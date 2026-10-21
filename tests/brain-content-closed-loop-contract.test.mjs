@@ -54,11 +54,14 @@ test('orchestrator exposes unsupported channel obligations as machine-readable h
 test('orchestrator preserves content_ready until executor consumes artifact', () => {
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(orchestrator, /COVERED_STATES\s*=\s*new Set\(\[[^\]]*'content_ready'/);
-  assert.match(orchestrator, /if \(shouldPreserveExisting\(previous\)\) continue;/);
+  assert.match(orchestrator, /if\s*\(\s*shouldPreserveExisting\(\s*previous,\s*channel,\s*personalSource,\s*consumedCapabilityChannels,\s*currentObligation\s*\)\s*\)\s*continue;/);
+  assert.match(orchestrator, /if\s*\(\s*consumedCapabilityChannels\.has\(channel\)\s*&&\s*!clean\(row\.delivery_ref\)\s*\)\s*return true;/);
+  assert.match(orchestrator, /evidence\.republish_forbidden\s*===\s*true/);
+  assert.match(orchestrator, /evidence\.possible_provider_side_effect\s*===\s*true/);
 });
 
 test('database has one canonical reconciliation loop and guards invoke it before recovery', () => {
-  const migration = read('supabase/migrations/20260917235901_content_closed_loop_reconciliation.sql');
+  const migration = read('supabase/migration-history/repository-only/20260917235901_content_closed_loop_reconciliation.sql');
   assert.match(migration, /powerhouse_reconcile_content_outcomes_v1/);
   assert.match(migration, /PROVIDER_RECORD_MISSING/);
   assert.match(migration, /provider_truth_verified/);
@@ -70,7 +73,7 @@ test('database has one canonical reconciliation loop and guards invoke it before
 });
 
 test('single scheduler replaces parallel content-control cron lanes', () => {
-  const scheduler = read('supabase/migrations/20260917235902_content_closed_loop_scheduler.sql');
+  const scheduler = read('supabase/migration-history/repository-only/20260917235902_content_closed_loop_scheduler.sql');
   assert.match(scheduler, /powerhouse-content-closed-loop-v1/);
   assert.match(scheduler, /powerhouse_content_closed_loop_tick_v1/);
   for (const legacy of [
@@ -123,7 +126,7 @@ test('cockpit health is outcome-based and never counts DISPATCHED as green', () 
 });
 
 test('autonomous improvement fixes executor rather than weakening immutable identity guard', () => {
-  const migration = read('supabase/migrations/20260917235903_autonomous_improvement_immutable_identity_fix.sql');
+  const migration = read('supabase/migration-history/repository-only/20260917235903_autonomous_improvement_immutable_identity_fix.sql');
   assert.match(migration, /powerhouse_autonomous_improvement_executor_v1/);
   assert.match(migration, /brain_guard_obligation_identity/);
   assert.match(migration, /IMMUTABLE_IDENTITY_GUARD_WEAKENED/);
