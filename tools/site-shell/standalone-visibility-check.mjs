@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
 import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
+import { formatClsFailure } from './layout-shift-evidence.mjs';
 
 const baseUrl = process.env.UI_VR_BASE_URL || process.argv[2];
 if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
@@ -134,6 +135,7 @@ async function readVisibleState(page, url) {
                   main: inspect('main'),
                   textLength: (document.querySelector('main')?.innerText || '').trim().length,
                   cls: Number(window.__bgCls || 0),
+                  layoutShifts: window.__bgLayoutShifts || [],
                 };
       });
     } catch (error) {
@@ -168,10 +170,25 @@ try {
         const page = await context.newPage();
         await page.addInitScript(() => {
           window.__bgCls = 0;
+          window.__bgLayoutShifts = [];
           try {
             new PerformanceObserver(list => {
               for (const entry of list.getEntries()) {
-                if (!entry.hadRecentInput) window.__bgCls += entry.value;
+                if (!entry.hadRecentInput) {
+                  window.__bgCls += entry.value;
+                  if (window.__bgLayoutShifts.length < 12) {
+                    const rect = r => r ? ({ x: r.x, y: r.y, width: r.width, height: r.height }) : null;
+                    window.__bgLayoutShifts.push({
+                      score: entry.value,
+                      sources: (entry.sources || []).slice(0, 3).map(source => ({
+                        tag: source.node?.tagName || 'unknown',
+                        id: source.node?.id || '',
+                        previous: rect(source.previousRect),
+                        current: rect(source.currentRect),
+                      })),
+                    });
+                  }
+                }
               }
             }).observe({ type: 'layout-shift', buffered: true });
           } catch {}
@@ -195,7 +212,8 @@ try {
                 }
               }
               if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
-              if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100`);
+              const clsFailure = formatClsFailure(route, viewport.name, state.cls, state.layoutShifts);
+              if (clsFailure) failures.push(clsFailure);
             } catch (error) {
               failures.push(`${route} ${viewport.name}: ${error.message || error}`);
             }

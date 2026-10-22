@@ -1,0 +1,42 @@
+{
+  "fingerprint": "website|mobile-cls|en-blog-afas-api|20261022-v1",
+  "owner": "existing website browser assurance; independent diagnostic obligation, not SEO PR #4606 writer",
+  "date": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "source_of_truth": "public.brain_failure_registry; this entry is a source-controlled learning projection",
+  "observed_failure": "GitHub Required #39740060787 rerun failed /en/blog/afas-api phone CLS 0.111 > 0.100 after checkout browser tests had passed.",
+  "root_cause": "CLS-causing node remains UNKNOWN; current browser assurance retained only scalar CLS, preventing attribution to a concrete DOM element.",
+  "proposed_fix": "Capture at most 12 performance layout-shift entries with 3 source tag/id and before/after rectangles each, print bounded diagnostics only when CLS > 0.100, with no page text or values.",
+  "prevention_rule": "When mobile CLS fails, retain actual node/rectangle evidence instead of guessing CSS fixes. Preserve the 0.100 gate, route inventory, and all browser/quality checks.",
+  "regression": "tests/website-layout-shift-evidence-20261022.test.mjs",
+  "status": "CANDIDATE_DIAGNOSTIC_ONLY; root cause of actual /en/blog/afas-api shift and production repair still unproven",
+  "compiler": {
+    "failure_class": "WEBSITE_MOBILE_CLS_UNATTRIBUTED",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/website-layout-shift-evidence-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/website-layout-shift-evidence-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/website-layout-shift-evidence-20261022.test.mjs"
+    ]
+  },
+  "evidence": {
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39740060787",
+    "failed_job": "119868910211",
+    "observed_cls": 0.111,
+    "threshold": 0.1,
+    "checkout_rerun": "PASSED",
+    "offline_artifact": "netlify-prebuilt-tree-68b0a9472d4035194d703806c6dc194b2fc9be9d",
+    "offline_dom_trial": "0 CLS on two blocked-network simulations, NOT representative of browser preview with fonts/CMS",
+    "browser_limit": "ERR_BLOCKED_BY_ADMINISTRATOR localhost HTTP; no source-node attribution possible offline",
+    "release_outcome": "NOT_LIVE",
+    "production_fix": "NOT_PROVEN"
+  }
+}
