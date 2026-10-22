@@ -5,7 +5,7 @@
   "relation": "parallel non-overlapping source plan refinement to protected draft #4558",
   "failure_pattern": "818 business opportunities repeatedly expand a 23,295-contact person-intelligence view inside a LATERAL next-best-action route. Revenue snapshot often times out at 120s.",
   "root_cause": "Uncorrelated source view is fully expanded per LATERAL opportunity; its own aliases/events/actions/outcomes and aggregated calculations are recomputed.",
-  "proposed_fix": "Same materialized person view plus guarded versioned two-arm equijoin successor, preserve 50 columns and ACL, all runtime/full finance gates still open.",
+  "proposed_fix": "Forward-only keyed alias set-join candidate after CTE + LATERAL showed a measured small-cohort slowdown; private 50-column buying-window formula preserved. Release blocked until multi-tenant 50/51-column financial parity and end-to-end cron runtime.",
   "evidence": {
     "baseline_explain_cost": 32713172.61,
     "candidate_explain_cost": 1597888.41,
@@ -54,6 +54,22 @@
       "actual_cron_sla": "NOT_TESTED",
       "full_finance_and_tenant_parity": "NOT_PROVEN",
       "production_applied": false
+    },
+    "set_join_read_only_20261022": {
+      "status": "READ_ONLY_SELECTED_PERSON_PARITY_ONLY",
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "opportunities": 818,
+      "linked": 650,
+      "bidirectional_person_selection_mismatches": 0,
+      "observed_top_timestamp_ambiguities": 0,
+      "selected_person_baseline_ms": 14623,
+      "selected_person_set_join_ms": 1291,
+      "full_50_column_parity": "TIMEOUT_45_SECONDS_NOT_VERIFIED",
+      "original_first_candidate_md5": "6a7a20df1f24b4333986ba9b2da09314",
+      "forward_set_join_candidate_md5": "dcac5a8d2543147d3d5e294cc14a599e",
+      "preview_data": "ZERO_OPPORTUNITIES",
+      "production_deploy": "NOT_AUTHORIZED_OR_DEPLOYED",
+      "restrictions": "Sample timings are not entire snapshot runtimes. SQL compilation confirmed 50 columns in temp view and rollback. No financial or tenant proof."
     }
   },
   "prevention": [
@@ -62,7 +78,9 @@
     "Existing daily executor, scheduler and social lineage remain active.",
     "Synthetic parity fixtures must run transactionally with verified ROLLBACK and must never be mistaken for authorized two-tenant financial parity or release acceptance.",
     "Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim.",
-    "Do not fan out Supabase provider runs with sequential one-file commits; batch same-lineage changes and inspect provider configuration failures before bounded retry."
+    "Do not fan out Supabase provider runs with sequential one-file commits; batch same-lineage changes and inspect provider configuration failures before bounded retry.",
+    "Planner cost reduction alone never earns release: bounded real runtime on 5/25 opportunities regressed for materialized OR-LATERAL; also measure full 818 cohort for keyed alias set join.",
+    "For aliases or timestamp ties after source changes, compare canonical selection and investigate ambiguities before release; no simulated positive financial values may be promoted as realized revenue."
   ],
   "compiler": {
     "failure_class": "RECOVERY",
@@ -74,15 +92,18 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
-      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs",
+      "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
     ],
     "canary": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
-      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs",
+      "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
     ],
     "shadow": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
-      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs",
+      "tests/brain-p0-4215-buying-window-set-join-parity.mjs"
     ]
   },
   "current_state": "TWO_ARM_VERSIONED_CANDIDATE_NO_LIVE_DEPLOY",
