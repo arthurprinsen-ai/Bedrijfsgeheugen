@@ -294,14 +294,7 @@ jobs:
                 python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/bg-approved-pr-source-server.log 2>&1 &
                 server_pid=$!
                 trap 'kill "$server_pid" 2>/dev/null || true' EXIT
-                for i in $(seq 1 30); do
-                  if curl -fsS --max-time 5 "http://127.0.0.1:4173/portaal/demo/" -o /dev/null; then break; fi
-                  if [ "$i" -eq 30 ]; then
-                    echo "::error::Approved PR source demo did not become reachable."
-                    exit 1
-                  fi
-                  sleep 1
-                done
+                POGINGEN=30 INTERVAL=1 bash "$GITHUB_WORKSPACE/tools/ci/wait-for-url.sh" "http://127.0.0.1:4173/portaal/demo/"
                 PRODUCTION_URL=http://127.0.0.1:4173 \
                   VISUAL_CAPTURE_PATH="$GITHUB_WORKSPACE/artifacts/visual-baseline-pr/portal-v2-canvassen.png" \
                   "$GITHUB_WORKSPACE/node_modules/.bin/playwright" test \

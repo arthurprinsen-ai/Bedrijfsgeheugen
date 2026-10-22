@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "delivery|portal-v2-readback|legacy-local-poll-versus-shared-wait-contract|20261022-v1",
+  "obligation_id": "delivery|portal-v2-readback|legacy-local-poll-versus-shared-wait-contract|20261022-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "PORTAL_LOCAL_READBACK_SHARED_WAIT_REGRESSION",
+  "root_cause": "The existing Portal V2 DOM readback workflow retains a manual seq 1 30 polling loop for its local approved-head visual source, despite the repository-wide readiness contract requiring tools/ci/wait-for-url.sh. The existing regression on main deterministically rejects the legacy loop.",
+  "observed_evidence": {
+    "run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39827594879",
+    "job_id": 119995933814,
+    "test": "tests/delivery-readback-wachtvenster.test.mjs:53",
+    "error": "de oude lus van vijf minuten staat er nog",
+    "source": ".github/workflows/portal-v2-production-dom-readback.yml",
+    "base_main_sha": "a692659ae245689273238baa7e01ccbe38c0d0ea"
+  },
+  "failed_approaches": [
+    "Blind CI retries without changed cause",
+    "Suppressing the existing fail-closed regression",
+    "Pushing to active ghost-aware PR #4663",
+    "Leaving a parallel manual local polling loop"
+  ],
+  "fix": "Replace local loop with POGINGEN=30 INTERVAL=1 invocation of existing tools/ci/wait-for-url.sh; retain exact approved PR SHA, server trap and visual Playwright proof.",
+  "prevention_rule": "All URL-readiness polls, including localhost approved visual baseline, reuse the canonical script with bounded scoped settings. Never weaken required CI, security or visual proof, and never conflate an obsolete canceled head with a current actual failing test.",
+  "tests": [
+    "tests/delivery-readback-wachtvenster.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_LOCAL_READBACK_SHARED_WAIT_REGRESSION",
+    "scope": "GITHUB_ACTIONS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "invariants": [
+      "no seq 1 30 in Portal V2 production-readback YAML",
+      "uses existing shared script with 30x1 local scope",
+      "preserves exact approved PR baseline browser proof and local server cleanup",
+      "no duplicate scheduler and no bypass"
+    ],
+    "historical_replay": [
+      "tests/delivery-readback-wachtvenster.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-readback-wachtvenster.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-readback-wachtvenster.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required, CodeQL, protected merge and main provider readback required; another PR's red Required does not automatically become green."
+}
