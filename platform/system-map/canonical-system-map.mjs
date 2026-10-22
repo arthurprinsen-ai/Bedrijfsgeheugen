@@ -2445,3 +2445,17 @@ export const EMAIL_LEARNING_SCOPED_REFRESH_20261020=Object.freeze({
  regression:'supabase/tests/email_learning_scoped_refresh_v1.sql',
  learning:'brain/learning/2026-10-20-email-learning-scoped-refresh.json'
 });
+
+
+export const DAILY_SOCIAL_BUILDER_MEDIA_RECOVERY_20261022=Object.freeze({
+  fingerprint:'powerhouse|daily-social-builder-reopen-media-preflight|20261022-v1',
+  owner:'existing Powerhouse content-loop, orchestrator and Instagram media router',
+  existingScheduler:'NETLIFY_SUPABASE_EDGE + existing scheduled GitHub recovery',
+  sourceContract:'validPersonalSource + verified AI-native builder evidence',
+  safety:['no provider side effect on rebootstrap','preserve publisher proof','no duplicated media claim','no implicit email send'],
+  mediaPreflight:'unchanged WAITING_ASSET probes are read-only and do not count as real attempts',
+  functions:['powerhouse-content-loop','powerhouse-content-orchestrator','powerhouse-instagram-media-router'],
+  regression:'tests/brain-daily-social-builder-media-recovery-20261022.test.mjs',
+  learning:'brain/learning/2026-10-22-daily-social-builder-media-recovery-v1.json',
+  noNewScheduler:true,noNewSender:true,noConsentBypass:true,noFabricatedProviderProof:true
+});
