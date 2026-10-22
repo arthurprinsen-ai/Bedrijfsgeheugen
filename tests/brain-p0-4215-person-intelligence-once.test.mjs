@@ -64,5 +64,9 @@ test('migrated preview is hash pinned, original is transaction-scoped, empty sna
  assert.ok(src.includes('CREATE TEMP VIEW p0_4215_buying_baseline WITH'));
  assert.ok(src.includes('CREATE TEMP VIEW p0_4215_buying_candidate WITH'));
  assert.ok(src.includes('old_rows=0 OR old_rows<>new_rows'));
+ assert.doesNotMatch(src,/const process=spawnSync/,'never shadow global process during preview env preflight');
+ assert.ok(src.includes('const childResult=spawnSync('));
+ assert.ok(src.includes('if(childResult.status!==0)'));
+ assert.ok(src.includes('process.env.P0_4215_PARITY_ENV'));
  assert.match(src,/ROLLBACK;/);
 });
