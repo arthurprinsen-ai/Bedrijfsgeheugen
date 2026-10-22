@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "id": "function:bg-dagoverzicht",
+      "type": "function",
+      "authority": "supabase/functions/bg-dagoverzicht/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:bg-interactie",
       "type": "function",
       "authority": "supabase/functions/bg-interactie/index.ts",
@@ -636,6 +643,13 @@
       "type": "rpc",
       "authority": "supabase/functions/portal-state-eu/index.ts",
       "evidence_contract": "tests/portal-business-input.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_uitkomst_vastleggen",
+      "type": "rpc",
+      "authority": "supabase/functions/bg-dagoverzicht/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
       "required": true
     },
     {
@@ -1434,6 +1448,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260928110707_workshop_scan_preprovision_customer_portal.sql",
       "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "view:public.bg_vandaag",
+      "type": "view",
+      "authority": "supabase/migration-history/repository-only/20260928162500_bg_vandaag_manual_dm_handoff_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
       "required": true
     }
   ]
