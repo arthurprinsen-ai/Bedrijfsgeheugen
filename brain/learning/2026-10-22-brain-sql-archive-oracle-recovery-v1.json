@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "type": "test_source_recovery_candidate",
+  "obligation_id": "ci-brain-inherited-sql-archive-oracle-batch-20261022",
+  "base_sha": "1ba81ffa48c605ac1c99a4502955f7db0d416040",
+  "baseline": {
+    "run_id": 39671036043,
+    "tests": 3511,
+    "passed": 3190,
+    "failed": 321
+  },
+  "scope": [
+    {
+      "test": "tests/brain-autonomous-improvement-currentstate-record-type.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260916182000_autonomous_improvement_currentstate_record_type_fix_v1.sql"
+    },
+    {
+      "test": "tests/brain-growth-swarm-bounded-refresh-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260929165000_growth_swarm_bounded_refresh_v1.sql"
+    },
+    {
+      "test": "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20261005122000_powerhouse_human_commercial_message_os_v1.sql"
+    },
+    {
+      "test": "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql"
+    },
+    {
+      "test": "tests/brain-instagram-canonical-mira-identity-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260929173500_instagram_canonical_mira_identity_guard_v1.sql"
+    },
+    {
+      "test": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260921152000_instagram_meta_oauth_onboarding_v1.sql"
+    },
+    {
+      "test": "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260922082500_instagram_mira_reel_recommendation_normalization_v1.sql"
+    },
+    {
+      "test": "tests/supabase-tenant-identity-review-semantics-v2.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260918105000_tenant_identity_review_semantics_v2.sql"
+    },
+    {
+      "test": "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql"
+    }
+  ],
+  "root_cause": "Historical SQL oracle tests continue reading retired executable migration paths after archival",
+  "change": "Only one exact SQL path literal updated per original test; all assertions preserved; add fail-closed archive source regression",
+  "production_changed": false,
+  "security_controls_weakened": false,
+  "verified_failure_reduction": false,
+  "acceptance": "Full BRAIN zero failures plus Required CI plus CodeQL on exact candidate head; separate #3742 schema parity and #4215 customer A/B readback"
+}

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
 const cfg=JSON.parse(readFileSync('config/instagram-canonical-mira-identity-v1.json','utf8'));
-const sql=readFileSync('supabase/migrations/20260929173500_instagram_canonical_mira_identity_guard_v1.sql','utf8');
+const sql=readFileSync('supabase/migration-history/repository-only/20260929173500_instagram_canonical_mira_identity_guard_v1.sql','utf8');
 
 test('Mira uses one fictional canonical identity reference',()=>{
   assert.equal(cfg.canonical_reference.reference_id,'Yjqu4D7v76HABNPmQPj1');
