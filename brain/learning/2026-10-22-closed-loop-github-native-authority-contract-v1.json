@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|closed-loop|github-native-authority-contract-drift|20261022-v1",
+  "obligation_id": "powerhouse|closed-loop|github-native-authority-contract|20261022-v1",
+  "parent_issue": 4198,
+  "related_issue": 4681,
+  "source_main_sha": "f2b299458352bfc3f109b323f5685d7c45cd4f60",
+  "root_cause": "Legacy contract still names retired Make BG169 scenario 7137190 as canonical production authority, while prior proven registry incident and protected PR #1486 establish GitHub-native-only delivery. Green static validation is not runtime execution proof.",
+  "change": "Keep existing estate-wide learning contract and owners; represent protected GitHub-native workflow as BG169 production authority, explicitly label retired Make route, and prevent contract-test READY output from masquerading as provider outcome proof.",
+  "prevention_rule": "Agents check canonical proven incident memory and current provider authority first. Never reactivate retired Make BG169, create parallel scheduler/store, promote failing full BRAIN, or mark static contract validation as incident auto-repair/provider-delivered proof. Require exact-head CI, CodeQL, protected merge, production identity and actual runtime outcome receipts.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-universal-closed-loop-learning.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-universal-closed-loop-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-universal-closed-loop-learning.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "before": "Independent Make scenario readback 2026-10-22: BG169 inactive; proven retirement fingerprint bg169-make-transport-retirement-stale-contract-tests-v1; static validator previously emitted UNIVERSAL_CLOSED_LOOP_READY.",
+    "after": "PENDING_EXACT_HEAD_REQUIRED_CODEQL",
+    "full_brain": "PENDING_0_FAIL_INTEGRATED",
+    "production": "NOT_CHANGED",
+    "runtime_repair": "UNVERIFIED",
+    "provider_outcome": "NOT_PROVEN"
+  },
+  "status": "CANDIDATE"
+}
