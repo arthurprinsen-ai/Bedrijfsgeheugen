@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 const originalSql = [
   { file: '20260918110000_legacy_growth_outcome_reconciler_v1.sql', gitBlobSha: 'e84bde6ba753e773e4d74cfb39f226dde9e068e3' },
   { file: '20260918101000_forecast_calibration_health_due_v1.sql', gitBlobSha: '4828bd5facf452f579b530e2b4332133d978ef7a' },
-  { file: '20260918131000_action_learning_production_truth_v1.sql', gitBlobSha: '0712bedcf5b12aed3b12e4a732c0361c9ec5c57a8' }
+  { file: '20260918131000_action_learning_production_truth_v1.sql', gitBlobSha: '0712bedcf5b12aed3b12e4a732c0361c9ec5c57a' }
 ];
 for (const item of originalSql) {
   test('immutable original SQL archive (no executable duplicate): ' + item.file, () => {
