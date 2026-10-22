@@ -16,14 +16,16 @@
     "previous_behavior": "Every ready non-conflicting work package could join a single unbounded Promise.all wave; base epoch and writer identity were not compared.",
     "baseline_main_sha": "read from protected GitHub main at commit creation",
     "production_readback": "PENDING",
-    "CI": "PENDING"
+    "CI": "PENDING",
+    "admission_recovery": "GitHub Required admission first rejected missing evaluation.historical_replay. Existing test is now explicitly registered without weakening the gate."
   },
   "prevention": [
     "Maximum four concurrent packages in policy, with hard cap six in code",
     "One writer per obligation and candidate SHA",
     "No speculative integration across main epochs",
     "Executor independently rejects manually forged waves",
-    "Protected Required, CodeQL, merge and exact-main production readback remain mandatory"
+    "Protected Required, CodeQL, merge and exact-main production readback remain mandatory",
+    "Canonical learning evaluation.historical_replay must point to runnable tests/brain-*.test.mjs before protected admission"
   ],
   "regression_tests": [
     "tests/brain-parallel-engineering-fabric.test.mjs"
@@ -35,5 +37,17 @@
   },
   "owner": "existing Powerhouse delivery control plane",
   "duplicate_scheduler": false,
-  "duplicate_incident_registry": false
+  "duplicate_incident_registry": false,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-parallel-engineering-fabric.test.mjs"
+    ]
+  }
 }
