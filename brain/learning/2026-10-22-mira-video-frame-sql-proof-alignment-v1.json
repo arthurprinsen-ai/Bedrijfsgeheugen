@@ -1,0 +1,38 @@
+{
+  "fingerprint": "mira|sql-proof-video-frame-portrait-dimension-false-rejection|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "cause": "SQL public.powerhouse_instagram_visual_proof_valid_v1 grouped media_type='video_frame' with still images, requiring 1080x1350 while the governed image verifier produces legitimate 1080x1920 video frames. BEFORE INSERT/UPDATE trigger independently downgrades PASS to FAIL, even when provider_status=prepublish_verified.",
+  "verified_evidence": {
+    "proof_rows_total": 46,
+    "provider_preverified_but_sql_fail": 21,
+    "conflicting_rows_media_type": "video_frame",
+    "positive_case": "2026-10-19: face_identity_confidence=0.95, visual.verified=true, provider_status=prepublish_verified, identity_gate_result=FAIL",
+    "current_sql_for_positive": false,
+    "proposed_strict_semantics_for_positive": true,
+    "below_094_case": "2026-10-22: all six visual proofs face confidence <=0.93, must remain rejected",
+    "impact_boundary": "SQL blocker distinct from actual 22-Oct insufficient video identity. No Instagram external post ID."
+  },
+  "repair": "Versioned CREATE OR REPLACE preserves existing SQL proof requirements and still-image/reel dimensions; correctly groups video_frame with 1080x1920 and adds mandatory video_frame face match, >=0.94, canonical master ID, master hash syntax and two-image provenance. Transactional SQL self-tests cover both positive and negative fixtures. No historical row rewrites.",
+  "prevention": "Contract parity between Edge verificationRole video_frame and DB media_type; reject inconsistent SQL media-type mapping and deny downstream use of legacy PASS without verified exact media and provider post readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-sql-video-frame-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-sql-video-frame-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-sql-video-frame-proof-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "current_state": "SOURCE_CANDIDATE_NOT_DEPLOYED",
+  "production_readback": "NOT_YET_VERIFIED"
+}
