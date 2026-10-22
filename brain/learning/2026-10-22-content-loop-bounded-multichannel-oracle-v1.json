@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "ci|brain|content-loop-bounded-multichannel-inherited-oracle|20261022-v1",
+  "obligation_id": "ci-brain-content-loop-channel-fanout-test-oracle-20261022-v1",
+  "parent_issue": 3742,
+  "related_issue": 4198,
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "An inherited test from #4307 asserts retired MAX_CHANNEL_GENERATIONS=1/bootstrapAttempted after the canonical content-loop changed to lease-bound, allowlisted, deduplicated four-channel generation; the inherited oracle was not updated with the source.",
+  "impact": "One independently failing original test case, not ok 114, in Unified BRAIN 39791707071; not evidence of a live provider-publication failure.",
+  "fix": "Replace two retired symbol assertions with twelve real source safety contracts and a mutation-negative check for every one; preserve original 90-second child/110-second parent and editorial identity requirements.",
+  "prevention_rule": "Every change to bounded supervisor fan-out must co-change historical source oracles. Keep one lease, four-channel cap, dedupe, child allowlist/scoped query and ambiguous-bootstrap no-repeat; do not weaken provider truth, security or publication uniqueness.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ]
+  },
+  "evidence": {
+    "run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "run_head": "8e665a86d2bb54712a34fd88bec0e1213df21dd2",
+    "failed_job_id": 119869500824,
+    "observed_failure": "not ok 114",
+    "existing_original_test": "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs",
+    "state": "SOURCE_VERIFIED_BUT_CANDIDATE_UNVERIFIED",
+    "live": "UNCHANGED",
+    "full_brain": "NOT_ZERO"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "prevention": [
+    "REUSE_EXISTING_CONTENT_LOOP_LEASE",
+    "FOUR_CHANNEL_SCOPE_ONLY",
+    "NO_DUPLICATE_CHANNEL_GENERATION",
+    "NO_REPEAT_ON_AMBIGUOUS_BOOTSTRAP"
+  ]
+}
