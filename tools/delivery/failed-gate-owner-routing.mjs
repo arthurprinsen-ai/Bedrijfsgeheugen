@@ -23,6 +23,13 @@ export function gateDecision(run) {
   return 'INCOMPLETE_NO_SUCCESS';
 }
 
+// A provider 401/403 on the canonical PR owner-comment endpoint is not a
+// successful signal; other API errors must retain their original fail-closed handling.
+export function isOwnerSignalPermissionDenied(error) {
+  const message = String(error?.message || error || '');
+  return /GitHub API (?:401|403) \/issues\/\d+\/comments(?:\b|:)/.test(message);
+}
+
 export function existingOwner(body) {
   const text = String(body || '');
   return text.match(/^Writer-Lease-Owner:\s*(.+)$/m)?.[1]?.trim() ||

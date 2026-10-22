@@ -12,10 +12,11 @@
     "Treating any completed Required test as successful coverage",
     "Blind rerun-failed-jobs on no-job CodeQL startup_failure (GitHub HTTP 403)",
     "Creating a parallel workflow/scheduler or new same-file PR",
-    "Waiving browser CLS 0.100 gate to force green"
+    "Waiving browser CLS 0.100 gate to force green",
+    "First actual postmerge watchdog invocation stopped at HTTP 403 PR-owner comment and prevented following PR recoveries."
   ],
-  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged.",
-  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates.",
+  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged. Follow-up: explicitly request pull-requests:write, classify precise 401/403 only at owner comment endpoint, cap denied signal attempts, keep unrelated missing-Required dispatch active, and fail the run visibly on denied notification.",
+  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates. Never terminate the entire watchdog on one denied owner PR comment before unrelated safe missing-gate dispatch; denied notification remains RED and auditable.",
   "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
   "tests": [
     "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
@@ -28,7 +29,11 @@
     "observed_source": ".github/scripts/required-gate-watchdog.mjs",
     "source_fix_proven": false,
     "autonomous_general_purpose_code_repair_proven": false,
-    "production_readback": "PENDING"
+    "production_readback": "PENDING",
+    "runtime_first_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "runtime_denied_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+    "observed_auth_denial": "GitHub Actions GITHUB_TOKEN advertised issues:write but only pull-requests:read; POST /issues/4656/comments returned 403. Missing Required dispatch for #4662 had succeeded first.",
+    "postmerge_followup_proven": false
   },
   "outcome": "CANDIDATE owner signal routing, not arbitrary autonomous code repair or live deployment",
   "compiler": {

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, isOwnerSignalPermissionDenied } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -56,11 +56,25 @@ test('handoff preserves immutable failure evidence, source repair, and unchanged
   assert.match(ownerSignalComment({ gate: 'codeql', headSha: sha, owner: 'old-owner', run: { id: 1, conclusion: 'startup_failure' } }), /No failing job/);
 });
 
+test('GitHub PR owner-comment authorization denial remains bounded and fail-closed', () => {
+  assert.equal(isOwnerSignalPermissionDenied(new Error('GitHub API 403 /issues/4656/comments: Resource not accessible by integration')), true);
+  assert.equal(isOwnerSignalPermissionDenied(new Error('GitHub API 401 /issues/4656/comments: Unauthorized')), true);
+  assert.equal(isOwnerSignalPermissionDenied(new Error('GitHub API 403 /actions/runs/7: forbidden')), false);
+  assert.equal(isOwnerSignalPermissionDenied(new Error('GitHub API 422 /issues/4656/comments: bad payload')), false);
+  const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
+  assert.match(source, /permissionDeniedSignals\+\+/);
+  assert.match(source, /ownerSignals \+ permissionDeniedSignals >= MAX_OWNER_SIGNALS_PER_TICK/);
+  assert.match(source, /FAILED_GATE_OWNER_SIGNAL_PERMISSION_DENIED/);
+  assert.match(source, /if \(permissionDeniedSignals\) process\.exitCode = 1/);
+  assert.match(source, /REQUIRED_GATE_WATCHDOG_DISPATCHED/);
+});
+
 test('existing five minute scheduler and critical gates remain enabled and source remediation is not disguised as green', () => {
   const workflow = readFileSync('.github/workflows/required-gate-watchdog.yml', 'utf8');
   const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /issues: write/);
+  assert.match(workflow, /pull-requests: write/);
   assert.match(workflow, /actions: write/);
   assert.match(source, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
   assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
