@@ -20,3 +20,7 @@ Regressie `tests/powerhouse-daily-self-evolution.test.mjs` vereist twee onafhank
 
 ## Voortaan voor alle agents
 Classificeer bron-specifieke confidence/freshness-blokkades en onafhankelijke herstel-/leeruitvoer apart. Preserveer de originele fout, dedupliceer per fingerprint, voer wat veilig onafhankelijk kan verder uit, publiceer exacte readback en laat echte security-/kwaliteitseisen ongewijzigd. Geen dubbele cron, geen valse groene status, geen reset van verificatieklokken.
+
+
+## Duurzame uitvoeringscheckpoint bij nieuwe fouten
+De al bestaande `improve`-job legt voortaan via `if: always()` zijn `run_id`, `run_attempt`, exacte `head_sha`, `job_status`, eigenaar en `next_safe_action` vast in `artifacts/quality/daily-learning-execution-checkpoint.json`. Het bestaande artifact-uploadpad draait óók wanneer een stap faalt. `terminal_proof=false` voorkomt schijnbewijs dat een checkpoint gelijkstaat aan een geslaagd leerresultaat. Dit is geen extra scheduler of waarheidssysteem; het is bewijsmateriaal waarmee dezelfde eigenaar na een onderbreking of incident causaal kan hervatten.
