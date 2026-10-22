@@ -50,7 +50,7 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
-          import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
+          import { deriveNetlifyDeploymentApplicability, requiresBrainRuntimeAuthenticatedProof } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
 
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
@@ -64,6 +64,7 @@ jobs:
             forceBrowser:manualReadback,
           });
           const { runtimeChangedPaths, websiteRequired, portalRequired, browserRequired, netlifyRuntimeRequired, deploymentRequired }=applicability;
+          const brainRuntimeAuthProofRequired=requiresBrainRuntimeAuthenticatedProof(changedPaths);
           const readbackControlPlaneOnly=changedPaths.length>0 && runtimeChangedPaths.length===0;
           const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
 
@@ -83,9 +84,10 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`website_required=${websiteRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`portal_required=${portalRequired}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`brain_runtime_auth_proof_required=${brainRuntimeAuthProofRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
-          console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:applicability.deliveryLanes,required_suites:applicability.requiredSuites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
+          console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:applicability.deliveryLanes,required_suites:applicability.requiredSuites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,brain_runtime_auth_proof_required:brainRuntimeAuthProofRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
         if: steps.scope.outputs.deployment_required == 'true'
@@ -168,7 +170,7 @@ jobs:
           echo "Production never exposed exact release marker + deploy identity for ${EXPECTED_COMMIT}" >&2
           exit 1
       - name: Verify authenticated Portal production API proof
-        if: steps.scope.outputs.portal_required == 'true' && steps.deploy.outcome == 'success'
+        if: (steps.scope.outputs.portal_required == 'true' || steps.scope.outputs.brain_runtime_auth_proof_required == 'true') && steps.deploy.outcome == 'success'
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           EXPECTED_DEPLOY_ID: ${{ steps.deploy.outputs.deploy_id }}

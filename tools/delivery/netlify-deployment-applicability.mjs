@@ -51,6 +51,16 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
 
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
 
+// A Netlify-deployed Brain source path can require authenticated tenant proof
+// even when the generic delivery lane is 'backend' rather than 'portal'.
+export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
+  return unique(changedPaths).some(path =>
+    path.startsWith('brain/operating-loop/') ||
+    path === 'netlify/functions/brain-operating-loop.mjs' ||
+    path === 'platform/api/brain-operating-loop-handler.mjs'
+  );
+}
+
 export function deriveNetlifyDeploymentApplicability({
   changedPaths=[],
   headSha,
