@@ -30,7 +30,9 @@ test('transient frames still require canonical Mira vision proof',()=>{
   assert.match(verifier,/mira_present/);
   assert.match(verifier,/identity_class/);
   assert.match(verifier,/confidence/);
-  assert.match(router,/VIDEO_FRAME_VISION_PROOF_FAILED/);
+  assert.match(router,/VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH/);
+  assert.match(router,/MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES/);
+  assert.match(router,/!fv\.body\?\.pass\|\|!miraFaceProofValid\(fv\.body\?\.visual\|\|\{\},'image'\)/);
   assert.match(router,/visual_complete:true/);
   assert.match(router,/daily_life_scene:true/);
   assert.match(router,/confidence:Math\.min/);

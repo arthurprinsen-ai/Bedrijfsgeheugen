@@ -1,0 +1,61 @@
+{
+  "fingerprint": "ci|social-learning|legacy-source-oracles-after-canonical-native-routing|20261022-v1",
+  "obligation_id": "ci-social-learning-canonical-source-oracles-20261022",
+  "date": "2026-10-22",
+  "type": "BRAIN_LEARNING",
+  "status": "CANDIDATE",
+  "parent_issue": 4439,
+  "source_main_sha": "47f302f9be29be967e35d31edd0e76795f46945b",
+  "observed": {
+    "failed_run": "39828093988",
+    "failed_job": "119996644744",
+    "failed_original_tests": 3,
+    "failures": [
+      "legacy Buffer config.schedule expected 15 */6 * * * but is intentionally undefined",
+      "Instagram publishPos source assertion expects retired whole-publisher call",
+      "video-frame proof expects retired VIDEO_FRAME_VISION_PROOF_FAILED literal"
+    ],
+    "changed_runtime_files": 0
+  },
+  "root_cause": "After canonical native per-channel publishing and fail-closed Mira vision upgrades, three push-only social learning source assertions retained retired scheduler/call/error identities.",
+  "fix": "Reassert no duplicate Buffer timer, actual provider-guarded Instagram channel-specific publish lane after media router, and exact failing frame/face-drift guards. Keep full original tests executable.",
+  "prevention_rule": "On any canonical source refactor, immediately replay social learning original tests against the exact runtime; never add old schedulers, skip safety checks or weaken verified-media gates just to make CI green.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/social-learning-buffer-schedule.test.mjs",
+      "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+      "tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-source-identity-recovery-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-source-identity-recovery-20261022.test.mjs"
+    ]
+  },
+  "regression_contract": "tests/brain-social-learning-source-identity-recovery-20261022.test.mjs",
+  "test_evidence": {
+    "before": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39828093988",
+    "source_review": "Current exact main pinned; native routing and 2 negative Mira guards confirmed",
+    "after": "PENDING_REQUIRED_CI",
+    "whole_brain": "PENDING_FULL_ZERO_FAIL",
+    "production": "UNCHANGED",
+    "provider": "NOT_CLAIMED"
+  },
+  "skill_targets": [
+    "social"
+  ],
+  "prevention": [
+    "ONE_CANONICAL_SOCIAL_EXECUTOR",
+    "BUFFER_LEGACY_UNSCHEDULED",
+    "INSTAGRAM_MEDIA_ROUTER_BEFORE_CHANNEL_SPECIFIC_PUBLISH",
+    "FRAME_VISION_AND_FACE_DRIFT_FAIL_CLOSED"
+  ]
+}

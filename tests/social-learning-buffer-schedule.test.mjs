@@ -12,8 +12,14 @@ const migrationUrl=(name)=>{
   return existsSync(executable)?executable:history;
 };
 
-test('Buffer collector is scheduled natively and not through Make', () => {
-  assert.equal(config.schedule, '15 */6 * * *');
+test('retired Buffer diagnostic collector has no independent schedule or Make fallback', async () => {
+  const workflow=await readFile(new URL('../.github/workflows/buffer-social-learning.yml',import.meta.url),'utf8');
+  const collector=await readFile(new URL('../netlify/functions/buffer-social-collect.mjs',import.meta.url),'utf8');
+  assert.equal(config.schedule, undefined, 'legacy Buffer collector must not become a second timer');
+  assert.match(workflow,/^\s+push:\s*$/m, 'the historical contract test is push-only');
+  assert.doesNotMatch(workflow,/^\s+schedule:\s*$/m, 'no duplicate Buffer cron may be created');
+  assert.match(collector,/export const config=\{\};/);
+  assert.match(collector,/canonical provider-native social collection\/Heartbeat must never be replaced/);
 });
 
 test('missing Buffer credential records one fail-closed obligation', async () => {
