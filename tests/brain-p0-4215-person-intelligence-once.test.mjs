@@ -68,5 +68,7 @@ test('migrated preview is hash pinned, original is transaction-scoped, empty sna
  assert.ok(src.includes('const childResult=spawnSync('));
  assert.ok(src.includes('if(childResult.status!==0)'));
  assert.ok(src.includes('process.env.P0_4215_PARITY_ENV'));
+ assert.equal((src.match(/^ candidateSql,$/gm)||[]).length,1,'candidate TEMP VIEW must be created exactly once');
+ assert.ok(src.includes("'CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_baseline;',\n 'CREATE TEMP TABLE p0_new"));
  assert.match(src,/ROLLBACK;/);
 });
