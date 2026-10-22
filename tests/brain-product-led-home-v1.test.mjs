@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { canonicalNetlifyBuild, phaseIndex } from './helpers/netlify-canonical-build-source.mjs';
+import { canonicalNetlifyBuild, phaseIndex } from './brain-netlify-canonical-build-source.mjs';
 
 const apply = readFileSync('tools/site-shell/apply-product-led-home.mjs','utf8');
 const skill = readFileSync('skills/powerhouse-product-led-growth.md','utf8');

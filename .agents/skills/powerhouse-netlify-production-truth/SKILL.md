@@ -236,3 +236,10 @@ For `/api/portal-ondernemersdata` specifically:
 
 Historical learning: `brain/learning/2026-09-21-netlify-serverless-env-api-v1.json`.
 Recurrence learning: `brain/learning/2026-10-07-portal-authenticated-production-503-serverless-env-v1.json`.
+
+## Canonieke Netlify-buildtests — 22 oktober 2026
+
+- Productie en deploy-preview moeten beiden exact `tools/ci/netlify-build-entry.mjs` uitvoeren; de werkelijke `phases`-lijst en fail-on-nonzero zijn de uitvoeringsautoriteit.
+- Historische BRAIN-tests mogen niet vasthouden aan een vroegere inlined TOML-commandostreng en nooit schijn-groen veroorzaken door die ongebruikte commandostreng opnieuw toe te voegen.
+- Controleer met `tests/brain-netlify-canonical-build-source.mjs` de uitvoeringsvolgorde, scriptnamen, faseargumenten, syntax en preview fallback. Bescherm alle verplichte security- en kwaliteitscontroles.
+- Gerichte successen tellen niet als 321→0 of als Netlify productieacceptatie. Verplicht: exact-head Required, CodeQL, fresh full BRAIN en onafhankelijk provider/prod-readback voordat een claim groen is.

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {canonicalNetlifyBuild,phaseIndex} from './helpers/netlify-canonical-build-source.mjs';
+import {canonicalNetlifyBuild,phaseIndex} from './brain-netlify-canonical-build-source.mjs';
 const workflow=fs.readFileSync('.github/workflows/lane-website.yml','utf8');
 test('website lane executes canonical Netlify production build before local browser proof',()=>{
   const {phases}=canonicalNetlifyBuild();

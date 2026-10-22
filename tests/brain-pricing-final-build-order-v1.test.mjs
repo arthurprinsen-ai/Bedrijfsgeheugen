@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {canonicalNetlifyBuild,phaseIndex} from './helpers/netlify-canonical-build-source.mjs';
+import {canonicalNetlifyBuild,phaseIndex} from './brain-netlify-canonical-build-source.mjs';
 test('final UI normalization runs before pricing and bedrijfslek integrity restore',()=>{
   const {phases}=canonicalNetlifyBuild();
   const normalizer=phaseIndex(phases,'site-ui','tools/normaliseer-site-ui.mjs');
