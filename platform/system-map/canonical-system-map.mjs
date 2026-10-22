@@ -50,7 +50,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       documentation:'docs/changes/2026-10-22-failed-gate-owner-routing-v1.md',
       obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742',
       noNewScheduler:true, noNewIncidentStore:true, noSecondWriter:true,
-      arbitrarySourceFixAutoExecutionProven:false, productionReadbackProven:false
+      arbitrarySourceFixAutoExecutionProven:false, productionReadbackProven:false, prCommentWriteAuthorizationProven:false, providerError:'GitHub Actions issues/PR-comment 403 at main 01af9f2, recovering on same watchdog obligation'
     }),
     Object.freeze({
       id:'portal-eight-outcomes-connected-journey-v1',
