@@ -16,6 +16,10 @@ test('historical replay: catalog failure cannot suppress independent daily agent
   assert.match(improve,/scripts\/brain\/powerhouse-engineering-closed-loop\.mjs --self-test/);
   assert.doesNotMatch(improve,/ai-model-intelligence-audit\.mjs/);
   assert.doesNotMatch(improve,/needs:\s*(?:\[)?model-freshness/);
+  assert.match(improve,/daily-learning-execution-checkpoint\.json/,'daily failures have durable exact-run evidence');
+  assert.match(improve,/job_status:process\.env\.DAILY_JOB_STATUS/);
+  assert.match(improve,/terminal_proof:false/,'checkpoint cannot claim a green outcome');
+  assert.match(improve,/uses: actions\/upload-artifact@v4\s+if: always\(\)/);
   assert.match(model,/scripts\/brain\/ai-model-intelligence-audit\.mjs/);
   assert.match(model,/node --test tests\/ai-model-intelligence-freshness-v1\.test\.mjs/);
 });
