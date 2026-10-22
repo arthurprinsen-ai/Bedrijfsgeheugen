@@ -1,0 +1,33 @@
+{
+  "fingerprint": "delivery|terminalizer|supabase-sql-tests-misclassified-runtime|20261022-v1",
+  "status": "CANDIDATE_PENDING_PROTECTED_GATES",
+  "failure_class": "TERMINALIZER_RUNTIME_CLASSIFICATION",
+  "scope": "CI_CONTROL_PLANE",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
+  "source_pr": 4697,
+  "evidence": {
+    "workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39833808183",
+    "job_id": 120016707966,
+    "log_marker": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "misclassified_path": "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql",
+    "post_merge_source_status": "MERGED_BUT_PRODUCTION_READBACK_BLOCKED"
+  },
+  "root_cause": "Terminalizer consumes brain/contracts/production-readback-v1.json verifierOnlyPrefixes; tests/ was included but the independent SQL regression fixture directory supabase/tests/ was omitted, so a non-deployable fixture became an unknown runtime path.",
+  "fix": "Add the narrow supabase/tests/ prefix to the existing verifier-only classifier. Do not alter migration, Supabase Edge, config.toml, production provider readback, CodeQL or Required checks.",
+  "prevention_rule": "Only explicit test-fixture directories may be verifier-only. Keep supabase/migrations/, supabase/functions/, supabase/config.toml and unrecognized backend paths non-verifier and fail-closed. Replay exact merged #4697 via the one canonical terminal controller after protected CI and check actual production semantic incident proof.",
+  "evaluation": {
+    "regression": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ],
+    "negative_paths": [
+      "supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql",
+      "supabase/functions/brain-observe/index.ts",
+      "supabase/config.toml",
+      "supabase/unknown-runtime/index.ts"
+    ],
+    "expected_positive": "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql"
+  },
+  "production_state": "UNVERIFIED",
+  "ownership": "Dedicated scoped terminalizer-classification fix; source PR #4697 is already protected-merged. No new scheduler, store or second incident lineage."
+}
