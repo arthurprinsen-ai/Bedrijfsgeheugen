@@ -5,7 +5,7 @@
   "observed_at": "2026-10-22",
   "component_type": "portal-agent-brain",
   "root_cause": "Existing learning contract and daily workflow had no explicit fail-closed tenant relevance projection plus required daily incident-prevention metrics enforced together.",
-  "failedApproach": "Treating incident learning as chat-only notes or a portal success badge without canonical runtime verification.",
+  "failedApproach": "Treating incident learning as chat-only notes or a portal success badge without canonical runtime verification. In this PR, the first admission was attempted without mandatory machine-readable metadata; this is now an explicitly recorded regression/preflight lesson.",
   "fix": "Reinforce canonical universal learning validator, agent skill and tenant-safe existing Portal V2 learning route with regression cases.",
   "preventionRule": "Every agent reads known canonical failures before material action, writes evidence-backed learning after bounded recovery, and projects only proven tenant learning to the portal.",
   "regressionTest": [
@@ -17,5 +17,14 @@
     "portal-v2/native-pages.js"
   ],
   "canonicalAuthority": "Existing Brain/Powerhouse and protected delivery; no second runtime",
-  "productionVerified": false
+  "productionVerified": false,
+  "admission_incident": {
+    "fingerprint": "github|required-ci|pr-machine-metadata-missing|20261022-v1",
+    "state": "RECOVERING",
+    "observed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39813937625",
+    "root_cause": "PR #4673 initially omitted mandatory machine metadata fields Obligation-ID, Delivery-Lane, Candidate-Type and Base-SHA; Required admission failed before tests.",
+    "fix": "Added canonical machine metadata and same obligation/branch lease to PR #4673; re-triggered exact-head gates using a learning record update.",
+    "preventionRule": "Every future GitHub PR must include machine metadata before opening; check canonical delivery-hygiene policy and branch writer lease preflight. Never suppress admission tests.",
+    "verification": "Pending the next exact-head Required CI, CodeQL and protected merge."
+  }
 }
