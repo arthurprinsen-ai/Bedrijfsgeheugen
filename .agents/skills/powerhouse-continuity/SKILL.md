@@ -5,6 +5,21 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## GitHub zero-job provider-ghost herstel, één canonieke owner (2026-10-22)
+
+Fingerprint: `github-actions:stale-queued-zero-jobs:cancel-409:20261007`.
+Bestaand incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655.
+Gebruik de bestaande janitor- en recovery-supervisor-owners; geen nieuwe cron, GitHub-support-agent of parallel incidentregister.
+
+Bij `queued` + minimaal 6 uur onveranderde `created_at/updated_at` + `jobs.total_count=0`:
+1. Herlees de exacte workflow-run, jobs, huidige main en alle open PR-heads. Current main/current PR, andere jobstatus of onbekende identiteit = nooit automatisch verwijderen.
+2. Hergebruik geregistreerde provideraanzeggingen. Eén poging voor onbetwistbaar obsolete zero-job run: native cancel, force-cancel, en alleen na beide HTTP 409 een herbevestigde run-DELETE. Een eenmaal waargenomen 409/409/403 is `PROVIDER_BOUNDARY`, geen runner starvation. Geen eindeloze retry.
+3. Schrijf een machineleesbare `GH_GHOST_RUN:<run_id>:<state>:<updated_at>`-regel als incidentevidence onder #4655. Iedere sweep leest deze marker en onderdrukt identieke side effects. Houd vereiste originele checkresultaten apart. De vijfminuten-supervisor mag nooit opnieuw dezelfde provider-denied run proberen.
+4. Controleer geblokkeerde run-ID's afzonderlijk op exact-ID GET (404 of terminal met conclusies) vóór `RECONCILED`, ook als het algemene queued-overzicht leeg is. Laat onoplosbare providersituaties open voor GitHub Support; claim geen automatische supportticketinzending zonder echte bevestiging.
+5. Borgen onder de bestaande Brain-fingerprint, error-/preflightregels en regressie `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`; merk niet het hele systeem groen omdat alleen fan-out preventie/PR is gemerged.
+
+Implementatie: `tools/delivery/github-ghost-run-reconcile.mjs`, twee bestaande workflow-owners; vervolgincidenten delen deze fingerprint, tenzij bewijs een wezenlijk andere root cause aantoont.
+
 ## Universele incidentherkenning & preventie
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
