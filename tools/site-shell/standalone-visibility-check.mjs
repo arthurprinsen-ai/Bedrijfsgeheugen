@@ -272,10 +272,7 @@ try {
                 }
               }
               if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
-              if (state.cls > 0.1) {
-                const annotated = formatClsFailure(route, viewport.name, state.cls, state.layoutShifts);
-                failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${annotated || 'UNAVAILABLE'}`);
-              }
+              if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${formatClsFailure(route, viewport.name, state.cls, state.layoutShifts) || 'UNAVAILABLE'}`);
             } catch (error) {
               failures.push(`${route} ${viewport.name}: ${error.message || error}`);
             }
