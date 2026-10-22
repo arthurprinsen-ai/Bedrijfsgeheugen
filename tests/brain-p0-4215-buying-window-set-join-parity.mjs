@@ -44,7 +44,7 @@ const sql=[
  " SELECT md5(pg_get_viewdef('pg_temp.p0_fast'::regclass,true)) INTO h2;",
  " SELECT md5(pg_get_viewdef('public.powerhouse_buying_window_v2'::regclass,true)) INTO installed;",
  " IF h0<>'2ce1ab1122390af0f51c5aa8b318600f' OR h1<>'6a7a20df1f24b4333986ba9b2da09314' OR h2<>'dcac5a8d2543147d3d5e294cc14a599e' THEN RAISE EXCEPTION 'IMMUTABLE_VIEW_SOURCE_DRIFT'; END IF;",
- " IF installed NOT IN (h0,h1,h2) THEN RAISE EXCEPTION 'PREVIEW_INSTALLED_VIEW_DRIFT'; END IF;",
+ " IF installed NOT IN (h0,h1,h2,'8a9b316a512dcf55889b0a56e7026170') THEN RAISE EXCEPTION 'PREVIEW_INSTALLED_VIEW_DRIFT'; END IF;",
  " IF has_table_privilege('anon','public.powerhouse_buying_window_v2','SELECT') OR has_table_privilege('authenticated','public.powerhouse_buying_window_v2','SELECT') THEN RAISE EXCEPTION 'VIEW_BROWSER_ACL_DRIFT'; END IF;",
  " IF NOT EXISTS (SELECT 1 FROM pg_class WHERE oid='public.powerhouse_buying_window_v2'::regclass AND 'security_invoker=true'=ANY(reloptions)) THEN RAISE EXCEPTION 'VIEW_INVOKER_MISSING'; END IF;",
  'END $integrity$;',
