@@ -44,7 +44,7 @@ export function retainMediaProofFailure(job,ob,row){
   const nextAction=proofReject(job?.last_error)
     ? String(job?.next_action||row.next_action)
     : String(ob?.next_action||row.next_action);
-  return {...row,last_error:reason,next_action};
+  return {...row,last_error:reason,next_action:nextAction};
 }
 
 // Writes only to the SAME canonical job and obligation with CAS/version guards;
