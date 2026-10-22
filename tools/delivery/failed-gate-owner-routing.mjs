@@ -51,3 +51,11 @@ Status: **RECOVERY REQUIRED**, not green. This is an existing PR/owner obligatio
 
 The existing watchdog leaves this obligation open until independent gate and delivery proof exists.`;
 }
+
+// A 401/403 on precisely the PR owner-comment endpoint is an authority denial,
+// not proof of delivery. Other API errors still fail closed immediately.
+export function isOwnerCommentPermissionDenied(error, prNumber) {
+  return Number.isInteger(prNumber) &&
+    [401, 403].includes(error?.status) &&
+    error?.path === `/issues/${prNumber}/comments`;
+}

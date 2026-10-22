@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, isOwnerCommentPermissionDenied } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -68,4 +68,22 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   assert.match(source, /gateDecision\(required\) !== 'MISSING'/);
   assert.match(source, /required-test\.yml\/dispatches/);
   assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
+});
+
+test('GitHub PR comment 403 remains red, typed and bounded without suppressing other dispatches', () => {
+  assert.equal(isOwnerCommentPermissionDenied({ status: 403, path: '/issues/4656/comments' }, 4656), true);
+  assert.equal(isOwnerCommentPermissionDenied({ status: 401, path: '/issues/4656/comments' }, 4656), true);
+  assert.equal(isOwnerCommentPermissionDenied({ status: 403, path: '/issues/4656/comments' }, 4657), false);
+  assert.equal(isOwnerCommentPermissionDenied({ status: 500, path: '/issues/4656/comments' }, 4656), false);
+  assert.equal(isOwnerCommentPermissionDenied({ status: 403, path: '/actions/runs/1' }, 4656), false);
+  const workflow = readFileSync('.github/workflows/required-gate-watchdog.yml', 'utf8');
+  const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
+  assert.match(workflow, /pull-requests: write/);
+  assert.match(workflow, /issues: write/);
+  assert.match(source, /attemptedOwnerSignals >= MAX_OWNER_SIGNALS_PER_TICK/);
+  assert.match(source, /isOwnerCommentPermissionDenied\(error, pr.number\)/);
+  assert.match(source, /FAILED_GATE_OWNER_COMMENT_AUTHZ_DENIED/);
+  assert.match(source, /FAILED_GATE_OWNER_HANDOFF_INCOMPLETE/);
+  assert.match(source, /process.exitCode = 1/);
+  assert.match(source, /REQUIRED_GATE_WATCHDOG_DISPATCHED/);
 });

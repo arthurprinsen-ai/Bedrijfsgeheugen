@@ -2575,3 +2575,17 @@ export const POWERHOUSE_GITHUB_ACTIONS_GHOST_AUTONOMY_V1 = Object.freeze({
   noSecondScheduler:true,
   deploymentStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_PROVIDER_READBACK'
 });
+
+
+export const POWERHOUSE_REQUIRED_GATE_WATCHDOG_OWNER_COMMENT_AUTHZ_V1 = Object.freeze({
+  fingerprint:'github|required-gate-watchdog|owner-comment-403|20261022-v1',
+  canonicalIncident:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742',
+  currentWorkflow:'.github/workflows/required-gate-watchdog.yml',
+  existingExecutor:'.github/scripts/required-gate-watchdog.mjs',
+  requiredPrCommentAuthority:'issues:write + pull-requests:write, actual GitHub provider acknowledgement required',
+  onAuthorizationDenial:'typed exact-PR/head/run evidence, continue independent recovery, terminal job non-success',
+  regression:'tests/brain-required-failed-gate-owner-routing-v1.test.mjs',
+  learning:'brain/learning/2026-10-22-watchdog-pr-comment-authz-denial-v1.json',
+  noSecondScheduler:true,
+  evidenceStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_REAL_PROVIDER_COMMENT_READBACK'
+});

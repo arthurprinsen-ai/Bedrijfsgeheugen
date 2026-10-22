@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, isOwnerCommentPermissionDenied } from '../../tools/delivery/failed-gate-owner-routing.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -14,7 +14,12 @@ async function api(path, init = {}) {
   const response = await fetch(`https://api.github.com/repos/${repo}${path}`, {
     ...init, headers: { ...headers, ...(init.headers || {}) }
   });
-  if (!response.ok) throw new Error(`GitHub API ${response.status} ${path}: ${await response.text()}`);
+  if (!response.ok) {
+    const error = new Error(`GitHub API ${response.status} ${path}: ${await response.text()}`);
+    error.status = response.status;
+    error.path = path;
+    throw error;
+  }
   if (response.status === 204) return null;
   return response.json();
 }
@@ -51,6 +56,8 @@ async function emitExistingOwnerSignal(pr, gate, run) {
 
 let dispatched = 0;
 let ownerSignals = 0;
+let attemptedOwnerSignals = 0;
+let blockedOwnerSignals = 0;
 for (let page = 1; page <= 5; page++) {
   const pulls = await api(`/pulls?state=open&base=main&per_page=100&page=${page}`);
   for (const pr of pulls) {
@@ -63,9 +70,16 @@ for (let page = 1; page <= 5; page++) {
     const required = latestGateRun(runs, 'required', head);
     const codeql = latestGateRun(runs, 'codeql', head);
     for (const [gate, run] of [['required', required], ['codeql', codeql]]) {
-      if (ownerSignals >= MAX_OWNER_SIGNALS_PER_TICK) break;
+      if (attemptedOwnerSignals >= MAX_OWNER_SIGNALS_PER_TICK) break;
       if (gateDecision(run) !== 'SAME_OWNER_REPAIR_REQUIRED') continue;
-      if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      attemptedOwnerSignals++;
+      try {
+        if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      } catch (error) {
+        if (!isOwnerCommentPermissionDenied(error, pr.number)) throw error;
+        blockedOwnerSignals++;
+        console.error(`::error::FAILED_GATE_OWNER_COMMENT_AUTHZ_DENIED:PR#${pr.number}:${gate}:${head}:${run.id}:NO_HANDOFF_DELIVERED`);
+      }
     }
 
     // Preserve the existing one-flight missing-Required recovery; never
@@ -89,4 +103,10 @@ for (let page = 1; page <= 5; page++) {
   }
   if (pulls.length < 100) break;
 }
-console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}`);
+console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}:OWNER_SIGNAL_BLOCKED:${blockedOwnerSignals}`);
+if (blockedOwnerSignals > 0) {
+  // Continue independent missing-gate dispatch, but never claim a successful
+  // watchdog when any current-head owner handoff was denied by GitHub.
+  console.error('::error::FAILED_GATE_OWNER_HANDOFF_INCOMPLETE');
+  process.exitCode = 1;
+}
