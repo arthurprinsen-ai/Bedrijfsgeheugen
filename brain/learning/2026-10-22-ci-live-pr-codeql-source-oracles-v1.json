@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "ci|brain|live-pr-codeql-retired-source-oracles|20261022-v1",
+  "obligation_id": "ci-brain-live-pr-codeql-oracle-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "title": "Current live PR admission and CodeQL single-flight source truth",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Two inherited BRAIN tests pinned removed or renamed source literals: const pr/const livePrBody/const eventLease rather than the current mutable synchronized PR readback; old CodeQL ref selector and the retired parallel powerhouse-codeql.yml. CI run 39791707071 has failures 801 and 1956. Neither failure proves the current runtime security gate is disabled.",
+  "impact": "False-red CI blocks release and misdirects agents into weakening real workflow authority or creating parallel workflows.",
+  "failed_approaches": [
+    "Copying stale source string literals without comparing the current protected workflows",
+    "Expecting a second retired CodeQL workflow rather than checking the single canonical workflow"
+  ],
+  "fix": "Test the actual live mutable PR/re-read ordering, exact SHA and parse refresh; test the one canonical CodeQL PR/merge_group/ref concurrency selector, cancellation, matrix, codeql action and active security permission; require retired duplicate workflow to stay absent.",
+  "prevention_rule": "Every repository-governed agent must discover canonical workflow paths and current execution semantics before writing source contract tests. Reject stale const/let, deleted workflow, and obsolete concurrency oracles; retain exact SHA, fail-closed admission, CodeQL, historical/shadow/canary on the original executable tests. The same fingerprint and owner must be reused for recurrences.",
+  "regression_contract": [
+    "tests/brain-delivery-live-pr-lease-admission-v1.test.mjs",
+    "tests/brain-post-merge-codeql-single-flight.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery"
+  ],
+  "tests": [
+    "tests/brain-delivery-live-pr-lease-admission-v1.test.mjs",
+    "tests/brain-post-merge-codeql-single-flight.test.mjs"
+  ],
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071/job/119869500824",
+    "tests/brain-delivery-live-pr-lease-admission-v1.test.mjs",
+    "tests/brain-post-merge-codeql-single-flight.test.mjs",
+    ".github/workflows/codeql.yml",
+    ".github/workflows/powerhouse-delivery-hygiene.yml"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-live-pr-lease-admission-v1.test.mjs",
+      "tests/brain-post-merge-codeql-single-flight.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-live-pr-lease-admission-v1.test.mjs",
+      "tests/brain-post-merge-codeql-single-flight.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-live-pr-lease-admission-v1.test.mjs",
+      "tests/brain-post-merge-codeql-single-flight.test.mjs"
+    ]
+  },
+  "outcome": "CANDIDATE_UNVERIFIED: current source invariants checked before write; exact-head CI, CodeQL, integrated 0-fail BRAIN and required production/parity readback pending."
+}
