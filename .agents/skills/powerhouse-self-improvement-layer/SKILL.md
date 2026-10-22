@@ -108,3 +108,11 @@ Fingerprint: `powerhouse|agent-incident-relevance-daily-evolution|20261022-v1`.
 - Dagelijkse verbetering vergelijkt minimaal herhaalde incidenten, hersteltijd, regressiedekking, bron-/bewijsdekking, doorlooptijd en klantwaarde met een geldige baseline; alleen aantoonbare vooruitgang mag via beveiligde CI/CodeQL/merge en exacte productie/providerreadback promoveren.
 - Portaalroute `learning-writeback` heet `Relevantie & verbeteringen` en leest uitsluitend `portal.runtime.learning.items` uit de bestaande tenant-gebonden `brain-operating-loop` projectie. Alleen `PROVEN` uit Brain mag als bewezen verschijnen; ontbrekend bewijs blijft expliciet niet bewezen.
 - Contract: `config/universal-closed-loop-learning.json`; gate: `scripts/brain/validate-universal-closed-loop-learning.mjs`; regressies: `tests/brain-universal-closed-loop-learning.test.mjs` en `portal-v2/tests/relevance-learning-closed-loop.test.mjs`. Werk na bewezen productie-uitkomst de bestaande System Map, leerlijn en skills bij.
+
+## Portal Relevantie: PROVEN alleen met tenant- en productiebewijs (22 oktober 2026)
+
+Fingerprint: `portal|relevance|health-status-false-proven|20261022-v1`.
+- Een `healthy=true`, `status=ok`, HTTP-succes of tekstuele PROVEN-claim is nooit op zichzelf een bewezen leerresultaat.
+- De bestaande tenant-gebonden `/api/brain-operating-loop` projectie moet een exacte tenantidentiteit, canonieke `PROVEN` maturity, geteste `proven_fix`, uitvoerbare `regression_ref` en geverifieerde productie-/providerreadback-URL doorgeven. Ontbreekt één bewijs, toon `Nog te verifiëren in Brain`; tel geen succes.
+- Hergebruik dezelfde Brain fingerprint, test historische/positieve/negatieve gevallen, sla incident + herstel + preventie in de bestaande Brain- en development-ledgerprojectie op. Geen tweede scheduler, geen verzonnen bewijs.
+- Regressie: `tests/brain-portal-relevance-proof-authority-v1.test.mjs` importeert de originele `portal-v2/tests/relevance-learning-closed-loop.test.mjs`.
