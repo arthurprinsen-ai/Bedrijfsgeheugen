@@ -1,3 +1,7 @@
+## Dagelijkse leercontinuïteit bij externe freshnessfouten — 22 oktober 2026
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`. Alle agents en chats raadplegen het bestaande modelcatalogusincident [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367), de gedeelde learning en `.agents/skills/powerhouse-continuity/SKILL.md`. Bij stale/onbewezen AI-leveranciersclaims mag de strenge aparte `model-freshness`-gate niet worden versoepeld of als groen worden gepresenteerd; **onafhankelijke** dagelijkse learning/skills/engineering-evals moeten in de bestaande dagelijkse workflow wel uitgevoerd blijven. Geen tweede scheduler, geen fictieve verificatie of modelactivatie. Meet de twee jobuitkomsten afzonderlijk en behoud de overall RED-status zolang vereiste catalogusbewijzen ontbreken. Regressie: `tests/powerhouse-daily-self-evolution.test.mjs`.
+
 ## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
 
 Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
