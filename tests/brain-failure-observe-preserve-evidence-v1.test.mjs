@@ -27,6 +27,8 @@ test('known alternate cron IDs resolve to a single actual provider event', () =>
   assert.match(migration, /v_alias_new := 'supabase:cron:job'/);
   assert.match(migration, /pg_catalog\.pg_advisory_xact_lock/);
   assert.match(sqlReplay, /SAME_CRON_RUN_ALIASES_MUST_COUNT_ONCE/);
+  assert.match(sqlReplay, /PROJECT_SCOPED_THEN_LEGACY_RUN_MUST_COUNT_ONCE/);
+  assert.match(migration, /FAILURE_CRON_PROJECT_SCOPE_AMBIGUOUS/);
 });
 
 test('distinct job runids still register separately and identity conflicts fail closed', () => {
