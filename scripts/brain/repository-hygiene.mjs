@@ -24,7 +24,9 @@ export function mayDeleteOrphanBranch({ branch, openHeads, aheadBy, policy }) {
 }
 
 export function isGitHubNotFound(error) {
-  return /(?:^|\\s)(?:GET|DELETE)\\s+\\/repos\\/[^\\s]+\\s+->\\s+404:/.test(String(error?.message ?? error));
+  const message = String(error?.message ?? error);
+  return (message.startsWith("GET /repos/") || message.startsWith("DELETE /repos/"))
+    && message.includes(" -> 404:");
 }
 
 function apiBase(repo) {
