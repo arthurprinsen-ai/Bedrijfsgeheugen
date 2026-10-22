@@ -2543,3 +2543,24 @@ export const POWERHOUSE_WEBSITE_CLS_ATTRIBUTION_V1 = Object.freeze({
   productionFixProven:false,
   existingSchedulerUnchanged:true
 });
+
+
+// 2026-10-22: provider-owned GitHub zero-job ghost detection extends existing janitor/supervisor; not a new scheduler.
+export const GITHUB_PROVIDER_GHOST_AUTONOMOUS_RECOVERY_V1 = Object.freeze({
+  fingerprint:'github-actions:stale-queued-zero-jobs:cancel-409:20261007',
+  issue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655',
+  authority:'existing Powerhouse Repository Janitor and Delivery Recovery Supervisor',
+  schedule:'existing hourly janitor + existing five-minute supervisor only',
+  detection:'queued six hours with unchanged timestamps, zero jobs, obsolete SHA and no current main/open-PR authority',
+  providerBoundary:'409 cancel and force-cancel + 403 delete -> provider support reconciliation, suppress identical retries',
+  evidence:'exact GitHub workflow run and jobs + issue GH_GHOST_RUN markers + janitor artifacts',
+  code:'tools/delivery/github-ghost-run-reconcile.mjs',
+  workflow:'.github/workflows/powerhouse-repository-janitor.yml',
+  supervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
+  test:'tests/brain-delivery-stale-queue-janitor-v1.test.mjs',
+  learning:'brain/learning/2026-10-22-github-provider-ghost-recovery-v1.json',
+  noParallelScheduler:true,
+  noSecurityGateBypass:true,
+  currentlyProviderReconciled:false,
+  closure:'exact-ID terminal status or 404, never a queue count alone'
+});
