@@ -81,3 +81,10 @@ test('autonomous recovery learning has semantic evidence and all required indepe
   assert.ok(learning.evidence?.production_readback, 'observed production evidence must be retained');
   assert.ok(learning.prevention.some(rule => rule.includes('autonomous agents')), 'pre-CI autonomous recovery prevention required');
 });
+
+test('SECURITY DEFINER trigger preserves production ACL with no browser RPC execution', () => {
+  assert.match(migration, /REVOKE ALL ON FUNCTION public\.enforce_instagram_media_proof_vision_v1\(\)\s+FROM PUBLIC, anon, authenticated;/);
+  assert.match(migration, /REVOKE ALL ON FUNCTION public\.powerhouse_instagram_visual_proof_valid_v1\(jsonb, text\)\s+FROM PUBLIC, anon, authenticated;/);
+  assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.enforce_instagram_media_proof_vision_v1\(\)\s+TO service_role;/);
+  assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.powerhouse_instagram_visual_proof_valid_v1\(jsonb, text\)\s+TO service_role;/);
+});
