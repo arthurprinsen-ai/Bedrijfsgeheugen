@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1",
+  "obligation_id": "github-actions|provider-ghost-reconciliation|20261022-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_PROVIDER_WORKFLOW_RUN_STATE_INCONSISTENCY",
+  "root_cause": "Observed: four GitHub Actions runs (2026-10-07) report queued, unchanged timestamps and zero jobs, while cancel/force-cancel yield 409 and DELETE yields 403. GitHub provider-internal root cause is unverified. Separate agent-level cause of recurring load is the existing five-minute Recovery Supervisor and hourly Janitor blindly reattempting unrecoverable provider operations without a durable per-run attempt marker.",
+  "observed_runs": [
+    37642383514,
+    37642383517,
+    37642336315,
+    37642334843
+  ],
+  "failed_approaches": [
+    "Repeated normal cancellation: HTTP 409",
+    "Repeated force cancellation: HTTP 409",
+    "Workflow-run DELETE: HTTP 403",
+    "Assuming a decreased queued count means record deleted",
+    "Repeating same API calls on each five-minute recovery sweep"
+  ],
+  "fix": "Keep the existing hourly Repository Janitor as sole bounded provider-ghost owner, detect queued+zero-jobs+24h unchanged provider state and non-authoritative SHA, recheck exact run and jobs before mutations, attempt cancel/force/delete once in a bounded process, persist per-run outcome to existing incident #4655 with markers. Existing five-minute supervisor and generic janitor skip repetitive provider-ghost retries. Poll attempted run IDs for 404/terminal readback and record resolution.",
+  "prevention_rule": "All present/future chats and agents must search existing incident fingerprint, use exactly the existing Repository Janitor owner, no duplicate schedulers/issues, no repeated 409/403 attempts, no deletion of current main SHA/current PR head/in-progress/real-job runs, no forged green CI. Provider authorization barrier is a real provider handoff, not permission to bypass security.",
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+    "prevention_merged": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4653",
+    "script": ".github/scripts/github-actions-ghost-reconcile.mjs",
+    "hourly_owner": ".github/workflows/powerhouse-repository-janitor.yml",
+    "supervisor": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml"
+  },
+  "tests": [
+    "tests/brain-delivery-stale-queue-janitor-v1.test.mjs",
+    "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_PROVIDER_WORKFLOW_RUN_STATE_INCONSISTENCY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "invariants": [
+      "do not cancel current main/PR head or a run containing real jobs",
+      "do not label a provider 403 failure as resolved",
+      "one bounded repair attempt per exact run persisted in canonical incident",
+      "GitHub provider support is used only when server-side deletion remains refused",
+      "never run second scheduler",
+      "do not bypass required CI, CodeQL or branch protection"
+    ],
+    "historical_replay": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "CANDIDATE until protected merge, live scheduled Janitor readback and per-run GitHub API confirmation. Provider incident #4655 remains open until the four exact historic records are terminal or missing, and current gates remain intact."
+}
