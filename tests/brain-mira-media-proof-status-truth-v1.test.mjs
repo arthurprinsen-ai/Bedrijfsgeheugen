@@ -47,3 +47,15 @@ test('contradictory provisional PASS is demoted without deleting actual publicat
   assert.match(migration, /'instagram_visual', v_visual \|\| jsonb_build_object\('verified', false\)/);
   assert.doesNotMatch(migration, /NEW\.provider_post_id\s*:=|NEW\.provider_external_url\s*:=/);
 });
+
+test('migration must include complete SQL function bodies and transaction boundaries', () => {
+  assert.match(migration, /AS \$validator\$[\s\S]*?\$validator\$;/);
+  assert.match(migration, /AS \$function\$[\s\S]*?\$function\$;/);
+  assert.equal((migration.match(/\bCREATE OR REPLACE FUNCTION\b/g) ?? []).length, 2);
+  assert.match(migration, /BEGIN;[\s\S]*COMMIT;\s*$/);
+  assert.match(migration, /AND EXISTS \(/);
+  assert.match(migration, /WHEN lower\(coalesce\(p_media_type/);
+  assert.match(migration, /'master_reference_sha256', ''\) =/);
+  assert.match(migration, /INSTAGRAM_PROOF_STATUS_WRONG_MASTER_HASH_ACCEPTED/);
+  assert.doesNotMatch(migration, /\\nRETURNS trigger\\nLANGUAGE plpgsql/);
+});
