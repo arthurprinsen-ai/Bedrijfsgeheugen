@@ -1,0 +1,50 @@
+{
+  "fingerprint": "ci|inherited-baseline|archived-sql-source-batch|20261022-v1",
+  "obligation_id": "ci-brain-inherited-archive-batch-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "source_main_sha": "1ba81ffa48c605ac1c99a4502955f7db0d416040",
+  "observed": {
+    "full_brain_run": 39671036043,
+    "total_tests": 3511,
+    "passed_tests": 3190,
+    "failed_tests": 321,
+    "affected_source_files": 7,
+    "changed_runtime_files": 0,
+    "changed_sql_migrations": 0
+  },
+  "root_cause": "Seven source-contract tests still refer to retired executable SQL paths; authenticated GitHub source shows the exact original files in non-executable repository-only history.",
+  "change": "Replace only seven file-read paths, preserve all original assertions and security constraints; add seven regression checks that require original archive identity and reject executable duplication.",
+  "prevention_rule": "Archived SQL source tests must resolve repository-only immutable sources and must never recreate historical migrations as runnable SQL or relax assertions.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-inherited-archive-source-batch-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-inherited-archive-source-batch-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-inherited-archive-source-batch-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "BRAIN run 39671036043: 321 failing",
+    "source_validation": "Seven genuine archived files read back from commit 1ba81ffa; expected source markers present; no executable migrations added.",
+    "after": "PENDING_EXACT_HEAD_RUN",
+    "full_brain": "PENDING_0_FAIL",
+    "production": "NOT_CHANGED",
+    "customer_acceptance": "NOT_PROVEN"
+  },
+  "status": "CANDIDATE_UNVERIFIED_CI"
+}
