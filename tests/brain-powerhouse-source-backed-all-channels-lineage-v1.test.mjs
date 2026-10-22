@@ -10,7 +10,8 @@ test('all outbound channels share one source/outcome lineage',()=>{
   assert.ok(selection.includes('powerhouse_materialize_source_backed_channel_candidates_v1'));
   assert.ok(selection.includes('powerhouse_sales_actions_source_gate_v1'));
   assert.ok(orchestrator.includes("row?.evidence?.source_backed === true"));
-  assert.ok(orchestrator.includes('powerhouse_materialize_source_backed_channel_candidates_v1'));
+  assert.ok(orchestrator.includes('powerhouse_materialize_source_backed_channel_candidates_v2'));
+  assert.ok(orchestrator.includes("db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2'"));
   const loops=JSON.parse(fs.readFileSync('powerhouse/assurance/loop-registry.json','utf8'));
   const outbound=loops.loops.find(x=>x.loop_key==='source-backed-outbound');
   assert.ok(outbound);

@@ -31,3 +31,7 @@ Exact head Required and CodeQL, full Unified BRAIN backend with zero failing, re
 ## Exact-head Required recovery
 
 Required test run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39757936632 failed canonical learning validation because evaluation directly referenced non-BRAIN-prefixed `tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs`. A new BRAIN-prefixed test wrapper `tests/brain-inherited-social-supabase-oracle-replay-v1.test.mjs` imports and runs that original complete source test. No assertion or release gate was waived; fresh Required and full BRAIN remain mandatory.
+
+## Source-contract modernization after protected CI diagnosis
+
+Exact-head Required run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39758223247 executed historical replay with six failures. Root cause checks were stale source literals (new stronger uniqueness body normalization, fresh company OAuth proof instead of pinned personal account, v2 source-backed RPC, actual Instagram claim placement), and three handoff quality surfaces missing from the registry. Fixed four existing test files against current stronger fail-closed runtime semantics and added real surface authorities to the central quality registry. The original anti-duplication, tenant, role, publish-before-claim prevention and immutable historic SQL assertions remain. Fresh runner verification remains mandatory.

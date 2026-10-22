@@ -5,10 +5,13 @@ const setup=fs.readFileSync('supabase/functions/powerhouse-composio-linkedin-set
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
 const migration=fs.readFileSync('supabase/migration-history/repository-only/20260927153500_social_daily_self_healing_v1.sql','utf8');
 
-assert.match(setup,/LINKEDIN_CANONICAL_PERSON_URN='urn:li:person:N1twnCNCrD'/);
-assert.match(setup,/probe-canonical-member-and-prefer-canonical-alias-v1/);
-assert.doesNotMatch(setup,/if\(accounts\.length>1\).*CONNECTION_AMBIGUOUS/s);
-assert.match(setup,/COMPOSIO_LINKEDIN_NO_HEALTHY_CANONICAL_CONNECTION/);
+assert.match(setup,/ALIAS='bedrijfsgeheugen-company-canonical'/);
+assert.match(setup,/COMPANY_PROOF_RECORD='linkedin-company-oauth-fresh-proof-v1'/);
+assert.match(setup,/COMPANY_REQUIRED_SCOPES=\['r_organization_admin','w_organization_social'\]/);
+assert.match(setup,/LINKEDIN_GET_COMPANY_INFO/);
+assert.match(setup,/COMPOSIO_LINKEDIN_CONNECTION_AMBIGUOUS/);
+assert.match(setup,/COMPOSIO_LINKEDIN_REAUTH_REQUIRED/);
+assert.match(setup,/proofAccountId\?healthy\.filter/);
 
 assert.match(publisher,/active_discovery/);
 assert.match(publisher,/LINKEDIN_REAUTH_REQUIRED/);

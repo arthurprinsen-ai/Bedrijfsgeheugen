@@ -174,7 +174,8 @@
   "prevention_rules": [
     "Resolve obsolete SQL source oracles only to authentic immutable Git blobs in the repository-only archive.",
     "Do not restore historical SQL to executable migrations or weaken original security/tenant/provider assertions.",
-    "Require zero-failure full exact-head BRAIN, Required and CodeQL plus independent #3742 migration parity and #4215 authenticated customer readback."
+    "Require zero-failure full exact-head BRAIN, Required and CodeQL plus independent #3742 migration parity and #4215 authenticated customer readback.",
+    "Test current fail-closed provider/organization authorization and actual source-backed v2 RPC instead of obsolete literal symbols; preserve real side-effect ordering and canonical registry coverage."
   ],
   "test_evidence": {
     "status": "SOURCE_ONLY_VERIFIED",
@@ -191,7 +192,18 @@
     "production_changed": false,
     "canonical_skill_projection": ".agents/skills/powerhouse-continuity/SKILL.md",
     "original_supabase_test_executed_by_brain_wrapper": "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs",
-    "canonical_learning_admission_recovery": "BRAIN-prefixed wrapper imports real original Supabase test rather than accepting a direct supabase- test evaluation path"
+    "canonical_learning_admission_recovery": "BRAIN-prefixed wrapper imports real original Supabase test rather than accepting a direct supabase- test evaluation path",
+    "current_head_required_run": "39758223247",
+    "current_head_required_failure_count": 6,
+    "current_head_required_recovered_contracts": [
+      "linkedin_global_uniqueness_canonical_story_source",
+      "organization_admin_authority_fresh_oauth_preflight",
+      "manual_linkedin_handoff_registry_surfaces",
+      "outbound_source_backed_materializer_v2",
+      "fresh_company_oauth_setup_contract",
+      "atomic_dispatching_before_provider_side_effect"
+    ],
+    "current_head_recovery_status": "CANDIDATE_NOT_RUN"
   },
   "production_changed": false,
   "security_controls_weakened": false,

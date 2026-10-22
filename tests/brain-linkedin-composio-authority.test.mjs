@@ -49,7 +49,8 @@ test('all social provider side effects require global historical uniqueness rese
   assert.match(source, /GLOBAL_POST_DUPLICATE_BLOCKED/);
   assert.match(source, /global_uniqueness_gate:'blocked'/);
   assert.match(source, /republish_forbidden:true/);
-  const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body),storyFingerprint)');
+  assert.match(source, /const uniquenessBody=row\.channel==='linkedin_company'\?canonicalPublicationStorySource\(art\.body\):clean\(art\.body\)/);
+  const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,uniquenessBody,storyFingerprint)');
   const personalCreate = source.indexOf('publishLinkedInPersonalViaComposio(db,art)', uniqueness);
   const companyCreate = source.indexOf('publishLinkedInCompanyViaComposio(db,art)', uniqueness);
   const instagramCreate = source.indexOf('publishInstagramViaComposio(db,art,runDate,instagramContext)', uniqueness);
@@ -93,7 +94,9 @@ test('LinkedIn company preflight proves live organization ACL on the exact token
   assert.match(source, /preflightLinkedInCompanyViaComposio/);
   assert.match(source, /LINKEDIN_GET_COMPANY_INFO/);
   assert.match(source, /role:'ADMINISTRATOR'/);
-  assert.match(source, /organization_capability_probe/);
+  assert.match(source, /organization_capability_verified:organizationAdminVerified===true&&companyOauthFreshVerified===true/);
+  assert.match(source, /organizationWriteScopeAuthorized/);
+  assert.match(source, /companyReadbackReady/);
   assert.match(source, /LINKEDIN_COMPANY_REAUTH_REQUIRED/);
   assert.match(source, /row\.channel==='linkedin_company' \? await preflightLinkedInCompanyComposio\(db\) : await preflightLinkedInComposio\(db\)/);
 });
