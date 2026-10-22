@@ -474,3 +474,25 @@ The router, image verifier and temporal verifier must all be explicitly enabled 
 Fingerprint: `mira-media-preflight-preserve-worker-cas-v1`.
 
 A CLAIMED/GENERATING media job legitimately has no final URL while the external provider runs. Readiness/preflight must preserve its owner/history and never reset it to WAITING_ASSET. All other existing-job projections require exact id+updated_at CAS; if state changed, reread before touching obligation evidence. Concurrent first insert is a typed retry. Completion remains owner-bound and proof remains verifier-owned. Never generate a duplicate because a poll lost a worker claim.
+
+## 2026-10-22 — daily builder recovery and media-poll no-spin
+
+Fingerprint: `powerhouse|daily-social-builder-reopen-media-preflight|20261022-v1`.
+
+A blocked personal LinkedIn `PERSONAL_SOURCE_UNVERIFIED` claim may be
+reconsidered by the EXISTING content-loop only when its identity evidence
+contains a verified AI-native builder event and the decision has no provider
+side effect, consumed publication authority, or republish prohibition.
+The content orchestrator must use its full `validPersonalSource` contract
+for ALL accepted personal modes: verified personal-life, observation, and
+verified founder-builder evidence. Reconsideration never bypasses fresh
+copy/source validation, global uniqueness, OAuth, independent prepublish review
+or provider receipts.
+
+For Instagram, `WAITING_ASSET` means asset generation has NOT occurred.
+A readiness/preflight check must not increment a provider-attempt counter or
+rewrite identical business state. Real worker submissions, asset verification
+and actual provider proof may increment their own attempts; a media router
+cannot manufacture an OpenArt asset or a Mira identity result. Continue
+other approved lanes when this media proof is missing. No second scheduler,
+no Buffer/Make fallback and no duplicate posting.

@@ -1,4 +1,5 @@
 import postgres from 'npm:postgres@3.4.7';
+import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
@@ -336,7 +337,10 @@ Deno.serve(async (req) => {
         && evidence.provider_create_success !== true
         && evidence.provider_publication_ack_verified !== true
         && evidence.provider_truth_verified !== true
-        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED');
+        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED'
+          || (decision.channel === 'linkedin_personal'
+            && reason === 'PERSONAL_SOURCE_UNVERIFIED'
+            && hasVerifiedPersonalBuilderEvidence(evidence.identity_gate_evidence)));
     });
     let bootstrapStillInFlight = false;
     // A completed bootstrap is one of the normal bounded generation rounds.

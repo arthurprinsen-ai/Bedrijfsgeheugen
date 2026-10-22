@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|daily-social-builder-reopen-media-preflight|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_obligations": [
+    "github-issue-4439",
+    "github-issue-4198"
+  ],
+  "root_causes": [
+    "Orchestrator blocked-personal-preservation recognized only personal-life/observational sources, not already valid verified AI-native founder source.",
+    "Content-loop safe rebootstrap classifier excluded PERSONAL_SOURCE_UNVERIFIED even when existing decision carried independent verifiable builder evidence.",
+    "Instagram readiness preflight incremented attempts on every unchanged WAITING_ASSET poll without provider-generation work."
+  ],
+  "production_baseline": {
+    "scheduler_jobs_active": [
+      116,
+      130,
+      138,
+      171
+    ],
+    "personal_source_verified_but_blocked": true,
+    "instagram_state": "WAITING_ASSET",
+    "instagram_attempts_20261021": 310,
+    "instagram_attempts_20261022_observed": 104,
+    "email_send_receipts_proven_today": 0
+  },
+  "fix": "Reuse canonical validPersonalSource; guarded builder-mode rebootstrap; read-only same-state preflight and nonincrementing readiness attempt projection.",
+  "safety": [
+    "no second scheduler",
+    "no direct email or unauthorized recipient",
+    "no revocation bypass",
+    "no new asset fabricated",
+    "no re-publish on existing provider side effect",
+    "no disabled quality/security checks"
+  ],
+  "expected_proof": "Focused Node tests, Required + CodeQL, exact protected merge, Supabase Edge readback, real provider proof and 7-day daily evidence soak.",
+  "current_state": "CANDIDATE_NOT_LIVE"
+}
