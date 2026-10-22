@@ -2474,3 +2474,14 @@ export const PERSONAL_VERIFIED_DISTINCT_SOURCE_RESERVE_20261022=Object.freeze({
  regression:'tests/brain-personal-distinct-source-reserve-v1.test.mjs',
  learning:'brain/learning/2026-10-22-personal-distinct-source-reserve-v1.json'
 });
+
+
+export const PERSONAL_HELD_DUPLICATE_REBOOTSTRAP_20261022=Object.freeze({
+ fingerprint:'powerhouse|held-personal-duplicate-rebootstrap|20261022-v1',owner:'powerhouse-content-loop',
+ source:'canonical content_publication_obligations plus powerhouse_channel_decisions',
+ evidence:'provider unused / no side effects / known global semantic duplicate',
+ retry:'reuse existing bounded powerhouse-content-orchestrator bootstrap',
+ noNewScheduler:true,noNewSender:true,noUnverifiedProviderProof:true,
+ tests:'tests/brain-held-personal-duplicate-rebootstrap-v1.test.mjs',
+ learning:'brain/learning/2026-10-22-held-personal-duplicate-rebootstrap-v1.json'
+});
