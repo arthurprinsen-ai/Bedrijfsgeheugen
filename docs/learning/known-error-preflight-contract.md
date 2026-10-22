@@ -179,3 +179,10 @@ On Notion Query Data Source `usage_limit_reached`: do not immediately retry, do 
 ## Completion rule
 
 A learning item is structurally guarded only when all applicable layers agree: persistent Activity/Telemetry log, shared Brain learning, searchable knowledge/fingerprint, compatibility/current-state mapping and a deterministic regression/prevention rule. Historical evidence is retained; later canonical rulings supersede stale interim conclusions without deleting audit history.
+
+## `github|required-gate-owner-handoff|provider-comment-403|20261022-v1`
+
+A successful workflow start or reported runner `Issues:write` scope is not proof GitHub can accept `POST /issues/{pr_number}/comments` from `GITHUB_TOKEN`. Live example: Required Gate Watchdog #39811993147 rejected owner handoff on existing PR #4656 with 403 despite the declared scope.
+
+Before agent claims a failed CI gate was handed to the same owner, obtain GitHub POST success and comment readback (or remain `PROVIDER_AUTHORITY_DENIED_NOT_DELIVERED`). Reuse the existing 5-minute watchdog; GitHub documents `Issues:write` or `Pull requests:write` as alternatives on the same endpoint. Record immutable PR/head/gate/run evidence and keep a red artifact on provider denial; do not let that denial abort independent authorized recovery for other PRs. Do not disable Required/CodeQL, create another scheduler or label owner signal as source repair.
+
