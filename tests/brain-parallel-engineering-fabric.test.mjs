@@ -175,3 +175,34 @@ test('failed parallel wave waits for all siblings and prevents downstream execut
   );
   assert.deepEqual(finished, ['B']);
 });
+
+test('independent paths with shared exact head or obligation cannot use concurrent writers', () => {
+  const oneObligation = buildExecutionPlan({workPackages: [
+    {id:'A', paths:['brain/a.mjs'], baseSha:'main', candidateSha:'head-a', obligationId:'O-1'},
+    {id:'B', paths:['site/b.js'], baseSha:'main', candidateSha:'head-b', obligation_id:'O-1'}
+  ], deliveryConfig, policy});
+  assert.deepEqual(oneObligation.waves.map(w=>w.map(p=>p.id)), [['A'],['B']]);
+  const oneHead = buildExecutionPlan({workPackages: [
+    {id:'A', paths:['brain/a.mjs'], baseSha:'main', candidateSha:'same-head'},
+    {id:'B', paths:['site/b.js'], baseSha:'main', candidateSha:'same-head'}
+  ], deliveryConfig, policy});
+  assert.deepEqual(oneHead.waves.map(w=>w.map(p=>p.id)), [['A'],['B']]);
+});
+
+test('executor rejects a forged over-budget wave before any worker starts', async () => {
+  let invocations = 0;
+  const wave = Array.from({length:5},(_,n)=>({id:'P'+n, specialist:'worker'}));
+  await assert.rejects(
+    executePlanWaves({waves:[wave],maxConcurrentPerWave:4},{worker:async()=>{invocations++;}}),
+    /PARALLEL_WAVE_BUDGET_EXCEEDED/
+  );
+  assert.equal(invocations, 0);
+});
+
+test('parallel policy refuses seven workers despite a forged tuning allowance', () => {
+  assert.throws(() => buildExecutionPlan({
+    workPackages:[{id:'A',paths:['brain/a.mjs'],baseSha:'main',candidateSha:'head'}],
+    deliveryConfig,
+    policy:{...policy,scheduling:{max_parallel_packages:7}}
+  }),/INVALID_PARALLEL_WAVE_BUDGET/);
+});

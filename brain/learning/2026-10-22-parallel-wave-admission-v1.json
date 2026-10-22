@@ -10,19 +10,22 @@
   "observed_failure_mode": "Scheduler admitted unlimited independent work packages per wave, accepted mixed base epochs, and Promise.all returned on first failure before all already-started workers settled.",
   "root_cause": "Missing bounded admission, main-epoch coherence invariant, and sibling-settlement barrier in existing deterministic plan.",
   "repair": [
-    "Cap each independent wave using the existing four-package tuning baseline (policy range 1..16)",
+    "Cap each independent wave using the existing four-package tuning baseline (policy range 1..6)",
     "Fail closed on mixed base SHAs before any worker begins",
-    "Wait for all in-flight siblings to settle, report failed/completed package IDs and block downstream wave on failure"
+    "Wait for all in-flight siblings to settle, report failed/completed package IDs and block downstream wave on failure",
+    "Serialize identical candidate heads and shared obligation writers even when paths do not overlap",
+    "Executor revalidates bounded wave admission for manually forged execution plans"
   ],
   "prevention": [
     "Tests enforce deterministic 4+2 wave splitting",
     "Tests reject mixed-main plans and invalid wave budgets",
-    "Tests assert failed wave completion barrier and no downstream work"
+    "Tests assert failed wave completion barrier and no downstream work",
+    "Regression prevents duplicate head/obligation writers and over-budget forged plans"
   ],
   "proof": {
     "local_tests": "NOT_EXECUTED_CONNECTOR_ONLY",
-    "github_required": "PENDING",
-    "github_codeql": "PENDING",
+    "github_required": "RECHECK_REQUIRED_AFTER_CONSOLIDATION",
+    "github_codeql": "RECHECK_REQUIRED_AFTER_CONSOLIDATION",
     "protected_merge": "PENDING",
     "production_readback": "PENDING",
     "measured_speed_gain": "NOT_MEASURED"
@@ -53,5 +56,6 @@
     "repair": "Added CI/GITHUB compiler identity and required historical replay against existing Brain parallel-engineering regression tests.",
     "prevention": "Future delivery learning records must declare compiler.failure_class and runnable evaluation.historical_replay before PR creation.",
     "status": "REPAIR_CANDIDATE_PENDING_REMOTE_GATE"
-  }
+  },
+  "integration_source": "Existing overlapping PR #4708, consolidated into PR #4705; avoid competing parallel auto-merges"
 }

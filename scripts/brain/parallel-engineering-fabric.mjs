@@ -44,6 +44,12 @@ export function buildCacheIdentity({ baseSha, candidateSha, paths = [], contract
 }
 
 function packageConflict(a, b) {
+  // One head / one obligation writer; never concurrently mutate the same lineage.
+  if (String(a.baseSha).toLowerCase() !== String(b.baseSha).toLowerCase()) return true;
+  if (String(a.candidateSha).toLowerCase() === String(b.candidateSha).toLowerCase()) return true;
+  const aObligation = a.obligationId ?? a.obligation_id;
+  const bObligation = b.obligationId ?? b.obligation_id;
+  if (aObligation && bObligation && String(aObligation) === String(bObligation)) return true;
   if (a.dependsOn.includes(b.id) || b.dependsOn.includes(a.id)) return true;
   if (a.paths.some(pa => b.paths.some(pb => overlapPath(pa, pb)))) return true;
   if (a.contracts.some(c => b.contracts.includes(c))) return true;
@@ -64,8 +70,8 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
   validatePackages(workPackages);
   // Bounded parallelism keeps independent coding fast without unbounded Actions fan-out.
   const maxParallelPackages = policy?.scheduling?.max_parallel_packages ?? 4;
-  if (!Number.isSafeInteger(maxParallelPackages) || maxParallelPackages < 1 || maxParallelPackages > 16) {
-    throw new Error('INVALID_PARALLEL_WAVE_BUDGET: expected integer 1..16');
+  if (!Number.isSafeInteger(maxParallelPackages) || maxParallelPackages < 1 || maxParallelPackages > 6) {
+    throw new Error('INVALID_PARALLEL_WAVE_BUDGET: expected integer 1..6');
   }
   const packages = workPackages.map(raw => {
     const graph = buildImpactGraph({ paths: raw.paths ?? [], resources: raw.resources ?? [], dependencies: raw.dependsOn ?? [], deliveryConfig, policy });
@@ -86,11 +92,17 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
     if (wave.length === 0) throw new Error('Dependency cycle or unschedulable conflict detected');
     waves.push(wave); for (const p of wave) { completed.add(p.id); remaining.delete(p.id); }
   }
-  return { fingerprint: policy?.fingerprint ?? null, waves, packages };
+  return { fingerprint: policy?.fingerprint ?? null, maxConcurrentPerWave: maxParallelPackages, waves, packages };
 }
 
 export async function executePlanWaves(plan, workers = {}) {
   if (!plan || !Array.isArray(plan.waves)) throw new TypeError('execution plan with waves is required');
+  // Revalidate caller-supplied plans: a forged wave must not bypass planning admission.
+  const maxConcurrent = plan.maxConcurrentPerWave ?? 4;
+  if (!Number.isSafeInteger(maxConcurrent) || maxConcurrent < 1 || maxConcurrent > 6 ||
+      plan.waves.some(wave => !Array.isArray(wave) || wave.length > maxConcurrent)) {
+    throw new Error('PARALLEL_WAVE_BUDGET_EXCEEDED: execution admission refused');
+  }
   const results = {};
   const waveResults = [];
   for (const wave of plan.waves) {
@@ -140,10 +152,13 @@ export async function validateParallelEngineeringFabric() {
   if (policy.authority?.creates_parallel_authority !== false) errors.push('parallel authority must remain false');
   if (policy.scheduling?.deterministic !== true) errors.push('deterministic scheduling required');
   if (!Number.isSafeInteger(policy.scheduling?.max_parallel_packages) ||
-      policy.scheduling.max_parallel_packages < 1 || policy.scheduling.max_parallel_packages > 16) {
-    errors.push('parallel wave budget must be an integer 1..16');
+      policy.scheduling.max_parallel_packages < 1 || policy.scheduling.max_parallel_packages > 6) {
+    errors.push('parallel wave budget must be an integer 1..6');
   }
   if (policy.scheduling?.parallel_only_without?.includes('mutable-resource-overlap') !== true) errors.push('mutable resource conflict guard drift');
+  for (const name of ['base-epoch-mismatch','same-candidate-head','same-obligation-writer']) {
+    if (!policy.scheduling?.parallel_only_without?.includes(name)) errors.push('missing parallel writer guard: '+name);
+  }
   if (policy.affected_testing?.fail_closed_unknown_material_scope !== true) errors.push('unknown material scope must fail closed');
   if (policy.affected_testing?.fast_path_never_replaces_release_gates !== true) errors.push('fast path cannot replace release gates');
   if (policy.cache?.never_skips_production_readback !== true) errors.push('cache cannot skip production readback');
