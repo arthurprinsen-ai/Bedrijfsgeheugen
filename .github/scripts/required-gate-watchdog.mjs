@@ -1,6 +1,6 @@
 import process from 'node:process';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, classifyOwnerSignalWriteError } from '../../tools/delivery/failed-gate-owner-routing.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -77,7 +77,7 @@ for (let page = 1; page <= 5; page++) {
       } catch (error) {
         // Preserve all independent missing-Required dispatches even if GitHub denies PR comments.
         // Never report a successful owner notification, and never repeat the denied write this tick.
-        if (!/^Error: GitHub API 403 \/issues\/\d+\/comments:/.test(String(error))) throw error;
+        if (classifyOwnerSignalWriteError(error) !== 'PROVIDER_COMMENT_AUTHORITY_DENIED') throw error;
         commentAuthorityDenied = true;
         deniedHandoffs.push({ pr_number: pr.number, head_sha: head, gate, run_id: run.id, reason: 'GITHUB_API_403_RESOURCE_NOT_ACCESSIBLE_BY_INTEGRATION' });
         console.error('::error::FAILED_GATE_OWNER_SIGNAL_PROVIDER_DENIED:#' + pr.number + ':' + gate + ':' + head + ':' + run.id);
