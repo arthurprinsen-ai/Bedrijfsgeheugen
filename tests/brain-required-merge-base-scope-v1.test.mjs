@@ -9,7 +9,7 @@ const mergeBaseSha = 'f627153ed569820917a2dc5787dd210613f0395e';
 const providerProof = {
   status: 'diverged',
   base_commit: { sha: baseSha },
-  head_commit: { sha: headSha },
+  commits: [{ sha: headSha }],
   merge_base_commit: { sha: mergeBaseSha },
 };
 
@@ -43,7 +43,7 @@ test('unverified head/base/status and malformed merge base fail closed', () => {
     null,
     { ...providerProof, status: 'behind' },
     { ...providerProof, base_commit: { sha: 'a'.repeat(40) } },
-    { ...providerProof, head_commit: { sha: 'b'.repeat(40) } },
+    { ...providerProof, commits: [{ sha: 'b'.repeat(40) }] },
     { ...providerProof, merge_base_commit: { sha: 'not-a-sha' } },
     { ...providerProof, merge_base_commit: { sha: headSha } },
   ]) {
