@@ -7,17 +7,28 @@ const RECEIPT_TTL_MS=7*24*60*60*1000;
 const KEY_PATTERN=/^bedrijfslek-[A-Za-z0-9-]{12,170}$/;
 const ALL_SCAN_KEYS=/^(?:bedrijfslek|workshop|frisse-blik)-[A-Za-z0-9._:-]{12,160}$/;
 export function pendingBedrijfslekReceipt(storage,session,now=Date.now()){
+  // V3 and legacy V2 can coexist. Select the most recent valid persisted
+  // receipt across both generations; server-side claim auth remains canonical.
+  let newest=null;
   try{
     const rows=JSON.parse(storage?.getItem('bg_scan_receipts_v3')||'[]');
-    const receipt=Array.isArray(rows)?rows.find(row=>ALL_SCAN_KEYS.test(String(row?.submission_key||''))&&Number.isFinite(row.at)&&row.at<=now&&now-row.at<=RECEIPT_TTL_MS):null;
-    if(receipt)return receipt.submission_key;
+    if(Array.isArray(rows))for(const row of rows){
+      if(!ALL_SCAN_KEYS.test(String(row?.submission_key||''))||
+         !Number.isFinite(row.at)||row.at>now||now-row.at>RECEIPT_TTL_MS)continue;
+      if(!newest||row.at>=newest.at)newest={at:row.at,submission_key:row.submission_key};
+    }
   }catch{}
-  try {
+  try{
     const receipt=JSON.parse(storage?.getItem(RECEIPT_KEY)||'null');
-    if(receipt && KEY_PATTERN.test(String(receipt.submission_key||'')) &&
-       Number.isFinite(receipt.received_at) && receipt.received_at<=now &&
-       now-receipt.received_at<=RECEIPT_TTL_MS) return receipt.submission_key;
+    if(receipt&&KEY_PATTERN.test(String(receipt.submission_key||''))&&
+       Number.isFinite(receipt.received_at)&&receipt.received_at<=now&&
+       now-receipt.received_at<=RECEIPT_TTL_MS&&
+       (!newest||receipt.received_at>newest.at))
+      newest={at:receipt.received_at,submission_key:receipt.submission_key};
   }catch{}
+  if(newest)return newest.submission_key;
+  // An untimed session-only legacy reference is fallback; the existing
+  // authenticated endpoint must still authorize and verify the claim.
   try{
     const value=String(session?.getItem(KEY)||'');
     return KEY_PATTERN.test(value)?value:null;

@@ -1,8 +1,8 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-21T09:19:55.315Z',
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'d4a163f674738fb19109758b1ec45253db97d113b5215c31ed7ae85b8d186b4a',authority:'repository-source',providerRuntimeVerified:false}),
+  observedAt:'2026-10-21T20:27:21.032Z',
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'46d9ab4902abc0300f240db00c56fd2cf8dd9731fd6fad9ba13aefcabe09dd25',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -36,6 +36,18 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'portal-scan-receipt-cross-generation-latest-v2',
+      fingerprint:'portal|scan-claim|cross-generation-most-recent-valid-receipt|20261021-v2',
+      label:'Newest valid V3/V2 Frisse Blik receipt selection before authorized tenant claim',
+      owner:'Existing Portal V2 scan claim / Brain and Supabase authoritative claim endpoint',
+      status:'CANDIDATE_PROTECTED_NOT_RELEASED',
+      authority:'Only existing authenticated /api/portal-scans validates tenant ownership',
+      evidence:'portal-v2/tests/scan-claim-receipt-order.test.mjs',
+      learning:'brain/learning/2026-10-21-portal-scan-receipt-order-v2.json',
+      noNewScheduler:true,autoClaimForbidden:true,realCustomerAcceptance:false,
+      releaseNote:'Pending protected merge, inventory hash reconciliation, provider readback and genuine two-customer acceptance'
+    }),
     Object.freeze({
       id:'portal-eight-outcomes-connected-journey-v1',
       fingerprint:'portal|eight-outcomes|connected-entrepreneur-journey|v1',
@@ -2445,7 +2457,6 @@ export const EMAIL_LEARNING_SCOPED_REFRESH_20261020=Object.freeze({
  regression:'supabase/tests/email_learning_scoped_refresh_v1.sql',
  learning:'brain/learning/2026-10-20-email-learning-scoped-refresh.json'
 });
-
 
 export const DAILY_SOCIAL_BUILDER_MEDIA_RECOVERY_20261022=Object.freeze({
   fingerprint:'powerhouse|daily-social-builder-reopen-media-preflight|20261022-v1',
