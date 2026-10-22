@@ -1,0 +1,58 @@
+{
+  "fingerprint": "brain|incident-observe|evidence-overwrite-and-crosswriter-runid-dup|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
+  "root_cause": "Production public.brain_observe_failure overwrote aggregate JSON evidence with coalesce(p_evidence,evidence), erasing prior promoted proof keys from its summary. Independently, different agents recorded one cron.runid under both cron-46:RUNID and supabase:cron:job46:run:RUNID, inflating raw occurrence_count by event aliasing (20 raw rows vs 11 distinct provider run IDs on 2026-10-22).",
+  "impact": "Cumulative learning evidence can be silently lost and dashboards can overcount material incidents, defeating autonomous learning/reuse and recurrence prediction.",
+  "source_evidence": {
+    "function": "public.brain_observe_failure(text,text,text,jsonb)",
+    "sql_source_readback": "pg_get_functiondef on project adhjwmvyoixzjtmiroln, 2026-10-22",
+    "source_contract": "SECURITY DEFINER, search_path=public, only service_role EXECUTE; raw occurrences remain immutable",
+    "observed_raw_occurrences": 20,
+    "observed_distinct_cron_runs": 11
+  },
+  "prevention_rule": "Resolve one canonical provider-event ID before writing and serialize all old aliases with one transaction-scoped lock; if payload hashes or fingerprints differ, fail closed and investigate rather than coerce them. Preserve all previously promoted evidence keys; append compact immutable event pointers while raw payloads remain in brain_failure_occurrences. Never delete historical duplicate raw records or add another scheduler/registry.",
+  "recovery": "Protected SQL migration updates existing brain_observe_failure only, retaining signature, privilege and search path; known cron aliases normalize to project/jobid/runid, and summary evidence is append-only rather than wholesale replaced. No production DDL before isolated database acceptance.",
+  "regression_contract": [
+    "observe->promote->observe preserves old evidence",
+    "two alias IDs same hash count once",
+    "two alias IDs different hashes fail closed",
+    "different run IDs count distinctly",
+    "concurrent agent writes serialize",
+    "old raw rows remain untouched",
+    "anon/authenticated EXECUTE forbidden",
+    "service_role EXECUTE preserved"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-observe-failure-lossless-dedupe-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-observe-failure-lossless-dedupe-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-observe-failure-lossless-dedupe-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-observe-failure-lossless-dedupe-v1.test.mjs"
+    ],
+    "historical_duplicate_report": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
+    "production_readback": "NOT_YET_DEPLOYED",
+    "isolated_database_replay": "REQUIRED_BEFORE_PROTECTED_MERGE"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "repeat_count": 9,
+    "scope": "CANONICAL_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "AGENTS.md"
+  ],
+  "maturity": "CANDIDATE_SOURCE_ONLY",
+  "next_action": "Execute SQL integration tests in an independently isolated preview, prove ACL/hash-conflict/concurrent writes with production-like function, verify Required/CodeQL/provider and exact main readback before claiming PROD GREEN."
+}
