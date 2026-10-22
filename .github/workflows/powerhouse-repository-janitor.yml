@@ -271,7 +271,19 @@ jobs:
           jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
             pr="$(jq -r '.prNumber' <<<"$action")"
             state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
-            [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
+            if [ "$state" != closed ]; then
+              # A later same-run safety reconciliation can reopen a terminal lease
+              # whose successor chain has ceased to be authoritative. This is a
+              # verified, intentional outcome, not a failed PR closure.
+              reopened=false
+              if [ "$state" = open ] && [ -f .artifacts/janitor-runtime-actions.json ]; then
+                if jq -e --argjson pr "$pr" '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE" and .pr_number == $pr)' .artifacts/janitor-runtime-actions.json >/dev/null; then
+                  reopened=true
+                fi
+              fi
+              [ "$reopened" = true ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
+              echo "::notice::JANITOR_INTENTIONAL_LEASE_REOPEN:#${pr}"
+            fi
           done
           if [ -f .artifacts/janitor-runtime-actions.json ]; then
             jq -c '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE")' .artifacts/janitor-runtime-actions.json | while read -r action; do
