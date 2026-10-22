@@ -33,5 +33,20 @@
     "no disabled quality/security checks"
   ],
   "expected_proof": "Focused Node tests, Required + CodeQL, exact protected merge, Supabase Edge readback, real provider proof and 7-day daily evidence soak.",
-  "current_state": "CANDIDATE_NOT_LIVE"
+  "current_state": "CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-social-builder-media-recovery-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-social-builder-media-recovery-20261022.test.mjs"
+    ]
+  }
 }
