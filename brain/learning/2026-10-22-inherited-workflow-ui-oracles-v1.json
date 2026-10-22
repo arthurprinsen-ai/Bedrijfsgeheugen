@@ -1,0 +1,52 @@
+{
+  "fingerprint": "ci|inherited-brain|workflow-ui-source-drift|20261022-v1",
+  "obligation_id": "ci-brain-inherited-workflow-ui-oracle-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "source_main_sha": "8ea724b80bdd81a5f31b9224254c6630eab3be6c",
+  "observed": {
+    "full_brain_run": 39671036043,
+    "total_tests": 3511,
+    "passed_tests": 3190,
+    "failed_tests": 321,
+    "failed_assertions_addressed_as_candidates": [
+      71,
+      207,
+      443,
+      446,
+      787
+    ],
+    "changed_test_files": 4,
+    "changed_runtime_files": 0,
+    "changed_sql_migrations": 0
+  },
+  "root_cause": "Inherited BRAIN source-contract assertions refer to retired canary test entrypoints, retired AI messaging, an old GitHub buffer symbol, and former auto-triggered LinkedIn specialist workflow; current canonical sources differ.",
+  "change": "Update exactly four source-contract test files to validate current implemented invariants: canary certificate artifact, proposition identity/idempotence, bounded paginated retry, manual-only LinkedIn with narrowly triggered Revenue Learning.",
+  "prevention_rule": "Tests must reflect current canonical source while preserving positive auth, artifact, concurrency, bounded retries, non-fanout and product-contract requirements; never greenwash by removing security constraints.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs",
+      "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs",
+      "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
+      "tests/brain-ci-path-scope-fanout.test.mjs"
+    ],
+    "shadow": [],
+    "canary": []
+  },
+  "test_evidence": {
+    "before": "BRAIN run 39671036043 failed 321 of 3511; five enumerated failures belong to this source-drift class.",
+    "source_validation": "Current canonical workflow and builder source files read back from GitHub main; positive safety invariants retained in revised assertions.",
+    "after": "PENDING_EXACT_HEAD_RUN",
+    "full_brain": "PENDING_0_FAIL",
+    "production": "NOT_CHANGED",
+    "customer_acceptance": "NOT_PROVEN"
+  },
+  "status": "CANDIDATE_UNVERIFIED_CI"
+}
