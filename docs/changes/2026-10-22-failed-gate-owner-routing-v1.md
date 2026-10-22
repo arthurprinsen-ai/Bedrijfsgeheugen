@@ -9,3 +9,11 @@ Safety: healthy queued/in-progress runs are not cancelled; no-job startup failur
 Existing website example: #4656 Required run 39800626684 failed in job 119901773175 due to English mobile blog CLS 0.168. Original website repair owner remains #4651 and P0 #4215. Parent delivery-obligation evidence is #3742; canonical Brain fingerprint `delivery|failed-gate|watchdog-observation-only|20261022-v1` remains OBSERVED pending verified launch.
 
 Regression: `node --test tests/brain-required-failed-gate-owner-routing-v1.test.mjs`. See accompanying learning JSON and append-only development ledger.
+
+## Additional root cause: older PR invisible to watchdog
+
+The already-merged initial watchdog fix has another verified gap: PRs whose `updated_at` was over two hours old were skipped before querying exact-head Actions runs. A new failed gate does not necessarily refresh the PR's timestamp. The same canonical fingerprint and owner remain in force.
+
+The same five-minute watchdog now inspects fresh PRs on every tick and inspects older PRs in 12 deterministic shards (every 60 minutes). The earlier short settling window and maximum two-hour **missing-Required dispatch** window still apply only to newly missing runs. Older PRs NEVER trigger fresh Required dispatch. GitHub API workload stays bounded, dedup remains by immutable gate/head, and no gate/CLS/security threshold changes.
+
+Regression: `node --test tests/brain-required-failed-gate-owner-routing-v1.test.mjs`. This candidate is not a verified deployment or general-purpose source-coding agent; protected exact-head CI/CodeQL and live watchdog readback are required.

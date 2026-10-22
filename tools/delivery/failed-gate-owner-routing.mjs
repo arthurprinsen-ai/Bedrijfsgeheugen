@@ -51,3 +51,17 @@ Status: **RECOVERY REQUIRED**, not green. This is an existing PR/owner obligatio
 
 The existing watchdog leaves this obligation open until independent gate and delivery proof exists.`;
 }
+
+/**
+ * Inspect recent PRs every five minutes and older open PRs in a 12-way
+ * 60-minute cycle. Missing-Required dispatch is reserved for fresh PRs.
+ * A new failed exact-head gate can appear without updating pr.updated_at.
+ */
+export function watchdogPrPlan(pr, nowMs) {
+  const age = nowMs - Date.parse(pr?.updated_at || pr?.created_at || '');
+  if (!Number.isFinite(age) || age < 90_000) return { inspect: false, dispatchMissing: false };
+  if (age <= 2 * 60 * 60 * 1000) return { inspect: true, dispatchMissing: true };
+  const number = Number(pr?.number);
+  if (!Number.isSafeInteger(number) || number <= 0) return { inspect: false, dispatchMissing: false };
+  return { inspect: number % 12 === Math.floor(nowMs / 300_000) % 12, dispatchMissing: false };
+}
