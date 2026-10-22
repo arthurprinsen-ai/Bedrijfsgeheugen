@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, watchdogPrPlan } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -72,4 +72,42 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   assert.match(source, /gateDecision\(required\) !== 'MISSING'/);
   assert.match(source, /required-test\.yml\/dispatches/);
   assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
+});
+
+test('old PR with a fresh failed exact-head gate is sampled exactly once every twelve ticks', () => {
+  const now = Date.parse('2026-10-22T18:00:00Z');
+  const pr = { number: 4660, updated_at: '2026-10-21T18:00:00Z' };
+  let scans = 0;
+  for (let tick = 0; tick < 12; tick++) {
+    const plan = watchdogPrPlan(pr, now + tick * 300_000);
+    if (plan.inspect) scans++;
+    assert.equal(plan.dispatchMissing, false);
+  }
+  assert.equal(scans, 1);
+  assert.equal(gateDecision(latestGateRun([
+    run(123, 'Required test', 'completed', 'failure', '2026-10-22T17:45:00Z')
+  ], 'required', sha)), 'SAME_OWNER_REPAIR_REQUIRED');
+  assert.equal(gateDecision(latestGateRun([
+    run(124, 'Powerhouse CodeQL', 'in_progress', null, '2026-10-22T17:46:00Z')
+  ], 'codeql', sha)), 'ACTIVE_DO_NOT_RETRY');
+});
+
+test('fresh missing-gate dispatch window is unchanged and old PRs cannot fan out into CI', () => {
+  const now = Date.parse('2026-10-22T18:00:00Z');
+  assert.deepEqual(watchdogPrPlan({ number: 1, updated_at: '2026-10-22T17:58:00Z' }, now), {
+    inspect: true, dispatchMissing: true
+  });
+  assert.deepEqual(watchdogPrPlan({ number: 1, updated_at: '2026-10-22T17:59:30Z' }, now), {
+    inspect: false, dispatchMissing: false
+  });
+  assert.deepEqual(watchdogPrPlan({ number: 1, updated_at: 'bad-date' }, now), {
+    inspect: false, dispatchMissing: false
+  });
+  assert.deepEqual(watchdogPrPlan({ number: null, updated_at: '2026-10-21T18:00:00Z' }, now), {
+    inspect: false, dispatchMissing: false
+  });
+  const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
+  assert.match(source, /watchdogPrPlan\(pr, now\)/);
+  assert.match(source, /!inspection\.dispatchMissing \|\| gateDecision\(required\) !== 'MISSING'/);
+  assert.doesNotMatch(source, /age > MAX_AGE_MS\) continue/);
 });
