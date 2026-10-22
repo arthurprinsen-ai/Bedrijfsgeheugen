@@ -29,5 +29,23 @@
     "canary": [
       "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
     ]
+  },
+  "evidence": {
+    "baseline_production_sql": "public.bg_gezondheid_meten() uses 74-hour stale threshold on non-daily cron",
+    "observed_weekly_runs": [
+      "2026-10-19T06:00:00Z bg-zoekwoordkansen-wekelijks success",
+      "2026-10-19T06:40:00Z bg-experimentcyclus-wekelijks success"
+    ],
+    "observed_monitoring": "2026-10-22 weekly jobs flagged warning despite successful weekly schedule",
+    "cron_timezone": "GMT",
+    "current_source_version": "protected draft candidate; NOT YET LIVE",
+    "test_evidence": [
+      "node:test weekly false-stale fixture",
+      "node:test missed weekly run alert",
+      "node:test failed/no-run remains error",
+      "node:test daily and nonweekly guard preservation"
+    ],
+    "negative_canary_required": true,
+    "final_eligibility": "CI/security/preview/actual production readback still pending"
   }
 }
