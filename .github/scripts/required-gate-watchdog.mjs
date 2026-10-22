@@ -51,6 +51,8 @@ async function emitExistingOwnerSignal(pr, gate, run) {
 
 let dispatched = 0;
 let ownerSignals = 0;
+let ownerSignalAttempts = 0;
+const ownerSignalFailures = [];
 for (let page = 1; page <= 5; page++) {
   const pulls = await api(`/pulls?state=open&base=main&per_page=100&page=${page}`);
   for (const pr of pulls) {
@@ -63,9 +65,19 @@ for (let page = 1; page <= 5; page++) {
     const required = latestGateRun(runs, 'required', head);
     const codeql = latestGateRun(runs, 'codeql', head);
     for (const [gate, run] of [['required', required], ['codeql', codeql]]) {
-      if (ownerSignals >= MAX_OWNER_SIGNALS_PER_TICK) break;
+      if (ownerSignalAttempts >= MAX_OWNER_SIGNALS_PER_TICK) break;
       if (gateDecision(run) !== 'SAME_OWNER_REPAIR_REQUIRED') continue;
-      if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      ownerSignalAttempts++;
+      try {
+        if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      } catch (error) {
+        // No false success: record the immutable failed owner handoff but keep
+        // scanning so one 403 never blocks unrelated missing-gate recovery.
+        const safeReason = String(error?.message || error).replace(/[\r\n]+/g, ' ').slice(0, 350);
+        const failure = `OWNER_HANDOFF_NOT_DELIVERED:#${pr.number}:${gate}:${head}:${run.id}:${safeReason}`;
+        ownerSignalFailures.push(failure);
+        console.error(`::error::${failure}`);
+      }
     }
 
     // Preserve the existing one-flight missing-Required recovery; never
@@ -89,4 +101,5 @@ for (let page = 1; page <= 5; page++) {
   }
   if (pulls.length < 100) break;
 }
-console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}`);
+console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}:OWNER_HANDOFF_FAILURES:${ownerSignalFailures.length}`);
+if (ownerSignalFailures.length) process.exitCode = 1;
