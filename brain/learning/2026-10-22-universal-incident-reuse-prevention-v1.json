@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1",
+  "obligation_id": "powerhouse-incident-learning-preflight-20261022-v1",
+  "title": "Universal incident fingerprint reuse, semantic root-cause prevention and agent preflight",
+  "status": "CANDIDATE",
+  "failure_class": "GOVERNANCE",
+  "root_cause": "The existing registry, learning and auto-projection controls do not by themselves prove that every error outside repository-controlled actions is captured and consulted by every future worker. Repeated historical CI and external side-effect incidents show the importance of deterministic root-cause deduplication, next-worker discovery and evidence-bound closure.",
+  "impact": "Recurring failure classes can be rediscovered as new incidents or repaired in duplicate; intermittent tool/stream interruptions may lose continuity; green may be claimed without proof.",
+  "failed_approaches": [
+    "Chat-only memory or a prose status as the source of incident truth",
+    "A separate memory store/scheduler/repair PR for the same root cause",
+    "Treating green CI, dispatched posts, or historical assertions as proven end outcomes"
+  ],
+  "fix": "Strengthen the existing AGENTS and Powerhouse Continuity skill with mandatory fingerprint-first incident preflight, semantic deduplication, durable incident evidence, bounded same-lineage recovery and fail-closed proof semantics. Add a regression contract guarding these requirements.",
+  "prevention_rule": "Before any material work every agent/chat must load known failure fingerprints and derived skills, deduplicate by semantic root cause, update the same canonical incident/occurrence and remediation owner, add a real regression and only mark PROVEN after exact-head/provider/outcome/learning-skill-readback. A context/tool interruption resumes the existing obligation with no duplicate side effects.",
+  "regression_contract": "tests/brain-universal-incident-memory-contract.test.mjs",
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "security",
+    "social",
+    "data",
+    "portal",
+    "foresight"
+  ],
+  "tests": [
+    "tests/brain-universal-incident-memory-contract.test.mjs"
+  ],
+  "evidence": [
+    "AGENTS.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "docs/learning/known-error-preflight-contract.md",
+    "docs/learning/2026-10-22-universal-incident-reuse-prevention-v1.md",
+    "GitHub issues #3742 #4215 #4478 #4439"
+  ],
+  "outcome": "CANDIDATE. Governance/test/learning changes proposed; CI, merge, skill projection, production and next-worker discovery remain unverified until external readback.",
+  "compiler": {
+    "failure_class": "GOVERNANCE",
+    "scope": "ALL_POWERHOUSE_AGENTS_CHATS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-universal-incident-memory-contract.test.mjs"
+    ]
+  },
+  "prevention": [
+    "ONE_ROOT_CAUSE_ONE_CANONICAL_REMEDIATION_OWNER",
+    "KNOWN_FAILURE_FINGERPRINTS_BEFORE_WRITE",
+    "NO_INCIDENT_WITHOUT_DURABLE_EVIDENCE_OR_OPEN_RCA",
+    "NO_PROVEN_WITHOUT_REGRESSION_PROVIDER_READBACK_AND_SKILL_DISCOVERY",
+    "STREAM_INTERRUPTION_RESUMES_SAME_OBLIGATION"
+  ]
+}

@@ -1,3 +1,15 @@
+## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
+
+Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
+
+**Verplicht vóór iedere materiële wijziging of herstelactie:** lees actuele runtime-/providerwaarheid, open obligations, `public.brain_failure_registry`, relevante `brain/learning/**/*.json`, `docs/learning/known-error-preflight-contract.md` en de automatisch afgeleide skillprojectie. Vergelijk component, operatie, foutklasse, genormaliseerd symptoom en root cause met bestaande fingerprints. Een zoekmiss is geen bewijs dat de fout nieuw is. Eerst hergebruik, dan pas nieuw bouwen.
+
+**Bij iedere fout, inclusief CI-fout, streaming/toolonderbreking, ontbrekend bewijs, providerfout en een herhaalde historische testfout:** behoud evidence en exacte lineage; classificeer OBSERVED/HISTORICAL/ACTIVE/RECOVERING/PROVEN; upsert één canonieke fingerprint en verhoog het occurrence-aantal in plaats van een dubbel incident of een tweede herstelowner te starten. Leg impact, aannemelijke/bewezen oorzaak, mislukte pogingen, fix, preventieregel, regressietest, eigenaar, volgende veilige actie en exacte verificatie-/readbackreferenties vast. Onbekende oorzaak blijft een open onderzoeksverplichting, nooit een verzonnen conclusie.
+
+**Geen closure op alleen documenten:** `PROVEN` vereist echte regressie plus toepasselijke exact-SHA CI/security en productie-/providerreadback, duurzaam Brain-writeback, ledger, documentatie, skillprojectie en aantoonbare ontdekbaarheid in de volgende preflight. Overkoepelende groenstatus volgt niet uit één lokale fix. Houd veilige bounded recovery actief binnen dezelfde obligation, zonder dubbele dispatch of publicatie, zonder uitgezette scheduler, zonder Make/Buffer-fallback en zonder beveiligingspoorten te verzwakken. Menselijke OAuth/consent, destructieve beslissingen en kostenverhoging worden niet omzeild.
+
+Lees voor de uitvoerbare procedure `.agents/skills/powerhouse-continuity/SKILL.md#universele-incidentherkenning--preventie`; het Brain-register blijft de enige operationele foutwaarheid.
+
 ## External observer isolation — provider truth blijft autoritatief
 
 Fingerprint: `delivery|external-observer|provider-truth-fallback|v1`.
