@@ -88,3 +88,27 @@ test('migration-history lock is verifier-only evidence while executable migratio
   assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
 });
+
+test('Supabase SQL rollback fixture is verifier-only but production migrations and unknown SQL remain gated', async()=>{
+  const [workflow,contract]=await Promise.all([
+    readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8'),
+    readFile('brain/contracts/production-readback-v1.json','utf8').then(JSON.parse),
+  ]);
+  const {verifierOnlyPaths,verifierOnlyPrefixes,supabaseMigrationReadback}=contract.productionTruth;
+  const verifierOnly=path=>verifierOnlyPaths.includes(path)||verifierOnlyPrefixes.some(prefix=>path.startsWith(prefix));
+  const sqlFixture='supabase/tests/brain_failure_observe_semantic_recovery_v1.sql';
+  const actualMigration='supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql';
+  assert.equal(verifierOnly(sqlFixture),true,'regression-only SQL must not demand independent deployment');
+  assert.equal(verifierOnly('supabase/tests/unrecognized.sql'),false,'do not allowlist the whole SQL test folder');
+  assert.equal(verifierOnly(actualMigration),false,'actual migration is always deployed runtime');
+  assert.equal(verifierOnly('supabase/functions/powerhouse-foo/index.ts'),false,'Edge runtime must remain provider-gated');
+  assert.equal(verifierOnly('supabase/unknown-config.sql'),false,'unknown backend files still fail closed');
+  assert.equal(verifierOnlyPrefixes.includes('supabase/'),false);
+  assert.equal(verifierOnlyPrefixes.includes('supabase/tests/'),false);
+  assert.equal(verifierOnlyPrefixes.includes('supabase/migrations/'),false);
+  assert.equal(supabaseMigrationReadback.requiredForMigrationRuntime,true);
+  assert.equal(supabaseMigrationReadback.failClosedWhenMissing,true);
+  assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
+  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
+  assert.match(workflow,/const migrations=paths\\.filter/);
+});
