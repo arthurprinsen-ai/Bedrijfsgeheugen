@@ -171,6 +171,48 @@ try {
         await page.addInitScript(() => {
           window.__bgCls = 0;
           window.__bgLayoutShifts = [];
+          // Capture DOM ancestry while nodes are connected: layout-shift source
+          // nodes can be detached by the time PerformanceObserver delivers them.
+          const sourceAncestry = new WeakMap();
+          let capturedNodes = 0;
+          const boundedToken = value => String(value || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0,28);
+          const identify = node => {
+            if (!(node instanceof Element)) return [];
+            const names = [];
+            for (let current = node; current && names.length < 5; current = current.parentElement) {
+              names.push([current.tagName.toLowerCase(), boundedToken(current.id),
+                ...Array.from(current.classList || []).slice(0, 2).map(boundedToken)].filter(Boolean).join('.'));
+            }
+            return names;
+          };
+          const remember = node => {
+            if (!(node instanceof Element) || capturedNodes >= 96) return;
+            const candidates = node.matches('div.wrap') ? [node] : [];
+            if (node.matches('main,section,.page,header,footer,body')) {
+              candidates.push(...Array.from(node.querySelectorAll('div.wrap')).slice(0, 12));
+            }
+            for (const candidate of candidates) {
+              if (capturedNodes >= 96) break;
+              if (!sourceAncestry.has(candidate)) {
+                sourceAncestry.set(candidate, identify(candidate));
+                capturedNodes++;
+              }
+            }
+          };
+          try {
+            new MutationObserver(mutations => {
+              for (const change of mutations) {
+                if (change.type !== 'childList') continue;
+                for (const node of change.addedNodes) remember(node);
+                // Preserve the parent chain while removal is still observable,
+                // without retaining DOM references or logging page content.
+                for (const node of change.removedNodes) remember(node);
+              }
+            }).observe(document, { childList: true, subtree: true });
+            document.addEventListener('DOMContentLoaded', () => {
+              document.querySelectorAll('div.wrap').forEach(remember);
+            }, { once: true });
+          } catch {}
           try {
             new PerformanceObserver(list => {
               for (const entry of list.getEntries()) {
@@ -180,11 +222,15 @@ try {
                     const rect = r => r ? ({ x: r.x, y: r.y, width: r.width, height: r.height }) : null;
                     window.__bgLayoutShifts.push({
                       score: entry.value,
+                      timeMs: Math.round(entry.startTime),
+                      fontStatus: document.fonts?.status || 'unknown',
                       sources: (entry.sources || []).slice(0, 3).map(source => ({
                         tag: source.node?.tagName || 'unknown',
                         id: source.node?.id || '',
                         previous: rect(source.previousRect),
                         current: rect(source.currentRect),
+                        connected: source.node?.isConnected === true,
+                        ancestry: sourceAncestry.get(source.node) || identify(source.node),
                       })),
                     });
                   }

@@ -42,3 +42,30 @@ test('original public route, semantic visibility and input-excluded CLS gates re
   assert.match(source, /is not visibly rendered/);
   assert.match(source, /browser\.close\(\)/);
 });
+
+test('detached source retains bounded parent chain and font/render timing without content', () => {
+  const input=[{ score:0.12329, timeMs:718.3, fontStatus:'loading', sources:[{
+    tag:'DIV', id:'', connected:false,
+    previous:{x:8.8,y:627.4,width:381.2,height:216.6}, current:{x:0,y:0,width:0,height:0},
+    ancestry:['div.wrap','section.inhoud-kop','div.page-inhoud','div#view-inhoud.page.active','html'],
+    text:'private page text', token:'SUPER_SECRET'
+  }]}];
+  const formatted=formatClsFailure('/en/blog/afas-api','phone',0.12329,input);
+  assert.match(formatted, /"timeMs":718/);
+  assert.match(formatted, /"fontStatus":"loading"/);
+  assert.match(formatted, /"connected":false/);
+  assert.match(formatted, /"ancestry":\["div.wrap","section.inhoud-kop"/);
+  assert.doesNotMatch(formatted, /private page text|SUPER_SECRET/);
+  assert.equal(normalizeLayoutShiftEvidence(input)[0].sources[0].ancestry.length,5);
+  assert.equal(formatClsFailure('/', 'phone', 0.100, input),null);
+});
+
+test('browser observer caches the ancestry before detachment, with bounded evidence', () => {
+  const code=readFileSync(new URL('../tools/site-shell/standalone-visibility-check.mjs',import.meta.url),'utf8');
+  assert.match(code,/sourceAncestry = new WeakMap/);
+  assert.match(code,/sourceAncestry\.get\(source\.node\) \|\| identify\(source\.node\)/);
+  assert.match(code,/change\.removedNodes/);
+  assert.match(code,/fontStatus: document\.fonts\?\.status/);
+  assert.match(code,/capturedNodes >= 96/);
+  assert.match(code,/if \(!entry\.hadRecentInput\)/);
+});

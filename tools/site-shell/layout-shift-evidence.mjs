@@ -16,11 +16,16 @@ export function normalizeLayoutShiftEvidence(events) {
   if (!Array.isArray(events)) return [];
   return events.slice(0, MAX_LAYOUT_SHIFT_EVENTS).map(event => ({
     score: Number.isFinite(Number(event?.score)) ? Math.round(Number(event.score) * 1e6) / 1e6 : null,
+    timeMs: Number.isFinite(Number(event?.timeMs)) ? Math.max(0, Math.round(Number(event.timeMs))) : null,
+    fontStatus: ['loaded','loading'].includes(event?.fontStatus) ? event.fontStatus : 'unknown',
     sources: (Array.isArray(event?.sources) ? event.sources : []).slice(0, MAX_LAYOUT_SHIFT_SOURCES).map(source => ({
       tag: String(source?.tag || 'unknown').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0,24),
       id: String(source?.id || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0,48),
       previous: box(source?.previous),
       current: box(source?.current),
+      connected: source?.connected === true,
+      ancestry: (Array.isArray(source?.ancestry) ? source.ancestry : []).slice(0, 5)
+        .map(value => String(value).replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 100)),
     })),
   }));
 }

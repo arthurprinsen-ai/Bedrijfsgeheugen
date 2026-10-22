@@ -6,9 +6,9 @@
   "source_of_truth": "public.brain_failure_registry; this entry is a source-controlled learning projection",
   "observed_failure": "GitHub Required #39740060787 rerun failed /en/blog/afas-api phone CLS 0.111 > 0.100 after checkout browser tests had passed.",
   "root_cause": "CLS-causing node remains UNKNOWN; current browser assurance retained only scalar CLS, preventing attribution to a concrete DOM element.",
-  "proposed_fix": "Capture at most 12 performance layout-shift entries with 3 source tag/id and before/after rectangles each, print bounded diagnostics only when CLS > 0.100, with no page text or values.",
+  "proposed_fix": "Capture at most 12 performance layout-shift entries with 3 source tag/id and before/after rectangles each, print bounded diagnostics only when CLS > 0.100, with no page text or values. Persist bounded pre-detach parent ancestry and font-status at layout-shift time; distinguish shared generated V18 sections before applying CSS hypotheses.",
   "prevention_rule": "When mobile CLS fails, retain actual node/rectangle evidence instead of guessing CSS fixes. Preserve the 0.100 gate, route inventory, and all browser/quality checks.",
-  "regression": "tests/website-layout-shift-evidence-20261022.test.mjs",
+  "regression": "tests/brain-website-layout-shift-evidence-20261022.test.mjs",
   "status": "CANDIDATE_DIAGNOSTIC_ONLY; root cause of actual /en/blog/afas-api shift and production repair still unproven",
   "compiler": {
     "failure_class": "WEBSITE_MOBILE_CLS_UNATTRIBUTED",
@@ -18,13 +18,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/website-layout-shift-evidence-20261022.test.mjs"
+      "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
     ],
     "shadow": [
-      "tests/website-layout-shift-evidence-20261022.test.mjs"
+      "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
     ],
     "canary": [
-      "tests/website-layout-shift-evidence-20261022.test.mjs"
+      "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
     ]
   },
   "evidence": {
@@ -36,7 +36,12 @@
     "offline_artifact": "netlify-prebuilt-tree-68b0a9472d4035194d703806c6dc194b2fc9be9d",
     "offline_dom_trial": "0 CLS on two blocked-network simulations, NOT representative of browser preview with fonts/CMS",
     "browser_limit": "ERR_BLOCKED_BY_ADMINISTRATOR localhost HTTP; no source-node attribution possible offline",
-    "release_outcome": "NOT_LIVE",
-    "production_fix": "NOT_PROVEN"
+    "release_outcome": "NOT_LIVE_REQUIRES_EXACT_HEAD_TEST",
+    "production_fix": "NOT_PROVEN",
+    "additional_observations": [
+      "Run 39839765028: /en/blog/afas-api phone CLS=0.12329, div.wrap [8.8,627.4,381.2,216.6] -> zero at 718ms",
+      "Run 39832691176: /en/blog/offertes-opvolgen-zonder-crm phone CLS=0.12084, div.wrap [24,577.8,342,266.2] -> zero at 515ms",
+      "Independent mobile 390px Netlify preview browser replay: generated static English V18 page with div.wrap in header/hero/breadcrumb/article/footer; a later warm-resource replay did not reproduce >0.100 shift, so timing/root cause remain unproven"
+    ]
   }
 }
