@@ -1,7 +1,7 @@
 // Canonical fictional Mira visual identity — reuse the verified original OpenArt master.
-// One master across every content day. No reliance on text prompt/filename alone.
+// One master across every content day. Bind reference ID and URL to the same OpenArt resource; do not trust a stale CDN alias or filename.
 export const MIRA_MASTER_REFERENCE_ID='Yjqu4D7v76HABNPmQPj1';
-export const MIRA_MASTER_REFERENCE_URL='https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg';
+export const MIRA_MASTER_REFERENCE_URL='https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg';
 export const MIRA_FACE_CONSISTENCY_POLICY='mira-master-two-image-face-continuity-v1';
 export const MIRA_IDENTITY_MIN_CONFIDENCE=0.94;
 // OpenArt element2video uses the immutable master as an identity reference for a NEW scene.
