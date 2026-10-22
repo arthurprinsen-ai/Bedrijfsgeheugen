@@ -31,6 +31,9 @@
     ],
     "shadow": [
       "tests/brain-personal-expired-publish-authority-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-expired-publish-authority-20261022.test.mjs"
     ]
   },
   "current_state": "CANDIDATE_NOT_LIVE"
