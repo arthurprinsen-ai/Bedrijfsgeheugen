@@ -33,12 +33,12 @@ export function projectLivingMemory(records,{now=new Date().toISOString(),defaul
     const proofUnverified=record?.kind==='memory'&&record?.status==='PROVEN'&&!memoryProof;
     return Object.freeze({...record,
       // Projection-only downgrade. Never rewrite the canonical stored record.
-      status:proofUnverified?'REVIEW_REQUIRED':record.status,
-      proof:record?.kind==='memory'?Object.freeze({
+      ...(proofUnverified?{status:'REVIEW_REQUIRED'}:{}),
+      ...(record?.kind==='memory'?{proof:Object.freeze({
         state:memoryProof?'PROVEN':'REVIEW_REQUIRED',
         outcomeId:memoryProof?.outcomeId||null,
         evidenceIds:memoryProof?.evidenceIds||[]
-      }):record.proof,
+      })}:{}),
       provenance:{...(record.provenance||{}),source,sourceId:record?.provenance?.sourceId||record?.id||'unknown'},
       freshness:{status,ageMs,maxAgeMs:maxAge,observedAt:record?.observedAt||null}
     });
