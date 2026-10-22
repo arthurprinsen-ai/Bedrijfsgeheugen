@@ -61,6 +61,10 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /issues: write/);
+  // GitHub PR timeline comment POST can require both write scopes in practice.
+  // Regression: live run 39811993147 returned 403 with Issues:write + PRs:read.
+  assert.match(workflow, /pull-requests: write/);
+  assert.doesNotMatch(workflow, /pull-requests: read/);
   assert.match(workflow, /actions: write/);
   assert.match(source, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
   assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
