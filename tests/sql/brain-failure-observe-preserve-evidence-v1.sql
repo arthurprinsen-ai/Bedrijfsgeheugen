@@ -62,9 +62,24 @@ BEGIN
     RAISE EXCEPTION 'DIFFERENT_CRON_RUNS_MUST_COUNT_SEPARATELY';
   END IF;
 
+  v_latest := public.brain_observe_failure(
+    'supabase:adhjwmvyoixzjtmiroln:cron:46:run:' || (v_run+3)::text,
+    v_fingerprint, repeat('e',64),
+    jsonb_build_object('jobid','46','runid',(v_run+3)::text,
+                       'project_ref','adhjwmvyoixzjtmiroln','status','failed')
+  );
+  v_duplicate := public.brain_observe_failure(
+    'cron-46:' || (v_run+3)::text,
+    v_fingerprint, repeat('f',64),
+    jsonb_build_object('jobid','46','runid',(v_run+3)::text,'status','failed')
+  );
+  IF v_duplicate.occurrence_count <> 4 THEN
+    RAISE EXCEPTION 'PROJECT_SCOPED_THEN_LEGACY_RUN_MUST_COUNT_ONCE';
+  END IF;
+
   SELECT count(*) INTO v_raw FROM public.brain_failure_occurrences
   WHERE fingerprint=v_fingerprint;
-  IF v_raw<>3 THEN RAISE EXCEPTION 'RAW_APPEND_ONLY_OBSERVATION_HISTORY_LOST_OR_DUPLICATED'; END IF;
+  IF v_raw<>4 THEN RAISE EXCEPTION 'RAW_APPEND_ONLY_OBSERVATION_HISTORY_LOST_OR_DUPLICATED'; END IF;
 
   BEGIN
     PERFORM public.brain_observe_failure(
@@ -99,7 +114,7 @@ BEGIN
     RAISE EXCEPTION 'REPLAY_SECURITY_BOUNDARY_MUST_REMAIN';
   END IF;
 
-  RAISE NOTICE 'BRAIN_FAILURE_REPLAY_PASSED: distinct-run-count=3, alias-dedupe, verified-proof-retained, privileges-intact';
+  RAISE NOTICE 'BRAIN_FAILURE_REPLAY_PASSED: distinct-run-count=4, alias-dedupe, verified-proof-retained, privileges-intact';
 END
 $replay$;
 
