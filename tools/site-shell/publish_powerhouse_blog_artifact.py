@@ -55,12 +55,24 @@ def seo_focus(data):
     raw = re.sub(r"\s+", " ", str(data.get("focus_keyword") or "")).strip()
     title = re.sub(r"\s+", " ", str(data.get("title") or "")).strip()
     body = re.sub(r"\s+", " ", str(data.get("body") or "")).strip()
-    candidates = [raw]
+    # A question opener is not a search topic: "Hoe Nederlandse" was being
+    # extracted from a valid longer title and led to nonsensical SEO headings.
+    # Prefer the first two substantive, contiguous words; never create a
+    # one-word fallback that is merely a question/article/preposition.
     words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title)
-    if len(words) >= 2:
-        candidates.append(" ".join(words[:2]))
-    if words:
-        candidates.append(words[0])
+    starters = {"hoe", "wat", "waarom", "wanneer", "welke", "wie",
+                "de", "het", "een", "dit", "die", "als", "voor"}
+    leading = 0
+    while leading < len(words) and words[leading].casefold() in starters:
+        leading += 1
+    meaningful = words[leading:]
+    raw_words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", raw)
+    raw_ok = raw_words and raw_words[0].casefold() not in starters
+    candidates = [raw] if raw_ok else []
+    if len(meaningful) >= 2:
+        candidates.append(" ".join(meaningful[:2]))
+    if meaningful and meaningful[0].casefold() not in starters:
+        candidates.append(meaningful[0])
     haystack = (title + " " + body).casefold()
     for candidate in candidates:
         if candidate and candidate.casefold() in haystack:

@@ -49,3 +49,19 @@ De **volledige bedrijfsketen is NIET geaccepteerd** zonder echte aparte geauthen
 
 ## Scan-score waarheid: aanvullende bronreparatie (21 oktober 2026)
 Oudere `renderBedrijfslekIntelligence`-kaarten gebruikten `Number(scan?.score)`. JavaScript zet `null` en lege tekst om in `0`, waardoor een geverifieerde maar scoreloze nulmeting verkeerd als **0/100** kon verschijnen. De oude kaart accepteert daarom uitsluitend expliciet aanwezige numerieke scorewaarden in 0–100; de doelgestuurde homepage behield de correcte onbekendstatus al. Regressie test `portal-v2/tests/entrepreneur-journey.test.mjs`, gekoppeld aan de bestaande Brain-replay. Dit is geen bewijs van onafhankelijke twee-tenant acceptatie of externe connectors.
+
+## Live Brain-runtime zichtbaar in de ondernemersreis — aanvullende herstelkandidaat 21 oktober 2026
+
+**Fingerprint:** `portal|eight-outcomes|principal-bound-live-runtime|v1`. De originele `loadRuntimeEvidence('/api/brain-operating-loop')` valideert een geauthenticeerde sessie en projecteert gegevens uitsluitend naar een vluchtige `domainState.setDerived('portal.runtime')`. De ondernemershomepage consumeerde bewust de serverwaarheid `stateClient.getSnapshot().state`, maar kreeg deze vluchtige projectie daardoor niet aangeboden. Een succesvolle Brain-readback kon dus ontbreken in de zichtbare klantreis.
+
+**Herstel:** het bestaande `powerhouseRuntimeBridge.onRuntime` bindt de readback aan de exacte actuele ingelogde principal. De originele `app.js` geeft via `getTenantRuntime` alleen de projectie van diezelfde principal aan de bestaande ondernemershomepage; een accountwissel wist deze vluchtige runtime onmiddellijk. Het update-event draagt geen identiteit, token of providerpayload. De `buildEntrepreneurJourneyModel` verwerkt die runtime afzonderlijk van opgeslagen klantgegevens en weigert stale observaties en niet-Brain-bronnen als Heartbeat-uitvoeringsbewijs.
+
+**Grenzen:** Brain-runtime-aanwezigheid ≠ Heartbeat-SLA, connector-authorisatie, Composio-provideruitvoering, Notion-live klantdata, financieel forecastbewijs of een bewezen uitkomst. De backend, Supabase RLS, cron, API en toegangsregels blijven ongemoeid. Twee echte klantcontroles en de ontbrekende connector-/forecastreadbacks blijven open in #4585, #4215 en #4547.
+
+**Regressie:** `portal-v2/tests/entrepreneur-journey.test.mjs`, ook in `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs`. De live-status van de *vorige* releases blijft behouden; deze herstelkandidaat mag pas na protected Required/CodeQL en exacte Netlify-acceptatie op live worden gezet.
+
+### Exacte provider-live status runtime-koppeling — 21 oktober 2026
+
+De extra principal-bound live Brain-runtime-koppeling [PR #4599](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4599) is beschermd gemerged met geslaagde admission, System Map-preflight, Root Required, Portal, Backend, Netlify build parity en CodeQL JavaScript/Python, exact main `dafece9841bcc248f455f0b9beb2520ac13b18fa`. Netlify actuele site `fd527056-493a-4d8a-8125-d00370104fa3` rapporteert production deploy `6ad910c695b04087a1c90a26`, `ready`, branch `main`, exact dezelfde commit, gepubliceerd `2026-10-21T19:23:50.367Z`. Dit bewijst de software-uitrol, niet dat een echte tweeklant-route of Composio-provideruitvoering heeft plaatsgevonden.
+
+Supabase read-only aggregaten (21 okt): één tenantlaag, nul connector-definities, nul connector-uitvoeringen en nul financiële forecastregels. Daarom blijven #4585, #4215 en #4547 open voor echte klant, bron- en financiële acceptatie. Een Heartbeat-runtime-observatie is geen gegarandeerde SLA of aantoonbaar gerealiseerde winst.

@@ -43,3 +43,66 @@ export function classifyMainWrite({ branch, parentCount, changedPaths, headSha, 
 }
 
 export { MATERIAL_PREFIXES };
+
+const MAIN_WRITE_PROOF_ATTEMPTS = 3;
+const normalizedProviderPr = pr => ({
+  number: pr?.number,
+  merged: Boolean(pr?.merged_at),
+  baseRef: pr?.base?.ref ?? null,
+  mergeCommitSha: pr?.merge_commit_sha ?? null,
+});
+
+/**
+ * Bounded provider-only readback; commit subject supplies an untrusted lookup
+ * hint, NEVER a proof. A merged PR is trusted only after GitHub itself
+ * confirms the exact merge commit SHA and main base branch.
+ */
+export async function resolveMainWriteAssociatedPullRequests({
+  repository, headSha, commitSubject, githubRead, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)),
+} = {}) {
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '') ||
+      !/^[0-9a-f]{40}$/.test(headSha ?? '') ||
+      typeof githubRead !== 'function') {
+    return { associatedPullRequests: undefined, source: 'INVALID_PROVENANCE_INPUT', attempts: 0 };
+  }
+  let attempts = 0;
+  let lastAssociation;
+  const associatedPath = `repos/${repository}/commits/${headSha}/pulls`;
+  for (let i = 0; i < MAIN_WRITE_PROOF_ATTEMPTS; i++) {
+    attempts++;
+    try {
+      const provider = await githubRead(associatedPath);
+      if (!Array.isArray(provider)) throw new Error('association_response_not_array');
+      lastAssociation = provider.map(normalizedProviderPr);
+      if (lastAssociation.some(pr =>
+        pr.merged === true && pr.baseRef === 'main' &&
+        pr.mergeCommitSha === headSha && Number.isInteger(pr.number) && pr.number > 0
+      )) return { associatedPullRequests: lastAssociation, source: 'GITHUB_COMMIT_ASSOCIATION', attempts };
+    } catch {
+      // Transient invalid JSON, empty provider response or GitHub API outage:
+      // do not promote absent data to an unauthorized-main conclusion.
+    }
+    if (i < MAIN_WRITE_PROOF_ATTEMPTS - 1) await sleep(150 * (i + 1));
+  }
+
+  // GitHub squash commit suffix is ONLY a candidate ID. Verify via the PR
+  // provider record itself; forged commit text or unrelated PRs cannot pass.
+  const id = typeof commitSubject === 'string' ? /\(#([1-9][0-9]{0,8})\)\s*$/.exec(commitSubject)?.[1] : null;
+  if (id) {
+    for (let i = 0; i < 2; i++) {
+      attempts++;
+      try {
+        const record = await githubRead(`repos/${repository}/pulls/${id}`);
+        const pr = normalizedProviderPr(record);
+        if (pr.number === Number(id) && pr.merged && pr.baseRef === 'main' &&
+            pr.mergeCommitSha === headSha) {
+          return { associatedPullRequests: [pr], source: 'GITHUB_VERIFIED_PR_FALLBACK', attempts };
+        }
+        break;
+      } catch {
+        if (i === 0) await sleep(200);
+      }
+    }
+  }
+  return { associatedPullRequests: lastAssociation, source: 'PROVIDER_PR_PROOF_UNVERIFIED', attempts };
+}

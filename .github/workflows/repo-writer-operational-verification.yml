@@ -4,6 +4,11 @@ on:
   workflow_run:
     workflows: ['Required test']
     types: [completed]
+    # Only writer proof PRs can dispatch candidate writers; prevent a second run for every unrelated CI completion.
+    branches:
+      - 'verify/**'
+      - 'verify-cheap/**'
+      - 'verify-parity/**'
 
 permissions:
   contents: read

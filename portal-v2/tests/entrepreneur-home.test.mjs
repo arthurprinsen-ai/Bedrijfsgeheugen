@@ -121,7 +121,7 @@ test('guided homepage is mounted once in original V2 with auth boundaries and na
  ]);
  for(const token of ['stateClient.subscribe(onIdentity)','domainState.subscribe(draw)','isDemo','saveEntrepreneurGoal','navigate(button.dataset.entrepreneurPage)','data-entrepreneur-home'])
    assert.ok(ui.includes(token),token);
- assert.match(app,/mountEntrepreneurHome\(\{domainState:portalDomainState,stateClient:portalStateClient\}\)/);
+ assert.match(app,/mountEntrepreneurHome\(\{domainState:portalDomainState,stateClient:portalStateClient,getTenantRuntime:currentOwnerRuntime\}\)/);
  assert.match(html,/entrepreneur-home\.css/);
  assert.match(css,/:focus-visible/);
  assert.match(css,/prefers-reduced-motion/);

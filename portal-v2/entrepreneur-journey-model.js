@@ -19,7 +19,7 @@ const PAGE_HINTS=Object.freeze({
 });
 
 export function buildEntrepreneurJourneyModel(state={},{
-  authenticated=false,home=null,impact=null,brainReceipt=null,now=Date.now()
+  authenticated=false,home=null,impact=null,brainReceipt=null,tenantRuntime=null,now=Date.now()
 }={}){
   if(!authenticated||!home?.authenticated)return Object.freeze({
     authenticated:false,steps:Object.freeze([]),cockpit:null,scenario:null,
@@ -32,9 +32,12 @@ export function buildEntrepreneurJourneyModel(state={},{
   const chosen=twin.selected;
   const stateConfirmed=Boolean(safe?.portal?.business_context?.goal_confirmed_at&&home.selectedGoal);
   const verifiedSeries=chosen?.history?.filter(item=>item.evidenceRef).length||0;
-  const runtime=safe?.portal?.runtime?.observability;
-  const updated=Date.parse(runtime?.updatedAt||'');
-  const currentRuntime=runtime?.source==='brain-operating-loop'&&Number.isFinite(updated)&&updated<=now&&now-updated<86400000;
+  // Only current principal-bound runtime readback is eligible for live evidence.
+  // Legacy canonical state remains the fallback; admin inventories are never proof.
+  const liveRuntime=tenantRuntime&&typeof tenantRuntime==='object'?tenantRuntime:safe?.portal?.runtime;
+  const observation=liveRuntime?.observability;
+  const updated=Date.parse(observation?.updatedAt||'');
+  const currentRuntime=observation?.source==='brain-operating-loop'&&Number.isFinite(updated)&&updated<=now&&now-updated<86400000;
   const dependencies=unique((Array.isArray(impact?.affectedPages)?impact.affectedPages:[]).filter(route)).slice(0,8)
     .map(id=>Object.freeze({id,label:findPage(id).label}));
   const receipt=brainReceipt?.acknowledged===true
