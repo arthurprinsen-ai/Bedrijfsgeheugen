@@ -3,6 +3,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assessQueuePressure } from '../../tools/delivery/predictive-controller.mjs';
 
 export const GHOST_FINGERPRINT = 'github-actions:stale-queued-zero-jobs:cancel-409:20261007';
 export const GHOST_INCIDENT = 4655;
@@ -27,9 +28,11 @@ export function evidenceIds(issueText, comments = []) {
   const text = [issueText, ...comments.map(c => c.body || '')].join('\n');
   const ids = new Set();
   const completed = new Set();
+  const blocked = new Set();
   for (const match of text.matchAll(/GHOST_RUN_(?:ATTEMPT|PROVIDER_BLOCKED|PENDING):(\d+)/g)) ids.add(Number(match[1]));
   for (const match of text.matchAll(/GHOST_RUN_RESOLVED:(\d+)/g)) completed.add(Number(match[1]));
-  return { ids, completed };
+  for (const match of text.matchAll(/GHOST_RUN_PROVIDER_BLOCKED:(\d+)/g)) blocked.add(Number(match[1]));
+  return { ids, completed, blocked };
 }
 
 async function main() {
@@ -73,6 +76,7 @@ async function main() {
   const mainSha = mainRef.object?.sha;
   const activeHeads = openPRs.map(pr => pr.head?.sha).filter(Boolean);
   const reports = [];
+  const runProofs = [];
   const newAttempts = [];
   let repairCount = 0;
   for (const item of queued) {
@@ -85,6 +89,13 @@ async function main() {
     if (!classified.eligible) continue;
     const record = { run_id: run.id, status: run.status, check_suite_id: run.check_suite_id, head_sha: run.head_sha, reason: classified.reason };
     reports.push(record);
+    if (known.blocked.has(run.id)) runProofs.push({
+      incident: GHOST_INCIDENT, runId: run.id,
+      providerBoundary: 'GITHUB_CANCEL_FORCE_409_DELETE_403',
+      jobsTotalCount: jobs.total_count, runStatus: run.status,
+      runHeadSha: run.head_sha, runCreatedAt: run.created_at,
+      runUpdatedAt: run.updated_at, readbackAt: new Date().toISOString()
+    });
     if (known.ids.has(run.id)) continue; // Provider boundary is durable. No endless identical 409/403 loops.
     if (repairCount >= MAX_REPAIR_PER_SWEEP) continue;
     repairCount++;
@@ -147,7 +158,23 @@ async function main() {
     const reopened = await api('/issues/' + GHOST_INCIDENT, 'PATCH', { state: 'open' });
     if (!reopened.ok) throw new Error('GHOST_INCIDENT_REOPEN_FAILED:' + reopened.status);
   }
-  const evidence = { fingerprint: GHOST_FINGERPRINT, issue: GHOST_INCIDENT, observed_at: new Date().toISOString(), queued_count: queued.length, ghosts: reports, attempts: newAttempts.length, provider_blocks: newAttempts.filter(x => x.marker.includes('BLOCKED')).length, newly_resolved: resolvedNew };
+  const pressure = assessQueuePressure({
+    queued: queued.length,
+    queueEvidence: { queuedRuns: queued, runProofs, currentMainSha: mainSha,
+      openPrHeadShas: activeHeads, snapshotComplete: true,
+      rawTotalCount: queued.length }
+  });
+  // Exact-ID provider anomalies stay visible if the collection omits them.
+  const collectionMissingKnownProviderIds = [...known.blocked].filter(id =>
+    !known.completed.has(id) && !queued.some(run => run.id === id) && !resolvedNew.includes(id));
+  const evidence = { fingerprint: GHOST_FINGERPRINT, issue: GHOST_INCIDENT, observed_at: new Date().toISOString(),
+    queued_count: queued.length, rawQueued: pressure.counts.rawQueued,
+    actionableQueued: pressure.counts.queued,
+    verifiedProviderGhostQueued: pressure.counts.verifiedProviderGhostQueued,
+    providerIncidentStillOpen: known.blocked.size > resolvedNew.length,
+    collectionMissingKnownProviderIds,
+    ghosts: reports, attempts: newAttempts.length,
+    provider_blocks: newAttempts.filter(x => x.marker.includes('BLOCKED')).length, newly_resolved: resolvedNew };
   await mkdir('.artifacts', { recursive: true });
   await writeFile('.artifacts/github-actions-ghost-reconcile.json', JSON.stringify(evidence, null, 2) + '\n');
   console.log(JSON.stringify(evidence));
