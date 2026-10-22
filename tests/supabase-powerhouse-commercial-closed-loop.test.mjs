@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const migration='supabase/migrations/20260915133500_powerhouse_commercial_closed_loop_v2.sql';
+const migration='supabase/migration-history/repository-only/20260915133500_powerhouse_commercial_closed_loop_v2.sql';
 
 function sql(){ return readFileSync(migration,'utf8'); }
 

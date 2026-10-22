@@ -93,6 +93,26 @@ const cases = [
     "test": "brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
     "sql": "20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
     "sha": "a6037047760fe281ab24298f9f7d94c62cc95695"
+  },
+  {
+    "test": "supabase-powerhouse-commercial-closed-loop.test.mjs",
+    "sql": "20260915133500_powerhouse_commercial_closed_loop_v2.sql",
+    "sha": "c4f587bd451da135fc4a2d9b4009cb53689eef5d"
+  },
+  {
+    "test": "supabase-powerhouse-data-intake-contract.test.mjs",
+    "sql": "20260915131500_powerhouse_data_intake_health_v1.sql",
+    "sha": "84c4a40ebd15cbbc2054dbde344965b76e69a677"
+  },
+  {
+    "test": "supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+    "sql": "20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+    "sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292"
+  },
+  {
+    "test": "brain-powerhouse-observability-outcome-contract.test.mjs",
+    "sql": "20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql",
+    "sha": "04a105cba63d24f69c8ff7290fdffb7a4e6b3119"
   }
 ];
 for (const {test: sourceTest,sql,sha} of cases) {

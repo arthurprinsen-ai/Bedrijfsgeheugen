@@ -38,3 +38,12 @@ Full exact-head BRAIN run [#39763894940](https://github.com/arthurprinsen-ai/Bed
 - `tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs` reads immutable `20260917235907_social_content_integrity_invalidation_guard.sql` (c653d64b4724fb654f610effd2ce6422c17269e9)
 - `tests/brain-terminal-autonomous-reconciler-v1.test.mjs` reads immutable `20260920095500_terminal_autonomous_reconciler_v1.sql` (bc0cbe3c7a830c13872cf5bc4cb1f858c37f0a32)
 - `tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs` reads immutable `20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql` (a6037047760fe281ab24298f9f7d94c62cc95695)
+
+## Additional SQL contract recovery batch 4
+- 4 test files and 4 retired-path reads mapped to identical Git archive blobs
+- Existing business/security assertions preserved; no DDL/SQL migration execution or permission change
+- Full BRAIN independent replay required before declaring any fixed-count reduction
+- `tests/supabase-powerhouse-commercial-closed-loop.test.mjs`: `20260915133500_powerhouse_commercial_closed_loop_v2.sql` (c4f587bd451da135fc4a2d9b4009cb53689eef5d)
+- `tests/supabase-powerhouse-data-intake-contract.test.mjs`: `20260915131500_powerhouse_data_intake_health_v1.sql` (84c4a40ebd15cbbc2054dbde344965b76e69a677)
+- `tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs`: `20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql` (ec95d7199b06974bb0e3cbe31c1c74407024e292)
+- `tests/brain-powerhouse-observability-outcome-contract.test.mjs`: `20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql` (04a105cba63d24f69c8ff7290fdffb7a4e6b3119)
