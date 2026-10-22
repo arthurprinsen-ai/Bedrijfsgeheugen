@@ -8,7 +8,9 @@ test('orchestrator pending selection is array based and deterministic',()=>{
   assert.match(source,/\.eq\('state','decided'\)/);
   assert.match(source,/\.order\('priority',\{ascending:false\}\)/);
   assert.match(source,/\.order\('channel',\{ascending:true\}\)/);
-  assert.match(source,/\.limit\(1\);/);
+  assert.match(source,/\.limit\(12\);/);
+  assert.match(source,/selectNextContentChannel\(pendingRows, Date\.now\(\)\)/);
+  assert.match(source,/ALL_PENDING_CHANNELS_IN_BOUNDED_COOLDOWN/);
   assert.doesNotMatch(source,/select-pending[\s\S]{0,500}maybeSingle\(\)/);
   assert.match(source,/Array\.isArray\(pendingRows\)/);
 });
@@ -24,7 +26,8 @@ test('orchestrator preserves sanitized AI provider status and model for autonomo
   assert.match(source,/class AIProviderHttpError extends Error/);
   assert.match(source,/AI_PROVIDER_REQUEST_FAILED:/);
   assert.match(source,/ORCHESTRATOR_AI_PROVIDER_ERROR/);
-  assert.match(source,/AbortSignal\.timeout\(45000\)/);
+  assert.match(source,/signal:AbortSignal\.timeout\(90_000\)/);
+  assert.match(source,/signal:AbortSignal\.timeout\(45_000\)/);
 });
 
 test('orchestrator records only sanitized Anthropic validation detail',()=>{
