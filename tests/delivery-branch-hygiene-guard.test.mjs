@@ -106,7 +106,7 @@ test('diverged owner PR uses exact verified merge base, not newer unrelated main
     comparison: {
       status: 'diverged',
       base_commit: { sha: baseSha },
-      head_commit: { sha: headSha },
+      commits: [{ sha: headSha }],
       merge_base_commit: { sha: mergeBase },
     },
   });
@@ -138,13 +138,13 @@ test('PR merge base fails closed on absent or mismatched provider proof', () => 
   const correct = {
     status: 'diverged',
     base_commit: { sha: baseSha },
-    head_commit: { sha: headSha },
+    commits: [{ sha: headSha }],
     merge_base_commit: { sha: 'c'.repeat(40) },
   };
   for (const comparison of [
     null,
     { ...correct, base_commit: { sha: 'd'.repeat(40) } },
-    { ...correct, head_commit: { sha: 'd'.repeat(40) } },
+    { ...correct, commits: [{ sha: 'd'.repeat(40) }] },
     { ...correct, status: 'behind' },
     { ...correct, merge_base_commit: { sha: 'not-a-sha' } },
     { ...correct, merge_base_commit: { sha: headSha } },
