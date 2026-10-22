@@ -51,6 +51,7 @@ export function resolvePRScopeMergeBase({
     throw new Error('PR_DIFF_IDENTITY_INVALID');
   }
   if (!comparison || comparison.base_commit?.sha !== baseSha ||
+      comparison.head_commit?.sha !== headSha ||
       !['ahead', 'diverged'].includes(comparison.status) ||
       !validSha(comparison.merge_base_commit?.sha) ||
       comparison.merge_base_commit.sha === headSha) {
