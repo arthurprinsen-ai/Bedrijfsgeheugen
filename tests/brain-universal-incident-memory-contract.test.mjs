@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { buildSkillProjectionIndex, selectSkillProjection } from '../scripts/brain/powerhouse-skill-projection.mjs';
+import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
 
 const read = p => readFileSync(p,'utf8');
 const tag = 'powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1';
@@ -33,4 +35,18 @@ test('canonical machine learning has a semantic, reproducible prevention contrac
   const docs=read('docs/learning/2026-10-22-universal-incident-reuse-prevention-v1.md');
   assert.match(docs,/geen nieuwe opslag/i);
   assert.match(docs,/ACCEPTANCE_PENDING/);
+});
+
+test('new agent without task hints receives real incident prevention in canonical preflight', () => {
+  const index = buildSkillProjectionIndex();
+  const defaultSelection = selectSkillProjection(index);
+  assert.equal(defaultSelection.selection_mode, 'MANDATORY_INCIDENT_BASELINE');
+  assert.deepEqual(defaultSelection.selected_entries.map(entry => entry.fingerprint), [tag]);
+  assert.ok(defaultSelection.selected_entries[0].prevention.length > 0);
+  const packet = compileChatLearningPreflight({ executionContext: {} });
+  assert.equal(packet.skill_projection.selection.selection_mode, 'MANDATORY_INCIDENT_BASELINE');
+  assert.ok(packet.skill_projection.selection.selected_entries.some(entry => entry.fingerprint === tag));
+  const targeted = selectSkillProjection(index, { targets: ['social'] });
+  assert.ok(targeted.selected_entries.some(entry => entry.fingerprint === tag));
+  assert.equal(new Set(targeted.selected_entries.map(entry => entry.fingerprint)).size, targeted.selected_entries.length);
 });
