@@ -1,0 +1,45 @@
+{
+  "version": "daily-blog-final-build-publication-marker-v1",
+  "date": "2026-10-22",
+  "fingerprint": "powerhouse|daily-blog|postbuild-marker-lost|20261022-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "parent_obligation": "daily-blog:2026-09-28:immutable-live-proof",
+  "observed_failure": "Native daily blog live watchdog run 39851092322 failed repeated exact public readback content_id marker missing for blog:aanzet-2026-emissieloze-trucks.",
+  "evidence": {
+    "original_workflow_run": 39851092322,
+    "job_id": 120077143423,
+    "failed_date": "2026-09-28",
+    "public_url": "https://www.bedrijfsgeheugen.nl/blog/aanzet-2026-emissieloze-trucks/",
+    "source_marker_present": true,
+    "production_readback_marker_absent": true,
+    "source_main_sha": "6cac871e506a1e4abb000b0533fcf540bc5bd93b",
+    "netlify_published_deploy": "6ada641b27965d068e1f8f5b",
+    "netlify_published_commit": "8d6dc6dd6cbc29643499f3d906d2fc49d837b7a5"
+  },
+  "root_cause_hypothesis": "Netlify build applies canonical content marker during homepage pricing cleanup, then runs later site/SEO/i18n/CMS transforms. Final public page lacks marker although source HTML contains it.",
+  "fix": "Apply the existing identity ledger validator after all build phases AND after prebuilt release stamping in the same canonical Netlify build entry. Maintain exact canonical body marker, never infer live success.",
+  "prevention": [
+    "Post-normalizer publication identity guard in final deploy artifact",
+    "No automatic wrong-content or unregistered blog marker acceptance",
+    "Existing external live watchdog remains a mandatory independent consumer",
+    "No parallel publisher, scheduler or rollout path"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/content-growth-v18-content-id-build-parity.test.mjs",
+      "tests/content-growth-live-readback.test.mjs"
+    ],
+    "shadow": [
+      "tests/content-growth-v18-content-id-build-parity.test.mjs"
+    ],
+    "canary": [
+      "tests/content-growth-live-readback.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FINAL_BUILD_PUBLICATION_MARKER_LOST",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

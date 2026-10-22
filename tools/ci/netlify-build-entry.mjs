@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { restampReleaseIdentity } from '../site-shell/restamp-release-identity.mjs';
+import { applyLedgerPublicationMarkers } from '../content-growth/publication-marker-build-guard.mjs';
 
 const PREBUILT_MARKER = '.bg-prebuilt-deploy.json';
 const PREBUILT_MANIFEST = '.bg-prebuilt-manifest.json';
@@ -123,4 +124,12 @@ if(prepareArg){
     if(error?.code==='ENOENT') await runFullBuild();
     else throw error;
   }
+  // All HTML producers, late normalizers and prebuilt release stamping ran.
+  // Repair only identities already present in the canonical publication ledger.
+  // A conflicting marker, missing article or malformed identity fails the build.
+  const publicationMarkers=await applyLedgerPublicationMarkers();
+  console.log('NETLIFY_FINAL_PUBLICATION_MARKERS_PROVEN',JSON.stringify({
+    verified:publicationMarkers.length,
+    updated:publicationMarkers.filter(item=>item.changed).length
+  }));
 }
