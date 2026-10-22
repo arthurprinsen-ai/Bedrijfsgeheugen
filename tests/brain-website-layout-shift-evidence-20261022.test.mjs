@@ -69,3 +69,16 @@ test('browser observer caches the ancestry before detachment, with bounded evide
   assert.match(code,/capturedNodes >= 96/);
   assert.match(code,/if \(!entry\.hadRecentInput\)/);
 });
+
+
+test('generated V18 blog table of contents keeps mobile display:none over its desktop flex selector', () => {
+  const source = readFileSync(new URL('../tools/bouw-v18-chrome.mjs', import.meta.url), 'utf8');
+  const enrich = readFileSync(new URL('../tools/v18-verrijking.mjs', import.meta.url), 'utf8');
+  const desktop = '.inhoud-body>.wrap:has(>section)>.bgx-opdezepagina{float:none;position:static;width:auto;max-width:none;display:flex';
+  const phone = '@media(max-width:1100px){.inhoud-body>.wrap:has(>section)>.bgx-opdezepagina{display:none}}';
+  assert.ok(source.includes(desktop), 'desktop V18 table of contents remains available');
+  assert.equal(source.split(phone).length - 1, 1, 'one same-specificity mobile rule exists');
+  assert.ok(source.indexOf(phone) > source.indexOf(desktop), 'phone rule follows desktop display:flex');
+  assert.match(enrich, /@media\(max-width:1100px\)\{\.bgx-opdezepagina\{display:none\}\}/);
+  assert.doesNotMatch(phone, /!important|\.inhoud-body\{display:none\}/);
+});

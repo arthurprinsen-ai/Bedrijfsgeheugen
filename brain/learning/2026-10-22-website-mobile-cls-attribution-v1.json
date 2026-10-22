@@ -4,7 +4,7 @@
   "fingerprint": "website|mobile-cls|en-blog-afas-api|20261022-v1",
   "obligation_id": "website|cls-attribution-exact-browser-proof|20261022-v1",
   "title": "Bounded mobile layout-shift source attribution with unchanged website quality gate",
-  "status": "CANDIDATE",
+  "status": "CANDIDATE_DIAGNOSTIC_AND_MOBILE_TOC_SOURCE_FIX; random cross-route CLS closure not yet proven",
   "failure_class": "WEBSITE_VISUAL_STABILITY",
   "root_cause": "UNPROVEN. Sitewide browser gate detected CLS 0.111 > 0.100 at phone /en/blog/afas-api after separately passing checkout; existing browser log gave scalar CLS without attributable shifted DOM elements. This learning item repairs diagnostic insufficiency, not the underlying CLS.",
   "impact": "The SEO release remains blocked and an ungrounded CSS guess could mask the defect or create regressions.",
@@ -36,7 +36,14 @@
       "Required 39839765028 /en/blog/afas-api phone CLS 0.12329 at 718ms (div.wrap -> 0 size)",
       "Required 39832691176 /en/blog/offertes-opvolgen-zonder-crm phone CLS 0.12084 at 515ms (div.wrap -> 0 size)",
       "Real isolated 390px preview browser replay of build-generated English V18 route: one warm/resource replay had CLS ~0.00037; root cause still timing dependent and unproven."
-    ]
+    ],
+    "mobile_toc_css_cascade": {
+      "defect": "Higher-specificity generated V18 .bgx-opdezepagina display:flex defeats existing mobile @media display:none",
+      "repro": "/en/blog/offertes-opvolgen-zonder-crm/ at 390px: computed display:flex, TOC 341.03px; isolated same-specificity display:none made nested article shift -369.03px; reverting rule restores old layout",
+      "guard": "@media(max-width:1100px){.inhoud-body>.wrap:has(>section)>.bgx-opdezepagina{display:none}}",
+      "causal_role_in_transient_cls": "UNPROVEN until protected cold-load full-sitemap browser checks",
+      "verification": "REQUIRES exact-head Required, CodeQL, protected merge and production readback"
+    }
   },
   "outcome": "DIAGNOSTICS_MERGED_WITH_MAIN_SOURCE_CANDIDATE; actual CLS root unresolved, browser Required/CodeQL/production proof required.",
   "compiler": {
@@ -63,5 +70,6 @@
     "NO_GUESSED_DOM_ROOT_CAUSE",
     "BOUND_BROWSER_ATTRIBUTION_MEMORY",
     "NO_DUPLICATE_WEBSITE_REMEDIATION_OWNER"
-  ]
+  ],
+  "regression": "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
 }
