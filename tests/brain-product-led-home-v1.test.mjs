@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { canonicalNetlifyBuild, phaseIndex } from './helpers/netlify-canonical-build-source.mjs';
 
 const apply = readFileSync('tools/site-shell/apply-product-led-home.mjs','utf8');
-const netlify = readFileSync('netlify.toml','utf8');
 const skill = readFileSync('skills/powerhouse-product-led-growth.md','utf8');
 
 test('product-led homepage presents one platform with three product lines', () => {
@@ -15,8 +15,8 @@ test('product-led homepage presents one platform with three product lines', () =
 });
 
 test('homepage product architecture is part of production and preview builds', () => {
-  const uses = netlify.match(/node tools\/site-shell\/apply-product-led-home\.mjs/g) || [];
-  assert.ok(uses.length >= 2, 'production and deploy-preview must both apply the product-led homepage');
+  const { phases } = canonicalNetlifyBuild();
+  phaseIndex(phases,'product-led-home','tools/site-shell/apply-product-led-home.mjs');
   assert.doesNotMatch(apply,/prototype-v18-stable\.html/);
 });
 

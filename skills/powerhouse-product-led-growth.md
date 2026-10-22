@@ -60,3 +60,8 @@ The product does not optimize for content volume, vanity engagement, raw lead co
 - Never mark the commercial day FULL_GREEN merely because a published PDF/post, LinkedIn send or scan is recorded. P0 #4198 remains open until true full-chain evidence exists.
 
 Canonical assets: `/7-bedrijfslekken`, `/assets/downloads/7-verborgen-bedrijfslekken.pdf`, `/zelfscan`, `/frisse-blik`. Parent acceptance: GitHub #4198.
+
+## Canonieke Netlify build-oracles — 22 oktober 2026
+- Production en deploy preview gebruiken één `node tools/ci/netlify-build-entry.mjs`. Controleer de echt uitgevoerde `phases` en fail-on-nonzero, niet de verwijderde inlined commandostreng.
+- De geaccepteerde fasevolgorde, scripts, product-led wijziging en syntax blijven verplicht. Tests moeten na een refactor de werkelijke autoritatieve bron volgen.
+- Gerichte groene regressies zijn geen bewijs dat alle 321 BRAIN-fouten weg zijn, noch productieacceptatie. Canonieke testhelper: `tests/helpers/netlify-canonical-build-source.mjs`.
