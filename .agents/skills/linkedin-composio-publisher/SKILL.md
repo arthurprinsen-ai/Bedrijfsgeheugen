@@ -400,10 +400,4 @@ Fingerprint `powerhouse|personal-verified-distinct-source-reserve|20261022-v1`.
 When the canonical personal founder post is blocked as a global story-family
 duplicate with NO consumed or ambiguous provider capability, the existing
 source-backed orchestrator must seek an independently recorded and distinct
-daily source family. The helper `powerhouse_seed_verified_personal_reserve_v1`
-may insert up to three real-event suggestions into the EXISTING
-`powerhouse_content_recommendations` authority after v2 materialization.
-Do not paraphrase a rejected story as a new factual event. All suggestions
-must pass `validPersonalSource`, editorial, global uniqueness, OAuth,
-and provider receipt. No verified event = no eligible fallback.
-No provider send, email consent or media claim is granted by materialization.
+daily source family. The pure helper `buildVerifiedFounderReserve` runs inside the existing unscoped content orchestrator and writes at most three genuinely source-backed alternatives in the SAME canonical recommendation table. No new Postgres RPC, preview branch, cron or sender is created. Each alternative requires a recorded source event ID or allowed external URL from the verified founder evidence. Context never becomes a claimed personal experience. No provider send, email consent or media claim is granted by materialization.

@@ -1,37 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const sql=readFileSync('supabase/migrations/20261022092300_personal_distinct_source_reserve_v1.sql','utf8');
-const edge=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
-
-test('canonical materializer seeds distinct founder stories before decisions',()=>{
- assert.match(edge,/powerhouse_materialize_source_backed_channel_candidates_v2/);
- assert.match(edge,/powerhouse_seed_verified_personal_reserve_v1/);
- assert.ok(edge.indexOf("await db.rpc('powerhouse_seed_verified_personal_reserve_v1'") <
-           edge.indexOf("stage = 'load-context'"));
- assert.match(edge,/recoverableObligationUniquenessDenial/);
- assert.match(edge,/rejected_recommendation_ids/);
- assert.match(edge,/validPersonalSource\(personalSource\)/);
+import {buildVerifiedFounderReserve} from '../supabase/functions/_shared/personal-founder-source-reserve.mjs';
+const e={ai_native_builder_story_verified:true,ai_native_builder_policy:'personal-linkedin-ai-native-builder-v1',
+build_event_verified:true,arthur_anchor_verified:true,source_backed:true,business_topic:true,
+corporate_voice:false,company_page_interchangeable:false,forced_business_moral:false,
+identity_contract:'arthur-personal-linkedin-identity-v4',identity_gate_version:'channel-identity-hard-gate-v3',
+content_id:'builder:real',source_lineage:['verified:evidence'],
+result_event:{event_id:'id-progress',event_type:'commercial_heartbeat',source:'powerhouse-heartbeat',occurred_at:'2026-10-22T07:00:00Z'},
+friction_event:{event_id:'id-error',event_type:'loop_assurance_refresh',source:'powerhouse-assurance',occurred_at:'2026-10-22T07:02:00Z'},
+entrepreneur_problem_sources:[{url:'https://example.org/real',titel:'Ondernemersprobleem'}]};
+const source={target_channel:'linkedin_personal',status:'suggested',evidence:e};
+test('three idempotently identifiable, independent, proven stories',()=>{
+ const x=buildVerifiedFounderReserve(source,'2026-10-22');
+ assert.equal(x.length,3);assert.equal(new Set(x.map(y=>y.dedupe_key)).size,3);
+ for(const v of x){assert.equal(v.evidence.provider_outcome_unproven,true);
+ assert.equal(v.evidence.source_lineage.length,2);assert.equal(v.target_channel,'linkedin_personal');}
 });
-test('source reserve is fact-bound and cannot publish, send or declare proof',()=>{
- assert.match(sql,/security invoker/i);
- assert.match(sql,/set search_path to 'pg_catalog'/i);
- assert.match(sql,/grant execute on function public\.powerhouse_seed_verified_personal_reserve_v1\(date\)\s+to service_role/i);
- assert.match(sql,/revoke execute on function public\.powerhouse_seed_verified_personal_reserve_v1\(date\)\s+from public,anon,authenticated/i);
- assert.match(sql,/NO_VERIFIED_BASE_SOURCE/);
- assert.match(sql,/event_id is not null/);
- assert.match(sql,/event_type in \(/);
- assert.match(sql,/evidence <> '\{\}'::jsonb/);
- assert.match(sql,/on conflict \(dedupe_key\) do nothing/);
- assert.match(sql,/source_family_verification/);
- assert.match(sql,/provider_outcome_unproven/);
- assert.doesNotMatch(sql,/\bupdate\s+public\.content_publication_obligations\b/i);
- assert.doesNotMatch(sql,/\binsert\s+into\s+public\.powerhouse_channel_decisions\b/i);
+test('no qualified source means no story, never a fabricated send',()=>{
+ assert.deepEqual(buildVerifiedFounderReserve(null,'2026-10-22'),[]);
+ assert.deepEqual(buildVerifiedFounderReserve({...source,evidence:{...e,arthur_anchor_verified:false}},'2026-10-22'),[]);
+ assert.deepEqual(buildVerifiedFounderReserve({...source,evidence:{...e,result_event:null,friction_event:null,entrepreneur_problem_sources:[]}},'2026-10-22'),[]);
 });
-test('bounded number of distinct source families with non-duplicate content keys',()=>{
- const match=sql.match(/when '(external_intelligence_universe_refresh|commercial_learning_cycle|source_health_evaluated)'/g)||[];
- assert.equal(match.length,3);
- assert.match(sql,/if scoped_count >= 3 then exit/);
- assert.match(sql,/'founder-proof-reserve:'\|\|p_date::text\|\|':'\|\|event_row\.event_type/);
- assert.match(sql,/100-scoped_count/);
+test('existing One Brain owners and publication truth gates preserved',()=>{
+ const s=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ assert.match(s,/buildVerifiedFounderReserve\(verified,runDate\)/);
+ assert.match(s,/ignoreDuplicates:true/);
+ assert.match(s,/validPersonalSource\(personalSource\)/);
+ assert.match(s,/recoverableObligationUniquenessDenial/);
+ assert.doesNotMatch(s,/powerhouse_seed_verified_personal_reserve_v1/);
 });

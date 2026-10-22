@@ -1,21 +1,19 @@
 {
   "fingerprint": "powerhouse|personal-verified-distinct-source-reserve|20261022-v1",
-  "observed_at": "2026-10-22",
-  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
   "root_causes": [
-    "One founder recommendation was generated for a day, and the exact original was rejected as globally duplicate; no independently anchored replacement existed."
+    "Personal source had one candidate; global story-family duplicate against 15 October left no evidence-backed alternative."
   ],
   "prevention": [
-    "Select distinct verified source-family events from canonical runtime, never paraphrase rejected original story as a new source.",
-    "Restrict to three facts-based source candidates and keep dedupe/provider side effect gates unchanged.",
-    "Never treat generated candidates as posted or as proof of outreach, conversion or revenue."
+    "Reuse only the existing canonical founder source evidence and independently identifiable actual event IDs/allowed external URLs.",
+    "Bound suggestions to 3 per day; no claims of real customer outcomes, founder experiences or provider side effects.",
+    "Keep existing identity, dedupe, OAuth, auth-consumption and provider-readback guards."
   ],
   "evidence": {
     "tests": [
       "tests/brain-personal-distinct-source-reserve-v1.test.mjs"
     ],
-    "production_readback": "PENDING",
-    "runtime_baseline": "2026-10-22 one personal candidate; earlier 2026-10-15 story duplicate; event categories observed in existing runtime."
+    "release": "PRE_MERGE",
+    "provider_readback": "NOT_YET_PROVEN"
   },
   "compiler": {
     "failure_class": "RECOVERY",

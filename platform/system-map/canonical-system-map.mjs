@@ -2464,13 +2464,13 @@ export const DAILY_SOCIAL_BUILDER_MEDIA_RECOVERY_20261022=Object.freeze({
 export const PERSONAL_VERIFIED_DISTINCT_SOURCE_RESERVE_20261022=Object.freeze({
  fingerprint:'powerhouse|personal-verified-distinct-source-reserve|20261022-v1',
  owner:'powerhouse-content-orchestrator canonical unscoped bootstrap',
- source:'public.powerhouse_runtime_events distinct independently observed source families',
- materializer:'public.powerhouse_seed_verified_personal_reserve_v1(date)',
+ source:'verified founder evidence already materialized: distinct actual event IDs and approved external URLs',
+ materializer:'buildVerifiedFounderReserve in existing powerhouse-content-orchestrator',
  destination:'public.powerhouse_content_recommendations',
  existingPublisher:'powerhouse-social-publisher',
  maxAlternativesPerDay:3,
  noNewScheduler:true,noDuplicateProviderSend:true,noUnverifiedPersonalAnecdote:true,
- security:'service_role only; security invoker; identity, review, uniqueness and readback unchanged',
+ security:'existing service-role-only orchestrator; identity, review, uniqueness and readback unchanged',
  regression:'tests/brain-personal-distinct-source-reserve-v1.test.mjs',
  learning:'brain/learning/2026-10-22-personal-distinct-source-reserve-v1.json'
 });

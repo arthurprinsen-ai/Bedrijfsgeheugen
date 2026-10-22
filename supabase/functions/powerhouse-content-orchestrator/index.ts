@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-reserve.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
@@ -64,7 +65,7 @@ const executor_capabilities: Record<string, { executable: boolean; executor: str
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
 const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1"]);
-const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2","powerhouse_seed_verified_personal_reserve_v1"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2"]);
 const DB_JSON_COLUMNS=new Set([
  'bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload',
  'content_publication_obligations.evidence','content_publication_obligations.metrics',
@@ -474,14 +475,23 @@ Deno.serve(async (req) => {
     if(!channelScope){
       const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
       if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
-      // Same canonical daily content owner: materialize independently evidenced
-      // alternate founder angles BEFORE selecting a replacement for a rejected story.
-      // This creates source recommendations only: never a post, authority claim or send.
-      const reserve = await db.rpc('powerhouse_seed_verified_personal_reserve_v1',{p_date:runDate});
-      if(reserve.error) {
+      // Existing canonical writer, same recommendation table, no new scheduler or RPC.
+      try{
+        const {data:sources,error:sourceError}=await db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,run_date,target_channel,status,priority,evidence')
+          .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+          .order('priority',{ascending:false}).limit(10);
+        if(sourceError)throw new Error('PERSONAL_RESERVE_BASE_READ_FAILED');
+        const verified=(sources||[]).find(validPersonalSource);
+        for(const alternative of buildVerifiedFounderReserve(verified,runDate)){
+          const {error}=await db.from('powerhouse_content_recommendations')
+            .upsert(alternative,{onConflict:'dedupe_key',ignoreDuplicates:true});
+          if(error)throw new Error('PERSONAL_RESERVE_WRITE_FAILED:'+error.message);
+        }
+      }catch(error){
+        // Other independently approved channel lanes must remain operational.
         console.error('PERSONAL_RESERVE_RECOVERY_DEGRADED',
-          clean(reserve.error.message).slice(0,120));
-        // Do not block the independently eligible company/blog channels.
+          clean((error as Error)?.message||error).slice(0,120));
       }
     }
     stage = 'load-context';

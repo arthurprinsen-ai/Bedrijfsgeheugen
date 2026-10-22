@@ -1,11 +1,9 @@
-# 22 oktober 2026 — unieke persoonlijke LinkedIn-bronnen als reserve
+# 2026-10-22 — bestaande BRAIN-orchestrator geeft unieke founderbronnen een reserve
 
-Dit is een herstel van dezelfde bestaande BRAIN/Powerhouse/Heartbeat-publicatieketen, geen tweede generator, scheduler of verzender.
+Root cause: slechts één geverifieerde persoonlijke LinkedIn-kandidaat per dag; de unieke verhaalcontrole blokkeert terecht tekst gelijk aan 15 oktober, maar krijgt geen brongebonden tweede optie.
 
-**Waargenomen oorzaak:** op 22 oktober was er één geverifieerde persoonlijke bron; deze leidde tot een STORY_FAMILY_DUPLICATE tegen 15 oktober. Hoewel de globale duplicaatbeveiliging werkte, had de bestaande orchestrator geen tweede brongebonden kandidaat om veilig door te gaan.
+De bestaande orchestrator hergebruikt de canonieke v2-bronregistratie en materialiseert maximaal drie idempotente alternatieven in dezelfde recommendationtabel. Iedere suggestie vereist een werkelijk vastgelegd voortgangs-event, fout-/leerevent of toegestaan extern ondernemerssignaal met expliciete provenance. Ontbrekende bron betekent geen alternatief. Externe context of machinegebeurtenissen zijn geen verzonnen persoonlijke ervaringen of gerealiseerde klantresultaten.
 
-**Herstel:** de bestaande, ongepartitioneerde content-orchestrator roept na zijn canonieke v2-bronmaterialisatie een kleine idempotente reservefunctie aan. Die legt maximaal drie verschillende werkelijk geregistreerde eventfamilies vast als afzonderlijke kandidaten in *dezelfde* recommendationtabel. Zonder echte geverifieerde basisbron en werkelijk database-event verschijnen er geen nieuwe kandidaten. Geen fictieve resultaten, omzet, ervaringen of provider-IDs.
+Geen nieuwe SQL-migratie, previewbranch, cron, externe verzender of aparte waarheid. De twee bestaande Supabase-previewbranches voor PR #4558 en #4573 blijven onaangetast. De independent prepublish, personal identity, global duplicate, authority-consumption, OAuth, external ID en readback-gates blijven volledig gelden. Dit verandert kandidaten, niet publicatiebewijzen.
 
-**Veiligheidsgrenzen:** onafhankelijke tekstcontrole, globale semantische deduplicatie, personal identity- en OAuth-gates, ongebruikte publicatiecapaciteiten, anti-republish en echte LinkedIn-readback blijven ongewijzigd. Een database-recommendation is geen publicatie. Een brongebonden alternatieve kandidaat krijgt uitsluitend een nieuwe voorbereiding als de bestaande publisher een eerder verhaal aantoonbaar voor verzending heeft afgekeurd.
-
-**Acceptatie:** vereiste CI/CodeQL, gevalideerde SQL-migratie, Edge exact-source-readback, werkelijke kandidaatdiversiteit, geen enkele dubbele publicatie, en providerbewijs. Zeven dagen opvolging in bestaand GitHub P0 #4439.
+Acceptance: gerichte regressies, Brain learning historisch/schaduw, Required/CodeQL/backend, exacte beschermde merge, deployed Edge-source parity, werkelijke providerpublicatie zonder duplicaat en zeven dagen correcte uitkomsten.
