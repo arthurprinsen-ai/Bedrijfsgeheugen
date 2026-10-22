@@ -119,7 +119,51 @@ $function$;
 
 -- Verify that the conservative trigger and owner permission boundary survive.
 DO $readback$
+DECLARE
+  v_good jsonb := jsonb_build_object(
+    'verified', true,
+    'semantic_verified', true,
+    'mira_present', true,
+    'identity_class', 'mira_daily_life',
+    'evidence_method', 'vision',
+    'format_verified', true,
+    'visual_complete', true,
+    'daily_life_scene', true,
+    'mira_central_subject', true,
+    'placeholder_detected', false,
+    'text_dominant', false,
+    'brand_template_dominant', false,
+    'confidence', 0.95,
+    'face_identity_match', true,
+    'face_identity_confidence', 0.95,
+    'identity_comparison_method', 'two_image_vision',
+    'canonical_reference_id', 'Yjqu4D7v76HABNPmQPj1',
+    'canonical_reference_url', 'https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg',
+    'master_reference_sha256', repeat('a', 64),
+    'evidence_refs', jsonb_build_array('vision:synthetic-contract-unit-test'),
+    'width', 1080,
+    'height', 1920
+  );
 BEGIN
+  -- These are synthetic predicate tests; no media row is inserted or marked live.
+  IF public.powerhouse_instagram_visual_proof_valid_v1(v_good, 'video_frame') IS DISTINCT FROM true THEN
+    RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_VALID_VERTICAL_FRAME_REJECTED';
+  END IF;
+  IF public.powerhouse_instagram_visual_proof_valid_v1(
+      v_good || jsonb_build_object('face_identity_confidence', 0.92), 'video_frame'
+    ) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_WEAK_FACE_ACCEPTED';
+  END IF;
+  IF public.powerhouse_instagram_visual_proof_valid_v1(
+      v_good || jsonb_build_object('height', 1350), 'video_frame'
+    ) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_WRONG_REEL_ASPECT_ACCEPTED';
+  END IF;
+  IF public.powerhouse_instagram_visual_proof_valid_v1(
+      v_good || jsonb_build_object('canonical_reference_id', 'different-person'), 'video_frame'
+    ) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_WRONG_MASTER_ACCEPTED';
+  END IF;
   IF NOT EXISTS (
     SELECT 1 FROM pg_proc
     WHERE oid = 'public.enforce_instagram_media_proof_vision_v1()'::regprocedure
