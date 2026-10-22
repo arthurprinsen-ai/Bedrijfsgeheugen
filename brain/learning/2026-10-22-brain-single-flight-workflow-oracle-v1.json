@@ -34,7 +34,11 @@
     "source_validation": "Four actual GitHub workflow files independently read; matched job IDs, correct concurrency selectors, cancel-in-progress and bounded timeouts.",
     "after": "PENDING_EXACT_HEAD_RUN",
     "full_brain": "PENDING_0_FAIL",
-    "production": "UNCHANGED"
+    "production": "UNCHANGED",
+    "skill_prevention": "PENDING_PR_MERGE"
   },
-  "status": "CANDIDATE_UNVERIFIED_CI"
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ]
 }
