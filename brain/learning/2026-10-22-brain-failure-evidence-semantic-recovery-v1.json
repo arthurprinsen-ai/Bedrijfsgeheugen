@@ -26,10 +26,13 @@
       "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
     ],
     "canary": [
-      "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql"
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
+    ],
+    "sql_rollback_preview": [
+      "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql"
     ]
   },
   "evidence": {
