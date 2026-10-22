@@ -3,6 +3,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-10-22T17:03:04.907Z',
   requiredGateWatchdogResilience:Object.freeze({owner:'Required Gate Watchdog',source:'.github/scripts/required-gate-watchdog.mjs',cron:'*/5 * * * *',boundedGetAttempts:2,readTimeoutMs:8000,perPrErrorIsolation:true,ambiguousWriteRetry:false,productionVerified:false}),
+  brainFullFailureTriage:Object.freeze({fingerprint:'delivery|brain|first-failure-only-learning-blindspot|20261022-v1',source:'tools/delivery/brain-failure-clustering.mjs',workflow:'.github/workflows/unified-brain-delivery.yml',authority:'existing-failed-lane-artifact',maxCases:5000,model:'observation-only',productionVerified:false}),
   explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'adcb2805d70c50503999a1cce99bb869605699c224b698e777478941cc6b47e0',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',

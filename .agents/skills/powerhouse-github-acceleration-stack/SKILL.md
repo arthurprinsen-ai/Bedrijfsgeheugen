@@ -49,3 +49,8 @@ Treat GitHub delivery acceleration as one governed control plane rather than sep
 
 Fingerprint: `delivery|required-watchdog|transient-api-abort-all-prs|20261022-v1`.
 De bestaande vijfminuten-watchdog blijft enige eigenaar van Required-/CodeQL-observaties. Begrens elke GitHub GET op 8 seconden en maximaal twee pogingen alleen bij 429, 5xx of netwerk/timeout. 403 en 404 blijven fail-closed. Retry nooit een POST/comment/dispatch op ambigu resultaat: lees de bestaande marker bij de volgende tick terug. Een fout in één PR mag de overige PR's niet overslaan; verwerk maximaal drie PR-fouten per tick en laat de workflow rood met onveranderde provider-evidence. Geen tweede cron of writer, geen verzwakte security-/CLS-gate en nooit LIVE_PROVEN zonder onafhankelijke readback.
+
+## Full-failure BRAIN triage in existing lane (22 October 2026)
+
+Fingerprint: `delivery|brain|first-failure-only-learning-blindspot|20261022-v1`.
+On a failing Unified BRAIN backend lane, use the existing uploaded `delivery-failure-clusters-backend.json` from `brain-delivery-failure-backend` before proposing new fixes. Every `not ok` must be represented; check `coverage_complete` against TAP `# fail`, and use case fingerprints to group probable shared causes across runs. Labels like `MISSING_EXECUTABLE_SQL_SOURCE` are **unproven candidates** until source/readback validates the cause. Preflight the canonical `public.brain_failure_registry`, compare existing owner scopes, and repair through that owner rather than opening duplicate PRs. A grouped error is never a closed test. Maintain independent Required, CodeQL, complete BRAIN 0-fail, SQL preview parity and tenant acceptance. No new scheduler, register, queue, or skipped tests.
