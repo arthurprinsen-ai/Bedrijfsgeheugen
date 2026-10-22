@@ -2496,3 +2496,14 @@ export const DAILY_BLOG_SEO_MATERIAL_CLOSURE_20261022=Object.freeze({
  regression:'tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs',
  noDuplicatePublisher:true,proof:'protected merge + public URL readback'
 });
+
+
+export const BLOG_NULL_CANONICAL_LINEAGE_REBIND_20261022=Object.freeze({
+ fingerprint:'powerhouse|blog-null-canonical-lineage-rebind|20261022-v1',owner:'powerhouse-blog-queue',
+ source:'content_publication_obligations SQL NULL original blog slug',
+ fix:'old SQL NULL uses is(slug,null); genuine non-null uses exact eq(slug,old)',
+ proof:'GENERATED-only CAS, no provider side effects, independent live URL readback',
+ oneScheduler:true,oneBlogPR:true,noUnprovenLiveState:true,
+ learning:'brain/learning/2026-10-22-blog-null-lineage-rebind-v1.json',
+ regression:'tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs'
+});

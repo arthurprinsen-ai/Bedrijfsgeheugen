@@ -1584,3 +1584,17 @@ activity ledger and change documentation. Do not disable protected CI or
 fork a duplicate blog. Avoid generic question-prefix SEO focus ("Hoe
 Nederlandse"); select substantive contiguous topic words. Generated is NOT
 live without Netlify public readback.
+
+
+## 2026-10-22 — canonical daily blog NULL-slug pre-provider repair
+
+Fingerprint: `powerhouse|blog-null-canonical-lineage-rebind|20261022-v1`.
+
+When a generated blog obligation has a SQL NULL slug, do NOT use
+`eq('slug', clean(o.slug))`: clean(null) yields empty string, which cannot
+match SQL NULL. The existing blog queue may recover the ORIGINAL
+daily obligation using `is('slug',null)` and the GENERATED-only
+tenant/date/channel/provider-unconsumed guards. Existing slug strings use
+exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
+publisher/provider proof boundaries, no duplicate blog, and never infer
+LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
