@@ -25,3 +25,16 @@ No production SQL, DDL, RLS, ACL, tenant data, browser policy, scheduler, publis
 ## Append-only historical migration prefix repair
 
 Full exact-head BRAIN run [#39763894940](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39763894940): 3,531 tests, 3,185 pass, 346 fail. The new source path repairs removed 12 earlier failing test keys, while 37 new failures emerged on the advanced baseline. Three old tests falsely required the actively growing canonical migration ledger to remain at exactly 568/603/607. The first 603 historical entries, the original 607th record and 568th boundary were independently read back from the current 634-entry lock before modifying any assertions. Tests now require a monotone history, retain exact original historical prefix/boundary and preserve migration-identity and security assertions. No migration data/files touched. Full revalidation pending.
+
+## Extended archived SQL source recovery batch 3
+- 8 additional inherited tests; 8 exact original SQL read-path references; 8 new Git blob-identity regressions
+- Full BRAIN before: run #39764575433: 3,531 executed, 343 failed; no postchange claim until next independent execution
+- No migrations restored into live SQL execution; assertion logic preserved
+- `tests/brain-autonomous-improvement-floor-terminal-v1.test.mjs` reads immutable `20260920095700_autonomous_improvement_floor_terminal_v1.sql` (de5bc791c06080d2da3da8cc21c52bb808eebdad)
+- `tests/brain-company-intelligence-os-v1.test.mjs` reads immutable `20260928193000_powerhouse_company_intelligence_os_v1.sql` (a4758905425f0964338371247343192e3ed4cd73)
+- `tests/brain-control-plane-monotonic-terminal-v1.test.mjs` reads immutable `20260918141000_powerhouse_control_plane_monotonic_terminal_v1.sql` (d005ca4d3d0aeef45ffe4efe06a414f9377d8bf3)
+- `tests/brain-one-million-revenue-operating-contract-v1.test.mjs` reads immutable `20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql` (f37aa930e2f2b89602a6878fc4714a88c5e46392)
+- `tests/brain-rocket-revenue-event-spine-v1.test.mjs` reads immutable `20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql` (ec95d7199b06974bb0e3cbe31c1c74407024e292)
+- `tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs` reads immutable `20260917235907_social_content_integrity_invalidation_guard.sql` (c653d64b4724fb654f610effd2ce6422c17269e9)
+- `tests/brain-terminal-autonomous-reconciler-v1.test.mjs` reads immutable `20260920095500_terminal_autonomous_reconciler_v1.sql` (bc0cbe3c7a830c13872cf5bc4cb1f858c37f0a32)
+- `tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs` reads immutable `20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql` (a6037047760fe281ab24298f9f7d94c62cc95695)

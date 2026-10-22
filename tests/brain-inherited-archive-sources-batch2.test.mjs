@@ -53,6 +53,46 @@ const cases = [
     "test": "supabase-powerhouse-signal-forecast-materialization.test.mjs",
     "sql": "20260915124500_powerhouse_signal_forecast_materialization.sql",
     "sha": "8610fdc4adafb5c3193cab5d2775a050e3f632dd"
+  },
+  {
+    "test": "brain-autonomous-improvement-floor-terminal-v1.test.mjs",
+    "sql": "20260920095700_autonomous_improvement_floor_terminal_v1.sql",
+    "sha": "de5bc791c06080d2da3da8cc21c52bb808eebdad"
+  },
+  {
+    "test": "brain-company-intelligence-os-v1.test.mjs",
+    "sql": "20260928193000_powerhouse_company_intelligence_os_v1.sql",
+    "sha": "a4758905425f0964338371247343192e3ed4cd73"
+  },
+  {
+    "test": "brain-control-plane-monotonic-terminal-v1.test.mjs",
+    "sql": "20260918141000_powerhouse_control_plane_monotonic_terminal_v1.sql",
+    "sha": "d005ca4d3d0aeef45ffe4efe06a414f9377d8bf3"
+  },
+  {
+    "test": "brain-one-million-revenue-operating-contract-v1.test.mjs",
+    "sql": "20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql",
+    "sha": "f37aa930e2f2b89602a6878fc4714a88c5e46392"
+  },
+  {
+    "test": "brain-rocket-revenue-event-spine-v1.test.mjs",
+    "sql": "20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+    "sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292"
+  },
+  {
+    "test": "brain-social-publish-atomic-claim-dedupe-v1.test.mjs",
+    "sql": "20260917235907_social_content_integrity_invalidation_guard.sql",
+    "sha": "c653d64b4724fb654f610effd2ce6422c17269e9"
+  },
+  {
+    "test": "brain-terminal-autonomous-reconciler-v1.test.mjs",
+    "sql": "20260920095500_terminal_autonomous_reconciler_v1.sql",
+    "sha": "bc0cbe3c7a830c13872cf5bc4cb1f858c37f0a32"
+  },
+  {
+    "test": "brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
+    "sql": "20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
+    "sha": "a6037047760fe281ab24298f9f7d94c62cc95695"
   }
 ];
 for (const {test: sourceTest,sql,sha} of cases) {

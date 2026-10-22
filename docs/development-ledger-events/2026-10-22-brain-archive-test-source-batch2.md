@@ -8,3 +8,5 @@
 - Dependencies: #3742 clean-room replay; #4215 authenticated two-customer validation
 
 - 2026-10-22: three old exact-history migration-length assertions made append-aware with fixed historical prefix positions (568/603/607 out of current 634). No migration edits. Full BRAIN 346/3531 on preceding commit, next exact-head acceptance pending.
+
+- 2026-10-22: batch 3: 8 archived SQL contract test readers repaired, 8 obsolete source refs replaced; existing positive/negative test assertions preserved; independent full BRAIN pending.
