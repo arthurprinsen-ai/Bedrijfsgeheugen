@@ -62,5 +62,20 @@
     "canary": [
       "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
     ]
+  },
+  "prevention_rule": "Retain a privacy-safe classified failure event and correlation ID for translation failures. Keep existing authorization and 409/502 response contracts; require provider evidence and regression tests before marking fixed.",
+  "evidence": {
+    "provider_requests": [
+      "01M5HQR0S42BBGP87AG7PFMAGD",
+      "01M5JF8SEX3S6DK38Y2D2BEZ9M"
+    ],
+    "observed_status": 502,
+    "tests": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "historical_replay": "local-pass",
+    "shadow": "local-pass",
+    "canary": "local-pass",
+    "production_readback": "pending"
   }
 }
