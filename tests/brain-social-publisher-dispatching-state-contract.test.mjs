@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260920102000_social_publisher_dispatching_state_contract.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260920102000_social_publisher_dispatching_state_contract.sql','utf8');
 
 test('social publisher atomic claim state is allowed by database contract',()=>{
   assert.match(publisher,/state: 'dispatching'/);

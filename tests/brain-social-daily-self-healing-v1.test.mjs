@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 const setup=fs.readFileSync('supabase/functions/powerhouse-composio-linkedin-setup/index.ts','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260927153500_social_daily_self_healing_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260927153500_social_daily_self_healing_v1.sql','utf8');
 
 assert.match(setup,/LINKEDIN_CANONICAL_PERSON_URN='urn:li:person:N1twnCNCrD'/);
 assert.match(setup,/probe-canonical-member-and-prefer-canonical-alias-v1/);

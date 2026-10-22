@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const review=fs.readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20261003152500_linkedin_personal_dual_truth_terminal_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20261003152500_linkedin_personal_dual_truth_terminal_v1.sql','utf8');
 
 assert.match(review,/const businessBlocked = observationalMode/);
 assert.match(review,/observationalMode[\s\S]*Bedrijfsgeheugen/);

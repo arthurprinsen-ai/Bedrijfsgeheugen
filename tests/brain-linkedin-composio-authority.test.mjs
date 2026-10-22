@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const source = readFileSync('supabase/functions/powerhouse-social-publisher/index.ts', 'utf8');
-const terminalMigration = readFileSync('supabase/migrations/20260928122000_social_provider_write_terminal_reconcile_v1.sql', 'utf8');
+const terminalMigration = readFileSync('supabase/migration-history/repository-only/20260928122000_social_provider_write_terminal_reconcile_v1.sql', 'utf8');
 
 test('LinkedIn publishing authority is Composio-only before Buffer fallback', () => {
   assert.match(source, /publishLinkedInPersonalViaComposio/);

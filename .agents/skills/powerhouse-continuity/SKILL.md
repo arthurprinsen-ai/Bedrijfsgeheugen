@@ -1598,3 +1598,7 @@ tenant/date/channel/provider-unconsumed guards. Existing slug strings use
 exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
 publisher/provider proof boundaries, no duplicate blog, and never infer
 LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
+
+## Archive SQL oracle recovery
+
+For inherited BRAIN SQL source-contract failures, preserve the original positive and negative assertions and repoint only missing historical read paths to the authentic immutable `supabase/migration-history/repository-only/` archive. Require nonempty content, exact source Git blob hash and absence of executable duplicate migrations. This does not waive exact-head BRAIN, Required, CodeQL or independent #3742/#4215 evidence.
