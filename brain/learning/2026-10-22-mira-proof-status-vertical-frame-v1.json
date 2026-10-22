@@ -52,5 +52,23 @@
     "instagram_post": "NOT_LIVE_PROVEN",
     "historical_real_data_query": "READ_ONLY_INSPECTION_FINISHED_NO_NEW_VALID_OCT22_MEDIA"
   },
-  "status": "CANDIDATE_PENDING_RELEASE"
+  "status": "CANDIDATE_PENDING_RELEASE",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 21,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ]
+  }
 }
