@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "delivery|parallel-wave-budget|epoch-writer-safety|20261022-v1",
+  "obligation_id": "delivery|parallel-wave-budget|epoch-writer-safety|20261022-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "failure_class": "POTENTIAL_UNBOUNDED_PARALLEL_AGENT_FANOUT",
+  "root_cause": "The existing deterministic parallel planner had no hard wave-size bound and did not classify mismatched base epochs, identical candidate heads, or identical obligations as concurrent-writer conflicts.",
+  "evidence": {
+    "source_files": [
+      "scripts/brain/parallel-engineering-fabric.mjs",
+      "config/powerhouse-parallel-engineering-fabric.json",
+      "tests/brain-parallel-engineering-fabric.test.mjs"
+    ],
+    "previous_behavior": "Every ready non-conflicting work package could join a single unbounded Promise.all wave; base epoch and writer identity were not compared.",
+    "baseline_main_sha": "read from protected GitHub main at commit creation",
+    "production_readback": "PENDING",
+    "CI": "PENDING"
+  },
+  "prevention": [
+    "Maximum four concurrent packages in policy, with hard cap six in code",
+    "One writer per obligation and candidate SHA",
+    "No speculative integration across main epochs",
+    "Executor independently rejects manually forged waves",
+    "Protected Required, CodeQL, merge and exact-main production readback remain mandatory"
+  ],
+  "regression_tests": [
+    "tests/brain-parallel-engineering-fabric.test.mjs"
+  ],
+  "measurement": {
+    "before_p95": "UNKNOWN",
+    "after_p95": "NOT_MEASURED",
+    "speedup_claim": "NONE"
+  },
+  "owner": "existing Powerhouse delivery control plane",
+  "duplicate_scheduler": false,
+  "duplicate_incident_registry": false
+}

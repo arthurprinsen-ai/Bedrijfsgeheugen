@@ -81,6 +81,59 @@ test('path contract dependency and mutable-resource conflicts serialize determin
   assert.deepEqual(plan.waves.map(w => w.map(p => p.id)), [['A','C'],['B','D']]);
 });
 
+
+test('parallel wave budget is deterministic and never fans out beyond policy', () => {
+  const boundedPolicy = { ...policy, scheduling: { max_concurrent_work_packages_per_wave: 2 } };
+  const packages = ['A','B','C','D','E'].map(id => ({
+    id, paths:[`brain/module-${id}.mjs`], baseSha:'base', candidateSha:`candidate-${id}`
+  }));
+  const plan = buildExecutionPlan({ workPackages:packages, deliveryConfig, policy:boundedPolicy });
+  assert.equal(plan.maxConcurrentPerWave,2);
+  assert.deepEqual(plan.waves.map(w => w.map(pkg => pkg.id)),[['A','B'],['C','D'],['E']]);
+});
+
+test('a shared obligation or exact candidate head never has concurrent writers', () => {
+  const sharedObligation = buildExecutionPlan({ workPackages:[
+    { id:'A', paths:['brain/a.mjs'], baseSha:'base', candidateSha:'a', obligationId:'O-1' },
+    { id:'B', paths:['site/b.js'], baseSha:'base', candidateSha:'b', obligation_id:'O-1' }
+  ], deliveryConfig, policy });
+  assert.deepEqual(sharedObligation.waves.map(w=>w.map(p=>p.id)),[['A'],['B']]);
+  const sharedHead = buildExecutionPlan({ workPackages:[
+    { id:'A', paths:['brain/a.mjs'], baseSha:'base', candidateSha:'same-head' },
+    { id:'B', paths:['site/b.js'], baseSha:'base', candidateSha:'same-head' }
+  ], deliveryConfig, policy });
+  assert.deepEqual(sharedHead.waves.map(w=>w.map(p=>p.id)),[['A'],['B']]);
+});
+
+test('different base main epochs serialize and never speculate integration together', () => {
+  const plan = buildExecutionPlan({ workPackages:[
+    { id:'A', paths:['brain/a.mjs'], baseSha:'main-1', candidateSha:'a' },
+    { id:'B', paths:['site/b.js'], baseSha:'main-2', candidateSha:'b' }
+  ], deliveryConfig, policy });
+  assert.deepEqual(plan.waves.map(w=>w.map(p=>p.id)),[['A'],['B']]);
+  assert.deepEqual(buildSpeculativeIntegrations(plan),[]);
+});
+
+test('executor refuses manually forged over-budget waves before starting workers', async () => {
+  let invoked = 0;
+  const oversized = Array.from({length:5},(_,i)=>({id:`P-${i}`,specialist:'worker'}));
+  await assert.rejects(
+    executePlanWaves({waves:[oversized],maxConcurrentPerWave:4},{worker:async()=>{invoked++;}}),
+    /PARALLEL_WAVE_BUDGET_EXCEEDED/
+  );
+  assert.equal(invoked,0);
+});
+
+test('unbounded or malformed wave budgets fail closed', () => {
+  const pkg=[{id:'A',paths:['brain/a.mjs'],baseSha:'main',candidateSha:'candidate'}];
+  for (const limit of [0,-1,1.5,7,Infinity,'6']) {
+    assert.throws(()=>buildExecutionPlan({
+      workPackages:pkg, deliveryConfig,
+      policy:{...policy,scheduling:{max_concurrent_work_packages_per_wave:limit}}
+    }),/PARALLEL_WAVE_BUDGET_INVALID/);
+  }
+});
+
 test('explicit dependencies order waves and cycles fail closed', () => {
   const plan = buildExecutionPlan({ workPackages: [
     { id:'A', paths:['brain/a.mjs'], baseSha:'base', candidateSha:'a' },
@@ -119,6 +172,9 @@ test('canonical fabric policy remains subordinate to Engineering OS and BG169', 
   assert.equal(actual.protocol_extension,'powerhouse-fast-development-protocol-v2');
   assert.equal(actual.authority.production_promotion,'BG169');
   assert.equal(actual.authority.creates_parallel_authority,false);
+  assert.equal(actual.version,3);
+  assert.equal(actual.scheduling.max_concurrent_work_packages_per_wave,4);
+  assert.ok(actual.scheduling.parallel_only_without.includes('same-obligation-writer'));
   assert.equal(actual.affected_testing.fast_path_never_replaces_release_gates,true);
   assert.equal(actual.cache.never_skips_production_readback,true);
   assert.ok(actual.cache.inputs.includes('schemaDigest'));

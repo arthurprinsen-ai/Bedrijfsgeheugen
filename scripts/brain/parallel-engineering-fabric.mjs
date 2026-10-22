@@ -18,6 +18,14 @@ function resolveForPaths(paths, deliveryConfig) {
 }
 function isKnownNonExecutableDocs(paths, deliveryConfig) { return paths.length > 0 && paths.every(p => (deliveryConfig.nonExecutableSharedPaths ?? []).some(rule => pathMatches(p, rule))); }
 function profileMap(policy) { return policy?.test_profiles ?? policy?.affected_testing?.test_profiles ?? {}; }
+const HARD_PARALLEL_WAVE_LIMIT = 6;
+function parallelWaveBudget(policy) {
+  const budget = policy?.scheduling?.max_concurrent_work_packages_per_wave ?? 4;
+  if (!Number.isInteger(budget) || budget < 1 || budget > HARD_PARALLEL_WAVE_LIMIT) {
+    throw new Error('PARALLEL_WAVE_BUDGET_INVALID: expected integer between 1 and 6');
+  }
+  return budget;
+}
 
 export function selectAffectedTests({ paths, deliveryConfig, policy }) {
   const normalizedPaths = stableUnique(paths); const { lanes, contracts } = resolveForPaths(normalizedPaths, deliveryConfig); const profiles = new Set(); const tests = profileMap(policy);
@@ -44,6 +52,13 @@ export function buildCacheIdentity({ baseSha, candidateSha, paths = [], contract
 }
 
 function packageConflict(a, b) {
+  // Distinct main epochs must be reconciled, not speculatively combined.
+  if (String(a.baseSha).toLowerCase() !== String(b.baseSha).toLowerCase()) return true;
+  // One candidate head/obligation is allowed only one concurrent writer.
+  if (String(a.candidateSha).toLowerCase() === String(b.candidateSha).toLowerCase()) return true;
+  const obligationA = a.obligationId ?? a.obligation_id;
+  const obligationB = b.obligationId ?? b.obligation_id;
+  if (obligationA && obligationB && String(obligationA) === String(obligationB)) return true;
   if (a.dependsOn.includes(b.id) || b.dependsOn.includes(a.id)) return true;
   if (a.paths.some(pa => b.paths.some(pb => overlapPath(pa, pb)))) return true;
   if (a.contracts.some(c => b.contracts.includes(c))) return true;
@@ -57,6 +72,7 @@ function validatePackages(workPackages) {
 }
 
 export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
+  const maxConcurrentPerWave = parallelWaveBudget(policy);
   validatePackages(workPackages);
   const packages = workPackages.map(raw => {
     const graph = buildImpactGraph({ paths: raw.paths ?? [], resources: raw.resources ?? [], dependencies: raw.dependsOn ?? [], deliveryConfig, policy });
@@ -70,15 +86,22 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
     const ready = [...remaining.values()].filter(p => p.dependsOn.every(dep => completed.has(dep))).sort((a, b) => a.id.localeCompare(b.id));
     if (ready.length === 0) throw new Error('Dependency cycle detected');
     const wave = [];
-    for (const candidate of ready) if (wave.every(existing => !packageConflict(existing, candidate))) wave.push(candidate);
+    for (const candidate of ready) {
+      if (wave.length >= maxConcurrentPerWave) break;
+      if (wave.every(existing => !packageConflict(existing, candidate))) wave.push(candidate);
+    }
     if (wave.length === 0) throw new Error('Dependency cycle or unschedulable conflict detected');
     waves.push(wave); for (const p of wave) { completed.add(p.id); remaining.delete(p.id); }
   }
-  return { fingerprint: policy?.fingerprint ?? null, waves, packages };
+  return { fingerprint: policy?.fingerprint ?? null, maxConcurrentPerWave, waves, packages };
 }
 
 export async function executePlanWaves(plan, workers = {}) {
   if (!plan || !Array.isArray(plan.waves)) throw new TypeError('execution plan with waves is required');
+  const maxConcurrent = parallelWaveBudget({ scheduling: { max_concurrent_work_packages_per_wave: plan.maxConcurrentPerWave ?? 4 } });
+  if (plan.waves.some(wave => !Array.isArray(wave) || wave.length > maxConcurrent)) {
+    throw new Error('PARALLEL_WAVE_BUDGET_EXCEEDED: refuse unbounded worker fan-out');
+  }
   const results = {};
   const waveResults = [];
   for (const wave of plan.waves) {
@@ -111,6 +134,12 @@ export async function validateParallelEngineeringFabric() {
   if (policy.authority?.production_promotion !== 'BG169') errors.push('production promotion authority drift');
   if (policy.authority?.creates_parallel_authority !== false) errors.push('parallel authority must remain false');
   if (policy.scheduling?.deterministic !== true) errors.push('deterministic scheduling required');
+  try { parallelWaveBudget({ scheduling: { max_concurrent_work_packages_per_wave: policy.scheduling?.max_concurrent_work_packages_per_wave } }); }
+  catch { errors.push('parallel worker budget must be bounded'); }
+  if (!Number.isInteger(policy.scheduling?.max_concurrent_work_packages_per_wave)) errors.push('explicit wave budget is required');
+  for (const guard of ['base-epoch-mismatch', 'same-candidate-head', 'same-obligation-writer']) {
+    if (!policy.scheduling?.parallel_only_without?.includes(guard)) errors.push('missing scheduling guard: ' + guard);
+  }
   if (policy.scheduling?.parallel_only_without?.includes('mutable-resource-overlap') !== true) errors.push('mutable resource conflict guard drift');
   if (policy.affected_testing?.fail_closed_unknown_material_scope !== true) errors.push('unknown material scope must fail closed');
   if (policy.affected_testing?.fast_path_never_replaces_release_gates !== true) errors.push('fast path cannot replace release gates');
