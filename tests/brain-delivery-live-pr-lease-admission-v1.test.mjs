@@ -5,10 +5,10 @@ import { readFileSync } from 'node:fs';
 const workflow=readFileSync('.github/workflows/powerhouse-delivery-hygiene.yml','utf8');
 
 test('synchronize admission reads live PR body before terminal lease validation',()=>{
-  const liveFetch="const pr = await gh(\`repos/\${process.env.GITHUB_REPOSITORY}/pulls/\${prNumber}\`);";
+  const liveFetch="let pr = await gh(\`repos/\${process.env.GITHUB_REPOSITORY}/pulls/\${prNumber}\`);";
   const headReadback="if (String(pr.head?.sha || '') !== headSha)";
-  const liveBody="const livePrBody = String(pr.body || process.env.EVENT_PR_BODY || '');";
-  const leaseParse="const eventLease = parseWriterLease(livePrBody);";
+  const liveBody="let livePrBody = String(pr.body || process.env.EVENT_PR_BODY || '');";
+  const leaseParse="let eventLease = parseWriterLease(livePrBody);";
 
   const fetchIndex=workflow.indexOf(liveFetch);
   const headIndex=workflow.indexOf(headReadback);
@@ -19,6 +19,7 @@ test('synchronize admission reads live PR body before terminal lease validation'
   assert.ok(headIndex>fetchIndex);
   assert.ok(bodyIndex>headIndex);
   assert.ok(leaseIndex>bodyIndex);
-  assert.equal((workflow.match(/const pr = await gh\(/g)||[]).length,1);
+  assert.equal((workflow.match(/let pr = await gh\(/g)||[]).length,1);
+  assert.ok(workflow.indexOf('eventLease = parseWriterLease(livePrBody);',leaseIndex+leaseParse.length)>leaseIndex,'lease is refreshed after live PR re-read');
   assert.doesNotMatch(workflow,/parseWriterLease\(process\.env\.EVENT_PR_BODY/);
 });
