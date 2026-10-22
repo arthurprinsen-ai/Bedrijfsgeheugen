@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "github-actions:stale-queued-zero-jobs:cancel-409:20261007",
+  "obligation_id": "github-actions|provider-ghost-run-reconciliation|20261007",
+  "date": "2026-10-22",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_PROVIDER_RUN_STATE_GHOST",
+  "root_cause": "OBSERVED: GitHub Actions individual run GET says queued with 0 jobs and unchanged timestamps, while cancel/force cancel return HTTP 409 and DELETE HTTP 403. The exact provider-internal cause is not established.",
+  "observed_evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+    "run_ids": [
+      37642383514,
+      37642383517,
+      37642336315,
+      37642334843
+    ],
+    "zero_jobs": true,
+    "cancel_http": 409,
+    "force_cancel_http": 409,
+    "delete_http": 403,
+    "provider_repaired": false
+  },
+  "impact": "Four historic provider-owned queued records remain visible; naive scheduled recovery repeatedly issues rejected API mutations, creates noise and may hinder current delivery telemetry.",
+  "failed_approaches": [
+    "Unbounded cancel retry (409)",
+    "Unbounded force cancel retry (409)",
+    "Repeated GitHub run DELETE (403)",
+    "Assuming fan-out prevention repairs historical provider records",
+    "Assuming an empty queue query proves individual deletion"
+  ],
+  "fix": "Extend existing hourly Repository Janitor with exact-ID/zero-job/age/obsolescence validation, bounded supported action ladder, canonical issue markers, provider-boundary deduplication and exact-ID readback; make five-minute supervisor skip previously escalated provider-denied IDs.",
+  "prevention_rule": "Reuse canonical fingerprint and owner; one bounded repair attempt per unchanged run state; never delete active main, any current open PR head, nonzero job runs or security gates; when GitHub denies backend mutation, preserve evidence, report Support dependency and continue exact-ID observation without automatic 409/403 storms.",
+  "regression_contract": "tests/brain-delivery-stale-queue-janitor-v1.test.mjs",
+  "owner": "Existing Powerhouse Repository Janitor and Delivery Recovery Supervisor",
+  "candidate_code": [
+    "tools/delivery/github-ghost-run-reconcile.mjs",
+    ".github/workflows/powerhouse-repository-janitor.yml",
+    ".github/workflows/powerhouse-delivery-recovery-supervisor.yml"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_PROVIDER_RUN_STATE_GHOST",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "invariants": [
+      "GitHub provider denied ghost is never interpreted as successful workflow run",
+      "existing canonical issue retains exact IDs and provenance",
+      "obsolete six-hour-old queued and zero-job only, never current main/PR head",
+      "no duplicate cancel/force/delete on unchanged provider denied run",
+      "provider reconciliation requires exact GET 404 or terminal readback",
+      "no duplicate scheduler or false Required/CodeQL status"
+    ],
+    "historical_replay": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Only protected merge and exact SHA/checks plus actual scheduled janitor evidence establish prevention live; four provider-owned orphans remain separately open until individual readback confirms resolution."
+}
