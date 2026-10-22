@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, boundedGateRequest, GATE_REQUEST_TIMEOUT_MS } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -68,4 +68,63 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   assert.match(source, /gateDecision\(required\) !== 'MISSING'/);
   assert.match(source, /required-test\.yml\/dispatches/);
   assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
+});
+
+
+test('bounded watchdog GitHub reads retry only transient GET failures and never hang', async () => {
+  const calls = [];
+  const delays = [];
+  const responses = [{status:503}, {status:502}, {status:200}];
+  const output = await boundedGateRequest(
+    async (_url, options) => {
+      calls.push(options);
+      return responses.shift();
+    }, '/actions/runs', {headers:{Accept:'application/json'}}, {
+      sleep: async ms => {delays.push(ms);},
+      timeout: ms => {
+        assert.equal(ms, 12_000);
+        return AbortSignal.timeout(ms);
+      }
+    }
+  );
+  assert.equal(output.status, 200);
+  assert.equal(calls.length, 3);
+  assert.deepEqual(delays, [250,750]);
+  assert.equal(GATE_REQUEST_TIMEOUT_MS, 12_000);
+  assert.equal(calls[0].signal instanceof AbortSignal, true);
+});
+
+test('bounded watchdog GET transport failures stop after two retries; permanent denial never retries', async () => {
+  let attempts = 0;
+  await assert.rejects(() => boundedGateRequest(async () => {
+    attempts++;
+    throw new Error('provider timeout');
+  }, '/actions/runs', {}, {sleep:async()=>{}}), /provider timeout/);
+  assert.equal(attempts, 3);
+  attempts = 0;
+  const denied = await boundedGateRequest(async () => {
+    attempts++;
+    return {status:403};
+  }, '/actions/runs', {}, {sleep:async()=>{}});
+  assert.equal(denied.status, 403);
+  assert.equal(attempts, 1);
+});
+
+test('uncertain POST comments or dispatches must never retry without marker readback', async () => {
+  let calls = 0;
+  await assert.rejects(() => boundedGateRequest(async () => {
+    calls++;
+    throw new Error('ambiguous POST completion');
+  }, '/issues/123/comments', {method:'POST',body:'{}'}, {sleep:async()=>{}}), /ambiguous POST completion/);
+  assert.equal(calls, 1);
+  calls = 0;
+  const overload = await boundedGateRequest(async () => {
+    calls++;
+    return {status:503};
+  }, '/actions/workflows/required-test.yml/dispatches', {method:'POST'}, {sleep:async()=>{}});
+  assert.equal(overload.status, 503);
+  assert.equal(calls, 1);
+  const source = readFileSync('.github/scripts/required-gate-watchdog.mjs','utf8');
+  assert.match(source, /boundedGateRequest\(fetch/);
+  assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
 });

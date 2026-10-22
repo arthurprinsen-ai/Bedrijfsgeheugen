@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "github|watchdog|bounded-read-retry-and-write-reconciliation|20261022-v1",
+  "obligation_id": "github|watchdog|bounded-read-retry-and-write-reconciliation|20261022-v1",
+  "title": "Bound watchdog GitHub calls; retry only safe reads and reconcile uncertain writes",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "The existing five-minute Required Gate Watchdog used raw fetch without an explicit per-request deadline or bounded transient GET retries, exposing the repair control plane to slow provider/network reads. This is a source-level risk, not proof of a past ChatGPT streaming fault.",
+  "impact": "A provider stall or transient 429/502/503 can consume the watchdog execution budget and delay same-owner failure handoff; replaying ambiguous POST may duplicate comments/dispatches.",
+  "failed_approaches": [
+    "Infinite retry/polling",
+    "Retrying ambiguous POST comments or workflow dispatches",
+    "Creating a second scheduler or writer",
+    "Disabling existing Required/CodeQL gates"
+  ],
+  "fix": "Use AbortSignal.timeout(12000) on every watchdog GitHub call and at most two short retries only for GET transport exceptions/429/500/502/503/504. Never auto retry POST; resume on scheduled tick after marker/readback reconciliation.",
+  "prevention_rule": "Every GitHub watchdog API call is deadline-bounded. Only idempotent GET reads may retry transient failure a fixed number of times. Any failed/ambiguous POST must not replay until durable side-effect readback. Preserve one canonical five-minute job and unchanged release gates.",
+  "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+  ],
+  "evidence": {
+    "watchdog_source": ".github/scripts/required-gate-watchdog.mjs",
+    "observed_no_deadline_in_main": true,
+    "production_readback": "PENDING",
+    "code_fix_proven": false,
+    "chat_stream_interruption_caused_by_this": false
+  },
+  "outcome": "CANDIDATE, awaiting exact-head Required/CodeQL and post-merge five-minute watchdog run",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "BOUNDED_PROVIDER_NETWORK",
+    "RETRY_READS_ONLY",
+    "NO_DUPLICATE_POSTS",
+    "SAME_OWNER_REPAIR",
+    "NO_NEW_SCHEDULER",
+    "REQUIRE_EXACT_HEAD_VERIFICATION"
+  ]
+}

@@ -51,3 +51,38 @@ Status: **RECOVERY REQUIRED**, not green. This is an existing PR/owner obligatio
 
 The existing watchdog leaves this obligation open until independent gate and delivery proof exists.`;
 }
+
+ 
+// Bounded read-only transport recovery. An uncertain GitHub POST must NEVER be
+// replayed automatically: the next watchdog tick reconciles the durable marker.
+export const GATE_REQUEST_TIMEOUT_MS = 12_000;
+const GATE_GET_RETRY_DELAYS_MS = [250, 750];
+const GATE_RETRYABLE_READ_STATUSES = new Set([429, 500, 502, 503, 504]);
+
+export async function boundedGateRequest(fetchImpl, url, init = {}, {
+  sleep = ms => new Promise(resolve => setTimeout(resolve, ms)),
+  timeout = ms => AbortSignal.timeout(ms)
+} = {}) {
+  const method = String(init.method || 'GET').toUpperCase();
+  for (let attempt = 0; attempt <= GATE_GET_RETRY_DELAYS_MS.length; attempt++) {
+    let response;
+    try {
+      response = await fetchImpl(url, {
+        ...init,
+        signal: timeout(GATE_REQUEST_TIMEOUT_MS)
+      });
+    } catch (error) {
+      if (method !== 'GET' || attempt === GATE_GET_RETRY_DELAYS_MS.length) throw error;
+      await sleep(GATE_GET_RETRY_DELAYS_MS[attempt]);
+      continue;
+    }
+    if (method === 'GET'
+      && GATE_RETRYABLE_READ_STATUSES.has(response.status)
+      && attempt < GATE_GET_RETRY_DELAYS_MS.length) {
+      await sleep(GATE_GET_RETRY_DELAYS_MS[attempt]);
+      continue;
+    }
+    return response;
+  }
+  throw new Error('GATE_READ_RETRY_EXHAUSTED');
+}
