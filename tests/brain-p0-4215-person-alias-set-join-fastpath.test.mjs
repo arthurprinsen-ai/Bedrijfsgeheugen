@@ -7,7 +7,7 @@ const sql=readFileSync('supabase/migrations/20261022222500_p0_4215_person_alias_
 const runner=readFileSync('tests/brain-p0-4215-buying-window-set-join-parity.mjs','utf8');
 
 test('forward-only exact predecessor and post source hash + invoker security boundaries',()=>{
- assert.match(sql,/6a7a20df1f24b4333986ba9b2da09314/);
+ assert.match(sql,/8a9b316a512dcf55889b0a56e7026170/);
  assert.match(sql,/dcac5a8d2543147d3d5e294cc14a599e/);
  assert.match(sql,/P0_4215_SETJOIN_PRE_BROWSER_READ_BOUNDARY_DRIFT/);
  assert.match(sql,/P0_4215_SETJOIN_POST_BROWSER_READ_BOUNDARY_DRIFT/);
