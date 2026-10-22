@@ -20,21 +20,49 @@ if(!url.hostname.includes(previewRef)&&!decodeURIComponent(url.username).include
  abort('URL not scoped to exact isolated preview ref');
 const source=readFileSync(migrationFile,'utf8');
 const startTag='CREATE OR REPLACE VIEW public.powerhouse_buying_window_v2 WITH (security_invoker=true) AS';
-const begin=source.indexOf(startTag),end=source.indexOf('\nDO $readback$',begin);
-if(begin<0||end<begin)abort('candidate view cannot be parsed');
-const candidateSql=source.slice(begin,end).trim().replace(startTag,
- 'CREATE TEMP VIEW p0_4215_buying_candidate WITH (security_invoker=true) AS');
-if(!candidateSql.endsWith(';'))abort('candidate view definition must terminate in semicolon');
-
+const endMarker='\n-- Match the existing service-role-only internal view boundary on this migration.';
+const begin=source.indexOf(startTag),end=source.indexOf(endMarker,begin);
+if(begin<0||end<begin)abort('candidate view cannot be parsed separately from the REVOKE/DO migration statements');
+const candidateBody=source.slice(begin+startTag.length,end).trim();
+const cacheCte='WITH person_intelligence_cache AS MATERIALIZED (SELECT * FROM public.powerhouse_person_intelligence_v1), base AS';
+const cacheSource='FROM person_intelligence_cache p1';
+if(!candidateBody.endsWith(';')||candidateBody.split(cacheCte).length!==2||
+   candidateBody.split(cacheSource).length!==2)
+ abort('candidate person-cache rewrite cannot be reconstructed safely');
+const baselineBody=candidateBody.replace(cacheCte,'WITH base AS')
+  .replace(cacheSource,'FROM powerhouse_person_intelligence_v1 p1');
+if(/\b(REVOKE|GRANT|ALTER|DROP|DO)\b/i.test(candidateBody))
+ abort('view extraction included a non-view statement');
+const baselineHash='2ce1ab1122390af0f51c5aa8b318600f';
+const candidateHash='6a7a20df1f24b4333986ba9b2da09314';
+// The provider can already have applied the migration. In that case reconstruct the
+// immutable ORIGINAL view as a transaction-scoped temp view, never overwrite public.
+// Both temp view definitions are canonical-hash checked before comparing actual rows.
+const baselineSql='CREATE TEMP VIEW p0_4215_buying_baseline WITH (security_invoker=true) AS\n'+baselineBody;
+const candidateSql='CREATE TEMP VIEW p0_4215_buying_candidate WITH (security_invoker=true) AS\n'+candidateBody;
 const sql=[
  'BEGIN ISOLATION LEVEL REPEATABLE READ;',
  "SET LOCAL statement_timeout='180s';",
  "SET LOCAL lock_timeout='2s';",
  "SET LOCAL search_path=public,pg_temp;",
- "DO $baseline$ BEGIN IF md5(pg_get_viewdef('public.powerhouse_buying_window_v2'::regclass,true))",
- " <> '2ce1ab1122390af0f51c5aa8b318600f' THEN",
- " RAISE EXCEPTION 'BUYING_BASELINE_DRIFT'; END IF; END $baseline$;",
- 'CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT * FROM public.powerhouse_buying_window_v2;',
+ baselineSql,
+ candidateSql,
+ 'DO $integrity$',
+ 'DECLARE installed_hash text; old_hash text; new_hash text;',
+ 'BEGIN',
+ " SELECT md5(pg_get_viewdef('public.powerhouse_buying_window_v2'::regclass,true)) INTO installed_hash;",
+ " SELECT md5(pg_get_viewdef('pg_temp.p0_4215_buying_baseline'::regclass,true)) INTO old_hash;",
+ " SELECT md5(pg_get_viewdef('pg_temp.p0_4215_buying_candidate'::regclass,true)) INTO new_hash;",
+ " IF old_hash<>'2ce1ab1122390af0f51c5aa8b318600f' OR new_hash<>'6a7a20df1f24b4333986ba9b2da09314' THEN",
+ " RAISE EXCEPTION 'BUYING_RECONSTRUCTED_SOURCE_HASH_MISMATCH'; END IF;",
+ " IF installed_hash NOT IN (old_hash,new_hash) THEN",
+ " RAISE EXCEPTION 'BUYING_DEPLOYED_SOURCE_DRIFT'; END IF;",
+ " IF NOT EXISTS (SELECT 1 FROM pg_class WHERE oid='public.powerhouse_buying_window_v2'::regclass AND 'security_invoker=true'=ANY(reloptions)) THEN",
+ " RAISE EXCEPTION 'BUYING_SECURITY_INVOKER_MISSING'; END IF;",
+ " IF has_table_privilege('anon','public.powerhouse_buying_window_v2','SELECT') OR has_table_privilege('authenticated','public.powerhouse_buying_window_v2','SELECT') THEN",
+ " RAISE EXCEPTION 'BUYING_BROWSER_READ_BOUNDARY_DRIFT'; END IF;",
+ 'END $integrity$;',
+'CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_baseline;',
  candidateSql,
  'CREATE TEMP TABLE p0_new ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_candidate;',
  'DO $parity$',
