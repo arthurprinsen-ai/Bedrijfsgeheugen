@@ -29,7 +29,10 @@ test('terminal workflow requires merged-terminal path and current source presenc
   const policy=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
   assert.equal(policy.productionTruth.supabaseMigrationReadback.marker,'Terminal-Supabase-Migration-Readback');
   assert.equal(policy.productionTruth.supabaseMigrationReadback.failClosedWhenMissing,true);
-  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
-  assert.match(workflow,/TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING/);
+  assert.match(workflow,/migration_readback_required/);
+  assert.match(workflow,/expected_migrations/);
+  const terminalizer=readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  assert.match(terminalizer,/SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE/);
+  assert.match(terminalizer,/TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING/);
   assert.match(workflow,/UNMERGED_SUPERSEDES_REPLACED_BY_MERGED_TERMINAL_MIGRATION/);
 });
