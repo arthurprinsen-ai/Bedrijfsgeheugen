@@ -157,6 +157,10 @@
 
   var nav = document.createElement('div');
   nav.id = 'bgSharedMobileNav';
+  // The shared mobile CSS is loaded asynchronously. A11y aria-hidden alone
+  // does not suppress layout: keep this new DOM out of document flow before
+  // append, including when the stylesheet is not yet ready at first paint.
+  nav.setAttribute('hidden', '');
   nav.setAttribute('aria-hidden', 'true');
   nav.setAttribute('aria-label', 'Mobiele hoofdnavigatie');
   nav.innerHTML = '<div class="bg-shared-mobile-shell"><div class="bg-shared-mobile-brandline"><span class="bg-shared-mobile-kicker">Bedrijfsgeheugen</span></div></div>';
@@ -237,6 +241,8 @@
   }
 
   function sluit() {
+    // Retain no-layout native state even when shared mobile CSS is late.
+    nav.setAttribute('hidden', '');
     nav.setAttribute('aria-hidden', 'true');
     knop.setAttribute('aria-expanded', 'false');
     knop.setAttribute('aria-label', 'Open menu');
@@ -247,6 +253,8 @@
   }
 
   function open() {
+    // A direct user interaction is the only way to bring the overlay into flow.
+    nav.removeAttribute('hidden');
     nav.setAttribute('aria-hidden', 'false');
     knop.setAttribute('aria-expanded', 'true');
     knop.setAttribute('aria-label', 'Sluit menu');
