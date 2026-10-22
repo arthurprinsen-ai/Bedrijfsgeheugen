@@ -4,6 +4,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   observedAt:'2026-10-22T17:03:04.907Z',
   requiredGateWatchdogResilience:Object.freeze({owner:'Required Gate Watchdog',source:'.github/scripts/required-gate-watchdog.mjs',cron:'*/5 * * * *',boundedGetAttempts:2,readTimeoutMs:8000,perPrErrorIsolation:true,ambiguousWriteRetry:false,productionVerified:false}),
   brainFullFailureTriage:Object.freeze({fingerprint:'delivery|brain|first-failure-only-learning-blindspot|20261022-v1',source:'tools/delivery/brain-failure-clustering.mjs',workflow:'.github/workflows/unified-brain-delivery.yml',authority:'existing-failed-lane-artifact',maxCases:5000,model:'observation-only',productionVerified:false}),
+  portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'3a589071b3351b77f72b8b765df7b07a71790c2d37a99540a2436ef90edfc02d',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
