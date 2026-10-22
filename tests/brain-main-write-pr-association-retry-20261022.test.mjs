@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readMainWritePullRequests, MAIN_WRITE_ASSOCIATION_DELAYS_MS } from '../tools/main-write-pr-association-retry.mjs';
+import { readMainWritePullRequests, MAIN_WRITE_ASSOCIATION_DELAYS_MS } from '../tools/ci/main-write-pr-association-retry.mjs';
 import { classifyMainWrite } from '../tools/main-write-integrity.mjs';
 const sha = '4ce0846ca51227169389241d3a122b274795a0b2';
 const governed = [{ number: 4658, merged_at: '2026-10-22T15:43:18Z', base: { ref: 'main' }, merge_commit_sha: sha }];

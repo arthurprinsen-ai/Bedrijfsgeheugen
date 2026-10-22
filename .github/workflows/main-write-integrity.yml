@@ -32,7 +32,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { appendFile, writeFile } from 'node:fs/promises';
           import { classifyMainWrite } from './tools/main-write-integrity.mjs';
-          import { readMainWritePullRequests } from './tools/main-write-pr-association-retry.mjs';
+          import { readMainWritePullRequests } from './tools/ci/main-write-pr-association-retry.mjs';
           const sha = process.env.GITHUB_SHA;
           const parentLine = execFileSync('git', ['rev-list', '--parents', '-n', '1', sha], { encoding: 'utf8' }).trim();
           const parentCount = Math.max(0, parentLine.split(/\s+/).length - 1);
