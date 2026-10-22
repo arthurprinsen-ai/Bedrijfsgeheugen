@@ -10,7 +10,16 @@
     "regression_replay": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39763876577",
     "replay_test_count": 6,
     "replay_state": "PASSED",
-    "full_brain_zero_proven": false
+    "full_brain_zero_proven": false,
+    "extended_replay_pending": true,
+    "previous_six_suite_replay_proven": true,
+    "new_full_suite_previous_run": {
+      "url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39764656116",
+      "tests": 3521,
+      "passed": 3169,
+      "failed": 352,
+      "fully_green": false
+    }
   },
   "observed": {
     "tests": 3511,
@@ -18,7 +27,7 @@
     "failed": 321
   },
   "root_cause": "Historical BRAIN tests read obsolete inlined Netlify TOML build steps; actual production and preview use the canonical ordered build entrypoint.",
-  "fix": "Six existing test suites now inspect actual canonical build phases, execution, ordering, product-led behavior and syntax via one fail-closed source oracle.",
+  "fix": "Eight inherited test suites now validate actual canonical Netlify ordered build phases, SEO sitemap and website final coherence, syntax, pricing, product-led behavior and exact local fallback through one fail-closed source oracle.",
   "prevention_rule": "TEST_ACTUAL_CANONICAL_BUILD_ENTRY_NOT_RETIRED_INLINE_COMMAND",
   "status": "CANDIDATE_UNVERIFIED",
   "production_changed": false,
@@ -37,7 +46,9 @@
       "tests/brain-pricing-final-build-order-v1.test.mjs",
       "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
       "tests/brain-product-led-home-v1.test.mjs",
-      "tests/brain-product-led-production-promotion-v1.test.mjs"
+      "tests/brain-product-led-production-promotion-v1.test.mjs",
+      "tests/brain-search-indexing-sitemap-contract.test.mjs",
+      "tests/brain-website-coherence-v1.test.mjs"
     ]
   },
   "compiler": {

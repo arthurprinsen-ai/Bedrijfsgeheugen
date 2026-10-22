@@ -243,3 +243,7 @@ Recurrence learning: `brain/learning/2026-10-07-portal-authenticated-production-
 - Historische BRAIN-tests mogen niet vasthouden aan een vroegere inlined TOML-commandostreng en nooit schijn-groen veroorzaken door die ongebruikte commandostreng opnieuw toe te voegen.
 - Controleer met `tests/brain-netlify-canonical-build-source.mjs` de uitvoeringsvolgorde, scriptnamen, faseargumenten, syntax en preview fallback. Bescherm alle verplichte security- en kwaliteitscontroles.
 - Gerichte successen tellen niet als 321→0 of als Netlify productieacceptatie. Verplicht: exact-head Required, CodeQL, fresh full BRAIN en onafhankelijk provider/prod-readback voordat een claim groen is.
+
+## SEO en eindcoherentie via canonieke buildbron (22 oktober 2026)
+- Ook zoekmachine-indexering, sitemap en afsluitende websitecoherentie moeten via de echte `netlify-build-entry.mjs`-fasevolgorde worden gecontroleerd.
+- De bestaande twee testbestanden `tests/brain-search-indexing-sitemap-contract.test.mjs` en `tests/brain-website-coherence-v1.test.mjs` zijn verbonden met dezelfde fail-closed buildbron. Bescherm noindex, canonical, SEO-volgorde en coherentievastlegging zonder oude inline buildcommandostreng.

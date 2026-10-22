@@ -7,3 +7,6 @@ Root cause: six inherited test suites inspect retired long inlined build command
 Correction: tests inspect both canonical build commands and the actual phase list; validate ordered transforms, full phase script syntax, product-led homepage step and exact-candidate local browser fallback. No runtime, provider, scheduler, migration, tenant or security changes.
 
 Acceptance: exact-head targeted Node, Required, CodeQL and fresh full BRAIN all required. This PR is **UNVERIFIED** until checks pass, and is not a claim that 321 failures became zero. Parent #3742 and customer-isolation #4215 remain independently open.
+
+## Additional same-root coverage (22 October 2026)
+The exact-head full BRAIN verification-only run #39764656116 proved 3,521 tests / 3,169 pass / 352 fail, including two additional retired inline Netlify build oracles in SEO sitemap and website coherence test suites. Both now read the same real canonical production/deploy-preview phases and assert transform order, sitemap/locale verification and terminal website coherence. No runtime/Netlify/workflow changes or skipped tests. Added both suites to canonical historical replay; until fresh exact-head gates pass the new coverage remains UNVERIFIED.

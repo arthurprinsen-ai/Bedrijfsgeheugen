@@ -9,3 +9,9 @@ Action: six affected tests + one fail-closed canonical source helper at tests/br
 CI admission initial failure: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39763346154 — unclassified tests/helpers path. Root fix: move test helper under existing backend-classified tests/brain-* without weakening classifier, replace all six references; revert noncanonical skills/ path, use existing classified .agents/skills skill.
 Prevention: TEST_ACTUAL_CANONICAL_BUILD_ENTRY_NOT_RETIRED_INLINE_COMMAND.
 Status: CANDIDATE_UNVERIFIED. Production unchanged. Exact-head targeted tests, full BRAIN, Required and CodeQL not yet demonstrated.
+
+## Same-root second mini-batch after full BRAIN evidence
+- Source: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39764656116 (3,521 tests, 3,169 pass, 352 fail).
+- Additional matching historical oracles: tests/brain-search-indexing-sitemap-contract.test.mjs (SEO pipeline source) and tests/brain-website-coherence-v1.test.mjs (final coherence source).
+- Both now resolve authoritative ordered build phases through tests/brain-netlify-canonical-build-source.mjs. No production or CI policy modifications.
+- Learning evaluation grows from six to eight suites; exact-head replay, Required, CodeQL and new whole BRAIN are pending. Initial 352 failures remain unclosed until executed acceptance.
