@@ -24,8 +24,11 @@ export function classifyGhost(run, { jobsTotal, mainSha, openHeadShas = [], now 
   return { eligible: true, reason: 'STALE_ZERO_JOB_NON_AUTHORITATIVE_HEAD' };
 }
 
-export function evidenceIds(issueText, comments = []) {
-  const text = [issueText, ...comments.map(c => c.body || '')].join('\n');
+export function evidenceIds(issueText, comments = [], { trustedActors = null } = {}) {
+  const accepted=trustedActors
+    ? comments.filter(c=>trustedActors.includes(c?.user?.login))
+    : comments;
+  const text = [issueText, ...accepted.map(c => c.body || '')].join('\n');
   const ids = new Set();
   const completed = new Set();
   const blocked = new Set();
@@ -56,10 +59,11 @@ async function main() {
     if (!response.ok) throw new Error('GITHUB_READ_FAILED:' + path + ':' + response.status);
     return response.data;
   }
-  async function paginate(path, extract, maxPages = 20) {
+  async function paginate(path, extract, maxPages = 20, onPage = null) {
     const all = [];
     for (let page = 1; page <= maxPages; page++) {
       const data = await required(path + (path.includes('?') ? '&' : '?') + 'per_page=100&page=' + page);
+      if (onPage) onPage(data, page);
       const rows = extract(data);
       if (!Array.isArray(rows)) throw new Error('GITHUB_PAGINATION_UNEXPECTED:' + path);
       all.push(...rows);
@@ -69,8 +73,15 @@ async function main() {
   }
   const issue = await required('/issues/' + GHOST_INCIDENT);
   const comments = await paginate('/issues/' + GHOST_INCIDENT + '/comments', data => data);
-  const known = evidenceIds(issue.body || '', comments);
-  const queued = await paginate('/actions/runs?status=queued', data => data.workflow_runs);
+  const known = evidenceIds(issue.body || '', comments, { trustedActors: [repo.split('/')[0], 'github-actions[bot]'] });
+  let queuedProviderTotalCount = null;
+  let queuedProviderTotalsStable = true;
+  const queued = await paginate('/actions/runs?status=queued', data => data.workflow_runs, 20, (data, page) => {
+    const count=data?.total_count;
+    if (!Number.isSafeInteger(count) || count<0) queuedProviderTotalsStable=false;
+    if (page===1) queuedProviderTotalCount=count;
+    else if (count!==queuedProviderTotalCount) queuedProviderTotalsStable=false;
+  });
   const openPRs = await paginate('/pulls?state=open', data => data);
   const mainRef = await required('/git/ref/heads/main');
   const mainSha = mainRef.object?.sha;
@@ -91,7 +102,7 @@ async function main() {
     reports.push(record);
     if (known.blocked.has(run.id)) runProofs.push({
       incident: GHOST_INCIDENT, runId: run.id,
-      providerBoundary: 'GITHUB_CANCEL_FORCE_409_DELETE_403',
+      providerBoundary: 'GITHUB_CANONICAL_PROVIDER_BLOCKED',
       jobsTotalCount: jobs.total_count, runStatus: run.status,
       runHeadSha: run.head_sha, runCreatedAt: run.created_at,
       runUpdatedAt: run.updated_at, readbackAt: new Date().toISOString()
@@ -131,6 +142,7 @@ async function main() {
   }
   // Poll previously attempted runs even when the queued collection omits them (provider API inconsistency).
   const resolvedNew = [];
+  const independentlyQueuedKnownIds = [];
   for (const id of known.ids) {
     if (known.completed.has(id)) continue;
     const response = await api('/actions/runs/' + id);
@@ -138,6 +150,8 @@ async function main() {
       resolvedNew.push(id);
     } else if (!response.ok) {
       throw new Error('GITHUB_READBACK_UNAVAILABLE_FOR_ATTEMPT:' + id + ':' + response.status);
+    } else if (response.data?.status === 'queued') {
+      independentlyQueuedKnownIds.push(id);
     }
   }
   // One comment per change, fingerprinted; existing incident is the only remediation owner.
@@ -158,11 +172,16 @@ async function main() {
     const reopened = await api('/issues/' + GHOST_INCIDENT, 'PATCH', { state: 'open' });
     if (!reopened.ok) throw new Error('GHOST_INCIDENT_REOPEN_FAILED:' + reopened.status);
   }
+  const rawProviderQueued = Number.isSafeInteger(queuedProviderTotalCount)
+    ? Math.max(queuedProviderTotalCount,queued.length) : queued.length;
   const pressure = assessQueuePressure({
-    queued: queued.length,
+    queued: rawProviderQueued,
     queueEvidence: { queuedRuns: queued, runProofs, currentMainSha: mainSha,
-      openPrHeadShas: activeHeads, snapshotComplete: true,
-      rawTotalCount: queued.length }
+      openPrHeadShas: activeHeads,
+      snapshotComplete: queuedProviderTotalsStable,
+      rawTotalCount: queuedProviderTotalCount,
+      knownUnresolvedQueuedIds: independentlyQueuedKnownIds,
+      providerIncidentOpen: issue.state === 'open' }
   });
   // Exact-ID provider anomalies stay visible if the collection omits them.
   const collectionMissingKnownProviderIds = [...known.blocked].filter(id =>
@@ -171,6 +190,11 @@ async function main() {
     queued_count: queued.length, rawQueued: pressure.counts.rawQueued,
     actionableQueued: pressure.counts.queued,
     verifiedProviderGhostQueued: pressure.counts.verifiedProviderGhostQueued,
+    queuePressureState: pressure.state,
+    queueSnapshotInconsistent: pressure.queueSnapshotInconsistent,
+    reportedQueuedTotalCount: queuedProviderTotalCount,
+    queuedProviderTotalsStable,
+    independentlyQueuedKnownIds,
     providerIncidentStillOpen: reports.length > 0 || [...known.blocked].some(id => !known.completed.has(id) && !resolvedNew.includes(id)),
     collectionMissingKnownProviderIds,
     ghosts: reports, attempts: newAttempts.length,

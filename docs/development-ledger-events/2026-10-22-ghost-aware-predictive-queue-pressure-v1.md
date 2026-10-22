@@ -19,3 +19,7 @@
 - Skill projection: .agents/skills/powerhouse-continuity/SKILL.md
 - Map: platform/system-map/canonical-system-map.mjs
 - Status: CANDIDATE; exact SHA CI, protected merge and live Janitor run required; broader #4661 goals separately open.
+
+- Recovery amendment: exact provider queued list total_count can differ from listed rows (12 vs 10) or exact known run APIs (0 vs 4); duplicated run IDs can over-discount capacity.
+- Fail-closed fix: propagate independently reported count and exact queued IDs, reject duplicate IDs/proofs, verify trusted actor on provider-block evidence, emit PROVIDER_QUEUE_SNAPSHOT_INCONSISTENT and hold optional dispatch.
+- Replay: tests/delivery-powerhouse-supervisor.test.mjs + tests/brain-delivery-stale-queue-janitor-v1.test.mjs. Candidate only until protected exact-head CI, merge and live Janitor readback. No new scheduler, no bypass, provider issue #4655 remains open.

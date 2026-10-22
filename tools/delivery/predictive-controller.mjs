@@ -1,32 +1,50 @@
-// Provider-denied GitHub Actions ghost runs remain incident-red but must not
-// consume an *actionable* queue slot once exact readback and issue proof agree.
-// The ordinary numeric queue path remains fail-closed: no proof, no discount.
+// A provider-denied zero-job record may be excluded from *actionable* work
+// only on a complete and consistent, independently rechecked GitHub snapshot.
+// A provider incident is never closed by this capacity classification.
 export function partitionVerifiedProviderGhostQueue({
   queuedRuns=[],runProofs=[],currentMainSha='',openPrHeadShas=[],
-  snapshotComplete=false,rawTotalCount=null,now=Date.now()
+  snapshotComplete=false,rawTotalCount=null,knownUnresolvedQueuedIds=[],
+  providerIncidentOpen=false,now=Date.now()
 }={}){
   const runs=Array.isArray(queuedRuns)?queuedRuns:[];
-  const rawQueued=Number.isInteger(rawTotalCount)&&rawTotalCount>=0?rawTotalCount:runs.length;
-  const complete=snapshotComplete===true && Number.isInteger(rawTotalCount) && rawTotalCount===runs.length;
-  const proofMap=new Map((Array.isArray(runProofs)?runProofs:[])
-    .filter(p=>Number.isSafeInteger(p?.runId)).map(p=>[p.runId,p]));
+  const reportedCountValid=Number.isSafeInteger(rawTotalCount)&&rawTotalCount>=0;
+  const rawQueued=reportedCountValid?rawTotalCount:runs.length;
+  const idsInRows=runs.map(run=>run?.id);
+  const uniqueIds=new Set(idsInRows);
+  const proofs=Array.isArray(runProofs)?runProofs:[];
+  const proofIds=proofs.map(proof=>proof?.runId);
+  const knownIds=Array.isArray(knownUnresolvedQueuedIds)?knownUnresolvedQueuedIds:[];
+  const missingKnown=knownIds.some(id=>!uniqueIds.has(id));
+  const collectionInconsistent=snapshotComplete!==true||!reportedCountValid
+    ||rawTotalCount!==runs.length||uniqueIds.size!==runs.length
+    ||idsInRows.some(id=>!Number.isSafeInteger(id))
+    ||new Set(proofIds).size!==proofs.length
+    ||proofIds.some(id=>!Number.isSafeInteger(id))
+    ||missingKnown;
+  const proofMap=new Map(proofs.map(proof=>[proof.runId,proof]));
   const currentHeads=new Set(openPrHeadShas||[]);
-  const ids=[];
-  for(const run of runs){
-    if(!complete || !Number.isSafeInteger(run?.id) || run.status!=='queued' || run.conclusion!=null) continue;
-    const proof=proofMap.get(run.id);
-    if(!proof || proof.incident!==4655 || proof.providerBoundary!=='GITHUB_CANCEL_FORCE_409_DELETE_403') continue;
-    if(proof.jobsTotalCount!==0 || proof.runStatus!=='queued' || proof.runHeadSha!==run.head_sha) continue;
-    if(!run.head_sha || !run.head_branch || !currentMainSha || run.head_sha===currentMainSha || currentHeads.has(run.head_sha)) continue;
-    if(!run.created_at || run.created_at!==run.updated_at || proof.runUpdatedAt!==run.updated_at || proof.runCreatedAt!==run.created_at) continue;
-    const age=now-Date.parse(run.created_at);
-    const freshness=now-Date.parse(proof.readbackAt||'');
-    if(!Number.isFinite(age)||age<86_400_000 || !Number.isFinite(freshness)||freshness<0||freshness>600_000) continue;
-    ids.push(run.id);
+  const verified=[];
+  if(!collectionInconsistent){
+    for(const run of runs){
+      if(run.status!=='queued'||run.conclusion!=null) continue;
+      const proof=proofMap.get(run.id);
+      if(!proof||proof.incident!==4655||proof.providerBoundary!=='GITHUB_CANONICAL_PROVIDER_BLOCKED') continue;
+      if(proof.jobsTotalCount!==0||proof.runStatus!=='queued'||proof.runHeadSha!==run.head_sha) continue;
+      if(!run.head_sha||!run.head_branch||!currentMainSha||run.head_sha===currentMainSha||currentHeads.has(run.head_sha)) continue;
+      if(!run.created_at||run.created_at!==run.updated_at||proof.runUpdatedAt!==run.updated_at||proof.runCreatedAt!==run.created_at) continue;
+      const age=now-Date.parse(run.created_at),freshness=now-Date.parse(proof.readbackAt||'');
+      if(!Number.isFinite(age)||age<86_400_000||!Number.isFinite(freshness)||freshness<0||freshness>600_000) continue;
+      verified.push(run.id);
+    }
   }
-  return Object.freeze({rawQueued,verifiedProviderGhostQueued:ids.length,
-    actionableQueued:Math.max(0,rawQueued-ids.length),verifiedGhostRunIds:Object.freeze(ids),
-    incidentId:4655,snapshotComplete:complete,providerIncidentStillOpen:ids.length>0});
+  return Object.freeze({
+    rawQueued,verifiedProviderGhostQueued:verified.length,
+    actionableQueued:Math.max(0,rawQueued-verified.length),
+    verifiedGhostRunIds:Object.freeze(verified),
+    incidentId:4655,snapshotComplete:!collectionInconsistent,
+    collectionInconsistent,missingKnownProviderIds:Object.freeze(knownIds.filter(id=>!uniqueIds.has(id))),
+    providerIncidentStillOpen:providerIncidentOpen===true||verified.length>0
+  });
 }
 
 export const QUEUE_PRESSURE_DEFAULTS = Object.freeze({ softActive:8, softQueued:5, hardActive:12, hardQueued:8, maxProjectedNewRuns:3 });
@@ -36,15 +54,18 @@ export function assessQueuePressure({queued=0,inProgress=0,pending=0,waiting=0,r
   const rawQueued=Math.max(0,Number(queued)||0);
   // Collection counts outrank any partial/inconsistent proof snapshot.
   const eligible=split && split.snapshotComplete && split.rawQueued===rawQueued ? split.verifiedProviderGhostQueued : 0;
+  // No optional dispatch if independent exact-ID reads contradict the queued listing.
+  const providerQueueUnknown=Boolean(split && (split.collectionInconsistent || split.rawQueued!==rawQueued));
   const counts={queued:Math.max(0,rawQueued-eligible),rawQueued,verifiedProviderGhostQueued:eligible,inProgress:Math.max(0,Number(inProgress)||0),pending:Math.max(0,Number(pending)||0),waiting:Math.max(0,Number(waiting)||0),requested:Math.max(0,Number(requested)||0),projectedNewRuns:Math.max(0,Number(projectedNewRuns)||0)};
   const active=counts.queued+counts.inProgress+counts.pending+counts.waiting+counts.requested;
   const projectedActive=active+counts.projectedNewRuns;
   const projectedQueued=counts.queued+counts.projectedNewRuns;
   let state='HEALTHY',action='ALLOW_BOUNDED_SINGLE_FLIGHT';
-  if(active>=limits.hardActive||counts.queued>=limits.hardQueued){state='CIRCUIT_OPEN';action='NO_NEW_RECOVERY_OR_OPTIONAL_WORK_REUSE_DEDUPE_REAP';}
+  if(providerQueueUnknown){state='PROVIDER_QUEUE_SNAPSHOT_INCONSISTENT';action='HOLD_OPTIONAL_DISPATCH_AND_RECHECK_EXACT_PROVIDER_STATE';}
+  else if(active>=limits.hardActive||counts.queued>=limits.hardQueued){state='CIRCUIT_OPEN';action='NO_NEW_RECOVERY_OR_OPTIONAL_WORK_REUSE_DEDUPE_REAP';}
   else if(counts.projectedNewRuns>limits.maxProjectedNewRuns||projectedActive>=limits.hardActive||projectedQueued>=limits.hardQueued){state='PROJECTED_OVERLOAD';action='BATCH_NARROW_OR_DEFER_BEFORE_MUTATION';}
   else if(active>=limits.softActive||counts.queued>=limits.softQueued){state='PRESSURE_HIGH';action='ESSENTIAL_SINGLE_FLIGHT_ONLY_BATCH_WRITES';}
-  return Object.freeze({state,action,active,projectedActive,projectedQueued,allowOptionalDispatch:state==='HEALTHY',allowRecoveryFanout:false,providerGhostIncidentOpen:eligible>0,shouldBatchWrites:state!=='HEALTHY'||counts.projectedNewRuns>1,counts,limits});
+  return Object.freeze({state,action,active,projectedActive,projectedQueued,allowOptionalDispatch:state==='HEALTHY',allowRecoveryFanout:false,providerGhostIncidentOpen:split?.providerIncidentStillOpen===true,queueSnapshotInconsistent:providerQueueUnknown,shouldBatchWrites:state!=='HEALTHY'||counts.projectedNewRuns>1,counts,limits});
 }
 
 export const DEFAULT_SLO = Object.freeze({
@@ -248,7 +269,7 @@ export function planConcurrentAgentWork({
     canMutateCandidate:false,canContinueIndependentWork:true,
     conflicts,pressure,reason:'OVERLAPPING_TERMINAL_RESOURCE'
   });
-  if(pressure.state==='CIRCUIT_OPEN'||pressure.state==='PROJECTED_OVERLOAD') return Object.freeze({
+  if(pressure.state==='CIRCUIT_OPEN'||pressure.state==='PROJECTED_OVERLOAD'||pressure.state==='PROVIDER_QUEUE_SNAPSHOT_INCONSISTENT') return Object.freeze({
     state:'BATCH_BEFORE_MUTATION',
     action:'REDUCE_FANOUT_REUSE_ACTIVE_RUNS_AND_CONTINUE_LOCAL_WORK',
     canMutateCandidate:false,canContinueIndependentWork:true,

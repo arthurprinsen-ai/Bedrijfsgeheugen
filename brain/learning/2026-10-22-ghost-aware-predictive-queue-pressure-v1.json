@@ -33,7 +33,7 @@
     "Repeating provider-denied API cancellation and deletion"
   ],
   "fix": "Extend the existing predictive-controller pure queue-pressure algorithm with exact run-id, current-main/open-PR-head, 24h unchanged timestamp, 0 jobs, canonical incident-denial marker, fresh ten-minute exact-readback and fully paginated collection proof. Existing Repository Janitor emits rawQueued, verifiedProviderGhostQueued and actionableQueued in the existing evidence artifact; no new scheduler.",
-  "prevention_rule": "Capacity reservations must use only independently verified provider-ghost exclusions; preserve unmodified raw count and provider incident OPEN. Any missing/mismatched proof, job present, active head, current Required/CodeQL, stale readback, partial collection or inconsistent total fails closed. Never weaken security/release gates or alter externally owned GitHub provider data to create false green.",
+  "prevention_rule": "Capacity reservations must use only independently verified provider-ghost exclusions; preserve unmodified raw count and provider incident OPEN. Any missing/mismatched proof, job present, active head, current Required/CodeQL, stale readback, partial collection or inconsistent total fails closed. Never weaken security/release gates or alter externally owned GitHub provider data to create false green. Inconsistent GitHub response total_count, duplicate run IDs/proofs, missing independently queued historical IDs or untrusted prior denial comments prohibit optional dispatch (PROVIDER_QUEUE_SNAPSHOT_INCONSISTENT), even if listed queue=0.",
   "tests": [
     "tests/brain-delivery-stale-queue-janitor-v1.test.mjs",
     "tests/delivery-powerhouse-supervisor.test.mjs"
@@ -56,7 +56,8 @@
       "current-head / required / CodeQL remain counted",
       "zero jobs and 409/403 provider denial required",
       "provider incident never marked resolved by capacity-only normalization",
-      "no new scheduler and deterministic regression"
+      "no new scheduler and deterministic regression",
+      "GitHub total_count/list discrepancy, duplicate run IDs/proofs, known queued IDs omitted by collection and untrusted denial markers never authorize optional CI dispatch"
     ],
     "historical_replay": [
       "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
