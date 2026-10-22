@@ -1,0 +1,62 @@
+{
+  "fingerprint": "brain|ci|supabase-preview-retired-source-contract|20261022-v1",
+  "date": "2026-10-22",
+  "type": "BRAIN_LEARNING",
+  "status": "CANDIDATE",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "baseline_run_id": 39671036043,
+  "baseline_backend_job_id": 119469063095,
+  "baseline_failed_tests": 321,
+  "root_cause": "Seven inherited tests target deleted .github/workflows/supabase-preview-applicability.yml instead of the canonical required-test.yml source/provider gates, reusable supabase-pr-preview.yml and Supabase-owned check diagnostics.",
+  "prevention_rule": "Test the canonical source and provider-owned Supabase Preview behavior with negative fixtures; never recreate retired workflow aliases or count a skipped, neutral, stale or spoofed provider check as success.",
+  "exact_base_sha": "64104acf8402d65dcfd7359a152eaf6f305b9ffe",
+  "production_verified": false,
+  "source_contracts": [
+    ".github/workflows/required-test.yml",
+    ".github/workflows/supabase-pr-preview.yml",
+    "tools/ci/supabase-preview-diagnosis.mjs",
+    "scripts/brain/check_powerhouse_supabase_security.py"
+  ],
+  "regression_tests": [
+    "tests/brain-supabase-preview-applicability-v1.test.mjs",
+    "tests/brain-supabase-migration-history-parity-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-applicability-v1.test.mjs",
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-preview-applicability-v1.test.mjs",
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-preview-applicability-v1.test.mjs",
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "baseline": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39671036043/job/119469063095",
+    "exact_head_backend": "NOT_RUN",
+    "isolated_tests": "NOT_RUN",
+    "expected_count_of_historical_ENOENT_cases": 7,
+    "observed_fixed_cases": null
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md"
+  ],
+  "writeback": {
+    "canonical_skill_projection": "PENDING_OWNER_COORDINATION",
+    "system_map": "NO_AUTHORITY_CHANGE",
+    "human_documentation": "docs/changes/2026-10-22-brain-supabase-preview-current-source-contract-v1.md"
+  }
+}
