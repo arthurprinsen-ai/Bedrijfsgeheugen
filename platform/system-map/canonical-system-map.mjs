@@ -37,6 +37,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'github-failed-gate-same-owner-recovery-v1',
+      fingerprint:'delivery|failed-gate|watchdog-observation-only|20261022-v1',
+      label:'Existing five-minute Required Gate Watchdog routes failed exact-head Required and CodeQL evidence to the original PR owner',
+      owner:'existing GitHub Required Gate Watchdog / immutable PR writer lease',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'.github/workflows/required-gate-watchdog.yml + tools/delivery/failed-gate-owner-routing.mjs',
+      inputs:Object.freeze(['latest exact-head Required test / CodeQL run','original PR lease and obligation','immutable failing job evidence']),
+      outputs:Object.freeze(['one deduplicated source-repair handoff per gate/head','existing missing-Required dispatch unchanged','unresolved failure remains not green']),
+      evidence:'tests/brain-required-failed-gate-owner-routing-v1.test.mjs',
+      learning:'brain/learning/2026-10-22-failed-gate-owner-routing-v1.json',
+      documentation:'docs/changes/2026-10-22-failed-gate-owner-routing-v1.md',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742',
+      noNewScheduler:true, noNewIncidentStore:true, noSecondWriter:true,
+      arbitrarySourceFixAutoExecutionProven:false, productionReadbackProven:false
+    }),
+    Object.freeze({
       id:'portal-eight-outcomes-connected-journey-v1',
       fingerprint:'portal|eight-outcomes|connected-entrepreneur-journey|v1',
       label:'Connected goal-first Frisse Blik, cockpit, source-backed Winstnavigator and page impact journey',
