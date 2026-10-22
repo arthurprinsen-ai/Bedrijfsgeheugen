@@ -57,5 +57,26 @@
       "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
       "tests/brain-mira-generation-reference-v1.test.mjs"
     ]
+  },
+  "prevention": [
+    "Before generating any media, compare the immutable Mira reference ID with OpenArt's actual provider resource URL and check that the file is retrievable; fail closed on stale mismatches.",
+    "Keep facial verification >=0.94 across three frames; do not claim completed Reel without authenticated post ID and public readback.",
+    "Only canonical scheduler/producer media lineage; avoid duplicate workers, retries and supplier fallback."
+  ],
+  "evidence": {
+    "provider_creation_history_id": "oM62pDwi2me8dkm4qrGj",
+    "reference_url_verified": "https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg",
+    "reference_metadata_checked": {
+      "width": 928,
+      "height": 1152,
+      "file_size_bytes": 741785
+    },
+    "failed_video_history_id": "11JIYC1cS878LoxreAIT",
+    "tests": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ],
+    "production_deployed": false,
+    "provider_post_readback": false
   }
 }
