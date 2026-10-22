@@ -36,3 +36,20 @@ test('view migration only changes person intelligence use, never dispatch',()=>{
  assert.match(sql,/BEGIN;/);
  assert.match(sql,/COMMIT;/);
 });
+
+test('independent preview runner compares every 50-column row, forecast aggregation and rejects production',()=>{
+ const p='tests/brain-p0-4215-buying-window-full-parity.mjs';
+ const src=readFileSync(p,'utf8');
+ assert.match(src,/P0_4215_PARITY_ENV/);
+ assert.match(src,/isolated-preview/);
+ assert.match(src,/productionRef='adhjwmvyoixzjtmiroln'/);
+ assert.match(src,/ALL_50_COLUMN_SCHEMA_PARITY_FAILED/);
+ assert.match(src,/BUYING_ALL_50_COLUMN_BIDIRECTIONAL_PARITY_FAILED/);
+ assert.match(src,/BUYING_FINANCIAL_AGGREGATE_PARITY_FAILED/);
+ assert.match(src,/EXCEPT ALL/);
+ assert.match(src,/BEGIN ISOLATION LEVEL REPEATABLE READ/);
+ assert.match(src,/ROLLBACK;/);
+ assert.match(src,/CREATE TEMP TABLE p0_old/);
+ assert.match(src,/CREATE TEMP VIEW p0_4215_buying_candidate/);
+ assert.doesNotMatch(src,/CREATE OR REPLACE VIEW public\.powerhouse_buying_window_v2 WITH/);
+});
