@@ -12,3 +12,12 @@
 - Next: exact-head tests, CodeQL, machine-readable skill projection, protected merge, workflow run readback, then source remediation owner and true release acceptance
 - Evidence status: CANDIDATE; live and autonomous arbitrary code repair NOT PROVEN
 
+
+## Follow-up — old-PR failure signal blindspot
+
+- Existing obligation/fingerprint: `delivery|failed-gate|watchdog-observation-only|20261022-v1` / #3742 (dedup, no new incident).
+- Observed root cause after #4660: `pr.updated_at > 2h` exited before checking newly failed exact-head Required/CodeQL.
+- Same five-minute workflow, no extra scheduler: inspect recent PRs every tick and older PRs in 12-way 60-minute shards.
+- Safety: no aged missing-Required redispatch; two owner comments max/tick; exact-head and comment dedup retained; no blind provider retry or lowered browser CLS/security threshold.
+- Branch: `fix/failed-gate-aged-pr-sharded-recovery-20261022-v1`. Reuse existing source module, original regression, Brain learning, human docs and ledger.
+- Evidence status: CANDIDATE until actual CI+CodeQL, protected merge and scheduled watchdog provider readback. Full BRAIN zero failures not claimed.
