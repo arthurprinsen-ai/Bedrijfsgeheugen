@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|health-weekly-cron-cadence-aware|20261022-v1",
+  "owner": "existing bg_gezondheid_meten / pg_cron health lane",
+  "date": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "source_of_truth": "public.brain_failure_registry; this is a learning projection, not a second registry",
+  "observed_failure": "Cron weekly 19 Oct 06:00 and 06:40 UTC succeeded; generic 74h warning on 22 Oct falsely labels them stale.",
+  "root_cause": "Health SQL treated every non-daily job as stale beyond 74 hours without respecting simple numeric day-of-week weekly schedule.",
+  "proposed_fix": "Guarded in-place canonical bg_gezondheid_meten function source patch: successful simple weekly owner: 7 days + 2h grace, failed/no-run still error; daily/nonweekly policies unchanged.",
+  "prevention_rule": "Treat a job as overdue only against its proven intended cadence. Never conflate cron invocation success with actual provider downstream outcomes; keep source/provider readback separate.",
+  "regression": "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs",
+  "migration": "supabase/migrations/20261022150000_powerhouse_health_weekly_cron_cadence_v1.sql",
+  "execution": "CANDIDATE; no production DDL until protected gates and preview pass",
+  "do_not_create_parallel_scheduler": true,
+  "do_not_mark_historical_provider_unproven_as_solved": true,
+  "compiler": {
+    "failure_class": "CRON_MONITOR_FALSE_STALE",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
+    ]
+  }
+}

@@ -1629,3 +1629,10 @@ tenant/date/channel/provider-unconsumed guards. Existing slug strings use
 exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
 publisher/provider proof boundaries, no duplicate blog, and never infer
 LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
+
+
+## 2026-10-22 — weekly cron health cadence versus false stale
+
+Fingerprint: `powerhouse|health-weekly-cron-cadence-aware|20261022-v1`.
+
+For scheduled jobs, do not classify a successful **weekly** invocation using the generic 74-hour nonweekly freshness threshold. Current source owner is the **existing** `public.bg_gezondheid_meten()`. Simple `M H * * D` weekly UTC schedules should be allowed seven days plus two hours after last successful run; never-running or failed runs remain errors. Keep daily and nonweekly checks intact. This does not prove the downstream provider operation; preserve `NOOIT_BEWEZEN` and source-readback obligations independently. Source/contract: `supabase/migrations/20261022150000_powerhouse_health_weekly_cron_cadence_v1.sql`, `tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs`. No new cron, updater, incident registry or parser authority; require protected migration and production/negative-canary readback before PROVEN.

@@ -2529,3 +2529,16 @@ export const LINKEDIN_PERSONAL_EXPIRED_AUTHORITY_RECOVERY_20261022=Object.freeze
  tests:'tests/brain-personal-expired-publish-authority-20261022.test.mjs',
  learning:'brain/learning/2026-10-22-personal-expired-publish-authority-v1.json'
 });
+
+
+export const POWERHOUSE_WEEKLY_CRON_HEALTH_CADENCE_20261022 = Object.freeze({
+  fingerprint: 'powerhouse|health-weekly-cron-cadence-aware|20261022-v1',
+  owner: 'public.bg_gezondheid_meten',
+  scheduler: 'existing pg_cron owners',
+  frequency: 'numeric-weekday weekly with seven-day plus two-hour evidence grace',
+  source: 'supabase/migrations/20261022150000_powerhouse_health_weekly_cron_cadence_v1.sql',
+  regression: 'tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs',
+  learning: 'brain/learning/2026-10-22-weekly-cron-health-cadence-v1.json',
+  noSecondScheduler: true,
+  noGreenWithoutProviderProof: true
+});
