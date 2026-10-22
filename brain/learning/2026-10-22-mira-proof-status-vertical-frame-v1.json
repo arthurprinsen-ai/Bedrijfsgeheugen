@@ -3,7 +3,7 @@
   "observed_at": "2026-10-22",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
   "related_pr": "fix/4439-instagram-proof-status-consistency-20261022",
-  "problem": "SQL trigger could demote an otherwise accepted 1080x1920 Reel video_frame to FAIL because validator treated video_frame as static 1080x1350 image, retaining prepublish_verified in same row.",
+  "problem": "Historical media proof records can contradict themselves: FAIL identity verdict with provisional prepublish_verified. The existing SQL validator also misclassifies 1080x1920 'video_frame' as a static 1080x1350 image. A historical 0.95 score frame had BOTH the shape classification problem and a stale August master, so it must remain rejected with the fixed September master gate.",
   "proof": {
     "production_ledger_rows": 46,
     "status_gate_contradictions": 21,
@@ -13,16 +13,27 @@
     "representative_face_identity_confidence": 0.95,
     "original_sql_validator_as_video_frame": false,
     "same_proof_as_reel": true,
-    "current_oct22_verdict": "BLOCKED; all 6 exact proofs FAIL, score <0.94; never claim live"
+    "current_oct22_verdict": "BLOCKED; all 6 exact proofs FAIL, score <0.94; never claim live",
+    "representative_stale_master_url": "https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg",
+    "representative_stale_master_sha256": "ab32dfce37ffdc25bb3f10ba62927442d055792bce6f77d987ca936b8c53e33d",
+    "official_current_master_sha256": "e32863f391e01dba910bf396ad13eb23c4a74b53f2614f1563b0fc332b1dd4e2",
+    "observed_candidate_readonly_simulation": {
+      "historical_rows": 46,
+      "oct22_rows": 6,
+      "oct22_proposed_passes": 0,
+      "previously_rejected_history_that_passes_all_new_guards": 0,
+      "explanation": "Historic 0.95 frame is still invalid due to stale master reference. Legacy proof rows lacking current face evidence also remain unaccepted."
+    }
   },
-  "root_cause": "Database projection has an incomplete video media-type discriminator, and BEFORE trigger changes identity_gate_result to FAIL but does not co-update contradictory preliminary status and visual.verified fields.",
-  "remediation": "Explicitly recognize video_frame=1080x1920 in the existing SQL validator; require canonical Mira ID/URL, two-image vision, >=0.94 facial similarity. Normalize prepublish_verified to prepublish_rejected on FAIL while preserving already-published external identifiers. No change to scheduler or provider dispatch.",
+  "root_cause": "Two independent defects: SQL validator omitted video_frame in its 9:16 type discriminator, and BEFORE trigger demoted identity_gate_result but not the contradictory provisional status. The historical 0.95 record also used the separate stale August master fixed by #4634; it cannot be promoted based on format alone.",
+  "remediation": "Apply strict source parity for video_frame=1080x1920, pin September official Mira ID, URL, sha256, require two-image vision and >=0.94 face confidence; prevent a fail identity verdict from retaining prepublish_verified and related nested flags. Preserve historical provider receipts. Never reclassify the 0.95 stale-master record as PASS.",
   "prevention": [
     "Treat format/proof tokens as a shared contract across producer, vision verifier, SQL trigger, and router.",
     "Never count provider_status prepublish_verified as proof if identity_gate_result is not PASS.",
     "Keep exact start/middle/end temporal+face verification and 0.94 minimum; no threshold lowering or random retry until PASS.",
     "Protect real provider receipts on already published media, reconcile separately.",
-    "Execute synthetic predicate checks and CI before protected merge; production and exact provider readback only after deployment."
+    "Execute synthetic predicate checks and CI before protected merge; production and exact provider readback only after deployment.",
+    "Test stale August reference URL/hash as explicit negative controls even if face score is >=0.94."
   ],
   "verification": {
     "source_test": "tests/brain-mira-media-proof-status-truth-v1.test.mjs",
@@ -31,13 +42,15 @@
       "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs",
+      "SQL embedded negative controls: reject stale August master, wrong hash, absent face score"
     ],
     "canary": [
       "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
     ],
     "deployment": "PENDING_REQUIRED_CI_AND_PROTECTED_MERGE",
-    "instagram_post": "NOT_LIVE_PROVEN"
+    "instagram_post": "NOT_LIVE_PROVEN",
+    "historical_real_data_query": "READ_ONLY_INSPECTION_FINISHED_NO_NEW_VALID_OCT22_MEDIA"
   },
   "status": "CANDIDATE_PENDING_RELEASE"
 }
