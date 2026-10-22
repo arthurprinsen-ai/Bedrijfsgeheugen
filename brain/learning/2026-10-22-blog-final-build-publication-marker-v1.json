@@ -45,5 +45,9 @@
     "tests/brain-native-blog-final-marker-build-v1.test.mjs",
     "tests/content-growth-v18-content-id-build-parity.test.mjs",
     "tests/content-growth-live-readback.test.mjs"
+  ],
+  "root_causes": [
+    "The production watchdog observed missing publication identity after fetching the public article even though the canonical GitHub source file contains the identity, leaving its historical daily blog obligation open.",
+    "Build-source chronology: the existing marker guard runs during homepage-pricing-cleanup and the build subsequently runs other HTML transformers. Removal by one of these later transforms remains a hypothesis until exact production artifact readback."
   ]
 }
