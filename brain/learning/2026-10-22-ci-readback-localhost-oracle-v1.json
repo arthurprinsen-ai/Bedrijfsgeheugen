@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "github|ci-automation|portal-readback-localhost-loop-false-oracle|20261022-v1",
+  "obligation_id": "github|ci-automation|portal-readback-localhost-loop-false-oracle|20261022-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "status": "CANDIDATE",
+  "failure_class": "CI_AUTOMATION_READBACK_TEST_ORACLE_FALSE_POSITIVE",
+  "root_cause": "The generic /seq 1 30/ assertion scans the entire portal production DOM workflow and rejects the legitimate 30x1s 127.0.0.1 approved-PR server start probe. It was meant only to reject an external 30x10s deploy-preview wait.",
+  "observed_evidence": {
+    "github_run": 39827594879,
+    "job_id": 119995933814,
+    "head_sha": "276a60e93aeb162812c6e36ceafbf86f2a54de01",
+    "failed_test": "tests/delivery-readback-wachtvenster.test.mjs:53",
+    "failure_message": "de oude lus van vijf minuten staat er nog",
+    "real_external_wait_script": "tools/ci/wait-for-url.sh",
+    "unsafe_scope": "whole-workflow regex false positive",
+    "safe_loopback": "http://127.0.0.1:4173/portaal/demo/"
+  },
+  "failed_approaches": [
+    "Treat every seq 1 30 local boot loop as an external provider timeout",
+    "Skip the umbrella Required automation suite to release a separate PR",
+    "Remove provider-preview wait testing altogether"
+  ],
+  "fix": "Scope the short legacy 30-iteration loop detection to curls using deploy-preview-*, PORTAL_ALIAS_URL or READBACK_URL. Add negative allowed-loopback and positive forbidden external alias/direct-host fixtures; leave the shared >=600s external wait invariant unchanged.",
+  "prevention_rule": "Evaluate CI test-oracle assertions against the relevant resource class and source path; require paired bad external preview poll and valid local bootstrap fixtures. Preserve Required/CodeQL and no duplicate GitHub CI dispatch.",
+  "tests": [
+    "tests/delivery-readback-wachtvenster.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_AUTOMATION_READBACK_TEST_ORACLE_FALSE_POSITIVE",
+    "scope": "GITHUB_CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "invariants": [
+      "the existing external 600-second shared script assertion remains unchanged",
+      "legitimate localhost 30x1s loop permitted",
+      "30x10s deploy-preview alias and direct URL loops forbidden",
+      "no second scheduler or test waiver"
+    ],
+    "historical_replay": [
+      "tests/delivery-readback-wachtvenster.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-readback-wachtvenster.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-readback-wachtvenster.test.mjs"
+    ]
+  },
+  "dependencies": [
+    "P0 #3742 remains open until exact-head Required and CodeQL plus protected merge and independent production run readback"
+  ],
+  "terminal_rule": "Do not promote to PROVEN before exact-head Required+CodeQL, protected merge to main, CI passing and canonical Brain/skill projectability."
+}
