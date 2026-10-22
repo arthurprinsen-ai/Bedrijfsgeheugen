@@ -1,0 +1,69 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1",
+  "obligation_id": "powerhouse|daily-self-evolution|independent-failure-domain-recovery|20261022-v1",
+  "status": "CANDIDATE",
+  "canonical_catalog_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367",
+  "root_cause": "Two real scheduled daily self-evolution runs (2026-10-21 and 2026-10-22) failed at an inline source-backed AI model catalog audit whose 14-day freshness threshold was exceeded. GitHub Actions default same-job fail-fast then skipped all subsequent independent chat/agent/skill/engineering learning steps and the evidence artifact upload. The model catalog stale evidence itself remains a genuine independent upstream issue, with official supplier receipts not yet accepted.",
+  "evidence": {
+    "failing_runs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39578449326",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39756866887"
+    ],
+    "failing_job_ids": [
+      119149765931,
+      119750958956
+    ],
+    "audit_state": "REFRESH_REQUIRED",
+    "catalog_verified_at": "2026-09-30",
+    "per_model_freshness_claims_unverified": 27,
+    "upstream_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367"
+  },
+  "prevention_rule": "Independent daily learning, engineering self-tests, skills and incident knowledge processing must execute independently of source-specific freshness failures. Move the strict provider model audit to a separate job inside the EXISTING scheduled workflow; retain its exit code and RED overall workflow whenever provider claims are unproven, and always upload audit artifact. Never restamp, waive, turn off a security test, add a scheduler or infer model recommendations are valid.",
+  "fix": [
+    "Run source-backed AI model audit in independently failing model-freshness job",
+    "Keep existing improve job for daily learning and self-improvement, without needs on stale model audit",
+    "Always preserve exact audit JSON as workflow artifact despite audit failure",
+    "Add regression test for independence, no swallowed errors, one schedule and owner"
+  ],
+  "owner": "Existing Powerhouse Daily Self Evolution workflow; supplier claim remediation remains canonically owned by issue #4367",
+  "code": [
+    ".github/workflows/powerhouse-daily-self-evolution.yml"
+  ],
+  "regression": [
+    "tests/powerhouse-daily-self-evolution.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "INDEPENDENT_LEARNING_BLOCKED_BY_STALE_PROVIDER_FRESHNESS",
+    "scope": "BRAIN_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-daily-self-evolution.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-daily-self-evolution.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-daily-self-evolution.test.mjs"
+    ],
+    "invariants": [
+      "AI model catalog freshness stays strict and independent",
+      "the workflow is RED overall while supplier evidence remains stale",
+      "daily self-evolution tasks are executed even while catalog job is RED",
+      "catalog failure report artifact survives RED status",
+      "no second scheduler or parallel learning owner",
+      "source timestamps are not modified without actual official verification",
+      "exact SHA protected Required CI and CodeQL before merge"
+    ]
+  },
+  "terminal_rule": "Only protected merge + exact main + actual post-merge daily learning job SUCCESS while model-freshness correctly reports independent source truth can prove the recovery. It does not close upstream model-catalog P0 #4367."
+}
