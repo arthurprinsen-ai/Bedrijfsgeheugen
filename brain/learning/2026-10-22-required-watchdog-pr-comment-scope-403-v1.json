@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|failed-gate|pr-comment-write-scope-403|20261022-v1",
+  "obligation_id": "delivery|failed-gate|pr-comment-write-scope-403|20261022-v1",
+  "title": "GitHub GITHUB_TOKEN issues:write still blocked PR issue-comment 403; require pull-requests:write for bounded same-owner recovery",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Actual workflow run 39811993147 on merged main 01af9f2 issued /issues/4656/comments POST and returned 403 Resource not accessible by integration. Runner's token had Issues:write and PullRequests:read. GitHub issue github/rest-api-description#6994 confirms real PR timeline comment needs PullRequests:write for this token integration behavior.",
+  "impact": "The newly merged same-owner failed-gate handoff aborts early; GitHub required dispatch of #4662 succeeded first, but later failed-gate repair signals are not delivered.",
+  "failed_approaches": [
+    "Relying on Issues:write alone to post comments to pull-request timelines",
+    "Treating exact-head green Required and CodeQL as runtime comment authorization proof",
+    "Declaring the five-minute watchdog live-healthy without provider run logs"
+  ],
+  "fix": "In the existing Required Gate Watchdog only, grant pull-requests:write alongside issues:write while retaining action dispatch and contents read; preserve same scheduler and idempotent owner markers.",
+  "prevention_rule": "For any GitHub Actions workflow writing PR timeline comments, enforce exact job token PR write permission, regression negative canary for read-only PR scope, and verify an actual successful provider comment readback before PROVEN.",
+  "regression_contract": "tests/brain-required-watchdog-pr-comment-403-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-watchdog-pr-comment-403-v1.test.mjs"
+  ],
+  "evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+    "failed_endpoint": "POST /repos/arthurprinsen-ai/Bedrijfsgeheugen/issues/4656/comments",
+    "http_status": 403,
+    "reported_token_permissions": [
+      "issues:write",
+      "pull-requests:read"
+    ],
+    "parent_obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742#issuecomment-6345583131",
+    "external_diagnostic": "https://github.com/github/rest-api-description/issues/6994",
+    "runtime_permission_fix_proven": false,
+    "production_readback": "PENDING"
+  },
+  "outcome": "CANDIDATE, no deployed or autonomous source repair claim",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-watchdog-pr-comment-403-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-watchdog-pr-comment-403-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "Remove pull-requests:write -> regression fails",
+      "Remove issues:write -> regression fails",
+      "Disable CLS/CodeQL or original scheduler -> regression fails"
+    ]
+  },
+  "prevention": [
+    "BOTH_PR_AND_ISSUE_SCOPES_ON_COMMENT_WORKFLOW",
+    "NO_SECOND_SCHEDULER",
+    "REQUIRE_ACTUAL_PROVIDER_PR_COMMENT_READBACK",
+    "NO_CLS_OR_CODEQL_BYPASS",
+    "DEDUP_IDENTICAL_FAILURE_HEAD"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
