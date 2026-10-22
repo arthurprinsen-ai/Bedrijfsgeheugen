@@ -2543,3 +2543,19 @@ export const POWERHOUSE_WEBSITE_CLS_ATTRIBUTION_V1 = Object.freeze({
   productionFixProven:false,
   existingSchedulerUnchanged:true
 });
+
+export const POWERHOUSE_GITHUB_ACTIONS_GHOST_AUTONOMY_V1 = Object.freeze({
+  fingerprint:'github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1',
+  canonicalIncident:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655',
+  authority:'GitHub Actions provider state + existing Repository Janitor single owner',
+  existingSchedule:'.github/workflows/powerhouse-repository-janitor.yml',
+  fiveMinuteSupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
+  executable:'.github/scripts/github-actions-ghost-reconcile.mjs',
+  regression:'tests/brain-delivery-stale-queue-janitor-v1.test.mjs',
+  skill:'.agents/skills/powerhouse-continuity/SKILL.md',
+  learning:'brain/learning/2026-10-22-github-actions-ghost-autonomous-reconciliation-v1.json',
+  providerHardBoundary:'GitHub provider API 403/409 requires actual provider reconciliation, not a forged terminal status',
+  preservesSecurityGates:true,
+  noSecondScheduler:true,
+  deploymentStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_PROVIDER_READBACK'
+});
