@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "ci|brain|orchestrator-pending-selection-bounded-oracle-drift|20261022-v1",
+  "obligation_id": "ci-brain-orchestrator-pending-oracle-20261022-v1",
+  "parent_issue": 3742,
+  "related_issue": 4198,
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Inherited source-oracle assertions require retired single-row .limit(1) and 45000ms literal timeout, while current canonical production source uses a bounded 12-row priority/channel query with cooldown-safe selection and separate 90000ms primary/45000ms fallback timeouts.",
+  "impact": "Two assertions in independent 2026-10-22 verification-only Unified BRAIN run #39791707071 fail (not ok 1996 and 1998); this is not evidence that production generation or delivery failed.",
+  "fix": "Update only original executable regression assertions to test the current bounded limit, cooldown selector, cooldown no-work evidence and differentiated provider deadlines; retain provider-detail sanitization, original other tests and no-double-dispatch guards.",
+  "prevention_rule": "Before changing any BRAIN test that matches literal source syntax, first compare exact current runtime and already RELEASED historical obligations. Lock real bounded behavior, canonical identity, cooldown and timeout semantics; do not revert safer production code to make a retired oracle pass, and do not skip tenant/security or provider-proof gates.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "SUPABASE_EDGE_FUNCTION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
+    ]
+  },
+  "evidence": {
+    "baseline_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "job_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071/job/119869500824",
+    "baseline_head": "8e665a86d2bb54712a34fd88bec0e1213df21dd2",
+    "failed_assertions": [
+      "not ok 1996",
+      "not ok 1998"
+    ],
+    "source": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "prior_proven_obligation": "orchestrator-select-pending-race-v1 / PR #2455",
+    "candidate_test_source_verified": 5,
+    "exact_head_required_ci": "PENDING",
+    "codeql": "PENDING",
+    "aggregated_unified_brain_zero_fail": "NOT_PROVEN",
+    "production": "UNCHANGED"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "prevention": [
+    "BOUND_CANDIDATE_QUERY_AND_COOLDOWN_PICKER",
+    "PRIMARY_AND_FALLBACK_TIMEOUT_SEPARATION",
+    "KEEP_PROVIDER_ERROR_SANITIZATION",
+    "NO_SOURCE_ORACLE_REVERSION",
+    "EXACT_HEAD_CI_BEFORE_RELEASE"
+  ]
+}
