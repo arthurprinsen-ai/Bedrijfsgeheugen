@@ -38,6 +38,19 @@ test('transaction-only SQL smoke asserts promotion preservation, alias idempoten
   assert.match(rollback,/CONFLICT_NOT_REJECTED/);
   assert.match(rollback,/RAW_OCCURRENCE_WRONG_COUNT/);
 });
+test('SQL proof assertions reject missing markers and unknown counts instead of accepting NULL',()=>{
+  assert.match(rollback,/r\.occurrence_count IS DISTINCT FROM 1/);
+  assert.match(rollback,/r\.occurrence_count IS DISTINCT FROM 2/);
+  assert.match(rollback,/\(r\.evidence->>'verified_marker'\) IS DISTINCT FROM 'must_survive'/);
+  assert.doesNotMatch(rollback,/verified_marker'\s*<>/);
+});
+test('project-scoped semantic keys and negative rollback canaries',()=>{
+  assert.match(migration,/FAILURE_SEMANTIC_EVENT_SCOPE_AMBIGUOUS/);
+  assert.match(migration,/supabase:\\1:cron:job\\3:run:\\4/);
+  for(const marker of ['PROJECT_ISOLATION_FAILED','SCOPED_FIRST_AMBIGUITY_ACCEPTED','LEGACY_FIRST_AMBIGUITY_ACCEPTED','SCOPE_RAW_COUNT_FAILED','MISSING_EVIDENCE_NOT_DETECTED']) {
+    assert.ok(rollback.includes(marker), marker);
+  }
+});
 test('canonical learning routes same owner, no claims of live recovery',()=>{
   assert.equal(learn.fingerprint,'brain|incident-observe|evidence-overwrite-and-crosswriter-runid-dup|20261022-v1');
   assert.equal(learn.compiler.failure_class,'BRAIN_INCIDENT_DURABILITY');

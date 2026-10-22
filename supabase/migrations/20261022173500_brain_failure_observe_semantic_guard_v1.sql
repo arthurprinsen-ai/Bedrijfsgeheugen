@@ -1,7 +1,7 @@
 -- Canonical P0 #4681. A new observation must never delete previously verified registry evidence.
 -- Preserve every legacy raw occurrence (including cross-writer aliases with conflicting hashes).
--- Semantic identity is scoped to this physical Supabase database; provider project refs are
--- retained in the immutable raw occurrence_id and evidence.
+-- Explicit provider project refs are part of semantic identity.
+-- Unscoped legacy events cannot establish project ownership.
 BEGIN;
 SET LOCAL lock_timeout = '2s';
 SET LOCAL statement_timeout = '30s';
@@ -28,10 +28,10 @@ RETURNS text LANGUAGE sql IMMUTABLE STRICT SET search_path = pg_catalog AS $key$
         'supabase:cron:job\1:run:\2')
     WHEN p_occurrence_id ~ '^supabase:cron:job[0-9]+:run:[0-9]+$' THEN
       p_occurrence_id
-    WHEN p_occurrence_id ~ '^supabase:[a-z0-9]+:cron:[0-9]+:run:[0-9]+$' THEN
+    WHEN p_occurrence_id ~ '^supabase:[a-z0-9]+:cron:(job)?[0-9]+:run:[0-9]+$' THEN
       regexp_replace(p_occurrence_id,
-        '^supabase:[a-z0-9]+:cron:([0-9]+):run:([0-9]+)$',
-        'supabase:cron:job\1:run:\2')
+        '^supabase:([a-z0-9]+):cron:(job)?([0-9]+):run:([0-9]+)$',
+        'supabase:\1:cron:job\3:run:\4')
     ELSE NULL
   END;
 $key$;
@@ -54,6 +54,7 @@ DECLARE
   o public.brain_failure_occurrences%ROWTYPE;
   r public.brain_failure_registry%ROWTYPE;
   v_semantic text;
+  v_run_scope text;
 BEGIN
   IF nullif(btrim(p_occurrence_id),'') IS NULL
      OR nullif(btrim(p_fingerprint),'') IS NULL
@@ -61,10 +62,22 @@ BEGIN
   THEN RAISE EXCEPTION 'VALIDATION_ERROR';
   END IF;
   v_semantic := powerhouse_ops.brain_failure_semantic_event_key(p_occurrence_id);
+  v_run_scope := regexp_replace(v_semantic, '^supabase:[a-z0-9]+:cron:', 'supabase:cron:');
   -- Same real event must serialize across multiple agents and all alias formats.
   PERFORM pg_advisory_xact_lock(hashtextextended(
     CASE WHEN v_semantic IS NULL THEN 'brain:raw:' || p_occurrence_id
-         ELSE 'brain:semantic:' || v_semantic END, 0));
+         ELSE 'brain:semantic:' || v_run_scope END, 0));
+
+  -- Serialize the ambiguity check with both arrival orders. Separate known
+  -- projects may coexist; unknown project ownership must never silently merge.
+  IF v_semantic IS NOT NULL AND EXISTS (
+    SELECT 1 FROM public.brain_failure_occurrences existing
+    CROSS JOIN LATERAL (SELECT powerhouse_ops.brain_failure_semantic_event_key(existing.occurrence_id) AS key) identity
+    WHERE regexp_replace(identity.key, '^supabase:[a-z0-9]+:cron:', 'supabase:cron:') = v_run_scope
+      AND identity.key IS DISTINCT FROM v_semantic
+      AND (identity.key = v_run_scope OR v_semantic = v_run_scope)
+  ) THEN RAISE EXCEPTION 'FAILURE_SEMANTIC_EVENT_SCOPE_AMBIGUOUS';
+  END IF;
 
   SELECT * INTO o
   FROM public.brain_failure_occurrences

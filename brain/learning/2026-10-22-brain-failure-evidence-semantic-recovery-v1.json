@@ -7,13 +7,15 @@
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
   "root_cause": "Existing brain_observe_failure overwrites promoted registry evidence on next event; alias occurrence_id formats duplicate a single cron run. Production audit observed 20 raw rows for 11 distinct run IDs, with conflicting raw hashes; never collapse historical distinct evidence.",
   "fix": "Preserve promoted summary evidence, append immutable raw observations as before, normalize known cron aliases within the same existing DB, serialize by semantic advisory lock, and fail closed when older alias hashes disagree. Reuse existing registry and scheduler.",
-  "prevention_rule": "Read canonical fingerprints before writes, never replace verified summary evidence with new event metadata, use one normalized provider event identity and idempotent transaction lock across agents; preserve raw historic conflicts and report raw versus semantic counts independently, keep role restrictions. No fake green without runtime verified snapshot and tenant proof.",
+  "prevention_rule": "Read canonical fingerprints before writes, never replace verified summary evidence with new event metadata, use one normalized provider event identity and idempotent transaction lock across agents; preserve raw historic conflicts and report raw versus semantic counts independently, keep role restrictions. No fake green without runtime verified snapshot and tenant proof. Preserve Supabase project_ref as part of the semantic event key. Reject scoped/unscoped ambiguity in either order unless project provenance is verified. Use IS DISTINCT FROM in proof assertions, never SQL NULL-allowing comparisons.",
   "expected_benefit": "No new silent evidence loss; newly arriving equivalent provider event ID does not increment occurrence count when verified hash is identical.",
   "remaining_risks": [
     "Historic events with conflicting hashes require investigation and cannot be automatically merged",
     "Unknown provider formats use existing raw-id uniqueness only",
     "Two concurrent database sessions require independent integration proof",
-    "Production SQL migration and real agent writeback are not yet released"
+    "Production SQL migration and real agent writeback are not yet released",
+    "Installed preview v1 index was computed by old IMMUTABLE helper and needs atomic REINDEX in correction migration.",
+    "Pending current-commit provider/CI and independent production verification."
   ],
   "compiler": {
     "failure_class": "BRAIN_INCIDENT_DURABILITY",
