@@ -22,5 +22,7 @@ jobs:
         run: node scripts/brain/validate-universal-closed-loop-learning.mjs
       - name: Regression tests
         run: node --test tests/brain-universal-closed-loop-learning.test.mjs
+      - name: Verify tenant relevance UI projection
+        run: node --test portal-v2/tests/relevance-learning-closed-loop.test.mjs
       - name: Compound learning integration regression
         run: node --test tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
