@@ -70,7 +70,7 @@ test("janitor never resurrects explicitly retired terminal leases", async () => 
   const { readFileSync } = await import("node:fs");
   const workflow = readFileSync(".github/workflows/powerhouse-repository-janitor.yml", "utf8");
   assert.match(workflow, /Retirement-State: RETIRED_DO_NOT_MERGE/);
-  assert.match(workflow, /startsWith\("RETIRED"\)/);
+  assert.match(workflow, /startswith\("RETIRED"\)/);
   assert.match(workflow, /AUTO_REOPEN_TERMINAL_LEASE/);
   assert.match(workflow, /JANITOR_INTENTIONAL_LEASE_REOPEN/);
 });
