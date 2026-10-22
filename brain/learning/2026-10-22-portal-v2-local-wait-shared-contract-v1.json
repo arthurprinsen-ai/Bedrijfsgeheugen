@@ -16,14 +16,16 @@
     "source": ".github/workflows/portal-v2-production-dom-readback.yml",
     "base_main_sha": "a692659ae245689273238baa7e01ccbe38c0d0ea",
     "admission_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39829501487",
-    "admission_error": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/delivery-readback-wachtvenster.test.mjs"
+    "admission_error": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/delivery-readback-wachtvenster.test.mjs",
+    "brain_runner_syntax_check": "Source readback before release corrected escaped regex literals to deterministic literal includes checks."
   },
   "failed_approaches": [
     "Blind CI retries without changed cause",
     "Suppressing the existing fail-closed regression",
     "Pushing to active ghost-aware PR #4663",
     "Leaving a parallel manual local polling loop",
-    "Canonicalization attempted to execute the older non-brain-prefixed test as evaluation.historical_replay; canonical admission intentionally rejected that path."
+    "Canonicalization attempted to execute the older non-brain-prefixed test as evaluation.historical_replay; canonical admission intentionally rejected that path.",
+    "The first BRAIN runner used overescaped regex literals; source readback revealed incorrect pattern syntax before release."
   ],
   "fix": "Replace local loop with POGINGEN=30 INTERVAL=1 invocation of existing tools/ci/wait-for-url.sh; retain exact approved PR SHA, server trap and visual Playwright proof.",
   "prevention_rule": "All URL-readiness polls, including localhost approved visual baseline, reuse the canonical script with bounded scoped settings. Never weaken required CI, security or visual proof, and never conflate an obsolete canceled head with a current actual failing test. The canonical learning evaluator accepts only executable tests/brain-*.test.mjs paths; preserve the original test and add a new BRAIN regression runner for machine learning replay.",

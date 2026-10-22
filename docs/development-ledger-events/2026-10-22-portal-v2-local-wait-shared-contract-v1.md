@@ -18,3 +18,9 @@
 - Hygiene admission failed *as designed* with `LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/delivery-readback-wachtvenster.test.mjs`. The original RED test exists but is not named `brain-*.test.mjs`, which the canonical learning evaluator strictly requires.
 - Correction: add independent executable `tests/brain-portal-v2-local-shared-wait.test.mjs` with deterministic assertions for source readiness, shared helper, visual proof and server cleanup. Reference this BRAIN runner for historical_replay/shadow/canary; preserve the original RED test unchanged.
 - Full admission/Required/CodeQL and exact-head protected merge must rerun; no bypass or fabricated green.
+
+## BRAIN regression runner exact syntax correction
+- First BRAIN runner commit 0573cae8aafe00a79b7c62563976a15bb18c6524 used accidental overescaping in regexp literals generated for shell source matching.
+- Immutable source readback caught this before any claim of verified GREEN.
+- Corrected the same test path with literal includes assertions for exact shared command, negative old-loop detection, helper defaults and visual/approved PR guard retention.
+- No existing quality gate disabled, no new scheduler, no altered release source.
