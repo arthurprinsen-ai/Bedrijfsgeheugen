@@ -8,7 +8,7 @@
   "root_cause": "HYPOTHESIS_PENDING_PROVIDER_REPLAY: shared assets/js/menu.js injected #bgSharedMobileNav into body before its dynamically loaded stylesheet, using aria-hidden only (no native layout suppression), plausibly causing transient pre-CSS page reflow. DOM-source association not yet causal proof.",
   "bounded_fix": "Add native hidden attribute before append; retain it on close/Escape/resize; remove it only on user-initiated menu open; preserve aria-hidden, all links, accessibility and single shared mobile stylesheet.",
   "prevention_rule": "Every newly inserted hidden overlay must be natively display:none before append independently of asynchronous CSS. aria-hidden alone never prevents layout shifts. Preserve phone CLS<=0.100 all canonical sitemap routes and desktop/checkout/security gates.",
-  "regression": "tests/website-mobile-nav-prestyle-layout-v1.test.mjs",
+  "regression": "tests/site-shell-mobile-nav-prestyle-layout-v1.test.mjs",
   "status": "CANDIDATE_UNVERIFIED_BROWSER_CAUSALITY_PENDING",
   "compiler": {
     "failure_class": "WEBSITE_MOBILE_CLS_PRESTYLE_INSERTION_HYPOTHESIS",
@@ -18,13 +18,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/website-mobile-nav-prestyle-layout-v1.test.mjs"
+      "tests/site-shell-mobile-nav-prestyle-layout-v1.test.mjs"
     ],
     "shadow": [
-      "tests/website-mobile-nav-prestyle-layout-v1.test.mjs"
+      "tests/site-shell-mobile-nav-prestyle-layout-v1.test.mjs"
     ],
     "canary": [
-      "tests/website-mobile-nav-prestyle-layout-v1.test.mjs"
+      "tests/site-shell-mobile-nav-prestyle-layout-v1.test.mjs"
     ]
   },
   "evidence": {
