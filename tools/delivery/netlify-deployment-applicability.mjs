@@ -35,6 +35,8 @@ export const NETLIFY_RUNTIME_PREFIXES = Object.freeze([
   'platform/saas/',
   'platform/connectors/',
   'platform/read-models/',
+  // Imported by netlify/functions/brain-operating-loop.mjs via store.mjs.
+  'brain/operating-loop/',
 ]);
 
 // These modules are imported transitively by Netlify's tenant-ai-inference and
