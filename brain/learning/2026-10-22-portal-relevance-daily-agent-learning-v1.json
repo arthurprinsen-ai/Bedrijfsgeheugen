@@ -25,6 +25,20 @@
     "root_cause": "PR #4673 initially omitted mandatory machine metadata fields Obligation-ID, Delivery-Lane, Candidate-Type and Base-SHA; Required admission failed before tests.",
     "fix": "Added canonical machine metadata and same obligation/branch lease to PR #4673; re-triggered exact-head gates using a learning record update.",
     "preventionRule": "Every future GitHub PR must include machine metadata before opening; check canonical delivery-hygiene policy and branch writer lease preflight. Never suppress admission tests.",
-    "verification": "Pending the next exact-head Required CI, CodeQL and protected merge."
+    "verification": "Pending the next exact-head Required CI, CodeQL and protected merge.",
+    "reconciled_head_admission_cause": "Exact-head Required 39818082206 failed fail-closed LEARNING_FAILURE_CLASS_REQUIRED because this learning JSON lacked compiler.failure_class and an executable historical_replay evaluation; repaired in-place on canonical PR #4673.",
+    "regression_prevention": "New semantic learning must include compiler.failure_class and evaluation.historical_replay with executable tests/brain-*.test.mjs. Never suppress learning canonicalization."
+  },
+  "compiler": {
+    "failure_class": "AGENT_LEARNING_CONTRACT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-universal-closed-loop-learning.test.mjs"
+    ]
   }
 }
