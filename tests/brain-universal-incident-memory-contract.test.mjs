@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { buildSkillProjectionIndex, selectSkillProjection } from '../scripts/brain/powerhouse-skill-projection.mjs';
+import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
 
 const read = p => readFileSync(p,'utf8');
 const tag = 'powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1';
@@ -25,6 +27,7 @@ test('canonical machine learning has a semantic, reproducible prevention contrac
   const entry=JSON.parse(read('brain/learning/2026-10-22-universal-incident-reuse-prevention-v1.json'));
   assert.equal(entry.fingerprint,tag);
   assert.equal(entry.status,'CANDIDATE');
+  assert.equal(entry.mandatory_preflight,true);
   assert.equal(entry.compiler.failure_class,'GOVERNANCE');
   assert.ok(entry.root_cause.length>40);
   assert.ok(entry.prevention_rule.length>100);
@@ -33,4 +36,28 @@ test('canonical machine learning has a semantic, reproducible prevention contrac
   const docs=read('docs/learning/2026-10-22-universal-incident-reuse-prevention-v1.md');
   assert.match(docs,/geen nieuwe opslag/i);
   assert.match(docs,/ACCEPTANCE_PENDING/);
+});
+
+
+test('default next-worker preflight discovers the universal incident rule without task hints', () => {
+  const index = buildSkillProjectionIndex();
+  const entry = index.entries.find(candidate => candidate.fingerprint === tag);
+  assert.ok(entry, 'canonical universal incident fingerprint must be projected');
+  assert.equal(entry.mandatory_preflight, true);
+  assert.equal(entry.status, 'CANDIDATE', 'preflight visibility must not invent outcome proof');
+
+  const noHints = selectSkillProjection(index);
+  assert.equal(noHints.selection_mode, 'MANDATORY_BASELINE_NO_TASK_HINTS');
+  assert.ok(noHints.selected_entries.some(candidate => candidate.fingerprint === tag));
+  assert.ok(noHints.selected_entries.every(candidate => candidate.mandatory_preflight === true),
+    'no-hint start must include only explicitly global mandatory entries');
+
+  const targeted = selectSkillProjection(index, { targets: ['social'] });
+  assert.equal(targeted.selection_mode, 'TASK_RELEVANT_WITH_MANDATORY_BASELINE');
+  assert.ok(targeted.selected_entries.some(candidate => candidate.fingerprint === tag));
+
+  const packet = compileChatLearningPreflight();
+  assert.ok(packet.skill_projection.verification.ok);
+  assert.ok(packet.skill_projection.selection.selected_entries.some(candidate => candidate.fingerprint === tag),
+    'real default chat preflight must pass prevention into the next worker packet');
 });

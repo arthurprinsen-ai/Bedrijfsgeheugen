@@ -87,7 +87,9 @@ function normalizedLearning(record, relativePath) {
     skill_targets: inferTargets(record, relativePath),
     prevention,
     source: relativePath.replaceAll('\\', '/'),
-    source_revision: Number(record.revision ?? record.version_revision ?? 1) || 1
+    source_revision: Number(record.revision ?? record.version_revision ?? 1) || 1,
+    ...(record?.mandatory_preflight === true && record?.compiler?.scope === 'ALL_POWERHOUSE_AGENTS_CHATS' && record?.compiler?.machine_enforceable === true
+      ? { mandatory_preflight: true } : {})
   };
 }
 
@@ -111,6 +113,7 @@ export function buildSkillProjectionIndex({ rootDir = process.cwd() } = {}) {
       source_revision: 1
     };
     current.status = normalized.status;
+    if (normalized.mandatory_preflight === true) current.mandatory_preflight = true;
     current.skill_targets = stableUnique([...current.skill_targets, ...normalized.skill_targets]);
     current.prevention = stableUnique([...current.prevention, ...normalized.prevention]);
     current.sources = stableUnique([...current.sources, normalized.source]);
@@ -125,7 +128,8 @@ export function buildSkillProjectionIndex({ rootDir = process.cwd() } = {}) {
       skill_targets: entry.skill_targets,
       prevention: entry.prevention,
       sources: entry.sources,
-      source_revision: entry.source_revision
+      source_revision: entry.source_revision,
+      ...(entry.mandatory_preflight === true ? { mandatory_preflight: true } : {})
     });
     return { ...entry, source_digest: sha256(canonical) };
   });
@@ -180,15 +184,19 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [] }
   const wantedFingerprints = new Set(stableUnique(fingerprints));
   const wantedTargets = new Set(stableUnique(targets));
   const hasHints = wantedFingerprints.size > 0 || wantedTargets.size > 0;
-  const selected = hasHints ? (index.entries ?? []).filter(entry => {
+  // Universal prevention is mandatory even when a default/CLI caller provides no task hints.
+  // Other learning remains task-targeted; this is not a full-registry dump.
+  const selected = (index.entries ?? []).filter(entry => {
+    if (entry.mandatory_preflight === true) return true;
+    if (!hasHints) return false;
     if (wantedFingerprints.has(entry.fingerprint)) return true;
     return entry.skill_targets.some(target => wantedTargets.has(target));
-  }) : [];
+  });
   return {
     fingerprint: SKILL_PROJECTION_FINGERPRINT,
     projection_digest: index.projection_digest,
     total_entries: index.entry_count ?? index.entries?.length ?? 0,
-    selection_mode: hasHints ? 'TASK_RELEVANT' : 'SUMMARY_ONLY_NO_TASK_HINTS',
+    selection_mode: hasHints ? 'TASK_RELEVANT_WITH_MANDATORY_BASELINE' : 'MANDATORY_BASELINE_NO_TASK_HINTS',
     selected_entries: selected
   };
 }
