@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "mira|media-preflight|rejected-frame-diagnostic-reset|20261022-v1",
+  "obligation_id": "mira|preflight-rejected-proof-diagnostic-retention|20261022-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "independent_related_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4643",
+  "title": "Keep exact rejected Mira video-frame identity evidence through recurring router preflight",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "Canonical instagram media router preflight unconditionally converts assetMaterialized to last_error=null and writes obligation fallback last_error=MEDIA_ASSET_REQUIRED. After genuine submit_asset proof rejection and an explicit diagnostic write this readiness step erases the failure reason and next action while preserving WAITING_PROOF. Actual proof remains in media_proof_evidence but actionable status regresses.",
+  "impact": "Existing agents repeatedly rediscover MEDIA_ASSET_REQUIRED instead of the proven frame-identity-below-0.94 cause. This increases pointless retries/provider spend and loses root-cause continuity; it never creates Instagram external readback.",
+  "evidence": {
+    "production_date": "2026-10-22",
+    "existing_job_state": "WAITING_PROOF",
+    "observed_rejected_scores": [
+      0.92,
+      0.92,
+      0.93,
+      0.93
+    ],
+    "required_identity_confidence": 0.94,
+    "active_obligation_after_readiness_poll": "BLOCKED / MEDIA_ASSET_REQUIRED",
+    "actual_provider_post_id": null,
+    "source_paths": [
+      "supabase/functions/powerhouse-instagram-media-router/index.ts",
+      "supabase/functions/powerhouse-instagram-media-router/preflight-write.mjs"
+    ],
+    "existing_exact_proof_fingerprints": "Stored in public.powerhouse_media_proof_evidence_v1; no new proof table",
+    "existing_parent_incident": "#4439"
+  },
+  "fix": "Record VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH once from the real rejected verifier response with CAS on the existing media job; update the canonical obligation diagnostic only while still BLOCKED/unposted; preserve exact failure and next action across subsequent preflight polls. Keep the existing verifier, master reference, 0.94 threshold, status and selected media unchanged.",
+  "prevention_rule": "Never transform a confirmed MEDIA_PROOF_REJECTED into MEDIA_ASSET_REQUIRED during a readiness-only poll; never erase last_error on assetMaterialized while WAITING_PROOF unless genuinely new exact provider proof has passed. Keep no-dispatch and idempotency invariant, emit a synthetic regression before protected promotion.",
+  "regression_contract": "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+  ],
+  "release_gates": [
+    "Required CI and CodeQL on final SHA",
+    "protected merge",
+    "existing Supabase router provider source parity",
+    "live preflight retains proof rejection",
+    "no real external Instagram post marked without full 3-frame proof and provider readback"
+  ],
+  "outcome": "CANDIDATE; a regression and source change are drafted. Does not make Instagram LIVE_PROVEN, and PR #4643 retains independent SQL-proof validation authority.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}
