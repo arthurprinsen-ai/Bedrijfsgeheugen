@@ -21,12 +21,13 @@
     "per_model_freshness_claims_unverified": 27,
     "upstream_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367"
   },
-  "prevention_rule": "Independent daily learning, engineering self-tests, skills and incident knowledge processing must execute independently of source-specific freshness failures. Move the strict provider model audit to a separate job inside the EXISTING scheduled workflow; retain its exit code and RED overall workflow whenever provider claims are unproven, and always upload audit artifact. Never restamp, waive, turn off a security test, add a scheduler or infer model recommendations are valid.",
+  "prevention_rule": "Independent daily learning, engineering self-tests, skills and incident knowledge processing must execute independently of source-specific freshness failures. Move the strict provider model audit to a separate job inside the EXISTING scheduled workflow; retain its exit code and RED overall workflow whenever provider claims are unproven, and always upload audit artifact. Never restamp, waive, turn off a security test, add a scheduler or infer model recommendations are valid. For every daily job outcome (including failure), persist an immutable exact-run/SHA/status checkpoint and attempt to upload its evidence artifact; the checkpoint cannot itself prove success.",
   "fix": [
     "Run source-backed AI model audit in independently failing model-freshness job",
     "Keep existing improve job for daily learning and self-improvement, without needs on stale model audit",
     "Always preserve exact audit JSON as workflow artifact despite audit failure",
-    "Add regression test for independence, no swallowed errors, one schedule and owner"
+    "Add regression test for independence, no swallowed errors, one schedule and owner",
+    "Always emit exact-run nonterminal daily execution checkpoint and upload artifacts even if a core learning step fails"
   ],
   "owner": "Existing Powerhouse Daily Self Evolution workflow; supplier claim remediation remains canonically owned by issue #4367",
   "code": [
@@ -77,5 +78,20 @@
     "initial_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/powerhouse-daily-self-evolution.test.mjs",
     "corrected_test": "tests/brain-daily-learning-failure-isolation-v1.test.mjs",
     "provider_evidence": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812960951"
+  },
+  "execution_checkpoint": {
+    "contract": "powerhouse-daily-learning-execution-checkpoint-v1",
+    "path": "artifacts/quality/daily-learning-execution-checkpoint.json",
+    "fields": [
+      "run_id",
+      "run_attempt",
+      "head_sha",
+      "job",
+      "job_status",
+      "terminal_proof",
+      "next_safe_action"
+    ],
+    "upload": "existing Powerhouse daily artifacts upload, if: always()",
+    "terminal_proof": false
   }
 }
