@@ -2529,3 +2529,14 @@ export const LINKEDIN_PERSONAL_EXPIRED_AUTHORITY_RECOVERY_20261022=Object.freeze
  tests:'tests/brain-personal-expired-publish-authority-20261022.test.mjs',
  learning:'brain/learning/2026-10-22-personal-expired-publish-authority-v1.json'
 });
+
+
+export const REVENUE_SNAPSHOT_LOCAL_WORKMEM_PROBE_20261022=Object.freeze({
+ fingerprint:'powerhouse|revenue-snapshot-local-workmem-probe|20261022-v1', owner:'canonical Supabase cron #46',
+ migration:'supabase/migrations/20261022115200_p0_4215_snapshot_local_workmem_probe_v1.sql',
+ runtime:'transaction-local 8MB work_mem with unchanged locked snapshot',
+ source:'powerhouse_commercial_next_best_action_v5',
+ proof:'next actual cron and business-output parity, not configuration status',
+ noDuplicateScheduler:true,noFinancialFormulaChange:true,noSecurityBypass:true,
+ learning:'brain/learning/2026-10-22-revenue-snapshot-workmem-probe-v1.json'
+});

@@ -1598,3 +1598,8 @@ tenant/date/channel/provider-unconsumed guards. Existing slug strings use
 exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
 publisher/provider proof boundaries, no duplicate blog, and never infer
 LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
+
+
+## 2026-10-22 · Bounded revenue snapshot runtime memory recovery
+Fingerprint: `powerhouse|revenue-snapshot-local-workmem-probe|20261022-v1`.
+Use the original canonical cron owner #46, retaining same forecast and refresh code, bounded slot `55 * * * *`, no second scheduler, SQL security or financial semantic changes. A single-job work_mem 8MB probe is reversible; only treat it as accepted when real cron result and nonzero financial reconciliation pass. The unmerged independent PR #4558 stays held for exact tenant parity; no green from planner estimates. See versioned migration and learning record.

@@ -1,0 +1,9 @@
+# 2026-10-22 · Canonical revenue snapshot bounded memory probe
+
+Fingerprint: `powerhouse|revenue-snapshot-local-workmem-probe|20261022-v1`; P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215; same canonical 1-owner scheduler job #46. The active production SQL at 11:42 Europe/Amsterdam had session-local `set_config('work_mem','8MB',true)` with the original `90000` ms guard, advisory lock, 55 * * * * job schedule and both immutable original forecast and revenue refresh statements.
+
+Measured baseline: `pg_stat_statements` 618 executions averaging 88.1 seconds with more than 2.05 billion cumulative temporary blocks read. Three previous runs (06:55, 07:55, 08:55 UTC) failed after 120 seconds at original default session `work_mem=3500kB`. The planner's full source projections are expensive; this small bounded memory adjustment may reduce spill but is **not** a substitute for the separate mathematically exact query-plan fix in protected draft PR #4558.
+
+The versioned migration is a drift-safe registration of the current production runtime: if owner missing (preview) or legacy 15-minute preview schedule, skip without creating a cron. When the observed single hourly job exists, confirm expected name, active state, exact schedule and command authority; if 8MB is already there, do nothing. Otherwise add the local setting and leave the rest byte-for-byte intact. Any divergent owner, memory setting or command fails closed. No new scheduler, broader connection memory changes, timeout increases or new outputs.
+
+Validation gate: Node regression, protected CI/CodeQL, exact SQL preview/migration admission, one subsequent actual cron #46 result, timed duration/temp I/O and independent row/result proof. If the actual run fails, revert only the local work_mem override after verifying current unchanged command. Never register green on a reconfigured command alone. Keep project #4215 open until throughput and forecast/customer parity proven.

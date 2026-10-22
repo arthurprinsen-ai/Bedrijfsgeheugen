@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|revenue-snapshot-local-workmem-probe|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_causes": [
+    "Canonical revenue snapshot cron #46 failed at 06:55/07:55/08:55 UTC with actual 120-second PostgreSQL timeout while inserting from the heavy NBA v5 view.",
+    "Query-plan costs for full revenue v4/v5 projections were ~97.8 million with 7 nested loops, and pg_stat_statements showed >2 billion accumulated temp blocks read over 618 snapshot calls.",
+    "Existing session work_mem was 3500kB; temporary spill was a measured, but not yet causally isolated, performance pressure."
+  ],
+  "prevention": [
+    "Preserve one canonical snapshot owner and forecast/snapshot query. Local 8MB work_mem experiment does not change financial semantics, indices, user rights or global defaults.",
+    "Idempotently codify exact production command only for observed owner/schedule and fail closed on unexpected drift. Preview missing owner is no-op.",
+    "Compare next actual cron run time, temp I/O and row/financial reconciliation against earlier successful snapshot. Revert local tuning if insufficient; do not merge separate heavy view PR #4558 until representative two-tenant parity and security proofs."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-revenue-snapshot-workmem-probe-20261022.test.mjs"
+    ],
+    "baseline": "618 calls, mean 88125ms, temp blocks read 2053201961; 3 recent timed-out cron runs",
+    "runtime_applied_at": "2026-10-22T09:xxZ",
+    "first_post_change_run": "NOT_YET_PROVEN",
+    "success_threshold": "cron actual success and complete nonzero snapshot, parity unchanged"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-snapshot-workmem-probe-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-snapshot-workmem-probe-20261022.test.mjs"
+    ]
+  },
+  "current_state": "RUNTIME_EXPERIMENT_UNVERIFIED"
+}
