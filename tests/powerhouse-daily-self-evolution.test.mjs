@@ -32,3 +32,25 @@ test('daily self evolution is scheduled/manual only and cannot add PR fanout',()
   assert.match(workflow,/workflow_dispatch:/);
   assert.doesNotMatch(workflow,/^  pull_request:/m);
 });
+
+
+test('stale provider catalog is fail-closed but cannot halt independent daily learning',()=>{
+  const workflow=fs.readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  const jobs=workflow.split(/^jobs:\s*$/m)[1];
+  assert.ok(jobs,'daily workflow contains jobs');
+  const isolated=jobs.split(/^  model-freshness:\s*$/m);
+  assert.equal(isolated.length,2,'existing improve and independent model-freshness jobs are separate');
+  const [improve,modelAudit]=isolated;
+  assert.match(improve,/^  improve:\s*$/m);
+  assert.match(improve,/node scripts\/brain\/daily-self-evolution\.mjs/);
+  assert.match(improve,/node scripts\/brain\/continuous-improvement\/run-autonomous-improvement\.mjs/);
+  assert.match(improve,/node scripts\/brain\/powerhouse-engineering-closed-loop\.mjs --self-test/);
+  assert.doesNotMatch(improve,/ai-model-intelligence-audit\.mjs/,'stale catalog may not short-circuit other learning tasks');
+  assert.doesNotMatch(improve,/needs:\s*(\[?model-freshness)/,'daily learning cannot depend on provider audit');
+  assert.match(modelAudit,/node --test tests\/ai-model-intelligence-freshness-v1\.test\.mjs/);
+  assert.match(modelAudit,/node scripts\/brain\/ai-model-intelligence-audit\.mjs/);
+  assert.match(modelAudit,/if: always\(\)/);
+  assert.match(modelAudit,/ai-model-intelligence-audit\.json/);
+  assert.doesNotMatch(modelAudit,/continue-on-error:|\|\| true|exit 0/,'provider freshness must stay red when evidence is stale');
+  assert.equal((workflow.match(/schedule:/g)||[]).length,1,'no duplicate daily scheduler');
+});

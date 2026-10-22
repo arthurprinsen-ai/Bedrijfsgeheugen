@@ -36,7 +36,7 @@ test("portal is the primary post-scan continuation", () => {
 
 test("Powerhouse scan persistence keeps participant PII out of the aggregate payload", () => {
   const start = js.indexOf("var scanPayload=");
-  const end = js.indexOf("fetch(\"/api/powerhouse-scan-ingest", start);
+  const end = js.indexOf("portal_intake:", start);
   const payload = js.slice(start, end);
   assert.ok(start >= 0 && end > start);
   assert.doesNotMatch(payload, /email/);

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { classifyMainWrite } from '../tools/main-write-integrity.mjs';
+import { classifyMainWrite, resolveMainWriteAssociatedPullRequests } from '../tools/main-write-integrity.mjs';
 
 test('verified material single-parent write to main without PR association is a governance incident', () => {
   const result = classifyMainWrite({
@@ -71,4 +71,75 @@ test('main-write incidents create or update one stateful deduplicated recovery i
   assert.match(workflow, /last_seen_sha/);
   assert.match(workflow, /recoveryRequired/);
   assert.match(workflow, /if:\s*always\(\)/);
+});
+
+const HEAD = '4ce0846ca51227169389241d3a122b274795a0b2';
+const canonicalPr = { number: 4658, merged_at: '2026-10-22T15:43:21Z', base: { ref: 'main' }, merge_commit_sha: HEAD };
+const mainProvenanceArgs = { branch: 'main', parentCount: 1, changedPaths: ['.github/workflows/main-write-integrity.yml'], headSha: HEAD };
+
+test('main write: real GitHub commit PR association proves governed squash merge', async () => {
+  const lookup = await resolveMainWriteAssociatedPullRequests({
+    repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: HEAD, commitSubject: 'fix: recovery (#4658)',
+    githubRead: async path => path.endsWith('/pulls') ? [canonicalPr] : null, sleep: async () => {},
+  });
+  assert.equal(lookup.source, 'GITHUB_COMMIT_ASSOCIATION');
+  assert.equal(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'GOVERNED_SQUASH_MERGE');
+});
+
+test('main write: malformed transient commit-association API falls back only to exact provider-verified PR', async () => {
+  let primary = 0;
+  const lookup = await resolveMainWriteAssociatedPullRequests({
+    repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: HEAD,
+    commitSubject: 'fix(github): autonomous recovery (#4658)', sleep: async () => {},
+    githubRead: async path => {
+      if (path.includes('/commits/')) { primary++; throw new SyntaxError('Unexpected end of JSON input'); }
+      if (path.endsWith('/pulls/4658')) return canonicalPr;
+      throw new Error('unexpected path');
+    },
+  });
+  assert.equal(primary, 3);
+  assert.equal(lookup.source, 'GITHUB_VERIFIED_PR_FALLBACK');
+  assert.equal(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'GOVERNED_SQUASH_MERGE');
+});
+
+test('main write: forged squash message cannot bypass PR verification', async () => {
+  const lookup = await resolveMainWriteAssociatedPullRequests({
+    repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: HEAD,
+    commitSubject: 'unauthorized direct main write (#4658)', sleep: async () => {},
+    githubRead: async path => path.includes('/commits/') ? [] : { ...canonicalPr, merge_commit_sha: 'e'.repeat(40) },
+  });
+  assert.notEqual(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'GOVERNED_SQUASH_MERGE');
+});
+
+test('main write: provider outage and unsupported commit hint preserve fail-closed unknown', async () => {
+  const lookup = await resolveMainWriteAssociatedPullRequests({
+    repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: HEAD,
+    commitSubject: 'unverified direct push', sleep: async () => {},
+    githubRead: async () => { throw new Error('HTTP 500'); },
+  });
+  assert.equal(lookup.associatedPullRequests, undefined);
+  assert.equal(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'UNKNOWN_MAIN_WRITE');
+});
+
+test('main write: fallback requires merged_at, main branch, numeric PR and immutable commit equality', async () => {
+  for (const invalid of [
+    { ...canonicalPr, merged_at: null }, { ...canonicalPr, base: { ref: 'release' } },
+    { ...canonicalPr, number: 1 }, { ...canonicalPr, merge_commit_sha: 'a'.repeat(40) },
+  ]) {
+    const lookup = await resolveMainWriteAssociatedPullRequests({
+      repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: HEAD,
+      commitSubject: 'fix: test (#4658)', sleep: async () => {},
+      githubRead: async path => path.includes('/commits/') ? [] : invalid,
+    });
+    assert.notEqual(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'GOVERNED_SQUASH_MERGE');
+  }
+});
+
+test('main write: existing workflow preserves bounded provider proof and red fail-closed boundary', async () => {
+  const w = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
+  assert.match(w, /resolveMainWriteAssociatedPullRequests/);
+  assert.match(w, /MAIN_WRITE_PROVIDER_PR_PROOF/);
+  assert.match(w, /Fail closed on ungoverned main write/);
+  assert.match(w, /recoveryRequired == 'true'/);
+  assert.doesNotMatch(w, /contents:\s*write/);
 });

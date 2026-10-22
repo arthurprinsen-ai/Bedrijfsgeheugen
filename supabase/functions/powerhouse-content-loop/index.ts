@@ -1,9 +1,11 @@
 import postgres from 'npm:postgres@3.4.7';
+import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
+import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
-const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records"]);
+const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations"]);
 const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1"]);
 const DB_JSON_COLUMNS=new Set(['bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload','content_publication_obligations.evidence','content_publication_obligations.metrics','powerhouse_channel_decisions.delivery_evidence','powerhouse_channel_decisions.learning_evidence','powerhouse_content_artifacts.generation_evidence','powerhouse_content_recommendations.evidence','powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence','powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest','powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage','powerhouse_sales_actions.evidence']);
 const DB_ARRAY_CASTS=new Map([['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],['powerhouse_instagram_media_jobs_v1.allowed_providers','text[]'],['brain_records.predecessor_ids','text[]'],['brain_records.evidence_ids','text[]'],['brain_ai_governance_registry.data_categories','text[]'],['brain_ai_governance_registry.prohibited_data_categories','text[]'],['brain_ai_governance_registry.approval_evidence_ids','text[]'],['brain_ai_governance_registry.evidence_ids','text[]'],['brain_ai_governance_registry.subprocessors','text[]'],['brain_ai_governance_registry.provider_evidence_urls','text[]']]);
@@ -336,11 +338,43 @@ Deno.serve(async (req) => {
         && evidence.provider_create_success !== true
         && evidence.provider_publication_ack_verified !== true
         && evidence.provider_truth_verified !== true
-        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED');
+        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED'
+          || (decision.channel === 'linkedin_personal'
+            && reason === 'PERSONAL_SOURCE_UNVERIFIED'
+            && hasVerifiedPersonalBuilderEvidence(evidence.identity_gate_evidence)));
     });
+    // The normal duplicate classifier only sees "decision=publish"; however the
+    // canonical reconciler can turn a pre-provider duplicate into "hold/blocked"
+    // while the ORIGINAL obligation correctly retains the duplicate refusal.
+    // Reopen only when the provider authority is provably unused, then reuse the
+    // existing source materializer and alternate-content decision path.
+    let retryableHeldPersonalDuplicate = false;
+    const personalHeld = (initialDecisions || []).find((decision:any) =>
+      clean(decision.channel)==='linkedin_personal' &&
+      clean(decision.state)==='blocked' &&
+      clean(decision.decision)==='hold');
+    if (personalHeld) {
+      const [obligationResult,recommendationResult] = await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,last_error,external_id,evidence,recovery_attempts')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_personal').maybeSingle(),
+        db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,dedupe_key,status')
+          .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+          .limit(12)
+      ]);
+      if (obligationResult.error || recommendationResult.error) {
+        stepResults.push({name:'held-personal-source-read',ok:false,degraded:true,
+          error:'PERSONAL_DUPLICATE_RECOVERY_READ_FAILED'});
+      } else {
+        retryableHeldPersonalDuplicate=shouldRebootstrapHeldPersonalDuplicate(
+          personalHeld,obligationResult.data,recommendationResult.data||[],runDate);
+      }
+    }
     let bootstrapStillInFlight = false;
     // A completed bootstrap is one of the normal bounded generation rounds.
-    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in

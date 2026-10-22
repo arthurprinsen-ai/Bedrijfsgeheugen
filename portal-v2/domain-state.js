@@ -210,7 +210,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   for(const page of organismPages){
    if(!effectDetails.some(detail=>detail.page===page))effectDetails.push(Object.freeze({page,label:page,viaCalculation:[],viaRule:['organism'],relation:'organism'}));
   }
-  const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
+  // Expose the exact causal mutation revision; a generic later Brain ACK must
+  // never be credited to an unrelated or newer customer edit.
+  const generation=impact.changed?impactRevision+1:null;
+  const enriched=Object.freeze({...impact,generation,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
   if(impact.changed){
    pendingImpacts.push({generation:++impactRevision,path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
   }

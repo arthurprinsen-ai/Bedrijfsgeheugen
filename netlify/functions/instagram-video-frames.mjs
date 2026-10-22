@@ -4,6 +4,8 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
+import {verifierProbeAuthorizesToken} from './_instagram-frame-auth-contract.mjs';
+import {instagramFrameSamplePoints} from './_instagram-frame-sampling.mjs';
 
 const execFileAsync=promisify(execFile);
 const SUPABASE='https://adhjwmvyoixzjtmiroln.supabase.co';
@@ -18,12 +20,17 @@ const clean=v=>String(v??'').trim();
 
 async function tokenIsValid(token){
   if(!token)return false;
-  const r=await fetch(`${SUPABASE}/functions/v1/powerhouse-instagram-media-verifier`,{
-    method:'POST',
-    headers:{'content-type':'application/json','x-powerhouse-token':token},
-    body:'{}'
-  });
-  return r.status!==401;
+  try{
+    // Only the canonical verifier's authenticated empty-payload response is proof.
+    const r=await fetch(`${SUPABASE}/functions/v1/powerhouse-instagram-media-verifier`,{
+      method:'POST',
+      headers:{'content-type':'application/json','x-powerhouse-token':token},
+      body:'{}'
+    });
+    if(r.status!==400||!clean(r.headers.get('content-type')).toLowerCase().startsWith('application/json'))return false;
+    const probe=await r.json().catch(()=>null);
+    return verifierProbeAuthorizesToken(r.status,probe);
+  }catch{return false;}
 }
 function safeOpenArtUrl(raw){
   const u=new URL(raw);
@@ -65,11 +72,7 @@ export default async (request)=>{
     const input=join(dir,'source.mp4');
     await writeFile(input,bytes);
 
-    const points=[
-      ['start',Math.min(0.25,Math.max(0.05,duration*0.05))],
-      ['middle',Math.max(0.05,duration*0.5)],
-      ['end',Math.max(0.05,duration-0.25)]
-    ];
+    const points=instagramFrameSamplePoints(duration);
     const frames=[];
     for(const [position,seconds] of points){
       const out=join(dir,`${position}.jpg`);

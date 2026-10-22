@@ -52,8 +52,8 @@ export function describePlanAccess(plan){
     canUseEnterpriseGovernance:code==='enterprise'
   });
 }
-export async function fetchPortalPlan(fetchFn=globalThis.fetch){
-  const response=await fetchFn('/api/portal-entitlements',{headers:{accept:'application/json'}});
+export async function fetchPortalPlan(fetchFn=globalThis.fetch,headers={}){
+  const response=await fetchFn('/api/portal-entitlements',{headers:{...headers,accept:'application/json'},credentials:'same-origin',cache:'no-store'});
   if(!response.ok)return null;
   const payload=await response.json().catch(()=>null);
   if(!payload?.plan)return null;

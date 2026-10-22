@@ -43,3 +43,12 @@ Referentie-incident 2026-09-30:
 - direct execute vereiste bovendien top-level user/entity identity;
 - oude foutlogger verloor providerdetails als `[object Object]`;
 - recovery: 5 mails provider-bevestigd via canonieke Gmail fallback en met echte Gmail message/thread IDs teruggeschreven; 6e action deferred door daily cap=5.
+
+
+## Scoped derived email statistics — 20 October 2026
+Fingerprint: `powerhouse|email-learning-scoped-refresh|20261020`.
+- `powerhouse_refresh_email_learning_stats()` is the existing derived statistics owner; never clear its entire table or disable safe-update controls.
+- Serialize refreshes; upsert current 180-day source-backed email aggregates and retire only missing keys owned by the exact email learning contract.
+- Other channels/contracts and source actions, replies and outcomes must survive refresh, repeat and expiration tests.
+- A passing statistics refresh is neither an outbound send nor a reply/order/revenue observation. Provider receipts and contact eligibility remain mandatory.
+- Regression fixture: `supabase/tests/email_learning_scoped_refresh_v1.sql`; runs against temporary clones and rolls back.

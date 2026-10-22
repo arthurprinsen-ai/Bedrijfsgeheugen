@@ -1,18 +1,20 @@
-import { deriveFlowState, statusLabel } from './flow-state.js';
-import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js';
-import { mountLegacyParity } from './legacy-parity.js';
-import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
-import { bindPortalNavigation, navigatePortal } from './router.js';
-import { groupedHubPages, hubDefinition } from './hubs.js';
-import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
-import { createScanClaimBridge } from './scan-claim-bridge.js';
-import { createPortalDomainState } from './domain-state.js';
-import { mountGlobalActions } from './global-actions-ui.js';
-import { applyCustomerBranding } from './customer-branding.js';
-import { applyOverviewDashboard } from './modules/overview.js';
-import { renderProjectOverview } from './project-overview.js';
-import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage } from './plan-access.js';
-import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js';
+import { deriveFlowState, statusLabel } from './flow-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountLegacyParity } from './legacy-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bindPortalNavigation, navigatePortal } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { groupedHubPages, hubDefinition } from './hubs.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createScanClaimBridge } from './scan-claim-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createPortalDomainState } from './domain-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountGlobalActions } from './global-actions-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { applyCustomerBranding } from './customer-branding.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { applyOverviewDashboard } from './modules/overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { renderProjectOverview } from './project-overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountEntrepreneurHome } from './entrepreneur-home.js';
+import { mountWinstnavigator } from './winstnavigator.js';
+import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -202,12 +204,31 @@ function closeHub(){
  sheet.setAttribute('aria-hidden','true');
 }
 function ensureNavigationStyles(){
- if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css'))return;
- const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
+ if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a'))return;
+ const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';document.head.appendChild(style);
 }
 
-document.documentElement.classList.add('portal-entitlements-loading');
-fetchPortalPlan().then(subscription=>{
+let planAuthSubject='',planReadRevision=0;
+let accountActivationStarted=false;
+async function activatePurchasedAccount(){
+ if(accountActivationStarted||new URL(location.href).searchParams.get('activate')!=='subscription')return;
+ accountActivationStarted=true;
+ const status=document.createElement('p');status.setAttribute('role','status');status.textContent='Je abonnement wordt aan je account gekoppeld…';
+ (document.querySelector('.main')||document.body).prepend(status);
+ try{
+  const response=await fetch('/api/checkout/activate',{method:'POST',credentials:'same-origin',headers:await portalStateClient.authHeaders()});
+  const data=await response.json();
+  if(!response.ok||data?.ok!==true)throw Error('ACTIVATION_PENDING');
+  if(data.refresh_required)await portalStateClient.currentUser()?.jwt?.(true);
+  const target=new URL(location.href);target.searchParams.delete('activate');location.replace(target.toString());
+ }catch{status.textContent='Je abonnement is nog niet gekoppeld. Controleer of je e-mailadres bevestigd is en of je hetzelfde account gebruikt als bij de aankoop.'}
+}
+async function refreshAuthenticatedPlan(subject){
+ const revision=++planReadRevision;
+ document.documentElement.classList.add('portal-entitlements-loading');
+ try{
+ const subscription=await fetchPortalPlan(globalThis.fetch,await portalStateClient.authHeaders());
+ if(revision!==planReadRevision||planAuthSubject!==subject)return;
  portalSubscription=subscription;
  applyPlanAccess(document,subscription);
  const requestedPage=new URL(location.href).searchParams.get('page');
@@ -221,7 +242,8 @@ fetchPortalPlan().then(subscription=>{
      const badge=document.createElement('a');badge.id='portalPlanBadge';badge.className='portal-plan-badge';badge.href='https://www.bedrijfsgeheugen.nl/prijzen#saas';badge.textContent=`Pakket: ${subscription.planName}`;host.appendChild(badge);
    }
  }
-}).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
+ }catch{}finally{if(revision===planReadRevision)document.documentElement.classList.remove('portal-entitlements-loading')}
+}
 
 const portalStateClient=createPortalStateClient();
 const scanClaimBridge=createScanClaimBridge({
@@ -252,10 +274,33 @@ function revalidateVisibleCustomer(){
  return pendingRevalidation;
 }
 
-const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
+// Runtime evidence is transient and belongs to the exact current principal.
+// Keep the bearer-bound readback out of canonical stored customer answers.
+let latestOwnerRuntime=null;
+const currentOwnerRuntime=()=>{
+ const snap=portalStateClient.getSnapshot?.();
+ const identity=snap?.mode==='authenticated'&&snap.user&&!portalStateClient.isDemo?.()?String(snap.user.id||''):'';
+ return identity&&identity===latestOwnerRuntime?.subject?latestOwnerRuntime.value:null;
+};
+const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({
+ stateClient:portalStateClient,domainState:portalDomainState,
+ onRuntime:next=>{
+  const snap=portalStateClient.getSnapshot?.();
+  if(snap?.mode!=='authenticated'||!snap.user?.id||portalStateClient.isDemo?.())return;
+  latestOwnerRuntime={subject:String(snap.user.id),value:next};
+  runtime=next;previewMode=false;render();
+  // No customer IDs, token or provider payload is broadcast in the event.
+  globalThis.dispatchEvent?.(new Event('bg:portal-owner-runtime-updated'));
+ }
+});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
 configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
+// One guided entry over the existing authenticated tenant state and Brain authority.
+mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClient,getTenantRuntime:currentOwnerRuntime});
+// Make the existing scenario/relationship experience available to the same
+// logged-in tenant rather than leaving its independent module unmounted.
+mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
 let portalVisualAuthSubject=null;
@@ -264,10 +309,20 @@ portalStateClient.subscribe(snap=>{
    ? String(snap.user.id||'') : '';
  if(nextVisualSubject!==portalVisualAuthSubject){
    portalVisualAuthSubject=nextVisualSubject;
+   latestOwnerRuntime=null;
+   runtime=null;
+   previewMode=true;
    document.dispatchEvent(new Event('bg:portal-identity-boundary'));
+   globalThis.dispatchEvent?.(new Event('bg:portal-owner-runtime-updated'));
  }
  applyCustomerBranding({state:snap.state||{},user:snap.user});
  const authenticated=(snap.mode==='authenticated'||snap.mode==='empty')&&!!snap.user&&!portalStateClient.isDemo();
+ const planSubject=authenticated?String(snap.user.id):'';
+ if(planSubject!==planAuthSubject){
+   planAuthSubject=planSubject;planReadRevision++;
+   portalSubscription=null;document.getElementById('portalPlanBadge')?.remove();
+   if(planSubject){refreshAuthenticatedPlan(planSubject);activatePurchasedAccount()}
+ }
  document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
  scanClaimBridge.setAuthenticated(authenticated,snap.user?.id);
  mountCanonicalDesktopNavigation();
