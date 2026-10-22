@@ -110,5 +110,5 @@ test('Supabase SQL rollback fixture is verifier-only but production migrations a
   assert.equal(supabaseMigrationReadback.failClosedWhenMissing,true);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
   assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
-  assert.match(workflow,/const migrations=paths\\.filter/);
+  assert.match(workflow,/const migrations=paths\.filter/);
 });
