@@ -1575,3 +1575,12 @@ Root checkout pages and the V18 production generator are Netlify runtime, while 
 
 ## Checkout source is not final-artifact proof
 Verify /afsluiten after the complete shell/localization pipeline. Capture and restore its canonical source around legacy builders, preserve only its explicit page-runtime marker, and require unique dynamic DOM targets plus provider-status verification in both NL/EN output. Checkout forms use POST even without JavaScript so customer fields never become a default GET query. A successful generic page build does not prove checkout execution.
+
+
+## 2026-10-22 — daily blog source SEO and material closure
+Fingerprint: `content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1`.
+Keep the daily blog on its SAME date branch/PR with canonical learning,
+activity ledger and change documentation. Do not disable protected CI or
+fork a duplicate blog. Avoid generic question-prefix SEO focus ("Hoe
+Nederlandse"); select substantive contiguous topic words. Generated is NOT
+live without Netlify public readback.
