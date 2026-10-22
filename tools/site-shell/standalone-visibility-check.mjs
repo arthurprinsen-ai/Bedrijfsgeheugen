@@ -182,7 +182,7 @@ try {
                     const node = source.node;
                     const tag = node?.tagName?.toLowerCase() || 'detached';
                     const id = node?.id ? '#' + String(node.id).slice(0, 70) : '';
-                    const className = typeof node?.className === 'string' ? node.className.trim().split(/\\s+/).slice(0, 3).join('.') : '';
+                    const className = typeof node?.className === 'string' ? node.className.trim().split(/\s+/).slice(0, 3).join('.') : '';
                     return { node: tag + id + (className ? '.' + className : ''), previous: rect(source.previousRect), current: rect(source.currentRect) };
                   });
                   window.__bgClsSources.push({ value: Number(entry.value.toFixed(5)), timeMs: Math.round(entry.startTime), sources });
