@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-const sql = readFileSync(new URL('../supabase/migrations/20261009160500_salesrobot_provider_proof_daily_assurance_v1.sql', import.meta.url), 'utf8');
+const sql = readFileSync(new URL('../supabase/migrations/20261009141054_salesrobot_provider_proof_daily_assurance_v1.sql', import.meta.url), 'utf8');
 test('canonical assurance only counts SalesRobot messages with independent provider inbox evidence', () => {
   for (const anchor of ["a.action_type='salesrobot_linkedin_dm'", "e.event_type='salesrobot_linkedin_dm_sent'", "e.source='salesrobot'", "e.evidence->>'provider_inbox_readback'='true'", "e.evidence->>'inbox_message_sent_by_me'='true'", "e.evidence->>'provider_step_status'='SENT'", "a.evidence->>'provider_message_id'=e.evidence->>'inbox_message_id'", "a.evidence->>'provider_campaign_uuid'=e.evidence->>'provider_campaign_uuid'", "a.person_key=e.person_key", "a.status='done'"]) assert.ok(sql.includes(anchor), 'Missing evidence condition: '+anchor);
 });

@@ -1,0 +1,87 @@
+{
+  "fingerprint": "powerhouse|brain|canonical-migration-timestamp-source-batch2|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation_id": "ci-brain-canonical-timestamp-oracle-batch2-20261022",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "root_causes": [
+    "Six other BRAIN tests use obsolete planned SQL timestamp filenames. These migrations were reconciled earlier into already-existing canonical executable filenames; old names are absent."
+  ],
+  "prevention": [
+    "Preserve all original assertions, check actual immutable SQL source blob and reconstruct original test blob from only the corrected path.",
+    "Do not create duplicate executable SQL files or trust a file-name-only placeholder as migration parity.",
+    "Keep exact-HEAD Required, CodeQL, full BRAIN zero-failure and independent production/tenant controls fail-closed."
+  ],
+  "evidence": {
+    "original_full_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755490943",
+    "source_baseline_failed": 354,
+    "source_baseline_total": 3552,
+    "source_identity": [
+      {
+        "testPath": "tests/brain-real-commercial-conversion-truth-v1.test.mjs",
+        "oldPath": "supabase/migrations/20261009190000_fix_noncommercial_conversion_projection_v1.sql",
+        "currentPath": "supabase/migrations/20261009155535_fix_noncommercial_conversion_projection_v1.sql",
+        "originalTestBlob": "8f728de935a43ff897512e246fb7653b99573289",
+        "canonicalSqlBlob": "96da76180829bd011b9c331b481ed07594c1c678"
+      },
+      {
+        "testPath": "tests/brain-salesrobot-provider-proof-daily-assurance-v1.test.mjs",
+        "oldPath": "supabase/migrations/20261009160500_salesrobot_provider_proof_daily_assurance_v1.sql",
+        "currentPath": "supabase/migrations/20261009141054_salesrobot_provider_proof_daily_assurance_v1.sql",
+        "originalTestBlob": "d3135dfdac5284e8930f445c728dae1b11c173f0",
+        "canonicalSqlBlob": "8a0f1020c5b07ea6a34165fc2a035c8161b6fc86"
+      },
+      {
+        "testPath": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
+        "oldPath": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+        "currentPath": "supabase/migrations/20260928140907_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+        "originalTestBlob": "35c42f32229638f57c8a7e1231b8dad80296c18c",
+        "canonicalSqlBlob": "08df171c6d4b340c69fda68338e18020f0468422"
+      },
+      {
+        "testPath": "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+        "oldPath": "supabase/migrations/20260928152400_powerhouse_persuasion_revenue_optimizer_v1.sql",
+        "currentPath": "supabase/migrations/20260928133343_powerhouse_persuasion_revenue_optimizer_v1.sql",
+        "originalTestBlob": "249f9de3d82931e8f905c60419d1491cf0559af0",
+        "canonicalSqlBlob": "d38a9b83f34b3bab104289b28d38c73fdb573004"
+      },
+      {
+        "testPath": "tests/brain-outreach-4340-canonical-quality.test.mjs",
+        "oldPath": "supabase/migrations/20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
+        "currentPath": "supabase/migrations/20261012074151_20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
+        "originalTestBlob": "9578814d03933ecb3e97ac4fc0c6e6a460e5bdd2",
+        "canonicalSqlBlob": "135a2a08eddfed78aa1e888e8f697ec9edbee34d"
+      },
+      {
+        "testPath": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+        "oldPath": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
+        "currentPath": "supabase/migrations/20260929183956_powerhouse_mira_public_complaint_source_loop_v1.sql",
+        "originalTestBlob": "d32945bae2ebf56ae8cc4c889d069b7a7395ced0",
+        "canonicalSqlBlob": "113b3cd976d74bcccd748e8bb2ef0c3f48c84509"
+      }
+    ],
+    "regression": "tests/brain-canonical-migration-timestamp-batch2-20261022.test.mjs",
+    "required_ci": "PENDING",
+    "codeql": "PENDING",
+    "full_brain": "PENDING",
+    "production": "UNCHANGED"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-migration-timestamp-batch2-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-canonical-migration-timestamp-batch2-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-canonical-migration-timestamp-batch2-20261022.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_UNVERIFIED"
+}
