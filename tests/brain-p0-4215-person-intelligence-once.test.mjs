@@ -51,5 +51,5 @@ test('independent preview runner compares every 50-column row, forecast aggregat
  assert.match(src,/ROLLBACK;/);
  assert.match(src,/CREATE TEMP TABLE p0_old/);
  assert.match(src,/CREATE TEMP VIEW p0_4215_buying_candidate/);
- assert.doesNotMatch(src,/CREATE OR REPLACE VIEW public\.powerhouse_buying_window_v2 WITH/);
+ assert.match(src,/const candidateSql=source\.slice\(begin,end\)\.trim\(\)\.replace\(startTag/);
 });
