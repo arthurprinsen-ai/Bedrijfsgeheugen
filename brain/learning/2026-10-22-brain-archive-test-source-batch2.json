@@ -53,5 +53,7 @@
     "after": "PENDING_EXACT_HEAD_RUN",
     "full_brain": "PENDING_0_FAIL",
     "production": "UNCHANGED"
-  }
+  },
+  "prevention_rule": "Never dereference archived historical SQL from executable supabase/migrations; test the exact non-executable Git blob, preserve every positive/negative source assertion, and reject duplicate executable migration versions.",
+  "regression_contract": "tests/brain-inherited-archive-sources-batch2.test.mjs"
 }
