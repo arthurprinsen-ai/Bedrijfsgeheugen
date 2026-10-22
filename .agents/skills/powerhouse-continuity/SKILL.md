@@ -5,6 +5,19 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Dagelijkse agentleerketen: onafhankelijke foutdomeinen (22 oktober 2026)
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`.
+Bronincident: [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367). Twee echte dagelijkse uitvoeringen op 21 en 22 oktober 2026 faalden omdat de 14-daagse AI-model-freshnesscontrole stopte in hetzelfde fail-fast job vóór de onafhankelijke leersnapshot, improvement probe en engineering self-tests.
+
+Verplicht voor alle huidige en toekomstige agents:
+- Behandel een falende externe leverancier- of catalogusfreshnesscheck als een **echt onopgelost bewijsprobleem**, geen reden om timestamps te vervalsen of gate-errors te onderdrukken.
+- Houd onafhankelijke dagelijkse leer-, incident-, skill- en zelftestuitvoer actief via de al bestaande Powerhouse Daily Self Evolution scheduler; geen tweede cron, geen parallel geheugen of tweede agentowner.
+- Catalogusclaim-validatie blijft een zelfstandige strenge `model-freshness` job; `improve` is daarvan onafhankelijk. De **totale** workflow blijft rood zolang enig verplicht onderdeel rood is. Alleen een werkelijk uitgevoerde en geslaagde improve-job bewijst dat de leercyclus zelf doorging.
+- Bewaar ook van mislukte providercontroles het daadwerkelijke JSON-artefact. Koppel iedere nieuwe recurrence aan de bestaande fingerprint en het Brain-register. Laat verantwoordelijkheid voor officiële claim-readback bij #4367.
+- Vóór LIVE/PROVEN: regressie `tests/powerhouse-daily-self-evolution.test.mjs`, echte exact-SHA Required+CodeQL, protected main-readback, vervolgens één echte workflow-run met afzonderlijke jobconclusies en output-artifacts.
+
+
 ## Ghost-aware predictive CI queue, bewijs boven telling (22 oktober 2026)
 
 - Canonieke obligation en fingerprint: #4661 `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`; historisch GitHub-providerincident blijft #4655.
