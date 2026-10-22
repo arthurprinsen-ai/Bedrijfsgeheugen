@@ -59,3 +59,25 @@ test('migration must include complete SQL function bodies and transaction bounda
   assert.match(migration, /INSTAGRAM_PROOF_STATUS_WRONG_MASTER_HASH_ACCEPTED/);
   assert.doesNotMatch(migration, /\\nRETURNS trigger\\nLANGUAGE plpgsql/);
 });
+
+test('autonomous recovery learning has semantic evidence and all required independent evaluation modes', async () => {
+  const { fileURLToPath } = await import('node:url');
+  const { compileLearningEvaluationPlan, validateEvaluationContract } = await import('../scripts/brain/learning-canonicalization-gate.mjs');
+  const { evaluateLearningSemantics } = await import('../scripts/brain/material-writeback-closure-guard.mjs');
+  const rootDir = fileURLToPath(new URL('../', import.meta.url));
+  const learningFile = 'brain/learning/2026-10-22-mira-proof-status-vertical-frame-v1.json';
+  const learning = JSON.parse(readFileSync(new URL('../' + learningFile, import.meta.url), 'utf8'));
+  const plan = compileLearningEvaluationPlan(learning);
+  assert.equal(plan.failure_class, 'DATA_INTEGRITY');
+  assert.equal(plan.security_sensitive, true);
+  assert.equal(plan.enforcement_kind, 'CI_SECURITY_GATE');
+  assert.equal(plan.shadow_required, true);
+  assert.equal(plan.canary_required, true);
+  const contract = validateEvaluationContract(learning, plan, { rootDir });
+  assert.deepEqual(contract.required_modes, ['historical_replay', 'shadow', 'canary']);
+  assert.equal(contract.tests_by_mode.shadow.includes('tests/brain-mira-media-proof-status-truth-v1.test.mjs'), true);
+  const semantic = evaluateLearningSemantics({ learningFiles: [learningFile], rootDir });
+  assert.equal(semantic.ok, true, JSON.stringify(semantic.missing));
+  assert.ok(learning.evidence?.production_readback, 'observed production evidence must be retained');
+  assert.ok(learning.prevention.some(rule => rule.includes('autonomous agents')), 'pre-CI autonomous recovery prevention required');
+});
