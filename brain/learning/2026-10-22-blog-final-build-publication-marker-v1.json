@@ -26,14 +26,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/content-growth-v18-content-id-build-parity.test.mjs",
-      "tests/content-growth-live-readback.test.mjs"
+      "tests/brain-native-blog-final-marker-build-v1.test.mjs"
     ],
     "shadow": [
-      "tests/content-growth-v18-content-id-build-parity.test.mjs"
+      "tests/brain-native-blog-final-marker-build-v1.test.mjs"
     ],
     "canary": [
-      "tests/content-growth-live-readback.test.mjs"
+      "tests/brain-native-blog-final-marker-build-v1.test.mjs"
     ]
   },
   "compiler": {
@@ -41,5 +40,10 @@
     "scope": "WEBSITE",
     "machine_enforceable": true,
     "security_sensitive": false
-  }
+  },
+  "tests": [
+    "tests/brain-native-blog-final-marker-build-v1.test.mjs",
+    "tests/content-growth-v18-content-id-build-parity.test.mjs",
+    "tests/content-growth-live-readback.test.mjs"
+  ]
 }
