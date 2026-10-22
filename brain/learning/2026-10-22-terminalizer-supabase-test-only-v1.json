@@ -1,0 +1,41 @@
+{
+  "fingerprint": "delivery|terminalizer|sql-regression-classified-as-runtime|20261022-v1",
+  "obligation_id": "delivery|terminalizer|sql-regression-classified-as-runtime|20261022-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE",
+  "failure_class": "TERMINAL_READBACK_PATH_MISCLASSIFICATION",
+  "scope": "GITHUB_CI",
+  "root_cause": "Post-merge terminalizer treated rollback-only supabase/tests SQL as unknown production runtime; canonical verifierOnlyPrefixes omitted supabase/tests/.",
+  "evidence": {
+    "run_id": 39833808183,
+    "job_id": 120016707966,
+    "merged_brain_pr": 4697,
+    "exact_path": "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql",
+    "error": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
+  },
+  "fix": "Add only supabase/tests/ to existing canonical verifierOnlyPrefixes; retain strict checks for real migrations, Edge Functions, Netlify Functions and unknown runtime.",
+  "prevention_rule": "Every test-only path exception requires negative runtime canaries and a protected postmerge readback; reuse canonical Brain fingerprint without a second scheduler.",
+  "compiler": {
+    "failure_class": "TERMINAL_READBACK_PATH_MISCLASSIFICATION",
+    "scope": "GITHUB_CI",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "validation": {
+    "before_fixture_verifier": false,
+    "after_fixture_verifier": true,
+    "real_migration_verifier": false,
+    "live_terminalizer_replay": "PENDING"
+  }
+}
