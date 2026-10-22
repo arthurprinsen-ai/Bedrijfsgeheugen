@@ -68,13 +68,41 @@ export async function recordMediaProofRejection(db,{job,ob,code,position,history
   if(write.error)return {kind:'failed',code:String(write.error.code||'MEDIA_PROOF_DIAGNOSTIC_WRITE_FAILED')};
   if(!write.data)return {kind:'stale'};
   // Obligation is a read-model diagnostic, NOT permission to publish.
-  if(ob?.status==='BLOCKED'&&ob?.updated_at){
+  if(['BLOCKED','FAILED'].includes(ob?.status)&&ob?.updated_at){
     const other=await db.from('content_publication_obligations')
       .update({last_error,next_action,updated_at})
       .eq('tenant_id','canonical').eq('publication_date',job.publication_date)
       .eq('channel','instagram').eq('updated_at',ob.updated_at)
-      .eq('status','BLOCKED').is('external_id',null);
+      .eq('status',ob.status).is('external_id',null);
     if(other.error)return {kind:'partial',code:String(other.error.code||'OBLIGATION_DIAGNOSTIC_WRITE_FAILED')};
+  }
+  // Preserve every genuinely new rejected OpenArt generation in the ONE canonical
+  // Brain failure register. The occurrence key is stable across retries and chats;
+  // repeated observations cannot inflate the incident count.
+  const history=String(historyId||'').trim();
+  if(history){
+    const occurrence='router:openart:'+history+':instagram:'+job.publication_date+':'+pos;
+    const hash=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(occurrence)));
+    const payloadSha256=Array.from(hash,b=>b.toString(16).padStart(2,'0')).join('');
+    try {
+      const {error:brainError}=await db.rpc('brain_observe_failure',{
+        p_occurrence_id:occurrence,
+        p_fingerprint:'powerhouse|instagram-mira|video-frame-identity-below-094|20261022-v1',
+        p_payload_sha256:payloadSha256,
+        p_evidence:{
+          source:'powerhouse-instagram-media-router',publication_date:String(job.publication_date),
+          provider:'openart',openart_history_id:history,frame_position:pos,
+          face_identity_confidence:Number.isFinite(score)?score:null,
+          minimum_required_face_confidence:0.94,
+          outcome:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',
+          media_job_id:String(job.id),publication_verified:false,
+          regression_ref:'tests/brain-mira-preflight-verifier-rejection-retention.test.mjs'
+        }
+      });
+      if(brainError)return {kind:'partial',code:'BRAIN_FAILURE_REGISTRY_WRITE_FAILED',last_error};
+    }catch{
+      return {kind:'partial',code:'BRAIN_FAILURE_REGISTRY_WRITE_FAILED',last_error};
+    }
   }
   return {kind:'applied',last_error};
 }
