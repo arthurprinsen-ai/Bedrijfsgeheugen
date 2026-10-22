@@ -1,0 +1,21 @@
+{
+  "fingerprint": "powerhouse|agent-incident-relevance-daily-evolution|20261022-v1",
+  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "event_kind": "IMPROVEMENT",
+  "observed_at": "2026-10-22",
+  "component_type": "portal-agent-brain",
+  "root_cause": "Existing learning contract and daily workflow had no explicit fail-closed tenant relevance projection plus required daily incident-prevention metrics enforced together.",
+  "failedApproach": "Treating incident learning as chat-only notes or a portal success badge without canonical runtime verification.",
+  "fix": "Reinforce canonical universal learning validator, agent skill and tenant-safe existing Portal V2 learning route with regression cases.",
+  "preventionRule": "Every agent reads known canonical failures before material action, writes evidence-backed learning after bounded recovery, and projects only proven tenant learning to the portal.",
+  "regressionTest": [
+    "tests/brain-universal-closed-loop-learning.test.mjs",
+    "portal-v2/tests/relevance-learning-closed-loop.test.mjs"
+  ],
+  "evidence": [
+    "config/universal-closed-loop-learning.json",
+    "portal-v2/native-pages.js"
+  ],
+  "canonicalAuthority": "Existing Brain/Powerhouse and protected delivery; no second runtime",
+  "productionVerified": false
+}
