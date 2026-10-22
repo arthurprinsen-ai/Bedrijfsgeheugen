@@ -2459,3 +2459,14 @@ export const DAILY_SOCIAL_BUILDER_MEDIA_RECOVERY_20261022=Object.freeze({
   learning:'brain/learning/2026-10-22-daily-social-builder-media-recovery-v1.json',
   noNewScheduler:true,noNewSender:true,noConsentBypass:true,noFabricatedProviderProof:true
 });
+
+
+export const DAILY_BLOG_SEO_MATERIAL_CLOSURE_20261022=Object.freeze({
+ fingerprint:'content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1',
+ original_pr:4603,owner:'existing powerhouse-daily-blog hourly reconciler',
+ publisher:'tools/site-shell/publish_powerhouse_blog_artifact.py',
+ focus_rule:'first consecutive substantive title words, never question prefix',
+ learning:'brain/learning/2026-10-22-daily-blog-seo-closure-v1.json',
+ regression:'tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs',
+ noDuplicatePublisher:true,proof:'protected merge + public URL readback'
+});
