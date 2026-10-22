@@ -12,10 +12,11 @@
     "Treating any completed Required test as successful coverage",
     "Blind rerun-failed-jobs on no-job CodeQL startup_failure (GitHub HTTP 403)",
     "Creating a parallel workflow/scheduler or new same-file PR",
-    "Waiving browser CLS 0.100 gate to force green"
+    "Waiving browser CLS 0.100 gate to force green",
+    "Assuming Issues: write alone was sufficient for the actual PR comment operation; production run returned integration 403"
   ],
-  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged.",
-  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates.",
+  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged. Follow-up same-owner successor grants scoped pull-requests: write and executes its own pure-routing regression in the scheduled watchdog; real current-main provider proof still required.",
+  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates. Validate real GitHub Actions token permissions against the actual PR-specific write endpoint on main; a local mock and successful CI do not prove API write authorization.",
   "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
   "tests": [
     "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
@@ -28,9 +29,15 @@
     "observed_source": ".github/scripts/required-gate-watchdog.mjs",
     "source_fix_proven": false,
     "autonomous_general_purpose_code_repair_proven": false,
-    "production_readback": "PENDING"
+    "production_readback": "PENDING",
+    "merged_predecessor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4660",
+    "merged_main_sha": "01af9f2a05794a170cd3fd63013db75a33e76268",
+    "live_provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "live_provider_failure": "GitHub API 403 /issues/4656/comments: Resource not accessible by integration",
+    "effective_job_permissions": "Issues: write, PullRequests: read",
+    "pr_comment_fix_proven": false
   },
-  "outcome": "CANDIDATE owner signal routing, not arbitrary autonomous code repair or live deployment",
+  "outcome": "RECOVERING/CANDIDATE: predecessor merged but provider PR-comment 403 verified; successor scoped permission repair not yet live-proven.",
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
     "scope": "CI",
