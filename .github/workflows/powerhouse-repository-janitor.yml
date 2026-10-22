@@ -131,7 +131,7 @@ jobs:
             select(((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY"))) |
             select(((.title // "") | startswith("RETIRED")) | not) |
             select(((.body // "") | contains("Retirement-State: RETIRED_DO_NOT_MERGE")) | not) |
-            select(((.body // "") | contains("\\nRETIRED:")) | not)
+            select(((.body // "") | contains("\nRETIRED:")) | not)
           ' .artifacts/closed-prs-recent.json | while read -r closed_pr; do
             pr="$(jq -r '.number' <<<"$closed_pr")"
             body="$(jq -r '.body // ""' <<<"$closed_pr")"
