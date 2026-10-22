@@ -1,3 +1,11 @@
+## GitHub platform-ghosts: autonome herkenning en herstel (2026-10-22)
+
+Fingerprint `github-actions:stale-queued-zero-jobs:cancel-409:20261007`, eigenaar [canoniek incident #4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655), uitgevoerd door de BESTAANDE uurlijkse Powerhouse Repository Janitor en vijfminuten Delivery Recovery Supervisor.
+
+Iedere huidige en toekomstige agent/chat voert bij `queued` + minimaal 6 uur geen statusprogressie + 0 jobs eerst een exacte provider-GET, jobs-readback, huidige main-SHA en open-PR-head controle uit. Nooit actieve/current-head CI, CodeQL, main of echte releasechecks annuleren. Voor bewezen obsolete runs slechts één begrensde native cancel → force-cancel → alleen indien beide 409, exact opnieuw gevalideerde DELETE. Bij 409/409/403: classificeer `PROVIDER_BOUNDARY`, dedupliceer onder hetzelfde incident en stop identieke destructieve retries. Het bestaande herstelproces blijft draaien, controleert de provider elke cyclus en herkent exact-ID terminale toestand of 404; alleen dan `RECONCILED`. GitHub Support-eigenaarschap is een harde providergrens; agents mogen niet beweren dat een ticket automatisch is verstuurd als daarvan geen providerbewijs bestaat.
+
+Machinecontract: `tools/delivery/github-ghost-run-reconcile.mjs`; bestaande workflows `.github/workflows/powerhouse-repository-janitor.yml` en `.github/workflows/powerhouse-delivery-recovery-supervisor.yml`; regressie `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`. Geen tweede scheduler, geen green override, geen herhaalde 403-delete-storm. Voor elke nieuwe signature lees het bestaande incident en `brain/learning/2026-10-22-github-provider-ghost-recovery-v1.json` vóór nieuwe acties.
+
 ## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
