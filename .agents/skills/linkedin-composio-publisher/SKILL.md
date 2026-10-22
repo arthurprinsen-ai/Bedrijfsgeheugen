@@ -391,3 +391,13 @@ For LinkedIn lead-magnet campaigns:
 - use short intent tokens tied to the asset, such as `100`, `50`, `ROI`, `2027`, `STACK`, `SAFE`;
 - every comment-intent event enters the canonical relationship/revenue loop and records post, keyword, language, delivery, reply, meeting/proposal/order and realized revenue;
 - LinkedIn publication remains Composio-only. Buffer and Make remain forbidden publication fallbacks.
+
+
+## 2026-10-22 — verified distinct-source founder reserve
+
+Fingerprint `powerhouse|personal-verified-distinct-source-reserve|20261022-v1`.
+
+When the canonical personal founder post is blocked as a global story-family
+duplicate with NO consumed or ambiguous provider capability, the existing
+source-backed orchestrator must seek an independently recorded and distinct
+daily source family. The pure helper `buildVerifiedFounderReserve` runs inside the existing unscoped content orchestrator and writes at most three genuinely source-backed alternatives in the SAME canonical recommendation table. No new Postgres RPC, preview branch, cron or sender is created. Each alternative requires a recorded source event ID or allowed external URL from the verified founder evidence. Context never becomes a claimed personal experience. No provider send, email consent or media claim is granted by materialization.
