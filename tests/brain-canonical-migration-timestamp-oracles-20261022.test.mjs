@@ -2,11 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import './brain-bedrijfslek-canonical-brain-v1.test.mjs';
-import './brain-commercial-hourly-stage-isolation-v1.test.mjs';
-import './brain-commercial-outcome-kpi-truth-v1.test.mjs';
-import './brain-contact-authority-review-v1.test.mjs';
-import './brain-decision-evidence-normalization.test.mjs';
+// Exact test-oracle identity check. All original suites also remain enabled in the full backend BRAIN suite.
 // The migrated SQL, not a test-only substitute, is the exact oracle source.
 const sources=[
   {
