@@ -28,6 +28,41 @@ export function isVerificationArtifact(path) {
   return VERIFICATION_PATTERNS.some(pattern => pattern.test(cleanPath));
 }
 
+
+/**
+ * Use the GitHub-authoritative merge base for pull-request scope classification.
+ * The PR event base can move forward while an owner's feature branch stays behind.
+ * A two-dot diff in that case includes unrelated main changes and is NOT the PR.
+ * Preserve the actual scope guard; fail closed on unverified/mismatched API proof.
+ */
+export function resolvePRScopeMergeBase({
+  eventName = '',
+  prNumber = '',
+  baseSha = '',
+  headSha = '',
+  comparison = null,
+} = {}) {
+  const validSha = value => /^[0-9a-f]{40}$/i.test(String(value || ''));
+  if (!prNumber || !['pull_request', 'workflow_dispatch'].includes(eventName)) {
+    if (!validSha(baseSha)) throw new Error('DELIVERY_BASE_SHA_INVALID');
+    return Object.freeze({ sha: baseSha, source: 'event-base' });
+  }
+  if (!validSha(baseSha) || !validSha(headSha)) {
+    throw new Error('PR_DIFF_IDENTITY_INVALID');
+  }
+  if (!comparison || comparison.base_commit?.sha !== baseSha ||
+      comparison.commits?.at(-1)?.sha !== headSha ||
+      !['ahead', 'diverged'].includes(comparison.status) ||
+      !validSha(comparison.merge_base_commit?.sha) ||
+      comparison.merge_base_commit.sha === headSha) {
+    throw new Error('PR_MERGE_BASE_PROVIDER_PROOF_MISSING');
+  }
+  return Object.freeze({
+    sha: comparison.merge_base_commit.sha,
+    source: 'github-compare-merge-base',
+  });
+}
+
 export function parseScopeMetadata(body = '') {
   const result = { delivery: parseDeliveryMetadata(body) };
   for (const rawLine of String(body).split(/\r?\n/)) {
