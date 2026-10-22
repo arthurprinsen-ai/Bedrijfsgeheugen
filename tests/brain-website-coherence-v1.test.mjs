@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { canonicalNetlifyBuild, phaseIndex } from './brain-netlify-canonical-build-source.mjs';
 
 const finalizer=readFileSync('tools/site-shell/finalize-website-coherence-v1.mjs','utf8');
 const css=readFileSync('assets/site-coherence-v1.css','utf8');
 const portal=readFileSync('portal-v2/index.html','utf8');
-const netlify=readFileSync('netlify.toml','utf8');
 
 test('contact navigation is repaired centrally',()=>{
   assert.match(finalizer,/fixContactLinks/);
@@ -31,8 +31,10 @@ test('portal loads the parity stylesheet',()=>{
 });
 
 test('final coherence pass runs in production and deploy preview builds',()=>{
-  const uses=netlify.match(/finalize-website-coherence-v1\.mjs/g)||[];
-  assert.ok(uses.length>=2);
+  const {phases}=canonicalNetlifyBuild();
+  const i=phaseIndex(phases,'website-coherence','tools/site-shell/finalize-website-coherence-v1.mjs');
+  const release=phaseIndex(phases,'release-evidence','tools/bouw-release-evidence.mjs');
+  assert.ok(i<release,'website coherence must precede release evidence');
 });
 
 test('pricing composer preserves canonical visual-regression hero hooks',()=>{

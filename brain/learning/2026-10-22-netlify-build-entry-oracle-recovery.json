@@ -1,0 +1,62 @@
+{
+  "id": "ci-brain-netlify-build-entry-oracle-20261022",
+  "fingerprint": "brain|netlify-build-entry|stale-inline-toml-oracles|20261022",
+  "event_kind": "ERROR",
+  "owner": "agent-integration-control-plane",
+  "stage": "CI_BRAIN",
+  "parent_issue": 3742,
+  "evidence": {
+    "baseline_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39671036043",
+    "regression_replay": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39763876577",
+    "replay_test_count": 6,
+    "replay_state": "PASSED",
+    "full_brain_zero_proven": false,
+    "extended_replay_pending": true,
+    "previous_six_suite_replay_proven": true,
+    "new_full_suite_previous_run": {
+      "url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39764656116",
+      "tests": 3521,
+      "passed": 3169,
+      "failed": 352,
+      "fully_green": false
+    },
+    "old_full_coherence_test_failures_unrelated_to_build_oracle": 2,
+    "focused_coherence_build_phase_verified_in": "tests/brain-netlify-production-build-parity-v1.test.mjs"
+  },
+  "observed": {
+    "tests": 3511,
+    "passed": 3190,
+    "failed": 321
+  },
+  "root_cause": "Historical BRAIN tests read obsolete inlined Netlify TOML build steps; actual production and preview use the canonical ordered build entrypoint.",
+  "fix": "Eight inherited test files corrected to canonical Netlify build entry. Seven full-file replay suites cover changed build oracles, including dedicated Netlify parity with the coherence phase. The original whole website-coherence suite retains two other failures checked by full BRAIN; do not merge until all zero.",
+  "prevention_rule": "TEST_ACTUAL_CANONICAL_BUILD_ENTRY_NOT_RETIRED_INLINE_COMMAND",
+  "status": "CANDIDATE_UNVERIFIED",
+  "production_changed": false,
+  "security_bypassed": false,
+  "full_brain_zero_proven": false,
+  "recorded_at": "2026-10-22",
+  "failure_class": "CI",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-production-build-parity-v1.test.mjs",
+      "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs",
+      "tests/brain-pricing-final-build-order-v1.test.mjs",
+      "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
+      "tests/brain-product-led-home-v1.test.mjs",
+      "tests/brain-product-led-production-promotion-v1.test.mjs",
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

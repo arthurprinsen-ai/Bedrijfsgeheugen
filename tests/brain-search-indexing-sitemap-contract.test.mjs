@@ -1,16 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { canonicalNetlifyBuild, phaseIndex } from './brain-netlify-canonical-build-source.mjs';
 
-test('production build regenerates sitemap from final HTML output', async () => {
-  const netlify = await readFile('netlify.toml', 'utf8');
-  const localized = netlify.indexOf('node tools/site-shell/build-localized-routes.mjs');
-  const revenueLinks = netlify.indexOf('node tools/seo-order-engine/apply-revenue-links.mjs');
-  const sitemap = netlify.indexOf('node tools/genereer-sitemap.mjs');
-  const localeValidation = netlify.indexOf('node tools/seo-order-engine/validate-locales.mjs');
-  const evidence = netlify.indexOf('node tools/bouw-release-evidence.mjs');
-  assert.ok(localized >= 0 && revenueLinks > localized && sitemap > revenueLinks && localeValidation > sitemap && evidence > localeValidation,
-    'Netlify must localize, project revenue links, generate sitemap, validate locales and only then build release evidence');
+test('production build regenerates sitemap from final HTML output', () => {
+  const {phases}=canonicalNetlifyBuild();
+  const chain=[
+    ['localized-routes','tools/site-shell/build-localized-routes.mjs'],
+    ['revenue-links','tools/seo-order-engine/apply-revenue-links.mjs'],
+    ['sitemap','tools/genereer-sitemap.mjs'],
+    ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
+    ['release-evidence','tools/bouw-release-evidence.mjs'],
+  ];
+  const indexes=chain.map(([name,script])=>phaseIndex(phases,name,script));
+  assert.deepEqual(indexes,[...indexes].sort((a,b)=>a-b),'localization, sitemap, locale checks and release evidence must remain ordered');
 });
 
 test('explicit geenIndex views override inherited robots metadata', async () => {
@@ -30,21 +33,19 @@ test('sitemap generator excludes noindex and only emits final canonical URLs', a
 
 
 test('website lane mirrors the full bilingual Netlify SEO pipeline', async () => {
-  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  const workflow=await readFile('.github/workflows/lane-website.yml','utf8');
+  assert.match(workflow,/node tools\/ci\/netlify-build-entry\.mjs/);
+  const {phases}=canonicalNetlifyBuild();
   const ordered=[
-    'node tools/seo-order-engine/apply.mjs',
-    'node tools/seo-order-engine/validate.mjs',
-    'node tools/site-shell/apply-i18n.mjs',
-    'node tools/site-shell/build-localized-routes.mjs',
-    'node tools/seo-order-engine/apply-revenue-links.mjs',
-    'node tools/genereer-sitemap.mjs',
-    'node tools/seo-order-engine/validate-locales.mjs',
-    'node tools/bouw-release-evidence.mjs'
+    ['seo-apply','tools/seo-order-engine/apply.mjs'],
+    ['seo-validate','tools/seo-order-engine/validate.mjs'],
+    ['i18n-assets','tools/site-shell/apply-i18n.mjs'],
+    ['localized-routes','tools/site-shell/build-localized-routes.mjs'],
+    ['revenue-links','tools/seo-order-engine/apply-revenue-links.mjs'],
+    ['sitemap','tools/genereer-sitemap.mjs'],
+    ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
+    ['release-evidence','tools/bouw-release-evidence.mjs'],
   ];
-  let cursor=-1;
-  for(const step of ordered){
-    const next=workflow.indexOf(step,cursor+1);
-    assert.ok(next>cursor, `website build parity must include ordered step: ${step}`);
-    cursor=next;
-  }
+  const indexes=ordered.map(([name,script])=>phaseIndex(phases,name,script));
+  assert.deepEqual(indexes,[...indexes].sort((a,b)=>a-b),'website production SEO phases must keep their actual canonical order');
 });
