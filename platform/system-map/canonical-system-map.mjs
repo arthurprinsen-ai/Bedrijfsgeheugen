@@ -2575,3 +2575,23 @@ export const POWERHOUSE_GITHUB_ACTIONS_GHOST_AUTONOMY_V1 = Object.freeze({
   noSecondScheduler:true,
   deploymentStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_PROVIDER_READBACK'
 });
+
+
+// 2026-10-22: existing Required Gate Watchdog provider comment-denial recovery.
+export const REQUIRED_GATE_WATCHDOG_COMMENT_403_RECOVERY_V1 = Object.freeze({
+  fingerprint:'github|required-gate-owner-handoff|provider-comment-403|20261022-v1',
+  canonicalOwner:'existing Required Gate Watchdog and original failed PR obligation',
+  sourceRun:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147',
+  originalDeniedPr:4656,
+  workflow:'.github/workflows/required-gate-watchdog.yml',
+  executable:'.github/scripts/required-gate-watchdog.mjs',
+  evaluator:'tools/delivery/failed-gate-owner-routing.mjs',
+  learning:'brain/learning/2026-10-22-watchdog-owner-comment-authority-403-v1.json',
+  test:'tests/brain-required-failed-gate-owner-routing-v1.test.mjs',
+  evidenceArtifact:'required-gate-owner-handoff',
+  acceptedOwnerHandoffRequiresProviderWrite:true,
+  deniedState:'PROVIDER_AUTHORITY_DENIED_NOT_DELIVERED',
+  independentGateDispatchPreserved:true,
+  noNewScheduler:true,
+  noSecurityGateOverride:true
+});
