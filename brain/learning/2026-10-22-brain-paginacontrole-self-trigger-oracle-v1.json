@@ -1,0 +1,62 @@
+{
+  "type": "BRAIN_LEARNING",
+  "fingerprint": "ci|brain|paginacontrole-self-trigger-retired-pr-oracle|20261022-v1",
+  "obligation_id": "ci-brain-paginacontrole-self-trigger-oracle-20261022-v1",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "date": "2026-10-22",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Inherited BRAIN test assumes two self-workflow path filters for push and pull_request. Current canonical paginacontrole intentionally removed standalone pull_request fanout, leaving one main-push path, manual dispatch, weekly schedule, and one serialized repository writer. The original two-hit assertion contradicts established no-duplicate-fanout contracts.",
+  "observed": {
+    "run_id": 39791707071,
+    "exact_head": "8e665a86d2bb54712a34fd88bec0e1213df21dd2",
+    "total_tests": 3526,
+    "passed": 3171,
+    "failed": 355,
+    "original_tap_number": 1668,
+    "original_assertion": "paginacontrole validates changes to its own workflow source",
+    "test_file": "tests/brain-paginacontrole-self-validation.test.mjs"
+  },
+  "fix": "Retain the current workflow unchanged. Replace stale two-trigger oracle with executable checks of exactly one self-path in main-push, absence of standalone pull_request, preserved manual dispatch and schedule, serialized non-cancellable repository writer; inject negative mutation canaries for removed self-path, added PR fanout and cancelled writer lock.",
+  "prevention_rule": "Before changing CI workflow assertions, inspect actual workflow source plus parallel fanout/governance tests. Assert the canonical event model, not retired trigger counts. Never restore duplicate PR workflows or weaken writer serialization merely to satisfy stale source tests; preserve independent focused negative canaries and exact-head Required, CodeQL and full-run proof.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-paginacontrole-self-validation.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-paginacontrole-self-validation.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-paginacontrole-self-validation.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "baseline_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "backend_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071/job/119869500824",
+    "canonical_workflow": ".github/workflows/paginacontrole.yml",
+    "companion_regressions": [
+      "tests/paginacontrole-concurrency.test.mjs",
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "prewrite_issue_comment": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742#issuecomment-6343276450",
+    "focused": "PENDING_EXACT_HEAD_CI",
+    "full_brain": "NOT_ZERO",
+    "production": "UNCHANGED"
+  },
+  "writeback": {
+    "canonical_skill_projection": "DERIVED_FROM_BRAIN_AFTER_REVIEW",
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+    "single_writer": "ci-brain-paginacontrole-self-trigger-oracle-20261022-v1"
+  }
+}
