@@ -20,3 +20,6 @@ The new source guard verifies archive existence/nonempty, original test import a
 
 ## Successor convergence
 The previous PR #4613 proved eight historical source-evaluation files passing but current main advanced to an unrelated content release. Replayed the same 9 source paths and assertions on current main without overlapping main changes. This successor includes the originally missing Brain canonical learning fields and semantic prevention/evidence.
+
+## Complete inherited suite replay
+The learning historical-replay suite also imports the **unaltered original Supabase identity-review and MKB trigger runtime tests** through `tests/brain-inherited-sql-archive-supabase-replay-v1.test.mjs`, because the canonical evaluation only accepts `tests/brain-*.test.mjs`. This preserves all original assertions and prevents a source-existence-only false-green signal.

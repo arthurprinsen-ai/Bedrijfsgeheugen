@@ -71,7 +71,8 @@
       "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs",
       "tests/brain-instagram-canonical-mira-identity-v1.test.mjs",
       "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
-      "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs"
+      "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs",
+      "tests/brain-inherited-sql-archive-supabase-replay-v1.test.mjs"
     ]
   },
   "prevention_rules": [
@@ -88,6 +89,10 @@
     "previous_candidate_head": "e6bcfe8b535e72d678199cbc4870356a276d91df",
     "production_readback": "PENDING",
     "current_full_brain": "PENDING",
-    "superseded_pr": 4613
+    "superseded_pr": 4613,
+    "original_supabase_contracts_executed_by_brain_replay": [
+      "tests/supabase-tenant-identity-review-semantics-v2.test.mjs",
+      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
+    ]
   }
 }
