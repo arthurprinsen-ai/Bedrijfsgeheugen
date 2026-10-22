@@ -13,6 +13,7 @@ on:
         options:
           - dry-run
           - apply-safe
+          - provider-ghost-only
 
 permissions:
   actions: write
@@ -309,7 +310,7 @@ jobs:
             done
           fi
       - name: Reconcile provider-owned GitHub Actions zero-job ghosts
-        if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
+        if: (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'apply-safe' || github.event.inputs.mode == 'provider-ghost-only')) || github.event_name == 'schedule'
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node .github/scripts/github-actions-ghost-reconcile.mjs
