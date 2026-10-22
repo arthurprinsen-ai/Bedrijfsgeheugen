@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateBranchHygiene, isVerificationArtifact, parseScopeMetadata } from '../tools/delivery-branch-hygiene-guard.mjs';
+import { evaluateBranchHygiene, isVerificationArtifact, parseScopeMetadata, resolvePRScopeMergeBase } from '../tools/delivery-branch-hygiene-guard.mjs';
 
 test('een test naast de wijziging vervuilt de scope niet', () => {
   const metadata = parseScopeMetadata('Change-Scope: tools/bouw-v18-production-core.mjs\nScope-Budget: 1');
@@ -91,4 +91,73 @@ test('bulk recovery uitzondering geldt niet zonder recovery-identiteit en Supaba
   });
   assert.equal(result.ok, false);
   assert.equal(result.state, 'HARD_SCOPE_LIMIT_EXCEEDED');
+});
+
+
+test('diverged owner PR uses exact verified merge base, not newer unrelated main', () => {
+  const baseSha = '903bf0ceecc339cd59df6c68e20245861f7f25fa';
+  const headSha = 'fae5812fee571e26da284c4f1e5c27305b8699e9';
+  const mergeBase = 'f627153ed569820917a2dc5787dd210613f0395e';
+  const scope = resolvePRScopeMergeBase({
+    eventName: 'pull_request',
+    prNumber: 4630,
+    baseSha,
+    headSha,
+    comparison: {
+      status: 'diverged',
+      base_commit: { sha: baseSha },
+      merge_base_commit: { sha: mergeBase },
+    },
+  });
+  assert.equal(scope.sha, mergeBase);
+  assert.equal(scope.source, 'github-compare-merge-base');
+
+  const metadata = parseScopeMetadata([
+    'Delivery-Lane: backend',
+    'Candidate-Type: recovery',
+    'Change-Scope: supabase/migrations/revenue.sql, docs/changes/revenue.md',
+    'Scope-Budget: 2',
+  ].join('\\n'));
+  const valid = evaluateBranchHygiene({
+    changedPaths: ['supabase/migrations/revenue.sql', 'docs/changes/revenue.md', 'tests/revenue.test.mjs'],
+    metadata,
+  });
+  assert.equal(valid.ok, true, 'only branch-owned code and verifier files pass');
+  const contaminated = evaluateBranchHygiene({
+    changedPaths: ['supabase/migrations/revenue.sql', 'tools/unauthorized-main-mutation.mjs'],
+    metadata,
+  });
+  assert.equal(contaminated.ok, false, 'actual out-of-scope candidate mutation remains blocked');
+  assert.equal(contaminated.state, 'SCOPE_CONTAMINATED');
+});
+
+test('PR merge base fails closed on absent or mismatched provider proof', () => {
+  const baseSha = 'a'.repeat(40);
+  const headSha = 'b'.repeat(40);
+  const correct = {
+    status: 'diverged',
+    base_commit: { sha: baseSha },
+    merge_base_commit: { sha: 'c'.repeat(40) },
+  };
+  for (const comparison of [
+    null,
+    { ...correct, base_commit: { sha: 'd'.repeat(40) } },
+    { ...correct, status: 'behind' },
+    { ...correct, merge_base_commit: { sha: 'not-a-sha' } },
+    { ...correct, merge_base_commit: { sha: headSha } },
+  ]) {
+    assert.throws(
+      () => resolvePRScopeMergeBase({
+        eventName: 'pull_request',
+        prNumber: 4630,
+        baseSha,
+        headSha,
+        comparison,
+      }),
+      /PR_MERGE_BASE_PROVIDER_PROOF_MISSING/,
+    );
+  }
+  assert.equal(resolvePRScopeMergeBase({
+    eventName: 'merge_group', baseSha, headSha, prNumber: '', comparison: null,
+  }).sha, baseSha, 'merge-group retains its explicit event scope');
 });
