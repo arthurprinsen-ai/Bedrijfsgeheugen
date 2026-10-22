@@ -3,7 +3,7 @@ import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-re
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
-import {incompleteStructuredArtifactReason,largerArtifactTokenBudget} from '../_shared/content-artifact-incomplete-retry.mjs';
+import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -730,10 +730,19 @@ Deno.serve(async (req) => {
           + 'Geen interne technische termen, geen statusrapport, geen verkooppraatje, geen fictieve ervaringen. '
           + 'Gebruik uitsluitend de geverifieerde persoonlijke bron. Eindig bij een oprichtersverhaal met één open vraag. '
           + 'Controleer zelf de woordlengte en brontrouw voordat je de definitieve body teruggeeft.';
-        const revision=await callAI(apiKey,gov.model_id,correctionPrompt,{
+        // Editorial revisions need the same bounded truncation recovery as the
+        // initial structured artifact. No retry for rejected prose, identity,
+        // schema, authorization or provider HTTP errors.
+        const revisionInput={
           ...artifactInput,rejected_draft:bodyText,
           editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
-        },artifactTool,2400);
+        };
+        const revision=await retryIncompleteEditorialDraft(
+          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget),
+          2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
+          largerArtifactTokenBudget,
+          (first:number,next:number)=>console.warn('PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY',gov.model_id,first,next)
+        );
         const revisedText=compactLinkedInCommentary(clean(revision?.body));
         if (revisedText
           && personalEditorialViolations(revisedText,personalSource?.evidence||{}).length===0

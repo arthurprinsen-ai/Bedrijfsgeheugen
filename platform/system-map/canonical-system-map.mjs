@@ -2507,3 +2507,14 @@ export const BLOG_NULL_CANONICAL_LINEAGE_REBIND_20261022=Object.freeze({
  learning:'brain/learning/2026-10-22-blog-null-lineage-rebind-v1.json',
  regression:'tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs'
 });
+
+
+export const PERSONAL_EDITORIAL_TRUNCATION_RETRY_20261022=Object.freeze({
+ fingerprint:'powerhouse|personal-editorial-truncation-bounded-retry|20261022-v1',owner:'powerhouse-content-orchestrator',
+ source:'verified builder source and strict editorial revision draft',
+ policy:'retry only AIProviderIncompleteOutputError, 2400 to 4800, one additional draft',
+ gates:['personalEditorialViolations','personalFinalCopyValid','global semantic uniqueness','OAuth','provider receipt'],
+ noSecondScheduler:true,noUnsafeProviderRetry:true,noFictitiousCopy:true,
+ regression:'tests/brain-personal-editorial-truncation-retry-20261022.test.mjs',
+ learning:'brain/learning/2026-10-22-personal-editorial-truncation-retry-v1.json'
+});
