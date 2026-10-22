@@ -5,6 +5,17 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Ghost-aware predictive CI queue, bewijs boven telling (22 oktober 2026)
+
+- Canonieke obligation en fingerprint: #4661 `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`; historisch GitHub-providerincident blijft #4655.
+- **Geen extra scheduler of scanner.** Reuse existing hourly Repository Janitor readback and `tools/delivery/predictive-controller.mjs`.
+- Expose `rawQueued`, `verifiedProviderGhostQueued` and `actionableQueued` separately. Proven incident ghosts are a provider anomaly, NOT completed/successful workflow jobs.
+- An exclusion requires one exact provider run and 0-job readback, still queued/null and unchanged 24h, noncurrent main/open PR SHA, previously verified provider-denied `GHOST_RUN_PROVIDER_BLOCKED` marker under #4655, matching timestamp/identity and a ten-minute-fresh readback. Fail closed on incomplete pagination, stale/missing proof, active jobs, current Required/CodeQL or ambiguity.
+- Agent prediction must not infer success from `GET /actions/runs?status=queued` returning 0 when individual known runs still report queued. Preserve the cross-endpoint inconsistency `collectionMissingKnownProviderIds`.
+- Regression: `tests/delivery-powerhouse-supervisor.test.mjs`. Brain learning `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; human doc `docs/changes/ghost-aware-predictive-queue-pressure-20261022-v1.md`.
+- Only protected merge + exact-main Janitor readback proves this scoped improvement. Overall throughput/lane prediction, statistically measured speedup and all four GitHub run removals have separate open acceptance obligations.
+
+
 ## Universele incidentherkenning & preventie
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
