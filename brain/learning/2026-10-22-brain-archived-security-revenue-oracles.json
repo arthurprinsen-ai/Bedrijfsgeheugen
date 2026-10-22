@@ -1,0 +1,38 @@
+{
+  "schema_version": "1",
+  "obligation_id": "ci-brain-archived-security-revenue-oracles-20261022",
+  "root_cause": "historical test source paths point to retired executable migration locations",
+  "repair": "reuse immutable repository-only SQL sources without changing test assertions",
+  "prevention": "Git blob archive check plus no executable duplicate",
+  "base_sha": "8ea724b80bdd81a5f31b9224254c6630eab3be6c",
+  "source_files": [
+    {
+      "test_file": "tests/supabase-powerhouse-revenue-acceleration-mode-v1.test.mjs",
+      "archived_filename": "20260915143000_powerhouse_revenue_acceleration_mode_v1.sql",
+      "git_blob": "59a2a9895df32660b678b368f92ea8da23125799"
+    },
+    {
+      "test_file": "tests/supabase-powerhouse-security-operations-hardening-v1.test.mjs",
+      "archived_filename": "20260916174000_powerhouse_security_operations_hardening_v1.sql",
+      "git_blob": "e729de2cde4a618a8562c1de51e92781077408c8"
+    },
+    {
+      "test_file": "tests/supabase-powerhouse-structural-gap-closure-v2.test.mjs",
+      "archived_filename": "20260918090000_powerhouse_structural_gap_closure_v2.sql",
+      "git_blob": "c26421ca46f3c24011d314e08686aa2d250a9a95"
+    },
+    {
+      "test_file": "tests/supabase-prospective-autonomous-commercial-experiment-v1.test.mjs",
+      "archived_filename": "20260918113000_prospective_autonomous_commercial_experiment_v1.sql",
+      "git_blob": "8bd6f9423ab1665d8e9a0771f51f28c9d3a61ec9"
+    }
+  ],
+  "release_gate": [
+    "Required CI",
+    "Powerhouse CodeQL",
+    "independent full BRAIN zero failures",
+    "#3742 clean-room parity",
+    "#4215 authenticated tenants"
+  ],
+  "production_change": false
+}
