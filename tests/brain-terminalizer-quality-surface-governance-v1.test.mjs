@@ -88,3 +88,23 @@ test('migration-history lock is verifier-only evidence while executable migratio
   assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
 });
+
+test('Supabase SQL regression fixtures are verifier-only without disabling database and Edge runtime evidence', async()=>{
+  const contract=JSON.parse(await readFile('brain/contracts/production-readback-v1.json','utf8'));
+  const truth=contract.productionTruth;
+  const verifierOnly=(path)=>truth.verifierOnlyPaths.includes(path)
+    || truth.verifierOnlyPrefixes.some(prefix=>path.startsWith(prefix));
+  assert.equal(verifierOnly('supabase/tests/brain_failure_observe_semantic_recovery_v1.sql'),true);
+  for (const path of [
+    'supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql',
+    'supabase/functions/brain-observe/index.ts',
+    'supabase/config.toml',
+    'supabase/unknown-runtime/index.ts',
+  ]) assert.equal(verifierOnly(path),false,path);
+  assert.ok(truth.verifierOnlyPrefixes.includes('supabase/tests/'));
+  assert.equal(truth.verifierOnlyPrefixes.includes('supabase/'),false);
+  const workflow=await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  assert.match(workflow,/const migrations=paths\\.filter/);
+  assert.match(workflow,/const supabase=paths\\.filter/);
+  assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
+});
