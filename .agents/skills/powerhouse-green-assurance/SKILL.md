@@ -200,3 +200,6 @@ For public i18n:
 - every behavioral change to `assets/js/i18n.js` requires a matching `I18N_ASSET_VERSION` rotation in `tools/site-shell/apply-i18n.mjs`;
 - production readback must prove the HTML references the rotated asset and the NL→EN→NL interaction works;
 - do not classify repeated old behavior as a new runtime defect until cache identity has been disproven.
+
+## Netlify runtime dependency assurance — 22 oktober 2026
+Fingerprint: `delivery|netlify|brain-operating-loop-import-deployment-misclassified|20261022-v1`. Een wijziging in `brain/operating-loop/` raakt de bestaande Netlify brain-operating-loop functie, via `store.mjs`. Verplicht `deployment_required=true` met provider exact-SHA en tenant-authenticated API readback. Success met `not_applicable` is geen bewijs. Test `tests/brain-netlify-imported-brain-runtime-deploy-v1.test.mjs`; geen extra scheduler, geen valse groene status.
