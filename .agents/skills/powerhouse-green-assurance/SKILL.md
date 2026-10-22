@@ -200,3 +200,8 @@ For public i18n:
 - every behavioral change to `assets/js/i18n.js` requires a matching `I18N_ASSET_VERSION` rotation in `tools/site-shell/apply-i18n.mjs`;
 - production readback must prove the HTML references the rotated asset and the NL→EN→NL interaction works;
 - do not classify repeated old behavior as a new runtime defect until cache identity has been disproven.
+
+
+## Historical SQL source-contract recovery — 2026-10-22
+
+For inherited source-contract tests that open a retired Supabase migration, verify the original immutable SQL blob under `supabase/migration-history/repository-only/` before changing the test read path. Keep each existing positive and negative assertion unchanged, and add a guard confirming the archived original exists and no executable duplicate is introduced. Never copy archive-only SQL back into `supabase/migrations/`, fabricate migration parity, suppress a failed test, or promote production without exact-HEAD Required CI, CodeQL and full zero-failure BRAIN evidence. Source: `brain/learning/2026-10-22-inherited-archive-source-batch-v1.json`.
