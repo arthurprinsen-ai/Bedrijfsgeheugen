@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "brain|ci|content-loop|obsolete-single-generation-oracle|20261022-v1",
+  "obligation_id": "p0-4198-anthropic-internal-deadline-20261010",
+  "parent_issue": 3742,
+  "related_issue": 4198,
+  "title": "Preserve safe per-channel content generation in Anthropic deadline regression",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Inherited tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs asserts removed MAX_CHANNEL_GENERATIONS and bootstrapAttempted symbols. Current canonical powerhouse-content-loop/index.ts uses a bounded per-channel Promise.all on only publish/decided channels, suppressing second dispatch after unknown/in-flight bootstrap, within the same supervisor.",
+  "impact": "One independently observed failure in Unified BRAIN 39791707071 on exact 8e665a86d2bb54712a34fd88bec0e1213df21dd2. Blindly reverting to a global single-generation cap would strand other authorized channels.",
+  "fix": "Replace obsolete identifier checks with source-based assertions for canonical pending decisions, per-channel targeted generation, in-flight bootstrap gate and provider-ack/possible-side-effect protection. Preserve 90-second Anthropic and 110-second supervisor deadlines, social identity and bounded output assertions. No runtime, dispatch or provider changes.",
+  "prevention_rule": "Test actual current supervisor source and behavior; when generation topology changes, update its source oracle in the same bounded change. Never resurrect obsolete per-tick caps or mask duplicate publication or unknown provider side effects to turn CI green.",
+  "regression_contract": "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs",
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "supabase/functions/powerhouse-content-loop/index.ts:307-422",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts:184-185",
+    "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CONTENT_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ]
+  },
+  "prevention": [
+    "SOURCE_BOUND_ORACLE",
+    "PER_CHANNEL_BOUNDED_GENERATION",
+    "BOOTSTRAP_INFLIGHT_NO_DOUBLE_DISPATCH",
+    "NO_BLIND_PROVIDER_REPUBLISH",
+    "PRESERVE_90_110_SECOND_DEADLINES"
+  ],
+  "outcome": "CANDIDATE: exact-head CI, CodeQL, full Unified BRAIN, registry writeback and production readback not yet proven"
+}
