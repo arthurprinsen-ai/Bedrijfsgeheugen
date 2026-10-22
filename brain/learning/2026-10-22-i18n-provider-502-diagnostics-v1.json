@@ -40,5 +40,27 @@
   },
   "next_step": "After protected merge + exact SHA deploy, obtain classified failure log + authenticated provider evidence; repair root cause in canonical existing lineage and prove no 502 regression.",
   "owner": "existing Powerhouse Netlify translation route",
-  "notes": "Telemetry instrumentation is not a verified fix for provider errors."
+  "notes": "Telemetry instrumentation is not a verified fix for provider errors.",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "netlify|production-i18n-translate|http-502|20261022-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "PROVIDER_DIAGNOSTIC_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ]
+  }
 }
