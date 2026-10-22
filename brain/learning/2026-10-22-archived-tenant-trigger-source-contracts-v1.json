@@ -42,16 +42,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
-      "tests/supabase-tenant-identity-review-semantics-v2.test.mjs"
+      "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
-      "tests/supabase-tenant-identity-review-semantics-v2.test.mjs"
+      "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
     ],
     "canary": [
-      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
-      "tests/supabase-tenant-identity-review-semantics-v2.test.mjs"
+      "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
     ]
   },
   "skill_targets": [
@@ -61,10 +58,11 @@
   "test_evidence": {
     "before": "Full BRAIN #39791707071: 3,526 total; 3,171 pass; 355 fail.",
     "source_validation": "Both authentic archived SQL files read back; every unchanged original positive/negative assertion checked against original archive content; no executable historical migrations on main.",
-    "after": "PENDING_EXACT_HEAD_NODE_AND_REQUIRED",
+    "after": "PENDING_EXACT_HEAD_BRAIN_WRAPPER_AND_REQUIRED",
     "full_brain": "PENDING_ZERO_FAIL",
     "production": "UNCHANGED",
     "customer_acceptance": "NOT_PROVEN"
   },
-  "status": "CANDIDATE_UNVERIFIED"
+  "status": "CANDIDATE_UNVERIFIED",
+  "evaluation_entrypoint": "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
 }
