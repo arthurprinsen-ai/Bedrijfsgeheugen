@@ -124,10 +124,15 @@ function specialistContent(pageId,model,navigation){
     // Do not synthesize wins from forecasts, local storage or missing runtime evidence.
     const learning=model?.portal?.runtime?.learning||{};
     const items=Array.isArray(learning.items)?learning.items:[];
-    const proven=items.filter(item=>item?.healthy===true&&item?.status==='ok');
+    // Transport health/status alone is NOT evidence of an accepted runtime fix.
+    const isProven=item=>item?.healthy===true&&item?.status==='ok'
+      &&item?.maturity==='PROVEN'&&item?.productionVerified===true
+      &&typeof item?.proofRef==='string'
+      &&/^https:\/\/(?:github\.com|app\.netlify\.com|supabase\.com)\//.test(item.proofRef);
+    const proven=items.filter(isProven);
     const detailRows=items.slice(0,12).map(item=>[
       String(item?.naam||'Leerrecord zonder titel'),
-      item?.healthy===true&&item?.status==='ok'?'Bewezen in Brain':'Nog te verifiëren in Brain'
+      isProven(item)?'Bewezen in Brain':'Nog te verifiëren in Brain'
     ]);
     const blocks=[
       {type:'metrics',title:'Relevantie & verbeteringen',items:[
