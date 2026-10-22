@@ -565,6 +565,7 @@ jobs:
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
           import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
+          import { unresolvedSupersededMigrationPaths } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -572,6 +573,15 @@ jobs:
           if(!Number.isInteger(prNumber)||prNumber<1) throw new Error('TERMINAL_PR_NUMBER_INVALID');
 
           const expected=[];
+          // Read trusted current-main migration identities once, before traversing
+          // closed predecessors. A retired migration is safe only if a *merged*
+          // successor contains the exact path and protected main still carries it.
+          execFileSync('git',['fetch','origin','main','--no-tags'],{stdio:'ignore'});
+          const currentMigrationPaths=execFileSync(
+            'git',
+            ['ls-tree','-r','--name-only','origin/main','--','supabase/migrations'],
+            {encoding:'utf8'}
+          ).split(/\r?\n/).filter(Boolean);
           const visited=new Set();
           let depth=0;
 
@@ -610,7 +620,17 @@ jobs:
                 .filter(file=>file.status!=='removed' && /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')))
                 .map(file=>String(file.filename||''));
               if(migrationFiles.length>0){
-                throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
+                // Do not treat arbitrary unmerged SQL as deployed. Only an
+                // exact path from a *previously visited merged successor*,
+                // still on protected main, is covered by the later provider gate.
+                const deliveredPaths=expected.map(item=>`supabase/migrations/${item.version}_${item.name}.sql`);
+                const unresolved=unresolvedSupersededMigrationPaths(
+                  migrationFiles,deliveredPaths,currentMigrationPaths
+                );
+                if(unresolved.length>0){
+                  throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${unresolved.join(',')}`);
+                }
+                console.log(`UNMERGED_SUPERSEDES_REPLACED_BY_MERGED_MAIN:${prNumber}:${migrationFiles.join(',')}`);
               }
               console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
@@ -628,12 +648,6 @@ jobs:
           // Reconcile exact applied (version, name) first. For historical aliases,
           // permit only a unique same-name mapping; duplicate names fail closed
           // unless the exact version is already present on protected main.
-          execFileSync('git',['fetch','origin','main','--no-tags'],{stdio:'ignore'});
-          const currentMigrationPaths=execFileSync(
-            'git',
-            ['ls-tree','-r','--name-only','origin/main','--','supabase/migrations'],
-            {encoding:'utf8'}
-          ).split(/\r?\n/).filter(Boolean);
           const canonical=resolveTerminalMigrationIdentities(unique,currentMigrationPaths);
           const compact=[...new Map(canonical.map(x=>[`${x.version}:${x.name}`,x])).values()]
             .map(({version,name})=>({version,name}));
