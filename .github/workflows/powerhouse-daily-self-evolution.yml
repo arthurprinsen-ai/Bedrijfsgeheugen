@@ -31,10 +31,6 @@ jobs:
         run: node --test tests/powerhouse-daily-self-evolution.test.mjs
       - name: Verify Powerhouse self-improvement layer
         run: node --test tests/brain-self-improvement-layer-v1.test.mjs
-      - name: Verify AI model intelligence freshness
-        run: |
-          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
-          node scripts/brain/ai-model-intelligence-audit.mjs
       - name: Build universal chat-agent-skill snapshot
         run: node scripts/brain/daily-self-evolution.mjs
       - name: Run canonical autonomous improvement probe
@@ -50,4 +46,28 @@ jobs:
           name: powerhouse-daily-self-evolution-${{ github.run_id }}
           path: artifacts/quality/
           if-no-files-found: error
+          retention-days: 30
+
+  # The catalog remains fail-closed, but a stale supplier receipt must not
+  # suppress independent daily chat/agent/skill/engineering learning tasks.
+  # Both jobs are part of this SAME scheduled workflow: no second scheduler.
+  model-freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify AI model intelligence contract and source-backed freshness
+        run: |
+          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
+          node scripts/brain/ai-model-intelligence-audit.mjs
+      - name: Preserve AI model freshness failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-model-freshness-${{ github.run_id }}
+          path: artifacts/quality/ai-model-intelligence-audit.json
+          if-no-files-found: warn
           retention-days: 30
