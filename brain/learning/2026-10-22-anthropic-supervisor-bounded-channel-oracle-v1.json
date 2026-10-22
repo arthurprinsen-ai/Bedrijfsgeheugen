@@ -1,0 +1,52 @@
+{
+  "fingerprint": "ci|brain|anthropic-supervisor-bounded-channel-oracle|20261022-v1",
+  "date": "2026-10-22",
+  "type": "BRAIN_LEARNING",
+  "status": "CANDIDATE_UNVERIFIED_FULL_BRAIN",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "baseline_run_id": 39791707071,
+  "baseline_backend_job_id": 119869500824,
+  "baseline_total_tests": 3526,
+  "baseline_failed_tests": 355,
+  "observed_case_number": 114,
+  "root_cause": "Inherited source-oracle asserts retired MAX_CHANNEL_GENERATIONS=1/bootstrapAttempted symbols; current canonical content-loop uses one bootstrap with 110s child timeout inside 240s lease, suppresses follow-up generation while bootstrap may still run and allows at most four deduplicated independent channel invocations.",
+  "prevention_rule": "Test executable current source boundaries and fail-closed concurrency behavior: 90s provider deadline, 110s supervisor child, 240s lease, no second call on indeterminate bootstrap, <=4 canonical channels, deduplicated per-channel fanout and bound channel to each invocation. Do not restore obsolete serial limit, change providers or bypass publication approval.",
+  "source_contracts": [
+    "supabase/functions/powerhouse-content-loop/index.ts",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts"
+  ],
+  "regression_tests": [
+    "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "before": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071/job/119869500824",
+    "source_readback": "2026-10-22 canonical current-main supervisor and orchestrator checked directly: all eleven deadline, lease, single-flight, dedupe and bounded fan-out patterns present.",
+    "after": "PENDING_EXACT_HEAD_REQUIRED_AND_CODEQL",
+    "full_brain": "NOT_PROVEN_ZERO",
+    "production": "UNCHANGED",
+    "customer_acceptance": "NOT_PROVEN"
+  },
+  "writeback": {
+    "canonical_skill_projection": "PENDING_OWNER_COORDINATION",
+    "human_documentation": "docs/changes/2026-10-22-brain-anthropic-supervisor-channel-oracle.md"
+  }
+}
