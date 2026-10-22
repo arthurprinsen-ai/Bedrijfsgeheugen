@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, classifyOwnerSignalWriteError } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -68,4 +68,26 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   assert.match(source, /gateDecision\(required\) !== 'MISSING'/);
   assert.match(source, /required-test\.yml\/dispatches/);
   assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
+});
+
+
+test('provider comment API denial is distinguished from all other errors and is not a delivered owner handoff', () => {
+  assert.equal(classifyOwnerSignalWriteError(new Error('GitHub API 403 /issues/4656/comments: {"message":"Resource not accessible by integration"}')),
+    'PROVIDER_COMMENT_AUTHORITY_DENIED');
+  for (const e of ['GitHub API 409 /issues/4656/comments: conflict',
+    'GitHub API 403 /actions/runs/123/cancel: denied', 'GitHub API 500 /issues/4656/comments: unavailable']) {
+    assert.equal(classifyOwnerSignalWriteError(new Error(e)), 'UNEXPECTED_ERROR');
+  }
+  const workflow = readFileSync('.github/workflows/required-gate-watchdog.yml', 'utf8');
+  const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
+  assert.match(workflow, /pull-requests: write/);
+  assert.match(workflow, /issues: write/);
+  assert.match(workflow, /if: always\(\)/);
+  assert.match(workflow, /required-gate-owner-handoff\.json/);
+  assert.match(source, /commentAuthorityDenied = true/);
+  assert.match(source, /PROVIDER_AUTHORITY_DENIED_NOT_DELIVERED/);
+  assert.match(source, /process\.exitCode = 1/);
+  assert.match(source, /deniedHandoffs\.push/);
+  assert.match(source, /classifyOwnerSignalWriteError\(error\)/);
+  assert.match(source, /required-test\.yml\/dispatches/);
 });
