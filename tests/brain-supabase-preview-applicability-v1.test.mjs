@@ -29,7 +29,7 @@ test('applicability gate always runs on pull requests to main',async()=>{
   assert.doesNotMatch(required,/\n  pull_request:\n    branches: \[main\]\n    paths:/);
   assert.match(sourceContract,/uses: \.\/\.github\/workflows\/supabase-pr-preview\.yml/);
   assert.match(source,/\n  workflow_call:\n/);
-  assert.match(source,/ref: \S*inputs\.head_sha/);
+  assert.match(source,/uses: actions\/checkout@v5[\s\S]{0,150}ref:\s*\$\{\{\s*inputs\.head_sha\s*\}\}/);
 });
 
 test('non-Supabase changes are scoped without invented provider success',async()=>{

@@ -75,8 +75,9 @@ test('source-side preview security only exempts immutable historical mirrors wit
 
 test('current production ledger lock is complete through LinkedIn OAuth terminal migrations', async () => {
   const lock = JSON.parse(await readFile('supabase/migration-history.lock.json', 'utf8'));
-  assert.equal(lock.production_ledger_count, 591);
-  assert.equal(lock.applied.length, 591);
-  assert.equal(lock.applied.at(-1)?.version, '20261006103856');
-  assert.equal(lock.applied.at(-1)?.name, 'linkedin_company_live_proof_state_canonical_v3');
+  assert.ok(Array.isArray(lock.applied) && lock.applied.length >= 591, 'historic production migration coverage must not shrink');
+  const versions = lock.applied.map(entry => entry.version);
+  assert.equal(new Set(versions).size, versions.length, 'no repeated migration version in canonical production ledger');
+  assert.deepEqual(versions, [...versions].sort(), 'production ledger must retain chronological order');
+  assert.ok(lock.applied.some(entry => entry.version === '20261006103856' && entry.name === 'linkedin_company_live_proof_state_canonical_v3'), 'LinkedIn OAuth terminal migration must remain represented');
 });

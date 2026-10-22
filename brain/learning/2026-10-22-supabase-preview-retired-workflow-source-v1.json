@@ -49,7 +49,14 @@
     "exact_head_backend": "NOT_RUN",
     "isolated_tests": "NOT_RUN",
     "expected_count_of_historical_ENOENT_cases": 7,
-    "observed_fixed_cases": null
+    "observed_fixed_cases": null,
+    "ci_replay_failure": "2026-10-22: GitHub Required run 39747190002 historical replay 12/14 pass, two fail due to stale ledger property/retired latest version and whitespace-sensitive YAML regex, not missing migration/permission proof",
+    "fixed_source_contracts": [
+      "Preserve minimum 591 historical entries, enforce unique and chronological ledger migrations, retain exact LinkedIn OAuth terminal migration even when later migrations have been appended",
+      "Verify actual reusable checkout@v5 checks out the exact inputs.head_sha expression, tolerating only YAML template whitespace"
+    ],
+    "exact_head_after_fix": "PENDING_REQUIRED_CI_CODEQL_FULL_BRAIN",
+    "supabase_parity": "NOT_PROVEN"
   },
   "skill_targets": [
     ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md"
