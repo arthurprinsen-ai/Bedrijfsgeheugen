@@ -1,6 +1,7 @@
 import { getUser } from '@netlify/identity';
 import { resolveIdentityTenant } from '../../platform/read-models/portal-server-state.mjs';
 import { runTranslation } from './_brain-ai.mjs';
+import { reportI18nError } from './_i18n-error-evidence.mjs';
 
 const MAX_ITEMS = 60;
 const MAX_CHARS = 8000;
@@ -29,11 +30,13 @@ export default async (request) => {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return Response.json({error:'translation_unavailable'},{status:503});
+  const requestId=crypto.randomUUID();
   try {
-    const result = await runTranslation({strings:clean,source,target,dataClass,tenantId,apiKey});
+    const result = await runTranslation({strings:clean,source,target,dataClass,tenantId,apiKey,requestId});
     return Response.json({translations:result.translations});
   } catch (error) {
     if(error?.code==='DATA_SOVEREIGNTY_AI_BLOCKED')return Response.json({error:error.code},{status:409});
+    reportI18nError({error,requestId,dataClass});
     return Response.json({error:'translation_failed'},{status:502});
   }
 };

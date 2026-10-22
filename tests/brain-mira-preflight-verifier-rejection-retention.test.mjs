@@ -31,7 +31,8 @@ test('generic missing asset is not misclassified and no error is promoted to ver
 
 function fakeDb(){
  const calls=[];
- const db={from(name){
+ const brainCalls=[];
+ const db={async rpc(name,args){brainCalls.push({name,args});return {data:{},error:null}},from(name){
    const call={name,fields:null,filters:[]};calls.push(call);
    const q={
      update(fields){call.fields=fields;return q},
@@ -41,13 +42,13 @@ function fakeDb(){
      async maybeSingle(){return {data:{id:'media-job'},error:null}}
    };return q;
  }};
- return {db,calls};
+ return {db,calls,brainCalls};
 }
 const job={id:'media-job',status:'WAITING_PROOF',updated_at:'2026-10-22T11:00:00Z',publication_date:'2026-10-22'};
 const ob={status:'BLOCKED',updated_at:'2026-10-22T11:00:00Z',external_id:null};
 
 test('one genuine verification failure writes exact diagnostic under CAS, never success/media replacement',async()=>{
- const {db,calls}=fakeDb();
+ const {db,calls,brainCalls}=fakeDb();
  const result=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:'start',historyId:'OpenArtHistory123',confidence:.92});
  assert.equal(result.kind,'applied');
  assert.equal(calls.length,2);
@@ -62,6 +63,10 @@ test('one genuine verification failure writes exact diagnostic under CAS, never 
  assert.deepEqual(calls[1].filters.slice(-2),[['eq','status','BLOCKED'],['is','external_id',null]]);
  assert.equal(calls[1].fields.last_error,calls[0].fields.last_error);
  assert.equal(Object.hasOwn(calls[1].fields,'external_id'),false);
+ assert.equal(brainCalls.length,1);
+ assert.equal(brainCalls[0].name,'brain_observe_failure');
+ assert.equal(brainCalls[0].args.p_fingerprint,'powerhouse|instagram-mira|video-frame-identity-below-094|20261022-v1');
+ assert.match(brainCalls[0].args.p_payload_sha256,/^[0-9a-f]{64}$/);
 });
 
 test('verified, already posted, missing CAS and invalid reason cannot mutate job',async()=>{
@@ -87,4 +92,31 @@ test('existing preflight CAS and exact router fail-closed path remain wired',()=
  assert.match(source,/const write=await writeMediaPreflight\(db,job,row\)/);
  assert.match(source,/\.is\('external_id',null\)/);
  assert.equal(typeof writeMediaPreflight,'function');
+});
+
+// A watchdog may already have marked the publication FAILED before the media
+// verifier returns. This must not split job truth from obligation truth.
+test('FAILED daily obligation receives fresh exact rejection while preserving FAILED state and no provider ID',async()=>{
+ const failed={...ob,status:'FAILED'};
+ const {db,calls,brainCalls}=fakeDb();
+ const result=await recordMediaProofRejection(db,{job,ob:failed,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:'middle',historyId:'Ge4MhZ3FFAoWREo0TtDJ',confidence:.93});
+ assert.equal(result.kind,'applied');
+ assert.equal(calls.length,2);
+ assert.deepEqual(calls[1].filters.slice(-2),[['eq','status','FAILED'],['is','external_id',null]]);
+ assert.match(calls[1].fields.last_error,/middle:face=0\.930:openart=Ge4MhZ3FFAoWREo0TtDJ/);
+ assert.equal(Object.hasOwn(calls[1].fields,'status'),false);
+ assert.equal(Object.hasOwn(calls[1].fields,'external_id'),false);
+ assert.equal(brainCalls.length,1);
+ assert.equal(brainCalls[0].args.p_evidence.frame_position,'middle');
+ assert.equal(brainCalls[0].args.p_evidence.face_identity_confidence,.93);
+});
+
+test('a failed canonical Brain write remains a visible partial incident, never a fabricated green publication',async()=>{
+ const {db,calls}=fakeDb();
+ db.rpc=async()=>({data:null,error:{code:'500'}});
+ const outcome=await recordMediaProofRejection(db,{job,ob:{...ob,status:'FAILED'},code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:'end',historyId:'rejection1',confidence:.9});
+ assert.equal(outcome.kind,'partial');
+ assert.equal(outcome.code,'BRAIN_FAILURE_REGISTRY_WRITE_FAILED');
+ assert.equal(calls.length,2);
+ assert.equal(Object.hasOwn(calls[0].fields,'status'),false);
 });
