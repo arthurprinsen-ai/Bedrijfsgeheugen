@@ -48,5 +48,19 @@
     "shadow": [
       "tests/brain-daily-social-builder-media-recovery-20261022.test.mjs"
     ]
+  },
+  "prevention": [
+    "Blocked founder-source retry requires the full existing personal source gate, zero previous provider side effect, and unchanged global duplicate/authorization gates.",
+    "Do not rewrite unchanged Instagram WAITING_ASSET readiness probes or increment actual provider-attempt counters on polls.",
+    "Never count a candidate, queued upload, green cron, or dry-run as a proven daily public publication or sent email."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-daily-social-builder-media-recovery-20261022.test.mjs"
+    ],
+    "historical_replay": "Passed in required learning canonicalization job on 2026-10-22T06:19Z",
+    "shadow": "Passed in the same required learning canonicalization job on 2026-10-22T06:19Z",
+    "production_readback": "NOT_YET_PROVEN",
+    "live_provider_post": "NOT_YET_PROVEN"
   }
 }
