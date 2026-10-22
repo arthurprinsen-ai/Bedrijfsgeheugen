@@ -33,7 +33,8 @@
     "Keep exact start/middle/end temporal+face verification and 0.94 minimum; no threshold lowering or random retry until PASS.",
     "Protect real provider receipts on already published media, reconcile separately.",
     "Execute synthetic predicate checks and CI before protected merge; production and exact provider readback only after deployment.",
-    "Test stale August reference URL/hash as explicit negative controls even if face score is >=0.94."
+    "Test stale August reference URL/hash as explicit negative controls even if face score is >=0.94.",
+    "Before proposing a material PR, autonomous agents must run both canonical learning evaluation and material-writeback semantic closure with the exact changed paths; repair missing compiler/evaluation/evidence in the same existing fingerprint before CI, never suppress the guard."
   ],
   "verification": {
     "source_test": "tests/brain-mira-media-proof-status-truth-v1.test.mjs",
@@ -70,5 +71,22 @@
     "canary": [
       "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "production_readback": {
+      "query_type": "read_only",
+      "date": "2026-10-22",
+      "historical_proof_rows": 46,
+      "contradictory_provisional_statuses": 21,
+      "october_22_passes": 0,
+      "maximum_october_22_identity_confidence": 0.93,
+      "identity_minimum_required": 0.94
+    },
+    "tests": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "canonical_learning_gate": "GitHub Required CI run 39811932831, historical_replay/shadow/canary passed (LEARNING_CANONICALIZATION_GREEN)",
+    "database_candidate": "Previously smoke-tested using a rolled-back transaction in an isolated preview; NOT a production deploy",
+    "release_proof": "MISSING_REQUIRED_CI_AND_PRODUCTION_AND_PROVIDER_READBACK"
   }
 }
