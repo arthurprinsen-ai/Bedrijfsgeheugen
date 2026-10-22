@@ -9,3 +9,5 @@
 - `tests/brain-canonical-renamed-production-sql-20261022.test.mjs` rejects returning retired SQL filenames as executable duplicates, and verifies retained source markers and canonical consumer pointers.
 - No new migration, schema, RLS, ACL, Edge Function, sender, scheduler, provider side effects, or production mutation.
 - Exact-head Required, CodeQL, complete BRAIN zero-fail acceptance and independent migration parity #3742 / tenant proof #4215 still required.
+
+- Additional uncovered failure: `tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs` used retired `20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql`. Its seven positive privacy/trigger-order markers and negative no-fabrication claims were source-checked against existing `20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql` (Git blob `c290810df7eca707114409cec5fa31baf7254288`). The old assertion was retained and only the source read path changed. This third source is independently verified as sufficient for the original assertion; byte identity with the obsolete filename is not claimed.
