@@ -120,7 +120,11 @@ jobs:
             fi
           fi
           git reset --hard HEAD
-          git push --force-with-lease origin "HEAD:$branch"
+          # Preserve the canonical PR's existing commits, including agent repairs.
+          # Never overwrite an existing branch with a regenerated artifact.
+          # If the branch advanced since checkout, fail closed and retry via
+          # the existing reconciliation workflow rather than force-pushing.
+          git push origin "HEAD:$branch"
 
           pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
           if [ -z "$pr" ]; then
