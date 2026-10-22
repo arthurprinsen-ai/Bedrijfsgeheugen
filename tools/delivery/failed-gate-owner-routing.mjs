@@ -2,6 +2,15 @@
 const RUNNING = new Set(['queued', 'in_progress', 'pending', 'requested', 'waiting']);
 const FAILED = new Set(['failure', 'timed_out', 'startup_failure', 'action_required']);
 
+// Fail-closed bounded retry policy: reads only. A write can have succeeded
+// despite a missing response and must be read back before another attempt.
+export function retryableGitHubReadError({ method = 'GET', status = 0, name = '' } = {}) {
+  if (String(method).toUpperCase() !== 'GET') return false;
+  const code = Number(status);
+  return code === 429 || (code >= 500 && code <= 599) ||
+    ['AbortError', 'TimeoutError', 'TypeError'].includes(String(name));
+}
+
 export function latestGateRun(runs, gate, headSha) {
   const nameMatches = run => gate === 'required'
     ? (String(run.name || '').startsWith('Required test') || String(run.path || '').endsWith('/required-test.yml'))
