@@ -61,6 +61,8 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /issues: write/);
+  assert.match(workflow, /pull-requests: write/);
+  assert.match(workflow, /node --test tests\/brain-required-failed-gate-owner-routing-v1\.test\.mjs/);
   assert.match(workflow, /actions: write/);
   assert.match(source, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
   assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
