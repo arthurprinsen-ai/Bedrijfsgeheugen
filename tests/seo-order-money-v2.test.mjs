@@ -1,6 +1,6 @@
 import test from 'node:test';
-import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { inspectMoneyPage, enrichMoneyPage } from '../tools/seo-order-engine/money-contract-v2.mjs';
 
 const entry={route:'https://www.bedrijfsgeheugen.nl/afas-koppeling',role:'money',primary_intent:'afas koppeling',funnel_stage:'decide',primary_cta:{action:'frisse-blik',url:'https://www.bedrijfsgeheugen.nl/frisse-blik'},supporting_routes:['https://www.bedrijfsgeheugen.nl/blog/afas-api/','https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/']};
@@ -31,7 +31,6 @@ test('money enrichment is idempotent',()=>{
   const once=enrichMoneyPage(base,entry);
   assert.equal(enrichMoneyPage(once,entry),once);
 });
-
 
 test('business process money page consistently promises the canonical 30-minute free Frisse Blik',()=>{
   const page=readFileSync(new URL('../bedrijfsprocessen-automatiseren.html',import.meta.url),'utf8');

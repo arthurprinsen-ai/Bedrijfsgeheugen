@@ -1,0 +1,36 @@
+{
+  "fingerprint": "content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_causes": [
+    "Daily blog publisher SEO fallback selected first two title words despite the first being a question starter. This converted a legitimate Dutch title into 'Hoe Nederlandse: wat verandert er voor jou?'.",
+    "The existing daily publication PR lacked the mandatory Brain learning, activity-ledger and human change artifact, so protected CI correctly refused the merge."
+  ],
+  "prevention": [
+    "Derive SEO focus from the first substantive subject phrase instead of question starters; avoid single generic question/article/preposition focus.",
+    "Attach material writeback closure to the SAME daily blog publication PR; keep exact canonical URL, CI, translation cache, protected merge and Netlify public readback; never duplicate the day.",
+    "Never mistake created PR / generated HTML for publicly verified publication or accept invented translation evidence."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs"
+    ],
+    "old_title": "Hoe Nederlandse: wat verandert er voor jou?",
+    "source_title": "Hoe Nederlandse cyberoefeningen jouw bedrijfsbeslissingen moeten beïnvloeden: concreet stappenplan voor ondernemers",
+    "preflight_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation",
+    "external_provider_proof": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

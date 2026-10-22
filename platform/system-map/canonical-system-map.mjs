@@ -2459,3 +2459,87 @@ export const DAILY_SOCIAL_BUILDER_MEDIA_RECOVERY_20261022=Object.freeze({
   learning:'brain/learning/2026-10-22-daily-social-builder-media-recovery-v1.json',
   noNewScheduler:true,noNewSender:true,noConsentBypass:true,noFabricatedProviderProof:true
 });
+
+
+export const PERSONAL_VERIFIED_DISTINCT_SOURCE_RESERVE_20261022=Object.freeze({
+ fingerprint:'powerhouse|personal-verified-distinct-source-reserve|20261022-v1',
+ owner:'powerhouse-content-orchestrator canonical unscoped bootstrap',
+ source:'verified founder evidence already materialized: distinct actual event IDs and approved external URLs',
+ materializer:'buildVerifiedFounderReserve in existing powerhouse-content-orchestrator',
+ destination:'public.powerhouse_content_recommendations',
+ existingPublisher:'powerhouse-social-publisher',
+ maxAlternativesPerDay:3,
+ noNewScheduler:true,noDuplicateProviderSend:true,noUnverifiedPersonalAnecdote:true,
+ security:'existing service-role-only orchestrator; identity, review, uniqueness and readback unchanged',
+ regression:'tests/brain-personal-distinct-source-reserve-v1.test.mjs',
+ learning:'brain/learning/2026-10-22-personal-distinct-source-reserve-v1.json'
+});
+
+
+export const PERSONAL_HELD_DUPLICATE_REBOOTSTRAP_20261022=Object.freeze({
+ fingerprint:'powerhouse|held-personal-duplicate-rebootstrap|20261022-v1',owner:'powerhouse-content-loop',
+ source:'canonical content_publication_obligations plus powerhouse_channel_decisions',
+ evidence:'provider unused / no side effects / known global semantic duplicate',
+ retry:'reuse existing bounded powerhouse-content-orchestrator bootstrap',
+ noNewScheduler:true,noNewSender:true,noUnverifiedProviderProof:true,
+ tests:'tests/brain-held-personal-duplicate-rebootstrap-v1.test.mjs',
+ learning:'brain/learning/2026-10-22-held-personal-duplicate-rebootstrap-v1.json'
+});
+
+
+export const DAILY_BLOG_SEO_MATERIAL_CLOSURE_20261022=Object.freeze({
+ fingerprint:'content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1',
+ original_pr:4603,owner:'existing powerhouse-daily-blog hourly reconciler',
+ publisher:'tools/site-shell/publish_powerhouse_blog_artifact.py',
+ focus_rule:'first contiguous substantive title words, never question prefix',
+ learning:'brain/learning/2026-10-22-daily-blog-seo-closure-v1.json',
+ regression:'tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs',
+ noDuplicatePublisher:true,proof:'protected merge + public URL readback'
+});
+
+
+export const BLOG_NULL_CANONICAL_LINEAGE_REBIND_20261022=Object.freeze({
+ fingerprint:'powerhouse|blog-null-canonical-lineage-rebind|20261022-v1',owner:'powerhouse-blog-queue',
+ source:'content_publication_obligations SQL NULL original blog slug',
+ fix:'old SQL NULL uses is(slug,null); genuine non-null uses exact eq(slug,old)',
+ proof:'GENERATED-only CAS, no provider side effects, independent live URL readback',
+ oneScheduler:true,oneBlogPR:true,noUnprovenLiveState:true,
+ learning:'brain/learning/2026-10-22-blog-null-lineage-rebind-v1.json',
+ regression:'tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs'
+});
+
+
+export const PERSONAL_EDITORIAL_TRUNCATION_RETRY_20261022=Object.freeze({
+ fingerprint:'powerhouse|personal-editorial-truncation-bounded-retry|20261022-v1',owner:'powerhouse-content-orchestrator',
+ source:'verified builder source and strict editorial revision draft',
+ policy:'retry only AIProviderIncompleteOutputError, 2400 to 4800, one additional draft',
+ gates:['personalEditorialViolations','personalFinalCopyValid','global semantic uniqueness','OAuth','provider receipt'],
+ noSecondScheduler:true,noUnsafeProviderRetry:true,noFictitiousCopy:true,
+ regression:'tests/brain-personal-editorial-truncation-retry-20261022.test.mjs',
+ learning:'brain/learning/2026-10-22-personal-editorial-truncation-retry-v1.json'
+});
+
+
+export const LINKEDIN_PERSONAL_EXPIRED_AUTHORITY_RECOVERY_20261022=Object.freeze({
+ fingerprint:'powerhouse|linkedin-personal-expired-authority-recover|20261022-v1',
+ owner:'powerhouse-social-publisher',scheduler:'existing canonical Powerhouse daily loop',
+ noNewSender:true,noNewScheduler:true,
+ proof:['expired unused capability','zero uniqueness reservation','explicit no provider mutation','original same-date decision'],
+ code:['canRecoverExpiredCompanyClaim','canRecoverExpiredPersonalClaim','recoverExpiredLinkedInPublicationAuthority'],
+ tests:'tests/brain-personal-expired-publish-authority-20261022.test.mjs',
+ learning:'brain/learning/2026-10-22-personal-expired-publish-authority-v1.json'
+});
+
+// 2026-10-22: diagnostic source projection only, not proof of live CLS remediation.
+export const POWERHOUSE_WEBSITE_CLS_ATTRIBUTION_V1 = Object.freeze({
+  contract:'powerhouse-website-mobile-cls-attribution-v1',
+  fingerprint:'website|mobile-cls|en-blog-afas-api|20261022-v1',
+  authority:'existing website Required browser visibility checker and Brain failure registry',
+  changedSurface:'tools/site-shell/standalone-visibility-check.mjs',
+  regression:'tests/brain-mobile-cls-attribution-20261022.test.mjs',
+  learning:'brain/learning/2026-10-22-website-mobile-cls-attribution-v1.json',
+  unchangedGate:'CLS > 0.100 fails across every public sitemap route and phone/tablet/desktop',
+  incidentStatus:'OBSERVED',
+  productionFixProven:false,
+  existingSchedulerUnchanged:true
+});

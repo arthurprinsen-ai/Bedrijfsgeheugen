@@ -869,7 +869,7 @@ if (PREPARE_CACHE_PATCH_NAME) {
   const before = loadCache();
   const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
   if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
-    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s)');
+    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s); first=' + String(missingBefore[0] || '').slice(0,160));
   }
   if (missingBefore.length) await translateAll([...allStrings]);
   const persisted = loadCache();

@@ -223,7 +223,6 @@ Measured demand captured on 30 September 2026 includes NL `ai governance`, `data
 
 The AI Modelwijzer owns the model-comparison/selection intent. `/data-soevereiniteit` owns the distinct data-sovereignty/sovereign-AI intent and hands off commercially to AI governance. These pages must not cannibalize `/ai-governance`.
 
-
 ## Conversieduur en afspraakbelofte — 22 oktober 2026
 Fingerprint: `seo|frisse-blik|consistent-duration|v1`.
 

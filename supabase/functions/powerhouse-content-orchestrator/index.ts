@@ -1,8 +1,9 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-reserve.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
-import {incompleteStructuredArtifactReason,largerArtifactTokenBudget} from '../_shared/content-artifact-incomplete-retry.mjs';
+import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -474,6 +475,24 @@ Deno.serve(async (req) => {
     if(!channelScope){
       const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
       if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
+      // Existing canonical writer, same recommendation table, no new scheduler or RPC.
+      try{
+        const {data:sources,error:sourceError}=await db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,run_date,target_channel,status,priority,evidence')
+          .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+          .order('priority',{ascending:false}).limit(10);
+        if(sourceError)throw new Error('PERSONAL_RESERVE_BASE_READ_FAILED');
+        const verified=(sources||[]).find(validPersonalSource);
+        for(const alternative of buildVerifiedFounderReserve(verified,runDate)){
+          const {error}=await db.from('powerhouse_content_recommendations')
+            .upsert(alternative,{onConflict:'dedupe_key',ignoreDuplicates:true});
+          if(error)throw new Error('PERSONAL_RESERVE_WRITE_FAILED:'+error.message);
+        }
+      }catch(error){
+        // Other independently approved channel lanes must remain operational.
+        console.error('PERSONAL_RESERVE_RECOVERY_DEGRADED',
+          clean((error as Error)?.message||error).slice(0,120));
+      }
     }
     stage = 'load-context';
     const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult,capabilitiesResult] = await Promise.all([
@@ -711,10 +730,19 @@ Deno.serve(async (req) => {
           + 'Geen interne technische termen, geen statusrapport, geen verkooppraatje, geen fictieve ervaringen. '
           + 'Gebruik uitsluitend de geverifieerde persoonlijke bron. Eindig bij een oprichtersverhaal met één open vraag. '
           + 'Controleer zelf de woordlengte en brontrouw voordat je de definitieve body teruggeeft.';
-        const revision=await callAI(apiKey,gov.model_id,correctionPrompt,{
+        // Editorial revisions need the same bounded truncation recovery as the
+        // initial structured artifact. No retry for rejected prose, identity,
+        // schema, authorization or provider HTTP errors.
+        const revisionInput={
           ...artifactInput,rejected_draft:bodyText,
           editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
-        },artifactTool,2400);
+        };
+        const revision=await retryIncompleteEditorialDraft(
+          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget),
+          2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
+          largerArtifactTokenBudget,
+          (first:number,next:number)=>console.warn('PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY',gov.model_id,first,next)
+        );
         const revisedText=compactLinkedInCommentary(clean(revision?.body));
         if (revisedText
           && personalEditorialViolations(revisedText,personalSource?.evidence||{}).length===0

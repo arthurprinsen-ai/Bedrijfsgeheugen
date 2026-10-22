@@ -134,6 +134,7 @@ async function readVisibleState(page, url) {
                   main: inspect('main'),
                   textLength: (document.querySelector('main')?.innerText || '').trim().length,
                   cls: Number(window.__bgCls || 0),
+                  clsSources: Array.isArray(window.__bgClsSources) ? window.__bgClsSources.slice(-8) : [],
                 };
       });
     } catch (error) {
@@ -168,10 +169,25 @@ try {
         const page = await context.newPage();
         await page.addInitScript(() => {
           window.__bgCls = 0;
+          window.__bgClsSources = [];
           try {
             new PerformanceObserver(list => {
               for (const entry of list.getEntries()) {
-                if (!entry.hadRecentInput) window.__bgCls += entry.value;
+                if (!entry.hadRecentInput) {
+                  window.__bgCls += entry.value;
+                  // Diagnostic only: preserve the exact 0.100 fail gate and every route.
+                  // CLS attribution never replaces a failed visibility assertion.
+                  const rect = r => r ? [r.x, r.y, r.width, r.height].map(n => Number(Number(n || 0).toFixed(1))) : null;
+                  const sources = Array.from(entry.sources || []).slice(0, 3).map(source => {
+                    const node = source.node;
+                    const tag = node?.tagName?.toLowerCase() || 'detached';
+                    const id = node?.id ? '#' + String(node.id).slice(0, 70) : '';
+                    const className = typeof node?.className === 'string' ? node.className.trim().split(/\s+/).slice(0, 3).join('.') : '';
+                    return { node: tag + id + (className ? '.' + className : ''), previous: rect(source.previousRect), current: rect(source.currentRect) };
+                  });
+                  window.__bgClsSources.push({ value: Number(entry.value.toFixed(5)), timeMs: Math.round(entry.startTime), sources });
+                  if (window.__bgClsSources.length > 12) window.__bgClsSources.shift();
+                }
               }
             }).observe({ type: 'layout-shift', buffered: true });
           } catch {}
@@ -195,7 +211,7 @@ try {
                 }
               }
               if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
-              if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100`);
+              if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}`);
             } catch (error) {
               failures.push(`${route} ${viewport.name}: ${error.message || error}`);
             }
