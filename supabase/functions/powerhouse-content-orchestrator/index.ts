@@ -437,10 +437,9 @@ function shouldPreserveExisting(row:any, channel:string, personalSource:any, con
   // independently eligible company/blog priority-99 channels. The same personal
   // obligation remains BLOCKED, never a fake SKIP or provider-side effect.
   // A newly proven source reopens the exact same canonical claim automatically.
-  const verifiedPersonalSource = personalSource?.evidence?.personal_truth_verified === true
-    || (personalSource?.evidence?.observational_personal_theme_verified === true
-      && personalSource?.evidence?.public_theme_source_verified === true
-      && personalSource?.evidence?.first_person_claims_present === false);
+  // Reopen only when the very same canonical source eligibility gate accepts it.
+  // This also covers verified AI-native founder/build events, not just older life/observation modes.
+  const verifiedPersonalSource = !!personalSource && validPersonalSource(personalSource);
   if (channel === 'linkedin_personal'
       && clean(row.state) === 'blocked'
       && clean(evidence.error) === 'PERSONAL_SOURCE_UNVERIFIED'
