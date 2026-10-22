@@ -171,7 +171,7 @@ async function main() {
     queued_count: queued.length, rawQueued: pressure.counts.rawQueued,
     actionableQueued: pressure.counts.queued,
     verifiedProviderGhostQueued: pressure.counts.verifiedProviderGhostQueued,
-    providerIncidentStillOpen: known.blocked.size > resolvedNew.length,
+    providerIncidentStillOpen: reports.length > 0 || [...known.blocked].some(id => !known.completed.has(id) && !resolvedNew.includes(id)),
     collectionMissingKnownProviderIds,
     ghosts: reports, attempts: newAttempts.length,
     provider_blocks: newAttempts.filter(x => x.marker.includes('BLOCKED')).length, newly_resolved: resolvedNew };
