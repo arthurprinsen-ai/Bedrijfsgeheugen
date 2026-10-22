@@ -37,8 +37,18 @@
       "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
       "tests/brain-ci-path-scope-fanout.test.mjs"
     ],
-    "shadow": [],
-    "canary": []
+    "shadow": [
+      "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs",
+      "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs",
+      "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
+      "tests/brain-ci-path-scope-fanout.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs",
+      "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs",
+      "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
+      "tests/brain-ci-path-scope-fanout.test.mjs"
+    ]
   },
   "test_evidence": {
     "before": "BRAIN run 39671036043 failed 321 of 3511; five enumerated failures belong to this source-drift class.",
@@ -46,7 +56,8 @@
     "after": "PENDING_EXACT_HEAD_RUN",
     "full_brain": "PENDING_0_FAIL",
     "production": "NOT_CHANGED",
-    "customer_acceptance": "NOT_PROVEN"
+    "customer_acceptance": "NOT_PROVEN",
+    "admission_retry": "2026-10-22: original run 39768684121 failed missing nonempty shadow; restored all four original full-file checks in historical, shadow and canary without modifying or skipping assertions; exact-head CI and full BRAIN pending"
   },
   "status": "CANDIDATE_UNVERIFIED_CI"
 }
