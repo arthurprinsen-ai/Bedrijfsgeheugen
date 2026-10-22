@@ -5,7 +5,7 @@
   "relation": "parallel non-overlapping source plan refinement to protected draft #4558",
   "failure_pattern": "818 business opportunities repeatedly expand a 23,295-contact person-intelligence view inside a LATERAL next-best-action route. Revenue snapshot often times out at 120s.",
   "root_cause": "Uncorrelated source view is fully expanded per LATERAL opportunity; its own aliases/events/actions/outcomes and aggregated calculations are recomputed.",
-  "proposed_fix": "Forward-only keyed alias set-join candidate after CTE + LATERAL showed a measured small-cohort slowdown; private 50-column buying-window formula preserved. Release blocked until multi-tenant 50/51-column financial parity and end-to-end cron runtime.",
+  "proposed_fix": "Canonical single-owner forward-only two-arm equijoin migration 20261022221500 is active release candidate. One-arm alias set-join 20261022222500 was identified as a conflicting parallel successor and retired before preview/production deployment. Keep standalone read-only performance evidence.",
   "evidence": {
     "baseline_explain_cost": 32713172.61,
     "candidate_explain_cost": 1597888.41,
@@ -56,7 +56,7 @@
       "production_applied": false
     },
     "set_join_read_only_20261022": {
-      "status": "READ_ONLY_SELECTED_PERSON_PARITY_ONLY",
+      "status": "RESEARCH_ONLY_ALTERNATIVE_RETIRED_NOT_DEPLOYED",
       "project_ref": "adhjwmvyoixzjtmiroln",
       "opportunities": 818,
       "linked": 650,
@@ -70,8 +70,9 @@
       "preview_data": "ZERO_OPPORTUNITIES",
       "production_deploy": "NOT_AUTHORIZED_OR_DEPLOYED",
       "restrictions": "Sample timings are not entire snapshot runtimes. SQL compilation confirmed 50 columns in temp view and rollback. No financial or tenant proof.",
-      "parity_runner_path": "tests/brain-p0-4215-buying-window-set-join-parity.mjs",
-      "shadow_test_path": "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
+      "parity_runner_path": "tests/brain-p0-4215-buying-window-full-parity.mjs",
+      "shadow_test_path": "tests/brain-p0-4215-person-two-arm-match.test.mjs",
+      "recovery_note": "Retired conflicting unmerged 20261022222500 migration and related tests so canonical earlier 20261022221500 two-arm migration can remain single successor of 20261022120800; historical measured alias performance preserved as learning, not an executable second migration."
     }
   },
   "prevention": [
@@ -82,7 +83,8 @@
     "Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim.",
     "Do not fan out Supabase provider runs with sequential one-file commits; batch same-lineage changes and inspect provider configuration failures before bounded retry.",
     "Planner cost reduction alone never earns release: bounded real runtime on 5/25 opportunities regressed for materialized OR-LATERAL; also measure full 818 cohort for keyed alias set join.",
-    "For aliases or timestamp ties after source changes, compare canonical selection and investigate ambiguities before release; no simulated positive financial values may be promoted as realized revenue."
+    "For aliases or timestamp ties after source changes, compare canonical selection and investigate ambiguities before release; no simulated positive financial values may be promoted as realized revenue.",
+    "Never stack two forward migrations which both assert the same predecessor hash and replace the same view. Supersede alternatives on one owner branch before allowing provider preview; preserve research evidence."
   ],
   "compiler": {
     "failure_class": "RECOVERY",
@@ -94,21 +96,18 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
-      "tests/brain-p0-4215-person-two-arm-match.test.mjs",
-      "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
     ],
     "canary": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
-      "tests/brain-p0-4215-person-two-arm-match.test.mjs",
-      "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
     ],
     "shadow": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
-      "tests/brain-p0-4215-person-two-arm-match.test.mjs",
-      "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
     ]
   },
-  "current_state": "TWO_ARM_VERSIONED_CANDIDATE_NO_LIVE_DEPLOY",
+  "current_state": "HOLD_DRAFT_UNVERIFIED_PRODUCTION",
   "parity_runner_incident": {
     "fingerprint": "p0-4215-parity-runner-migrated-preview-and-process-shadow-20261022",
     "observed_at": "2026-10-22",
