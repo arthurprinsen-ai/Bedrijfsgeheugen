@@ -40,13 +40,20 @@
       "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
     ],
     "shadow": [
-      "Exact live watchdog invocation must successfully write one eligible existing-owner PR comment, or evidence BLOCKED without false success"
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
     ],
     "negative_canary": [
       "Do not weaken Required/CodeQL or CLS threshold",
       "Do not create second scheduler",
       "No duplicate comments for same head/gate",
       "No unrelated PR write outside existing owner signal"
+    ],
+    "canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "invariants": [
+      "Historical/shadow/canary run the same actual Node regression contract; proof of a provider comment still requires a post-merge live readback",
+      "Keep Required CI, CodeQL, CLS threshold and owner-dedup protection"
     ]
   },
   "prevention": [
