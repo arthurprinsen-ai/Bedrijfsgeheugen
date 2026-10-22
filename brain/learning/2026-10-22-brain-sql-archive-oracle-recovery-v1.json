@@ -93,6 +93,7 @@
     "original_supabase_contracts_executed_by_brain_replay": [
       "tests/supabase-tenant-identity-review-semantics-v2.test.mjs",
       "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
-    ]
+    ],
+    "canonical_skill_projection": ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
   }
 }

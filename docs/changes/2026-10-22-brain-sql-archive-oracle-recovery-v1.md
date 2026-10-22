@@ -23,3 +23,6 @@ The previous PR #4613 proved eight historical source-evaluation files passing bu
 
 ## Complete inherited suite replay
 The learning historical-replay suite also imports the **unaltered original Supabase identity-review and MKB trigger runtime tests** through `tests/brain-inherited-sql-archive-supabase-replay-v1.test.mjs`, because the canonical evaluation only accepts `tests/brain-*.test.mjs`. This preserves all original assertions and prevents a source-existence-only false-green signal.
+
+## Portal inventory compatibility
+The earlier repair added a dedicated skill directory and triggered `SYSTEM_MAP_WRITEBACK_INCOMPLETE` in Required preflight because the portal explanation inventory hashes skill names. The rule now lives in existing `.agents/skills/powerhouse-delivery-self-optimization/SKILL.md`; the new skill directory is removed without changing existing System Map counts. No guard or System Map evaluator is modified. Protected preflight must reverify.

@@ -7,3 +7,5 @@ Corrected nine independent stale historical SQL oracle pointers to nonempty veri
 - Successor from #4613 (previous candidate `e6bcfe8b535e72d678199cbc4870356a276d91df`) after non-overlapping new main epoch. Original eight-file historical learning evaluation passed; enhanced semantic prevention and evidence fields in this candidate. Full BRAIN not yet proven.
 
 - Added BRAIN-prefixed historical wrapper executing both original Supabase test files; learning historical replay includes wrapper so all nine original source oracles remain enforced rather than checking filenames alone.
+
+- Detected exact-head Required preflight failure `SYSTEM_MAP_WRITEBACK_INCOMPLETE` due candidate-only new skill directory. Canonical skill projection moved to existing Powerhouse delivery self-optimization skill, with identical security and historical SQL invariants; obsolete new skill entry deleted. Rerun preflight.
