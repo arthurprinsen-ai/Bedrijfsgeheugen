@@ -48,7 +48,8 @@
     "No production migration before representative financial result parity, isolation verification, Required CI and CodeQL.",
     "Existing daily executor, scheduler and social lineage remain active.",
     "Synthetic parity fixtures must run transactionally with verified ROLLBACK and must never be mistaken for authorized two-tenant financial parity or release acceptance.",
-    "Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim."
+    "Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim.",
+    "Do not fan out Supabase provider runs with sequential one-file commits; batch same-lineage changes and inspect provider configuration failures before bounded retry."
   ],
   "compiler": {
     "failure_class": "RECOVERY",
@@ -103,5 +104,29 @@
     "release_gate": "DRAFT until exact-head Required/CodeQL and populated authorized 2-tenant full and financial parity plus two independently authenticated HTTP checks and measured runtime succeed",
     "latest_candidate_commit": "5437c48ebad6948f5883a33747c7bd26e699d021",
     "current_state": "ZERO_FINANCIAL_FALSE_GREEN_GUARD_ADDED_PENDING_EXACT_HEAD_CI_AND_REAL_TWO_TENANT_ACCEPTANCE"
+  },
+  "preview_provider_incident": {
+    "fingerprint": "supabase|preview-config|provider-failure-overlapping-runs|20261022-v1",
+    "observed_at": "2026-10-22",
+    "maturity": "VALIDATED_OBSERVATION_NOT_PROVEN_RECOVERY",
+    "symptom": "Exact candidate b8463e0 Supabase Preview GitHub check 119941888607 failed at provider configure stage, causing Required CI aggregator failure even though backend/source/security tests passed.",
+    "provider_branch": "fix/powerhouse-person-intelligence-once-20261022-v1",
+    "provider_project": "nqyptchljoucghdihmqy",
+    "evidence": {
+      "check_id": 119941888607,
+      "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812348612",
+      "codeql_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812348505",
+      "config_blob_identical_to_main": "f5e90adb23c2f531262b3cb54c70bd513aa4aad1",
+      "preview_health": "ACTIVE_HEALTHY",
+      "overlapping_provider_workflow_runs": [
+        "5263748d7f0e45feb15a1b7b7feb5688",
+        "1d054772dc734aa389ce65b43ea36e5a"
+      ],
+      "workflow_logs": "16:14:34–16:15:27 UTC, both config paths reported remote DB/API/Auth/Storage up to date; exact provider failure origin remains unknown"
+    },
+    "root_cause": "Not yet proven. Multiple commits within a short interval triggered overlapping Supabase branch workflows; overlap may have contributed to configuration failure but logs have not established causality.",
+    "prevention": "Before expensive CI, coalesce source/regression/learning into one immutable integration commit. Never trigger overlapping Supabase previews or blind reruns; inspect exact provider check + workflow_run_logs, deduplicate and preserve strong release gate. One bounded recovery commit only after overlapping workflows are terminal. Stop if provider remains unhealthy; do not reset/delete/recreate a paid branch, bypass protected CI, touch auth/RLS or claim green.",
+    "bounded_recovery": "A single same-branch append-only learning commit after observed previous workflow completion, to obtain one new exact-head provider result. No repeated retries on the same provider failure.",
+    "next_proof": "Require genuine provider success on the new exact head and all independent existing financial/tenant/performance release obligations; keep draft until then."
   }
 }
