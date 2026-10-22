@@ -10,7 +10,7 @@ SET LOCAL statement_timeout='15s';
 DO $source_guard$
 BEGIN
  IF md5(pg_get_viewdef('public.powerhouse_buying_window_v2'::regclass,true))
-    <> '6a7a20df1f24b4333986ba9b2da09314' THEN
+    <> '8a9b316a512dcf55889b0a56e7026170' THEN
    RAISE EXCEPTION 'P0_4215_PERSON_CACHE_PREDECESSOR_HASH_DRIFT';
  END IF;
  IF NOT EXISTS (SELECT 1 FROM pg_class
