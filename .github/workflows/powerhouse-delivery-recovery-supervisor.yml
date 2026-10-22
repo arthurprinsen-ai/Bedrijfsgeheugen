@@ -12,6 +12,7 @@ permissions:
   contents: write
   pull-requests: write
   actions: write
+  issues: read
 
 concurrency:
   group: powerhouse-delivery-recovery-supervisor
@@ -49,6 +50,9 @@ jobs:
           stale_cancelled=0
           obsolete_uncancellable=0
           current_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+          # Provider-denied zero-job records are owned by canonical incident #4655.
+          # Repeating 409/403 every five minutes cannot repair GitHub backend state.
+          provider_ghosts="$(gh api --paginate "repos/$repo/issues/4655/comments?per_page=100" --jq '.[].body' 2>/dev/null | grep -oE 'GH_GHOST_RUN:[0-9]+:PROVIDER_BOUNDARY:' | cut -d: -f2 | sort -u || true)"
 
           is_run_obsolete() {
             local run_json="$1"
@@ -122,6 +126,11 @@ jobs:
               age_seconds=$((now_epoch - run_epoch))
               [ "$age_seconds" -ge "$min_age" ] || continue
               is_run_obsolete "$run_json" || continue
+              if printf '%s\n' "$provider_ghosts" | grep -Fxq "$run_id"; then
+                obsolete_uncancellable=$((obsolete_uncancellable + 1))
+                echo "::notice::KNOWN_PROVIDER_GHOST_ALREADY_ESCALATED:$run_id"
+                continue
+              fi
               if cancel_mode="$(cancel_obsolete_run "$run_id")"; then
                 stale_cancelled=$((stale_cancelled + 1))
                 echo "::notice::STALE_ACTIONS_RUN_CANCELLED:$run_id status:$status branch:$head_branch age_seconds:$age_seconds mode:$cancel_mode"
