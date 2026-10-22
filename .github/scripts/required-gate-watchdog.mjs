@@ -1,11 +1,9 @@
 import process from 'node:process';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, watchdogPrPlan } from '../../tools/delivery/failed-gate-owner-routing.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
 const now = Date.now();
-const MIN_AGE_MS = 90_000;
-const MAX_AGE_MS = 2 * 60 * 60 * 1000;
 const MAX_OWNER_SIGNALS_PER_TICK = 2;
 if (!repo || !token) throw new Error('GITHUB_REPOSITORY and GITHUB_TOKEN are required');
 const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
@@ -54,8 +52,8 @@ let ownerSignals = 0;
 for (let page = 1; page <= 5; page++) {
   const pulls = await api(`/pulls?state=open&base=main&per_page=100&page=${page}`);
   for (const pr of pulls) {
-    const age = now - Date.parse(pr.updated_at || pr.created_at);
-    if (!Number.isFinite(age) || age < MIN_AGE_MS || age > MAX_AGE_MS) continue;
+    const inspection = watchdogPrPlan(pr, now);
+    if (!inspection.inspect) continue;
     const head = pr.head?.sha;
     if (!/^[a-f0-9]{40}$/.test(head || '')) continue;
     const response = await api(`/actions/runs?head_sha=${head}&per_page=100`);
@@ -70,7 +68,7 @@ for (let page = 1; page <= 5; page++) {
 
     // Preserve the existing one-flight missing-Required recovery; never
     // automatically redispatch a failing source test or cancel a healthy job.
-    if (gateDecision(required) !== 'MISSING') continue;
+    if (!inspection.dispatchMissing || gateDecision(required) !== 'MISSING') continue;
     const inputs = {
       pr_number: String(pr.number),
       base_sha: String(pr.base?.sha || ''),
