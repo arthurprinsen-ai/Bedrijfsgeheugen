@@ -103,7 +103,7 @@ test('FAILED daily obligation receives fresh exact rejection while preserving FA
  assert.equal(result.kind,'applied');
  assert.equal(calls.length,2);
  assert.deepEqual(calls[1].filters.slice(-2),[['eq','status','FAILED'],['is','external_id',null]]);
- assert.match(calls[1].fields.last_error,/middle:face=0\\.930:openart=Ge4MhZ3FFAoWREo0TtDJ/);
+ assert.match(calls[1].fields.last_error,/middle:face=0\.930:openart=Ge4MhZ3FFAoWREo0TtDJ/);
  assert.equal(Object.hasOwn(calls[1].fields,'status'),false);
  assert.equal(Object.hasOwn(calls[1].fields,'external_id'),false);
  assert.equal(brainCalls.length,1);
