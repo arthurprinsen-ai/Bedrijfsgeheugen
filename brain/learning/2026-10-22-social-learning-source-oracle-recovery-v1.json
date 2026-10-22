@@ -46,7 +46,8 @@
     "whole_brain": "PENDING_FULL_ZERO_FAIL",
     "production": "UNCHANGED",
     "provider": "NOT_CLAIMED",
-    "gate_predecessor": "Required CI 39831225464 rejected direct social-* evaluation path at LEARNING_EVALUATION_TEST_PATH_INVALID; corrected by BRAIN wrapper importing full original suites, no assertion skip"
+    "gate_predecessor": "Required CI 39831225464 rejected direct social-* evaluation path at LEARNING_EVALUATION_TEST_PATH_INVALID; corrected by BRAIN wrapper importing full original suites, no assertion skip",
+    "gate_after_wrapper_failure": "Required 39831651154 failed due dependency-free admission importing original tests needing @netlify/blobs; full original tests moved to separate backend-run BRAIN wrapper after npm install; zero tests disabled"
   },
   "skill_targets": [
     "social"
@@ -61,5 +62,6 @@
     "tests/social-learning-buffer-schedule.test.mjs",
     "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
     "tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs"
-  ]
+  ],
+  "required_backend_full_original_replay": "tests/brain-social-learning-full-suite-replay-20261022.test.mjs"
 }

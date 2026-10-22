@@ -8,3 +8,5 @@
 - Action: three precise original source-contract test fixes, new regression, Brain learning and human-readable evidence. No production side effect or weakened gate.
 - Prevention: re-run exact-head social contract on changes to channel scheduling, provider route or Mira verification. Never restore Buffer fallback; keep one canonical executor and exact external readback.
 - Verification: PENDING exact-head Required, CodeQL, complete BRAIN zero-fail, protected merge and postmerge readback; candidate not PROVEN.
+
+- Admission evidence: [run 39831225464](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39831225464) rejected direct `tests/social-*` evaluation paths. [Run 39831651154](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39831651154) rejected full original test imports because `@netlify/blobs` not installed in dependency-free admission. Repair retains dependency-free source contract in learning and introduces a separate Required-backend BRAIN wrapper importing all three original test modules; no skip. New head gates pending.
