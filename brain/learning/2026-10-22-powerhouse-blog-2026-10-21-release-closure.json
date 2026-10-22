@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse-blog-2026-10-21|diverged-generated-publication-index|merge-conflict",
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "input": "PR #4570 merge against main, 2026-10-22",
+        "observed": "three conflicting generated files and missing closure artifacts",
+        "expected": "preserve both 21 and 22 October entries; fail closed without CI evidence"
+      }
+    ]
+  },
+  "root_cause": "Concurrent daily publication updates to blog/index.html, blog/rss.xml and sitemap.xml on main and an older PR branch; closure artifacts absent.",
+  "prevention_rule": "Merge from current main and union generated publication entries; require Brain learning, append-only ledger and human documentation before merge.",
+  "evidence": {
+    "tests": "GitHub Actions run 39834341009: CodeQL success, hygiene failure for missing closure artifacts; new CI pending",
+    "commits": [
+      "49600e6",
+      "9a3fbab",
+      "619d13c",
+      "98f58cf"
+    ],
+    "production_readback": "NOT_VERIFIED"
+  },
+  "outcome": "Merge conflict resolved on PR branch; production release pending required tests."
+}
