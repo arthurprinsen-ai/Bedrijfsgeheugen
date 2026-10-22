@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 export const SKILL_PROJECTION_FINGERPRINT = 'powerhouse-learning-skill-auto-projection-v1';
 export const SKILL_INDEX_VERSION = 'POWERHOUSE-LEARNING-SKILL-INDEX-v1';
+const MANDATORY_INCIDENT_BASELINE = 'powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1';
 
 const TARGET_RULES = [
   ['delivery', /delivery|deploy|github|branch|merge|ci|writer|lease|promotion|release|migration/i],
@@ -180,15 +181,20 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [] }
   const wantedFingerprints = new Set(stableUnique(fingerprints));
   const wantedTargets = new Set(stableUnique(targets));
   const hasHints = wantedFingerprints.size > 0 || wantedTargets.size > 0;
-  const selected = hasHints ? (index.entries ?? []).filter(entry => {
+  // A task without routing hints still needs the universal incident guard.
+  // Keep the baseline bounded: do not dump the entire learning archive.
+  const selected = (index.entries ?? []).filter(entry => {
+    if (entry.fingerprint === MANDATORY_INCIDENT_BASELINE) return true;
+    if (!hasHints) return false;
     if (wantedFingerprints.has(entry.fingerprint)) return true;
     return entry.skill_targets.some(target => wantedTargets.has(target));
-  }) : [];
+  });
+  const hasBaseline = selected.some(entry => entry.fingerprint === MANDATORY_INCIDENT_BASELINE);
   return {
     fingerprint: SKILL_PROJECTION_FINGERPRINT,
     projection_digest: index.projection_digest,
     total_entries: index.entry_count ?? index.entries?.length ?? 0,
-    selection_mode: hasHints ? 'TASK_RELEVANT' : 'SUMMARY_ONLY_NO_TASK_HINTS',
+    selection_mode: hasHints ? 'TASK_RELEVANT' : hasBaseline ? 'MANDATORY_INCIDENT_BASELINE' : 'SUMMARY_ONLY_NO_TASK_HINTS',
     selected_entries: selected
   };
 }
