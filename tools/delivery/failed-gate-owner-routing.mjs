@@ -36,8 +36,9 @@ export function ownerSignalMarker(gate, headSha) {
 
 export function ownerSignalComment({gate, headSha, run, owner, job}) {
   const marker = ownerSignalMarker(gate, headSha);
-  const jobLine = job?.id ? `Failed job: [${String(job.name || 'job')}](
-https://github.com/${String(run.repository?.full_name || '')}/actions/runs/${run.id}/job/${job.id})`.replace(']('+'\\n', '](') : 'No failing job was returned; inspect workflow startup / provider control plane.';
+  const jobLine = job?.id
+    ? `Failed job: [${String(job.name || 'job')}](https://github.com/${String(run.repository?.full_name || '')}/actions/runs/${run.id}/job/${job.id})`
+    : 'No failing job was returned; inspect workflow startup / provider control plane.';
   return `${marker}
 ### Automatic same-owner recovery handoff — ${gate === 'required' ? 'Required test' : 'Powerhouse CodeQL'}
 Status: **RECOVERY REQUIRED**, not green. This is an existing PR/owner obligation, not a new writer or incident.
