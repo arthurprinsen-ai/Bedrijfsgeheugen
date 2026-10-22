@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {instagramFrameSamplePoints} from '../netlify/functions/_instagram-frame-sampling.mjs';
 
 const extractor=fs.readFileSync('netlify/functions/instagram-video-frames.mjs','utf8');
 const verifier=fs.readFileSync('supabase/functions/powerhouse-instagram-media-verifier/index.ts','utf8');
@@ -13,9 +14,11 @@ test('Instagram reel proof extracts exact OpenArt video frames automatically',()
   assert.match(netlify,/external_node_modules = \["ffmpeg-static"\]/);
   assert.match(extractor,/OPENART_CDN_URL_REQUIRED/);
   assert.match(extractor,/instagram-exact-video-frame-extraction-v1/);
-  assert.match(extractor,/\['start'/);
-  assert.match(extractor,/\['middle'/);
-  assert.match(extractor,/\['end'/);
+  assert.match(extractor,/instagramFrameSamplePoints\(duration\)/);
+  assert.match(extractor,/for\(const \[position,seconds\] of points\)/);
+  assert.deepEqual(instagramFrameSamplePoints(8),[['start',0],['middle',4],['end',7.75]]);
+  assert.throws(()=>instagramFrameSamplePoints(0),/INVALID_VIDEO_DURATION/);
+  assert.throws(()=>instagramFrameSamplePoints(61),/INVALID_VIDEO_DURATION/);
   assert.match(router,/FRAME_EXTRACTOR/);
   assert.match(router,/VIDEO_FRAME_EXTRACTION_FAILED/);
   assert.match(router,/imageBase64/);
