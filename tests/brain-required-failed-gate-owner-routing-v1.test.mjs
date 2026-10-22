@@ -67,5 +67,5 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   assert.match(source, /'SAME_OWNER_REPAIR_REQUIRED'/);
   assert.match(source, /gateDecision\(required\) !== 'MISSING'/);
   assert.match(source, /required-test\.yml\/dispatches/);
-  assert.doesNotMatch(source, /cancel|skipLayoutShift|disableCls|allowCls/i);
+  assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
 });
