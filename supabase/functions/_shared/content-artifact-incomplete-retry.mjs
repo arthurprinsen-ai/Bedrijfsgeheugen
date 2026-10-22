@@ -13,3 +13,19 @@ export function largerArtifactTokenBudget(initial) {
   if (!Number.isInteger(initial) || initial <= 0) throw new RangeError('INITIAL_ARTIFACT_BUDGET_INVALID');
   return Math.min(8000, Math.max(initial * 2, 3200));
 }
+
+// A revision is still an unsubmitted draft. Retry exactly once, ONLY if the
+// caller proves that the structured model output was genuinely truncated.
+// Provider failures, invalid schema, poor editorial content or incomplete
+// evidence must remain blocked and never acquire an extra retry.
+export async function retryIncompleteEditorialDraft(generate, initialBudget, isIncomplete, budgetForRetry, onRetry=()=>{}) {
+  try {
+    return await generate(initialBudget);
+  } catch (error) {
+    if (!isIncomplete(error)) throw error;
+    const nextBudget=budgetForRetry(initialBudget);
+    if (!Number.isFinite(nextBudget)||nextBudget<=initialBudget) throw error;
+    onRetry(initialBudget,nextBudget);
+    return await generate(nextBudget);
+  }
+}

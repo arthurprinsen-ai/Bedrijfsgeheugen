@@ -415,3 +415,16 @@ the same existing content orchestrator under its original lease, verified
 source reserve, rejected recommendation IDs, bounded daily attempts, and all
 independent identity/copy/global uniqueness/provider readback gates.
 This is not a new scheduler or consent to publish an unverified story.
+
+
+## 2026-10-22 — personal editorial strict JSON truncated response
+
+Fingerprint `powerhouse|personal-editorial-truncation-bounded-retry|20261022-v1`. A verified personal founder recommendation is not
+a publishable artifact until BOTH independent editorial and final-copy
+truth gates pass. If the editorial rewrite itself returns a demonstrably
+incomplete strict JSON because the model reached `max_output_tokens`,
+perform only ONE bounded larger-budget draft retry (2400 → 4800).
+Do NOT retry a rejected editorial result, OAuth denial, source failure or
+an ambiguous social provider write. Preserve the original publisher,
+one channel/day publication authority, global semantic dedupe, and external
+provider receipt. The daily executor remains active with original leases.
