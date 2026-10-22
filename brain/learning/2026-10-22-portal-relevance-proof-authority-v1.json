@@ -1,0 +1,37 @@
+{
+  "fingerprint": "portal|relevance|health-status-false-proven|20261022-v1",
+  "status": "OBSERVED_PENDING_EXACT_HEAD_CI",
+  "event_kind": "INCIDENT",
+  "observed_at": "2026-10-22",
+  "component_type": "portal-v2",
+  "root_cause": "The authenticated Brain runtime adapter converted source PROVEN to only healthy=true/status=ok and discarded tenant, regression and production proof. The UI then displayed Bewezen in Brain based only on these two health flags.",
+  "failedApproach": "Merged #4673 tests treated healthy:true/status:ok without a regression or provider proof as one proven record; Required+CodeQL could pass the wrong fixture.",
+  "fix": "Preserve actual canonical maturity and verified producer readback from /api/brain-operating-loop; gate learning counts and labels on same-tenant immutable proof; treat missing source details as unverified.",
+  "prevention_rule": "Every customer-facing PROVEN label must be backed by same-tenant canonical maturity PROVEN, concrete fix, executable regression and a real allowed HTTPS provider/production readback; healthy/status alone must never turn unknown into verified.",
+  "regressionTest": [
+    "tests/brain-portal-relevance-proof-authority-v1.test.mjs",
+    "portal-v2/tests/relevance-learning-closed-loop.test.mjs"
+  ],
+  "test_evidence": [
+    "tests/brain-portal-relevance-proof-authority-v1.test.mjs"
+  ],
+  "productionVerified": false,
+  "compiler": {
+    "failure_class": "PORTAL_FALSE_GREEN_PROOF",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-relevance-proof-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-relevance-proof-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-relevance-proof-authority-v1.test.mjs"
+    ]
+  }
+}

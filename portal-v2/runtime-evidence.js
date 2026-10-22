@@ -210,11 +210,29 @@ export function mapRuntimeProjection(projection) {
       waarde: measuredNumber(item.value ?? item.amount)
     })), bijgewerkt, { totals: waarde.totals || {} }),
 
-    learning: slice(arr(geheugen.memories || geheugen.records).map(item => ({
-      naam: txt(item.claim || item.subjectId || item.id),
-      status: item.status === 'PROVEN' ? 'ok' : 'aandacht',
-      healthy: item.status === 'PROVEN'
-    })), bijgewerkt, { summary: geheugen.memorySummary || geheugen.summary || {} }),
+    learning: slice(arr(geheugen.memories || geheugen.records).map(item => {
+      // Preserve actual upstream proof: a PROVEN claim without an authenticated
+      // tenant match, regression and provider readback is not a confirmed result.
+      const maturity=txt(item.maturity || item.status);
+      const tenantId=txt(item.tenantId || item.tenant_id);
+      const regressionRef=txt(item.regression_ref || item.regressionRef);
+      const provenFix=txt(item.proven_fix || item.provenFix);
+      const productionReadbackUrl=sourceEvidenceUrl({
+        url: item.evidence?.production_readback_url ||
+          item.evidence?.provider_readback_url || item.productionReadbackUrl
+      });
+      const verified=maturity==='PROVEN'&&Boolean(tenantId)
+        &&tenantId===txt(projection.tenantId || projection.tenant_id)
+        &&Boolean(regressionRef)&&Boolean(provenFix)&&Boolean(productionReadbackUrl);
+      return {
+        naam: txt(item.claim || item.subjectId || item.id),
+        status: verified ? 'ok' : 'aandacht', healthy: verified,
+        maturity, tenantId, regressionRef, provenFix, productionReadbackUrl
+      };
+    }), bijgewerkt, {
+      summary: geheugen.memorySummary || geheugen.summary || {},
+      tenantId: txt(projection.tenantId || projection.tenant_id)
+    }),
 
     selfHeal: slice(lussen.filter(loop => !loop?.complete).map(loop => ({
       naam: txt(loop.correlationId || 'lus'),

@@ -124,10 +124,18 @@ function specialistContent(pageId,model,navigation){
     // Do not synthesize wins from forecasts, local storage or missing runtime evidence.
     const learning=model?.portal?.runtime?.learning||{};
     const items=Array.isArray(learning.items)?learning.items:[];
-    const proven=items.filter(item=>item?.healthy===true&&item?.status==='ok');
+    // Transport/health OK is not an immutable Brain PROVEN receipt.
+    // This existing API projection is tenant-bound; unresolved tenant identity or
+    // missing verified source, regression or production readback is never green.
+    const isProven=item=>item?.maturity==='PROVEN'&&item?.healthy===true&&item?.status==='ok'
+      &&Boolean(learning.tenantId)&&item?.tenantId===learning.tenantId
+      &&Boolean(String(item?.provenFix||'').trim())
+      &&Boolean(String(item?.regressionRef||'').trim())
+      &&/^https:\/\/(?:github\.com|app\.netlify\.com|supabase\.com|app\.supabase\.com)\//.test(String(item?.productionReadbackUrl||''));
+    const proven=items.filter(isProven);
     const detailRows=items.slice(0,12).map(item=>[
       String(item?.naam||'Leerrecord zonder titel'),
-      item?.healthy===true&&item?.status==='ok'?'Bewezen in Brain':'Nog te verifiëren in Brain'
+      isProven(item)?'Bewezen in Brain':'Nog te verifiëren in Brain'
     ]);
     const blocks=[
       {type:'metrics',title:'Relevantie & verbeteringen',items:[
