@@ -1,0 +1,47 @@
+{
+  "fingerprint": "brain|incident-observe|evidence-overwrite-and-crosswriter-runid-dup|20261022-v1",
+  "obligation_id": "delivery|terminalizer|unmerged-superseded-migration-false-red|20261022-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE",
+  "failure_class": "TERMINAL_SUPERSEDED_MIGRATION_FALSE_RED",
+  "scope": "GITHUB_CI",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
+  "root_cause": "Obligation Terminal Closure PR #4697 failed after correctly verifying production migration because its supersession walk rejected any SQL path on retired unmerged PR #4686, even when that exact path was already delivered by merged #4697 and retained on protected main.",
+  "evidence": {
+    "failed_run_id": 39840439339,
+    "job_id": 120039732278,
+    "step": "Derive exact Supabase production migration identities across supersession lineage",
+    "error": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:4686:supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql",
+    "closed_unmerged_pr": 4686,
+    "merged_successor_pr": 4697,
+    "production_migration_version": "20261022173500",
+    "production_observer_md5": "3f5d19e556f5425630cf80a5e341a02b"
+  },
+  "fix": "At terminal supersession traversal, permit only exact migration filenames already collected from the merged successor with the same obligation and simultaneously present on protected main; all other retired SQL migration paths stay fail-closed. Keep existing provider migration readback unchanged.",
+  "prevention_rule": "Compare retired SQL paths to delivered exact merged successor path AND protected main before skipping. Never equate closed/unmerged with deployed, never infer production validity from filename alone; require final Supabase migration/version provider readback and terminal workflow gates.",
+  "compiler": {
+    "failure_class": "TERMINAL_SUPERSEDED_MIGRATION_FALSE_RED",
+    "scope": "GITHUB_CI",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-superseded-migration-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-superseded-migration-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-superseded-migration-proof-v1.test.mjs"
+    ]
+  },
+  "validation": {
+    "historical_run": "RED",
+    "replacement_proof": "SOURCE_ASSERTION_PENDING_GITHUB_CI",
+    "protected_required": "PENDING",
+    "codeql": "PENDING",
+    "terminal_replay": "PENDING",
+    "no_production_sql_write": true
+  }
+}

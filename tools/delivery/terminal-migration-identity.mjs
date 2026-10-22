@@ -38,3 +38,19 @@ export function resolveTerminalMigrationIdentities(items=[], currentPaths=[]){
     return {...item,version:matches[0].version,canonical_path:matches[0].path,historical_version:version};
   });
 }
+
+/**
+ * An unmerged superseded PR is not a deployment. Its SQL paths may only be
+ * skipped when the same exact path was delivered by an earlier, *merged* PR
+ * in the SAME obligation lineage, and survives on protected main.
+ * This checks filenames/lineage only; the existing terminal provider gate
+ * still independently proves (version, name) installed in production.
+ * Content from an unmerged predecessor is never trusted as runtime source.
+ */
+export function unresolvedSupersededMigrationPaths(candidates=[], delivered=[], currentMain=[]){
+  const provedByMerge=new Set(delivered.filter(p=>SQL_PATH.test(p)));
+  const presentOnMain=new Set(currentMain.filter(p=>SQL_PATH.test(p)));
+  return [...new Set(candidates)].filter(path=>
+    !SQL_PATH.test(path) || !provedByMerge.has(path) || !presentOnMain.has(path)
+  );
+}
