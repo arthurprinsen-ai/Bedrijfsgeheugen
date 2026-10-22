@@ -18,5 +18,20 @@
   "production_changed": false,
   "security_bypassed": false,
   "full_brain_zero_proven": false,
-  "recorded_at": "2026-10-22"
+  "recorded_at": "2026-10-22",
+  "failure_class": "CI",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-production-build-parity-v1.test.mjs",
+      "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs",
+      "tests/brain-pricing-final-build-order-v1.test.mjs",
+      "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
+      "tests/brain-product-led-home-v1.test.mjs",
+      "tests/brain-product-led-production-promotion-v1.test.mjs"
+    ]
+  }
 }
