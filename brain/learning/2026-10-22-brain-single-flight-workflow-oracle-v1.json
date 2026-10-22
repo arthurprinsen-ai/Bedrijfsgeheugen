@@ -35,10 +35,9 @@
     "after": "PENDING_EXACT_HEAD_RUN",
     "full_brain": "PENDING_0_FAIL",
     "production": "UNCHANGED",
-    "skill_prevention": "PENDING_PR_MERGE"
+    "skill_prevention": "DEFERRED_UNTIL_SOCIAL_BRAIN_ORACLE_RECOVERY",
+    "deferred_reason": "Changing delivery-concurrency skill activates unrelated preflight tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs with 2 inherited known failures; repair belongs to existing PR #4608, do not overwrite that writer."
   },
   "status": "CANDIDATE_UNVERIFIED_CI",
-  "skill_targets": [
-    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
-  ]
+  "skill_targets": []
 }
