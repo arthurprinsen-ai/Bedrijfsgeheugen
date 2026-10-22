@@ -188,6 +188,19 @@ BEGIN
      ) IS DISTINCT FROM false THEN
     RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_WRONG_MASTER_HASH_ACCEPTED';
   END IF;
+  IF public.powerhouse_instagram_visual_proof_valid_v1(
+       v_good || jsonb_build_object(
+         'canonical_reference_url',
+         'https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg'
+       ), 'video_frame'
+     ) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_STALE_MASTER_URL_ACCEPTED';
+  END IF;
+  IF public.powerhouse_instagram_visual_proof_valid_v1(
+       v_good - 'face_identity_confidence', 'video_frame'
+     ) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'INSTAGRAM_PROOF_STATUS_MISSING_FACE_SCORE_ACCEPTED';
+  END IF;
   IF NOT EXISTS (
     SELECT 1 FROM pg_proc
     WHERE oid = 'public.enforce_instagram_media_proof_vision_v1()'::regprocedure
