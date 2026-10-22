@@ -145,6 +145,19 @@ Fingerprint: `delivery|agent-factory|supabase-notion-fast-path|v1`.
 
 Canonical learning: `brain/learning/agent-factory-supabase-notion-fast-path-20260925-v1.json`.
 
+## Supabase archived migration two-authority gate
+
+Fingerprint: `supabase|archived-migration-replay|source-drift|fail-closed|v1`.
+Verified incident: PR #4479 / issue #3742 on 2026-10-19; hosted branch replay stopped with `CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1` at migration `20261006085416` (SQLSTATE `P0001`), even though the version-controlled file with the same version had been changed to skip absent jobs. Provider archived statement MD5 `6e4aa572b4c8f5bb4091958db833eba3`, confirmed independently in the live database. The provider record and Git source are **two different authorities**, not interchangeable. On the same date, two GitHub-linked preview databases independently contained the corrected migration SQL while production and a manually created branch contained the older hard-abort body. The same migration version can have different archived SQL between environments; version parity is not semantic parity. Do not mistake a manual branch failure for GitHub PR preview failure.
+
+Prevention and learning closure:
+- Before authoring a schema replay fix, inspect **both** the repository SQL and the actual `supabase_migrations.schema_migrations.statements` payload for the exact migration version and compare relevant semantics. Version/name alone are not proof of parity; a later edit to an already-applied migration does not change the remote archived SQL.
+- For a historical prerequisite error, capture the first real SQLSTATE, failing archived version **and branch creation route**; compare the actual SQL body from the production parent, a manually created branch and a GitHub-connected PR branch before inferring they have the same replay authority. A workaround observed only on a manual branch is **not** authorization to create extra cron jobs in a GitHub PR.
+- A temporary SQL test under `BEGIN ... ROLLBACK`, static test or successful CodeQL does not prove provider-owned full-history preview. Supabase Preview must be `success` from the Supabase app on the exact candidate SHA, not `skipped` or a GitHub-authored lookalike.
+- Distinguish `MIGRATION_ARCHIVED_CRON_PRECONDITION` from `PREVIEW_CAPACITY_EXHAUSTED`, and treat both as fail-closed. Never delete another writer's preview branch to free capacity, silently raise paid quota, alter applied Supabase migration-history rows, add fake no-op cron entries, weaken production RLS or skip a required check.
+- Migration replay parity must pass before protected merge; preserve a single canonical scheduler, only deploy from merged main, and demand production cron readback plus source-evidence verification. If provider APIs cannot reconcile a divergent archive through supported means, report `BLOCKED_HARD_BOUNDARY`, not live/green.
+- Keep reproducible tests in `tests/brain-supabase-preview-diagnosis-v1.test.mjs` and the scheduler reachability regression; write root cause, competing branch-source evidence and corrected diagnosis into Brain learning and append-only ledger in the same obligation.
+
 ## Mandatory material-run closure gate
 
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.

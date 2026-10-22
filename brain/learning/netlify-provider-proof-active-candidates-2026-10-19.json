@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-active-oauth-candidate-provider-read-20261019",
+  "fingerprint": "netlify-fallback|two-active-connections|first-account-without-provider-read",
+  "root_cause": "Owner reauthorized Netlify MCP in the correct Composio Platform auth config. A read-only GitHub OIDC health run #39234783733 then enumerated 50 accounts, 2 eligible ACTIVE Netlify accounts with complete identity, but the bridge selected the first matching ACTIVE account without verifying remote Netlify site access. The chosen account still failed Composio session tool reader HTTP400; a previous Platform tool log proved the old MCP account returned upstream HTTP401 Unauthorized. Two active account records alone do not prove the fresh account will work, but selection without provider proof is a confirmed design defect.",
+  "failure_class": "AUTH",
+  "intervention": "Collect up to four exact ACTIVE project-visible Netlify account candidates across all connected_accounts cursor pages; prefer recent connections but verify every candidate in turn by pinned user/account and read-only Netlify get-project. Only a successful fixed site-ID read grants any proxy/deploy authority. All failures remain fail-closed, no arbitrary account fallback, provider IDs or credentials in logs.",
+  "prevention": "Never infer third-party MCP authorization from Composio account status; enforce read-only provider proof for whichever account is selected, before both health and write-capable deployment. Prevent silent first-account selection after OAuth renewal, prohibit unlimited candidate scanning and preserve OIDC/CI branch protection.",
+  "state": "CANDIDATE_AWAITING_REQUIRED_CHECKS_AND_PRODUCTION_PROOF",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-provider-proof-selection.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-provider-proof-selection.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-provider-proof-selection.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39234783733",
+    "eligible_connections": 2,
+    "session_health": "HTTP400 on first chosen account",
+    "source_release": "not yet proven",
+    "deploy_provider_effect": "not yet proven"
+  },
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39234783733",
+    "https://docs.composio.dev/reference/api-reference/tool-router/postToolRouterSessionBySessionIdExecute"
+  ]
+}

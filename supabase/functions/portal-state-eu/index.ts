@@ -1,8 +1,14 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { repairBusinessInputsFromAuthority } from './business-input-read-repair.js';
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
+import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
+import { boundedReads } from './bounded-reads.js';
+import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
+// Accept the approved production Netlify gateway token by hash, never by plaintext.
+// Preserve the original hash until all dependent internal callers are proven migrated.
+const NETLIFY_PORTAL_TOKEN_HASH='95827ae5b67419121961a7e1e144bb0702b8568997c531df00b8505e8338b63e';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const AI_PROFILE_OPTIONS:Record<string,string[]>={
@@ -34,9 +40,9 @@ async function sha256(value:string){const bytes=new TextEncoder().encode(value);
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
 
 const list=(value:any)=>Array.isArray(value)?value:[];
-const finite=(value:any)=>{const n=Number(value);return Number.isFinite(n)?n:null};
-const sumKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?known.reduce((a,b)=>a+b,0):null};
-const maxKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?Math.max(...known):null};
+const finite=finiteEvidence;
+const sumKnown=sumKnownEvidence;
+const maxKnown=maxKnownEvidence;
 function groupBy(rows:any[],key:string){
   const map=new Map<any,any[]>();
   for(const row of list(rows)){
@@ -92,6 +98,7 @@ function mergeEntrepreneurActions(canonicalActions:any[],tenantActions:any[]){
 }
 function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:any[],tenantImpacts:any[],actions:any[]){
   const now=Date.now();
+  const sourceTruth=entrepreneurSnapshotFreshness({base,signals,now});
   const ageDays=(value:any)=>{
     if(!value)return Infinity;
     const time=new Date(value).getTime();
@@ -102,7 +109,7 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
   return {
     ...(base||{}),
     tenant_id:'authenticated',
-    refreshed_at:base?.refreshed_at||new Date().toISOString(),
+    refreshed_at:sourceTruth.refreshed_at,
     catalog_source_count:catalog.length,
     public_source_count:catalog.filter((item:any)=>item.activation_mode==='PUBLIC_ALWAYS').length,
     connector_source_count:catalog.filter((item:any)=>item.activation_mode==='CONNECTOR_REQUIRED').length,
@@ -115,20 +122,26 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
     action_candidate_count:actions.filter((item:any)=>['CANDIDATE','READY','MATERIALIZED'].includes(item.status)).length,
     known_opportunity_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_value_eur)),
     known_risk_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_loss_eur)),
-    source_health:{...(base?.source_health||{}),availability},
-    status:signals.length?'CURRENT':'EMPTY'
+    source_health:{...(base?.source_health||{}),availability,snapshot_freshness:sourceTruth},
+    status:sourceTruth.status
   };
 }
-async function readRows(label:string,query:any){
-  const {data,error}=await query;
-  if(error)throw new Error(label);
-  return Array.isArray(data)?data:[];
+function readRows(label:string,query:any){
+  // Lazy: database requests are issued only when boundedReads schedules a job.
+  return async(signal:AbortSignal)=>{
+    // PostgREST supports AbortSignal; abort the underlying HTTP/database read
+    // on its deadline rather than keeping an abandoned 150s+ request alive.
+    const {data,error}=await query.abortSignal(signal);
+    if(error)throw new Error(label);
+    return Array.isArray(data)?data:[];
+  };
 }
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
   const token=req.headers.get('x-bg-service-token')||'';
-  if(await sha256(token)!==TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
+  const serviceTokenHash=await sha256(token);
+  if(serviceTokenHash!==TOKEN_HASH&&serviceTokenHash!==NETLIFY_PORTAL_TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();
@@ -137,6 +150,30 @@ Deno.serve(async(req:Request)=>{
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+  // Authoritative tenant financial series only. No market-signal-to-finance conversion.
+  // This gateway is service-token protected; a browser never receives a database key.
+  if(action==='financial_forecasts'){
+    const {data:rows,error}=await client.from('portal_financial_forecasts_v1')
+      .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest,independent_review')
+      .eq('tenant_id',tenantId)
+      .eq('verification_status','passed')
+      // Candidate fetch remains tenant-scoped and bounded. Filter and independently
+      // validate rows BEFORE limiting to 30 chart entries, so an expired/corrupt
+      // top-ranked review cannot crowd out a valid later source.
+      .order('verified_at',{ascending:false}).limit(150);
+    if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
+    const forecasts=(rows||[]).filter(row=>eligibleFinancialForecast(row,tenantId)).slice(0,30).map(row=>({
+      id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
+      source:row.source_name,model:row.model_version,updatedAt:row.source_updated_at,
+      history:row.historical_points,forecast:row.forecast_points,
+      ...(row.lower_points?{low:row.lower_points}:{}),
+      ...(row.upper_points?{high:row.upper_points}:{}),
+      verified:true,
+      validation:{status:'passed',tenantBound:true,tenantId,verifiedAt:row.verified_at}
+    }));
+    return json({tenantId,forecasts});
+  }
 
   if(action==='cms_public'){
     const cmsSurface=String(body?.surface||'website').trim();
@@ -417,7 +454,7 @@ Deno.serve(async(req:Request)=>{
       const [
         sources,publications,signalsRaw,domains,sourceCatalog,signalsCanonical,
         tenantImpacts,canonicalActions,tenantActions,baseSnapshots
-      ]=await Promise.all([
+      ]=await boundedReads([
         readRows('SOURCES',client.from('bronnen')
           .select('id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden')
           .eq('actief',true).order('uitgever').order('naam')),
@@ -448,7 +485,7 @@ Deno.serve(async(req:Request)=>{
         readRows('INTELLIGENCE_SNAPSHOT',client.from('powerhouse_intelligence_snapshot_v1')
           .select('tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at')
           .eq('tenant_id','canonical').limit(1))
-      ]);
+      ],{maxConcurrent:3});
       const intelligenceSignals=mergeEntrepreneurSignals(signalsCanonical,tenantImpacts);
       const actionCandidates=mergeEntrepreneurActions(canonicalActions,tenantActions);
       const snapshot=buildEntrepreneurSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actionCandidates);

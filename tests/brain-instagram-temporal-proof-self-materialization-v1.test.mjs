@@ -10,5 +10,5 @@ assert.match(router,/if\(!temporalCheck\.body\?\.pass\)return json\(\{ok:false,e
 assert.match(verifier,/mira-continuous-human-video-v1/);
 for (const token of ['single_continuous_take','continuous_motion_verified','scene_continuity_verified','identity_continuity_verified','human_motion_verified','realistic_camera_motion','slideshow_detected','still_image_animation_detected']) assert.ok(verifier.includes(token),token);
 assert.match(verifier,/confidence\)>=0\.9/);
-assert.match(verifier,/temporal:anthropic:/);
+assert.match(verifier,/temporal:openai:/);
 console.log('Instagram temporal Reel proof is automatically produced and exact-video bound');

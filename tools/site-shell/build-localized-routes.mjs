@@ -3,9 +3,10 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { parse, serialize } from 'parse5';
+import { translateBatchWithOpenAI } from './static-i18n-openai-fallback.mjs';
 
 const ROOT = process.cwd();
-const MODEL = 'claude-haiku-4-5-20251001';
+// OpenAI Responses is the sole network translation provider; production deploy remains cache-only.
 const SITE = 'https://www.bedrijfsgeheugen.nl';
 const LOCALES = ['nl','en'];
 const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','components','email','intern','preview','site','tools','tests','docs','brain','platform','config','.netlify','dist','nl','en']);
@@ -609,45 +610,6 @@ function parseTranslations(raw) {
   throw new Error('Translation provider returned invalid JSON');
 }
 
-async function translateBatch(strings,key) {
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(),60000);
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'content-type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01'
-      },
-      body:JSON.stringify({
-        model:MODEL,
-        max_tokens:6000,
-        system:'Translate Dutch website UI and marketing copy faithfully into natural English. Preserve Bedrijfsgeheugen, product names, URLs, numbers, currencies, placeholders and factual meaning. Do not add or remove claims. Return ONLY one valid JSON array of strings, same order and same length as input.',
-        messages:[{role:'user',content:JSON.stringify(strings)}]
-      }),
-      signal:controller.signal
-    });
-    if (!response.ok) {
-      const body = (await response.text()).slice(0,300);
-      const retryAfterRaw = response.headers.get('retry-after');
-      const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
-      const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
-      error.status = response.status;
-      error.providerBody = body;
-      error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
-      throw error;
-    }
-    const payload = await response.json();
-    const raw = payload?.content?.map(x=>x?.type==='text'?x.text:'').join('') || '';
-    const out = parseTranslations(raw);
-    if (out.length !== strings.length || out.some(x=>typeof x!=='string')) throw new Error('Translation response shape mismatch');
-    return out;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function translateAll(strings) {
   const cache = loadCache();
   const result = new Map();
@@ -658,6 +620,16 @@ async function translateAll(strings) {
     else missing.push(source);
   }
   if (!missing.length) return result;
+
+  // Public marketing-copy cache keys only. Preserve an exact, bounded review
+  // list when the approved translation provider cannot serve today's article.
+  if (PREPARE_CACHE_PATCH_NAME) {
+    console.log('STATIC_I18N_CACHE_GAPS_V1', JSON.stringify({
+      patch: PREPARE_CACHE_PATCH_NAME,
+      total: missing.length,
+      sources: missing.slice(0,80)
+    }));
+  }
 
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
@@ -675,9 +647,9 @@ async function translateAll(strings) {
     return result;
   }
 
-  const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
+  const key = String(process.env.OPENAI_API_KEY || '').trim();
   if (!key) {
-    throw new Error('ANTHROPIC_API_KEY is required when STATIC_I18N_NETWORK=1');
+    throw new Error('STATIC_I18N_OPENAI_KEY_MISSING');
   }
 
   const batches = [];
@@ -694,7 +666,9 @@ async function translateAll(strings) {
     let lastError;
     for (let attempt=0;attempt<6;attempt++) {
       try {
-        const translated = await translateBatch(part,key);
+        // Approved NL->EN content is translated with OpenAI only.
+        // A complete validated batch is required before any cache write.
+        const translated = await translateBatchWithOpenAI(part,key);
         part.forEach((source,index)=>{
           cache[source]=translated[index];
           result.set(source,translated[index]);
@@ -718,6 +692,12 @@ async function translateAll(strings) {
           provider_body: providerBody,
           delay_ms: transient ? delay : 0
         }));
+        // Payment/credit exhaustion is terminal, not a batch-size error.
+        // Do not bisect the same 402-like billing problem into dozens of calls.
+        if ((status === 400 || status === 402 || status === 429) &&
+            /credit balance is too low|insufficient.quota|billing/i.test(providerBody || '')) {
+          throw new Error('STATIC_I18N_PROVIDER_BILLING_BLOCKED: ' + (error?.message || String(error)));
+        }
         if (!transient && status >= 400 && status < 500) break;
         await new Promise(r=>setTimeout(r,delay));
       }
@@ -889,7 +869,7 @@ if (PREPARE_CACHE_PATCH_NAME) {
   const before = loadCache();
   const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
   if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
-    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s)');
+    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s); first=' + String(missingBefore[0] || '').slice(0,160));
   }
   if (missingBefore.length) await translateAll([...allStrings]);
   const persisted = loadCache();

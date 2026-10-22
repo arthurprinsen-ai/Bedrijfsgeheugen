@@ -1,0 +1,16 @@
+{
+  "skill": "powerhouse-decision-twin-receipt-v1",
+  "fingerprint": "powerhouse|portal-v2|decision-twin-proof-receipt|v1",
+  "owner": "ONE BRAIN / Portal V2",
+  "authority": "existing tenant-scoped portal state, Powerhouse provider receipts and outcome ledger",
+  "instruction": "In every business foresight page show the difference between tenant-evidenced historical extrapolation, purely arithmetic what-if, source-backed proposed action, exact provider acknowledgment, and independently verified outcome. Never upgrade a scenario based on confidence scores or action status strings. Require exact tenant+goal/source scope, provider receipt and outcome evidence, and link to existing next-best-actions rather than introducing a second write path.",
+  "routing": [
+    "portal-v2/foresight-scenario-studio.js",
+    "portal-v2/decision-twin-receipt.js"
+  ],
+  "tests": [
+    "tests/brain-decision-twin-receipt-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}

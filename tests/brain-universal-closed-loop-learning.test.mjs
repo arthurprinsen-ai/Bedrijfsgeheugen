@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import { validateContract } from '../scripts/brain/validate-universal-closed-loop-learning.mjs';
+import { evaluateLearningSemantics } from '../scripts/brain/material-writeback-closure-guard.mjs';
 
 const canonical = JSON.parse(fs.readFileSync(new URL('../config/universal-closed-loop-learning.json', import.meta.url), 'utf8'));
 
@@ -30,4 +31,31 @@ test('fails closed when canonical Brain routes disappear', () => {
   assert.equal(result.ok, false);
   assert.ok(result.errors.includes('canonical.learning_router'));
   assert.ok(result.errors.includes('canonical.learning_writer'));
+});
+
+test('agent autonomy and tenant relevance requirements cannot be disabled', () => {
+  const broken = structuredClone(canonical);
+  broken.policies.material_errors_incidents_and_improvements_write_back = false;
+  broken.policies.daily_verified_improvement_review_required = false;
+  broken.portal_relevance.no_parallel_learning_store = false;
+  broken.portal_relevance.authenticated_tenant_projection = 'global.error_registry';
+  broken.daily_improvement.promotion_requires = ['representative_eval'];
+  const result = validateContract(broken);
+  assert.equal(result.ok, false);
+  for (const key of [
+    'policy.material_errors_incidents_and_improvements_write_back',
+    'policy.daily_verified_improvement_review_required',
+    'portal_relevance.no_parallel_learning_store',
+    'portal_relevance.authenticated_tenant_projection',
+    'daily_improvement.promotion.regression',
+    'daily_improvement.promotion.protected_main',
+    'daily_improvement.promotion.production_readback'
+  ]) assert.ok(result.errors.includes(key), key);
+});
+
+test('portal learning record satisfies canonical semantic material closure', () => {
+  const result = evaluateLearningSemantics({ learningFiles: ['brain/learning/2026-10-22-portal-relevance-daily-agent-learning-v1.json'] });
+  assert.equal(result.ok, true, JSON.stringify(result.evaluated));
+  assert.equal(result.evaluated.length, 1);
+  assert.deepEqual(result.evaluated[0].missing, []);
 });

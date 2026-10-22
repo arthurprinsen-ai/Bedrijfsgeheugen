@@ -1,3 +1,5 @@
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
@@ -101,6 +103,9 @@ function personalViolations(text: string, body: any, finalHash: string) {
   }
 
   require(body.forced_business_moral === false, 'FORCED_BUSINESS_MORAL_BLOCKED', 'Geforceerde businessmoraal is geblokkeerd.');
+  require(body.final_copy_approved === true, 'PERSONAL_EDITORIAL_APPROVAL_MISSING', 'Definitieve persoonlijke tekst is niet inhoudelijk goedgekeurd.');
+  require(body.editorial_policy_version === PERSONAL_EDITORIAL_POLICY, 'PERSONAL_EDITORIAL_POLICY_OUTDATED', 'Canoniek persoonlijk redactiecontract ontbreekt.');
+  out.push(...personalEditorialViolations(text,body));
   require(body.prediction_lineage_present === true && !!clean(body.prior_prediction_decision_id), 'PREDICTION_LINEAGE_REQUIRED', 'Prediction/decision-lineage ontbreekt.');
   require(body.publication_intent === 'publish', 'PUBLICATION_INTENT_REQUIRED', 'publication_intent=publish ontbreekt.');
   require(clean(body.final_text_hash) === finalHash, 'FINAL_TEXT_HASH_MISMATCH', 'Final-text hash is niet exact gebonden aan de beoordeelde tekst.');
@@ -193,7 +198,13 @@ Deno.serve(async (req) => {
 
   const [{ data: contracts, error: contractError }, { data: rules, error: rulesError }] = await Promise.all([
     db.from('brain_records').select('record_id,status,verified,result').eq('tenant_id','canonical').in('record_id',[PARENT_CONTRACT,PERSONAL_CONTRACT]),
-    db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status,bijgewerkt_op').eq('status','actief').order('vertrouwen',{ ascending: false }).limit(24),
+    // Freshness must be checked against recent, sufficiently trusted ACTIVE rules.
+    // Ranking only by confidence selected 24 old 1.0 rules and excluded recent 0.85-0.95
+    // validated rules, permanently returning RULE_CONTEXT_STALE despite daily updates.
+    // Keep the 96-hour gate and independently VERIFIED identity contracts unchanged.
+    db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status,bijgewerkt_op')
+      .eq('status','actief').gte('vertrouwen',0.85)
+      .order('bijgewerkt_op',{ ascending: false }).order('vertrouwen',{ ascending: false }).limit(24),
   ]);
   if (contractError) return json({ ok: false, can_publish: false, error: 'CHANNEL_IDENTITY_CONTRACT_UNAVAILABLE' }, 503);
   const parent = (contracts || []).find((x: any) => x.record_id === PARENT_CONTRACT);
@@ -218,7 +229,26 @@ Deno.serve(async (req) => {
     if (ruleError) return json({ ok: false, can_generate: false, can_publish: false, error: 'RULE_CHECK_FAILED', channel }, 503);
     genericBlockers = (violations || []).filter((v: any) => v.violation);
   }
-  const blockers = [...identityBlockers, ...genericBlockers];
+  let companyEditorialBlockers:any[]=[];
+  if(channel==='linkedin_company'){
+    const reviewedDate=/^\d{4}-\d{2}-\d{2}$/.test(clean(body.run_date))
+      ? clean(body.run_date) : new Date().toISOString().slice(0,10);
+    const {data:previous,error:historyError}=await db.from('powerhouse_content_artifacts')
+      .select('run_date,body').eq('channel','linkedin_company').eq('status','published')
+      .order('run_date',{ascending:false}).limit(28);
+    if(historyError)return json({ok:false,can_generate:false,can_publish:false,error:'COMPANY_EDITORIAL_HISTORY_UNAVAILABLE',channel},503);
+    const current=Date.parse(reviewedDate+'T00:00:00Z');
+    const recentPosts=(previous||[]).filter((p:any)=>{
+      const ageDays=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;
+      return ageDays>=1&&ageDays<=21;
+    }).map((p:any)=>clean(p.body)).filter(Boolean);
+    companyEditorialBlockers=companyEditorialViolations(text,{recentPosts});
+    if(body.editorial_policy_version!==COMPANY_EDITORIAL_POLICY)
+      companyEditorialBlockers.unshift({code:'COMPANY_EDITORIAL_POLICY_OUTDATED',message:'Canoniek bedrijfspagina-redactiecontract ontbreekt.'});
+    if(body.final_copy_approved!==true)
+      companyEditorialBlockers.unshift({code:'COMPANY_EDITORIAL_APPROVAL_MISSING',message:'Exacte bedrijfspagina-tekst is niet redactioneel goedgekeurd.'});
+  }
+  const blockers = [...identityBlockers, ...genericBlockers, ...companyEditorialBlockers];
   const pass = blockers.length === 0;
   return json({
     ok: pass,

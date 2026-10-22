@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|p0-4198|content-scheduler-continuity|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "SCHEDULER_STAGE_FAILURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-content-continuity-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The canonical hourly cron function ran an outcome reconciliation as a mandatory step before dispatch. A provider OAuth proof veto from reconciliation raised an exception and cancelled the dispatch of unrelated content channels. The scheduler only covered a daytime UTC window.",
+  "prevention_rule": "Catch/log only the observational reconciliation error, never catch scheduler-token or publication-provider errors. Preserve original caller ACL and independent delivery authorization. Keep one original cron job running hourly through the whole Amsterdam day.",
+  "evidence": {
+    "production_readback": {
+      "at": "2026-10-11",
+      "source": "Supabase pg_proc + cron.job + cron.job_run_details",
+      "existing_job_id": 140,
+      "schedule": "27 * * * *",
+      "active": true,
+      "original_owner": "postgres",
+      "original_acl": "postgres=X/postgres,service_role=X/postgres",
+      "security_definer": true,
+      "token_gate_intact": true,
+      "observed_failure": "2026-10-10 18:27Z provider organization-admin OAuth proof exception prevented scheduler dispatch"
+    },
+    "tests": [
+      "tests/brain-commercial-content-continuity-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "sql_applied_in_production": true,
+    "provider_publication_proven": false,
+    "independent_edge_fix_deployed": false,
+    "remaining_required_provider_truth": true
+  }
+}

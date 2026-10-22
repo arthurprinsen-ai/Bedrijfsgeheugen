@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal-expired-authority-recover|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_causes": [
+    "Existing social publisher automatically recovers expired unconsumed publication capability only for linkedin_company even though linkedin_personal has the exact same safe same-day blocked-authority state.",
+    "On 2026-10-22 the personal lane had three lease records, zero consumed, latest expired 09:20 UTC, no external provider receipt and zero same-day uniqueness rows, but state stayed blocked DAILY_CHANNEL_PUBLICATION_ALREADY_CLAIMED."
+  ],
+  "prevention": [
+    "Generalize existing company claim resume to channel-scoped LinkedIn company and personal with same strict no-side-effect, no-uniqueness, expired unconsumed proof checks.",
+    "Use exact CAS revocation and updated_at decision resume under the SAME canonical publisher, not a new scheduling or sending lane.",
+    "Never recover a consumed lease, valid lease, uncertain create, provider receipt, republish prohibition, or unverifiable no-send evidence."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-personal-expired-publish-authority-20261022.test.mjs"
+    ],
+    "sample": "3 same-day personal leases; consumed=0, latest expired 09:20:08 UTC; duplicate-proof blocked, 0 uniqueness rows",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-expired-publish-authority-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-expired-publish-authority-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-expired-publish-authority-20261022.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

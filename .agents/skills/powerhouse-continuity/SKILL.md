@@ -5,6 +5,50 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Dagelijkse agentleerketen: onafhankelijke foutdomeinen (22 oktober 2026)
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`.
+Bronincident: [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367). Twee echte dagelijkse uitvoeringen op 21 en 22 oktober 2026 faalden omdat de 14-daagse AI-model-freshnesscontrole stopte in hetzelfde fail-fast job vóór de onafhankelijke leersnapshot, improvement probe en engineering self-tests.
+
+Verplicht voor alle huidige en toekomstige agents:
+- Behandel een falende externe leverancier- of catalogusfreshnesscheck als een **echt onopgelost bewijsprobleem**, geen reden om timestamps te vervalsen of gate-errors te onderdrukken.
+- Houd onafhankelijke dagelijkse leer-, incident-, skill- en zelftestuitvoer actief via de al bestaande Powerhouse Daily Self Evolution scheduler; geen tweede cron, geen parallel geheugen of tweede agentowner.
+- Catalogusclaim-validatie blijft een zelfstandige strenge `model-freshness` job; `improve` is daarvan onafhankelijk. De **totale** workflow blijft rood zolang enig verplicht onderdeel rood is. Alleen een werkelijk uitgevoerde en geslaagde improve-job bewijst dat de leercyclus zelf doorging.
+- Bewaar ook van mislukte providercontroles het daadwerkelijke JSON-artefact. Koppel iedere nieuwe recurrence aan de bestaande fingerprint en het Brain-register. Laat verantwoordelijkheid voor officiële claim-readback bij #4367.
+- Vóór LIVE/PROVEN: regressie `tests/powerhouse-daily-self-evolution.test.mjs`, echte exact-SHA Required+CodeQL, protected main-readback, vervolgens één echte workflow-run met afzonderlijke jobconclusies en output-artifacts.
+
+
+## Universele incidentherkenning & preventie
+
+Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
+Geldt voor elk bestaand en toekomstig agent-/chat-/CI-/runtime-/providerpad dat materieel Powerhouse-werk uitvoert. Dit is een werkvoorschrift voor de bestaande Brain→skillprojectie, geen nieuwe databank of incidentautoriteit.
+
+### 1. Eerst detecteren wat al bekend is
+- Verzamel vóór uitvoering: `obligation_id`, tenant/scope (zonder gevoelige details), component, operatie, pad, canonieke provider, foutklasse, onveranderlijke bronreferenties, actuele status en exacte commit/deploy/run-ID.
+- Raadpleeg `public.brain_failure_registry`, `brain/learning/**/*.json`, `docs/learning/known-error-preflight-contract.md`, open GitHub-issues en de huidige derived skill index. Vergelijk semantisch; een anders geformuleerde fout kan dezelfde hoofdoorzaak hebben.
+- Maak een deterministische fingerprint van stabiele oorzaakindicatoren (component + operatie + failure contract + normalized error signature); sluit tijdstip, request-ID, token, klantidentificatie en niet-relevante variatie uit. Een nieuw symptoom onder dezelfde root cause verhoogt occurrences; alleen een materieel andere root cause rechtvaardigt een nieuwe fingerprint/owner.
+- Bevestig het originele foutsignaal met actuele evidence. Historische SQL/testfouten, toolafwijzingen en verdwenen observertoegang zijn niet vanzelf actieve productieproblemen. Onvolledige evidence betekent `UNKNOWN` of `EVIDENCE_MISSING`, niet groen.
+
+### 2. Eén herstelowner, één duurzame keten
+- Gebruik de bestaande `obligation_id`, herstel-PR en incident-ID. Creëer geen tweede scheduler, writer, publication obligation of parallel knowledge store.
+- Bewaar per incident: fingerprint, severity, class, eerste/laatste waarneming, occurrence count, symptomen, oorzaakstatus, proven root cause of open RCA-vraag, impact, bewijslinks, pogingen/uitkomsten, rollback, preventieregel, regressietest, owner, next safe action, blockers en exact-head/productie-/providerreadback.
+- Registreer het incident ook wanneer herstel nog niet beschikbaar is. Geen gefingeerde root cause, no-op-regressie of voltooiingsclaim. Voer binnen autorisatie bounded herstel uit en persist checkpoint voor na context/stream/toolonderbreking.
+- Bundel clusters zoals historische SQL-oracles en CI-regressies per bewezen oorzaak, maar behoud de losse falende assertions/occurrences als controleerbare bewijsregels. `321` gemelde fouten betekent niet automatisch 321 onafhankelijke oorzaken.
+
+### 3. Van fout naar uitvoerbare kennis
+- Leg eerst een regressietest/contract vast die het oorspronkelijke defect detecteert; wijs die test toe aan een bestaande BRAIN-DELIVERY-lane. Reparatie aan de oorzaak, niet de status/oracle/threshold cosmetisch groen maken.
+- Registreer learning met `fingerprint`, `root_cause`, `prevention_rule`, `compiler.failure_class`, `evaluation.historical_replay`, echte `evidence`, `skill_targets` en bronversie in `brain/learning`; projecteer uitsluitend uit deze canonieke waarheid via `scripts/brain/powerhouse-skill-projection.mjs`.
+- Deel het in dezelfde lineage met de bestaande append-only development ledger en menselijke documentatie. De volgende agent moet de regel aantoonbaar kunnen vinden en vóór een nieuwe write toepassen; bij missende/stale projection blijft `LEARNING_WRITTEN_SKILL_SYNC_PENDING`.
+- Sluit pas af na actuele regressie, geschikte required checks, protected promotion waar van toepassing, exacte productie-/providerreadback, outcome en duurzame registry/skill writeback. `OBSERVED` en `CANDIDATE` zijn geen `PROVEN`. Een gedeelde leerregel vermindert herhaling maar garandeert niet dat externe platformfouten nooit opnieuw optreden.
+
+### Bekende klassen die altijd worden vergeleken
+- `CI_ZERO_JOB_ACTION_REQUIRED`: `action_required` zonder jobs is niet geslaagd; behoud bestaande PR-lineage en vereist de legitieme workflow-trigger/autorisatie.
+- `SQL_ARCHIVE_ORACLE_DRIFT`: historische SQL-bronpad-/migratieverwijzingen moeten met huidige canonical source en ledger worden vergeleken, zonder DDL-replay of ongeoorloofde oracle-versoepeling.
+- `SCHEDULER_UNREACHABLE_BRANCH`: toets cron-vuurminuten tegen mux-branchminuten inclusief UTC/DST; succes van mux is niet succes van alle taken.
+- `SOCIAL_PROVIDER_DELIVERY_GAP`: provider ack is geen geverifieerde post of exact-final-media; opnieuw posten is verboden zonder bewijs dat geen side effect bestaat.
+- `TOOL_OR_STREAM_INTERRUPTION`: bewaar checkpoint en hervat dezelfde obligation na tool/context/stream-uitval; maak geen dubbele PR, post, mail of mutatie.
+
+
 ## Core principle
 
 Every material chat or agent is an intrinsic execution node in one canonical Powerhouse loop. Local chat state is never authority.
@@ -1543,3 +1587,74 @@ For daily blogs, the approved content artifact is the immutable input to the exi
 Fingerprint: `github|obligation-terminal-closure|pr-body-context|v1`.
 
 The post-merge terminal closure must forward the canonical merged PR body from the resolved GitHub PR context into obligation identity parsing. A `pull_request: closed` or manual recovery run may never assume `PR_BODY` is implicitly present in the shell environment. Resolve PR → encode body → explicitly bind `PR_BODY_B64` → decode → parse `Obligation-ID` / `Delivery-Lane`. Missing forwarding is a control-plane defect and must fail in regression before terminalization.
+
+## Predictive OpenAI public-market boundary
+
+Use the existing canonical predictive engine and approved use case. Its OpenAI Responses adapter accepts only explicit public market/search evidence, never internal forecasts or revenue-learning free text; redact embedded contacts, validate strict completed tool output and retain independent-source/score gates. Do not reactivate Anthropic/Groq after user-directed replacement or add another scheduler. Provider health is separate from customer forecast acceptance. Require protected main, native Integration authority and real forecast readback before live claims. Canonical learning: `brain/learning/2026-10-19-predictive-openai-recovery.json`.
+
+The predictive engine and calibrator share the governance row: migrate and attest both together. Calibration uses opaque outbound refs, restores exact refs locally, rejects impossible/out-of-horizon dates and unverified negative outcomes, and cannot attribute global revenue to a forecast. Shared transport edits must include both consumers in production authority scope.
+
+## Terminal adaptive-routing classification recovery
+
+Adaptive regression-routing config is verifier-only under the canonical production-readback contract. Keep the allowlist exact; mixed Edge/migration releases still require real provider evidence and unknown config remains fail-closed. When a merged immutable terminal candidate failed only an outdated control-plane classifier, use the existing Terminal-Replay-PR controller; do not rewrite its source head or create a second automatic owner. Canonical learning: `brain/learning/2026-10-19-predictive-terminal-classifier-replay.json`.
+
+## Predictive uncertainty survives reconciliation
+
+Both existing calibration-obligation writers use one revision-bound state merge. Preserve real uncertainty and backoff across unchanged forecast refresh, archive invalidated attempt evidence when event/horizon/evidence changes, and never overwrite CLOSED outcome proof. Runtime acceptance requires real attempt markers surviving canonical refresh; model HTTP200 alone is insufficient. Learning: `brain/learning/2026-10-19-predictive-uncertainty-retention.json`.
+
+## Actual provider migration identity parity
+
+When native deployment rejects a remote version absent locally, restore its exact actual provider-applied source identity after byte-for-byte proof. Preserve separately Preview-applied revisions and prove compatibility replay idempotent. Never rewrite tracking rows or rename away an applied source. Learning: `brain/learning/2026-10-19-predictive-migration-identity-parity.json`.
+
+## Acknowledged predictive assessment persistence
+
+Count/report uncertainty only after an OPEN and same-revision write is acknowledged with its actual marker and due date. A transientSQL retry reuses the computed assessment and never repeats model inference. Skip unchanged canonical rows before row-locking upsert; require per-result durable readback, not just aggregate/model success. Learning: `brain/learning/2026-10-19-predictive-uncertainty-write-ack.json`.
+
+## SaaS customer persistence and ownership
+
+For SaaS changes preserve one plan → intent → verified provider subscription → confirmed identity → organisation → tenant scan/Brain lineage. Store before redirecting to payment, retry with the same provider key and resume every provisioning stage. A success URL, empty subscription table, browser cache or green deploy is never end-to-end evidence. Refuse cross-tenant reassignment and existing workspace overwrite. Subscription provisioning is not revenue verification. Canonical learning: `brain/learning/2026-10-21-saas-customer-loop.json`.
+
+## SaaS deployment scope recovery
+Root checkout pages and the V18 production generator are Netlify runtime, while the exact technical SEO checker is a verifier. Keep this in the canonical production-readback contract, retain unknown-path rejection, and replay the original merged PR with the current terminalizer after protected contract recovery. Never rewrite a terminal candidate or fabricate provider receipts.
+
+## Checkout source is not final-artifact proof
+Verify /afsluiten after the complete shell/localization pipeline. Capture and restore its canonical source around legacy builders, preserve only its explicit page-runtime marker, and require unique dynamic DOM targets plus provider-status verification in both NL/EN output. Checkout forms use POST even without JavaScript so customer fields never become a default GET query. A successful generic page build does not prove checkout execution.
+
+
+## 2026-10-22 — daily blog source SEO and material closure
+Fingerprint: `content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1`.
+Keep the daily blog on its SAME date branch/PR with canonical learning,
+activity ledger and change documentation. Do not disable protected CI or
+fork a duplicate blog. Avoid generic question-prefix SEO focus ("Hoe
+Nederlandse"); select substantive contiguous topic words. Generated is NOT
+live without Netlify public readback.
+
+
+## 2026-10-22 — canonical daily blog NULL-slug pre-provider repair
+
+Fingerprint: `powerhouse|blog-null-canonical-lineage-rebind|20261022-v1`.
+
+When a generated blog obligation has a SQL NULL slug, do NOT use
+`eq('slug', clean(o.slug))`: clean(null) yields empty string, which cannot
+match SQL NULL. The existing blog queue may recover the ORIGINAL
+daily obligation using `is('slug',null)` and the GENERATED-only
+tenant/date/channel/provider-unconsumed guards. Existing slug strings use
+exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
+publisher/provider proof boundaries, no duplicate blog, and never infer
+LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
+
+## GitHub Actions provider-ghost autonomie — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+
+Iedere agent/chat hergebruikt het bestaande incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655) en het enige bestaande, ieder uur geplande `Powerhouse Repository Janitor`-pad. Een `queued` workflow-run van ouder dan 24 uur met nul jobs en onveranderde timestamps is *kandidaat* voor provider-ghost, niet direct bewezen runner starvation. Controleer exact run-ID, job count, branch, sha, open-PR-head en huidig main opnieuw vóór een write. Huidige main/PR-heads, in-progress jobs en runs met echte jobs blijven beschermd.
+
+De bestaande Janitor-eigenaar probeert ondersteunde cancel/force-cancel en uitsluitend na twee 409-statussen één officiële DELETE voor aantoonbaar obsolete zero-job runs. Leg foutcodes en providerreadback met stabiele per-run marker in canoniek issue #4655 vast. Herhaal 409/403 niet blind in supervisor/chat/volgende hourly run; blijf dezelfde run-ID wel readbacken, registreer pas herstel bij 404 of terminal readback. Een provider 403 is `BLOCKED_HARD_BOUNDARY` voor server-side cleanup; bewijs escaleren kan autonoom, GitHub Support-acties niet forceren. Nooit fake groen, second scheduler, tweede incident, verzwakte CodeQL of branch protection.
+
+Uitvoerbare owner: `.github/scripts/github-actions-ghost-reconcile.mjs` aangeroepen door `.github/workflows/powerhouse-repository-janitor.yml`. Preventieregressie: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`. Learning: `brain/learning/2026-10-22-github-actions-ghost-autonomous-reconciliation-v1.json`. Menselijke documentatie: `docs/changes/github-actions-ghost-autonomous-recovery-20261022-v1.md`. Providertransities vereisen onafhankelijke GitHub API-readback.
+
+
+## Main Write Integrity: herstel een onvolledig GitHub-associatieantwoord zonder governance-bypass — 22 oktober 2026
+
+Fingerprint: `delivery|main-write|unverifiable-pr-association-v1`; bestaande eigenaar: GitHub-incident #4657.
+Wanneer de post-merge main-write-controle faalt met `unexpected end of JSON input` op GitHub `commits/{sha}/pulls`, bewijs dan eerst of de exacte commit uit een legitieme beschermde PR-merge voortkomt. De bestaande workflow voert begrensde provider-readback uit en mag als tweede bron de GitHub PR-API raadplegen. Het commitonderwerp met `(#nummer)` is uitsluitend een onbewezen lookup-hint: vertrouwen vereist vanuit GitHub zelf `merged_at`, `base.ref=main`, `number` en exacte `merge_commit_sha`. Bij onbereikbaarheid, mismatch of ongeldige respons blijft `UNKNOWN_MAIN_WRITE` of `DIRECT_MAIN_WRITE_INCIDENT` rood. Geen security-bypass, geen tweede incident/scheduler, geen bewijs uit alleen een commitbericht. Regressies in `tests/brain-main-write-integrity.test.mjs`; canonieke learning `brain/learning/2026-10-22-main-write-provider-association-readback-v1.json`. Bewijs moet na merge op werkelijke main/CI worden gelezen, nooit achteraf een oude GitHub-run herschrijven.

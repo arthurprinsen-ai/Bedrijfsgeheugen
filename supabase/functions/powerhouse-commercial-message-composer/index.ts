@@ -12,7 +12,7 @@ function extractJson(text:string){const t=clean(text);try{return JSON.parse(t);}
 const banned=[/ik zag (je|jouw) profiel/i,/we zijn al een tijd verbonden/i,/just following up/i,/even opvolgen/i,/heb je mijn (mail|bericht)/i,/ik heb nog niets gehoord/i,/in het huidige digitale landschap/i,/revolutionair/i,/game.?changer/i,/mis deze kans niet/i,/laatste kans/i,/synergie/i,/boek (hier|nu).*(agenda|meeting|afspraak)/i,/calendly\.com/i,/\b(inspirerend|indrukwekkend|geweldig|fantastisch|super interessant|mooi om te zien|goed om te zien|gaaf om te zien)\b[!.]?/i,/\bveel (bedrijven|organisaties|founders|ondernemers|teams|mkb.?bedrijven)\b/i,/\bals (founder|oprichter|directeur|eigenaar|mede.?oprichter) merk ik\b/i];
 function numberClaims(text:string){return [...text.matchAll(/\b\d+(?:[.,]\d+)?%?\b/g)].map(x=>x[0]);}
 function canonicalNumber(v:string){const raw=clean(v).replace(/%/g,'').replace(',','.');const n=Number(raw);return Number.isFinite(n)?String(n)+(clean(v).endsWith('%')?'%':''):normalize(v);}
-function quality(action:any,plan:any,out:any){
+function quality(action:any,plan:any,out:any,history:any[]=[]){
   const msg=clean(out?.message),subject=clean(out?.subject),anchor=clean(out?.personalization_anchor);
   const max=Number(plan?.max_words||100),channel=clean(action.channel_norm);
   const ev=action?.evidence||{},pub=ev?.public_source_evidence?.evidence||{};
@@ -61,10 +61,24 @@ function quality(action:any,plan:any,out:any){
     const topic=/\b(ai[- /]?data|data governance|data-governance|use[- ]?cases?|governance|ai[- ]?initiatief|ai project|artificial intelligence|machine learning)\b/i;
     topicLeak=topic.test(msg)&&!topic.test(context);
   }
-  const checks:any={length_ok:lengthOk,word_count:words(msg),max_words:max,question_count:qCount,question_rule_ok:oneQuestion,banned_ok:noBanned,banned_hits:bannedHits,subject_ok:subjectOk,personalization_anchor_ok:specificOk,followup_evidence_match:followupEvidenceOk,personalization_anchor:anchor,personalization_anchor_human:!anchorMachine,trigger_human_readable_context_ok:triggerReadableOk,semantic_topic_leak_free:!topicLeak,unsupported_numeric_claims:nums,facts_ok:factsOk,one_primary_problem_declared:clean(out?.primary_problem).length>0,micro_commitment_present:plan?.cta_style==='no_question'||clean(out?.micro_commitment).length>0,human_reason_present:clean(out?.human_reason).length>0};
-  const vals=[checks.length_ok,checks.question_rule_ok,checks.banned_ok,checks.subject_ok,checks.personalization_anchor_ok,checks.personalization_anchor_human,checks.trigger_human_readable_context_ok,checks.semantic_topic_leak_free,checks.facts_ok,checks.one_primary_problem_declared,checks.micro_commitment_present,checks.human_reason_present];
+  const sourceSpecificEvidenceOk=plan?.human_readable_context===true&&plan?.source_trigger_relevance===true&&clean(action?.source_url).startsWith('https://')&&clean(ev?.headline||ev?.summary||pub?.headline||pub?.summary).length>=24;
+  const terms=(s:string)=>new Set(normalize(s).split(/\s+/).filter(x=>x.length>=5));
+  const candidateTerms=terms(msg);
+  const genericAsk=(s:string)=>/proces|process|overdrachtsmoment|kennis/i.test(s)&&/slimmer|verbeter|effici|voorbeeld|kost|tijd/i.test(s);
+  const historicalMessages=history.map(h=>clean(h?.message_draft||h?.evidence?.sent_message_text));
+  const semanticNoveltyOk=historicalMessages.every(prev=>{
+    if(!prev)return false;
+    const earlier=terms(prev),shared=[...candidateTerms].filter(x=>earlier.has(x)).length;
+    const similarity=shared/Math.max(1,Math.min(candidateTerms.size,earlier.size));
+    return similarity<0.56&&!(genericAsk(prev)&&genericAsk(msg));
+  });
+  const previousSentAt=Math.max(0,...history.map(h=>Date.parse(clean(h?.executed_at))||0));
+  const newEvidenceAt=Date.parse(clean(ev?.public_source_evidence?.occurred_at||ev?.inbound?.occurred_at))||0;
+  const newFollowupEvidenceOk=plan?.play_key!=='followup_new_angle'||(history.length>0&&newEvidenceAt>previousSentAt);
+  const checks:any={semantic_novelty_ok:semanticNoveltyOk,new_followup_evidence_ok:newFollowupEvidenceOk,prior_messages_checked:history.length,source_specific_evidence_ok:sourceSpecificEvidenceOk,length_ok:lengthOk,word_count:words(msg),max_words:max,question_count:qCount,question_rule_ok:oneQuestion,banned_ok:noBanned,banned_hits:bannedHits,subject_ok:subjectOk,personalization_anchor_ok:specificOk,followup_evidence_match:followupEvidenceOk,personalization_anchor:anchor,personalization_anchor_human:!anchorMachine,trigger_human_readable_context_ok:triggerReadableOk,semantic_topic_leak_free:!topicLeak,unsupported_numeric_claims:nums,facts_ok:factsOk,one_primary_problem_declared:clean(out?.primary_problem).length>0,micro_commitment_present:plan?.cta_style==='no_question'||clean(out?.micro_commitment).length>0,human_reason_present:clean(out?.human_reason).length>0};
+  const vals=[checks.source_specific_evidence_ok,checks.semantic_novelty_ok,checks.new_followup_evidence_ok,checks.length_ok,checks.question_rule_ok,checks.banned_ok,checks.subject_ok,checks.personalization_anchor_ok,checks.personalization_anchor_human,checks.trigger_human_readable_context_ok,checks.semantic_topic_leak_free,checks.facts_ok,checks.one_primary_problem_declared,checks.micro_commitment_present,checks.human_reason_present];
   const score=vals.filter(Boolean).length/vals.length;
-  const passed=score>=0.90&&lengthOk&&oneQuestion&&noBanned&&subjectOk&&specificOk&&!anchorMachine&&factsOk&&!topicLeak;
+  const passed=score>=0.90&&lengthOk&&oneQuestion&&noBanned&&subjectOk&&specificOk&&!anchorMachine&&factsOk&&!topicLeak&&sourceSpecificEvidenceOk&&semanticNoveltyOk&&newFollowupEvidenceOk;
   return {passed,score:Number(score.toFixed(4)),checks};
 }
 
@@ -75,6 +89,18 @@ async function anthropicGenerate(apiKey:string,model:string,system:string,allowe
   const body:any=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error('ANTHROPIC_'+r.status+':'+clean(body?.error?.message).slice(0,220));
   return {text:clean((body?.content||[]).find((x:any)=>x.type==='text')?.text),provider:'Anthropic',model};
+}
+async function openaiGenerate(apiKey:string,model:string,system:string,allowed:any){
+  const response=await fetch('https://api.openai.com/v1/responses',{
+    method:'POST',headers:{'authorization':'Bearer '+apiKey,'content-type':'application/json'},
+    body:JSON.stringify({model,instructions:system,input:JSON.stringify(allowed),text:{format:{type:'json_object'}}}),
+    signal:AbortSignal.timeout(45000)
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error('OPENAI_'+response.status+':'+clean(body?.error?.message).slice(0,220));
+  const text=clean(body?.output_text)||clean((body?.output||[]).flatMap((item:any)=>item?.content||[]).filter((item:any)=>item?.type==='output_text').map((item:any)=>item?.text).join(''));
+  if(!text)throw new Error('OPENAI_EMPTY_RESPONSE');
+  return {text,provider:'OpenAI',model};
 }
 async function groqGenerate(composioKey:string,system:string,allowed:any){
   const model='openai/gpt-oss-120b';
@@ -114,18 +140,10 @@ async function generate(db:any,anthropicKey:string,anthropicModel:string,action:
     safeEvidence.trigger_type=rawEvidence?.trigger_type||null;
   }
   const allowed={person_name:action.person_name,company_name:action.company_name,role:action.role,channel:action.channel_norm,action_type:action.action_type,source_url:action.source_url,predicted_problem:triggerRelevant?action.predicted_problem:null,predicted_buying_trigger:triggerRelevant?action.predicted_buying_trigger:null,predicted_objection:action.predicted_objection,action_reason:action.reason,evidence:safeEvidence,play:{play_key:plan.play_key,play_name:plan.play_name,objective:plan.objective,psychology:persuasion?.principles||plan.psychology,message_structure:plan.message_structure,cta_style:plan.cta_style,tone_rules:plan.tone_rules,prohibited:[...(Array.isArray(plan.prohibited)?plan.prohibited:[]),...(Array.isArray(persuasion?.do_not_use)?persuasion.do_not_use:[])],max_words:plan.max_words,source_trigger_relevance:triggerRelevant},canonical_persuasion:persuasion||null,brand_voice:plan.brand_voice,quality_contract:plan.quality_contract};
-  const system='Je bent de Human Commercial Composer van Bedrijfsgeheugen. Gebruik alleen leesbare prospectcontext zoals een echte headline, samenvatting, concreet openbaar feit, eerder gesprek of relatiecontext. Toon nooit interne taxonomylabels, snake_case, scores, source keys of het woord trigger als intern systeembegrip. Schrijf als een slimme, sympathieke Nederlandse ondernemer; niet als een salesbot. Gebruik ALLEEN aangeleverde feiten. Verzin nooit persoonsdetails, gebeurtenissen, cijfers, urgentie, bewijs of problemen. Een hypothese moet hoorbaar als hypothese klinken (kan, mogelijk, ik vraag me af of). Externe AI-content of een AI-product is nooit automatisch bewijs van een intern data-, governance- of implementatieprobleem. Als source_trigger_relevance false is, negeer voorspelde problemen/triggers volledig en schrijf alleen vanuit de leesbare bron- of relatiecontext. Doel: de kleinste logische commitment, niet meteen een afspraak. Pas exact de gekozen sales play en psychologische mechanismen toe zonder manipulatief te worden. Menselijk: korte zinnen, spreektaal, concreet, warm, licht droge humor alleen als die vanzelf past. Geen lege complimenten zoals inspirerend, indrukwekkend, geweldig of mooi om te zien. Vermijd onbewezen generalisaties zoals veel bedrijven, veel founders of veel organisaties. Als er geen echte bronpost, concrete publieke observatie of inbound/reply-context is, forceer dan geen persoonlijke boodschap: de quality gate moet die actie tegenhouden. Nooit humor ten koste van de prospect. Verboden: generieke complimenten/openingen, dienstencatalogus, AI-hype, corporate jargon, nep-schaarste, schuldgevoel bij geen reactie, agendalink, meerdere CTAs. LinkedIn-DM: maximaal 80 woorden. E-mail: maximaal het opgegeven maximum. Eén vraag maximaal. Follow-up: altijd nieuwe invalshoek; nooit even opvolgen, heb je mijn mail gezien of verwijt. Graceful close: geen vraag. DMs mogen niet eindigen als reclame voor Bedrijfsgeheugen. Geef uitsluitend JSON met keys: subject, message, personalization_anchor, fact_used, hypothesis_used, primary_problem, micro_commitment, predicted_objection, objection_response, human_reason. personalization_anchor moet een KORTE LETTERLIJKE frase zijn uit de aangeleverde context die de tekst werkelijk uniek maakt.';
-  let generated:any=null,primaryError='';
-  try{
-    if(!anthropicKey)throw new Error('ANTHROPIC_KEY_MISSING');
-    generated=await anthropicGenerate(anthropicKey,anthropicModel,system,allowed);
-  }catch(e:any){
-    primaryError=clean(e?.message||e);
-    const composioKey=await secret(db,'COMPOSIO_API_KEY');
-    if(!composioKey)throw new Error(primaryError+'; GROQ_FALLBACK_KEY_MISSING');
-    generated=await groqGenerate(composioKey,system,allowed);
-  }
-  return {output:extractJson(generated.text),provider:generated.provider,model:generated.model,primary_error:primaryError||null};
+  const system='Je bent de Human Commercial Composer van Bedrijfsgeheugen. Gebruik alleen leesbare prospectcontext zoals een echte headline, samenvatting, concreet openbaar feit, eerder gesprek of relatiecontext. Toon nooit interne taxonomylabels, snake_case, scores, source keys of het woord trigger als intern systeembegrip. Schrijf als een slimme, sympathieke Nederlandse ondernemer; niet als een salesbot. Gebruik ALLEEN aangeleverde feiten. Verzin nooit persoonsdetails, gebeurtenissen, cijfers, urgentie, bewijs of problemen. Een hypothese moet hoorbaar als hypothese klinken (kan, mogelijk, ik vraag me af of). Externe AI-content of een AI-product is nooit automatisch bewijs van een intern data-, governance- of implementatieprobleem. Als source_trigger_relevance false is, negeer voorspelde problemen/triggers volledig en schrijf alleen vanuit de leesbare bron- of relatiecontext. Productwaarheid: Bedrijfsgeheugen is geen extra AI-tool, chatbot, dashboard of los adviestraject, maar helpt een ondernemer dagelijks sturen door interne en externe veranderingen te verbinden met strategie, gevolgen, besluiten, acties met eigenaar en meetbare resultaten. AI en POWERHOUSE zijn middelen onder de motorkap; presenteer geen lijst van agents, modellen of modules. Benoem dit onderscheid alleen wanneer het duidelijk aansluit op het bewezen probleem of signaal bij deze specifieke ontvanger; maak het geen standaardpitch. Geen onbewijsbare voorspelling, resultaat of claim dat alles autonoom wordt uitgevoerd. Doel: de kleinste logische commitment, niet meteen een afspraak. Pas exact de gekozen sales play en psychologische mechanismen toe zonder manipulatief te worden. Menselijk: korte zinnen, spreektaal, concreet, warm, licht droge humor alleen als die vanzelf past. Geen lege complimenten zoals inspirerend, indrukwekkend, geweldig of mooi om te zien. Vermijd onbewezen generalisaties zoals veel bedrijven, veel founders of veel organisaties. Als er geen echte bronpost, concrete publieke observatie of inbound/reply-context is, forceer dan geen persoonlijke boodschap: de quality gate moet die actie tegenhouden. Nooit humor ten koste van de prospect. Verboden: generieke complimenten/openingen, dienstencatalogus, AI-hype, corporate jargon, nep-schaarste, schuldgevoel bij geen reactie, agendalink, meerdere CTAs. LinkedIn-DM: maximaal 80 woorden. E-mail: maximaal het opgegeven maximum. Eén vraag maximaal. Follow-up: altijd nieuwe invalshoek; nooit even opvolgen, heb je mijn mail gezien of verwijt. Graceful close: geen vraag. DMs mogen niet eindigen als reclame voor Bedrijfsgeheugen. Geef uitsluitend JSON met keys: subject, message, personalization_anchor, fact_used, hypothesis_used, primary_problem, micro_commitment, predicted_objection, objection_response, human_reason. personalization_anchor moet een KORTE LETTERLIJKE frase zijn uit de aangeleverde context die de tekst werkelijk uniek maakt.';
+  if(!anthropicKey)throw new Error('OPENAI_KEY_MISSING');
+  const generated=await openaiGenerate(anthropicKey,anthropicModel,system,allowed);
+  return {output:extractJson(generated.text),provider:generated.provider,model:generated.model,primary_error:null};
 }
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
@@ -136,9 +154,9 @@ Deno.serve(async(req:Request)=>{
   const limit=Math.max(1,Math.min(Number(input?.limit||10),50)),channels=Array.isArray(input?.channels)?input.channels.map((x:any)=>normalize(x).replace(/\s+/g,'_')):[],actionIds=Array.isArray(input?.action_ids)?input.action_ids.map(clean).filter(Boolean):[],dryRun=input?.dry_run===true,now=new Date().toISOString();
   try{
     await db.rpc('powerhouse_refresh_message_plans_v1',{p_limit:Math.max(limit,50)});
-    const apiKey=await secret(db,'ANTHROPIC_API_KEY');if(!apiKey)throw new Error('ANTHROPIC_API_KEY_MISSING');
+    const apiKey=await secret(db,'OPENAI_API_KEY');if(!apiKey)throw new Error('OPENAI_API_KEY_MISSING');
     const {data:gov,error:gErr}=await db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle();
-    if(gErr||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='Anthropic')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    if(gErr||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='OpenAI')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
     const {data,error}=await db.rpc('powerhouse_commercial_message_candidates_v1',{p_limit:limit,p_channels:channels.length?channels:null,p_action_ids:actionIds.length?actionIds:null});
     if(error)throw new Error('PLAN_READ:'+error.message);
     let rows=(data||[]);
@@ -164,9 +182,18 @@ Deno.serve(async(req:Request)=>{
         });
         if(persuasionError)throw new Error('PERSUASION_AUTHORITY:'+persuasionError.message);
         const persuasion=persuasionRaw||{};
-        const gen=await generate(db,apiKey,clean(gov.model_id),workingAction,persuasion),generated=gen.output,qv=quality(workingAction,workingAction.message_plan,generated),message=clean(generated.message),hash=await sha256(message);
+        let history:any[]=[];
+        if(clean(workingAction.person_key)){
+          const {data:past,error:hErr}=await db.from('powerhouse_sales_actions').select('action_id,channel,message_draft,evidence,executed_at')
+            .eq('person_key',workingAction.person_key).eq('status','done')
+            .in('channel',['email','e-mail','reply_email','linkedin_dm']).not('executed_at','is',null)
+            .neq('action_id',workingAction.action_id).order('executed_at',{ascending:false}).limit(12);
+          if(hErr)throw new Error('OUTREACH_HISTORY_UNAVAILABLE:'+hErr.message);
+          history=past||[];
+        }
+        const gen=await generate(db,apiKey,clean(gov.model_id),workingAction,persuasion),generated=gen.output,qv=quality(workingAction,workingAction.message_plan,generated,history),message=clean(generated.message),hash=await sha256(message);
         await db.from('powerhouse_message_quality_v1').upsert({action_id:action.action_id,composer_version:CONTRACT,play_key:action.play_key,channel:action.channel_norm,message_hash:hash,passed:qv.passed,score:qv.score,checks:qv.checks,evidence:{model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,generated_at:now,personalization_anchor:generated.personalization_anchor,fact_used:generated.fact_used,hypothesis_used:generated.hypothesis_used,primary_problem:generated.primary_problem,micro_commitment:generated.micro_commitment,predicted_objection:generated.predicted_objection,objection_response:generated.objection_response,human_reason:generated.human_reason}},{onConflict:'action_id,message_hash'});
-        const ci={...(action.evidence?.commercial_intelligence||{}),message_strategy:action.play_key,persuasion_authority:{contract:'powerhouse-persuasion-revenue-optimizer-v1',play_key:clean(persuasion?.play_key),principles:persuasion?.principles||[],primary_message_strategy:clean(persuasion?.primary_message_strategy),micro_cta:clean(persuasion?.micro_cta),do_not_use:persuasion?.do_not_use||[],confidence:persuasion?.confidence??null,truth_boundary:clean(persuasion?.truth_boundary)},predicted_objection:clean(generated.predicted_objection),objection_response:clean(generated.objection_response),quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,composer_contract:CONTRACT,composer:{contract:CONTRACT,model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,generated_at:now,personalization_anchor:clean(generated.personalization_anchor),micro_commitment:clean(generated.micro_commitment),human_reason:clean(generated.human_reason)}};
+        const ci={...(action.evidence?.commercial_intelligence||{}),message_strategy:action.play_key,persuasion_authority:{contract:'powerhouse-persuasion-revenue-optimizer-v1',play_key:clean(persuasion?.play_key),principles:persuasion?.principles||[],primary_message_strategy:clean(persuasion?.primary_message_strategy),micro_cta:clean(persuasion?.micro_cta),do_not_use:persuasion?.do_not_use||[],confidence:persuasion?.confidence??null,truth_boundary:clean(persuasion?.truth_boundary)},predicted_objection:clean(generated.predicted_objection),objection_response:clean(generated.objection_response),quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,composer_contract:CONTRACT,composer:{contract:CONTRACT,model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,source_specific_evidence_ok:qv.checks.source_specific_evidence_ok,semantic_novelty_ok:qv.checks.semantic_novelty_ok,new_followup_evidence_ok:qv.checks.new_followup_evidence_ok,generated_at:now,personalization_anchor:clean(generated.personalization_anchor),micro_commitment:clean(generated.micro_commitment),human_reason:clean(generated.human_reason)}};
         const evidence={...(action.evidence||{}),commercial_intelligence:ci};if(['email','e-mail','reply_email'].includes(action.channel_norm))evidence.email_subject=clean(generated.subject)||clean(action.evidence?.email_subject);
         const update:any={evidence,updated_at:now};if(qv.passed)update.message_draft=message;else if(clean(action.message_draft))update.message_draft='';
         const {error:uErr}=await db.from('powerhouse_sales_actions').update(update).eq('action_id',action.action_id);if(uErr)throw new Error('ACTION_WRITE:'+uErr.message);

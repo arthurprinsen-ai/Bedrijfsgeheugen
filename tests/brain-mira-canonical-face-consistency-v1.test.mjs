@@ -42,7 +42,7 @@ test('actual two-image vision call receives master and candidate; provenance is 
  assert.match(verifier,/MIRA_CANONICAL_MASTER_UNAVAILABLE/);
 });
 test('existing router checks actual frames and refuses a nonmaster generation before provider truth',()=>{
- assert.match(router,/MIRA_FRESH_IMAGE2VIDEO_CANONICAL_MASTER_REQUIRED/);
+ assert.match(router,/MIRA_CANONICAL_REFERENCE_VIDEO_REQUIRED/);
  assert.match(router,/VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH/);
  assert.match(router,/MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES/);
  assert.match(router,/MIRA_SAME_FACE_EXACT_MEDIA_GATE_FAILED/);
@@ -54,4 +54,17 @@ test('existing orchestrator/publisher maintain fail-closed face proof before Com
  assert.match(publisher,/miraFaceProofValid\(visual,mediaType\)/);
  assert.match(publisher,/MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED/);
  assert.ok(publisher.indexOf('MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED')<publisher.indexOf('await consumePublishCapability(db,capability,runDate,row.channel'));
+});
+
+
+test('official Mira reference ID maps to live OpenArt resource, never expired CDN alias',()=>{
+ const officialId='Yjqu4D7v76HABNPmQPj1';
+ const resourceUrl='https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg';
+ const staleUrl='https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg';
+ assert.equal(MIRA_MASTER_REFERENCE_ID,officialId);
+ assert.equal(MIRA_MASTER_REFERENCE_URL,resourceUrl);
+ assert.equal(config.canonical_reference.reference_id,officialId);
+ assert.equal(config.canonical_reference.url,resourceUrl);
+ assert.deepEqual(config.canonical_reference.dimensions,{width:928,height:1152});
+ assert.equal(validMiraGenerationReference({openart_reference_id:officialId,openart_reference_url:staleUrl,openart_history_id:'history',generation_mode:'element2video'}),false);
 });

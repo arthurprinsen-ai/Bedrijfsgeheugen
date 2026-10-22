@@ -1,4 +1,5 @@
 import {createPortalProjectStore} from './_portal-project-store.mjs';
+import {createHash} from 'node:crypto';
 
 const json=(status,body)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const hex=bytes=>Array.from(new Uint8Array(bytes)).map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -27,21 +28,23 @@ async function stripe(path,method='GET',params=null){
 const iso=v=>Number(v)>0?new Date(Number(v)*1000).toISOString():null;
 const slug=(name,id)=>{const base=String(name||'organisatie').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,42)||'organisatie';return base+'-'+String(id||'').replace(/[^a-z0-9]/gi,'').slice(-8).toLowerCase()};
 
-async function completeCheckout(store,session){
+export async function completeCheckout(store,session,provider=stripe){
   const subId=typeof session.subscription==='string'?session.subscription:session.subscription?.id;
   if(!subId)return;
   const existing=await store.findSubscription(subId);
-  if(existing)return;
   const planCode=String(session.metadata?.plan_code||'').toLowerCase();
-  if(!['control','scale'].includes(planCode))throw new Error('INVALID_PLAN');
+  const plan=await store.getPlan(planCode);
+  if(!plan||plan.active===false)throw new Error('INVALID_PLAN');
+  if(existing&&existing.plan_code!==planCode)throw new Error('CHECKOUT_PLAN_MISMATCH');
   const company=String(session.metadata?.company_name||session.customer_details?.name||'').trim();
   const email=String(session.customer_details?.email||session.customer_email||'').trim().toLowerCase();
   if(!company||!email)throw new Error('MISSING_CUSTOMER');
-  const org=await store.createOrganisation(company,slug(company,session.id));
+  const org=existing?{id:existing.organisation_id}:await store.ensureCheckoutOrganisation(company,'checkout-'+createHash('sha256').update(session.id).digest('hex').slice(0,40));
   if(!org?.id)throw new Error('ORGANISATION_CREATE_FAILED');
   await store.ensureCustomer(org.id,company,email);
   await store.ensureInvitation(org.id,email);
-  const sub=await stripe('subscriptions/'+encodeURIComponent(subId));
+  const sub=await provider('subscriptions/'+encodeURIComponent(subId));
+  if(sub.id!==subId)throw new Error('SUBSCRIPTION_MISMATCH');
   await store.upsertSubscription({
     organisation_id:org.id,
     plan_code:planCode,
@@ -51,23 +54,37 @@ async function completeCheckout(store,session){
     status:sub.status||'active',
     current_period_end:iso(sub.current_period_end),
     cancel_at_period_end:Boolean(sub.cancel_at_period_end),
-    metadata:{...(sub.metadata||{}),checkout_session_id:session.id},
+    metadata:{...(sub.metadata||{}),checkout_session_id:session.id,billing_cycle:session.metadata?.billing_cycle||'monthly'},
     updated_at:new Date().toISOString()
   });
   const params=new URLSearchParams();
   params.set('metadata[organisation_id]',org.id);
   params.set('metadata[plan_code]',planCode);
-  await stripe('subscriptions/'+encodeURIComponent(sub.id),'POST',params);
+  params.set('metadata[checkout_session_id]',session.id);
+  params.set('metadata[billing_cycle]',session.metadata?.billing_cycle||'monthly');
+  await provider('subscriptions/'+encodeURIComponent(sub.id),'POST',params);
+  const receipt={plan_code:planCode,email,company_name:company,state:'completed',provider:'stripe',provider_session_id:session.id,organisation_id:org.id,updated_at:new Date().toISOString()};
+  // Reuse the intent primary key, including a webhook racing the create response.
+  const intentId=session.metadata?.checkout_intent_id;
+  if(/^[0-9a-f-]{36}$/i.test(String(intentId||'')))receipt.id=intentId;
+  await store.completeCheckoutIntent(receipt);
+  await store.recordCheckoutOutcome({dedupe_key:'stripe:checkout:'+session.id+':provisioned',event_type:'subscription_provisioned',source:'stripe.webhook',channel:'website',company_key:'org:'+org.id,topic_key:'saas_subscription',occurred_at:new Date().toISOString(),
+    evidence:{checkout_session_id:session.id,subscription_id:sub.id,organisation_id:org.id},
+    context:{plan_code:planCode,status:sub.status,billing_cycle:session.metadata?.billing_cycle||'monthly',privacy_scope:'no_pii',revenue_verified:false},state:'observed',data_quality:'OBSERVED',confidence:1});
 }
-async function syncSubscription(store,sub){
+export async function syncSubscription(store,sub,provider=stripe){
   const existing=await store.findSubscription(sub.id);
   if(!existing)return;
+  // Stripe retries can arrive out of order. Re-read provider truth instead of
+  // letting an old active event resurrect a cancelled subscription.
+  const latest=await provider('subscriptions/'+encodeURIComponent(sub.id));
+  sub=latest;
   await store.patchSubscription(sub.id,{
     status:sub.status||existing.status,
     provider_customer_id:typeof sub.customer==='string'?sub.customer:sub.customer?.id||existing.provider_customer_id,
     current_period_end:iso(sub.current_period_end),
     cancel_at_period_end:Boolean(sub.cancel_at_period_end),
-    metadata:sub.metadata||existing.metadata||{}
+    metadata:{...(existing.metadata||{}),...(sub.metadata||{}),checkout_session_id:existing.metadata?.checkout_session_id||sub.metadata?.checkout_session_id}
   });
 }
 
@@ -80,7 +97,7 @@ export default async request=>{
   let event;try{event=JSON.parse(raw)}catch{return json(400,{error:'invalid_json'})}
   const store=createPortalProjectStore();
   try{
-    if(event.type==='checkout.session.completed')await completeCheckout(store,event.data.object);
+    if(event.type==='checkout.session.completed'||event.type==='checkout.session.async_payment_succeeded')await completeCheckout(store,event.data.object);
     if(event.type==='customer.subscription.updated'||event.type==='customer.subscription.deleted')await syncSubscription(store,event.data.object);
     return json(200,{received:true});
   }catch{

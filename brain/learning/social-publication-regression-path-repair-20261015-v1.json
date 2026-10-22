@@ -1,0 +1,43 @@
+{
+  "id": "social-publication-regression-path-repair-20261015",
+  "date": "2026-10-15",
+  "type": "incident_prevention",
+  "fingerprint": "social-publication|regression-test-filename-stale|recovery-workflow-failed|20261015",
+  "compiler": {
+    "failure_class": "SCHEDULED_RECOVERY_REGRESSION_ASSERTS_STALE_TEST_FILENAME",
+    "scope": "CONTENT_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Recovery workflow invokes tests/supabase-social-publication-recovery.test.mjs after the protected candidate renamed the regression test, but the test asserted the obsolete tests/social-publication-recovery.test.mjs path. The post-merge workflow_dispatch failed before calling the already deployed and authorized social-recovery-runner.",
+  "prevention": [
+    "The recovery contract derives the required workflow test filename from import.meta.url; a path rename must be reflected in the actual workflow command.",
+    "Preserve the same-day fail-closed identity guard, service-role authorization, provider write safeguards, unique publication claims, and actual provider outcome readback.",
+    "A merged source change and deployed function are not publication proof: assert successful workflow steps and live provider publication IDs independently.",
+    "A separate expired SUPABASE_ACCESS_TOKEN in GitHub Actions must be renewed with an authorized credential; never bypass source-parity, CI or deploy checks.",
+    "Learning evaluation uses the canonical brain-prefixed test runner for all three non-send modes; the workflow invokes its exact own, independent social-recovery regression test."
+  ],
+  "evidence": {
+    "baseline_main_sha": "389f052b9da66fc5401f5ae5924af5496bfc0554",
+    "recovery_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4391",
+    "initial_failed_recovery_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38737629053",
+    "fault": "ERR_ASSERTION: workflow did not contain tests/social-publication-recovery.test.mjs after rename",
+    "corrected_test": "tests/supabase-social-publication-recovery.test.mjs",
+    "canonical_recovery_function": "social-recovery-runner",
+    "production_function_readback_version_before_test_fix": 33,
+    "provider_delivery_confirmed": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_PENDING_PROTECTED_CI_AND_PROVIDER_READBACK"
+}

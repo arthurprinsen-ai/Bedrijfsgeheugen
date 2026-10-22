@@ -91,8 +91,15 @@ export function createPowerhouseRuntimeBridge({
   async function refresh(){
     if(stopped)return null;
     if(activeRefresh)return activeRefresh;
-    activeRefresh=loadRuntimeEvidence({fetchImpl,domainState,authHeadersProvider})
-      .then(runtime=>{if(runtime){onRuntime(runtime);return runtime;}return null;})
+    const session=stateClient.getSnapshot?.();
+    const sessionId=String(session?.user?.id||'');
+    if(session?.mode!=='authenticated'||!sessionId||stateClient.isDemo?.())return null;
+    const stillSameSession=()=>{
+      const current=stateClient.getSnapshot?.();
+      return !stopped&&current?.mode==='authenticated'&&String(current?.user?.id||'')===sessionId&&!stateClient.isDemo?.();
+    };
+    activeRefresh=loadRuntimeEvidence({fetchImpl,domainState,authHeadersProvider,validateSession:stillSameSession})
+      .then(runtime=>{if(runtime&&stillSameSession()){onRuntime(runtime);return runtime;}return null;})
       .finally(()=>{activeRefresh=null;});
     return activeRefresh;
   }

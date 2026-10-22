@@ -47,9 +47,11 @@ function nonFunctionConfig(configText){
 export function resolveEdgeRuntimeFunctions({changedPaths=[],configText='',baseConfigText=null}={}){
   const paths=[...new Set((changedPaths||[]).map(x=>String(x||'').trim()).filter(Boolean))].sort();
   const declared=declaredFunctions(configText);
-  if(paths.some(path=>path.startsWith('supabase/functions/_shared/')))return declared;
+  const sharedChanged=paths.some(path=>path.startsWith('supabase/functions/_shared/'));
 
   const direct=new Set();
+  // Both consumers must attest the same shared, side-effect-free transport.
+  if(paths.includes('supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs'))direct.add('powerhouse-forecast-calibrator');
   for(const path of paths){
     const match=path.match(/^supabase\/functions\/([^/]+)\//);
     if(!match)continue;
@@ -58,14 +60,17 @@ export function resolveEdgeRuntimeFunctions({changedPaths=[],configText='',baseC
     direct.add(slug);
   }
 
+  const allAffected=()=>[...new Set([...declared,...direct])].sort();
+  if(sharedChanged)return allAffected();
+
   if(paths.includes('supabase/config.toml')){
-    if(typeof baseConfigText!=='string' || !baseConfigText.trim())return declared;
-    if(nonFunctionConfig(baseConfigText)!==nonFunctionConfig(configText))return declared;
+    if(typeof baseConfigText!=='string' || !baseConfigText.trim())return allAffected();
+    if(nonFunctionConfig(baseConfigText)!==nonFunctionConfig(configText))return allAffected();
 
     const before=functionSections(baseConfigText);
     const after=functionSections(configText);
     const removed=[...before.keys()].filter(name=>!after.has(name));
-    if(removed.length)return declared;
+    if(removed.length)return allAffected();
 
     for(const name of after.keys()){
       if(!before.has(name) || before.get(name)!==after.get(name))direct.add(name);

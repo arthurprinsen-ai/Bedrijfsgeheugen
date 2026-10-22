@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|p0-4198|channel-evidence-json-normalization|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "SCHEDULER_STAGE_FAILURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-decision-evidence-normalization.test.mjs"
+    ]
+  },
+  "root_cause": "Some canonical publication decisions persisted delivery_evidence as a JSONB scalar string containing JSON text. The fairness gate expects an object and cannot read generation_retry_after from a scalar, repeatedly choosing the same high-priority failing personal channel and starving the company/blog lanes.",
+  "prevention_rule": "Coerce double-encoded JSON objects at the one database write boundary using a typed SECURITY INVOKER trigger; reject evidence arrays and invalid values; normalize recent safely decodable data without changing publication status, provider receipts, identity gates, or sender permissions.",
+  "evidence": {
+    "production_observation": {
+      "date": "2026-10-11",
+      "type_counts": "Several recent days contained JSONB strings alongside objects; personal retry_after JSON field invisible until corrected",
+      "verified_company_after_repair": true
+    },
+    "tests": [
+      "tests/brain-decision-evidence-normalization.test.mjs"
+    ]
+  },
+  "outcome": {
+    "requires_provider_migration": true,
+    "publication_proof_unchanged": true
+  }
+}

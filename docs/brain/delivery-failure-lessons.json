@@ -480,6 +480,16 @@
       "fix": "resume the canonical branch or PR and newest exact head on the next executable turn and continue to the normal terminal contract",
       "preventionRule": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify-transport-auth|production|shared|project-account-not-visible-20261019",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Production exact-source fallback was mistakenly retried as build lag although the Supabase OIDC bridge could not resolve a Netlify connection in the scoped Composio project",
+      "rootCause": "Composio project-scoped deployment key did not reveal an ACTIVE authorized netlify_mcp account. The bridge's HTTP 420 maps any unavailable account to the not_public error, without proving the exact missing binding",
+      "fix": "Classify HTTP 420 as non-retryable authorization boundary, preserve exact source evidence and incident owner, restore provider/Composio project visibility through an approved service/team connection and independently verify production readback",
+      "preventionRule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+      "status": "PROVEN"
     }
   ]
 }

@@ -457,3 +457,42 @@ Fingerprint: `mira-master-two-image-face-continuity-v1`. The sole canonical fict
 After generating, compare exact final media (or each start/middle/end frame in an MP4) alongside the original Mira master using the existing approved vision verifier. Approve only if `face_identity_match=true`, confidence >=0.94, and all three Reel frames match the same canonical SHA; face/age/hairline/identity must not drift. Clothes, gestures, setting and expression may vary. If the comparison is uncertain, hold rather than post. All original exact-media, PH-P entrepreneur problem, full caption, scene-match, dedupe, provider-ack and independent permalink-readback checks remain mandatory.
 
 Canonical code: `supabase/functions/_shared/mira-canonical-face.mjs`. Regressions: `tests/brain-mira-canonical-face-consistency-v1.test.mjs`. No new scheduler, publisher, CRM, or alternate Instagram identity.
+
+
+## Mira image proof provider recovery — 19 October 2026
+Fingerprint: `mira-openai-exact-media-verification-20261019`.
+The existing image/temporal verifiers use the governance-approved OpenAI Responses route and OPENAI_API_KEY. Provider changes never alter identity confidence, frame continuity, dimensions, source references, exact hashes or publisher capability gates. Incomplete output, refusal, schema mismatch and provider errors fail closed. Preserve the generated OpenArt history/resource/URL in the same media job; retry verification of those bytes rather than generating another video. A provider outage is not evidence that the face differs. Both vision stages must migrate together; governance remains scoped to the fictional Mira use case. Never deploy Edge source outside protected main and its Supabase Integration.
+
+
+## Production registration and proof scope
+Fingerprint: `mira-production-stage-registration-20261019`.
+The router, image verifier and temporal verifier must all be explicitly enabled in supabase/config.toml before protected-main provider delivery can attest this chain. An attestation for other functions never proves Mira source parity. Shared-helper changes must retain explicitly edited undeclared slugs in the resolved scope so the existing registration guard rejects them; never silently drop the very function being repaired. Require exact function inventory/source parity plus a genuine same-video proof request after promotion.
+
+
+## Producer claim preservation under readiness polling
+
+Fingerprint: `mira-media-preflight-preserve-worker-cas-v1`.
+
+A CLAIMED/GENERATING media job legitimately has no final URL while the external provider runs. Readiness/preflight must preserve its owner/history and never reset it to WAITING_ASSET. All other existing-job projections require exact id+updated_at CAS; if state changed, reread before touching obligation evidence. Concurrent first insert is a typed retry. Completion remains owner-bound and proof remains verifier-owned. Never generate a duplicate because a poll lost a worker claim.
+
+## 2026-10-22 — daily builder recovery and media-poll no-spin
+
+Fingerprint: `powerhouse|daily-social-builder-reopen-media-preflight|20261022-v1`.
+
+A blocked personal LinkedIn `PERSONAL_SOURCE_UNVERIFIED` claim may be
+reconsidered by the EXISTING content-loop only when its identity evidence
+contains a verified AI-native builder event and the decision has no provider
+side effect, consumed publication authority, or republish prohibition.
+The content orchestrator must use its full `validPersonalSource` contract
+for ALL accepted personal modes: verified personal-life, observation, and
+verified founder-builder evidence. Reconsideration never bypasses fresh
+copy/source validation, global uniqueness, OAuth, independent prepublish review
+or provider receipts.
+
+For Instagram, `WAITING_ASSET` means asset generation has NOT occurred.
+A readiness/preflight check must not increment a provider-attempt counter or
+rewrite identical business state. Real worker submissions, asset verification
+and actual provider proof may increment their own attempts; a media router
+cannot manufacture an OpenArt asset or a Mira identity result. Continue
+other approved lanes when this media proof is missing. No second scheduler,
+no Buffer/Make fallback and no duplicate posting.

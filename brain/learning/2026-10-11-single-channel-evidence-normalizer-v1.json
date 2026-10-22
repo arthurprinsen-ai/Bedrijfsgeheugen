@@ -1,0 +1,26 @@
+{
+  "fingerprint": "p0-4198|single-channel-evidence-normalizer|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "DUPLICATE_RECOVERY_CONTROL",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-channel-evidence-single-normalizer.test.mjs"
+    ]
+  },
+  "root_cause": "Two parallel but legitimate recovery changes installed overlapping before-write evidence normalizers. Inconsistent trigger behavior could reject a legacy encoding before the other trigger could fix it.",
+  "prevention_rule": "Keep the pre-existing protected-main normalizer as the only enabled trigger and extend it to handle nested string and known composite encoding. Preserve original service-role authorization and public delivery truth.",
+  "evidence": {
+    "parent_issue": 4198,
+    "source": "supabase/migrations/20261011124000_consolidate_channel_evidence_normalizer_v1.sql",
+    "test": "tests/brain-channel-evidence-single-normalizer.test.mjs"
+  },
+  "outcome": {
+    "provider_publication_proven": false,
+    "commercial_issue_open": true
+  }
+}

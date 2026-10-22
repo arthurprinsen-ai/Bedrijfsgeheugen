@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { buildSkillProjectionIndex, selectSkillProjection } from '../scripts/brain/powerhouse-skill-projection.mjs';
+import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
 import {
   classifyRelease,
   validateIncidentLearning,
@@ -30,5 +32,16 @@ const lesson = failureLessons.lessons.find((candidate) => candidate.preventionRu
 assert.ok(lesson);
 assert.equal(lesson.status, 'PROVEN');
 assert.match(lesson.fix, /independent production readback/i);
+
+const universalIncidentFingerprint = 'powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1';
+const projectedLearning = buildSkillProjectionIndex();
+const universalEntry = projectedLearning.entries.find(entry => entry.fingerprint === universalIncidentFingerprint);
+assert.equal(universalEntry?.mandatory_preflight, true, 'universal learning is mandatory in projection');
+assert.ok(selectSkillProjection(projectedLearning).selected_entries.some(entry => entry.fingerprint === universalIncidentFingerprint),
+  'no-hint worker start must discover the universal prevention');
+const defaultAgentPacket = compileChatLearningPreflight();
+assert.ok(defaultAgentPacket.skill_projection.verification.ok, 'skill projection must be internally consistent');
+assert.ok(defaultAgentPacket.skill_projection.selection.selected_entries.some(entry => entry.fingerprint === universalIncidentFingerprint),
+  'real agent preflight packet must expose universal prevention without task hints');
 
 console.log('brain-error-learning-contract: all tests passed');

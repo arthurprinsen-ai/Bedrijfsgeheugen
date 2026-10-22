@@ -1,0 +1,50 @@
+{
+  "id": "p0-4198-linkedin-company-expired-publish-lease-recovery-v1",
+  "date": "2026-10-11",
+  "root_cause": "Existing social company publish decision stuck blocked after an issued unconsumed five-minute capability expired; because the decision was blocked, publisher's own capability expiry cleanup was unreachable.",
+  "action": "Recover the same-day canonical LinkedIn company decision only if capability is expired and unconsumed, both decision and obligation explicitly prove no provider create or possible side effect, no provider id or uniqueness reservation exists, and CAS updates still hold. Resume through the original gates.",
+  "invariants": {
+    "one_publication_lineage": true,
+    "no_new_sender": true,
+    "no_new_scheduler": true,
+    "no_duplicate_posts": true,
+    "no_auth_bypass": true,
+    "no_fake_external_proof": true
+  },
+  "production_status": "MANUAL_ONE_CLAIM_RESTORED__AUTO_RECOVERY_PR_AWAITING_PROTECTED_MERGE_AND_PRODUCTION_PROVIDER_PROOF",
+  "evidence": {
+    "manual_repair": "2026-10-11: 1 expired unused company lease revoked and original company decision moved blocked to content_ready under SQL CAS",
+    "published": false,
+    "provider_acknowledgement": false,
+    "live_url": null,
+    "pull_request": 4339
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publish-claim-recovery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-publish-claim-recovery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publish-claim-recovery-p0-4198.test.mjs"
+    ]
+  },
+  "fingerprint": "linkedin-company-expired-unconsumed-capability-blocks-original-publication",
+  "failure_class": "IDEMPOTENCY",
+  "scope": "PUBLICATION",
+  "machine_enforceable": true,
+  "repeat_count": 3,
+  "security_sensitive": true,
+  "observation": "On Oct 11 the company day had three expired unconsumed capabilities, with no external URN/acknowledgement; final unrevoked expired lease prevented re-issue.",
+  "root_cause_hypothesis": "The capability issue function revokes expired leases only after the blocked decision is already dispatching; without bounded reactivation of original blocked decision the canonical lane cannot restart.",
+  "prevention": "Small existing publisher code with explicit no-send guards and same-day CAS; original pre-publish, Composio OAuth, uniqueness and side-effect recording remain authoritative.",
+  "limitations": "Only a PR and one manual production claim recovery are proven; automated recovery is not deployed and external company publication/readback remains unproven.",
+  "compiler": {
+    "failure_class": "IDEMPOTENCY",
+    "scope": "PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  }
+}

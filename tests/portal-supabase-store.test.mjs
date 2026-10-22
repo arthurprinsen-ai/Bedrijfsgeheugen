@@ -80,3 +80,68 @@ test('reads entrepreneur intelligence through the existing service-token Edge ga
   const driftStore=createSupabasePortalProjectionStore({fetchFn:drift.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
   await assert.rejects(()=>driftStore.getEntrepreneurIntelligence('tenant-1'),/tenant scope mismatch/i);
 });
+
+test('entrepreneur gateway transport timeout aborts and fails closed before Netlify wall clock',async()=>{
+ let aborted=false, tenant;
+ const fetchFn=async(_url,{body,signal})=>{
+   tenant=JSON.parse(body).tenantId;
+   return new Promise((_resolve,reject)=>{
+     signal.addEventListener('abort',()=>{aborted=true;reject(new Error('ABORTED'))},{once:true});
+   });
+ };
+ const store=createSupabasePortalProjectionStore({fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service',entrepreneurTimeoutMs:35});
+ await assert.rejects(store.getEntrepreneurIntelligence('tenant-a'),/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/);
+ assert.equal(aborted,true);
+ assert.equal(tenant,'tenant-a');
+});
+test('an uncooperative upstream cannot hold the entrepreneur request beyond hard deadline',async()=>{
+ let signal;
+ const store=createSupabasePortalProjectionStore({
+   fetchFn:async(_url,options)=>{signal=options.signal;return new Promise(()=>{})},
+   baseUrl:'https://example.supabase.co',serviceToken:'service',entrepreneurTimeoutMs:30
+ });
+ await assert.rejects(store.getEntrepreneurIntelligence('tenant-a'),/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/);
+ assert.equal(signal.aborted,true);
+});
+test('invalid gateway deadline configuration rejected without serving fake data',()=>{
+ assert.throws(()=>createSupabasePortalProjectionStore({fetchFn:async()=>response({}),baseUrl:'https://example.supabase.co',serviceToken:'service',entrepreneurTimeoutMs:0}),/PORTAL_INTELLIGENCE_TIMEOUT_INVALID/);
+});
+
+test('entrepreneur gateway preserves exact safe upstream HTTP status for operator classification',async()=>{
+  const upstream=fakeClient(()=>response({error:'internal source failure',tenantId:'private'},503));
+  const store=createSupabasePortalProjectionStore({fetchFn:upstream.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
+  await assert.rejects(()=>store.getEntrepreneurIntelligence('tenant-private'),/EU portal store gateway failed \(503\)/);
+});
+test('entrepreneur response missing authenticated scope fails closed instead of accepting malformed data',async()=>{
+  const malformed=fakeClient(()=>response({sources:[],publications:[],intelligence:{tenantId:'tenant-1'}}));
+  const store=createSupabasePortalProjectionStore({fetchFn:malformed.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
+  await assert.rejects(()=>store.getEntrepreneurIntelligence('tenant-1'),/response shape invalid/);
+});
+
+test('entrepreneur Edge stage diagnostics are finite and never include tenant or arbitrary upstream text',async()=>{
+  const safe=fakeClient(()=>response({
+    error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',
+    source:'PUBLICATIONS',
+    tenantId:'private-tenant',
+    detail:'token-secret-must-not-appear'
+  },500));
+  const store=createSupabasePortalProjectionStore({
+    fetchFn:safe.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'
+  });
+  await assert.rejects(
+    store.getEntrepreneurIntelligence('tenant-private'),
+    error=>error.message==='EU portal store gateway failed (500) [PUBLICATIONS]'
+  );
+
+  const malicious=fakeClient(()=>response({
+    error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',
+    source:'private-tenant-secret'
+  },500));
+  const other=createSupabasePortalProjectionStore({
+    fetchFn:malicious.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'
+  });
+  await assert.rejects(
+    other.getEntrepreneurIntelligence('tenant-private'),
+    error=>error.message==='EU portal store gateway failed (500)'
+  );
+});

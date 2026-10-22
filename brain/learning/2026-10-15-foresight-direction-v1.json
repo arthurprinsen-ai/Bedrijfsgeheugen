@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-foresight-scenario-direction-20261015-v1",
+  "fingerprint": "powerhouse|portal-v2|foresight-scenario-direction|v1",
+  "compiler": {
+    "failure_class": "FORECAST_SCENARIO_DIRECTION_REVERSED",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The first sensitivity engine used expected * (1+pct) for every metric; lowering manual workload and risk was incorrectly portrayed as an adverse outcome.",
+  "prevention": "Use a direction-aware favourable/adverse sensitivity transformation. If goal direction is down, beneficial scenarios must lower the baseline. For negative-valued up metrics, a favourable scenario moves values toward zero rather than further negative. No claims of model causality or measured effect.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-direction-regression.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "portal-v2/tests/foresight-scenario-studio.test.mjs",
+      "tests/brain-foresight-direction-regression.test.mjs"
+    ],
+    "source": "Existing seven-domain goal direction contract in brain/context/goal-forecast-engine.mjs",
+    "release_gate": "Required CI + CodeQL + protected merge + Netlify production readback"
+  },
+  "outcome": {
+    "source_fix_committed": true,
+    "release_verified": false,
+    "tenant_live_verified": false
+  }
+}

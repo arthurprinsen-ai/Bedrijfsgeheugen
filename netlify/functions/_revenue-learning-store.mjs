@@ -7,6 +7,8 @@ export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=pro
   async function gateway(body){
     const response=await fetchFn(endpoint,{method:'POST',headers,body:JSON.stringify({tenantId,...body})});
     const data=await response.json().catch(()=>({}));
+    // 202 with degraded=true is NOT an empty successful projection.
+    if(data?.degraded===true){const e=new Error(`Revenue learning store degraded: ${data?.reason||'DATA_API_UNAVAILABLE'} (${response.status})`);e.status=503;throw e;}
     if(!response.ok){const e=new Error(`Revenue learning store ${data?.error||'gateway failed'} (${response.status})`);e.status=response.status;throw e;}
     return data||{};
   }

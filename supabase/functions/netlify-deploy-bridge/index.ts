@@ -37,7 +37,7 @@ async function getVaultSecret(name: string) {
   }
 }
 
-async function getProxy() {
+async function getComposioCandidates() {
   const apiKey = await getVaultSecret("COMPOSIO_API_KEY");
   const base = "https://backend.composio.dev/api/v3.1";
   const toolSlug = "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
@@ -47,65 +47,251 @@ async function getProxy() {
     "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/7",
   };
 
-  const accountsRes = await fetch(base + "/connected_accounts?limit=100&account_type=ALL", {
-    method: "GET",
-    headers,
-  });
-  const accountsRaw = await accountsRes.text();
-  if (!accountsRes.ok) throw new Error("composio connected accounts " + accountsRes.status);
-  let accountsPayload: any = {};
-  try { accountsPayload = JSON.parse(accountsRaw); } catch {}
-  const items = Array.isArray(accountsPayload?.items) ? accountsPayload.items : [];
-  const account = items.find((item: any) =>
-    String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
-    /active/i.test(String(item?.status || "")) &&
-    !item?.is_disabled
-  );
-  const accountId = String(account?.id || "").trim();
-  const userId = String(account?.user_id || "").trim();
-  if (!accountId || !userId) throw new Error("composio netlify connected account unavailable");
+  // Provider pagination is cursor-based. An active Netlify account may appear
+  // beyond the first 100 accounts in this Composio project. Never interpret an
+  // incomplete account scan as an authorization failure.
+  const accounts: any[] = [];
+  let cursor = "";
+  let pages = 0;
+  let scannedAccounts = 0;
+  // Aggregate-only diagnostics: never log provider IDs, token material, user
+  // identities, auth config IDs or individual connected-account records.
+  const netlifyScan = {
+    slug_exact: 0, slug_like: 0, active_exact: 0, expired_exact: 0,
+    active_disabled: 0, active_missing_identity: 0, active_like: 0,
+    missing_toolkit_slug: 0,
+  };
+  const seenCursors = new Set<string>();
+  for (;;) {
+    if (pages >= 20) throw new Error("composio connected accounts pagination incomplete");
+    const endpoint = new URL(base + "/connected_accounts");
+    endpoint.searchParams.set("limit", "100");
+    endpoint.searchParams.set("account_type", "ALL");
+    if (cursor) endpoint.searchParams.set("cursor", cursor);
+    const accountsRes = await fetch(endpoint, {
+      method: "GET",
+      headers,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!accountsRes.ok) throw new Error("composio connected accounts " + accountsRes.status);
+    const accountsRaw = await accountsRes.text();
+    let payload: any = {};
+    try { payload = JSON.parse(accountsRaw); } catch { throw new Error("composio connected accounts invalid JSON"); }
+    if (!Array.isArray(payload?.items)) throw new Error("composio connected accounts invalid shape");
+    pages++;
+    scannedAccounts += payload.items.length;
+    for (const item of payload.items) {
+      const slug = String(item?.toolkit?.slug || "").trim().toLowerCase();
+      const status = String(item?.status || "").toUpperCase();
+      const exact = slug === "netlify_mcp";
+      const like = slug.includes("netlify");
+      if (!slug) netlifyScan.missing_toolkit_slug++;
+      if (exact) netlifyScan.slug_exact++;
+      if (like) netlifyScan.slug_like++;
+      if (exact && status === "ACTIVE") {
+        netlifyScan.active_exact++;
+        if (item?.is_disabled) netlifyScan.active_disabled++;
+        if (typeof item?.id !== "string" || !item.id.trim() ||
+            typeof item?.user_id !== "string" || !item.user_id.trim()) {
+          netlifyScan.active_missing_identity++;
+        }
+      }
+      if (exact && status === "EXPIRED") netlifyScan.expired_exact++;
+      if (like && status === "ACTIVE") netlifyScan.active_like++;
+    }
+    // Authorization is unchanged: only an ACTIVE, complete, enabled exact
+    // netlify_mcp account may be selected; never fall back to a test user.
+    const pageCandidates = payload.items.filter((item: any) =>
+      String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
+      String(item?.status || "").toUpperCase() === "ACTIVE" &&
+      !item?.is_disabled &&
+      typeof item?.id === "string" && item.id.trim().length > 0 &&
+      typeof item?.user_id === "string" && item.user_id.trim().length > 0
+    );
+    accounts.push(...pageCandidates);
+    // Never send an unlimited number of third-party provider requests. A
+    // larger eligible pool is an explicit ambiguity, not implicit authority.
+    if (accounts.length > 4) throw new Error("composio netlify candidate pool ambiguous");
+    const nextCursor = String(payload?.next_cursor || "").trim();
+    if (!nextCursor) break;
+    if (seenCursors.has(nextCursor)) throw new Error("composio connected accounts repeated cursor");
+    seenCursors.add(nextCursor);
+    cursor = nextCursor;
+  }
+  console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY", JSON.stringify({
+    pages, scanned_accounts: scannedAccounts, authorized_netlify_found: accounts.length > 0, eligible_candidates: accounts.length,
+    netlify_scan: netlifyScan,
+    // Deliberately omit account IDs, user IDs, API keys and OAuth details.
+  }));
+  if (accounts.length === 0) throw new Error("composio netlify connected account unavailable");
+
+  // Try a newly connected OAuth grant first, but never trust creation time
+  // alone: the actual Netlify read-only get-project must pass before use.
+  const age = (a: any) => {
+    const ms = Date.parse(String(a?.created_at || ""));
+    return Number.isFinite(ms) ? ms : 0;
+  };
+  accounts.sort((a: any, b: any) => age(b) - age(a));
+  return accounts.map((a: any) => ({
+    apiKey, accountId: String(a.id), userId: String(a.user_id),
+  }));
+}
+
+// Composio v3.1 session *request* uses {toolkits:{enable:[...]}}.
+// "enabled" appears in normalized response shapes, but is NOT the create syntax.
+// See https://docs.composio.dev/docs/configuring-sessions
+async function executePinnedComposioTool(context: {apiKey:string,accountId:string,userId:string}, slug:string, schema:Record<string,unknown>) {
+  const base = "https://backend.composio.dev/api/v3.1";
+  const headers = {
+    "content-type": "application/json",
+    "x-api-key": context.apiKey,
+    "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/9",
+  };
+  const allowed = [
+    "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER",
+    "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER",
+  ];
+  if (!allowed.includes(slug)) throw new Error("netlify unapproved tool");
 
   const sessionRes = await fetch(base + "/tool_router/session", {
     method: "POST",
     headers,
     body: JSON.stringify({
-      user_id: userId,
-      toolkits: { enabled: ["netlify_mcp"] },
-      connected_accounts: { netlify_mcp: [accountId] },
-      tools: { netlify_mcp: { enabled: [toolSlug] } },
+      user_id: context.userId,
+      toolkits: { enable: ["netlify_mcp"] },
+      // The session is constrained to two reviewed Netlify app tools. The
+      // session router otherwise exposes only discovery/meta tools by default.
+      preload: { tools: allowed },
+      // Declare the two approved app tools as an explicit positive allowlist.
+      // Session preload exposes tools but must not be the only authority filter.
+      tools: { netlify_mcp: { enable: allowed } },
+      connected_accounts: { netlify_mcp: [context.accountId] },
+      instant: false,
+      manage_connections: { enable: false },
+      workbench: { enable: false },
       search: { enable: false },
       execute: { enable_multi_execute: false },
     }),
+    signal: AbortSignal.timeout(20000),
   });
   const sessionRaw = await sessionRes.text();
-  if (!sessionRes.ok) throw new Error("composio session create " + sessionRes.status);
-  let session: any = {};
+  let session: any = null;
   try { session = JSON.parse(sessionRaw); } catch {}
+  if (!sessionRes.ok) {
+    const field = Array.isArray(session?.detail)
+      ? session.detail.flatMap((x:any)=>Array.isArray(x?.loc)?x.loc:[]).find((x:any)=>["toolkits","connected_accounts","user_id","workbench","manage_connections"].includes(String(x))) || null
+      : null;
+    console.error("NETLIFY_SESSION_CONFIG_REJECTED", JSON.stringify({
+      http: sessionRes.status, field,
+      format: session ? "json" : "other",
+    }));
+    throw new Error("composio pinned session create " + sessionRes.status);
+  }
   const sessionId = String(session?.session_id || "").trim();
-  if (!sessionId) throw new Error("composio session id missing");
+  if (!/^trs_[A-Za-z0-9_-]+$/.test(sessionId)) throw new Error("composio pinned session id invalid");
 
   const executeRes = await fetch(base + "/tool_router/session/" + encodeURIComponent(sessionId) + "/execute", {
     method: "POST",
     headers,
     body: JSON.stringify({
-      tool_slug: toolSlug,
-      account: accountId,
-      arguments: {
-        selectSchema: {
-          operation: "deploy-site",
-          params: { siteId },
-          aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
-          llmModelName: "gpt-5.6",
-        },
-      },
+      tool_slug: slug,
+      // The session already pins precisely one verified connected account.
+      // Explicit 'account' is reserved for multi-account execution in Composio
+      // and caused HTTP 400 in this single-account session. Do not broaden
+      // the session's connected_accounts or allowed tool slugs.
+      arguments: { selectSchema: schema },
     }),
+    signal: AbortSignal.timeout(25000),
   });
   const raw = await executeRes.text();
-  if (!executeRes.ok) throw new Error("composio session execute " + executeRes.status);
+  let parsed: any = null;
+  try { parsed = JSON.parse(raw); } catch {}
+  // Composio session.execute returns {result_type,data,error,log_id}, NOT
+  // the legacy direct tool envelope {successful,data,error}. A completed
+  // provider call is proven only by result_type=completed, an actual data
+  // payload, and no provider error or nested unsuccessful tool result.
+  const providerError = parsed?.error;
+  const errorText = typeof providerError === "string" ? providerError.toLowerCase()
+    : JSON.stringify(providerError || parsed?.detail || "").toLowerCase();
+  const resultType = typeof parsed?.result_type === "string"
+    ? parsed.result_type : "missing";
+  const accepted = executeRes.ok && resultType === "completed" &&
+    parsed?.data !== undefined && parsed?.data !== null &&
+    !providerError && parsed?.data?.successful !== false;
+  if (!accepted) {
+    // Never log raw response, account IDs, user IDs, provider secrets or
+    // arbitrary provider messages. Composio log IDs are safe references.
+    const errorKind = /not found|unknown tool|tool.*not.*available/i.test(errorText)
+      ? "TOOL_NOT_EXPOSED"
+      : /connected.account|connected_account|no account/i.test(errorText)
+      ? "ACCOUNT_BINDING"
+      : /unauthorized|permission|forbidden|scope/i.test(errorText)
+      ? "PROVIDER_PERMISSION"
+      : /schema|validation|invalid|argument|input/i.test(errorText)
+      ? "INPUT_CONTRACT"
+      : "OTHER";
+    const providerLogId = typeof parsed?.log_id === "string" &&
+      /^log_[a-zA-Z0-9_-]{3,100}$/.test(parsed.log_id)
+      ? parsed.log_id : null;
+    // Composio may reject a direct call when the session exposes no such
+    // app tool; diagnose the session's public tool inventory without logging
+    // IDs, tool lists, account identities, response bodies or proxy URLs.
+    let requestedToolExposed: boolean|null = null;
+    if (executeRes.status === 400) {
+      try {
+        const toolsRes = await fetch(base + "/tool_router/session/" +
+          encodeURIComponent(sessionId) + "/tools?limit=100", {
+          headers, signal: AbortSignal.timeout(4000),
+        });
+        if (toolsRes.ok) {
+          const toolsPayload: any = await toolsRes.json();
+          const entries = Array.isArray(toolsPayload?.items) ? toolsPayload.items
+            : Array.isArray(toolsPayload?.tools) ? toolsPayload.tools : null;
+          if (entries) requestedToolExposed = entries.some((t:any) =>
+            String(t?.slug || t?.name || t?.tool_slug || "").toUpperCase() === slug);
+        }
+      } catch { /* A diagnostic fetch must never authorize a deployment. */ }
+    }
+    const validation = Array.isArray(parsed?.detail) ? parsed.detail : [];
+    const locationTokens = validation.flatMap((d:any)=>Array.isArray(d?.loc)?d.loc:[]);
+    const whitelistedLocation = locationTokens.find((t:any)=>
+      ["body","tool_slug","account","arguments","selectSchema","operation","params","siteId"]
+        .includes(String(t))) || null;
+    const firstType = validation.find((d:any)=>typeof d?.type==="string")?.type || "";
+    const safeValidationType = [
+      "missing","extra_forbidden","string_type","dict_type",
+      "list_type","literal_error","value_error","model_attributes_type"
+    ].includes(firstType) ? firstType : null;
+    console.error("NETLIFY_SESSION_TOOL_REJECTED",JSON.stringify({
+      http: executeRes.status,
+      kind: slug === "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER" ? "read" : "deploy_authority",
+      has_json: Boolean(parsed),
+      result_type: resultType,
+      error_kind: errorKind,
+      provider_log_id: providerLogId,
+      requested_tool_exposed: requestedToolExposed,
+      validation_type: safeValidationType,
+      validation_field: whitelistedLocation,
+      has_detail: parsed?.detail !== undefined,
+    }));
+    throw new Error("composio pinned session execute " + executeRes.status);
+  }
+  return JSON.stringify(parsed.data);
+}
+
+async function getProxy(context:{apiKey:string,accountId:string,userId:string}) {
+  const raw = await executePinnedComposioTool(context,
+    "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER", {
+      operation: "deploy-site",
+      params: { siteId },
+      aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
+      llmModelName: "gpt-5.6",
+    });
   const match = raw.match(/https:\/\/netlify-mcp\.netlify\.app\/proxy\/[A-Za-z0-9._~-]+/);
   if (!match) throw new Error("fresh netlify proxy not issued");
   return match[0];
 }
+
 const safe=(x:any)=>({
   id:x?.id||null,state:x?.state||null,done:x?.done??null,error:x?.error||null,
   error_message:x?.error_message||null,deploy_id:x?.deploy_id||null,build_id:x?.build_id||null,
@@ -130,13 +316,44 @@ Deno.serve(async (req: Request) => {
     }
     let body: Record<string, unknown> = {};
     try { body = await req.json(); } catch {}
-    phase = "proxy_read";
-    const proxy = await getProxy();
-    console.log("NETLIFY_DEPLOY_BRIDGE_PHASE", JSON.stringify({ phase:"proxy_ready", elapsed_ms:Date.now()-startedAt }));
+    phase = "account_read";
+    const candidateContexts = await getComposioCandidates();
     const action = String(body.action || "proxy");
-    if (action === "health") {
-      return Response.json({ok:true,authority:"composio_jit"},{headers:{"Cache-Control":"no-store"}});
+    // An ACTIVE connected account is metadata, not live provider access.
+    // Verify the exact site with a read-only tool call before considering
+    // either an authority probe or the write-capable production fallback.
+    phase = "provider_authority_selection";
+    let verifiedContext: (typeof candidateContexts)[number] | null = null;
+    for (const [index, candidate] of candidateContexts.entries()) {
+      try {
+        const readResult = await executePinnedComposioTool(candidate,
+          "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER", {
+            operation: "get-project",
+            params: { siteId },
+          });
+        if (readResult.includes(siteId)) {
+          verifiedContext = candidate;
+          console.log("NETLIFY_BACKUP_PROVIDER_READ_VERIFIED", JSON.stringify({
+            site_match:true, candidate_position:index+1,
+            eligible_candidates:candidateContexts.length,
+            elapsed_ms:Date.now()-startedAt,
+          }));
+          break;
+        }
+      } catch {
+        console.warn("NETLIFY_BACKUP_PROVIDER_CANDIDATE_REJECTED", JSON.stringify({
+          candidate_position:index+1,
+          eligible_candidates:candidateContexts.length,
+        }));
+      }
     }
+    if (!verifiedContext) throw new Error("composio netlify site authority unverified");
+    if (action === "health") {
+      return Response.json({ok:true,authority:"composio_project_scoped_netlify_read",provider_readback:true},{headers:{"Cache-Control":"no-store"}});
+    }
+    phase = "proxy_read";
+    const proxy = await getProxy(verifiedContext);
+    console.log("NETLIFY_DEPLOY_BRIDGE_PHASE", JSON.stringify({ phase:"proxy_ready", elapsed_ms:Date.now()-startedAt }));
 
     if (action === "trigger_build") {
       const expectedSha = String(body.expected_sha || "").trim();
@@ -181,6 +398,10 @@ Deno.serve(async (req: Request) => {
     } else if (!authPhase && /composio netlify connected account unavailable/i.test(message)) {
       errorCode = "composio_netlify_account_not_public";
       status = 420;
+    }
+    else if (!authPhase && /composio netlify site authority unverified|composio netlify candidate pool ambiguous/i.test(message)) {
+      errorCode = "composio_netlify_provider_authority_unverified";
+      status = 424;
     } else if (!authPhase && /composio connected accounts 401/i.test(message)) {
       errorCode = "composio_project_key_unauthorized";
       status = 431;
@@ -199,6 +420,16 @@ Deno.serve(async (req: Request) => {
     } else if (!authPhase && /composio session create/i.test(message)) {
       errorCode = "composio_session_create_failed";
       status = 422;
+    }
+    else if (!authPhase && /composio pinned session create/i.test(message)) {
+      errorCode = "composio_pinned_session_create_failed";
+      status = 422;
+    } else if (!authPhase && /composio pinned session execute/i.test(message)) {
+      errorCode = "composio_pinned_session_execute_failed";
+      status = 423;
+    } else if (!authPhase && /netlify project readback mismatch/i.test(message)) {
+      errorCode = "netlify_provider_site_mismatch";
+      status = 403;
     } else if (!authPhase && /composio session execute/i.test(message)) {
       errorCode = "composio_session_execute_failed";
       status = 423;
