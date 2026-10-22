@@ -1,0 +1,47 @@
+{
+  "id": "terminalizer-supabase-sql-fixture-verifier-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|terminalizer|supabase-sql-test-fixture-unwired-readback|20261022-v1",
+  "root_cause": "Powerhouse Obligation Terminalizer reads the canonical production-readback contract. supabase/tests/brain_failure_observe_semantic_recovery_v1.sql is test-only SQL but was not classified verifier-only, so merged PR #4697 terminal job 120016707966 failed UNWIRED_NON_NETLIFY_RUNTIME_READBACK (exit 78) despite the actual production migration and function independently existing.",
+  "prevention": [
+    "Allowlist the exact SQL regression fixture in productionTruth.verifierOnlyPaths; never whitelist supabase/tests/ or supabase/ generically.",
+    "Keep real supabase/migrations/YYYYMMDDHHMMSS_*.sql under mandatory exact provider APPLIED migration readback.",
+    "Keep unknown backend/runtime and missing provider evidence fail-closed; never force terminal green.",
+    "Regression-validate positive exact fixture and negative unrecognized fixture, Edge and migration paths before protection and replay."
+  ],
+  "compiler": {
+    "failure_class": "TERMINALIZER_EVIDENCE_FILE_MISCLASSIFIED_AS_RUNTIME",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "parent_incident": 4681,
+    "source_pr": 4697,
+    "merged_main_sha": "d41950ed3eed1758134fd82281c1023c1b6a22f5",
+    "terminalizer_run": 39833808183,
+    "terminalizer_job": 120016707966,
+    "error": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK: supabase/tests/brain_failure_observe_semantic_recovery_v1.sql",
+    "observed_production_migration": "20261022173500_brain_failure_observe_semantic_guard_v1",
+    "production_function_md5": "3f5d19e556f5425630cf80a5e341a02b",
+    "production_migration_and_acl_readback": true,
+    "terminal_closure_verified": false
+  },
+  "skill_targets": [
+    "delivery",
+    "continuity",
+    "supabase"
+  ]
+}
