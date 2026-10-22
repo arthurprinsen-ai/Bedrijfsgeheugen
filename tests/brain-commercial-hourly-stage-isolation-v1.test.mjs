@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const sql=readFileSync('supabase/migrations/20261011171500_powerhouse_commercial_isolated_hourly_stages_v1.sql','utf8');
+const sql=readFileSync('supabase/migrations/20261011122630_powerhouse_commercial_isolated_hourly_stages_v1.sql','utf8');
 test('preserves original cron and does not create second sender, queue or scheduler',()=>{
  assert.match(sql,/jobname='powerhouse-commercial-learning-v1'/);
  assert.match(sql,/cron\.alter_job/);

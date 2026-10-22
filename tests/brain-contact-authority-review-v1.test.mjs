@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const migration=readFileSync(new URL('../supabase/migrations/20261013160000_powerhouse_canonical_contact_authority_review_v1.sql',import.meta.url),'utf8');
+const migration=readFileSync(new URL('../supabase/migrations/20261013145222_powerhouse_canonical_contact_authority_review_v1.sql',import.meta.url),'utf8');
 const runner=readFileSync(new URL('../supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts',import.meta.url),'utf8');
 test('authority review is integrated into original commercial heartbeat',()=>{
  assert.match(runner,/async function reviewContactAuthority\(/);

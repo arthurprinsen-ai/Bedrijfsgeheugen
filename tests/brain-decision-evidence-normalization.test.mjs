@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const path='supabase/migrations/20261011120000_powerhouse_decision_evidence_json_normalize_v1.sql';
+const path='supabase/migrations/20261011091426_powerhouse_decision_evidence_json_normalize_v1.sql';
 const sql=readFileSync(path,'utf8');
 
 test('normalize legacy JSON-encoded evidence at the DB write boundary',()=>{

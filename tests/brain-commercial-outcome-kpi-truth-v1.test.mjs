@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const sql=readFileSync(resolve(root,'supabase/migrations/20261009193000_filter_real_commercial_outcome_kpis_v1.sql'),'utf8');
+const sql=readFileSync(resolve(root,'supabase/migrations/20261009161226_filter_real_commercial_outcome_kpis_v1.sql'),'utf8');
 test('full-cycle outcome KPI only counts genuine qualified steps or positive verified revenue',()=>{
  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_full_cycle_production_proof/);
  assert.match(sql,/into v_outcomes_90d,v_revenue_90d from public\.powerhouse_sales_outcomes\s+where coalesce\(revenue_eur,0\)>0 or lower\(outcome_type\) in/);
