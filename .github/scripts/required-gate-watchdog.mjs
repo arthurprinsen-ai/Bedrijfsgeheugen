@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, boundedGateRequest, eligibleMissingGateDispatch } from '../../tools/delivery/failed-gate-owner-routing.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -11,7 +11,7 @@ if (!repo || !token) throw new Error('GITHUB_REPOSITORY and GITHUB_TOKEN are req
 const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
 
 async function api(path, init = {}) {
-  const response = await fetch(`https://api.github.com/repos/${repo}${path}`, {
+  const response = await boundedGateRequest(fetch, `https://api.github.com/repos/${repo}${path}`, {
     ...init, headers: { ...headers, ...(init.headers || {}) }
   });
   if (!response.ok) throw new Error(`GitHub API ${response.status} ${path}: ${await response.text()}`);
@@ -71,6 +71,9 @@ for (let page = 1; page <= 5; page++) {
     // Preserve the existing one-flight missing-Required recovery; never
     // automatically redispatch a failing source test or cancel a healthy job.
     if (gateDecision(required) !== 'MISSING') continue;
+    // Avoid another 19-dispatch stampede: the canonical 5-minute watchdog
+    // handles at most two missing gates, and never revives retired writers.
+    if (!eligibleMissingGateDispatch(pr, dispatched)) continue;
     const inputs = {
       pr_number: String(pr.number),
       base_sha: String(pr.base?.sha || ''),
