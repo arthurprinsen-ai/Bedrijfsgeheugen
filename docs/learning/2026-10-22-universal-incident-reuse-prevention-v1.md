@@ -26,3 +26,12 @@ De repository had al `AGENTS.md`, `docs/learning/powerhouse-failure-learning-con
 De governancewijziging op een candidate branch is geen bewijs dat alle historische fouten in productie zijn gerepareerd. `LIVE_PROVEN` voor deze borging vereist protected merge, groen regressie/skill-projectie, readback uit actuele main en bewijs dat een volgende agent de nieuwe fingerprint daadwerkelijk uit het canonieke preflight-resultaat terugvindt. Tot die tijd: `CANDIDATE / ACCEPTANCE_PENDING`.
 
 Geen nieuwe opslag, cron, betaalde cloudbranch of onbewezen green override.
+
+
+## Vervolgcorrectie: verplichte baseline in standaard agentpreflight (22 oktober 2026)
+
+Een read-only audit na de eerste governed merge identificeerde een echt overdrachtsgat: `selectSkillProjection()` retourneerde met lege `fingerprints` én lege `targets` uitsluitend een samenvatting zonder `selected_entries`. De standaard CLI- en contextloze agentstart kon daardoor de nieuwe universele preventieregels niet zien, ook al bestond de learning en waren de projectiecontroles groen.
+
+De bestaande runtimeprojector includeert voortaan expliciet aangewezen `mandatory_preflight`-regels met aantoonbaar universele `compiler.scope=ALL_POWERHOUSE_AGENTS_CHATS` en `machine_enforceable=true`, ook zonder hints. Alle niet-universele regels blijven op fingerprint/taakdomein geselecteerd om output begrensd te houden. Het regressiecontract controleert projectie, default selectie, gerichte selectie en het werkelijk gebouwde preflight-pakket. `CANDIDATE` blijft onveranderd zolang exacte release- en daadwerkelijke externe-agentbewijzen ontbreken: zichtbaarheid is niet hetzelfde als bewezen effectiviteit.
+
+Deze opvolgcorrectie is deel van dezelfde learning-fingerprint/obligation en gebruikt de bestaande Brain/skillprojectie; er ontstaat geen parallelle registry, scheduler of herstelowner.
