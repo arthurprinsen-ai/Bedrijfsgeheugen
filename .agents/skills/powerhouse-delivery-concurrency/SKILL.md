@@ -525,3 +525,14 @@ All Netlify build/deploy decisions use `tools/delivery/netlify-deployment-applic
 - website, Portal V2 and Netlify-hosted runtime changes remain fail-closed and require their normal exact-SHA production evidence;
 - manual production dispatch may explicitly force deployment; a manual snapshot with deploy=false remains non-mutating;
 - static `paths-ignore` is only an early fan-out optimization, never the canonical applicability decision.
+
+## Workflow-oracle drift: use the actual canonical jobs
+
+Fingerprint: `ci|brain|single-flight-current-job-identity|20261022-v1`. Incident: Unified BRAIN run #39671036043, subtest 39; recovery candidate [PR #4636](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4636).
+
+- Before editing a test asserting GitHub workflow concurrency, **read the actual current YAML**. Derive job IDs from `jobs:`, not from legacy remembered labels.
+- Choose the concurrency authority from the trigger: PR workflows use the PR identity; `workflow_dispatch`-only workflows may correctly use `github.ref_name`. Never enforce `github.event.pull_request.number` on a workflow without a PR event.
+- For each actual selected expensive job, require a **strictly positive** `timeout-minutes`; require non-empty concurrency group and `cancel-in-progress: true`. A name-change fix may not disable runner limits or permit parallel duplicate work.
+- Do not restore obsolete/duplicate workflow entrypoints to make an inherited test pass. Correct the test source expectation against the protected canonical workflow while preserving operational guardrails.
+- Source-level readback alone is not terminal-green evidence. Require exact-head CI, CodeQL and independent integrated BRAIN zero-failure acceptance before claiming the historical 321 failed tests are eradicated.
+- Preserve the single canonical recovery obligation, failure fingerprint and ledger lineage. Concurrent agents must not create a replacement writer for the same obligation.
