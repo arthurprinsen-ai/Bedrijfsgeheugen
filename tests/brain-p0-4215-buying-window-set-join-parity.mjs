@@ -23,8 +23,7 @@ function extract(s,endMarker){
  if(!body.endsWith(';'))abort('unterminated view');
  return body;
 }
-const mid=extract(first,'
--- Match the existing service-role-only internal view boundary on this migration.');
+const mid=extract(first,'\n-- Match the existing service-role-only internal view boundary on this migration.');
 const next=extract(second,'\n-- Preserve private service-side invoker semantics.');
 const cte='WITH person_intelligence_cache AS MATERIALIZED (SELECT * FROM public.powerhouse_person_intelligence_v1), base AS (';
 const from='FROM person_intelligence_cache p1';
