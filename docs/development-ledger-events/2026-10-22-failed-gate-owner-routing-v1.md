@@ -21,3 +21,5 @@
 - Safety: no aged missing-Required redispatch; two owner comments max/tick; exact-head and comment dedup retained; no blind provider retry or lowered browser CLS/security threshold.
 - Branch: `fix/failed-gate-aged-pr-sharded-recovery-20261022-v1`. Reuse existing source module, original regression, Brain learning, human docs and ledger.
 - Evidence status: CANDIDATE until actual CI+CodeQL, protected merge and scheduled watchdog provider readback. Full BRAIN zero failures not claimed.
+
+- Admission diagnosis on PR #4671: first exact-head Required run #39813227730 stopped before tests with `PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING`. PR body now supplies the immutable ancestor `Base-SHA: 01af9f2a05794a170cd3fd63013db75a33e76268`; this follow-up commit triggers fresh exact-head CI. No gate skipped.
