@@ -5,7 +5,7 @@
   "relation": "parallel non-overlapping source plan refinement to protected draft #4558",
   "failure_pattern": "818 business opportunities repeatedly expand a 23,295-contact person-intelligence view inside a LATERAL next-best-action route. Revenue snapshot often times out at 120s.",
   "root_cause": "Uncorrelated source view is fully expanded per LATERAL opportunity; its own aliases/events/actions/outcomes and aggregated calculations are recomputed.",
-  "proposed_fix": "One statement-local MATERIALIZED person intelligence CTE; preserve original LATERAL equality, sort and LIMIT; unchanged all 50 view output fields.",
+  "proposed_fix": "Same materialized person view plus guarded versioned two-arm equijoin successor, preserve 50 columns and ACL, all runtime/full finance gates still open.",
   "evidence": {
     "baseline_explain_cost": 32713172.61,
     "candidate_explain_cost": 1597888.41,
@@ -41,6 +41,19 @@
       "code_guard": "BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED",
       "regression": "tests/brain-p0-4215-person-intelligence-once.test.mjs",
       "meaning": "no actual positive-valued financial parity; no fabricated revenue or PII copied"
+    },
+    "two_arm_trial_20261022": {
+      "status": "SQL_COMPILED_ROLLED_BACK_ON_EXISTING_PREVIEW",
+      "preview_ref": "kvygrqnkhhidwbaugnqp",
+      "old_hash": "6a7a20df1f24b4333986ba9b2da09314",
+      "new_hash": "8a9b316a512dcf55889b0a56e7026170",
+      "column_count": 50,
+      "anon_select": false,
+      "authenticated_select": false,
+      "service_role_select": true,
+      "actual_cron_sla": "NOT_TESTED",
+      "full_finance_and_tenant_parity": "NOT_PROVEN",
+      "production_applied": false
     }
   },
   "prevention": [
@@ -60,16 +73,19 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-p0-4215-person-intelligence-once.test.mjs"
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
     ],
     "canary": [
-      "tests/brain-p0-4215-person-intelligence-once.test.mjs"
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
     ],
     "shadow": [
-      "tests/brain-p0-4215-person-intelligence-once.test.mjs"
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
     ]
   },
-  "current_state": "CANDIDATE_NO_LIVE_DEPLOY",
+  "current_state": "TWO_ARM_VERSIONED_CANDIDATE_NO_LIVE_DEPLOY",
   "parity_runner_incident": {
     "fingerprint": "p0-4215-parity-runner-migrated-preview-and-process-shadow-20261022",
     "observed_at": "2026-10-22",
