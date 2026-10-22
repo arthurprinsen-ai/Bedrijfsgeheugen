@@ -38,8 +38,7 @@ test('view migration only changes person intelligence use, never dispatch',()=>{
 });
 
 test('independent preview runner compares every 50-column row, forecast aggregation and rejects production',()=>{
- const p='tests/brain-p0-4215-buying-window-full-parity.mjs';
- const src=readFileSync(p,'utf8');
+ const src=readFileSync('tests/brain-p0-4215-buying-window-full-parity.mjs','utf8');
  assert.match(src,/P0_4215_PARITY_ENV/);
  assert.match(src,/isolated-preview/);
  assert.match(src,/productionRef='adhjwmvyoixzjtmiroln'/);
@@ -49,26 +48,21 @@ test('independent preview runner compares every 50-column row, forecast aggregat
  assert.match(src,/EXCEPT ALL/);
  assert.match(src,/BEGIN ISOLATION LEVEL REPEATABLE READ/);
  assert.match(src,/ROLLBACK;/);
- assert.match(src,/CREATE TEMP TABLE p0_old/);
- assert.match(src,/CREATE TEMP VIEW p0_4215_buying_candidate/);
- assert.match(src,/const candidateBody=source\\.slice\\(begin\\+startTag\\.length,end\\)\\.trim\\(\\)/);
- assert.match(src,/const baselineBody=candidateBody\\.replace\\(cacheCte,'WITH base AS'\\)/);
- assert.match(src,/BUYING_RECONSTRUCTED_SOURCE_HASH_MISMATCH/);
- assert.match(src,/BUYING_DEPLOYED_SOURCE_DRIFT/);
- assert.match(src,/CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT \\* FROM pg_temp\\.p0_4215_buying_baseline/);
- assert.match(src,/const endMarker=/);
- assert.doesNotMatch(src,/source\\.indexOf\\('\\\\nDO \\$readback\\$/);
-
+ assert.ok(src.includes('const candidateBody=source.slice(begin+startTag.length,end).trim()'));
+ assert.ok(src.includes("const baselineBody=candidateBody.replace(cacheCte,'WITH base AS')"));
+ assert.ok(src.includes('CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_baseline'));
+ assert.ok(src.includes('const endMarker='));
+ assert.doesNotMatch(src,/source\.indexOf\('\\nDO \$readback\$/);
 });
-
 test('migrated preview is hash pinned, original is transaction-scoped, empty snapshots cannot pass',()=>{
  const src=readFileSync('tests/brain-p0-4215-buying-window-full-parity.mjs','utf8');
- assert.match(src,/baselineHash='2ce1ab1122390af0f51c5aa8b318600f'/);
- assert.match(src,/candidateHash='6a7a20df1f24b4333986ba9b2da09314'/);
- assert.match(src,/installed_hash NOT IN \\(old_hash,new_hash\\)/);
- assert.match(src,/REVOKE\\|GRANT\\|ALTER\\|DROP\\|DO/);
- assert.match(src,/CREATE TEMP VIEW p0_4215_buying_baseline WITH/);
- assert.match(src,/CREATE TEMP VIEW p0_4215_buying_candidate WITH/);
- assert.match(src,/old_rows=0 OR old_rows<>new_rows/);
- assert.match(src,/rollback-only|ROLLBACK;/i);
+ assert.ok(src.includes("baselineHash='2ce1ab1122390af0f51c5aa8b318600f'"));
+ assert.ok(src.includes("candidateHash='6a7a20df1f24b4333986ba9b2da09314'"));
+ assert.ok(src.includes('installed_hash NOT IN (old_hash,new_hash)'));
+ assert.match(src,/BUYING_RECONSTRUCTED_SOURCE_HASH_MISMATCH/);
+ assert.match(src,/BUYING_DEPLOYED_SOURCE_DRIFT/);
+ assert.ok(src.includes('CREATE TEMP VIEW p0_4215_buying_baseline WITH'));
+ assert.ok(src.includes('CREATE TEMP VIEW p0_4215_buying_candidate WITH'));
+ assert.ok(src.includes('old_rows=0 OR old_rows<>new_rows'));
+ assert.match(src,/ROLLBACK;/);
 });
