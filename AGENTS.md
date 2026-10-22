@@ -1,3 +1,7 @@
+## GitHub owner-handoff: provider-403 is never a delivered recovery signal (22 October 2026)
+
+Fingerprint: `github|required-gate-owner-handoff|provider-comment-403|20261022-v1`. The existing five-minute Required Gate Watchdog can observe an exact-head failed Required/CodeQL check but GitHub can deny its `POST /issues/<pr>/comments` with HTTP 403 despite runner-declared `Issues:write` (run #39811993147). Every current/future agent must classify `PROVIDER_AUTHORITY_DENIED_NOT_DELIVERED`, never claim successful handoff, keep the SAME PR/obligation owner, retain the exact run/job/head evidence and use the documented `pull-requests:write` alternative only within the existing workflow. Preserve safe independent work and fail closed while owner notification is unverified. The canonical regression is `tests/brain-required-failed-gate-owner-routing-v1.test.mjs`; source learning is `brain/learning/2026-10-22-watchdog-owner-comment-authority-403-v1.json`. No second scheduler, false green, code fix invented from a comment, or security gate bypass.
+
 ## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
 
 Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
