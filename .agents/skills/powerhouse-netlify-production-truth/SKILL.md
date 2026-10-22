@@ -236,3 +236,15 @@ For `/api/portal-ondernemersdata` specifically:
 
 Historical learning: `brain/learning/2026-09-21-netlify-serverless-env-api-v1.json`.
 Recurrence learning: `brain/learning/2026-10-07-portal-authenticated-production-503-serverless-env-v1.json`.
+
+## Mobiele CLS: exacte bronherleiding zonder groen-bypass (2026-10-22)
+
+Fingerprint: `website|mobile-cls|en-blog-afas-api|20261022-v1`.
+
+Bij `standalone-visibility-check.mjs` op `/en/blog/afas-api` is in Required PR #4606 CLS 0.111 bij mobiel 390×844 gemeten, boven de onveranderlijke acceptatiegrens 0.100. De checkoutcontrole slaagde bij de herstart, maar deze afzonderlijke brononzekerheid blijft rood.
+
+Verplichte diagnose voordat CSS of content wordt veranderd: bewaar de echte layout-shift `entry.sources` inclusief elementselector en previous/current rectangles; noteer welke DOM-elementen de verschuiving veroorzaken. Houd de reporter begrensd (maximaal 12 samples in geheugen, 8 naar de controle, 1.800 uitvoertekens bij rood), voer exact dezelfde routes, viewports en CLS-limiet uit en produceer geen verzonnen bronattributie als de browser geen sources levert.
+
+De diagnose is uitsluitend meetinstrumentatie. `CLS > 0.100` blijft **release-blocking**; niet boven de limiet gaan zitten, geen uitzondering voor de AFAS-route en geen extra scheduler, providerpublishing of parallel foutregister. Alleen herstel van een bewezen DOM/CSS-oorzaak met herhaalde volledige browserregressie, exact-head Required/CodeQL en Netlify-productiereadback mag het incident `PROVEN` maken.
+
+Regressie: `tests/brain-mobile-cls-attribution-20261022.test.mjs`. Incident authority: `public.brain_failure_registry`, issue #4215 en originele website PR #4606.
