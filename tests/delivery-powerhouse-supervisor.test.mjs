@@ -277,6 +277,6 @@ test('existing hourly Janitor exports both raw and actionable queue under canoni
   assert.match(js,/assessQueuePressure/);
   assert.match(js,/verifiedProviderGhostQueued/);
   assert.match(js,/collectionMissingKnownProviderIds/);
-  assert.match(js,/providerIncidentStillOpen/);
+  assert.match(js,/providerIncidentStillOpen: reports\.length > 0/);
   assert.match(js,/GHOST_RUN_PROVIDER_BLOCKED/);
 });
