@@ -61,7 +61,7 @@ jobs:
             terminal_proof:false,
             next_safe_action:'Inspect exact failed step and resume the existing canonical learning obligation; never infer success from the checkpoint alone'
           };
-          fs.writeFileSync('artifacts/quality/daily-learning-execution-checkpoint.json',JSON.stringify(snapshot,null,2)+'\\n');
+          fs.writeFileSync('artifacts/quality/daily-learning-execution-checkpoint.json',JSON.stringify(snapshot,null,2)+'\n');
           NODE
       - uses: actions/upload-artifact@v4
         if: always()
