@@ -1,0 +1,84 @@
+{
+  "fingerprint": "powerhouse|brain|archived-commercial-oracles|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation_id": "ci-brain-archived-commercial-oracle-batch-20261022",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "root_causes": [
+    "Ten historical test modules read retired executable migration paths."
+  ],
+  "prevention": [
+    "Test against verified immutable archive blobs, retaining original contract assertions.",
+    "Do not restore retired executable SQL migrations."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 10,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-historical-commercial-sql-oracle-guard-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-historical-commercial-sql-oracle-guard-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-historical-commercial-sql-oracle-guard-20261022.test.mjs"
+    ]
+  },
+  "evidence": {
+    "baseline_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755490943",
+    "archive_sources": [
+      {
+        "filename": "20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+        "git_blob": "18876bf5a51efe00d948f6652899477535b910a4"
+      },
+      {
+        "filename": "20260928161000_powerhouse_all_20_growth_plays_v3.sql",
+        "git_blob": "409e3836129733c6443d6f27a59ad148a634220f"
+      },
+      {
+        "filename": "20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+        "git_blob": "fa911898c56c6f02cd24a85091c69d92c0ec4123"
+      },
+      {
+        "filename": "20260928123500_powerhouse_growth_swarm_v1.sql",
+        "git_blob": "e0e34c92aa5f622f6e4d9441f5b79f462eea3e3e"
+      },
+      {
+        "filename": "20260928124000_powerhouse_growth_swarm_activation_v1.sql",
+        "git_blob": "2b842dc2aa3d2b17ea437b453af3bfef71fdb876"
+      },
+      {
+        "filename": "20260929212500_powerhouse_loop_assurance_v3.sql",
+        "git_blob": "0a3eeaa971e3acd2fbac58087019fc8244102036"
+      },
+      {
+        "filename": "20260918103100_action_evidence_obligations_v1.sql",
+        "git_blob": "8e48ff68d930f2d33d94092baaa255d2e36d8ca0"
+      },
+      {
+        "filename": "20260918100000_powerhouse_dataforseo_intelligence_schedule_v1.sql",
+        "git_blob": "716cdf257c9017aeaaeb5533a0cdbc6bd1b18ec5"
+      },
+      {
+        "filename": "20260915140200_powerhouse_full_cycle_status_normalization_v1.sql",
+        "git_blob": "3e9ab3d880e03a75cd915c95397ee76db33cd22a"
+      },
+      {
+        "filename": "20260915140300_powerhouse_forecast_calibrator_timing_gap_fix_v1.sql",
+        "git_blob": "b2dcfb81a3773363fba0bf177bc34c27183cc318"
+      },
+      {
+        "filename": "20260915170000_powerhouse_tenant_identity_hardening_v1.sql",
+        "git_blob": "50d899bfa0569cf17661804b8a142cb4aa42d808"
+      }
+    ],
+    "original_assertions_preserved": true,
+    "production_changes": false,
+    "full_brain": "NOT_VERIFIED"
+  },
+  "current_state": "CANDIDATE_UNVERIFIED"
+}
