@@ -29,14 +29,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-branch-hygiene-guard.test.mjs"
+      "tests/brain-required-diverged-pr-scope-v1.test.mjs"
     ],
     "shadow": [
-      "tests/delivery-required-branch-hygiene-wiring.test.mjs"
+      "tests/brain-required-diverged-pr-scope-v1.test.mjs"
     ],
     "canary": [
-      "tests/delivery-branch-hygiene-guard.test.mjs",
-      "tests/delivery-required-branch-hygiene-wiring.test.mjs"
+      "tests/brain-required-diverged-pr-scope-v1.test.mjs"
     ]
   },
   "validation": {
