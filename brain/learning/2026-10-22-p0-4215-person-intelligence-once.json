@@ -69,7 +69,9 @@
       "forward_set_join_candidate_md5": "dcac5a8d2543147d3d5e294cc14a599e",
       "preview_data": "ZERO_OPPORTUNITIES",
       "production_deploy": "NOT_AUTHORIZED_OR_DEPLOYED",
-      "restrictions": "Sample timings are not entire snapshot runtimes. SQL compilation confirmed 50 columns in temp view and rollback. No financial or tenant proof."
+      "restrictions": "Sample timings are not entire snapshot runtimes. SQL compilation confirmed 50 columns in temp view and rollback. No financial or tenant proof.",
+      "parity_runner_path": "tests/brain-p0-4215-buying-window-set-join-parity.mjs",
+      "shadow_test_path": "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
     }
   },
   "prevention": [
@@ -103,7 +105,7 @@
     "shadow": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
       "tests/brain-p0-4215-person-two-arm-match.test.mjs",
-      "tests/brain-p0-4215-buying-window-set-join-parity.mjs"
+      "tests/brain-p0-4215-person-alias-set-join-fastpath.test.mjs"
     ]
   },
   "current_state": "TWO_ARM_VERSIONED_CANDIDATE_NO_LIVE_DEPLOY",
