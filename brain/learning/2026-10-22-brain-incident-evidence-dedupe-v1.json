@@ -1,0 +1,64 @@
+{
+  "fingerprint": "brain|incident-observe|evidence-overwrite-and-crosswriter-runid-dup|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
+  "relation": "Distinct canonical Brain-registry storage defect; commercial cron #4215 remains separately unresolved",
+  "failure_pattern": "New brain_observe_failure occurrence overwrites registry.evidence, while two agent formats encode the same job46/runid and inflate the raw occurrence count.",
+  "observed_evidence": {
+    "production_function": "UPDATE public.brain_failure_registry SET ... evidence=coalesce(p_evidence,evidence)",
+    "actual_duplicate_examples": [
+      "cron-46:121040",
+      "supabase:cron:job46:run:121040"
+    ],
+    "recorded_raw_count_at_original_issue": 20,
+    "distinct_normalized_cron_run_ids_at_original_issue": 11,
+    "duplicated_semantic_events": 9,
+    "raw_history_preserved_in": "public.brain_failure_occurrences",
+    "security": "SECURITY DEFINER, anon/authenticated cannot EXECUTE, service_role can EXECUTE"
+  },
+  "root_cause": "Registry current evidence is replaced wholesale on observe; deduplication's only identity is caller-supplied exact occurrence_id, not normalized physical provider cron job/run.",
+  "proposed_fix": "Preserve old registry evidence in place; maintain raw append-only occurrences for new details; normalize known cron occurrence-ID aliases by jobid and runid and serialize concurrent writers with a transaction-scoped advisory lock; reject conflicting provider status or exact-ID mismatched hashes.",
+  "prevention": [
+    "All agents use one canonical provider event identity and a single Brain RPC before writing a new recovery occurrence.",
+    "Do not overwrite verified or promoted evidence with an observation's latest raw JSON; the raw ledger holds new events.",
+    "Distinguish raw historical occurrences from normalized unique provider events; retain old raw records unmodified.",
+    "Run transaction-only positive/negative regression before creating a protected release; preserve service-role-only permissions.",
+    "Do not infer production recovery from source CI, a draft PR, or old commercial snapshot rows.",
+    "Source-code edits containing JavaScript replacement tokens such as $' must use a replacement callback, not a replacement template; a temporary malformed migration write was corrected from its immutable previous commit before PR creation."
+  ],
+  "regression": [
+    "tests/brain-failure-observe-preserve-evidence-v1.test.mjs",
+    "tests/sql/brain-failure-observe-preserve-evidence-v1.sql"
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-failure-observe-preserve-evidence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/sql/brain-failure-observe-preserve-evidence-v1.sql"
+    ],
+    "shadow": [
+      "tests/brain-failure-observe-preserve-evidence-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "AGENTS.md"
+  ],
+  "release_gates": [
+    "Exact-head Required CI and CodeQL",
+    "Representative service-role test on appropriate isolated provider preview without copied customer PII",
+    "Protected merge on latest main",
+    "Production RPC ACL and idempotent occurrence readback",
+    "Canonical registry/skill/ledger writeback"
+  ],
+  "current_state": "CODE_CANDIDATE_NOT_YET_PROVIDER_VERIFIED_NOT_LIVE",
+  "raw_occurrence_history_must_remain_untouched": true,
+  "separate_open_incident": "powerhouse|revenue-snapshot|cron-120s-statement-timeout|v1"
+}
