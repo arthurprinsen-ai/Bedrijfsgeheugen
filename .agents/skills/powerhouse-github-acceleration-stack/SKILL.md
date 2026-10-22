@@ -44,3 +44,11 @@ Treat GitHub delivery acceleration as one governed control plane rather than sep
 ## Proven source lineages
 
 #3222, #3236, #3242, #3244, #3247 and #3256 establish the component capabilities and their terminal proof. This skill is the canonical composition/projection of those proven lineages.
+
+## Repository-only migration test source reconciliation — ci|brain-baseline|content-loop-repository-history-pointers|20261021-v1
+
+- Historical SQL canonically retained under `supabase/migration-history/repository-only/` is **not** executable production migration input; never copy it back to `supabase/migrations/` to satisfy a failing test.
+- For a moved SQL source-contract test, point only the exact historical file reference to its preserved byte-bearing archive and leave content matchers, security/tenant guards, immutable-identity checks and scheduler assertions unchanged.
+- Verify exact archive object IDs and existing matchers before accepting a candidate. A passing source marker check is not a Node/full-BRAIN run.
+- Required, CodeQL and full exact-head BRAIN must succeed before protected merge; no waiver for inherited failures. Production and two-real-customer acceptance are separate contracts.
+- Evidence: issue #4215 and #3742, BRAIN run 39554866582, test `tests/brain-content-closed-loop-contract.test.mjs`, candidate fingerprint `ci|brain-baseline|content-loop-repository-history-pointers|20261021-v1`.
