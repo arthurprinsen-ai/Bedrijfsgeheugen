@@ -1,0 +1,75 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1",
+  "obligation_id": "delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_provider_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_QUEUE_PRESSURE_PROVIDER_GHOST_FALSE_OVERLOAD",
+  "root_cause": "The predictive controller previously counted the raw queued collection without distinguishing four independently proven 2026-10-07 GitHub provider-owned zero-job, cancel-409, delete-403 ghosts from executable current workflow jobs. GitHub queued listing itself is sometimes inconsistent with per-ID GET.",
+  "observed_evidence": {
+    "provider_ghost_ids": [
+      37642383514,
+      37642383517,
+      37642336315,
+      37642334843
+    ],
+    "janitor_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39807553086",
+    "janitor_status": "completed/success",
+    "previous_recovery_http": [
+      409,
+      409,
+      403
+    ],
+    "single_build_baseline_ms": 71354
+  },
+  "failed_approaches": [
+    "Counting all historical provider ghosts as real scheduled jobs",
+    "Treating queued-list count 0 as deleted evidence",
+    "Excluding run IDs merely because they are old",
+    "Applying a raw numerical discount without exact provider/zero-job evidence",
+    "Repeating provider-denied API cancellation and deletion"
+  ],
+  "fix": "Extend the existing predictive-controller pure queue-pressure algorithm with exact run-id, current-main/open-PR-head, 24h unchanged timestamp, 0 jobs, canonical incident-denial marker, fresh ten-minute exact-readback and fully paginated collection proof. Existing Repository Janitor emits rawQueued, verifiedProviderGhostQueued and actionableQueued in the existing evidence artifact; no new scheduler.",
+  "prevention_rule": "Capacity reservations must use only independently verified provider-ghost exclusions; preserve unmodified raw count and provider incident OPEN. Any missing/mismatched proof, job present, active head, current Required/CodeQL, stale readback, partial collection or inconsistent total fails closed. Never weaken security/release gates or alter externally owned GitHub provider data to create false green.",
+  "tests": [
+    "tests/delivery-powerhouse-supervisor.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_QUEUE_PRESSURE_PROVIDER_GHOST_FALSE_OVERLOAD",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "invariants": [
+      "raw queued count is preserved",
+      "5 raw = 4 provider-proven ghosts + 1 actionable",
+      "no proof means all 5 actionable",
+      "current-head / required / CodeQL remain counted",
+      "zero jobs and 409/403 provider denial required",
+      "provider incident never marked resolved by capacity-only normalization",
+      "no new scheduler and deterministic regression"
+    ],
+    "historical_replay": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ]
+  },
+  "dependencies": [
+    "full lane-specific predictive throughput and measured multi-run p50/p95 remain owned by issue #4661",
+    "legacy provider records remain owned by issue #4655"
+  ],
+  "terminal_rule": "Scope-1 queue evidence live only after protected merge, required CodeQL and Janitor exact-main readback. Full #4661 and provider incident #4655 remain open until their independent acceptance evidence is complete."
+}
