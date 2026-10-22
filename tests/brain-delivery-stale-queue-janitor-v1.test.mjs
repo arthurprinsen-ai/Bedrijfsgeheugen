@@ -87,5 +87,5 @@ test('existing five-minute supervisor skips previously escalated GitHub 409/403 
   assert.match(supervisor,/KNOWN_PROVIDER_GHOST_ALREADY_ESCALATED/);
   assert.match(supervisor,/issues\/4655\/comments/);
   assert.match(supervisor,/provider_ghosts/);
-  assert.match(supervisor,/GITHUB_PROVIDER/);
+  assert.match(supervisor,/PROVIDER_CONTROL_PLANE_ZOMBIE/);
 });
