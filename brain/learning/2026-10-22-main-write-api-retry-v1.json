@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "delivery|main-write|unverifiable-pr-association-v1",
+  "obligation_id": "delivery|main-write|transient-association-retry|20261022-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4657",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_MAIN_WRITE_PROVENANCE_READBACK",
+  "root_cause": "On main 4ce0846ca51227169389241d3a122b274795a0b2 one-shot gh api commits/{sha}/pulls failed; independent provider proof later returned merged PR #4658 and targeted rerun attempt 2 succeeded. Exact initial provider HTTP cause not captured.",
+  "prevention_rule": "Retry same exact main commit association at most three times with bounded backoff, including initial empty lists. Only a genuinely merged PR to main with exact merge SHA proves governed. Provider missing/malformed/unavailable remains fail-closed. No second scheduler.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-main-write-pr-association-retry-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-main-write-pr-association-retry-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-main-write-pr-association-retry-20261022.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-main-write-pr-association-retry-20261022.test.mjs"
+  ],
+  "test_evidence": {
+    "initial": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39807485724",
+    "verified_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4658",
+    "job_rerun_attempt_2": "SUCCESS",
+    "ci": "PENDING",
+    "production": "PENDING"
+  }
+}

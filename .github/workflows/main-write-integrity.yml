@@ -32,20 +32,24 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { appendFile, writeFile } from 'node:fs/promises';
           import { classifyMainWrite } from './tools/main-write-integrity.mjs';
+          import { readMainWritePullRequests } from './tools/main-write-pr-association-retry.mjs';
           const sha = process.env.GITHUB_SHA;
           const parentLine = execFileSync('git', ['rev-list', '--parents', '-n', '1', sha], { encoding: 'utf8' }).trim();
           const parentCount = Math.max(0, parentLine.split(/\s+/).length - 1);
           const changedPaths = execFileSync('git', ['diff-tree', '--no-commit-id', '--name-only', '-r', sha], { encoding: 'utf8' }).split(/\r?\n/).map(v => v.trim()).filter(Boolean);
-          let associatedPullRequests;
-          try {
-            const raw = execFileSync('gh', ['api', `repos/${process.env.GITHUB_REPOSITORY}/commits/${sha}/pulls`], { encoding: 'utf8', env: process.env });
-            associatedPullRequests = JSON.parse(raw).map(pr => ({ number: pr.number, merged: Boolean(pr.merged_at), baseRef: pr.base?.ref ?? null, mergeCommitSha: pr.merge_commit_sha ?? null }));
-          } catch (error) {
-            console.error(`Unable to verify PR association: ${error.message}`);
-            associatedPullRequests = undefined;
-          }
+          // GitHub PR association may lag a protected squash commit; retry the exact immutable SHA.
+          const associationReadback = await readMainWritePullRequests({
+            read: () => JSON.parse(execFileSync('gh', ['api', `repos/${process.env.GITHUB_REPOSITORY}/commits/${sha}/pulls`], {
+              encoding: 'utf8', env: process.env, timeout: 15000, maxBuffer: 1024 * 1024,
+            })),
+          });
+          const associatedPullRequests = associationReadback.pullRequests?.map(pr => ({
+            number: pr.number, merged: Boolean(pr.merged_at),
+            baseRef: pr.base?.ref ?? null, mergeCommitSha: pr.merge_commit_sha ?? null,
+          }));
+          console.log('MAIN_WRITE_PR_ASSOCIATION_RECHECK', JSON.stringify({ status: associationReadback.status, attempts: associationReadback.attempts, count: associatedPullRequests?.length ?? null }));
           const result = classifyMainWrite({ branch: process.env.GITHUB_REF_NAME, parentCount, changedPaths, headSha: sha, associatedPullRequests });
-          const evidence = { observedAt: new Date().toISOString(), repository: process.env.GITHUB_REPOSITORY, runId: process.env.GITHUB_RUN_ID, changedPaths, associatedPullRequests: associatedPullRequests ?? null, ...result };
+          const evidence = { observedAt: new Date().toISOString(), repository: process.env.GITHUB_REPOSITORY, runId: process.env.GITHUB_RUN_ID, changedPaths, associatedPullRequests: associatedPullRequests ?? null, associationLookup: { status: associationReadback.status, attempts: associationReadback.attempts }, ...result };
           await writeFile('.artifacts/main-write-integrity.json', `${JSON.stringify(evidence, null, 2)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT, `status=${result.status}\nrecoveryRequired=${String(result.recoveryRequired)}\nfingerprint=${result.fingerprint ?? ''}\n`);
           console.log(JSON.stringify(evidence));
