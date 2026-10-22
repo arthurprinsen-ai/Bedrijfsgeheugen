@@ -2559,3 +2559,24 @@ export const POWERHOUSE_GITHUB_ACTIONS_GHOST_AUTONOMY_V1 = Object.freeze({
   noSecondScheduler:true,
   deploymentStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_PROVIDER_READBACK'
 });
+
+
+// 2026-10-22: scoped addition to the existing predictive controller and hourly Janitor.
+export const GHOST_AWARE_PREDICTIVE_QUEUE_PRESSURE_V1 = Object.freeze({
+  fingerprint:'delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1',
+  obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661',
+  providerIncident:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655',
+  controller:'tools/delivery/predictive-controller.mjs',
+  evidenceProducer:'.github/scripts/github-actions-ghost-reconcile.mjs',
+  scheduler:'existing Powerhouse Repository Janitor hourly schedule',
+  queueMetrics:['rawQueued','verifiedProviderGhostQueued','actionableQueued','collectionMissingKnownProviderIds'],
+  proofRequirements:['exact run and 0-jobs GET','queued/null unchanged age >= 24h',
+    'not current protected main nor any open PR head','canonical GHOST_RUN_PROVIDER_BLOCKED issue marker',
+    'fresh provider readback <= 10 min','complete paginated queue snapshot'],
+  failClosed:true,
+  noParallelScheduler:true,
+  noProviderGreenInference:true,
+  regression:'tests/delivery-powerhouse-supervisor.test.mjs',
+  learning:'brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json',
+  status:'CANDIDATE_AWAITING_PROTECTED_MERGE_AND_RUNTIME_READBACK'
+});
