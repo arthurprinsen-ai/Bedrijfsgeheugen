@@ -5,6 +5,37 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Universele incidentherkenning & preventie
+
+Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
+Geldt voor elk bestaand en toekomstig agent-/chat-/CI-/runtime-/providerpad dat materieel Powerhouse-werk uitvoert. Dit is een werkvoorschrift voor de bestaande Brain→skillprojectie, geen nieuwe databank of incidentautoriteit.
+
+### 1. Eerst detecteren wat al bekend is
+- Verzamel vóór uitvoering: `obligation_id`, tenant/scope (zonder gevoelige details), component, operatie, pad, canonieke provider, foutklasse, onveranderlijke bronreferenties, actuele status en exacte commit/deploy/run-ID.
+- Raadpleeg `public.brain_failure_registry`, `brain/learning/**/*.json`, `docs/learning/known-error-preflight-contract.md`, open GitHub-issues en de huidige derived skill index. Vergelijk semantisch; een anders geformuleerde fout kan dezelfde hoofdoorzaak hebben.
+- Maak een deterministische fingerprint van stabiele oorzaakindicatoren (component + operatie + failure contract + normalized error signature); sluit tijdstip, request-ID, token, klantidentificatie en niet-relevante variatie uit. Een nieuw symptoom onder dezelfde root cause verhoogt occurrences; alleen een materieel andere root cause rechtvaardigt een nieuwe fingerprint/owner.
+- Bevestig het originele foutsignaal met actuele evidence. Historische SQL/testfouten, toolafwijzingen en verdwenen observertoegang zijn niet vanzelf actieve productieproblemen. Onvolledige evidence betekent `UNKNOWN` of `EVIDENCE_MISSING`, niet groen.
+
+### 2. Eén herstelowner, één duurzame keten
+- Gebruik de bestaande `obligation_id`, herstel-PR en incident-ID. Creëer geen tweede scheduler, writer, publication obligation of parallel knowledge store.
+- Bewaar per incident: fingerprint, severity, class, eerste/laatste waarneming, occurrence count, symptomen, oorzaakstatus, proven root cause of open RCA-vraag, impact, bewijslinks, pogingen/uitkomsten, rollback, preventieregel, regressietest, owner, next safe action, blockers en exact-head/productie-/providerreadback.
+- Registreer het incident ook wanneer herstel nog niet beschikbaar is. Geen gefingeerde root cause, no-op-regressie of voltooiingsclaim. Voer binnen autorisatie bounded herstel uit en persist checkpoint voor na context/stream/toolonderbreking.
+- Bundel clusters zoals historische SQL-oracles en CI-regressies per bewezen oorzaak, maar behoud de losse falende assertions/occurrences als controleerbare bewijsregels. `321` gemelde fouten betekent niet automatisch 321 onafhankelijke oorzaken.
+
+### 3. Van fout naar uitvoerbare kennis
+- Leg eerst een regressietest/contract vast die het oorspronkelijke defect detecteert; wijs die test toe aan een bestaande BRAIN-DELIVERY-lane. Reparatie aan de oorzaak, niet de status/oracle/threshold cosmetisch groen maken.
+- Registreer learning met `fingerprint`, `root_cause`, `prevention_rule`, `compiler.failure_class`, `evaluation.historical_replay`, echte `evidence`, `skill_targets` en bronversie in `brain/learning`; projecteer uitsluitend uit deze canonieke waarheid via `scripts/brain/powerhouse-skill-projection.mjs`.
+- Deel het in dezelfde lineage met de bestaande append-only development ledger en menselijke documentatie. De volgende agent moet de regel aantoonbaar kunnen vinden en vóór een nieuwe write toepassen; bij missende/stale projection blijft `LEARNING_WRITTEN_SKILL_SYNC_PENDING`.
+- Sluit pas af na actuele regressie, geschikte required checks, protected promotion waar van toepassing, exacte productie-/providerreadback, outcome en duurzame registry/skill writeback. `OBSERVED` en `CANDIDATE` zijn geen `PROVEN`. Een gedeelde leerregel vermindert herhaling maar garandeert niet dat externe platformfouten nooit opnieuw optreden.
+
+### Bekende klassen die altijd worden vergeleken
+- `CI_ZERO_JOB_ACTION_REQUIRED`: `action_required` zonder jobs is niet geslaagd; behoud bestaande PR-lineage en vereist de legitieme workflow-trigger/autorisatie.
+- `SQL_ARCHIVE_ORACLE_DRIFT`: historische SQL-bronpad-/migratieverwijzingen moeten met huidige canonical source en ledger worden vergeleken, zonder DDL-replay of ongeoorloofde oracle-versoepeling.
+- `SCHEDULER_UNREACHABLE_BRANCH`: toets cron-vuurminuten tegen mux-branchminuten inclusief UTC/DST; succes van mux is niet succes van alle taken.
+- `SOCIAL_PROVIDER_DELIVERY_GAP`: provider ack is geen geverifieerde post of exact-final-media; opnieuw posten is verboden zonder bewijs dat geen side effect bestaat.
+- `TOOL_OR_STREAM_INTERRUPTION`: bewaar checkpoint en hervat dezelfde obligation na tool/context/stream-uitval; maak geen dubbele PR, post, mail of mutatie.
+
+
 ## Core principle
 
 Every material chat or agent is an intrinsic execution node in one canonical Powerhouse loop. Local chat state is never authority.
