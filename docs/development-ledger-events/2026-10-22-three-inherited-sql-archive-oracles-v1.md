@@ -1,0 +1,3 @@
+# Development ledger: ci-brain|retired-sql-source|three-unowned-oracles|20261022-v1
+
+Status: CANDIDATE_UNVERIFIED. Evidence: Unified BRAIN run #39791707071, 355 failing TAP cases, 58 distinct retired SQL ENOENT paths in original log; three unowned tests now targeted. Cause: outdated test read paths, not missing original SQL. Recovery: three minimal source path replacements, unchanged semantic/security tests, immutable Git blob and no-executable-duplicate regression. Prevention: reuse canonical Brain failure registry and skills, exact-head CI, CodeQL, full BRAIN, migration parity and production readback. No new scheduler/tenant write. Result: awaiting independent verification.

@@ -200,3 +200,6 @@ For public i18n:
 - every behavioral change to `assets/js/i18n.js` requires a matching `I18N_ASSET_VERSION` rotation in `tools/site-shell/apply-i18n.mjs`;
 - production readback must prove the HTML references the rotated asset and the NL→EN→NL interaction works;
 - do not classify repeated old behavior as a new runtime defect until cache identity has been disproven.
+
+## Canonieke BRAIN historische SQL-orakelherstel — 22 oktober 2026
+Fingerprint: `ci-brain|retired-sql-source|three-unowned-oracles|20261022-v1`. Bij ENOENT van retired SQL-migraties waarvan de originele Git blob in `supabase/migration-history/repository-only/` bestaat: valideer hash en originele positieve en negatieve assertions, herstel uitsluitend het testbron-leespad, en verbied een tweede executable migratiebestand. Controleer vóór elke write bestaande PR-writer en actuele main. Vereis een machineleesbare BRAIN wrapper met historische replay/shadow/canary, Required/CodeQL, onafhankelijke volledige BRAIN nul-fail run en ondersteunde Supabase clean-room replay. Nooit lege SQL-shims, testskips, tweede scheduler of nep-groen.
