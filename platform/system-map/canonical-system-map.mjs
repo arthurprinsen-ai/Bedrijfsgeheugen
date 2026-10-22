@@ -2575,3 +2575,22 @@ export const POWERHOUSE_GITHUB_ACTIONS_GHOST_AUTONOMY_V1 = Object.freeze({
   noSecondScheduler:true,
   deploymentStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_PROVIDER_READBACK'
 });
+
+
+// 2026-10-22: existing daily learning workflow executes independent self-improvement
+// even when separate source-backed AI model freshness is correctly fail-closed.
+export const POWERHOUSE_DAILY_SELF_EVOLUTION_FAILURE_DOMAIN_ISOLATION_V1 = Object.freeze({
+  fingerprint:'learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1',
+  schedule:'existing Powerhouse Daily Self Evolution (one daily cron, no replacement scheduler)',
+  authority:'.github/workflows/powerhouse-daily-self-evolution.yml',
+  independentJobs:Object.freeze(['improve','model-freshness']),
+  providerOwner:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367',
+  providerModelClaimsAutomaticallyApproved:false,
+  overallWorkflowMustStayRedWhenAuditFails:true,
+  evidence:'artifacts/quality/ai-model-intelligence-audit.json',
+  regression:'tests/powerhouse-daily-self-evolution.test.mjs',
+  learning:'brain/learning/2026-10-22-daily-learning-provider-freshness-isolation-v1.json',
+  sourceRunIds:Object.freeze([39578449326,39756866887]),
+  status:'CANDIDATE_NOT_YET_PROVEN',
+  noSecondScheduler:true, noWeakenedGate:true
+});
