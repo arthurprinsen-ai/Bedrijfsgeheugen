@@ -117,7 +117,7 @@ test('diverged owner PR uses exact verified merge base, not newer unrelated main
     'Candidate-Type: recovery',
     'Change-Scope: supabase/migrations/revenue.sql, docs/changes/revenue.md',
     'Scope-Budget: 2',
-  ].join('\\n'));
+  ].join(String.fromCharCode(10)));
   const valid = evaluateBranchHygiene({
     changedPaths: ['supabase/migrations/revenue.sql', 'docs/changes/revenue.md', 'tests/revenue.test.mjs'],
     metadata,
