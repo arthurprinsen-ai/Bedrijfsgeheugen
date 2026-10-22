@@ -136,6 +136,17 @@ BEGIN
 END;
 $function$;
 
+-- Preserve production's already-restricted ACL; SECURITY DEFINER may never
+-- become directly executable from browser roles during CREATE OR REPLACE.
+REVOKE ALL ON FUNCTION public.enforce_instagram_media_proof_vision_v1()
+  FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.powerhouse_instagram_visual_proof_valid_v1(jsonb, text)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.enforce_instagram_media_proof_vision_v1()
+  TO service_role;
+GRANT EXECUTE ON FUNCTION public.powerhouse_instagram_visual_proof_valid_v1(jsonb, text)
+  TO service_role;
+
 -- Verify that the conservative trigger and owner permission boundary survive.
 DO $readback$
 DECLARE
