@@ -4,12 +4,15 @@ import fs from 'node:fs';
 
 test('CodeQL is stable single-flight per PR/ref and terminal delivery rule is durable', () => {
   const workflow = fs.readFileSync('.github/workflows/codeql.yml', 'utf8');
-  assert.match(workflow, /github\.event\.pull_request\.number \|\| github\.ref/);
+  assert.match(workflow, /github\.event\.pull_request\.number \|\| github\.event\.merge_group\.head_sha \|\| github\.ref_name/);
   assert.doesNotMatch(workflow, /github\.event\.pull_request\.number \|\| github\.run_id/);
   assert.match(workflow, /cancel-in-progress:\s*true/);
 
-  const powerhouse = fs.readFileSync('.github/workflows/powerhouse-codeql.yml', 'utf8');
-  assert.match(powerhouse, /github\.event\.pull_request\.number \|\| github\.ref_name/);
+  assert.equal(fs.existsSync('.github/workflows/powerhouse-codeql.yml'), false, 'retired parallel CodeQL workflow must stay absent');
+  assert.match(workflow, /merge_group:\s*\n\s*types: \[checks_requested\]/);
+  assert.match(workflow, /security-events:\s*write/);
+  assert.match(workflow, /github\/codeql-action\/analyze@v4/);
+  assert.match(workflow, /language: \[javascript-typescript, python\]/);
 
   const rules = JSON.parse(fs.readFileSync('config/delivery-prevention-rules.json', 'utf8'));
   const ids = new Set(rules.rules.filter(r => r.active).map(r => r.id));
