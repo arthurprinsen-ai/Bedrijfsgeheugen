@@ -1,0 +1,43 @@
+{
+  "fingerprint": "brain|incident-observe|evidence-overwrite-and-crosswriter-runid-dup|20261022-v1",
+  "obligation_id": "delivery|terminalizer|unmerged-supersedes-migration-covered|20261022-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE",
+  "failure_class": "TERMINAL_SUPERSESSION_MIGRATION_FALSE_RED",
+  "scope": "GITHUB_CI",
+  "root_cause": "Postrelease terminal closure #39840439339 treated SQL path in closed/unmerged #4686 as unshipped even though protected-merged #4697 delivered exactly that path; unconditional fail prevented otherwise completed migration provider check.",
+  "evidence": {
+    "run_id": 39840439339,
+    "job_id": 120039732278,
+    "source_pr": 4697,
+    "retired_pr": 4686,
+    "terminal_error": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:4686",
+    "migration": "20261022173500_brain_failure_observe_semantic_guard_v1",
+    "live_provider_readback": "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN"
+  },
+  "fix": "Permit a closed unmerged ancestor SQL path only when the already-seen merged same-obligation successor delivered the exact identical path; reject any unique or renamed SQL.",
+  "prevention_rule": "Terminalizer must preserve supersession migrations on exact merged evidence; never infer release from an unmerged PR or bypass protected migration/ACL/provider gates.",
+  "compiler": {
+    "failure_class": "TERMINAL_SUPERSESSION_MIGRATION_FALSE_RED",
+    "scope": "GITHUB_CI",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-unmerged-supersedes-migration-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-unmerged-supersedes-migration-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-unmerged-supersedes-migration-v1.test.mjs"
+    ]
+  },
+  "validation": {
+    "source_regression": "PENDING_CI",
+    "protected_merge": "PENDING",
+    "terminalizer_replay": "PENDING",
+    "production_migration_already_live": true
+  }
+}

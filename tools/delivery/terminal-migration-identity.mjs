@@ -38,3 +38,20 @@ export function resolveTerminalMigrationIdentities(items=[], currentPaths=[]){
     return {...item,version:matches[0].version,canonical_path:matches[0].path,historical_version:version};
   });
 }
+
+/**
+ * A retired, CLOSED/unmerged predecessor does not itself establish production
+ * migration authority. Its SQL paths may be ignored ONLY if an already merged
+ * successor in the SAME obligation delivered their exact path. Differently
+ * named or extra SQL remains a terminal error, never an implicit omission.
+ */
+export function assertRetiredMigrationPathsCovered(prNumber, predecessorPaths=[], mergedItems=[]){
+  if(!Number.isInteger(prNumber)||prNumber<1)
+    throw new Error('SUPERSEDES_PR_ID_INVALID');
+  const delivered=new Set(mergedItems.map(item=>
+    `supabase/migrations/${item.version}_${item.name}.sql`));
+  const missing=[...new Set(predecessorPaths)].filter(path=>!delivered.has(path));
+  if(missing.length)
+    throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${missing.join(',')}`);
+  return {source_pr:prNumber,covered_paths:[...new Set(predecessorPaths)]};
+}

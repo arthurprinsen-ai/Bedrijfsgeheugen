@@ -564,7 +564,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
+          import { resolveTerminalMigrationIdentities, assertRetiredMigrationPathsCovered } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -609,10 +609,11 @@ jobs:
               const migrationFiles=files
                 .filter(file=>file.status!=='removed' && /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')))
                 .map(file=>String(file.filename||''));
-              if(migrationFiles.length>0){
-                throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
-              }
-              console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
+              // The merged descendant is already in expected[] (walk order).
+              // Exact-path coverage is required; any unique predecessor SQL
+              // still fails closed, rather than silently disappearing.
+              const covered=assertRetiredMigrationPathsCovered(prNumber,migrationFiles,expected);
+              console.log(`UNMERGED_SUPERSEDES_COVERED:${prNumber}:${covered.covered_paths.join(',')}`);
             }
 
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
