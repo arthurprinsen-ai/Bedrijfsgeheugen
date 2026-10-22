@@ -33,5 +33,23 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "terminal_rule": "Until exact-head Required, CodeQL, protected merge, explicit safe enable, actual permitted event and no-spurious-reopen readback all pass, status remains CANDIDATE_NOT_LIVE."
+  "terminal_rule": "Until exact-head Required, CodeQL, protected merge, explicit safe enable, actual permitted event and no-spurious-reopen readback all pass, status remains CANDIDATE_NOT_LIVE.",
+  "evaluation": {
+    "invariants": [
+      "Bash syntax parses",
+      "unrelated closed PR is no-op",
+      "TERMINAL_DELIVERY requires exact lease metadata",
+      "MAIN_SYNC requires exact lease metadata",
+      "reopen mutation path stays single"
+    ],
+    "historical_replay": [
+      "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+    ]
+  }
 }
