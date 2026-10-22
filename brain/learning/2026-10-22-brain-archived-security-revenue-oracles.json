@@ -34,5 +34,34 @@
     "#3742 clean-room parity",
     "#4215 authenticated tenants"
   ],
-  "production_change": false
+  "production_change": false,
+  "fingerprint": "powerhouse|brain|archived-security-revenue-oracles|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-inherited-security-revenue-archive-oracles-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-inherited-security-revenue-archive-oracles-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-inherited-security-revenue-archive-oracles-20261022.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_UNVERIFIED",
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755490943/job/119746782219",
+    "original_assertions_preserved": true,
+    "sql_edits": 0,
+    "production_changes": false,
+    "full_brain": "NOT_VERIFIED"
+  }
 }
