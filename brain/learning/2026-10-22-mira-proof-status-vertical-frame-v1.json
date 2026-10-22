@@ -1,0 +1,43 @@
+{
+  "fingerprint": "mira|prepublish-status-fail-contradiction|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "related_pr": "fix/4439-instagram-proof-status-consistency-20261022",
+  "problem": "SQL trigger could demote an otherwise accepted 1080x1920 Reel video_frame to FAIL because validator treated video_frame as static 1080x1350 image, retaining prepublish_verified in same row.",
+  "proof": {
+    "production_ledger_rows": 46,
+    "status_gate_contradictions": 21,
+    "representative_record_date": "2026-10-19",
+    "representative_media_type": "video_frame",
+    "representative_height": 1920,
+    "representative_face_identity_confidence": 0.95,
+    "original_sql_validator_as_video_frame": false,
+    "same_proof_as_reel": true,
+    "current_oct22_verdict": "BLOCKED; all 6 exact proofs FAIL, score <0.94; never claim live"
+  },
+  "root_cause": "Database projection has an incomplete video media-type discriminator, and BEFORE trigger changes identity_gate_result to FAIL but does not co-update contradictory preliminary status and visual.verified fields.",
+  "remediation": "Explicitly recognize video_frame=1080x1920 in the existing SQL validator; require canonical Mira ID/URL, two-image vision, >=0.94 facial similarity. Normalize prepublish_verified to prepublish_rejected on FAIL while preserving already-published external identifiers. No change to scheduler or provider dispatch.",
+  "prevention": [
+    "Treat format/proof tokens as a shared contract across producer, vision verifier, SQL trigger, and router.",
+    "Never count provider_status prepublish_verified as proof if identity_gate_result is not PASS.",
+    "Keep exact start/middle/end temporal+face verification and 0.94 minimum; no threshold lowering or random retry until PASS.",
+    "Protect real provider receipts on already published media, reconcile separately.",
+    "Execute synthetic predicate checks and CI before protected merge; production and exact provider readback only after deployment."
+  ],
+  "verification": {
+    "source_test": "tests/brain-mira-media-proof-status-truth-v1.test.mjs",
+    "migration": "supabase/migrations/20261022161000_instagram_proof_status_truth_v1.sql",
+    "historical_replay": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "deployment": "PENDING_REQUIRED_CI_AND_PROTECTED_MERGE",
+    "instagram_post": "NOT_LIVE_PROVEN"
+  },
+  "status": "CANDIDATE_PENDING_RELEASE"
+}
