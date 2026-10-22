@@ -93,3 +93,17 @@ test('parity runner categorically refuses production ref even with isolated prev
  assert.equal(child.status,1);
  assert.match(child.stderr,/P0_4215_BUYING_FULL_PARITY_BLOCKED: independent preview ref required/);
 });
+
+test('full parity refuses zero-only financial fixtures even when all 50 columns match',()=>{
+ const runner=readFileSync('tests/brain-p0-4215-buying-window-full-parity.mjs','utf8');
+ assert.match(runner,/BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED/);
+ assert.match(runner,/positive_finance_old=0 OR positive_finance_new=0/);
+ assert.match(runner,/FROM pg_temp\.p0_old WHERE expected_value_eur>0 AND expected_commercial_value_eur>0/);
+ assert.match(runner,/FROM pg_temp\.p0_new WHERE expected_value_eur>0 AND expected_commercial_value_eur>0/);
+ const nonEmpty=runner.indexOf('BUYING_EMPTY_OR_DUPLICATE_OR_ROWCOUNT_DRIFT');
+ const positive=runner.indexOf('BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED');
+ const resultParity=runner.indexOf('BUYING_ALL_50_COLUMN_BIDIRECTIONAL_PARITY_FAILED');
+ const receipt=runner.indexOf('P0_4215_BUYING_FULL_PARITY_PASSED');
+ assert.ok(nonEmpty>0 && positive>nonEmpty && resultParity>positive && receipt>resultParity,
+  'financial source validity must be checked before success and complete semantic parity');
+});
