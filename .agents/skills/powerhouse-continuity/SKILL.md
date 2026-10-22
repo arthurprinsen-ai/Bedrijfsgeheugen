@@ -5,6 +5,13 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Required Gate Watchdog — denied existing-owner comment API (2026-10-22)
+
+Fingerprint: `github|required-gate-owner-handoff|provider-comment-403|20261022-v1`. Reuse the existing Required Gate Watchdog; failed source tests stay under their original PR owner. Exact live evidence: workflow #39811993147/job #119940435969 returned `GitHub API 403 /issues/4656/comments` although runner permissions reported Issues:write.
+
+Provider success is a hard precondition for calling an automatic owner comment 'delivered'. GitHub explicitly permits Issues:write OR Pull requests:write; request only the documented existing-workflow alternative, no broad tokens or extra scheduler. On exact 403: do not loop duplicate comments this tick, keep observing and executing independently authorized missing-Required dispatch, persist a `PROVIDER_AUTHORITY_DENIED_NOT_DELIVERED` evidence artifact with PR/head/gate/run, fail the workflow visibly, and continue with original owner after authority becomes available. Other API errors must fail closed. A handoff is NOT a source fix or protected release proof. Read `brain/learning/2026-10-22-watchdog-owner-comment-authority-403-v1.json` and `tests/brain-required-failed-gate-owner-routing-v1.test.mjs`.
+
+
 ## Universele incidentherkenning & preventie
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
