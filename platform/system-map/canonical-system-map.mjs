@@ -2529,3 +2529,17 @@ export const LINKEDIN_PERSONAL_EXPIRED_AUTHORITY_RECOVERY_20261022=Object.freeze
  tests:'tests/brain-personal-expired-publish-authority-20261022.test.mjs',
  learning:'brain/learning/2026-10-22-personal-expired-publish-authority-v1.json'
 });
+
+// 2026-10-22: diagnostic source projection only, not proof of live CLS remediation.
+export const POWERHOUSE_WEBSITE_CLS_ATTRIBUTION_V1 = Object.freeze({
+  contract:'powerhouse-website-mobile-cls-attribution-v1',
+  fingerprint:'website|mobile-cls|en-blog-afas-api|20261022-v1',
+  authority:'existing website Required browser visibility checker and Brain failure registry',
+  changedSurface:'tools/site-shell/standalone-visibility-check.mjs',
+  regression:'tests/brain-mobile-cls-attribution-20261022.test.mjs',
+  learning:'brain/learning/2026-10-22-website-mobile-cls-attribution-v1.json',
+  unchangedGate:'CLS > 0.100 fails across every public sitemap route and phone/tablet/desktop',
+  incidentStatus:'OBSERVED',
+  productionFixProven:false,
+  existingSchedulerUnchanged:true
+});
