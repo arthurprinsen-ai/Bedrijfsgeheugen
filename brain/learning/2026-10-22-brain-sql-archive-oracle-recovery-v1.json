@@ -53,5 +53,25 @@
   "production_changed": false,
   "security_controls_weakened": false,
   "verified_failure_reduction": false,
-  "acceptance": "Full BRAIN zero failures plus Required CI plus CodeQL on exact candidate head; separate #3742 schema parity and #4215 customer A/B readback"
+  "acceptance": "Full BRAIN zero failures plus Required CI plus CodeQL on exact candidate head; separate #3742 schema parity and #4215 customer A/B readback",
+  "fingerprint": "brain|historical-sql-oracle-source-contract|20261022-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sql-archive-oracle-source-guard-v1.test.mjs",
+      "tests/brain-autonomous-improvement-currentstate-record-type.test.mjs",
+      "tests/brain-growth-swarm-bounded-refresh-v1.test.mjs",
+      "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs",
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs",
+      "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs"
+    ]
+  }
 }
