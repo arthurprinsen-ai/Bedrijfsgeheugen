@@ -18,6 +18,7 @@ permissions:
   actions: write
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: powerhouse-repository-janitor
@@ -212,6 +213,24 @@ jobs:
               [ "$safe_cancel" = true ] || continue
               latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
               case "$latest_status" in queued|in_progress) ;; *) continue ;; esac
+              # Long-stuck zero-job runs can be GitHub provider ghosts. The bounded provider
+              # reconciler below owns cancel/force/delete and deduplicated escalation;
+              # never send the same 409/403 trio on every hourly janitor sweep.
+              if [ "$latest_status" = queued ] && [ -n "$created_at" ]; then
+                run_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
+                now_epoch="$(date -u +%s)"
+                if [ "$run_epoch" -gt 0 ] && [ $((now_epoch-run_epoch)) -ge 86400 ]; then
+                  run_details="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" 2>/dev/null || echo '{}')"
+                  updated_at="$(jq -r '.updated_at // ""' <<<"$run_details")"
+                  if [ "$updated_at" = "$created_at" ]; then
+                    jobs_count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=1" --jq '.total_count' 2>/dev/null || echo UNPROVEN)"
+                    if [ "$jobs_count" = 0 ]; then
+                      jq -cn --arg type GITHUB_PROVIDER_GHOST_OBSERVED --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,owner:"github-actions-ghost-reconcile"}' >> .artifacts/janitor-runtime-actions.ndjson
+                      continue
+                    fi
+                  fi
+                fi
+              fi
               cancel_mode=""
               if gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
                 cancel_mode=normal-cancel
@@ -289,6 +308,11 @@ jobs:
               fi
             done
           fi
+      - name: Reconcile provider-owned GitHub Actions zero-job ghosts
+        if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/github-actions-ghost-reconcile.mjs
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -297,4 +321,5 @@ jobs:
           path: |
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
+            .artifacts/github-actions-ghost-reconcile.json
           if-no-files-found: error
