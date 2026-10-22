@@ -52,6 +52,6 @@ test('Unified BRAIN preserves its original tests, lane failure and learning rout
   assert.match(s,/clusterBrainFailures/);
   assert.match(s,/delivery-failure-clusters-\$\{process\.env\.LANE\}\.json/);
   assert.match(s,/\.artifacts\/delivery-failure-clusters-\$\{\{ matrix\.id \}\}\.json/);
-  assert.match(s,/node --test tests\/brain-\*\.test\.mjs/);
+  assert.match(s,/tests\/brain-\*\.test\.mjs/);
   assert.doesNotMatch(s,/skipBRAIN|skipBackend|allowFailures|continue-on-error:\s*true/);
 });

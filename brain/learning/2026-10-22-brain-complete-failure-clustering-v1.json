@@ -12,7 +12,8 @@
     "Treat a single first failed test as the entire run",
     "Re-run 355 tests without grouping",
     "Mark archived migration path symptoms as repaired without source verification",
-    "Create parallel scheduler/incident memory"
+    "Create parallel scheduler/incident memory",
+    "False-red initial regression expected tests/brain-*.test.mjs to immediately follow node --test; actual canonical runner combines multiple test groups before the BRAIN glob."
   ],
   "fix": "Retain legacy first-failure canonical learning event, and add a deterministic redacted all-failures clustering JSON artifact in the SAME failed lane.",
   "prevention_rule": "Every failed Unified BRAIN lane must expose all TAP not-ok records with stable fingerprints, coverage vs #fail and grouped candidate classes; no class is a proven repair until exact-head test re-run plus required gates and canonical register evidence.",
@@ -48,7 +49,9 @@
     "observed_total_tests": 3526,
     "observed_passed_tests": 3171,
     "original_failure_capture_source": ".github/workflows/unified-brain-delivery.yml",
-    "provider_runtime_readback": "PENDING"
+    "provider_runtime_readback": "PENDING",
+    "first_failed_required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39822122071",
+    "first_failed_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39822122071/job/119975815671"
   },
   "outcome": "Candidate: complete failure triage without automatic fixes; require protected merge and actual failed run artifact readback."
 }
