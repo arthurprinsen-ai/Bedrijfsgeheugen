@@ -121,6 +121,7 @@
       "docs/",
       ".agents/",
       "tests/",
+      "supabase/tests/",
       ".github/",
       "brain/learning/",
       "brain/policies/",
