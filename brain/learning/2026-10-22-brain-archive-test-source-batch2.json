@@ -55,5 +55,20 @@
     "production": "UNCHANGED"
   },
   "prevention_rule": "Never dereference archived historical SQL from executable supabase/migrations; test the exact non-executable Git blob, preserve every positive/negative source assertion, and reject duplicate executable migration versions.",
-  "regression_contract": "tests/brain-inherited-archive-sources-batch2.test.mjs"
+  "regression_contract": "tests/brain-inherited-archive-sources-batch2.test.mjs",
+  "additional_root_cause": "Historical snapshot tests compared live append-only migration ledger length to obsolete 568/603/607 exact counts, despite 634 legitimate accumulated entries; first 603 entries and 607 boundary verified from live Git source.",
+  "additional_prevention_rule": "Historical migration assertions must pin the verified historical prefix and require a monotonic append-only ledger, never cap the current ledger at an old snapshot count.",
+  "additional_test_evidence": {
+    "observed_current_applied": 634,
+    "original_568_boundary": "20261005160410",
+    "original_603_boundary": "20261007064948",
+    "original_607_boundary": "20261007091140",
+    "full_brain_before_additional_fixes": {
+      "run": 39763894940,
+      "tests": 3531,
+      "passed": 3185,
+      "failed": 346
+    },
+    "after": "PENDING_INDEPENDENT_RUN"
+  }
 }

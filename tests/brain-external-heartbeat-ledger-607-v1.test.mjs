@@ -10,7 +10,8 @@ test('production migration 607 is represented exactly once in the local ledger',
   const rows=lock.applied.filter(x=>x.version==='20261007091140');
   assert.equal(rows.length,1);
   assert.equal(rows[0].name,'restore_single_staggered_commercial_heartbeat_owner');
-  assert.equal(lock.applied.length,607);
+  assert.ok(lock.applied.length>=607,'historical 607-entry production snapshot must remain a prefix of the append-only migration ledger');
+  assert.equal(lock.applied[606].version,'20261007091140');
 });
 
 test('607 replay converges away from the emergency legacy pg_cron owner',()=>{

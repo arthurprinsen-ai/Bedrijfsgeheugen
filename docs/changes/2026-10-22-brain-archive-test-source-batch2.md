@@ -20,3 +20,8 @@ Scope: 10 test files, 12 obsolete SQL source occurrences. Each original SQL Git 
 - `tests/supabase-powerhouse-signal-forecast-materialization.test.mjs`: 1 path(s) to `20260915124500_powerhouse_signal_forecast_materialization.sql` (Git blob `8610fdc4adafb5c3193cab5d2775a050e3f632dd`)
 
 No production SQL, DDL, RLS, ACL, tenant data, browser policy, scheduler, publisher or provider is modified. Existing PRs #4605, #4608 and #4617 remain separate and unchanged. Required CI, CodeQL, focused test execution, independent complete zero-failure BRAIN, Supabase #3742 clean-room parity, and #4215 real authenticated tenant tests are not waived. Merge only with applicable exact-head proof.
+
+
+## Append-only historical migration prefix repair
+
+Full exact-head BRAIN run [#39763894940](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39763894940): 3,531 tests, 3,185 pass, 346 fail. The new source path repairs removed 12 earlier failing test keys, while 37 new failures emerged on the advanced baseline. Three old tests falsely required the actively growing canonical migration ledger to remain at exactly 568/603/607. The first 603 historical entries, the original 607th record and 568th boundary were independently read back from the current 634-entry lock before modifying any assertions. Tests now require a monotone history, retain exact original historical prefix/boundary and preserve migration-identity and security assertions. No migration data/files touched. Full revalidation pending.

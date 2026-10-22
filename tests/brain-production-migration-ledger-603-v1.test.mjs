@@ -49,8 +49,8 @@ const expected=[
 test('migration lock matches the observed 603-row production authority',()=>{
   assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
   assert.equal(lock.source,'supabase_migration_history');
-  assert.equal(lock.applied.length,603);
-  assert.deepEqual(lock.applied.slice(-10).map(row=>[row.version,row.name]),expected);
+  assert.ok(lock.applied.length>=603,'historical 603-entry production snapshot must remain in append-only ledger');
+  assert.deepEqual(lock.applied.slice(0,603).slice(-10).map(row=>[row.version,row.name]),expected);
 });
 
 test('every newly reconciled production identity has one canonical local migration file',()=>{
