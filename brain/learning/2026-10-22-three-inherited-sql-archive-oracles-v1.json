@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "ci-brain|retired-sql-source|three-unowned-oracles|20261022-v1",
+  "obligation_id": "ci-brain|retired-sql-source|three-unowned-oracles|20261022-v1",
+  "title": "Reuse three immutable historical SQL sources in previously unowned BRAIN test oracles",
+  "status": "CANDIDATE_UNVERIFIED",
+  "failure_class": "CI_BRAIN_HISTORICAL_SQL_SOURCE",
+  "root_cause": "Unified BRAIN run #39791707071 tests open retired executable SQL migration paths; exact original SQL remains available in repository-only history.",
+  "impact": "Original full run recorded 355 failures, including three Node modules failing ENOENT.",
+  "failed_approaches": [
+    "Empty migration shims",
+    "Restoring applied SQL as new executable migrations",
+    "Skipping inherited assertions"
+  ],
+  "fix": "Retarget precisely three source read paths, preserve all original assertions, add immutable Git blob/no duplicate migration regression and reuse original test modules.",
+  "prevention_rule": "Classify common ENOENT, preflight Git blob + active owners before write; preserve security/negative checks; exact-head Required CodeQL and independent full BRAIN to zero plus migration parity before completion.",
+  "regression_contract": "tests/brain-three-inherited-sql-archive-oracles-v1.test.mjs",
+  "tests": [
+    "tests/brain-three-inherited-sql-archive-oracles-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-three-inherited-sql-archive-oracles-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-three-inherited-sql-archive-oracles-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-three-inherited-sql-archive-oracles-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_BRAIN_HISTORICAL_SQL_SOURCE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742#issuecomment-6346546605",
+    "original_git_blobs": [
+      {
+        "test": "tests/supabase-legacy-growth-outcome-reconciler-v1.test.mjs",
+        "file": "20260918110000_legacy_growth_outcome_reconciler_v1.sql",
+        "sha": "e84bde6ba753e773e4d74cfb39f226dde9e068e3"
+      },
+      {
+        "test": "tests/supabase-forecast-calibration-health-due-v1.test.mjs",
+        "file": "20260918101000_forecast_calibration_health_due_v1.sql",
+        "sha": "4828bd5facf452f579b530e2b4332133d978ef7a"
+      },
+      {
+        "test": "tests/supabase-action-learning-production-truth-v1.test.mjs",
+        "file": "20260918131000_action_learning_production_truth_v1.sql",
+        "sha": "0712bedcf5b12aed3b12e4a732c0361c9ec5c57a8"
+      }
+    ],
+    "full_brain_readback": "PENDING",
+    "production_readback": "PENDING"
+  },
+  "outcome": "CANDIDATE only; not three independently proven passes"
+}
