@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deriveNetlifyDeploymentApplicability } from '../tools/delivery/netlify-deployment-applicability.mjs';
 import { projectLivingMemory } from '../brain/operating-loop/living-memory.mjs';
+import policy from '../config/brain-delivery-system.json' with { type: 'json' };
 const sha='a'.repeat(40);
-const classify=changedPaths=>deriveNetlifyDeploymentApplicability({changedPaths,headSha:sha});
+const classify=changedPaths=>deriveNetlifyDeploymentApplicability({changedPaths,headSha:sha,policy});
 test('Netlify-imported Brain operating-loop must deploy and cannot be declared not applicable',()=>{
   for(const p of ['brain/operating-loop/living-memory.mjs','brain/operating-loop/store.mjs','brain/operating-loop/model.mjs']){
     const r=classify([p]);

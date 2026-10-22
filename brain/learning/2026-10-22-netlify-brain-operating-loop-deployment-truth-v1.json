@@ -8,7 +8,7 @@
   "root_cause": "Protected PR #4691 modified brain/operating-loop/living-memory.mjs, a transitive Netlify import. Actual Production Release Readback #39824197943 reported deployment_required=false and skipped authenticated tenant proof despite success.",
   "impact": "An active customer Brain backend change may not deploy while CI claims successful production readback.",
   "fix": "Add brain/operating-loop/ to the single existing Netlify runtime applicability classifier; touch the imported module with correct shape preservation and require exact deployment.",
-  "prevention_rule": "Netlify-imported Brain source changes must require deployment and authenticated provider readback; no no-deploy false green.",
+  "prevention_rule": "Netlify-imported Brain source changes must require deployment and authenticated provider readback; no no-deploy false green. Always pass the canonical BRAIN-DELIVERY policy to classifier tests; never disable the admission replay.",
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
     "scope": "BACKEND",
@@ -33,7 +33,12 @@
   "evidence": {
     "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39824197943",
     "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4691",
-    "production_verified": false
+    "production_verified": false,
+    "first_admission_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39825113976",
+    "admission_root_cause": "New exact runtime regression omitted canonical BRAIN-DELIVERY-v2 policy parameter; corrected test harness, not runtime threshold."
   },
-  "outcome": "CANDIDATE_UNVERIFIED"
+  "outcome": "CANDIDATE_UNVERIFIED",
+  "failed_approaches": [
+    "New test invoked createDeliveryPlan without canonical config, so two admission replay checks failed on #39825113976"
+  ]
 }
