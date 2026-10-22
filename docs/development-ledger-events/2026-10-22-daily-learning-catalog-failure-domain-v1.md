@@ -19,3 +19,10 @@ State: CANDIDATE pending exact CI, protected merge and runtime readback.
 
 ## Outcome policy
 `improve=success` with `model-freshness=failure` means **daily learning execution has recovered but supplier catalog is still unverified**. The workflow must remain RED and the provider incident remains open; do not hide failures to manufacture a green dashboard.
+
+
+## Candidate incident during protected learning admission (same lineage)
+
+Initial PR #4666 head `8013e767138983e5c71d240da0511d322ec55263` failed `hygiene / admission` in GitHub run [#39812960951](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812960951) for exactly `LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/powerhouse-daily-self-evolution.test.mjs`. The test existed, but the canonical Brain evaluator allows only executable `tests/brain-*.test.mjs` paths. No quality gate was bypassed. Corrected under the same PR by adding `tests/brain-daily-learning-failure-isolation-v1.test.mjs` with meaningful historical/shadow/canary assertions and referring to that path in learning. Protected admission was independently observed `completed/success` on the corrected candidate before subsequent protected main synchronization.
+
+Prevent recurrence: preflight the actual learning-canonicalization path contract **before** the first PR; avoid adding duplicate fake placeholder tests or weakening the validator. This is an occurrence under the original repair lineage, not a second incident owner. The daily provider freshness issue #4367 is separately still OPEN.
