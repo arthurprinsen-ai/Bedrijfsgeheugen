@@ -129,7 +129,8 @@ test('terminal job retains live provider/ACL proof and uses single bounded succe
   const yaml=readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(yaml,/const proof=verifyRetiredMigrationSupersession\(/);
   assert.match(yaml,/SUPERSEDES_MERGED_MIGRATION_CONFLICT/);
-  assert.match(yaml,/SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN/);
+  assert.match(yaml,/SUPABASE_ONLY_PROVIDER_READBACK_REQUIRED/);
+  assert.match(yaml,/MIGRATION_READBACK_REQUIRED/);
   assert.match(yaml,/CONTROL_PLANE_DURABLE_READBACK_REJECTED/);
   assert.match(yaml,/const canonical=resolveTerminalMigrationIdentities\(unique,currentMigrationPaths\)/);
 });
