@@ -8,7 +8,7 @@ on:
 permissions:
   actions: write
   contents: read
-  pull-requests: read
+  pull-requests: write
   issues: write
 
 concurrency:
@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Enforce canonical failed-gate owner routing regression
+        run: node --test tests/brain-required-failed-gate-owner-routing-v1.test.mjs
       - name: Recover missing gates and route failed gates to existing agent owner
         env:
           GITHUB_TOKEN: ${{ github.token }}
