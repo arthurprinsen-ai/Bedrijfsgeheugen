@@ -1,3 +1,13 @@
+## Dagelijkse leercontinuïteit bij externe freshnessfouten — 22 oktober 2026
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`. Alle agents en chats raadplegen het bestaande modelcatalogusincident [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367), de gedeelde learning en `.agents/skills/powerhouse-continuity/SKILL.md`. Bij stale/onbewezen AI-leveranciersclaims mag de strenge aparte `model-freshness`-gate niet worden versoepeld of als groen worden gepresenteerd; **onafhankelijke** dagelijkse learning/skills/engineering-evals moeten in de bestaande dagelijkse workflow wel uitgevoerd blijven. Geen tweede scheduler, geen fictieve verificatie of modelactivatie. Meet de twee jobuitkomsten afzonderlijk en behoud de overall RED-status zolang vereiste catalogusbewijzen ontbreken. Regressie: `tests/powerhouse-daily-self-evolution.test.mjs`.
+
+## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+Alle huidige/toekomstige agents en chats behandelen GitHub queued+zero-job+409/403 niet als gewone runner-capaciteit. Gebruik uitsluitend het bestaande Repository Janitor-pad en incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655). De uitvoerbare procedure staat in `.agents/skills/powerhouse-continuity/SKILL.md#github-actions-provider-ghost-autonomie--22-oktober-2026`. Slechts na exacte niet-actieve SHA-, nul-job- en 24u-stabiliteitscontrole geldt bounded cancel→force-cancel→DELETE; stop na providerweigering en dedupliceer per run-ID. De agents lezen dezelfde provider-ID's periodiek terug. Nooit huidige Required/CodeQL gates beïnvloeden, geen provider 403 omzeilen, geen nieuwe scheduler, geen nep-groen of tweede eigenaar. GitHub Support blijft de enige autoriteit voor een server-side platformfout.
+
+
 ## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.

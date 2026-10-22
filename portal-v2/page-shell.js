@@ -90,7 +90,7 @@ const COPY = {
   'actieve-acties':['Actieve acties','Van inzicht naar concrete uitvoering, eigenaar, voortgang en bewijs.'],
   'recovery-obligations':['Open recovery obligations','Elke containment of blokkade blijft zichtbaar totdat root cause, fix, test en heractivatie aantoonbaar gesloten zijn.'],
   'outcomes-evidence':['Outcomes & evidence','Koppel acties aan gemeten resultaat en bewijs zodat effect niet op aannames rust.'],
-  'learning-writeback':['Learning/writeback','Zet geverifieerde outcomes om in herbruikbare learnings voor volgende beslissingen.'],
+  'learning-writeback':['Relevantie & verbeteringen','Bekijk de relevante Brain-leerrecords uit je eigen omgeving, wat bewezen is en welke verbeteringen nog verificatie vragen.'],
   'self-heal':['Self-heal / recovery','Detecteer problemen, herstel binnen grenzen, verifieer en heractiveer gecontroleerd.'],
   audittrail:['Audittrail','Maak besluiten, acties, wijzigingen en bewijs terugvindbaar in één traceerbare keten.']
 };

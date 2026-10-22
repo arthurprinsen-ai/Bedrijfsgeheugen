@@ -256,3 +256,33 @@ test('Netlify control-plane registry and janitor remain non-runtime while runtim
   assert.equal(isNetlifyRuntimePath('tools/site-shell/restamp-release-identity.mjs'), true);
   assert.equal(isNetlifyRuntimePath('netlify/functions/connector-readiness.mjs'), true);
 });
+
+test('terminalizer keeps rollback-only Supabase SQL under verifier-only scope without hiding production migrations', async () => {
+  const [contract, terminalizer] = await Promise.all([
+    readFile('brain/contracts/production-readback-v1.json', 'utf8').then(JSON.parse),
+    readFile('.github/workflows/powerhouse-obligation-terminalizer.yml', 'utf8'),
+  ]);
+  const truth = contract.productionTruth;
+  const isVerifier = path => truth.verifierOnlyPaths.includes(path)
+    || truth.verifierOnlyPrefixes.some(prefix => path.startsWith(prefix));
+
+  // RED before fix: the rollback-only SQL fixture was incorrectly treated as runtime.
+  assert.ok(truth.verifierOnlyPrefixes.includes('supabase/tests/'));
+  assert.equal(isVerifier('supabase/tests/brain_failure_observe_semantic_recovery_v1.sql'), true);
+
+  // Negative canaries: no wildcard for real database, Edge or Netlify runtime.
+  for (const realRuntime of [
+    'supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql',
+    'supabase/functions/powerhouse-brain/index.ts',
+    'netlify/functions/brain-readback.mjs',
+    'supabase/unclassified/runtime.ts',
+  ]) {
+    assert.equal(isVerifier(realRuntime), false, realRuntime);
+  }
+  assert.match(terminalizer, /verifier_only_prefixes/);
+  assert.match(terminalizer, /is_governance_path/);
+  assert.match(terminalizer, /UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
+  assert.match(terminalizer, /SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE/);
+  assert.match(terminalizer, /SUPABASE_PROVIDER_READBACK_MISSING/);
+  assert.match(terminalizer, /prove_main_containment/);
+});

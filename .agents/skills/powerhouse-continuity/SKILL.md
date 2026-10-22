@@ -5,6 +5,19 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Dagelijkse agentleerketen: onafhankelijke foutdomeinen (22 oktober 2026)
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`.
+Bronincident: [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367). Twee echte dagelijkse uitvoeringen op 21 en 22 oktober 2026 faalden omdat de 14-daagse AI-model-freshnesscontrole stopte in hetzelfde fail-fast job vóór de onafhankelijke leersnapshot, improvement probe en engineering self-tests.
+
+Verplicht voor alle huidige en toekomstige agents:
+- Behandel een falende externe leverancier- of catalogusfreshnesscheck als een **echt onopgelost bewijsprobleem**, geen reden om timestamps te vervalsen of gate-errors te onderdrukken.
+- Houd onafhankelijke dagelijkse leer-, incident-, skill- en zelftestuitvoer actief via de al bestaande Powerhouse Daily Self Evolution scheduler; geen tweede cron, geen parallel geheugen of tweede agentowner.
+- Catalogusclaim-validatie blijft een zelfstandige strenge `model-freshness` job; `improve` is daarvan onafhankelijk. De **totale** workflow blijft rood zolang enig verplicht onderdeel rood is. Alleen een werkelijk uitgevoerde en geslaagde improve-job bewijst dat de leercyclus zelf doorging.
+- Bewaar ook van mislukte providercontroles het daadwerkelijke JSON-artefact. Koppel iedere nieuwe recurrence aan de bestaande fingerprint en het Brain-register. Laat verantwoordelijkheid voor officiële claim-readback bij #4367.
+- Vóór LIVE/PROVEN: regressie `tests/powerhouse-daily-self-evolution.test.mjs`, echte exact-SHA Required+CodeQL, protected main-readback, vervolgens één echte workflow-run met afzonderlijke jobconclusies en output-artifacts.
+
+
 ## Universele incidentherkenning & preventie
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
@@ -261,6 +274,22 @@ Reference production recovery: PR #2158 / merge `7d0442b517c80c51f69ebcaba6328d7
 Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
 
 When repository delivery reaches merge, continuity ownership remains active. Resume the same obligation until the canonical `Obligation Terminal Closure` workflow proves main containment, canonical production/runtime readback, applicable learning-to-skill projection, immutable terminal evidence and writer-lease release. Only the resulting machine-readable terminal state (`LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`) may end the lineage. Never create a new recovery PR merely because post-merge readback is still running.
+
+
+## Terminal Supabase supersession — retired SQL is not deployed SQL (22 October 2026)
+
+Fingerprint: `delivery|terminal-closure|retired-superseded-migration-lineage|20261022-v1`.
+During the existing `Obligation Terminal Closure` traversal, a closed/unmerged
+predecessor with SQL migrations is admissible only after the direct immutable
+`Supersedes: <PR>` link, a retired writer lease, adoption of **every** exact
+migration path in the protected merged successor, and Git blob parity between
+that successor and current protected main. Historical draft SQL bytes may differ
+and remain audit evidence, never an independent production source. Unknown paths,
+unmerged current candidates, conflicting merged source blobs, missing provider
+APPLIED evidence and missing ACL/tenant evidence fail closed. Preserve the one
+existing terminal controller, incident #4681, all mandatory downstream readback,
+and the executable negative regression in
+`tests/brain-terminal-migration-identity-v1.test.mjs`.
 
 ## Mandatory material-run closure gate
 
@@ -1629,3 +1658,19 @@ tenant/date/channel/provider-unconsumed guards. Existing slug strings use
 exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
 publisher/provider proof boundaries, no duplicate blog, and never infer
 LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
+
+## GitHub Actions provider-ghost autonomie — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+
+Iedere agent/chat hergebruikt het bestaande incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655) en het enige bestaande, ieder uur geplande `Powerhouse Repository Janitor`-pad. Een `queued` workflow-run van ouder dan 24 uur met nul jobs en onveranderde timestamps is *kandidaat* voor provider-ghost, niet direct bewezen runner starvation. Controleer exact run-ID, job count, branch, sha, open-PR-head en huidig main opnieuw vóór een write. Huidige main/PR-heads, in-progress jobs en runs met echte jobs blijven beschermd.
+
+De bestaande Janitor-eigenaar probeert ondersteunde cancel/force-cancel en uitsluitend na twee 409-statussen één officiële DELETE voor aantoonbaar obsolete zero-job runs. Leg foutcodes en providerreadback met stabiele per-run marker in canoniek issue #4655 vast. Herhaal 409/403 niet blind in supervisor/chat/volgende hourly run; blijf dezelfde run-ID wel readbacken, registreer pas herstel bij 404 of terminal readback. Een provider 403 is `BLOCKED_HARD_BOUNDARY` voor server-side cleanup; bewijs escaleren kan autonoom, GitHub Support-acties niet forceren. Nooit fake groen, second scheduler, tweede incident, verzwakte CodeQL of branch protection.
+
+Uitvoerbare owner: `.github/scripts/github-actions-ghost-reconcile.mjs` aangeroepen door `.github/workflows/powerhouse-repository-janitor.yml`. Preventieregressie: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`. Learning: `brain/learning/2026-10-22-github-actions-ghost-autonomous-reconciliation-v1.json`. Menselijke documentatie: `docs/changes/github-actions-ghost-autonomous-recovery-20261022-v1.md`. Providertransities vereisen onafhankelijke GitHub API-readback.
+
+
+## Main Write Integrity: herstel een onvolledig GitHub-associatieantwoord zonder governance-bypass — 22 oktober 2026
+
+Fingerprint: `delivery|main-write|unverifiable-pr-association-v1`; bestaande eigenaar: GitHub-incident #4657.
+Wanneer de post-merge main-write-controle faalt met `unexpected end of JSON input` op GitHub `commits/{sha}/pulls`, bewijs dan eerst of de exacte commit uit een legitieme beschermde PR-merge voortkomt. De bestaande workflow voert begrensde provider-readback uit en mag als tweede bron de GitHub PR-API raadplegen. Het commitonderwerp met `(#nummer)` is uitsluitend een onbewezen lookup-hint: vertrouwen vereist vanuit GitHub zelf `merged_at`, `base.ref=main`, `number` en exacte `merge_commit_sha`. Bij onbereikbaarheid, mismatch of ongeldige respons blijft `UNKNOWN_MAIN_WRITE` of `DIRECT_MAIN_WRITE_INCIDENT` rood. Geen security-bypass, geen tweede incident/scheduler, geen bewijs uit alleen een commitbericht. Regressies in `tests/brain-main-write-integrity.test.mjs`; canonieke learning `brain/learning/2026-10-22-main-write-provider-association-readback-v1.json`. Bewijs moet na merge op werkelijke main/CI worden gelezen, nooit achteraf een oude GitHub-run herschrijven.
