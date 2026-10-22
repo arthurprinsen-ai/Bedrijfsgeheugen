@@ -47,6 +47,7 @@ DECLARE
   v_alias_new text;
   v_project_old text;
   v_project_new text;
+  v_existing_project_count integer;
 BEGIN
   IF NULLIF(btrim(p_occurrence_id), '') IS NULL
     OR NULLIF(btrim(p_fingerprint), '') IS NULL
@@ -129,12 +130,33 @@ BEGIN
     v_project_old := 'supabase:' || v_project || ':cron:' || v_job || ':run:' || v_run;
     v_project_new := 'supabase:' || v_project || ':cron:job' || v_job || ':run:' || v_run;
 
+    -- If a legacy caller omitted project scope, it may only join a unique
+    -- corresponding provider-scoped run. Multiple projects are ambiguous.
+    IF v_project IS NULL THEN
+      SELECT count(DISTINCT substring(occurrence_id
+        FROM '^supabase:([a-z0-9]{15,30}):cron:'))
+      INTO v_existing_project_count
+      FROM public.brain_failure_occurrences
+      WHERE fingerprint = p_fingerprint
+        AND occurrence_id ~ (
+          '^supabase:[a-z0-9]{15,30}:cron:(job)?'
+          || v_job || ':run:' || v_run || '$'
+        );
+      IF v_existing_project_count > 1 THEN
+        RAISE EXCEPTION 'FAILURE_CRON_PROJECT_SCOPE_AMBIGUOUS';
+      END IF;
+    END IF;
+
     SELECT * INTO v_existing
     FROM public.brain_failure_occurrences
     WHERE fingerprint = p_fingerprint
       AND (
         occurrence_id IN (v_alias_old, v_alias_new)
         OR (v_project IS NOT NULL AND occurrence_id IN (v_project_old, v_project_new))
+        OR (v_project IS NULL AND occurrence_id ~ (
+          '^supabase:[a-z0-9]{15,30}:cron:(job)?'
+          || v_job || ':run:' || v_run || '$'
+        ))
       )
     ORDER BY observed_at, occurrence_id
     LIMIT 1;
