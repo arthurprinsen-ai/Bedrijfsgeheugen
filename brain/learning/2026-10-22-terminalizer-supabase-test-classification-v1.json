@@ -26,7 +26,10 @@
       "supabase/config.toml",
       "supabase/unknown-runtime/index.ts"
     ],
-    "expected_positive": "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql"
+    "expected_positive": "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql",
+    "historical_replay": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ]
   },
   "production_state": "UNVERIFIED",
   "ownership": "Dedicated scoped terminalizer-classification fix; source PR #4697 is already protected-merged. No new scheduler, store or second incident lineage."
