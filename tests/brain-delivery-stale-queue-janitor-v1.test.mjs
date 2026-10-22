@@ -83,3 +83,21 @@ test('hourly janitor owns provider-ghost retries, artifacts, and issue persisten
   assert.match(script,/\/issues\/' \+ GHOST_INCIDENT \+ '\/comments'/);
   assert.doesNotMatch(script,/schedule:|workflow_dispatch:/);
 });
+
+
+test('canonical Brain historical replay: only issue-4655 denied stale zero-job evidence discounts queued capacity',async()=>{
+  const {partitionVerifiedProviderGhostQueue}=await import('../tools/delivery/predictive-controller.mjs');
+  const run={id:37642383514,status:'queued',conclusion:null,head_branch:'old',
+    head_sha:'oldsha',created_at:'2026-10-07T15:09:03Z',updated_at:'2026-10-07T15:09:03Z'};
+  const now=Date.parse('2026-10-22T16:00:00Z');
+  const proof={incident:4655,runId:run.id,providerBoundary:'GITHUB_CANCEL_FORCE_409_DELETE_403',
+    jobsTotalCount:0,runStatus:'queued',runHeadSha:run.head_sha,
+    runCreatedAt:run.created_at,runUpdatedAt:run.updated_at,readbackAt:'2026-10-22T15:59:00Z'};
+  const input={queuedRuns:[run],runProofs:[proof],currentMainSha:'mainsha',
+    openPrHeadShas:[],snapshotComplete:true,rawTotalCount:1,now};
+  assert.equal(partitionVerifiedProviderGhostQueue(input).verifiedProviderGhostQueued,1);
+  assert.equal(partitionVerifiedProviderGhostQueue({...input,runProofs:[]}).actionableQueued,1);
+  assert.equal(partitionVerifiedProviderGhostQueue({...input,openPrHeadShas:['oldsha']}).actionableQueued,1);
+  assert.equal(partitionVerifiedProviderGhostQueue({...input,runProofs:[{...proof,jobsTotalCount:1}]}).actionableQueued,1);
+  assert.equal(partitionVerifiedProviderGhostQueue({...input,snapshotComplete:false}).actionableQueued,1);
+});
