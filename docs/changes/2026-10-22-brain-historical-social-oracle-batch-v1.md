@@ -27,3 +27,7 @@ No schema, migration, RLS/ACL, runtime, provider, scheduler, auth, or production
 
 ## Remaining mandatory evidence
 Exact head Required and CodeQL, full Unified BRAIN backend with zero failing, release readback and unchanged AGENTS.md protection. Independent #3742 supported Supabase local/remote migration parity and clean-room replay; #4215 two independently authenticated real tenant readbacks. Never assert production-green before these succeed.
+
+## Exact-head Required recovery
+
+Required test run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39757936632 failed canonical learning validation because evaluation directly referenced non-BRAIN-prefixed `tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs`. A new BRAIN-prefixed test wrapper `tests/brain-inherited-social-supabase-oracle-replay-v1.test.mjs` imports and runs that original complete source test. No assertion or release gate was waived; fresh Required and full BRAIN remain mandatory.
