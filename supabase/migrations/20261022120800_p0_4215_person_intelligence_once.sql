@@ -265,6 +265,8 @@ WITH person_intelligence_cache AS MATERIALIZED (SELECT * FROM public.powerhouse_
             ELSE 'research'::text
         END AS buying_window_state
    FROM scored s;
+-- Match the existing service-role-only internal view boundary on this migration.
+REVOKE ALL ON public.powerhouse_buying_window_v2 FROM PUBLIC, anon, authenticated;
 DO $readback$
 BEGIN
  IF NOT EXISTS (SELECT 1 FROM pg_class
