@@ -16,7 +16,8 @@
   "evidence": [
     "bedrijfsprocessen-automatiseren.html",
     "AGENTS.md:commercial-website|orders-first|existing-pages|v1",
-    "tests/seo-order-money-v2.test.mjs"
+    "tests/seo-order-money-v2.test.mjs",
+    "tests/brain-seo-conversion-orders-v1.test.mjs"
   ],
   "prevention": [
     "Keep the 30-minute free Frisse Blik claim consistent in every section of the same money page.",
@@ -33,13 +34,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/seo-order-money-v2.test.mjs"
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
     ],
     "shadow": [
-      "tests/seo-order-money-v2.test.mjs"
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
     ],
     "canary": [
-      "tests/seo-order-money-v2.test.mjs"
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
     ],
     "scope": "local static regression only; no real customer or revenue outcomes claimed"
   }

@@ -120,3 +120,14 @@ test('chat and agent order-first inheritance stays canonical',()=>{
   assert.equal(learning.agent_chat_inheritance?.fingerprint,'commercial-website|orders-first|existing-pages|v1');
   assert.equal(learning.agent_chat_inheritance?.production_proof?.state,'ready');
 });
+
+
+test('Frisse Blik appointment duration is consistent in canonical business-process money page',()=>{
+  const html=readFileSync('bedrijfsprocessen-automatiseren.html','utf8');
+  const cache=JSON.parse(readFileSync('config/bg-static-i18n-en.d/2026-10-22-frisse-blik-duration.json','utf8'));
+  const dutch='Tijdens de gratis Frisse Blik van 30 minuten bespreken we welk handwerk de meeste tijd kost en of verder onderzoek zinvol is. Zonder verplichting.';
+  assert.ok(html.includes(dutch));
+  assert.ok(!html.includes('In een halve dag zien we samen waar het handwerk zit'));
+  assert.match(html,/In 30 minuten bepalen we waar het grootste handwerk zit/);
+  assert.match(cache[dutch],/free 30-minute Frisse Blik/);
+});
