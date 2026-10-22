@@ -63,7 +63,7 @@ test('migration runtime requires explicit provider-applied evidence', async()=>{
 
   assert.match(workflow,/const migrations=paths\.filter/);
   assert.match(workflow,/Terminal-Supabase-Migration-Readback/);
-  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
+  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE/);
   assert.match(workflow,/supabase_migration_provider/);
   assert.match(workflow,/supabase_edge_and_migration_provider/);
   assert.match(workflow,/TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING/);
@@ -85,7 +85,7 @@ test('migration-history lock is verifier-only evidence while executable migratio
   assert.equal(contract.productionTruth.verifierOnlyPrefixes.includes('supabase/'),false);
   assert.equal(contract.productionTruth.verifierOnlyPrefixes.includes('supabase/migrations/'),false);
   assert.match(workflow,/const migrations=paths\.filter/);
-  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
+  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE/);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
 });
 
