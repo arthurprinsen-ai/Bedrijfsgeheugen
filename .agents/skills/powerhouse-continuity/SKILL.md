@@ -5,6 +5,13 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Supabase SQL test-fixtures in terminalizer — 22 oktober 2026
+
+Fingerprint: `delivery|terminalizer|supabase-sql-tests-misclassified-runtime|20261022-v1`. Parentincident [#4681](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681), verificatiefout [run #39833808183](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39833808183).
+
+Bij protected merge van een SQL-wijziging behandelt de bestaande Powerhouse Obligation Terminalizer `supabase/tests/*.sql` als testbewijs en **niet** als deployed backend-runtime. De enige autoritatieve padclassificatie is `brain/contracts/production-readback-v1.json#productionTruth.verifierOnlyPrefixes`; de expliciete uitzondering is uitsluitend `supabase/tests/`, nooit de hele `supabase/`-boom. `supabase/migrations/*.sql` vereist provider-applied migration readback; Edge Functions, `supabase/config.toml` en onbekende runtimepaden blijven fail-closed. Regressie: `tests/brain-terminalizer-quality-surface-governance-v1.test.mjs`. Hergebruik bestaande canonical terminal controller; geen tweede scheduler of nep-groen. Sluit pas na exact-head Required/CodeQL, beschermd merge, terminal replay en onafhankelijke productie-evidence.
+
+
 ## Dagelijkse agentleerketen: onafhankelijke foutdomeinen (22 oktober 2026)
 
 Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`.
