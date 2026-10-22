@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "github|required-gate-owner-handoff|provider-comment-403|20261022-v1",
+  "obligation_id": "delivery|required-gate-watchdog|comment-authority-403|20261022-v1",
+  "source_parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4660",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_ACTIONS_OWNER_HANDOFF_COMMENT_AUTHORITY_DENIED",
+  "root_cause": "Observed: live workflow_dispatch GitHub Actions GITHUB_TOKEN was shown Issues:write in runner permissions, yet POST /issues/4656/comments returned HTTP 403 Resource not accessible by integration. The provider-internal reason is not proven. The watchdog prematurely aborted independently safe missing-Required recovery when the external comment write failed.",
+  "evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+    "denied_endpoint": "/repos/arthurprinsen-ai/Bedrijfsgeheugen/issues/4656/comments",
+    "status_code": 403,
+    "declared_runner_permissions": [
+      "actions:write",
+      "contents:read",
+      "issues:write",
+      "pull-requests:read"
+    ],
+    "human_same_owner_handoff": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4656#issuecomment-6345583016"
+  },
+  "failed_approaches": [
+    "Assuming issues:write printed in logs proves POST to PR issue-comments succeeds",
+    "Allowing provider-denied owner comments to abort unrelated missing-Required dispatch",
+    "Treating failed handoff as successful owner remediation"
+  ],
+  "fix": "Use GitHub documented PR comment alternative pull-requests:write while keeping issues:write and narrow actions:write; classify exact 403, short circuit further same-tick denied comment posts; continue safe independent dispatch; keep workflow red and upload exact run/PR/gate evidence as an artifact for canonical owner review.",
+  "prevention_rule": "An agent cannot claim it handed off a failure until GitHub confirms its comment write. Any 403 from exact POST issue comment must remain a provider authority obligation with an immutable audit artifact and red result, while independent authorized recovery must continue. Never bypass Required/CodeQL or create a second scheduler.",
+  "compiler": {
+    "failure_class": "GITHUB_ACTIONS_OWNER_HANDOFF_COMMENT_AUTHORITY_DENIED",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "invariants": [
+      "403 cannot be success",
+      "independent missing Required dispatch never silently loses its chance to run",
+      "all denied handoffs are tied to exact PR/head/gate/run",
+      "no duplicate scheduler or issue owner",
+      "fail closed until exact GitHub comment provider write/readback"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "CANDIDATE until protected exact-head Required+CodeQL, merged workflow on main, and live watchdog run showing provider handoff accepted or explicitly denied with artifact and red status; no green claim from source only."
+}
