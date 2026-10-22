@@ -8,7 +8,7 @@ on:
 permissions:
   actions: write
   contents: read
-  pull-requests: read
+  pull-requests: write
   issues: write
 
 concurrency:
@@ -30,3 +30,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node .github/scripts/required-gate-watchdog.mjs
+      - name: Preserve denied handoff evidence for the existing owner
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: required-gate-owner-handoff-${{ github.run_id }}
+          path: .artifacts/required-gate-owner-handoff.json
+          if-no-files-found: ignore
+          retention-days: 30
