@@ -29,9 +29,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/social-learning-buffer-schedule.test.mjs",
-      "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
-      "tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs"
+      "tests/brain-social-learning-source-identity-recovery-20261022.test.mjs"
     ],
     "shadow": [
       "tests/brain-social-learning-source-identity-recovery-20261022.test.mjs"
@@ -47,7 +45,8 @@
     "after": "PENDING_REQUIRED_CI",
     "whole_brain": "PENDING_FULL_ZERO_FAIL",
     "production": "UNCHANGED",
-    "provider": "NOT_CLAIMED"
+    "provider": "NOT_CLAIMED",
+    "gate_predecessor": "Required CI 39831225464 rejected direct social-* evaluation path at LEARNING_EVALUATION_TEST_PATH_INVALID; corrected by BRAIN wrapper importing full original suites, no assertion skip"
   },
   "skill_targets": [
     "social"
@@ -57,5 +56,10 @@
     "BUFFER_LEGACY_UNSCHEDULED",
     "INSTAGRAM_MEDIA_ROUTER_BEFORE_CHANNEL_SPECIFIC_PUBLISH",
     "FRAME_VISION_AND_FACE_DRIFT_FAIL_CLOSED"
+  ],
+  "original_replay_suite_paths": [
+    "tests/social-learning-buffer-schedule.test.mjs",
+    "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+    "tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs"
   ]
 }

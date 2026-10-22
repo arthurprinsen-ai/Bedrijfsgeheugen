@@ -23,3 +23,9 @@ test('Mira router must precede channel-specific publisher and remain fail-closed
  assert.match(router,/!fv\.body\?\.pass\|\|!miraFaceProofValid\(/);
  assert.match(router,/MIRA_SAME_FACE_EXACT_MEDIA_GATE_FAILED/);
 });
+
+// Canonical learning-gate replay must execute all three unchanged original suites.
+// Direct tests/social-* file inputs are excluded by the BRAIN evaluation allowlist.
+import './social-learning-buffer-schedule.test.mjs';
+import './social-learning-instagram-media-provider-routing-v1.test.mjs';
+import './social-learning-instagram-video-frame-proof-worker-v1.test.mjs';
