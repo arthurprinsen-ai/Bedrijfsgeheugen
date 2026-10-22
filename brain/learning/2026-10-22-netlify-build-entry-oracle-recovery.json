@@ -19,7 +19,9 @@
       "passed": 3169,
       "failed": 352,
       "fully_green": false
-    }
+    },
+    "old_full_coherence_test_failures_unrelated_to_build_oracle": 2,
+    "focused_coherence_build_phase_verified_in": "tests/brain-netlify-production-build-parity-v1.test.mjs"
   },
   "observed": {
     "tests": 3511,
@@ -27,7 +29,7 @@
     "failed": 321
   },
   "root_cause": "Historical BRAIN tests read obsolete inlined Netlify TOML build steps; actual production and preview use the canonical ordered build entrypoint.",
-  "fix": "Eight inherited test suites now validate actual canonical Netlify ordered build phases, SEO sitemap and website final coherence, syntax, pricing, product-led behavior and exact local fallback through one fail-closed source oracle.",
+  "fix": "Eight inherited test files corrected to canonical Netlify build entry. Seven full-file replay suites cover changed build oracles, including dedicated Netlify parity with the coherence phase. The original whole website-coherence suite retains two other failures checked by full BRAIN; do not merge until all zero.",
   "prevention_rule": "TEST_ACTUAL_CANONICAL_BUILD_ENTRY_NOT_RETIRED_INLINE_COMMAND",
   "status": "CANDIDATE_UNVERIFIED",
   "production_changed": false,
@@ -47,8 +49,7 @@
       "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
       "tests/brain-product-led-home-v1.test.mjs",
       "tests/brain-product-led-production-promotion-v1.test.mjs",
-      "tests/brain-search-indexing-sitemap-contract.test.mjs",
-      "tests/brain-website-coherence-v1.test.mjs"
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
     ]
   },
   "compiler": {

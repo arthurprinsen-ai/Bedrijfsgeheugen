@@ -15,3 +15,8 @@ Status: CANDIDATE_UNVERIFIED. Production unchanged. Exact-head targeted tests, f
 - Additional matching historical oracles: tests/brain-search-indexing-sitemap-contract.test.mjs (SEO pipeline source) and tests/brain-website-coherence-v1.test.mjs (final coherence source).
 - Both now resolve authoritative ordered build phases through tests/brain-netlify-canonical-build-source.mjs. No production or CI policy modifications.
 - Learning evaluation grows from six to eight suites; exact-head replay, Required, CodeQL and new whole BRAIN are pending. Initial 352 failures remain unclosed until executed acceptance.
+
+## Initial eight-file replay surfaced unrelated coherence failures
+- https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39765624372: 28 replay cases, 26 passed, 2 failed in existing website coherence product-hero/metadata assertions.
+- No runtime source or security gates changed. Coherence phase ordering is also validated inside Netlify production parity replay. Whole website-coherence suite remains executed by full BRAIN and must eventually pass before protected merge.
+- Outcome CANDIDATE_UNVERIFIED pending exact-head Required/CodeQL and full BRAIN.

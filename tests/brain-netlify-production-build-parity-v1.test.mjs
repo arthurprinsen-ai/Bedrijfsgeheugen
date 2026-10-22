@@ -20,6 +20,9 @@ test('website lane executes canonical Netlify production build before local brow
     ['sitemap','tools/genereer-sitemap.mjs',[]],
     ['release-evidence','tools/bouw-release-evidence.mjs',[]],
   ];
+  const coherence=phaseIndex(phases,'website-coherence','tools/site-shell/finalize-website-coherence-v1.mjs');
+  const release=phaseIndex(phases,'release-evidence','tools/bouw-release-evidence.mjs');
+  assert.ok(coherence<release,'final website coherence must execute before release evidence');
   const indexes=required.map(([name,script,args])=>phaseIndex(phases,name,script,args));
   assert.deepEqual(indexes,[...indexes].sort((a,b)=>a-b),'build phase order drift');
 });
