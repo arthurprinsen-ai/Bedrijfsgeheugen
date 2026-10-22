@@ -42,3 +42,50 @@ test('janitor applies explicit successor chains oldest-first so it cannot invali
   assert.match(source,/sort_by\(\.prNumber\)\[\]/);
   assert.match(source,/Successor #\$\{successor\} is no longer open/);
 });
+
+
+import { classifyGhostRun, ghostMarkers } from '../tools/delivery/github-ghost-run-reconcile.mjs';
+
+const historicalRun={id:37642383514,status:'queued',conclusion:null,head_sha:'old',created_at:'2026-10-07T15:09:03Z',updated_at:'2026-10-07T15:09:03Z'};
+const ghostContext={now:Date.parse('2026-10-22T15:00:00Z'),mainSha:'main',openHeads:new Set()};
+
+test('provider ghost classification admits only aged queued zero-job obsolete heads',()=>{
+  assert.equal(classifyGhostRun(historicalRun,0,ghostContext),'OBSOLETE_ZERO_JOB');
+  assert.equal(classifyGhostRun(historicalRun,1,ghostContext),'HAS_JOBS_OR_UNKNOWN');
+  assert.equal(classifyGhostRun({...historicalRun,head_sha:'main'},0,ghostContext),'CURRENT_MAIN_OR_UNKNOWN');
+  assert.equal(classifyGhostRun(historicalRun,0,{...ghostContext,openHeads:new Set(['old'])}),'CURRENT_PR_HEAD');
+  assert.equal(classifyGhostRun({...historicalRun,status:'in_progress'},0,ghostContext),'NOT_QUEUED');
+  assert.equal(classifyGhostRun({...historicalRun,updated_at:'2026-10-22T14:00:00Z'},0,ghostContext),'PROGRESS_OR_UNKNOWN');
+  assert.equal(classifyGhostRun({...historicalRun,created_at:'2026-10-22T14:59:00Z',updated_at:'2026-10-22T14:59:00Z'},0,ghostContext),'TOO_NEW');
+});
+
+test('provider ghost marker replay deduplicates failed requests across janitor runs',()=>{
+  const found=ghostMarkers([
+    {body:'GH_GHOST_RUN:37642383514:PROVIDER_BOUNDARY:2026-10-07T15:09:03Z'},
+    {body:'GH_GHOST_RUN:37642383514:RECONCILED:deleted'}
+  ]);
+  assert.deepEqual(found.get(37642383514),{state:'RECONCILED',updatedAt:'deleted'});
+  assert.equal(found.size,1);
+});
+
+test('existing janitor owns hourly ghost recovery, checkpoint and incident evidence',()=>{
+  assert.match(source,/node tools\/delivery\/github-ghost-run-reconcile\.mjs/);
+  assert.match(source,/issues: write/);
+  assert.match(source,/ghost-blocked-ids\.txt/);
+  assert.match(source,/PROVIDER_GHOST_SUPPRESSED/);
+  const scanner=fs.readFileSync(new URL('../tools/delivery/github-ghost-run-reconcile.mjs',import.meta.url),'utf8');
+  assert.match(scanner,/const INCIDENT = 4655/);
+  assert.match(scanner,/GH_GHOST_RUN:/);
+  assert.match(scanner,/jobs\?per_page=1/);
+  assert.match(scanner,/classifyGhostRun\(fresh, recheckJobs.total_count/);
+  assert.match(scanner,/RECOVERY_REQUESTED/);
+  assert.match(scanner,/RECONCILED/);
+});
+
+test('existing five-minute supervisor skips previously escalated GitHub 409/403 ghost runs',()=>{
+  const supervisor=fs.readFileSync(new URL('../.github/workflows/powerhouse-delivery-recovery-supervisor.yml',import.meta.url),'utf8');
+  assert.match(supervisor,/KNOWN_PROVIDER_GHOST_ALREADY_ESCALATED/);
+  assert.match(supervisor,/issues\/4655\/comments/);
+  assert.match(supervisor,/provider_ghosts/);
+  assert.match(supervisor,/GITHUB_PROVIDER/);
+});
