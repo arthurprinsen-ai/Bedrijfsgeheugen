@@ -15,8 +15,10 @@ test('specialist revenue workflows never fan out on every Supabase migration',()
 
   assert.match(revenue,/supabase\/migrations\/\*revenue\*\.sql/);
   assert.match(revenue,/supabase\/migrations\/\*growth\*\.sql/);
-  assert.match(linkedin,/supabase\/migrations\/\*linkedin\*\.sql/);
-  assert.match(linkedin,/supabase\/migrations\/\*revenue\*\.sql/);
+  // LinkedIn is explicit-diagnostic only, so it cannot fan out on generic migrations.
+  assert.match(linkedin,/^  workflow_dispatch:\s*$/m);
+  assert.doesNotMatch(linkedin,/^  (?:push|pull_request):/m);
+  assert.match(linkedin,/tests\/linkedin-revenue-cockpit\.test\.mjs/);
 });
 
 test('revenue learning trigger list contains no duplicate path entries',()=>{
@@ -44,12 +46,16 @@ test('specialist workflows retain bounded concurrency cancellation',()=>{
 test('direct runtime dependency and PR-ref single-flight refinement',()=>{
   const linkedin=readFileSync('.github/workflows/linkedin-revenue-cockpit-tests.yml','utf8');
   const revenue=readFileSync('.github/workflows/revenue-learning.yml','utf8');
-  assert.match(linkedin,/supabase\/functions\/powerhouse-runtime\/\*\*/);
+  // The specialist LinkedIn job is deliberately manual, whereas revenue-learning
+  // retains narrow push paths on main and is still cancellation-bounded.
+  assert.match(linkedin,/^  workflow_dispatch:\s*$/m);
+  assert.doesNotMatch(linkedin,/^  (?:push|pull_request):/m);
+  assert.match(revenue,/supabase\/functions\/revenue-learning-store\/\*\*/);
   const liConcurrency=linkedin.slice(linkedin.indexOf('concurrency:'),linkedin.indexOf('\npermissions:'));
   const revConcurrency=revenue.slice(revenue.indexOf('concurrency:'),revenue.indexOf('\npermissions:'));
   assert.doesNotMatch(liConcurrency,/github\.event_name/);
   assert.doesNotMatch(revConcurrency,/github\.event_name/);
-  assert.match(liConcurrency,/github\.event\.pull_request\.number \|\| github\.ref_name/);
+  assert.match(liConcurrency,/github\.ref_name/);
   assert.match(revConcurrency,/github\.event\.pull_request\.number \|\| github\.ref_name/);
   const push=revenue.slice(revenue.indexOf('  push:'),revenue.indexOf('\nconcurrency:'));
   assert.match(push,/supabase\/migrations\/\*revenue\*\.sql/);
