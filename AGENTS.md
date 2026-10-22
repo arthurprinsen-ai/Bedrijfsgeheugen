@@ -1,3 +1,7 @@
+## Voorspellende GitHub-capaciteit: provider-ghosts blijven incident-rood (22 oktober 2026)
+
+Fingerprint `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`, eigenaar #4661, gekoppeld aan platformincident #4655. Iedere huidige en toekomstige agent gebruikt de bestaande `tools/delivery/predictive-controller.mjs` en de bestaande uurlijkse Repository Janitor; maak geen tweede scheduler, wachtrij of herstelowner. De ruwe GitHub-queued-lijst telt volledig mee, tenzij **per exacte run** de actuele queued/null-status, zero-job readback, 24u onveranderde timestamps, niet-huidige main/PR-head, canonieke provider 409/403-blokkademarkering en maximaal tien minuten oude readback allemaal bewezen zijn. Alleen dan mag die run in de `verifiedProviderGhostQueued`-categorie in plaats van `actionableQueued` meetellen. `rawQueued` blijft altijd zichtbaar. Een lege lijst zonder exact-ID-readback is geen bewijs van GitHub-verwijdering. Zonder voldoende bewijs blijft elk record uitvoerbare queue-capaciteit belasten. Vereiste Required/CodeQL-controles, daadwerkelijke jobs en lopende PR-heads zijn nooit ghost-candidates. Geen status groen maken op capaciteitsnormalisatie; #4655 blijft open tot GitHub exact-ID-terminal/deletion bewijst. Machinebron: `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
 ## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
 
 Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
