@@ -41,7 +41,30 @@ jobs:
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
       - name: Verify autonomous engineering fabric v3
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+      - name: Persist exact-run daily agent-learning checkpoint even after a failed step
+        if: always()
+        env:
+          DAILY_JOB_STATUS: ${{ job.status }}
+        run: |
+          mkdir -p artifacts/quality
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const snapshot={
+            contract:'powerhouse-daily-learning-execution-checkpoint-v1',
+            observed_at:new Date().toISOString(),
+            run_id:process.env.GITHUB_RUN_ID,
+            run_attempt:process.env.GITHUB_RUN_ATTEMPT,
+            head_sha:process.env.GITHUB_SHA,
+            job:'improve',
+            job_status:process.env.DAILY_JOB_STATUS||'unknown',
+            provider_catalog_authority:'independent model-freshness job',
+            terminal_proof:false,
+            next_safe_action:'Inspect exact failed step and resume the existing canonical learning obligation; never infer success from the checkpoint alone'
+          };
+          fs.writeFileSync('artifacts/quality/daily-learning-execution-checkpoint.json',JSON.stringify(snapshot,null,2)+'\\n');
+          NODE
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: powerhouse-daily-self-evolution-${{ github.run_id }}
           path: artifacts/quality/
