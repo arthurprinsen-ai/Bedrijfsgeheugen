@@ -1629,3 +1629,13 @@ tenant/date/channel/provider-unconsumed guards. Existing slug strings use
 exact equality CAS. Keep the protected GitHub/Netlify exact-head lineage,
 publisher/provider proof boundaries, no duplicate blog, and never infer
 LIVE_PROVEN from source, deploy-ready, or an unavailable external fetch.
+
+## GitHub Actions provider-ghost autonomie — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+
+Iedere agent/chat hergebruikt het bestaande incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655) en het enige bestaande, ieder uur geplande `Powerhouse Repository Janitor`-pad. Een `queued` workflow-run van ouder dan 24 uur met nul jobs en onveranderde timestamps is *kandidaat* voor provider-ghost, niet direct bewezen runner starvation. Controleer exact run-ID, job count, branch, sha, open-PR-head en huidig main opnieuw vóór een write. Huidige main/PR-heads, in-progress jobs en runs met echte jobs blijven beschermd.
+
+De bestaande Janitor-eigenaar probeert ondersteunde cancel/force-cancel en uitsluitend na twee 409-statussen één officiële DELETE voor aantoonbaar obsolete zero-job runs. Leg foutcodes en providerreadback met stabiele per-run marker in canoniek issue #4655 vast. Herhaal 409/403 niet blind in supervisor/chat/volgende hourly run; blijf dezelfde run-ID wel readbacken, registreer pas herstel bij 404 of terminal readback. Een provider 403 is `BLOCKED_HARD_BOUNDARY` voor server-side cleanup; bewijs escaleren kan autonoom, GitHub Support-acties niet forceren. Nooit fake groen, second scheduler, tweede incident, verzwakte CodeQL of branch protection.
+
+Uitvoerbare owner: `.github/scripts/github-actions-ghost-reconcile.mjs` aangeroepen door `.github/workflows/powerhouse-repository-janitor.yml`. Preventieregressie: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`. Learning: `brain/learning/2026-10-22-github-actions-ghost-autonomous-reconciliation-v1.json`. Menselijke documentatie: `docs/changes/github-actions-ghost-autonomous-recovery-20261022-v1.md`. Providertransities vereisen onafhankelijke GitHub API-readback.
