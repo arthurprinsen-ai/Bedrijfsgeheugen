@@ -51,9 +51,16 @@
       "one bounded repair attempt per exact run persisted in canonical incident",
       "GitHub provider support is used only when server-side deletion remains refused",
       "never run second scheduler",
-      "do not bypass required CI, CodeQL or branch protection"
+      "do not bypass required CI, CodeQL or branch protection",
+      "historical/shadow/canary replay executes real deterministic provider-ghost guard tests; no weakening of security-sensitive evaluation"
     ],
     "historical_replay": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ],
+    "canary": [
       "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
     ]
   },
