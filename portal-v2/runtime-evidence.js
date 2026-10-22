@@ -83,7 +83,8 @@ function inferLayer(record={}) {
 function sourceEvidenceUrl(record={}) {
   const values=[
     record.referenceUrl,record.html_url,record.url,
-    record.evidence?.html_url,record.evidence?.runUrl,record.evidence?.url,
+    record.evidence?.html_url,record.evidence?.runUrl,record.evidence?.run_url,
+    record.evidence?.readback_url,record.evidence?.url,
     record.provenance?.sourceUrl
   ];
   for(const value of values){
@@ -210,11 +211,20 @@ export function mapRuntimeProjection(projection) {
       waarde: measuredNumber(item.value ?? item.amount)
     })), bijgewerkt, { totals: waarde.totals || {} }),
 
-    learning: slice(arr(geheugen.memories || geheugen.records).map(item => ({
-      naam: txt(item.claim || item.subjectId || item.id),
-      status: item.status === 'PROVEN' ? 'ok' : 'aandacht',
-      healthy: item.status === 'PROVEN'
-    })), bijgewerkt, { summary: geheugen.memorySummary || geheugen.summary || {} }),
+    learning: slice(arr(geheugen.memories || geheugen.records).map(item => {
+      const maturity=txt(item.maturity || item.status).toUpperCase();
+      // Only preserve server-side verified evidence, never infer a receipt from success status.
+      const proofRef=sourceEvidenceUrl(item);
+      const productionVerified=item.productionVerified===true
+        ||item.evidence?.productionVerified===true||item.evidence?.production_verified===true
+        ||item.evidence?.production_proven===true;
+      return {
+        naam: txt(item.claim || item.subjectId || item.id),
+        status: maturity==='PROVEN'?'ok':'aandacht',
+        healthy: maturity==='PROVEN',
+        maturity,proofRef,productionVerified
+      };
+    }), bijgewerkt, { summary: geheugen.memorySummary || geheugen.summary || {} }),
 
     selfHeal: slice(lussen.filter(loop => !loop?.complete).map(loop => ({
       naam: txt(loop.correlationId || 'lus'),
