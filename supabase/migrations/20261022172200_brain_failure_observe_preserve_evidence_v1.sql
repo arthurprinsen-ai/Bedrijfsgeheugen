@@ -114,89 +114,11 @@ BEGIN
     IF v_project IS NULL AND p_evidence ? 'project_ref' THEN
       v_project := p_evidence->>'project_ref';
     END IF;
-    IF v_project IS NOT NULL AND v_project !~ '^[a-z0-9]{15,30}
-    v_alias_old := 'cron-' || v_job || ':' || v_run;
-    v_alias_new := 'supabase:cron:job' || v_job || ':run:' || v_run;
-    v_project_old := 'supabase:' || v_project || ':cron:' || v_job || ':run:' || v_run;
-    v_project_new := 'supabase:' || v_project || ':cron:job' || v_job || ':run:' || v_run;
-
-    SELECT * INTO v_existing
-    FROM public.brain_failure_occurrences
-    WHERE fingerprint = p_fingerprint
-      AND (
-        occurrence_id IN (v_alias_old, v_alias_new)
-        OR (v_project IS NOT NULL AND occurrence_id IN (v_project_old, v_project_new))
-      )
-    ORDER BY observed_at, occurrence_id
-    LIMIT 1;
-    IF FOUND THEN
-      IF p_evidence ? 'status' AND v_existing.evidence ? 'status'
-        AND p_evidence->>'status' IS DISTINCT FROM v_existing.evidence->>'status' THEN
-        RAISE EXCEPTION 'FAILURE_SEMANTIC_PROVIDER_STATUS_CONFLICT';
-      END IF;
-      SELECT * INTO v_registry FROM public.brain_failure_registry
-      WHERE fingerprint = p_fingerprint;
-      RETURN v_registry;
-    END IF;
-  END IF;
-
-  INSERT INTO public.brain_failure_registry
-    (fingerprint, occurrence_count, evidence)
-  VALUES (p_fingerprint, 0, p_evidence)
-  ON CONFLICT (fingerprint) DO NOTHING;
-
-  INSERT INTO public.brain_failure_occurrences
-    (occurrence_id, fingerprint, payload_sha256, evidence)
-  VALUES (p_occurrence_id, p_fingerprint, p_payload_sha256, p_evidence);
-
-  -- New raw events live in append-only occurrences; older promoted/verified
-  -- JSON fields in the registry are never replaced by a fresh observation.
-  UPDATE public.brain_failure_registry
-  SET occurrence_count = occurrence_count + 1,
-      last_seen_at = now(),
-      evidence = coalesce(evidence, p_evidence)
-  WHERE fingerprint = p_fingerprint
-  RETURNING * INTO v_registry;
-  RETURN v_registry;
-EXCEPTION WHEN unique_violation THEN
-  SELECT * INTO v_existing FROM public.brain_failure_occurrences
-  WHERE occurrence_id = p_occurrence_id;
-  IF NOT FOUND THEN RAISE; END IF;
-  IF v_existing.fingerprint IS DISTINCT FROM p_fingerprint
-    OR v_existing.payload_sha256 IS DISTINCT FROM p_payload_sha256 THEN
-    RAISE EXCEPTION 'FAILURE_OCCURRENCE_IDENTITY_CONFLICT';
-  END IF;
-  SELECT * INTO v_registry FROM public.brain_failure_registry
-  WHERE fingerprint = p_fingerprint;
-  RETURN v_registry;
-END
-$function$;
-
--- Retain current restricted service-role-only authority of the definer RPC.
-REVOKE ALL ON FUNCTION public.brain_observe_failure(text,text,text,jsonb)
-FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.brain_observe_failure(text,text,text,jsonb)
-TO service_role;
-
-DO $readback$
-BEGIN
-  IF has_function_privilege('anon', 'public.brain_observe_failure(text,text,text,jsonb)', 'EXECUTE')
-    OR has_function_privilege('authenticated', 'public.brain_observe_failure(text,text,text,jsonb)', 'EXECUTE')
-    OR NOT has_function_privilege('service_role', 'public.brain_observe_failure(text,text,text,jsonb)', 'EXECUTE')
-    OR NOT (SELECT prosecdef FROM pg_proc
-            WHERE oid = 'public.brain_observe_failure(text,text,text,jsonb)'::regprocedure)
-  THEN
-    RAISE EXCEPTION 'BRAIN_FAILURE_OBSERVE_POSTWRITE_SECURITY_DRIFT';
-  END IF;
-END
-$readback$;
-COMMIT;
- THEN
+    IF v_project IS NOT NULL AND v_project !~ '^[a-z0-9]{15,30}$' THEN
       RAISE EXCEPTION 'FAILURE_CRON_PROJECT_REF_INVALID';
     END IF;
 
-    -- All writer aliases for one job/run serialize on the same advisory key.
-    -- A project-aware source retains project-specific matching below.
+    -- All aliases for a job/run serialize on the same event lock.
     PERFORM pg_catalog.pg_advisory_xact_lock(
       pg_catalog.hashtextextended(
         'brain-observe:' || p_fingerprint || ':cron:' || v_job || ':' || v_run, 0
