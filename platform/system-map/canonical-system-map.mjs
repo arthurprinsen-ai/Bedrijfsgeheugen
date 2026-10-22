@@ -2597,3 +2597,6 @@ export const POWERHOUSE_DAILY_SELF_EVOLUTION_FAILURE_DOMAIN_ISOLATION_V1 = Objec
   status:'CANDIDATE_NOT_YET_PROVEN',
   noSecondScheduler:true, noWeakenedGate:true
 });
+
+
+export const INSTAGRAM_FRAME_AUTH_FAILCLOSED_20261022=Object.freeze({fingerprint:'powerhouse|instagram-frame-extractor-auth-oracle-fail-open|20261022-v1',owner:'netlify/functions/instagram-video-frames.mjs',trustedVerifier:'powerhouse-instagram-media-verifier',allowedResponse:'HTTP 400 JSON ok=false error=INVALID_INPUT',failClosed:true,noSecondScheduler:true,regression:'tests/brain-instagram-frame-auth-failclosed-20261022.test.mjs',learning:'brain/learning/2026-10-22-instagram-frame-auth-failclosed-v1.json'});
