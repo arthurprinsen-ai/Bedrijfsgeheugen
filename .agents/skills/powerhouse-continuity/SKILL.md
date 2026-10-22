@@ -275,6 +275,22 @@ Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1
 
 When repository delivery reaches merge, continuity ownership remains active. Resume the same obligation until the canonical `Obligation Terminal Closure` workflow proves main containment, canonical production/runtime readback, applicable learning-to-skill projection, immutable terminal evidence and writer-lease release. Only the resulting machine-readable terminal state (`LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`) may end the lineage. Never create a new recovery PR merely because post-merge readback is still running.
 
+
+## Terminal Supabase supersession — retired SQL is not deployed SQL (22 October 2026)
+
+Fingerprint: `delivery|terminal-closure|retired-superseded-migration-lineage|20261022-v1`.
+During the existing `Obligation Terminal Closure` traversal, a closed/unmerged
+predecessor with SQL migrations is admissible only after the direct immutable
+`Supersedes: <PR>` link, a retired writer lease, adoption of **every** exact
+migration path in the protected merged successor, and Git blob parity between
+that successor and current protected main. Historical draft SQL bytes may differ
+and remain audit evidence, never an independent production source. Unknown paths,
+unmerged current candidates, conflicting merged source blobs, missing provider
+APPLIED evidence and missing ACL/tenant evidence fail closed. Preserve the one
+existing terminal controller, incident #4681, all mandatory downstream readback,
+and the executable negative regression in
+`tests/brain-terminal-migration-identity-v1.test.mjs`.
+
 ## Mandatory material-run closure gate
 
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
