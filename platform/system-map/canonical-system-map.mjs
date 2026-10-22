@@ -2518,3 +2518,14 @@ export const PERSONAL_EDITORIAL_TRUNCATION_RETRY_20261022=Object.freeze({
  regression:'tests/brain-personal-editorial-truncation-retry-20261022.test.mjs',
  learning:'brain/learning/2026-10-22-personal-editorial-truncation-retry-v1.json'
 });
+
+
+export const LINKEDIN_PERSONAL_EXPIRED_AUTHORITY_RECOVERY_20261022=Object.freeze({
+ fingerprint:'powerhouse|linkedin-personal-expired-authority-recover|20261022-v1',
+ owner:'powerhouse-social-publisher',scheduler:'existing canonical Powerhouse daily loop',
+ noNewSender:true,noNewScheduler:true,
+ proof:['expired unused capability','zero uniqueness reservation','explicit no provider mutation','original same-date decision'],
+ code:['canRecoverExpiredCompanyClaim','canRecoverExpiredPersonalClaim','recoverExpiredLinkedInPublicationAuthority'],
+ tests:'tests/brain-personal-expired-publish-authority-20261022.test.mjs',
+ learning:'brain/learning/2026-10-22-personal-expired-publish-authority-v1.json'
+});

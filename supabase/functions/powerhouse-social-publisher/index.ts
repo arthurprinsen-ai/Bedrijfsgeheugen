@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {canRecoverExpiredCompanyClaim} from '../_shared/social-publish-claim-recovery.mjs';
+import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -1130,12 +1130,12 @@ function instagramInput(art:any,due:Date,future:boolean){
  * without being consumed and BOTH decision + obligation prove zero provider side effects.
  * This is not a new sender, scheduler, daily claim, or authorization bypass.
  */
-async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,channels:string[]) {
-  if(runDate!==today()||!channels.includes('linkedin_company'))
-    return {recovered:false,reason:'NOT_SAME_DAY_COMPANY_LANE'};
+async function recoverExpiredOriginalLinkedInClaim(db:any,runDate:string,channel:string) {
+  if(runDate!==today()||!['linkedin_company','linkedin_personal'].includes(channel))
+    return {recovered:false,reason:'NOT_SAME_DAY_LINKEDIN_LANE'};
   const {data:decision,error:de}=await db.from('powerhouse_channel_decisions')
     .select('run_date,channel,decision,state,delivery_ref,delivery_evidence,updated_at')
-    .eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle();
+    .eq('run_date',runDate).eq('channel',channel).maybeSingle();
   if(de)throw new Error('RECOVERY_DECISION_READ:'+de.message);
   if(!decision || decision.state!=='blocked' ||
      decision.delivery_evidence?.error!=='PUBLICATION_AUTHORITY_DENIED:DAILY_CHANNEL_PUBLICATION_ALREADY_CLAIMED')
@@ -1143,15 +1143,15 @@ async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,c
   const [{data:obligation,error:oe},{data:capabilities,error:ce},{data:reservations,error:re}]=await Promise.all([
     db.from('content_publication_obligations')
       .select('channel,status,external_id,live_proven_at,evidence')
-      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','linkedin_company').maybeSingle(),
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel',channel).maybeSingle(),
     db.from('powerhouse_social_publish_capabilities_v1')
       .select('capability_id,expires_at,consumed_at,revoked_at,evidence')
-      .eq('run_date',runDate).eq('channel','linkedin_company'),
+      .eq('run_date',runDate).eq('channel',channel),
     db.from('powerhouse_publication_uniqueness_v1')
-      .select('id').eq('publication_date',runDate).eq('channel','linkedin_company').limit(1)
+      .select('id').eq('publication_date',runDate).eq('channel',channel).limit(1)
   ]);
   if(oe||ce||re)throw new Error('RECOVERY_GUARD_READ:'+(oe?.message||ce?.message||re?.message));
-  const verdict=canRecoverExpiredCompanyClaim({
+  const verdict=(channel==='linkedin_personal'?canRecoverExpiredPersonalClaim:canRecoverExpiredCompanyClaim)({
     runDate,currentDate:today(),decision,obligation,capabilities,reservations,nowMs:Date.now()
   });
   if(!verdict.authorized)return {recovered:false,reason:verdict.reason};
@@ -1177,12 +1177,28 @@ async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,c
       recovery_reason:'EXPIRED_UNCONSUMED_PUBLICATION_AUTHORITY',recovered_at:now,
       provider_create_success:false,provider_publication_ack_verified:false,
       possible_provider_side_effect:false,republish_forbidden:false}})
-    .eq('run_date',runDate).eq('channel','linkedin_company')
+    .eq('run_date',runDate).eq('channel',channel)
     .eq('decision','publish').eq('state','blocked')
     .eq('updated_at',decision.updated_at).is('delivery_ref',null)
     .select('channel').maybeSingle();
   if(resumeError)throw new Error('RECOVERY_ORIGINAL_CLAIM_CAS:'+resumeError.message);
   return {recovered:!!resumed,revoked,reason:resumed?'ORIGINAL_CLAIM_RESUMED':'CANONICAL_CLAIM_CHANGED'};
+}
+
+// Reuse the SAME provider-authority restoration for both LinkedIn lanes.
+// One channel's failure is isolated; every lease check remains scoped by date
+// and channel. No second publisher, no extra send, no cross-channel permission.
+async function recoverExpiredLinkedInPublicationAuthority(db:any,runDate:string,channels:string[]) {
+  const selected=[...new Set(channels.filter(c=>c==='linkedin_company'||c==='linkedin_personal'))];
+  if(!selected.length)return {recovered:false,reason:'NO_LINKEDIN_LANE_SELECTED',channels:[]};
+  const results=[];
+  for(const channel of selected){
+    const result=await recoverExpiredOriginalLinkedInClaim(db,runDate,channel);
+    results.push({channel,...result});
+  }
+  return {recovered:results.some(r=>r.recovered===true),
+    reason:results.some(r=>r.recovered===true)?'ORIGINAL_CLAIM_RESUMED':'NO_ELIGIBLE_EXPIRED_LEASE',
+    channels:results};
 }
 
 Deno.serve(async (req) => {
@@ -1236,7 +1252,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const authority_recovery=await recoverExpiredCompanyPublicationAuthority(db,runDate,channels);
+  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')

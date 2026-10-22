@@ -428,3 +428,15 @@ Do NOT retry a rejected editorial result, OAuth denial, source failure or
 an ambiguous social provider write. Preserve the original publisher,
 one channel/day publication authority, global semantic dedupe, and external
 provider receipt. The daily executor remains active with original leases.
+
+
+## 2026-10-22 — personal unconsumed publish lease recovery
+
+Fingerprint `powerhouse|linkedin-personal-expired-authority-recover|20261022-v1`. The EXISTING protected personal LinkedIn
+publisher now shares the company's exact expired authority recovery: only
+same day; original publish/blocked claim; explicit no provider side effect;
+all leases unconsumed and expired/revoked; zero uniqueness reservations.
+Revoke by exact lease CAS then resume the ORIGINAL content_ready record by
+exact updated_at CAS. Repeat source, editorial, identity, OAuth, semantic
+uniqueness and external provider receipt gates; never manufacture a post.
+Never add second sender, job, or OAuth fallback.
