@@ -1,7 +1,7 @@
 {
   "id": "ci-brain-archived-source-batch2-20261022",
   "date": "2026-10-22",
-  "status": "PREVENTION_CANDIDATE_UNVERIFIED",
+  "status": "CANDIDATE_UNVERIFIED_CI",
   "root_cause": "Inherited tests still read retired executable migration paths after archival.",
   "remediation": "Repair test source paths only; verify original immutable blob identity and absence of executable duplicates.",
   "evidence": {
@@ -22,5 +22,36 @@
     "tests/supabase-powerhouse-linkedin-sales-prediction-activation.test.mjs",
     "tests/supabase-powerhouse-signal-forecast-materialization.test.mjs"
   ],
-  "acceptance": "No green until exact-head CI/CodeQL and independent zero-failure full BRAIN"
+  "acceptance": "No green until exact-head CI/CodeQL and independent zero-failure full BRAIN",
+  "fingerprint": "ci|inherited-baseline|archived-sql-source-batch2|20261022",
+  "obligation_id": "ci-brain-archived-source-batch2-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-inherited-archive-sources-batch2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-inherited-archive-sources-batch2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-inherited-archive-sources-batch2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "BRAIN #39671036043: 321 failed",
+    "after": "PENDING_EXACT_HEAD_RUN",
+    "full_brain": "PENDING_0_FAIL",
+    "production": "UNCHANGED"
+  }
 }
