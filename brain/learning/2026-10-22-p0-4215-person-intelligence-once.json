@@ -30,13 +30,25 @@
       "initial_basic_case": "2 unmatched-person synthetic opportunities, 50-column comparison, zero differences and two positive finance outputs",
       "final_readback": "public.powerhouse_opportunities=0; public.bg_connecties=0; public.powerhouse_forecasts=0; candidate view MD5 6a7a20df1f24b4333986ba9b2da09314",
       "release_limitation": "NOT live acceptance: synthetic smoke does not prove representative >=2-tenant 50-column/finance parity, real authenticated customer isolation, or real end-to-end runtime improvements."
+    },
+    "financial_source_readiness_20261022": {
+      "status": "OBSERVED_ZERO_EUR_RELEASE_BLOCKER",
+      "production_opportunities": 818,
+      "positive_expected_value_eur_rows": 0,
+      "positive_expected_revenue_value_rows": 0,
+      "confirmed_from": "read-only Supabase production SQL readback",
+      "canonical_registry_fingerprint": "powerhouse|opportunities|all-zero-expected-value-source|20261022",
+      "code_guard": "BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED",
+      "regression": "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "meaning": "no actual positive-valued financial parity; no fabricated revenue or PII copied"
     }
   },
   "prevention": [
     "Root cause is never declared solved by increasing work_mem or timeouts.",
     "No production migration before representative financial result parity, isolation verification, Required CI and CodeQL.",
     "Existing daily executor, scheduler and social lineage remain active.",
-    "Synthetic parity fixtures must run transactionally with verified ROLLBACK and must never be mistaken for authorized two-tenant financial parity or release acceptance."
+    "Synthetic parity fixtures must run transactionally with verified ROLLBACK and must never be mistaken for authorized two-tenant financial parity or release acceptance.",
+    "Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim."
   ],
   "compiler": {
     "failure_class": "RECOVERY",
@@ -64,29 +76,32 @@
     "causes": [
       "Runner assumed public buying-window remained pre-migration on provider-owned preview and incorrectly incorporated the migration REVOKE statement in the extracted view SQL.",
       "Local variable named process shadowed global process; preview environment preflight would fail in the temporal-dead-zone before opening the DB connection.",
-      "The full-parity SQL array accidentally contained candidateSql twice, raising relation-already-exists on a populated preview before row/financial comparison."
+      "The full-parity SQL array accidentally contained candidateSql twice, raising relation-already-exists on a populated preview before row/financial comparison.",
+      "The full parity runner accepted nonempty but all-zero financial input because equality of two zero-euro datasets satisfied bidirectional 50-column and aggregate comparisons without any positive-value scenario."
     ],
     "fixes": [
       "Use exactly extracted canonical view definition and reconstruct immutable baseline/candidate as transaction-local TEMP VIEWs.",
       "Assert exact both canonical MD5s, installed source identity, original browser role denial, 50 ordered columns, nonzero complete row-set and financial EXCEPT ALL; always ROLLBACK.",
       "Name the spawned child childResult, never process, and retain global process env/output.",
-      "Create each transaction-local baseline/candidate TEMP VIEW exactly once; verify that the source array contains precisely one candidateSql token."
+      "Create each transaction-local baseline/candidate TEMP VIEW exactly once; verify that the source array contains precisely one candidateSql token.",
+      "Add a fail-closed test in the existing 50-column isolated-preview runner: both original and candidate must contain an actual row with expected_value_eur>0 AND expected_commercial_value_eur>0 before reporting full parity; reject zero-only datasets as BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED."
     ],
     "evidence": [
       "On existing isolated preview nqyptchljoucghdihmqy, temporary restored original md5 2ce1ab1122390af0f51c5aa8b318600f and candidate md5 6a7a20df1f24b4333986ba9b2da09314 matched installed candidate; SQL transaction rolled back.",
       "Six local source/regression contract assertions passed after the correction; not an end-to-end parity receipt.",
       "Current preview has zero opportunities; empty result is explicitly fail-closed; no authentic two-tenant acceptance or scheduler runtime success claimed.",
       "Regression verifies exactly one candidate TEMP VIEW creation, and Node child-process tests independently prove missing-authorization and production-ref preflight rejection.",
-      "On existing preview, transaction-only 3-row synthetic advanced parity passed all 50 columns, bidirectional EXCEPT ALL with zero mismatches; keyed and URL-alias person joins, unmatched person, forecast and nonzero financial outputs were exercised; rollback readback confirmed zero opportunities, contacts and forecasts. This is NOT actual customer or runtime parity."
+      "On existing preview, transaction-only 3-row synthetic advanced parity passed all 50 columns, bidirectional EXCEPT ALL with zero mismatches; keyed and URL-alias person joins, unmatched person, forecast and nonzero financial outputs were exercised; rollback readback confirmed zero opportunities, contacts and forecasts. This is NOT actual customer or runtime parity.",
+      "Production observed 818 opportunity inputs, 0 positive expected_value_eur and 0 positive expected_revenue_value, so previous all-zero parity could be true without testing positive-valued money output. Existing preview remains empty. Guard and regression added on PR #4630; exact-head CI/CodeQL and nonempty real multi-tenant acceptance still pending."
     ],
     "regression": [
       "tests/brain-p0-4215-person-intelligence-once.test.mjs",
       "tests/brain-p0-4215-buying-window-full-parity.mjs"
     ],
-    "prevention": "All parity harnesses must be executable, mutation-free on production, reject empty or mismatched datasets, detect preview migration state without weakening hash gates, and forbid shadowing Node process. Prevent duplicate transient SQL objects and cover explicit fail-closed CLI entry paths with real subprocess smoke tests.",
+    "prevention": "All parity harnesses must be executable, mutation-free on production, reject empty or mismatched datasets, detect preview migration state without weakening hash gates, and forbid shadowing Node process. Prevent duplicate transient SQL objects and cover explicit fail-closed CLI entry paths with real subprocess smoke tests. Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim.",
     "verified_at": "2026-10-22",
     "release_gate": "DRAFT until exact-head Required/CodeQL and populated authorized 2-tenant full and financial parity plus two independently authenticated HTTP checks and measured runtime succeed",
     "latest_candidate_commit": "5437c48ebad6948f5883a33747c7bd26e699d021",
-    "current_state": "SOURCE_CORRECTED_SYNTHETIC_PARITY_PASSED_REAL_TWO_TENANT_AND_RUNTIME_PROOF_PENDING"
+    "current_state": "ZERO_FINANCIAL_FALSE_GREEN_GUARD_ADDED_PENDING_EXACT_HEAD_CI_AND_REAL_TWO_TENANT_ACCEPTANCE"
   }
 }
