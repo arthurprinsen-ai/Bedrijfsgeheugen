@@ -1,0 +1,57 @@
+{
+  "fingerprint": "ci|brain|anthropic-content-loop-bounded-fanout-stale-singleton-oracle|20261022-v1",
+  "date": "2026-10-22",
+  "type": "BRAIN_LEARNING",
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "obligation_id": "ci-brain-anthropic-bounded-fanout-oracle-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "baseline_run_id": 39791707071,
+  "baseline_total_tests": 3526,
+  "baseline_passed_tests": 3171,
+  "baseline_failed_tests": 355,
+  "targeted_original_failure": "not ok 114 - Anthropic request deadline fits inside supervisor and does not truncate legitimate generation at 45s",
+  "root_cause": "Inherited source-oracle asserts retired MAX_CHANNEL_GENERATIONS=1 and bootstrapAttempted symbols, while the canonical supervisor uses bounded four-channel deduplicated fanout and bootstrapStillInFlight safety interlock.",
+  "correction": "Replace obsolete singleton text assertions with positive verification of 90s/110s request budgets, <=4 pending channels, channel deduplication, targeted per-channel dispatch, failure evidence, and no second invocation during ambiguous in-flight bootstrap.",
+  "prevention_rule": "Before modifying generation controls, validate assertions against the current canonical supervisor and orchestrator source; preserve bounded concurrency, idempotent channel selection, timeouts, and fail-closed uncertainty.",
+  "exact_base_sha": "f627153ed569820917a2dc5787dd210613f0395e",
+  "changed_runtime_files": 0,
+  "changed_sql_migrations": 0,
+  "production_verified": false,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "baseline": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "baseline_failing_test": 114,
+    "canonical_source_invariant_readback": "10/10 positive static regex checks passed on protected main, including both timeouts and bounded fanout",
+    "exact_head_required": "PENDING",
+    "exact_head_codeql": "PENDING",
+    "independent_full_brain_zero_fail": "NOT_PROVEN",
+    "supabase_cleanroom_parity": "NOT_PROVEN",
+    "two_authenticated_tenant_acceptance": "NOT_PROVEN"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md"
+  ],
+  "writeback": {
+    "canonical_skill_projection": "PENDING_OWNER_COORDINATION",
+    "incident_register": "EXISTING_3742",
+    "human_documentation": "docs/changes/2026-10-22-brain-anthropic-bounded-fanout-oracle.md"
+  }
+}
