@@ -63,7 +63,6 @@ const sql=[
  " RAISE EXCEPTION 'BUYING_BROWSER_READ_BOUNDARY_DRIFT'; END IF;",
  'END $integrity$;',
 'CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_baseline;',
- candidateSql,
  'CREATE TEMP TABLE p0_new ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_candidate;',
  'DO $parity$',
  'DECLARE old_shape jsonb; new_shape jsonb; old_rows bigint; new_rows bigint;',
