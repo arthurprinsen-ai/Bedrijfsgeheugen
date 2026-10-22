@@ -40,7 +40,22 @@
     "failure_class": "RECOVERY",
     "scope": "AUTOMATION",
     "machine_enforceable": true,
-    "security_sensitive": true
+    "security_sensitive": true,
+    "repeat_count": 2
   },
-  "current_state": "CANDIDATE_REQUIRES_PROTECTED_CI_AND_DEPLOY"
+  "current_state": "CANDIDATE_REQUIRES_PROTECTED_CI_AND_DEPLOY",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ]
+  }
 }
