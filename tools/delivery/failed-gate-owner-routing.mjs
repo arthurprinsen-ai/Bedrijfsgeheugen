@@ -51,3 +51,10 @@ Status: **RECOVERY REQUIRED**, not green. This is an existing PR/owner obligatio
 
 The existing watchdog leaves this obligation open until independent gate and delivery proof exists.`;
 }
+
+export function classifyOwnerSignalWriteError(error) {
+  const message = String(error?.message || error || '');
+  return /^GitHub API 403 \/issues\/\d+\/comments:/.test(message)
+    ? 'PROVIDER_COMMENT_AUTHORITY_DENIED'
+    : 'UNEXPECTED_ERROR';
+}
