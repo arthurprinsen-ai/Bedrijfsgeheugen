@@ -66,5 +66,16 @@
       "exact SHA protected Required CI and CodeQL before merge"
     ]
   },
-  "terminal_rule": "Only protected merge + exact main + actual post-merge daily learning job SUCCESS while model-freshness correctly reports independent source truth can prove the recovery. It does not close upstream model-catalog P0 #4367."
+  "terminal_rule": "Only protected merge + exact main + actual post-merge daily learning job SUCCESS while model-freshness correctly reports independent source truth can prove the recovery. It does not close upstream model-catalog P0 #4367.",
+  "failed_approaches": [
+    "Original daily single-job pipeline aborted all autonomous learning when a genuinely stale model catalog audit exited 1.",
+    "First candidate mistakenly referenced tests/powerhouse-daily-self-evolution.test.mjs as historical/shadow/canary evaluation; canonical learning-gate refused it with LEARNING_EVALUATION_TEST_PATH_INVALID because executable evals require tests/brain-*.test.mjs."
+  ],
+  "preventive_preflight": "Before creating a Brain learning JSON evaluation, verify historical_replay/shadow/canary test paths meet the existing learning-canonicalization-gate.mjs tests/brain-*.test.mjs contract and are real executable regression tests. Never weaken this gate to clear delivery.",
+  "admission_recovery": {
+    "initial_head": "8013e767138983e5c71d240da0511d322ec55263",
+    "initial_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/powerhouse-daily-self-evolution.test.mjs",
+    "corrected_test": "tests/brain-daily-learning-failure-isolation-v1.test.mjs",
+    "provider_evidence": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812960951"
+  }
 }
