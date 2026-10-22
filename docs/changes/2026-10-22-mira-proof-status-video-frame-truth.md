@@ -4,14 +4,14 @@ Fingerprint: `mira|prepublish-status-fail-contradiction|20261022-v1`.
 
 ## Provider-grounded cause
 
-Direct Supabase readback of `public.powerhouse_media_proof_evidence_v1` found 21 of 46 historical records with `provider_status=prepublish_verified` while `identity_gate_result=FAIL`. The existing BEFORE trigger correctly demotes invalid vision evidence to FAIL, but does not demote the preliminary status. The SQL validator additionally handles `video` and `reel` as 1080×1920 yet treats `video_frame` as a 1080×1350 image. An actual 2026-10-19 video-frame record with score **0.95** was rejected: calling the same database validator with `video_frame` returns false, but with `reel` returns true. This is a confirmed classification bug, independent from the October 22 sub-0.94 image-quality failure.
+Direct Supabase readback of `public.powerhouse_media_proof_evidence_v1` found 21 of 46 historical records with `provider_status=prepublish_verified` while `identity_gate_result=FAIL`. The existing BEFORE trigger correctly demotes invalid vision evidence to FAIL, but does not demote the preliminary status. The SQL validator additionally handles `video` and `reel` as 1080×1920 yet treats `video_frame` as a 1080×1350 image. An actual 2026-10-19 video-frame record with score **0.95** was rejected: calling the same database validator with `video_frame` returns false, but with `reel` returns true. The media-type misclassification is confirmed, but this specific historic 0.95 record also used the OLD August Mira master (`ab32dfce...` and an August CDN URL), rather than the corrected September master (`e32863f...`). Therefore it is NOT eligible for promotion after correcting the video-frame classifier. The October 22 sub-0.94 issue is independent and also remains blocked.
 
 ## Narrow correction
 
 - Reuse existing validator and trigger in place. `video_frame`, `video`, `reel` are explicitly 1080×1920. Still images remain 1080×1350.
 - SQL validator now requires the approved Mira master, actual two-image vision lineage, identity-match evidence and **>=0.94** face confidence. No metadata-only bypass, token changes, loosened security or new scheduler.
 - When a row's identity verdict is FAIL/absent, its provisional `prepublish_verified` must be `prepublish_rejected`; align nested verified/final flags. A genuine external provider-published result, if already present, must remain historically visible for independent reconciliation, never silently deleted.
-- Include predicate smoke tests (0.95 video frame accepted; 0.92 rejected; wrong dimensions/master rejected) and Node source regression. These are **synthetic logic tests**, not proof that any specific Instagram video is acceptable.
+- Include predicate smoke tests (synthetic 0.95 video frame with the **correct September master** accepted as a predicate, 0.92 rejected, stale August master and wrong dimensions/hash rejected) and Node source regression. These are **synthetic logic tests**, not proof that any real Instagram video is acceptable. Read-only historical simulation: none of the 46 original records becomes newly valid under all proposed strict guards; the six October 22 rejected assets remain rejected.
 
 ## Release and non-goals
 
