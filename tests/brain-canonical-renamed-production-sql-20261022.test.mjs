@@ -25,17 +25,29 @@ const contracts = [
       'semantic_novelty_ok',
       'new_followup_evidence_ok'
     ]
+  },
+  {
+    testFile: 'tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs',
+    oldFile: 'supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql',
+    newFile: 'supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql',
+    markers: [
+      'powerhouse_execute_relationship_research_v1',
+      'bg_bedrijfsnieuws',
+      'bg_externe_signalen',
+      'powerhouse_predictive_signals',
+      "external_outreach_executed',false"
+    ]
   }
 ];
 
 for (const contract of contracts) {
-  test('renamed production SQL oracle preserves original contract: ' + contract.testFile, () => {
+  test('canonical production SQL oracle preserves original contract: ' + contract.testFile, () => {
     assert.equal(fs.existsSync(contract.oldFile), false, 'Obsolete filename must not be restored as duplicate executable migration');
     const source = fs.readFileSync(contract.newFile, 'utf8');
-    assert.ok(source.trim().length > 0, 'Canonical already-applied source must be nonempty');
+    assert.ok(source.trim().length > 0, 'Canonical existing SQL source must be nonempty');
     for (const marker of contract.markers) assert.ok(source.includes(marker), 'Preserve original safety marker: ' + marker);
     const consumer = fs.readFileSync(contract.testFile, 'utf8');
     assert.ok(consumer.includes(contract.newFile), 'Consumer must read the surviving canonical migration');
-    assert.ok(!consumer.includes(contract.oldFile), 'Consumer must not read the retired filename');
+    assert.ok(!consumer.includes(contract.oldFile), 'Consumer must not read the obsolete filename');
   });
 }
