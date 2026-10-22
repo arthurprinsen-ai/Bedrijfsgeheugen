@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, boundedGateRequest, GATE_REQUEST_TIMEOUT_MS } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, boundedGateRequest, GATE_REQUEST_TIMEOUT_MS, eligibleMissingGateDispatch, MAX_MISSING_GATE_DISPATCHES_PER_TICK } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -127,4 +127,22 @@ test('uncertain POST comments or dispatches must never retry without marker read
   const source = readFileSync('.github/scripts/required-gate-watchdog.mjs','utf8');
   assert.match(source, /boundedGateRequest\(fetch/);
   assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
+});
+
+test('historical 19-dispatch watchdog fanout is now bounded and never revives retired writers', () => {
+  const active = {title:'fix(ci): same-owner recovery',body:'Writer-Lease-State: CANDIDATE_ACTIVE'};
+  const retired = {title:'RETIRED — superseded by current-main repair',body:''};
+  const released = {title:'fix(ci): old closure',body:'Writer-Lease-State: RELEASED'};
+  const proven = {title:'fix(ci): done',body:'Terminal-State: LIVE_BEWEZEN'};
+  assert.equal(MAX_MISSING_GATE_DISPATCHES_PER_TICK, 2);
+  assert.equal(eligibleMissingGateDispatch(active, 0), true);
+  assert.equal(eligibleMissingGateDispatch(active, 1), true);
+  assert.equal(eligibleMissingGateDispatch(active, 2), false);
+  assert.equal(eligibleMissingGateDispatch(retired, 0), false);
+  assert.equal(eligibleMissingGateDispatch(released, 0), false);
+  assert.equal(eligibleMissingGateDispatch(proven, 0), false);
+  const script = readFileSync('.github/scripts/required-gate-watchdog.mjs','utf8');
+  assert.match(script, /if \(!eligibleMissingGateDispatch\(pr, dispatched\)\) continue/);
+  assert.match(script, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
+  assert.match(script, /REQUIRED_GATE_WATCHDOG_DONE/);
 });

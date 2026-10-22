@@ -86,3 +86,15 @@ export async function boundedGateRequest(fetchImpl, url, init = {}, {
   }
   throw new Error('GATE_READ_RETRY_EXHAUSTED');
 }
+
+// Fail-closed queue pressure bound: no bulk fanout of missing Required checks.
+// Keep scanning existing owners even when the per-tick dispatch budget is reached.
+export const MAX_MISSING_GATE_DISPATCHES_PER_TICK = 2;
+
+export function eligibleMissingGateDispatch(pr, alreadyDispatched = 0) {
+  if (alreadyDispatched >= MAX_MISSING_GATE_DISPATCHES_PER_TICK) return false;
+  if (/^(RETIRED|SUPERSEDED)\b/i.test(String(pr?.title || '').trim())) return false;
+  if (/^Writer-Lease-State:\s*(RELEASED|TERMINAL|RETIRED|CLOSED)\b/im.test(String(pr?.body || ''))) return false;
+  if (/^Terminal-State:\s*(LIVE_BEWEZEN|LIVE_PROVEN|ROLLED_BACK_GREEN)\b/im.test(String(pr?.body || ''))) return false;
+  return true;
+}

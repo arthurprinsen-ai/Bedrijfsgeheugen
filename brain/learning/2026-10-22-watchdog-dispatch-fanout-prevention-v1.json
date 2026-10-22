@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|failed-gate|unbounded-watchdog-dispatch-fanout|20261022-v1",
+  "obligation_id": "delivery|failed-gate|unbounded-watchdog-dispatch-fanout|20261022-v1",
+  "title": "Canonical watchdog must cap missing Required CI dispatches instead of creating runner stampedes",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Actual production watchdog run #39814141663 emitted 19 REQUIRED_GATE_WATCHDOG_DISPATCHED events in one five-minute tick because missing-gate dispatches were uncapped and recently touched retired PRs were still eligible.",
+  "impact": "Avoidable workflow fanout increases GitHub runner queue pressure, provider API load, and time to useful BRAIN/Required verification.",
+  "failed_approaches": [
+    "Unbounded redispatch across all open PRs",
+    "Treating old retired PR updated_at as proof of active work",
+    "Turning off the canonical watchdog to escape pressure",
+    "Cancelling healthy Required/CodeQL jobs"
+  ],
+  "fix": "Preserve existing five-minute watchdog and owner handoff while capping new missing-Required dispatches to two per tick and excluding explicitly retired/released/terminal PRs. Keep full source-owner scan; do not introduce scheduler or queue.",
+  "prevention_rule": "At most two new missing Required dispatches per watchdog tick, never dispatch retired/released/terminal obligations; keep failed owner recovery signals independently budgeted, and verify an actual production watchdog run.",
+  "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+  ],
+  "evidence": {
+    "production_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39814141663",
+    "actual_missing_gate_dispatches": 19,
+    "actual_owner_signals": 2,
+    "producer_script": ".github/scripts/required-gate-watchdog.mjs",
+    "post_repair_runtime_proof": "PENDING"
+  },
+  "outcome": "CANDIDATE bounded dispatch and retired-writer exclusion; verify exact-head gates and production provider readback",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "DISPATCH_MAX_TWO_PER_TICK",
+    "NO_RETIRED_WRITER_REDISPATCH",
+    "NO_DUPLICATE_OWNER_SIGNAL",
+    "PRESERVE_REQUIRED_CODEQL",
+    "NO_SECOND_SCHEDULER"
+  ]
+}
