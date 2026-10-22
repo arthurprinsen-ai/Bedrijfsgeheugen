@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "powerhouse|parallel-wave-admission|bounded-epochs-settlement|20261022-v1",
+  "obligation_id": "powerhouse|parallel-wave-admission|bounded-epochs-settlement|20261022-v1",
+  "canonical_related_obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE_PENDING_PROTECTED_GATES",
+  "component": "existing parallel-engineering-fabric; no new scheduler/queue/memory",
+  "observed_failure_mode": "Scheduler admitted unlimited independent work packages per wave, accepted mixed base epochs, and Promise.all returned on first failure before all already-started workers settled.",
+  "root_cause": "Missing bounded admission, main-epoch coherence invariant, and sibling-settlement barrier in existing deterministic plan.",
+  "repair": [
+    "Cap each independent wave using the existing four-package tuning baseline (policy range 1..16)",
+    "Fail closed on mixed base SHAs before any worker begins",
+    "Wait for all in-flight siblings to settle, report failed/completed package IDs and block downstream wave on failure"
+  ],
+  "prevention": [
+    "Tests enforce deterministic 4+2 wave splitting",
+    "Tests reject mixed-main plans and invalid wave budgets",
+    "Tests assert failed wave completion barrier and no downstream work"
+  ],
+  "proof": {
+    "local_tests": "NOT_EXECUTED_CONNECTOR_ONLY",
+    "github_required": "PENDING",
+    "github_codeql": "PENDING",
+    "protected_merge": "PENDING",
+    "production_readback": "PENDING",
+    "measured_speed_gain": "NOT_MEASURED"
+  },
+  "safety": {
+    "release_gate_unchanged": true,
+    "security_gate_unchanged": true,
+    "no_duplicate_scheduler": true,
+    "no_auto_promotion": true
+  }
+}

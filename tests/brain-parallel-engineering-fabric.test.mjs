@@ -129,3 +129,49 @@ test('fabric CLI exposes canonical readiness', () => {
   const parsed = JSON.parse(execFileSync(process.execPath,['scripts/brain/parallel-engineering-fabric.mjs','--check'],{encoding:'utf8'}));
   assert.equal(parsed.status,'PARALLEL_ENGINEERING_READY');
 });
+
+test('hypercoding admission splits independent same-epoch packages into bounded deterministic waves', () => {
+  const workPackages = Array.from({ length: 6 }, (_, i) => ({
+    id: `W${i + 1}`, paths: [`brain/parallel-${i + 1}.mjs`],
+    baseSha: 'same-main', candidateSha: `head-${i + 1}`
+  }));
+  const plan = buildExecutionPlan({
+    workPackages, deliveryConfig,
+    policy: { ...policy, scheduling: { max_parallel_packages: 4 } }
+  });
+  assert.deepEqual(plan.waves.map(w => w.map(p => p.id)),
+    [['W1','W2','W3','W4'],['W5','W6']]);
+  assert.throws(() => buildExecutionPlan({
+    workPackages, deliveryConfig,
+    policy: { ...policy, scheduling: { max_parallel_packages: 0 } }
+  }), /INVALID_PARALLEL_WAVE_BUDGET/);
+});
+
+test('mixed main epochs fail closed before concurrent mutation or speculative integration', () => {
+  assert.throws(() => buildExecutionPlan({ workPackages: [
+    { id:'A', paths:['brain/a.mjs'], baseSha:'main-old', candidateSha:'a' },
+    { id:'B', paths:['site/b.js'], baseSha:'main-new', candidateSha:'b' }
+  ], deliveryConfig, policy }), /MIXED_BASE_EPOCH/);
+});
+
+test('failed parallel wave waits for all siblings and prevents downstream execution', async () => {
+  const plan = buildExecutionPlan({ workPackages: [
+    { id:'A', paths:['brain/a.mjs'], baseSha:'main', candidateSha:'a', specialist:'backend' },
+    { id:'B', paths:['site/b.js'], baseSha:'main', candidateSha:'b', specialist:'website' },
+    { id:'C', paths:['brain/c.mjs'], dependsOn:['A'], baseSha:'main', candidateSha:'c', specialist:'backend' }
+  ], deliveryConfig, policy });
+  const finished = [];
+  await assert.rejects(
+    executePlanWaves(plan, {
+      backend: async pkg => { if (pkg.id === 'A') throw new Error('FAILED_EXACT_HEAD_TEST'); finished.push(pkg.id); },
+      website: async pkg => { await new Promise(resolve => setTimeout(resolve, 15)); finished.push(pkg.id); return 'proof:B'; }
+    }),
+    error => {
+      assert.equal(error.code, 'PARALLEL_WAVE_FAILED');
+      assert.deepEqual(error.failedPackageIds, ['A']);
+      assert.deepEqual(error.completedPackageIds, ['B']);
+      return true;
+    }
+  );
+  assert.deepEqual(finished, ['B']);
+});

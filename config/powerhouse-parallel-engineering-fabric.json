@@ -12,6 +12,7 @@
   },
   "scheduling": {
     "deterministic": true,
+    "max_parallel_packages": 4,
     "sort": "lexical-work-package-id",
     "require_exact_base_identity": true,
     "require_exact_candidate_identity": true,
