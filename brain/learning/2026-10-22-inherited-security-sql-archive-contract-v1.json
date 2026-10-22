@@ -1,0 +1,37 @@
+{
+  "contract": "BRAIN-INHERITED-SECURITY-SQL-ARCHIVE-v1",
+  "date": "2026-10-22",
+  "obligation_id": "ci-inherited-security-sql-archive-20261022",
+  "parent_issue": 3742,
+  "blocked_portal_pr": 4573,
+  "source_run": 39671036043,
+  "source_job": 119469063095,
+  "baseline_failed": 321,
+  "cause": "Six legacy BRAIN source contract tests read retired executable migration paths while original SQL blobs remain in the immutable repository-only archive",
+  "repair": "Six single-path read replacements; original assertions unchanged",
+  "status": "CANDIDATE_UNVERIFIED",
+  "prevention": "tests/brain-inherited-security-sql-archive-contract-v1.test.mjs",
+  "forbidden": [
+    "restoring_old_executable_migrations",
+    "skipping_tests",
+    "weakening_required_codeql_or_BRAIN",
+    "fabricating_prod_success"
+  ],
+  "source_blob_shas": {
+    "20260919123730_restrict_capture_trigger_execute_v1.sql": "6121995f1ca3727d47fa96e0e5b67817d745fc31",
+    "20260915123500_powerhouse_autonomous_growth_revenue_trigger_fix.sql": "36e819b3903dc41528072454c79a17cabab5513b",
+    "20260915104000_powerhouse_autonomy_rpc_security_hardening.sql": "5a2433a155f965f085f5d7ea1dee6a996e30d3c2",
+    "20260915110500_powerhouse_gap_register_security_hardening.sql": "2de1cf82e52aafae97deb132302400095dc7b1e1",
+    "20260915110000_powerhouse_internal_view_security_hardening.sql": "1aa3033564c25892814853701662c3ab104f0c0c",
+    "20260915124500_powerhouse_signal_forecast_materialization.sql": "8610fdc4adafb5c3193cab5d2775a050e3f632dd"
+  },
+  "release_requirements": [
+    "exact_HEAD_required_success",
+    "exact_HEAD_codeql_success",
+    "exact_HEAD_full_brain_zero_failed",
+    "protected_merge",
+    "supported_supabase_clean_room_parity_3742",
+    "authenticated_tenant_A_B_readback_4215",
+    "release_readback"
+  ]
+}
