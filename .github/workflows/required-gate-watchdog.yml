@@ -8,7 +8,6 @@ on:
 permissions:
   actions: write
   contents: read
-  # PR issue-comment API accepts Pull requests:write; Issues:write alone was denied in production.
   pull-requests: write
   issues: write
 

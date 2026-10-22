@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|required-gate-watchdog|owner-comment-403|20261022-v1",
+  "obligation_id": "delivery|required-gate-watchdog|owner-comment-403|20261022-v1",
+  "title": "Required Gate Watchdog PR comment 403 despite Issues write",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Live GitHub Actions run 39811993147 reached POST /issues/4656/comments and returned HTTP 403 Resource not accessible by integration. Effective GITHUB_TOKEN permissions were Issues:write but PullRequests:read; GitHub REST docs claim either write permission suffices, while upstream github/rest-api-description#6994 documents that some installations require Pull requests:write as well. A permissions mismatch is observed; remediation efficacy awaits live replay.",
+  "impact": "Existing watchdog aborted after one failed PR comment, despite successfully dispatching one missing Required test, preventing later PRs in that execution from receiving recovery handling.",
+  "failed_approaches": [
+    "Treat Issues:write as guaranteed sufficient for PR conversation comment creation",
+    "Classify a failed owner-signal dispatch as delivered",
+    "Bypass browser CLS <=0.100 or Required/CodeQL checks to make the job green"
+  ],
+  "fix": "Grant pull-requests:write in the existing five-minute required-gate-watchdog.yml while preserving issues:write, actions:write and contents:read. Assert the effective PR write scope in the regression test.",
+  "prevention_rule": "Every agent writing PR conversation comments must have PR write scope and must verify actual provider-side write/readback; permissions declared in YAML alone are not sufficient evidence. Failed handoffs remain BLOCKED until provider confirmation, not silently green.",
+  "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+  ],
+  "evidence": {
+    "failing_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "failing_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+    "canonical_owner_comment": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4656#issuecomment-6345553362",
+    "upstream_provider_issue": "https://github.com/github/rest-api-description/issues/6994",
+    "source_fix_proven": false,
+    "production_readback": "PENDING"
+  },
+  "outcome": "CANDIDATE: source and regression test; no claim that the PR comment delivery works until exact live verification.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "Do not weaken Required/CodeQL or CLS threshold",
+      "Do not create second scheduler",
+      "No duplicate comments for same head/gate",
+      "No unrelated PR write outside existing owner signal"
+    ],
+    "canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "invariants": [
+      "Historical/shadow/canary run the same actual Node regression contract; proof of a provider comment still requires a post-merge live readback",
+      "Keep Required CI, CodeQL, CLS threshold and owner-dedup protection"
+    ]
+  },
+  "prevention": [
+    "REQUIRE_PR_WRITE_FOR_PR_COMMENT",
+    "REQUIRE_PROVIDER_WRITE_READBACK",
+    "NO_FAKE_GREEN",
+    "SAME_OWNER_RECOVERY"
+  ]
+}

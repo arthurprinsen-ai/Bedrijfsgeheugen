@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|required-gate-watchdog|partial-denial-fault-isolation|20261022-v1",
+  "obligation_id": "delivery|required-gate-watchdog|partial-denial-fault-isolation|20261022-v1",
+  "title": "Prevent one denied GitHub owner-handoff from terminating unrelated Required recovery",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Original 5-minute Required Gate Watchdog throws for any PR-comment POST 403, aborting the entire PR scan even though some other current-head PRs need independent missing Required dispatch; root permission scope itself was already corrected by PR #4670.",
+  "impact": "One denied PR owner comment blocks unrelated recovery and creates repeat incidents; a work queue may remain unreconciled.",
+  "fix": "Catch only typed 401/403 on the exact PR comment POST, bound owner signal attempts, record immutable failed owner handoff, complete independent missing-run dispatch, then exit non-success. Preserve all original source/security gates.",
+  "prevention_rule": "Partial recovery failure must be isolated to its precise side-effect but never silently converted to success; same canonical scheduler/owner, bounded attempts, immutable evidence and provider readback.",
+  "parent_permission_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4670",
+  "observed_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "regression": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
+    "exact_head_ci": "PENDING",
+    "production_denial_canary": "NOT_YET_PROVEN",
+    "false_green_forbidden": true
+  }
+}

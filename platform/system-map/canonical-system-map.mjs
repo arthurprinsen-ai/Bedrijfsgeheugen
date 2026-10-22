@@ -2577,15 +2577,15 @@ export const POWERHOUSE_GITHUB_ACTIONS_GHOST_AUTONOMY_V1 = Object.freeze({
 });
 
 
-export const POWERHOUSE_REQUIRED_GATE_WATCHDOG_OWNER_COMMENT_AUTHZ_V1 = Object.freeze({
-  fingerprint:'github|required-gate-watchdog|owner-comment-403|20261022-v1',
-  canonicalIncident:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742',
-  currentWorkflow:'.github/workflows/required-gate-watchdog.yml',
+export const POWERHOUSE_REQUIRED_GATE_OWNER_DENIAL_FAULT_ISOLATION_V1 = Object.freeze({
+  fingerprint:'delivery|required-gate-watchdog|partial-denial-fault-isolation|20261022-v1',
+  permissionFixOwner:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4670',
   existingExecutor:'.github/scripts/required-gate-watchdog.mjs',
-  requiredPrCommentAuthority:'issues:write + pull-requests:write, actual GitHub provider acknowledgement required',
-  onAuthorizationDenial:'typed exact-PR/head/run evidence, continue independent recovery, terminal job non-success',
+  existingScheduler:'.github/workflows/required-gate-watchdog.yml',
+  onComment401or403:'record exact PR/head/gate/run, continue independent dispatch, fail terminal watchdog',
+  maxOwnerSignalAttemptsPerTick:2,
   regression:'tests/brain-required-failed-gate-owner-routing-v1.test.mjs',
-  learning:'brain/learning/2026-10-22-watchdog-pr-comment-authz-denial-v1.json',
+  learning:'brain/learning/2026-10-22-watchdog-owner-denial-fault-isolation-v1.json',
   noSecondScheduler:true,
-  evidenceStatus:'CANDIDATE_REQUIRES_PROTECTED_MERGE_AND_REAL_PROVIDER_COMMENT_READBACK'
+  status:'CANDIDATE_REQUIRES_EXACT_SHA_CI_AND_PROVIDER_DENIAL_CANARY'
 });

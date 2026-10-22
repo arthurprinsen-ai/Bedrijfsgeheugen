@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, isOwnerCommentPermissionDenied } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -61,6 +61,10 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /issues: write/);
+  // GitHub PR timeline comment POST can require both write scopes in practice.
+  // Regression: live run 39811993147 returned 403 with Issues:write + PRs:read.
+  assert.match(workflow, /pull-requests: write/);
+  assert.doesNotMatch(workflow, /pull-requests: read/);
   assert.match(workflow, /actions: write/);
   assert.match(source, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
   assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
@@ -70,7 +74,7 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
 });
 
-test('GitHub PR comment 403 remains red, typed and bounded without suppressing other dispatches', () => {
+test('GitHub comment permission denial isolates unrelated Required dispatch without false green', () => {
   assert.equal(isOwnerCommentPermissionDenied({ status: 403, path: '/issues/4656/comments' }, 4656), true);
   assert.equal(isOwnerCommentPermissionDenied({ status: 401, path: '/issues/4656/comments' }, 4656), true);
   assert.equal(isOwnerCommentPermissionDenied({ status: 403, path: '/issues/4656/comments' }, 4657), false);
