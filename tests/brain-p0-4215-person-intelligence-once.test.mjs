@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
 const path='supabase/migrations/20261022120800_p0_4215_person_intelligence_once.sql';
 const sql=readFileSync(path,'utf8');
 const view=sql.split('CREATE OR REPLACE VIEW public.powerhouse_buying_window_v2 WITH (security_invoker=true) AS')[1]?.split('\nDO $readback$')[0];
@@ -71,4 +72,24 @@ test('migrated preview is hash pinned, original is transaction-scoped, empty sna
  assert.equal((src.match(/^ candidateSql,$/gm)||[]).length,1,'candidate TEMP VIEW must be created exactly once');
  assert.ok(src.includes("'CREATE TEMP TABLE p0_old ON COMMIT DROP AS SELECT * FROM pg_temp.p0_4215_buying_baseline;',\n 'CREATE TEMP TABLE p0_new"));
  assert.match(src,/ROLLBACK;/);
+});
+
+test('parity runner exits fail-closed before DB access without isolated-preview authorization',()=>{
+ const child=spawnSync(process.execPath,['tests/brain-p0-4215-buying-window-full-parity.mjs'],{
+  encoding:'utf8',timeout:5000,
+  env:{...process.env,P0_4215_PARITY_ENV:'',P0_4215_PREVIEW_PROJECT_REF:'',P0_4215_PREVIEW_DATABASE_URL:''}
+ });
+ assert.equal(child.error,undefined);
+ assert.equal(child.status,1);
+ assert.match(child.stderr,/P0_4215_BUYING_FULL_PARITY_BLOCKED: explicit isolated-preview environment required/);
+ assert.doesNotMatch(child.stderr,/ReferenceError|Cannot access 'process'/);
+});
+test('parity runner categorically refuses production ref even with isolated preview mode',()=>{
+ const child=spawnSync(process.execPath,['tests/brain-p0-4215-buying-window-full-parity.mjs'],{
+  encoding:'utf8',timeout:5000,
+  env:{...process.env,P0_4215_PARITY_ENV:'isolated-preview',P0_4215_PREVIEW_PROJECT_REF:'adhjwmvyoixzjtmiroln',P0_4215_PREVIEW_DATABASE_URL:'postgres://example.invalid/test'}
+ });
+ assert.equal(child.error,undefined);
+ assert.equal(child.status,1);
+ assert.match(child.stderr,/P0_4215_BUYING_FULL_PARITY_BLOCKED: independent preview ref required/);
 });
