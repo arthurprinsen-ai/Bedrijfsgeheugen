@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migration=await readFile(new URL('../supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
+const migration=await readFile(new URL('../supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
 
 test('trigger runtime reuses canonical stores and creates no parallel CRM or scheduler',()=>{
   assert.match(migration,/powerhouse_runtime_events/);
@@ -47,4 +47,10 @@ test('existing hourly commercial learning authority is wrapped rather than dupli
   assert.match(migration,/powerhouse_refresh_trigger_based_mkb_acquisition_v1\(p_run_date\)/);
   assert.match(migration,/powerhouse_commercial_learning_cycle_v1\(p_run_date\)/);
   assert.match(migration,/powerhouse_trigger_based_mkb_acquisition_cycle_v1/);
+});
+
+
+test('immutable acquisition source stays archived, not executable', async () => {
+  await assert.rejects(readFile(new URL('../supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql', import.meta.url), 'utf8'), { code: 'ENOENT' });
+  assert.match(migration, /create or replace view public\.powerhouse_mkb_trigger_intelligence_v1/i);
 });
