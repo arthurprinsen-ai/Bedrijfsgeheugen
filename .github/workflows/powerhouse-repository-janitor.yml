@@ -124,7 +124,15 @@ jobs:
           : > .artifacts/janitor-runtime-actions.ndjson
 
           # Active TERMINAL_DELIVERY lease may not remain closed without merge.
-          jq -c '.[] | select((.merged_at == null) and ((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY")))' .artifacts/closed-prs-recent.json | while read -r closed_pr; do
+          # Explicitly retired/unmergeable candidates are archival records, not live
+          # terminal leases: reopening them recreates abandoned PR clutter.
+          jq -c '.[] |
+            select(.merged_at == null) |
+            select(((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY"))) |
+            select(((.title // "") | startswith("RETIRED")) | not) |
+            select(((.body // "") | contains("Retirement-State: RETIRED_DO_NOT_MERGE")) | not) |
+            select(((.body // "") | contains("\\nRETIRED:")) | not)
+          ' .artifacts/closed-prs-recent.json | while read -r closed_pr; do
             pr="$(jq -r '.number' <<<"$closed_pr")"
             body="$(jq -r '.body // ""' <<<"$closed_pr")"
             obligation="$(printf '%s\n' "$body" | sed -n 's/^Obligation-ID:[[:space:]]*//p' | head -n1)"
