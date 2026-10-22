@@ -11,3 +11,5 @@ prevent: paired positive/negative resource-scoped oracle tests; never waive Requ
 replay: tests/delivery-readback-wachtvenster.test.mjs
 skill_reuse: .agents/skills/powerhouse-continuity/SKILL.md
 release: protected exact-head CI/CodeQL, merge, main run + Brain readback; unproven until then
+
+admission_recovery: LEARNING_EVALUATION_TEST_PATH_INVALID on original tests/delivery-readback-wachtvenster.test.mjs; canonical bridge tests/brain-ci-readback-wait-oracle-v1.test.mjs imports and executes original regressions unchanged; exact-head Required must rerun

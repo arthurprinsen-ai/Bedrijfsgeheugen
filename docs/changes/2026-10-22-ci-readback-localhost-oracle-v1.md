@@ -13,3 +13,7 @@ Verbied alleen korte loops die daadwerkelijke externe preview-URL's of variabele
 
 ## Vrijgave
 Test-only, geen workflow/runtime wijziging, geen scheduler of nieuwe foutregistratie. Red→green lokale test, exact-head Required CI+CodeQL, protected merge, hoofdbranch-readback en BRAIN-bewijs vereist. Andere incidenten #4655/#4661 blijven onafhankelijk.
+
+## Canonieke BRAIN-evaluatiepoort
+
+De repository accepteert voor learning-historical/shadow/canary uitsluitend `tests/brain-*.test.mjs`. De bestaande regressies blijven intact; de nieuwe `tests/brain-ci-readback-wait-oracle-v1.test.mjs` importeert en voert de oorspronkelijke vier Node-tests uit. Geen bypass van de learning-poort.

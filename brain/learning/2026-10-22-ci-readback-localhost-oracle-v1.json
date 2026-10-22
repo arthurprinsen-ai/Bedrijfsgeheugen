@@ -26,7 +26,8 @@
   "fix": "Scope the short legacy 30-iteration loop detection to curls using deploy-preview-*, PORTAL_ALIAS_URL or READBACK_URL. Add negative allowed-loopback and positive forbidden external alias/direct-host fixtures; leave the shared >=600s external wait invariant unchanged.",
   "prevention_rule": "Evaluate CI test-oracle assertions against the relevant resource class and source path; require paired bad external preview poll and valid local bootstrap fixtures. Preserve Required/CodeQL and no duplicate GitHub CI dispatch.",
   "tests": [
-    "tests/delivery-readback-wachtvenster.test.mjs"
+    "tests/delivery-readback-wachtvenster.test.mjs",
+    "tests/brain-ci-readback-wait-oracle-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity"
@@ -46,13 +47,13 @@
       "no second scheduler or test waiver"
     ],
     "historical_replay": [
-      "tests/delivery-readback-wachtvenster.test.mjs"
+      "tests/brain-ci-readback-wait-oracle-v1.test.mjs"
     ],
     "shadow": [
-      "tests/delivery-readback-wachtvenster.test.mjs"
+      "tests/brain-ci-readback-wait-oracle-v1.test.mjs"
     ],
     "canary": [
-      "tests/delivery-readback-wachtvenster.test.mjs"
+      "tests/brain-ci-readback-wait-oracle-v1.test.mjs"
     ]
   },
   "dependencies": [
