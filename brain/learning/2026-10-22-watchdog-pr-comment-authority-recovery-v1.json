@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|failed-gate|watchdog-pr-comment-403|20261022-v1",
+  "obligation_id": "delivery|failed-gate|watchdog-pr-comment-403|20261022-v1",
+  "parent_issue": 3742,
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "On main 01af9f2a, the canonical five-minute Required Gate Watchdog selected a real failing gate and attempted a same-owner PR issue comment, but GitHub returned HTTP 403 Resource not accessible by integration; the workflow declared issues:write and pull-requests:read. An uncaught denied POST terminated the entire tick, potentially preventing further missing-gate recovery.",
+  "impact": "Canonical repair owners do not receive actionable failed-gate signals; subsequent PRs remain unexamined when one provider post is denied.",
+  "evidence": {
+    "immutable_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "immutable_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+    "http_status": 403,
+    "endpoint": "/issues/4656/comments",
+    "prior_change": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4660",
+    "source_head": "01af9f2a05794a170cd3fd63013db75a33e76268",
+    "provider_outcome": "denied",
+    "production_acceptance": "PENDING_EXACT_HEAD_PROTECTED_CHECKS"
+  },
+  "fix": "Extend the SAME existing watchdog permission to pull-requests:write for PR comments, bound both failed and successful signal attempts to two per tick, catch denied owner signal individually, preserve missing-run dispatch and append immutable failure to the same job summary; exit red after processing if any delivery failed. Never record a denied post as completed.",
+  "prevention_rule": "Check effective Actions token permission against exact endpoint and provider readback, not YAML issues-write alone; failed comment POST is undelivered, remain red, bound retries/attempts and carry immutable run + canonical PR owner to the existing registry and skill projection. Do not duplicate scheduler/writer or waive Required/CodeQL/CLS.",
+  "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "before": "GitHub #39811993147 failed with 403 PR comment denial; no later owner delivery proved",
+    "after": "PENDING_VERIFIED_RUN",
+    "production": "NOT_YET_PROVEN"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "prevention": [
+    "PR_COMMENT_ENDPOINT_EFFECTIVE_PERMISSION",
+    "FAIL_CLOSED_UNDELIVERED_SIGNAL",
+    "BOUNDED_ATTEMPTS",
+    "PRESERVE_CURRENT_SCHEDULER",
+    "ONE_OWNER_ONE_RECOVERY",
+    "NO_FALSE_GREEN"
+  ]
+}

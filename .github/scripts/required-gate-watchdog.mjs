@@ -1,5 +1,6 @@
 import process from 'node:process';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../../tools/delivery/failed-gate-owner-routing.mjs';
+import { appendFileSync } from 'node:fs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, classifyOwnerSignalWriteError } from '../../tools/delivery/failed-gate-owner-routing.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -51,6 +52,8 @@ async function emitExistingOwnerSignal(pr, gate, run) {
 
 let dispatched = 0;
 let ownerSignals = 0;
+let ownerSignalAttempts = 0;
+let ownerSignalWriteErrors = 0;
 for (let page = 1; page <= 5; page++) {
   const pulls = await api(`/pulls?state=open&base=main&per_page=100&page=${page}`);
   for (const pr of pulls) {
@@ -63,9 +66,20 @@ for (let page = 1; page <= 5; page++) {
     const required = latestGateRun(runs, 'required', head);
     const codeql = latestGateRun(runs, 'codeql', head);
     for (const [gate, run] of [['required', required], ['codeql', codeql]]) {
-      if (ownerSignals >= MAX_OWNER_SIGNALS_PER_TICK) break;
+      if (ownerSignalAttempts >= MAX_OWNER_SIGNALS_PER_TICK) break;
       if (gateDecision(run) !== 'SAME_OWNER_REPAIR_REQUIRED') continue;
-      if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      ownerSignalAttempts++;
+      try {
+        if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      } catch (error) {
+        // Never stop scanning or mask provider-denied delivery as a successful
+        // recovery handoff. A blocked post remains a red operational signal.
+        ownerSignalWriteErrors++;
+        const classification = classifyOwnerSignalWriteError(error);
+        console.error(`::error title=${classification}::PR #${pr.number} gate=${gate} head=${head} run=${run.id}; owner handoff NOT delivered`);
+        if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+          `- **${classification}** PR #${pr.number}, ${gate}, exact head \`${head}\`, [failing run](https://github.com/${repo}/actions/runs/${run.id}). Handoff **NOT delivered**; same-owner recovery remains required.\n`);
+      }
     }
 
     // Preserve the existing one-flight missing-Required recovery; never
@@ -89,4 +103,5 @@ for (let page = 1; page <= 5; page++) {
   }
   if (pulls.length < 100) break;
 }
-console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}`);
+console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}:SIGNAL_ATTEMPTS:${ownerSignalAttempts}:DELIVERY_ERRORS:${ownerSignalWriteErrors}`);
+if (ownerSignalWriteErrors > 0) process.exitCode = 1;

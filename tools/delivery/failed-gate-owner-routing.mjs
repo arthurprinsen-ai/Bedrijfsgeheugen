@@ -51,3 +51,12 @@ Status: **RECOVERY REQUIRED**, not green. This is an existing PR/owner obligatio
 
 The existing watchdog leaves this obligation open until independent gate and delivery proof exists.`;
 }
+
+// Authentication failures on PR issue-comment endpoints are delivery failures,
+// not evidence that the repair owner received the signal. Keep the true
+// provider status distinct from transient transport and other permission errors.
+export function classifyOwnerSignalWriteError(error) {
+  const message = String(error?.message || error || '');
+  if (/GitHub API (401|403) \/issues\/\d+\/comments\b/.test(message)) return 'OWNER_PR_COMMENT_AUTHORITY_DENIED';
+  return 'OWNER_SIGNAL_DELIVERY_FAILED';
+}

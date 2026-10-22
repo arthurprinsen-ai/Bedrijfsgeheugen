@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../tools/delivery/failed-gate-owner-routing.mjs';
+import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment, classifyOwnerSignalWriteError } from '../tools/delivery/failed-gate-owner-routing.mjs';
 
 const sha = 'a'.repeat(40);
 const otherSha = 'b'.repeat(40);
@@ -61,11 +61,26 @@ test('existing five minute scheduler and critical gates remain enabled and sourc
   const source = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
   assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
   assert.match(workflow, /issues: write/);
+  assert.match(workflow, /pull-requests: write/);
   assert.match(workflow, /actions: write/);
   assert.match(source, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
+  assert.match(source, /ownerSignalAttempts\+\+/);
+  assert.match(source, /ownerSignalWriteErrors\+\+/);
+  assert.match(source, /if \(ownerSignalWriteErrors > 0\) process\.exitCode = 1/);
   assert.match(source, /hasOwnerSignal\(pr.number, marker\)/);
   assert.match(source, /'SAME_OWNER_REPAIR_REQUIRED'/);
   assert.match(source, /gateDecision\(required\) !== 'MISSING'/);
   assert.match(source, /required-test\.yml\/dispatches/);
   assert.doesNotMatch(source, /\/actions\/runs\/[^'\"\\s]*\/cancel|skipLayoutShift|disableCls|allowCls/i);
+});
+
+test('GitHub 403 PR comment denial is classified as unresolved authority, never green', () => {
+  assert.equal(classifyOwnerSignalWriteError(new Error('GitHub API 403 /issues/4656/comments: Resource not accessible by integration')), 'OWNER_PR_COMMENT_AUTHORITY_DENIED');
+  assert.equal(classifyOwnerSignalWriteError(new Error('GitHub API 401 /issues/123/comments: Bad credentials')), 'OWNER_PR_COMMENT_AUTHORITY_DENIED');
+  assert.equal(classifyOwnerSignalWriteError(new Error('GitHub API 502 /issues/123/comments')), 'OWNER_SIGNAL_DELIVERY_FAILED');
+  const watchdog = readFileSync('.github/scripts/required-gate-watchdog.mjs', 'utf8');
+  assert.match(watchdog, /ownerSignalAttempts >= MAX_OWNER_SIGNALS_PER_TICK/);
+  assert.match(watchdog, /Handoff \*\*NOT delivered\*\*/);
+  assert.match(watchdog, /GITHUB_STEP_SUMMARY/);
+  assert.match(watchdog, /if \(ownerSignalWriteErrors > 0\) process\.exitCode = 1/);
 });
