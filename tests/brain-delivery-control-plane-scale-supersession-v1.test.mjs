@@ -7,7 +7,11 @@ const workflow=fs.readFileSync(new URL('../.github/workflows/powerhouse-delivery
 const policy=JSON.parse(fs.readFileSync(new URL('../config/powerhouse-delivery-hygiene-v1.json', import.meta.url)));
 
 test('delivery hygiene paginates the full open PR candidate set with bounded large buffer',()=>{
-  assert.match(workflow,/GH_MAX_BUFFER = 64 \* 1024 \* 1024/);
+  // A single bounded buffer is shared by both the single-page and paginated GitHub calls.
+  assert.match(workflow,/const LOCAL_COMMAND_MAX_BUFFER = 64 \* 1024 \* 1024/);
+  assert.match(workflow,/const GH_MAX_BUFFER = LOCAL_COMMAND_MAX_BUFFER/);
+  assert.match(workflow,/maxBuffer:GH_MAX_BUFFER/);
+  assert.match(workflow,/GITHUB_API_PAGINATION_RETRY_EXHAUSTED/);
   assert.match(workflow,/\['api','--paginate','--slurp',path\]/);
   assert.match(workflow,/const open = await ghAll\(/);
 });
