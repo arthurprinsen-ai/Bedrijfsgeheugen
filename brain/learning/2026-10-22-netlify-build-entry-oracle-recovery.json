@@ -5,7 +5,13 @@
   "owner": "agent-integration-control-plane",
   "stage": "CI_BRAIN",
   "parent_issue": 3742,
-  "evidence": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39671036043",
+  "evidence": {
+    "baseline_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39671036043",
+    "regression_replay": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39763876577",
+    "replay_test_count": 6,
+    "replay_state": "PASSED",
+    "full_brain_zero_proven": false
+  },
   "observed": {
     "tests": 3511,
     "passed": 3190,
@@ -33,5 +39,12 @@
       "tests/brain-product-led-home-v1.test.mjs",
       "tests/brain-product-led-production-promotion-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
