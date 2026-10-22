@@ -1,4 +1,5 @@
 import process from 'node:process';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { latestGateRun, gateDecision, existingOwner, ownerSignalMarker, ownerSignalComment } from '../../tools/delivery/failed-gate-owner-routing.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
@@ -51,6 +52,8 @@ async function emitExistingOwnerSignal(pr, gate, run) {
 
 let dispatched = 0;
 let ownerSignals = 0;
+let commentAuthorityDenied = false;
+const deniedHandoffs = [];
 for (let page = 1; page <= 5; page++) {
   const pulls = await api(`/pulls?state=open&base=main&per_page=100&page=${page}`);
   for (const pr of pulls) {
@@ -65,7 +68,20 @@ for (let page = 1; page <= 5; page++) {
     for (const [gate, run] of [['required', required], ['codeql', codeql]]) {
       if (ownerSignals >= MAX_OWNER_SIGNALS_PER_TICK) break;
       if (gateDecision(run) !== 'SAME_OWNER_REPAIR_REQUIRED') continue;
-      if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      if (commentAuthorityDenied) {
+        deniedHandoffs.push({ pr_number: pr.number, head_sha: head, gate, run_id: run.id, reason: 'PROVIDER_COMMENT_AUTHORITY_DENIED_EARLIER_THIS_TICK' });
+        continue;
+      }
+      try {
+        if (await emitExistingOwnerSignal(pr, gate, run)) ownerSignals++;
+      } catch (error) {
+        // Preserve all independent missing-Required dispatches even if GitHub denies PR comments.
+        // Never report a successful owner notification, and never repeat the denied write this tick.
+        if (!/^Error: GitHub API 403 \/issues\/\d+\/comments:/.test(String(error))) throw error;
+        commentAuthorityDenied = true;
+        deniedHandoffs.push({ pr_number: pr.number, head_sha: head, gate, run_id: run.id, reason: 'GITHUB_API_403_RESOURCE_NOT_ACCESSIBLE_BY_INTEGRATION' });
+        console.error('::error::FAILED_GATE_OWNER_SIGNAL_PROVIDER_DENIED:#' + pr.number + ':' + gate + ':' + head + ':' + run.id);
+      }
     }
 
     // Preserve the existing one-flight missing-Required recovery; never
@@ -89,4 +105,16 @@ for (let page = 1; page <= 5; page++) {
   }
   if (pulls.length < 100) break;
 }
-console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}`);
+console.log(`REQUIRED_GATE_WATCHDOG_DONE:${dispatched}:OWNER_RECOVERY_SIGNALS:${ownerSignals}:DENIED:${deniedHandoffs.length}`);
+if (deniedHandoffs.length) {
+  await mkdir('.artifacts', { recursive: true });
+  await writeFile('.artifacts/required-gate-owner-handoff.json',
+    JSON.stringify({ observed_at: new Date().toISOString(), repository: repo,
+      fingerprint: 'github|required-gate-owner-handoff|provider-comment-403|20261022-v1',
+      state: 'PROVIDER_AUTHORITY_DENIED_NOT_DELIVERED',
+      independent_dispatches: dispatched, successful_owner_signals: ownerSignals,
+      denied_handoffs: deniedHandoffs }, null, 2) + '\n');
+  console.error('::error::OWNER_HANDOFF_UNDELIVERED:' + deniedHandoffs.length +
+    ':SEE_ARTIFACT:required-gate-owner-handoff');
+  process.exitCode = 1;
+}
