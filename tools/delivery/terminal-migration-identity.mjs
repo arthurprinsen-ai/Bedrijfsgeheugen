@@ -38,3 +38,15 @@ export function resolveTerminalMigrationIdentities(items=[], currentPaths=[]){
     return {...item,version:matches[0].version,canonical_path:matches[0].path,historical_version:version};
   });
 }
+
+/**
+ * A retired, never-merged predecessor may have proposed a migration later
+ * REPLACED under the *same exact migration path* by the protected merged terminal
+ * successor. Ignore only the rejected predecessor's source, never the successor's
+ * mandatory production APPLIED migration/provider proof.
+ */
+export function unmergedMigrationFullyReplaced(historicalPaths=[],terminalMergedPaths=[]){
+  if(!Array.isArray(historicalPaths)||!Array.isArray(terminalMergedPaths))return false;
+  const actual=new Set(terminalMergedPaths.filter(x=>typeof x==='string'&&SQL_PATH.test(x)));
+  return historicalPaths.every(x=>typeof x==='string'&&SQL_PATH.test(x)&&actual.has(x));
+}

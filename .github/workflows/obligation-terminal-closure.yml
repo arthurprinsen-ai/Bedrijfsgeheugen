@@ -564,7 +564,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
+          import { resolveTerminalMigrationIdentities, unmergedMigrationFullyReplaced } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -572,6 +572,8 @@ jobs:
           if(!Number.isInteger(prNumber)||prNumber<1) throw new Error('TERMINAL_PR_NUMBER_INVALID');
 
           const expected=[];
+          const terminalMergedMigrationPaths=new Set();
+          const requestedPrNumber=prNumber;
           const visited=new Set();
           let depth=0;
 
@@ -602,6 +604,7 @@ jobs:
                 const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
                 if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${candidate}`);
                 expected.push({version:match[1],name:match[2],source_pr:prNumber});
+                if(prNumber===requestedPrNumber) terminalMergedMigrationPaths.add(candidate);
               }
             } else {
               if(pr.state!=='closed') throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
@@ -610,9 +613,17 @@ jobs:
                 .filter(file=>file.status!=='removed' && /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')))
                 .map(file=>String(file.filename||''));
               if(migrationFiles.length>0){
-                throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
+                // Only the merged terminal successor can replace a retired migration.
+                // Exact path, same version/name and actual main-tree presence are required.
+                // The successor remains subject to provider APPLIED migration readback.
+                const terminalPaths=[...terminalMergedMigrationPaths].filter(path=>existsSync(path));
+                if(!unmergedMigrationFullyReplaced(migrationFiles,terminalPaths)){
+                  throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
+                }
+                console.log(`UNMERGED_SUPERSEDES_REPLACED_BY_MERGED_TERMINAL_MIGRATION:${prNumber}:${migrationFiles.join(',')}`);
+              } else {
+                console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
               }
-              console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
 
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);

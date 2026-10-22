@@ -1,0 +1,40 @@
+{
+  "fingerprint": "delivery|terminal-closure|replaced-retired-supabase-migration-lineage|20261022-v1",
+  "obligation_id": "delivery|terminal-closure|replaced-retired-supabase-migration-lineage|20261022-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE",
+  "failure_class": "TERMINAL_SUPERSEDES_MIGRATION_LINEAGE",
+  "scope": "GITHUB_CI",
+  "root_cause": "A previously never-merged superseded PR #4686 contains the same migration filename as the protected merged successor #4697, but its older source blob differs; current terminal closure unconditionally rejects any retired migration regardless of authoritative replacement.",
+  "evidence": {
+    "failing_run": 39840439339,
+    "failing_job": 120039732278,
+    "failing_error": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:4686:supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql",
+    "prior_sha": "2245b1fa4fde5e349954cd79a8420b9315526922",
+    "merged_source_sha": "505ab108a5414d7c6285d4d4f7bf40b9b72e6991",
+    "merged_pr": 4697,
+    "merged_migration_applied": true,
+    "production_security": "service_role only",
+    "root_cause_proven": true
+  },
+  "fix": "Allow a closed unmerged predecessor only when every proposed migration path is identically present in the CURRENT protected merged terminal successor and the checked-out source; still demand verified migration APPLIED provider readback for terminal successor.",
+  "prevention_rule": "Check exact predecessor/successor path lineage before expensive closure replay. Never silently drop a migration absent from the merged terminal PR, unknown migration version, open predecessor, unknown runtime, missing provider APPLIED record or mismatched tenant/security proof.",
+  "compiler": {
+    "failure_class": "TERMINAL_SUPERSEDES_MIGRATION_LINEAGE",
+    "scope": "GITHUB_CI",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-supersedes-migration-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-supersedes-migration-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-supersedes-migration-coverage-v1.test.mjs"
+    ]
+  },
+  "regression_ref": "tests/brain-terminal-supersedes-migration-coverage-v1.test.mjs"
+}
