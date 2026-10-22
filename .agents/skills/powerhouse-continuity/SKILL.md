@@ -1578,13 +1578,9 @@ Verify /afsluiten after the complete shell/localization pipeline. Capture and re
 
 
 ## 2026-10-22 — daily blog source SEO and material closure
-
 Fingerprint: `content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1`.
-
-Keep the daily blog on its SAME date branch and PR. Under AGENTS.md the
-publication candidate must include canonical learning, activity ledger and
-change documentation with its actual material delta; do not disable CI or
-fork a duplicate blog. Reject generic question-prefix SEO focus such as
-"H​oe Nederlandse"; choose actual substantive topic words. Use exact
-localized cache, protected merge and public Netlify readback. GENERATED
-is never LIVE_PROVEN without provider/public evidence.
+Keep the daily blog on its SAME date branch/PR with canonical learning,
+activity ledger and change documentation. Do not disable protected CI or
+fork a duplicate blog. Avoid generic question-prefix SEO focus ("Hoe
+Nederlandse"); select substantive contiguous topic words. Generated is NOT
+live without Netlify public readback.

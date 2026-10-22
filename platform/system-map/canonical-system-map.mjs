@@ -2461,11 +2461,37 @@ export const DAILY_SOCIAL_BUILDER_MEDIA_RECOVERY_20261022=Object.freeze({
 });
 
 
+export const PERSONAL_VERIFIED_DISTINCT_SOURCE_RESERVE_20261022=Object.freeze({
+ fingerprint:'powerhouse|personal-verified-distinct-source-reserve|20261022-v1',
+ owner:'powerhouse-content-orchestrator canonical unscoped bootstrap',
+ source:'verified founder evidence already materialized: distinct actual event IDs and approved external URLs',
+ materializer:'buildVerifiedFounderReserve in existing powerhouse-content-orchestrator',
+ destination:'public.powerhouse_content_recommendations',
+ existingPublisher:'powerhouse-social-publisher',
+ maxAlternativesPerDay:3,
+ noNewScheduler:true,noDuplicateProviderSend:true,noUnverifiedPersonalAnecdote:true,
+ security:'existing service-role-only orchestrator; identity, review, uniqueness and readback unchanged',
+ regression:'tests/brain-personal-distinct-source-reserve-v1.test.mjs',
+ learning:'brain/learning/2026-10-22-personal-distinct-source-reserve-v1.json'
+});
+
+
+export const PERSONAL_HELD_DUPLICATE_REBOOTSTRAP_20261022=Object.freeze({
+ fingerprint:'powerhouse|held-personal-duplicate-rebootstrap|20261022-v1',owner:'powerhouse-content-loop',
+ source:'canonical content_publication_obligations plus powerhouse_channel_decisions',
+ evidence:'provider unused / no side effects / known global semantic duplicate',
+ retry:'reuse existing bounded powerhouse-content-orchestrator bootstrap',
+ noNewScheduler:true,noNewSender:true,noUnverifiedProviderProof:true,
+ tests:'tests/brain-held-personal-duplicate-rebootstrap-v1.test.mjs',
+ learning:'brain/learning/2026-10-22-held-personal-duplicate-rebootstrap-v1.json'
+});
+
+
 export const DAILY_BLOG_SEO_MATERIAL_CLOSURE_20261022=Object.freeze({
  fingerprint:'content-publication:2026-10-22:blog|seo-question-prefix-and-closure-v1',
  original_pr:4603,owner:'existing powerhouse-daily-blog hourly reconciler',
  publisher:'tools/site-shell/publish_powerhouse_blog_artifact.py',
- focus_rule:'first consecutive substantive title words, never question prefix',
+ focus_rule:'first contiguous substantive title words, never question prefix',
  learning:'brain/learning/2026-10-22-daily-blog-seo-closure-v1.json',
  regression:'tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs',
  noDuplicatePublisher:true,proof:'protected merge + public URL readback'
