@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import { validateContract } from '../scripts/brain/validate-universal-closed-loop-learning.mjs';
+import { evaluateLearningSemantics } from '../scripts/brain/material-writeback-closure-guard.mjs';
 
 const canonical = JSON.parse(fs.readFileSync(new URL('../config/universal-closed-loop-learning.json', import.meta.url), 'utf8'));
 
@@ -50,4 +51,11 @@ test('agent autonomy and tenant relevance requirements cannot be disabled', () =
     'daily_improvement.promotion.protected_main',
     'daily_improvement.promotion.production_readback'
   ]) assert.ok(result.errors.includes(key), key);
+});
+
+test('portal learning record satisfies canonical semantic material closure', () => {
+  const result = evaluateLearningSemantics({ learningFiles: ['brain/learning/2026-10-22-portal-relevance-daily-agent-learning-v1.json'] });
+  assert.equal(result.ok, true, JSON.stringify(result.evaluated));
+  assert.equal(result.evaluated.length, 1);
+  assert.deepEqual(result.evaluated[0].missing, []);
 });

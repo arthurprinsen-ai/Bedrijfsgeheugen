@@ -27,7 +27,9 @@
     "preventionRule": "Every future GitHub PR must include machine metadata before opening; check canonical delivery-hygiene policy and branch writer lease preflight. Never suppress admission tests.",
     "verification": "Pending the next exact-head Required CI, CodeQL and protected merge.",
     "reconciled_head_admission_cause": "Exact-head Required 39818082206 failed fail-closed LEARNING_FAILURE_CLASS_REQUIRED because this learning JSON lacked compiler.failure_class and an executable historical_replay evaluation; repaired in-place on canonical PR #4673.",
-    "regression_prevention": "New semantic learning must include compiler.failure_class and evaluation.historical_replay with executable tests/brain-*.test.mjs. Never suppress learning canonicalization."
+    "regression_prevention": "New semantic learning must include compiler.failure_class and evaluation.historical_replay with executable tests/brain-*.test.mjs. Never suppress learning canonicalization.",
+    "semantic_failure": "Required 39818778024 LEARNING_CANONICALIZATION_GREEN, then INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning; existing camelCase preventionRule was insufficient for protected material closure that requires semantic prevention_rule (or prevention) field; same-owner source learning updated with snake_case prevention and test_evidence.",
+    "semantic_prevention": "Before candidate branch write, run compileLearningEvaluationPlan plus evaluateLearningSemantics for changed Brain learning and make real negative tests fail closed."
   },
   "compiler": {
     "failure_class": "AGENT_LEARNING_CONTRACT",
@@ -40,5 +42,10 @@
     "historical_replay": [
       "tests/brain-universal-closed-loop-learning.test.mjs"
     ]
-  }
+  },
+  "prevention_rule": "Every agent must preflight canonical fingerprints, write a source-evidenced and tenant-safe repair, and retain incident/portal tests plus an append-only event. Never promote status without exact production and authenticated tenant verification.",
+  "test_evidence": [
+    "tests/brain-universal-closed-loop-learning.test.mjs",
+    "portal-v2/tests/relevance-learning-closed-loop.test.mjs"
+  ]
 }
