@@ -4,7 +4,7 @@
   "obligation_id": "ci-brain-renamed-production-sql-oracles-20261022",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
   "root_causes": [
-    "Three inherited BRAIN test cases read obsolete filenames of existing already-applied production SQL after supported canonical migration timestamp reconciliation."
+    "Four inherited BRAIN test cases read obsolete filenames of existing already-applied production SQL after supported canonical migration timestamp reconciliation."
   ],
   "prevention": [
     "Reference the exact renamed existing migration versions; never copy old file names into executable migrations or alter SQL bodies.",
@@ -14,7 +14,7 @@
     "failure_class": "RECOVERY",
     "scope": "TEST_SOURCE",
     "machine_enforceable": true,
-    "repeat_count": 3,
+    "repeat_count": 4,
     "security_sensitive": true
   },
   "evaluation": {
@@ -41,6 +41,13 @@
         "old_path": "supabase/migrations/20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
         "current_path": "supabase/migrations/20261012074151_20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
         "identical_historical_and_current_blob": "135a2a08eddfed78aa1e888e8f697ec9edbee34d",
+        "failures": 1
+      },
+      {
+        "old_path": "supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql",
+        "current_path": "supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql",
+        "surviving_source_blob": "c290810df7eca707114409cec5fa31baf7254288",
+        "all_original_source_assertions_verified": true,
         "failures": 1
       }
     ],
