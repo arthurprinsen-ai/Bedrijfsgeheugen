@@ -1,0 +1,48 @@
+{
+  "id": "terminal-superseded-migration-proof-v1",
+  "fingerprint": "delivery|terminal-closure|retired-superseded-migration-lineage|20261022-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE_UNVERIFIED",
+  "parent_incident": 4681,
+  "error": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:4686:supabase/migrations/20261022173500_brain_failure_observe_semantic_guard_v1.sql",
+  "evidence": {
+    "failed_replay_run": 39840439339,
+    "failed_replay_job": 120039732278,
+    "retired_unmerged_pr": 4686,
+    "protected_merged_successor_pr": 4697,
+    "protected_successor_merge": "d41950ed3eed1758134fd82281c1023c1b6a22f5",
+    "production_migration_version": "20261022173500",
+    "production_function_md5_observed_prior": "3f5d19e556f5425630cf80a5e341a02b",
+    "terminal_closure_verified": false
+  },
+  "root_cause": "Terminal closure treats any migration file on retired unmerged superseded PR as a new deploy despite the exact migration path being adopted by the explicitly linked protected merged successor. Retired draft SQL bytes differ from live successor source.",
+  "repair": "One existing workflow calls exact-path owner+Git-blob successor reconciliation. A retired predecessor cannot assert a new provider migration or override deployed source. Keep provider APPLIED, function/ACL, durable Brain writeback gates.",
+  "prevention": [
+    "Require explicit direct supersedes link, retired lease, all exact migration paths adopted by merged successor",
+    "Require merged source Git blob to equal current protected main source",
+    "Require provider APPLIED and current production runtime/ACL proof; no generic SQL exception",
+    "Reject new paths, drifted source, active predecessors and ambiguous owner links; preserve old immutable evidence"
+  ],
+  "compiler": {
+    "failure_class": "RETIRED_SUPERSEDED_MIGRATION_FALSE_RUNTIME_GATE",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "delivery",
+    "continuity",
+    "supabase"
+  ]
+}
