@@ -496,3 +496,7 @@ and actual provider proof may increment their own attempts; a media router
 cannot manufacture an OpenArt asset or a Mira identity result. Continue
 other approved lanes when this media proof is missing. No second scheduler,
 no Buffer/Make fallback and no duplicate posting.
+
+
+## 2026-10-22 — Netlify Mira video-frame authorization must fail closed
+Fingerprint `powerhouse|instagram-frame-extractor-auth-oracle-fail-open|20261022-v1`: Original Supabase verifier checks the existing scheduler token BEFORE answering 400/INVALID_INPUT for the purposely blank POST. Treat only HTTP 400 JSON ok=false/error=INVALID_INPUT as proof of a valid caller. Deny 401/403/404/429/5xx/200, malformed JSON and network errors; never trust status!=401. Keep existing OpenArt video allowlist, strict master-face 0.94 and temporal proof. No new scheduler or sender.

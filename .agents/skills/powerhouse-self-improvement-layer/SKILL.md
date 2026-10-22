@@ -96,3 +96,23 @@ Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
 - The same source record counts once. The verified comparison must explicitly link the same business and engineering outcomes and have an independently read-back cohort assignment.
 - `BUSINESS_VALUE_EVIDENCE_REQUIRED` is a valid fail-closed state, not green. Raw append-only evidence must remain unchanged. A proposal stays `PROPOSED_NOT_EXECUTED`.
 - Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
+
+## Verplichte relevantie, incidentborging en dagelijkse feedback (2026-10-22)
+
+Fingerprint: `powerhouse|agent-incident-relevance-daily-evolution|20261022-v1`.
+
+- Elke huidige en toekomstige agent en chat leest vóór materieel werk de canonieke failure fingerprints, actieve obligations, vorige aanpakken, skillprojecties en bronbewijs. Reproduceer alleen als dit veilig nodig is; dedupliceer binnen dezelfde Brain-lineage.
+- Ieder materieel incident, probleem, fout, herstel of verbetering behoudt oorzaak (of expliciet UNKNOWN), eigenaar, impact, mislukte poging, bewijs, bronstatus, herstel, preventieregel, regressietest en productieverificatie. Geen eenzijdige documentatie als bewijs van runtime-writeback.
+- Veilige herstelacties zijn bounded, idempotent, herstartbaar, hebben retry-budget en worden getest vóór protected promotion. Menselijke OAuth, geheimen, destructieve mutaties, betaalde capaciteit, security-verzwakking en juridische/financiële toezeggingen blijven harde grenzen.
+- De bestaande `Powerhouse Daily Self Evolution` en `Universal Closed-loop Learning` zijn de enige dagelijkse governance-eigenaren; voeg geen tweede cron, agentgeheugen, foutregister of agent-publisher toe.
+- Dagelijkse verbetering vergelijkt minimaal herhaalde incidenten, hersteltijd, regressiedekking, bron-/bewijsdekking, doorlooptijd en klantwaarde met een geldige baseline; alleen aantoonbare vooruitgang mag via beveiligde CI/CodeQL/merge en exacte productie/providerreadback promoveren.
+- Portaalroute `learning-writeback` heet `Relevantie & verbeteringen` en leest uitsluitend `portal.runtime.learning.items` uit de bestaande tenant-gebonden `brain-operating-loop` projectie. Alleen `PROVEN` uit Brain mag als bewezen verschijnen; ontbrekend bewijs blijft expliciet niet bewezen.
+- Contract: `config/universal-closed-loop-learning.json`; gate: `scripts/brain/validate-universal-closed-loop-learning.mjs`; regressies: `tests/brain-universal-closed-loop-learning.test.mjs` en `portal-v2/tests/relevance-learning-closed-loop.test.mjs`. Werk na bewezen productie-uitkomst de bestaande System Map, leerlijn en skills bij.
+
+## Relevantie: outcome-bewijs is verplicht (22 oktober 2026)
+
+Fingerprint: `portal|learning-memory|proven-without-verified-outcome-evidence|20261022-v1`. Voordat de bestaande Portal V2 een leerrecord als "Bewezen in Brain" toont, moet de canonieke tenant-eigen living-memory projectie de originele source PROVEN, geverifieerde recordstatus, een daadwerkelijk uitgevoerde en geverifieerde outcome in dezelfde tenant en onveranderlijke evidence IDs bewijzen. De vereiste IDs moeten daadwerkelijk bestaan en bij de outcome aansluiten. Onvoldoende bewijs projecteert uitsluitend REVIEW_REQUIRED, zonder de opgeslagen records te wijzigen. Gebruik nooit losse healthy/status-ok flags als eindbewijs. Test met `tests/brain-portal-learning-memory-evidence-proof-v1.test.mjs`, hergebruik exact dezelfde Brain/ledger/System Map en houd alle bestaande CI, tenancy en productiepoorten verplicht.
+
+## Fail-closed bewijslabel voor Portal Relevantie (2026-10-22)
+
+Success/healthy van een transport- of runtimeprojectie is **geen bewezen bronherstel**. De canonieke tenant-geautoriseerde Brain-projectie moet expliciet een `PROVEN`-maturity, een echte productie/provider-readback en een onveranderlijke toegestane bewijsreferentie dragen voordat `Relevantie & verbeteringen` een item als `Bewezen in Brain` telt. Ontbreekt een van die drie, toon `Nog te verifiëren in Brain`; registreer hetzelfde fingerprint en herstel in dezelfde lineage. Een UI-label, testfixture, eigenaarcomment of merge is nooit op zichzelf productiebewijs. Regressie: `portal-v2/tests/relevance-learning-closed-loop.test.mjs`. Geen tweede registry of cron.

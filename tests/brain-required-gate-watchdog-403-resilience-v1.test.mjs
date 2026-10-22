@@ -55,6 +55,46 @@ test('existing watchdog has the narrowly scoped PR comment permissions and fixed
   assert.ok(workflow.includes("cron: '*/5 * * * *'"));
   assert.ok(code.includes("ownerSignalAttempts++"));
   assert.match(code, /OWNER_HANDOFF_NOT_DELIVERED/);
-  assert.ok(code.includes('if (ownerSignalFailures.length) process.exitCode = 1;'));
+  assert.ok(code.includes('if (failedPrs > 0 || ownerSignalFailures.length > 0) process.exitCode = 1;'));
+  assert.match(code, /MAX_READ_ATTEMPTS = 2/);
+  assert.match(code, /MAX_FAILED_PRS_PER_TICK = 3/);
   assert.doesNotMatch(code, /skipLayoutShift|disableCls|allowCls/i);
+});
+
+test('denied CodeQL owner comment does not suppress missing Required for that same PR', () => {
+  const sha = 'c'.repeat(40);
+  const mock = `
+    const sha = '${sha}';
+    const when = new Date(Date.now() - 5 * 60_000).toISOString();
+    const reply = (value, status = 200) => status === 204
+      ? new Response(null, { status })
+      : new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } });
+    globalThis.fetch = async (input, init = {}) => {
+      const url = new URL(input), path = url.pathname;
+      if (path.endsWith('/pulls')) return reply([{ number: 4656, updated_at: when,
+        head: { sha, ref: 'writer/owner' }, base: { sha }, labels: [],
+        body: 'Writer-Lease-Owner: canonical-owner' }]);
+      if (path.endsWith('/actions/runs')) return reply({ workflow_runs: [{
+        id: 301, name: 'Powerhouse CodeQL', head_sha: sha, status: 'completed',
+        conclusion: 'failure', created_at: when
+      }] });
+      if (path.endsWith('/issues/4656/comments')) {
+        if (init.method === 'POST') return reply({ message: 'Resource not accessible by integration' }, 403);
+        return reply([]);
+      }
+      if (path.endsWith('/actions/runs/301/jobs')) return reply({ jobs: [{ id: 401, conclusion: 'failure', name: 'CodeQL' }] });
+      if (path.endsWith('/actions/workflows/required-test.yml/dispatches') && init.method === 'POST') return reply(null, 204);
+      throw new Error('Unexpected mock URL: ' + url.href);
+    };
+  `;
+  const run = spawnSync(process.execPath, [
+    '--import', 'data:text/javascript;base64,' + Buffer.from(mock).toString('base64'),
+    '.github/scripts/required-gate-watchdog.mjs'
+  ], { cwd: process.cwd(), encoding: 'utf8', env: {
+    ...process.env, GITHUB_REPOSITORY: 'arthurprinsen-ai/Bedrijfsgeheugen', GITHUB_TOKEN: 'mock-test-token'
+  } });
+  assert.equal(run.status, 1, run.stderr);
+  assert.match(run.stderr, /OWNER_HANDOFF_NOT_DELIVERED:#4656:codeql/);
+  assert.match(run.stdout, /REQUIRED_GATE_WATCHDOG_DISPATCHED:#4656:/);
+  assert.match(run.stdout, /OWNER_HANDOFF_FAILURES:1/);
 });

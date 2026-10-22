@@ -564,7 +564,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
+          import { resolveTerminalMigrationIdentities, verifyRetiredMigrationSupersession } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -573,6 +573,9 @@ jobs:
 
           const expected=[];
           const visited=new Set();
+          const mergedMigrationBlobs={};
+          let directSuccessor=null;
+          execFileSync('git',['fetch','origin','main','--no-tags'],{stdio:'ignore'});
           let depth=0;
 
           while(prNumber && depth<20){
@@ -601,20 +604,40 @@ jobs:
                 const base=path.basename(candidate,'.sql');
                 const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
                 if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${candidate}`);
+                const sha=execFileSync('git',['rev-parse',`${merge}:${candidate}`],{encoding:'utf8'}).trim();
+                if(!/^[0-9a-f]{40}$/i.test(sha)) throw new Error(`SUPERSEDES_MERGED_MIGRATION_BLOB_MISSING:${candidate}`);
+                const previous=mergedMigrationBlobs[candidate];
+                if(previous && previous.sha!==sha)
+                  throw new Error(`SUPERSEDES_MERGED_MIGRATION_CONFLICT:${candidate}`);
+                mergedMigrationBlobs[candidate]={sha,source_pr:prNumber};
                 expected.push({version:match[1],name:match[2],source_pr:prNumber});
               }
             } else {
               if(pr.state!=='closed') throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+              if(Number(pr.changed_files)>100) throw new Error(`UNMERGED_SUPERSEDES_CHANGED_FILES_UNBOUNDED:${prNumber}`);
               const files=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}/files?per_page=100`],{encoding:'utf8'}));
-              const migrationFiles=files
-                .filter(file=>file.status!=='removed' && /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')))
-                .map(file=>String(file.filename||''));
+              const migrationFiles=files.filter(file=>file.status!=='removed' &&
+                /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')));
               if(migrationFiles.length>0){
-                throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
+                const currentMainBlobs={};
+                for(const file of migrationFiles){
+                  try {
+                    currentMainBlobs[file.filename]=execFileSync('git',['rev-parse',`origin/main:${file.filename}`],
+                      {encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();
+                  } catch { currentMainBlobs[file.filename]=''; }
+                }
+                const proof=verifyRetiredMigrationSupersession({
+                  retiredPrNumber:prNumber,
+                  retiredState:pr.state,retiredMerged:pr.merged,retiredBody:pr.body,
+                  successorPrNumber:directSuccessor?.number,successorBody:directSuccessor?.body,
+                  migrationFiles,mergedMigrationBlobs,currentMainBlobs
+                });
+                console.log('RETIRED_SUPERSEDED_MIGRATIONS_SOURCE_PROVEN:'+JSON.stringify(proof));
               }
               console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
 
+            directSuccessor={number:prNumber,body:pr.body};
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
             if(prNumber && !Number.isInteger(prNumber)) throw new Error('SUPERSEDES_INVALID');
           }
@@ -628,7 +651,6 @@ jobs:
           // Reconcile exact applied (version, name) first. For historical aliases,
           // permit only a unique same-name mapping; duplicate names fail closed
           // unless the exact version is already present on protected main.
-          execFileSync('git',['fetch','origin','main','--no-tags'],{stdio:'ignore'});
           const currentMigrationPaths=execFileSync(
             'git',
             ['ls-tree','-r','--name-only','origin/main','--','supabase/migrations'],

@@ -6,3 +6,7 @@
 - Regression uses an isolated mock provider: first PR comment 403; second PR missing Required still dispatches; process exits 1, not false green.
 - Keep exact-head gates, no source-test retries, historical/shadow/canary, CodeQL, no bypass of CLS or tenant security. No autonomous code correction is claimed.
 - Canonical incident fingerprint: `github|watchdog|owner-comment-403-recovery|20261022-v1`; new live-run completion and same-PR verified comment must be observed after protected merge before closing.
+
+## Reconciliation with protected main (22 October 2026)
+
+Existing merged #4670 provides narrowly scoped PR comment authorization; merged #4679 already enforces GET-only 2-attempt/8s bounded retries, outer PR failure budget, and red on partial provider observation. Preserve those exact source contracts. This candidate adds same-PR 403 containment and counts signal ATTEMPTS against a two-per-tick ceiling. A second mocked canary proves that denied CodeQL comment does not suppress dispatching missing Required for the SAME PR while final exit remains red. Candidate, not production proof until protected merge and scheduled readback.

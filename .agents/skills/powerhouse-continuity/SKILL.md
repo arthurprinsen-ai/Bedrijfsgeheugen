@@ -5,6 +5,19 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Dagelijkse agentleerketen: onafhankelijke foutdomeinen (22 oktober 2026)
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`.
+Bronincident: [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367). Twee echte dagelijkse uitvoeringen op 21 en 22 oktober 2026 faalden omdat de 14-daagse AI-model-freshnesscontrole stopte in hetzelfde fail-fast job vóór de onafhankelijke leersnapshot, improvement probe en engineering self-tests.
+
+Verplicht voor alle huidige en toekomstige agents:
+- Behandel een falende externe leverancier- of catalogusfreshnesscheck als een **echt onopgelost bewijsprobleem**, geen reden om timestamps te vervalsen of gate-errors te onderdrukken.
+- Houd onafhankelijke dagelijkse leer-, incident-, skill- en zelftestuitvoer actief via de al bestaande Powerhouse Daily Self Evolution scheduler; geen tweede cron, geen parallel geheugen of tweede agentowner.
+- Catalogusclaim-validatie blijft een zelfstandige strenge `model-freshness` job; `improve` is daarvan onafhankelijk. De **totale** workflow blijft rood zolang enig verplicht onderdeel rood is. Alleen een werkelijk uitgevoerde en geslaagde improve-job bewijst dat de leercyclus zelf doorging.
+- Bewaar ook van mislukte providercontroles het daadwerkelijke JSON-artefact. Koppel iedere nieuwe recurrence aan de bestaande fingerprint en het Brain-register. Laat verantwoordelijkheid voor officiële claim-readback bij #4367.
+- Vóór LIVE/PROVEN: regressie `tests/powerhouse-daily-self-evolution.test.mjs`, echte exact-SHA Required+CodeQL, protected main-readback, vervolgens één echte workflow-run met afzonderlijke jobconclusies en output-artifacts.
+
+
 ## Universele incidentherkenning & preventie
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
@@ -261,6 +274,22 @@ Reference production recovery: PR #2158 / merge `7d0442b517c80c51f69ebcaba6328d7
 Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
 
 When repository delivery reaches merge, continuity ownership remains active. Resume the same obligation until the canonical `Obligation Terminal Closure` workflow proves main containment, canonical production/runtime readback, applicable learning-to-skill projection, immutable terminal evidence and writer-lease release. Only the resulting machine-readable terminal state (`LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`) may end the lineage. Never create a new recovery PR merely because post-merge readback is still running.
+
+
+## Terminal Supabase supersession — retired SQL is not deployed SQL (22 October 2026)
+
+Fingerprint: `delivery|terminal-closure|retired-superseded-migration-lineage|20261022-v1`.
+During the existing `Obligation Terminal Closure` traversal, a closed/unmerged
+predecessor with SQL migrations is admissible only after the direct immutable
+`Supersedes: <PR>` link, a retired writer lease, adoption of **every** exact
+migration path in the protected merged successor, and Git blob parity between
+that successor and current protected main. Historical draft SQL bytes may differ
+and remain audit evidence, never an independent production source. Unknown paths,
+unmerged current candidates, conflicting merged source blobs, missing provider
+APPLIED evidence and missing ACL/tenant evidence fail closed. Preserve the one
+existing terminal controller, incident #4681, all mandatory downstream readback,
+and the executable negative regression in
+`tests/brain-terminal-migration-identity-v1.test.mjs`.
 
 ## Mandatory material-run closure gate
 

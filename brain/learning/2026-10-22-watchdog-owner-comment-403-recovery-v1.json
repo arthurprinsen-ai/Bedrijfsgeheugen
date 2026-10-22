@@ -8,11 +8,13 @@
   "failure_class": "GITHUB_DELIVERY",
   "root_cause": "Post-merge live workflow #39811993147 job #119940435969 failed at GitHub POST /issues/4656/comments with 403 Resource not accessible by integration although issues:write was present. Uncaught exception aborted processing later PRs.",
   "impact": "One unauthorized failed-gate handoff aborts remaining watchdog work and leaves source recovery unrouted.",
-  "fix": "Authorize pull-requests:write for PR notes and keep per-gate attempts at most two; catch and annotate refused owner signals, continue unrelated dispatch, exit nonzero if any handoff remains unproved.",
+  "fix": "Existing main already includes PR write authority (#4670) and bounded GET-only retries/PR exception isolation (#4679). This candidate adds max two handoff ATTEMPTS, catches denied comment within same-PR owner loop so missing Required dispatch continues, and preserves nonzero exit on any failed handoff; no duplicate schedule.",
   "prevention_rule": "Do not equate issue comment success with source repair; never let one 403 stop other safe dispatches; never mark refused comment green; preserve one scheduler, immutable head, original writer lease, security/CLS protections.",
   "regression_contract": "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs",
   "tests": [
-    "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs"
+    "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs",
+    "tests/brain-required-gate-watchdog-resilience-v1.test.mjs",
+    "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
   ],
   "evidence": {
     "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
