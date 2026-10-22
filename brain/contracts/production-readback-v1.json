@@ -68,6 +68,7 @@
       "config/pr-trigger-baseline.json",
       "config/supabase-edge-functions.json",
       "supabase/migration-history.lock.json",
+      "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql",
       "config/powerhouse-runtime-backpressure-v1.json",
       "config/powerhouse-adaptive-delivery-v1.json",
       "tools/controleer-technische-seo.mjs"
