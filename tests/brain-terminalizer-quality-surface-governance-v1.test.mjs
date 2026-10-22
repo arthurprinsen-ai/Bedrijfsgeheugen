@@ -104,7 +104,7 @@ test('Supabase SQL regression fixtures are verifier-only without disabling datab
   assert.ok(truth.verifierOnlyPrefixes.includes('supabase/tests/'));
   assert.equal(truth.verifierOnlyPrefixes.includes('supabase/'),false);
   const workflow=await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
-  assert.match(workflow,/const migrations=paths\\.filter/);
-  assert.match(workflow,/const supabase=paths\\.filter/);
+  assert.match(workflow,/const migrations=paths\.filter/);
+  assert.match(workflow,/const supabase=paths\.filter/);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
 });
