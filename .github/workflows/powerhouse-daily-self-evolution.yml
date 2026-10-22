@@ -27,6 +27,10 @@ jobs:
           node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Verify canonical incident learning and portal relevance
+        run: |
+          node scripts/brain/validate-universal-closed-loop-learning.mjs
+          node --test tests/brain-universal-closed-loop-learning.test.mjs portal-v2/tests/relevance-learning-closed-loop.test.mjs
       - name: Verify self-evolution contract
         run: node --test tests/powerhouse-daily-self-evolution.test.mjs
       - name: Verify Powerhouse self-improvement layer
