@@ -105,12 +105,12 @@ const sql=[
  'END $parity$;',
  'ROLLBACK;'
 ].join('\n');
-const process=spawnSync('psql',['-X','-v','ON_ERROR_STOP=1','-q','-d',previewUrl],{
+const childResult=spawnSync('psql',['-X','-v','ON_ERROR_STOP=1','-q','-d',previewUrl],{
  input:sql,encoding:'utf8',timeout:900000,maxBuffer:1024*1024,
  env:{...globalThis.process?.env,PGCONNECT_TIMEOUT:'10',PGOPTIONS:'-c application_name=p0_4215_buying_full_parity'}
 });
-if(process.error)abort(process.error.code==='ENOENT'?'psql client unavailable':process.error.message);
-if(process.status!==0)abort((process.stderr||'SQL failed').slice(-2500));
-const receipt=(process.stderr||'').split('\n').filter(x=>x.includes('P0_4215_BUYING_FULL_PARITY_PASSED')).join('\n');
+if(childResult.error)abort(childResult.error.code==='ENOENT'?'psql client unavailable':childResult.error.message);
+if(childResult.status!==0)abort((childResult.stderr||'SQL failed').slice(-2500));
+const receipt=(childResult.stderr||'').split('\n').filter(x=>x.includes('P0_4215_BUYING_FULL_PARITY_PASSED')).join('\n');
 if(!receipt)abort('exact parity success receipt missing');
 process.stdout.write(receipt+'\n');
