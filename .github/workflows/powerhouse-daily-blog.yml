@@ -86,7 +86,9 @@ jobs:
           echo "slug=$slug" >> "$GITHUB_OUTPUT"
 
       - name: Create exactly one protected candidate
-        if: steps.render.outputs.changed == 'true'
+        # Existing candidate branches are maintained by the idempotent i18n/reconciliation step.
+        # Do not recreate their history from main or overwrite agent repair commits.
+        if: steps.render.outputs.changed == 'true' && steps.writer.outputs.existing_pr == ''
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
