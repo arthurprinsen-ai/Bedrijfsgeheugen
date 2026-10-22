@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|p0-4215-person-intelligence-once|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "relation": "parallel non-overlapping source plan refinement to protected draft #4558",
+  "failure_pattern": "818 business opportunities repeatedly expand a 23,295-contact person-intelligence view inside a LATERAL next-best-action route. Revenue snapshot often times out at 120s.",
+  "root_cause": "Uncorrelated source view is fully expanded per LATERAL opportunity; its own aliases/events/actions/outcomes and aggregated calculations are recomputed.",
+  "proposed_fix": "One statement-local MATERIALIZED person intelligence CTE; preserve original LATERAL equality, sort and LIMIT; unchanged all 50 view output fields.",
+  "evidence": {
+    "baseline_explain_cost": 32713172.61,
+    "candidate_explain_cost": 1597888.41,
+    "sample_read_only_person_rows_compared": 60,
+    "sample_person_mismatches": 0,
+    "old_source_md5": "2ce1ab1122390af0f51c5aa8b318600f",
+    "financial_parity": "NOT_YET_VERIFIED",
+    "two_tenant_session_parity": "NOT_YET_VERIFIED",
+    "customer_output": "NO_PROVIDER_SEND"
+  },
+  "prevention": [
+    "Root cause is never declared solved by increasing work_mem or timeouts.",
+    "No production migration before representative financial result parity, isolation verification, Required CI and CodeQL.",
+    "Existing daily executor, scheduler and social lineage remain active."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NO_LIVE_DEPLOY"
+}
