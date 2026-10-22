@@ -1,0 +1,46 @@
+{
+  "fingerprint": "seo|frisse-blik|consistent-duration|v1",
+  "date": "2026-10-22",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "seo-frisse-blik-duration-20261022",
+  "root_cause": "The canonical business-process money page offered the same free first conversation as both 30 minutes and half a day, creating an avoidable duration mismatch at the closing CTA.",
+  "failure_class": "SEO_CRO_CONFLICTING_APPOINTMENT_DURATION",
+  "compiler": {
+    "failure_class": "SEO_CRO_CONFLICTING_APPOINTMENT_DURATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "bedrijfsprocessen-automatiseren.html",
+    "AGENTS.md:commercial-website|orders-first|existing-pages|v1",
+    "tests/seo-order-money-v2.test.mjs"
+  ],
+  "prevention": [
+    "Keep the 30-minute free Frisse Blik claim consistent in every section of the same money page.",
+    "Update Dutch source and English static translation cache in one candidate.",
+    "Verify final production build and functional CTA before claiming live or commercial outcomes."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md"
+  ],
+  "documentation": "docs/changes/2026-10-22-seo-frisse-blik-duration.md",
+  "production_readback": {
+    "verified": false,
+    "source": "public website observation 2026-10-22; change not yet promoted"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-order-money-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/seo-order-money-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-order-money-v2.test.mjs"
+    ],
+    "scope": "local static regression only; no real customer or revenue outcomes claimed"
+  }
+}
