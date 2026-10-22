@@ -48,7 +48,7 @@ test('new RPC is a required Powerhouse quality surface',()=>{
 
 
 test('relationship research is executed from canonical public evidence stores before trigger materialization',()=>{
-  const auto=fs.readFileSync('supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
+  const auto=fs.readFileSync('supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
   assert.match(auto,/powerhouse_execute_relationship_research_v1/);
   assert.match(auto,/bg_bedrijfsnieuws/);
   assert.match(auto,/bg_externe_signalen/);
