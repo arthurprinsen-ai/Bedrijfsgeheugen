@@ -32,5 +32,11 @@
     ]
   },
   "production_state": "UNVERIFIED",
-  "ownership": "Dedicated scoped terminalizer-classification fix; source PR #4697 is already protected-merged. No new scheduler, store or second incident lineage."
+  "ownership": "Dedicated scoped terminalizer-classification fix; source PR #4697 is already protected-merged. No new scheduler, store or second incident lineage.",
+  "compiler": {
+    "failure_class": "TERMINALIZER_RUNTIME_CLASSIFICATION",
+    "scope": "CI_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
 }
