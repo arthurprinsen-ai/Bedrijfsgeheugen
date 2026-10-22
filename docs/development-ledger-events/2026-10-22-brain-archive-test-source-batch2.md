@@ -1,0 +1,8 @@
+# Development ledger event: ci-brain-archived-source-batch2-20261022
+- 2026-10-22: historical SQL source contract drift, observed in BRAIN run 39671036043
+- Scope: 10 test files; 12 obsolete path references; 10 immutable archive identity checks
+- Root cause: tests retained executable migration paths after repository-only archival
+- Production impact: none; candidate test and governance only
+- State: NOT_YET_ACCEPTED, no claim of zero BRAIN failures
+- Acceptance: exact-head Required CI, CodeQL and independent full 0-failure BRAIN
+- Dependencies: #3742 clean-room replay; #4215 authenticated two-customer validation

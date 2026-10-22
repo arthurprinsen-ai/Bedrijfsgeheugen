@@ -1,0 +1,26 @@
+{
+  "id": "ci-brain-archived-source-batch2-20261022",
+  "date": "2026-10-22",
+  "status": "PREVENTION_CANDIDATE_UNVERIFIED",
+  "root_cause": "Inherited tests still read retired executable migration paths after archival.",
+  "remediation": "Repair test source paths only; verify original immutable blob identity and absence of executable duplicates.",
+  "evidence": {
+    "run": 39671036043,
+    "job": 119469063095,
+    "baseline_total": 3511,
+    "baseline_failed": 321
+  },
+  "files": [
+    "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+    "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+    "tests/brain-powerhouse-need-discovery-v1.test.mjs",
+    "tests/brain-supabase-capture-trigger-execute-security-v1.test.mjs",
+    "tests/supabase-powerhouse-autonomous-trigger-fix.test.mjs",
+    "tests/supabase-powerhouse-autonomy-rpc-security.test.mjs",
+    "tests/supabase-powerhouse-internal-view-security.test.mjs",
+    "tests/supabase-powerhouse-gap-register-security.test.mjs",
+    "tests/supabase-powerhouse-linkedin-sales-prediction-activation.test.mjs",
+    "tests/supabase-powerhouse-signal-forecast-materialization.test.mjs"
+  ],
+  "acceptance": "No green until exact-head CI/CodeQL and independent zero-failure full BRAIN"
+}
