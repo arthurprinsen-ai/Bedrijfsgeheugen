@@ -7,3 +7,6 @@
 
 ## Same-PR admission repair
 - Exact Required run #39825113976 failed at `LEARNING_EVALUATION_FAILED`: new replay test omitted mandatory `BRAIN-DELIVERY-v2` policy and `createDeliveryPlan` threw TypeError. Corrected the original test harness to import/pass canonical `config/brain-delivery-system.json` as policy. The real deploy applicability assertions, source classifier, release security gates and prior Brain evidence logic stay unchanged. Fresh exact-head Required/CodeQL mandatory.
+
+## CI admission correction 2026-10-22
+PR #4696 Required run 39827675727 correctly rejected invalid Supersedes syntax. The same PR was corrected to use the single numeric predecessor 4694. The full eight-file recovery scope remains unchanged and exact-head CI/CodeQL plus production deployment verification are still mandatory.
