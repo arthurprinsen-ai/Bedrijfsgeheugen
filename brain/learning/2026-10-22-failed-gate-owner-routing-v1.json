@@ -6,7 +6,7 @@
   "title": "Route failed current-head critical gates to one durable existing PR owner instead of treating completed red runs as coverage",
   "status": "CANDIDATE",
   "failure_class": "GITHUB_DELIVERY",
-  "root_cause": "Verified existing five-minute Required Gate Watchdog checks only for absence of a Required run; a completed failed run is considered present, with no owner signal. Prior website mobile CLS 0.168 > 0.100 was detected on #4656 without auto handoff to canonical website owner #4651.",
+  "root_cause": "Verified existing five-minute Required Gate Watchdog checks only for absence of a Required run; a completed failed run is considered present, with no owner signal. Prior website mobile CLS 0.168 > 0.100 was detected on #4656 without auto handoff to canonical website owner #4651. The watchdog also filters on PR.updated_at >2h before fetching Actions runs, so new failures on older PRs were invisible.",
   "impact": "Failed Required / CodeQL outcomes can persist unnoticed by owner agents; repeated source-test retries or duplicate PRs risk queue pressure and obscured real layout defects.",
   "failed_approaches": [
     "Treating any completed Required test as successful coverage",
@@ -14,8 +14,8 @@
     "Creating a parallel workflow/scheduler or new same-file PR",
     "Waiving browser CLS 0.100 gate to force green"
   ],
-  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged.",
-  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates.",
+  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged. Follow-up: a bounded 12-way hourly shard inspects older open PRs for exact-head failures without permitting missing-Required redispatch on old PRs.",
+  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates. Decouple failed-gate observation from missing-run dispatch age: every older open PR gets one exact-head status observation per 12 five-minute ticks. Preserve per-head dedup and two signals per tick.",
   "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
   "tests": [
     "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
@@ -28,9 +28,10 @@
     "observed_source": ".github/scripts/required-gate-watchdog.mjs",
     "source_fix_proven": false,
     "autonomous_general_purpose_code_repair_proven": false,
-    "production_readback": "PENDING"
+    "production_readback": "PENDING",
+    "aged_pr_failure_prewrite": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742#issuecomment-6345369895"
   },
-  "outcome": "CANDIDATE owner signal routing, not arbitrary autonomous code repair or live deployment",
+  "outcome": "CANDIDATE follow-up aged-PR blindspot fix; exact-head CI, CodeQL, runtime observation and production readback pending",
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
     "scope": "CI",
@@ -43,13 +44,15 @@
       "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
     ],
     "shadow": [
-      "Failed Required and CodeQL signal should route to only the original writer once per immutable head"
+      "Failed Required and CodeQL signal should route to only the original writer once per immutable head",
+      "Older open PR with recent failed gate receives canonical handoff in one-hour shard"
     ],
     "negative_canary": [
       "Queued and in_progress must not be retried",
       "Failed source test must not be marked green or bypassed",
       "Duplicate signal on same head must not create second comment",
-      "Sitewide phone CLS 0.168 > 0.100 must remain a failing gate"
+      "Sitewide phone CLS 0.168 > 0.100 must remain a failing gate",
+      "Old PR without a Required run never causes workflow dispatch storm"
     ]
   },
   "prevention": [
