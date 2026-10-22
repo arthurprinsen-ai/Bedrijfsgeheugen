@@ -33,7 +33,8 @@
     ".github/workflows/powerhouse-daily-self-evolution.yml"
   ],
   "regression": [
-    "tests/powerhouse-daily-self-evolution.test.mjs"
+    "tests/powerhouse-daily-self-evolution.test.mjs",
+    "tests/brain-daily-learning-failure-isolation-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity"
@@ -47,13 +48,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-daily-self-evolution.test.mjs"
+      "tests/brain-daily-learning-failure-isolation-v1.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-daily-self-evolution.test.mjs"
+      "tests/brain-daily-learning-failure-isolation-v1.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-daily-self-evolution.test.mjs"
+      "tests/brain-daily-learning-failure-isolation-v1.test.mjs"
     ],
     "invariants": [
       "AI model catalog freshness stays strict and independent",
