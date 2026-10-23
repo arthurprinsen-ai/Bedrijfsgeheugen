@@ -7,3 +7,7 @@ Observation: pre-existing `buildExecutionPlan` validates SHA epochs, conflicts, 
 Change: one additional pure quality evaluation in current parallel planner for explicitly typed innovation/model upgrade/autonomous optimization work. Seven stage statuses, evidence and current-main lease preconditions, representative retrospective tests. Self-declared intent is not provider authority. No extra workflow, scheduler, queue, service, production release, marketing publication, security exception or spend authorization.
 
 Release proof pending Required/CodeQL and protected merge. Canonical Brain projection and exact-main readback required; issue #4661 stays OPEN for measured longitudinal improvement. Supplier freshness, Supabase preview and GitHub provider ghost incidents remain separate.
+
+## Same-lineage first-failure correction
+
+Initial exact-head Required run 39940228593 passed admission/preflight/backend/automation/portal, but `website / preview-ready` failed on source line `if(!response.ok) throw` after GitHub status API 403; source failure denied all existing exact browser validation. Repair appends a conditional 403/404/429 branch only to the established local exact candidate fallback and preserves all browser tests. Added replay test with exact-checkout/route verification invariants; new PR HEAD requires fresh Required, CodeQL and merge. Never label provider preview ready without a real provider success and responsive target.
