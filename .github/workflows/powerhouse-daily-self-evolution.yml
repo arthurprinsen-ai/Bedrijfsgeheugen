@@ -10,10 +10,26 @@ permissions:
 
 concurrency:
   group: powerhouse-daily-self-evolution-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
+  # Single shared admission for both independent daily jobs. The scheduled
+  # GitHub event may arrive hours after a manual recovery: do not run twice.
+  daily-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Prove first daily GitHub workflow run before any learning or catalog audit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/daily-learning-run-admission.mjs
+
   improve:
+    needs: daily-admission
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -79,6 +95,7 @@ jobs:
   # suppress independent daily chat/agent/skill/engineering learning tasks.
   # Both jobs are part of this SAME scheduled workflow: no second scheduler.
   model-freshness:
+    needs: daily-admission
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
