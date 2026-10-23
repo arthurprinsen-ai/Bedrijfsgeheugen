@@ -6,7 +6,7 @@ import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/con
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
-import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
+import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
 
 const STEERING_BRAND_CONTRACT='Merkcategorie: dagelijkse ondernemingssturing, geen afzonderlijke AI-tool, chatbot, dashboard of automatiseringspakket. Leg in menselijke ondernemerstermen uit hoe interne én externe veranderingen worden verbonden met strategie, doelen, geld, processen, mensen en risico’s; benoem vervolgens een passende beslissing, de eigenaar van een actie en een controleerbare uitkomst of meetpunt. Het onderscheid is de gesloten verbeterlus: signaal → context → gevolg → beslissing → actie → resultaat → leren. POWERHOUSE is de motor, niet het hoofdproduct. AI-agenten, modelnamen en modulelijsten zijn hoogstens uitleg ná concrete ondernemerswaarde. Nooit verzonnen klantbewijs, gegarandeerde omzet, automatische beslissingen zonder toestemming of onbewezen productcapaciteit. Gebruik per uiting één aantoonbare bron of waarheidsgetrouw voorbeeld en een andere invalshoek dan vorige posts.';
 const BLOG_READER_READY_POLICY='openai-blog-reader-ready-v1';
@@ -560,6 +560,11 @@ Deno.serve(async (req) => {
       media_type: clean(mediaProof?.proof_lineage?.media_type) || clean(instagramObligation?.evidence?.media_type),
       instagram_visual: mediaProof?.proof_lineage?.instagram_visual || instagramObligation?.evidence?.instagram_visual || instagramObligation?.evidence?.instagram_media_proof?.instagram_visual || null,
       proof_fingerprint: mediaProof?.fingerprint || null,
+      mira_source_hash: clean(instagramObligation?.evidence?.instagram_media_proof?.mira_source_hash || instagramObligation?.evidence?.mira_source_hash),
+      mira_winner_recommendation_id: clean(instagramObligation?.evidence?.instagram_media_proof?.mira_winner_recommendation_id || instagramObligation?.evidence?.mira_winner_recommendation_id),
+      mira_source_led: instagramObligation?.evidence?.instagram_media_proof?.mira_source_led===true,
+      mira_entrepreneur_scene: clean(instagramObligation?.evidence?.instagram_media_proof?.mira_entrepreneur_scene),
+      mira_business_problem_id: clean(instagramObligation?.evidence?.instagram_media_proof?.mira_business_problem_id),
     };
     const existingByChannel = new Map(existing.map((r:any) => [r.channel,r]));
 
@@ -641,6 +646,19 @@ Deno.serve(async (req) => {
         }) || null
       : pickRecommendation(recs,pending.channel);
     if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
+    let resolvedMira:any=null;
+    if(pending.channel==='instagram_company'){
+      const [{data:lineage,error:lineageError},{data:job,error:jobError}]=await Promise.all([
+        db.from('powerhouse_mira_problem_lineage_v1').select('run_date,winner_recommendation_id,state,source_evidence').eq('run_date',runDate).maybeSingle(),
+        db.from('powerhouse_instagram_media_jobs_v1').select('asset_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
+      ]);
+      if(lineageError||jobError)throw new Error('MIRA_WINNER_LINEAGE_READ_FAILED');
+      resolvedMira=resolveMiraFrozenWinner(runDate,{winner:instagramWinner,lineage,recommendation,job});
+      if(!resolvedMira.ok)throw new Error(resolvedMira.code);
+      if(clean(instagramProof?.mira_source_hash)!==clean(resolvedMira.source_hash)
+        ||clean(instagramProof?.mira_winner_recommendation_id)!==clean(resolvedMira.winner_recommendation_id))
+        throw new Error('MIRA_FROZEN_SOURCE_MEDIA_PROOF_REQUIRED');
+    }
     let recentCompanyPosts:string[]=[];
     if(pending.channel==='linkedin_company'){
       const {data:publishedHistory,error:historyError}=await db.from('powerhouse_content_artifacts')
@@ -680,13 +698,19 @@ Deno.serve(async (req) => {
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
       : pending.channel==='linkedin_company' ? system : system + ' ' + STEERING_BRAND_CONTRACT;
     stage = 'artifact-ai';
-    const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
-    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
+    const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
+    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
     let fallbackReason:string|null=null;
+    if(pending.channel==='instagram_company'&&resolvedMira?.kind==='approved_source_led'){
+      // Reuse the immutable source-reviewed copy: no wasteful second generative draft.
+      artifact={title:'Mira: waar blijven kopieën van persoonsgegevens?',body:miraResolvedCaption(resolvedMira),cta:'Controleer ook de kopieën.',hook_type:'Herkenbare situatie',focus_keyword:'persoonsgegevens verwijderen',meta_description:'Fictieve Mira-situatie over verwijderverzoeken en achtergebleven kopieën.'};
+      generationProvider='approved-frozen-source';
+      generationModel='mira-source-led-deterministic-v1';
+    }else{
     try {
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
       const initialBudget=pending.channel==='blog'?4800:1800;
@@ -709,14 +733,20 @@ Deno.serve(async (req) => {
       fallbackReason=clean((error as Error)?.message).slice(0,240);
       artifact=await callComposioArtifact(db,generationModel,editorialSystem,artifactInput,pending.channel==='blog'?4800:1800);
     }
+    }
     let bodyText = clean(artifact.body);
     if (pending.channel === 'linkedin_personal' || pending.channel === 'linkedin_company') bodyText = compactLinkedInCommentary(bodyText);
     if (pending.channel==='instagram_company') {
       // The caption is deterministic from the canonical PH-P problem, not a random consumer-complaint winner.
-      bodyText=miraCaption(miraBusinessProblem);
-      const check=validateMiraCaptionForDelivery(runDate,bodyText,miraProductionEvidence(miraBusinessProblem));
+      bodyText=miraResolvedCaption(resolvedMira);
+      const check=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext);
       if(!check.ok)throw new Error(check.reason);
-      if(clean(instagramProof?.mira_business_problem_id)!==miraBusinessProblem.id)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
+      const expectedScene=clean(resolvedMira.scene||resolvedMira.problem?.scene);
+      const sceneValid=clean(instagramProof?.mira_entrepreneur_scene)===expectedScene;
+      const candidateValid=resolvedMira.kind==='approved_source_led'
+        ? (instagramProof?.mira_source_led===true && clean(instagramProof?.media_url)===resolvedMira.asset_url)
+        : clean(instagramProof?.mira_business_problem_id)===clean(resolvedMira.problem?.id);
+      if(!sceneValid||!candidateValid)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
     }
     if (pending.channel==='linkedin_personal') {
       let editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
@@ -811,7 +841,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraContext||{})},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
