@@ -40,10 +40,10 @@
       "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
     ],
     "shadow": [
-      "validate exact previously failing synthetic title and preserved lineage rejection"
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
     ],
     "negative_canary": [
-      "explicit malformed approved slug must return 409; never publish by bypassing validity checks"
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
     ]
   },
   "prevention": [
