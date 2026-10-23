@@ -173,3 +173,61 @@ test('provider incomplete / insufficient observations cannot report hotspots',as
   assert.equal(observed.diagnostic_hotspots.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.deepEqual(observed.diagnostic_hotspots.jobs,[]);
 });
+
+test('recurring hotspots require three independently completed attempts per stable workflow job',()=>{
+  const rows=Array.from({length:20},(_,i)=>{
+    const runId=200+Math.floor(i/4);
+    const row=sample(runId,5000+i,1000,10000+i*1000);
+    row.run.workflow_id=900;
+    row.run.name='Required test PR #'+runId+' '+sha;
+    row.job.name=i%4===0?'CodeQL javascript-typescript':'preflight';
+    return row;
+  });
+  const x=summarizeObservedCiJobs(rows);
+  assert.equal(x.status,'SAMPLED_METRICS_NOT_SLO');
+  assert.equal(x.recurrent_hotspots.status,'REPEATED_JOB_SAMPLE_NOT_SLO');
+  assert.equal(x.recurrent_hotspots.jobs.length,2);
+  assert.equal(x.recurrent_hotspots.jobs[0].job_name,'preflight');
+  assert.equal(x.recurrent_hotspots.jobs[0].investigation_lane,'delivery');
+  assert.equal(x.recurrent_hotspots.jobs[0].distinct_attempts,5);
+  assert.equal(x.recurrent_hotspots.jobs[0].sample_p50_execution_ms,21000);
+  assert.equal(x.recurrent_hotspots.jobs[1].distinct_attempts,5);
+  assert.ok(x.recurrent_hotspots.jobs.every(j=>j.representative_run_ids.length===5));
+});
+
+test('recurrence cannot be created by matrix fanout, different workflows, or skipped jobs',()=>{
+  const rows=Array.from({length:20},(_,i)=>{
+    const row=sample(300+Math.floor(i/4),6000+i,1000,3000+i);
+    row.job.name=i<8?'website':'preflight';
+    row.run.workflow_id=i<8?101:102;
+    return row;
+  });
+  // Only TWO distinct runs for workflow 101 / website; it is not a recurrence.
+  const x=summarizeObservedCiJobs(rows);
+  assert.equal(x.status,'SAMPLED_METRICS_NOT_SLO');
+  assert.ok(!x.recurrent_hotspots.jobs.some(j=>j.job_name==='website'));
+  assert.equal(x.recurrent_hotspots.jobs.length,1);
+  assert.equal(x.recurrent_hotspots.jobs[0].job_name,'preflight');
+  assert.equal(x.recurrent_hotspots.jobs[0].distinct_attempts,3);
+  const skipped={...sample(999,999,0,0),run:{...sample(999,999).run,workflow_id:102},
+    job:{...sample(999,999,0,0).job,name:'preflight',conclusion:'skipped'}};
+  const withSkipped=summarizeObservedCiJobs([...rows,skipped]);
+  assert.equal(withSkipped.recurrent_hotspots.jobs[0].distinct_attempts,3);
+  assert.equal(withSkipped.rejected.non_executed,1);
+});
+
+test('recurrent evidence never escapes insufficient or partial provider snapshots',async()=>{
+  const first=summarizeObservedCiJobs([sample(1,1)]);
+  assert.equal(first.recurrent_hotspots.status,'INSUFFICIENT_EVIDENCE');
+  assert.deepEqual(first.recurrent_hotspots.jobs,[]);
+  const runs=Array.from({length:7},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0),workflow_id:89}));
+  const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10_000,read:path=>{
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+    if(id===2)throw Error('GitHub provider failure');
+    return {total_count:4,jobs:Array.from({length:4},(_,i)=>({...sample(id,id*10+i).job,name:'preflight'}))};
+  }});
+  assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
+  assert.equal(x.recurrent_hotspots.status,'PARTIAL_PROVIDER_OBSERVATION');
+  assert.deepEqual(x.recurrent_hotspots.jobs,[]);
+});
