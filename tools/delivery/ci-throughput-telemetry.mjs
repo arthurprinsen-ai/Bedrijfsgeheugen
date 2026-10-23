@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { summarizeObservedCiJobs } from './predictive-controller.mjs';
 import { routeObservedCiHotspots } from './ci-agent-priority.mjs';
+import { observeRequiredHeadChurn } from './ci-required-head-churn.mjs';
 import { projectObservedCicdTaskRuns, reconcileCicdProjectionWithCanonical } from './ci-cicd-semconv-projection.mjs';
 
 const MAX_RUNS=24;
@@ -51,9 +52,15 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
     }
   }
   const summary=summarizeObservedCiJobs(observations);
+  // Independent evidence: run-list head versions do not require job-list success.
+  // Uses the exact original provider response; never requests a second page/API.
+  const requiredHeadChurn=observeRequiredHeadChurn({
+    workflowRuns:records.workflow_runs,totalCount:records.total_count,now
+  });
   const incomplete=readErrors.length>0;
   const result={
     ...summary,
+    required_head_churn:requiredHeadChurn,
     // A provider error suppresses even attribution-only hotspots.
     diagnostic_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',jobs:[]}:summary.diagnostic_hotspots,
     recurrent_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',minimum_distinct_attempts:3,jobs:[]}:summary.recurrent_hotspots,
@@ -91,6 +98,8 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       p95_wait_to_start_ms:result.p95_wait_to_start_ms,
       slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
       recurring_slow_jobs:result.recurrent_hotspots.jobs.length,
+      observed_pr_head_rechecks:result.required_head_churn.additional_head_versions_lower_bound,
+      merge_queue_review:result.required_head_churn.merge_queue_advice,
       agent_advice_status:result.agent_priority_advice.status,
       cicd_semconv_evidence_status:result.cicd_semconv_evidence.status,
       cicd_semconv_tasks:result.cicd_semconv_evidence.sampled_tasks||0,
