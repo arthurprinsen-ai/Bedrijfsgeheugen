@@ -74,3 +74,39 @@ test('reuse only current hourly Janitor and preserve all protected quality gates
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.doesNotMatch(workflow,/ci-agent-priorities.*workflow_dispatch/);
 });
+
+test('matrix fanout cannot manufacture a repeated slow median from one run',()=>{
+  const input=valid();
+  // Genuine browser observations remain fast except one run. Fan out 12
+  // very slow matrix replicas in only that run; they have no extra vote.
+  for(const row of input.job_evidence){
+    if(row.job_name==='website browser mobile')row.execution_ms=row.run_id===100?180000:10000;
+  }
+  for(let i=0;i<12;i++)input.job_evidence.push(job(100,9000+i,180000,'website browser mobile'));
+  input.sample_jobs=input.job_evidence.length;
+  const result=prioritizeObservedCiWork(input);
+  assert.equal(result.status,'NO_REPEATED_SLOW_JOB_PROVEN');
+  assert.deepEqual(result.priorities,[]);
+});
+
+test('matrix fanout cannot hide three genuinely slow independent attempts',()=>{
+  const input=valid();
+  for(const row of input.job_evidence){
+    if(row.job_name==='website browser mobile'){
+      row.execution_ms=[70000,80000,90000,10000,10000][row.run_id-100];
+    }
+  }
+  for(let i=0;i<14;i++)input.job_evidence.push(job(100,9200+i,1000,'website browser mobile'));
+  input.sample_jobs=input.job_evidence.length;
+  const result=prioritizeObservedCiWork(input);
+  assert.equal(result.status,'REPEATED_SLOW_JOB_ADVISORY');
+  const match=result.priorities.find(p=>p.job_name==='website browser mobile');
+  assert.equal(match.independent_run_attempts,5);
+  assert.equal(match.independent_attempt_samples,5);
+  assert.equal(match.sample_jobs,19);
+  assert.equal(match.matrix_replica_samples_excluded,14);
+  assert.equal(match.median_execution_ms,70000);
+  assert.equal(match.p95_execution_ms,90000);
+  assert.equal(match.evidence.length,3);
+  assert.equal(new Set(match.evidence.map(e=>e.run_id+':'+e.run_attempt)).size,3);
+});
