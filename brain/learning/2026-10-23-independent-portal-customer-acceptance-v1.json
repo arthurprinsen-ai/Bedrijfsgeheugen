@@ -28,7 +28,7 @@
   "fix": "Add Ed25519 signed, bounded, two-tenant evidence admission for exact release, real sign-ins, negative isolation, sourceRevision->Brain ACK, action, measured result, independent provider/finance proof, closed learning lineage and registered portal page coverage. Never auto-promote to productionAccepted.",
   "prevention_rule": "No LIVE customer acceptance may be promoted solely from successful CI, provider readiness, synthetic login, result count, model forecast, unverified signer, or status labels. An independent validator must authenticate upstream receipts; missing provider/client reality remains BLOCKED.",
   "regression_tests": [
-    "tests/portal-independent-customer-production-acceptance-v1.test.mjs"
+    "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
   ],
   "existing_daily_owner": ".github/workflows/universal-closed-loop-learning.yml",
   "canonical_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
@@ -41,13 +41,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-independent-customer-production-acceptance-v1.test.mjs"
+      "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-independent-customer-production-acceptance-v1.test.mjs"
+      "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-independent-customer-production-acceptance-v1.test.mjs"
+      "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
     ]
   },
   "test_evidence": {
