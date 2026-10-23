@@ -1,0 +1,62 @@
+{
+  "id": "p0-4198-mira-midnight-qualified-source-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|mira|source-evidence|midnight-prepared-daily-harvest|v1",
+  "root_cause": "Mira's actual scheduled source radar runs at 20:02 UTC (22:02 Europe/Amsterdam) for the following runDate. The shared assurance guard counted only rows updated after local midnight, leaving the source loop red for most of the next day despite genuine pre-collected sources. It also counted unqualified results such as irrelevant Nederland, Texas pages.",
+  "evidence": {
+    "scheduled_job": "powerhouse-mira-problem-radar-v1 (20:02 UTC, runDate local date + 1)",
+    "observed_on": "2026-10-09",
+    "observed_batch": "2026-10-08T20:02Z; 36 source observations, 12 marked eligible",
+    "qualified_examples": [
+      {
+        "domain": "consumentenbond.nl",
+        "title": "Veel problemen bij pakketbezorging",
+        "evidence_score": 0.67,
+        "total_score": 0.908
+      },
+      {
+        "domain": "radar.avrotros.nl",
+        "title": "‘We hebben u gemist’, maar niemand aan de deur",
+        "evidence_score": 0.568,
+        "total_score": 0.895
+      }
+    ],
+    "unqualified_example": "ci.nederland.tx.us (Nederland, Texas) flagged ineligible",
+    "production_guard_before": "RED; 0 observed source rows after local midnight",
+    "test": "tests/brain-mira-midnight-source-window-v1.test.mjs",
+    "migration": "supabase/migrations/20261009140200_mira_prepared_signal_proof_window_v1.sql"
+  },
+  "change": "Reuse existing powerhouse_refresh_regression_stage_evidence_v1; qualify observed source evidence across a rolling 24-hour window, requiring existing eligible=true plus evidence_score >=0.40 and total_score >=0.75. Leave producer, publisher, scheduling, RLS and prepublish gates unchanged.",
+  "prevention": [
+    "A forward-prepared daily source is evaluated by evidence freshness, not by the midnight write-time boundary.",
+    "A score or source row alone is never evidence of a verified complaint; require existing eligible flag and evidence/total score.",
+    "Reject irrelevant results, stale sources and unverified content in regression, do not fabricate observations or publish content.",
+    "Keep source-stage GREEN distinct from Mira final media and provider post proof; every channel retains its own quality gate.",
+    "Keep one canonical Brain, Heartbeat, Powerhouse source and non-public privileged function grants."
+  ],
+  "compiler": {
+    "failure_class": "MIRA_ASSURANCE_LOCAL_MIDNIGHT_AND_UNQUALIFIED_SIGNAL_BUG",
+    "scope": "MIRA_SOURCE_RADAR_PROOF_WINDOW",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-midnight-source-window-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-midnight-source-window-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-midnight-source-window-v1.test.mjs"
+    ],
+    "production_claim": "not_released_until_protected_ci_merge_migration_application_true_source_count_and_runtime_assurance_readback"
+  },
+  "truth_rules": {
+    "no_fake_signal": true,
+    "no_fake_provider_publication": true,
+    "no_fake_learning_or_revenue": true,
+    "only_actual_qualified_observations": true
+  }
+}
