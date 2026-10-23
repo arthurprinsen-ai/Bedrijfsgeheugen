@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {routeObservedCiHotspots} from '../tools/delivery/ci-agent-priority.mjs';
+import {routeObservedCiHotspots as routeObservedCiHotspotsWithClock} from '../tools/delivery/ci-agent-priority.mjs';
+// Synthetic fixtures use a fixed, explicit observation instant. The production
+// implementation independently validates the timestamp and current clock.
+const FIXTURE_NOW=Date.parse('2026-10-23T13:00:00.000Z');
+function routeObservedCiHotspots(data={},options={}){
+  return routeObservedCiHotspotsWithClock({observed_at:new Date(FIXTURE_NOW).toISOString(),...data},
+    {now:FIXTURE_NOW,...options});
+}
 import {collectObservedCiThroughput} from '../tools/delivery/ci-throughput-telemetry.mjs';
 
 const SHA='a'.repeat(40);
@@ -60,7 +67,7 @@ test('unknown CI jobs are never assigned invented delivery owner',()=>{
   assert.equal(x.priorities[0].action,'RESOLVE_CANONICAL_WORKFLOW_OWNER_BEFORE_MUTATION');
 });
 test('existing hourly collector embeds only advisory priorities; never dispatches',async()=>{
-  const clock=Date.parse('2026-10-23T08:45:00Z');
+  const clock=Date.now()-10_000;
   const iso=n=>new Date(clock+n).toISOString();
   const runs=Array.from({length:7},(_,i)=>({id:i+1,run_attempt:1,head_sha:SHA,status:'completed',created_at:iso(0),name:'Required test'}));
   const x=await collectObservedCiThroughput({repo:'example/repo',now:clock+10000,read:path=>{
@@ -167,4 +174,30 @@ test('independent recurrent medians take precedence over an isolated larger port
     assert.equal(invalid.status,'WITHHELD_UNVERIFIED_RECURRENT_PROOF');
     assert.deepEqual(invalid.priorities,[]);
   }
+});
+
+
+test('stale, future-dated, untrusted and missing observation clocks cannot drive owner priorities',()=>{
+  const valid={...observed,observed_at:new Date(FIXTURE_NOW).toISOString()};
+  assert.equal(routeObservedCiHotspotsWithClock(valid,{now:FIXTURE_NOW+2*60*60*1000}).status,
+    'EVIDENCE_BACKED_INVESTIGATION_ONLY');
+  const invalid=[
+    {...valid,observed_at:undefined},
+    {...valid,observed_at:'2026-10-23'},
+    {...valid,observed_at:'2026-10-23T13:00:00Z'},
+    {...valid,observed_at:'2026-10-23T13:00:00.000+00:00'},
+    {...valid,observed_at:'2026-10-23T25:00:00.000Z'},
+    {...valid,observed_at:new Date(FIXTURE_NOW+1000).toISOString()},
+    {...valid,observed_at:new Date(FIXTURE_NOW-2*60*60*1000-1).toISOString()}
+  ];
+  for(const data of invalid){
+    const outcome=routeObservedCiHotspotsWithClock(data,{now:FIXTURE_NOW});
+    assert.equal(outcome.status,'WITHHELD_STALE_OR_UNDATED_OBSERVATION');
+    assert.deepEqual(outcome.priorities,[]);
+    assert.equal(outcome.may_dispatch,false);
+    assert.equal(outcome.may_mutate,false);
+    assert.equal(outcome.may_promote,false);
+  }
+  assert.equal(routeObservedCiHotspotsWithClock(valid,{now:Number.NaN}).status,
+    'WITHHELD_STALE_OR_UNDATED_OBSERVATION');
 });

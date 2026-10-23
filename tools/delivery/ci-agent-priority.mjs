@@ -1,5 +1,6 @@
 // Read-only, provenance-backed cooperation advice for the EXISTING hourly Janitor.
 // Never treat a sampled slow job as a causal critical path or release authorization.
+const MAX_ADVICE_OBSERVATION_AGE_MS=2*60*60*1000; // Existing hourly Janitor + one recovery window.
 const GATES=Object.freeze(['Required','CodeQL','Supabase preview when applicable','RLS/tenant isolation','financial/visual parity','production/provider readback']);
 const ACTIONS=Object.freeze({
   website:'COMPARE_EXACT_SHA_COLD_WARM_BUILD_AND_CONTENT_PARITY',
@@ -97,7 +98,7 @@ function validateRecurrentHotspots(telemetry){
   return {valid:true,rows:ranked};
 }
 
-export function routeObservedCiHotspots(telemetry={}, {maxOwners=3}={}){
+export function routeObservedCiHotspots(telemetry={}, {maxOwners=3,now=Date.now()}={}){
   const base={
     schema:'powerhouse-ci-agent-evidence-priorities-v1',
     status:'WITHHELD_NO_TRUSTED_SAMPLE',
@@ -111,6 +112,16 @@ export function routeObservedCiHotspots(telemetry={}, {maxOwners=3}={}){
     mandatory_release_gates:GATES,
     priorities:[]
   };
+  // Janitor JSON can outlive its owner lease, the deployment, or the incident.
+  // Do not tell agents an old (or future-dated) observation is current evidence.
+  const stamp=telemetry?.observed_at;
+  const observed=typeof stamp==='string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(stamp)
+    ?Date.parse(stamp):NaN;
+  const age=Number(now)-observed;
+  if(!Number.isFinite(observed)||!Number.isFinite(Number(now))||!Number.isFinite(age)||
+     new Date(observed).toISOString()!==stamp||age<0||age>MAX_ADVICE_OBSERVATION_AGE_MS){
+    return {...base,status:'WITHHELD_STALE_OR_UNDATED_OBSERVATION'};
+  }
   const jobs=telemetry?.diagnostic_hotspots?.jobs;
   if(telemetry?.status!=='SAMPLED_METRICS_NOT_SLO'||
       telemetry?.diagnostic_hotspots?.status!=='SAMPLED_DIAGNOSTIC_NOT_CRITICAL_PATH'||
