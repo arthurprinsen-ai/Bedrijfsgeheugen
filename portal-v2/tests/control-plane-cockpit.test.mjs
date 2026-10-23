@@ -51,8 +51,8 @@ test('Only literal outcome_verified=true promotes FULFILLED to green',()=>{
 
 test('Unverified outcomes do not allow HTML injection into the control-plane screen',()=>{
   const html=controlPlaneCockpitMarkup({obligations:[
-    {obligation_key:'<script>alert(1)</script>',current_state:'FULFILLED',outcome_verified:null}
+    {obligation_key:'<ScRiPt type="text/javascript">alert(1)</ScRiPt>',current_state:'FULFILLED',outcome_verified:null}
   ]});
-  assert.doesNotMatch(html,/<script>/);
-  assert.match(html,/&lt;script&gt;/);
+  assert.doesNotMatch(html,/<script\b/i);
+  assert.match(html,/&lt;ScRiPt type=&quot;text\/javascript&quot;&gt;/);
 });

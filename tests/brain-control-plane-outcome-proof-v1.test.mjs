@@ -26,7 +26,7 @@ test('positive provider receipt allows green only for literal outcome_verified t
 });
 
 test('canonical HTML presentation continues to escape unknown input',()=>{
-  const html=show({obligation_key:'<img src=x onerror=alert(1)>',outcome_verified:false});
-  assert.doesNotMatch(html,/<img /);
-  assert.match(html,/&lt;img src=x onerror=alert\(1\)&gt;/);
+  const html=show({obligation_key:'<IMG src=x onerror=alert(1)>',outcome_verified:false});
+  assert.doesNotMatch(html,/<img\b/i);
+  assert.match(html,/&lt;IMG src=x onerror=alert\(1\)&gt;/);
 });

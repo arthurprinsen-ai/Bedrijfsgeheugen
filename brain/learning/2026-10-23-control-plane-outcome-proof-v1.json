@@ -64,6 +64,15 @@
     ],
     "provider_production_readback": null,
     "terminal_release": "PENDING_PROTECTED_MERGE_AND_DEPLOY",
-    "customer_value_improvement_proven": false
+    "customer_value_improvement_proven": false,
+    "code_scanning_triage": {
+      "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4776#discussion_r4359079355",
+      "finding": "CodeQL / Bad HTML filtering regexp",
+      "severity": "high",
+      "root_cause": "Security-negative test used a case-sensitive lowercase-only HTML tag detector, missing mixed-case SCRIPT variants; production HTML escaping remained unchanged.",
+      "fix": "Exercise mixed-case script and img payloads; assert raw tags absent using word-boundary case-insensitive filters; retain exact escaped output assertions.",
+      "regression_status": "CANDIDATE_UNTIL_NEW_EXACT_HEAD_CODEQL",
+      "no_code_scanning_waiver": true
+    }
   }
 }
