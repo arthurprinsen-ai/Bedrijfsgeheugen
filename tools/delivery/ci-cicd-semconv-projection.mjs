@@ -19,8 +19,13 @@ function taskProof(repo,record){
   !Object.hasOwn(RESULTS,job.conclusion)||
   typeof job.name!=='string'||!job.name.trim()||job.name.length>100||
   /[<>\r\n]/.test(job.name))return null;
+ // Match the original summarizeObservedCiJobs temporal contract exactly:
+ // no phantom wait/negative elapsed jobs or unbounded clock glitches.
+ const created=Date.parse(job.created_at||'');
  const start=Date.parse(job.started_at||''),end=Date.parse(job.completed_at||'');
- if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start)return null;
+ const wait=start-created,elapsed=end-start;
+ if(!Number.isFinite(wait)||!Number.isFinite(elapsed)||
+    wait<0||elapsed<0||wait>172800000||elapsed>172800000)return null;
  const url='https://github.com/'+repo+'/actions/runs/'+run.id+'/job/'+job.id;
  return Object.freeze({
   // Source-only projection: not a collected OpenTelemetry span or exported trace.
@@ -30,7 +35,10 @@ function taskProof(repo,record){
    'cicd.pipeline.task.run.id':String(job.id),
    'cicd.pipeline.task.run.result':RESULTS[job.conclusion],
    'cicd.pipeline.task.run.url.full':url,
-   'vcs.repository.ref.revision':run.head_sha.toLowerCase()
+   'vcs.repository.ref.revision':run.head_sha.toLowerCase(),
+   // Stable low-cardinality classification; never copy raw runner output.
+   ...(job.conclusion==='failure'?{'error.type':'ci_task_failed'}:
+      job.conclusion==='timed_out'?{'error.type':'timeout'}:{})
   }),
   run_id:run.id,run_attempt:run.run_attempt,job_id:job.id,
   started_at:new Date(start).toISOString(),
