@@ -210,7 +210,8 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   if (!skillProjectionVerification.ok) throw new Error(`SKILL_PROJECTION_DRIFT:${JSON.stringify(skillProjectionVerification.drift)}`);
   const skillProjection = selectSkillProjection(skillProjectionIndex, {
     fingerprints: executionContext.relevantLearningFingerprints ?? [],
-    targets: executionContext.deliveryLanes ?? []
+    targets: executionContext.deliveryLanes ?? [],
+    intent: executionContext.intent ?? ''
   });
 
   const contextLoadMs = Math.max(0, nowMs() - preflightStarted);
