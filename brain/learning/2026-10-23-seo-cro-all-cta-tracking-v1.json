@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-cro|all-primary-cta-instrumentation|20261023-v1",
+  "fingerprint": "website|cro|first-matching-anchor-only-and-dynamic-cta-unobserved|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "PRIMARY_CTA_ATTRIBUTION_MISSES_REPEATED_AND_DYNAMIC_CONTENT_LINKS",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The canonical SEO conversion annotator used a case-insensitive single-match regex and therefore tagged only the first in-content anchor pointing to the primary CTA. The delegated growth tracker emitted primary_cta_click only for statically tagged anchors, ignoring dynamic first-party, in-content links to selfscan, Frisse Blik and checkout. One recorded primary CTA event in 28 days is a signal of insufficient tracking, not proof that nobody clicked: ingestion/delivery may also be incomplete.",
+  "observed_evidence": {
+    "source": "tools/seo-order-engine/conversion.mjs and measurement.mjs",
+    "primary_cta_events_last_28_days": 1,
+    "known_brain_delivery_queued": 190444,
+    "optional_bg211_delivery_enabled": false,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Annotate every in-content primary CTA anchor, preserve header/mobile/footer byte-for-byte, use narrowly allowlisted delegated first-party fallback for dynamic untagged /zelfscan, /frisse-blik and /afsluiten links inside main. Reuse existing first-party /api/growth-event, no new collector, cookie, session identity, customer PII or analytics store.",
+  "prevention_rule": "All declared in-content conversion CTAs must be measured once including repeated, mobile/content and dynamically rendered anchors, while cross-site and global shell links do not become primary conversions; sampled event counts are not customer or revenue evidence.",
+  "tests": [
+    "tests/brain-seo-cro-all-primary-cta-tracking-v1.test.mjs",
+    "tests/seo-order-conversion.test.mjs",
+    "tests/seo-order-measurement.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-cro-all-primary-cta-tracking-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-cro-all-primary-cta-tracking-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-cro-all-primary-cta-tracking-v1.test.mjs"
+    ],
+    "invariants": [
+      "all matching main CTAs annotated",
+      "header and footer unchanged",
+      "dynamic same-site main CTAs measured once",
+      "external links ignored",
+      "no PII in events",
+      "no scheduler or paid capacity",
+      "real measured conversion and production readback required"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
