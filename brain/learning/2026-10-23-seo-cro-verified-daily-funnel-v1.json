@@ -31,13 +31,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/seo-growth-daily-conversion-planner.test.mjs"
+      "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
     ],
     "canary": [
-      "tests/growth-intelligence-daily.test.mjs"
+      "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
     ],
     "invariants": [
       "one existing scheduler",
