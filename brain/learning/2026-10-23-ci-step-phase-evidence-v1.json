@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|predictive-lane-capacity|repeatable-ci-step-attribution|20261023-v1",
+  "obligation_id": "delivery|predictive-lane-capacity|repeatable-ci-step-attribution|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_JOB_DURATION_WITHOUT_RECURRENT_STEP_ATTRIBUTION",
+  "root_cause": "The existing Janitor identifies recurrent slow jobs, but does not attribute their duration to independently repeated completed provider job steps; agents could optimize unrelated stages based on a one-off peak.",
+  "observed_evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "sample": "28 executed jobs / 13 attempts / longest 353000ms / p95 wait 3000ms; single-window diagnostic, no speedup proof",
+    "github_jobs_api": "https://docs.github.com/en/rest/actions/workflow-jobs",
+    "existing_scheduler": ".github/workflows/powerhouse-repository-janitor.yml",
+    "additional_provider_requests": 0,
+    "performance_gain_proven": false
+  },
+  "failed_approaches": [
+    "Infer step bottleneck from slowest job alone",
+    "Count parallel matrix jobs as distinct attempts",
+    "Speculate unavailable timestamps",
+    "Create duplicate recurring telemetry scheduler"
+  ],
+  "fix": "Derive bounded completed-step-phase evidence entirely from existing GitHub job-list rows plus canonical executed-job IDs, attempts, SHAs and runtime. Require >=20 executed jobs, >=5 attempts and >=3 independent attempts per exact workflow ID/job/step group. Reject invalid/mismatched steps and return at most five step median/max hypotheses without release or automatic action.",
+  "prevention_rule": "Never count skipped/cancelled/zero/negative/outside-job steps, spoofed name, duplicate number or unverified job. Reuse existing canonical Janitor/Brain owner and source snapshot, no extra scheduler, API read, gate bypass, paid capacity or unverified speedup. Step attribution does not prove critical path.",
+  "tests": [
+    "tests/brain-ci-step-phase-evidence-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_JOB_DURATION_WITHOUT_RECURRENT_STEP_ATTRIBUTION",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-step-phase-evidence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-step-phase-evidence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-step-phase-evidence-v1.test.mjs"
+    ],
+    "invariants": [
+      "only use existing Janitor GitHub job response",
+      "20 executed jobs / 5 distinct run attempts minimum",
+      "3 independent attempts for repeated step",
+      "exact SHA, workflow ID, job and step identity",
+      "no fabricated causal critical path or speed improvement",
+      "safe with missing, duplicate, invalid or malicious provider steps"
+    ]
+  },
+  "terminal_rule": "Only call source released after exact-head Required and CodeQL, protected auto-merge, exact-main proof and existing Janitor runtime step evidence; keep #4661 open for repeatable optimization benchmark."
+}
