@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/powerhouse-ci-intelligence.yml'
       - 'scripts/brain/powerhouse-ci-intelligence.mjs'
+      - 'tools/delivery/ci-adaptive-pr-planner.mjs'
   schedule:
     - cron: '17 5 * * *'
   workflow_dispatch:
