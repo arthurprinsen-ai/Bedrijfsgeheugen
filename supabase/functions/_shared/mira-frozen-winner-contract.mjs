@@ -110,3 +110,42 @@ export function resolveMiraFrozenWinner(runDate,{winner=null,lineage=null,recomm
   return {ok:true,kind:'approved_frozen_library_mapping',problem,
     winner_recommendation_id:id,source_url:source.source_url,source_hash:source.source_hash};
 }
+
+
+/**
+ * One-time, CAS-protected candidate re-use for the original Heartbeat media
+ * router. This only materializes existing completed OpenArt bytes; it never
+ * generates, approves, publishes, or creates another scheduler.
+ */
+export function sourceLedAutoVerifyCandidate({runDate,resolved,job,ob,postType,readyProviders=[]}={}){
+ const id=clean(resolved?.winner_recommendation_id);
+ const manifest=job?.asset_manifest||{};
+ const reserved=clean(manifest.daily_winner_recommendation_id||manifest.recommendation_id);
+ if(resolved?.kind!=='approved_source_led'||!id||!runDate||
+   postType!=='reel'||job?.status!=='WAITING_ASSET'||
+   Number(job?.attempts)!==0||!clean(job?.id)||!clean(job?.updated_at)||
+   !readyProviders.includes('openart')||
+   !clean(resolved.asset_url).startsWith('https://cdn.openart.ai/')||
+   !clean(resolved.asset_url).endsWith('.mp4')||
+   !clean(resolved.openart_history_id)||
+   (reserved&&reserved!==id)||
+   ob?.external_id||ob?.evidence?.republish_forbidden===true||
+   job?.republish_forbidden===true||
+   manifest.automatic_generation_budget_exhausted===true||
+   manifest.source_led_auto_verify_started===true)
+   return {ok:false,reason:'NOT_ELIGIBLE_FOR_SINGLE_PROOF_ATTEMPT'};
+ return {ok:true,provider:'openart',assetManifest:{
+   ...manifest,
+   source_led_auto_verify_started:true,
+   source_led_auto_verify_contract:'mira-frozen-approved-existing-asset-only-v1',
+   recommendation_id:id,
+   daily_winner_recommendation_id:id,
+   scene:resolved.scene,
+   asset_url:resolved.asset_url,
+   openart_history_id:resolved.openart_history_id,
+   openart_reference_id:'Yjqu4D7v76HABNPmQPj1',
+   openart_reference_url:'https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg',
+   generation_mode:'image2video',
+   duration:8
+ }};
+}
