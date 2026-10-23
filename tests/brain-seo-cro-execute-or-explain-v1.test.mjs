@@ -32,3 +32,27 @@ test('SEO/CRO daily material opportunities execute or reject with evidence', asy
   assert.ok(doc.includes('recommendation-only'));
   assert.ok(ledger.includes('recovery work'));
 });
+
+
+test('daily CRO evidence decision is bounded and terminates without claiming publication', async()=>{
+  const {planDailyConversion}=await import('../tools/seo-growth/daily-conversion-planner.mjs');
+  const url='https://www.bedrijfsgeheugen.nl/afas-koppeling';
+  const rows=[{pagina:url,datum:'2026-10-22',opgehaald_op:'2026-10-23T05:00:00Z',zoekterm:'afas koppeling',vertoningen:400,klikken:3,positie:5}];
+  const outcome=planDailyConversion({registry:{pages:[{route:url,role:'money'}]},searchRows:rows,now:new Date('2026-10-23T12:00:00Z')});
+  assert.equal(outcome.candidates.length,1);
+  assert.equal(outcome.candidates[0].action,'title-meta');
+  assert.equal(outcome.candidates[0].terminal.state,'REJECTED_WITH_EVIDENCE');
+  assert.equal(outcome.candidates[0].terminal.reason_code,'NO_SAFE_REVERSIBLE_CHANGE');
+  assert.equal(outcome.candidates[0].auto_publish,false);
+  assert.equal(outcome.pages[0].qualifiedLeads,null);
+  assert.equal(outcome.publicationStatus,'NOT_PUBLISHED_REQUIRES_PROTECTED_DELIVERY');
+});
+
+test('daily CRO runs inside incumbent scheduled Netlify function with exact-project service-role guard',async()=>{
+  const fn=await read('netlify/functions/growth-intelligence-daily.mjs');
+  assert.match(fn,/schedule:'0 6 \* \* \*'/);
+  assert.match(fn,/SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(fn,/GROWTH_STORE_SERVICE_ROLE_PROJECT_MISMATCH/);
+  assert.match(fn,/planDailyConversion/);
+  assert.match(fn,/cro_live_changes_verified:null/);
+});
