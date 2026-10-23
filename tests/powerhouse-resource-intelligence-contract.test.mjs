@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
 
 const migrationPath = 'supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql';
 const configPath = 'config/powerhouse-resource-intelligence-v1.json';
@@ -96,4 +97,30 @@ test('all-agent Brain contract is explicit, mandatory in preflight and closed-lo
   assert.equal(contract.daily_cycle.enabled, true);
   assert.ok(contract.after_outcome.includes('refresh_shared_context'));
   assert.match(preflight, /brain\/contracts\/resource-intelligence-v1\.json/);
+});
+
+
+test('CI audit validates the exactly applied production migration, not an absent historical filename', () => {
+  const audit = read(auditPath);
+  assert.match(audit, /20260917094812_powerhouse_resource_intelligence_v1\.sql/);
+  assert.doesNotMatch(audit, /20260917093000_powerhouse_resource_intelligence_v1\.sql/);
+  const result = spawnSync(process.execPath, [auditPath, '--check'], {encoding:'utf8'});
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const proof = JSON.parse(result.stdout.trim());
+  assert.equal(proof.status, 'RESOURCE_INTELLIGENCE_READY');
+  assert.equal(proof.unknown_data_policy, 'null_not_zero');
+  assert.equal(proof.production_authority, 'BG169');
+});
+
+test('resource audit guards match the actual resource units, provenance and NULL-not-zero rules', () => {
+  const audit = read(auditPath);
+  const sql = read(migrationPath);
+  for (const physical of ['energy_kwh','water_liters','co2e_kg']) {
+    assert.match(audit, new RegExp(physical));
+    assert.match(sql, new RegExp(physical));
+  }
+  assert.match(audit, /provenance_complete/);
+  assert.match(audit, /coalesce/);
+  assert.match(audit, /security_invoker = true/);
+  assert.match(sql, /force row level security/);
 });
