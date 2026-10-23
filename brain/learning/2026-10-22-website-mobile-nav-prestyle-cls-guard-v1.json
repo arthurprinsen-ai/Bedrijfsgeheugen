@@ -1,0 +1,55 @@
+{
+  "fingerprint": "website|mobile-cls|en-blog-afas-api|20261022-v1",
+  "owner": "website|mobile-nav|prestyle-hidden-20261022-v1",
+  "date": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "source_of_truth": "public.brain_failure_registry existing CLS family; no duplicate Brain register",
+  "observed_failure": "Required #39827594879 / browser job 119996167603: phone CLS 0.248, 0.103, 0.121 on three NL/EN blog routes, div.wrap layout-shift source at 533-626ms.",
+  "root_cause": "HYPOTHESIS_PENDING_PROVIDER_REPLAY: shared assets/js/menu.js injected #bgSharedMobileNav into body before its dynamically loaded stylesheet, using aria-hidden only (no native layout suppression), plausibly causing transient pre-CSS page reflow. DOM-source association not yet causal proof.",
+  "bounded_fix": "Add native hidden attribute before append; retain it on close/Escape/resize; remove it only on user-initiated menu open; preserve aria-hidden, all links, accessibility and single shared mobile stylesheet.",
+  "prevention_rule": "Every newly inserted hidden overlay must be natively display:none before append independently of asynchronous CSS. aria-hidden alone never prevents layout shifts. Preserve phone CLS<=0.100 all canonical sitemap routes and desktop/checkout/security gates.",
+  "regression": "tests/brain-website-mobile-nav-prestyle-layout-v1.test.mjs",
+  "status": "CANDIDATE_UNVERIFIED_BROWSER_CAUSALITY_PENDING",
+  "compiler": {
+    "failure_class": "WEBSITE_MOBILE_CLS_PRESTYLE_INSERTION_HYPOTHESIS",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-mobile-nav-prestyle-layout-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-mobile-nav-prestyle-layout-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-website-mobile-nav-prestyle-layout-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39827594879",
+    "browser_job": 119996167603,
+    "preview": "https://deploy-preview-4663--bedrijfsgeheugen.netlify.app",
+    "cls_observations": [
+      {
+        "route": "/blog/hoe-nederlandse-cyberoefeningen-jouw-bedrijfsbeslissingen-moeten-beinv/",
+        "score": 0.248
+      },
+      {
+        "route": "/blog/offertes-opvolgen-zonder-crm/",
+        "score": 0.103
+      },
+      {
+        "route": "/en/blog/offertes-opvolgen-zonder-crm/",
+        "score": 0.121
+      }
+    ],
+    "threshold": 0.1,
+    "proven_root_cause": false,
+    "required_live_verification": "exact-current-head Required including all mobile sitemap visibility, CodeQL, protected merge, Netlify production readback, provider route replay",
+    "source_control_owner": "separate menu-only writer; diagnostic owner PR #4651 remains unchanged",
+    "provider_workflows_created": 0,
+    "duplicate_incident_created": 0
+  }
+}
