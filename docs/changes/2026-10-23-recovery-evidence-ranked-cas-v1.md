@@ -9,3 +9,6 @@ A single added read fetches at most the latest 100 Required workflow runs; faile
 Acceptance: node --test tests/delivery-recovery-pr-prioritizer.test.mjs tests/delivery-powerhouse-supervisor.test.mjs; protected exact-head Required and CodeQL; 24h independently observed supervisor reports to compare baseline fallback, elapsed completion time, CAS rejects, repeat drift and gate failures. No AI technique is authorized to change production without independent baseline, regression suite, staged canary, rollback and provider readback. Existing #4763 and #4788 own innovation quality; #4772 and #4778 own deeper CI repeat/step telemetry. No duplicate collector, scheduler, skill store or incident register.
 
 Status at submission: code candidate only, production performance improvement unproven until measured.
+
+## Protected CI evidence correction
+First exact-head Required run #39964307735 correctly failed canonical learning compilation with LEARNING_FAILURE_CLASS_REQUIRED. The learning packet now declares its CI/GitHub compiler and evaluates the real test suite through the required tests/brain- entrypoint in historical, shadow and canary modes. Existing protection remains mandatory; previous failed head cannot be reused for green evidence.
