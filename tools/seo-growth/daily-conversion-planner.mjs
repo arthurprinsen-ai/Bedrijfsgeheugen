@@ -4,11 +4,8 @@ const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const DAY = 86_400_000;
 const num = value => Number.isFinite(Number(value)) ? Math.max(0, Number(value)) : 0;
 const isoDay = date => date.toISOString().slice(0, 10);
-const age = (value, now) => {
-  const timestamp = Date.parse(String(value || ''));
-  return Number.isFinite(timestamp) ? now.getTime() - timestamp : Infinity;
-};
 function canonical(value) {
+  if (!value || !String(value).trim()) return null;
   try {
     const url = new URL(String(value || ''), ORIGIN);
     if (url.protocol !== 'https:' || url.hostname !== 'www.bedrijfsgeheugen.nl') return null;
@@ -92,8 +89,9 @@ export function planDailyConversion({ searchRows = [], events = [], outcomes = [
     pageSummaries.push({ canonical: page.canonical, impressions: gscFresh ? gsc.impressions : null,
       clicks: gscFresh ? gsc.clicks : null, ctr: gscFresh ? ctr : null,
       views: eventFresh ? ev.views : null, ctaClicks: eventFresh ? ev.cta : null,
-      ctaRate: eventFresh ? ctaRate : null, qualifiedLeads: incomplete ? null : business.qualifiedLeads,
-      orders: incomplete ? null : business.orders, realizedRevenueEur: incomplete ? null : Number(business.realizedRevenueEur.toFixed(2)) });
+      ctaRate: eventFresh ? ctaRate : null, qualifiedLeads: incomplete || !results.has(page.canonical) ? null : business.qualifiedLeads,
+      orders: incomplete || !results.has(page.canonical) ? null : business.orders,
+      realizedRevenueEur: incomplete || !results.has(page.canonical) ? null : Number(business.realizedRevenueEur.toFixed(2)) });
     if (incomplete) continue;
     let action = null, reason = null, target = null, priority = 0, refs = [];
     if (eventFresh && ev.views >= 50 && ev.engaged >= 15 && ctaRate < 0.04) {
@@ -113,7 +111,10 @@ export function planDailyConversion({ searchRows = [], events = [], outcomes = [
       evidence_refs: refs, auto_publish: false, introduces_new_factual_claim: false,
       evidence_safe: true, proposed_change: { kind: 'review-required', primary_cta: page.primary_cta || null },
       priority: Number(priority.toFixed(2)), observation_day: day, source_status: sourceStatus,
-      actual_business_outcomes: { ...business, realizedRevenueEur: Number(business.realizedRevenueEur.toFixed(2)) }
+      actual_business_outcomes: results.has(page.canonical) ? { ...business, realizedRevenueEur: Number(business.realizedRevenueEur.toFixed(2)) } : null,
+      terminal: { state: 'REJECTED_WITH_EVIDENCE', reason_code: 'NO_SAFE_REVERSIBLE_CHANGE',
+        missing_or_conflicting_evidence: 'No independently validated challenger copy or protected delivery/readback for this observation',
+        future_execution_condition: 'Validated reversible challenger with exact-head CI, protected delivery, and independent production readback' }
     };
     if (validateOptimizationCandidate(proposal).length === 0) candidates.push(proposal);
   }
