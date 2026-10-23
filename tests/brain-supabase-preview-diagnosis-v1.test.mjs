@@ -104,6 +104,27 @@ test('provider preview quota exhaustion is NOT a successful preview or permissio
   assert.match(result.remediation, /Do not delete another PR owner/);
 });
 
+test('actual provider concurrent branch limit cancellation is classified as capacity, not generic CI failure', () => {
+  const output = diagnosePreviewCheckRuns({check_runs:[
+    check(310, 'cancelled', 'Maximum number of concurrent branches reached. You can update this limit in Project Integrations Settings.')
+  ]});
+  assert.equal(output.code, 'PREVIEW_CAPACITY_EXHAUSTED');
+  assert.equal(output.terminal, true);
+  assert.equal(output.conclusion, 'cancelled');
+  assert.match(output.remediation, /Project Integrations/);
+  assert.match(output.remediation, /Do not delete another PR owner/);
+});
+
+test('current provider capacity reason cannot be upgraded to green by an older success', () => {
+  const output = diagnosePreviewCheckRuns({check_runs:[
+    check(311, 'success', 'previous provider attempt'),
+    check(312, 'skipped', 'Maximum number of concurrent preview branches reached')
+  ]});
+  assert.equal(output.id, '312');
+  assert.equal(output.code, 'PREVIEW_CAPACITY_EXHAUSTED');
+  assert.equal(output.conclusion, 'skipped');
+});
+
 test('newest Supabase-owned check remains the sole preview authority over a stale success', () => {
   const result = diagnosePreviewCheckRuns({check_runs:[
     check(208, 'success', 'Old preview success, no longer current'),

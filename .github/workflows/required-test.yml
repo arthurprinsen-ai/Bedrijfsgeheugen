@@ -195,6 +195,7 @@ jobs:
           const metadataAuthority=resolveDeliveryMetadataAuthority({
             prBody: livePrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
+            eventName: process.env.EVENT_NAME,
           });
           const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
             ? metadataAuthority.delivery.baseSha

@@ -18,12 +18,49 @@ const PAGE_HINTS=Object.freeze({
   overig:'Controleer hoe de conclusie zich verhoudt tot je doel, de brongegevens en mogelijke risico’s.'
 });
 
+// One read-only projection of the existing, tenant-scoped Powerhouse outcome chain.
+// This never schedules work, persists data, grants approvals or asserts an
+// autonomous execution on the strength of a proposal or an outcome alone.
+export function buildAutopilotEvidence(owner,heartbeat='UNKNOWN'){
+  const freshRuntime=heartbeat==='TENANT_RUNTIME_OBSERVED';
+  if(owner?.ready!==true)return Object.freeze({
+    status:'UNVERIFIED',freshRuntime,proposals:null,approvals:null,
+    outcomes:null,learned:null,autonomousExecutionVerified:false
+  });
+  const seen=new Set();
+  const proven=(Array.isArray(owner.outcomes)?owner.outcomes:[]).filter(item=>{
+    const id=String(item?.id||item?.outcome_id||'').trim();
+    if(!id||seen.has(id)
+      ||item?.evidence_health?.status!=='healthy'
+      ||!Array.isArray(item.source_refs)
+      ||!item.source_refs.some(ref=>typeof ref==='string'&&ref.trim())
+      ||!['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(String(item.verification_status||item.status||'').trim().toUpperCase()))return false;
+    seen.add(id);
+    return true;
+  });
+  const learned=proven.filter(item=>item.learning_verified===true
+    &&Array.isArray(item.learning_evidence_refs)
+    &&item.learning_evidence_refs.some(ref=>typeof ref==='string'&&ref.trim())
+    &&typeof item.next_decision_id==='string'&&item.next_decision_id.trim()).length;
+  return Object.freeze({
+    status:freshRuntime?'RUNTIME_OBSERVED':'HISTORICAL_PROOF_ONLY',
+    freshRuntime,
+    proposals:Array.isArray(owner.actions)?owner.actions.length:0,
+    approvals:Array.isArray(owner.decisions)?owner.decisions.length:0,
+    outcomes:proven.length,
+    learned,
+    // Existing operating model intentionally does not call anything
+    // autonomous unless the execution/readback chain separately proves it.
+    autonomousExecutionVerified:owner.autonomousExecutionVerified===true
+  });
+}
+
 export function buildEntrepreneurJourneyModel(state={},{
   authenticated=false,home=null,impact=null,brainReceipt=null,tenantRuntime=null,now=Date.now()
 }={}){
   if(!authenticated||!home?.authenticated)return Object.freeze({
     authenticated:false,steps:Object.freeze([]),cockpit:null,scenario:null,
-    dependencies:Object.freeze([]),brainReceipt:null,heartbeat:'UNKNOWN'
+    dependencies:Object.freeze([]),brainReceipt:null,heartbeat:'UNKNOWN',autopilot:null
   });
   const safe=state&&typeof state==='object'?state:{};
   const owner=buildOwnerOperatingModel(safe,{now});
@@ -38,6 +75,11 @@ export function buildEntrepreneurJourneyModel(state={},{
   const observation=liveRuntime?.observability;
   const updated=Date.parse(observation?.updatedAt||'');
   const currentRuntime=observation?.source==='brain-operating-loop'&&Number.isFinite(updated)&&updated<=now&&now-updated<86400000;
+  // One canonical proof contract for the journey, cockpit and autopilot. The
+  // broader OS outcome inventory can contain repeated or incomplete evidence;
+  // it must not independently claim extra customer results.
+  const autopilot=buildAutopilotEvidence(owner,currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN');
+  const verifiedOutcomes=Number.isInteger(autopilot.outcomes)?autopilot.outcomes:0;
   const dependencies=unique((Array.isArray(impact?.affectedPages)?impact.affectedPages:[]).filter(route)).slice(0,8)
     .map(id=>Object.freeze({id,label:findPage(id).label}));
   const receipt=brainReceipt?.acknowledged===true
@@ -50,9 +92,9 @@ export function buildEntrepreneurJourneyModel(state={},{
       Object.freeze({id:'goal',label:'Mijn doel',confirmed:stateConfirmed,detail:stateConfirmed?'Voorkeur vastgelegd, niet je hele bedrijfsdiagnose':'Kies een doel; andere bedrijfsgegevens blijven onveranderd'}),
       Object.freeze({id:'evidence',label:'Mijn bedrijfsgegevens',confirmed:owner.ready&&owner.proof.verified>0,detail:owner.ready?owner.proof.verified+' onderdelen met bronbewijs':'Een actuele klantgebonden Powerhouse-projectie is nog niet bewezen'}),
       Object.freeze({id:'decision',label:'Mijn vervolgstap',confirmed:home.next.kind==='verified-proposal',detail:home.next.kind==='verified-proposal'?'Onderbouwd voorstel, uitvoering vraagt eigen bewijs':'Begeleidingsstap; geen gerealiseerd financieel effect'}),
-      Object.freeze({id:'outcome',label:'Gemeten resultaat',confirmed:owner.outcomes.length>0,detail:owner.outcomes.length?owner.outcomes.length+' brongeverifieerde uitkomsten':'Nog geen gerealiseerde uitkomst met voldoende bewijs'})
+      Object.freeze({id:'outcome',label:'Gemeten resultaat',confirmed:verifiedOutcomes>0,detail:verifiedOutcomes?verifiedOutcomes+' uniek brongeverifieerd(e) resultaat/resultaten':'Nog geen gerealiseerde uitkomst met voldoende bewijs'})
     ]),
-    cockpit:Object.freeze({ready:owner.ready,actions:owner.counts.acties,verified:owner.proof.verified,outcomes:owner.counts.uitkomsten}),
+    cockpit:Object.freeze({ready:owner.ready,actions:owner.counts.acties,verified:owner.proof.verified,outcomes:verifiedOutcomes}),
     scenario:Object.freeze({
       id:metric,history:chosen?.history?.length||0,sourceRefs:verifiedSeries,
       available:Boolean(chosen?.forecast),quality:chosen?.quality||'INSUFFICIENT_HISTORY',
@@ -60,7 +102,8 @@ export function buildEntrepreneurJourneyModel(state={},{
         'Geen verantwoorde trend: minimaal 3 recente metingen over 14 dagen zijn nodig'
     }),
     dependencies:Object.freeze(dependencies),brainReceipt:receipt,
-    heartbeat:currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN'
+    heartbeat:currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN',
+    autopilot
   });
 }
 

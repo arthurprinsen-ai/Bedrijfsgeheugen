@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { planConcurrentAgentWork, buildResumableCheckpoint } from '../tools/delivery/predictive-controller.mjs';
+import { planConcurrentAgentWork, buildResumableCheckpoint, assessQueuePressure } from '../tools/delivery/predictive-controller.mjs';
 
 test('same obligation parks behind canonical writer but continues independent work',()=>{
  const r=planConcurrentAgentWork({obligationId:'O1',currentHead:'h2',currentMain:'m1',activeCandidates:[{obligationId:'O1',headSha:'h1',active:true}],queue:{inProgress:1},projectedNewRuns:1});
@@ -47,4 +47,36 @@ test('complete scheduler governance bundle stays off portal and website lanes', 
     policy
   });
   assert.deepEqual(plan.lanes.map(l=>l.id),['automation','backend']);
+});
+
+test('CI capacity fails closed on invalid provider counts instead of treating them as free capacity',()=>{
+  for(const key of ['queued','inProgress','pending','waiting','requested','projectedNewRuns']){
+    for(const bad of [null,'4','unavailable',-1,1.5,Infinity,NaN]){
+      const observed=assessQueuePressure({[key]:bad});
+      assert.equal(observed.state,'PROVIDER_QUEUE_SNAPSHOT_INCONSISTENT',key+': '+String(bad));
+      assert.equal(observed.allowOptionalDispatch,false,key+': '+String(bad));
+      assert.equal(observed.counts[key],0,key+': '+String(bad));
+      assert.deepEqual(observed.invalidCountKeys,[key]);
+      assert.equal(observed.queueSnapshotInconsistent,true);
+    }
+  }
+});
+
+test('malformed provider queue numbers block agent candidate mutation but preserve independent read-only work',()=>{
+  const plan=planConcurrentAgentWork({
+    obligationId:'queue-evidence-cas',currentHead:'h1',currentMain:'m1',
+    queue:{queued:'not available',inProgress:2},projectedNewRuns:1
+  });
+  assert.equal(plan.state,'BATCH_BEFORE_MUTATION');
+  assert.equal(plan.canMutateCandidate,false);
+  assert.equal(plan.canContinueIndependentWork,true);
+  assert.deepEqual(plan.pressure.invalidCountKeys,['queued']);
+});
+
+test('valid integer queue readings retain the existing bounded single-flight capacity decision',()=>{
+  const observed=assessQueuePressure({queued:1,inProgress:2,pending:1,projectedNewRuns:1});
+  assert.equal(observed.state,'HEALTHY');
+  assert.equal(observed.allowOptionalDispatch,true);
+  assert.deepEqual(observed.invalidCountKeys,[]);
+  assert.equal(observed.counts.rawQueued,1);
 });

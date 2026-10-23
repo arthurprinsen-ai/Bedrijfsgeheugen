@@ -27,6 +27,8 @@ concurrency:
 
 jobs:
   janitor:
+    # GitHub 2026 cache-token least privilege: this privileged Janitor never uses Actions caches.
+    cache-mode: none
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -59,7 +61,7 @@ jobs:
             let uniqueCommits=true;
             let compareEvidence={status:'UNPROVEN'};
             try {
-              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/main...${pr.head.sha}`);
+              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/${process.env.GITHUB_SHA}...${pr.head.sha}`);
               uniqueCommits=Number(compare.ahead_by || 0) > 0;
               compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
             } catch (error) {
@@ -80,6 +82,7 @@ jobs:
           const evidence={
             observed_at:new Date().toISOString(),
             repository:process.env.GITHUB_REPOSITORY,
+            main_epoch_sha:process.env.GITHUB_SHA,
             open_pr_count:candidates.length,
             candidates:candidates.map(({number,headSha,uniqueCommits,compareEvidence})=>({number,headSha,uniqueCommits,compareEvidence})),
             ...plan,
@@ -87,6 +90,10 @@ jobs:
           await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
           console.log(JSON.stringify(evidence,null,2));
           NODE
+      - name: Diagnose read-only merge freshness from existing Janitor snapshot
+        if: always()
+        continue-on-error: true
+        run: node tools/delivery/ci-merge-freshness.mjs
       - name: Apply deterministic safe PR cleanup
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
@@ -320,6 +327,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node tools/delivery/ci-throughput-telemetry.mjs
+      - name: Observe actual Recovery Supervisor runs and repeated drift in existing Janitor
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/recovery-supervisor-telemetry.mjs
+      - name: Derive read-only repeated CI job priorities for existing agents
+        if: always()
+        continue-on-error: true
+        run: node tools/delivery/ci-agent-priorities.mjs
+      - name: Recover missed daily self-evolution using existing hourly Janitor
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUESTED_MODE: ${{ github.event.inputs.mode }}
+        run: node tools/delivery/daily-learning-liveness-recovery.mjs
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -330,4 +353,8 @@ jobs:
             .artifacts/janitor-runtime-actions.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
+            .artifacts/powerhouse-ci-agent-priorities.json
+            .artifacts/powerhouse-supervisor-execution-evidence.json
+            .artifacts/powerhouse-merge-freshness.json
+            .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error

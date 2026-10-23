@@ -207,3 +207,9 @@ Fingerprint: `delivery|netlify|brain-operating-loop-import-deployment-misclassif
 ## Brain runtime cannot skip existing authenticated production readback (22 October 2026)
 
 Fingerprint: `delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1`. A successful exact Netlify deployment of `brain/operating-loop/` is not sufficient proof that authenticated tenant Brain outcomes work. Existing `.github/workflows/production-release-readback.yml` must run its **same** authenticated Portal production proof after successful exact deploy for changes to this imported source, its Netlify entrypoint or handler; missing/invalid provider or tenant proof stays red. Reuse `tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs`, canonical Brain learning, development ledger and System Map. Never add a second scheduler, parallel proof endpoint, cross-tenant token or synthetic receipt. A fully signed-in two-tenant readback remains a separate obligation.
+
+## 23 oktober 2026 — interne cockpit claimt nooit uitkomst zonder bewijs
+
+Fingerprint: `portal|control-plane|fulfilled-without-outcome-proof|20261023-v1`; eigenaar [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198).
+
+Het bestaande portaal projecteert read-only de canonieke /api/powerhouse-control-plane. Een obligation met `current_state=FULFILLED` is géén bewezen uitkomst wanneer `outcome_verified !== true`. Markeer die rood, toon uitkomst onbewezen en label de aggregate teller 'Geclaimd afgerond'. Een string 'true', workflowgroen, zero red_evidence_count of migration_readback zijn onvoldoende. Een echte boolean true uit dezelfde geauthenticeerde backend is noodzakelijk voor groen. De regressietest `portal-v2/tests/control-plane-cockpit.test.mjs` draait ook in de bestaande dagelijkse Universal Closed-loop Learning, zonder extra cron of second Brain. Vereist beschermd GitHub- en productie-readback; premerge nooit LIVE_BEWEZEN claimen.

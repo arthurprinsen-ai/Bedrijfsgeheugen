@@ -1,0 +1,40 @@
+{
+  "type": "QUALITY_IMPROVEMENT_CANDIDATE",
+  "date": "2026-10-23",
+  "fingerprint": "portal|quality-report|self-claimed-evidence-not-provider-proof|20261023-v1",
+  "failure_class": "UI_SELF_ATTESTED_PROOF_PROMOTION",
+  "root_cause": "Client readback source booleans and allowed HTTPS URLs were incorrectly presented as independently verified customer outcomes or proven agent knowledge.",
+  "prevention_rule": "Never promote a client/server data claim solely from PROVEN/VERIFIED flags and URL syntax; demand independent provider/tenant reconciliation and record its separately verified readback.",
+  "status": "CANDIDATE_NOT_LIVE",
+  "owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+  "related": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4761",
+  "tests": [
+    "tests/brain-agent-intelligence-analytics.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "UI_SELF_ATTESTED_PROOF_PROMOTION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "invariants": [
+      "safe URL is not independent attestation",
+      "source claims remain visible",
+      "no fabricated customer outcomes",
+      "no new scheduler or source authority"
+    ]
+  },
+  "customerValueVerified": false,
+  "providerDeploymentVerified": false
+}
