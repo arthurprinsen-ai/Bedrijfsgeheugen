@@ -27,5 +27,12 @@
       "No CI/CodeQL/production release gate relaxation"
     ]
   },
-  "next_action": "Exact-head protected Required and CodeQL, protected merge and next actual Main Write Integrity provider readback."
+  "next_action": "Exact-head protected Required and CodeQL, protected merge and next actual Main Write Integrity provider readback.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  }
 }
