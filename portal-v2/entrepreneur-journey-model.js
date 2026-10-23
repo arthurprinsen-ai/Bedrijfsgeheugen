@@ -27,11 +27,17 @@ export function buildAutopilotEvidence(owner,heartbeat='UNKNOWN'){
     status:'UNVERIFIED',freshRuntime,proposals:null,approvals:null,
     outcomes:null,learned:null,autonomousExecutionVerified:false
   });
-  const proven=(Array.isArray(owner.outcomes)?owner.outcomes:[]).filter(item=>
-    item?.evidence_health?.status==='healthy'
-    &&Array.isArray(item.source_refs)&&item.source_refs.some(ref=>typeof ref==='string'&&ref.trim())
-    &&['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(String(item.verification_status||item.status||'').trim().toUpperCase())
-  );
+  const seen=new Set();
+  const proven=(Array.isArray(owner.outcomes)?owner.outcomes:[]).filter(item=>{
+    const id=String(item?.id||item?.outcome_id||'').trim();
+    if(!id||seen.has(id)
+      ||item?.evidence_health?.status!=='healthy'
+      ||!Array.isArray(item.source_refs)
+      ||!item.source_refs.some(ref=>typeof ref==='string'&&ref.trim())
+      ||!['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(String(item.verification_status||item.status||'').trim().toUpperCase()))return false;
+    seen.add(id);
+    return true;
+  });
   const learned=proven.filter(item=>item.learning_verified===true
     &&Array.isArray(item.learning_evidence_refs)
     &&item.learning_evidence_refs.some(ref=>typeof ref==='string'&&ref.trim())
