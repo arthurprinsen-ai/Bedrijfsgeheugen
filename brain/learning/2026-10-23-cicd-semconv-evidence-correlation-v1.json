@@ -28,5 +28,17 @@
   "reference_urls": [
     "https://opentelemetry.io/docs/specs/semconv/cicd/cicd-spans/",
     "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
