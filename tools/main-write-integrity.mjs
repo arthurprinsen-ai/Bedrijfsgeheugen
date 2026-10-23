@@ -74,14 +74,14 @@ function isProviderRateLimited(error) {
 export async function resolveMainWriteAssociatedPullRequests({
   repository, headSha, commitSubject, githubRead, sleep = ms => new Promise(resolve => setTimeout(resolve, ms)),
 } = {}) {
-  if (!/^[A-Za-z0-9_.-]+\\/[A-Za-z0-9_.-]+$/.test(repository ?? '') ||
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository ?? '') ||
       !/^[0-9a-f]{40}$/.test(headSha ?? '') ||
       typeof githubRead !== 'function') {
     return { associatedPullRequests: undefined, source: 'INVALID_PROVENANCE_INPUT', attempts: 0 };
   }
   let attempts = 0;
   const idText = typeof commitSubject === 'string'
-    ? /\\(#([1-9][0-9]{0,8})\\)\\s*$/.exec(commitSubject)?.[1] : null;
+    ? /\(#([1-9][0-9]{0,8})\)\s*$/.exec(commitSubject)?.[1] : null;
   const id = idText ? Number(idText) : null;
   if (id !== null) {
     attempts++;
