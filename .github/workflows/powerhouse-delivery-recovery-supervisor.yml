@@ -5,8 +5,10 @@ on:
   # Recovery is scheduled/manual only. A main push must never fan out into
   # another repository-wide recovery scan.
   workflow_dispatch:
+  # Shift identical five-minute cadence off the hour's overloaded minute zero.
+  # One existing owner: do not introduce a second scheduler or workflow.
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '2-57/5 * * * *'
 
 permissions:
   contents: write
@@ -28,7 +30,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify recovery controller
-        run: node --test tests/delivery-powerhouse-supervisor.test.mjs
+        run: node --test tests/delivery-powerhouse-supervisor.test.mjs tests/delivery-recovery-pr-prioritizer.test.mjs
       - name: Recover exact-head canonical Required gate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -184,6 +186,21 @@ jobs:
             exit 0
           fi
           gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          # One bounded evidence read; sorting is advisory only. Every PR still
+          # traverses the original live merge, lease, overlap and GitHub CAS gates.
+          # On provider failure or malformed evidence retain the original order.
+          if gh api "repos/$repo/actions/workflows/required-test.yml/runs?per_page=100" > /tmp/recovery-required-runs.json; then
+            if node tools/delivery/recovery-pr-prioritizer.mjs \
+                /tmp/open-prs.json /tmp/recovery-required-runs.json \
+                "$current_main_sha" /tmp/open-prs-ranked.json; then
+              mv /tmp/open-prs-ranked.json /tmp/open-prs.json
+              echo "::notice::RECOVERY_PR_ORDERED_BY_BOUNDED_REQUIRED_EVIDENCE"
+            else
+              echo "::warning::RECOVERY_PRIORITY_EVIDENCE_UNAVAILABLE:original-provider-order-preserved"
+            fi
+          else
+            echo "::warning::RECOVERY_PRIORITY_PROVIDER_READ_FAILED:original-provider-order-preserved"
+          fi
           recovered_prs=0
           while read -r pr; do
             if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then

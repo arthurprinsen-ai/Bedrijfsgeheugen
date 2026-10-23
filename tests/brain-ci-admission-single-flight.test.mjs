@@ -7,7 +7,7 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   const yml = await readFile('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.doesNotMatch(yml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
   assert.match(yml,/workflow_dispatch:/);
-  assert.match(yml,/cron:\s*'\*\/5 \* \* \* \*'/);
+  assert.match(yml,/cron:\s*'2-57\/5 \* \* \* \*'/);
   assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'12'/);
   assert.match(yml,/RECOVERY_PR_BUDGET:\s*'1'/);
   assert.match(yml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);

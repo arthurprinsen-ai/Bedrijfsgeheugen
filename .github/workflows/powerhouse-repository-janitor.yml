@@ -327,6 +327,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node tools/delivery/ci-throughput-telemetry.mjs
+      - name: Observe actual Recovery Supervisor runs and repeated drift in existing Janitor
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/recovery-supervisor-telemetry.mjs
       - name: Derive read-only repeated CI job priorities for existing agents
         if: always()
         continue-on-error: true
@@ -348,6 +354,7 @@ jobs:
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
             .artifacts/powerhouse-ci-agent-priorities.json
+            .artifacts/powerhouse-supervisor-execution-evidence.json
             .artifacts/powerhouse-merge-freshness.json
             .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error
