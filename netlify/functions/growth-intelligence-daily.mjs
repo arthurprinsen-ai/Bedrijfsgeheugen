@@ -7,8 +7,15 @@ const slug=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/
 const n=v=>Number.isFinite(Number(v))?Number(v):0;
 const uniq=a=>[...new Set((a||[]).filter(Boolean).map(String))];
 
-function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL_LEARNING_SUPABASE_URL||process.env.BG_PORTAL_EU_SUPABASE_URL,token=process.env.BG_SOCIAL_LEARNING_SERVICE_TOKEN||process.env.BG_PORTAL_EU_SERVICE_ROLE_TOKEN}={}){
+function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL_LEARNING_SUPABASE_URL||process.env.BG_PORTAL_EU_SUPABASE_URL,token=process.env.BG_SOCIAL_LEARNING_SERVICE_TOKEN||process.env.BG_PORTAL_EU_SERVICE_ROLE_TOKEN||process.env.SUPABASE_SERVICE_ROLE_KEY}={}){
   if(!fetchFn||!baseUrl||!token)throw new Error('growth intelligence store configuration missing');
+  // Existing Netlify service-role fallback must belong to this exact Supabase project.
+  // Never send privileged credentials to a mismatched PostgREST host.
+  if(token===process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_SERVICE_ROLE_KEY){
+    let claim;try{claim=JSON.parse(Buffer.from(String(token).split('.')[1]||'', 'base64url').toString('utf8'));}catch{throw new Error('GROWTH_STORE_SERVICE_ROLE_JWT_INVALID');}
+    const host=new URL(baseUrl).hostname;const project=host.endsWith('.supabase.co')?host.split('.')[0]:null;
+    if(!project||claim.ref!==project||claim.role!=='service_role')throw new Error('GROWTH_STORE_SERVICE_ROLE_PROJECT_MISMATCH');
+  }
   const root=String(baseUrl).replace(/\/$/,'')+'/rest/v1';
   const headers={apikey:token,authorization:`Bearer ${token}`,'content-type':'application/json'};
   async function call(path,init={}){const r=await fetchFn(root+path,{...init,headers:{...headers,...(init.headers||{})}});const text=await r.text();if(!r.ok)throw new Error(`growth intelligence store ${r.status}: ${text.slice(0,300)}`);return text?JSON.parse(text):null;}
