@@ -337,6 +337,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUESTED_MODE: ${{ github.event.inputs.mode }}
         run: node tools/delivery/daily-learning-liveness-recovery.mjs
+      - name: Observe native supervisor drift in existing hourly Janitor
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/recovery-supervisor-telemetry.mjs
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -346,6 +352,7 @@ jobs:
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
             .artifacts/github-actions-ghost-reconcile.json
+            .artifacts/powerhouse-supervisor-drift-observation.json
             .artifacts/powerhouse-ci-throughput.json
             .artifacts/powerhouse-ci-agent-priorities.json
             .artifacts/powerhouse-merge-freshness.json

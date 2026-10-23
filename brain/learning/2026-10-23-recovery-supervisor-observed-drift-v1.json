@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|recovery-supervisor|drift-evidence-not-measured-across-runs|20261023-v1",
+  "obligation_id": "github|recovery-supervisor|observed-repeated-drift-in-existing-janitor|20261023-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "CI",
+  "root_cause": "Native CAS recovery was protected and merged, but supervisor repeated drift, missing writer leases and recovery-effect trends stayed in ephemeral log lines; run success did not demonstrate repaired PRs.",
+  "fix": "Project at most two actual completed supervisor job logs per hourly pre-existing Janitor cycle into a bounded, source-linked artifact; count repeated PR drift only across two independent run IDs and preserve provider gaps.",
+  "prevention_rule": "Never infer zero drift or a healed PR from a successful supervisor workflow or missing provider log. Keep the single writer, expected-head CAS, bounded attempts, protected CI, and one scheduler per existing owner.",
+  "evidence": {
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "reference_protected_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4781",
+    "historical_drift_events": 49,
+    "missing_exact_terminal_lease_events": 58,
+    "customer_outcomes_verified": false,
+    "production_artifact": null
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-observed-telemetry.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-recovery-supervisor-observed-telemetry.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-supervisor-observed-telemetry.test.mjs"
+    ],
+    "metrics": [
+      "repeated_drift_pr_count",
+      "missing_lease_events",
+      "sync_reconciled_events",
+      "budget_exhaustion_events",
+      "provider_log_incomplete_count"
+    ],
+    "invariants": [
+      "No new scheduled job, code writer, issue register or Supabase table",
+      "Read only provider-authoritative actual run logs",
+      "Never call 202 an accepted merge completion or infer customer value",
+      "Partial logs never become zero drift"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "next_decision": "Run protected exact-head CI, release via auto-merge and independently verify the first existing Janitor evidence artifact."
+}
