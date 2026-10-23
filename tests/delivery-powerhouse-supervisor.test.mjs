@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {assessQueuePressure,partitionVerifiedProviderGhostQueue,classifyRecovery,criticalWorkflowCoverage,latestCriticalWorkflowRuns,planConcurrentAgentWork} from '../tools/delivery/predictive-controller.mjs';
+import {assessQueuePressure,partitionVerifiedProviderGhostQueue,classifyRecovery,criticalWorkflowCoverage,latestCriticalWorkflowRuns,planConcurrentAgentWork,classifyDeliveryImpact} from '../tools/delivery/predictive-controller.mjs';
 
 test('zero-run head becomes recoverable after first-signal SLO',()=>{
   const r=classifyRecovery({workflowRuns:[],headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')});
@@ -337,4 +337,36 @@ test('response total mismatch and omitted exact-ID ghosts block falsely healthy 
       ...common,queuedRuns:[],rawTotalCount:0
     }}});
   assert.equal(plan.canMutateCandidate,false);
+});
+
+test('cross-lane early preflight: CMS implies website, without skipping protected checks',()=>{
+  const r=classifyDeliveryImpact(['cms/story.md']);
+  assert.deepEqual(r.lanes,['website','cms']);
+  assert.deepEqual(r.crossLaneContracts,['cms-to-website']);
+  assert.equal(r.maySkipProtectedChecks,false);
+  assert.deepEqual(r.mandatoryProtectedChecks,['hygiene / admission','test','CodeQL javascript-typescript']);
+});
+test('cross-lane early preflight: shared Brain contracts propagate to consumers',()=>{
+  const r=classifyDeliveryImpact(['brain/contracts/identity.json','brain/contracts/identity.json']);
+  assert.deepEqual(r.lanes,['portal','one-brain','powerhouse','heartbeat']);
+  assert.deepEqual(r.crossLaneContracts,['brain-contract-to-consumers']);
+});
+test('cross-lane early preflight: Supabase migration propagates, website can stay narrow',()=>{
+  assert.deepEqual(classifyDeliveryImpact(['supabase/migrations/20261023_identity.sql']).lanes,
+    ['backend-supabase','portal','one-brain','heartbeat']);
+  assert.deepEqual(classifyDeliveryImpact(['src/home.tsx']).lanes,['website']);
+});
+test('cross-lane early preflight: unknown paths and traversal force broad coverage',()=>{
+  for(const paths of [[],['package.json'],['../secret'],['/absolute']]){
+    const r=classifyDeliveryImpact(paths);
+    assert.equal(r.preflightMode,'FULL_CROSS_LANE_PREFLIGHT');
+    assert.deepEqual(r.lanes,['website','backend-supabase','portal','cms','one-brain','powerhouse','heartbeat']);
+    assert.equal(r.maySkipProtectedChecks,false);
+  }
+});
+test('cross-lane impact remains available for queue-held agent work',()=>{
+  assert.deepEqual(planConcurrentAgentWork({changedPaths:['src/home.tsx']}).deliveryImpact.lanes,['website']);
+  const held=planConcurrentAgentWork({changedPaths:['cms/story.md'],queue:{queued:20}});
+  assert.equal(held.state,'BATCH_BEFORE_MUTATION');
+  assert.deepEqual(held.deliveryImpact.lanes,['website','cms']);
 });

@@ -40,6 +40,20 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'governance',label:'Trust, security & compliance',purpose:'Auth, RLS, admin boundaries, AI governance, evidence coverage and controls'}),
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
+  agentCrossLaneImpact:Object.freeze({
+    fingerprint:'delivery|predictive-lane-capacity|cross-domain-impact|20261023-v1',
+    owner:'existing Powerhouse predictive delivery controller / issue #4661',
+    source:'tools/delivery/predictive-controller.mjs',
+    consumer:'planConcurrentAgentWork',
+    model:'advisory early preflight, no mandatory protected gate changes',
+    crossContracts:Object.freeze(['cms-to-website','brain-contract-to-consumers','schema-to-runtime-consumers']),
+    unknownPathPolicy:'FULL_CROSS_LANE_PREFLIGHT',
+    requiredChecksCannotBeSkipped:true,
+    noNewScheduler:true,noSecondWriter:true,
+    regression:'tests/delivery-powerhouse-supervisor.test.mjs',
+    learning:'brain/learning/2026-10-23-agent-crosslane-impact-v1.json',
+    productionVerified:false
+  }),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
       id:'github-failed-gate-same-owner-recovery-v1',

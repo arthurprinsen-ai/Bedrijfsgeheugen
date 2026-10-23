@@ -179,6 +179,72 @@ export function classifyRecovery({mergeable=true,behindBy=0,workflowRuns=[],head
 }
 
 
+
+// Advisory preflight impact only. This does not change mandatory exact-head,
+// security, provider, tenant or production release checks.
+export const DELIVERY_LANES=Object.freeze(['website','backend-supabase','portal','cms','one-brain','powerhouse','heartbeat']);
+export function classifyDeliveryImpact(changedPaths=[]){
+  const lanes=new Set(),crossLaneContracts=new Set(),unknownPaths=[];
+  const paths=Array.isArray(changedPaths)?[...new Set(changedPaths.map(String))]:[];
+  for(const original of paths){
+    const path=original.trim().replaceAll('\\','/').replace(/^\.\//,'').toLowerCase();
+    if(!path||path.startsWith('/')||path==='..'||path.startsWith('../')||path.includes('/../')){
+      unknownPaths.push(original);continue;
+    }
+    let recognized=false;
+    const add=(...xs)=>{xs.forEach(x=>lanes.add(x));recognized=true;};
+    if(/^(cms\/|content\/|blog\/|posts\/|scripts\/(blog|content)\/)/.test(path)){
+      add('cms','website');crossLaneContracts.add('cms-to-website');
+    }
+    if(/^(website\/|site\/|src\/|pages\/|styles\/|public\/)/.test(path))add('website');
+    if(/^netlify\//.test(path)||path==='netlify.toml'){
+      add('website');
+      if(/^netlify\/functions\//.test(path)){
+        add('portal','one-brain');crossLaneContracts.add('serverless-to-portal-brain');
+      }
+    }
+    if(/^supabase\//.test(path)){
+      add('backend-supabase');
+      if(/^supabase\/migrations\//.test(path)){
+        add('one-brain','portal','heartbeat');crossLaneContracts.add('schema-to-runtime-consumers');
+      }
+    }
+    if(/^(portal\/|portal-next\/|portal-v2\/)/.test(path))add('portal');
+    if(/^(brain\/|scripts\/brain\/)/.test(path)){
+      add('one-brain');
+      if(/^brain\/contracts\//.test(path)){
+        add('powerhouse','portal','heartbeat');crossLaneContracts.add('brain-contract-to-consumers');
+      }
+    }
+    if(/^(\.github\/|tools\/delivery\/|tools\/ci\/|\.agents\/|platform\/system-map\/|docs\/)/.test(path)||path==='agents.md'||path==='readme.md'){
+      add('powerhouse');
+      if(path.includes('heartbeat'))add('heartbeat');
+    }
+    if(/^(heartbeat\/|tools\/heartbeat\/)/.test(path))add('heartbeat');
+    if(/^tests\//.test(path)){
+      if(/^tests\/(delivery|powerhouse|github|ci)[/-]/.test(path))add('powerhouse');
+      else if(/^tests\/(brain|one-brain)[/-]/.test(path))add('one-brain');
+      else if(/^tests\/portal[/-]/.test(path))add('portal');
+      else if(/^tests\/(cms|blog|content)[/-]/.test(path)){
+        add('cms','website');crossLaneContracts.add('cms-to-website');
+      }
+      else if(/^tests\/(supabase|sql)[/-]/.test(path))add('backend-supabase');
+      else{add(...DELIVERY_LANES);crossLaneContracts.add('unscoped-test-impact');}
+    }
+    if(!recognized)unknownPaths.push(original);
+  }
+  if(!paths.length)unknownPaths.push('<missing changed paths>');
+  if(unknownPaths.length)DELIVERY_LANES.forEach(l=>lanes.add(l));
+  return Object.freeze({
+    lanes:Object.freeze(DELIVERY_LANES.filter(l=>lanes.has(l))),
+    crossLaneContracts:Object.freeze([...crossLaneContracts].sort()),
+    unknownPaths:Object.freeze(unknownPaths),
+    preflightMode:unknownPaths.length?'FULL_CROSS_LANE_PREFLIGHT':'TARGETED_EARLY_PREFLIGHT',
+    mandatoryProtectedChecks:Object.freeze(['hygiene / admission','test','CodeQL javascript-typescript']),
+    maySkipProtectedChecks:false
+  });
+}
+
 export const AGENT_DELIVERY_DEFAULTS = Object.freeze({
   maxParallelNonConflicting: 6,
   terminalWritersPerObligation: 1,
@@ -208,6 +274,7 @@ export function planConcurrentAgentWork({
   limits=AGENT_DELIVERY_DEFAULTS
 }={}){
   const pressure=assessQueuePressure({...queue,projectedNewRuns});
+  const deliveryImpact=classifyDeliveryImpact(changedPaths);
   const normalizedHead=String(currentHead||'').trim().toLowerCase();
   const normalizedMain=String(currentMain||'').trim().toLowerCase();
   const normalizedCaptured=String(capturedMainEpoch||'').trim().toLowerCase();
@@ -227,7 +294,7 @@ export function planConcurrentAgentWork({
           : 'DO_NOT_REWRITE_TERMINAL_CANDIDATE',
       canMutateCandidate:false,
       canContinueIndependentWork:true,
-      pressure,
+      pressure,deliveryImpact,
       reason:staleLeaseHead?'TERMINAL_LEASE_HEAD_DRIFT':staleLeaseMain?'TERMINAL_LEASE_MAIN_EPOCH_DRIFT':'TERMINAL_LEASE_BRANCH_IMMUTABLE'
     });
   }
@@ -238,7 +305,7 @@ export function planConcurrentAgentWork({
       action:'REVALIDATE_ZERO_OVERLAP_AND_SYNC_EXISTING_CANDIDATE',
       canMutateCandidate:false,
       canContinueIndependentWork:true,
-      pressure,
+      pressure,deliveryImpact,
       reason:'CAPTURED_MAIN_EPOCH_STALE'
     });
   }
@@ -261,32 +328,32 @@ export function planConcurrentAgentWork({
     state:'PARK_BEHIND_CANONICAL_WRITER',
     action:'CHECKPOINT_AND_CONTINUE_NONCONFLICTING_WORK',
     canMutateCandidate:false,canContinueIndependentWork:true,
-    canonicalWriter:competingWriter,pressure,reason:'ONE_OBLIGATION_ONE_ACTIVE_WRITER'
+    canonicalWriter:competingWriter,pressure,deliveryImpact,reason:'ONE_OBLIGATION_ONE_ACTIVE_WRITER'
   });
   if(terminalIntent && conflicts.length) return Object.freeze({
     state:'SERIALIZE_TERMINAL_LANDING',
     action:'CHECKPOINT_AND_WAIT_FOR_CONFLICTING_LANDING_WHILE_CONTINUING_INDEPENDENT_WORK',
     canMutateCandidate:false,canContinueIndependentWork:true,
-    conflicts,pressure,reason:'OVERLAPPING_TERMINAL_RESOURCE'
+    conflicts,pressure,deliveryImpact,reason:'OVERLAPPING_TERMINAL_RESOURCE'
   });
   if(pressure.state==='CIRCUIT_OPEN'||pressure.state==='PROJECTED_OVERLOAD'||pressure.state==='PROVIDER_QUEUE_SNAPSHOT_INCONSISTENT') return Object.freeze({
     state:'BATCH_BEFORE_MUTATION',
     action:'REDUCE_FANOUT_REUSE_ACTIVE_RUNS_AND_CONTINUE_LOCAL_WORK',
     canMutateCandidate:false,canContinueIndependentWork:true,
-    pressure,reason:'PREDICTED_QUEUE_OVERLOAD'
+    pressure,deliveryImpact,reason:'PREDICTED_QUEUE_OVERLOAD'
   });
   const parallelActive=activeCandidates.filter(candidate=>candidate.active!==false).length;
   if(parallelActive>=limits.maxParallelNonConflicting) return Object.freeze({
     state:'PARALLEL_BUDGET_FULL',
     action:'CHECKPOINT_AND_CONTINUE_NONMUTATING_WORK',
     canMutateCandidate:false,canContinueIndependentWork:true,
-    pressure,reason:'PARALLEL_AGENT_BUDGET'
+    pressure,deliveryImpact,reason:'PARALLEL_AGENT_BUDGET'
   });
   return Object.freeze({
     state:'BUILD_PARALLEL',
     action:'MUTATE_OWN_CANDIDATE_AND_REUSE_SINGLE_FLIGHT_CI',
     canMutateCandidate:true,canContinueIndependentWork:true,
-    pressure,currentMain,reason:'NO_CONFLICT_AND_CAPACITY_AVAILABLE'
+    pressure,deliveryImpact,currentMain,reason:'NO_CONFLICT_AND_CAPACITY_AVAILABLE'
   });
 }
 
