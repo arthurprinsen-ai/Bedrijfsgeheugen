@@ -54,5 +54,5 @@ test('daily CRO runs inside incumbent scheduled Netlify function with exact-proj
   assert.match(fn,/SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(fn,/GROWTH_STORE_SERVICE_ROLE_PROJECT_MISMATCH/);
   assert.match(fn,/planDailyConversion/);
-  assert.match(fn,/cro_live_changes_verified:0/);
+  assert.match(fn,/cro_live_changes_verified:null/);
 });
