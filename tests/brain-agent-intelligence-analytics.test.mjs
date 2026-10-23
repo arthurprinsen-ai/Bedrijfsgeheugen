@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { deriveLearningTelemetry, agentIntelligenceMarkup } from '../portal-v2/modules/agent-intelligence-analytics.js';
+import { deriveLearningTelemetry, agentIntelligenceMarkup, deriveQualityReport, qualityReportMarkup } from '../portal-v2/modules/agent-intelligence-analytics.js';
 
 const now=Date.parse('2026-10-23T11:00:00Z');
 const events=[
@@ -68,4 +68,59 @@ test('future or out-of-period observations cannot inflate measured learning',()=
  assert.equal(result.observed,0);
  assert.equal(result.learningSignals,0);
  assert.equal(result.sourceRows.filter(row=>row.observations).length,0);
+});
+
+
+test('quality report is fail-closed for missing evidence and does not fabricate DORA scores',()=>{
+ const report=deriveQualityReport({events:[],runtime:{},now});
+ assert.equal(report.observedEvents,0);
+ assert.equal(report.verifiedCustomerOutcomes,0);
+ assert.equal(report.rows.find(x=>x.id==='delivery').status,'ONBEKEND');
+ assert.equal(report.rows.find(x=>x.id==='outcomes').status,'NIET BEWEZEN');
+ const html=qualityReportMarkup({events:[],runtime:{},now});
+ assert.match(html,/KWALITEITSRAPPORT/);
+ assert.match(html,/NIET BEWEZEN/);
+ assert.doesNotMatch(html,/100% geslaagd|€100.000 gerealiseerd|alles groen/);
+});
+
+test('quality report deduplicates incidents and never equates CI events to production',()=>{
+ const report=deriveQualityReport({events,now});
+ assert.equal(report.observedEvents,2);
+ assert.equal(report.failures,1);
+ assert.equal(report.rows.find(x=>x.id==='delivery').status,'AANDACHT');
+ assert.equal(report.rows.find(x=>x.id==='incidents').count,1);
+ assert.equal(report.rows.find(x=>x.id==='outcomes').count,0);
+});
+
+test('customer outcomes require unique tenant, production and learning evidence',()=>{
+ const runtime={customerOutcomes:{items:[
+   {outcomeId:'x',tenantVerified:true,productionVerified:true,learningVerified:true,
+    proofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747',
+    learningProofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+    verificationStatus:'VERIFIED'},
+   {outcomeId:'x',tenantVerified:true,productionVerified:true,learningVerified:true,
+    proofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747',
+    learningProofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+    verificationStatus:'VERIFIED'},
+   {outcomeId:'y',tenantVerified:true,productionVerified:false,learningVerified:true,
+    proofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747',
+    learningProofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+    verificationStatus:'VERIFIED'},
+   {outcomeId:'z',tenantVerified:true,productionVerified:true,learningVerified:true,
+    proofRef:'javascript:alert(1)',learningProofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+    verificationStatus:'VERIFIED'}
+ ]}};
+ const report=deriveQualityReport({runtime,now});
+ assert.equal(report.verifiedCustomerOutcomes,1);
+ assert.equal(report.rows.find(x=>x.id==='outcomes').status,'BEWIJS GEKOPPELD');
+});
+
+test('trace ID observation is not a trace grade and markup escapes risky content',()=>{
+ const report=deriveQualityReport({events:[{id:'t',occurredAt:'2026-10-23T10:00:00Z',
+   traceId:'<script>alert(1)</script>',source:'GitHub',status:'SUCCESS'}],now});
+ assert.equal(report.rows.find(x=>x.id==='agents').status,'TRACE WAARGENOMEN');
+ const markup=qualityReportMarkup({events:[{id:'t',occurredAt:'2026-10-23T10:00:00Z',
+   traceId:'<script>alert(1)</script>',source:'GitHub',status:'SUCCESS'}],now});
+ assert.equal(markup.includes('alert(1)'),false,'untrusted trace payload must never be reflected in report HTML');
+ assert.match(markup,/geen onafhankelijke trace-grade/);
 });
