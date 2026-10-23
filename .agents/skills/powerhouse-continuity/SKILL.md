@@ -5,6 +5,11 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Adaptive minimum-sufficient CI telemetry — 23 oktober 2026
+
+Bestaande Janitor run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) bevestigde 17/20 geldige jobs in de oorspronkelijke 12-run sample. Onder het bestaande issue #4661 mag de READ-ONLY collector nu adaptief meer afgeronde GitHub-jobbewijzen ophalen, maximaal 24 job-list calls en onmiddellijk stoppen bij de minimumdrempel (20 jobs / 5 runs) of eerste providerfout. Zonder bewijs blijven percentielen null; een providerfout leidt tot `PARTIAL_PROVIDER_OBSERVATION`. Geen extra uitvoeringen, bypass, tweede scheduler of fictieve snelheid. Volgende echte hourly artifact nodig voor productiebewijs; lees de bestaande Brain learning en `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+
 ## Uurlijkse leerbare CI-telemetrie — 23 oktober 2026
 
 De bestaande Repository Janitor observeert GitHub-workflowjobtijdstempels via `tools/delivery/ci-throughput-telemetry.mjs` met per sweep maximaal 12 run-reads, en bewaart uitsluitend `.artifacts/powerhouse-ci-throughput.json`. Dat zijn vroege diagnostische signalen, geen nieuwe scheduler, controlepoort, service of tweede waarheid. `summarizeObservedCiJobs` weigert p50/p95 zonder minstens 20 complete jobs en 5 onafhankelijke runpogingen; incomplete GitHub readback blijft expliciet onbekend. Agents vergelijken pas na meerdere tijdstippen, lane-, cache- en commitprovenance en zonder gesuggereerd prestatiewinstbewijs. Nooit Required, hygiene, CodeQL, provider, CLS, RLS of tenant/finance gates overslaan, extra queues of betaalde compute starten, of GitHub provider-ghosts als opgelost markeren. Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). Test: `tests/brain-observed-ci-throughput-v1.test.mjs`.
