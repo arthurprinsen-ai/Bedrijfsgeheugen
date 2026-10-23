@@ -4,7 +4,8 @@ import {
   candidateFamily,
   filesAreDiscardable,
   isControlledWriterBranch,
-  mayDeleteOrphanBranch
+  mayDeleteOrphanBranch,
+  isGitHubNotFound
 } from "../scripts/brain/repository-hygiene.mjs";
 
 const policy = {
@@ -56,4 +57,20 @@ test("deletes orphan writer branch only when it has no unique commits", () => {
     aheadBy: 0,
     policy
   }), false);
+});
+
+test("only GitHub repository HTTP 404 is eligible for deleted-ref reconciliation", () => {
+  assert.equal(isGitHubNotFound(new Error("GET /repos/owner/repo/compare/main...writer%2Fgone -> 404: Not Found")), true);
+  assert.equal(isGitHubNotFound(new Error("GET /repos/owner/repo/branches/writer%2Fgone -> 404: Not Found")), true);
+  assert.equal(isGitHubNotFound(new Error("GET /repos/owner/repo/compare/main...writer%2Flive -> 403: forbidden")), false);
+  assert.equal(isGitHubNotFound(new Error("timeout while comparing branches")), false);
+});
+
+test("janitor never resurrects explicitly retired terminal leases", async () => {
+  const { readFileSync } = await import("node:fs");
+  const workflow = readFileSync(".github/workflows/powerhouse-repository-janitor.yml", "utf8");
+  assert.match(workflow, /Retirement-State: RETIRED_DO_NOT_MERGE/);
+  assert.match(workflow, /startswith\("RETIRED"\)/);
+  assert.match(workflow, /AUTO_REOPEN_TERMINAL_LEASE/);
+  assert.match(workflow, /JANITOR_INTENTIONAL_LEASE_REOPEN/);
 });

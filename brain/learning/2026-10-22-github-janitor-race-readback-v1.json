@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "github-repository-hygiene:deleted-branch-404-and-retired-lease-readback-v1",
+  "obligation_id": "github|repository-cleanup-race-readback|20261022-v1",
+  "title": "Fail-closed repository cleanup despite concurrent branch removals and retired terminal PRs",
+  "status": "CANDIDATE",
+  "failure_class": "CI_REPOSITORY_JANITOR_FALSE_RED",
+  "root_cause": "Repository hygiene compares a branch after another janitor deleted it, causing 404. Repository janitor verifies a planned close as closed even when same-run safety reconciliation intentionally reopens the terminal lease. Retired terminal PRs were also eligible for unjustified resurrection.",
+  "impact": "Scheduled repository cleanup fails and may repeatedly reopen retired PRs; queue and PR clutter remain.",
+  "failed_approaches": [
+    "Re-running failed janitors without correcting compare 404",
+    "Marking janitor green despite unexpected readback",
+    "Blindly deleting active branch heads to speed cleanup"
+  ],
+  "fix": "Only skip missing-branch compare 404 after independent branch 404 readback; accept exact same-run AUTO_REOPEN_TERMINAL_LEASE evidence and independently verify its open/unmerged status; exclude explicit RETIRED candidates from terminal lease reopen.",
+  "prevention_rule": "Treat inventory as a snapshot. All destructive actions require exact head and open PR protection; a terminal lease reopen is legal only with immutable same-run evidence; retirement must remain terminal.",
+  "regression_contract": "tests/brain-repository-hygiene.test.mjs",
+  "tests": [
+    "tests/brain-repository-hygiene.test.mjs"
+  ],
+  "evidence": {
+    "hygiene_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755226803",
+    "janitor_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39761281487",
+    "janitor_false_red": "JANITOR_READBACK_FAILED:#3995:open",
+    "hygiene_error": "compare/main...writer%2Fpaginacontrole%2F6ad2489cf3400128 -> 404",
+    "fix_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4656",
+    "provider_orphans": "Tracked independently as #4655",
+    "live_proof": "NOT_YET_VERIFIED"
+  },
+  "outcome": "CANDIDATE; require exact-head Required test + CodeQL, then protected merge and janitor readback.",
+  "compiler": {
+    "failure_class": "CI_REPOSITORY_JANITOR_FALSE_RED",
+    "scope": "AUTOMATION_CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-repository-hygiene.test.mjs"
+    ],
+    "shadow": [
+      "Concurrent branch removal must be confirmed by independent 404; retired PR must not be eligible for reopen"
+    ],
+    "negative_canary": [
+      "403 or live branch compare error must fail closed; reopened PR requires same-run evidence and unmerged state"
+    ]
+  },
+  "prevention": [
+    "NO_DELETE_ACTIVE_PR_BRANCH",
+    "NO_FALSE_GREEN_READBACK",
+    "PRESERVE_RETIRED_TERMINAL_STATUS",
+    "NO_WAIVE_REQUIRED_OR_CODEQL"
+  ]
+}

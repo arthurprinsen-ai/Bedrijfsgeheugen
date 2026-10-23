@@ -23,6 +23,12 @@ export function mayDeleteOrphanBranch({ branch, openHeads, aheadBy, policy }) {
   return aheadBy === 0;
 }
 
+export function isGitHubNotFound(error) {
+  const message = String(error?.message ?? error);
+  return (message.startsWith("GET /repos/") || message.startsWith("DELETE /repos/"))
+    && message.includes(" -> 404:");
+}
+
 function apiBase(repo) {
   return `https://api.github.com/repos/${repo}`;
 }
@@ -135,7 +141,24 @@ export async function buildPlan({ repo, policy, apply = false }) {
       continue;
     }
     branchEvaluations += 1;
-    const cmp = await compare(repo, policy.default_branch, name);
+    let cmp;
+    try {
+      cmp = await compare(repo, policy.default_branch, name);
+    } catch (error) {
+      // The branch inventory is a snapshot. A concurrent janitor may delete a
+      // zero-ahead writer ref before compare, yielding a harmless GitHub 404.
+      // Never classify other compare failures as successful cleanup.
+      if (!isGitHubNotFound(error)) throw error;
+      try {
+        await gh(`/repos/${repo}/branches/${encodeURIComponent(name)}`);
+      } catch (readbackError) {
+        if (!isGitHubNotFound(readbackError)) throw readbackError;
+        deferredOrphanBranches.push({ branch: name, reason: "branch-removed-during-scan" });
+        continue;
+      }
+      // An existing branch with a failed compare is a real blocker.
+      throw error;
+    }
     if (mayDeleteOrphanBranch({ branch: name, openHeads, aheadBy: cmp.ahead_by, policy })) {
       const item = { branch: name, ahead_by: cmp.ahead_by, behind_by: cmp.behind_by };
       if (apply && branchDeletes < maxBranchDeletes) {
