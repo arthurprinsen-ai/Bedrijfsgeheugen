@@ -83,7 +83,7 @@ test('Third-party model directory remains source-labeled; only auto-eligible mod
      issues.push('partial or conflicting supplier evidence for recommended model');
    if(e?.checked_on!==m.verified_at)issues.push('evidence date differs');
    const age=(Date.now()-new Date((e?.checked_on??'')+'T00:00:00Z'))/86400000;
-   if(!Number.isFinite(age)||age<0||age>14)issues.push('stale supplier verification on recommended model');
+   if(!Number.isFinite(age)||age<0||age>7)issues.push('stale supplier verification on recommended model');
    for(const claim of required){
     if(!e?.verified_claims?.includes(claim))issues.push('unverified '+claim);
     if(classifySupplierClaim(e,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED')
@@ -172,4 +172,18 @@ test('Embed 4 Bedrock Marketplace claim cannot certify customer entitlement or p
  assert.ok(model.verification_evidence.not_verified.includes('pricing'));
  assert.ok(model.verification_evidence.not_verified.includes('governance'));
  assert.notEqual(model.supplier_audit?.automatic_recommendation_eligible,true);
+});
+
+
+test('same seven-day supplier receipt policy gates daily audit and public model advisor',()=>{
+ const policy=JSON.parse(fs.readFileSync('config/powerhouse-ai-model-intelligence-v1.json','utf8'));
+ const audit=fs.readFileSync('scripts/brain/ai-model-intelligence-audit.mjs','utf8');
+ const advisor=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.equal(policy.refresh.fail_closed_on_stale_pricing_days,7);
+ assert.match(audit,/const staleAfter=policy\.refresh\.fail_closed_on_stale_pricing_days;/);
+ assert.match(audit,/stale_supplier_claim_receipts:staleSupplierReceipts/);
+ assert.match(audit,/stale_auto_recommendation_candidates:staleAutoCandidates/);
+ assert.ok(audit.includes("!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)"),'Claim receipt date must parse as an ISO calendar date');
+ assert.ok(advisor.includes('if(!Number.isFinite(age)||age<0||age>7)return false;'));
+ assert.ok(!advisor.includes('age>14)return false;'),'The public advisor must not retain the old fourteen-day automatic eligibility window');
 });
