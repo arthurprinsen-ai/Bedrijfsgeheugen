@@ -74,7 +74,9 @@
       "first malformed or denied jobs read stops the current cycle without further GitHub GETs; partial statistics remain NULL",
       "Completed Required pull_request run identity must match its encoded #PR and exact 40-character head SHA; matrix jobs, workflow_dispatch and merge_group are not extra candidate heads.",
       "One PR multiple full checks on same commit is one candidate head; malformed provider evidence holds all PR-head churn claims.",
-      "No automatic queue settings, bypassed CodeQL, or claimed causal speedup from a truncated sample."
+      "No automatic queue settings, bypassed CodeQL, or claimed causal speedup from a truncated sample.",
+      "The workflow-scoped Required history is separately available or HOLD, never inferred as empty from a generic page full of unrelated runs.",
+      "One additional bounded provider history GET and unchanged <=24 job-list GETs; targeted read failure must not fake or contaminate separate job latency percentiles."
     ]
   },
   "terminal_rule": "This observation step is live only after exact-head Required, hygiene, CodeQL, protected merge, actual hourly Janitor execution artifact and main/readback + skill projection. No claim of speed improvement without repeated comparable baselines, and #4661 remains broader open.",
@@ -104,11 +106,21 @@
     ],
     "observed_behavior": "Multiple completed Required pull_request workflow runs on different commit heads for the same PR within one current-day sample. It can be normal iteration, but is a measured source of repeated check execution.",
     "sample_causality": "UNKNOWN_MAIN_DRIFT_VS_DEVELOPER_ITERATION",
-    "provider_authority": "existing one bounded completed-actions-runs API page",
+    "provider_authority": "one original general completed-runs page plus one exact Required-workflow-scoped completed-runs page, with unchanged <=24 job-list reads",
     "partial_history": "explicitly disclose sampled lower bounds and provider pagination; never claim full organization CI cost",
     "outcome": "read-only agent advice to evaluate GitHub native merge queue with admin and complete merge_group checks, not install or change protected policy",
     "current_policy_writes": false,
     "performance_gain_verified": false,
-    "evaluation_test": "tests/brain-ci-required-head-churn-v1.test.mjs"
+    "evaluation_test": "tests/brain-ci-required-head-churn-v1.test.mjs",
+    "observed_general_sample_20261023": {
+      "general_workflow_rows": 40,
+      "required_rows": 4,
+      "repeated_required_heads_visible": 0,
+      "limitation": "A broad completed-runs page is dominated by other workflows and cannot establish absence of Required PR churn",
+      "provider_total_count": 2500
+    },
+    "one_additional_bounded_history_get_per_hour": true,
+    "history_provider_error_is_independently_fail_closed": true,
+    "original_execution_percentiles_remain_independent": true
   }
 }
