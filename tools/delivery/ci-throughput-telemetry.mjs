@@ -4,6 +4,7 @@
 import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { summarizeObservedCiJobs } from './predictive-controller.mjs';
+import { routeObservedCiHotspots } from './ci-agent-priority.mjs';
 
 const MAX_RUNS=24;
 const MAX_AGE_MS=7*24*60*60*1000;
@@ -50,8 +51,11 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
   }
   const summary=summarizeObservedCiJobs(observations);
   const incomplete=readErrors.length>0;
-  return {
+  const result={
     ...summary,
+    // A provider error suppresses even attribution-only hotspots.
+    diagnostic_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',jobs:[]}:summary.diagnostic_hotspots,
+    recurrent_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',minimum_distinct_attempts:3,jobs:[]}:summary.recurrent_hotspots,
     observed_at:new Date(now).toISOString(),
     repository:repo,
     workflow_runs_sampled:sampledRuns,
@@ -68,6 +72,7 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
     automation_allowed:false,
     changes_to_required_ci:false
   };
+  return {...result,agent_priority_advice:routeObservedCiHotspots(result)};
 }
 
 if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href){
@@ -80,6 +85,10 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       sample_jobs:result.sample_jobs,distinct_runs:result.distinct_runs,
       p50_wait_to_start_ms:result.p50_wait_to_start_ms,
       p95_wait_to_start_ms:result.p95_wait_to_start_ms,
+      slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
+      recurring_slow_jobs:result.recurrent_hotspots.jobs.length,
+      agent_advice_status:result.agent_priority_advice.status,
+      owner_lanes:result.agent_priority_advice.priorities.map(x=>x.lane),
       read_errors:result.read_errors.length
     }));
     if(result.read_errors.length)process.exitCode=2;
