@@ -106,3 +106,48 @@ test('existing single hourly Janitor emits semantic projection without network e
  assert.match(source,/cicd_semconv_evidence_status/);
  assert.doesNotMatch(source,/OTLP_ENDPOINT|traceExporter|schedule\s*\(/i);
 });
+
+
+test('semconv projection excludes malformed timestamps even when 20 other canonical jobs qualify',()=>{
+ const good=samples();
+ const malformed=[
+  {created_at:null},
+  {created_at:iso(1500)},                   // job was created after its start
+  {started_at:iso(-500)},                    // job started before creation
+  {started_at:iso(172800000+1000),completed_at:iso(172800000+3000)}, // >48h wait
+  {completed_at:iso(172800000+3001)},       // >48h execution
+  {started_at:'garbled'},                   // unparsable
+  {completed_at:'garbled'}
+ ];
+ for(const bad of malformed){
+  const rowNew=row(900,90001);
+  rowNew.job={...rowNew.job,...bad};
+  const observed=projectObservedCicdTaskRuns({repo:'example/repo',
+   observations:[...good,rowNew],status:'SAMPLED_METRICS_NOT_SLO',readErrors:[]});
+  assert.equal(observed.status,'SOURCE_ONLY_FIELD_COMPATIBLE');
+  assert.equal(observed.records.length,20);
+  assert.ok(observed.records.every(x=>x.job_id!==90001),'unverified task must not leak into proof');
+ }
+ // If a bad row would be the twentieth, the entire sample remains unproven.
+ const x=projectObservedCicdTaskRuns({repo:'example/repo',
+  observations:[...good.slice(0,19),{...row(900,90001),job:{
+   ...row(900,90001).job,created_at:null}}],
+  status:'SAMPLED_METRICS_NOT_SLO',readErrors:[]});
+ assert.equal(x.status,'INCOMPLETE_OR_INSUFFICIENT_SOURCE');
+ assert.equal(x.records.length,0);
+});
+
+test('failure and timeout use low-cardinality OpenTelemetry error.type; success/cancel do not',()=>{
+ const rows=samples();
+ rows[0].job.conclusion='failure';
+ rows[1].job.conclusion='timed_out';
+ rows[2].job.conclusion='cancelled';
+ const x=projectObservedCicdTaskRuns({repo:'example/repo',
+  observations:rows,status:'SAMPLED_METRICS_NOT_SLO',readErrors:[]});
+ assert.equal(x.status,'SOURCE_ONLY_FIELD_COMPATIBLE');
+ assert.equal(x.records[0].attributes['error.type'],'ci_task_failed');
+ assert.equal(x.records[1].attributes['error.type'],'timeout');
+ assert.equal(x.records[2].attributes['error.type'],undefined);
+ assert.equal(x.records[3].attributes['error.type'],undefined);
+ assert.ok(!JSON.stringify(x).includes('runner.stderr'),'must never ingest arbitrary output');
+});
