@@ -47,7 +47,8 @@ test('checkout redirects to the authenticated account activation journey',async(
  readFile('pages/mijn-account.html','utf8'),
  readFile('netlify/functions/portal-entitlements.mjs','utf8')]);
  assert.match(checkout,/pages\/mijn-account\.html\?activate=subscription/);
- assert.match(checkout,/id="checkoutToAccount" type="button">Verder naar mijn portaal →/);
+ assert.match(checkout,/<a id="checkoutToAccount"><b>Verder naar mijn portaal →<\/b><\/a>/);
+ assert.match(checkout,/checkoutToAccount'\)\.href='https:\/\/www\.bedrijfsgeheugen\.nl\/pages\/mijn-account\.html\?activate=subscription'/);
  assert.doesNotMatch(checkout,/<a[^>]*href="https:\/\/www\.bedrijfsgeheugen\.nl\/pages\/mijn-account\.html/);
  assert.match(page,/\/api\/checkout\/activate/);
  assert.match(page,/\/api\/saas\/my-account/);

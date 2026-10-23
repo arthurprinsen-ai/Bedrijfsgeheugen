@@ -25,3 +25,5 @@ Owner: canonical Powerhouse/Portal delivery, PR https://github.com/arthurprinsen
 
 ## Private checkout continuation and SEO
 The final verified checkout continuation is a visible, keyboard-accessible button **only after** `/api/checkout/readiness` returns `ready=true`. Its click handler opens the fully qualified HTTPS account URL. The noindex account URL is not published as a crawlable link from the public checkout page; the public technical SEO gate remains unchanged.
+
+Browser compatibility: The verified checkout continuation uses a keyboard-accessible `<a>` after server readiness. In the unverified static HTML it has **no href**; only the successful `/api/checkout/readiness` response installs the full HTTPS account URL and reveals it. This preserves the existing exact-browser contract `#checkoutContinue a` and avoids exposing a private, nonindexable public SEO link.
