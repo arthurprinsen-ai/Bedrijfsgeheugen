@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|resource-intelligence|stale-migration-audit-pointer|20261023-v1",
+  "obligation_id": "delivery|resource-intelligence|stale-migration-audit-pointer|20261023-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_migration_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "failure_class": "CI_AUDIT_REFERENCES_ABSENT_AND_OUTDATED_RESOURCE_MIGRATION",
+  "evidence": [
+    "Powerhouse Resource Intelligence GitHub run #39937291073 audit failed: missing required artifact supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
+    "GitHub main contains 20260917094812 and 20260917094941 resource intelligence migration paths with identical Git blob SHA 51c13c5c298523278dad440da8dbbbc3ab11c977.",
+    "Supabase list_migrations independently confirms both 20260917094812 and 20260917094941 were applied.",
+    "Existing resource-intelligence-contract.test.mjs already pins 20260917094812 and checks measured energy_kwh, water_liters, co2e_kg, provenance and NULL-not-zero.",
+    "Legacy audit checks energy_wh/water_ml fields absent from actual applied schema and therefore would remain red after only fixing the filename."
+  ],
+  "root_cause": "The old resource-intelligence audit referenced an untracked 09:30 migration and obsolete physical units/field names. The actual historical migration and source contract use applied 09:48 migration, energy_kwh/water_liters/co2e_kg and explicit provenance.",
+  "fix": "Point the original audit to the applied 09:48 migration and check exact actual physical-unit fields, null-preserving filtered sums, provenance_complete, methodology, invoker security and forced RLS; no new migration or production SQL. Regression executes the actual audit and guards the exact migration reference.",
+  "prevention_rule": "Audit checks must target a versioned migration that exists in both main source history and applied Supabase migration history; check actual canonical field names and fail on coalescing missing physical telemetry to zero. Never mint a different migration filename to satisfy CI.",
+  "tests": [
+    "tests/powerhouse-resource-intelligence-contract.test.mjs",
+    "scripts/brain/resource-intelligence-audit.mjs --check"
+  ],
+  "promotion": "Required, CodeQL, exact-head protected merge and next natural Powerhouse Resource Intelligence audit run; repeat provider readback of real workflow job conclusion required before declaring fixed.",
+  "readback": {
+    "production_sql_changed": false,
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_agent": false,
+    "additional_permissions": false,
+    "required_quality_gates_unchanged": true,
+    "resource_audit_live_fixed_proven": false
+  }
+}
