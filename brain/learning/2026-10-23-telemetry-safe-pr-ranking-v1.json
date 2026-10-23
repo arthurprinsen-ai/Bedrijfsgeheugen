@@ -36,5 +36,19 @@
     "canary": [
       "tests/brain-ci-adaptive-pr-ranking.test.mjs"
     ]
+  },
+  "tests": [
+    "tests/brain-ci-adaptive-pr-ranking.test.mjs",
+    "tests/delivery-ci-adaptive-pr-planner.test.mjs"
+  ],
+  "evidence": {
+    "first_candidate_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963314702",
+    "first_failure": "LEARNING_FAILURE_CLASS_REQUIRED",
+    "second_candidate_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963590980",
+    "independent_test_observations": "GitHub Actions canonicalization historical replay, shadow and canary wrappers all passed on second candidate; later semantic-learning closure failed because structured evidence was absent.",
+    "second_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning",
+    "production_readback": "PENDING - protected merge and real provider post-merge observation required",
+    "performance_change": "NOT_VERIFIED",
+    "safety_assertion": "Evidence is diagnostic; no runner cost or successful production release claimed."
   }
 }
