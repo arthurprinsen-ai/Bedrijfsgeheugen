@@ -1,0 +1,41 @@
+{
+  "fingerprint": "commercial-execution-handoff-nonterminal-research-20261005-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Internal research_enrichment accumulated as prepared/suggested while users observed no provider-backed commercial output.",
+  "root_cause": "Research and external execution shared the sales-action lifecycle but stale internal research had no mandatory terminal OBSERVE decision; external non-email actions could also remain nonterminal without explicit executor ownership.",
+  "failed_approach": "Treat scheduler activity, generated research, merged content or prepared actions as evidence of commercial execution.",
+  "fix": [
+    "Canonical runtime watchdog powerhouse_commercial_action_closure_watchdog_v1 terminalizes stale internal research as evidence-backed OBSERVE/expired.",
+    "Overdue external non-email actions become WAIT and remain owned until provider proof or an explicit terminal decision.",
+    "Watchdog runs every 10 minutes under existing Supabase scheduler control; no parallel CRM or outbound queue.",
+    "Daily assurance must count provider proof separately from intelligence/preparation."
+  ],
+  "terminal_verification": {
+    "research_terminalized_observe": 570,
+    "overdue_research_nonterminal": 0,
+    "external_actions_owned_wait": 325,
+    "cron_job_id": 134,
+    "cron_schedule": "*/10 * * * *"
+  },
+  "prevention": {
+    "invariant": "No stale research_enrichment may remain suggested/prepared/waiting; research is not commercial success. External execution is terminal only with provider proof or explicit evidence-backed terminal decision.",
+    "duplicate_safety": "No provider mutation is performed by the lifecycle watchdog; existing channel executors retain dedupe/idempotency authority."
+  },
+  "evaluation": {
+    "method": "runtime readback after first watchdog execution",
+    "expected": "overdue_research_nonterminal=0 and watchdog cron active"
+  },
+  "skill_targets": [
+    "powerhouse-growth-swarm",
+    "powerhouse-daily-full-connection-enrichment",
+    "powerhouse-persuasion-revenue"
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_EXECUTION_HANDOFF_GAP",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
