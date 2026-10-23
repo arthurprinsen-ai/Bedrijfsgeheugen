@@ -187,7 +187,15 @@ jobs:
           }
           while(Date.now()<deadline){
             const response=await fetch(endpoint,{headers});
-            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            if(!response.ok){
+              // An inaccessible Netlify status is NOT a green preview. Still run the
+              // existing exact candidate checkout/build and required browser tests.
+              if([403,404,429].includes(response.status)){
+                console.log(`::warning::GITHUB_PREVIEW_STATUS_UNAVAILABLE:${response.status}: using exact local candidate browser proof, not provider preview green`);
+                break;
+              }
+              throw new Error(`GitHub status API ${response.status}`);
+            }
             const body=await response.json();
             const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
             if(status?.state==='success'){

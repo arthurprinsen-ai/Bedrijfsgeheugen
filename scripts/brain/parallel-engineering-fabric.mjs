@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { evaluateAgentCandidateQuality } from './agent-candidate-quality-stages.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');
@@ -66,7 +67,7 @@ function validatePackages(workPackages) {
   if (baseEpochs.size > 1) throw new Error('MIXED_BASE_EPOCH: revalidate work packages against one canonical main SHA');
 }
 
-export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
+export function buildExecutionPlan({ workPackages, deliveryConfig, policy, now=Date.now() }) {
   validatePackages(workPackages);
   // Bounded parallelism keeps independent coding fast without unbounded Actions fan-out.
   const maxParallelPackages = policy?.scheduling?.max_parallel_packages ?? 4;
@@ -74,9 +75,11 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
     throw new Error('INVALID_PARALLEL_WAVE_BUDGET: expected integer 1..6');
   }
   const packages = workPackages.map(raw => {
+    const quality=evaluateAgentCandidateQuality({workPackage:raw,now});
+    if(quality.applies && !quality.canPlanLocalExperiment) throw new Error(`QUALITY_STEPS_HOLD:${raw.id}:${quality.missing.join(',')}`);
     const graph = buildImpactGraph({ paths: raw.paths ?? [], resources: raw.resources ?? [], dependencies: raw.dependsOn ?? [], deliveryConfig, policy });
     if (graph.failClosed) throw new Error(`Fail-closed work package ${raw.id}: ${graph.reason}`);
-    return { ...raw, paths: graph.paths, resources: graph.resources, dependsOn: graph.dependencies, lanes: graph.lanes, contracts: graph.contracts, testProfiles: graph.testProfiles, failClosed: false, failClosedReason: null,
+    return { ...raw, qualityStages:quality, paths: graph.paths, resources: graph.resources, dependsOn: graph.dependencies, lanes: graph.lanes, contracts: graph.contracts, testProfiles: graph.testProfiles, failClosed: false, failClosedReason: null,
       cacheIdentity: buildCacheIdentity({ baseSha: raw.baseSha, candidateSha: raw.candidateSha, paths: graph.paths, contracts: graph.contracts, tests: graph.testProfiles, policyVersion: policy?.version ?? 1, environment: raw.environment ?? null, configDigest: raw.configDigest ?? null, schemaDigest: raw.schemaDigest ?? null, dependencyDigest: raw.dependencyDigest ?? null, gateVersion: raw.gateVersion ?? null, contractDigest: raw.contractDigest ?? null })
     };
   }).sort((a, b) => a.id.localeCompare(b.id));
