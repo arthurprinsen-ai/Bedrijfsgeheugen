@@ -59,8 +59,8 @@ test('collector has bounded GET fanout and partial provider failure suppresses p
     return {total_count:1,jobs:[sample(id,1000+id).job]};
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
-  assert.equal(calls,13);
-  assert.equal(x.workflow_runs_sampled,12);
+  assert.equal(calls,25);
+  assert.equal(x.workflow_runs_sampled,24);
   assert.equal(x.read_errors.length,1);
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(x.p95_wait_to_start_ms,null);
@@ -75,4 +75,43 @@ test('janitor reuses one existing hourly schedule and does not skip security gat
   assert.match(yaml,/powerhouse-ci-throughput\.json/);
   assert.match(yaml,/github-actions-ghost-reconcile\.mjs/);
   assert.doesNotMatch(yaml,/ci-throughput.*workflow_dispatch/);
+});
+
+
+test('adaptive sampling stops as soon as 20 independent jobs across five runs exist',async()=>{
+  const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  let requests=0;
+  const read=path=>{
+    requests++;
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+    const jobs=Array.from({length:3},(_,idx)=>sample(id,id*100+idx,1000+idx*100,3000).job);
+    return {total_count:jobs.length,jobs};
+  };
+  const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10_000,read});
+  assert.equal(x.status,'SAMPLED_METRICS_NOT_SLO');
+  assert.equal(x.sample_jobs,21);
+  assert.equal(x.distinct_runs,7);
+  assert.equal(x.workflow_runs_sampled,7);
+  assert.equal(requests,8);
+  assert.equal(x.p95_wait_to_start_ms,1200);
+  assert.deepEqual(x.read_errors,[]);
+});
+
+test('adaptive budget remains finite and never masks an earlier missing read',async()=>{
+  const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  let count=0;
+  const read=path=>{
+    count++;
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+    if(id===1)throw Error('provider boundary');
+    const jobs=Array.from({length:3},(_,i)=>sample(id,id*100+i).job);
+    return {total_count:3,jobs};
+  };
+  const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10_000,read});
+  assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
+  assert.equal(x.workflow_runs_sampled,24);
+  assert.equal(count,25);
+  assert.equal(x.p95_execution_ms,null);
 });
