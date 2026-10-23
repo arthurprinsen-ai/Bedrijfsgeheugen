@@ -18,14 +18,14 @@
       "protected merge into main",
       "source readback shows native CAS",
       "supervisor run confirms no repeated unsafe drift"
-    ]
+    ],
+    "first_failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39950164728",
+    "first_failed_gate": "LEARNING_EVALUATION_TEST_PATH_INVALID",
+    "admission_repair": "Replace natural-language historical_replay values with a real executable test path; retain scenarios separately in expected_behaviors."
   },
   "evaluation": {
     "historical_replay": [
-      "stale expected head returns non-success and does not update a second writer",
-      "accepted asynchronous update never marks green before immutable ancestry proof",
-      "no branch change within 10 minutes consumes bounded retry attempt",
-      "MAIN_SYNC reconciliation requires old-head and main-epoch ancestry"
+      "tests/delivery-powerhouse-supervisor.test.mjs"
     ],
     "metrics": [
       "drift_refresh_attempts_per_pr",
@@ -42,7 +42,19 @@
       "no manual merge bypass",
       "one canonical failure memory"
     ],
-    "status_reason": "Code candidate only: provider CI and production readback not yet complete."
+    "status_reason": "Code candidate only: provider CI and production readback not yet complete.",
+    "shadow": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "expected_behaviors": [
+      "stale expected head returns non-success and does not update a second writer",
+      "accepted asynchronous update never marks green before immutable ancestry proof",
+      "no branch change within 10 minutes consumes bounded retry attempt",
+      "MAIN_SYNC reconciliation requires old-head and main-epoch ancestry"
+    ]
   },
   "compiler": {
     "failure_class": "CI",
