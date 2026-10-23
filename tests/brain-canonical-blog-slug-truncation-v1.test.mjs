@@ -7,7 +7,7 @@ const read=(name)=>readFileSync('supabase/functions/'+name+'/index.ts','utf8');
 const sourceFn=(name)=>{
  const line=read(name).split('\n').find(line=>line.trim().startsWith('const slugify='));
  assert.ok(line,'missing '+name+' canonical slugifier');
- return vm.runInNewContext(line+'\nslugify;');
+ return vm.runInNewContext(line.replace('(s:string)','(s)')+'\nslugify;');
 };
 test('queue matches already-merged #4723 export identity at the 2026-10-23 boundary',()=>{
  const title='Cyberdreigingen voor ondernemers: een praktisch beslis- en oefenplan om risico’s bestuurlijk te beheersen';
