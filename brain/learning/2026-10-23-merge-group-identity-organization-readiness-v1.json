@@ -1,0 +1,34 @@
+{
+  "type": "QUALITY_IMPROVEMENT_CANDIDATE",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|merge-queue|run-id-as-pr-number|20261023-v1",
+  "failure_class": "MERGE_GROUP_RUN_ID_MASQUERADES_AS_PR_NUMBER",
+  "root_cause": "Merge-group event normalizer used an Actions run ID as prNumber instead of null, allowing PR-specific flows to mistake a merge-group execution for a PR. The hygiene admission did not independently compare checkout SHA against merge_group.head_sha.",
+  "prevention_rule": "Never infer PR number from workflow run ID. Require provider-supplied merge_group.head_sha to equal immutable GitHub Actions SHA and checkout SHA; emit empty PR output. Required, CodeQL and admission remain fail closed.",
+  "status": "CANDIDATE_NOT_LIVE",
+  "owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "tests": [
+    "tests/delivery-github-event-context.test.mjs",
+    "tests/brain-ci-admission-single-flight.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-github-event-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ],
+    "canary": [
+      "Native organization-owned one-candidate queue pilot after authorized transfer"
+    ],
+    "invariants": [
+      "no Actions run ID as PR",
+      "exact merge-group checkout SHA",
+      "all three protected branch checks",
+      "one candidate build / squash",
+      "no additional schedule, agent or registry"
+    ]
+  },
+  "customerValueVerified": false,
+  "providerDeploymentVerified": false
+}

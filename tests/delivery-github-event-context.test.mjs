@@ -34,8 +34,26 @@ test('merge group event uses the merge-group head as both change and candidate i
     changeHeadSha: sha('e'),
     candidateSha: sha('e'),
     headSha: sha('e'),
-    prNumber: '456',
+    prNumber: null,
   });
+});
+
+test('merge group rejects missing provider head and never falls back to a run ID', () => {
+  assert.throws(() => normalizeGitHubDeliveryEvent({
+    eventName: 'merge_group',
+    event: { merge_group: { base_sha: sha('a') } },
+    githubSha: sha('b'),
+    runId: '999',
+  }), /valid mergeGroup.headSha/i);
+});
+
+test('merge group rejects a provider/GITHUB_SHA mismatch (never test a stale or PR SHA)', () => {
+  assert.throws(() => normalizeGitHubDeliveryEvent({
+    eventName: 'merge_group',
+    event: { merge_group: { base_sha: sha('a'), head_sha: sha('b') } },
+    githubSha: sha('c'),
+    runId: '999',
+  }), /MERGE_GROUP_HEAD_SHA_MISMATCH/);
 });
 
 test('workflow dispatch binds explicit PR identity and immutable PR refs when provided', () => {

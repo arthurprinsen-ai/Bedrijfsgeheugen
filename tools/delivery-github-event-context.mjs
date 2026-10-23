@@ -42,9 +42,14 @@ export function normalizeGitHubDeliveryEvent({
     const group = event.merge_group || {};
     mode = 'merge_group';
     baseSha = group.base_sha;
-    changeHeadSha = group.head_sha || githubSha;
-    candidateSha = group.head_sha || githubSha;
-    prNumber = safeRunId;
+    // A queue item is not a PR and must never inherit the Actions run ID.
+    // The provider merge-group SHA is the only candidate identity.
+    changeHeadSha = requireSha('mergeGroup.headSha', group.head_sha);
+    candidateSha = changeHeadSha;
+    if (requireSha('githubSha', githubSha) !== candidateSha) {
+      throw new Error('MERGE_GROUP_HEAD_SHA_MISMATCH');
+    }
+    prNumber = null;
     changeId = `merge-group-${String(candidateSha || '').slice(0, 12)}`;
   } else if (eventName === 'workflow_dispatch') {
     const dispatchPr = event.pull_request || {};
