@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|main-write|provider-rate-limit-causes-false-unauthorized-alarm|20261023-v1",
+  "obligation_id": "delivery|main-write|provider-rate-limit-causes-false-unauthorized-alarm|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "existing_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3191",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "GITHUB_INSTALLATION_API_RATE_LIMIT_PREVENTS_PR_PROVENANCE",
+  "root_cause": "GitHub App installation API quota exhausted during main-write provenance classifier; prior lookup performed up to three commit-association reads and two PR reads even when rate-limited. Run #39940563356 observed 5 attempted provider reads returning PROVIDER_PR_PROOF_UNVERIFIED. Then stateful-incident write called paginated open issues, got 403, jq error and terminal workflow failure. Immutable main sha 03bf825a6f4207df397f045ba0a3630faef34170 was independently verified as legitimate protected squash PR #4762, not proven direct-main bypass.",
+  "source_evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39940563356",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4762",
+    "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api"
+  ],
+  "fix": "Prefer a single GitHub exact PR-number record derived only as untrusted squash-message lookup hint; require provider verified merged_at, base main, numeric PR ID, exact head merge_commit_sha. If that does not independently verify, use bounded existing commit association. On GitHub primary or secondary rate-limit abort immediately without repeated reads or additional stateful issue API call; preserve terminal red UNKNOWN_MAIN_WRITE and immutable artifact. For non-limited genuine incidents keep existing canonical stateful-issue route.",
+  "prevention_rule": "Never infer unauthorized production main write from a missing provider response; NEVER call a limited GitHub installation repeatedly or fan out a new issue write on a rate-limited API. Never mark success without exact independent PR provider association. On true unauthorized material direct main writes preserve fail-closed incident and required protections.",
+  "tests": [
+    "tests/brain-main-write-integrity.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_INSTALLATION_API_RATE_LIMIT_PREVENTS_PR_PROVENANCE",
+    "scope": "POWERHOUSE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ],
+    "invariants": [
+      "Trusted GitHub provider PR record validates merged_at, main base, exact immutable merge SHA",
+      "Forged commit suffix cannot itself prove authorization",
+      "429 or GitHub installation limit 403 triggers at most one provider call and zero issue mutations",
+      "Unknown authorization evidence remains RED and canonical evidence artifact persists",
+      "True direct material single-parent write with complete, negative provider evidence remains a RED security incident",
+      "Original Required, CodeQL, branch protection and all tenant release gates remain mandatory"
+    ]
+  },
+  "promotion": "Exact-head Required and CodeQL success; protected merge; independent main-write integrity workflow on future main commit; no unverified green or rate-limit bypass.",
+  "readback": {
+    "main_workflow_red_on_rate_limit": true,
+    "provider_commit_association_4762_verified": true,
+    "candidate_tests_executed": false,
+    "production_live": false,
+    "performance_gain_measured": false
+  }
+}
