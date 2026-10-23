@@ -50,5 +50,17 @@
   },
   "new_scheduler": false,
   "new_writer": false,
-  "new_error_registry": false
+  "new_error_registry": false,
+  "evidence": {
+    "tests": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs",
+      "tests/brain-recovery-supervisor-daily-learning-v2.test.mjs",
+      "tests/brain-recovery-supervisor-owner-claims-v2.test.mjs"
+    ],
+    "source": "Observed GitHub supervisor runs and existing Janitor provider artifacts; shadow-only optimization",
+    "protected_required": "PENDING_EXACT_HEAD",
+    "codeql": "PENDING_EXACT_HEAD",
+    "production_readback": "NOT_YET_INDEPENDENTLY_VERIFIED",
+    "speed_improvement": "NOT_PROVEN"
+  }
 }
