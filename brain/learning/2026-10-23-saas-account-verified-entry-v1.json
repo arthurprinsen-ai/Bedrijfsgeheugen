@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "portal|saas-customer-onboarding|uncategorized-new-page-and-incomplete-canonical-writeback|20261023-v1",
+  "obligation_id": "portal|saas-account|verified-checkout-to-customer-entry|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4812",
+  "status": "CANDIDATE_UNVERIFIED",
+  "failure_class": "SAAS_CUSTOMER_ENTRY_DELIVERY_CLOSURE_MISSING",
+  "root_cause": "A new account page was placed at an unclassified root path, so the protected delivery admission gate correctly failed. The next attempt had the page in the existing pages/ lane but lacked Brain learning, append-only development activity and human change documentation in the same material candidate.",
+  "observed_evidence": {
+    "required_failed_initial": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39977844111",
+    "required_failed_closure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39980483223",
+    "not_live": true,
+    "provider_preview_failed": true,
+    "customer_acceptance_proven": false
+  },
+  "fix": "Move new account HTML into the existing classified pages/ website lane and update checkout/test to use its exact route; add one read-only authenticated SaaS entitlement endpoint and preserve the existing Netlify Identity/Stripe/Supabase authority; commit the required closure artifacts in the same PR lineage.",
+  "prevention_rule": "Before any new customer-facing file, classify its path under an existing delivery lane and require server-validated user+canonical tenant+active or trialing subscription; do not treat a checkout success flag, client-side plan lock, missing payment receipt or anonymous scan as authorization. Every material PR carries canonical Brain learning, ledger and documentation with executable tests. Required, CodeQL, preview and independent production acceptance must be green on exact SHA before LIVE.",
+  "tests": [
+    "tests/brain-saas-customer-account-gateway-v1.test.mjs",
+    "tests/brain-saas-customer-loop-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "SAAS_CUSTOMER_ENTRY_DELIVERY_CLOSURE_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-customer-account-gateway-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-saas-customer-account-gateway-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-saas-customer-account-gateway-v1.test.mjs"
+    ],
+    "invariants": [
+      "no user or confirmed email => deny",
+      "tenant mismatch or inactive billing => deny",
+      "query parameters cannot elevate tenant/plan",
+      "no paid access on provider outage",
+      "no new scheduler, billing store or payment charge"
+    ]
+  },
+  "test_evidence": {
+    "local_tests": null,
+    "exact_head_required": null,
+    "exact_head_codeql": null,
+    "netlify_preview": null,
+    "production_deploy": null,
+    "real_two_customer_isolation": false
+  },
+  "next_safe_action": "Complete exact-head Required+CodeQL and Netlify preview; inspect any failed-stage logs; verify authenticated customer activation and two-tenant denial in real preview; only then use existing protected merge and production readback.",
+  "terminal_rule": "No fake green. Zero authenticated customer readback or a failed build/required test means NOT_LIVE."
+}
