@@ -120,6 +120,26 @@ test('read-only probe is executable while production scheduling stays in Supabas
   assert.equal(output.production.scheduler_authority, 'Supabase pg_cron');
   assert.equal(output.production.job, 'powerhouse-autonomous-improvement-cycle-v1');
   assert.equal(output.writeback, 'not attempted by GitHub read-only probe');
+  assert.equal(output.packet.probe_evidence.measured_performance, false);
+  assert.equal(output.packet.probe_evidence.evaluated_champion, false);
+  assert.equal(output.packet.probe_evidence.synthetic_performance_samples, false);
+  assert.equal(output.packet.probe_evidence.automatic_promotion_allowed, false);
+  assert.equal(output.packet.portfolio_decision.decision, 'HOLD');
+  assert.equal(output.packet.portfolio_decision.winner, null);
+  for (const metric of ['reliability', 'latency_ms', 'cost_per_outcome']) {
+    assert.equal(output.packet.fitness.dimensions[metric].baseline, null);
+    assert.equal(output.packet.fitness.dimensions[metric].current, null);
+    assert.equal(output.packet.fitness.dimensions[metric].trend, 'unknown');
+  }
+  assert.deepEqual(output.packet.fitness.material_regressions, []);
+});
+
+test('daily contract probe never passes synthetic fixture metrics as real improvement evidence', async () => {
+  const source = await readFile(new URL('../scripts/brain/continuous-improvement/run-autonomous-improvement.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /baseline:\s*\{\s*reliability:\s*99\.9/);
+  assert.doesNotMatch(source, /champion:\s*\{\s*id:\s*'current',\s*observations:\s*30/);
+  assert.match(source, /synthetic_performance_samples:\s*false/);
+  assert.match(source, /automatic_promotion_allowed:\s*false/);
 });
 
 test('production adapter uses only canonical Brain record taxonomy', async () => {
