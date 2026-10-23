@@ -173,3 +173,16 @@ test('Embed 4 Bedrock Marketplace claim cannot certify customer entitlement or p
  assert.ok(model.verification_evidence.not_verified.includes('governance'));
  assert.notEqual(model.supplier_audit?.automatic_recommendation_eligible,true);
 });
+
+test('seven-day supplier source freshness has one fail-closed policy across audit and public advisor',()=>{
+ const policy=JSON.parse(fs.readFileSync('config/powerhouse-ai-model-intelligence-v1.json','utf8'));
+ assert.equal(policy.refresh.fail_closed_on_stale_pricing_days,7);
+ assert.equal(policy.refresh.fail_closed_on_stale_supplier_claim_days,7);
+ const auditSource=fs.readFileSync('scripts/brain/ai-model-intelligence-audit.mjs','utf8');
+ const advisorSource=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(auditSource,/const staleAfter=7;/);
+ assert.match(advisorSource,/const age=supplierVerificationAgeDays\(m\);/);
+ assert.match(advisorSource,/if\(!Number\.isFinite\(age\)\|\|age<0\|\|age>7\)return false;/);
+ assert.match(advisorSource,/leverancierscontrole verouderd/);
+ assert.match(advisorSource,/supplierVerificationLabel\(m\)/);
+});
