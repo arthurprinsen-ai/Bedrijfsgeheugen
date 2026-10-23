@@ -34,4 +34,7 @@ test('Canonical learning scheduler and Supabase store are unchanged',()=>{
   assert.match(evaluator,/schedule:\s*'@hourly'/);
   assert.match(evaluator,/createSocialLearningStore/);
   assert.doesNotMatch(evaluator,/ffmpeg-static/);
+  const revenueEvaluator=readFileSync(new URL('netlify/functions/revenue-learning-evaluate.mjs',root),'utf8');
+  assert.match(revenueEvaluator,/schedule:\s*'@hourly'/);
+  assert.doesNotMatch(revenueEvaluator,/ffmpeg-static/);
 });
