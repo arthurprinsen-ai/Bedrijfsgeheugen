@@ -11,7 +11,12 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'12'/);
   assert.match(yml,/RECOVERY_PR_BUDGET:\s*'1'/);
   assert.match(yml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
-  assert.match(yml,/concurrency:\n\s+group: powerhouse-delivery-recovery-supervisor\n\s+cancel-in-progress: true/);
+  // A lease-bearing recovery writer must finish its native CAS and readback;
+  // a newer cron tick must never interrupt that critical section.
+  assert.match(yml,/group: powerhouse-delivery-recovery-supervisor/);
+  assert.match(yml,/cancel-in-progress: false/);
+  assert.match(yml,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
+  assert.match(yml,/expected_head_sha="\$head"/);
 });
 
 test('Required is the only PR admission orchestrator and keeps PR-scoped single-flight identity', async () => {
