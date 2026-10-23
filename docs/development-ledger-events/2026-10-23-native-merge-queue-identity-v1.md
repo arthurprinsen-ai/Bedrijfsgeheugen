@@ -8,3 +8,5 @@ Correction candidate: queue has no PR number; provider queue SHA must match GITH
 Migration gate: approved organization and authorized transfer + app/Netlify/Supabase readback; one-candidate/one-build/squash pilot; unchanged security/release controls.
 Decision: prepare source only. No branch protection mutation, org transfer, production deployment or queue enablement.
 Outcome: NOT VERIFIED. Exact-head Required, hygiene, CodeQL and protected squash merge plus provider and customer readback remain to be independently observed.
+
+Runner feedback on PR #4782 Required run 39951080247: admission and metadata succeeded; protected Brain canonicalization correctly blocked a non-`tests/brain-*.test.mjs` historical replay path (LEARNING_EVALUATION_TEST_PATH_INVALID). Same-lineage fix: add `tests/brain-merge-group-event-identity-v1.test.mjs` as canonical replay, shadow and canary; retain the validator unmodified. Source-level additional correction: synthetic composite merge-group requires its own strict scope cap; stale PR manifest would make all native groups falsely red. Outcome still unproven until new exact-head Required/CodeQL results.

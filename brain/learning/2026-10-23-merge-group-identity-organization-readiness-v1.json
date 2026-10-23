@@ -4,22 +4,23 @@
   "fingerprint": "delivery|merge-queue|run-id-as-pr-number|20261023-v1",
   "failure_class": "MERGE_GROUP_RUN_ID_MASQUERADES_AS_PR_NUMBER",
   "root_cause": "Merge-group event normalizer used an Actions run ID as prNumber instead of null, allowing PR-specific flows to mistake a merge-group execution for a PR. The hygiene admission did not independently compare checkout SHA against merge_group.head_sha.",
-  "prevention_rule": "Never infer PR number from workflow run ID. Require provider-supplied merge_group.head_sha to equal immutable GitHub Actions SHA and checkout SHA; emit empty PR output. Required, CodeQL and admission remain fail closed.",
+  "prevention_rule": "Never infer PR number from workflow run ID. Require provider-supplied merge_group.head_sha to equal immutable GitHub Actions SHA and checkout SHA; emit empty PR output. Required, CodeQL and admission remain fail closed. Combined merge-group diffs use a separate fail-closed 40-file cap and normalized labels, not an unrelated static PR manifest.",
   "status": "CANDIDATE_NOT_LIVE",
   "owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
   "tests": [
+    "tests/brain-merge-group-event-identity-v1.test.mjs",
     "tests/delivery-github-event-context.test.mjs",
     "tests/brain-ci-admission-single-flight.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-github-event-context.test.mjs"
+      "tests/brain-merge-group-event-identity-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-ci-admission-single-flight.test.mjs"
+      "tests/brain-merge-group-event-identity-v1.test.mjs"
     ],
     "canary": [
-      "Native organization-owned one-candidate queue pilot after authorized transfer"
+      "tests/brain-merge-group-event-identity-v1.test.mjs"
     ],
     "invariants": [
       "no Actions run ID as PR",
@@ -30,5 +31,12 @@
     ]
   },
   "customerValueVerified": false,
-  "providerDeploymentVerified": false
+  "providerDeploymentVerified": false,
+  "compiler": {
+    "failure_class": "MERGE_GROUP_RUN_ID_MASQUERADES_AS_PR_NUMBER",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
 }

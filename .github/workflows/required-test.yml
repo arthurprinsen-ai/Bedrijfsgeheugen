@@ -227,8 +227,15 @@ jobs:
             execFileSync('git',['fetch','--no-tags','--depth=1','origin',diffBaseSha],{stdio:'inherit'});
           }
           const changedPaths=execFileSync('git',['diff','--name-only',diffBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
-          const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
+          const parsedLabels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
+          const labels=Array.isArray(parsedLabels)?parsedLabels:[];
+          // Merge queue produces a synthetic combined ref, not an individual PR body.
+          // Original PRs are independently gated before queue admission. On the
+          // combined SHA enforce the stricter 40-file cap and all protected tests,
+          // never reuse the unrelated static versioned candidate manifest.
+          const metadata=process.env.EVENT_NAME === 'merge_group'
+            ? {expectedPaths:[],maxFiles:40,delivery:{candidateType:'implementation'}}
+            : {expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
           const databaseRelevantSupabase=changedPaths.some(path =>
             path.startsWith('supabase/') &&
             !path.startsWith('supabase/functions/') &&
