@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { summarizeObservedCiJobs } from './predictive-controller.mjs';
 import { routeObservedCiHotspots } from './ci-agent-priority.mjs';
+import { projectObservedCicdTaskRuns } from './ci-cicd-semconv-projection.mjs';
 
 const MAX_RUNS=24;
 const MAX_AGE_MS=7*24*60*60*1000;
@@ -72,7 +73,9 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
     automation_allowed:false,
     changes_to_required_ci:false
   };
-  return {...result,agent_priority_advice:routeObservedCiHotspots(result)};
+  return {...result,agent_priority_advice:routeObservedCiHotspots(result),
+    cicd_semconv_evidence:projectObservedCicdTaskRuns({repo,observations,
+      status:result.status,readErrors})};
 }
 
 if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href){
@@ -88,6 +91,8 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
       recurring_slow_jobs:result.recurrent_hotspots.jobs.length,
       agent_advice_status:result.agent_priority_advice.status,
+      cicd_semconv_evidence_status:result.cicd_semconv_evidence.status,
+      cicd_semconv_tasks:result.cicd_semconv_evidence.sampled_tasks||0,
       owner_lanes:result.agent_priority_advice.priorities.map(x=>x.lane),
       read_errors:result.read_errors.length
     }));
