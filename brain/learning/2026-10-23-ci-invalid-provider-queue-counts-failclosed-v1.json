@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|predictive-lane-capacity|invalid-provider-queue-counts-failclosed|20261023-v1",
+  "obligation_id": "delivery|predictive-lane-capacity|invalid-provider-queue-counts-failclosed|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_provider_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+  "status": "CANDIDATE",
+  "failure_class": "MALFORMED_GITHUB_PROVIDER_QUEUE_TELEMETRY_FALSE_FREE_CAPACITY",
+  "root_cause": "assessQueuePressure sanitized all fields through Number(value)||0, allowing malformed, absent-as-null, negative and fractional GitHub counter telemetry to become zero free capacity and unlock optional dispatch.",
+  "observed_evidence": {
+    "code_authority": "tools/delivery/predictive-controller.mjs",
+    "risk_scenario": "GitHub count 'unavailable' or null, inProgress 2 => optional parallel candidate could be allowed",
+    "actual_incident_this_exact_variant_proven": false,
+    "impact": "Preventive fail-closed queue capacity guard; no claimed speed gain"
+  },
+  "fix": "Require all six counters to be finite, nonnegative safe integers before optional dispatch; expose invalidCountKeys; hold mutation and allow read-only independent work on any invalid count. Preserve the existing exact-ID verified ghost classifier and native singleflight scheduler.",
+  "prevention_rule": "Malformed provider queue counters are untrusted evidence, never zero capacity. Do not add schedulers, disable required checks or count unresolved zero-job provider runs as removed. Replay negative counters and preserve valid zero/integer capacity decisions.",
+  "tests": [
+    "tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs"
+  ],
+  "verification": {
+    "local_execution": "not_run",
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "protected_merge": "PENDING",
+    "production_readback": "PENDING",
+    "measured_throughput_gain": false
+  }
+}
