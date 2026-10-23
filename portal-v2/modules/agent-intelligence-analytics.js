@@ -114,6 +114,107 @@ function metric(label,value,detail){
 function timeLabel(at){
   return at ? new Date(at).toLocaleString('nl-NL',{dateStyle:'short',timeStyle:'short'}) : 'Niet waargenomen';
 }
+
+/**
+ * Evidence-first quality report: one read-only slice of the same tenant-bound
+ * operating-loop response. No added metrics backend, score, scheduler or writer.
+ * Event activity alone can never become a successful release, agent evaluation
+ * or independently proven customer outcome.
+ */
+export function deriveQualityReport({events=[],runtime={},now=Date.now(),days=7}={}){
+  const at=Number.isFinite(Number(now))?Number(now):Date.now();
+  const length=Number.isInteger(days)?Math.min(30,Math.max(1,days)):7;
+  const start=Date.parse(isoDay(at)+'T00:00:00Z')-(length-1)*86400000;
+  const seen=new Set();
+  const current=[];
+  for(const e of items(events)){
+    if(!e||typeof e!=='object')continue;
+    const key=[e.id,e.occurredAt,e.title,e.status].map(String).join('|');
+    if(seen.has(key))continue;
+    seen.add(key);
+    const t=validTime(e.occurredAt);
+    if(t!==null&&t>=start&&t<=at+60000)current.push(e);
+  }
+  const failures=current.filter(isFailure);
+  const ci=current.filter(e=>/github|codeql|ci\b|merge|deploy|release|workflow|pull.request/i.test(
+    [e.layer,e.source,e.category,e.rawType].join(' ')));
+  const traceEvents=current.filter(e=>typeof e.traceId==='string'&&e.traceId.trim());
+  const learningEvents=current.filter(isLearning);
+  const sourceEvents=current.filter(e=>sourceDefinitions.some(s=>s.pattern.test(
+    [e.layer,e.source].join(' '))));
+  const memories=items(runtime?.learning?.items);
+  const proven=memories.filter(r=>r?.maturity==='PROVEN'&&r?.productionVerified===true&&safeProofLink(r?.proofRef));
+  const verifiedIds=new Set();
+  const customerResults=items(runtime?.customerOutcomes?.items).filter(r=>{
+    const id=String(r?.outcomeId||'').trim();
+    if(!id||verifiedIds.has(id)||r?.tenantVerified!==true||
+      r?.productionVerified!==true||r?.learningVerified!==true||
+      !safeProofLink(r?.proofRef)||!safeProofLink(r?.learningProofRef)||
+      !['VERIFIED','REALIZED_VERIFIED'].includes(String(r?.verificationStatus||'')))return false;
+    verifiedIds.add(id);
+    return true;
+  });
+  const label=(id,title,status,detail,count)=>Object.freeze({id,title,status,detail,count});
+  return Object.freeze({
+    windowDays:length,observedEvents:current.length,failures:failures.length,
+    provenKnowledge:proven.length,verifiedCustomerOutcomes:customerResults.length,
+    rows:Object.freeze([
+      label('delivery','CI/CD & productie',
+        ci.some(isFailure)?'AANDACHT':ci.length?'WAARGENOMEN':'ONBEKEND',
+        ci.length?ci.length+' delivery-signalen; '+ci.filter(isFailure).length+
+          ' foutsignalen. Geen DORA-waarde of exacte productie-SHA zonder onafhankelijk deploybewijs.'
+          :'Geen herleidbare CI/CD-waarnemingen in de geladen selectie.',ci.length),
+      label('incidents','Incidenten & herstel',
+        failures.length?'AANDACHT':current.length?'GEEN FOUT IN SELECTIE':'ONBEKEND',
+        failures.length?failures.length+' geregistreerde fout-/blokkadesignalen; oorzaken en herstel apart verifiëren.'
+          :'Afwezigheid in deze selectie is geen bewijs van storingsvrijheid.',failures.length),
+      label('agents','Agents & tracekwaliteit',
+        traceEvents.length?'TRACE WAARGENOMEN':'NIET GEMETEN',
+        traceEvents.length?traceEvents.length+' events met trace-ID; geen onafhankelijke trace-grade of regressiebewijs.'
+          :'Geen verifieerbare trace-ID in deze geladen selectie; modelkwaliteit onbekend.',traceEvents.length),
+      label('learning','Kennis & leerverbetering',
+        proven.length?'KENNIS BEWEZEN':learningEvents.length?'LEREN WAARGENOMEN':'NIET BEWEZEN',
+        proven.length?proven.length+' brongekoppelde productiekennisrecords; klantimpact niet automatisch bewezen.'
+          :learningEvents.length+' leer-/skill-signalen, zonder bewezen productieverbetering.',proven.length),
+      label('sources','Bronnen & versheid',
+        sourceEvents.length?'HERKOMST WAARGENOMEN':'NIET GEMETEN',
+        sourceEvents.length?sourceEvents.length+' herleidbare bron-events; leveranciers-SLA, synchronisatie en volledigheid niet vastgesteld.'
+          :'Geen bron-events beschikbaar; bronkoppelingen niet beoordeeld.',sourceEvents.length),
+      label('outcomes','Klantwaarde & resultaat',
+        customerResults.length?'BEWIJS GEKOPPELD':'NIET BEWEZEN',
+        customerResults.length?customerResults.length+' unieke tenantgebonden uitkomsten met apart productie- én leerbewijs; causaal effect blijft apart te toetsen.'
+          :'Geen uitkomst met unieke ID, tenantcontrole, productiebewijs én leerbewijs in deze projectie.',customerResults.length),
+      label('policy','Privacy & autorisatie','APART TOETSEN',
+        'Geen tenant-, regio- of toestemmingsclaim op basis van eventtelling; bevoegdheden blijven serverzijdig.',null)
+    ])
+  });
+}
+
+export function qualityReportMarkup({events=[],runtime={},days=7,now=Date.now()}={}){
+  const report=deriveQualityReport({events,runtime,days,now});
+  const rows=report.rows.map(r=>
+    '<tr><th scope="row">'+html(r.title)+'</th><td><span class="pai-quality-state">'+
+    html(r.status)+'</span></td><td>'+html(r.detail)+'</td></tr>').join('');
+  const actions=[];
+  if(report.failures)actions.push('Onderzoek actuele foutclusters bij dezelfde canonieke incidenteigenaar.');
+  if(!report.provenKnowledge)actions.push('Koppel leerclaims aan regresstest, productiecontrole en bronbewijs.');
+  if(!report.verifiedCustomerOutcomes)actions.push('Verbind uitgevoerde acties met unieke, tenantgebonden resultaten en onafhankelijk leerbewijs.');
+  actions.push('Meet DORA-doorlooptijd, change failure rate en trace-grades uitsluitend uit volledige CI- en runtimebronnen.');
+  return '<section class="poc-panel pai-quality-report" aria-labelledby="pai-quality-title">'+
+    '<header><span class="pai-quality-eyebrow">KWALITEITSRAPPORT · BEWIJSGESTUURD</span>'+
+    '<h4 id="pai-quality-title">Hoe betrouwbaar verbeteren we echt?</h4>'+
+    '<p class="poc-note">Automatische momentopname van de reeds beveiligde Brain/Heartbeat-readback; venster: '+
+    html(report.windowDays)+' UTC-dagen. Geen fictief totaalcijfer, geen beloofde omzet, geen schijn-groen.</p></header>'+
+    '<div class="poc-tablewrap"><table class="poc-table pai-quality-table"><thead><tr><th scope="col">Kwaliteitsgebied</th>'+
+    '<th scope="col">Bewijsstatus</th><th scope="col">Onderbouwing en beperking</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody></table></div>'+
+    '<div class="pai-quality-actions"><b>Volgende verbeteracties op basis van bewijs</b><ol>'+
+    actions.map(a=>'<li>'+html(a)+'</li>').join('')+'</ol></div>'+
+    '<p class="poc-note">Controleer iedere status met bron, tijdstempel, eigenaar, exacte release en vervolgmeting. '+ 
+    'Een CI-run, sociale interactie, agenttrace of leernotitie is op zichzelf geen gerealiseerde klantwaarde. '+
+    'Onvolledige of gefilterde geschiedenis mag geen 100%-score produceren.</p></section>';
+}
+
 export function agentIntelligenceMarkup({events=[],runtime={},period='week',now=Date.now()}={}){
   const days=period==='today'?1:period==='month'?30:period==='all'?30:7;
   const telemetry=deriveLearningTelemetry({events,runtime,days,now});
@@ -146,6 +247,7 @@ export function agentIntelligenceMarkup({events=[],runtime={},period='week',now=
       '<section class="poc-panel"><h4>Verifieerbaar leren</h4><p class="poc-note">Een notitie, hypothese of groene CI-check is geen gerealiseerde klantverbetering. Alleen door de bestaande server als PROVEN gemarkeerde kennis met productiereadback én geldig bewijs krijgt die kwalificatie.</p>'+
       (memories||'<div class="poc-empty">Nog geen kennisrecords in deze beveiligde readback.</div>')+'</section>'+
     '</div>'+
+    qualityReportMarkup({events,runtime,days,now})+
     '<section class="poc-panel"><h4>Zelfverbeterende besluitlus</h4>'+
       '<div class="pai-flow" role="list">'+
       ['Signaal','Oorzaak','Hypothese','Test','Guardrails','Productiereadback','Leerregel & skill'].map((step,index)=>

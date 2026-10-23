@@ -203,3 +203,22 @@ test('main write: rate-limited provider evidence never attempts to write another
   assert.match(workflow,/Fail closed on ungoverned main write/);
   assert.match(workflow,/Upload immutable integrity evidence/);
 });
+
+test('main write issue recovery validates all paginated provider shapes before any deduplicated issue mutation', async () => {
+  const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
+  const lookup = workflow.indexOf('issues_json="$(gh api');
+  const validate = workflow.indexOf('MAIN_WRITE_ISSUE_LIST_INVALID_PROVIDER_SHAPE');
+  const dedupe = workflow.indexOf('issue_number="$(printf');
+  const create = workflow.indexOf("gh api --method POST");
+  assert.ok(lookup >= 0 && validate > lookup && dedupe > validate && create > dedupe,
+    'provider issue response, all-page JSON validation, dedupe and mutation remain ordered');
+  assert.match(workflow, /jq -e -s 'length > 0 and all\(\.\[\]; type == "array"/);
+  assert.match(workflow, /all\(\.\[\]; type == "object" and \(\.number \| type\) == "number"\)/);
+  assert.match(workflow, /MAIN_WRITE_ISSUE_LIST_INVALID_PROVIDER_SHAPE/);
+  assert.match(workflow, /exit 75/);
+  assert.match(workflow, /select\(\.pull_request == null\)/);
+  assert.match(workflow, /contains\(\$fingerprint\)/);
+  assert.match(workflow, /if \(\.body \| type\) == "string" then \.body else "" end/);
+  assert.match(workflow, /providerProofSource != 'PROVIDER_RATE_LIMITED'/);
+  assert.doesNotMatch(workflow, /issue_number="\$\(gh api/);
+});
