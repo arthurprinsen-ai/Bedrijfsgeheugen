@@ -10,7 +10,7 @@ De audit controleerde bovendien verouderde `energy_wh`/`water_ml`- en provenance
 
 ## Afgebakend herstel
 
-Alleen het bestaande read-only `scripts/brain/resource-intelligence-audit.mjs` is aangepast aan hetzelfde onveranderde migratiebestand als de contracttest. De audit controleert nog steeds de bestaande BG169-autoriteit, kosten/effect/provenance, terugdraai-plan, veilige omkeerbaarheid en alle verbodsbepalingen. Ook controleert hij dat niet-gemeten energie, water of CO₂ nooit als 0 worden ingevuld. De bestaande uitvoerbare contracttest roept de audit nu zelf aan en weigert een terugval naar het niet-bestaande migratiepad of verouderde eenheden.
+Alleen het bestaande read-only `scripts/brain/resource-intelligence-audit.mjs` is aangepast aan hetzelfde onveranderde migratiebestand als de contracttest. De audit controleert nog steeds de bestaande BG169-autoriteit, kosten/effect/provenance, terugdraai-plan, veilige omkeerbaarheid en alle verbodsbepalingen. Ook controleert hij dat niet-gemeten energie, water of CO₂ nooit als 0 worden ingevuld. De bestaande contracttest blijft ongewijzigd; een nieuwe uitvoerbare, canoniek benoemde Brain-regressietest (`tests/brain-resource-intelligence-canonical-audit-v1.test.mjs`) roept de audit zelf aan en weigert een terugval naar het niet-bestaande migratiepad of verouderde eenheden.
 
 Geen nieuwe migratie, geen SQL-wijziging, geen permissiewijziging, geen tweede scheduler, geen schatting van niet-gemeten energie/water/omzet, geen uitgeschakelde gate.
 
@@ -19,3 +19,5 @@ Geen nieuwe migratie, geen SQL-wijziging, geen permissiewijziging, geen tweede s
 Exact-head Required CI en CodeQL groen; beveiligde merge naar `main`; daarna de oorspronkelijke Powerhouse Resource Intelligence-workflow werkelijk succesvol laten draaien en de bewijsregels teruglezen. Een groene audit valideert contractintegriteit, **niet** werkelijk bespaarde energie, geld of CO₂. Resultaten en kosten blijven `unknown` zolang onafhankelijke providerinformatie ontbreekt.
 
 De native GitHub merge queue wordt niet als oplossing aangezet: de repository heeft bij de gecontroleerde GitHub-API `owner.type=User`, terwijl GitHub merge queues aanbiedt voor repositories van organisaties, onder bijbehorende voorwaarden. Bestaande branchregels blijven intact.
+
+- **Admission correction:** First Required #39938691372 refused an evaluation path not prefixed with the canonical `tests/brain-` test namespace. This candidate now preserves the original standalone resource contract and registers an executable canonical Brain test for historical replay, shadow and canary. No admission rule waived.
