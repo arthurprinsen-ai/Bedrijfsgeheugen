@@ -340,6 +340,7 @@ jobs:
               body: pr.body || '',
               baseSha: immutableBaseSha,
               headSha,
+              changedPaths,
               conflictContracts: currentContracts,
             }, policy);
             const result = evaluateAdmission({candidate,openCandidates:normalized,policy,currentMainSha});
