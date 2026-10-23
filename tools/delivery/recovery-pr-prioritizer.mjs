@@ -28,13 +28,18 @@ function getLease(pr,repo,mainSha){
   const owner=field(b,'Writer-Lease-Owner'),obligation=field(b,'Writer-Lease-Obligation');
   const raw=field(b,'Writer-Lease-Drift-Refreshes');
   const count=raw===null?0:/^\d{1,2}$/.test(raw)?Number(raw):NaN;
+  // Reconciliation of a pre-existing MAIN_SYNC at attempt two does not
+  // authorize any additional update-branch write. Terminal leases still
+  // must have remaining budget for a new CAS request.
+  const withinBudget=Number.isInteger(count)&&count>=0&&
+    (state==='MAIN_SYNC'?count<=MAX_REFRESHES:count<MAX_REFRESHES);
   const valid=pr?.state==='open'&&pr?.draft!==true&&
     pr?.head?.repo?.full_name===repo&&pr?.base?.repo?.full_name===repo&&
     SHA.test(pr?.head?.sha??'')&&head===pr.head.sha&&
     SHA.test(epoch??'')&&SHA.test(base??'')&&
     typeof owner==='string'&&owner.length>0&&
     typeof obligation==='string'&&obligation.length>0&&
-    Number.isInteger(count)&&count>=0&&count<MAX_REFRESHES;
+    withinBudget;
   return {state,valid,count:Number.isInteger(count)?count:null,main_epoch_stale:epoch!==mainSha};
 }
 function duration(run){
@@ -59,20 +64,23 @@ export function rankRecoveryCandidates({prs=[],requiredRuns=[],repo='',mainSha='
     const active=runs.some(r=>ACTIVE.has(r.status));
     const completed=runs.filter(r=>r.status==='completed');
     const lengths=runs.map(duration).filter(Number.isFinite);
+    const observedSuccess=runs.some(r=>r.status==='completed'&&r.conclusion==='success');
     const eligible=lease.valid&&(lease.state==='MAIN_SYNC'||lease.state==='TERMINAL_DELIVERY');
     const tier=eligible&&lease.state==='MAIN_SYNC'?0:
-      eligible&&lease.main_epoch_stale&&!active?1:
-      eligible&&lease.main_epoch_stale?2:3;
+      eligible&&lease.main_epoch_stale&&!active&&observedSuccess?1:
+      eligible&&lease.main_epoch_stale&&!active?2:
+      eligible&&lease.main_epoch_stale?3:4;
     const updated=Date.parse(pr.updated_at??'');
-    return {pr,index,lease,tier,active,repeats:Math.max(0,completed.length-1),
+    return {pr,index,lease,tier,active,observedSuccess,repeats:Math.max(0,completed.length-1),
       successes:lengths.length,median:median(lengths),
       updated:Number.isFinite(updated)?updated:0};
   });
+  // Exact-head positive evidence is a priority signal, never a gate result.
+  // Missing observations in a bounded provider sample remain unknown, not failed.
   records.sort((a,b)=>a.tier-b.tier||
-    (a.tier===3?a.index-b.index:
+    (a.tier===4?a.index-b.index:
       (a.lease.count??MAX_REFRESHES)-(b.lease.count??MAX_REFRESHES)||
-      (b.successes>=2?b.median:0)-(a.successes>=2?a.median:0)||
-      a.updated-b.updated||a.pr.number-b.pr.number));
+      b.updated-a.updated||a.pr.number-b.pr.number));
   return {
     schema:'recovery-supervisor-priority-v1',
     sample:'BOUNDED_GITHUB_REQUIRED_RUNS_NOT_FULL_CI_HISTORY',
@@ -84,10 +92,13 @@ export function rankRecoveryCandidates({prs=[],requiredRuns=[],repo='',mainSha='
     prior_drift_refreshes:records.reduce((s,r)=>s+(r.lease.count??0),0),
     ordered_prs:records.map(r=>r.pr),
     rankings:records.map((r,i)=>({rank:i+1,number:r.pr.number,
-      advisory_stage:['RECONCILE_EXISTING_MAIN_SYNC','PREFLIGHT_STALE_TERMINAL_LEASE',
-        'OBSERVE_ACTIVE_EXACT_HEAD','UNCHANGED_OTHER_RECOVERY'][r.tier],
+      advisory_stage:r.tier===0?'RECONCILE_EXISTING_MAIN_SYNC':
+        r.tier<=2?'PREFLIGHT_STALE_TERMINAL_LEASE':
+        r.tier===3?'OBSERVE_ACTIVE_EXACT_HEAD':'UNCHANGED_OTHER_RECOVERY',
       lease_valid:r.lease.valid,prior_drift_refreshes:r.lease.count,
-      observed_active_required:r.active,potential_same_head_repeats:r.repeats,
+      observed_active_required:r.active,
+      observed_completed_exact_head_required_success:r.observedSuccess,
+      potential_same_head_repeats:r.repeats,
       required_success_median_seconds:r.successes>=2?r.median:null,
       causal_speedup_proven:false}))
   };
