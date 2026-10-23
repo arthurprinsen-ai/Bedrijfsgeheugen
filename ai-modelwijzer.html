@@ -378,7 +378,8 @@ function fullSupplierEvidence(m){
  const e=m.verification_evidence;
  if(!e||e.claim_scope!=='full'||e.source_url!==m.source||e.checked_on!==m.verified_at)return false;
  const age=(Date.now()-Date.parse(e.checked_on+'T00:00:00Z'))/86400000;
- if(!Number.isFinite(age)||age<0||age>14)return false;
+ // Mirrors config/powerhouse-ai-model-intelligence-v1.json; source freshness is not DB write freshness.
+ if(!Number.isFinite(age)||age<0||age>7)return false;
  const required=['model_id','status','pricing','capabilities','deployment','governance'];
  if(!Array.isArray(e.verified_claims)||!Array.isArray(e.claim_evidence)||(e.not_verified||[]).length)return false;
  return required.every(claim=>e.verified_claims.includes(claim)&&e.claim_evidence.some(r=>r.claim===claim&&r.checked_on===e.checked_on&&typeof r.url==='string'&&r.url.startsWith('https://')&&typeof r.locator==='string'&&r.locator.trim()&&typeof r.observed_value==='string'&&r.observed_value.trim()&&r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'&&!String(r.scope??'').includes('NOT model-specific')&&(claim!=='pricing'||!/UNVERIFIED|NOT_LIVE|HISTORICAL|PARTIAL|EXAMPLE|UNKNOWN|BASIS_ONLY/.test(String(r.verification_status??'').toUpperCase()))));
