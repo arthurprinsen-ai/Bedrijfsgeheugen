@@ -1,0 +1,46 @@
+{
+  "fingerprint": "p0-4215-production-migration-source-divergence-20261023",
+  "date": "2026-10-23",
+  "parent_incident": "#4215",
+  "source_pr": "#4558",
+  "source_only_owner_pr": "#4733",
+  "obligation": "p0-4215-prod-applied-migration-history-sync-20261023",
+  "root_cause": "Supabase production migration 20261023070053 was already applied with the forecast lower(scope_key) index; protected GitHub main tracked 745 versions, while Supabase production tracked 746, leaving exactly this one provider-applied version without a local file. Supabase main deployment workflow failed Remote migration versions not found in local migrations directory.",
+  "intervention": "Restore byte-for-byte identical 1,620-byte original provider-applied SQL as its exact historical versioned file through protected GitHub PR; do not rewrite remote migration history, recreate the physical index, add another scheduler, or merge the separate unverified maturity view refactor.",
+  "prevention": "Git blob SHA-1 regression requires production-applied SQL source bytes to stay immutable; CI delivery closure records canonical learning, human explanation, and activity ledger, and production postmerge requires provider deployment and migration count reconciliation.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "P0_4215_REMOTE_MIGRATION_HISTORY_VERSION_MATCH",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "remote_version": "20261023070053",
+    "remote_version_count_at_diagnosis": 746,
+    "protected_main_file_count_at_diagnosis": 745,
+    "remote_sql_byte_length": 1620,
+    "pinned_git_blob_sha1": "3e6af2848e72d8733b73900eff7174315427a55c",
+    "provider_failed_at_utc": "2026-10-23T07:42:53Z",
+    "error": "Remote migration versions not found in local migrations directory",
+    "already_live_index": "ph_forecasts_active_scope_lower_p0",
+    "already_live_index_def_md5": "26970207b59f178ef927b57a4ab57d8c",
+    "natural_cron_run_success": 122338,
+    "natural_cron_duration_s": 109.766,
+    "natural_snapshot_rows": 838,
+    "natural_snapshot_refreshed_at_utc": "2026-10-23T07:55:01.279174Z",
+    "release_status": "SOURCE_ONLY_PR_PENDING_EXACT_HEAD_CHECKS_AND_PROTECTED_MERGE",
+    "provider_preview_status": "UNVERIFIED_NO_BYPASS"
+  },
+  "status": "SOURCE_SYNC_CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4558"
+  ]
+}
