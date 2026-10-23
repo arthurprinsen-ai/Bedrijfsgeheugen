@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {resolveMiraFrozenWinner,sourceLedAutoVerifyCandidate} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
 import {MIRA_CASES,selectMiraProblem} from '../supabase/functions/_shared/mira-entrepreneur-caption.mjs';
 
 const runDate='2026-10-23';
@@ -118,4 +118,48 @@ test('the original media preflight has a CAS claim and background actual-proof c
  assert.match(src,/action:'submit_asset'/);
  assert.match(src,/MIRA_AUTO_PROOF_FAILED/);
  assert.match(src,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
+});
+
+
+test('bounded verifier retries only transient same-source proof without another media producer',()=>{
+ const frozen={kind:'approved_source_led',
+  winner_recommendation_id:'7880c326-72b8-4ac8-a712-971a9a24de12',
+  scene:'source-led-privacy-scene',asset_url:'https://cdn.openart.ai/existing.mp4',
+  openart_history_id:'S2WRHcZAKIV5Cxn2tZLE'};
+ const job={id:'existing-job',status:'WAITING_PROOF',attempts:1,
+  updated_at:'2026-10-23T09:00:00Z',last_error:'MIRA_AUTO_PROOF_TRANSPORT_FAILED',
+  asset_manifest:{source_led_auto_verify_started:true,
+   source_led_auto_verify_contract:'mira-frozen-approved-existing-asset-only-v1',
+   daily_winner_recommendation_id:frozen.winner_recommendation_id,
+   scene:frozen.scene,asset_url:frozen.asset_url,openart_history_id:frozen.openart_history_id},
+  proof_manifest:{}};
+ const opts={runDate:'2026-10-23',resolved:frozen,job,
+  ob:{external_id:null,status:'BLOCKED'},postType:'reel',
+  readyProviders:['openart'],now:Date.parse('2026-10-23T09:20:00Z')};
+ const retry=sourceLedRecoverableProofRetry(opts);
+ assert.equal(retry.ok,true);
+ assert.equal(retry.nextAttempts,2);
+ assert.equal(retry.assetManifest,job.asset_manifest,'must use exact existing bytes');
+ assert.equal(sourceLedRecoverableProofRetry({...opts,now:Date.parse('2026-10-23T09:01:00Z')}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:{...job,attempts:3}}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:{...job,last_error:'MIRA_AUTO_PROOF_FAILED:VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'}}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:{...job,last_error:'MIRA_AUTO_PROOF_FAILED:MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED'}}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:{...job,proof_manifest:{exact_final_media_proven:true}}}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,ob:{external_id:'already-published'}}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,ob:{status:'APPROVED'}}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,readyProviders:[]}).ok,false);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:{...job,asset_manifest:{...job.asset_manifest,asset_url:'https://cdn.openart.ai/other.mp4'}}}).ok,false);
+ const abandoned={...job,last_error:'',updated_at:'2026-10-23T09:00:00Z'};
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:abandoned,now:Date.parse('2026-10-23T09:31:00Z')}).ok,true);
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:abandoned,now:Date.parse('2026-10-23T09:18:00Z')}).ok,false);
+ const second={...job,attempts:2,last_error:'MIRA_AUTO_PROOF_FAILED:VIDEO_FRAME_EXTRACTION_FAILED'};
+ assert.equal(sourceLedRecoverableProofRetry({...opts,job:second,now:Date.parse('2026-10-23T09:35:00Z')}).nextAttempts,3);
+});
+test('retry triggers inside original Heartbeat preflight with CAS and never after hard vision rejection',()=>{
+ const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
+ assert.match(router,/sourceLedRecoverableProofRetry/);
+ assert.match(router,/attempts:candidate.nextAttempts\|\|1/);
+ assert.match(router,/\.eq\('id',job.id\)\.eq\('updated_at',job.updated_at\)/);
+ assert.match(router,/\.eq\('status',job.status\)\.eq\('attempts',job.attempts\)/);
+ assert.match(router,/EdgeRuntime\.waitUntil\(background\)/);
 });
