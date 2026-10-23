@@ -20,5 +20,11 @@ test('Fresh Device Canary does not trigger on generic delivery policy changes', 
   const workflow = await readFile('.github/workflows/fresh-device-autonomy-canary.yml','utf8');
   assert.doesNotMatch(workflow, /config\/brain-delivery-system\.json/);
   assert.match(workflow, /scripts\/brain\/device-certify\.mjs/);
-  assert.match(workflow, /tests\/brain-fresh-device-canary\.test\.mjs/);
+  // The canonical canary now certifies through its device script and persists an artifact;
+  // a retired test filename must not be required for a valid protected merge-group gate.
+  assert.match(workflow, /merge_group:/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /node scripts\/brain\/device-certify\.mjs/);
+  assert.match(workflow, /\.artifacts\/fresh-device-certification\.json/);
+  assert.match(workflow, /if-no-files-found: error/);
 });
