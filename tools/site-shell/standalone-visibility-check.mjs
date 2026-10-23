@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
 import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
 import { formatClsFailure } from './layout-shift-evidence.mjs';
+import { selectVisibilityViewports } from './visibility-viewport-sharding.mjs';
 
 const baseUrl = process.env.UI_VR_BASE_URL || process.argv[2];
 if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
@@ -16,11 +17,7 @@ const routeConcurrency = isCanonicalProduction ? Math.min(4, requestedRouteConcu
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
 let cleanupTimedOut = false;
-const viewports = [
-  { name: 'phone', width: 390, height: 844 },
-  { name: 'tablet', width: 768, height: 1024 },
-  { name: 'desktop', width: 1440, height: 900 },
-];
+const viewports = selectVisibilityViewports(process.env.UI_VR_VIEWPORT_SHARD || '');
 const requestedViewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : viewports.length))));
 const viewportConcurrency = isCanonicalProduction ? Math.min(2, requestedViewportConcurrency) : requestedViewportConcurrency;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
