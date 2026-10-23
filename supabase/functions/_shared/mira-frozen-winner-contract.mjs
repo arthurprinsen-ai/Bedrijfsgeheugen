@@ -18,10 +18,10 @@ const APPROVED_SOURCE_LED=Object.freeze({
    'Mira zou daarom eerst de vindplaatsen controleren, één verantwoordelijke aanwijzen en de verwijdering daarna verifiëren.',
    'De pointe: iets wissen is eenvoudig. Zeker weten dat het overal weg is, vraagt overzicht.',
    'Een fictieve Mira-situatie, geïnspireerd op een openbare klacht over persoonsgegevens. Geen echte klantervaring en geen bewezen uitkomst.'
-  ].join('\\n\\n')
+  ].join('\n\n')
  })
 });
-const normalize = value => String(value??'').replace(/\\s+/g,' ').trim();
+const normalize = value => String(value??'').replace(/\s+/g,' ').trim();
 export function miraResolvedCaption(resolved) {
  if(resolved?.kind==='approved_source_led')return resolved.caption;
  if(resolved?.kind==='approved_frozen_library_mapping'||resolved?.kind==='pre_freeze_legacy'){
