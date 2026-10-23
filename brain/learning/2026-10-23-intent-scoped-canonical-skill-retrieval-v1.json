@@ -25,6 +25,9 @@
   ],
   "evaluation": {
     "historical_replay": [
+      "tests/brain-chat-learning-fast-development-v2.test.mjs"
+    ],
+    "replay_cases": [
       {
         "input": "Dutch klantportaal task, no explicit lanes",
         "expected": "mandatory prevention and portal learning, unrelated security excluded"
