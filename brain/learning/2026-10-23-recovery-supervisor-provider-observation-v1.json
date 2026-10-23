@@ -52,5 +52,15 @@
   "provider_evidence": [
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963580805"
-  ]
+  ],
+  "evidence": {
+    "provider_observation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "canonical_admission_failures": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963580805",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963835326"
+    ],
+    "regression_test": "tests/brain-recovery-supervisor-provider-observation-v1.test.mjs",
+    "status": "CANDIDATE_NOT_YET_PROVIDER_VERIFIED",
+    "change_authority": "protected GitHub main after exact-head Required + CodeQL"
+  }
 }
