@@ -75,6 +75,11 @@ export function buildEntrepreneurJourneyModel(state={},{
   const observation=liveRuntime?.observability;
   const updated=Date.parse(observation?.updatedAt||'');
   const currentRuntime=observation?.source==='brain-operating-loop'&&Number.isFinite(updated)&&updated<=now&&now-updated<86400000;
+  // One canonical proof contract for the journey, cockpit and autopilot. The
+  // broader OS outcome inventory can contain repeated or incomplete evidence;
+  // it must not independently claim extra customer results.
+  const autopilot=buildAutopilotEvidence(owner,currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN');
+  const verifiedOutcomes=Number.isInteger(autopilot.outcomes)?autopilot.outcomes:0;
   const dependencies=unique((Array.isArray(impact?.affectedPages)?impact.affectedPages:[]).filter(route)).slice(0,8)
     .map(id=>Object.freeze({id,label:findPage(id).label}));
   const receipt=brainReceipt?.acknowledged===true
@@ -87,9 +92,9 @@ export function buildEntrepreneurJourneyModel(state={},{
       Object.freeze({id:'goal',label:'Mijn doel',confirmed:stateConfirmed,detail:stateConfirmed?'Voorkeur vastgelegd, niet je hele bedrijfsdiagnose':'Kies een doel; andere bedrijfsgegevens blijven onveranderd'}),
       Object.freeze({id:'evidence',label:'Mijn bedrijfsgegevens',confirmed:owner.ready&&owner.proof.verified>0,detail:owner.ready?owner.proof.verified+' onderdelen met bronbewijs':'Een actuele klantgebonden Powerhouse-projectie is nog niet bewezen'}),
       Object.freeze({id:'decision',label:'Mijn vervolgstap',confirmed:home.next.kind==='verified-proposal',detail:home.next.kind==='verified-proposal'?'Onderbouwd voorstel, uitvoering vraagt eigen bewijs':'Begeleidingsstap; geen gerealiseerd financieel effect'}),
-      Object.freeze({id:'outcome',label:'Gemeten resultaat',confirmed:owner.outcomes.length>0,detail:owner.outcomes.length?owner.outcomes.length+' brongeverifieerde uitkomsten':'Nog geen gerealiseerde uitkomst met voldoende bewijs'})
+      Object.freeze({id:'outcome',label:'Gemeten resultaat',confirmed:verifiedOutcomes>0,detail:verifiedOutcomes?verifiedOutcomes+' uniek brongeverifieerd(e) resultaat/resultaten':'Nog geen gerealiseerde uitkomst met voldoende bewijs'})
     ]),
-    cockpit:Object.freeze({ready:owner.ready,actions:owner.counts.acties,verified:owner.proof.verified,outcomes:owner.counts.uitkomsten}),
+    cockpit:Object.freeze({ready:owner.ready,actions:owner.counts.acties,verified:owner.proof.verified,outcomes:verifiedOutcomes}),
     scenario:Object.freeze({
       id:metric,history:chosen?.history?.length||0,sourceRefs:verifiedSeries,
       available:Boolean(chosen?.forecast),quality:chosen?.quality||'INSUFFICIENT_HISTORY',
@@ -98,7 +103,7 @@ export function buildEntrepreneurJourneyModel(state={},{
     }),
     dependencies:Object.freeze(dependencies),brainReceipt:receipt,
     heartbeat:currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN',
-    autopilot:buildAutopilotEvidence(owner,currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN')
+    autopilot
   });
 }
 
