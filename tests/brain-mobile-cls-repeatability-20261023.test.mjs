@@ -61,9 +61,9 @@ test('existing scheduler and full sitemap remain authoritative, extra replay add
 
 test('workflow_dispatch cannot silently skip production CLS replay',()=>{
  const flow=readFileSync('.github/workflows/website-cross-browser-screenshot-assurance.yml','utf8');
- assert.match(flow,/workflow_dispatch:/);
- assert.match(flow,/ASSURANCE_MODE: \\$\\{\\{ \\(github\\.event_name == 'schedule' \\|\\| github\\.event_name == 'workflow_dispatch'\\) && 'daily' \\|\\| 'pr' \\}\\}/);
- assert.match(flow,/node --test tests\\/brain-website-cross-browser-screenshot-assurance-v1\\.test\\.mjs tests\\/brain-mobile-cls-repeatability-20261023\\.test\\.mjs/);
- assert.match(flow,/cron: '20 6 \\* \\* \\*'/);
+ assert.ok(flow.includes('workflow_dispatch:'));
+ assert.ok(flow.includes("ASSURANCE_MODE: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'daily' || 'pr' }}"));
+ assert.ok(flow.includes('node --test tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs tests/brain-mobile-cls-repeatability-20261023.test.mjs'));
+ assert.ok(flow.includes("cron: '20 6 * * *'"));
  assert.equal(MOBILE_CLS_LIMIT,0.100);
 });
