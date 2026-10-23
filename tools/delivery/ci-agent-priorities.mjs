@@ -64,16 +64,35 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
   const ranked=[];
   for(const [key,group] of groups){
     const attemptsCount=group.attempts.size;
-    if(attemptsCount<minRepeatedRuns)continue;
-    const median=percentile(group.jobs.map(j=>j.execution_ms),.5);
-    if(median<minMedianMs)continue;
+    if(attemptsCount<Math.max(3,minRepeatedRuns))continue;
+    // A matrix can create several same-named jobs in ONE workflow attempt.
+    // Treat its slowest executed job as the conservative per-attempt wall-time
+    // representative, never as multiple statistically independent runs.
+    const byAttempt=new Map();
+    for(const row of group.jobs){
+      const attemptId=row.run_id+':'+row.run_attempt;
+      const prior=byAttempt.get(attemptId);
+      if(prior && prior.head_sha!==row.head_sha)
+        return deny('EVIDENCE_REJECTED','RUN_ATTEMPT_SHA_INCONSISTENT',rows.length);
+      if(!prior||row.execution_ms>prior.execution_ms||
+         (row.execution_ms===prior.execution_ms&&row.job_id<prior.job_id))
+        byAttempt.set(attemptId,row);
+    }
+    const independent=[...byAttempt.values()];
+    if(independent.length!==attemptsCount)
+      return deny('EVIDENCE_REJECTED','REPEATED_ATTEMPT_IDENTITY_MISMATCH',rows.length);
+    const durations=independent.map(row=>row.execution_ms);
+    const median=percentile(durations,.5);
+    if(median<Math.max(60000,minMedianMs))continue;
     ranked.push(Object.freeze({
       signature:key,workflow_name:group.workflow,job_name:group.job,
       suggested_lane:group.lane,independent_run_attempts:attemptsCount,
-      sample_jobs:group.jobs.length,distinct_head_shas:group.shaSet.size,
-      median_execution_ms:median,p95_execution_ms:percentile(group.jobs.map(j=>j.execution_ms),.95),
-      median_wait_ms:percentile(group.jobs.map(j=>j.wait_to_start_ms),.5),
-      evidence:Object.freeze([...group.jobs].sort((a,b)=>b.execution_ms-a.execution_ms)
+      sample_jobs:independent.length,matrix_job_rows:group.jobs.length,
+      distinct_head_shas:group.shaSet.size,
+      median_execution_ms:median,p95_execution_ms:percentile(durations,.95),
+      median_wait_ms:percentile(independent.map(j=>j.wait_to_start_ms),.5),
+      evidence:Object.freeze([...independent].sort((a,b)=>b.execution_ms-a.execution_ms||
+        a.run_id-b.run_id||a.job_id-b.job_id)
         .slice(0,3).map(j=>Object.freeze(j))),
       proposed_action:'INVESTIGATE_AND_BENCHMARK_WITH_EXISTING_OWNER',
       proof_level:'REPEATED_OBSERVATION_NOT_CAUSAL_OR_PERFORMANCE_GAIN'
