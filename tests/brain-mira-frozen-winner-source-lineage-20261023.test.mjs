@@ -163,3 +163,15 @@ test('retry triggers inside original Heartbeat preflight with CAS and never afte
  assert.match(router,/\.eq\('status',job.status\)\.eq\('attempts',job.attempts\)/);
  assert.match(router,/EdgeRuntime\.waitUntil\(background\)/);
 });
+
+
+test('Heartbeat cannot reset proof last_error or lease clock while frame verification is in flight',()=>{
+ const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
+ const retryIndex=router.indexOf('sourceLedRecoverableProofRetry({');
+ const preserveIndex=router.indexOf("job?.status==='WAITING_PROOF'&&");
+ const preflightWriteIndex=router.indexOf('writeMediaPreflight(db,job,row)');
+ assert.ok(retryIndex>=0&&preserveIndex>retryIndex&&preflightWriteIndex>preserveIndex);
+ assert.match(router,/job\?\.asset_manifest\?\.source_led_auto_verify_started===true/);
+ assert.match(router,/last_error:job\.last_error\|\|null,next_action:job\.next_action/);
+ assert.match(router,/\.eq\('id',job\.id\)\.eq\('updated_at',job\.updated_at\)/);
+});
