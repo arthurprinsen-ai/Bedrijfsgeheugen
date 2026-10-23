@@ -10,7 +10,7 @@
   "refresh": {
     "cadence": "daily",
     "source_policy": "official-provider-first",
-    "fail_closed_on_stale_pricing_days": 14,
+    "fail_closed_on_stale_pricing_days": 7,
     "lifecycle_check": true,
     "pricing_check": true,
     "residency_check": true,
