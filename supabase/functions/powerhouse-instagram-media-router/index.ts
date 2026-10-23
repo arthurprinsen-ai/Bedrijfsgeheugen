@@ -15,6 +15,24 @@ async function hashRemote(url:string,max=120*1024*1024){const r=await fetch(url,
 function inferType(...v:any[]){const s=v.map(clean).join(' ').toLowerCase();if(s.includes('carousel'))return'carousel';if(s.includes('reel'))return'reel';if(s.includes('video'))return'video';return'image';}
 async function invoke(base:string,token:string,name:string,payload:any){const r=await fetch(`${base}/functions/v1/${name}`,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify(payload)});return{http:r.status,body:await r.json().catch(()=>({}))};}
 
+async function observeSourceAutoProofFailure(db:any,runDate:string,historyId:string,code:string){
+ const occurrence='mira:auto-proof:'+runDate+':'+historyId+':'+code;
+ const payloadSha256=await digest(new TextEncoder().encode(occurrence));
+ try{
+  const {error}=await db.rpc('brain_observe_failure',{
+   p_occurrence_id:occurrence,
+   p_fingerprint:'powerhouse|instagram-mira|source-led-auto-proof-failed|20261023-v1',
+   p_payload_sha256:payloadSha256,
+   p_evidence:{source:'powerhouse-instagram-media-router',
+    publication_date:runDate,openart_history_id:historyId,
+    exact_rejected_code:code,media_approval:false,instagram_live_proven:false,
+    publishing_authority:'original-only',
+    regression_ref:'tests/brain-mira-frozen-winner-source-lineage-20261023.test.mjs'}
+  });
+  if(error)console.error('MIRA_AUTO_PROOF_BRAIN_OBSERVATION_FAILED',error.code);
+ }catch(error){console.error('MIRA_AUTO_PROOF_BRAIN_OBSERVATION_UNAVAILABLE',clean(error).slice(0,100));}
+}
+
 Deno.serve(async req=>{
  if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
  const base=Deno.env.get('SUPABASE_URL')||'',key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
@@ -194,6 +212,7 @@ Deno.serve(async req=>{
      if(result.http===200&&result.body?.ready===true)return;
      const code=clean(result.body?.error||'MIRA_EXACT_VIDEO_PROOF_INCOMPLETE').slice(0,150);
      console.error('MIRA_SOURCE_AUTO_VERIFY_REJECTED',runDate,code);
+     await observeSourceAutoProofFailure(db,runDate,candidate.assetManifest.openart_history_id,code);
      const u=await db.from('powerhouse_instagram_media_jobs_v1')
       .update({last_error:'MIRA_AUTO_PROOF_FAILED:'+code,
         next_action:'Inspect real frame and temporal proof; never substitute or duplicate this video.',
@@ -202,6 +221,7 @@ Deno.serve(async req=>{
      if(u.error)console.error('MIRA_AUTO_PROOF_WRITE_FAILED',u.error.code);
    }).catch(async error=>{
      console.error('MIRA_AUTO_PROOF_TRANSPORT_ERROR',clean(error?.message||error).slice(0,100));
+     await observeSourceAutoProofFailure(db,runDate,candidate.assetManifest.openart_history_id,'MIRA_AUTO_PROOF_TRANSPORT_FAILED');
      const u=await db.from('powerhouse_instagram_media_jobs_v1')
       .update({last_error:'MIRA_AUTO_PROOF_TRANSPORT_FAILED',
         next_action:'Recover verifier transport within existing Heartbeat; no new generation.',
