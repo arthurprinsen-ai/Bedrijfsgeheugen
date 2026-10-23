@@ -128,9 +128,12 @@ test('same-lineage moving-main recovery requires terminal lease, zero overlap an
   assert.match(yaml,/\[ "\$lease_head" != "\$head" \]/);
   assert.doesNotMatch(yaml,/Writer-Lease-Owner: powerhouse-terminal-delivery/);
   assert.match(yaml,/head_repo/);
-  assert.match(yaml,/repos\/\$repo\/merges/);
-  assert.match(yaml,/-f base="\$branch"/);
-  assert.match(yaml,/-f head="\$refresh_main_sha"/);
+  // Regression oracle now requires GitHub's native expected-head CAS, never unguarded merge.
+  assert.match(yaml,/--method PUT "repos\/\$repo\/pulls\/\$number\/update-branch"/);
+  assert.match(yaml,/expected_head_sha="\$head"/);
+  assert.doesNotMatch(yaml,/--method POST "repos\/\$repo\/merges"/);
+  assert.match(yaml,/main_proof/);
+  assert.match(yaml,/head_proof/);
   assert.match(yaml,/Writer-Lease-Head/);
   assert.match(yaml,/Writer-Lease-Main-Epoch/);
   assert.match(yaml,/Base-SHA/);
