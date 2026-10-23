@@ -143,3 +143,20 @@ test('main write: existing workflow preserves bounded provider proof and red fai
   assert.match(w, /recoveryRequired == 'true'/);
   assert.doesNotMatch(w, /contents:\s*write/);
 });
+
+test('main write incident recovery rejects malformed GitHub issue lists instead of creating duplicate incidents', async () => {
+  const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
+  const lookup = workflow.indexOf('issues_json="$(gh api');
+  const validate = workflow.indexOf('MAIN_WRITE_ISSUE_LIST_INVALID_PROVIDER_SHAPE');
+  const dedupe = workflow.indexOf('issue_number="$(printf');
+  const create = workflow.indexOf("gh api --method POST");
+  assert.ok(lookup >= 0 && validate > lookup && dedupe > validate && create > dedupe,
+    'listing retrieval, full shape check, fingerprint matching and mutation must remain ordered');
+  assert.match(workflow, /jq -e 'type == "array" and all\(\.\[\]; type == "object"\)'/);
+  assert.match(workflow, /if ! printf '%s\\n' "\$issues_json"/);
+  assert.match(workflow, /exit 75/);
+  assert.match(workflow, /select\(\.pull_request == null\)/);
+  assert.match(workflow, /contains\(\$fingerprint\)/);
+  assert.match(workflow, /if \(\.body \| type\) == "string" then \.body else "" end/);
+  assert.doesNotMatch(workflow, /issue_number="\$\(gh api/);
+});
