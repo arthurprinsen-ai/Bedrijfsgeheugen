@@ -39,5 +39,6 @@
       "no new scheduler",
       "HTML injection escaped"
     ]
-  }
+  },
+  "prevention_rule": "QUALITY_REPORT_EVIDENCE_FAIL_CLOSED_V1: no green or score from events alone; require independent evaluation, exact deploy readback and tenant-verified customer outcomes before claiming improvement."
 }
