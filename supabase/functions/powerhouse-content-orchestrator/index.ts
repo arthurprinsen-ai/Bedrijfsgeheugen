@@ -705,6 +705,12 @@ Deno.serve(async (req) => {
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
     let fallbackReason:string|null=null;
+    if(pending.channel==='instagram_company'&&resolvedMira?.kind==='approved_source_led'){
+      // Reuse the immutable source-reviewed copy: no wasteful second generative draft.
+      artifact={title:'Mira: waar blijven kopieën van persoonsgegevens?',body:miraResolvedCaption(resolvedMira),cta:'Controleer ook de kopieën.',hook_type:'Herkenbare situatie',focus_keyword:'persoonsgegevens verwijderen',meta_description:'Fictieve Mira-situatie over verwijderverzoeken en achtergebleven kopieën.'};
+      generationProvider='approved-frozen-source';
+      generationModel='mira-source-led-deterministic-v1';
+    }else{
     try {
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
       const initialBudget=pending.channel==='blog'?4800:1800;
@@ -726,6 +732,7 @@ Deno.serve(async (req) => {
       generationModel=clean(fallbackGov.model_id);
       fallbackReason=clean((error as Error)?.message).slice(0,240);
       artifact=await callComposioArtifact(db,generationModel,editorialSystem,artifactInput,pending.channel==='blog'?4800:1800);
+    }
     }
     let bodyText = clean(artifact.body);
     if (pending.channel === 'linkedin_personal' || pending.channel === 'linkedin_company') bodyText = compactLinkedInCommentary(bodyText);
