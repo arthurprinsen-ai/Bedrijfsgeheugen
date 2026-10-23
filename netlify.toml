@@ -36,6 +36,11 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# Scope the binary to the *only* frame-extraction function, rather than shipping
+# a ~32 MB FFmpeg executable with every social-learning and revenue function.
+# Keep the original provider/frame identity verifier unchanged.
+[functions."instagram-video-frames"]
   external_node_modules = ["ffmpeg-static"]
   included_files = ["node_modules/ffmpeg-static/ffmpeg"]
 # Legacy /nl/* locale URLs zijn niet canoniek. Nederlands leeft op de
