@@ -1,0 +1,20 @@
+{
+  "id": "daily-blog-slug-boundary-20261023-v1",
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-10-23",
+  "fingerprint": "powerhouse|daily-blog|title-slug-trailing-separator|v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39883989350",
+  "root_cause": "70-character truncation after slugification retained a trailing hyphen; 2026-10-23 renderer rejected invalid slug.",
+  "old_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om-",
+  "expected_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om",
+  "production_obligation": {
+    "date": "2026-10-23",
+    "state": "GENERATED",
+    "external_id": null,
+    "live_proven_at": null
+  },
+  "prevention": "Common canonicalBlogSlug in queue/export, fail closed for invalid explicit SEO slugs; preserve existing compare-and-swap unsent-only rebind.",
+  "regression": "tests/brain-canonical-blog-slug-truncation-v1.test.mjs",
+  "verification": "PENDING_PROTECTED_MERGE_EDGE_FUNCTION_DEPLOY_AND_PUBLIC_READBACK"
+}
