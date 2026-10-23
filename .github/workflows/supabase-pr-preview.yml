@@ -81,5 +81,14 @@ jobs:
           python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
           python3 scripts/brain/check_powerhouse_supabase_security.py "${{ inputs.base_sha }}" "${{ inputs.head_sha }}"
 
-      - name: Contract evidence
-        run: node --test tests/candidate-environment.test.mjs
+      - name: Contract evidence and bounded clean-room replay regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/candidate-environment.test.mjs
+          # Historical 20261023070053 source may be absent on older, independent
+          # PR branches; whenever it exists the paired regression is mandatory.
+          if [ -f supabase/migrations/20261023070053_p0_4215_forecast_scope_lower_idx.sql ]; then
+            test -f tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs
+            node --test tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs
+          fi
