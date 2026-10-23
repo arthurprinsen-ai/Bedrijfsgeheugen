@@ -12,3 +12,9 @@ Any navigation/visibility failure, missing expected sample, or **individual** CL
 ## Protected release contract
 `node --test tests/brain-mobile-cls-repeatability-20261023.test.mjs tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs`
 Then full Required, CodeQL, protected merge and one native existing scheduled production run with provider evidence. Do not claim #4451 finally eliminated until sample readback and repeated real production cold-load evidence support it. Never invent a second scheduler or fake `LIVE_PROVEN` for the CLS incident.
+
+## 2026-10-23 follow-up — manual workflow_dispatch must run the same production CLS proof
+
+Native `workflow_dispatch` already existed, but the job assigned `ASSURANCE_MODE=pr` outside scheduled events. A manual invocation tested the production host without the strict 20 cold-load replay and therefore could not count as independent production CLS stability evidence. This was an observability mode gap, not proof of the physical source of future intermittent CLS.
+
+Existing P1 #4451 remains the sole owner. Protected PR #4730 maps both `schedule` and `workflow_dispatch` into `ASSURANCE_MODE=daily`, retains the original `20 6 * * *` cadence and 30-day artifact, and runs both existing assurance and CLS repeatability contract regressions. All missing/invalid cold-load samples and any individual CLS above 0.100 still fail the same job. No duplicate scheduler, incident or weakened quality gate. Exact-head Required/CodeQL, merge, READY production readback and independent completed 20-sample production artifact are required to graduate evidence.
