@@ -150,3 +150,37 @@ export function sourceLedAutoVerifyCandidate({runDate,resolved,job,ob,postType,r
    duration:8
  }};
 }
+
+
+// Recover only an interrupted/recoverable proof of the SAME frozen asset.
+// It cannot produce a new video, change editorial source, approve identity,
+// or dispatch a provider post. At most two further attempts, with backoff.
+export function sourceLedRecoverableProofRetry({runDate,resolved,job,ob,postType,readyProviders=[],now=Date.now()}={}){
+ const manifest=job?.asset_manifest||{};
+ const id=clean(resolved?.winner_recommendation_id);
+ const attempts=Number(job?.attempts);
+ const lastUpdated=Date.parse(clean(job?.updated_at));
+ const age=now-lastUpdated;
+ const error=clean(job?.last_error);
+ const allowedError=/^(MIRA_AUTO_PROOF_TRANSPORT_FAILED|MIRA_AUTO_PROOF_FAILED:(VIDEO_FRAME_EXTRACTION_FAILED|MEDIA_FETCH_FAILED|MIRA_EXACT_VIDEO_PROOF_INCOMPLETE))$/.test(error);
+ const abandoned=error==='' && age>=30*60*1000;
+ const backoffMs=attempts===1?10*60*1000:30*60*1000;
+ const valid=resolved?.kind==='approved_source_led'&&!!id&&!!runDate&&
+  postType==='reel'&&job?.status==='WAITING_PROOF'&&
+  Number.isInteger(attempts)&&attempts>=1&&attempts<3&&
+  !!clean(job?.id)&&Number.isFinite(lastUpdated)&&
+  age>=backoffMs&&(allowedError||abandoned)&&
+  readyProviders.includes('openart')&&
+  manifest.source_led_auto_verify_started===true&&
+  manifest.source_led_auto_verify_contract==='mira-frozen-approved-existing-asset-only-v1'&&
+  clean(manifest.daily_winner_recommendation_id)===id&&
+  clean(manifest.openart_history_id)===clean(resolved.openart_history_id)&&
+  clean(manifest.asset_url)===clean(resolved.asset_url)&&
+  clean(manifest.scene)===clean(resolved.scene)&&
+  !job?.proof_manifest?.exact_final_media_proven&&
+  !ob?.external_id&&!ob?.live_proven_at&&!ob?.evidence?.republish_forbidden&&
+  ob?.status!=='LIVE_PROVEN'&&ob?.status!=='APPROVED'&&
+  job?.republish_forbidden!==true;
+ return valid?{ok:true,provider:'openart',assetManifest:manifest,nextAttempts:attempts+1,reason:abandoned?'STALE_BACKGROUND':'TRANSIENT_PROOF'}:
+  {ok:false,reason:'NO_SAFE_RETRY'};
+}
