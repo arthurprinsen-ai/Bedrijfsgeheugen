@@ -43,5 +43,18 @@
       "tests/brain-ai-model-supplier-freshness-proof-gate-v1.test.mjs"
     ]
   },
-  "canonicalization_requirement": "Executable historical replay required before fail-closed policy promotion. Required CI and exact production readback remain independent release gates."
+  "canonicalization_requirement": "Executable historical replay required before fail-closed policy promotion. Required CI and exact production readback remain independent release gates.",
+  "evidence": {
+    "production_source": "Supabase public.ai_model_supplier_verification_v1 checked October 23, 2026",
+    "historical_record_counts": {
+      "total": 110,
+      "verified_historically": 83,
+      "partial": 26,
+      "conflict": 1,
+      "over_seven_day_old_dates": 110
+    },
+    "independent_supplier_reverification": "NOT_PERFORMED",
+    "historical_regression": "tests/brain-ai-model-supplier-freshness-proof-gate-v1.test.mjs",
+    "latest_successful_release": "NOT_YET_VERIFIED"
+  }
 }
