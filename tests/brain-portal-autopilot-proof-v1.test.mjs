@@ -72,8 +72,8 @@ test('existing original portal renders proof from same journey; no second API or
   readFile(new URL('../portal-v2/entrepreneur-home.js',import.meta.url),'utf8')
  ]);
  assert.match(view,/journey\.autopilot/);
- assert.match(view,/data\.entrepreneurAutopilot='proof-v1'/);
- assert.match(view,/data\.entrepreneurPage='outcomes-evidence'/);
+ assert.match(view,/dataset\.entrepreneurAutopilot='proof-v1'/);
+ assert.match(view,/dataset\.entrepreneurPage='outcomes-evidence'/);
  assert.match(css,/\.eh-autopilot-grid/);
  assert.match(home,/renderEntrepreneurJourney\(host,journey\)/);
  assert.doesNotMatch(view,/fetch\(|localStorage|setInterval|Math\.random/);
