@@ -355,5 +355,6 @@ jobs:
             .artifacts/powerhouse-ci-throughput.json
             .artifacts/powerhouse-ci-agent-priorities.json
             .artifacts/powerhouse-merge-freshness.json
+            .artifacts/powerhouse-supervisor-runs.json
             .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error
