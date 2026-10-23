@@ -1,5 +1,5 @@
 // Existing hourly Powerhouse Repository Janitor's READ-ONLY GitHub CI observation.
-// 1 completed-runs GET and at most 12 job-list GETs. No new scheduler, dispatch,
+// 1 completed-runs GET and at most 24 job-list GETs; stop on the first provider error. No new scheduler, dispatch,
 // check/run mutation, provider-ghost classification or "green" state write.
 import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -38,13 +38,14 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
       const result=read('repos/'+repo+'/actions/runs/'+run.id+'/jobs?per_page=100');
       if(!Array.isArray(result?.jobs)||!Number.isSafeInteger(result?.total_count)||
          result.total_count>result.jobs.length){
-        readErrors.push({run_id:run.id,reason:'JOBS_SNAPSHOT_INCOMPLETE'});continue;
+        readErrors.push({run_id:run.id,reason:'JOBS_SNAPSHOT_INCOMPLETE'});break;
       }
       for(const job of result.jobs)observations.push({run,job});
       // Stop on independently sufficient evidence. Never hide an earlier read error.
       if(readErrors.length===0 && summarizeObservedCiJobs(observations).status==='SAMPLED_METRICS_NOT_SLO')break;
     }catch{
       readErrors.push({run_id:run.id,reason:'GITHUB_JOB_READ_UNAVAILABLE'});
+      break;
     }
   }
   const summary=summarizeObservedCiJobs(observations);
@@ -54,6 +55,7 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
     observed_at:new Date(now).toISOString(),
     repository:repo,
     workflow_runs_sampled:sampledRuns,
+    provider_reads_attempted:sampledRuns+1,
     requested_run_read_limit:MAX_RUNS,
     workflow_runs_available:records.workflow_runs.length,
     read_errors:readErrors,
