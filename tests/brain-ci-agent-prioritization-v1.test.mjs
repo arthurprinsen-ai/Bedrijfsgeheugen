@@ -108,3 +108,63 @@ test('only CodeQL hotspots change the security-specific advice; ordinary preflig
   assert.equal(advice.priorities[0].action,'MEASURE_EXISTING_REQUIRED_PREFLIGHT_PHASE_WITHOUT_SKIPPING_GATES');
   assert.equal(advice.priorities[0].lane,'powerhouse');
 });
+
+test('independent recurrent medians take precedence over an isolated larger portal spike',()=>{
+  const runs=[];
+  const add=(id,workflow,name,duration)=>runs.push({
+    run_id:id,run_attempt:1,job_id:id*10,head_sha:SHA,workflow_id:workflow,
+    workflow_name:'Required test',job_name:name,conclusion:'success',
+    execution_ms:duration,wait_to_start_ms:3000
+  });
+  add(201,21,'preflight',30000);
+  add(202,21,'preflight',35000);
+  add(203,21,'preflight',40000);
+  add(204,22,'website',25000);
+  add(205,22,'website',30000);
+  add(206,22,'website',34000);
+  add(207,23,'portal',100000);
+  for(let i=0;i<13;i++)add(208+i,1000+i,'misc-'+i,1000);
+  const evidence={
+    status:'SAMPLED_METRICS_NOT_SLO',sample_jobs:20,distinct_runs:20,read_errors:[],
+    job_evidence:runs,
+    diagnostic_hotspots:{status:'SAMPLED_DIAGNOSTIC_NOT_CRITICAL_PATH',
+      jobs:[...runs].sort((a,b)=>b.execution_ms-a.execution_ms).slice(0,5)},
+    recurrent_hotspots:{status:'REPEATED_JOB_SAMPLE_NOT_SLO',minimum_distinct_attempts:3,jobs:[
+      {workflow_id:21,job_name:'preflight',distinct_attempts:3,
+        sample_p50_execution_ms:35000,sample_max_execution_ms:40000,representative_run_ids:[201,202,203]},
+      {workflow_id:22,job_name:'website',distinct_attempts:3,
+        sample_p50_execution_ms:30000,sample_max_execution_ms:34000,representative_run_ids:[204,205,206]}
+    ]}
+  };
+  const advice=routeObservedCiHotspots(evidence);
+  assert.equal(advice.status,'EVIDENCE_BACKED_INVESTIGATION_ONLY');
+  assert.deepEqual(advice.priorities.map(p=>p.lane),['powerhouse','website','portal']);
+  assert.deepEqual(advice.priorities.map(p=>p.evidence_basis),[
+    'REPEATED_INDEPENDENT_ATTEMPTS','REPEATED_INDEPENDENT_ATTEMPTS',
+    'ONE_OFF_PEAK_NOT_RECURRENT'
+  ]);
+  assert.equal(advice.priorities[0].repeated_attempts,3);
+  assert.equal(advice.priorities[0].repeated_sample_p50_execution_ms,35000);
+  assert.equal(advice.priorities[0].head_sha,SHA);
+  assert.equal(advice.priorities[0].job_id,2030);
+  assert.equal(advice.may_mutate,false);
+  assert.equal(advice.may_dispatch,false);
+  assert.equal(advice.may_promote,false);
+
+  for(const altered of [
+    {...evidence,recurrent_hotspots:{...evidence.recurrent_hotspots,jobs:[
+      {...evidence.recurrent_hotspots.jobs[0],sample_p50_execution_ms:1},
+      evidence.recurrent_hotspots.jobs[1]
+    ]}},
+    {...evidence,job_evidence:runs.slice(1)},
+    {...evidence,job_evidence:[...runs.slice(0,19),runs[0]]},
+    {...evidence,recurrent_hotspots:{...evidence.recurrent_hotspots,jobs:[
+      {...evidence.recurrent_hotspots.jobs[0],distinct_attempts:7},
+      evidence.recurrent_hotspots.jobs[1]
+    ]}}
+  ]){
+    const invalid=routeObservedCiHotspots(altered);
+    assert.equal(invalid.status,'WITHHELD_UNVERIFIED_RECURRENT_PROOF');
+    assert.deepEqual(invalid.priorities,[]);
+  }
+});
