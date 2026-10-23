@@ -75,7 +75,10 @@ export function deriveLearningTelemetry({events=[],runtime={},days=7,now=Date.no
     }
   }
   const memories=items(runtime?.learning?.items);
-  const verifiedMemories=memories.filter(record=>
+  // A runtime item's own PROVEN flag and a syntactically valid URL are claims,
+  // not independent provider readbacks. Preserve references for investigation,
+  // but never promote them to independently validated production evidence.
+  const referencedMemories=memories.filter(record=>
     record?.maturity==='PROVEN'&&record?.productionVerified===true&&safeProofLink(record.proofRef)
   );
   return {
@@ -83,11 +86,12 @@ export function deriveLearningTelemetry({events=[],runtime={},days=7,now=Date.no
     observed:series.reduce((n,day)=>n+day.observed,0),
     failures:series.reduce((n,day)=>n+day.failures,0),
     learningSignals:series.reduce((n,day)=>n+day.learning,0),
-    verifiedMemories:verifiedMemories.length,
+    verifiedMemories:0,
+    referencedMemories:referencedMemories.length,
     sampled:true,
     memoryRows:memories.slice(0,8).map(record=>({
       title:String(record?.naam||'Niet benoemd').slice(0,200),
-      maturity:String(record?.maturity||'UNKNOWN'),
+      maturity:String(record?.maturity||'UNKNOWN')+(record?.maturity==='PROVEN'?' · bronclaim, niet onafhankelijk gecontroleerd':''),
       productionVerified:record?.productionVerified===true,
       proof:record?.maturity==='PROVEN'&&record?.productionVerified===true
         ? safeProofLink(record?.proofRef) : ''
@@ -143,9 +147,10 @@ export function deriveQualityReport({events=[],runtime={},now=Date.now(),days=7}
   const sourceEvents=current.filter(e=>sourceDefinitions.some(s=>s.pattern.test(
     [e.layer,e.source].join(' '))));
   const memories=items(runtime?.learning?.items);
-  const proven=memories.filter(r=>r?.maturity==='PROVEN'&&r?.productionVerified===true&&safeProofLink(r?.proofRef));
+  const declaredKnowledge=memories.filter(r=>
+    r?.maturity==='PROVEN'&&r?.productionVerified===true&&safeProofLink(r?.proofRef));
   const verifiedIds=new Set();
-  const customerResults=items(runtime?.customerOutcomes?.items).filter(r=>{
+  const declaredCustomerResults=items(runtime?.customerOutcomes?.items).filter(r=>{
     const id=String(r?.outcomeId||'').trim();
     if(!id||verifiedIds.has(id)||r?.tenantVerified!==true||
       r?.productionVerified!==true||r?.learningVerified!==true||
@@ -157,7 +162,12 @@ export function deriveQualityReport({events=[],runtime={},now=Date.now(),days=7}
   const label=(id,title,status,detail,count)=>Object.freeze({id,title,status,detail,count});
   return Object.freeze({
     windowDays:length,observedEvents:current.length,failures:failures.length,
-    provenKnowledge:proven.length,verifiedCustomerOutcomes:customerResults.length,
+    // The quality report has no signed provider readback or provider-backed
+    // reconciliation channel. Never infer independent verification from fields
+    // supplied inside this client-side runtime object, even if they claim so.
+    provenKnowledge:0,verifiedCustomerOutcomes:0,
+    declaredKnowledgeReferences:declaredKnowledge.length,
+    declaredOutcomeReferences:declaredCustomerResults.length,
     rows:Object.freeze([
       label('delivery','CI/CD & productie',
         ci.some(isFailure)?'AANDACHT':ci.length?'WAARGENOMEN':'ONBEKEND',
@@ -173,17 +183,17 @@ export function deriveQualityReport({events=[],runtime={},now=Date.now(),days=7}
         traceEvents.length?traceEvents.length+' events met trace-ID; geen onafhankelijke trace-grade of regressiebewijs.'
           :'Geen verifieerbare trace-ID in deze geladen selectie; modelkwaliteit onbekend.',traceEvents.length),
       label('learning','Kennis & leerverbetering',
-        proven.length?'KENNIS BEWEZEN':learningEvents.length?'LEREN WAARGENOMEN':'NIET BEWEZEN',
-        proven.length?proven.length+' brongekoppelde productiekennisrecords; klantimpact niet automatisch bewezen.'
-          :learningEvents.length+' leer-/skill-signalen, zonder bewezen productieverbetering.',proven.length),
+        declaredKnowledge.length?'BRONCLAIM':learningEvents.length?'LEREN WAARGENOMEN':'NIET BEWEZEN',
+        declaredKnowledge.length?declaredKnowledge.length+' productiekennisclaims met verwijzingen; inhoud en productie-effect zijn niet onafhankelijk gecontroleerd.'
+          :learningEvents.length+' leer-/skill-signalen, zonder bewezen productieverbetering.',declaredKnowledge.length),
       label('sources','Bronnen & versheid',
         sourceEvents.length?'HERKOMST WAARGENOMEN':'NIET GEMETEN',
         sourceEvents.length?sourceEvents.length+' herleidbare bron-events; leveranciers-SLA, synchronisatie en volledigheid niet vastgesteld.'
           :'Geen bron-events beschikbaar; bronkoppelingen niet beoordeeld.',sourceEvents.length),
       label('outcomes','Klantwaarde & resultaat',
-        customerResults.length?'BEWIJS GEKOPPELD':'NIET BEWEZEN',
-        customerResults.length?customerResults.length+' unieke tenantgebonden uitkomsten met apart productie- én leerbewijs; causaal effect blijft apart te toetsen.'
-          :'Geen uitkomst met unieke ID, tenantcontrole, productiebewijs én leerbewijs in deze projectie.',customerResults.length),
+        declaredCustomerResults.length?'BRONCLAIM':'NIET BEWEZEN',
+        declaredCustomerResults.length?declaredCustomerResults.length+' unieke aangeleverde klantresultaatclaims met verwijzingen; geen onafhankelijke providerreconciliatie, tenant- of effectverificatie aangetoond.'
+          :'Geen onafhankelijk gecontroleerde klantuitkomst in deze projectie.',declaredCustomerResults.length),
       label('policy','Privacy & autorisatie','APART TOETSEN',
         'Geen tenant-, regio- of toestemmingsclaim op basis van eventtelling; bevoegdheden blijven serverzijdig.',null)
     ])
@@ -212,6 +222,7 @@ export function qualityReportMarkup({events=[],runtime={},days=7,now=Date.now()}
     actions.map(a=>'<li>'+html(a)+'</li>').join('')+'</ol></div>'+
     '<p class="poc-note">Controleer iedere status met bron, tijdstempel, eigenaar, exacte release en vervolgmeting. '+ 
     'Een CI-run, sociale interactie, agenttrace of leernotitie is op zichzelf geen gerealiseerde klantwaarde. '+
+    'Een aangeleverde GitHub-/Netlify-/Supabase-link bewijst de inhoud niet. Onafhankelijke verificatie vereist een serverzijdig gekoppeld providerbewijs. '+
     'Onvolledige of gefilterde geschiedenis mag geen 100%-score produceren.</p></section>';
 }
 
@@ -225,7 +236,7 @@ export function agentIntelligenceMarkup({events=[],runtime={},period='week',now=
     (row.observations?html(row.observations):'—')+'</strong></article>').join('');
   const memories=telemetry.memoryRows.map(record=>'<article class="pai-memory"><b>'+
     html(record.title)+'</b><small>'+html(record.maturity)+
-    (record.proof?' · Productiebewijs gekoppeld':' · Niet onafhankelijk als productieverbetering aangetoond')+
+    (record.proof?' · Bronreferentie aanwezig, inhoud niet onafhankelijk bevestigd':' · Niet onafhankelijk als productieverbetering aangetoond')+
     '</small>'+(record.proof?'<a href="'+html(record.proof)+'" target="_blank" rel="noopener noreferrer">Bronbewijs</a>':'')+
     '</article>').join('');
   return '<section class="pai-learning" aria-labelledby="pai-title">'+
@@ -237,7 +248,7 @@ export function agentIntelligenceMarkup({events=[],runtime={},period='week',now=
       metric('Activiteit waargenomen',telemetry.observed,'Geen bewijs van behaalde bedrijfswaarde')+
       metric('Fout- en blokkadesignalen',telemetry.failures,'Geclassificeerde runtime-events')+
       metric('Leer- en skill-events',telemetry.learningSignals,'Niet automatisch toegepast')+
-      metric('Productiebevestigde kennis',telemetry.verifiedMemories,'PROVEN + productievlag + bronverwijzing')+
+      metric('Kennis met bronreferentie',telemetry.referencedMemories,'Aangeleverde bronclaims; nog niet onafhankelijk gecontroleerd')+
     '</div>'+
     '<div class="poc-grid2">'+chart(telemetry.days,'observed','Activiteit per dag')+
       chart(telemetry.days,'failures','Foutsignalen per dag')+'</div>'+
