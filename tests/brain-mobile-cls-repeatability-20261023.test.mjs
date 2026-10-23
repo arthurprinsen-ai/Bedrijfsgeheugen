@@ -12,6 +12,10 @@ test('full historical NL/EN CLS routes are sampled at 390x844 under both concurr
  assert.deepEqual(p.modes,['isolated','parallel']);
  assert.ok(p.rounds>=2 && p.expected<=24);
  assert.equal(p.maxCls,0.100);
+ const dutchSitemapOnly=routes.filter(x=>!x.startsWith('/en/')).concat(['/blog/afas-api/']);
+ const derived=planMobileClsReplay(dutchSitemapOnly,config);
+ assert.equal(derived.expected,p.expected);
+ assert.ok(derived.routes.includes('/en/blog/afas-api'));
 });
 test('any distinct cold load over 0.100 fails, even with healthy average',()=>{
  const p=planMobileClsReplay(routes,config),rec=make(p);
@@ -33,7 +37,7 @@ test('invalid, missing and duplicate samples cannot produce green',()=>{
 });
 test('sampling cannot hide sitemap removal or weaken the gate',()=>{
  assert.equal(MOBILE_CLS_LIMIT,0.100);
- assert.throws(()=>planMobileClsReplay(routes.slice(1),config),/ROUTES_MISSING/);
+ assert.throws(()=>planMobileClsReplay(routes.filter(x=>!x.includes('kennis-borgen-in-het-mkb')),config),/ROUTES_MISSING/);
  assert.throws(()=>planMobileClsReplay(routes,{...config,max_cls:0.2}),/THRESHOLD_CHANGE_FORBIDDEN/);
  assert.throws(()=>planMobileClsReplay(routes,{...config,samples_per_route:1}),/ROUNDS_INVALID/);
  assert.throws(()=>planMobileClsReplay(routes,{...config,max_total_checks:999}),/BUDGET_INVALID/);
