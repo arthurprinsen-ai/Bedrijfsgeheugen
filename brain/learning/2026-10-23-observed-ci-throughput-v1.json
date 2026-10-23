@@ -34,7 +34,8 @@
   "fix": "Use the existing hourly Repository Janitor to read up to 12 completed workflow runs and their job timestamps, writing only a provenance-tagged observation artifact. Compute percentiles only after at least 20 complete jobs from 5 distinct runs, preserving identity and incomplete observations. Follow-up adaptation: query at most 24 runs only as needed and stop early when 20 valid jobs from 5 runs exist with no provider read errors; preserve partial evidence boundaries. Subsequent bounded fail-fast follow-up: stop the current read cycle immediately after the first malformed or denied job-list response, retain the read error and suppress all percentiles; no repeated provider reads once trust is lost.",
   "prevention_rule": "No CI speedup, performance SLO, green status or autonomous workflow optimization from partial, small or provider-denied telemetry. Read-only collection cannot start/cancel/approve work, lower security gates, waive branch protection, change runner resources or spend. Job timings are diagnostic metrics, not deployment frequency or change lead time. Explicitly preserve unresolved provider-ghost issue #4655. Every sample is independently counted; do not lower the 20-job / 5-run threshold. Once it is met without read errors, stop extra GitHub GETs to reduce API pressure; the first incomplete or denied provider read stops the sweep immediately, records partial evidence, and suppresses all percentiles; further GETs cannot restore completeness for that observation.",
   "tests": [
-    "tests/brain-observed-ci-throughput-v1.test.mjs"
+    "tests/brain-observed-ci-throughput-v1.test.mjs",
+    "tests/brain-ci-required-head-churn-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity"
@@ -48,13 +49,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-observed-ci-throughput-v1.test.mjs"
+      "tests/brain-observed-ci-throughput-v1.test.mjs",
+      "tests/brain-ci-required-head-churn-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-observed-ci-throughput-v1.test.mjs"
+      "tests/brain-observed-ci-throughput-v1.test.mjs",
+      "tests/brain-ci-required-head-churn-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-observed-ci-throughput-v1.test.mjs"
+      "tests/brain-observed-ci-throughput-v1.test.mjs",
+      "tests/brain-ci-required-head-churn-v1.test.mjs"
     ],
     "invariants": [
       "20 complete jobs and 5 distinct attempts needed for percentiles",
@@ -67,7 +71,10 @@
       "adaptive read stops immediately after verified minimum rather than a fixed under-sampling window",
       "24-run hard budget; partial provider read cannot be masked by later successful jobs",
       "first real 12-run sample 17 jobs remains honestly INSUFFICIENT_EVIDENCE",
-      "first malformed or denied jobs read stops the current cycle without further GitHub GETs; partial statistics remain NULL"
+      "first malformed or denied jobs read stops the current cycle without further GitHub GETs; partial statistics remain NULL",
+      "Completed Required pull_request run identity must match its encoded #PR and exact 40-character head SHA; matrix jobs, workflow_dispatch and merge_group are not extra candidate heads.",
+      "One PR multiple full checks on same commit is one candidate head; malformed provider evidence holds all PR-head churn claims.",
+      "No automatic queue settings, bypassed CodeQL, or claimed causal speedup from a truncated sample."
     ]
   },
   "terminal_rule": "This observation step is live only after exact-head Required, hygiene, CodeQL, protected merge, actual hourly Janitor execution artifact and main/readback + skill projection. No claim of speed improvement without repeated comparable baselines, and #4661 remains broader open.",
@@ -85,5 +92,23 @@
     "real_provider_gain_verified": false,
     "protected_ci_required": true,
     "source_review_status": "CANDIDATE_NOT_LIVE"
+  },
+  "required_head_churn_extension_20261023": {
+    "contract": "powerhouse-required-head-churn-observation-v1",
+    "canonical_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+    "source": "tools/delivery/ci-required-head-churn.mjs",
+    "integrated_collector": "tools/delivery/ci-throughput-telemetry.mjs",
+    "observed_pr_samples": [
+      4765,
+      4761
+    ],
+    "observed_behavior": "Multiple completed Required pull_request workflow runs on different commit heads for the same PR within one current-day sample. It can be normal iteration, but is a measured source of repeated check execution.",
+    "sample_causality": "UNKNOWN_MAIN_DRIFT_VS_DEVELOPER_ITERATION",
+    "provider_authority": "existing one bounded completed-actions-runs API page",
+    "partial_history": "explicitly disclose sampled lower bounds and provider pagination; never claim full organization CI cost",
+    "outcome": "read-only agent advice to evaluate GitHub native merge queue with admin and complete merge_group checks, not install or change protected policy",
+    "current_policy_writes": false,
+    "performance_gain_verified": false,
+    "evaluation_test": "tests/brain-ci-required-head-churn-v1.test.mjs"
   }
 }
