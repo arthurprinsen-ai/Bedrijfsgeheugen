@@ -379,8 +379,11 @@
 # Deploy previews zijn bewust een exacte kopie van de productie-build.
 # Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
 # alternatieve preview-composer meer die een andere website kan tonen.
+# Required independent deploy-preview evidence must not be suppressed by a
+# cached-commit heuristic. Production continues using its selective ignore.
 [context.deploy-preview]
   command = "node tools/ci/netlify-build-entry.mjs"
+  ignore = "exit 1"
 
 [[redirects]]
   from = "/aanmelden.html"
