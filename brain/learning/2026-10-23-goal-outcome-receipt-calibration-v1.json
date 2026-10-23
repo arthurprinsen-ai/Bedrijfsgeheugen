@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "portal|goal-learning|status-or-reused-source-trains-calibration|20261023-v1",
+  "obligation_id": "portal|goal-outcome|verified-receipt-calibration|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_UNVERIFIED",
+  "failure_class": "GOAL_CALIBRATION_FALSE_VERIFICATION",
+  "root_cause": "brain/context/goal-outcome-learning.mjs accepted verified/healthy/status labels or a mere source reference as independent realized outcome proof; duplicate record IDs and repeated receipt references could meet the three-outcome calibration threshold. Number(null) and blank strings were parsed as measured zero.",
+  "observed_evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/146f90e33a1c13cae87e6056ab20cd5af44dbe52/brain/context/goal-outcome-learning.mjs",
+    "old_logic": "verified(item) accepted status/healthy/refs with OR; calibration took all verified records without receipt dedupe.",
+    "proved_customer_impact": null,
+    "baseline_model_calibration_quality": null,
+    "live_tenant_data_readback": null
+  },
+  "failed_approaches": [
+    "Counting VERIFIED status as proof without outcome receipt",
+    "Reusing the same receipt as multiple independent historical observations",
+    "Treating missing measured effect as a numeric zero"
+  ],
+  "fix": "Existing goal-outcome learning now demands affirmative realized outcome verification AND nonempty canonical outcome evidenceIds; rejects explicit negative statuses, filters missing effects, and deduplicates within the same learning evaluation by outcome identity and reused proof IDs. No added scheduler, DB, AI model or parallel source of truth.",
+  "prevention_rule": "Only unique evidence-linked, affirmative and quantified realized outcomes count toward the threshold of three. Source refs, completion, expected values and UI health are not outcome evidence. Outcome receipts still need independent provider/tenant validation before production economic truth claims.",
+  "regression_tests": [
+    "tests/brain-goal-outcome-learning.test.mjs",
+    "tests/brain-goal-outcome-proof-calibration-v1.test.mjs",
+    "tests/brain-goal-scenario-engine.test.mjs"
+  ],
+  "existing_daily_owner": ".github/workflows/universal-closed-loop-learning.yml",
+  "canonical_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+  "compiler": {
+    "failure_class": "GOAL_CALIBRATION_FALSE_VERIFICATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-outcome-proof-calibration-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-outcome-proof-calibration-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-goal-outcome-proof-calibration-v1.test.mjs"
+    ],
+    "invariants": [
+      "Three independently referenced records are a minimum calibration precondition",
+      "Outcome IDs and receipt IDs count once across a learning evaluation",
+      "Explicit pending/rejected outcomes are excluded",
+      "Zero-value assumption is not fabricated from null/blank/malformed observations",
+      "No bypass of JWT-scoped tenant source or Required/CodeQL gates"
+    ]
+  },
+  "test_evidence": {
+    "local_pure_logic_assertions": 7,
+    "exact_head_required": null,
+    "exact_head_codeql": null,
+    "provider_release_readback": null,
+    "customer_result_proven": false
+  },
+  "terminal_rule": "Candidate until protected exact-head Required/CodeQL, branch protection, protected merge, independent production/provider readback and canonical Brain writeback; no claim of measured better customer results."
+}
