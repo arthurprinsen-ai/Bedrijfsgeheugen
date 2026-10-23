@@ -61,7 +61,7 @@ export function buildSupervisorDailyLearning({supervisor,ci=null,releaseEvidence
     status:sampleValid?'OBSERVED_EVIDENCE_ADVISORY_ONLY':'INCOMPLETE_SUPERVISOR_EVIDENCE',
     supervisor_run_ids:sampleValid?supervisor.runs.map(run=>run.run_id):[],
     repeated_drift_prs:Array.isArray(repeated)?repeated:null,
-    writer_lease_denials:categories?.WRITER_LEASE_MISSING??null,
+    writer_lease_denials:categories?.MISSING_EXACT_TERMINAL_WRITER_LEASE??categories?.WRITER_LEASE_MISSING??null,
     cas_or_provider_rejections_unverified:categories?.CAS_OR_PROVIDER_REJECTION_UNVERIFIED??null,
     confirmed_stale_head_cas_rejections:null,
     ci_distinct_runs_sampled:ciValid?ci.distinct_runs??null:null,
