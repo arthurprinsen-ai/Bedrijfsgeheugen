@@ -5,6 +5,11 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Adaptief lezen op basis van echt meetbewijs — 23 oktober 2026
+
+Bestaande run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823): 12 runs, 17 jobs, 10 distinct, 0 providerleesfouten, dus p50/p95 correct NULL. Hergebruik exact hetzelfde meetartefact en dezelfde uurlijkse Repository Janitor, niet een nieuwe scheduler. Bounded adaptieve selectie leest tot maximaal 24 runs, stopt alleen bij minimaal 20 valide jobs uit 5 distinct runpogingen zonder enige eerdere read-error, en houdt onvolledige readback volledig rood/onbekend. Geen wijziging aan Required, CodeQL, provider, Supabase, RLS, CLS of releaseautorisatie. Originele regressie `tests/brain-observed-ci-throughput-v1.test.mjs`; canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661).
+
+
 ## Uurlijkse leerbare CI-telemetrie — 23 oktober 2026
 
 De bestaande Repository Janitor observeert GitHub-workflowjobtijdstempels via `tools/delivery/ci-throughput-telemetry.mjs` met per sweep maximaal 12 run-reads, en bewaart uitsluitend `.artifacts/powerhouse-ci-throughput.json`. Dat zijn vroege diagnostische signalen, geen nieuwe scheduler, controlepoort, service of tweede waarheid. `summarizeObservedCiJobs` weigert p50/p95 zonder minstens 20 complete jobs en 5 onafhankelijke runpogingen; incomplete GitHub readback blijft expliciet onbekend. Agents vergelijken pas na meerdere tijdstippen, lane-, cache- en commitprovenance en zonder gesuggereerd prestatiewinstbewijs. Nooit Required, hygiene, CodeQL, provider, CLS, RLS of tenant/finance gates overslaan, extra queues of betaalde compute starten, of GitHub provider-ghosts als opgelost markeren. Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). Test: `tests/brain-observed-ci-throughput-v1.test.mjs`.

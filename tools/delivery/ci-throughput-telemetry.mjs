@@ -1,11 +1,11 @@
 // Existing hourly Powerhouse Repository Janitor's READ-ONLY GitHub CI observation.
-// 1 completed-runs GET and at most 12 job-list GETs. No new scheduler, dispatch,
+// 1 completed-runs GET and at most 24 job-list GETs; stop on the first provider error. No new scheduler, dispatch,
 // check/run mutation, provider-ghost classification or "green" state write.
 import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { summarizeObservedCiJobs } from './predictive-controller.mjs';
 
-const MAX_RUNS=12;
+const MAX_RUNS=24;
 const MAX_AGE_MS=7*24*60*60*1000;
 const OUT='.artifacts/powerhouse-ci-throughput.json';
 function readJson(path){
@@ -31,25 +31,33 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
   ).slice(0,MAX_RUNS);
 
   const observations=[],readErrors=[];
+  let sampledRuns=0;
   for(const run of selected){
+    sampledRuns++;
     try{
       const result=read('repos/'+repo+'/actions/runs/'+run.id+'/jobs?per_page=100');
       if(!Array.isArray(result?.jobs)||!Number.isSafeInteger(result?.total_count)||
          result.total_count>result.jobs.length){
-        readErrors.push({run_id:run.id,reason:'JOBS_SNAPSHOT_INCOMPLETE'});continue;
+        readErrors.push({run_id:run.id,reason:'JOBS_SNAPSHOT_INCOMPLETE'});break;
       }
       for(const job of result.jobs)observations.push({run,job});
+      // Stop on independently sufficient evidence. Never hide an earlier read error.
+      if(readErrors.length===0 && summarizeObservedCiJobs(observations).status==='SAMPLED_METRICS_NOT_SLO')break;
     }catch{
       readErrors.push({run_id:run.id,reason:'GITHUB_JOB_READ_UNAVAILABLE'});
+      break;
     }
   }
   const summary=summarizeObservedCiJobs(observations);
   const incomplete=readErrors.length>0;
   return {
     ...summary,
+    // A provider error suppresses even attribution-only hotspots.
+    diagnostic_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',jobs:[]}:summary.diagnostic_hotspots,
     observed_at:new Date(now).toISOString(),
     repository:repo,
-    workflow_runs_sampled:selected.length,
+    workflow_runs_sampled:sampledRuns,
+    provider_reads_attempted:sampledRuns+1,
     requested_run_read_limit:MAX_RUNS,
     workflow_runs_available:records.workflow_runs.length,
     read_errors:readErrors,
@@ -74,6 +82,7 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       sample_jobs:result.sample_jobs,distinct_runs:result.distinct_runs,
       p50_wait_to_start_ms:result.p50_wait_to_start_ms,
       p95_wait_to_start_ms:result.p95_wait_to_start_ms,
+      slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
       read_errors:result.read_errors.length
     }));
     if(result.read_errors.length)process.exitCode=2;
