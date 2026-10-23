@@ -42,6 +42,21 @@ jobs:
         run: |
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
+          metrics_file="$(mktemp)"
+          : > "$metrics_file"
+          emit_metric() {
+            printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$metrics_file"
+          }
+          finalize_metrics() {
+            code="$1"
+            trap - EXIT
+            if ! RECOVERY_METRICS_TSV="$metrics_file" RECOVERY_METRICS_EXIT_CODE="$code" node tools/delivery/recovery-supervisor-metrics.mjs; then
+              echo "::error::RECOVERY_DRIFT_METRICS_WRITE_FAILED"
+              exit 1
+            fi
+            exit "$code"
+          }
+          trap 'finalize_metrics "$?"' EXIT
 
           # Reap proven zombie Actions runs before evaluating the circuit breaker.
           # Cancellation is allowed only when the run is stale AND its delivery
@@ -164,6 +179,7 @@ jobs:
           [ "$effective_active_runs" -ge 0 ] || effective_active_runs=0
           echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs provider_zombies:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
           if [ "$effective_active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
+            emit_metric 0 CIRCUIT_OPEN 0
             echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
             exit 0
           fi
@@ -194,6 +210,7 @@ jobs:
                   if [ "$(jq -r '.head.sha' <<<"$live_pr")" = "$head" ] && [ "$live_body" = "$body" ]; then
                     restore_body="$(sed 's/^Writer-Lease-State: MAIN_SYNC$/Writer-Lease-State: TERMINAL_DELIVERY/' <<<"$body")"
                     gh api --method PATCH "repos/$repo/pulls/$number" -f body="$restore_body" >/dev/null
+                    emit_metric "$number" SYNC_TIMEOUT 0
                     echo "::warning::MAIN_DRIFT_SYNC_TIMED_OUT:PR#$number; preserved attempt budget."
                   fi
                 else
@@ -217,6 +234,7 @@ jobs:
               if [ "$(jq -r '.head.sha' <<<"$live_pr")" != "$head" ] ||
                  [ "$(jq -r '.head.ref' <<<"$live_pr")" != "$branch" ] ||
                  [ "$live_body" != "$body" ]; then
+                emit_metric "$number" SYNC_RACE 0
                 echo "::warning::MAIN_DRIFT_SYNC_RACE:PR#$number metadata changed; no mutation."; continue
               fi
               updated_body="$(printf '%s\n' "$live_body" | awk -v h="$head" -v b="$sync_epoch" '
@@ -229,6 +247,7 @@ jobs:
                 END {if(s!=1||hd!=1||bs!=1||e!=1)exit 42}
               ')"
               gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
+              emit_metric "$number" SYNC_RECONCILED 0
               echo "::notice::MAIN_DRIFT_SYNC_RECONCILED:PR#$number; new exact-head Required and CodeQL still mandatory."
               recovered_prs=$((recovered_prs + 1))
               continue
@@ -334,6 +353,7 @@ jobs:
                 echo "::notice::PR#$number current-head workflow is long-running but still in progress; do not cancel without concrete stalled-job evidence."
                 ;;
               MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY)
+                if [ "$state" = MAIN_DRIFT_RECOVERY ]; then emit_metric "$number" DRIFT_DETECTED 0; fi
                 echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
                 if [ "$head_repo" != "$repo" ]; then
                   echo "::warning::PR#$number is not a same-repository branch; automatic refresh forbidden."
@@ -344,6 +364,7 @@ jobs:
                 lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
                 lease_obligation="$(sed -n 's/^Writer-Lease-Obligation: //p' <<<"$body" | tail -n1)"
                 if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ -z "$lease_owner" ] || [ "$lease_head" != "$head" ] || [ -z "$lease_obligation" ]; then
+                  emit_metric "$number" LEASE_DENIED 0
                   echo "::warning::PR#$number has no exact active terminal writer lease; automatic refresh forbidden."
                   continue
                 fi
@@ -352,7 +373,9 @@ jobs:
                   echo "::warning::MAIN_DRIFT_COUNTER_INVALID:PR#$number"; continue
                 fi
                 [ -n "$drift_count" ] || drift_count=0
+                if [ "$drift_count" -ge 1 ]; then emit_metric "$number" REPEATED_DRIFT "$drift_count"; fi
                 if [ "$drift_count" -ge "$MAX_MAIN_DRIFT_REFRESHES" ]; then
+                  emit_metric "$number" BUDGET_EXHAUSTED "$drift_count"
                   echo "::warning::MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED:PR#$number"; continue
                 fi
                 default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
@@ -414,7 +437,9 @@ jobs:
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   continue
                 fi
+                emit_metric "$number" CAS_REQUEST "$next_drift_count"
                 if gh api --method PUT "repos/$repo/pulls/$number/update-branch" -f expected_head_sha="$head" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
+                  emit_metric "$number" CAS_ACCEPTED "$next_drift_count"
                   new_head="$head"
                   for readback_attempt in 1 2 3 4 5 6 7 8; do
                     new_head="$(gh api "repos/$repo/pulls/$number" --jq '.head.sha')"
@@ -422,6 +447,7 @@ jobs:
                     sleep 2
                   done
                   if [ "$new_head" = "$head" ]; then
+                    emit_metric "$number" CAS_ASYNC_PENDING "$next_drift_count"
                     echo "::warning::MAIN_DRIFT_ASYNC_PENDING:PR#$number; held for reconciliation."
                     continue
                   fi
@@ -451,10 +477,12 @@ jobs:
           NODE
                   )"
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
+                  emit_metric "$number" CAS_PROVEN "$next_drift_count"
                   echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; MAIN_SYNC lease returned to exact TERMINAL_DELIVERY."
                   recovered_prs=$((recovered_prs + 1))
                   echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 else
+                  emit_metric "$number" CAS_REJECTED "$next_drift_count"
                   echo "::warning::PR#$number could not be refreshed automatically; restoring terminal lease fail-closed."
                   rejected_head="$(gh api "repos/$repo/pulls/$number" --jq '.head.sha' 2>/dev/null || echo unknown)"
                   rejected_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""' 2>/dev/null || echo '')"
@@ -472,6 +500,15 @@ jobs:
               echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
             fi
           done < <(jq -c '.[]' /tmp/open-prs.json)
+
+      - name: Upload source-observed Recovery Supervisor evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-recovery-drift-evidence
+          path: .artifacts/powerhouse-recovery-drift-evidence.json
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Recover merged obligations missing terminal closure
         env:
