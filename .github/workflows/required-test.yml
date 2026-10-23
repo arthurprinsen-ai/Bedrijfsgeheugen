@@ -168,7 +168,7 @@ jobs:
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
-          import { evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
+          import { evaluateBranchHygiene, resolvePRScopeMergeBase } from './tools/delivery-branch-hygiene-guard.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const context=normalizeGitHubDeliveryEvent({
@@ -202,13 +202,31 @@ jobs:
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
+          // For a diverged PR, GitHub's merge base is the scope authority.
+          // A two-dot diff from today's main includes unrelated main edits.
+          // Non-PR and merge-group delivery retain their event-base scope.
+          const providerBaseSha=context.prNumber && context.baseSha ? context.baseSha : comparisonBaseSha;
+          const prComparison=context.prNumber && ['pull_request','workflow_dispatch'].includes(process.env.EVENT_NAME)
+            ? JSON.parse(execFileSync('gh',[
+                'api',
+                `repos/${process.env.GITHUB_REPOSITORY}/compare/${providerBaseSha}...${context.changeHeadSha}`,
+              ],{encoding:'utf8'}))
+            : null;
+          const scopeBase=resolvePRScopeMergeBase({
+            eventName:process.env.EVENT_NAME,
+            prNumber:context.prNumber,
+            baseSha:providerBaseSha,
+            headSha:context.changeHeadSha,
+            comparison:prComparison,
+          });
+          const diffBaseSha=scopeBase.sha;
           try {
-            execFileSync('git',['cat-file','-e',`${comparisonBaseSha}^{commit}`],{stdio:'ignore'});
+            execFileSync('git',['cat-file','-e',`${diffBaseSha}^{commit}`],{stdio:'ignore'});
           } catch {
-            console.log(`TARGETED_BASE_FETCH:${comparisonBaseSha}`);
-            execFileSync('git',['fetch','--no-tags','--depth=1','origin',comparisonBaseSha],{stdio:'inherit'});
+            console.log(`TARGETED_SCOPE_BASE_FETCH:${diffBaseSha}`);
+            execFileSync('git',['fetch','--no-tags','--depth=1','origin',diffBaseSha],{stdio:'inherit'});
           }
-          const changedPaths=execFileSync('git',['diff','--name-only',comparisonBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const changedPaths=execFileSync('git',['diff','--name-only',diffBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
           const databaseRelevantSupabase=changedPaths.some(path =>
@@ -220,7 +238,7 @@ jobs:
           if(changedPaths.includes('supabase/config.toml')){
             const probe="import subprocess,sys,tomllib; base,head=sys.argv[1:3]; load=lambda ref: tomllib.loads(subprocess.check_output(['git','show',f'{ref}:supabase/config.toml']).decode('utf-8')); norm=lambda config:{k:v for k,v in config.items() if k!='functions'}; raise_code=0 if norm(load(base))==norm(load(head)) else 1; sys.exit(raise_code)";
             try {
-              execFileSync('python3',['-c',probe,comparisonBaseSha,context.changeHeadSha],{stdio:'pipe'});
+              execFileSync('python3',['-c',probe,diffBaseSha,context.changeHeadSha],{stdio:'pipe'});
               supabaseConfigDatabaseRelevant=false;
             } catch {
               supabaseConfigDatabaseRelevant=true;
@@ -236,8 +254,8 @@ jobs:
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\ndependency_review_required=${dependencyReviewRequired}\n`);
-          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,netlifyApplicability},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${diffBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\ndependency_review_required=${dependencyReviewRequired}\n`);
+          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,scopeBase,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,netlifyApplicability},null,2));
           NODE
       - name: Evaluate changed Brain learning before protected merge
         env:

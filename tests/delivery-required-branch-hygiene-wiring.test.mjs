@@ -97,3 +97,13 @@ test('merged same-repository branches are deleted only after exact-head verifica
   assert.match(mergedBranchCleanup, /EXACT_MERGED_HEAD_REMOVED/);
   assert.match(mergedBranchCleanup, /Upload merged branch cleanup evidence/);
 });
+
+test('Required computes a verified merge-base for stale PRs without loosening scope guard', () => {
+  assert.match(workflow, /resolvePRScopeMergeBase/);
+  assert.match(workflow, /compare\/\$\{providerBaseSha\}\.\.\.\$\{context\.changeHeadSha\}/);
+  assert.match(workflow, /const diffBaseSha=scopeBase\.sha/);
+  assert.match(workflow, /'diff','--name-only',diffBaseSha,context\.changeHeadSha/);
+  assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
+  assert.match(workflow, /base_sha=\$\{diffBaseSha\}/);
+  assert.match(workflow, /SUPABASE_PREVIEW/);
+});
