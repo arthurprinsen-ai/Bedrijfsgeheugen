@@ -57,7 +57,7 @@ test('a missing provider log suppresses performance claims, not fabricating zero
   assert.equal(fetched,2);
   assert.equal(result.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(result.p95_supervisor_job_duration_ms,null);
-  assert.deepEqual(result.repeated_drift_prs,[]);
+  assert.equal(result.repeated_drift_prs,null);
   assert.equal(result.read_errors.length,1);
 });
 test('six bounded runs are read; schedule and manual executions stay separate',()=>{
@@ -123,4 +123,24 @@ test('no annotation spoofing or untrusted empty lease can be counted as owner re
   const valid=parseSupervisorAnnotations(iso(0)+' ##[warning]'+text,99);
   assert.equal(valid.length,1);
   assert.equal(valid[0].category,'MISSING_EXACT_TERMINAL_WRITER_LEASE');
+});
+
+
+test('retired #4792 actual runtime drift marker survives without counting successful sync as new drift',()=>{
+  const raw=[
+    iso(0)+' PR#4594 '+SHA+' MAIN_DRIFT_RECOVERY',
+    iso(0)+' ##[warning]PR#4594 has no exact active terminal writer lease; automatic refresh forbidden.',
+    iso(0)+' echo "PR#4774 '+SHA+' MAIN_DRIFT_RECOVERY"',
+    iso(0)+' ##[notice]MAIN_DRIFT_SYNC_RECONCILED:PR#4774; exact Required and CodeQL still mandatory.'
+  ].join('\n');
+  const first=parseSupervisorAnnotations(raw,39960974891);
+  assert.deepEqual(first.map(row=>row.pr_number),[4594,4594,4774]);
+  assert.equal(first[1].category,'MISSING_EXACT_TERMINAL_WRITER_LEASE');
+  const summary=summarizeSupervisorEvidence({events:[
+    ...first,...parseSupervisorAnnotations(raw,39960974892)
+  ],observedAt:iso(0)});
+  assert.deepEqual(summary.repeated_drift_prs,[4594]);
+  assert.equal(summary.observed_event_categories.MISSING_EXACT_TERMINAL_WRITER_LEASE,2);
+  assert.equal(summary.per_pr.find(x=>x.pr_number===4774).repeated_drift_observed,false);
+  assert.equal(summary.can_mutate,false);
 });
