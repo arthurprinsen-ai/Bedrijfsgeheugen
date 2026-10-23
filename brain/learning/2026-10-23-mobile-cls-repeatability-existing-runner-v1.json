@@ -29,5 +29,17 @@
       "tests/brain-mobile-cls-repeatability-20261023.test.mjs"
     ]
   },
-  "status": "CANDIDATE_DIAGNOSTIC_NOT_PROOF_OF_ZERO_FUTURE_CLS"
+  "status": "CANDIDATE_DIAGNOSTIC_NOT_PROOF_OF_ZERO_FUTURE_CLS",
+  "manual_dispatch_proof_gap": {
+    "root_cause": "The existing GitHub workflow_dispatch triggered production base URL while setting ASSURANCE_MODE=pr; the live 20-sample mobile CLS replay only ran when ASSURANCE_MODE=daily. Thus a manual green run could not establish independent production repeatability. The physical cause of remaining intermittent mobile CLS is still UNPROVEN until measured.",
+    "prevention": "Route both native schedule and workflow_dispatch through unchanged daily assurance within the same existing workflow, preserve fail-closed 0.100 threshold and 20 samples, and add repeatability regression contract to the workflow. No additional scheduler or alternate provider.",
+    "evidence": {
+      "fix_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4730",
+      "source_fix_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4651",
+      "existing_guard_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4729",
+      "first_admission_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39913153581",
+      "live_20_sample_readback": "PENDING_INDEPENDENT_NATIVE_PRODUCTION_DISPATCH"
+    },
+    "regression_contract": "tests/brain-mobile-cls-repeatability-20261023.test.mjs"
+  }
 }
