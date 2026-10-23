@@ -12,11 +12,13 @@
     "GitHub Actions Powerhouse Resource Intelligence run #39937291073, job #120359836809: RESOURCE_INTELLIGENCE_AUDIT_FAILED missing required artifact supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
     "Existing tests/powerhouse-resource-intelligence-contract.test.mjs uses existing supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql",
     "Supabase production applied schema_migrations contains version 20260917094812 and version 20260917094941; the nonexistent 20260917093000 was not applied",
-    "Verified committed 20260917094812 SHA 51c13c5c298523278dad440da8dbbbc3ab11c977; canonical units energy_kwh, water_liters, co2e_kg; quantity filters preserve NULL; production authority BG169"
+    "Verified committed 20260917094812 SHA 51c13c5c298523278dad440da8dbbbc3ab11c977; canonical units energy_kwh, water_liters, co2e_kg; quantity filters preserve NULL; production authority BG169",
+    "Initial PR #4758 Required #39938691372 correctly blocked non-canonical evaluation path LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/powerhouse-resource-intelligence-contract.test.mjs. Existing original test restored unchanged; new dedicated tests/brain-*-v1.test.mjs executes the real audit without weakening canonicalization."
   ],
   "fix": "Align existing read-only scheduled audit to canonical committed migration, verify actual nullable measures, business value, factor coverage, provenance and safe rollback contracts. Add executed regression using existing audit contract test. Do not create, reapply, delete or rewrite production migration or physical telemetry.",
   "prevention_rule": "All scheduled resource audits, contract tests and deployment checks refer to the same canonical migration identity. Real energy is kWh, water liters, carbon kgCO2e. Unknown sources remain NULL, never zero. No guessed provider cost, carbon, water, money or demonstrated savings. Audit must remain fail-closed on missing canonical source or security boundaries and use unchanged Required/CodeQL/Netlify rules.",
   "tests": [
+    "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs",
     "tests/powerhouse-resource-intelligence-contract.test.mjs"
   ],
   "skill_targets": [
@@ -32,13 +34,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-resource-intelligence-contract.test.mjs"
+      "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-resource-intelligence-contract.test.mjs"
+      "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-resource-intelligence-contract.test.mjs"
+      "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs"
     ],
     "invariants": [
       "Resource Intelligence scheduled audit must find committed production-backed migration 20260917094812",
