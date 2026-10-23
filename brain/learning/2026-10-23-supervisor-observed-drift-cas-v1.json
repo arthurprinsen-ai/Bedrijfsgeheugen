@@ -1,0 +1,34 @@
+{
+  "fingerprint": "ci|supervisor|provider-runs-repeated-drift-cas-observation|20261023-v1",
+  "parent_issue": 4661,
+  "owner": "Existing hourly Repository Janitor + native Recovery Supervisor",
+  "status": "CANDIDATE_PENDING_PROTECTED_CI",
+  "root_cause": "Successful supervisor job is not a validated release, while repeated drift and CAS/provider rejection classifications were not measured across actual independent job runs.",
+  "prevention": [
+    "Reuse one existing hourly Janitor for read-only observation",
+    "Preserve native expected-head CAS, one writer per PR and two-attempt budget",
+    "Require complete provider job/log reads for summary statistics",
+    "Use independently validated release and production baselines before tuning"
+  ],
+  "evidence": {
+    "source": "GitHub Actions real workflow jobs, job log annotations and exact PR identifiers",
+    "local_regression": "tests/brain-recovery-supervisor-telemetry-v1.test.mjs",
+    "sampled_schedule_runs": "NOT_YET_VERIFIED_POST_MERGE",
+    "time_to_green": "UNMEASURED",
+    "time_to_production": "UNMEASURED",
+    "speedup": "NOT_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "acceptance": {
+    "protected_required": "PENDING",
+    "codeql": "PENDING",
+    "actual_main_readback": "PENDING",
+    "janitor_artifact_readback": "PENDING"
+  }
+}
