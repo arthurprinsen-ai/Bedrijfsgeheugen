@@ -20,5 +20,24 @@
   ],
   "desired": "better evidence visibility, not yet measured customer lift",
   "release_status": "CANDIDATE_NOT_LIVE",
-  "customer_value_verified": false
+  "customer_value_verified": false,
+  "failure_class": "EVIDENCE_REPORT_GAP",
+  "compiler": {
+    "failure_class": "EVIDENCE_REPORT_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "invariants": [
+      "unknown != success",
+      "outcomes require tenant + independent proof",
+      "no new scheduler",
+      "HTML injection escaped"
+    ]
+  }
 }
