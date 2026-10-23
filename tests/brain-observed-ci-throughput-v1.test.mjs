@@ -44,7 +44,7 @@ test('duplicates, incomplete identities and impossible times cannot become succe
   ];
   const x=summarizeObservedCiJobs(rows);
   assert.equal(x.sample_jobs,1);
-  assert.deepEqual(x.rejected,{invalid_identity:1,partial_job:1,invalid_time:1,duplicate:1});
+  assert.deepEqual(x.rejected,{invalid_identity:1,partial_job:1,non_executed:0,invalid_time:1,duplicate:1});
   assert.equal(x.p95_wait_to_start_ms,null);
 });
 
@@ -114,4 +114,43 @@ test('adaptive budget remains finite and never masks an earlier missing read',as
   assert.equal(x.workflow_runs_sampled,24);
   assert.equal(count,25);
   assert.equal(x.p95_execution_ms,null);
+});
+
+
+test('skipped zero-duration provider jobs never dilute actual p50/p95 or slowest jobs',()=>{
+  const executed=Array.from({length:20},(_,i)=>{
+    const row=sample(100+Math.floor(i/4),1000+i,1000,2000+i*100);
+    row.run.name='Required test';
+    row.job.name=i===19?'browser release check':'backend contract';
+    return row;
+  });
+  const skipped={...sample(999,999,0,0),job:{...sample(999,999,0,0).job,
+    name:'supabase_preview',conclusion:'skipped'}};
+  const x=summarizeObservedCiJobs([...executed,skipped]);
+  assert.equal(x.sample_jobs,20);
+  assert.equal(x.rejected.non_executed,1);
+  assert.equal(x.status,'SAMPLED_METRICS_NOT_SLO');
+  assert.equal(x.p50_execution_ms,2900);
+  assert.equal(x.p95_execution_ms,3800);
+  assert.equal(x.diagnostic_hotspots.status,'SAMPLED_DIAGNOSTIC_NOT_CRITICAL_PATH');
+  assert.equal(x.diagnostic_hotspots.jobs.length,5);
+  assert.equal(x.diagnostic_hotspots.jobs[0].job_name,'browser release check');
+  assert.equal(x.diagnostic_hotspots.jobs[0].execution_ms,3900);
+  assert.ok(x.diagnostic_hotspots.jobs.every(job=>job.conclusion==='success'));
+});
+
+test('provider incomplete / insufficient observations cannot report hotspots',async()=>{
+  const tooSmall=summarizeObservedCiJobs([sample(1,10)]);
+  assert.equal(tooSmall.diagnostic_hotspots.status,'INSUFFICIENT_EVIDENCE');
+  assert.deepEqual(tooSmall.diagnostic_hotspots.jobs,[]);
+  const runs=Array.from({length:24},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  const observed=await collectObservedCiThroughput({repo:'example/repo',now:T+10_000,read:path=>{
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+    if(id===2)throw Error('partial GitHub provider read');
+    return {total_count:3,jobs:Array.from({length:3},(_,i)=>sample(id,id*100+i).job)};
+  }});
+  assert.equal(observed.status,'PARTIAL_PROVIDER_OBSERVATION');
+  assert.equal(observed.diagnostic_hotspots.status,'PARTIAL_PROVIDER_OBSERVATION');
+  assert.deepEqual(observed.diagnostic_hotspots.jobs,[]);
 });
