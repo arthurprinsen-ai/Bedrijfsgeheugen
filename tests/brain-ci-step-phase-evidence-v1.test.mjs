@@ -26,7 +26,7 @@ test('real job steps give repeated 3-attempt step evidence, not a causal path',(
   const phase=summary.step_phase_evidence;
   assert.equal(phase.status,'REPEATED_STEP_SAMPLES_NOT_SLO');
   assert.equal(phase.accepted_step_observations,20);
-  assert.equal(phase.recurrent_phases.length,2);
+  assert.equal(phase.recurrent_phases.length,1); // backend has only two independent attempts
   const top=phase.recurrent_phases[0];
   assert.equal(top.workflow_id,91);
   assert.equal(top.job_name,'preflight');
