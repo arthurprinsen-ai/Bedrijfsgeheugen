@@ -1,0 +1,50 @@
+{
+  "fingerprint": "ci|inherited-baseline|canonical-netlify-phase-order-test-contract|v1",
+  "obligation_id": "baseline-netlify-phase-contract-20261021-v1",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "source_main_sha": "8f322681ba46045e5d65746c2b2f0fd5b40ffac1",
+  "source_evidence": {
+    "failed_brain_run": 39554866582,
+    "backend_job": 119072398429,
+    "portal_pr": 4573,
+    "actual_build_runner": "tools/ci/netlify-build-entry.mjs",
+    "delegation": "netlify.toml"
+  },
+  "observed": {
+    "baseline_failures": 355,
+    "missing_inline_phases_test": true,
+    "actual_runner_phases_present_and_ordered": true
+  },
+  "root_cause": "Old BRAIN contract reads Netlify phases from inline netlify.toml command although exact build authority has moved to tools/ci/netlify-build-entry.mjs.",
+  "change": "Same five phase ordering assertions now target the executable immutable phase list, while verifying production/preview delegation, phase uniqueness and fail-closed subprocess handling.",
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "Test the actual production build authority, not a retired inline configuration format; never skip build phases or exception guards.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-final-build-order-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-final-build-order-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-final-build-order-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "Baseline BRAIN run #39554866582 failed 355, including legacy inline Netlify phase assertion.",
+    "source_validation": "Source inspected: both Netlify contexts call canonical runner, whose immutable phase list orders all five required transformations and aborts on phase nonzero status.",
+    "after": "EXACT_HEAD_CI_NOT_RUN",
+    "customer_acceptance": "NOT_PROVEN"
+  }
+}
