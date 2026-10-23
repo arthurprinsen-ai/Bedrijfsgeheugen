@@ -16,7 +16,7 @@
   "fix": "At the existing materialize-learning input boundary, partition only the recognized source-only research event_type from performance events. Preserve research IDs and counted exclusions as bounded provenance; keep all other invalid events fail closed. Empty performance cohorts produce zero observations, revenue and proven learning.",
   "prevention_rule": "Only exact canonical content IDs with actual content performance may enter attribution. Source research never becomes clicks, orders, income, or a model performance score. Missing content_id for revenue and other measured events must still throw, no dummy or synthesized identifiers. Reuse existing daily workflow, event file, source policies and Brain registry.",
   "tests": [
-    "tests/content-growth-source-boundary.test.mjs",
+    "tests/brain-content-growth-source-boundary.test.mjs",
     "tests/content-growth-attribution.test.mjs"
   ],
   "compiler": {
@@ -28,7 +28,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/content-growth-source-boundary.test.mjs"
+      "tests/brain-content-growth-source-boundary.test.mjs"
     ],
     "invariants": [
       "Source signal does not create revenue or learning",
