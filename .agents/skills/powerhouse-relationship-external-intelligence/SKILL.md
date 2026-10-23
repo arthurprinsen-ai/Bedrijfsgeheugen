@@ -32,3 +32,8 @@ Powerhouse moet bij iedere relevante connectie/klant/bedrijf weten wat er extern
 
 ## Daily full connection enrichment
 Gebruik permanent `powerhouse-daily-full-connection-enrichment-v1`. Iedere canonieke connectie wordt iedere kalenderdag opnieuw verrijkt met alle reeds ingeladen relevante LinkedIn-, bedrijfs-, publieke web-, runtime-, opportunity- en outcome-evidence. De full-graph refresh draait set-based binnen de bestaande `powerhouse-commercial-learning-v1` scheduler. Gedetailleerde evidence blijft in de canonieke bronstores; de dagelijkse enrichment-state is een rollup/provenance-laag en geen parallel CRM. Nieuwe evidence die later op de dag binnenkomt wordt bij de volgende bestaande commerciële cyclus opnieuw op de volledige graph geprojecteerd.
+
+
+## 2026-10-22 — immutable SQL source oracles for historical BRAIN verification
+
+If an inherited contract test must inspect historical SQL that has been correctly retired from executable `supabase/migrations`, reference the exact non-executable `supabase/migration-history/repository-only` source. Preserve every original positive and negative security assertion. Require a regression against missing/empty archive content and executable duplicates; never recreate applied migrations, remove failing tests, waive protected full BRAIN, or infer live status from source-only verification. Fingerprint: `powerhouse|brain|relationship-seo-spine-retired-sql-source-oracles|20261022-v1`.

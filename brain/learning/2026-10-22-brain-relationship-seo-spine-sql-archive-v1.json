@@ -1,0 +1,50 @@
+{
+  "fingerprint": "powerhouse|brain|relationship-seo-spine-retired-sql-source-oracles|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation_id": "ci-brain-retired-sql-source-relationship-seo-spine-20261022",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "blocked_portal_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4573",
+  "root_causes": [
+    "Five inherited BRAIN test modules read seven deleted executable SQL migration paths. Each exact historical SQL source survives as a non-executable repository-only archive."
+  ],
+  "prevention": [
+    "All original positive and negative assertions remain unchanged; repair only seven SQL oracle read paths.",
+    "Never restore history as executable duplicate migrations or substitute blank SQL. Keep Required CI, CodeQL and complete BRAIN zero-fail gating."
+  ],
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39671036043",
+    "baseline_tests": 3511,
+    "baseline_failed": 321,
+    "regression": "tests/brain-inherited-relationship-seo-spine-archive-v1.test.mjs",
+    "source_git_blob_shas": {
+      "20260928114500_powerhouse_linkedin_sales_machine_v1.sql": "4b56a5333818c81b7e074341182460d3dc45a992",
+      "20260928115000_powerhouse_linkedin_sales_machine_cycle_v1.sql": "5507619ad8dd309010e12e02eda8c3e1c00a024f",
+      "20260928173100_powerhouse_relationship_external_intelligence_v1.sql": "ce3e9d346de8274d8356a6ee841c67ad3229e5e0",
+      "20260924072500_powerhouse_seo_opportunity_resolver_v1.sql": "6a9ba57a8a97edf16fee5c21f243ac6729962d40",
+      "20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql": "b8f754c43c6d872232148a2dee07e3c11c32b8aa",
+      "20260918102000_powerhouse_data_spine_heartbeat_truth_v1.sql": "7d292f0c897f14b8b5bedb06ed786b8f0055a222",
+      "20260918104500_sales_action_signal_cycle_materializer_v1.sql": "024fa031562eb1f374da17f00bed9735c13bb2ff"
+    },
+    "full_brain": "PENDING",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-inherited-relationship-seo-spine-archive-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-inherited-relationship-seo-spine-archive-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-inherited-relationship-seo-spine-archive-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_UNVERIFIED"
+}

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918104500_sales_action_signal_cycle_materializer_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918104500_sales_action_signal_cycle_materializer_v1.sql','utf8');
 
 test('sales actions materialize one deterministic signal-stage cycle',()=>{
   assert.match(sql,/cycle_id,subject_key,source_signal_ref,current_stage,status/);
