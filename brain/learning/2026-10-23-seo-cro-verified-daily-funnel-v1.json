@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "growth|seo-cro|verified-daily-funnel|20261023-v1",
+  "fingerprint": "growth|daily-intelligence|missing-page-funnel-and-unconfigured-role-fallback|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "DAILY_GROWTH_SCORECARD_WITHOUT_CANONICAL_CRO_FUNNEL_OR_VALID_ROLE_FALLBACK",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Daily canonical Growth Intelligence used keyword and sales context without joining observed page-level GSC metrics, behavior events and outcomes. Its PostgREST default credential chain ignored the existing EU-project-matched SUPABASE_SERVICE_ROLE_KEY.",
+  "observed_evidence": {
+    "netlify_published_sha": "4f95802e3fd2cb84a3e272d7a15cd2e9832a0ef4",
+    "netlify_deploy_state": "ready",
+    "daily_schedule": "0 6 * * *",
+    "configured_project_matched_role_key": true,
+    "real_daily_cro_readback": false,
+    "real_sales_impact_proven": false
+  },
+  "fix": "Add bounded source reads and deterministic CRO prioritization within existing daily Netlify function; use same-project checked existing service role; persist evidence-backed non-publication terminal decisions and scorecard.",
+  "prevention_rule": "No daily CRO claim without source freshness and sample coverage; never equate CTA clicks with customers or sales, never send cross-project service-role credentials, never auto-publish copy without real challenger evidence and protected readback.",
+  "tests": [
+    "tests/seo-growth-daily-conversion-planner.test.mjs",
+    "tests/brain-seo-cro-execute-or-explain-v1.test.mjs",
+    "tests/growth-intelligence-daily.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-growth-daily-conversion-planner.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/growth-intelligence-daily.test.mjs"
+    ],
+    "invariants": [
+      "one existing scheduler",
+      "service role exact project match",
+      "no guessed zero outcomes",
+      "source freshness and bounded samples",
+      "max three observations",
+      "no unverified publication or revenue"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_sales_proven": false
+  }
+}
