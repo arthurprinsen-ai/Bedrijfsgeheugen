@@ -36,10 +36,15 @@
     "scope": "GITHUB",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": false
+    "security_sensitive": false,
+    "failure_class": "CI"
   },
   "evaluation": {
-    "historical_replay": true,
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs",
+      "tests/brain-recovery-supervisor-daily-learning-v2.test.mjs",
+      "tests/brain-recovery-supervisor-owner-claims-v2.test.mjs"
+    ],
     "independent_production_observation": false,
     "benchmark_proven": false
   },
