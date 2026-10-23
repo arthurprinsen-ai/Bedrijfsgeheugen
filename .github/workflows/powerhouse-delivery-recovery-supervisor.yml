@@ -15,7 +15,8 @@ permissions:
 
 concurrency:
   group: powerhouse-delivery-recovery-supervisor
-  cancel-in-progress: true
+  # Do not interrupt a branch-sync writer during its CAS/readback.
+  cancel-in-progress: false
 
 jobs:
   supervise:
@@ -33,6 +34,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTIVE_RUN_CIRCUIT_BREAKER: '12'
           RECOVERY_PR_BUDGET: '1'
+          MAX_MAIN_DRIFT_REFRESHES: '2'
           STALE_QUEUE_MIN_AGE_SECONDS: '60'
           STALE_QUEUE_CANCEL_BUDGET: '100'
           STALE_IN_PROGRESS_MIN_AGE_SECONDS: '300'
@@ -179,6 +181,58 @@ jobs:
             updated="$(jq -r '.updated_at' <<<"$pr")"
             body="$(jq -r '.body // ""' <<<"$pr")"
             head_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
+            # Reconcile only the same native CAS writer; never create a second update.
+            early_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+            if [ "$early_state" = MAIN_SYNC ] && grep -Eq '^Writer-Lease-Drift-Refreshes: [0-9]+$' <<<"$body"; then
+              old_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+              sync_epoch="$(sed -n 's/^Writer-Lease-Main-Epoch: //p' <<<"$body" | tail -n1)"
+              if [ "$head" = "$old_head" ]; then
+                updated_epoch="$(date -u -d "$updated" +%s 2>/dev/null || echo 0)"
+                if [ "$updated_epoch" -gt 0 ] && [ $((now_epoch - updated_epoch)) -ge 600 ]; then
+                  live_pr="$(gh api "repos/$repo/pulls/$number")"
+                  live_body="$(jq -r '.body // ""' <<<"$live_pr")"
+                  if [ "$(jq -r '.head.sha' <<<"$live_pr")" = "$head" ] && [ "$live_body" = "$body" ]; then
+                    restore_body="$(sed 's/^Writer-Lease-State: MAIN_SYNC$/Writer-Lease-State: TERMINAL_DELIVERY/' <<<"$body")"
+                    gh api --method PATCH "repos/$repo/pulls/$number" -f body="$restore_body" >/dev/null
+                    echo "::warning::MAIN_DRIFT_SYNC_TIMED_OUT:PR#$number; preserved attempt budget."
+                  fi
+                else
+                  echo "::notice::MAIN_DRIFT_SYNC_PENDING:PR#$number; no duplicate update."
+                fi
+                continue
+              fi
+              if ! [[ "$old_head" =~ ^[0-9a-f]{40}$ && "$sync_epoch" =~ ^[0-9a-f]{40}$ ]]; then
+                echo "::warning::MAIN_DRIFT_SYNC_UNVERIFIED:PR#$number invalid ancestry inputs."; continue
+              fi
+              old_proof="$(gh api "repos/$repo/compare/$old_head...$head" 2>/dev/null || echo '{}')"
+              base_proof="$(gh api "repos/$repo/compare/$sync_epoch...$head" 2>/dev/null || echo '{}')"
+              if [ "$(jq -r '.status // ""' <<<"$old_proof")" != ahead ] ||
+                 [ "$(jq -r '.behind_by // -1' <<<"$old_proof")" != 0 ] ||
+                 [ "$(jq -r '.status // ""' <<<"$base_proof")" != ahead ] ||
+                 [ "$(jq -r '.behind_by // -1' <<<"$base_proof")" != 0 ]; then
+                echo "::warning::MAIN_DRIFT_SYNC_UNVERIFIED:PR#$number ancestry not proven."; continue
+              fi
+              live_pr="$(gh api "repos/$repo/pulls/$number")"
+              live_body="$(jq -r '.body // ""' <<<"$live_pr")"
+              if [ "$(jq -r '.head.sha' <<<"$live_pr")" != "$head" ] ||
+                 [ "$(jq -r '.head.ref' <<<"$live_pr")" != "$branch" ] ||
+                 [ "$live_body" != "$body" ]; then
+                echo "::warning::MAIN_DRIFT_SYNC_RACE:PR#$number metadata changed; no mutation."; continue
+              fi
+              updated_body="$(printf '%s\n' "$live_body" | awk -v h="$head" -v b="$sync_epoch" '
+                BEGIN {s=0;hd=0;bs=0;e=0}
+                /^Writer-Lease-State:/ {print "Writer-Lease-State: TERMINAL_DELIVERY";s++;next}
+                /^Writer-Lease-Head:/ {print "Writer-Lease-Head: " h;hd++;next}
+                /^Base-SHA:/ {print "Base-SHA: " b;bs++;next}
+                /^Writer-Lease-Main-Epoch:/ {print "Writer-Lease-Main-Epoch: " b;e++;next}
+                {print}
+                END {if(s!=1||hd!=1||bs!=1||e!=1)exit 42}
+              ')"
+              gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
+              echo "::notice::MAIN_DRIFT_SYNC_RECONCILED:PR#$number; new exact-head Required and CodeQL still mandatory."
+              recovered_prs=$((recovered_prs + 1))
+              continue
+            fi
             mergeable="$(gh api "repos/$repo/pulls/$number" --jq '.mergeable')"
             refresh_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
             compare_json="$(gh api "repos/$repo/compare/$refresh_main_sha...$head" 2>/dev/null || echo '{}')"
@@ -293,6 +347,14 @@ jobs:
                   echo "::warning::PR#$number has no exact active terminal writer lease; automatic refresh forbidden."
                   continue
                 fi
+                drift_count="$(sed -n 's/^Writer-Lease-Drift-Refreshes: //p' <<<"$body" | tail -n1)"
+                if [ -n "$drift_count" ] && ! [[ "$drift_count" =~ ^[0-9]+$ ]]; then
+                  echo "::warning::MAIN_DRIFT_COUNTER_INVALID:PR#$number"; continue
+                fi
+                [ -n "$drift_count" ] || drift_count=0
+                if [ "$drift_count" -ge "$MAX_MAIN_DRIFT_REFRESHES" ]; then
+                  echo "::warning::MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED:PR#$number"; continue
+                fi
                 default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
                 if [ -z "$merge_base" ]; then
                   echo "::warning::PR#$number main refresh compare could not prove a merge base; automatic refresh forbidden."
@@ -306,7 +368,17 @@ jobs:
                   printf '%s\n' "$path_overlap"
                   continue
                 fi
-                current_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
+                fresh_pr="$(gh api "repos/$repo/pulls/$number")"
+                fresh_main="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+                if [ "$(jq -r '.head.sha' <<<"$fresh_pr")" != "$head" ] ||
+                   [ "$(jq -r '.head.ref' <<<"$fresh_pr")" != "$branch" ] ||
+                   [ "$fresh_main" != "$refresh_main_sha" ]; then
+                  echo "::warning::MAIN_DRIFT_PREFLIGHT_CHANGED:PR#$number"; continue
+                fi
+                current_body="$(jq -r '.body // ""' <<<"$fresh_pr")"
+                if [ "$current_body" != "$body" ]; then
+                  echo "::warning::MAIN_DRIFT_LEASE_BODY_CHANGED:PR#$number"; continue
+                fi
                 pre_sync_body="$(printf '%s\n' "$current_body" | awk -v sync_main="$refresh_main_sha" '
           BEGIN { state_count=0; epoch_count=0 }
           {
@@ -326,6 +398,12 @@ jobs:
             if (state_count != 1 || epoch_count != 1) exit 42
           }
           ')"
+                next_drift_count=$((drift_count + 1))
+                if grep -q '^Writer-Lease-Drift-Refreshes:' <<<"$pre_sync_body"; then
+                  pre_sync_body="$(sed -E "s/^Writer-Lease-Drift-Refreshes: .*/Writer-Lease-Drift-Refreshes: $next_drift_count/" <<<"$pre_sync_body")"
+                else
+                  pre_sync_body="$(printf '%s\nWriter-Lease-Drift-Refreshes: %s\n' "$pre_sync_body" "$next_drift_count")"
+                fi
                 gh api --method PATCH "repos/$repo/pulls/$number" -f body="$pre_sync_body" >/dev/null
                 sync_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
                 sync_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$sync_body" | tail -n1)"
@@ -336,8 +414,26 @@ jobs:
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   continue
                 fi
-                if gh api --method POST "repos/$repo/merges" -f base="$branch" -f head="$refresh_main_sha" -f commit_message="delivery: refresh PR #$number from $default_branch@$refresh_main_sha" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
-                  new_head="$(gh api "repos/$repo/branches/$branch" --jq '.commit.sha')"
+                if gh api --method PUT "repos/$repo/pulls/$number/update-branch" -f expected_head_sha="$head" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
+                  new_head="$head"
+                  for readback_attempt in 1 2 3 4 5 6 7 8; do
+                    new_head="$(gh api "repos/$repo/pulls/$number" --jq '.head.sha')"
+                    [ "$new_head" != "$head" ] && break
+                    sleep 2
+                  done
+                  if [ "$new_head" = "$head" ]; then
+                    echo "::warning::MAIN_DRIFT_ASYNC_PENDING:PR#$number; held for reconciliation."
+                    continue
+                  fi
+                  head_proof="$(gh api "repos/$repo/compare/$head...$new_head" 2>/dev/null || echo '{}')"
+                  main_proof="$(gh api "repos/$repo/compare/$refresh_main_sha...$new_head" 2>/dev/null || echo '{}')"
+                  if [ "$(jq -r '.status // ""' <<<"$head_proof")" != ahead ] ||
+                     [ "$(jq -r '.behind_by // -1' <<<"$head_proof")" != 0 ] ||
+                     [ "$(jq -r '.status // ""' <<<"$main_proof")" != ahead ] ||
+                     [ "$(jq -r '.behind_by // -1' <<<"$main_proof")" != 0 ]; then
+                    echo "::warning::MAIN_DRIFT_UPDATE_UNVERIFIED:PR#$number; held for provenance."
+                    continue
+                  fi
                   new_main="$refresh_main_sha"
                   current_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
                   updated_body="$(PR_BODY="$current_body" NEW_HEAD="$new_head" NEW_MAIN="$new_main" node --input-type=module - <<'NODE'
@@ -360,7 +456,13 @@ jobs:
                   echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 else
                   echo "::warning::PR#$number could not be refreshed automatically; restoring terminal lease fail-closed."
-                  gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
+                  rejected_head="$(gh api "repos/$repo/pulls/$number" --jq '.head.sha' 2>/dev/null || echo unknown)"
+                  rejected_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""' 2>/dev/null || echo '')"
+                  if [ "$rejected_head" = "$head" ] &&
+                     [ "$(sed -n 's/^Writer-Lease-State: //p' <<<"$rejected_body" | tail -n1)" = MAIN_SYNC ]; then
+                    restored="$(sed 's/^Writer-Lease-State: MAIN_SYNC$/Writer-Lease-State: TERMINAL_DELIVERY/' <<<"$rejected_body")"
+                    gh api --method PATCH "repos/$repo/pulls/$number" -f body="$restored" >/dev/null || true
+                  fi
                   cat /tmp/merge-refresh.err || true
                 fi
                 ;;
