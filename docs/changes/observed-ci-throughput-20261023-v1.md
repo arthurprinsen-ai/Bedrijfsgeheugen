@@ -14,3 +14,11 @@ A single sampled build profile (71,354ms) and a raw queued count cannot prove sp
 
 ## Acceptance and safety
 Tests: `tests/brain-observed-ci-throughput-v1.test.mjs`. Mandatory hygiene, Required, CodeQL, any provider/security/CLS/tenant/financial checks, exact SHA protected merge, current-main readback, real existing hourly Janitor artifact and canonical Brain skill projection. Preserve [provider incident #4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655) independently red until reconciled. This change measures one early signal; it does **not** claim DORA change lead time or deployment frequency.
+
+## Adaptive follow-up after real Janitor proof (2026-10-23)
+
+Actual [hourly Janitor run #39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) succeeded and wrote the expected artifact with 12 workflow runs, 17 valid jobs, 10 distinct runs, 0 read errors, and truthful `INSUFFICIENT_EVIDENCE` (p50/p95 withheld). Existing threshold is 20 jobs / 5 runs.
+
+Within the SAME hourly Janitor, increase the maximum possible job-list GETs to 24 **only as needed**. Stop the moment 20 valid jobs / 5 real runs have been observed, or immediately on a missing/failed provider read. A successful early sample uses fewer reads than a full 24-run sweep. The evidence includes `workflow_runs_sampled`, `requested_run_read_limit`, `sampling_stop_reason` and original run/job/SHA proof.
+
+No new workflow execution is generated; no extra cron, new queue, false speedup claim, security gate change, or paid scaling. These sample percentiles remain diagnostic, non-SLO and not representative of all jobs without further calibrated longitudinal evidence. Acceptance requires exact-head protected CI/CodeQL, merge and a NEW real existing Janitor run artifact.
