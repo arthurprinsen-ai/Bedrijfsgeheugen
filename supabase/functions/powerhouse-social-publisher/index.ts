@@ -1406,8 +1406,8 @@ Deno.serve(async (req) => {
           &&clean(proof.mira_entrepreneur_scene)===clean(captionEvidence.mira_entrepreneur_scene)
           &&clean(proof.media_url)===clean(captionEvidence.mira_source_asset_url)
           &&clean(proof.mira_generation_source?.openart_history_id)===clean(captionEvidence.mira_openart_history_id))
-        : (clean(proof.mira_business_problem_id)===selected.id
-           &&clean(proof.mira_entrepreneur_scene)===selected.scene
+        : (clean(proof.mira_business_problem_id)===clean(selected?.id)
+           &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
            &&!dailyWinner);
       if(!verdict.ok||!mediaMatches||!masterFaceOk||!sourceConsistent){
         const error=!verdict.ok?verdict.reason:!sourceConsistent?'MIRA_FROZEN_SOURCE_PUBLISHER_REJECTED':!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
