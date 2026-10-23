@@ -10,3 +10,7 @@ The global Netlify [functions] config previously included ffmpeg-static/executab
 
 ## Independent acceptance
 Exact-head Required CI/CodeQL, a measured deploy-preview comparison of evaluator package size, and a functioning original Mira frame extractor are mandatory before protected merge. Then verify production Netlify Scheduler actually invokes the learning evaluator (rather than only observing gateway status), and store genuinely comparable provider metrics in the original 24/48/72-hour evaluation pathway. Do not backfill unverifiable data, create a second scheduler, or claim that reducing a function bundle by itself fixes all 499 requests. Commercial revenue and today's Instagram publication remain unproven until their external provider readbacks.
+
+## 23 October deploy admissibility correction
+
+The first Netlify deploy preview for PR #4805 was cancelled as 'no content change', even though the FFmpeg configuration in `netlify.toml` changed. This is a **separate proven fault in the existing deploy applicability classifier**. The same PR explicitly classifies `netlify.toml` as Netlify-runtime-affecting, so its existing `tools/ci/netlify-ignore-build.mjs` no longer skips a config-only function packaging change. The new regression checks this rule. Do not claim a successful deploy until a fresh real preview is READY with the measured function artifact sizes and the original Mira video binary intact.
