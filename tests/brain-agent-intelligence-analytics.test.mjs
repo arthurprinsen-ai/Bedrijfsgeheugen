@@ -32,7 +32,8 @@ test('only explicitly proven and production-verified knowledge counts, with URL 
   {naam:'Proposal',maturity:'CANDIDATE',productionVerified:true,proofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/24'}
  ]}};
  const result=deriveLearningTelemetry({events,now,runtime});
- assert.equal(result.verifiedMemories,1);
+ assert.equal(result.verifiedMemories,0);
+ assert.equal(result.referencedMemories,1);
  const markup=agentIntelligenceMarkup({events,now,runtime});
  assert.match(markup,/Safe/);
  assert.ok(markup.includes('href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/22"'), 'exact allowlisted HTTPS proof href must be rendered');
@@ -111,8 +112,9 @@ test('customer outcomes require unique tenant, production and learning evidence'
     verificationStatus:'VERIFIED'}
  ]}};
  const report=deriveQualityReport({runtime,now});
- assert.equal(report.verifiedCustomerOutcomes,1);
- assert.equal(report.rows.find(x=>x.id==='outcomes').status,'BEWIJS GEKOPPELD');
+ assert.equal(report.verifiedCustomerOutcomes,0);
+ assert.equal(report.declaredOutcomeReferences,1);
+ assert.equal(report.rows.find(x=>x.id==='outcomes').status,'BRONCLAIM');
 });
 
 test('trace ID observation is not a trace grade and markup escapes risky content',()=>{
@@ -123,4 +125,36 @@ test('trace ID observation is not a trace grade and markup escapes risky content
    traceId:'<script>alert(1)</script>',source:'GitHub',status:'SUCCESS'}],now});
  assert.equal(markup.includes('alert(1)'),false,'untrusted trace payload must never be reflected in report HTML');
  assert.match(markup,/geen onafhankelijke trace-grade/);
+});
+
+test('self-certified source URLs cannot masquerade as provider-verified customer value',()=>{
+ const runtime={customerOutcomes:{authority:'PROVIDER_VERIFIED',providerReadbackVerified:true,items:[
+  {outcomeId:'real-looking',tenantVerified:true,productionVerified:true,learningVerified:true,
+   providerReadbackVerified:true,authority:'PROVIDER_VERIFIED',verificationStatus:'REALIZED_VERIFIED',
+   proofRef:'https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6adb43564586f9dc5286642e',
+   learningProofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'}
+ ]},learning:{items:[{maturity:'PROVEN',productionVerified:true,
+  proofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4761'}]}};
+ const report=deriveQualityReport({runtime,now});
+ const telemetry=deriveLearningTelemetry({runtime,now});
+ assert.equal(report.verifiedCustomerOutcomes,0);
+ assert.equal(report.provenKnowledge,0);
+ assert.equal(report.declaredOutcomeReferences,1);
+ assert.equal(report.declaredKnowledgeReferences,1);
+ assert.equal(telemetry.verifiedMemories,0);
+ assert.equal(telemetry.referencedMemories,1);
+ assert.equal(report.rows.find(r=>r.id==='learning').status,'BRONCLAIM');
+ assert.equal(report.rows.find(r=>r.id==='outcomes').status,'BRONCLAIM');
+ const markup=qualityReportMarkup({runtime,now});
+ assert.match(markup,/geen onafhankelijke providerreconciliatie/i);
+ assert.doesNotMatch(markup,/KENNIS BEWEZEN|BEWIJS GEKOPPELD/);
+});
+
+test('a source reference is displayed as a claim, never as independently verified production proof',()=>{
+ const runtime={learning:{items:[{naam:'Spoof',maturity:'PROVEN',productionVerified:true,
+  proofRef:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547'}]}};
+ const markup=agentIntelligenceMarkup({runtime,events:[],now});
+ assert.match(markup,/Kennis met bronreferentie/);
+ assert.match(markup,/inhoud niet onafhankelijk bevestigd/);
+ assert.doesNotMatch(markup,/Productiebevestigde kennis/);
 });
