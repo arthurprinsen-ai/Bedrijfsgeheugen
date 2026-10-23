@@ -12,10 +12,11 @@
   },
   "scheduling": {
     "deterministic": true,
+    "max_parallel_packages": 4,
     "sort": "lexical-work-package-id",
     "require_exact_base_identity": true,
     "require_exact_candidate_identity": true,
-    "parallel_only_without": ["changed-path-overlap", "conflict-contract-overlap", "declared-dependency-edge", "mutable-resource-overlap"],
+    "parallel_only_without": ["changed-path-overlap", "conflict-contract-overlap", "declared-dependency-edge", "mutable-resource-overlap", "base-epoch-mismatch", "same-candidate-head", "same-obligation-writer"],
     "missing_dependency": "fail-closed",
     "dependency_cycle": "fail-closed",
     "mutable_resource_collision": "serialize"
