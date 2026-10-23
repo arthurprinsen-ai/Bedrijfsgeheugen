@@ -22,3 +22,6 @@ The original static root page path did not match the existing delivery classifie
 - Unresolved billing configuration, missing consent, preview failure or provider outages stay blocked; no fake-green
 
 Owner: canonical Powerhouse/Portal delivery, PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4812, issue https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215. Status: **CANDIDATE_UNVERIFIED**, not production accepted.
+
+## Private checkout continuation and SEO
+The final verified checkout continuation is a visible, keyboard-accessible button **only after** `/api/checkout/readiness` returns `ready=true`. Its click handler opens the fully qualified HTTPS account URL. The noindex account URL is not published as a crawlable link from the public checkout page; the public technical SEO gate remains unchanged.
