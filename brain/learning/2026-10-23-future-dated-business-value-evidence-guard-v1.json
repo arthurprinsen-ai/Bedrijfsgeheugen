@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "brain|autonomous-improvement|future-dated-value-evidence-guard|20261023-v1",
+  "obligation_id": "brain|autonomous-improvement|future-dated-value-evidence-guard|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4358",
+  "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4755",
+  "status": "CANDIDATE_NOT_LIVE",
+  "root_cause": "Existing freshnessWeight capped negative age at zero: a future-dated result received the same full freshness factor as an actually observed present result. The business value ranker also classified finite out-of-range confidence as known evidence.",
+  "failure_class": "FUTURE_DATED_BUSINESS_VALUE_ADMISSION",
+  "fix": "Reject future timestamps and invalid or unparsable observation/reference time as unknown. Refuse confidence outside inclusive [0,1] as known. Preserve valid historical positive and negative observations.",
+  "prevention_rule": "Before any agent ranks or promotes a business-value observation, validate the observation time is not in the future relative to a valid reference time, value is finite and confidence lies between 0 and 1. Unknown gets null priority and must not be treated as learned ROI or as independently verified customer outcome.",
+  "tests": [
+    "tests/brain-autonomous-improvement-runtime.test.mjs"
+  ],
+  "test_evidence": {
+    "source_branch": "fix/brain-future-value-evidence-guard-20261023-v1",
+    "preflight_initial": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "current": "PENDING_EXACT_HEAD_REQUIRED_AND_CODEQL",
+    "positive": [
+      "valid historical observed benefit ranks with its confidence and freshness",
+      "genuinely observed negative value remains eligible to show loss"
+    ],
+    "negative": [
+      "future-dated fabricated high value becomes unknown",
+      "invalid time becomes unknown",
+      "negative confidence becomes unknown",
+      "confidence above 1 becomes unknown",
+      "invalid reference clock becomes unknown"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FUTURE_DATED_BUSINESS_VALUE_ADMISSION",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "invariants": [
+      "No future timestamp is counted as current observed business value",
+      "No invalid confidence is counted as known value",
+      "A measured loss remains a known negative value",
+      "No synthetic evaluations or fake champion are automatically promoted",
+      "No additional scheduler, persistent Brain store or direct database writes"
+    ]
+  },
+  "production_readback": {
+    "not_yet_verified": true,
+    "measured_business_uplift": null,
+    "new_model_activated": false,
+    "additional_scheduler": false
+  },
+  "next_safe_action": "Require exact-head source tests, admission, Required and CodeQL, protected merge, immutable main and production readback; business lift and genuine tenant benefit remain unproven."
+}
