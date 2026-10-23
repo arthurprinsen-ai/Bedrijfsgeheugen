@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "learning|daily-self-evolution|missing-provider-scheduled-run|20261023-v1",
+  "obligation_id": "learning|daily-self-evolution|missing-provider-scheduled-run|20261023-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367",
+  "related_delivery_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "failure_class": "GITHUB_ACTIONS_SCHEDULE_MISSING_DAILY_LEARNING",
+  "root_cause": "GitHub Actions scheduled events may be delayed or dropped. The authoritative repo Actions scheduled-run list for 2026-10-23 includes other workflows but no Powerhouse Daily Self Evolution; its latest observed scheduled run on 2026-10-22 failed. A job cron declaration is not evidence of actual daily learning.",
+  "source_evidence": [
+    "GitHub API actions/runs?event=schedule&per_page=100 returned 15 scheduled runs dated 2026-10-23 and none named Powerhouse Daily Self Evolution",
+    "Existing .github/workflows/powerhouse-daily-self-evolution.yml contains cron 47 4 * * * and workflow_dispatch",
+    "Existing hourly Repository Janitor already has actions:write and concurrency group, no new token or scheduler is needed",
+    "GitHub Docs troubleshooting workflows warns scheduled events can be delayed or dropped: https://docs.github.com/en/actions/how-tos/troubleshoot-workflows"
+  ],
+  "fix": "Add one bounded liveness-check and missed-run dispatch to the EXISTING Janitor. At/after 06:47 UTC, verify today's active workflow runs via GitHub provider API and recheck before one requested workflow_dispatch to main. Preserve independent improve and model-freshness jobs, and record dispatch acceptance separately from terminal execution.",
+  "prevention_rule": "No synthetic daily heartbeat or fake status. Failure, queued or in-progress run already present prevents duplicate dispatch. Provider read/truncation/invalid data or branch/ref uncertainty blocks recovery. Restore through same GitHub workflow only, never a new scheduler/agent/writer/queue; classify accepted dispatch as NOT execution proof.",
+  "tests": [
+    "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_ACTIONS_SCHEDULE_MISSING_DAILY_LEARNING",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+    ],
+    "invariants": [
+      "GitHub provider run absence must be independently observed before dispatch",
+      "At most one recovery request from this Janitor evaluation",
+      "Two provider reads guard races and duplicate dispatches",
+      "An accepted dispatch is not terminal learning proof",
+      "Failed model-freshness stays red; no security or production gates skipped",
+      "No additional schedule, tokens, persistent authority or provider-paid preview"
+    ]
+  },
+  "promotion": "Release only on exact-head Required+CodeQL protected merge. Proof requires a later real Janitor artifact and an actual daily workflow run/job conclusion; mere PR or dispatch acceptance does not prove execution.",
+  "readback": {
+    "production_modified": false,
+    "additional_scheduler": false,
+    "additional_token_permission": false,
+    "model_upgrade_executed": false,
+    "daily_coverage_restored_proven": false
+  }
+}
