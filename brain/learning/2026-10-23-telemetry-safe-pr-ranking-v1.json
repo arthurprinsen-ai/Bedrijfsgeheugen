@@ -13,5 +13,28 @@
   ],
   "independent_proof": "Pending exact-head protected Required, CodeQL, provider run and post-merge observation",
   "release_status": "CANDIDATE_UNVERIFIED",
-  "reuse": "Existing Janitor, CI Intelligence, Recovery Supervisor, quality admission and canonical memory; no new scheduler"
+  "reuse": "Existing Janitor, CI Intelligence, Recovery Supervisor, quality admission and canonical memory; no new scheduler",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-adaptive-pr-ranking.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-adaptive-pr-ranking.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-adaptive-pr-ranking.test.mjs"
+    ]
+  }
 }
