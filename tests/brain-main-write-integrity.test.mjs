@@ -86,7 +86,7 @@ test('main write: real GitHub commit PR association proves governed squash merge
   assert.equal(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'GOVERNED_SQUASH_MERGE');
 });
 
-test('main write: malformed transient commit-association API falls back only to exact provider-verified PR', async () => {
+test('main write: one verified PR provider read avoids all commit-association polling', async () => {
   let primary = 0;
   const lookup = await resolveMainWriteAssociatedPullRequests({
     repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: HEAD,
@@ -97,8 +97,9 @@ test('main write: malformed transient commit-association API falls back only to 
       throw new Error('unexpected path');
     },
   });
-  assert.equal(primary, 3);
-  assert.equal(lookup.source, 'GITHUB_VERIFIED_PR_FALLBACK');
+  assert.equal(primary, 0, 'exact PR verification needs no association poll');
+  assert.equal(lookup.attempts, 1);
+  assert.equal(lookup.source, 'GITHUB_VERIFIED_PR_FAST_PATH');
   assert.equal(classifyMainWrite({ ...mainProvenanceArgs, associatedPullRequests: lookup.associatedPullRequests }).status, 'GOVERNED_SQUASH_MERGE');
 });
 
@@ -144,19 +145,80 @@ test('main write: existing workflow preserves bounded provider proof and red fai
   assert.doesNotMatch(w, /contents:\s*write/);
 });
 
-test('main write incident recovery rejects malformed GitHub issue lists instead of creating duplicate incidents', async () => {
+test('main write: actual squash receipt #4762 is verified by a single exact GitHub PR call', async () => {
+  const head = '03bf825a6f4207df397f045ba0a3630faef34170';
+  const paths = [];
+  const lookup = await resolveMainWriteAssociatedPullRequests({
+    repository: 'arthurprinsen-ai/Bedrijfsgeheugen', headSha: head,
+    commitSubject: 'fix(ci): reject inconsistent task-clock evidence and classify CI/CD errors (#4762)',
+    sleep: async () => { throw new Error('no retry permitted'); },
+    githubRead: async path => {
+      paths.push(path);
+      if (!path.endsWith('/pulls/4762')) throw new Error('unnecessary provider poll');
+      return { number: 4762, merged_at: '2026-10-23T10:38:41Z', base: {ref:'main'}, merge_commit_sha:head };
+    }
+  });
+  assert.deepEqual(paths, ['repos/arthurprinsen-ai/Bedrijfsgeheugen/pulls/4762']);
+  assert.equal(lookup.source, 'GITHUB_VERIFIED_PR_FAST_PATH');
+  assert.equal(classifyMainWrite({branch:'main',parentCount:1,headSha:head,
+    changedPaths:['tools/delivery/ci-cicd-semconv-projection.mjs'],
+    associatedPullRequests:lookup.associatedPullRequests}).status,'GOVERNED_SQUASH_MERGE');
+});
+
+test('main write: rate-limited exact PR read stops immediately without classifying a direct-main bypass', async () => {
+  let calls=0, waits=0;
+  const lookup=await resolveMainWriteAssociatedPullRequests({
+    repository:'arthurprinsen-ai/Bedrijfsgeheugen',headSha:HEAD,
+    commitSubject:'fix: throttled (#4658)',
+    githubRead:async()=>{calls++;throw new Error('gh: API rate limit exceeded for installation. (HTTP 403)');},
+    sleep:async()=>{waits++;}
+  });
+  assert.equal(calls,1);
+  assert.equal(waits,0);
+  assert.equal(lookup.source,'PROVIDER_RATE_LIMITED');
+  assert.equal(lookup.associatedPullRequests,undefined);
+  const result=classifyMainWrite({...mainProvenanceArgs,associatedPullRequests:lookup.associatedPullRequests});
+  assert.equal(result.status,'UNKNOWN_MAIN_WRITE');
+  assert.equal(result.productionGreenAllowed,false);
+  assert.notEqual(result.fingerprint,'delivery|main-write|material-single-parent-bypass-v1');
+});
+
+test('main write: provider secondary rate limit without a PR suffix also short-circuits', async () => {
+  let calls=0;
+  const lookup=await resolveMainWriteAssociatedPullRequests({
+    repository:'arthurprinsen-ai/Bedrijfsgeheugen',headSha:HEAD,
+    commitSubject:'unknown direct source',
+    githubRead:async()=>{calls++;throw new Error('HTTP 429 secondary rate limit');},
+    sleep:async()=>{throw Error('should not wait');}
+  });
+  assert.equal(calls,1);
+  assert.equal(lookup.source,'PROVIDER_RATE_LIMITED');
+  assert.equal(lookup.associatedPullRequests,undefined);
+});
+
+test('main write: rate-limited provider evidence never attempts to write another issue', async () => {
+  const workflow=await readFile('.github/workflows/main-write-integrity.yml','utf8');
+  assert.match(workflow,/providerProofSource=\$\{provenance\.source\}/);
+  assert.match(workflow,/steps\.classify\.outputs\.providerProofSource != 'PROVIDER_RATE_LIMITED'/);
+  assert.match(workflow,/Fail closed on ungoverned main write/);
+  assert.match(workflow,/Upload immutable integrity evidence/);
+});
+
+test('main write issue recovery validates all paginated provider shapes before any deduplicated issue mutation', async () => {
   const workflow = await readFile('.github/workflows/main-write-integrity.yml', 'utf8');
   const lookup = workflow.indexOf('issues_json="$(gh api');
   const validate = workflow.indexOf('MAIN_WRITE_ISSUE_LIST_INVALID_PROVIDER_SHAPE');
   const dedupe = workflow.indexOf('issue_number="$(printf');
   const create = workflow.indexOf("gh api --method POST");
   assert.ok(lookup >= 0 && validate > lookup && dedupe > validate && create > dedupe,
-    'listing retrieval, full shape check, fingerprint matching and mutation must remain ordered');
-  assert.match(workflow, /jq -e 'type == "array" and all\(\.\[\]; type == "object"\)'/);
-  assert.match(workflow, /if ! printf '%s\\n' "\$issues_json"/);
+    'provider issue response, all-page JSON validation, dedupe and mutation remain ordered');
+  assert.match(workflow, /jq -e -s 'length > 0 and all\(\.\[\]; type == "array"/);
+  assert.match(workflow, /all\(\.\[\]; type == "object" and \(\.number \| type\) == "number"\)/);
+  assert.match(workflow, /MAIN_WRITE_ISSUE_LIST_INVALID_PROVIDER_SHAPE/);
   assert.match(workflow, /exit 75/);
   assert.match(workflow, /select\(\.pull_request == null\)/);
   assert.match(workflow, /contains\(\$fingerprint\)/);
   assert.match(workflow, /if \(\.body \| type\) == "string" then \.body else "" end/);
+  assert.match(workflow, /providerProofSource != 'PROVIDER_RATE_LIMITED'/);
   assert.doesNotMatch(workflow, /issue_number="\$\(gh api/);
 });
