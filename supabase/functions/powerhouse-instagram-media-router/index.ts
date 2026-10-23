@@ -240,6 +240,18 @@ Deno.serve(async req=>{
   }
  }
 
+
+ // Preserve the exact in-flight verifier lease and diagnostic clock. Repeated
+ // Heartbeat preflight must never overwrite updated_at or clear last_error:
+ // that would indefinitely defer the bounded retry and discard face failures.
+ // The CAS retry above is the ONLY automatic transition from WAITING_PROOF.
+ if(action==='preflight'&&sourceLed&&job?.status==='WAITING_PROOF'&&
+    job?.asset_manifest?.source_led_auto_verify_started===true){
+  return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',
+   proof_attempt:Number(job.attempts)||0,
+   last_error:job.last_error||null,next_action:job.next_action||'Wait for original exact-media verifier.'});
+ }
+
  const existingAssetUrl=clean(job?.asset_manifest?.asset_url||job?.asset_manifest?.assetUrl);
  const existingProvider=clean(job?.asset_manifest?.provider||job?.selected_provider).toLowerCase();
  const assetMaterialized=!!existingAssetUrl && !!existingProvider && allowed.includes(existingProvider);
