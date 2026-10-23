@@ -34,5 +34,23 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": true
-  }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-provider-observation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-recovery-supervisor-provider-observation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-supervisor-provider-observation-v1.test.mjs"
+    ],
+    "status_reason": "Historical replay, shadow and canary execute the real supervisor source/parsing regression; runtime provider results are verified separately after protected merge.",
+    "provider_outcome_verified": false,
+    "observed_speedup_proven": false
+  },
+  "provider_evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963580805"
+  ]
 }
