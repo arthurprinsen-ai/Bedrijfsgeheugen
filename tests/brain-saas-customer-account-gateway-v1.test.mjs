@@ -53,3 +53,18 @@ test('checkout redirects to the authenticated account activation journey',async(
  assert.match(fn,/createCustomerAccountHandler/);
  assert.doesNotMatch(page,/START GRATIS ABONNEMENT/i);
 });
+
+test('customer-provided query selectors cannot change canonical tenant or plan',async()=>{
+ const injected=new Request('https://www.bedrijfsgeheugen.nl/api/saas/my-account?tenant_id=22222222-2222-4222-8222-222222222222&plan=enterprise');
+ const res=await make().handler(injected);
+ assert.equal(res.status,200);
+ const payload=await res.json();
+ assert.equal(payload.plan,'pro');
+ assert.equal(payload.entitlements.max_users,25);
+ assert.equal(JSON.stringify(payload).includes(other),false);
+});
+test('invalid tenant IDs cannot call paid plan lookup',async()=>{
+ const fake=make({tenantId:'user:u1'});
+ const response=await fake.handler(request);
+ assert.equal(response.status,403);
+});
