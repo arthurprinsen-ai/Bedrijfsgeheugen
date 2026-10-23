@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|recovery-supervisor|shared-terminal-file-workflow-ownership|20261023-v1",
+  "obligation_id": "github|recovery-supervisor|shared-terminal-file-workflow-ownership|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4120",
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_SHARED_TERMINAL_WRITER_COLLISION",
+  "root_cause": "Independent obligations can target the same workflow/file while both have terminal lease claims, and duplicate obligation checks alone cannot serialize distinct obligations.",
+  "fix": "Use canonical admission to check true changed files against declared Change-Scope, serialize exact overlapping still-open TERMINAL_DELIVERY PRs by oldest active PR number, exempt retired predecessors, keep unrelated work parallel.",
+  "prevention_rule": "One terminal writer per shared resource. Preserve native expected_head_sha, two-attempt bounded Recovery Supervisor, Required and CodeQL on new exact PR-head. This admission is not an atomic lock; no unverified promotion or speedup.",
+  "evidence": {
+    "canonical_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4793",
+    "retired_overlap": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4792",
+    "native_cas": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4781",
+    "run_metrics": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4791",
+    "speedup_proven": false
+  },
+  "tests": [
+    "tests/brain-shared-terminal-writer-ownership-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_SHARED_TERMINAL_WRITER_COLLISION",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-shared-terminal-writer-ownership-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-shared-terminal-writer-ownership-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-shared-terminal-writer-ownership-v1.test.mjs"
+    ],
+    "invariants": [
+      "Closed/retired #4792 cannot compete with canonical #4793",
+      "Different obligation IDs cannot both be admitted as current terminal writers on one exact shared workflow",
+      "Actual candidate GitHub changed filenames must be declared",
+      "Two bounded native CAS retries and fresh Required/CodeQL remain authoritative",
+      "Existing hourly Janitor/Brain only, no second scheduler",
+      "Measured speedup requires independent repeatable regressions and performance readback"
+    ]
+  },
+  "terminal_rule": "Require exact-head Required/CodeQL, protected merge, main readback and existing agent learning projections; keep #4120 and #4661 open for unresolved provider and performance proof."
+}
