@@ -18,6 +18,7 @@ const KNOWN=new Map([
   ['MAIN_DRIFT_ASYNC_PENDING','ASYNC_PENDING_NOT_FAILED'],
   ['MAIN_DRIFT_SYNC_PENDING','ASYNC_PENDING_NOT_FAILED'],
   ['MAIN_DRIFT_SYNC_RECONCILED','CAS_UPDATE_RECONCILED'],
+  ['MAIN_DRIFT_UPDATE_REJECTED','CAS_OR_PROVIDER_REJECTION_UNVERIFIED'],
   ['MAIN_DRIFT_COUNTER_INVALID','INVALID_RETRY_COUNTER']
 ]);
 function read(path){
@@ -75,13 +76,25 @@ export function parseSupervisorAnnotations(content,runId){
     const identity=runId+':'+pr+':'+code;
     if(seen.has(identity))continue;
     seen.add(identity);
+    // Trust only our emitted class vocabulary, never untrusted log text.
+    const rawClass=code==='MAIN_DRIFT_UPDATE_REJECTED'?
+      note.match(/\bclass:([A-Z0-9_]+)\b/)?.[1]:null;
+    const acceptedClasses=new Set([
+      'HTTP_422_AND_HEAD_CHANGED_CAUSALITY_UNVERIFIED','HTTP_422_CAUSE_UNVERIFIED',
+      'HTTP_403_PERMISSION_OR_POLICY','HTTP_409_CONFLICT_UNVERIFIED',
+      'PROVIDER_5XX_UNAVAILABLE','NATIVE_UPDATE_REJECTION_CAUSE_UNVERIFIED'
+    ]);
     events.push({run_id:runId,pr_number:pr,code,
-      category:KNOWN.get(code)||
+      category:(acceptedClasses.has(rawClass)?rawClass:null)||KNOWN.get(code)||
         (code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED'?'CAS_OR_PROVIDER_REJECTION_UNVERIFIED':
         code==='MAIN_DRIFT_SYNC_CONFIRMED'?'CAS_UPDATE_CONFIRMED':
         'DRIFT_DETECTED_NOT_PROVEN_RESOLVED')});
   }
-  return events;
+  // A typed rejection supersedes the previous generic annotation for the same run/PR.
+  const typed=new Set(events.filter(e=>e.code==='MAIN_DRIFT_UPDATE_REJECTED')
+    .map(e=>e.run_id+':'+e.pr_number));
+  return events.filter(e=>e.code!=='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED'||
+    !typed.has(e.run_id+':'+e.pr_number));
 }
 
 export function summarizeSupervisorEvidence({runs=[],events=[],available=0,observedAt,
@@ -101,7 +114,8 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
       p.drift_run_ids.add(e.run_id);
     if(['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))
       p.successful_run_ids.add(e.run_id);
-    if(e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')p.rejection_run_ids.add(e.run_id);
+    if(e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED'||
+       e.code==='MAIN_DRIFT_UPDATE_REJECTED')p.rejection_run_ids.add(e.run_id);
     if(e.code==='MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED')p.exhausted_run_ids.add(e.run_id);
     p.classifications.add(e.category);
     classes[e.category]=(classes[e.category]||0)+1;

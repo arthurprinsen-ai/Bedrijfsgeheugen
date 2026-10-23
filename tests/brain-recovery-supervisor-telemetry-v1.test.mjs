@@ -35,6 +35,26 @@ test('only executed annotations count, not echo commands or copied workflow text
   assert.deepEqual(rows.map(r=>r.pr_number),[100,101,102]);
   assert.equal(rows[1].category,'CAS_OR_PROVIDER_REJECTION_UNVERIFIED');
 });
+test('executed typed CAS rejection overrides generic fallback without double counting',()=>{
+  const stamp=iso(0)+' ##[warning]';
+  const log=[
+    stamp+'PR#500 could not be refreshed automatically; restoring terminal lease fail-closed.',
+    stamp+'MAIN_DRIFT_UPDATE_REJECTED:PR#500 class:HTTP_422_AND_HEAD_CHANGED_CAUSALITY_UNVERIFIED http:422',
+    'echo "::warning::MAIN_DRIFT_UPDATE_REJECTED:PR#500 class:HTTP_422_CAUSE_UNVERIFIED"'
+  ].join('\n');
+  const events=parseSupervisorAnnotations(log,19);
+  assert.equal(events.length,1);
+  assert.equal(events[0].code,'MAIN_DRIFT_UPDATE_REJECTED');
+  assert.equal(events[0].category,'HTTP_422_AND_HEAD_CHANGED_CAUSALITY_UNVERIFIED');
+  const summary=summarizeSupervisorEvidence({runs:[],events,readErrors:[],observedAt:iso(0)});
+  assert.equal(summary.per_pr[0].native_update_rejection_runs,1);
+  assert.equal(summary.time_to_production_ms,null);
+});
+test('403 with changed head is still authorization/policy, never definite CAS',()=>{
+  assert.equal(classifyCasReadback({httpStatus:403,expectedHead:SHA,observedHead:SHA2}),
+    'HTTP_403_PERMISSION_OR_POLICY');
+});
+
 test('repeated drift requires distinct real supervisor runs, not repeated notes',()=>{
   const rows=[...parseSupervisorAnnotations(annotation('MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED',66),1),
     ...parseSupervisorAnnotations(annotation('MAIN_DRIFT_SYNC_PENDING',66),2),
