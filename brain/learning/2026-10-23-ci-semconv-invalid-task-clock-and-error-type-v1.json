@@ -22,9 +22,25 @@
   "reference": "https://opentelemetry.io/docs/specs/semconv/cicd/cicd-spans/",
   "compiler": {
     "failure_class": "CI",
-    "scope": "GITHUB",
+    "scope": "CI",
     "machine_enforceable": true,
     "security_sensitive": false,
     "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs"
+    ],
+    "invariants": [
+      "Existing hourly Janitor remains sole scheduler",
+      "Source-only observations cannot approve release or revenue",
+      "Malformed job timestamps never become proof"
+    ]
   }
 }
