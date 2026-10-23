@@ -1,0 +1,68 @@
+{
+  "fingerprint": "ci|brain|archived-sql-readpath|tenant-trigger|20261022-v1",
+  "obligation_id": "ci-brain-archived-tenant-trigger-test-sourcing-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "source_main_sha": "4ce0846ca51227169389241d3a122b274795a0b2",
+  "observed": {
+    "full_brain_run": 39791707071,
+    "total_tests": 3526,
+    "passed_tests": 3171,
+    "failed_tests": 355,
+    "previous_run": 39671036043,
+    "previous_failures": 321,
+    "affected_source_files": 2,
+    "changed_runtime_files": 0,
+    "changed_sql_migrations": 0
+  },
+  "root_cause": "Two existing Node source-contract tests read historical SQL from removed executable supabase/migrations paths although the original source and all security clauses exist under immutable supabase/migration-history/repository-only.",
+  "evidence": {
+    "original_tests": [
+      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
+      "tests/supabase-tenant-identity-review-semantics-v2.test.mjs"
+    ],
+    "immutable_sources": [
+      "supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
+      "supabase/migration-history/repository-only/20260918105000_tenant_identity_review_semantics_v2.sql"
+    ],
+    "original_archive_blob_shas": [
+      "a6037047760fe281ab24298f9f7d94c62cc95695",
+      "322fee022b78584346f1970e290e7cf763a1147a"
+    ],
+    "previous_run_link": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071"
+  },
+  "recovery": "Change only the two test read paths to immutable repository-only originals; preserve all positive/negative access-control and scheduler assertions. Append regression cases forbidding executable historical migrations.",
+  "prevention_rule": "For historical SQL source-contract tests, read the exact immutable repository-only SQL source after migration history archival. Never restore as executable migration, add placeholders, weaken ACL/RLS/scheduler assertions, or classify a source-only fix as clean-room parity.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    "AGENTS.md"
+  ],
+  "test_evidence": {
+    "before": "Full BRAIN #39791707071: 3,526 total; 3,171 pass; 355 fail.",
+    "source_validation": "Both authentic archived SQL files read back; every unchanged original positive/negative assertion checked against original archive content; no executable historical migrations on main.",
+    "after": "PENDING_EXACT_HEAD_BRAIN_WRAPPER_AND_REQUIRED",
+    "full_brain": "PENDING_ZERO_FAIL",
+    "production": "UNCHANGED",
+    "customer_acceptance": "NOT_PROVEN"
+  },
+  "status": "CANDIDATE_UNVERIFIED",
+  "evaluation_entrypoint": "tests/brain-archived-tenant-trigger-contract-replay-v1.test.mjs"
+}
