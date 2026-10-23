@@ -10,6 +10,7 @@ const APPROVED_SOURCE_LED=Object.freeze({
   source_url:'https://www.klacht.nl/klacht-nl/klacht/verwijdering-van-persoonlijke-gegevens-uit-klachten/',
   source_title:'Verwijdering van persoonlijke gegevens uit klachten',
   openart_history_id:'S2WRHcZAKIV5Cxn2tZLE',
+  asset_url:'https://cdn.openart.ai/openart-ai/production/2026-10/create-video/WZvuT1BzGx566fWaFo8F/sample_0_1792734075917_40938741.mp4',
   scene:'Mira overdenkt wat er met kopieën gebeurt wanneer persoonsgegevens uit een online klacht moeten worden verwijderd.',
   caption:[
    'Je vraagt of je naam uit een online klacht kan worden gehaald.',
@@ -35,6 +36,7 @@ export function miraResolvedEvidence(resolved){
   mira_source_led:true,mira_source_hash:resolved.source_hash,
   mira_winner_recommendation_id:resolved.winner_recommendation_id,
   mira_entrepreneur_scene:resolved.scene,mira_openart_history_id:resolved.openart_history_id,
+  mira_source_asset_url:resolved.asset_url,
   source_evidence_status:'FROZEN_PUBLIC_EXTERNAL_SOURCE',
   source_url:resolved.source_url
  };
@@ -49,6 +51,7 @@ export function validateResolvedMiraCaptionForDelivery(runDate,body,evidence={})
     clean(evidence.mira_source_hash)!==approved.source_hash||
     clean(evidence.mira_entrepreneur_scene)!==approved.scene||
     clean(evidence.mira_openart_history_id)!==approved.openart_history_id||
+    clean(evidence.mira_source_asset_url)!==approved.asset_url||
     clean(evidence.source_url)!==approved.source_url||
     normalize(body)!==normalize(approved.caption))
    return {ok:false,reason:'MIRA_FROZEN_SOURCE_LED_CAPTION_PROOF_FAILED'};
@@ -95,7 +98,7 @@ export function resolveMiraFrozenWinner(runDate,{winner=null,lineage=null,recomm
     return {ok:true,kind:'approved_source_led',
       winner_recommendation_id:id,source_url:approved.source_url,
       source_hash:approved.source_hash,scene:approved.scene,
-      caption:approved.caption,openart_history_id:approved.openart_history_id,
+      caption:approved.caption,openart_history_id:approved.openart_history_id,asset_url:approved.asset_url,
       caption_contract:MIRA_SOURCE_LED_CAPTION_CONTRACT};
   }
   const approvedId=clean(evidence.approved_canonical_problem_id);
