@@ -60,17 +60,23 @@ function buildReadOnlyProbe({ sourceSha, backlog }) {
     sourceSha,
     observedAt: new Date().toISOString(),
     evidence: ['runtime-contract-probe', backlog.fingerprint ?? 'backlog-unknown', backlog.source_state?.mode ?? 'unknown-source-mode'],
+    // This job validates the improvement machinery; it does not query production
+    // reliability, prices, latency or business outcomes. Never substitute
+    // convenient fixture values for provider-observed measurements.
     fitness: {
-      baseline: { reliability: 99.9, latency_ms: 100, cost_per_outcome: 10 },
-      current: { reliability: 99.9, latency_ms: 100, cost_per_outcome: 10 },
+      baseline: { reliability: null, latency_ms: null, cost_per_outcome: null },
+      current: { reliability: null, latency_ms: null, cost_per_outcome: null },
       lowerIsBetter: ['latency_ms','cost_per_outcome']
     },
     capabilityGraph: {
       capabilities: [{ id: 'continuous-improvement', provides: ['improve'], tests: ['brain-autonomous-improvement-runtime.test.mjs','brain-autonomous-backlog-intake.test.mjs','brain-github-backlog-source.test.mjs'], status: 'active' }],
       requirements: ['improve']
     },
+    // A daily probe cannot assert 30 real evaluations of a champion.
+    // Challenger promotion remains HOLD until independent outcome and guardrail
+    // observations arrive through the canonical evidence path.
     experimentPortfolio: {
-      champion: { id: 'current', observations: 30, metrics: { quality: 1 } },
+      champion: null,
       challengers: [],
       primaryMetric: 'quality',
       minimumObservations: 30
@@ -79,7 +85,19 @@ function buildReadOnlyProbe({ sourceSha, backlog }) {
     simplification: {},
     valueFeedback: { candidates: [] }
   });
-  return { ...packet, backlog: backlogResult, backlog_source: backlog.source_state ?? null };
+  return {
+    ...packet,
+    probe_evidence: {
+      authority: 'READ_ONLY_CONTRACT_AND_BACKLOG_PROJECTION',
+      measured_performance: false,
+      evaluated_champion: false,
+      synthetic_performance_samples: false,
+      automatic_promotion_allowed: false,
+      next_safe_action: 'Collect independently verified provider metrics and representative champion/challenger evals before proposing a controlled change.'
+    },
+    backlog: backlogResult,
+    backlog_source: backlog.source_state ?? null
+  };
 }
 
 async function main() {
