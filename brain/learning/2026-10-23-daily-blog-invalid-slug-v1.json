@@ -16,5 +16,18 @@
   },
   "prevention": "Common canonicalBlogSlug in queue/export, fail closed for invalid explicit SEO slugs; preserve existing compare-and-swap unsent-only rebind.",
   "regression": "tests/brain-canonical-blog-slug-truncation-v1.test.mjs",
-  "verification": "PENDING_PROTECTED_MERGE_EDGE_FUNCTION_DEPLOY_AND_PUBLIC_READBACK"
+  "verification": "PENDING_PROTECTED_MERGE_EDGE_FUNCTION_DEPLOY_AND_PUBLIC_READBACK",
+  "compiler": {
+    "failure_class": "VALIDATION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-blog-slug-truncation-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
 }
