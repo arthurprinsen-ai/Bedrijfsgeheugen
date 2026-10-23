@@ -105,8 +105,9 @@ el('login').addEventListener('click',()=>identity?.open?.('login'));
 el('logout').addEventListener('click',()=>identity?.logout?.());
 el('retry').addEventListener('click',()=>{activationAttempted=false;void refresh()});
 if(!identity){show('Inloggen tijdelijk niet beschikbaar','Gebruik de inlogpagina of neem contact op.','Identiteitsdienst niet geladen.',['pricing','retry']);return}
-identity.init();
+identity.on('init',()=>void refresh());
 identity.on('login',()=>{identity.close();void refresh()});
+identity.init();
 identity.on('logout',()=>{activationAttempted=false;void refresh()});
 void refresh();
 })();
