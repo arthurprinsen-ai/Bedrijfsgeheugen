@@ -70,7 +70,7 @@ test('content loop isolates Instagram routing and invokes it before publish when
  assert.match(contentLoop,/invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)/);
  assert.match(contentLoop,/reason:'INSTAGRAM_NOT_READY'/);
  const routerPos=contentLoop.indexOf("'powerhouse-instagram-media-router'");
- const publishPos=contentLoop.indexOf("'powerhouse-social-publisher', { runDate, mode: 'publish_only' }");
+ const publishPos=contentLoop.indexOf("['instagram_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['instagram_company']}]");
  assert.ok(routerPos>=0);
  assert.ok(publishPos>routerPos);
 });
