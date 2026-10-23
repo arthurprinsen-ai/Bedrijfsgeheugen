@@ -21,3 +21,6 @@ GitHub source branch and PR are *not* proof of production delivery. Required exa
 `node scripts/brain/ai-model-intelligence-audit.mjs`
 
 The audit must return `REFRESH_REQUIRED` until official supplier receipts are actually updated.
+
+## CI delivery correction
+The initial PR admission rejected missing `Obligation-ID` and `Base-SHA` machine metadata, not the supplier-safety implementation. The immutable base SHA and canonical obligation were supplied in PR #4754; this documentation amendment starts a new exact-head PR check. Automatic delivery remains blocked if the new checks fail.
