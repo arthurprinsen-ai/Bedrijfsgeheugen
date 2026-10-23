@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-10-23",
+  "fingerprint": "powerhouse|daily-blog|source-slug-recovery-to-protected-publication|20261023-v1",
+  "obligation": "content-publication:2026-10-23:blog",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_cause": "Truncating title-based blog slugs to 70 chars after stripping hyphens produced a trailing separator rejected by the strict renderer. Protected #4723/#4725 corrected Supabase export/queue; original daily publisher #39903363015 then emitted the same-day blog page and approved English-cache patch. The cache path requires normal material closure evidence.",
+  "prevention": "Keep one same-date protected publisher PR with verified canonical slug; each material English cache patch must retain Brain learning, human change documentation, append-only evidence, actual historical replay and unmodified public website Required/CodeQL/CLS quality gates.",
+  "evidence": {
+    "failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39883989350",
+    "successful_source_repairs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4723",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4725"
+    ],
+    "candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4726",
+    "canonical_url": "https://www.bedrijfsgeheugen.nl/blog/cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om/",
+    "expected_content_id": "blog:cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om",
+    "source_status": "GENERATED",
+    "production_readback": "PENDING_REQUIRED_CODEQL_MERGE_AND_NETLIFY"
+  },
+  "compiler": {
+    "failure_class": "VALIDATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}
