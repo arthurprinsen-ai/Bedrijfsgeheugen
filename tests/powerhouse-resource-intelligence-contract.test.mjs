@@ -101,8 +101,8 @@ test('all-agent Brain contract is explicit, mandatory in preflight and closed-lo
 
 test('resource intelligence audit verifies the same canonical production migration as its contract', () => {
   const audit = read(auditPath);
-  assert.match(audit, /20260917094812_powerhouse_resource_intelligence_v1\\.sql/);
-  assert.doesNotMatch(audit, /20260917093000_powerhouse_resource_intelligence_v1\\.sql/);
+  assert.ok(audit.includes('supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql'));
+  assert.ok(!audit.includes('20260917093000_powerhouse_resource_intelligence_v1.sql'));
   assert.doesNotMatch(audit, /energy_wh|water_ml|energy_provenance|water_provenance|co2e_provenance/);
   for(const signal of ['energy_kwh','water_liters','co2e_kg','factor_coverage','provenance_complete','BG169']){
     assert.ok(audit.includes(signal), `missing canonical audit invariant: ${signal}`);
