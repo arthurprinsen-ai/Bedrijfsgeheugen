@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 const required = [
   'config/powerhouse-resource-intelligence-v1.json',
-  'supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql',
+  'supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql',
   'tests/powerhouse-resource-intelligence-contract.test.mjs',
   '.github/workflows/powerhouse-resource-intelligence.yml'
 ];
@@ -28,10 +28,20 @@ for (const forbidden of ['allow_security_weakening','allow_paid_resource_creatio
 }
 
 const sql = fs.readFileSync(required[1], 'utf8');
-for (const token of ['energy_wh','water_ml','energy_provenance','water_provenance','co2e_provenance','powerhouse_compliance_evidence_v1','powerhouse_optimization_candidate_v1','powerhouse_resource_intelligence_daily_v1']) {
+for (const token of [
+  'energy_kwh','water_liters','co2e_kg','factor_coverage','min(confidence)',
+  'provenance_complete','methodology is not null','security_invoker = true',
+  'force row level security','powerhouse_compliance_evidence_v1',
+  'powerhouse_optimization_candidate_v1','powerhouse_resource_intelligence_daily_v1'
+]) {
   if (!sql.includes(token)) fail(`migration missing ${token}`);
 }
-if (/energy_wh\s+numeric[^,;]*default\s+0/i.test(sql) || /water_ml\s+numeric[^,;]*default\s+0/i.test(sql)) fail('physical telemetry may not default to zero');
+if (/coalesce\s*\(\s*(?:energy_kwh|water_liters|co2e_kg)\s*,\s*0\s*\)/i.test(sql))
+  fail('unknown physical telemetry may not be replaced with a numeric zero');
+if (!/sum\(energy_kwh\)\s+filter\s*\(where energy_kwh is not null\)/i.test(sql) ||
+    !/sum\(water_liters\)\s+filter\s*\(where water_liters is not null\)/i.test(sql) ||
+    !/sum\(co2e_kg\)\s+filter\s*\(where co2e_kg is not null\)/i.test(sql))
+  fail('all physical resource projections must preserve unknown values as NULL');
 
 console.log(JSON.stringify({
   status: 'RESOURCE_INTELLIGENCE_READY',
