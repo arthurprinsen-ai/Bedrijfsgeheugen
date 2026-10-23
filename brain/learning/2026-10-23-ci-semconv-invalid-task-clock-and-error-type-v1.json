@@ -1,0 +1,30 @@
+{
+  "fingerprint": "delivery|ci|semconv-accepted-invalid-task-clock-and-missing-error-type|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "existing_feature_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4756",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The source-only semantic projection validated task started/completed but not created_at or the canonical <=48h wait/runtime gates; a task rejected by canonical CI telemetry could be included in projected evidence. Failed tasks also omitted conditionally required OpenTelemetry error.type.",
+  "change": "Align project taskProof timestamp admissibility with summarizeObservedCiJobs and add generic low-cardinality failure/timeout classifications without exporting raw output.",
+  "prevention": "Accept only task timestamps consistent with canonical executed-job telemetry; block projection when sample falls below 20 tasks over five independent run attempts; never claim deployment, successful tests or customer uplift from projected records.",
+  "evidence": {
+    "source_file": "tools/delivery/ci-cicd-semconv-projection.mjs",
+    "regression": "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs",
+    "canonical_source": "tools/delivery/predictive-controller.mjs",
+    "effect_measured": false,
+    "provider_readback_pending": true
+  },
+  "release_gates": [
+    "exact-head Required + CodeQL",
+    "protected merge",
+    "existing hourly Janitor source readback",
+    "no new scheduler or exporter"
+  ],
+  "reference": "https://opentelemetry.io/docs/specs/semconv/cicd/cicd-spans/",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  }
+}
