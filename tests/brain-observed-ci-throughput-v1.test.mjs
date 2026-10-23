@@ -59,8 +59,9 @@ test('collector has bounded GET fanout and partial provider failure suppresses p
     return {total_count:1,jobs:[sample(id,1000+id).job]};
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
-  assert.equal(calls,13);
-  assert.equal(x.workflow_runs_sampled,12);
+  assert.ok(calls>13 && calls<=25);
+  assert.ok(x.workflow_runs_sampled>12 && x.workflow_runs_sampled<=24);
+  assert.equal(x.sampling_stop_reason,'SUFFICIENT_OBSERVED_SAMPLE');
   assert.equal(x.read_errors.length,1);
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(x.p95_wait_to_start_ms,null);
@@ -75,4 +76,58 @@ test('janitor reuses one existing hourly schedule and does not skip security gat
   assert.match(yaml,/powerhouse-ci-throughput\.json/);
   assert.match(yaml,/github-actions-ghost-reconcile\.mjs/);
   assert.doesNotMatch(yaml,/ci-throughput.*workflow_dispatch/);
+});
+
+test('adaptive job sampling reads beyond twelve existing runs only when first twelve lack proof',async()=>{
+  const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  let calls=0;
+  const read=path=>{
+    calls++;
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+    // Precisely 17 completed jobs in the first 12 runs (observed production shape).
+    const count=id<=5?2:1;
+    return {total_count:count,jobs:Array.from({length:count},(_,j)=>sample(id,id*100+j).job)};
+  };
+  const result=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
+  assert.equal(result.workflow_runs_sampled,15);
+  assert.equal(calls,16); // one run-list + fifteen bounded job-list GETs, no dispatch
+  assert.equal(result.sample_jobs,20);
+  assert.equal(result.distinct_runs,15);
+  assert.equal(result.status,'SAMPLED_METRICS_NOT_SLO');
+  assert.equal(result.sampling_stop_reason,'SUFFICIENT_OBSERVED_SAMPLE');
+  assert.equal(result.automation_allowed,false);
+});
+
+test('adaptive sampling stops early when enough real job evidence already exists',async()=>{
+  const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  let calls=0;
+  const read=path=>{
+    calls++;
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+    return {total_count:2,jobs:[sample(id,id*100).job,sample(id,id*100+1).job]};
+  };
+  const result=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
+  assert.equal(result.workflow_runs_sampled,10);
+  assert.equal(calls,11);
+  assert.equal(result.sample_jobs,20);
+  assert.equal(result.sampling_stop_reason,'SUFFICIENT_OBSERVED_SAMPLE');
+});
+
+test('adaptive cap does not fake p95 when even twenty-four existing runs are insufficient',async()=>{
+  const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  let calls=0;
+  const read=path=>{
+    calls++;
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    return {total_count:0,jobs:[]};
+  };
+  const result=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
+  assert.equal(result.workflow_runs_sampled,24);
+  assert.equal(calls,25);
+  assert.equal(result.status,'INSUFFICIENT_EVIDENCE');
+  assert.equal(result.p50_execution_ms,null);
+  assert.equal(result.p95_wait_to_start_ms,null);
+  assert.equal(result.sampling_stop_reason,'RUN_READ_CAP_OR_SOURCE_EXHAUSTED');
 });
