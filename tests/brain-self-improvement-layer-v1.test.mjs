@@ -25,12 +25,29 @@ test('promotion rejects security regression and unknown evidence',()=>{
   assert.equal(rejected.promotable,false);
   assert.equal(rejected.decision,'REJECT');
 
-  const promote=evaluatePromotionCandidate({
+  const sourceSha='a'.repeat(40);
+  const input={
     baseline:{qualityScore:.8,businessOutcome:10,cost:1,latencyMs:100},
-    candidate:{qualityScore:.9,businessOutcome:12,cost:1.05,latencyMs:105,evidenceRefs:['a','b'],gates:{quality:true,security:true,regression:true}}
+    candidate:{sourceSha,qualityScore:.9,businessOutcome:12,cost:1.05,latencyMs:105,
+      evidenceRefs:['provider-eval-1','provider-eval-2'],
+      gates:{quality:true,security:true,regression:true}},
+    now:'2026-10-23T12:00:00Z'
+  };
+  const assertedOnly=evaluatePromotionCandidate(input);
+  assert.equal(assertedOnly.promotable,false);
+  assert.equal(assertedOnly.decision,'GATHER_MORE_EVIDENCE');
+  assert.equal(assertedOnly.independentlyVerifiedEvidenceCount,0);
+  const promote=evaluatePromotionCandidate({...input,
+    verifyEvidenceRef:(ref,{candidateSha})=>({
+      evidence_ref:ref,candidate_sha:candidateSha,verified:true,independent:true,
+      authority:'INDEPENDENT_EVALUATION',verified_at:'2026-10-23T11:00:00Z'
+    })
   });
   assert.equal(promote.promotable,true);
   assert.equal(promote.decision,'PROMOTE');
+  assert.equal(promote.independentlyVerifiedEvidenceCount,2);
+  assert.equal(promote.releaseAuthorized,false);
+  assert.equal(promote.protectedReleaseRequired,true);
 });
 
 test('model router is provider neutral and respects privacy/capability',()=>{
@@ -84,4 +101,47 @@ test('daily improvement score requires guardrails',()=>{
   });
   assert.equal(score.guardrailGreen,true);
   assert.ok(score.score>.85);
+});
+
+test('autonomous promotion cannot promote on forged, duplicate, stale or self-asserted receipts',()=>{
+  const sourceSha='b'.repeat(40),now='2026-10-23T12:00:00Z';
+  const input={
+    baseline:{qualityScore:.8,businessOutcome:1,cost:1,latencyMs:100},
+    candidate:{sourceSha,qualityScore:.9,businessOutcome:2,cost:1,latencyMs:100,
+      evidenceRefs:['provider-1','provider-2'],gates:{quality:true,security:true,regression:true}},
+    now
+  };
+  const proof=(ref,{candidateSha})=>({
+    evidence_ref:ref,candidate_sha:candidateSha,verified:true,independent:true,
+    authority:'PROVIDER_READBACK',verified_at:'2026-10-23T11:00:00Z'
+  });
+  for(const verifyEvidenceRef of [
+    undefined,
+    ()=>true,
+    ref=>({...proof(ref,{candidateSha:sourceSha}),independent:false}),
+    ref=>({...proof(ref,{candidateSha:sourceSha}),candidate_sha:'c'.repeat(40)}),
+    ref=>({...proof(ref,{candidateSha:sourceSha}),authority:'SELF_ATTESTED'}),
+    ref=>({...proof(ref,{candidateSha:sourceSha}),verified_at:'2026-10-24T12:00:00Z'}),
+    ()=>{throw Error('provider temporarily unavailable');}
+  ]){
+    const result=evaluatePromotionCandidate({...input,verifyEvidenceRef});
+    assert.equal(result.promotable,false);
+    assert.equal(result.releaseAuthorized,false);
+    assert.equal(result.decision,'GATHER_MORE_EVIDENCE');
+  }
+  const dedup=evaluatePromotionCandidate({...input,
+    candidate:{...input.candidate,evidenceRefs:['provider-1','provider-1']},
+    verifyEvidenceRef:proof,minEvidence:0,requiredGates:[]});
+  assert.equal(dedup.promotable,false);
+  assert.equal(dedup.independentlyVerifiedEvidenceCount,1);
+  assert.equal(dedup.minimumVerifiedEvidence,2);
+  const security=evaluatePromotionCandidate({...input,
+    candidate:{...input.candidate,gates:{quality:true,regression:true}},
+    verifyEvidenceRef:proof,minEvidence:0,requiredGates:[]});
+  assert.equal(security.promotable,false);
+  assert.equal(security.decision,'REJECT');
+  assert.equal(security.gates.security,'unknown');
+  const wrongSha=evaluatePromotionCandidate({...input,
+    candidate:{...input.candidate,sourceSha:undefined},verifyEvidenceRef:proof});
+  assert.equal(wrongSha.promotable,false);
 });
