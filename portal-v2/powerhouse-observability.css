@@ -27,3 +27,16 @@
 .pai-flow small{display:block;color:#2563eb;margin-bottom:5px}
 @media(max-width:900px){.pai-flow{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:620px){.pai-flow{grid-template-columns:repeat(2,minmax(0,1fr))}.pai-bars small{font-size:.55rem}}
+
+
+/* Evidence quality report lives inside the existing, authenticated learning tab. */
+.pai-quality-report{display:grid;gap:12px;min-width:0}
+.pai-quality-eyebrow{font-size:.7rem;letter-spacing:.09em;font-weight:900;color:#1769ff}
+.pai-quality-report h4{margin:4px 0 0;font-size:1.1rem}
+.pai-quality-table{min-width:720px}
+.pai-quality-table th[scope="row"]{text-align:left;white-space:normal;min-width:150px}
+.pai-quality-table td{vertical-align:top;line-height:1.5}
+.pai-quality-state{display:inline-block;border:1px solid #dae2ed;padding:4px 7px;border-radius:7px;background:#f8fafc;font-size:.7rem;font-weight:900;white-space:nowrap}
+.pai-quality-actions{padding:12px;border-radius:10px;background:#f8faff;border:1px solid #e3eafa;font-size:.82rem}
+.pai-quality-actions ol{padding-left:22px;margin:8px 0 0}
+.pai-quality-actions li+li{margin-top:5px}

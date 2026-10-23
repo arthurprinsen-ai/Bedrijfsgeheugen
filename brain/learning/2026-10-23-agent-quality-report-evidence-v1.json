@@ -1,0 +1,24 @@
+{
+  "fingerprint": "portal|powerhouse|agent-quality-report|evidence-grades|20261023-v1",
+  "type": "QUALITY_IMPROVEMENT_CANDIDATE",
+  "canonical_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+  "related": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747",
+  "source": "existing authenticated Brain/Heartbeat runtime and Agent Intelligence dashboard",
+  "diagnosis": "Events, incident trends and proved memory already exist; no explicit per-domain quality evidence taxonomy was displayed.",
+  "root_cause": "Activity counts can be misinterpreted as autonomous effectiveness without exact deployment, trace-grade or tenant-matched outcome receipts.",
+  "change": "Add read-only, deduplicated 7-domain quality report and strict evidence classification inside existing tab.",
+  "safety": [
+    "no new scheduler",
+    "no additional API or permissions",
+    "no fake DORA denominators",
+    "only allowlisted HTTPS proof references",
+    "unknown remains unknown",
+    "no duplicated customer outcomes"
+  ],
+  "tests": [
+    "tests/brain-agent-intelligence-analytics.test.mjs"
+  ],
+  "desired": "better evidence visibility, not yet measured customer lift",
+  "release_status": "CANDIDATE_NOT_LIVE",
+  "customer_value_verified": false
+}
