@@ -49,7 +49,7 @@ export function buildSupervisorDailyLearning({supervisor,ci=null,releaseEvidence
   const sampleValid=Boolean(supervisor&&
     ['SAMPLED_EXECUTION_NOT_RELEASE_SLO','INSUFFICIENT_EXECUTION_SAMPLES'].includes(supervisor.status)&&
     Array.isArray(supervisor.runs)&&Array.isArray(supervisor.read_errors)&&supervisor.read_errors.length===0);
-  const ciValid=Boolean(ci&&!['PARTIAL_PROVIDER_OBSERVATION','PROVIDER_OBSERVATION_UNAVAILABLE'].includes(ci.status)&&
+  const ciValid=Boolean(ci&&ci.status==='SAMPLED_METRICS_NOT_SLO'&&
     Array.isArray(ci.read_errors)&&ci.read_errors.length===0);
   const verdict=evaluateIndependentOptimization(releaseEvidence||{});
   const categories=sampleValid?supervisor.observed_event_categories||{}:null;
@@ -64,7 +64,8 @@ export function buildSupervisorDailyLearning({supervisor,ci=null,releaseEvidence
     writer_lease_denials:categories?.WRITER_LEASE_MISSING??null,
     cas_or_provider_rejections_unverified:categories?.CAS_OR_PROVIDER_REJECTION_UNVERIFIED??null,
     confirmed_stale_head_cas_rejections:null,
-    ci_repeated_executions_observed:ciValid?ci.distinct_runs??null:null,
+    ci_distinct_runs_sampled:ciValid?ci.distinct_runs??null:null,
+    repeated_exact_sha_workflow_runs:null,
     unnecessary_ci_repetitions_proven:null,
     ci_p95_wait_to_start_ms:ciValid?ci.p95_wait_to_start_ms??null:null,
     ci_p95_execution_ms:ciValid?ci.p95_execution_ms??null:null,
