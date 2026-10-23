@@ -121,6 +121,6 @@ test('trace ID observation is not a trace grade and markup escapes risky content
  assert.equal(report.rows.find(x=>x.id==='agents').status,'TRACE WAARGENOMEN');
  const markup=qualityReportMarkup({events:[{id:'t',occurredAt:'2026-10-23T10:00:00Z',
    traceId:'<script>alert(1)</script>',source:'GitHub',status:'SUCCESS'}],now});
- assert.doesNotMatch(markup,/<script>/);
+ assert.equal(markup.includes('alert(1)'),false,'untrusted trace payload must never be reflected in report HTML');
  assert.match(markup,/geen onafhankelijke trace-grade/);
 });
