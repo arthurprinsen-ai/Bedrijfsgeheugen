@@ -48,11 +48,11 @@ jobs:
           const result = classifyMainWrite({ branch: process.env.GITHUB_REF_NAME, parentCount, changedPaths, headSha: sha, associatedPullRequests });
           const evidence = { observedAt: new Date().toISOString(), repository: process.env.GITHUB_REPOSITORY, runId: process.env.GITHUB_RUN_ID, changedPaths, prAssociationSource: provenance.source, prAssociationAttempts: provenance.attempts, associatedPullRequests: associatedPullRequests ?? null, ...result };
           await writeFile('.artifacts/main-write-integrity.json', `${JSON.stringify(evidence, null, 2)}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `status=${result.status}\nrecoveryRequired=${String(result.recoveryRequired)}\nfingerprint=${result.fingerprint ?? ''}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `status=${result.status}\nrecoveryRequired=${String(result.recoveryRequired)}\nfingerprint=${result.fingerprint ?? ''}\nproviderProofSource=${provenance.source}\n`);
           console.log(JSON.stringify(evidence));
           NODE
       - name: Create or update stateful recovery incident
-        if: steps.classify.outputs.recoveryRequired == 'true'
+        if: steps.classify.outputs.recoveryRequired == 'true' && steps.classify.outputs.providerProofSource != 'PROVIDER_RATE_LIMITED'
         env:
           GH_TOKEN: ${{ github.token }}
           FINGERPRINT: ${{ steps.classify.outputs.fingerprint }}
@@ -81,6 +81,10 @@ jobs:
             gh api --method POST "${api}/issues" -f title='Recovery: direct main write integrity incident' -f body="$body" >/dev/null
             echo "created recovery issue"
           fi
+      - name: Preserve provider rate-limit evidence without further API calls
+        if: steps.classify.outputs.recoveryRequired == 'true' && steps.classify.outputs.providerProofSource == 'PROVIDER_RATE_LIMITED'
+        run: |
+          echo "::error::GITHUB_PROVIDER_PROVENANCE_RATE_LIMITED: exact PR evidence is unavailable; preserve UNKNOWN_MAIN_WRITE, retain red integrity check, avoid further GitHub API requests and use canonical issue #3191 after provider access recovers."
       - name: Upload immutable integrity evidence
         if: always()
         uses: actions/upload-artifact@v4
