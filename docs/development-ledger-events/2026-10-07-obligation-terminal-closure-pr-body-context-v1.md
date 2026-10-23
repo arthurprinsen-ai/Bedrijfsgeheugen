@@ -7,3 +7,8 @@ Root cause: the canonical PR body was fetched and encoded in the context step bu
 Action: bind the resolved body explicitly, add a regression, update continuity skill and System Map, and retain the existing fail-closed metadata parser.
 
 No Security Trust runtime, provider, database or customer-data path is changed by this recovery.
+
+
+## Canonicalization follow-up
+
+Powerhouse Skill Projection run `37655008659` rejected the initial learning evaluation path because canonical learning evaluation only accepts `tests/brain-*.test.mjs`. A same-obligation successor adds the Brain-namespaced regression and rewires historical replay/shadow/canary to it. No workflow runtime logic changes in this follow-up.

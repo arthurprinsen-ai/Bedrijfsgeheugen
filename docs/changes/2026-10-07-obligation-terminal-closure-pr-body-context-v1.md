@@ -18,3 +18,10 @@ A regression test scopes itself to the identity block and requires:
 
 ## Structural rule
 Post-merge and manually resumed terminalization resolve identity from the fetched canonical merged PR. Event payload presence is not treated as an implicit shell-environment contract.
+
+
+## Canonicalization recovery
+
+The first protected repair proved the workflow identity fix but Powerhouse Skill Projection correctly rejected its learning evaluation because the regression path was outside the canonical `tests/brain-*.test.mjs` namespace.
+
+The recovery adds `tests/brain-obligation-terminal-closure-pr-body-context-v1.test.mjs` and points historical replay, shadow and canary evaluation to that canonical Brain regression. The workflow implementation itself is unchanged.
