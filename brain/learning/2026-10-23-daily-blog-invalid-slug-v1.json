@@ -29,5 +29,18 @@
       "tests/brain-canonical-blog-slug-truncation-v1.test.mjs"
     ]
   },
-  "current_state": "CANDIDATE_NOT_LIVE"
+  "current_state": "CANDIDATE_NOT_LIVE",
+  "evidence": {
+    "failure_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39883989350",
+    "exact_error": "INVALID_SLUG",
+    "source_artifact_date": "2026-10-23",
+    "failed_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om-",
+    "expected_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om",
+    "regression_tests": [
+      "tests/brain-canonical-blog-slug-truncation-v1.test.mjs",
+      "tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs"
+    ],
+    "provider_publication": "NOT_CREATED",
+    "production_readback": "PENDING_PROTECTED_RELEASE"
+  }
 }
