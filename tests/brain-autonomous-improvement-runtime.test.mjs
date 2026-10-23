@@ -96,6 +96,24 @@ test('business value changes priority only for observed known evidence', () => {
   assert.equal(ranked[2].value_priority, null);
 });
 
+test('future or malformed outcome evidence never wins the autonomous business-value ranking', () => {
+  const now = '2026-09-16T12:00:00Z';
+  const candidates = [
+    { id: 'future-huge', realized_value: 1000000, confidence: 1, observed_at: '2026-09-17T12:00:00Z' },
+    { id: 'unparseable', realized_value: 1000000, confidence: 1, observed_at: 'not-a-date' },
+    { id: 'negative-confidence', realized_value: 1000000, confidence: -0.1, observed_at: now },
+    { id: 'overconfident', realized_value: 1000000, confidence: 1.2, observed_at: now },
+    { id: 'verified-observation', realized_value: 30, confidence: 0.8, observed_at: now },
+    { id: 'observed-loss', realized_value: -5, confidence: 1, observed_at: now }
+  ];
+  const ranked = prioritizeByBusinessValue({ now, candidates });
+  assert.deepEqual(ranked.filter(item => item.value_known).map(item => item.id), ['verified-observation', 'observed-loss']);
+  for (const item of ranked.filter(item => !item.value_known)) assert.equal(item.value_priority, null);
+  assert.equal(ranked.find(item => item.id === 'verified-observation').value_priority, 24);
+  assert.equal(ranked.find(item => item.id === 'observed-loss').value_priority, -5);
+  assert.ok(prioritizeByBusinessValue({ now: 'not-a-date', candidates: [candidates[4]] }).every(item => !item.value_known));
+});
+
 test('runtime composes one deterministic evidence packet over existing authorities', () => {
   const input = { sourceSha: 'abc', observedAt: '2026-09-16T12:00:00Z', evidence: ['e1'], fitness: { baseline: { reliability: 1 }, current: { reliability: 1 } }, capabilityGraph: { capabilities: [{ id: 'improve', provides: ['improve'] }], requirements: ['improve'] }, experimentPortfolio: { champion: { id: 'a', observations: 30, metrics: { q: 1 } }, primaryMetric: 'q' }, causalEvidence: {}, simplification: {}, valueFeedback: { candidates: [] } };
   const a = buildAutonomousImprovementPacket(input);
