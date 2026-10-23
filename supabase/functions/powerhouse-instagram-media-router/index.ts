@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry} from '../_shared/mira-frozen-winner-contract.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
@@ -191,17 +191,20 @@ Deno.serve(async req=>{
  // the true bytes, t=0/mid/end face >=0.940 and temporal movement in background.
  // No generation spend, additional scheduler, alternate publisher or auto-PASS.
  if(action==='preflight'&&sourceLed&&postType==='reel'&&!historical){
-  const candidate=sourceLedAutoVerifyCandidate({runDate,resolved:winnerContract,job,ob,postType,readyProviders});
+  const initial=sourceLedAutoVerifyCandidate({runDate,resolved:winnerContract,job,ob,postType,readyProviders});
+  const candidate=initial.ok?initial:sourceLedRecoverableProofRetry({
+    runDate,resolved:winnerContract,job,ob,postType,readyProviders
+  });
   if(candidate.ok){
    if(typeof EdgeRuntime==='undefined'||typeof EdgeRuntime.waitUntil!=='function')
     return json({ok:false,error:'MIRA_PROOF_BACKGROUND_RUNTIME_UNAVAILABLE'},503);
    const claim=await db.from('powerhouse_instagram_media_jobs_v1')
-    .update({status:'WAITING_PROOF',attempts:1,selected_provider:'openart',
+    .update({status:'WAITING_PROOF',attempts:candidate.nextAttempts||1,selected_provider:'openart',
       provider_connection_state:'ASSET_MATERIALIZED',asset_manifest:candidate.assetManifest,
       last_error:null,next_action:'Original router verifying existing OpenArt video: face and temporal proof.',
       updated_at:new Date().toISOString()})
     .eq('id',job.id).eq('updated_at',job.updated_at)
-    .eq('status','WAITING_ASSET').eq('attempts',0)
+    .eq('status',job.status).eq('attempts',job.attempts)
     .select('id').maybeSingle();
    if(claim.error)return json({ok:false,error:'MIRA_AUTO_PROOF_CLAIM_FAILED'},503);
    if(!claim.data)return json({ok:true,ready:false,status:'STATE_CHANGED_RETRY',runDate},409);
@@ -231,6 +234,7 @@ Deno.serve(async req=>{
    });
    EdgeRuntime.waitUntil(background);
    return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',
+     proof_attempt:candidate.nextAttempts||1,
      openart_history_id:candidate.assetManifest.openart_history_id,
      next_action:'One existing video accepted for genuine frame/temporal verification; no Instagram provider create yet.'});
   }
