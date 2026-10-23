@@ -6,9 +6,12 @@
   "root_cause": "The 14-day frontend and audit freshness windows allowed 110 historical supplier checks older than seven days to remain eligible for a FRESH assessment despite independent supplier receipts not being renewed.",
   "prevention": "Apply one seven-day source-evidence gate in advisor, daily audit, and configuration; show explicit historical-stale label; never infer official verification from DB updated_at or an HTTP response.",
   "evaluation": {
-    "regression_test": "tests/ai-model-intelligence-freshness-v1.test.mjs",
+    "regression_test": "tests/brain-ai-model-supplier-freshness-guard-v1.test.mjs",
     "audit": "scripts/brain/ai-model-intelligence-audit.mjs",
-    "customer_surface": "ai-modelwijzer.html"
+    "customer_surface": "ai-modelwijzer.html",
+    "historical_replay": [
+      "tests/brain-ai-model-supplier-freshness-guard-v1.test.mjs"
+    ]
   },
   "evidence": {
     "supplier_records": 110,
