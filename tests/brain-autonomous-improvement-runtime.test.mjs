@@ -13,6 +13,7 @@ import {
   runFailureInjection,
   findSimplificationCandidates,
   prioritizeByBusinessValue,
+  assessVerifiedGrowthLoop,
   buildAutonomousImprovementPacket
 } from '../scripts/brain/continuous-improvement/autonomous-runtime.mjs';
 import { validateAutonomousImprovementRuntime } from '../scripts/brain/continuous-improvement/run-autonomous-improvement.mjs';
@@ -90,10 +91,87 @@ test('simplification proposes removals but never auto deletes', () => {
   assert.ok(result.proposals.some(item => item.key === 'dead-helper'));
 });
 
-test('business value changes priority only for observed known evidence', () => {
-  const ranked = prioritizeByBusinessValue({ now: '2026-09-16T12:00:00Z', candidates: [{ id: 'unknown', realized_value: null, confidence: 1, observed_at: '2026-09-16T11:00:00Z' }, { id: 'low', realized_value: 10, confidence: 1, observed_at: '2026-09-16T11:00:00Z' }, { id: 'high', realized_value: 100, confidence: 0.9, observed_at: '2026-09-16T11:00:00Z' }] });
-  assert.deepEqual(ranked.map(item => item.id), ['high','low','unknown']);
-  assert.equal(ranked[2].value_priority, null);
+const growthEvidence=(id,realizedValue,overrides={})=>({
+  id,tenant_id:'tenant-a',channel:'blog',
+  outcome_id:'outcome-'+id,
+  observed_at:'2026-10-23T09:00:00Z',
+  realized_value:realizedValue,confidence:0.9,
+  action_executed:true,verification_status:'REALIZED_VERIFIED',
+  evidence_health:{status:'healthy'},source_refs:['provider:outcome-'+id],
+  learning_verified:true,learning_evidence_refs:['learning:receipt-'+id],
+  next_decision_id:'decision:next-'+id,
+  growth_proof:{
+    tenant_id:'tenant-a',goal_id:'goal:revenue',decision_id:'decision:'+id,
+    action_id:'action:'+id,outcome_id:'outcome-'+id,
+    published_artifact_id:'blog:article-'+id,
+    provider_receipt_id:'publisher:create-'+id,provider_status:'LIVE_PROVEN'
+  },
+  ...overrides
+});
+
+test('one organism prioritizes independently source-backed verified business outcomes',()=>{
+  const ranked=prioritizeByBusinessValue({
+    now:'2026-10-23T10:00:00Z',
+    candidates:[growthEvidence('unknown',null),growthEvidence('low',10),growthEvidence('high',100)]
+  });
+  assert.deepEqual(ranked.map(item=>item.id),['high','low','unknown']);
+  assert.equal(ranked[0].value_known,true);
+  assert.equal(ranked[0].loop_assurance.status,'CLOSED_LOOP_VERIFIED');
+  assert.equal(ranked[2].value_priority,null);
+});
+
+test('unverified numeric revenue cannot outrank provider-verified value',()=>{
+  const ranked=prioritizeByBusinessValue({
+    now:'2026-10-23T10:00:00Z',
+    candidates:[{id:'invented-million',realized_value:1e6,confidence:1,observed_at:'2026-10-23T09:00:00Z'},
+      growthEvidence('confirmed',7)]
+  });
+  assert.deepEqual(ranked.map(x=>x.id),['confirmed','invented-million']);
+  assert.equal(ranked[1].value_known,false);
+  assert.equal(ranked[1].loop_assurance.status,'UNVERIFIED');
+});
+
+test('private tenant drift, stale sources, external delivery proof and time travel all fail closed',()=>{
+  const base=growthEvidence('guard',150);
+  const changes=[
+    {growth_proof:{...base.growth_proof,tenant_id:'tenant-other'},reason:'TENANT_PROOF_MISMATCH'},
+    {evidence_health:{status:'stale'},reason:'OUTCOME_PROVIDER_EVIDENCE_MISSING'},
+    {growth_proof:{...base.growth_proof,provider_receipt_id:''},reason:'EXTERNAL_DELIVERY_NOT_PROVEN'},
+    {observed_at:'2026-10-24T09:00:00Z',reason:'OBSERVATION_TIME_UNVERIFIED'},
+    {action_executed:false,reason:'ACTION_NOT_VERIFIED_EXECUTED'},
+    {source_refs:[],reason:'OUTCOME_PROVIDER_EVIDENCE_MISSING'}
+  ];
+  for(const {reason,...patch} of changes){
+    const result=assessVerifiedGrowthLoop({...base,...patch},'2026-10-23T10:00:00Z');
+    assert.equal(result.outcome_verified,false,reason);
+    assert.ok(result.missing_evidence.includes(reason),reason);
+    assert.equal(result.closed_loop_verified,false);
+  }
+});
+
+test('real observed outcome is not a closed learning loop without evidence and next decision',()=>{
+  const base=growthEvidence('learning',15);
+  for(const patch of [
+    {learning_verified:false},
+    {learning_evidence_refs:[]},
+    {next_decision_id:''}
+  ]){
+    const result=assessVerifiedGrowthLoop({...base,...patch},'2026-10-23T10:00:00Z');
+    assert.equal(result.outcome_verified,true);
+    assert.equal(result.status,'OUTCOME_VERIFIED_LEARNING_PENDING');
+    assert.equal(result.closed_loop_verified,false);
+    assert.equal(result.causal_attribution,'NOT_ESTABLISHED');
+  }
+});
+
+test('multiple receipts for the same tenant outcome cannot inflate value ranking',()=>{
+  const base=growthEvidence('single',18);
+  const result=prioritizeByBusinessValue({now:'2026-10-23T10:00:00Z',
+    candidates:[base,{...base,id:'duplicate',realized_value:250}]
+  });
+  assert.equal(result.filter(x=>x.value_known).length,1);
+  assert.equal(result.filter(x=>x.loop_assurance.status==='DUPLICATE_OUTCOME_RECEIPT').length,1);
+  assert.equal(result.filter(x=>x.value_priority!==null).length,1);
 });
 
 test('runtime composes one deterministic evidence packet over existing authorities', () => {
