@@ -31,5 +31,30 @@
     "additional_permissions": false,
     "required_quality_gates_unchanged": true,
     "resource_audit_live_fixed_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-resource-intelligence-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-resource-intelligence-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-resource-intelligence-contract.test.mjs"
+    ],
+    "invariants": [
+      "Audit migration filename exists in source and in applied Supabase migration ledger",
+      "Unit names and filtered physical-resource sums match immutable applied SQL",
+      "Missing energy, water and carbon observations remain NULL rather than fabricated zero",
+      "Provenance, tenant RLS, invoker and BG169 production authority remain intact",
+      "No migration or extra scheduler, permission or database writer is introduced"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_AUDIT_REFERENCES_ABSENT_AND_OUTDATED_RESOURCE_MIGRATION",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
   }
 }
