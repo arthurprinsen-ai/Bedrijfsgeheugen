@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Mijn account | Bedrijfsgeheugen SaaS</title>
+<meta name="description" content="Log veilig in en controleer je Bedrijfsgeheugen-abonnement voordat je het klantenportaal opent.">
+<style>
+:root{color-scheme:light;--ink:#101e35;--muted:#53627a;--line:#dce5f0;--accent:#2446d8;--paper:#f7f9fc;--yellow:#ffe86b}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:970px;margin:auto;padding:24px 22px 72px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:54px}
+.brand{font-weight:850;letter-spacing:-.035em;font-size:1.35rem}
+nav{display:flex;flex-wrap:wrap;gap:16px}a{color:var(--accent);text-underline-offset:3px}
+main{display:grid;grid-template-columns:1.2fr .8fr;gap:22px}
+.card{border:1px solid var(--line);border-radius:20px;background:white;padding:clamp(24px,4vw,42px);box-shadow:0 12px 35px #1424400c}
+.eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.1em;color:var(--accent);text-transform:uppercase}
+h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.07;letter-spacing:-.05em;margin:14px 0 18px}
+h2{font-size:1.18rem;margin:0 0 10px}p{color:var(--muted)}
+.status{border-left:4px solid var(--accent);padding:10px 14px;background:#f1f5ff;border-radius:7px;font-size:.9rem}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.action{display:inline-flex;align-items:center;justify-content:center;padding:13px 18px;border-radius:10px;border:1px solid var(--ink);background:white;color:var(--ink);text-decoration:none;font-weight:750;font:inherit;cursor:pointer}
+.action.primary{background:var(--ink);color:white}.action:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.step{padding:14px 0;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}.step strong{display:block}
+.small{font-size:.85rem}footer{margin-top:40px;color:var(--muted);font-size:.86rem}
+[hidden]{display:none!important}
+@media(max-width:720px){header{margin-bottom:30px}main{grid-template-columns:1fr}.wrap{padding:18px 16px 48px}nav{gap:9px}}
+</style>
+</head>
+<body><div class="wrap">
+<header><a class="brand" href="https://www.bedrijfsgeheugen.nl/" aria-label="Bedrijfsgeheugen homepage">Bedrijfsgeheugen</a>
+<nav aria-label="Accountnavigatie"><a href="https://www.bedrijfsgeheugen.nl/prijzen">Abonnementen</a><a href="https://www.bedrijfsgeheugen.nl/scan">Gratis scan</a><a href="https://www.bedrijfsgeheugen.nl/contact">Hulp</a></nav></header>
+<main>
+<section class="card" aria-labelledby="heading">
+<span class="eyebrow">Beveiligde klantomgeving</span>
+<h1 id="heading">Jouw Bedrijfsgeheugen</h1>
+<p id="explanation">We controleren eerst jouw identiteit, organisatie en abonnementsrechten. Pas daarna kun je de betaalde klantomgeving openen.</p>
+<p id="status" class="status" role="status" aria-live="polite">Inlogstatus controleren…</p>
+<p id="plan" hidden></p>
+<div class="actions">
+<button class="action primary" id="login" type="button" hidden>Inloggen of account maken</button>
+<a class="action primary" id="portal" href="https://www.bedrijfsgeheugen.nl/portal-v2/" hidden>Open mijn klantenportaal →</a>
+<a class="action" id="pricing" href="https://www.bedrijfsgeheugen.nl/prijzen#saas" hidden>Kies een abonnement</a>
+<button class="action" id="retry" type="button" hidden>Opnieuw controleren</button>
+<button class="action" id="logout" type="button" hidden>Uitloggen</button>
+</div>
+</section>
+<aside class="card" aria-labelledby="flowTitle">
+<h2 id="flowTitle">Van scan naar resultaat</h2>
+<div class="step"><strong>1. Ontdek kansen</strong><span class="small">Doe de publieke workshopscan zonder abonnement. Je volledige bedrijfsdata is niet publiek.</span></div>
+<div class="step"><strong>2. Kies je abonnement</strong><span class="small">Starter €99, Pro €299, Groei €749 per maand excl. btw; Enterprise op aanvraag.</span></div>
+<div class="step"><strong>3. Bevestig je account</strong><span class="small">Gebruik hetzelfde e-mailadres als bij je aankoop. Betaling en organisatie worden server-side gecontroleerd.</span></div>
+<div class="step"><strong>4. Werk in je portaal</strong><span class="small">Koppel scans, volg acties en bekijk alleen de onderdelen die je abonnement toestaat.</span></div>
+</aside>
+</main>
+<footer>Je account is privé. Publieke voorbeelden zijn geen echte klantgegevens. Vragen? <a href="https://www.bedrijfsgeheugen.nl/contact">Neem contact op</a>.</footer>
+</div>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+(()=>{
+'use strict';
+const el=id=>document.getElementById(id);
+const identity=window.netlifyIdentity;
+const activate=new URLSearchParams(location.search).get('activate')==='subscription';
+let activationAttempted=false,run=0;
+function show(title,body,status,buttons=[]){
+  el('heading').textContent=title;el('explanation').textContent=body;el('status').textContent=status;
+  for(const id of ['login','portal','pricing','retry','logout'])el(id).hidden=!buttons.includes(id);
+  el('plan').hidden=true;el('plan').textContent='';
+}
+async function refresh(){
+  const rev=++run;
+  const user=identity?.currentUser?.();
+  if(!user){show('Welkom bij Bedrijfsgeheugen','Log in of maak een account om jouw abonnement en organisatie te controleren.','Geen actieve inlogsessie.',['login','pricing']);return}
+  show('Account controleren','Je toegang wordt gecontroleerd aan de hand van je bevestigde account en de betalingen.','Bezig met controleren…',['logout']);
+  try{
+    let jwt=await user.jwt();if(rev!==run)return;
+    if(!jwt)throw Error('missing_token');
+    if(activate&&!activationAttempted){
+      activationAttempted=true;
+      const res=await fetch('/api/checkout/activate',{method:'POST',credentials:'same-origin',headers:{authorization:'Bearer '+jwt,'content-type':'application/json'},cache:'no-store'});
+      if(res.ok){await user.jwt(true);jwt=await user.jwt()}
+    }
+    const res=await fetch('/api/saas/my-account',{method:'GET',headers:{authorization:'Bearer '+jwt,accept:'application/json'},credentials:'same-origin',cache:'no-store'});
+    const data=await res.json().catch(()=>({}));if(rev!==run)return;
+    if(res.ok&&data.ready===true){
+      show('Je klantomgeving staat klaar','Je identiteit, organisatie en abonnement zijn gecontroleerd. Je kunt nu veilig verder.','Toegang bevestigd.',['portal','logout']);
+      el('plan').textContent='Abonnement: '+String(data.plan_name||data.plan)+' · '+(data.status==='trialing'?'proefperiode':'actief');el('plan').hidden=false;
+    }else if(res.status===402){
+      show('Kies jouw abonnement','Er is nog geen actief SaaS-abonnement voor dit account bevestigd. Een publieke scan blijft mogelijk.','Betaalde portaaltoegang niet actief.',['pricing','logout','retry']);
+    }else if(res.status===403){
+      show('Bevestig je account','Bevestig je e-mailadres en gebruik hetzelfde account als bij de aankoop.','Organisatie of e-mailadres niet geverifieerd.',['logout','retry']);
+    }else if(res.status===401){
+      show('Log opnieuw in','Je inlogsessie is verlopen.','Aanmelden is vereist.',['login','retry']);
+    }else{
+      show('Controle nog niet beschikbaar','We konden je abonnementsrechten niet onafhankelijk verifiëren. Probeer opnieuw of neem contact op.','Geen toegang toegekend zonder verificatie.',['retry','logout']);
+    }
+  }catch{
+    if(rev===run)show('Controle tijdelijk niet beschikbaar','De identiteits- of abonnementsdienst kon niet worden bereikt.','Geen toegang toegekend zonder verificatie.',['retry','logout']);
+  }
+}
+el('login').addEventListener('click',()=>identity?.open?.('login'));
+el('logout').addEventListener('click',()=>identity?.logout?.());
+el('retry').addEventListener('click',()=>{activationAttempted=false;void refresh()});
+if(!identity){show('Inloggen tijdelijk niet beschikbaar','Gebruik de inlogpagina of neem contact op.','Identiteitsdienst niet geladen.',['pricing','retry']);return}
+identity.on('init',()=>void refresh());
+identity.on('login',()=>{identity.close();void refresh()});
+identity.init();
+identity.on('logout',()=>{activationAttempted=false;void refresh()});
+void refresh();
+})();
+</script>
+</body></html>

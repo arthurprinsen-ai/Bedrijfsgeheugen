@@ -37,7 +37,11 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
      rows.length!==telemetry.sample_jobs){
     return deny('INSUFFICIENT_EVIDENCE','INCOMPLETE_OR_UNTRUSTED_TELEMETRY');
   }
-  const unique=new Set(),groups=new Map(),attempts=new Set();
+  // Advisory tuning cannot weaken the evidence contract owned by the canonical Janitor.
+  const repeatedRunFloor=Number.isSafeInteger(minRepeatedRuns)&&minRepeatedRuns>=3?minRepeatedRuns:3;
+  const medianFloorMs=Number.isSafeInteger(minMedianMs)&&minMedianMs>=60000?minMedianMs:60000;
+  const priorityLimit=Number.isSafeInteger(maxPriorities)&&maxPriorities>=1?Math.min(5,maxPriorities):5;
+  const unique=new Set(),groups=new Map(),attempts=new Set(),attemptShas=new Map();
   for(const row of rows){
     const run=row?.run_id,attempt=row?.run_attempt,job=row?.job_id;
     const sha=row?.head_sha,workflow=String(row?.workflow_name||'').trim();
@@ -52,28 +56,45 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
        duration>172800000||wait>172800000||unique.has(id)){
       return deny('EVIDENCE_REJECTED','INVALID_OR_DUPLICATE_PROVIDER_JOB',rows.length);
     }
-    unique.add(id);attempts.add(run+':'+attempt);
+    const attemptKey=run+':'+attempt;
+    // The same workflow attempt cannot legitimately carry two distinct HEAD SHAs.
+    const knownSha=attemptShas.get(attemptKey);
+    if(knownSha&&knownSha.toLowerCase()!==sha.toLowerCase())
+      return deny('EVIDENCE_REJECTED','RUN_ATTEMPT_SHA_INCONSISTENT',rows.length);
+    attemptShas.set(attemptKey,sha);
+    unique.add(id);attempts.add(attemptKey);
     const key=(Number.isSafeInteger(row.workflow_id)?'id:'+row.workflow_id:'name:'+workflow)+'|'+name;
-    if(!groups.has(key))groups.set(key,{workflow,job:name,lane:laneOf(workflow,name),jobs:[],attempts:new Set(),shaSet:new Set()});
+    if(!groups.has(key))groups.set(key,{workflow,job:name,lane:laneOf(workflow,name),jobs:[],perAttempt:new Map(),shaSet:new Set()});
     const group=groups.get(key);
-    group.jobs.push({run_id:run,run_attempt:attempt,job_id:job,head_sha:sha,execution_ms:duration,wait_to_start_ms:wait});
-    group.attempts.add(run+':'+attempt);group.shaSet.add(sha);
+    const observed={run_id:run,run_attempt:attempt,job_id:job,head_sha:sha,execution_ms:duration,wait_to_start_ms:wait};
+    group.jobs.push(observed);
+    const prior=group.perAttempt.get(attemptKey);
+    // A matrix fan-out contributes one conservative observation per independent
+    // workflow attempt, not N votes in the median or in p95.
+    if(!prior||observed.execution_ms>prior.execution_ms||
+       (observed.execution_ms===prior.execution_ms&&observed.job_id<prior.job_id)){
+      group.perAttempt.set(attemptKey,observed);
+    }
+    group.shaSet.add(sha);
   }
   if(attempts.size!==telemetry.distinct_runs)
     return deny('EVIDENCE_REJECTED','DISTINCT_ATTEMPT_COUNT_MISMATCH',rows.length);
   const ranked=[];
   for(const [key,group] of groups){
-    const attemptsCount=group.attempts.size;
-    if(attemptsCount<minRepeatedRuns)continue;
-    const median=percentile(group.jobs.map(j=>j.execution_ms),.5);
-    if(median<minMedianMs)continue;
+    const independentJobs=[...group.perAttempt.values()];
+    const attemptsCount=independentJobs.length;
+    if(attemptsCount<repeatedRunFloor)continue;
+    const median=percentile(independentJobs.map(j=>j.execution_ms),.5);
+    if(median<medianFloorMs)continue;
     ranked.push(Object.freeze({
       signature:key,workflow_name:group.workflow,job_name:group.job,
       suggested_lane:group.lane,independent_run_attempts:attemptsCount,
-      sample_jobs:group.jobs.length,distinct_head_shas:group.shaSet.size,
-      median_execution_ms:median,p95_execution_ms:percentile(group.jobs.map(j=>j.execution_ms),.95),
-      median_wait_ms:percentile(group.jobs.map(j=>j.wait_to_start_ms),.5),
-      evidence:Object.freeze([...group.jobs].sort((a,b)=>b.execution_ms-a.execution_ms)
+      sample_jobs:group.jobs.length,independent_attempt_samples:independentJobs.length,
+      matrix_replica_samples_excluded:group.jobs.length-independentJobs.length,
+      distinct_head_shas:group.shaSet.size,
+      median_execution_ms:median,p95_execution_ms:percentile(independentJobs.map(j=>j.execution_ms),.95),
+      median_wait_ms:percentile(independentJobs.map(j=>j.wait_to_start_ms),.5),
+      evidence:Object.freeze([...independentJobs].sort((a,b)=>b.execution_ms-a.execution_ms||a.job_id-b.job_id)
         .slice(0,3).map(j=>Object.freeze(j))),
       proposed_action:'INVESTIGATE_AND_BENCHMARK_WITH_EXISTING_OWNER',
       proof_level:'REPEATED_OBSERVATION_NOT_CAUSAL_OR_PERFORMANCE_GAIN'
@@ -86,8 +107,8 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
     status:ranked.length?'REPEATED_SLOW_JOB_ADVISORY':'NO_REPEATED_SLOW_JOB_PROVEN',
     reason:ranked.length?'MULTIPLE_DISTINCT_WORKFLOW_ATTEMPTS':'NO_THRESHOLD_CROSSING_GROUP',
     observed_at:telemetry.observed_at||null,sampled_jobs:rows.length,
-    distinct_runs:attempts.size,min_repeated_runs:minRepeatedRuns,min_median_ms:minMedianMs,
-    priorities:Object.freeze(ranked.slice(0,maxPriorities)),
+    distinct_runs:attempts.size,min_repeated_runs:repeatedRunFloor,min_median_ms:medianFloorMs,
+    priorities:Object.freeze(ranked.slice(0,priorityLimit)),
     provenance:'EXISTING_JANITOR_PROVIDER_TIMESTAMPS',
     can_mutate:false,can_dispatch:false,can_promote:false
   });
