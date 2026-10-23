@@ -24,6 +24,19 @@
       "drift_classifications": 49,
       "lease_denials": 58
     },
-    "actual_new_receipt": null
+    "actual_new_receipt": null,
+    "canonicalization_repair": {
+      "failed_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963706106",
+      "failure": "LEARNING_FAILURE_CLASS_REQUIRED",
+      "fix": "same learning document now declares machine-enforceable CI failure classification"
+    }
+  },
+  "failure_class": "CI",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
