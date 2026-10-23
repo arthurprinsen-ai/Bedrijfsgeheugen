@@ -51,3 +51,10 @@ test('A netlify.toml-only change cannot be skipped by the deployment applicabili
   assert.equal(status.deploymentRequired,true);
   assert.ok(status.runtimeChangedPaths.includes('netlify.toml'));
 });
+
+test('Deploy previews cannot skip the required independent function bundle check',()=>{
+  const preview=section('context.deploy-preview');
+  assert.match(preview,/^\s*ignore\s*=\s*"exit 1"/m);
+  const production=section('build');
+  assert.match(production,/^\s*ignore\s*=\s*"node \.\/tools\/ci\/netlify-ignore-build\.mjs"/m);
+});
