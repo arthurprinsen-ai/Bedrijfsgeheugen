@@ -51,6 +51,8 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
   const incomplete=readErrors.length>0;
   return {
     ...summary,
+    // Partial GitHub reads must not accidentally publish an authoritative hotspot list.
+    diagnostic_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',jobs:[]}:summary.diagnostic_hotspots,
     observed_at:new Date(now).toISOString(),
     repository:repo,
     workflow_runs_sampled:sampledRuns,
@@ -78,6 +80,7 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       sample_jobs:result.sample_jobs,distinct_runs:result.distinct_runs,
       p50_wait_to_start_ms:result.p50_wait_to_start_ms,
       p95_wait_to_start_ms:result.p95_wait_to_start_ms,
+      slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
       read_errors:result.read_errors.length
     }));
     if(result.read_errors.length)process.exitCode=2;
