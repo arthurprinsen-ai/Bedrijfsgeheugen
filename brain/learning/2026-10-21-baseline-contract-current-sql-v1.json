@@ -1,0 +1,63 @@
+{
+  "fingerprint": "ci|inherited-baseline|canonical-sql-contract-test-reference|v1",
+  "obligation_id": "baseline-contract-current-sql-v1",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "source_main_sha": "8f322681ba46045e5d65746c2b2f0fd5b40ffac1",
+  "source_evidence": {
+    "failed_brain_run": 39554866582,
+    "checked_pr": 4573,
+    "existing_sql": [
+      "supabase/migrations/20260916161635_autonomous_improvement_currentstate_record_type_fix_v1.sql",
+      "supabase/migrations/20260918085708_tenant_identity_review_semantics_v2.sql"
+    ],
+    "missing_legacy_sql": [
+      "supabase/migrations/20260916182000_autonomous_improvement_currentstate_record_type_fix_v1.sql",
+      "supabase/migrations/20260918105000_tenant_identity_review_semantics_v2.sql"
+    ]
+  },
+  "observed": {
+    "inherited_test_failures": 355,
+    "unchanged_base_same_failures": true,
+    "existing_assertions_static_matched": 8,
+    "affected_test_files": 2
+  },
+  "change": "Replace two stale literal references with existing canonical migration identities. Retain all assertion code verbatim; no new migration, RLS/ACL changes, test skip, or BRAIN narrowing.",
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "acceptance": [
+    "all 8 original assertions pass with canonical checked SQL",
+    "full inherited BRAIN baseline issues tracked and not masked",
+    "exact-head Required and CodeQL success",
+    "protected merge and production readback only after all relevant gates"
+  ],
+  "prevention": "When a migration filename is canonicalized, update historical source-contract test pointers only with verified semantically equivalent SQL and preserve negative security coverage.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Two historic SQL migration path literals no longer identify the tracked canonical SQL, making inherited full-BRAIN tests fail with ENOENT despite current source-backed security and CurrentState contracts.",
+  "prevention_rule": "Keep every migration SQL path asserted by active BRAIN tests aligned to its exact canonical migration identity; verify real SQL semantics, including RLS and negative access, before remapping. Never restore fake/duplicate migrations or narrow the full suite.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-baseline-contract-current-sql-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-baseline-contract-current-sql-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-baseline-contract-current-sql-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "BRAIN 39554866582 fails 355 on candidate and unchanged base; two tests fail ENOENT on legacy migration names.",
+    "source_validation": "Both existing canonical SQL files satisfy all 8 original predicates by read-only static validation. Negative RLS/security assertions remain unchanged.",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "customer_acceptance": "NOT_YET_PROVEN"
+  }
+}

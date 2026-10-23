@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918105000_tenant_identity_review_semantics_v2.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260918085708_tenant_identity_review_semantics_v2.sql','utf8');
 
 test('smoke scans are classified as test evidence',()=>{
   assert.match(sql,/branche[\s\S]*like '%smoke%'/i);
