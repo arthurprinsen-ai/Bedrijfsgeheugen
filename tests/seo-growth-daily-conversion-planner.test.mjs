@@ -69,3 +69,33 @@ test('unsupported and external URLs are excluded from commercial candidate set',
   assert.equal(result.candidates.length, 0);
   assert.equal(result.pagesReviewed, 2);
 });
+
+
+test('bounded existing page-day rollup remains usable when raw pageviews are intentionally not fetched', () => {
+  const pageDailyRows = [
+    { day: '2026-10-22', updated_at: '2026-10-23T06:00:00Z', canonical: money,
+      intent_owner: 'afas', page_views: 80, cta_clicks: 0, qualified_leads: 0, won_orders: 0, revenue_eur: 0 }
+  ];
+  const result = planDailyConversion({now,registry,searchRows:[gsc(money,400,25)],
+    pageDailyRows,events:events(money,'engaged_view',25)});
+  assert.equal(result.sourceStatus, 'GSC_AND_BEHAVIOR_FRESH');
+  assert.equal(result.pages.find(p=>p.canonical===money).views,80);
+  assert.equal(result.pages.find(p=>p.canonical===money).qualifiedLeads,0);
+  assert.equal(result.candidates[0].action,'cta-copy-position');
+});
+
+test('stale day rollups never imply a current page-wide zero-CTA problem', () => {
+  const pageDailyRows = [{ day:'2026-09-29',updated_at:'2026-09-29T10:00:00Z',
+    canonical:money,intent_owner:'afas',page_views:900,cta_clicks:0 }];
+  const result = planDailyConversion({now,registry,pageDailyRows,events:events(money,'engaged_view',30)});
+  assert.equal(result.candidates.length,0);
+  assert.equal(result.pages.find(p=>p.canonical===money).views,null);
+});
+
+test('daily rollups and sparse events are still bounded and cannot silently truncate',()=>{
+  const pageDailyRows=[{day:'2026-10-22',updated_at:'2026-10-23T06:00:00Z',
+    canonical:money,page_views:200,cta_clicks:0,intent_owner:'afas'}];
+  const result=planDailyConversion({now,registry,pageDailyRows,dailyLimit:1,events:events(money,'engaged_view',20)});
+  assert.equal(result.sourceStatus,'PARTIAL_TRUNCATED');
+  assert.equal(result.candidates.length,0);
+});
