@@ -13,30 +13,31 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "root_cause": "Server correctly refuses checkout without Stripe secrets, but the public website still displays an immediately enabled payment form and asks for business/email information before giving the known billing_not_configured message.",
+  "root_cause": "Server correctly refuses checkout without Stripe secrets, but the public website still displays an immediately enabled payment form and asks for business/email information before giving the known billing_not_configured message. The first protected admission correctly rejected a Playwright helper outside tests/ as the sole historical replay/shadow/canary path; a proper Node test oracle is required.",
   "observed_evidence": {
     "production_registered_stripe_secret": false,
     "production_registered_webhook_secret": false,
     "subscription_rows": 0,
     "checkout_intent_rows": 0,
     "verified_live_release": "82609b2175ce60e3991f998976471c62bb6b335a",
-    "real_payment_verification": false
+    "real_payment_verification": false,
+    "admission_failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39990013060"
   },
-  "fix": "Use the existing public GET /api/checkout/readiness to gate form input and submit readiness. Fail closed on non-200/missing status/network error; display the already-shipped Dutch billing unavailable copy. When ready, preserve the existing Stripe checkout; never block the separately verified success/activation return. Add fixture-only browser tests desktop/mobile NL/EN for disabled state and no checkout-create call.",
+  "fix": "Use the existing public GET /api/checkout/readiness to gate form input and submit readiness. Fail closed on non-200/missing status/network error; display the already-shipped Dutch billing unavailable copy. When ready, preserve the existing Stripe checkout; never block the separately verified success/activation return. Add fixture-only browser tests desktop/mobile NL/EN for disabled state and no checkout-create call. Add a dedicated tests/*.test.mjs source-and-fixture regression, while keeping the existing Playwright browser scenario for desktop/mobile and both languages.",
   "prevention_rule": "Do not collect personal company/email form inputs or create payment attempts when the canonical server payment readiness is blocked or unreachable. In a provider outage show an explicit accessible status; never infer payment from a URL, and never create a second billing authority or scheduler.",
   "tests": [
-    "tools/site-shell/checkout-browser-check.mjs",
-    "tests/brain-saas-customer-account-gateway-v1.test.mjs"
+    "tests/brain-saas-checkout-preflight-availability-v1.test.mjs",
+    "tools/site-shell/checkout-browser-check.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/checkout-browser-check.mjs"
+      "tests/brain-saas-checkout-preflight-availability-v1.test.mjs"
     ],
     "shadow": [
-      "tools/site-shell/checkout-browser-check.mjs"
+      "tests/brain-saas-checkout-preflight-availability-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/checkout-browser-check.mjs"
+      "tests/brain-saas-checkout-preflight-availability-v1.test.mjs"
     ],
     "invariants": [
       "no form input or checkout-create calls before verified readiness",
