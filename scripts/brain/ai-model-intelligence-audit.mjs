@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
 const now=new Date();
-const staleAfter=14;
+const staleAfter=7;
 const providers=[...new Set(catalog.models.map(m=>m.provider))].sort();
 const missingSource=catalog.models.filter(m=>!/^https:\/\//.test(String(m.source||''))).map(m=>m.id);
 const missingJurisdiction=catalog.models.filter(m=>!m.jurisdiction).map(m=>m.id);
