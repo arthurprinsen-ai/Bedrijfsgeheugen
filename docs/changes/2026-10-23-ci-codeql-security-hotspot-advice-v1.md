@@ -1,0 +1,9 @@
+# CodeQL-pijnpunt correct aan beveiligingsonderzoek toewijzen
+
+Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). Eerdere beschermde implementaties: PR #4739 (uitgevoerde-jobstatistiek), PR #4741 (een adviesowner per lane), PR #4742 (minstens drie onafhankelijke herhalingen voor recurrente jobfamilies). Geen tweede scheduler, bronregistratie of aparte agent.
+
+De echte [Janitor-run #39928058144](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39928058144) had 21 uitvoerbare jobs, 11 workflowpogingen, 17 **uitgesloten** placeholders, nul providerleesfouten, p95-queue 4s, p95-runtime 139s. Het complete artefact toont `CodeQL javascript-typescript` 199s (job 120328545101, run 39927850261) en `netlify_build_parity` 106s (job 120328733393, run 39927728654). De bestaande `ci-agent-priority.mjs` routeert die CodeQL-job ten onrechte naar het generieke Powerhouse-advies *Required preflight analyseren*. Dat is geen juiste causaliteitsroute.
+
+Deze correctie verandert uitsluitend de **adviesinhoud** wanneer de providerjobnaam of workflownaam echt `CodeQL` bevat: `PROFILE_CODEQL_ANALYSIS_RUNTIME_PRESERVING_FULL_SECURITY_GATES`. Voor een echte Required preflight blijft het oude advies behouden. De job houdt lane Powerhouse; het is geen autorisatie om beveiligingscontroles te wijzigen. Output is alleen evidence-backed onderzoek, zonder automatische runs, mutaties, nieuwe queues of spend. De gemeten 199s zijn geen bewezen oorzaak of aangetoonde tijdswinst.
+
+Regressie: `node --test tests/brain-ci-agent-prioritization-v1.test.mjs`. Beschermde vrijgave: exacte head Required, CodeQL, auto-merge zonder override, main- en skillprojectie-readback. Reële herhaalde eigen workflowmeting vereist voor de claim dat agents het verbeterde advies runtime krijgen; geen globaal groen zolang provider- en migratie-incidenten open zijn.
