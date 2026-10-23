@@ -166,5 +166,23 @@
     "prevention": "Before expensive CI, coalesce source/regression/learning into one immutable integration commit. Never trigger overlapping Supabase previews or blind reruns; inspect exact provider check + workflow_run_logs, deduplicate and preserve strong release gate. One bounded recovery commit only after overlapping workflows are terminal. Stop if provider remains unhealthy; do not reset/delete/recreate a paid branch, bypass protected CI, touch auth/RLS or claim green.",
     "bounded_recovery": "A single same-branch append-only learning commit after observed previous workflow completion, to obtain one new exact-head provider result. No repeated retries on the same provider failure.",
     "next_proof": "Require genuine provider success on the new exact head and all independent existing financial/tenant/performance release obligations; keep draft until then."
+  },
+  "shared_buying_snapshot_candidate_20261023": {
+    "fingerprint": "powerhouse|revenue-snapshot|cron-120s-statement-timeout|v1",
+    "status": "CANDIDATE_NOT_LIVE",
+    "root_cause": "Repeated buying-window expansion through commercial NBA v2, account strategy and research queue; avoid three full executions by one statement-local MATERIALIZED buying CTE",
+    "production_source_opportunities": 838,
+    "source_unique_opportunity_keys": 838,
+    "historic_snapshot_rows": 818,
+    "historic_refreshed_at_utc": "2026-10-22T05:55:01.519459Z",
+    "cron_last_failed_runid": 122081,
+    "exact_snapshot_select_measured_ms": 77606.088,
+    "measured_method": "Rollback-free read-only EXPLAIN ANALYZE on real production data, exact function projected columns; no production function rewrite",
+    "migration": "supabase/migrations/20261023054900_p0_4215_revenue_snapshot_shared_buying_v1.sql",
+    "regression": "tests/brain-p0-4215-snapshot-shared-buying-v1.test.mjs",
+    "actual_cron_full_refresh_under_90s": "NOT_VERIFIED",
+    "financial_parity": "NOT_VERIFIED",
+    "authenticated_two_tenant_isolation": "NOT_VERIFIED",
+    "release": "HOLD until protected exact-head checks + provider/money/tenant/performance/prod readback"
   }
 }
