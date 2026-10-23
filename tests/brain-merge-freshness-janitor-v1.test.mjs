@@ -94,5 +94,5 @@ test('GitHub Janitor reuses same hourly schedule, pins SHA compare, no new CI di
   assert.match(yaml,/node tools\/delivery\/ci-merge-freshness\.mjs/);
   assert.match(yaml,/\.artifacts\/powerhouse-merge-freshness\.json/);
   assert.match(yaml,/continue-on-error: true/);
-  assert.doesNotMatch(yaml,/merge-freshness\.mjs.*workflow_dispatch/s);
+  assert.equal((yaml.match(/^\s+- cron:/gm)||[]).length,1);
 });
