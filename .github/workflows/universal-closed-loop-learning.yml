@@ -10,7 +10,7 @@ on:
       - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
       - 'tests/brain-universal-closed-loop-learning.test.mjs'
       - 'tools/delivery/customer-portal-production-acceptance.mjs'
-      - 'tests/portal-independent-customer-production-acceptance-v1.test.mjs'
+      - 'tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs'
       - '.github/workflows/universal-closed-loop-learning.yml'
 
 jobs:
@@ -30,6 +30,6 @@ jobs:
       - name: Verify false-green control-plane obligation guard
         run: node --test portal-v2/tests/control-plane-cockpit.test.mjs
       - name: Verify signed independent customer production acceptance contract
-        run: node --test tests/portal-independent-customer-production-acceptance-v1.test.mjs
+        run: node --test tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs
       - name: Compound learning integration regression
         run: node --test tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
