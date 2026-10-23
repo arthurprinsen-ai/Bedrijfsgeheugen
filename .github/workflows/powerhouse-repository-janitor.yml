@@ -94,6 +94,12 @@ jobs:
         if: always()
         continue-on-error: true
         run: node tools/delivery/ci-merge-freshness.mjs
+      - name: Observe executed Recovery Supervisor runs
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/supervisor-run-evidence.mjs
       - name: Apply deterministic safe PR cleanup
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
