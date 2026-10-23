@@ -22,14 +22,14 @@ function moneyPages(registry) {
  * event and verified business-outcome sources. Never deploys or publishes copy.
  * Source gaps, truncation and poor sampling prevent false zero-conversion claims.
  */
-export function planDailyConversion({ searchRows = [], events = [], outcomes = [], registry = {}, now = new Date(),
-  searchLimit = 2000, eventLimit = 2500, outcomeLimit = 500 } = {}) {
+export function planDailyConversion({ searchRows = [], events = [], pageDailyRows = [], outcomes = [], registry = {}, now = new Date(),
+  searchLimit = 2000, eventLimit = 2500, dailyLimit = 1500, outcomeLimit = 500 } = {}) {
   const at = now instanceof Date ? now : new Date(now);
   if (Number.isNaN(at.getTime())) throw new Error('INVALID_CRO_OBSERVATION_TIME');
   const day = isoDay(at);
-  const incomplete = searchRows.length >= searchLimit || events.length >= eventLimit || outcomes.length >= outcomeLimit;
+  const incomplete = searchRows.length >= searchLimit || events.length >= eventLimit || pageDailyRows.length >= dailyLimit || outcomes.length >= outcomeLimit;
   const pages = moneyPages(registry);
-  const search = new Map(), seen = new Set(), behavior = new Map(), results = new Map();
+  const search = new Map(), seen = new Set(), behavior = new Map(), results = new Map(), daily = new Map(), dailySeen = new Set();
   let newestSearch = null, newestEvent = null;
   const startSearch = at.getTime() - 35 * DAY, startEvents = at.getTime() - 28 * DAY;
   for (const row of searchRows) {
@@ -41,13 +41,37 @@ export function planDailyConversion({ searchRows = [], events = [], outcomes = [
     const rowKey = [page, String(row.zoekterm || ''), row.datum].join('|');
     if (seen.has(rowKey)) continue; // ordered newest-first from canonical GSC sync
     seen.add(rowKey);
-    const aggregate = search.get(page) || { impressions: 0, clicks: 0, weightedPosition: 0, weight: 0 };
+    const aggregate = search.get(page) || { impressions: 0, clicks: 0, weightedPosition: 0, weight: 0, latestUpdated: 0 };
     const impressions = num(row.vertoningen), clicks = num(row.klikken);
     aggregate.impressions += impressions;
     aggregate.clicks += clicks;
     aggregate.weightedPosition += num(row.positie) * impressions;
     aggregate.weight += impressions;
+    aggregate.latestUpdated=Math.max(aggregate.latestUpdated,updated);
     search.set(page, aggregate);
+  }
+  // Existing canonical daily page rollups are bounded and avoid truncating the high-volume event table.
+  // Only observed rows with a valid day, unique day/intent owner and fresh update are counted.
+  let latestDaily = null;
+  for (const row of pageDailyRows) {
+    const page = canonical(row.canonical), timestamp = Date.parse(String(row.day || ''));
+    const updated = Date.parse(String(row.updated_at || ''));
+    if (!page || !Number.isFinite(timestamp) || timestamp < startEvents || timestamp > at.getTime() ||
+        !Number.isFinite(updated) || updated > at.getTime()) continue;
+    const key = [page, row.day, String(row.intent_owner || '')].join('|');
+    if (dailySeen.has(key)) continue;
+    dailySeen.add(key);
+    if (latestDaily === null || updated > latestDaily) latestDaily = updated;
+    const d = daily.get(page) || { views: 0, cta: 0, qualifiedLeads: 0, orders: 0,
+      realizedRevenueEur: 0, latestDay: 0, latestUpdated: 0 };
+    d.views += num(row.page_views);
+    d.cta += num(row.cta_clicks);
+    d.qualifiedLeads += num(row.qualified_leads);
+    d.orders += num(row.won_orders);
+    d.realizedRevenueEur += num(row.revenue_eur);
+    d.latestDay = Math.max(d.latestDay, timestamp);
+    d.latestUpdated = Math.max(d.latestUpdated, updated);
+    daily.set(page, d);
   }
   const observedEvents = new Set();
   for (const event of events) {
@@ -72,7 +96,8 @@ export function planDailyConversion({ searchRows = [], events = [], outcomes = [
     results.set(page, current);
   }
   const gscFresh = newestSearch !== null && at.getTime() - newestSearch <= 7 * DAY;
-  const eventFresh = newestEvent !== null && at.getTime() - newestEvent <= 3 * DAY;
+  const latestBehavior = Math.max(newestEvent ?? 0, latestDaily ?? 0);
+  const eventFresh = latestBehavior > 0 && at.getTime() - latestBehavior <= 3 * DAY;
   const sourceStatus = incomplete ? 'PARTIAL_TRUNCATED' :
     gscFresh && eventFresh ? 'GSC_AND_BEHAVIOR_FRESH' :
     gscFresh ? 'BEHAVIOR_MISSING_OR_STALE' :
@@ -80,25 +105,32 @@ export function planDailyConversion({ searchRows = [], events = [], outcomes = [
   const candidates = [];
   const pageSummaries = [];
   for (const page of pages) {
-    const gsc = search.get(page.canonical) || { impressions: 0, clicks: 0, weight: 0, weightedPosition: 0 };
-    const ev = behavior.get(page.canonical) || { views: 0, engaged: 0, cta: 0 };
+    const gsc = search.get(page.canonical) || { impressions: 0, clicks: 0, weight: 0, weightedPosition: 0, latestUpdated: 0 };
+    const observed = behavior.get(page.canonical) || { views: 0, engaged: 0, cta: 0 };
+    const rollup = daily.get(page.canonical) || null;
+    const rollupFresh = Boolean(rollup && at.getTime() - rollup.latestUpdated <= 7 * DAY && at.getTime() - rollup.latestDay <= 7 * DAY);
+    const ev = { views: rollupFresh ? rollup.views : observed.views, engaged: observed.engaged,
+      cta: rollupFresh ? Math.max(rollup.cta, observed.cta) : observed.cta };
+    const pageEventFresh = rollupFresh || (eventFresh && observed.views > 0);
+    const pageGscFresh = Boolean(gsc.latestUpdated && at.getTime() - gsc.latestUpdated <= 7 * DAY);
     const business = results.get(page.canonical) || { qualifiedLeads: 0, orders: 0, realizedRevenueEur: 0 };
     const ctr = gsc.impressions ? gsc.clicks / gsc.impressions : null;
     const ctaRate = ev.views ? ev.cta / ev.views : null;
     const position = gsc.weight ? gsc.weightedPosition / gsc.weight : null;
-    pageSummaries.push({ canonical: page.canonical, impressions: gscFresh ? gsc.impressions : null,
-      clicks: gscFresh ? gsc.clicks : null, ctr: gscFresh ? ctr : null,
-      views: eventFresh ? ev.views : null, ctaClicks: eventFresh ? ev.cta : null,
-      ctaRate: eventFresh ? ctaRate : null, qualifiedLeads: incomplete || !results.has(page.canonical) ? null : business.qualifiedLeads,
-      orders: incomplete || !results.has(page.canonical) ? null : business.orders,
-      realizedRevenueEur: incomplete || !results.has(page.canonical) ? null : Number(business.realizedRevenueEur.toFixed(2)) });
+    pageSummaries.push({ canonical: page.canonical, impressions: pageGscFresh ? gsc.impressions : null,
+      clicks: pageGscFresh ? gsc.clicks : null, ctr: pageGscFresh ? ctr : null,
+      views: pageEventFresh ? ev.views : null, ctaClicks: pageEventFresh ? ev.cta : null,
+      ctaRate: pageEventFresh ? ctaRate : null,
+      qualifiedLeads: incomplete ? null : results.has(page.canonical) ? business.qualifiedLeads : rollupFresh ? rollup.qualifiedLeads : null,
+      orders: incomplete ? null : results.has(page.canonical) ? business.orders : rollupFresh ? rollup.orders : null,
+      realizedRevenueEur: incomplete ? null : results.has(page.canonical) ? Number(business.realizedRevenueEur.toFixed(2)) : rollupFresh ? Number(rollup.realizedRevenueEur.toFixed(2)) : null });
     if (incomplete) continue;
     let action = null, reason = null, target = null, priority = 0, refs = [];
-    if (eventFresh && ev.views >= 50 && ev.engaged >= 15 && ctaRate < 0.04) {
+    if (pageEventFresh && ev.views >= 50 && ev.engaged >= 15 && ctaRate < 0.04) {
       action = 'cta-copy-position'; reason = 'observed-low-primary-cta-rate';
       target = 'primary_cta_click_rate'; priority = 100 + ev.views * (0.04 - ctaRate);
       refs = ['growth_events:' + page.canonical + ':' + day];
-    } else if (gscFresh && gsc.impressions >= 200 && ctr < 0.025) {
+    } else if (pageGscFresh && gsc.impressions >= 200 && ctr < 0.025) {
       action = position !== null && position > 10 ? 'content-gap' : 'title-meta';
       reason = position !== null && position > 10 ? 'observed-ranking-gap' : 'observed-low-organic-ctr';
       target = 'organic_click_through_rate'; priority = 40 + gsc.impressions * (0.025 - ctr);
