@@ -26,18 +26,38 @@ test('public route inventory de-duplicates and normalizes absolute/relative URLs
   assert.deepEqual(routesFromSitemap(xml, 'https://www.bedrijfsgeheugen.nl'), ['/ai-act', '/prijzen']);
 });
 
-test('website lane can never skip the all-public-pages visibility gate', async () => {
+test('website lane can never skip any sitemap or viewport visibility gate', async () => {
   const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  const required = await readFile('.github/workflows/required-test.yml', 'utf8');
+  const shardStart = workflow.indexOf('\n  browser-visibility:\n');
+  const originalStart = workflow.indexOf('\n  browser:\n');
+  assert.ok(shardStart >= 0 && originalStart > shardStart,
+    'all-public-pages visibility must run in a required matrix adjacent to the original browser');
+  const job = workflow.slice(shardStart,originalStart);
   const marker = '- name: Verify all public pages are visibly rendered';
-  const start = workflow.indexOf(marker);
-  assert.notEqual(start, -1, 'all-public-pages visibility step must exist in website lane');
-  const tail = workflow.slice(start);
-  const nextStep = tail.indexOf('\n      - name:', marker.length);
-  const step = nextStep === -1 ? tail : tail.slice(0, nextStep);
-  assert.doesNotMatch(step, /menu_only/, 'visibility crawl must not be bypassed for menu-only changes');
-  assert.doesNotMatch(step, /\n\s+if:/, 'visibility crawl must remain unconditional inside the browser job');
-  assert.match(step, /standalone-visibility-check\.mjs/, 'visibility crawl must execute the full public-page checker');
-  assert.match(workflow, /\n  browser:\n\s+needs: \[classify, syntax-preflight, preview-ready\]/, 'shared browser job must wait for syntax preflight and exact preview resolution');
+  const start = job.indexOf(marker);
+  assert.notEqual(start,-1,'all-public-pages visibility must remain mandatory');
+  const tail = job.slice(start);
+  const nextStep = tail.indexOf('\n      - name:',marker.length);
+  const step = nextStep === -1 ? tail : tail.slice(0,nextStep);
+  assert.doesNotMatch(step,/menu_only/, 'visibility may not be bypassed for menu-only changes');
+  assert.doesNotMatch(step,/\n\s+if:/, 'visibility must be unconditional within each required viewport shard');
+  assert.match(step,/standalone-visibility-check\.mjs/, 'the original full-public-sitemap checker must run');
+  assert.match(step,/UI_VR_VIEWPORT_SHARD: \$\{\{ matrix\.viewport \}\}/,
+    'each job must pin an exactly one viewport');
+  assert.match(job,/viewport: \[phone, tablet, desktop\]/, 'all viewports must be represented');
+  assert.match(job,/fail-fast: false/,'all viewport shards must complete even when one fails');
+  assert.doesNotMatch(job,/continue-on-error: true/,'no viewport is optional');
+  assert.match(job,/needs: \[classify, syntax-preflight, preview-ready\]/,
+    'visibility must use exact candidate source and preview preflight');
+  assert.match(workflow,/\n  browser:\n\s+needs: \[classify, syntax-preflight, preview-ready\]/,
+    'original browser contracts still need same preflight and exact preview');
+  assert.match(workflow,/Fail closed on missing browser matrix or incomplete viewport coverage/,
+    'the completeness test must run in early website preflight');
+  assert.match(required,/uses: \.\/\.github\/workflows\/lane-website\.yml/,
+    'protected Required must use the entire reusable website workflow');
+  assert.match(required,/needs\.website\.result/,
+    'an unsuccessful viewport shard must block the Required aggregate');
 });
 
 test('final website pipeline re-applies Kennisbank navigation estate-wide before sitemap and SEO verification', async () => {
