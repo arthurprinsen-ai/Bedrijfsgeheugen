@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|blog-export|slug-boundary-terminal-hyphen|20261023-v1",
+  "obligation_id": "content-publication:2026-10-23:blog|slug-boundary",
+  "title": "Canonical Powerhouse daily blog slug boundary",
+  "status": "CANDIDATE",
+  "failure_class": "BLOG_EXPORT_SLUG_BOUNDARY",
+  "root_cause": "Exporter slugify stripped punctuation before truncating to 70 characters, allowing the 70th character to be a hyphen; the protected Python publication generator rejected it as INVALID_SLUG.",
+  "impact": "One approved blog was not published by the existing daily GitHub publisher; generation and obligation truth must not be overwritten or marked delivered.",
+  "failed_approaches": [
+    "Ignoring INVALID_SLUG or waiving Python publication validation",
+    "Changing an already published canonical provider path",
+    "Starting duplicate publication schedulers"
+  ],
+  "fix": "Strip trailing hyphens again after 70-character truncation. Reject malformed manually approved SEO slugs at the exporter before publication, preserving exact provider lineage.",
+  "prevention_rule": "Every generated slug must match the writer regex after truncation; explicit approved slugs and provider receipts remain immutable; source must pass protected CI, deployment and one real same-day readback.",
+  "regression_contract": "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs",
+  "tests": [
+    "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+  ],
+  "evidence": {
+    "date": "2026-10-23",
+    "failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39883989350",
+    "failed_token": "INVALID_SLUG",
+    "current_export_version": "v3-repository-native-export",
+    "artifact_status": "content_ready",
+    "obligation_status": "GENERATED",
+    "provider_publication_proof": "NOT_PROVEN",
+    "production_fix": "NOT_YET_DEPLOYED"
+  },
+  "compiler": {
+    "failure_class": "BLOG_EXPORT_SLUG_BOUNDARY",
+    "scope": "BACKEND_SUPABASE_EDGE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ],
+    "shadow": [
+      "validate exact previously failing synthetic title and preserved lineage rejection"
+    ],
+    "negative_canary": [
+      "explicit malformed approved slug must return 409; never publish by bypassing validity checks"
+    ]
+  },
+  "prevention": [
+    "NO_SLUG_VALIDATION_BYPASS",
+    "NO_DUPLICATE_DAILY_EXECUTOR",
+    "PRESERVE_PROVIDER_PROOF",
+    "EXACT_HEAD_PROTECTED_CI_AND_EDGE_READBACK"
+  ]
+}

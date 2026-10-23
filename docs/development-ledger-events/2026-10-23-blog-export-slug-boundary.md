@@ -1,0 +1,1 @@
+- 2026-10-23 | BLOG_EXPORT_SLUG_BOUNDARY | Canonieke exporter laat trailing hyphen na slice(0,70) staan; daily publisher #39883989350 INVALID_SLUG. Broncorrectie en immutable-lineage-tests in beschermd hersteltraject. Geen fictieve live/receipt, één bestaande scheduler. Zie docs/changes/2026-10-23-blog-export-slug-boundary.md.

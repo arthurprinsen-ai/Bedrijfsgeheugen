@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
-const VERSION='v3-repository-native-export';
+const VERSION='v4-canonical-slug-boundary';
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*'}});
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -8,7 +8,7 @@ function evidenceObject(value:any):Record<string,any>{
   if(typeof value==='string'){try{return evidenceObject(JSON.parse(value))}catch{return {}}}
   return value && !Array.isArray(value) && typeof value==='object'?value:{};
 }
-const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(!['GET','POST'].includes(req.method)) return json({ok:false,error:'METHOD_NOT_ALLOWED'},405);
@@ -29,7 +29,7 @@ Deno.serve(async(req)=>{
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
 
   const generation=evidenceObject(a.generation_evidence);
-  const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
+  // Approved explicit SEO slugs are immutable publication identities: reject invalid\n  // input instead of silently changing an already approved provider path.\n  const approvedSlug=clean(generation.seo_slug);\n  if(approvedSlug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(approvedSlug))\n    return json({ok:false,error:'INVALID_APPROVED_SEO_SLUG',runDate},409);\n  const slug=approvedSlug||slugify(clean(a.title))||('powerhouse-'+runDate);
   // Never export a stale obligation's URL when the artifact was regenerated.
   // A proven provider side effect is immutable: reconcile it, do not replace it.
   if (clean(o?.slug) && clean(o.slug)!==slug
