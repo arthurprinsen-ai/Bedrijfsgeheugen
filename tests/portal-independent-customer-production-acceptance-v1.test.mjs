@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPairSync,sign} from 'node:crypto';
-import {evaluateCustomerProductionAcceptance,REQUIRED_EVENTS} from '../tools/portal/customer-production-acceptance.mjs';
+import {evaluateCustomerProductionAcceptance,REQUIRED_EVENTS} from '../tools/delivery/customer-portal-production-acceptance.mjs';
 
 const NOW=Date.parse('2026-10-23T14:00:10Z');
 const TS='2026-10-23T14:00:00Z';
