@@ -57,7 +57,7 @@ test('provider partial response, invalid repository, insufficient runs and fake 
 
 test('duplicate provider rows, skipped placeholders and job name injection cannot inflate evidence',()=>{
  const a=samples();
- const duplicate=a.map(x=>x);
+ const duplicate=Array.from({length:20},()=>a[0]);
  const x=projectObservedCicdTaskRuns({repo:'example/repo',
   observations:duplicate,status:'SAMPLED_METRICS_NOT_SLO',readErrors:[]});
  assert.equal(x.status,'INCOMPLETE_OR_INSUFFICIENT_SOURCE');
