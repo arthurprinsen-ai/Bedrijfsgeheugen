@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "ci|resource-intelligence|audit-obsolete-migration-path-and-units|20261023-v1",
+  "obligation_id": "ci|resource-intelligence|audit-obsolete-migration-path-and-units|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "CANONICAL_SOURCE_AUDIT_DRIFT",
+  "root_cause": "Existing scheduled Resource Intelligence audit requires nonexistent migration 20260917093000 and obsolete Wh/ml/provenance column names. The existing authoritative contract test and both repository / production migration history independently refer to 20260917094812 and its kWh/liters/CO2e nullable measured source. This causes a false red before any contract test can run.",
+  "source_evidence": [
+    "GitHub Actions Powerhouse Resource Intelligence run #39937291073, job #120359836809: RESOURCE_INTELLIGENCE_AUDIT_FAILED missing required artifact supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
+    "Existing tests/powerhouse-resource-intelligence-contract.test.mjs uses existing supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql",
+    "Supabase production applied schema_migrations contains version 20260917094812 and version 20260917094941; the nonexistent 20260917093000 was not applied",
+    "Verified committed 20260917094812 SHA 51c13c5c298523278dad440da8dbbbc3ab11c977; canonical units energy_kwh, water_liters, co2e_kg; quantity filters preserve NULL; production authority BG169",
+    "Initial PR #4758 Required #39938691372 correctly blocked non-canonical evaluation path LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/powerhouse-resource-intelligence-contract.test.mjs. Existing original test restored unchanged; new dedicated tests/brain-*-v1.test.mjs executes the real audit without weakening canonicalization."
+  ],
+  "fix": "Align existing read-only scheduled audit to canonical committed migration, verify actual nullable measures, business value, factor coverage, provenance and safe rollback contracts. Add executed regression using existing audit contract test. Do not create, reapply, delete or rewrite production migration or physical telemetry.",
+  "prevention_rule": "All scheduled resource audits, contract tests and deployment checks refer to the same canonical migration identity. Real energy is kWh, water liters, carbon kgCO2e. Unknown sources remain NULL, never zero. No guessed provider cost, carbon, water, money or demonstrated savings. Audit must remain fail-closed on missing canonical source or security boundaries and use unchanged Required/CodeQL/Netlify rules.",
+  "tests": [
+    "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs",
+    "tests/powerhouse-resource-intelligence-contract.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ],
+  "compiler": {
+    "failure_class": "CANONICAL_SOURCE_AUDIT_DRIFT",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-resource-intelligence-canonical-audit-v1.test.mjs"
+    ],
+    "invariants": [
+      "Resource Intelligence scheduled audit must find committed production-backed migration 20260917094812",
+      "Real energy_kwh, water_liters and co2e_kg are nullable source-backed metrics",
+      "Absent energy, water, CO2e data cannot be converted into zero or business outcomes",
+      "Existing BG169 protected production authority, rollback plan and policy prohibitions remain intact",
+      "No new scheduler, duplicate agent owner, permissions, paid resource or Supabase DDL"
+    ]
+  },
+  "promotion": "Independent exact-head Required+CodeQL, protected merge; subsequent scheduled/authorized original Powerhouse Resource Intelligence job must pass before marking PROVEN. No claims of resource optimization or business gains without measured outcomes.",
+  "readback": {
+    "provider_failed_run": 39937291073,
+    "provider_failure_confirmed": true,
+    "local_contract_parity_in_memory": true,
+    "candidate_live": false,
+    "provider_runtime_recheck": false,
+    "actual_resource_savings_proven": false
+  }
+}
