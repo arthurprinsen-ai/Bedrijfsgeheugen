@@ -66,6 +66,7 @@ jobs:
             git checkout -B "$branch" "origin/$branch"
             echo "existing_pr=$pr" >> "$GITHUB_OUTPUT"
             echo "SAME_OBLIGATION_CANDIDATE_PRESERVED:$DATE:$pr"
+            echo "SAME_OBLIGATION_WRITER_ACTIVE:$DATE:$pr"
           fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
