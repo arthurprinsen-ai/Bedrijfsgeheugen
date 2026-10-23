@@ -327,6 +327,7 @@ jobs:
               normalized.push(classifyCandidate({
                 number: item.number,
                 state: item.state,
+                title: item.title || '',
                 body: item.body || '',
                 baseSha: item.number === prNumber ? immutableBaseSha : (metadata.baseSha || item.base?.sha || ''),
                 headSha: item.head?.sha || '',
@@ -340,6 +341,7 @@ jobs:
               body: pr.body || '',
               baseSha: immutableBaseSha,
               headSha,
+              changedPaths,
               conflictContracts: currentContracts,
             }, policy);
             const result = evaluateAdmission({candidate,openCandidates:normalized,policy,currentMainSha});
