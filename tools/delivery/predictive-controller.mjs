@@ -529,6 +529,44 @@ export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={
     const values=valid.map(r=>r[key]).sort((a,b)=>a-b);
     return values[Math.max(0,Math.ceil(p*values.length)-1)];
   };
+  // Independent attempts, not raw matrix replicas, define recurrence.
+  // Only compare jobs from the SAME numeric GitHub workflow ID and exact job name.
+  const recurrentGroups=new Map();
+  for(const job of valid){
+    if(!Number.isSafeInteger(job.workflow_id)||job.workflow_id<1||
+       !job.job_name||job.job_name==='unnamed_job')continue;
+    const family=job.workflow_id+':'+job.job_name;
+    if(!recurrentGroups.has(family))recurrentGroups.set(family,{
+      workflow_id:job.workflow_id,job_name:job.job_name,attempts:new Map()
+    });
+    const group=recurrentGroups.get(family);
+    const attempt=job.run_id+':'+job.run_attempt;
+    const existing=group.attempts.get(attempt);
+    // A matrix retry within one workflow attempt is ONE conservative worst observed job.
+    if(!existing||job.execution_ms>existing.execution_ms)group.attempts.set(attempt,job);
+  }
+  const recurrent=sufficient?[...recurrentGroups.values()].filter(g=>g.attempts.size>=3)
+    .map(g=>{
+      const occurrences=[...g.attempts.values()];
+      const timings=occurrences.map(j=>j.execution_ms).sort((a,b)=>a-b);
+      const p50=timings[Math.max(0,Math.ceil(timings.length*0.5)-1)];
+      const name=g.job_name.toLowerCase();
+      const investigation_lane=/codeql|security/.test(name)?'security'
+        :/preflight|admission|janitor|test/.test(name)?'delivery'
+        :/supabase|preview/.test(name)?'provider'
+        :/website|netlify/.test(name)?'website'
+        :/backend/.test(name)?'backend'
+        :/portal/.test(name)?'portal':'unclassified';
+      return Object.freeze({
+        workflow_id:g.workflow_id,job_name:g.job_name,investigation_lane,
+        distinct_attempts:occurrences.length,sample_p50_execution_ms:p50,
+        sample_max_execution_ms:timings[timings.length-1],
+        representative_run_ids:Object.freeze(occurrences.slice(0,6).map(j=>j.run_id))
+      });
+    })
+    .sort((a,b)=>b.sample_p50_execution_ms-a.sample_p50_execution_ms||
+      b.distinct_attempts-a.distinct_attempts||a.workflow_id-b.workflow_id||
+      a.job_name.localeCompare(b.job_name)).slice(0,5):[];
   return Object.freeze({
     schema:'powerhouse-observed-ci-job-telemetry-v1',
     evidence_kind:'GITHUB_PROVIDER_JOB_TIMESTAMPS',
@@ -549,6 +587,14 @@ export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={
           head_sha:r.head_sha,workflow_name:r.workflow_name,job_name:r.job_name,
           conclusion:r.conclusion,execution_ms:r.execution_ms,wait_to_start_ms:r.wait_to_start_ms
         })):[])
+    }),
+    // Advisory learning signal only: at least three DIFFERENT attempts per stable
+    // workflow/job identity; no historical baseline or change-lead-time claim.
+    recurrent_hotspots:Object.freeze({
+      status:!sufficient?'INSUFFICIENT_EVIDENCE'
+        :recurrent.length?'REPEATED_JOB_SAMPLE_NOT_SLO':'INSUFFICIENT_REPEATED_JOB_EVIDENCE',
+      minimum_distinct_attempts:3,
+      jobs:Object.freeze(recurrent)
     }),
     job_evidence:Object.freeze(valid)
   });
