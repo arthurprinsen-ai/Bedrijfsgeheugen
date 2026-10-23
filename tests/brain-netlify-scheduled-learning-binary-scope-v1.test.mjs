@@ -38,3 +38,16 @@ test('Canonical learning scheduler and Supabase store are unchanged',()=>{
   assert.match(revenueEvaluator,/schedule:\s*'@hourly'/);
   assert.doesNotMatch(revenueEvaluator,/ffmpeg-static/);
 });
+
+test('A netlify.toml-only change cannot be skipped by the deployment applicability guard',async()=>{
+  const {deriveNetlifyDeploymentApplicability}=await import('../tools/delivery/netlify-deployment-applicability.mjs');
+  const policy=JSON.parse(readFileSync(new URL('config/brain-delivery-system.json',root),'utf8'));
+  const status=deriveNetlifyDeploymentApplicability({
+    changedPaths:['netlify.toml'],
+    headSha:'a'.repeat(40),
+    policy,
+  });
+  assert.equal(status.netlifyRuntimeRequired,true);
+  assert.equal(status.deploymentRequired,true);
+  assert.ok(status.runtimeChangedPaths.includes('netlify.toml'));
+});
