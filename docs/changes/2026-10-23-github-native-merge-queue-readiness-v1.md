@@ -34,3 +34,8 @@ ONE BRAIN, POWERHOUSE and HEARTBEAT consume existing independent CI / deployment
 
 ## Composite merge-group scope (source policy)
 A GitHub merge-group is a synthetic combined ref: it does not carry a PR body and cannot be admitted under the unrelated static `config/powerhouse-one-loop-v1.json` candidate manifest. On a native merge-group the existing Required preflight evaluates the independently computed provider base-to-HEAD diff with a fail-closed maximum of 40 non-verification files, no `scope-broad-approved` label bypass and all original protected suites. Each individual PR still has its normal machine-readable PR scope, writer lease and per-PR scope budget before being eligible for the queue. A group with 41 material files is blocked and must be explicitly decomposed; this pilot does not create or bypass a new release authority. Null event labels are normalized to an empty list to avoid false crashes.
+
+## Independently read provider cutover baseline (23 Oct 2026, around 12:10 UTC)
+- Netlify production site `bedrijfsgeheugen`: published deployment `6adb4d47bf7e1fa53fb6ae63`, provider state `ready`, context `production`, branch `main`, commit `ad01555f2b5ef6ade8e7677d1e74b60140931074`; this is NOT deployment of this queue-readiness PR.
+- Supabase authoritative project inventory: one linked project, ACTIVE_HEALTHY in eu-central-1, 746 migration history entries at observation, latest migration version `20261023070053`. Verify again during authorized cutover; state can advance independently.
+- GitHub App account inventory: only personal `arthurprinsen-ai` installation; no GitHub organization memberships returned. Organization creation/selection and transfer remain unresolved human-admin boundary.
