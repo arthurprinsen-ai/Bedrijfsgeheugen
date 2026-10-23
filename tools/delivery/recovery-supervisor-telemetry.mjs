@@ -1,7 +1,9 @@
 // Read-only evidence of ACTUAL Recovery Supervisor runs for the EXISTING hourly Repository Janitor.
 // Never mutate a PR, start CI, relax gates, declare a deployment, or add a scheduler.
 import {execFileSync} from 'node:child_process';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {buildSupervisorDailyLearning} from './recovery-supervisor-daily-learning.mjs';
+import {assessSupervisorOwnerClaims} from './recovery-supervisor-owner-claims.mjs';
 import {pathToFileURL} from 'node:url';
 
 const WF='powerhouse-delivery-recovery-supervisor.yml';
@@ -59,9 +61,12 @@ export function parseSupervisorAnnotations(content,runId){
     // GitHub log lines must carry real ISO runtime timestamps; arbitrary prefixes
     // or shell-echoed commands cannot act as provider evidence.
     const actual=line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+##\[(?:warning|notice|error)\](.+)$/);
-    if(!actual)continue;
-    const note=actual[1];
+    const marker=line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+PR#([1-9]\d{0,9})\s+[a-f0-9]{40}\s+MAIN_DRIFT_RECOVERY$/i);
+    if(!actual&&!marker)continue;
+    const note=actual?.[1]||'';
     let pr=null,code=null;
+    if(marker)[code,pr]=['MAIN_DRIFT_RECOVERY',Number(marker[1])];
+    if(!marker){
     const named=note.match(/^(MAIN_DRIFT_[A-Z_]+):PR#([1-9]\d{0,9})/);
     if(named&&KNOWN.has(named[1])){
       [code,pr]=[named[1],Number(named[2])];
@@ -74,6 +79,7 @@ export function parseSupervisorAnnotations(content,runId){
       else if(rejected)[code,pr]=['NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED',Number(rejected[1])];
       else if(successful)[code,pr]=['MAIN_DRIFT_SYNC_CONFIRMED',Number(successful[1])];
       else if(needed)[code,pr]=['MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED',Number(needed[1])];
+    }
     }
     if(code===null||!Number.isSafeInteger(pr))continue;
     const identity=runId+':'+pr+':'+code;
@@ -102,7 +108,8 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     const p=prMap.get(e.pr_number);
     p.observed_run_ids.add(e.run_id);
     if(e.code==='MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED'||
-      e.code.startsWith('MAIN_DRIFT_')||e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')
+      (e.code.startsWith('MAIN_DRIFT_')&&!['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))||
+      e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')
       p.drift_run_ids.add(e.run_id);
     if(['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))
       p.successful_run_ids.add(e.run_id);
@@ -138,7 +145,7 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     p50_supervisor_job_duration_ms:timed?percentile(durations,.5):null,
     p95_supervisor_job_duration_ms:timed?percentile(durations,.95):null,
     per_pr:byPr,
-    repeated_drift_prs:complete?byPr.filter(p=>p.repeated_drift_observed).map(p=>p.pr_number):[],
+    repeated_drift_prs:complete?byPr.filter(p=>p.repeated_drift_observed).map(p=>p.pr_number):null,
     observed_event_categories:classes,
     runs,read_errors:readErrors,
     time_to_green_ms:null,time_to_production_ms:null,
@@ -197,6 +204,17 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       sampled_completed_runs:0,per_pr:[],read_errors:[{reason:'PROVIDER_READ_FAILED'}],
       time_to_green_ms:null,time_to_production_ms:null,
       release_cycle_speedup_proven:false,can_dispatch:false,can_mutate:false,can_promote:false};
+  }
+  // Use only Janitor snapshots already available on this run.
+  let ci=null;
+  try{ci=JSON.parse(await readFile('.artifacts/powerhouse-ci-throughput.json','utf8'));}
+  catch{ci=null;}
+  result.daily_learning=buildSupervisorDailyLearning({supervisor:result,ci});
+  try{
+    const openPrs=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+    result.daily_learning.declared_writer_ownership=assessSupervisorOwnerClaims(openPrs);
+  }catch{
+    result.daily_learning.declared_writer_ownership=assessSupervisorOwnerClaims(null);
   }
   await mkdir('.artifacts',{recursive:true});
   await writeFile(OUT,JSON.stringify(result,null,2)+'\n');
