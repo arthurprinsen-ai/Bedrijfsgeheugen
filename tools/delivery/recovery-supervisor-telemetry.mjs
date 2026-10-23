@@ -3,6 +3,7 @@
 import {execFileSync} from 'node:child_process';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {buildSupervisorDailyLearning} from './recovery-supervisor-daily-learning.mjs';
+import {assessSupervisorOwnerClaims} from './recovery-supervisor-owner-claims.mjs';
 import {pathToFileURL} from 'node:url';
 
 const WF='powerhouse-delivery-recovery-supervisor.yml';
@@ -207,6 +208,13 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{ci=JSON.parse(await readFile('.artifacts/powerhouse-ci-throughput.json','utf8'));}
   catch{ci=null;}
   result.daily_learning=buildSupervisorDailyLearning({supervisor:result,ci});
+  // Reuse the already-fetched, read-only Janitor PR snapshot. No new API calls.
+  try{
+    const openPrs=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+    result.daily_learning.declared_writer_ownership=assessSupervisorOwnerClaims(openPrs);
+  }catch{
+    result.daily_learning.declared_writer_ownership=assessSupervisorOwnerClaims(null);
+  }
   await mkdir('.artifacts',{recursive:true});
   await writeFile(OUT,JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify({status:result.status,runs:result.sampled_completed_runs,
