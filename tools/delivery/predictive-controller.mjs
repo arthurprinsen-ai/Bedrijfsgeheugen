@@ -483,9 +483,11 @@ export function planWorkflowObservation({
 // Read-only, bounded GitHub Actions job telemetry. No runner/job state is mutated.
 // Job queue delay is distinct from execution duration; incomplete provider evidence
 // must never become a zero-duration sample or a production SLO claim.
+const EXECUTED_CI_JOB_CONCLUSIONS=new Set(['success','failure','timed_out']);
+// Skipped, neutral and cancelled provider records do not establish actual runner execution.
 export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={}){
   const rows=Array.isArray(observations)?observations:[];
-  const seen=new Set(),valid=[],rejected={invalid_identity:0,partial_job:0,invalid_time:0,duplicate:0};
+  const seen=new Set(),valid=[],rejected={invalid_identity:0,partial_job:0,non_executed:0,invalid_time:0,duplicate:0};
   for(const observation of rows){
     const run=observation?.run||{},job=observation?.job||{};
     const runId=run.id,attempt=run.run_attempt,jobId=job.id;
@@ -496,6 +498,9 @@ export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={
     }
     if(run.status!=='completed'||job.status!=='completed'||!job.conclusion){
       rejected.partial_job++;continue;
+    }
+    if(!EXECUTED_CI_JOB_CONCLUSIONS.has(job.conclusion)){
+      rejected.non_executed++;continue;
     }
     const id=runId+':'+attempt+':'+jobId;
     if(seen.has(id)){rejected.duplicate++;continue;}
@@ -511,6 +516,8 @@ export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={
     valid.push(Object.freeze({
       run_id:runId,run_attempt:attempt,job_id:jobId,head_sha:sha,
       workflow_id:Number.isSafeInteger(run.workflow_id)?run.workflow_id:null,
+      workflow_name:String(run.name||job.workflow_name||'unnamed_workflow').replace(/[\x00-\x1f\x7f]/g,' ').trim().slice(0,100),
+      job_name:String(job.name||'unnamed_job').replace(/[\x00-\x1f\x7f]/g,' ').trim().slice(0,100),
       conclusion:String(job.conclusion),
       wait_to_start_ms:wait,execution_ms:duration
     }));
@@ -532,6 +539,17 @@ export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={
     p95_wait_to_start_ms:percentile('wait_to_start_ms',0.95),
     p50_execution_ms:percentile('execution_ms',0.5),
     p95_execution_ms:percentile('execution_ms',0.95),
+    // These observed maxima identify investigation candidates, NOT a causal critical path.
+    diagnostic_hotspots:Object.freeze({
+      status:sufficient?'SAMPLED_DIAGNOSTIC_NOT_CRITICAL_PATH':'INSUFFICIENT_EVIDENCE',
+      jobs:Object.freeze(sufficient?[...valid]
+        .sort((a,b)=>b.execution_ms-a.execution_ms||b.wait_to_start_ms-a.wait_to_start_ms||a.job_id-b.job_id)
+        .slice(0,5).map(r=>Object.freeze({
+          run_id:r.run_id,run_attempt:r.run_attempt,job_id:r.job_id,
+          head_sha:r.head_sha,workflow_name:r.workflow_name,job_name:r.job_name,
+          conclusion:r.conclusion,execution_ms:r.execution_ms,wait_to_start_ms:r.wait_to_start_ms
+        })):[])
+    }),
     job_evidence:Object.freeze(valid)
   });
 }
