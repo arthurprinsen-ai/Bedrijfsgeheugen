@@ -12,7 +12,7 @@ test('one existing supervisor provides structured provider-only recovery telemet
   assert.match(wf,/GITHUB_STEP_SUMMARY/);
   assert.match(wf,/causal_speedup_proven:false,customer_value_proven:false/);
   assert.equal((wf.match(/name: Powerhouse Delivery Recovery Supervisor/g)||[]).length,1);
-  assert.equal((wf.match(/cron: '\*\/5 \* \* \* \*'/g)||[]).length,1);
+  assert.equal((wf.match(/cron: '2-57\/5 \* \* \* \*'/g)||[]).length,1);
   assert.match(wf,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
   assert.match(wf,/RECOVERY_PR_BUDGET: '1'/);
   assert.match(wf,/cancel-in-progress: false/);
