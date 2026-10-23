@@ -1,4 +1,5 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { agentImprovementMarkup } from './agent-improvement-intelligence.js';
 import { ensureIdentityWidget } from '../portal-state.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
@@ -6,7 +7,7 @@ const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['live','Live uitvoering'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['live','Live uitvoering'],['improvement','Verbeterintelligentie'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
@@ -318,7 +319,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='improvement'?agentImprovementMarkup(obs):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
     if(state.tab==='integrations'){
       body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
       body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));
