@@ -62,6 +62,7 @@ test('existing Janitor collector is bounded, remains advisory and cannot create 
   assert.match(workflow,/cron: '17 \* \* \* \*'/);
   assert.equal((workflow.match(/Observe executed Recovery Supervisor runs/g)||[]).length,1);
   assert.match(workflow,/run: node tools\/delivery\/supervisor-run-evidence\.mjs/);
+  assert.match(workflow,/\.artifacts\/powerhouse-supervisor-runs\.json/);
   assert.doesNotMatch(readFileSync('tools/delivery/supervisor-run-evidence.mjs','utf8'),
     /gh workflow run|--method (?:POST|PUT|PATCH|DELETE)/);
 });
