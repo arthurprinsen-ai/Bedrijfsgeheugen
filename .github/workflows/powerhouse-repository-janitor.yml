@@ -316,11 +316,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node .github/scripts/github-actions-ghost-reconcile.mjs
-      - name: Recover missed daily learning via existing scheduled Janitor
-        if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node tools/delivery/daily-learning-recovery.mjs --apply-safe
       - name: Observe bounded CI throughput on existing hourly Janitor
         if: always()
         continue-on-error: true
@@ -343,6 +338,5 @@ jobs:
             .artifacts/janitor-runtime-actions.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
-            .artifacts/daily-learning-recovery.json
             .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error
