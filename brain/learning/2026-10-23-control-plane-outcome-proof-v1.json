@@ -12,7 +12,9 @@
     "source": "portal-v2/control-plane-cockpit.js",
     "observed_code": "if(v==='FULFILLED') return ok",
     "verified_prod_false_success_cases": null,
-    "independent_portal_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4689"
+    "independent_portal_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4689",
+    "learning_admission_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:portal-v2/tests/control-plane-cockpit.test.mjs",
+    "canonicalization_guard_preserved": true
   },
   "failed_approaches": [
     "Treat terminal state as outcome proof",
@@ -22,7 +24,8 @@
   "fix": "Fail closed on FULFILLED unless server outcome_verified is literal boolean true; visibly flag unverified claims. Preserve existing API, state, and tenant projection.",
   "prevention_rule": "A green outcome requires an affirmative provider-owned verified outcome, not workflow completion, migration status, or truthy string. Run both positive/negative tests before protected promotion.",
   "regression_tests": [
-    "portal-v2/tests/control-plane-cockpit.test.mjs"
+    "portal-v2/tests/control-plane-cockpit.test.mjs",
+    "tests/brain-control-plane-outcome-proof-v1.test.mjs"
   ],
   "existing_daily_owner": ".github/workflows/universal-closed-loop-learning.yml",
   "canonical_skill": ".agents/skills/powerhouse-green-assurance/SKILL.md",
@@ -36,13 +39,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/control-plane-cockpit.test.mjs"
+      "tests/brain-control-plane-outcome-proof-v1.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/control-plane-cockpit.test.mjs"
+      "tests/brain-control-plane-outcome-proof-v1.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/control-plane-cockpit.test.mjs"
+      "tests/brain-control-plane-outcome-proof-v1.test.mjs"
     ]
   },
   "terminal_rule": "Exact-head protected Required+CodeQL, portal production deployment, independent provider readback and final Brain learning writeback. No LIVE claim for this change from source-only checks."
