@@ -222,3 +222,8 @@ Hard rules:
 Measured demand captured on 30 September 2026 includes NL `ai governance`, `data soevereiniteit`, `bedrijfsprocessen automatiseren`, and EN `AI model comparison`, `AI governance`, `sovereign AI`. High-volatility volume signals must be combined with SERP-intent evidence before scaling.
 
 The AI Modelwijzer owns the model-comparison/selection intent. `/data-soevereiniteit` owns the distinct data-sovereignty/sovereign-AI intent and hands off commercially to AI governance. These pages must not cannibalize `/ai-governance`.
+
+## Conversieduur en afspraakbelofte — 22 oktober 2026
+Fingerprint: `seo|frisse-blik|consistent-duration|v1`.
+
+Voor bestaande MKB-money pages geldt de canonieke gratis Frisse Blik van 30 minuten als feitelijke eerste afspraak. Controleer vóór iedere publicatie alle CTA-secties op tegenstrijdige duur- of prijsbeloften; onderscheid de betaalde verdiepingsscan van de gratis kennismaking. Houd NL/EN static-i18n cache en finale build-readback gelijk. Geen verzonnen afspraak-, lead- of omzetresultaten. Regressie: `tests/seo-order-money-v2.test.mjs`.
