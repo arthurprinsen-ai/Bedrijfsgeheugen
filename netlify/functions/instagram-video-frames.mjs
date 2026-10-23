@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
 import {verifierProbeAuthorizesToken} from './_instagram-frame-auth-contract.mjs';
+import {instagramFrameSamplePoints} from './_instagram-frame-sampling.mjs';
 
 const execFileAsync=promisify(execFile);
 const SUPABASE='https://adhjwmvyoixzjtmiroln.supabase.co';
@@ -71,11 +72,7 @@ export default async (request)=>{
     const input=join(dir,'source.mp4');
     await writeFile(input,bytes);
 
-    const points=[
-      ['start',Math.min(0.25,Math.max(0.05,duration*0.05))],
-      ['middle',Math.max(0.05,duration*0.5)],
-      ['end',Math.max(0.05,duration-0.25)]
-    ];
+    const points=instagramFrameSamplePoints(duration);
     const frames=[];
     for(const [position,seconds] of points){
       const out=join(dir,`${position}.jpg`);

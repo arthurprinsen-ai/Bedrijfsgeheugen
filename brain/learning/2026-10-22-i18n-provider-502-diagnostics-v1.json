@@ -1,0 +1,81 @@
+{
+  "schema": "brain-learning.v1",
+  "date": "2026-10-22",
+  "obligation_id": "netlify|production-i18n-translate|http-502|20261022-v1",
+  "parent_p0": "#4215",
+  "failure_class": "HTTP_502_TRANSLATION_UNDIAGNOSED",
+  "maturity": "OBSERVED",
+  "source": "Netlify edge observability provider",
+  "observations": [
+    {
+      "environment": "production",
+      "request_id": "01M5HQR0S42BBGP87AG7PFMAGD",
+      "occurred_at": "2026-10-22T12:00:34.084Z",
+      "status": 502,
+      "route": "/api/i18n-translate"
+    },
+    {
+      "environment": "deploy-preview-4708",
+      "request_id": "01M5JF8SEX3S6DK38Y2D2BEZ9M",
+      "occurred_at": "2026-10-22T18:51:40.893Z",
+      "status": 502,
+      "route": "/api/i18n-translate"
+    }
+  ],
+  "root_cause_state": "UNPROVEN_PROVIDER_OR_RESULT_SHAPE",
+  "root_cause": "Current catch block discards upstream status and technical error class; actual cause of upstream 502 remains unproven.",
+  "implementation": "Correlate an error-only request UUID and log only allowlisted class, numeric upstream HTTP status, and Public/Confidential class. Preserve existing 409 sovereignty and 502 failure responses.",
+  "security_rules": [
+    "never log prompts, translations, tenant IDs, provider error messages, credentials, or customer data",
+    "never bypass data sovereignty, Identity authorization, or provider policy",
+    "diagnostic write failures must not change original HTTP response",
+    "no new scheduler, agent, table, or parallel incident register"
+  ],
+  "verification": {
+    "local_node": "6/6 passed on Node.js v22.16.0",
+    "protected_required": "PENDING",
+    "codeql": "PENDING",
+    "netlify_prod": "PENDING",
+    "live_causal_root_fix": "PENDING"
+  },
+  "next_step": "After protected merge + exact SHA deploy, obtain classified failure log + authenticated provider evidence; repair root cause in canonical existing lineage and prove no 502 regression.",
+  "owner": "existing Powerhouse Netlify translation route",
+  "notes": "Telemetry instrumentation is not a verified fix for provider errors.",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "netlify|production-i18n-translate|http-502|20261022-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "PROVIDER_DIAGNOSTIC_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ]
+  },
+  "prevention_rule": "Retain a privacy-safe classified failure event and correlation ID for translation failures. Keep existing authorization and 409/502 response contracts; require provider evidence and regression tests before marking fixed.",
+  "evidence": {
+    "provider_requests": [
+      "01M5HQR0S42BBGP87AG7PFMAGD",
+      "01M5JF8SEX3S6DK38Y2D2BEZ9M"
+    ],
+    "observed_status": 502,
+    "tests": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "historical_replay": "local-pass",
+    "shadow": "local-pass",
+    "canary": "local-pass",
+    "production_readback": "pending"
+  }
+}

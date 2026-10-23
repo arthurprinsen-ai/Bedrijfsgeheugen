@@ -275,6 +275,22 @@ Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1
 
 When repository delivery reaches merge, continuity ownership remains active. Resume the same obligation until the canonical `Obligation Terminal Closure` workflow proves main containment, canonical production/runtime readback, applicable learning-to-skill projection, immutable terminal evidence and writer-lease release. Only the resulting machine-readable terminal state (`LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`) may end the lineage. Never create a new recovery PR merely because post-merge readback is still running.
 
+
+## Terminal Supabase supersession — retired SQL is not deployed SQL (22 October 2026)
+
+Fingerprint: `delivery|terminal-closure|retired-superseded-migration-lineage|20261022-v1`.
+During the existing `Obligation Terminal Closure` traversal, a closed/unmerged
+predecessor with SQL migrations is admissible only after the direct immutable
+`Supersedes: <PR>` link, a retired writer lease, adoption of **every** exact
+migration path in the protected merged successor, and Git blob parity between
+that successor and current protected main. Historical draft SQL bytes may differ
+and remain audit evidence, never an independent production source. Unknown paths,
+unmerged current candidates, conflicting merged source blobs, missing provider
+APPLIED evidence and missing ACL/tenant evidence fail closed. Preserve the one
+existing terminal controller, incident #4681, all mandatory downstream readback,
+and the executable negative regression in
+`tests/brain-terminal-migration-identity-v1.test.mjs`.
+
 ## Mandatory material-run closure gate
 
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
@@ -1658,3 +1674,13 @@ Uitvoerbare owner: `.github/scripts/github-actions-ghost-reconcile.mjs` aangeroe
 
 Fingerprint: `delivery|main-write|unverifiable-pr-association-v1`; bestaande eigenaar: GitHub-incident #4657.
 Wanneer de post-merge main-write-controle faalt met `unexpected end of JSON input` op GitHub `commits/{sha}/pulls`, bewijs dan eerst of de exacte commit uit een legitieme beschermde PR-merge voortkomt. De bestaande workflow voert begrensde provider-readback uit en mag als tweede bron de GitHub PR-API raadplegen. Het commitonderwerp met `(#nummer)` is uitsluitend een onbewezen lookup-hint: vertrouwen vereist vanuit GitHub zelf `merged_at`, `base.ref=main`, `number` en exacte `merge_commit_sha`. Bij onbereikbaarheid, mismatch of ongeldige respons blijft `UNKNOWN_MAIN_WRITE` of `DIRECT_MAIN_WRITE_INCIDENT` rood. Geen security-bypass, geen tweede incident/scheduler, geen bewijs uit alleen een commitbericht. Regressies in `tests/brain-main-write-integrity.test.mjs`; canonieke learning `brain/learning/2026-10-22-main-write-provider-association-readback-v1.json`. Bewijs moet na merge op werkelijke main/CI worden gelezen, nooit achteraf een oude GitHub-run herschrijven.
+
+## Ghost-aware predictive CI queue, bewijs boven telling (22 oktober 2026)
+
+- Canonieke obligation en fingerprint: #4661 `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`; historisch GitHub-providerincident blijft #4655.
+- **Geen extra scheduler of scanner.** Reuse existing hourly Repository Janitor readback and `tools/delivery/predictive-controller.mjs`.
+- Expose `rawQueued`, `verifiedProviderGhostQueued` and `actionableQueued` separately. Proven incident ghosts are a provider anomaly, NOT completed/successful workflow jobs.
+- An exclusion requires one exact provider run and 0-job readback, still queued/null and unchanged 24h, noncurrent main/open PR SHA, previously verified provider-denied `GHOST_RUN_PROVIDER_BLOCKED` marker under #4655, matching timestamp/identity and a ten-minute-fresh readback. Fail closed on incomplete pagination, stale/missing proof, active jobs, current Required/CodeQL or ambiguity.
+- Agent prediction must not infer success from `GET /actions/runs?status=queued` returning 0 when individual known runs still report queued. Preserve the cross-endpoint inconsistency `collectionMissingKnownProviderIds`.
+- Regression: `tests/delivery-powerhouse-supervisor.test.mjs`. Brain learning `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; human doc `docs/changes/ghost-aware-predictive-queue-pressure-20261022-v1.md`.
+- Only protected merge + exact-main Janitor readback proves this scoped improvement. Overall throughput/lane prediction, statistically measured speedup and all four GitHub run removals have separate open acceptance obligations.

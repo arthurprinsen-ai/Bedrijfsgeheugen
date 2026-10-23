@@ -4,7 +4,7 @@
   "fingerprint": "website|mobile-cls|en-blog-afas-api|20261022-v1",
   "obligation_id": "website|cls-attribution-exact-browser-proof|20261022-v1",
   "title": "Bounded mobile layout-shift source attribution with unchanged website quality gate",
-  "status": "CANDIDATE",
+  "status": "CANDIDATE_DIAGNOSTIC_AND_MOBILE_TOC_SOURCE_FIX; random cross-route CLS closure not yet proven",
   "failure_class": "WEBSITE_VISUAL_STABILITY",
   "root_cause": "UNPROVEN. Sitewide browser gate detected CLS 0.111 > 0.100 at phone /en/blog/afas-api after separately passing checkout; existing browser log gave scalar CLS without attributable shifted DOM elements. This learning item repairs diagnostic insufficiency, not the underlying CLS.",
   "impact": "The SEO release remains blocked and an ungrounded CSS guess could mask the defect or create regressions.",
@@ -13,12 +13,14 @@
     "Treating successful checkout as passing all browser acceptance",
     "Raising thresholds, skipping the AFAS page or blind reruns"
   ],
-  "fix": "Preserve PerformanceObserver layout-shift entries with bounded sources, node labels and previous/current geometry. Emit their diagnostics only when the unchanged >0.100 gate fails.",
+  "fix": "Preserve PerformanceObserver layout-shift entries with bounded sources, node labels and previous/current geometry. Emit their diagnostics only when the unchanged >0.100 gate fails. Ancestor path is captured before a node detaches, bounded to five sanitized DOM tokens; log font-loading status and timing alongside score.",
   "prevention_rule": "For an unexplained website CLS regression, capture real source nodes/old and new rectangles before changing layout; never waive original route, viewport or mobile CLS coverage; only verified source fix plus exact-head full CI and Netlify production readback can close the operating incident.",
   "regression_contract": "tests/brain-mobile-cls-attribution-20261022.test.mjs",
   "tests": [
     "tests/brain-mobile-cls-attribution-20261022.test.mjs",
-    "tools/site-shell/standalone-visibility-check.mjs"
+    "tools/site-shell/standalone-visibility-check.mjs",
+    "tests/brain-website-layout-shift-evidence-20261022.test.mjs",
+    "tools/site-shell/layout-shift-evidence.mjs"
   ],
   "evidence": {
     "observed_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4606",
@@ -29,9 +31,21 @@
     "max_cls": 0.1,
     "checkout_rerun": "passed",
     "dom_attribution": "NOT_YET_CAPTURED",
-    "production_fix": "NOT_CLAIMED"
+    "production_fix": "NOT_CLAIMED",
+    "additional_observations": [
+      "Required 39839765028 /en/blog/afas-api phone CLS 0.12329 at 718ms (div.wrap -> 0 size)",
+      "Required 39832691176 /en/blog/offertes-opvolgen-zonder-crm phone CLS 0.12084 at 515ms (div.wrap -> 0 size)",
+      "Real isolated 390px preview browser replay of build-generated English V18 route: one warm/resource replay had CLS ~0.00037; root cause still timing dependent and unproven."
+    ],
+    "mobile_toc_css_cascade": {
+      "defect": "Higher-specificity generated V18 .bgx-opdezepagina display:flex defeats existing mobile @media display:none",
+      "repro": "/en/blog/offertes-opvolgen-zonder-crm/ at 390px: computed display:flex, TOC 341.03px; isolated same-specificity display:none made nested article shift -369.03px; reverting rule restores old layout",
+      "guard": "@media(max-width:1100px){.inhoud-body>.wrap:has(>section)>.bgx-opdezepagina{display:none}}",
+      "causal_role_in_transient_cls": "UNPROVEN until protected cold-load full-sitemap browser checks",
+      "verification": "REQUIRES exact-head Required, CodeQL, protected merge and production readback"
+    }
   },
-  "outcome": "CANDIDATE diagnostics only; requires Protected Required/CodeQL and original visual CLS defect remains OBSERVED.",
+  "outcome": "DIAGNOSTICS_MERGED_WITH_MAIN_SOURCE_CANDIDATE; actual CLS root unresolved, browser Required/CodeQL/production proof required.",
   "compiler": {
     "failure_class": "WEBSITE_VISUAL_STABILITY",
     "scope": "WEBSITE_BROWSER_REQUIRED",
@@ -41,7 +55,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-mobile-cls-attribution-20261022.test.mjs"
+      "tests/brain-mobile-cls-attribution-20261022.test.mjs",
+      "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
     ],
     "shadow": [
       "same threshold and visibility checks, diagnostic-only attribute capture"
@@ -55,5 +70,6 @@
     "NO_GUESSED_DOM_ROOT_CAUSE",
     "BOUND_BROWSER_ATTRIBUTION_MEMORY",
     "NO_DUPLICATE_WEBSITE_REMEDIATION_OWNER"
-  ]
+  ],
+  "regression": "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
 }
