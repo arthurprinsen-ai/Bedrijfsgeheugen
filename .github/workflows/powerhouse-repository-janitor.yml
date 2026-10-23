@@ -27,6 +27,8 @@ concurrency:
 
 jobs:
   janitor:
+    # GitHub 2026 cache-token least privilege: this privileged Janitor never uses Actions caches.
+    cache-mode: none
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
