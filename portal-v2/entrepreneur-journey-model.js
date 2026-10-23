@@ -18,12 +18,43 @@ const PAGE_HINTS=Object.freeze({
   overig:'Controleer hoe de conclusie zich verhoudt tot je doel, de brongegevens en mogelijke risico’s.'
 });
 
+// One read-only projection of the existing, tenant-scoped Powerhouse outcome chain.
+// This never schedules work, persists data, grants approvals or asserts an
+// autonomous execution on the strength of a proposal or an outcome alone.
+export function buildAutopilotEvidence(owner,heartbeat='UNKNOWN'){
+  const freshRuntime=heartbeat==='TENANT_RUNTIME_OBSERVED';
+  if(owner?.ready!==true)return Object.freeze({
+    status:'UNVERIFIED',freshRuntime,proposals:null,approvals:null,
+    outcomes:null,learned:null,autonomousExecutionVerified:false
+  });
+  const proven=(Array.isArray(owner.outcomes)?owner.outcomes:[]).filter(item=>
+    item?.evidence_health?.status==='healthy'
+    &&Array.isArray(item.source_refs)&&item.source_refs.some(ref=>typeof ref==='string'&&ref.trim())
+    &&['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(String(item.verification_status||item.status||'').trim().toUpperCase())
+  );
+  const learned=proven.filter(item=>item.learning_verified===true
+    &&Array.isArray(item.learning_evidence_refs)
+    &&item.learning_evidence_refs.some(ref=>typeof ref==='string'&&ref.trim())
+    &&typeof item.next_decision_id==='string'&&item.next_decision_id.trim()).length;
+  return Object.freeze({
+    status:freshRuntime?'RUNTIME_OBSERVED':'HISTORICAL_PROOF_ONLY',
+    freshRuntime,
+    proposals:Array.isArray(owner.actions)?owner.actions.length:0,
+    approvals:Array.isArray(owner.decisions)?owner.decisions.length:0,
+    outcomes:proven.length,
+    learned,
+    // Existing operating model intentionally does not call anything
+    // autonomous unless the execution/readback chain separately proves it.
+    autonomousExecutionVerified:owner.autonomousExecutionVerified===true
+  });
+}
+
 export function buildEntrepreneurJourneyModel(state={},{
   authenticated=false,home=null,impact=null,brainReceipt=null,tenantRuntime=null,now=Date.now()
 }={}){
   if(!authenticated||!home?.authenticated)return Object.freeze({
     authenticated:false,steps:Object.freeze([]),cockpit:null,scenario:null,
-    dependencies:Object.freeze([]),brainReceipt:null,heartbeat:'UNKNOWN'
+    dependencies:Object.freeze([]),brainReceipt:null,heartbeat:'UNKNOWN',autopilot:null
   });
   const safe=state&&typeof state==='object'?state:{};
   const owner=buildOwnerOperatingModel(safe,{now});
@@ -60,7 +91,8 @@ export function buildEntrepreneurJourneyModel(state={},{
         'Geen verantwoorde trend: minimaal 3 recente metingen over 14 dagen zijn nodig'
     }),
     dependencies:Object.freeze(dependencies),brainReceipt:receipt,
-    heartbeat:currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN'
+    heartbeat:currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN',
+    autopilot:buildAutopilotEvidence(owner,currentRuntime?'TENANT_RUNTIME_OBSERVED':'UNKNOWN')
   });
 }
 
