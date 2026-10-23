@@ -58,11 +58,20 @@ jobs:
           EVENT_PR_BODY: ${{ github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           EXPECTED_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+          MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
           TRUSTED_WORKFLOW_SHA: ${{ github.workflow_sha }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
           if [ "$EVENT_NAME" = "merge_group" ]; then
+            if [[ ! "${MERGE_GROUP_HEAD_SHA:-}" =~ ^[0-9a-f]{40}$ ]] || \
+               [ "$GITHUB_SHA" != "$MERGE_GROUP_HEAD_SHA" ] || \
+               [ "$(git rev-parse HEAD)" != "$MERGE_GROUP_HEAD_SHA" ]; then
+              printf 'state=MERGE_GROUP_SHA_MISMATCH\nadmitted=false\nobligation_id=\ncandidate_head_sha=\n' >> "$GITHUB_OUTPUT"
+              printf '{"state":"MERGE_GROUP_SHA_MISMATCH","admitted":false}\n' > .artifacts/powerhouse-delivery-hygiene.json
+              echo "::error::MERGE_GROUP_SHA_MISMATCH" >&2
+              exit 78
+            fi
             printf 'state=MERGE_GROUP_PREVALIDATED\nadmitted=true\nobligation_id=merge-group\ncandidate_head_sha=%s\n' "${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
             printf '{"state":"MERGE_GROUP_PREVALIDATED","admitted":true,"head_sha":"%s"}\n' "$GITHUB_SHA" > .artifacts/powerhouse-delivery-hygiene.json
             exit 0
