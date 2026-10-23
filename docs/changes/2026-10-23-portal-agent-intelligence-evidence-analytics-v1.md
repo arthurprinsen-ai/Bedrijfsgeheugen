@@ -83,3 +83,18 @@ Concreet vervolg binnen de bestaande Brain/Heartbeat-owner: verbetering
 sturen op gemeten outcome-dekking, eerste-keer-goed, versheid van bronbewijs,
 betrouwbaarheid en bewezen klantdoelen; met baseline, controleconditie,
 risicogrenzen, onafhankelijke production-readback en rollbackbewijs.
+
+
+## Controle bij herplaatsing op actuele hoofdbranch
+
+Git-geschiedenis is opnieuw opgebouwd met oudercommit
+`51eb7900a61adcb8567bc2557f6926c40732a0a3` en uitsluitend de negen
+ongewijzigde feature-blobs. De eerste schone commit is
+`c544d00596c1d9c7d7bc7457aaa3a16f04bd85af` (exact negen
+gewijzigde paden, geen meegesleepte workflow- of migratiebestanden).
+
+Dit is alleen een scope-/geschiedenisreparatie; opnieuw uit te voeren Required,
+Portal, Browser en CodeQL blijven noodzakelijk. Een neutrale GitHub Code Scanning
+aggregatie mag niet worden opgewaardeerd naar een bewezen schone securityscan.
+Productie blijft ongewijzigd tot beschermde merge, Netlify exact-SHA en een
+geauthenticeerde beheerdersreadback. Geen tweede scheduler of agentwriter.
