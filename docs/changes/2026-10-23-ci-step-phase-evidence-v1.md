@@ -1,0 +1,9 @@
+# Powerhouse: repeated CI-step phase evidence, without new polling
+
+Canonical [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). The actual [Janitor run #39926363163](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163) measured 28 executed jobs, 13 attempts and a maximum observed job duration of 353s. This is not attribution or a measured speedup.
+
+GitHub Actions already includes step timestamps within each job-list response. Official contract: https://docs.github.com/en/rest/actions/workflow-jobs. The new `tools/delivery/ci-step-phase-evidence.mjs` consumes **only the existing bounded Janitor collection**, never an additional GET, scheduler or exporter.
+
+For a valid step the job must match the accepted canonical executed-job identity, SHA, attempt, result and elapsed time. The step must be completed with an executed result, positive elapsed and valid timestamps strictly inside its verified job; hostile names/duplicates are rejected. Require >=20 real jobs from >=5 distinct run attempts, and for an actual repeated phase require >=3 **different attempts** sharing workflow ID, exact job name and exact step name; matrix copies count once. Up to five bounded phases include observed median, maximum and a source exemplar, expressly **not** a root-cause proof or CI/DORA SLO.
+
+The `step_phase_evidence` result is part of the same existing `powerhouse-ci-throughput.json`; existing `agent_priority_advice` remains read-only and cannot mutate, dispatch or promote. Autonomous agents may use repeated phases as diagnostic hypotheses and route by existing canonical owner/skills, but only independently tested comparable cold/warm benchmarks, protected CI, security/tenant checks and release readback can promote an optimization. No second register, provider writes, new capacity or extra GitHub call.
