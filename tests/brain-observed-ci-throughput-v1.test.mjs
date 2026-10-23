@@ -59,9 +59,9 @@ test('collector has bounded GET fanout and partial provider failure suppresses p
     return {total_count:1,jobs:[sample(id,1000+id).job]};
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
-  assert.ok(calls>13 && calls<=25);
-  assert.ok(x.workflow_runs_sampled>12 && x.workflow_runs_sampled<=24);
-  assert.equal(x.sampling_stop_reason,'SUFFICIENT_OBSERVED_SAMPLE');
+  assert.equal(calls,3);
+  assert.equal(x.workflow_runs_sampled,2);
+  assert.equal(x.sampling_stop_reason,'PROVIDER_READ_INCOMPLETE');
   assert.equal(x.read_errors.length,1);
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(x.p95_wait_to_start_ms,null);
