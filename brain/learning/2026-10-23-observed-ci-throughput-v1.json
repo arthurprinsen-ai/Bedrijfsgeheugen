@@ -31,8 +31,8 @@
     "Start extra recurring CI checkers just to collect statistics",
     "Fixed 12-run sampling produced only 17 valid jobs and could not satisfy the 20-job threshold even though the provider reads succeeded."
   ],
-  "fix": "Use the existing hourly Repository Janitor to read up to 12 completed workflow runs and their job timestamps, writing only a provenance-tagged observation artifact. Compute percentiles only after at least 20 complete jobs from 5 distinct runs, preserving identity and incomplete observations. Follow-up adaptation: query at most 24 runs only as needed and stop early when 20 valid jobs from 5 runs exist with no provider read errors; preserve partial evidence boundaries.",
-  "prevention_rule": "No CI speedup, performance SLO, green status or autonomous workflow optimization from partial, small or provider-denied telemetry. Read-only collection cannot start/cancel/approve work, lower security gates, waive branch protection, change runner resources or spend. Job timings are diagnostic metrics, not deployment frequency or change lead time. Explicitly preserve unresolved provider-ghost issue #4655. Every sample is independently counted; do not lower the 20-job / 5-run threshold. Once it is met without read errors, stop extra GitHub GETs to reduce API pressure; a prior read failure makes full bounded sweep necessary and suppresses p95.",
+  "fix": "Use the existing hourly Repository Janitor to read up to 12 completed workflow runs and their job timestamps, writing only a provenance-tagged observation artifact. Compute percentiles only after at least 20 complete jobs from 5 distinct runs, preserving identity and incomplete observations. Follow-up adaptation: query at most 24 runs only as needed and stop early when 20 valid jobs from 5 runs exist with no provider read errors; preserve partial evidence boundaries. Subsequent bounded fail-fast follow-up: stop the current read cycle immediately after the first malformed or denied job-list response, retain the read error and suppress all percentiles; no repeated provider reads once trust is lost.",
+  "prevention_rule": "No CI speedup, performance SLO, green status or autonomous workflow optimization from partial, small or provider-denied telemetry. Read-only collection cannot start/cancel/approve work, lower security gates, waive branch protection, change runner resources or spend. Job timings are diagnostic metrics, not deployment frequency or change lead time. Explicitly preserve unresolved provider-ghost issue #4655. Every sample is independently counted; do not lower the 20-job / 5-run threshold. Once it is met without read errors, stop extra GitHub GETs to reduce API pressure; the first incomplete or denied provider read stops the sweep immediately, records partial evidence, and suppresses all percentiles; further GETs cannot restore completeness for that observation.",
   "tests": [
     "tests/brain-observed-ci-throughput-v1.test.mjs"
   ],
@@ -61,16 +61,29 @@
       "one sample cannot infer p95",
       "unknown/partial API proof suppresses percentiles",
       "dedupe jobs by run+attempt+job",
-      "limited 12-run API read fanout",
+      "limited 24-run API read fanout with adaptive early-stop",
       "existing Janitor schedule only",
       "no automatic workflow mutation or skip of protected CI checks",
       "adaptive read stops immediately after verified minimum rather than a fixed under-sampling window",
       "24-run hard budget; partial provider read cannot be masked by later successful jobs",
-      "first real 12-run sample 17 jobs remains honestly INSUFFICIENT_EVIDENCE"
+      "first real 12-run sample 17 jobs remains honestly INSUFFICIENT_EVIDENCE",
+      "first malformed or denied jobs read stops the current cycle without further GitHub GETs; partial statistics remain NULL"
     ]
   },
   "terminal_rule": "This observation step is live only after exact-head Required, hygiene, CodeQL, protected merge, actual hourly Janitor execution artifact and main/readback + skill projection. No claim of speed improvement without repeated comparable baselines, and #4661 remains broader open.",
   "dependencies": [
     "adaptive source must pass protected CI and a second real Janitor observation before any runtime metric proof can be claimed"
-  ]
+  ],
+  "followup_provider_failfast_20261023": {
+    "parent_obligation": "delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1",
+    "sub_obligation": "delivery|predictive-lane-capacity|first-provider-read-failfast|20261023-v1",
+    "observed_problem": "Existing collector continues requesting up to 24 job lists even after the first denied/malformed response, although all output percentiles must be withheld; needless GitHub API load during provider degradation.",
+    "safe_change": "Immediately stop on first provider read failure or incomplete jobs pagination, preserve partial status and evidence; never claim valid sample, live deployment or sustained speedup on test-only evidence.",
+    "regression": "tests/brain-observed-ci-throughput-v1.test.mjs",
+    "baseline_simulated_gets": 25,
+    "improved_simulated_gets_when_second_job_read_fails": 3,
+    "real_provider_gain_verified": false,
+    "protected_ci_required": true,
+    "source_review_status": "CANDIDATE_NOT_LIVE"
+  }
 }

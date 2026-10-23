@@ -48,7 +48,7 @@ test('duplicates, incomplete identities and impossible times cannot become succe
   assert.equal(x.p95_wait_to_start_ms,null);
 });
 
-test('collector has bounded GET fanout and partial provider failure suppresses p95',async()=>{
+test('collector stops at first provider error, preserves partial proof and suppresses p95',async()=>{
   const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
   let calls=0;
   const read=path=>{
@@ -59,8 +59,9 @@ test('collector has bounded GET fanout and partial provider failure suppresses p
     return {total_count:1,jobs:[sample(id,1000+id).job]};
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
-  assert.equal(calls,25);
-  assert.equal(x.workflow_runs_sampled,24);
+  assert.equal(calls,3);
+  assert.equal(x.provider_reads_attempted,3);
+  assert.equal(x.workflow_runs_sampled,2);
   assert.equal(x.read_errors.length,1);
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(x.p95_wait_to_start_ms,null);
@@ -98,7 +99,7 @@ test('adaptive sampling stops as soon as 20 independent jobs across five runs ex
   assert.deepEqual(x.read_errors,[]);
 });
 
-test('adaptive budget remains finite and never masks an earlier missing read',async()=>{
+test('first denied provider read fails closed without exhausting unnecessary GET budget',async()=>{
   const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
   let count=0;
   const read=path=>{
@@ -111,9 +112,27 @@ test('adaptive budget remains finite and never masks an earlier missing read',as
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10_000,read});
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
-  assert.equal(x.workflow_runs_sampled,24);
-  assert.equal(count,25);
+  assert.equal(x.workflow_runs_sampled,1);
+  assert.equal(count,2);
+  assert.equal(x.provider_reads_attempted,2);
   assert.equal(x.p95_execution_ms,null);
+});
+
+test('incomplete job-list pagination stops bounded collector immediately',async()=>{
+  const runs=Array.from({length:30},(_,i)=>({id:i+1,run_attempt:1,head_sha:sha,status:'completed',created_at:iso(0)}));
+  let reads=0;
+  const read=path=>{
+    reads++;
+    if(path.includes('status=completed'))return {workflow_runs:runs};
+    return {total_count:2,jobs:[sample(1,1001).job]};
+  };
+  const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
+  assert.equal(reads,2);
+  assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
+  assert.equal(x.workflow_runs_sampled,1);
+  assert.equal(x.read_errors[0].reason,'JOBS_SNAPSHOT_INCOMPLETE');
+  assert.equal(x.p95_wait_to_start_ms,null);
+  assert.equal(x.automation_allowed,false);
 });
 
 
