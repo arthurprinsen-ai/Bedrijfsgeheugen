@@ -109,7 +109,7 @@ export function planDailyConversion({ searchRows = [], events = [], outcomes = [
       action, canonical: page.canonical, hypothesis: reason,
       target_metric: target, rollback_condition: 'independent post-deploy decline in qualified leads or primary conversions',
       evidence_refs: refs, auto_publish: false, introduces_new_factual_claim: false,
-      evidence_safe: true, proposed_change: { kind: 'review-required', primary_cta: page.primary_cta || null },
+      evidence_safe: true, proposed_change: { kind: 'human-validation-required', primary_cta: page.primary_cta || null },
       priority: Number(priority.toFixed(2)), observation_day: day, source_status: sourceStatus,
       actual_business_outcomes: results.has(page.canonical) ? { ...business, realizedRevenueEur: Number(business.realizedRevenueEur.toFixed(2)) } : null,
       terminal: { state: 'REJECTED_WITH_EVIDENCE', reason_code: 'NO_SAFE_REVERSIBLE_CHANGE',
