@@ -70,6 +70,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     learning:'brain/learning/2026-10-23-observed-ci-throughput-v1.json',
     productionVerified:false
   }),
+  adaptiveCiSampling:Object.freeze({fingerprint:'delivery|predictive-lane-capacity|adaptive-sample-completeness|20261023-v1',owner:'existing hourly Repository Janitor / issue #4661',source:'tools/delivery/ci-throughput-telemetry.mjs',observedBaselineRun:39921463823,baselineValidJobs:17,baselineWorkflows:12,requiredValidJobs:20,requiredDistinctRuns:5,maxJobListReads:24,earlyStopOnMinimum:true,earlyStopOnProviderError:true,readOnly:true,createsNoWorkflowRun:true,requiredGatesUnchanged:true,productionVerified:false,regression:'tests/brain-observed-ci-throughput-v1.test.mjs'}),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
       id:'github-failed-gate-same-owner-recovery-v1',
