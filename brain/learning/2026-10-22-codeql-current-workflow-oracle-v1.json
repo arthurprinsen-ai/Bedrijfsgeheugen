@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|brain|codeql-current-mergegroup-authority-oracle|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation_id": "ci-brain-codeql-current-workflow-source-oracle-20261022",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "root_causes": [
+    "Two inherited BRAIN tests read a retired .github/workflows/powerhouse-codeql.yml after CodeQL moved to .github/workflows/codeql.yml with stronger unscoped matrix/merge_group protection."
+  ],
+  "prevention": [
+    "Point tests at the actual protected CodeQL workflow; assert pull_request, merge_group, JS+Python, extended security queries and SARIF upload, concurrent per-ref cancellation.",
+    "Never reintroduce outdated scope-filtered workflow or weaken CodeQL required-check protection."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-codeql-current-workflow-oracle-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-codeql-current-workflow-oracle-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-codeql-current-workflow-oracle-20261022.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755490943/job/119746782219",
+    "active_workflow": ".github/workflows/codeql.yml",
+    "active_workflow_blob": "96459966b2edda60159ce288e9c3411c5fbce82c",
+    "source_files": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs",
+      "tests/brain-rocket-delivery-v1.test.mjs"
+    ],
+    "codeql_permission_preserved": true,
+    "full_brain": "NOT_VERIFIED",
+    "production_mutations": 0
+  },
+  "current_state": "CANDIDATE_UNVERIFIED"
+}

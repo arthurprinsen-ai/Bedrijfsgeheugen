@@ -20,14 +20,21 @@ test('critical-path workflows keep visible checks while eliminating stale work',
     readFile('.github/workflows/repo-writer-operational-verification.yml','utf8'),
     readFile('.github/workflows/repo-writer-candidate-shadow.yml','utf8'),
     readFile('.github/workflows/repo-writer-cheap-canary.yml','utf8'),
-    readFile('.github/workflows/powerhouse-codeql.yml','utf8'),
+    readFile('.github/workflows/codeql.yml','utf8'),
     readFile('.github/workflows/required-test.yml','utf8'),
   ]);
   assert.match(gate,/group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}[\s\S]*cancel-in-progress: true/);
   assert.match(operational,/group: repo-writer-operational-[\s\S]*cancel-in-progress: true/);
   assert.match(shadow,/group: repo-writer-candidate-shadow-[\s\S]*cancel-in-progress: true/);
   assert.match(canary,/group: repo-writer-cheap-canary-[\s\S]*cancel-in-progress: true/);
-  assert.match(codeql,/CodeQL scope[\s\S]*pulls\/\$PR_NUMBER\/files[\s\S]*needs: scope[\s\S]*needs\.scope\.outputs\.run_codeql == 'true'/);
+  assert.match(codeql,/name: Powerhouse CodeQL/);
+  assert.match(codeql,/pull_request:[\s\S]*merge_group:[\s\S]*push:/);
+  assert.match(codeql,/merge_group:[\s\S]*types: \[checks_requested\]/);
+  assert.match(codeql,/javascript-typescript, python/);
+  assert.match(codeql,/queries: security-extended/);
+  assert.match(codeql,/Upload CodeQL SARIF evidence/);
+  assert.match(codeql,/group: powerhouse-codeql-/);
+  assert.match(codeql,/cancel-in-progress: true/);
   assert.match(required,/supabase_preview_required[\s\S]*Verify provider-owned Supabase Preview on exact candidate head/);
 });
 
