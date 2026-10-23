@@ -77,7 +77,7 @@ test('single head-heavy PR alone does not recommend policy changes',()=>{
  assert.equal(r.merge_queue_advice,'NO_POLICY_CHANGE_WITHOUT_ADMIN_AND_EXACT_MERGE_GROUP_CHECKS');
 });
 
-test('hourly Janitor reuses existing single provider list GET, no extra reads or mutations',async()=>{
+test('hourly Janitor uses one bounded targeted Required GET, no new workflow or mutations',async()=>{
  const observations=[
   required(21,4765,sha(2)),required(22,4765,sha(3)),
   required(23,4761,sha(4)),required(24,4761,sha(5)),
@@ -89,12 +89,67 @@ test('hourly Janitor reuses existing single provider list GET, no extra reads or
   if(path.includes('status=completed'))return {total_count:500,workflow_runs:observations};
   throw Error('simulated job endpoint offline');
  }});
- assert.equal(calls,2,'the existing collector uses one completed-runs GET and stops on first failed job GET');
+ assert.equal(calls,3,'general page, one scoped Required page and a single denied jobs read');
  assert.equal(report.status,'PARTIAL_PROVIDER_OBSERVATION');
  assert.equal(report.required_head_churn.status,'SAMPLED_REPEATED_CANDIDATE_HEADS_NOT_CAUSAL');
  assert.equal(report.required_head_churn.additional_head_versions_lower_bound,3);
  assert.equal(report.required_head_churn.automatic_merge_queue_enablement,false);
  assert.equal(report.p95_execution_ms,null,'partial jobs must remain unknown even though independent run-list churn was observed');
+});
+
+test('generic completed-run page full of unrelated workflows does not conceal Required head churn',async()=>{
+ const targeted=[
+  required(11,4765,sha(11)),required(12,4765,sha(12)),
+  required(13,4761,sha(13)),required(14,4761,sha(14)),
+  required(15,4761,sha(15))
+ ];
+ const general=Array.from({length:40},(_,i)=>({
+   id:300+i,run_attempt:1,head_sha:sha(900+i),status:'completed',
+   name:'Production Source Snapshot',created_at:at(1000+i*1000),event:'push'
+ }));
+ const paths=[];
+ const x=await collectObservedCiThroughput({repo:'owner/repo',now:NOW,read:path=>{
+   paths.push(path);
+   if(path.includes('workflows/required-test.yml/runs?'))return {total_count:500,workflow_runs:targeted};
+   if(path.includes('actions/runs?status=completed'))return {total_count:2500,workflow_runs:general};
+   throw Error('no job provider read in fixture');
+ }});
+ assert.equal(x.required_head_churn.status,'SAMPLED_REPEATED_CANDIDATE_HEADS_NOT_CAUSAL');
+ assert.equal(x.required_head_churn.pr_count_with_repeated_heads,2);
+ assert.equal(x.required_head_churn.additional_head_versions_lower_bound,3);
+ assert.equal(x.required_head_churn.provider_history_truncated,true);
+ assert.equal(x.required_head_churn.provider_query_scope,'required-test.yml/completed-runs-first-40');
+ assert.equal(paths.filter(p=>p.includes('workflows/required-test.yml/runs?')).length,1);
+ assert.equal(x.automation_allowed,false);
+ assert.equal(x.p95_execution_ms,null);
+});
+
+test('missing targeted Required history holds churn without contaminating independently valid CI job samples',async()=>{
+ let generalReads=0,scopedReads=0,jobReads=0;
+ const general=Array.from({length:5},(_,i)=>({
+   id:200+i,run_attempt:1,head_sha:sha(200+i),status:'completed',
+   name:'Required test',event:'pull_request',created_at:at((i+1)*1000),
+   workflow_id:8
+ }));
+ const x=await collectObservedCiThroughput({repo:'owner/repo',now:NOW,read:path=>{
+   if(path.includes('workflows/required-test.yml/runs?')){scopedReads++;throw Error('simulated 503');}
+   if(path.includes('actions/runs?status=completed')){generalReads++;return {total_count:5,workflow_runs:general};}
+   jobReads++;
+   const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
+   return {total_count:4,jobs:Array.from({length:4},(_,i)=>({
+     id:id*10+i,status:'completed',conclusion:'success',
+     created_at:at(1000),started_at:at(500),completed_at:at(200)
+   }))};
+ }});
+ assert.equal(generalReads,1);
+ assert.equal(scopedReads,1);
+ assert.equal(jobReads,5);
+ assert.equal(x.status,'SAMPLED_METRICS_NOT_SLO');
+ assert.equal(x.required_head_churn.status,'HOLD_PROVIDER_EVIDENCE_UNVERIFIED');
+ assert.equal(x.required_head_churn.provider_read_error,'REQUIRED_WORKFLOW_HISTORY_READ_UNAVAILABLE');
+ assert.equal(x.required_head_churn.additional_head_versions_lower_bound,0);
+ assert.equal(x.p95_execution_ms,300);
+ assert.equal(x.automation_allowed,false);
 });
 
 test('main required gates already implement merge_group, all unchanged by telemetry-only PR',()=>{
