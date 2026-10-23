@@ -31,7 +31,7 @@ try{
    await page.locator('#form').evaluate(form=>form.requestSubmit());
    await page.waitForFunction(()=>(document.querySelector('#status')?.textContent.trim().length||0)>0);
    assert.equal(await page.locator('#status').isVisible(),true);
-   assert.equal(await page.locator('#submit').isDisabled(),false);
+   assert.equal(await page.locator('#submit').isDisabled(),true,'server billing_not_configured must leave checkout disabled');
    await page.goto(`${base}${path}?success=1&session_id=cs_fixture`,{waitUntil:'domcontentloaded',timeout:45000});
    await page.waitForFunction(()=>document.querySelector('#checkout')?.hidden===true);
    assert.equal(await page.locator('#checkout').isVisible(),false,'pending payment must hide the purchase grid');
