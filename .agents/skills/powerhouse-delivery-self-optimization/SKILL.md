@@ -819,3 +819,14 @@ CI Calibration remains read-only and has no repository mutation authority. The A
 - Downward/defensive tuning remains metric-derived and bounded to the existing tuning allowlist.
 - Calibration observations remain non-persistent signals.
 - Every persistent tuning change still requires the existing protected optimizer PR and all Required/security/exact-SHA/production gates.
+
+
+## Inherited BRAIN historical SQL oracle source contract — 2026-10-22
+
+Fingerprint: `brain|historical-sql-oracle-source-contract|20261022-v1`.
+
+- Reproduce exact failing names against protected `main` and distinguish missing historical SQL test sources from substantive assertions.
+- Historical source-oracle tests read only independently verified, nonempty `supabase/migration-history/repository-only/` SQL. Preserve all original positive/negative assertions; never re-create an archived file under executable `supabase/migrations/`.
+- Require source-path regression and the original SQL-oracle suites in canonical historical-replay learning evaluation; a source-existence-only check is insufficient.
+- Do not introduce a new skill directory for a test-only repair if that would invalidate portal-explanation inventory provenance; project the rule into this existing delivery optimization skill, maintaining current System Map inventory.
+- Before protected merge, demand latest exact-head Required, Powerhouse CodeQL, full BRAIN zero failure and independent #3742 database parity and #4215 real customer readback. No bypass or production-green claims.

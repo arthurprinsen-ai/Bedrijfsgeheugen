@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-22",
+  "type": "test_source_recovery_candidate",
+  "obligation_id": "ci-brain-inherited-sql-archive-oracle-batch-20261022",
+  "base_sha": "54ed4ffcad4e27a1c0c8ea189a39818246b537df",
+  "baseline": {
+    "run_id": 39671036043,
+    "tests": 3511,
+    "passed": 3190,
+    "failed": 321
+  },
+  "scope": [
+    {
+      "test": "tests/brain-autonomous-improvement-currentstate-record-type.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260916182000_autonomous_improvement_currentstate_record_type_fix_v1.sql"
+    },
+    {
+      "test": "tests/brain-growth-swarm-bounded-refresh-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260929165000_growth_swarm_bounded_refresh_v1.sql"
+    },
+    {
+      "test": "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20261005122000_powerhouse_human_commercial_message_os_v1.sql"
+    },
+    {
+      "test": "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql"
+    },
+    {
+      "test": "tests/brain-instagram-canonical-mira-identity-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260929173500_instagram_canonical_mira_identity_guard_v1.sql"
+    },
+    {
+      "test": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260921152000_instagram_meta_oauth_onboarding_v1.sql"
+    },
+    {
+      "test": "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260922082500_instagram_mira_reel_recommendation_normalization_v1.sql"
+    },
+    {
+      "test": "tests/supabase-tenant-identity-review-semantics-v2.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260918105000_tenant_identity_review_semantics_v2.sql"
+    },
+    {
+      "test": "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
+      "canonical_historical_source": "supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql"
+    }
+  ],
+  "root_cause": "Historical SQL oracle tests continue reading retired executable migration paths after archival",
+  "change": "Only one exact SQL path literal updated per original test; all assertions preserved; add fail-closed archive source regression",
+  "production_changed": false,
+  "security_controls_weakened": false,
+  "verified_failure_reduction": false,
+  "acceptance": "Full BRAIN zero failures plus Required CI plus CodeQL on exact candidate head; separate #3742 schema parity and #4215 customer A/B readback",
+  "fingerprint": "brain|historical-sql-oracle-source-contract|20261022-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sql-archive-oracle-source-guard-v1.test.mjs",
+      "tests/brain-autonomous-improvement-currentstate-record-type.test.mjs",
+      "tests/brain-growth-swarm-bounded-refresh-v1.test.mjs",
+      "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs",
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs",
+      "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs",
+      "tests/brain-inherited-sql-archive-supabase-replay-v1.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Fail read-only historical SQL oracle tests when the immutable archived source is absent, empty or mapped back into executable migrations.",
+    "Never create dummy SQL migrations or weaken the existing SQL, security and tenant assertions to turn BRAIN green.",
+    "Require exact-head full Unified BRAIN, Required CI and CodeQL as well as independent #3742 migration-history parity and #4215 customer readback."
+  ],
+  "evidence": {
+    "origin_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39671036043",
+    "origin_failed": 321,
+    "previous_candidate_historical_replay": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39751123376",
+    "previous_candidate_historical_replay_passed_test_files": 8,
+    "verified_sql_archives": 9,
+    "previous_candidate_head": "e6bcfe8b535e72d678199cbc4870356a276d91df",
+    "production_readback": "PENDING",
+    "current_full_brain": "PENDING",
+    "superseded_pr": 4613,
+    "original_supabase_contracts_executed_by_brain_replay": [
+      "tests/supabase-tenant-identity-review-semantics-v2.test.mjs",
+      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
+    ],
+    "canonical_skill_projection": ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  }
+}
