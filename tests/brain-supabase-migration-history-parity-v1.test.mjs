@@ -58,20 +58,26 @@ test('historical autonomous trigger repair is replay-idempotent but still fail-c
 });
 
 
-test('preview applicability is fail-closed but skips exact immutable production mirrors', async () => {
-  const workflow = await readFile('.github/workflows/supabase-preview-applicability.yml', 'utf8');
-  assert.match(workflow, /grep -v -x -F 'supabase\/migration-history\.lock\.json'/);
-  assert.match(workflow, /HISTORICAL_PRODUCTION_MIRROR_BLOBS/);
-  assert.match(workflow, /git', 'hash-object', path/);
-  assert.match(workflow, /actual != expected/);
-  assert.match(workflow, /immutable reviewed production migration mirrors/);
-});
 
+test('source-side preview security only exempts immutable historical mirrors with exact reviewed blob hashes', async () => {
+  const [source,security]=await Promise.all([
+    readFile('.github/workflows/supabase-pr-preview.yml','utf8'),
+    readFile('scripts/brain/check_powerhouse_supabase_security.py','utf8'),
+  ]);
+  assert.match(source,/check_powerhouse_supabase_security\.py --self-test/);
+  assert.match(source,/check_powerhouse_supabase_security\.py "\$\{\{ inputs\.base_sha \}\}" "\$\{\{ inputs\.head_sha \}\}"/);
+  assert.match(security,/HISTORICAL_PRODUCTION_MIRROR_BLOBS\s*=\s*\{/);
+  assert.match(security,/def historical_mirror_is_exact\(path: Path\)/);
+  assert.match(security,/not expected or not path\.exists\(\)/);
+  assert.match(security,/subprocess\.run\(\["git", "hash-object", str\(path\)\]/);
+  assert.match(security,/return actual == expected/);
+});
 
 test('current production ledger lock is complete through LinkedIn OAuth terminal migrations', async () => {
   const lock = JSON.parse(await readFile('supabase/migration-history.lock.json', 'utf8'));
-  assert.equal(lock.production_ledger_count, 591);
-  assert.equal(lock.applied.length, 591);
-  assert.equal(lock.applied.at(-1)?.version, '20261006103856');
-  assert.equal(lock.applied.at(-1)?.name, 'linkedin_company_live_proof_state_canonical_v3');
+  assert.ok(Array.isArray(lock.applied) && lock.applied.length >= 591, 'historic production migration coverage must not shrink');
+  const versions = lock.applied.map(entry => entry.version);
+  assert.equal(new Set(versions).size, versions.length, 'no repeated migration version in canonical production ledger');
+  assert.deepEqual(versions, [...versions].sort(), 'production ledger must retain chronological order');
+  assert.ok(lock.applied.some(entry => entry.version === '20261006103856' && entry.name === 'linkedin_company_live_proof_state_canonical_v3'), 'LinkedIn OAuth terminal migration must remain represented');
 });
