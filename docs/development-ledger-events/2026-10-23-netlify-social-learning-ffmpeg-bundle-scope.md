@@ -11,3 +11,7 @@
 - Required validation: Required CI + CodeQL, Netlify preview bundle sizes plus Mira frame executable, protected merge, exact production deploy, real scheduler invocation, canonical qualified learning evaluation and source-backed next decision.
 - Metrics: evaluator artifact bytes, provider 499 rate, invocation rate, time-to-first-real-evaluation, cohort coverage, zero duplicate schedules and zero fake promotions.
 - State: CANDIDATE_ONLY; production and user-facing evidence still open.
+
+## 23 October deploy admissibility correction
+
+The first Netlify deploy preview for PR #4805 was cancelled as 'no content change', even though the FFmpeg configuration in `netlify.toml` changed. This is a **separate proven fault in the existing deploy applicability classifier**. The same PR explicitly classifies `netlify.toml` as Netlify-runtime-affecting, so its existing `tools/ci/netlify-ignore-build.mjs` no longer skips a config-only function packaging change. The new regression checks this rule. Do not claim a successful deploy until a fresh real preview is READY with the measured function artifact sizes and the original Mira video binary intact.
