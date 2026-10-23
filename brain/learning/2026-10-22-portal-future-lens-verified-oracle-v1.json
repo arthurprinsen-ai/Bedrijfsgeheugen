@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "ci|portal-future-lens|unverified-kpi-scenario-oracle|20261022-v1",
+  "obligation_id": "ci-brain-portal-future-lens-proven-forecast-oracle-20261022-v1",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Inherited tests/brain-portal-v2-nextgen-intelligence.test.mjs requires stress/base/opportunity arithmetic from visible KPI value/delta even though the canonical portal-v2/nextgen-intelligence.js intentionally requires an authenticated tenant-bound VERIFIED forecast with independent review, backtest, source receipts, freshness and calibrated confidence.",
+  "impact": "Three inherited full Unified BRAIN test cases fail. Reverting to fabricated scenario interpolation would also misrepresent financial business intelligence and break protected #4215 evidence semantics.",
+  "fix": "Replace stale synthetic projection expectations with positive verified-base receipt acceptance and fail-closed rejection of unverified, cross-tenant, stale, invalid-confidence and non-base unverified scenario evidence. Production runtime remains unchanged.",
+  "prevention_rule": "Never calculate or show future outcomes from visible KPI card text. BRAIN source oracles must verify exact authenticated-tenant forecast receipts, calibrated confidence, source lineage, passed backtest, independent review and freshness; stress/opportunity remain unavailable until separately proven.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-nextgen-intelligence.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-nextgen-intelligence.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-nextgen-intelligence.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "baseline_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39785541338",
+    "baseline_failed_tests": 357,
+    "baseline_total_tests": 3521,
+    "identified_failed_cases": 3,
+    "target_test": "tests/brain-portal-v2-nextgen-intelligence.test.mjs",
+    "actual_current_runtime": "portal-v2/nextgen-intelligence.js",
+    "after": "PENDING_EXACT_HEAD_CI",
+    "full_brain": "NOT_ZERO",
+    "production": "UNCHANGED",
+    "auth_tenants": "NOT_PROVEN"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-company-intelligence-os/SKILL.md"
+  ],
+  "prevention": [
+    "UNVERIFIED_KPI_FORECAST_DENY",
+    "TENANT_BOUND_VERIFIED_RECEIPT_ONLY",
+    "NO_SYNTHETIC_STRESS_OPPORTUNITY_SCENARIOS",
+    "MODEL_BACKTEST_AND_INDEPENDENT_REVIEW_REQUIRED"
+  ]
+}
