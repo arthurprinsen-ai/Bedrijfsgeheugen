@@ -78,7 +78,7 @@ test('quality report is fail-closed for missing evidence and does not fabricate 
  assert.equal(report.rows.find(x=>x.id==='delivery').status,'ONBEKEND');
  assert.equal(report.rows.find(x=>x.id==='outcomes').status,'NIET BEWEZEN');
  const html=qualityReportMarkup({events:[],runtime:{},now});
- assert.match(html,/Kwaliteitsrapport/);
+ assert.match(html,/KWALITEITSRAPPORT/);
  assert.match(html,/NIET BEWEZEN/);
  assert.doesNotMatch(html,/100% geslaagd|€100.000 gerealiseerd|alles groen/);
 });
