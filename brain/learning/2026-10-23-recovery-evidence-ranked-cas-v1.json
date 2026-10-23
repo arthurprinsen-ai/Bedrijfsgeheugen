@@ -1,0 +1,18 @@
+{
+  "fingerprint": "recovery-priority:bounded-provider-run-advisory:20261023-v1",
+  "rootCause": "Recovery Supervisor used provider listing order despite existing exact-head Required telemetry and single-writer lease states.",
+  "preventionRule": "Sort only trusted current-head lease and bounded Required-run evidence; on any observation error preserve original order; no gate skipping.",
+  "regressionTest": "tests/delivery-recovery-pr-prioritizer.test.mjs",
+  "evidence": [
+    "existing-supervisor-single-writer-CAS",
+    "bounded-GitHub-Required-workflow-run-sample",
+    "deterministic-regression-fixtures"
+  ],
+  "learning_writeback": "canonical_brain_learning_append_only",
+  "shared_context_refresh": "existing_skill_projection_only",
+  "observedProductionGain": false,
+  "productionProofRequired": true,
+  "redundantTestExecutionIsProven": false,
+  "noSecondScheduler": true,
+  "protectedRequiredAndCodeQLPreserved": true
+}
