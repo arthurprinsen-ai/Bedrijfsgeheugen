@@ -20,7 +20,15 @@ export function planMobileClsReplay(routes, policy) {
   const focus = policy.focus_routes;
   if (!Array.isArray(focus) || focus.length < 3 || new Set(focus.map(canonical)).size !== focus.length)
     throw new Error('MOBILE_CLS_REPLAY_FOCUS_INVALID');
-  const missing = focus.filter(route => !known.has(canonical(route)));
+  // The primary NL sitemap is the source inventory; EN mirrors are generated
+  // routes and do not have to be listed separately in sitemap.xml.
+  // checkOne still requires a successful real HTTP navigation for every EN URL.
+  const inSourceInventory = route => {
+    const candidate=canonical(route);
+    return known.has(candidate)
+      || (candidate.startsWith('/en/') && known.has(candidate.slice(3)));
+  };
+  const missing = focus.filter(route => !inSourceInventory(route));
   if (missing.length) throw new Error('MOBILE_CLS_REPLAY_ROUTES_MISSING:' + missing.join(','));
   const expected = focus.length * rounds * 2;
   if (expected > 24 || policy.max_total_checks !== 24)
