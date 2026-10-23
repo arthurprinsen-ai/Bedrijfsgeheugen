@@ -314,6 +314,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node .github/scripts/github-actions-ghost-reconcile.mjs
+      - name: Observe bounded CI throughput on existing hourly Janitor
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/ci-throughput-telemetry.mjs
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -323,4 +329,5 @@ jobs:
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
             .artifacts/github-actions-ghost-reconcile.json
+            .artifacts/powerhouse-ci-throughput.json
           if-no-files-found: error

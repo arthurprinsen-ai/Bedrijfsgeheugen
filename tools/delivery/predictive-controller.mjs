@@ -478,3 +478,60 @@ export function planWorkflowObservation({
     snapshotKey
   });
 }
+
+
+// Read-only, bounded GitHub Actions job telemetry. No runner/job state is mutated.
+// Job queue delay is distinct from execution duration; incomplete provider evidence
+// must never become a zero-duration sample or a production SLO claim.
+export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={}){
+  const rows=Array.isArray(observations)?observations:[];
+  const seen=new Set(),valid=[],rejected={invalid_identity:0,partial_job:0,invalid_time:0,duplicate:0};
+  for(const observation of rows){
+    const run=observation?.run||{},job=observation?.job||{};
+    const runId=run.id,attempt=run.run_attempt,jobId=job.id;
+    const sha=String(run.head_sha||'');
+    if(!Number.isSafeInteger(runId)||!Number.isSafeInteger(attempt)||attempt<1||
+       !Number.isSafeInteger(jobId)||!/^[0-9a-f]{40}$/i.test(sha)){
+      rejected.invalid_identity++;continue;
+    }
+    if(run.status!=='completed'||job.status!=='completed'||!job.conclusion){
+      rejected.partial_job++;continue;
+    }
+    const id=runId+':'+attempt+':'+jobId;
+    if(seen.has(id)){rejected.duplicate++;continue;}
+    seen.add(id);
+    const created=Date.parse(job.created_at||'');
+    const started=Date.parse(job.started_at||'');
+    const completed=Date.parse(job.completed_at||'');
+    const wait=started-created,duration=completed-started;
+    if(!Number.isFinite(wait)||!Number.isFinite(duration)||
+       wait<0||duration<0||wait>172800000||duration>172800000){
+      rejected.invalid_time++;continue;
+    }
+    valid.push(Object.freeze({
+      run_id:runId,run_attempt:attempt,job_id:jobId,head_sha:sha,
+      workflow_id:Number.isSafeInteger(run.workflow_id)?run.workflow_id:null,
+      conclusion:String(job.conclusion),
+      wait_to_start_ms:wait,execution_ms:duration
+    }));
+  }
+  const runs=new Set(valid.map(r=>r.run_id+':'+r.run_attempt));
+  const sufficient=valid.length>=minJobs&&runs.size>=minRuns;
+  const percentile=(key,p)=>{
+    if(!sufficient)return null;
+    const values=valid.map(r=>r[key]).sort((a,b)=>a-b);
+    return values[Math.max(0,Math.ceil(p*values.length)-1)];
+  };
+  return Object.freeze({
+    schema:'powerhouse-observed-ci-job-telemetry-v1',
+    evidence_kind:'GITHUB_PROVIDER_JOB_TIMESTAMPS',
+    status:sufficient?'SAMPLED_METRICS_NOT_SLO':'INSUFFICIENT_EVIDENCE',
+    sample_jobs:valid.length,distinct_runs:runs.size,
+    input_rows:rows.length,rejected:Object.freeze(rejected),
+    p50_wait_to_start_ms:percentile('wait_to_start_ms',0.5),
+    p95_wait_to_start_ms:percentile('wait_to_start_ms',0.95),
+    p50_execution_ms:percentile('execution_ms',0.5),
+    p95_execution_ms:percentile('execution_ms',0.95),
+    job_evidence:Object.freeze(valid)
+  });
+}
