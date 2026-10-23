@@ -61,3 +61,23 @@ test('the production router calls the strict resolver before it can verify media
  assert.match(src,/MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES/);
  assert.match(src,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
 });
+
+test('router, orchestrator and publisher share the frozen source-led authority',()=>{
+ const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
+ const orchestrator=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(router,/resolveMiraFrozenWinner/);
+ assert.match(router,/manifest\.openart_history_id/);
+ assert.match(router,/winnerContract\.asset_url/);
+ assert.match(router,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
+ assert.match(orchestrator,/resolveMiraFrozenWinner/);
+ assert.match(orchestrator,/miraResolvedCaption\(resolvedMira\)/);
+ assert.match(orchestrator,/validateResolvedMiraCaptionForDelivery/);
+ assert.match(orchestrator,/MIRA_FROZEN_SOURCE_MEDIA_PROOF_REQUIRED/);
+ assert.doesNotMatch(orchestrator,/bodyText=miraCaption\(miraBusinessProblem\)/);
+ assert.match(publisher,/validateResolvedMiraCaptionForDelivery/);
+ assert.match(publisher,/proof\.mira_source_hash/);
+ assert.match(publisher,/proof\.mira_generation_source\?\.openart_history_id/);
+ assert.match(publisher,/miraFaceProofValid/);
+ assert.doesNotMatch(publisher,/validateMiraCaptionForDelivery\(runDate,art\.body/);
+});
