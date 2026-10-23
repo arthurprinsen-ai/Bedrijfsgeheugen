@@ -54,6 +54,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     learning:'brain/learning/2026-10-23-agent-crosslane-impact-v1.json',
     productionVerified:false
   }),
+  observedCiThroughput:Object.freeze({
+    fingerprint:'delivery|predictive-lane-capacity|measured-ci-workflow-job-latency|20261023-v1',
+    owner:'existing hourly Repository Janitor / canonical issue #4661',
+    source:'tools/delivery/ci-throughput-telemetry.mjs',
+    classifier:'tools/delivery/predictive-controller.mjs#summarizeObservedCiJobs',
+    workflow:'.github/workflows/powerhouse-repository-janitor.yml',
+    artifact:'.artifacts/powerhouse-ci-throughput.json',
+    provider:'GitHub Actions read-only workflow job timestamps',
+    sampleMinimumJobs:20,sampleMinimumDistinctRuns:5,maxRunsPerSweep:12,
+    sourceEvidenceOnly:true,failClosedOnPartialProviderReadback:true,
+    automaticOptimization:false,measuredSpeedupProven:false,
+    noNewScheduler:true,noNewQueue:true,requiredChecksUnchanged:true,
+    regression:'tests/brain-observed-ci-throughput-v1.test.mjs',
+    learning:'brain/learning/2026-10-23-observed-ci-throughput-v1.json',
+    productionVerified:false
+  }),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
       id:'github-failed-gate-same-owner-recovery-v1',
