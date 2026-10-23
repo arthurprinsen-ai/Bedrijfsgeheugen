@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|supervisor|unverified-run-drift-and-cas-classification|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "obligation_id": "delivery|supervisor|actual-executed-run-proof|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Recovery Supervisor CAS was in production source, but its actual run-by-run main-drift behavior was not measured by the existing hourly Janitor. Manual run 39960974891 showed nonterminal writer leases blocking PR #4772 and #4778. Cron liveness, repeated drift, and CAS causes cannot be inferred from source or generic 422 messages.",
+  "evidence": {
+    "actual_provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "observed_event": "workflow_dispatch",
+    "observed_prs": [
+      4772,
+      4778
+    ],
+    "observed_condition": "MAIN_DRIFT_RECOVERY and no exact active terminal writer lease",
+    "speedup_proven": false
+  },
+  "fix": "Add one bounded READ-ONLY supervisor-run observer within existing hourly Repository Janitor. Read at most five completed real runs, exact supervise job and plain execution logs, classify per PR per run, distinguish scheduled/manual and require explicit typed CAS evidence. Emit read-only .artifacts/powerhouse-supervisor-runs.json.",
+  "prevention_rule": "Do not create a scheduler, queue, registry, new PR writer or unguarded branch sync. Reject missing/partial provider evidence; source echoes, duplicate runs and generic 422 are not proof of CAS rejection. Maintain Required, CodeQL, secure provider preview and independent production/customer outcome verification.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supervisor-run-evidence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supervisor-run-evidence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supervisor-run-evidence-v1.test.mjs"
+    ],
+    "invariants": [
+      "No new cron",
+      "One writer per PR preserved",
+      "Never forge green",
+      "No branch mutation from telemetry",
+      "Actual post-merge Janitor proof required"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "NOT_YET_OBSERVED"
+}
