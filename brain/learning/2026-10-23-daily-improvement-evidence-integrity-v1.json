@@ -35,10 +35,10 @@
       "tests/brain-autonomous-improvement-runtime.test.mjs"
     ],
     "shadow": [
-      "scripts/brain/continuous-improvement/run-autonomous-improvement.mjs"
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
     ],
     "canary": [
-      ".github/workflows/powerhouse-daily-self-evolution.yml"
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
     ],
     "invariants": [
       "Unknown metrics may not be replaced with flat fake values",
@@ -46,7 +46,8 @@
       "No direct production mutation",
       "No new scheduler/agent/memory owner",
       "All protected CI and independent release evidence remain mandatory"
-    ]
+    ],
+    "workflow_reference": ".github/workflows/powerhouse-daily-self-evolution.yml"
   },
   "promotion": "Existing Required+CodeQL and protected merge; independently observed daily workflow artifact after release. Evidence of faster/smarter agents still unproven.",
   "readback": {
