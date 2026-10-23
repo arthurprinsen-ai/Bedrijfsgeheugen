@@ -24,8 +24,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-ci-admission-single-flight.test.mjs",
-      "tests/delivery-powerhouse-supervisor.test.mjs"
+      "tests/brain-ci-admission-single-flight.test.mjs"
     ],
     "shadow": [
       "tests/brain-ci-admission-single-flight.test.mjs"
@@ -40,6 +39,9 @@
       "native expected-head CAS preserved",
       "bounded per-PR retries preserved",
       "no misleading schedule-success claim"
+    ],
+    "additional_regression": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
     ]
   },
   "compiler": {
