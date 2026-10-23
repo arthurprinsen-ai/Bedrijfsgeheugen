@@ -5,11 +5,12 @@
   "parent_issue": 4661,
   "detection": "Repeated Required run observations, bottlenecks and main drift must be measured from provider identity",
   "root_cause": "Provider ordering alone does not express evidence-qualified sync priority; run repetition can be misread as safely skippable",
-  "correction": "Pure advisory ranks existing PR snapshot; keeps existing required-gate lease CAS on authority; precise repeat grouping; paired job measurements; AI evidence hold",
-  "prevention_rule": "Never infer safe sync, duplicate test to skip or AI production approval from an advisory or partial sample",
+  "correction": "Reuse already merged canonical tools/delivery/recovery-pr-prioritizer.mjs and existing Recovery Supervisor. Only add paired job bottleneck, SHA/workflow repeated-run observations and independent AI preflight diagnostics to canonical CI Intelligence. Remove competing PR rank/writer from this candidate.",
+  "prevention_rule": "PR prioritization has exactly one canonical owner: existing Recovery Supervisor and recovery-pr-prioritizer.mjs. CI diagnostic repetition must never bypass Required/CodeQL; independent AI baselines and provider evidence are necessary but never sufficient to promote production.",
   "regression_tests": [
+    "tests/brain-ci-adaptive-pr-ranking.test.mjs",
     "tests/delivery-ci-adaptive-pr-planner.test.mjs",
-    "tests/delivery-powerhouse-supervisor.test.mjs"
+    "tests/delivery-recovery-pr-prioritizer.test.mjs"
   ],
   "independent_proof": "Pending exact-head protected Required, CodeQL, provider run and post-merge observation",
   "release_status": "CANDIDATE_UNVERIFIED",
@@ -39,7 +40,8 @@
   },
   "tests": [
     "tests/brain-ci-adaptive-pr-ranking.test.mjs",
-    "tests/delivery-ci-adaptive-pr-planner.test.mjs"
+    "tests/delivery-ci-adaptive-pr-planner.test.mjs",
+    "tests/delivery-recovery-pr-prioritizer.test.mjs"
   ],
   "evidence": {
     "first_candidate_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963314702",
@@ -47,8 +49,11 @@
     "second_candidate_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963590980",
     "independent_test_observations": "GitHub Actions canonicalization historical replay, shadow and canary wrappers all passed on second candidate; later semantic-learning closure failed because structured evidence was absent.",
     "second_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning",
-    "production_readback": "PENDING - protected merge and real provider post-merge observation required",
+    "production_readback": "PENDING",
     "performance_change": "NOT_VERIFIED",
-    "safety_assertion": "Evidence is diagnostic; no runner cost or successful production release claimed."
+    "safety_assertion": "Evidence is diagnostic; no runner cost or successful production release claimed.",
+    "canonical_priority_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/f7b1d0da6bb60302a2360fa5280ec8ec1e18cc28/tools/delivery/recovery-pr-prioritizer.mjs",
+    "concurrent_owner_integration": "Main already merged one supervisor ranker; this candidate deliberately drops its duplicate PR ordering code and workflow modifications.",
+    "real_speedup_proven": false
   }
 }

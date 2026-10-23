@@ -1,12 +1,10 @@
-import {readFile} from 'node:fs/promises';
-import {pathToFileURL} from 'node:url';
-// Diagnostic extension of the canonical Janitor/CI telemetry and Recovery Supervisor.
-// Never grants writer authority, weakens Required/CodeQL or promotes production.
+// Advisory CI evidence for existing Powerhouse collector; source of PR
+// ordering is tools/delivery/recovery-pr-prioritizer.mjs on main.
+// No second supervisor, no production mutation and no Required/CodeQL waiver.
 const SHA=/^[0-9a-f]{40}$/;
 const active=new Set(['queued','pending','waiting','requested','in_progress']);
 const stamp=v=>{const n=Date.parse(v??'');return Number.isFinite(n)?n:null};
 const valid=n=>typeof n==='number'&&Number.isFinite(n)&&n>=0;
-const field=(body,name)=>{const x=[...String(body??'').matchAll(new RegExp('^'+name+': ([^\\r\\n]+)$','gm'))];return x.length===1?x[0][1].trim():null};
 export function inspectRepeatExecutions(runs=[]){
  const ids=new Set(),groups=new Map();
  for(const r of runs){
@@ -35,40 +33,6 @@ export function locateMeasuredDelay(jobs=[],{minimumPairedJobs=10}={}){
   bottleneck:queue>execution?'RUNNER_QUEUE_WAIT':execution>queue?'JOB_EXECUTION':'TIED',
   queue_seconds:queue,execution_seconds:execution,attribution:'observational_only_no_causal_claim',missing_rows_not_zero:true};
 }
-function activeHead(runs,number,head){
- return runs.some(r=>{
-  if(!active.has(r?.status))return false;
-  if(r.event==='pull_request'&&r.head_sha===head&&(r.name==='Powerhouse CodeQL'||/^Required test(?:$| PR #\d+\s)/.test(r.name??'')))return true;
-  const match=/^Required test PR #(\d+) ([0-9a-f]{40})$/.exec(String(r?.display_title??''));
-  return r.event==='workflow_dispatch'&&match&&Number(match[1])===number&&match[2]===head;
- });
-}
-export function rankRecoveryCandidates(prs=[],runs=[],{now=new Date().toISOString()}={}){
- if(!Array.isArray(prs)||!Array.isArray(runs))throw new TypeError('PRs and runs must be arrays');
- const at=stamp(now);if(at===null)throw new TypeError('invalid time');
- const counts=new Map();for(const p of prs){const o=field(p?.body,'Obligation-ID');if(o)counts.set(o,(counts.get(o)??0)+1)}
- const ev=prs.map((p,i)=>{
-  const number=p?.number,head=p?.head?.sha,obligation=field(p?.body,'Obligation-ID'),blockers=[];
-  if(p?.state!=='open'||!Number.isSafeInteger(number)||number<=0)blockers.push('NOT_OPEN_PR');
-  if(p?.base?.ref!=='main'||!p?.base?.repo?.full_name||p?.head?.repo?.full_name!==p?.base?.repo?.full_name)blockers.push('NOT_SAME_REPO_MAIN');
-  if(!SHA.test(head??'')||!SHA.test(p?.base?.sha??''))blockers.push('UNVERIFIED_SHA');
-  if(field(p?.body,'Writer-Lease-State')!=='TERMINAL_DELIVERY'||!field(p?.body,'Writer-Lease-Owner')||
-    !field(p?.body,'Writer-Lease-Obligation')||field(p?.body,'Writer-Lease-Head')!==head)blockers.push('NO_EXACT_TERMINAL_LEASE');
-  if(!obligation||counts.get(obligation)!==1)blockers.push('OBLIGATION_DUPLICATE_OR_MISSING');
-  const d=field(p?.body,'Writer-Lease-Drift-Refreshes');
-  if(d!==null&&(!/^\d+$/.test(d)||Number(d)>=2))blockers.push('DRIFT_BUDGET_EXHAUSTED');
-  const changed=stamp(p?.updated_at);if(changed===null||changed>at)blockers.push('INVALID_UPDATED_AT');
-  const busy=activeHead(runs,number,head);
-  const score=blockers.length?null:(busy?0:1000000)+Math.min(604800,Math.floor(Math.max(0,at-(changed??at))/1000));
-  return {pr:p,index:i,pr_number:number,score,blockers,active_exact_head_ci:busy,
-    status:blockers.length?'EXISTING_SUPERVISOR_EVALUATION_ONLY':busy?'WAIT_FOR_ACTIVE_EXACT_HEAD_CI':'PRIORITY_FOR_INDEPENDENT_PREFLIGHT'};
- });
- ev.sort((a,b)=>(b.score??-1)-(a.score??-1)||a.index-b.index);
- return {ranked_prs:ev.map(x=>x.pr),advisory:ev.map(({pr,...x})=>x),verified_safe_to_sync:false,
-  next_authority:'EXISTING_RECOVERY_SUPERVISOR_LIVE_COMPARE_LEASE_CAS_REQUIRED_CODEQL'};
-}
-// Independent baseline is necessary, never sufficient: original seven-stage agent
-// admission, protected release and production readback remain authoritative.
 export function assessTechniqueEvidence({baseline,candidate,evaluation,rollout}={}){
  const blockers=[];
  if(!baseline||!candidate||!evaluation||!rollout)blockers.push('INCOMPLETE_EVIDENCE');
@@ -87,13 +51,3 @@ export function assessTechniqueEvidence({baseline,candidate,evaluation,rollout}=
   blockers:unique,production_behavior_change_allowed:false,independently_verified_production_success:false,
   authority:'EXISTING_SEVEN_STAGE_AI_POLICY_AND_PROTECTED_DELIVERY'};
 }
-async function main(){
- const [mode,pfile,rfile]=process.argv.slice(2);
- if(mode!=='--rank'||!pfile||!rfile)throw new Error('Usage: --rank <prs.json> <runs.json>');
- const prs=JSON.parse(await readFile(pfile,'utf8')),payload=JSON.parse(await readFile(rfile,'utf8'));
- if(!Array.isArray(payload.workflow_runs))throw new TypeError('missing workflow_runs');
- const result=rankRecoveryCandidates(prs,payload.workflow_runs);
- process.stderr.write('CI_ADAPTIVE_PRIORITY '+JSON.stringify({prioritized:result.advisory.filter(x=>x.status==='PRIORITY_FOR_INDEPENDENT_PREFLIGHT').map(x=>x.pr_number),duplicates:inspectRepeatExecutions(payload.workflow_runs).total_repeat_executions_lower_bound,authority:result.next_authority})+'\n');
- process.stdout.write(JSON.stringify(result.ranked_prs)+'\n');
-}
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)await main();

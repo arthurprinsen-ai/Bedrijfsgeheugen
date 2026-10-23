@@ -1,24 +1,20 @@
-# CI adaptive evidence planning (candidate, not live proof)
+# CI telemetry evidence extensions (single canonical Recovery Supervisor)
+The existing, main-merged `tools/delivery/recovery-pr-prioritizer.mjs` is the **sole**
+PR order authority. This PR does not touch the Recovery Supervisor workflow,
+create a second selector, scheduler, writer, action dispatcher or data store.
 
-This protected candidate extends the **existing** five-minute Recovery Supervisor and daily
-CI Intelligence; no new scheduler, registry, agent, writer or merge queue.
+The existing daily Powerhouse CI Intelligence now also reports:
+- exact workflow ID + exact candidate SHA + unique native run ID repeated-execution
+  observations, with active-flight classification. Repeat is **not** a skippable
+  Required or CodeQL check, runner saving, or seven-day statistical claim;
+- queue-versus-execution bottleneck from >=10 paired complete job observations,
+  with explicit insufficient-evidence and observational attribution.
 
-- Rank same-repository main PRs only when one obligation and exact active terminal writer
-  lease are present and the bounded drift retry budget is not exhausted. Defer active exact-head CI.
-  Sorting is **not** a green gate: the existing per-PR live compare, ancestry, changed-file
-  overlap, single-owner lease, expected-head CAS, Required, CodeQL and provider readback
-  remain the only authorities.
-- Group potential repeated Actions runs only by native workflow ID, immutable PR-event HEAD,
-  unique run ID. Incomplete provider evidence stays unknown. Active exact-head single-flight
-  already exists in Supervisor; no successful or compulsory gate may be skipped.
-- Quantify the largest **observed** runner delay using >=10 jobs with both queue and execution
-  durations. Paired coverage and observational attribution prevent false bottleneck claims.
-- New AI technique evidence: independent matched 30+ sample baseline vs candidate,
-  regression/security evidence, shadow, bounded canary, rollback rehearsal and provider readback.
-  Passing this diagnostic is only eligibility for the **existing** seven-stage quality and
-  protected production gates. No automated release authority is introduced.
+The pure AI evidence diagnostic requires >=30 matched baseline/candidate samples,
+an independent reviewer identifier, regression/security checks, shadow and canary,
+rollback test and provider readback, but **cannot** grant production access.
+Existing protected seven-stage policy and independent provider gates decide.
+No automatic adoption or model behavior change is enabled by this PR.
 
-Measure before/after: p95 Required/queue latency, repeated-run count, fail rate, exact-head
-coverage and production outcome. No speed improvement or live status is claimed yet.
-
-Regression: `node --test tests/delivery-ci-adaptive-pr-planner.test.mjs tests/delivery-powerhouse-supervisor.test.mjs`.
+Current impact is candidate only: compare actual bounded CI samples and job
+coverage before/after protected merge, then read back the collector on main.
