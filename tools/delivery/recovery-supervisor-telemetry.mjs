@@ -56,7 +56,9 @@ export function parseSupervisorAnnotations(content,runId){
   if(typeof content!=='string'||content.length>2_000_000)throw Error('LOG_UNBOUNDED');
   const events=[],seen=new Set();
   for(const line of content.split('\n')){
-    const actual=line.match(/^\S+\s+##\[(?:warning|notice|error)\](.+)$/);
+    // GitHub log lines must carry real ISO runtime timestamps; arbitrary prefixes
+    // or shell-echoed commands cannot act as provider evidence.
+    const actual=line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+##\[(?:warning|notice|error)\](.+)$/);
     if(!actual)continue;
     const note=actual[1];
     let pr=null,code=null;
@@ -64,10 +66,12 @@ export function parseSupervisorAnnotations(content,runId){
     if(named&&KNOWN.has(named[1])){
       [code,pr]=[named[1],Number(named[2])];
     }else{
+      const missingLease=note.match(/^PR#([1-9]\d{0,9}) has no exact active terminal writer lease; automatic refresh forbidden\.$/);
       const rejected=note.match(/^PR#([1-9]\d{0,9}) could not be refreshed automatically;/);
       const successful=note.match(/^PR#([1-9]\d{0,9}) refreshed on same leased lineage /);
       const needed=note.match(/^PR#([1-9]\d{0,9}) requires same-lineage main refresh;/);
-      if(rejected)[code,pr]=['NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED',Number(rejected[1])];
+      if(missingLease)[code,pr]=['WRITER_TERMINAL_LEASE_MISSING',Number(missingLease[1])];
+      else if(rejected)[code,pr]=['NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED',Number(rejected[1])];
       else if(successful)[code,pr]=['MAIN_DRIFT_SYNC_CONFIRMED',Number(successful[1])];
       else if(needed)[code,pr]=['MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED',Number(needed[1])];
     }
@@ -78,6 +82,7 @@ export function parseSupervisorAnnotations(content,runId){
     events.push({run_id:runId,pr_number:pr,code,
       category:KNOWN.get(code)||
         (code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED'?'CAS_OR_PROVIDER_REJECTION_UNVERIFIED':
+        code==='WRITER_TERMINAL_LEASE_MISSING'?'MISSING_EXACT_TERMINAL_WRITER_LEASE':
         code==='MAIN_DRIFT_SYNC_CONFIRMED'?'CAS_UPDATE_CONFIRMED':
         'DRIFT_DETECTED_NOT_PROVEN_RESOLVED')});
   }
@@ -92,7 +97,7 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     if(!prMap.has(e.pr_number))prMap.set(e.pr_number,{
       pr_number:e.pr_number,observed_run_ids:new Set(),
       drift_run_ids:new Set(),successful_run_ids:new Set(),rejection_run_ids:new Set(),
-      exhausted_run_ids:new Set(),classifications:new Set()
+      exhausted_run_ids:new Set(),missing_lease_run_ids:new Set(),classifications:new Set()
     });
     const p=prMap.get(e.pr_number);
     p.observed_run_ids.add(e.run_id);
@@ -103,6 +108,7 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
       p.successful_run_ids.add(e.run_id);
     if(e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')p.rejection_run_ids.add(e.run_id);
     if(e.code==='MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED')p.exhausted_run_ids.add(e.run_id);
+    if(e.code==='WRITER_TERMINAL_LEASE_MISSING')p.missing_lease_run_ids.add(e.run_id);
     p.classifications.add(e.category);
     classes[e.category]=(classes[e.category]||0)+1;
   }
@@ -113,6 +119,8 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     accepted_or_reconciled_runs:p.successful_run_ids.size,
     native_update_rejection_runs:p.rejection_run_ids.size,
     retry_budget_exhaustion_runs:p.exhausted_run_ids.size,
+    missing_terminal_lease_runs:p.missing_lease_run_ids.size,
+    repeated_missing_terminal_lease:p.missing_lease_run_ids.size>=2,
     categories:[...p.classifications].sort()
   })).sort((a,b)=>b.drift_observed_in_distinct_runs-a.drift_observed_in_distinct_runs||
     a.pr_number-b.pr_number);
