@@ -13,10 +13,11 @@
     "GitHub API actions/runs?event=schedule&per_page=100 returned 15 scheduled runs dated 2026-10-23 and none named Powerhouse Daily Self Evolution",
     "Existing .github/workflows/powerhouse-daily-self-evolution.yml contains cron 47 4 * * * and workflow_dispatch",
     "Existing hourly Repository Janitor already has actions:write and concurrency group, no new token or scheduler is needed",
-    "GitHub Docs troubleshooting workflows warns scheduled events can be delayed or dropped: https://docs.github.com/en/actions/how-tos/troubleshoot-workflows"
+    "GitHub Docs troubleshooting workflows warns scheduled events can be delayed or dropped: https://docs.github.com/en/actions/how-tos/troubleshoot-workflows",
+    "Actual GitHub scheduled run #39932748334 arrived 2026-10-23T09:33:37Z, 4h46m after 04:47 UTC; earlier workflow_dispatch #39932498219 at 09:31:34Z already completed: duplicate trigger race verified."
   ],
-  "fix": "Add one bounded liveness-check and missed-run dispatch to the EXISTING Janitor. At/after 06:47 UTC, verify today's active workflow runs via GitHub provider API and recheck before one requested workflow_dispatch to main. Preserve independent improve and model-freshness jobs, and record dispatch acceptance separately from terminal execution.",
-  "prevention_rule": "No synthetic daily heartbeat or fake status. Failure, queued or in-progress run already present prevents duplicate dispatch. Provider read/truncation/invalid data or branch/ref uncertainty blocks recovery. Restore through same GitHub workflow only, never a new scheduler/agent/writer/queue; classify accepted dispatch as NOT execution proof.",
+  "fix": "Add one bounded liveness-check and missed-run dispatch to the EXISTING Janitor. At/after 06:47 UTC, verify today's active workflow runs via GitHub provider API and recheck before one requested workflow_dispatch to main. Preserve independent improve and model-freshness jobs, and record dispatch acceptance separately from terminal execution. Subsequent independent provider readback proved that even a two-hour wait can still precede GitHub's late original schedule. Add a shared day/run admission job inside the SAME original Daily Self Evolution workflow. Reject later duplicate daily runs before both improve and model-freshness, and serialize workflow runs without cancel-in-progress; preserve real failures and original provider jobs.",
+  "prevention_rule": "No synthetic daily heartbeat or fake status. Failure, queued or in-progress run already present prevents duplicate dispatch. Provider read/truncation/invalid data or branch/ref uncertainty blocks recovery. Restore through same GitHub workflow only, never a new scheduler/agent/writer/queue; classify accepted dispatch as NOT execution proof. Double-read recovery alone cannot predict a future late schedule; use an independent run-time provider admission before any daily job. A second run stays visibly red, never green by skipping mandatory validation.",
   "tests": [
     "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
   ],
@@ -33,13 +34,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs",
+      "tests/brain-daily-learning-run-admission-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs",
+      "tests/brain-daily-learning-run-admission-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs"
+      "tests/brain-daily-learning-liveness-recovery-v1.test.mjs",
+      "tests/brain-daily-learning-run-admission-v1.test.mjs"
     ],
     "invariants": [
       "GitHub provider run absence must be independently observed before dispatch",
@@ -47,15 +51,18 @@
       "Two provider reads guard races and duplicate dispatches",
       "An accepted dispatch is not terminal learning proof",
       "Failed model-freshness stays red; no security or production gates skipped",
-      "No additional schedule, tokens, persistent authority or provider-paid preview"
+      "No additional schedule, tokens, persistent authority or provider-paid preview",
+      "Real 2026-10-23 delayed scheduled run arrives 4h46m late: second workflow execution must be rejected at shared daily-admission even after an earlier manual run finishes."
     ]
   },
-  "promotion": "Release only on exact-head Required+CodeQL protected merge. Proof requires a later real Janitor artifact and an actual daily workflow run/job conclusion; mere PR or dispatch acceptance does not prove execution.",
+  "promotion": "Exact-head Required+CodeQL protected merge. After release, independently verify fresh Daily Self Evolution runs include the daily-admission job, real one-day uniqueness, and separate improve/model-freshness terminal evidence. Neither a dispatch nor a merge is proof of better models.",
   "readback": {
     "production_modified": false,
     "additional_scheduler": false,
     "additional_token_permission": false,
     "model_upgrade_executed": false,
-    "daily_coverage_restored_proven": false
+    "daily_coverage_restored_proven": false,
+    "late_schedule_duplicate_20261023_observed": true,
+    "second_run_admission_live": false
   }
 }
