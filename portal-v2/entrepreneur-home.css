@@ -70,3 +70,16 @@
 @media(max-width:1050px){.eh-journey-stages{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:640px){.eh-journey{padding:14px}.eh-journey-stages{grid-template-columns:repeat(2,minmax(0,1fr))}.eh-journey-links{grid-template-columns:1fr}}
 @media(max-width:400px){.eh-journey-stages{grid-template-columns:1fr}}
+
+/* Evidence-first autopilot cockpit: never a second action engine. */
+.eh-autopilot{margin:14px 0 17px;padding:16px;border:1px solid #c7dde5;border-radius:14px;background:#f5fafc}
+.eh-autopilot h4{font-size:1rem;margin:7px 0;color:#163448}
+.eh-autopilot-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.eh-autopilot-tile{min-width:0;display:flex;flex-direction:column;gap:4px;padding:12px;border:1px solid #dbe8eb;border-radius:12px;background:#fff}
+.eh-autopilot-tile strong{font-size:1.3rem;line-height:1.15;color:#163e51}
+.eh-autopilot-tile span{font-size:.76rem;color:#4e6677;line-height:1.4}
+.eh-autopilot-proof{margin:12px 0 4px;font-weight:750;font-size:.83rem;line-height:1.5;color:#255568}
+.eh-autopilot-note{font-size:.77rem;line-height:1.5;color:#576e79}
+.eh-autopilot-links{display:flex;flex-wrap:wrap;gap:9px 19px}
+@media(max-width:680px){.eh-autopilot{padding:12px}.eh-autopilot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.eh-autopilot-grid{grid-template-columns:1fr}}
