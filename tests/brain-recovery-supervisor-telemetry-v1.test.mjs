@@ -57,7 +57,7 @@ test('a missing provider log suppresses performance claims, not fabricating zero
   assert.equal(fetched,2);
   assert.equal(result.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(result.p95_supervisor_job_duration_ms,null);
-  assert.deepEqual(result.repeated_drift_prs,[]);
+  assert.equal(result.repeated_drift_prs,null);
   assert.equal(result.read_errors.length,1);
 });
 test('six bounded runs are read; schedule and manual executions stay separate',()=>{
@@ -88,4 +88,24 @@ test('single existing Janitor owns observation and never starts a second schedul
   assert.match(supervisor,/expected_head_sha="\$head"/);
   assert.match(supervisor,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
   assert.match(supervisor,/RECOVERY_PR_BUDGET: '1'/);
+});
+
+
+test('real timestamped drift and missing writer lease from the retired #4792 replay survive consolidation',()=>{
+  const sha='a'.repeat(40);
+  const raw=[
+    '2026-10-23T13:27:00Z PR#4594 '+sha+' MAIN_DRIFT_RECOVERY',
+    '2026-10-23T13:27:00Z ##[warning]PR#4594 has no exact active terminal writer lease; automatic refresh forbidden.',
+    '2026-10-23T13:27:00Z echo "PR#4774 '+sha+' MAIN_DRIFT_RECOVERY"',
+    '2026-10-23T13:27:00Z ##[notice]MAIN_DRIFT_SYNC_RECONCILED:PR#4774; new Required and CodeQL mandatory.'
+  ].join('\n');
+  const first=parseSupervisorAnnotations(raw,39960974891);
+  assert.deepEqual(first.map(row=>row.pr_number),[4594,4594,4774]);
+  assert.equal(first[1].category,'WRITER_LEASE_MISSING');
+  const second=parseSupervisorAnnotations(raw,39960974892);
+  const result=summarizeSupervisorEvidence({runs:[],events:[...first,...second],observedAt:iso(0)});
+  assert.deepEqual(result.repeated_drift_prs,[4594]);
+  assert.equal(result.observed_event_categories.WRITER_LEASE_MISSING,2);
+  assert.equal(result.per_pr.find(x=>x.pr_number===4774).repeated_drift_observed,false);
+  assert.equal(result.time_to_production_ms,null);
 });
