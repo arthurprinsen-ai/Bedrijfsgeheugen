@@ -75,7 +75,8 @@ export async function recoverDailyLearning({repo=process.env.GITHUB_REPOSITORY,
   if(!authorized)return {...assessDailyLearningLiveness({now}),
     status:'NON_OWNER_OR_READ_ONLY_MODE',dispatch_allowed:false,
     dispatch_requested:false,execution_verified:false,provider_reads:0};
-  const uri='/runs?per_page=100';
+  // Scope the provider query to THIS UTC DAY, not its entire long-lived history.
+  const uri='/runs?created='+now.slice(0,10)+'&per_page=100';
   const workflow=read(repo,'');
   let reads=1;
   const first=assessDailyLearningLiveness({now,workflow,snapshot:read(repo,uri)});
