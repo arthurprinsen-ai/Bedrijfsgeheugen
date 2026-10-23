@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {resolveMiraFrozenWinner} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,sourceLedAutoVerifyCandidate} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
 import {MIRA_CASES,selectMiraProblem} from '../supabase/functions/_shared/mira-entrepreneur-caption.mjs';
 
 const runDate='2026-10-23';
@@ -80,4 +80,42 @@ test('router, orchestrator and publisher share the frozen source-led authority',
  assert.match(publisher,/proof\.mira_generation_source\?\.openart_history_id/);
  assert.match(publisher,/miraFaceProofValid/);
  assert.doesNotMatch(publisher,/validateMiraCaptionForDelivery\(runDate,art\.body/);
+});
+
+test('one-shot Heartbeat source-led reuse never generates or publishes',()=>{
+ const frozen={kind:'approved_source_led',
+  winner_recommendation_id:'7880c326-72b8-4ac8-a712-971a9a24de12',
+  scene:'Mira privacy complaints',asset_url:'https://cdn.openart.ai/mira-approved.mp4',
+  openart_history_id:'S2WRHcZAKIV5Cxn2tZLE'};
+ const job={id:'a',updated_at:'2026-10-23T08:00:00Z',status:'WAITING_ASSET',
+  attempts:0,asset_manifest:{recommendation_id:frozen.winner_recommendation_id}};
+ const input={runDate:'2026-10-23',resolved:frozen,job,ob:{external_id:null},postType:'reel',readyProviders:['openart']};
+ const proposed=sourceLedAutoVerifyCandidate(input);
+ assert.equal(proposed.ok,true);
+ assert.equal(proposed.assetManifest.asset_url,frozen.asset_url);
+ assert.equal(proposed.assetManifest.generation_mode,'image2video');
+ assert.equal(proposed.assetManifest.source_led_auto_verify_started,true);
+ assert.equal(proposed.assetManifest.openart_history_id,frozen.openart_history_id);
+ for(const variant of [
+  {job:{...job,attempts:1}},
+  {job:{...job,status:'WAITING_PROOF'}},
+  {job:{...job,asset_manifest:{...job.asset_manifest,source_led_auto_verify_started:true}}},
+  {ob:{external_id:'existing-instagram-post'}},
+  {ob:{evidence:{republish_forbidden:true}}},
+  {readyProviders:[]},
+  {resolved:{...frozen,kind:'unapproved'}},
+  {job:{...job,asset_manifest:{recommendation_id:'different'}}}
+ ]){
+  assert.equal(sourceLedAutoVerifyCandidate({...input,...variant}).ok,false);
+ }
+});
+test('the original media preflight has a CAS claim and background actual-proof call',()=>{
+ const src=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
+ assert.match(src,/sourceLedAutoVerifyCandidate/);
+ assert.match(src,/\.eq\('status','WAITING_ASSET'\)\.eq\('attempts',0\)/);
+ assert.match(src,/\.eq\('id',job\.id\)\.eq\('updated_at',job\.updated_at\)/);
+ assert.match(src,/EdgeRuntime\.waitUntil\(background\)/);
+ assert.match(src,/action:'submit_asset'/);
+ assert.match(src,/MIRA_AUTO_PROOF_FAILED/);
+ assert.match(src,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
 });
