@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 const required = [
   'config/powerhouse-resource-intelligence-v1.json',
-  'supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql',
+  'supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql',
   'tests/powerhouse-resource-intelligence-contract.test.mjs',
   '.github/workflows/powerhouse-resource-intelligence.yml'
 ];
@@ -28,10 +28,30 @@ for (const forbidden of ['allow_security_weakening','allow_paid_resource_creatio
 }
 
 const sql = fs.readFileSync(required[1], 'utf8');
-for (const token of ['energy_wh','water_ml','energy_provenance','water_provenance','co2e_provenance','powerhouse_compliance_evidence_v1','powerhouse_optimization_candidate_v1','powerhouse_resource_intelligence_daily_v1']) {
-  if (!sql.includes(token)) fail(`migration missing ${token}`);
+// These are the actual committed, production-applied September 17 resource
+// contracts, shared with the authoritative resource-intelligence test.
+for (const token of [
+  'powerhouse_resource_impact_v1',
+  'powerhouse_action_business_value_v1',
+  'powerhouse_resource_intelligence_daily_v1',
+  'powerhouse_business_value_intelligence_v1',
+  'powerhouse_compliance_evidence_v1',
+  'powerhouse_optimization_candidate_v1',
+  'energy_kwh', 'water_liters', 'co2e_kg', 'factor_coverage',
+  'observed_cost_eur', 'realized_roi', 'provenance_complete',
+  'rollback_plan', 'safe_reversible', 'BG169'
+]) {
+  if (!sql.includes(token)) fail(`canonical migration missing ${token}`);
 }
-if (/energy_wh\s+numeric[^,;]*default\s+0/i.test(sql) || /water_ml\s+numeric[^,;]*default\s+0/i.test(sql)) fail('physical telemetry may not default to zero');
+// Unknown measured physical usage stays NULL. Zero is an actual observation,
+// never an imputation for an absent provider/resource factor.
+if (/\bcoalesce\s*\(\s*(?:energy_kwh|water_liters|co2e_kg)\s*,\s*0\s*\)/i.test(sql) ||
+    /\b(?:energy_kwh|water_liters|co2e_kg)\s+numeric[^,;]*\bdefault\s+0\b/i.test(sql))
+  fail('physical telemetry may not default to zero');
+for (const measure of ['energy_kwh', 'water_liters', 'co2e_kg']) {
+  if (!new RegExp(`sum\\(${measure}\\)\\s+filter\\s*\\(where\\s+${measure}\\s+is\\s+not\\s+null\\)`, 'i').test(sql))
+    fail(`canonical migration must preserve nullable measure: ${measure}`);
+}
 
 console.log(JSON.stringify({
   status: 'RESOURCE_INTELLIGENCE_READY',
