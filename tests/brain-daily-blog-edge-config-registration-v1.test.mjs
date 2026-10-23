@@ -17,7 +17,7 @@ test('both existing daily blog functions are registered exactly once in canonica
  assert.ok(declaredFunctions(config).includes('powerhouse-blog-queue'));
 });
 test('both new registrations are resolved as exact provider-attestation scope',()=>{
- const base=config.replace(/\n# The approved daily blog exporter[\s\S]*$/,'');
+ const base=config.replace(/\[functions\.powerhouse-blog-export\][\s\S]*?(?=\[functions\.powerhouse-predictive-engine\])/,'');
  assert.deepEqual(resolveEdgeRuntimeFunctions({changedPaths:['supabase/config.toml'],configText:config,baseConfigText:base}),['powerhouse-blog-export','powerhouse-blog-queue']);
 });
 test('queue retains internal scheduler secret gate; export remains read-only',()=>{

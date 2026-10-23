@@ -1,5 +1,17 @@
 project_id = "bedrijfsgeheugen"
 
+[functions.powerhouse-blog-export]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-export/index.ts"
+# Approved read-only source; no provider write.
+
+[functions.powerhouse-blog-queue]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-queue/index.ts"
+# Existing privileged write protected by x-powerhouse-token.
+
 [functions.powerhouse-predictive-engine]
 enabled = true
 verify_jwt = false
@@ -144,17 +156,3 @@ entrypoint = "./functions/bg-social-metrics-sync/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/revenue-learning-store/index.ts"
-
-# The approved daily blog exporter is an existing read-only public export route.
-# It accepts only approved artifacts and creates no provider publication.
-[functions.powerhouse-blog-export]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/powerhouse-blog-export/index.ts"
-
-# Canonical daily blog queue: JWT mode matches the deployed v17 Edge function.
-# Privileged writes remain protected inside the entrypoint by x-powerhouse-token.
-[functions.powerhouse-blog-queue]
-enabled = true
-verify_jwt = false
-entrypoint = "./functions/powerhouse-blog-queue/index.ts"
