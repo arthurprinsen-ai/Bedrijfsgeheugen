@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|daily-learning|schedule-missed-no-execution|20261023-v1",
+  "obligation_id": "delivery|daily-learning|schedule-missed-no-execution|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_dependency": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4743",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "SCHEDULED_DAILY_AGENT_LEARNING_MISSING",
+  "root_cause": "The existing Powerhouse Daily Self Evolution GitHub workflow has schedule 04:47 UTC and workflow_dispatch, but provider schedule-run readback on 2026-10-23 after its expected window found no invocation that day; its latest known 2026-10-22 scheduled invocation ended failure. GitHub documents that schedule events may be delayed or dropped. This does not prove GitHub's specific failure mechanism.",
+  "source_evidence": [
+    "GitHub REST actions/runs?event=schedule readback on 2026-10-23: no Powerhouse Daily Self Evolution run recorded for that date after 04:47 UTC",
+    "Last recorded schedule run #39756866887 dated 2026-10-22 09:37:34 UTC failed; a later manual run #39837421178 on 2026-10-22 also failed",
+    ".github/workflows/powerhouse-daily-self-evolution.yml already has daily 04:47 UTC schedule and workflow_dispatch",
+    ".github/workflows/powerhouse-repository-janitor.yml already has Actions:write, hourly schedule, and non-overlapping concurrency group",
+    "https://docs.github.com/en/actions/how-tos/troubleshoot-workflows"
+  ],
+  "fix": "Use the existing Janitor as recovery orchestrator: after 180 minutes grace, query the existing Daily Self Evolution workflow for current UTC day's schedule or workflow_dispatch runs, including completed failure/cancelled/queued; never retry an observed run; fail closed on disabled workflow, incomplete provider data or error; re-query immediately before a single workflow_dispatch on main; persist proof to Janitor artifact without claiming execution success.",
+  "prevention_rule": "No secondary daily scheduler or GitHub workflow. Any completed or running main-branch run for today prevents a duplicate. A provider dispatch acceptance is not completed run evidence. Failed jobs remain failures and cannot be auto-marked green. Do not bypass model-freshness, Required/CodeQL, tenant ACL or Supabase native preview checks.",
+  "tests": [
+    "tests/brain-daily-learning-schedule-recovery-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ],
+  "compiler": {
+    "failure_class": "SCHEDULED_DAILY_AGENT_LEARNING_MISSING",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-learning-schedule-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-learning-schedule-recovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-learning-schedule-recovery-v1.test.mjs"
+    ],
+    "invariants": [
+      "Provider workflow active and current date fully queried before dispatch",
+      "Grace window prevents legitimate delayed schedule dispatch collisions",
+      "One existing daily execution per UTC day is enough even if failure; do not hide failures",
+      "All GitHub API errors and paginated ambiguity fail closed",
+      "No extra scheduler, agent, memory authority or spend",
+      "Dispatch acceptance never means a successful model learning result"
+    ]
+  },
+  "promotion": "Exact-head protected Required+CodeQL success, guarded main merge, real Janitor schedule/readback, then daily provider workflow readback with observed run and outcome.",
+  "readback": {
+    "live": false,
+    "real_daily_learning_observed": false,
+    "schedule_recovered_in_prod": false,
+    "actual_model_upgrade_proven": false
+  }
+}
