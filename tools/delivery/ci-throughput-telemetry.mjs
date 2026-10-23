@@ -41,7 +41,8 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
       const result=read('repos/'+repo+'/actions/runs/'+run.id+'/jobs?per_page=100');
       if(!Array.isArray(result?.jobs)||!Number.isSafeInteger(result?.total_count)||
          result.total_count>result.jobs.length){
-        readErrors.push({run_id:run.id,reason:'JOBS_SNAPSHOT_INCOMPLETE'});continue;
+        readErrors.push({run_id:run.id,reason:'JOBS_SNAPSHOT_INCOMPLETE'});
+        stopReason='PROVIDER_READ_INCOMPLETE';break;
       }
       for(const job of result.jobs)observations.push({run,job});
       // Reuse fully observed existing jobs; never dispatch runs to reach a sample target.
@@ -51,6 +52,7 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
       }
     }catch{
       readErrors.push({run_id:run.id,reason:'GITHUB_JOB_READ_UNAVAILABLE'});
+      stopReason='PROVIDER_READ_INCOMPLETE';break;
     }
   }
   const summary=summarizeObservedCiJobs(observations);
