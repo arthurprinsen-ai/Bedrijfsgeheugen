@@ -1,0 +1,45 @@
+{
+  "type": "BRAIN_LEARNING",
+  "version": "v1",
+  "fingerprint": "ci|brain|production-readback-authority-source-oracle-drift|20261022-v1",
+  "obligation_id": "ci-brain-production-readback-oracle-drift-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "status": "CANDIDATE",
+  "source_main_sha": "f627153ed569820917a2dc5787dd210613f0395e",
+  "observed": {
+    "full_brain_run": 39785541338,
+    "total": 3521,
+    "passed": 3164,
+    "failed": 357,
+    "affected_test": "tests/brain-production-readback-authority-routing-v1.test.mjs",
+    "failed_assertions": 5
+  },
+  "root_cause": "Original BRAIN assertions inspect retired inline governance prefixes, narrower parity obligation and legacy Netlify-only readback evidence rather than current canonical authorities.",
+  "change": "Retain all five original tests; exercise actual control-plane deployment classification and enforce unknown-runtime and provider readback fail-closed evidence.",
+  "prevention_rule": "Read authoritative workflow and classifier source before updating old source oracles; preserve all positive and negative security/readback obligations.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-authority-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-readback-authority-routing-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-authority-routing-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "before": "run 39785541338 five failed assertions",
+    "after": "PENDING_EXACT_HEAD_CI",
+    "full_brain": "PENDING_ZERO_FAILURE",
+    "production": "UNCHANGED"
+  }
+}

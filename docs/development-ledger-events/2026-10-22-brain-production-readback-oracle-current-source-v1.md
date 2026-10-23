@@ -1,0 +1,5 @@
+# 2026-10-22 — production readback source-oracle repair
+
+[Unified BRAIN #39785541338](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39785541338) exposed five obsolete assertions in the existing test file (3,521 total, 357 failures on another candidate). Current protected source uses `deriveNetlifyDeploymentApplicability` and separate fail-closed Supabase provider and migration readback modes. Preserve all five historical tests and assert current source plus no fake Netlify or unproved readback. No runtime/workflow/security/provider/migration changes. Parent #3742; related #4215. Exact-head Required CI, CodeQL, and full BRAIN 0-fail remain mandatory before protected merge. No production green claimed.
+
+Canonical prewrite: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742#issuecomment-6341979408. One Supabase OBSERVED fingerprint, no parallel recovery owner.
