@@ -1,0 +1,7 @@
+# 2026-10-23 — fail-closed improvement evaluation, reuse existing owner
+
+Fingerprint: `powerhouse|self-improvement|provider-verified-promotion-evidence|20261023-v1`. Source: `brain/self-improvement/self-improvement-layer.mjs#evaluatePromotionCandidate` and canonical #2750. Exact current production Supabase read-only audit: nine optimization candidates, nine requiring independent review, zero verified review/delivery/learning, zero independent observations and zero candidate-measured effects; customer `powerhouse_realized_values` and verified `brain_value_evaluations` both zero. Systemwide outcome counters are not these customer-specific proofs.
+
+Cause: old pure evaluator counted arbitrary nonempty evidence refs as proof and allowed configurable minimum gates to be removed. Remedy: explicit trusted independent proof-attester input and immutable minimum gates; no unconditional API access, no self-authenticated proof, no skip for protected CI, RLS or production authorization. Original source/main and issue lineage used; regression `tests/brain-self-improvement-layer-v1.test.mjs`. Keep required stage `REVIEW_REQUIRED` until actual authorized provider- and outcome-level readback, and avoid claims of proved uplift. The advisory verdict is never a release grant.
+
+Terminal states: `CANDIDATE` until exact-head protected Required + CodeQL + protected merge and source/skill/readback; broader #2750 and real-customer #4358 remain open even after this guard is merged.
