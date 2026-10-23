@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
 const migration='supabase/migrations/20261007221130_source_universe_loop_assurance_closure_v1.sql';
+const learning='brain/learning/2026-10-07-source-universe-loop-assurance-closure-v1.json';
 const read=()=>readFile(migration,'utf8');
 
 test('Source Universe assurance closes action outcome learning with truthful no-op evidence',async()=>{
@@ -56,4 +57,13 @@ test('migration backfills from proven runtime state rather than fabricating new 
   assert.doesNotMatch(sql,/insert into public\.powerhouse_intelligence_signal_projection_v1/i);
   assert.doesNotMatch(sql,/insert into public\.powerhouse_intelligence_company_impact_v1/i);
   assert.doesNotMatch(sql,/insert into public\.powerhouse_intelligence_action_candidate_v1/i);
+});
+
+test('security-sensitive learning declares replay shadow and canary evaluation evidence',async()=>{
+  const record=JSON.parse(await readFile(learning,'utf8'));
+  assert.equal(record.compiler.security_sensitive,true);
+  const expected=['tests/brain-source-universe-loop-assurance-closure-v1.test.mjs'];
+  assert.deepEqual(record.evaluation.historical_replay,expected);
+  assert.deepEqual(record.evaluation.shadow,expected);
+  assert.deepEqual(record.evaluation.canary,expected);
 });
