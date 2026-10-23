@@ -25,3 +25,27 @@ test('P0 #4215: historical index remains bounded, idempotent and fails closed',(
   assert.match(source,/WHERE status IN \('active','claimed'\) AND scope_key IS NOT NULL/);
   assert.doesNotMatch(source,/\b(?:DELETE|TRUNCATE|UPDATE|INSERT|GRANT|REVOKE|ALTER ROLE|DROP TABLE|cron\.schedule|cron\.alter_job)\b/i);
 });
+
+const historicalCronSql=readFileSync(
+  new URL('../supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql',import.meta.url),
+  'utf8',
+);
+
+function assertColdReplaySafeCronStagger(sql) {
+  assert.match(sql,/if\s+v_jobid\s+is\s+not\s+null\s+then\s+perform\s+cron\.alter_job\s*\(\s*job_id\s*:=\s*v_jobid\s*,\s*schedule\s*:=\s*rec\.schedule\s*\)\s*;\s*end\s+if\s*;/i);
+  assert.doesNotMatch(sql,/raise\s+exception\s+['"]CRON_PRESSURE_CONTRACT_JOB_MISSING/i);
+  assert.doesNotMatch(sql,/\b(?:perform\s+)?cron\.schedule\s*\(/i);
+}
+
+test('P0 #3742: cold GitHub replay skips production-only missing cron jobs safely',()=>{
+  assertColdReplaySafeCronStagger(historicalCronSql);
+});
+
+test('P0 #3742: regression rejects an unconditional historic missing-job exception',()=>{
+  const poisoned=historicalCronSql.replace(
+    'if v_jobid is not null then',
+    "raise exception 'CRON_PRESSURE_CONTRACT_JOB_MISSING:%', rec.jobname;\n    if v_jobid is not null then",
+  );
+  assert.notEqual(poisoned,historicalCronSql);
+  assert.throws(()=>assertColdReplaySafeCronStagger(poisoned),/CRON_PRESSURE_CONTRACT_JOB_MISSING/);
+});
