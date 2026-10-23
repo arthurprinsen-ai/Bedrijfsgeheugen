@@ -27,11 +27,36 @@ function read(path){
     encoding:'utf8',timeout:12000,maxBuffer:5_000_000,stdio:['ignore','pipe','pipe']
   }));
 }
-function log(path){
-  return execFileSync('gh',['api',path],{
-    encoding:'utf8',timeout:12000,maxBuffer:2_000_000,stdio:['ignore','pipe','pipe']
-  });
+// GitHub's job-log REST endpoint returns a short-lived 302 redirect. Prefer
+// the direct API, then the GitHub CLI's supported run-view fallback. Never
+// invent empty logs on provider errors and never read an unbounded response.
+export function readSupervisorJobLog(path,runCommand=execFileSync){
+  const matched=String(path||'').match(/^repos\/([a-z0-9_.-]+\/[a-z0-9_.-]+)\/actions\/jobs\/([1-9]\d*)\/logs$/i);
+  if(!matched)throw Error('SUPERVISOR_JOB_LOG_ENDPOINT_INVALID');
+  const opts={encoding:'utf8',timeout:16000,maxBuffer:2_000_000,stdio:['ignore','pipe','pipe']};
+  const valid=text=>typeof text==='string'&&text.length>0&&text.length<=2_000_000&&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+/m.test(text);
+  try{
+    const direct=runCommand('gh',['api',path],opts);
+    if(valid(direct))return direct;
+  }catch{}
+  let cli;
+  try{
+    cli=runCommand('gh',['run','view','--job',matched[2],'--log','--repo',matched[1]],opts);
+  }catch{
+    throw Error('SUPERVISOR_JOB_LOG_PROVIDER_READ_FAILED');
+  }
+  if(typeof cli!=='string'||cli.length>2_000_000)throw Error('SUPERVISOR_JOB_LOG_UNBOUNDED');
+  const normalized=cli.split('\n').map(line=>{
+    // gh run view prints job-name and step-name columns before the genuine
+    // timestamp. Strip those columns only; keep actual runner lines intact.
+    const prefixed=line.match(/^(?:[^\t\r\n]*\t){1,4}(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+.*)$/);
+    return prefixed?prefixed[1]:line;
+  }).join('\n');
+  if(!valid(normalized))throw Error('SUPERVISOR_JOB_LOG_TIMESTAMP_EVIDENCE_MISSING');
+  return normalized;
 }
+function log(path){return readSupervisorJobLog(path);}
 const date=v=>{const n=Date.parse(v||'');return Number.isFinite(n)?n:null;};
 const percentile=(ns,fraction)=>{
   if(ns.length===0)return null;
