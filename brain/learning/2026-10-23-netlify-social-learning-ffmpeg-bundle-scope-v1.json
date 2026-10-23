@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|netlify|scheduled-social-learning-ffmpeg-global-bundle-20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4445",
+  "obligation_id": "netlify|social-learning-499|ffmpeg-global-bundle-amplification|20261023-v1",
+  "title": "Keep heavy frame-extraction binaries out of unrelated scheduled social-learning functions",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "Netlify functions configuration globally included ffmpeg-static and its executable even in unrelated hourly social-learning and revenue-learning evaluators. The extra bundle size is a measured optimization target, but does not alone prove the root cause of 15-second 499 cancellations.",
+  "impact": "In production both learning evaluation functions were about 32.5 MB, returned HTTP 499 near 15 seconds from Netlify Scheduler without a usable invocation, and social-learning_evaluations had zero new rows in 30 days.",
+  "evidence": {
+    "date": "2026-10-23",
+    "netlify_deploy": "6adb708cf76ddcef00357a6b",
+    "scheduler_request_id": "01M5MH21KZKK5ZAQW0NAEWZ18Z",
+    "status": 499,
+    "measured_duration_seconds": 14.986,
+    "functions_present": true,
+    "netlify_bundle_bytes_approx": 32497969,
+    "social_learning_recent_evaluations": 0,
+    "mira_original_binary_required": true
+  },
+  "fix": "Move original ffmpeg-static external/include settings from [functions] to [functions.\"instagram-video-frames\"] only, preserving the existing executable and identity verifier.",
+  "prevention_rule": "Large media tooling is isolated to functions that actually use it; ensure Netlify bundle parity and scheduled function real invocation before claiming completed source-qualified learning.",
+  "regression_contract": "tests/brain-netlify-scheduled-learning-binary-scope-v1.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-scheduled-learning-binary-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-scheduled-learning-binary-scope-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-scheduled-learning-binary-scope-v1.test.mjs"
+    ]
+  },
+  "release_gates": [
+    "Exact-head Required CI and CodeQL",
+    "Netlify preview measured artifact-size reduction",
+    "Mira exact-video ffmpeg/frame extractor remains functional",
+    "Protected main merge and production deploy parity",
+    "Actual Netlify Scheduler 2xx response plus function invocation",
+    "New genuinely source-qualified social learning evaluation and subsequent action"
+  ],
+  "outcome": "CODE_CANDIDATE_ONLY: no production merge, video publication, learning row or revenue claim until independent provider readback.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
