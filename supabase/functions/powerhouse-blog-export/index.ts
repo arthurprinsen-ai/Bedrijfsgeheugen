@@ -8,7 +8,7 @@ function evidenceObject(value:any):Record<string,any>{
   if(typeof value==='string'){try{return evidenceObject(JSON.parse(value))}catch{return {}}}
   return value && !Array.isArray(value) && typeof value==='object'?value:{};
 }
-const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(!['GET','POST'].includes(req.method)) return json({ok:false,error:'METHOD_NOT_ALLOWED'},405);

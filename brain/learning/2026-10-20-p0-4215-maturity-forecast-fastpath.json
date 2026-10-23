@@ -15,13 +15,16 @@
   "prevention_rule": "MATURITY_FORECAST_NO_FULL_NBA_REEXPANSION",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs",
+      "tests/brain-p0-4215-forecast-scope-lower-index.test.mjs"
     ],
     "shadow": [
-      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs",
+      "tests/brain-p0-4215-forecast-scope-lower-index.test.mjs"
     ],
     "canary": [
-      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs",
+      "tests/brain-p0-4215-forecast-scope-lower-index.test.mjs"
     ]
   },
   "test_evidence": {
@@ -33,7 +36,23 @@
     "preview_schema": "Production and preview show identical 51-column ordered name/type fingerprint 86328924f18155095270db76a88ecf3f",
     "preview_data": "Preview: 0 opportunities, 0 forecasts, 0 action-business-value rows; full-row and two-tenant acceptance cannot yet pass",
     "full_semantic_parity": "PENDING: require nonempty old/new full 51-column EXCEPT ALL parity and at least two represented tenants on an isolated pre-migration preview",
-    "manual_preview_parity_runner": "tests/brain-p0-4215-maturity-full-parity.mjs (must be executed externally on populated isolated pre-migration preview; intentionally not an ordinary Node unit test)"
+    "manual_preview_parity_runner": "tests/brain-p0-4215-maturity-full-parity.mjs (must be executed externally on populated isolated pre-migration preview; intentionally not an ordinary Node unit test)",
+    "forecast_scope_lower_index_preflight_20261023": {
+      "category": "PREVIEW_GATED_PRODUCTION_PERFORMANCE_CANDIDATE",
+      "observed_at": "2026-10-23",
+      "observed_pg_stat_forecasts_sequential_scans": 5258739,
+      "observed_pg_stat_forecasts_sequential_rows_read": 21217760748,
+      "measurement_caveat": "cumulative pg_stat counters, not a causal benchmark for the exact production cron failure",
+      "source_query_predicate": "lower(pf.scope_key)=lower(opp.company_key) OR lower(pf.scope_key)=lower(opp.person_key)",
+      "existing_partial_index": "ph_forecasts_active_scope_lookup_p0(scope_key) WITHOUT lower expression",
+      "new_forward_only_index": "supabase/migrations/20261023064000_p0_4215_forecast_scope_lower_idx.sql",
+      "proposed_view_full_read_only_51_field_execution_ms": "39576.821",
+      "independent_combined_v4_plus_maturity_observation": "READ_ONLY_90S_TIMEOUT; NOT_EVIDENCE_OF_RUNTIME_SLA",
+      "production_index_installed": false,
+      "provider_preview_acceptance": false,
+      "real_customer_finance_tenant_parity": false,
+      "release_state": "DRAFT_NOT_LIVE"
+    }
   },
   "status": "CANDIDATE",
   "evidence_urls": [
