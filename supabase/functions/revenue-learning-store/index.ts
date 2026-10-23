@@ -144,15 +144,24 @@ Deno.serve(async(req)=>{
       const o=body.obligation||{};const row={tenant_id:tenant,obligation_id:o.id,type:o.type,content_id:o.contentId??null,window_hours:o.windowHours??null,status:o.status||'OPEN',payload:o,due_at:o.dueAt??null,updated_at:new Date().toISOString()};const {error}=await db.from('revenue_learning_obligations').upsert(row,{onConflict:'tenant_id,obligation_id'});if(error)throw error;return json({stored:true});
     }
     if(action==='reconcile_action_learning_obligations'){
-      const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions').select('action_id').not('executed_at','is',null).order('executed_at',{ascending:true}).limit(50);
-      if(aErr)throw aErr;
-      let reconciled=0;
-      for(const actionRow of actions||[]){
-        const {error:rErr}=await db.rpc('powerhouse_reconcile_action_learning_obligations_v1',{p_action_id:actionRow.action_id});
-        if(rErr)throw rErr;
-        reconciled++;
+      // The existing service-token boundary is not a tenant authorization bypass.
+      // This canonical sales-action reconciliation cannot write another tenant.
+      if(tenant!=='canonical')return json({error:'RECONCILIATION_TENANT_FORBIDDEN'},403);
+      // One bounded atomic DB batch instead of 50 serial HTTP RPCs per hour.
+      // The DB chooses actions with the oldest existing obligation checkpoint;
+      // incomplete coverage must never be reported as verified commercial value.
+      const {data:result,error}=await db.rpc('powerhouse_reconcile_action_learning_batch_v1',{p_limit:20});
+      if(error)throw error;
+      const selected=Number(result?.selected),total=Number(result?.total_executed);
+      if(result?.proof_level!=='BOUNDED_RECONCILIATION_ONLY'||
+         !Number.isSafeInteger(selected)||selected<0||selected>20||
+         !Number.isSafeInteger(total)||total<selected){
+        return json({error:'RECONCILIATION_RECEIPT_INVALID',degraded:true},503);
       }
-      return json({reconciled,total:(actions||[]).length});
+      return json({reconciled:selected,selected,total,
+        remaining_review_required:result.remaining_review_required===true,
+        proof_level:'BOUNDED_RECONCILIATION_ONLY',
+        verified_customer_value:false});
     }
     if(action==='get_projection'){
       const {data,error}=await db.from('revenue_learning_projections').select('*').eq('tenant_id',tenant).maybeSingle();if(error)throw error;return json({projection:data?.projection||null});
