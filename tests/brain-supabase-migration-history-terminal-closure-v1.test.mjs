@@ -12,7 +12,8 @@ test('3742 terminal closure binds trusted repair to the 568-entry production led
   assert.equal(closure.supported_repair.workflow_run, 37426469433);
   assert.equal(closure.supported_repair.conclusion, 'SUCCESS');
   assert.equal(closure.supported_repair.post_repair_drift, 0);
-  assert.equal(lock.applied.length, 568);
+  assert.ok(lock.applied.length>=568,'historical Supabase 568-entry recovery record must remain in the append-only ledger');
+  assert.equal(lock.applied[567].version, '20261005160410', 'the original 568-entry ledger prefix must stay unchanged');
   assert.equal(closure.supported_repair.production_ledger_count, 568);
 
   const byVersion = new Map(lock.applied.map(row => [String(row.version), String(row.name)]));

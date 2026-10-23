@@ -1,0 +1,142 @@
+{
+  "id": "ci-brain-archived-source-batch2-20261022",
+  "date": "2026-10-22",
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "root_cause": "Inherited tests still read retired executable migration paths after archival.",
+  "remediation": "Repair test source paths only; verify original immutable blob identity and absence of executable duplicates.",
+  "evidence": {
+    "run": 39671036043,
+    "job": 119469063095,
+    "baseline_total": 3511,
+    "baseline_failed": 321
+  },
+  "files": [
+    "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+    "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+    "tests/brain-powerhouse-need-discovery-v1.test.mjs",
+    "tests/brain-supabase-capture-trigger-execute-security-v1.test.mjs",
+    "tests/supabase-powerhouse-autonomous-trigger-fix.test.mjs",
+    "tests/supabase-powerhouse-autonomy-rpc-security.test.mjs",
+    "tests/supabase-powerhouse-internal-view-security.test.mjs",
+    "tests/supabase-powerhouse-gap-register-security.test.mjs",
+    "tests/supabase-powerhouse-linkedin-sales-prediction-activation.test.mjs",
+    "tests/supabase-powerhouse-signal-forecast-materialization.test.mjs"
+  ],
+  "acceptance": "No green until exact-head CI/CodeQL and independent zero-failure full BRAIN",
+  "fingerprint": "ci|inherited-baseline|archived-sql-source-batch2|20261022",
+  "obligation_id": "ci-brain-archived-source-batch2-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-inherited-archive-sources-batch2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-inherited-archive-sources-batch2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-inherited-archive-sources-batch2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "BRAIN #39671036043: 321 failed",
+    "after": "PENDING_EXACT_HEAD_RUN",
+    "full_brain": "PENDING_0_FAIL",
+    "production": "UNCHANGED"
+  },
+  "prevention_rule": "Never dereference archived historical SQL from executable supabase/migrations; test the exact non-executable Git blob, preserve every positive/negative source assertion, and reject duplicate executable migration versions.",
+  "regression_contract": "tests/brain-inherited-archive-sources-batch2.test.mjs",
+  "additional_root_cause": "Historical snapshot tests compared live append-only migration ledger length to obsolete 568/603/607 exact counts, despite 634 legitimate accumulated entries; first 603 entries and 607 boundary verified from live Git source.",
+  "additional_prevention_rule": "Archive-only SQL input references must resolve a Git-blob-identical repository-only historical source, without recreating an executable migration or relaxing source assertions.",
+  "additional_test_evidence": {
+    "observed_current_applied": 634,
+    "original_568_boundary": "20261005160410",
+    "original_603_boundary": "20261007064948",
+    "original_607_boundary": "20261007091140",
+    "full_brain_before_additional_fixes": {
+      "run": 39763894940,
+      "tests": 3531,
+      "passed": 3185,
+      "failed": 346
+    },
+    "after": "PENDING_INDEPENDENT_RUN"
+  },
+  "additional_archived_source_batch": {
+    "files": 8,
+    "source_references": 8,
+    "archived_sql_sha1": [
+      {
+        "file": "20260920095700_autonomous_improvement_floor_terminal_v1.sql",
+        "sha": "de5bc791c06080d2da3da8cc21c52bb808eebdad"
+      },
+      {
+        "file": "20260928193000_powerhouse_company_intelligence_os_v1.sql",
+        "sha": "a4758905425f0964338371247343192e3ed4cd73"
+      },
+      {
+        "file": "20260918141000_powerhouse_control_plane_monotonic_terminal_v1.sql",
+        "sha": "d005ca4d3d0aeef45ffe4efe06a414f9377d8bf3"
+      },
+      {
+        "file": "20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql",
+        "sha": "f37aa930e2f2b89602a6878fc4714a88c5e46392"
+      },
+      {
+        "file": "20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+        "sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292"
+      },
+      {
+        "file": "20260917235907_social_content_integrity_invalidation_guard.sql",
+        "sha": "c653d64b4724fb654f610effd2ce6422c17269e9"
+      },
+      {
+        "file": "20260920095500_terminal_autonomous_reconciler_v1.sql",
+        "sha": "bc0cbe3c7a830c13872cf5bc4cb1f858c37f0a32"
+      },
+      {
+        "file": "20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
+        "sha": "a6037047760fe281ab24298f9f7d94c62cc95695"
+      }
+    ],
+    "full_brain_run_before": 39764575433,
+    "failures_before": 343,
+    "after": "PENDING_EXACT_HEAD_VERIFICATION"
+  },
+  "additional_archived_source_batch_4": {
+    "files": 4,
+    "references": 4,
+    "regression_blob_identities": [
+      {
+        "test": "supabase-powerhouse-commercial-closed-loop.test.mjs",
+        "sql": "20260915133500_powerhouse_commercial_closed_loop_v2.sql",
+        "sha": "c4f587bd451da135fc4a2d9b4009cb53689eef5d"
+      },
+      {
+        "test": "supabase-powerhouse-data-intake-contract.test.mjs",
+        "sql": "20260915131500_powerhouse_data_intake_health_v1.sql",
+        "sha": "84c4a40ebd15cbbc2054dbde344965b76e69a677"
+      },
+      {
+        "test": "supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+        "sql": "20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+        "sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292"
+      },
+      {
+        "test": "brain-powerhouse-observability-outcome-contract.test.mjs",
+        "sql": "20260915203000_powerhouse_observability_outcome_calibration_closure_v1.sql",
+        "sha": "04a105cba63d24f69c8ff7290fdffb7a4e6b3119"
+      }
+    ],
+    "verification": "PENDING_EXACT_HEAD"
+  }
+}

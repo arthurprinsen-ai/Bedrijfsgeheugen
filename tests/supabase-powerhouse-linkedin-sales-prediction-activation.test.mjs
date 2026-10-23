@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const migration='supabase/migrations/20260915125800_powerhouse_linkedin_sales_prediction_activation_v1.sql';
+const migration='supabase/migration-history/repository-only/20260915125800_powerhouse_linkedin_sales_prediction_activation_v1.sql';
 
 test('safe commercial NBA set gets pre-action forecasts without loosening direct outreach',()=>{
   const sql=readFileSync(migration,'utf8');

@@ -16,7 +16,7 @@ test('€1M revenue operating contract is machine-readable and revenue-first',()
 });
 
 test('single canonical commercial scheduler executes full acquisition cycle',()=>{
-  const sql=read('supabase/migrations/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql');
+  const sql=read('supabase/migration-history/repository-only/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql');
   assert.match(sql,/jobname='powerhouse-commercial-learning-v1'/);
   assert.match(sql,/cron\.schedule\(\s*'powerhouse-commercial-learning-v1'/);
   assert.match(sql,/powerhouse_trigger_based_mkb_acquisition_cycle_v1\(\)/);
