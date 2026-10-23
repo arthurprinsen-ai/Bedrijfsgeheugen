@@ -79,3 +79,62 @@ export function projectObservedCicdTaskRuns({repo='',observations=[],status='',r
   sampled_tasks:records.length,records:Object.freeze(records)
  });
 }
+
+
+// Reconcile the optional semantic projection against the existing authoritative
+// CI job estimator. Both derive from ONE GitHub snapshot and ONE Janitor read.
+// Disagreement is a hard evidence HOLD, not a request to rerun or write status.
+export function reconcileCicdProjectionWithCanonical(projection={},summary={}){
+ const withheld=(reason)=>Object.freeze({
+  schema:'powerhouse-ci-cicd-semconv-projection-v1',
+  status:reason,exported:false,critical_path_proven:false,
+  release_authorized:false,provider_snapshot_complete:false,
+  canonical_reconciled:false,records:Object.freeze([])
+ });
+ if(projection?.status!=='SOURCE_ONLY_FIELD_COMPATIBLE')
+  return Object.freeze({...projection,canonical_reconciled:false});
+ const rows=summary?.job_evidence;
+ if(summary?.status!=='SAMPLED_METRICS_NOT_SLO'||!Array.isArray(rows)||
+    rows.length!==summary.sample_jobs||rows.length<20||
+    !Array.isArray(projection.records)||
+    projection.records.length!==Math.min(64,rows.length))
+  return withheld('CANONICAL_JOB_EVIDENCE_MISMATCH');
+ const canonical=new Map();
+ for(const row of rows){
+  const key=row?.run_id+':'+row?.run_attempt+':'+row?.job_id;
+  if(!Number.isSafeInteger(row?.run_id)||row.run_id<=0||
+     !Number.isSafeInteger(row?.run_attempt)||row.run_attempt<1||
+     !Number.isSafeInteger(row?.job_id)||row.job_id<=0||
+     !HEAD.test(row?.head_sha||'')||
+     !['success','failure','timed_out','cancelled'].includes(row?.conclusion)||
+     typeof row?.job_name!=='string'||!row.job_name.trim()||
+     !Number.isFinite(row?.execution_ms)||row.execution_ms<0||
+     !Number.isFinite(row?.wait_to_start_ms)||row.wait_to_start_ms<0||
+     canonical.has(key))
+   return withheld('CANONICAL_JOB_EVIDENCE_MISMATCH');
+  canonical.set(key,row);
+ }
+ const observed=new Set();
+ for(const proof of projection.records){
+  const key=proof?.run_id+':'+proof?.run_attempt+':'+proof?.job_id;
+  const row=canonical.get(key);
+  const attrs=proof?.attributes;
+  if(!row||observed.has(key)||!attrs||
+     attrs['vcs.repository.ref.revision']!==row.head_sha.toLowerCase()||
+     attrs['cicd.pipeline.task.name']!==row.job_name||
+     attrs['cicd.pipeline.task.run.id']!==String(row.job_id)||
+     attrs['cicd.pipeline.task.run.result']!==RESULTS[row.conclusion]||
+     proof.observed_execution_ms!==row.execution_ms||
+     !Number.isFinite(Date.parse(proof.started_at||''))||
+     !Number.isFinite(Date.parse(proof.completed_at||''))||
+     Date.parse(proof.completed_at)-Date.parse(proof.started_at)!==row.execution_ms)
+   return withheld('CANONICAL_JOB_EVIDENCE_MISMATCH');
+  observed.add(key);
+ }
+ // With <=64 source jobs, all canonical accepted jobs MUST be represented.
+ if(rows.length<=64&&observed.size!==canonical.size)
+  return withheld('CANONICAL_JOB_EVIDENCE_MISMATCH');
+ return Object.freeze({...projection,canonical_reconciled:true,
+  canonical_jobs_total:rows.length,
+  canonical_sample_bounded:rows.length>64});
+}
