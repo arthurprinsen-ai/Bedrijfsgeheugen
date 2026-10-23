@@ -35,3 +35,20 @@ test('sole Recovery Supervisor retains native CAS, one writer and protected deli
   assert.match(y,/actions\/upload-artifact@v4/);
   assert.doesNotMatch(y,/--method POST "repos\/\$repo\/merges"/);
 });
+
+test('a green run with no drift events is not a complete repository scan',()=>{
+  const e=summarizeRecoveryEvents('',{runId:'39966378899',exitCode:0});
+  assert.equal(e.supervisor_step_succeeded,true);
+  assert.equal(e.counts.DRIFT_DETECTED,0);
+  assert.equal(e.source_snapshot_complete,false);
+  assert.equal(e.coverage_state,'PARTIAL_OR_UNPROVEN');
+  assert.equal(e.eligible_pr_denominator,null);
+  assert.equal(e.classified_pr_denominator,null);
+  assert.equal(e.zero_drift_global_claim_allowed,false);
+});
+test('partial scan with actual CAS evidence still cannot certify global absence of drift',()=>{
+  const e=summarizeRecoveryEvents('4781\tCAS_PROVEN\t1\n',{exitCode:0});
+  assert.equal(e.counts.CAS_PROVEN,1);
+  assert.equal(e.source_snapshot_complete,false);
+  assert.equal(e.coverage_state,'PARTIAL_OR_UNPROVEN');
+});

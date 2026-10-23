@@ -26,7 +26,14 @@ export function summarizeRecoveryEvents(raw,{runId=null,headSha=null,exitCode=0,
   const sample=[...perPr.values()].sort((a,b)=>a.pr-b.pr).slice(0,50);
   return {schema:'POWERHOUSE_RECOVERY_DRIFT_EVIDENCE-v1',authority:'EXISTING_RECOVERY_SUPERVISOR',
     proof_level:'PROVIDER_RUN_SOURCE_ONLY',run_id:runId,head_sha:headSha,observed_at:observedAt,
-    exit_code:code,supervisor_step_succeeded:code===0,source_snapshot_complete:code===0,
+    exit_code:code,supervisor_step_succeeded:code===0,
+    // A successful job can stop at its recovery budget: zero observed drift is not zero repository drift.
+    // No eligible-PR denominator or end-of-scan proof is present in this run-local event stream.
+    source_snapshot_complete:false,
+    coverage_state:'PARTIAL_OR_UNPROVEN',
+    eligible_pr_denominator:null,
+    classified_pr_denominator:null,
+    zero_drift_global_claim_allowed:false,
     event_rows:rows.length,counts,distinct_drift_prs:drift.size,repeated_drift_prs:repeated.size,
     sampled_prs:sample,sample_truncated:perPr.size>50,time_to_green_ms:null,
     customer_outcome_verified:false,release_authorized:false};
@@ -44,6 +51,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
     'Distinct drift PRs: '+result.distinct_drift_prs+'; repeated drift PRs: '+result.repeated_drift_prs,
     'CAS requested / accepted / proven / rejected: '+[result.counts.CAS_REQUEST,result.counts.CAS_ACCEPTED,result.counts.CAS_PROVEN,result.counts.CAS_REJECTED].join(' / '),
     'Lease denied: '+result.counts.LEASE_DENIED+'; budget exhausted: '+result.counts.BUDGET_EXHAUSTED,
+    'Coverage: PARTIAL_OR_UNPROVEN; zero observed events do not prove zero open PR drift.',
     'Observation only, never proof of protected merge or customer outcome.'].join('\n')+'\n');
   process.stdout.write(JSON.stringify({status:'RECOVERY_METRICS_RECORDED',event_rows:result.event_rows,counts:result.counts})+'\n');
 }

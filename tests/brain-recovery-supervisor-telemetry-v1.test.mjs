@@ -90,22 +90,57 @@ test('single existing Janitor owns observation and never starts a second schedul
   assert.match(supervisor,/RECOVERY_PR_BUDGET: '1'/);
 });
 
+test('actual supervisor missing-terminal-lease warnings become deduped, typed per-run evidence',()=>{
+  const message='PR#4778 has no exact active terminal writer lease; automatic refresh forbidden.';
+  const real=iso(0)+' ##[warning]'+message;
+  const rows=parseSupervisorAnnotations([real,real,
+    iso(0)+' ##[notice]'+message].join('\n'),39960974891);
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].pr_number,4778);
+  assert.equal(rows[0].code,'WRITER_TERMINAL_LEASE_MISSING');
+  assert.equal(rows[0].category,'MISSING_EXACT_TERMINAL_WRITER_LEASE');
+  const summary=summarizeSupervisorEvidence({runs:[],events:[
+    ...rows,...parseSupervisorAnnotations(real,39960974900)
+  ],readErrors:[],observedAt:iso(0)});
+  const pr=summary.per_pr.find(x=>x.pr_number===4778);
+  assert.equal(pr.missing_terminal_lease_runs,2);
+  assert.equal(pr.repeated_missing_terminal_lease,true);
+  assert.equal(pr.accepted_or_reconciled_runs,0);
+  assert.equal(summary.release_cycle_speedup_proven,false);
+  assert.equal(summary.can_mutate,false);
+});
 
-test('real timestamped drift and missing writer lease from the retired #4792 replay survive consolidation',()=>{
-  const sha='a'.repeat(40);
+test('no annotation spoofing or untrusted empty lease can be counted as owner release',()=>{
+  const text='PR#4772 has no exact active terminal writer lease; automatic refresh forbidden.';
+  const examples=[
+    'echo "::warning::'+text+'"',
+    'not-a-time ##[warning]'+text,
+    iso(0)+' \\u001b[36;1mecho "::warning::'+text+'"',
+    iso(0)+' ##[warning]PR#0 has no exact active terminal writer lease; automatic refresh forbidden.',
+    iso(0)+' ##[warning]PR#4772 has no exact active terminal writer lease; automatic refresh forbidden. extra'
+  ];
+  assert.deepEqual(parseSupervisorAnnotations(examples.join('\n'),99),[]);
+  const valid=parseSupervisorAnnotations(iso(0)+' ##[warning]'+text,99);
+  assert.equal(valid.length,1);
+  assert.equal(valid[0].category,'MISSING_EXACT_TERMINAL_WRITER_LEASE');
+});
+
+
+test('retired #4792 actual runtime drift marker survives without counting successful sync as new drift',()=>{
   const raw=[
-    '2026-10-23T13:27:00Z PR#4594 '+sha+' MAIN_DRIFT_RECOVERY',
-    '2026-10-23T13:27:00Z ##[warning]PR#4594 has no exact active terminal writer lease; automatic refresh forbidden.',
-    '2026-10-23T13:27:00Z echo "PR#4774 '+sha+' MAIN_DRIFT_RECOVERY"',
-    '2026-10-23T13:27:00Z ##[notice]MAIN_DRIFT_SYNC_RECONCILED:PR#4774; new Required and CodeQL mandatory.'
+    iso(0)+' PR#4594 '+SHA+' MAIN_DRIFT_RECOVERY',
+    iso(0)+' ##[warning]PR#4594 has no exact active terminal writer lease; automatic refresh forbidden.',
+    iso(0)+' echo "PR#4774 '+SHA+' MAIN_DRIFT_RECOVERY"',
+    iso(0)+' ##[notice]MAIN_DRIFT_SYNC_RECONCILED:PR#4774; exact Required and CodeQL still mandatory.'
   ].join('\n');
   const first=parseSupervisorAnnotations(raw,39960974891);
   assert.deepEqual(first.map(row=>row.pr_number),[4594,4594,4774]);
-  assert.equal(first[1].category,'WRITER_LEASE_MISSING');
-  const second=parseSupervisorAnnotations(raw,39960974892);
-  const result=summarizeSupervisorEvidence({runs:[],events:[...first,...second],observedAt:iso(0)});
-  assert.deepEqual(result.repeated_drift_prs,[4594]);
-  assert.equal(result.observed_event_categories.WRITER_LEASE_MISSING,2);
-  assert.equal(result.per_pr.find(x=>x.pr_number===4774).repeated_drift_observed,false);
-  assert.equal(result.time_to_production_ms,null);
+  assert.equal(first[1].category,'MISSING_EXACT_TERMINAL_WRITER_LEASE');
+  const summary=summarizeSupervisorEvidence({events:[
+    ...first,...parseSupervisorAnnotations(raw,39960974892)
+  ],observedAt:iso(0)});
+  assert.deepEqual(summary.repeated_drift_prs,[4594]);
+  assert.equal(summary.observed_event_categories.MISSING_EXACT_TERMINAL_WRITER_LEASE,2);
+  assert.equal(summary.per_pr.find(x=>x.pr_number===4774).repeated_drift_observed,false);
+  assert.equal(summary.can_mutate,false);
 });
