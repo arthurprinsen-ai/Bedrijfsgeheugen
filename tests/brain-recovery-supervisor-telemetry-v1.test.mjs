@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {classifyCasReadback,parseSupervisorAnnotations,
-  summarizeSupervisorEvidence,collectSupervisorEvidence}
+  summarizeSupervisorEvidence,collectSupervisorEvidence,readSupervisorJobLog}
   from '../tools/delivery/recovery-supervisor-telemetry.mjs';
 
 const SHA='a'.repeat(40);
@@ -143,4 +143,42 @@ test('retired #4792 actual runtime drift marker survives without counting succes
   assert.equal(summary.observed_event_categories.MISSING_EXACT_TERMINAL_WRITER_LEASE,2);
   assert.equal(summary.per_pr.find(x=>x.pr_number===4774).repeated_drift_observed,false);
   assert.equal(summary.can_mutate,false);
+});
+
+
+test('GitHub 302/read failure falls back to bounded CLI job view without adding a writer',()=>{
+  const calls=[],job='120464700413';
+  const run=(program,args)=>{
+    calls.push([program,...args]);
+    if(args[0]==='api')throw Error('GitHub REST 302 redirect unsupported');
+    return 'supervise\tCollect evidence\t2026-10-23T14:19:09Z PR#4801 '+SHA+' MAIN_DRIFT_RECOVERY\n'+
+      'supervise\tCollect evidence\t2026-10-23T14:19:10Z ##[warning]PR#4801 has no exact active terminal writer lease; automatic refresh forbidden.\n';
+  };
+  const result=readSupervisorJobLog('repos/owner/repo/actions/jobs/'+job+'/logs',run);
+  assert.equal(calls.length,2);
+  assert.deepEqual(calls[1],['gh','run','view','--job',job,'--log','--repo','owner/repo']);
+  const events=parseSupervisorAnnotations(result,39968527525);
+  assert.deepEqual(events.map(e=>e.pr_number),[4801,4801]);
+  assert.equal(events[1].category,'MISSING_EXACT_TERMINAL_WRITER_LEASE');
+});
+test('healthy direct GitHub job log uses one request and retains exact log',()=>{
+  const raw=iso(0)+' ##[warning]MAIN_DRIFT_SYNC_PENDING:PR#4801\n';
+  const calls=[];
+  const value=readSupervisorJobLog('repos/owner/repo/actions/jobs/456/logs',
+    (_,args)=>{calls.push(args);return raw;});
+  assert.equal(value,raw);assert.equal(calls.length,1);
+});
+test('unavailable or malformed direct and fallback logs fail closed, never zero drift',()=>{
+  assert.throws(()=>readSupervisorJobLog('repos/owner/repo/actions/jobs/0/logs',()=>''),/ENDPOINT_INVALID/);
+  assert.throws(()=>readSupervisorJobLog('repos/owner/repo/actions/jobs/456/logs',
+    (_,args)=>args[0]==='api'?'': 'supervise\tjob\tnot-an-ISO-timestamp ##[warning]MAIN_DRIFT_SYNC_PENDING:PR#4'),
+    /TIMESTAMP_EVIDENCE_MISSING/);
+  assert.throws(()=>readSupervisorJobLog('repos/owner/repo/actions/jobs/456/logs',
+    ()=>{throw Error('transport broken');}),/PROVIDER_READ_FAILED/);
+});
+test('fallback never treats echoed workflow source as a runtime annotation',()=>{
+  const raw='supervise\tCollect evidence\t'+iso(0)+' echo "##[warning]MAIN_DRIFT_SYNC_PENDING:PR#100"\n';
+  const normalized=readSupervisorJobLog('repos/owner/repo/actions/jobs/123/logs',
+    (_,args)=>args[0]==='api'?'':raw);
+  assert.deepEqual(parseSupervisorAnnotations(normalized,400),[]);
 });
