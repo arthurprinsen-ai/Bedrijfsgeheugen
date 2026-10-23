@@ -74,3 +74,58 @@ test('reuse only current hourly Janitor and preserve all protected quality gates
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.doesNotMatch(workflow,/ci-agent-priorities.*workflow_dispatch/);
 });
+
+test('matrix multiplicity cannot hide a repeated slow independent attempt',()=>{
+  const input=valid();
+  // Ten fast siblings on only one attempt used to outvote the five slow
+  // independent workflow attempts in the raw row median.
+  let nextId=3000;
+  for(let i=0;i<10;i++)input.job_evidence.push(job(100,nextId++,1000,'website browser mobile'));
+  input.sample_jobs=input.job_evidence.length;
+  const advice=prioritizeObservedCiWork(input);
+  assert.equal(advice.status,'REPEATED_SLOW_JOB_ADVISORY');
+  assert.equal(advice.priorities.length,1);
+  assert.equal(advice.priorities[0].independent_run_attempts,5);
+  assert.equal(advice.priorities[0].sample_jobs,5);
+  assert.equal(advice.priorities[0].matrix_job_rows,15);
+  assert.equal(advice.priorities[0].median_execution_ms,92000);
+  assert.equal(advice.priorities[0].p95_execution_ms,94000);
+  assert.ok(advice.priorities[0].evidence.every(x=>x.execution_ms>=90000));
+  assert.equal(advice.can_mutate,false);
+  assert.equal(advice.can_dispatch,false);
+});
+
+test('one workflow attempt with many slow matrix siblings cannot fake recurring slow work',()=>{
+  const input=valid();
+  for(const row of input.job_evidence){
+    if(row.job_name==='website browser mobile')row.execution_ms=row.run_id===100?300000:3000;
+  }
+  let nextId=3100;
+  for(let i=0;i<18;i++)input.job_evidence.push(job(100,nextId++,300000,'website browser mobile'));
+  input.sample_jobs=input.job_evidence.length;
+  const advice=prioritizeObservedCiWork(input);
+  assert.equal(advice.status,'NO_REPEATED_SLOW_JOB_PROVEN');
+  assert.deepEqual(advice.priorities,[]);
+  assert.equal(advice.can_promote,false);
+});
+
+test('reject mismatched head SHAs inside the same workflow attempt',()=>{
+  const input=valid();
+  const extra={...job(100,4000,100000,'website browser mobile'),head_sha:'b'.repeat(40)};
+  input.job_evidence.push(extra);
+  input.sample_jobs=input.job_evidence.length;
+  const advice=prioritizeObservedCiWork(input);
+  assert.equal(advice.status,'EVIDENCE_REJECTED');
+  assert.equal(advice.reason,'RUN_ATTEMPT_SHA_INCONSISTENT');
+  assert.deepEqual(advice.priorities,[]);
+});
+
+test('callers cannot lower the three-run or sixty-second quality floors',()=>{
+  const input=valid();
+  for(const row of input.job_evidence){
+    if(row.job_name==='website browser mobile')row.execution_ms=3000;
+  }
+  const advisory=prioritizeObservedCiWork(input,{minRepeatedRuns:1,minMedianMs:0});
+  assert.equal(advisory.status,'NO_REPEATED_SLOW_JOB_PROVEN');
+  assert.deepEqual(advisory.priorities,[]);
+});
