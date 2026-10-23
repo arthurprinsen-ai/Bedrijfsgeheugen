@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_CANONICAL_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|all-intelligence-applicability-reuse-loop|20261023",
+  "status": "CANDIDATE_PENDING_REQUIRED_TESTS_AND_RUNTIME_READBACK",
+  "source_authority": "Existing ONE BRAIN / Powerhouse learning; no parallel memory",
+  "skill_targets": [
+    "continuity",
+    "portal",
+    "delivery",
+    "data"
+  ],
+  "compiler": {
+    "failure_class": "TASK_INTENT_DROPPED_FROM_CANONICAL_SKILL_RETRIEVAL",
+    "scope": "ALL_POWERHOUSE_AGENTS_CHATS",
+    "machine_enforceable": true
+  },
+  "root_cause": "compileChatLearningPreflight passed only explicit lane/fingerprint hints, omitting executionContext.intent; relevant nonmandatory learning was consequently skipped for intent-only tasks.",
+  "failed_approach": "Notion/Brain documentation without demonstrated task-level retrieval cannot prove shared-knowledge reuse.",
+  "prevention_rule": "Forward intent to the existing canonical skill projection. Prioritize mandatory and explicit learning; bound inferred matches and surface deferred or missing references without claiming learning was applied.",
+  "prevention": [
+    "Never equate stored or retrieved learning with proven application or business outcome.",
+    "Maintain tenant privacy, source provenance, and bounded retrieval; never create parallel schedules or memory.",
+    "Require observed provider/outcome and changed next decision before a fully learned claim.",
+    "Reject substring-based CI false positives when inferring task skills; require a word boundary around CI and verify social-only negative replay."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-chat-learning-fast-development-v2.test.mjs"
+    ],
+    "replay_cases": [
+      {
+        "input": "Dutch klantportaal task, no explicit lanes",
+        "expected": "mandatory prevention and portal learning, unrelated security excluded"
+      },
+      {
+        "input": "17 matching portal lessons with explicit last fingerprint",
+        "expected": "explicit learning retained, 12 extra inferred, 4 deferred with partial receipt"
+      },
+      {
+        "input": "task without hints",
+        "expected": "mandatory baseline only"
+      },
+      {
+        "input": "social-only or financial content task containing letters ci inside a larger word",
+        "expected": "never infer CI/CD delivery; only standalone CI, CI/CD and CICD are delivery-relevant"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-chat-learning-fast-development-v2.test.mjs"
+    ],
+    "predecessor_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4766",
+    "prior_guard": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation",
+    "protected_ci_status": "PENDING",
+    "production_readback": null,
+    "customer_value_verified": false,
+    "pr_successor_reason": "PREDECESSOR_BEHIND_MAIN_AND_CI_SUBSTRING_FALSE_POSITIVE",
+    "semantic_replay": "tests/brain-chat-learning-fast-development-v2.test.mjs",
+    "superseded_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4768"
+  },
+  "next_decision": "Run protected gates; after exact-head merge prove agent-retrieval receipt and actual effect on next decision in existing #2750/#4358."
+}

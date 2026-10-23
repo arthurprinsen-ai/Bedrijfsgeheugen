@@ -7,13 +7,13 @@ export const SKILL_PROJECTION_FINGERPRINT = 'powerhouse-learning-skill-auto-proj
 export const SKILL_INDEX_VERSION = 'POWERHOUSE-LEARNING-SKILL-INDEX-v1';
 
 const TARGET_RULES = [
-  ['delivery', /delivery|deploy|github|branch|merge|ci|writer|lease|promotion|release|migration/i],
+  ['delivery', /delivery|deploy|github|branch|merge|\bci(?:[/-]cd)?\b|cicd|ontwikkelstraat|writer|lease|promotion|release|livegang|migration/i],
   ['social', /instagram|linkedin|social|content|publisher|media|mira|buffer/i],
-  ['portal', /portal|canvas|customer|tenant|strategy|execution ladder/i],
+  ['portal', /portal|portaal|canvas|customer|klant|tenant|strategy|strategie|execution ladder/i],
   ['data', /data|analytics|evidence|source|supabase|database|schema|connector|search|seo/i],
   ['foresight', /foresight|forecast|predict|calibrat|experiment|future|autonom/i],
   ['security', /security|secret|permission|rls|auth|least privilege|privacy/i],
-  ['continuity', /continuity|learning|memory|agent|chat|skill|preflight|writeback|recovery/i]
+  ['continuity', /continuity|learning|leren|leerlus|kennis|hergebruik|memory|geheugen|agent|chat|skill|preflight|writeback|recovery|herstel/i]
 ];
 
 function sha256(value) {
@@ -180,24 +180,63 @@ export function verifySkillProjectionIndex({ rootDir = process.cwd(), index } = 
   };
 }
 
-export function selectSkillProjection(index, { fingerprints = [], targets = [] } = {}) {
-  const wantedFingerprints = new Set(stableUnique(fingerprints));
-  const wantedTargets = new Set(stableUnique(targets));
-  const hasHints = wantedFingerprints.size > 0 || wantedTargets.size > 0;
-  // Universal prevention is mandatory even when a default/CLI caller provides no task hints.
-  // Other learning remains task-targeted; this is not a full-registry dump.
-  const selected = (index.entries ?? []).filter(entry => {
-    if (entry.mandatory_preflight === true) return true;
-    if (!hasHints) return false;
-    if (wantedFingerprints.has(entry.fingerprint)) return true;
-    return entry.skill_targets.some(target => wantedTargets.has(target));
-  });
+// Intents select relevant existing canonical knowledge; bounded selection is never mislabelled as complete.
+const MAX_IMPLICIT_LEARNINGS = 12;
+
+function inferSkillTargets(intent) {
+  if (typeof intent !== 'string' || !intent.trim()) return [];
+  return stableUnique(TARGET_RULES.filter(([, pattern]) => pattern.test(intent.slice(0, 4096))).map(([name]) => name));
+}
+
+function relevanceScore(entry, tokens) {
+  const text = [entry.fingerprint, ...(entry.sources ?? [])].join(' ').toLowerCase();
+  return tokens.reduce((score, token) => score + Number(text.includes(token)), 0);
+}
+
+export function selectSkillProjection(index, { fingerprints = [], targets = [], intent = '' } = {}) {
+  const explicitFingerprints = stableUnique(fingerprints);
+  const explicitTargets = stableUnique(targets);
+  const inferredTargets = inferSkillTargets(intent);
+  const entries = index.entries ?? [];
+  const mandatoryAndExplicit = entries.filter(entry =>
+    entry.mandatory_preflight === true
+    || explicitFingerprints.includes(entry.fingerprint)
+    || entry.skill_targets?.some(target => explicitTargets.includes(target))
+  );
+  const guaranteed = new Set(mandatoryAndExplicit.map(entry => entry.fingerprint));
+  const tokens = typeof intent === 'string'
+    ? [...new Set(intent.toLowerCase().slice(0, 4096).split(/[^a-z0-9à-ÿ]+/u).filter(token => token.length >= 4))].slice(0, 24)
+    : [];
+  const inferredCandidates = entries.filter(entry =>
+    !guaranteed.has(entry.fingerprint)
+    && entry.skill_targets?.some(target => inferredTargets.includes(target))
+  ).sort((a, b) => relevanceScore(b, tokens) - relevanceScore(a, tokens) || a.fingerprint.localeCompare(b.fingerprint));
+  const inferred = inferredCandidates.slice(0, MAX_IMPLICIT_LEARNINGS);
+  const deferred = inferredCandidates.slice(MAX_IMPLICIT_LEARNINGS);
+  const selectedFingerprints = new Set([...mandatoryAndExplicit, ...inferred].map(entry => entry.fingerprint));
+  const selected = entries.filter(entry => selectedFingerprints.has(entry.fingerprint));
+  const unresolved = explicitFingerprints.filter(fp => !entries.some(entry => entry.fingerprint === fp));
+  const hinted = explicitFingerprints.length || explicitTargets.length || inferredTargets.length;
   return {
     fingerprint: SKILL_PROJECTION_FINGERPRINT,
     projection_digest: index.projection_digest,
-    total_entries: index.entry_count ?? index.entries?.length ?? 0,
-    selection_mode: hasHints ? 'TASK_RELEVANT_WITH_MANDATORY_BASELINE' : 'MANDATORY_BASELINE_NO_TASK_HINTS',
-    selected_entries: selected
+    total_entries: index.entry_count ?? entries.length,
+    selection_mode: !hinted ? 'MANDATORY_BASELINE_NO_TASK_HINTS'
+      : inferredTargets.length ? 'TASK_INTENT_WITH_MANDATORY_BASELINE' : 'TASK_RELEVANT_WITH_MANDATORY_BASELINE',
+    selected_entries: selected,
+    retrieval_evidence: {
+      status: deferred.length || unresolved.length ? 'PARTIAL_REQUIRES_TARGETED_RETRIEVAL' : 'COMPLETE_FOR_MATCHED_HINTS',
+      inferred_targets: inferredTargets,
+      explicit_targets: explicitTargets,
+      explicitly_requested_fingerprints: explicitFingerprints,
+      selected_fingerprints: selected.map(entry => entry.fingerprint),
+      inferred_candidate_count: inferredCandidates.length,
+      inferred_loaded_count: inferred.length,
+      deferred_count: deferred.length,
+      deferred_fingerprint_sample: deferred.slice(0, 12).map(entry => entry.fingerprint),
+      unresolved_explicit_fingerprints: unresolved,
+      interpretation: 'retrieved_not_applied_or_outcome_verified'
+    }
   };
 }
 
