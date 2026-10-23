@@ -9,7 +9,7 @@ const PAID_STATUSES=new Set(['active','trialing']);
 const KNOWN_PLANS=new Set(['starter','pro','groei','enterprise']);
 
 // Read-only projection: never take tenant, plan or billing status from the request.
-export function createCustomerAccountHandler({getUser,storeFactory}={}){
+export function createCustomerAccountHandler({getUser,storeFactory,includeOrganisationId=false}={}){
   if(typeof getUser!=='function'||typeof storeFactory!=='function')
     throw new TypeError('getUser and storeFactory are required');
   return async request=>{
@@ -33,7 +33,7 @@ export function createCustomerAccountHandler({getUser,storeFactory}={}){
         return json(403,{error:'organisation_scope_mismatch'});
       if(!KNOWN_PLANS.has(String(sub.plan_code||'')))
         return json(503,{error:'plan_unavailable'});
-      return json(200,{ready:true,plan:sub.plan_code,
+      return json(200,{ready:true,...(includeOrganisationId?{organisation_id:tenantId}:{}),plan:sub.plan_code,
         plan_name:String(sub.plan_name||sub.plan_code),status:sub.status,
         entitlements:sub.entitlements&&typeof sub.entitlements==='object'?sub.entitlements:{}});
     }catch{return json(503,{error:'account_temporarily_unavailable'})}

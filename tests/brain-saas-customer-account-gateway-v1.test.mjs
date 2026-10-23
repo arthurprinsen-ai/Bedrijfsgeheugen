@@ -45,12 +45,14 @@ test('checkout redirects to the authenticated account activation journey',async(
  const [checkout,page,fn]=await Promise.all([
  readFile('afsluiten.html','utf8'),
  readFile('pages/mijn-account.html','utf8'),
- readFile('netlify/functions/saas-my-account.mjs','utf8')]);
+ readFile('netlify/functions/portal-entitlements.mjs','utf8')]);
  assert.match(checkout,/pages\/mijn-account\.html\?activate=subscription/);
  assert.match(page,/\/api\/checkout\/activate/);
  assert.match(page,/\/api\/saas\/my-account/);
  assert.match(page,/\/portal-v2\//);
  assert.match(fn,/createCustomerAccountHandler/);
+ assert.match(fn,/\/api\/portal-entitlements/);
+ assert.match(fn,/\/api\/saas\/my-account/);
  assert.doesNotMatch(page,/START GRATIS ABONNEMENT/i);
 });
 
@@ -67,4 +69,17 @@ test('invalid tenant IDs cannot call paid plan lookup',async()=>{
  const fake=make({tenantId:'user:u1'});
  const response=await fake.handler(request);
  assert.equal(response.status,403);
+});
+
+test('legacy Portal entitlement route preserves authenticated tenant binding without disclosing it in the account response',async()=>{
+ const base={id:'u1',confirmedAt:'2026-10-23T10:00:00Z'};
+ const store={resolveTenant:async()=>tenant,getEntitlements:async()=>({organisation_id:tenant,plan_code:'starter',plan_name:'Starter',status:'active',entitlements:{data_sources:2}})};
+ const account=createCustomerAccountHandler({getUser:async()=>base,storeFactory:()=>store});
+ const portal=createCustomerAccountHandler({getUser:async()=>base,storeFactory:()=>store,includeOrganisationId:true});
+ const a=await (await account(request)).json();
+ const b=await (await portal(new Request('https://www.bedrijfsgeheugen.nl/api/portal-entitlements'))).json();
+ assert.equal(a.organisation_id,undefined);
+ assert.equal(b.organisation_id,tenant);
+ assert.equal(a.plan,b.plan);
+ assert.deepEqual(a.entitlements,b.entitlements);
 });

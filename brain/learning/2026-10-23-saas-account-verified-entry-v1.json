@@ -8,19 +8,21 @@
   "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4812",
   "status": "CANDIDATE_UNVERIFIED",
   "failure_class": "SAAS_CUSTOMER_ENTRY_DELIVERY_CLOSURE_MISSING",
-  "root_cause": "A new account page was placed at an unclassified root path, so the protected delivery admission gate correctly failed. The next attempt had the page in the existing pages/ lane but lacked Brain learning, append-only development activity and human change documentation in the same material candidate.",
+  "root_cause": "A new account page was placed at an unclassified root path, so the protected delivery admission gate correctly failed. The next attempt had the page in the existing pages/ lane but lacked Brain learning, append-only development activity and human change documentation in the same material candidate. Adding a second function filename also changed the canonical Netlify function inventory, causing the protected portal explanation source/hash freshness check to fail before content tests.",
   "observed_evidence": {
     "required_failed_initial": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39977844111",
     "required_failed_closure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39980483223",
     "not_live": true,
     "provider_preview_failed": true,
-    "customer_acceptance_proven": false
+    "customer_acceptance_proven": false,
+    "preflight_inventory_failed": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39980962268"
   },
-  "fix": "Move new account HTML into the existing classified pages/ website lane and update checkout/test to use its exact route; add one read-only authenticated SaaS entitlement endpoint and preserve the existing Netlify Identity/Stripe/Supabase authority; commit the required closure artifacts in the same PR lineage.",
+  "fix": "Move new account HTML into the existing classified pages/ website lane and update checkout/test to use its exact route; add one read-only authenticated SaaS entitlement endpoint and preserve the existing Netlify Identity/Stripe/Supabase authority; commit the required closure artifacts in the same PR lineage. Consolidate the new account response into the existing portal-entitlements function through two URL routes and the same verified handler, retaining the older organisation_id response only for the existing portal route; delete the duplicate function file.",
   "prevention_rule": "Before any new customer-facing file, classify its path under an existing delivery lane and require server-validated user+canonical tenant+active or trialing subscription; do not treat a checkout success flag, client-side plan lock, missing payment receipt or anonymous scan as authorization. Every material PR carries canonical Brain learning, ledger and documentation with executable tests. Required, CodeQL, preview and independent production acceptance must be green on exact SHA before LIVE.",
   "tests": [
     "tests/brain-saas-customer-account-gateway-v1.test.mjs",
-    "tests/brain-saas-customer-loop-v1.test.mjs"
+    "tests/brain-saas-customer-loop-v1.test.mjs",
+    "tests/brain-portal-explanation-autosync-v1.test.mjs"
   ],
   "compiler": {
     "failure_class": "SAAS_CUSTOMER_ENTRY_DELIVERY_CLOSURE_MISSING",
