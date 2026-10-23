@@ -44,9 +44,9 @@ test('provider failures fail closed, and only GET is accepted',async()=>{
 test('checkout redirects to the authenticated account activation journey',async()=>{
  const [checkout,page,fn]=await Promise.all([
  readFile('afsluiten.html','utf8'),
- readFile('mijn-account.html','utf8'),
+ readFile('pages/mijn-account.html','utf8'),
  readFile('netlify/functions/saas-my-account.mjs','utf8')]);
- assert.match(checkout,/mijn-account\.html\?activate=subscription/);
+ assert.match(checkout,/pages\/mijn-account\.html\?activate=subscription/);
  assert.match(page,/\/api\/checkout\/activate/);
  assert.match(page,/\/api\/saas\/my-account/);
  assert.match(page,/\/portal-v2\//);
