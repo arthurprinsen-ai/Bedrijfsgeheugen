@@ -20,7 +20,7 @@
     "social_learning_recent_evaluations": 0,
     "mira_original_binary_required": true
   },
-  "fix": "Move original ffmpeg-static external/include settings from [functions] to [functions.\"instagram-video-frames\"] only, preserving the existing executable and identity verifier. Correct the canonical Netlify deploy applicability classifier so a netlify.toml-only change cannot be skipped by Netlify ignore-build.",
+  "fix": "Move original ffmpeg-static external/include settings from [functions] to [functions.\"instagram-video-frames\"] only, preserving the existing executable and identity verifier. Correct the canonical Netlify deploy applicability classifier so a netlify.toml-only change cannot be skipped by Netlify ignore-build. Additionally keep production's selective build ignore intact while deploy-preview context forces a real function bundle build, preventing falsely green skipped previews.",
   "prevention_rule": "Large media tooling is isolated to functions that actually use it; ensure Netlify bundle parity and scheduled function real invocation before claiming completed source-qualified learning.",
   "regression_contract": "tests/brain-netlify-scheduled-learning-binary-scope-v1.test.mjs",
   "evaluation": {
@@ -37,6 +37,7 @@
   "release_gates": [
     "Exact-head Required CI and CodeQL",
     "Netlify config-only changes are deployment-required and cannot be skipped by ignore-build",
+    "Deploy previews always build and must show READY verified function artifacts",
     "Netlify preview measured artifact-size reduction",
     "Mira exact-video ffmpeg/frame extractor remains functional",
     "Protected main merge and production deploy parity",
