@@ -64,6 +64,72 @@ test('one outcome cannot inflate proven value or learning through repeated recor
  assert.equal(m.learned,1);
 });
 
+
+test('goal journey, cockpit and Autopilot never count the same real outcome twice',()=>{
+ const now=Date.parse('2026-10-23T09:00:00.000Z');
+ const evidence={
+   id:'outcome-a',tenant_id:'tenant-a',entity_type:'outcome',
+   source_refs:['provider:tenant-a:receipt-1'],provenance:{source:'customer-system'},
+   freshness_at:'2026-10-23T08:59:00.000Z',confidence:0.95,
+   model_or_formula_version:'v1',observed_at:'2026-10-23T08:59:00.000Z',
+   updated_at:'2026-10-23T08:59:00.000Z',
+   verification_status:'OUTCOME_VERIFIED',
+   learning_verified:true,learning_evidence_refs:['learning:tenant-a:outcome-a'],
+   next_decision_id:'decision:next-a'
+ };
+ const state={
+   tenant_id:'tenant-a',
+   powerhouse:{executive:{outcomes:[evidence,{...evidence,source_refs:['provider:tenant-a:receipt-2']}]}},
+   portal:{business_context:{goals:['profit'],primary_goal:'profit',
+     goal_confirmed_at:'2026-10-23T08:00:00.000Z'}}
+ };
+ const home={authenticated:true,selectedGoal:'profit',scan:{verified:false},
+   next:{kind:'measure'}};
+ const journey=buildEntrepreneurJourneyModel(state,{authenticated:true,home,now});
+ assert.equal(journey.autopilot.outcomes,1,'unique canonical outcome ID is counted once');
+ assert.equal(journey.autopilot.learned,1,'one outcome cannot double learning');
+ assert.equal(journey.cockpit.outcomes,1,'cockpit uses the identical proof authority');
+ const stage=journey.steps.find(item=>item.id==='outcome');
+ assert.equal(stage.confirmed,true);
+ assert.match(stage.detail,/1 uniek brongeverifieerd/);
+ assert.doesNotMatch(stage.detail,/2 brongeverifieerde/);
+});
+
+test('no unverified outcome can upgrade the goal stage or cockpit',()=>{
+ const now=Date.parse('2026-10-23T09:00:00.000Z');
+ const source={
+   id:'candidate',tenant_id:'tenant-a',entity_type:'outcome',
+   source_refs:['provider:tenant-a:receipt'],provenance:{source:'customer-system'},
+   freshness_at:'2026-10-23T08:59:00.000Z',confidence:0.95,
+   model_or_formula_version:'v1',observed_at:'2026-10-23T08:59:00.000Z',
+   updated_at:'2026-10-23T08:59:00.000Z',
+   verification_status:'PROVIDER_VERIFIED'
+ };
+ const state={tenant_id:'tenant-a',powerhouse:{executive:{outcomes:[source]}}};
+ const home={authenticated:true,selectedGoal:'profit',scan:{verified:false},
+   next:{kind:'measure'}};
+ const journey=buildEntrepreneurJourneyModel(state,{authenticated:true,home,now});
+ assert.equal(journey.autopilot.outcomes,0);
+ assert.equal(journey.cockpit.outcomes,0);
+ assert.equal(journey.steps.find(item=>item.id==='outcome').confirmed,false);
+});
+
+test('foreign-tenant evidence never verifies this entrepreneur goal or changes cockpit results',()=>{
+ const now=Date.parse('2026-10-23T09:00:00.000Z');
+ const state={tenant_id:'tenant-a',powerhouse:{executive:{outcomes:[{
+   id:'foreign-customer-outcome',tenant_id:'tenant-b',entity_type:'outcome',
+   source_refs:['provider:tenant-b:receipt'],provenance:{source:'tenant-b'},
+   freshness_at:'2026-10-23T08:59:00.000Z',confidence:0.99,
+   model_or_formula_version:'v1',observed_at:'2026-10-23T08:59:00.000Z',
+   updated_at:'2026-10-23T08:59:00.000Z',verification_status:'OUTCOME_VERIFIED'
+ }]}}};
+ const home={authenticated:true,selectedGoal:'profit',scan:{verified:false},next:{kind:'measure'}};
+ const journey=buildEntrepreneurJourneyModel(state,{authenticated:true,home,now});
+ assert.equal(journey.autopilot.outcomes,0);
+ assert.equal(journey.cockpit.outcomes,0);
+ assert.equal(journey.steps.find(item=>item.id==='outcome').confirmed,false);
+});
+
 test('guest and unauthenticated journeys never render tenant autopilot state',()=>{
  const guest=buildEntrepreneurJourneyModel({
    tenant_id:'tenant-private',powerhouse:{executive:{outcomes:[verified]}}
