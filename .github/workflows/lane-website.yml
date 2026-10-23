@@ -100,6 +100,8 @@ jobs:
           node-version: '22'
       - name: Fail fast on broken inline JavaScript
         run: node tools/site-shell/website-static-syntax-preflight.mjs
+      - name: Fail closed on missing browser matrix or incomplete viewport coverage
+        run: node --test tests/brain-website-browser-parallel-v1.test.mjs
 
   baseline:
     needs: [classify, syntax-preflight]
