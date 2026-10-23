@@ -1,0 +1,32 @@
+{
+  "fingerprint": "revenue-goal-deadline-drift-20261019",
+  "compiler": {
+    "failure_class": "REVENUE_GOAL_DEADLINE_DRIFT"
+  },
+  "root_cause": "Production revenue pace view used target_end 2027-09-29, inconsistent with agreed 2027-09-01 target. Initial candidate also lacked recognized test path and mandatory closure artifacts.",
+  "prevention": {
+    "regression_contract": "tests/seo-order-revenue-goal-deadline.test.mjs checks deadline and dynamic pacing; branch protection requires CI, CodeQL and migration readback",
+    "no_bypass": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "observed": "2026-10-19",
+        "input": "2027-09-29 target_end in production view",
+        "expected": "2027-09-01",
+        "outcome": "mismatch confirmed; migration proposed, not yet deployed"
+      },
+      {
+        "observed": "2026-10-19",
+        "input": "PR 4441 Required CI",
+        "expected": "all checks green",
+        "outcome": "admission failed due to missing material closure evidence"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": "tests/seo-order-revenue-goal-deadline.test.mjs added; required CI still pending after closure",
+    "production_readback": "NOT_VERIFIED",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4441"
+  }
+}
