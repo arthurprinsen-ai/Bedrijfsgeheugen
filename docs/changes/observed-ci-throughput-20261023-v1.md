@@ -14,3 +14,9 @@ A single sampled build profile (71,354ms) and a raw queued count cannot prove sp
 
 ## Acceptance and safety
 Tests: `tests/brain-observed-ci-throughput-v1.test.mjs`. Mandatory hygiene, Required, CodeQL, any provider/security/CLS/tenant/financial checks, exact SHA protected merge, current-main readback, real existing hourly Janitor artifact and canonical Brain skill projection. Preserve [provider incident #4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655) independently red until reconciled. This change measures one early signal; it does **not** claim DORA change lead time or deployment frequency.
+
+## Real-provider evidence and adaptive correction — 23 October 2026
+
+The existing Janitor dry-run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) completed successfully on the first merged version, with the new observation step and artifact upload both successful. Actual provider result: **12 runs sampled, 17 valid jobs, 10 distinct runs, 0 read failures**. It correctly emitted `INSUFFICIENT_EVIDENCE`, with p50 and p95 null, because the job threshold was 20.
+
+Rather than lower the quality threshold or add a scheduler, the follow-up collector increases the *upper bound* to 24 completed runs, yet stops immediately when 20 valid jobs and 5 independent workflow attempts have been observed without an earlier provider read error. An incomplete provider read still forces `PARTIAL_PROVIDER_OBSERVATION` and null percentiles; no false success. No added recurring job or new writer. Source evidence requires a second existing Janitor run after protected merge.
