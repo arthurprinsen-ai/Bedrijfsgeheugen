@@ -39,7 +39,7 @@ export function observeRequiredHeadChurn({workflowRuns, totalCount, now} = {}) {
     if (!match) continue;
     // Only the actual completed pull_request Required run is a PR-head observation;
     // merge_group, workflow_dispatch, job-matrix and synthetic names cannot forge it.
-    const id = Number(run.id);
+    const id = run.id;
     const pr = Number(match[1]);
     const stamp = Date.parse(run.created_at || '');
     const valid = Number.isSafeInteger(id) && id > 0 && !uniqueIds.has(id) &&
@@ -82,8 +82,8 @@ export function observeRequiredHeadChurn({workflowRuns, totalCount, now} = {}) {
       'NO_REPEATED_HEADS_IN_BOUNDED_SAMPLE',
     sampled_required_runs: sampledRequired,
     invalid_required_run_rows: invalid,
-    pr_count_with_repeated_heads: repeated.length,
-    additional_head_versions_lower_bound: additionalHeads,
+    pr_count_with_repeated_heads: invalid ? 0 : repeated.length,
+    additional_head_versions_lower_bound: invalid ? 0 : additionalHeads,
     provider_history_truncated: Number.isSafeInteger(totalCount) ?
       totalCount > workflowRuns.length : null,
     provider_total_count: Number.isSafeInteger(totalCount) ? totalCount : null,
