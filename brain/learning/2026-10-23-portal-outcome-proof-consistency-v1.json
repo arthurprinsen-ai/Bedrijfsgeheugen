@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "portal|proof|outcome-count-authority-divergence|20261023-v1",
+  "obligation_id": "portal|proof|outcome-count-authority-divergence|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585",
+  "related_obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4740",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "TENANT_OUTCOME_PROOF_COUNT_INCONSISTENCY",
+  "root_cause": "The existing read-only authenticated entrepreneurial journey marked its goal/outcome stage and cockpit outcome count using owner.outcomes.length, while the Autopilot panel used the stricter canonical buildAutopilotEvidence filtering by healthy source, verified status, nonempty stable ID and deduplication. Duplicate provider records could inflate goal completion and cockpit count while Autopilot correctly counted once.",
+  "source_evidence": [
+    "portal-v2/entrepreneur-journey-model.js had distinct metrics owner.outcomes.length and buildAutopilotEvidence(...).outcomes",
+    "tests/brain-portal-autopilot-proof-v1.test.mjs already asserts exact-ID deduplication in the canonical Autopilot function",
+    "Canonical owner scope: existing authenticated buildOwnerOperatingModel and owner operating projection; no new client fetches"
+  ],
+  "fix": "Compute the existing strict buildAutopilotEvidence once after read-only runtime validation; use its verified outcome count for both stage completion and cockpit count, while preserving separate raw action inventory and the historical/runtime distinction.",
+  "prevention_rule": "Never claim a different number of realized customer outcomes on separate portal surfaces for the same authenticated snapshot. A source document, proposed action, duplicate provider event, simulated forecast or partial provider confirmation cannot count as an independently verified result. The canonical deduplicated proof projection is the single UI counting authority; unknown remains unverified.",
+  "tests": [
+    "tests/brain-portal-autopilot-proof-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-company-intelligence-os"
+  ],
+  "compiler": {
+    "failure_class": "TENANT_OUTCOME_PROOF_COUNT_INCONSISTENCY",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-autopilot-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-autopilot-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-autopilot-proof-v1.test.mjs"
+    ],
+    "invariants": [
+      "Autopilot, goal stage and cockpit count exactly identical unique verified outcomes",
+      "A repeated real ID counted once",
+      "Tenant-unverified or guest outputs are not promoted",
+      "No change to Supabase tenancy, RLS, OAuth, money movement, approval or execution",
+      "Required, CodeQL, Portal, Netlify and exact-commit production readback required"
+    ]
+  },
+  "promotion": "Protected exact-head GitHub tests and CodeQL, safe merge, Netlify source and actual authenticated two-tenant UI acceptance before full business-outcome claim.",
+  "readback": {
+    "candidate": true,
+    "live": false,
+    "actual_customer_improvement_proven": false,
+    "tenant_ab_accepted": false,
+    "forecast_or_money_impact_proven": false
+  }
+}
