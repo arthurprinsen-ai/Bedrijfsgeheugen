@@ -6,21 +6,44 @@
   "relatedIssue": 4215,
   "owner": "portal-v2",
   "status": "CANDIDATE_NOT_LIVE",
-  "scope": [
+  "failure_class": "PORTAL_GOAL_ACTION_PROOF_POLICY",
+  "scope": "PORTAL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "compiler": {
+    "failure_class": "PORTAL_GOAL_ACTION_PROOF_POLICY",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-goal-next-action-v1.test.mjs"
+    ],
+    "expected_behaviors": [
+      "other-tenant action never outranks own tenant",
+      "expired/unproven/blocked action never becomes next actionable item",
+      "human approval remains explicit",
+      "duplicate source references are counted once"
+    ]
+  },
+  "scope_files": [
     "portal-v2/goal-action-selector.js",
     "portal-v2/entrepreneur-home-model.js"
   ],
-  "rootCause": "First matching action could win despite lower relevance; noncanonical status/tenant filtering and duplicate source references could overstate an actionable recommendation.",
-  "intervention": "Deterministic, read-only canonical goal-category/tenant/proof/policy/status selector; unique nonblank source count; no executor or new authority.",
-  "sourceOfTruth": "Authenticated tenant-scoped Powerhouse executive projection and existing action safety and evidence health contracts",
+  "rootCause": "First matching action could win despite lower relevance; status/tenant filtering and duplicate source references could overstate recommendations.",
+  "intervention": "Deterministic read-only canonical goal-category/tenant/proof/policy/status selector; unique nonblank source count; no executor or new authority.",
+  "sourceOfTruth": "Authenticated tenant-scoped Powerhouse executive projection and existing action safety and evidence contracts",
   "checks": {
     "chatLearningPreflight": "READY",
     "snapshot": "a45fa2fb2ae1d55b80540c862c82a4b5973b8e17",
     "localNode22Tests": "51/51 PASS",
-    "exactHeadCI": "NOT_YET_RUN",
+    "initialRequiredAdmission": "LEARNING_FAILURE_CLASS_REQUIRED",
+    "exactHeadCI": "NOT_YET_GREEN",
     "productionReadback": "NOT_PROVEN",
     "customerOutcome": "UNKNOWN"
   },
-  "prevention": "Reject wrong tenant, stale/unproven, blocked, completed or in-flight actions; never treat recommendation as realized value.",
-  "promotion": "Protected exact-head Required + CodeQL, BG169, Netlify exact-SHA live readback, independent tenant A/B evidence and canonical learning writeback; no bypass."
+  "prevention": "Reject wrong tenant, stale/unproven, blocked, completed or in-flight actions; require canonical learning compiler fields and executable historical replay before admission; never treat recommendation as realized value.",
+  "promotion": "Protected exact-head Required + CodeQL, BG169, Netlify SHA readback, independent tenant A/B evidence and canonical learning writeback; no bypass."
 }
