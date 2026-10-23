@@ -45,6 +45,8 @@ test('closed or retired #4792 does not block canonical #4793',()=>{
   const retired=pr(4792,OTHER,{extra:'Retirement-State: RETIRED_DO_NOT_MERGE'});
   const winner=pr(4793);
   assert.equal(evaluateSharedTerminalOwnership({candidate:winner,openCandidates:[retired]}).ok,true);
+  const titleOnly=pr(3975,OTHER);titleOnly.title='RETIRED — terminal lease metadata drift after second in-place sync';
+  assert.equal(evaluateSharedTerminalOwnership({candidate:winner,openCandidates:[titleOnly]}).ok,true);
   const closed=pr(4792,OTHER);closed.state='closed';
   assert.equal(evaluateSharedTerminalOwnership({candidate:winner,openCandidates:[closed]}).ok,true);
 });
@@ -78,6 +80,7 @@ test('the existing production gate obtains provider file lists; native CAS and p
   const required=fs.readFileSync('.github/workflows/required-test.yml','utf8');
   assert.match(admit,/pulls\/\$\{prNumber\}\/files\?per_page=100/);
   assert.match(admit,/changedPaths,\n\s+conflictContracts: currentContracts/);
+  assert.match(admit,/title: item\.title \|\| ''/);
   assert.match(supervisor,/expected_head_sha="\$head"/);
   assert.match(supervisor,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
   assert.match(supervisor,/Writer-Lease-State: MAIN_SYNC/);
