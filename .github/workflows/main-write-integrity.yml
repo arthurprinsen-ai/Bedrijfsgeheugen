@@ -62,7 +62,15 @@ jobs:
         run: |
           set -euo pipefail
           api="repos/${GITHUB_REPOSITORY}"
-          issue_number="$(gh api "${api}/issues?state=open&per_page=100" --paginate | jq --arg fingerprint "$FINGERPRINT" -r '.[] | select(.pull_request == null) | select((.body // "") | contains($fingerprint)) | .number' | head -n1)"
+          # Keep the existing recovery owner and fingerprint. A GitHub API error
+          # object (or malformed issue listing) must not be mistaken for an empty
+          # list: fail closed rather than creating a duplicate recovery issue.
+          issues_json="$(gh api "${api}/issues?state=open&per_page=100" --paginate)"
+          if ! printf '%s\n' "$issues_json" | jq -e 'type == "array" and all(.[]; type == "object")' >/dev/null; then
+            echo "::error::MAIN_WRITE_ISSUE_LIST_INVALID_PROVIDER_SHAPE"
+            exit 75
+          fi
+          issue_number="$(printf '%s\n' "$issues_json" | jq --arg fingerprint "$FINGERPRINT" -r '.[] | select(.pull_request == null) | select((if (.body | type) == "string" then .body else "" end) | contains($fingerprint)) | .number' | head -n1)"
           body=$(cat <<EOF
           Status: \`RECOVERING\`
 
