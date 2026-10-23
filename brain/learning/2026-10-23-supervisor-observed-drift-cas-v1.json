@@ -30,5 +30,10 @@
     "codeql": "PENDING",
     "actual_main_readback": "PENDING",
     "janitor_artifact_readback": "PENDING"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs"
+    ]
   }
 }
