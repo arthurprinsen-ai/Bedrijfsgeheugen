@@ -327,6 +327,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node tools/delivery/ci-throughput-telemetry.mjs
+      - name: Derive read-only repeated CI job priorities for existing agents
+        if: always()
+        continue-on-error: true
+        run: node tools/delivery/ci-agent-priorities.mjs
       - name: Recover missed daily self-evolution using existing hourly Janitor
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
         env:
@@ -343,6 +347,7 @@ jobs:
             .artifacts/janitor-runtime-actions.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
+            .artifacts/powerhouse-ci-agent-priorities.json
             .artifacts/powerhouse-merge-freshness.json
             .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error
