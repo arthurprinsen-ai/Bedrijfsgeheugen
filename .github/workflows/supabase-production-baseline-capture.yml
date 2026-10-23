@@ -1,0 +1,337 @@
+name: Supabase Production Baseline Capture
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/supabase-production-baseline-capture.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: supabase-production-baseline-capture
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Enforce trusted default-branch execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main" || {
+            echo "::error::Production baseline capture may execute only from trusted main workflow code"
+            exit 78
+          }
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Resolve unique highest-version canonical recovery
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidates="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" --jq '
+            [.[] |
+              . as $pr |
+              ((.body // "") | capture("(?m)^Obligation-ID: supabase-migration-history-canonical-v(?<v>[0-9]+)$")?) as $m |
+              select($m != null) |
+              {number, head_ref:.head.ref, head_sha:.head.sha, version:($m.v|tonumber)}
+            ] | sort_by(.version) | reverse
+          ')"
+          count="$(jq 'length' <<<"$candidates")"
+          test "$count" -gt 0 || { echo "::error::No open canonical #3742 recovery candidate found"; exit 78; }
+
+          top_version="$(jq -r '.[0].version' <<<"$candidates")"
+          top_count="$(jq --argjson v "$top_version" '[.[] | select(.version == $v)] | length' <<<"$candidates")"
+          test "$top_count" -eq 1 || {
+            echo "::error::Multiple open canonical recoveries share highest version v$top_version"
+            jq . <<<"$candidates"
+            exit 78
+          }
+
+          target="$(jq '.[0]' <<<"$candidates")"
+          pr="$(jq -r '.number' <<<"$target")"
+          head_ref="$(jq -r '.head_ref' <<<"$target")"
+          head_sha="$(jq -r '.head_sha' <<<"$target")"
+          [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Invalid recovery head SHA"; exit 78; }
+
+          echo "pr=$pr" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "canonical_version=$top_version" >> "$GITHUB_OUTPUT"
+          echo "CANONICAL_RECOVERY pr=$pr version=v$top_version ref=$head_ref sha=$head_sha"
+
+      - name: Capture, repair and prove official production baseline with Supabase CLI
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_ID: adhjwmvyoixzjtmiroln
+          TARGET_PR: ${{ steps.candidate.outputs.pr }}
+          CANDIDATE_HEAD_SHA: ${{ steps.candidate.outputs.head_sha }}
+        run: |
+          set -euo pipefail
+          : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN missing}"
+          : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD missing}"
+          test "$SUPABASE_PROJECT_ID" = "adhjwmvyoixzjtmiroln"
+
+          rm -rf /tmp/bg3742-baseline /tmp/bg3742-candidate
+          mkdir -p /tmp/bg3742-baseline /tmp/bg3742-candidate/supabase
+          cp supabase/config.toml /tmp/bg3742-candidate/supabase/config.toml
+          git archive "$CANDIDATE_HEAD_SHA" supabase/migrations | tar -x -C /tmp/bg3742-candidate
+          git show "$CANDIDATE_HEAD_SHA:supabase/migration-history.lock.json" > /tmp/bg3742-candidate/candidate-lock.json
+
+          cd /tmp/bg3742-candidate
+          supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+          supabase migration list --linked > /tmp/bg3742-baseline/migration-list.pre-repair.txt
+
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const expected=['20260920101150','20260920102450','20260925080500','20261005133951'];
+          const expectedNames={
+            '20260920101150':'p0_proof_replay_baseline_v1',
+            '20260920102450':'instagram_daily_winner_table_replay_baseline_v1',
+            '20260925080500':'instagram_media_reserve_replay_baseline_v1',
+            '20261005133951':'outbound_message_quality_ready_replay_baseline_v1',
+          };
+          const lock=JSON.parse(await readFile('/tmp/bg3742-candidate/candidate-lock.json','utf8'));
+          const pending=(lock.replay_baselines_pending_repair||[])
+            .filter(x=>x.status==='EFFECT_VERIFIED_REPAIR_REQUIRED')
+            .map(x=>({version:String(x.version),name:String(x.name)}))
+            .sort((a,b)=>a.version.localeCompare(b.version));
+          const expectedPending=expected.map(version=>({version,name:expectedNames[version]})).sort((a,b)=>a.version.localeCompare(b.version));
+          if(JSON.stringify(pending)!==JSON.stringify(expectedPending)){
+            console.error(JSON.stringify({error:'CANDIDATE_REPAIR_SET_NOT_EXACT',pending,expected:expectedPending},null,2));
+            process.exit(78);
+          }
+          const text=await readFile('/tmp/bg3742-baseline/migration-list.pre-repair.txt','utf8');
+          const rows=text.split(/\r?\n/)
+            .map(line=>line.trim())
+            .filter(line=>line && !/^[-─┼┬┴]+$/.test(line) && !/^LOCAL\s*[|│]/i.test(line))
+            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .filter(c=>c.length>=2)
+            .map(c=>({local:c[0]||'',remote:c[1]||''}))
+            .filter(r=>/^\d{14}$/.test(r.local)||/^\d{14}$/.test(r.remote));
+          const localOnly=rows.filter(r=>/^\d{14}$/.test(r.local)&&!/^\d{14}$/.test(r.remote)).map(r=>r.local).sort();
+          const remoteOnly=rows.filter(r=>!/^\d{14}$/.test(r.local)&&/^\d{14}$/.test(r.remote)).map(r=>r.remote).sort();
+          const want=[...expected].sort();
+          if(JSON.stringify(localOnly)!==JSON.stringify(want) || remoteOnly.length){
+            console.error(JSON.stringify({error:'PRE_REPAIR_PARITY_NOT_EXACT',localOnly,remoteOnly,expected:want},null,2));
+            process.exit(78);
+          }
+          console.log(JSON.stringify({pre_repair_exact:true,localOnly,remoteOnly},null,2));
+          NODE
+
+          echo "Production effects were independently re-verified through the Supabase SQL authority before this control-plane revision. Candidate lock must still prove EFFECT_VERIFIED_REPAIR_REQUIRED for the exact repair set."
+
+          supabase migration repair \
+            20260920101150 \
+            20260920102450 \
+            20260925080500 \
+            20261005133951 \
+            --status applied \
+            --linked
+
+          cat > /tmp/bg3742-repair-readback.sql <<'SQL'
+          do $proof$
+          begin
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20260920101150' and name='p0_proof_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20260920101150';
+            end if;
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20260920102450' and name='instagram_daily_winner_table_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20260920102450';
+            end if;
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20260925080500' and name='instagram_media_reserve_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20260925080500';
+            end if;
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20261005133951' and name='outbound_message_quality_ready_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20261005133951';
+            end if;
+          end
+          $proof$;
+          SQL
+          supabase db query --linked -p "$SUPABASE_DB_PASSWORD" "$(cat /tmp/bg3742-repair-readback.sql)"
+
+          supabase migration list --linked > /tmp/bg3742-baseline/migration-list.txt
+
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const text=await readFile('/tmp/bg3742-baseline/migration-list.txt','utf8');
+          const rows=text.split(/\r?\n/)
+            .map(line=>line.trim())
+            .filter(line=>line && !/^[-─┼┬┴]+$/.test(line) && !/^LOCAL\s*[|│]/i.test(line))
+            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .filter(c=>c.length>=2)
+            .map(c=>({local:c[0]||'',remote:c[1]||''}))
+            .filter(r=>/^\d{14}$/.test(r.local)||/^\d{14}$/.test(r.remote));
+          const drift=rows.filter(r=>r.local!==r.remote);
+          await writeFile('/tmp/bg3742-baseline/migration-parity.json',JSON.stringify({rows:rows.length,drift},null,2)+'\n');
+          if(!rows.length || drift.length){
+            console.error(JSON.stringify({error:'POST_REPAIR_PARITY_DRIFT',drift},null,2));
+            process.exit(78);
+          }
+          console.log(JSON.stringify({post_repair_exact:true,rows:rows.length},null,2));
+          NODE
+
+          supabase db dump --linked -f /tmp/bg3742-baseline/schema.sql
+          supabase db dump --linked -f /tmp/bg3742-baseline/history-schema.sql --schema supabase_migrations
+          supabase db dump --linked -f /tmp/bg3742-baseline/history-data.sql --use-copy --data-only --schema supabase_migrations
+
+          test -s /tmp/bg3742-baseline/schema.sql
+          test -s /tmp/bg3742-baseline/history-schema.sql
+          test -s /tmp/bg3742-baseline/history-data.sql
+          test -s /tmp/bg3742-baseline/migration-list.txt
+          test -s /tmp/bg3742-baseline/migration-parity.json
+
+          sha256sum \
+            /tmp/bg3742-baseline/schema.sql \
+            /tmp/bg3742-baseline/history-schema.sql \
+            /tmp/bg3742-baseline/history-data.sql \
+            /tmp/bg3742-baseline/migration-list.pre-repair.txt \
+            /tmp/bg3742-baseline/migration-list.txt \
+            /tmp/bg3742-baseline/migration-parity.json \
+            > /tmp/bg3742-baseline/SHA256SUMS
+
+          cd "$GITHUB_WORKSPACE"
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const sums=(await readFile('/tmp/bg3742-baseline/SHA256SUMS','utf8'))
+            .trim().split(/\r?\n/).filter(Boolean)
+            .map(line => {
+              const [sha256, file] = line.trim().split(/\s+/, 2);
+              return { sha256, file: file.replace('/tmp/bg3742-baseline/','') };
+            });
+          const manifest={
+            contract:'supabase-production-baseline-v2',
+            obligation_issue:3742,
+            source:'official-supabase-cli',
+            project_ref:process.env.SUPABASE_PROJECT_ID,
+            captured_from_main_sha:process.env.GITHUB_SHA,
+            candidate_pr:Number(process.env.TARGET_PR),
+            candidate_head_sha:process.env.CANDIDATE_HEAD_SHA,
+            captured_at:new Date().toISOString(),
+            files:sums,
+            migration_history_repair:{
+              status:'applied',
+              versions:['20260920101150','20260920102450','20260925080500','20261005133951'],
+              sql_reexecuted:false,
+              precondition:'exactly these four local-only, candidate lock marks all four EFFECT_VERIFIED_REPAIR_REQUIRED, and zero remote-only',
+              postcondition:'zero migration-list drift'
+            },
+            commands:[
+              'supabase migration list --linked',
+              'supabase migration repair <4 exact versions> --status applied --linked',
+              'supabase migration list --linked',
+              'supabase db dump --linked',
+              'supabase db dump --linked --schema supabase_migrations',
+              'supabase db dump --linked --data-only --schema supabase_migrations'
+            ],
+            hand_built_catalog_dump:false,
+            production_schema_write:false
+          };
+          await writeFile('/tmp/bg3742-baseline/manifest.json', JSON.stringify(manifest,null,2)+'\n');
+          NODE
+
+          rm -rf supabase/.temp .supabase
+
+      - name: Write immutable baseline to exact recovery branch head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_BRANCH: ${{ steps.candidate.outputs.head_ref }}
+          EXPECTED_HEAD: ${{ steps.candidate.outputs.head_sha }}
+          TARGET_PR: ${{ steps.candidate.outputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin "$TARGET_BRANCH"
+          observed="$(git rev-parse "origin/$TARGET_BRANCH")"
+          test "$observed" = "$EXPECTED_HEAD" || {
+            echo "::error::Recovery branch moved before baseline write: expected=$EXPECTED_HEAD observed=$observed"
+            exit 78
+          }
+
+          git checkout -B "$TARGET_BRANCH" "$EXPECTED_HEAD"
+          mkdir -p supabase/production-baseline
+          cp /tmp/bg3742-baseline/schema.sql supabase/production-baseline/schema.sql
+          cp /tmp/bg3742-baseline/history-schema.sql supabase/production-baseline/history-schema.sql
+          cp /tmp/bg3742-baseline/history-data.sql supabase/production-baseline/history-data.sql
+          cp /tmp/bg3742-baseline/migration-list.pre-repair.txt supabase/production-baseline/migration-list.pre-repair.txt
+          cp /tmp/bg3742-baseline/migration-list.txt supabase/production-baseline/migration-list.txt
+          cp /tmp/bg3742-baseline/migration-parity.json supabase/production-baseline/migration-parity.json
+          cp /tmp/bg3742-baseline/SHA256SUMS supabase/production-baseline/SHA256SUMS
+          cp /tmp/bg3742-baseline/manifest.json supabase/production-baseline/manifest.json
+
+          node --input-type=module - <<'NODE'
+          import {readFile,writeFile} from 'node:fs/promises';
+          const path='supabase/migration-history.lock.json';
+          const lock=JSON.parse(await readFile(path,'utf8'));
+          const expected=[
+            ['20260920101150','p0_proof_replay_baseline_v1'],
+            ['20260920102450','instagram_daily_winner_table_replay_baseline_v1'],
+            ['20260925080500','instagram_media_reserve_replay_baseline_v1'],
+            ['20261005133951','outbound_message_quality_ready_replay_baseline_v1'],
+          ];
+          lock.applied=Array.isArray(lock.applied)?lock.applied:[];
+          lock.replay_baselines_pending_repair=Array.isArray(lock.replay_baselines_pending_repair)?lock.replay_baselines_pending_repair:[];
+          for(const [version,name] of expected){
+            const pending=lock.replay_baselines_pending_repair.find(x=>x.version===version&&x.name===name);
+            if(!pending || pending.status!=='EFFECT_VERIFIED_REPAIR_REQUIRED') throw new Error(`LOCK_REPAIR_PRECONDITION_FAILED:${version}`);
+            pending.status='REPAIRED_APPLIED_VERIFIED';
+            pending.repair_method='supabase migration repair --linked --status applied';
+            if(!lock.applied.some(x=>x.version===version)) lock.applied.push({version,name});
+          }
+          lock.applied.sort((a,b)=>a.version.localeCompare(b.version));
+          lock.captured_at=new Date().toISOString();
+          lock.source='supabase_migration_history_after_supported_repair';
+          await writeFile(path,JSON.stringify(lock,null,2)+'\n');
+          NODE
+
+          git add supabase/production-baseline supabase/migration-history.lock.json
+          git diff --cached --quiet && {
+            echo "::error::Official baseline produced no repository delta"
+            exit 78
+          }
+          git commit -m "Capture official Supabase production baseline for #3742"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_HEAD" origin "HEAD:refs/heads/$TARGET_BRANCH"
+
+          new_head="$(git rev-parse HEAD)"
+          pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${TARGET_PR}" --jq '.body')"
+          updated_body="$(PR_BODY="$pr_body" NEW_HEAD="$new_head" node --input-type=module - <<'NODE'
+          const body=process.env.PR_BODY || '';
+          const head=process.env.NEW_HEAD || '';
+          if (!head || !/^Writer-Lease-Head:.*$/m.test(body)) process.exit(78);
+          process.stdout.write(body.replace(/^Writer-Lease-Head:.*$/m, `Writer-Lease-Head: ${head}`));
+          NODE
+          )"
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${TARGET_PR}" -f body="$updated_body" >/dev/null
+
+      - name: Record provider evidence on recovery PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_PR: ${{ steps.candidate.outputs.pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          new_head="$(git rev-parse HEAD)"
+          schema_sha="$(sha256sum supabase/production-baseline/schema.sql | awk '{print $1}')"
+          history_sha="$(sha256sum supabase/production-baseline/history-data.sql | awk '{print $1}')"
+          gh pr comment "$TARGET_PR" --body "Official production baseline captured after supported Supabase migration-history repair of exactly 20260920101150, 20260920102450, 20260925080500 and 20261005133951. Precondition: exactly these four local-only, all four live production effects re-verified, and zero remote-only. Postcondition: zero migration-list drift. No migration SQL was re-executed. Candidate advanced from \`${{ steps.candidate.outputs.head_sha }}\` to \`$new_head\`. schema.sql SHA-256: \`$schema_sha\`; migration-history data SHA-256: \`$history_sha\`. This is baseline evidence only: #3742 remains fail-closed until fresh replay, exact-head gates, protected merge, and post-merge production readback are green."
