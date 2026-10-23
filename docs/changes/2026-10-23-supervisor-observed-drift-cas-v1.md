@@ -20,3 +20,6 @@ Geen tweede scheduler, writer, queue of foutenregister. Het bestaande Powerhouse
 - [Native CAS release PR #4781](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4781)
 
 **Status:** beschermd wijzigingsvoorstel. Bewijs van geslaagde CI, merge, live Janitor-run of snelheidswinst moet na CI onafhankelijk worden gelezen.
+
+## Exacte native afwijzingsclassificatie — aanvullende integratie
+De bestaande supervisor geeft bij een geweigerde native update nu een getypeerde GitHub Actions-annotatie met HTTP-status en onafhankelijk herlezen PR-head uit. De ENIGE bestaande Janitor-collector classificeert die annotatie; de eerdere generieke afwijzing wordt voor dezelfde PR/run gededupliceerd. GitHub 422 met veranderde head blijft expliciet causality-unverified, geen verzonnen bewezen CAS-hoofdoorzaak. Regressie: bestaande tests/brain-recovery-supervisor-telemetry-v1.test.mjs. Native expected-head CAS, fail-closed leases, bounded attempts, one writer en alle protected checks blijven ongewijzigd. Geen tweede telemetry-artifact of scheduler.

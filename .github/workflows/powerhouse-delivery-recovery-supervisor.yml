@@ -508,6 +508,16 @@ jobs:
                     restored="$(sed 's/^Writer-Lease-State: MAIN_SYNC$/Writer-Lease-State: TERMINAL_DELIVERY/' <<<"$rejected_body")"
                     gh api --method PATCH "repos/$repo/pulls/$number" -f body="$restored" >/dev/null || true
                   fi
+                  # Classification is diagnostic only; the rejected native CAS remains fail-closed.
+                  rejection_http="$(grep -Eo 'HTTP [0-9]{3}' /tmp/merge-refresh.err | tail -n1 | awk '{print $2}' || true)"
+                  rejection_class="$(node --input-type=module - "$rejection_http" "$head" "$rejected_head" <<'NODE'
+          import {classifyCasReadback} from './tools/delivery/recovery-supervisor-telemetry.mjs';
+          const [rawStatus,expectedHead,observedHead]=process.argv.slice(2);
+          const httpStatus=/^[0-9]{3}$/.test(rawStatus)?Number(rawStatus):null;
+          process.stdout.write(classifyCasReadback({httpStatus,expectedHead,observedHead}));
+          NODE
+                  )"
+                  echo "::warning::MAIN_DRIFT_UPDATE_REJECTED:PR#$number class:$rejection_class http:${rejection_http:-UNKNOWN}"
                   cat /tmp/merge-refresh.err || true
                 fi
                 ;;
