@@ -1,7 +1,8 @@
 // Read-only evidence of ACTUAL Recovery Supervisor runs for the EXISTING hourly Repository Janitor.
 // Never mutate a PR, start CI, relax gates, declare a deployment, or add a scheduler.
 import {execFileSync} from 'node:child_process';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {buildSupervisorDailyLearning} from './recovery-supervisor-daily-learning.mjs';
 import {pathToFileURL} from 'node:url';
 
 const WF='powerhouse-delivery-recovery-supervisor.yml';
@@ -56,34 +57,44 @@ export function parseSupervisorAnnotations(content,runId){
   if(typeof content!=='string'||content.length>2_000_000)throw Error('LOG_UNBOUNDED');
   const events=[],seen=new Set();
   for(const line of content.split('\n')){
-    const actual=line.match(/^\S+\s+##\[(?:warning|notice|error)\](.+)$/);
-    if(!actual)continue;
-    const note=actual[1];
+    // Only genuine timestamped annotations OR the exact runtime drift marker.
+    // Script source echoes, ANSI text and unstructured prose are never events.
+    const m=line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+(.+)$/);
+    if(!m)continue;
+    const raw=m[1];
+    if(raw.includes('\u001b[')||raw.includes('echo "')||raw.includes('printf '))continue;
+    const marker=raw.match(/^PR#([1-9]\d{0,9})\s+[a-f0-9]{40}\s+MAIN_DRIFT_RECOVERY$/i);
+    const annotation=raw.match(/^##\[(?:warning|notice|error)\](.+)$/);
+    if(!marker&&!annotation)continue;
+    const note=annotation?.[1]||'';
     let pr=null,code=null;
-    const named=note.match(/^(MAIN_DRIFT_[A-Z_]+):PR#([1-9]\d{0,9})/);
-    if(named&&KNOWN.has(named[1])){
-      [code,pr]=[named[1],Number(named[2])];
-    }else{
+    if(marker)[code,pr]=['MAIN_DRIFT_RECOVERY',Number(marker[1])];
+    else{
+      const named=note.match(/^(MAIN_DRIFT_[A-Z_]+):PR#([1-9]\d{0,9})/);
       const rejected=note.match(/^PR#([1-9]\d{0,9}) could not be refreshed automatically;/);
       const successful=note.match(/^PR#([1-9]\d{0,9}) refreshed on same leased lineage /);
       const needed=note.match(/^PR#([1-9]\d{0,9}) requires same-lineage main refresh;/);
-      if(rejected)[code,pr]=['NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED',Number(rejected[1])];
+      const noLease=note.match(/^PR#([1-9]\d{0,9}) has no exact active terminal writer lease; automatic refresh forbidden\./);
+      if(named&&KNOWN.has(named[1]))[code,pr]=[named[1],Number(named[2])];
+      else if(rejected)[code,pr]=['NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED',Number(rejected[1])];
       else if(successful)[code,pr]=['MAIN_DRIFT_SYNC_CONFIRMED',Number(successful[1])];
       else if(needed)[code,pr]=['MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED',Number(needed[1])];
+      else if(noLease)[code,pr]=['MAIN_DRIFT_WRITER_LEASE_MISSING',Number(noLease[1])];
     }
     if(code===null||!Number.isSafeInteger(pr))continue;
     const identity=runId+':'+pr+':'+code;
     if(seen.has(identity))continue;
     seen.add(identity);
-    events.push({run_id:runId,pr_number:pr,code,
-      category:KNOWN.get(code)||
-        (code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED'?'CAS_OR_PROVIDER_REJECTION_UNVERIFIED':
+    const category=code==='MAIN_DRIFT_WRITER_LEASE_MISSING'?'WRITER_LEASE_MISSING':
+      code==='MAIN_DRIFT_RECOVERY'?'DRIFT_DETECTED_NOT_PROVEN_RESOLVED':
+      KNOWN.get(code)||(code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED'?
+        'CAS_OR_PROVIDER_REJECTION_UNVERIFIED':
         code==='MAIN_DRIFT_SYNC_CONFIRMED'?'CAS_UPDATE_CONFIRMED':
-        'DRIFT_DETECTED_NOT_PROVEN_RESOLVED')});
+        'DRIFT_DETECTED_NOT_PROVEN_RESOLVED');
+    events.push({run_id:runId,pr_number:pr,code,category});
   }
   return events;
 }
-
 export function summarizeSupervisorEvidence({runs=[],events=[],available=0,observedAt,
   repo,readErrors=[]}={}){
   const complete=readErrors.length===0;
@@ -97,7 +108,8 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     const p=prMap.get(e.pr_number);
     p.observed_run_ids.add(e.run_id);
     if(e.code==='MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED'||
-      e.code.startsWith('MAIN_DRIFT_')||e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')
+      (e.code.startsWith('MAIN_DRIFT_')&&!['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))||
+      e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')
       p.drift_run_ids.add(e.run_id);
     if(['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))
       p.successful_run_ids.add(e.run_id);
@@ -130,7 +142,7 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     p50_supervisor_job_duration_ms:timed?percentile(durations,.5):null,
     p95_supervisor_job_duration_ms:timed?percentile(durations,.95):null,
     per_pr:byPr,
-    repeated_drift_prs:complete?byPr.filter(p=>p.repeated_drift_observed).map(p=>p.pr_number):[],
+    repeated_drift_prs:complete?byPr.filter(p=>p.repeated_drift_observed).map(p=>p.pr_number):null,
     observed_event_categories:classes,
     runs,read_errors:readErrors,
     time_to_green_ms:null,time_to_production_ms:null,
@@ -190,6 +202,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       time_to_green_ms:null,time_to_production_ms:null,
       release_cycle_speedup_proven:false,can_dispatch:false,can_mutate:false,can_promote:false};
   }
+  // Existing Janitor ran CI telemetry earlier this hour; absent/invalid evidence is null.
+  let ci=null;
+  try{ci=JSON.parse(await readFile('.artifacts/powerhouse-ci-throughput.json','utf8'));}
+  catch{ci=null;}
+  result.daily_learning=buildSupervisorDailyLearning({supervisor:result,ci});
   await mkdir('.artifacts',{recursive:true});
   await writeFile(OUT,JSON.stringify(result,null,2)+'\n');
   console.log(JSON.stringify({status:result.status,runs:result.sampled_completed_runs,
