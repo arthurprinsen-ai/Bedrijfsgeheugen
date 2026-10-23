@@ -6,10 +6,11 @@ const source=readFileSync('supabase/functions/powerhouse-content-orchestrator/in
 const start=source.indexOf('function shouldPreserveExisting(');
 const end=source.indexOf('\n\nDeno.serve(',start);
 assert.ok(start>=0&&end>start,'canonical preserve helper exists');
-const helper=source.slice(start,end).replace('(row:any, channel:string, personalSource:any)','(row, channel, personalSource)');
+const helper=source.slice(start,end).replace(/^function shouldPreserveExisting\([^\n]+\)/,'function shouldPreserveExisting(row, channel, personalSource, consumedCapabilityChannels, obligation = null)');
 const clean=(value)=>String(value??'').trim();
 const covered=new Set(['content_ready','scheduled','published','measured','learned','skipped']);
-const preserve=Function('clean','COVERED_STATES',helper+'; return shouldPreserveExisting;')(clean,covered);
+const live=Function('clean','COVERED_STATES','recoverableUniquenessDenial','recoverableObligationUniquenessDenial',helper+'; return shouldPreserveExisting;')(clean,covered,()=>false,()=>false);
+const preserve=(row,channel,personalSource,consumedCapabilityChannels=new Set(),obligation=null)=>live(row,channel,personalSource,consumedCapabilityChannels,obligation);
 
 test('a repeated unverified first-person claim must not starve due company and blog',()=>{
   const personal={channel:'linkedin_personal',state:'blocked',decision:'publish',priority:100,delivery_evidence:{error:'PERSONAL_SOURCE_UNVERIFIED'}};
@@ -30,11 +31,15 @@ test('genuinely new personal evidence resumes same blocked claim, not duplicate 
 
 test('provider side effects are never reopened and hard auth failures remain separately recoverable',()=>{
   assert.equal(preserve({state:'published',delivery_evidence:{}},'linkedin_company',null),true);
+  assert.equal(preserve({state:'decided',delivery_evidence:{}},'linkedin_company',null,new Set(['linkedin_company'])),true,'a consumed provider capability is not reopened without a confirmed provider receipt');
   assert.equal(preserve({state:'blocked',delivery_ref:'urn:li:share:123',delivery_evidence:{provider_create_success:true}},'linkedin_company',null),true);
   assert.equal(preserve({state:'blocked',delivery_evidence:{error:'LINKEDIN_REAUTH_REQUIRED'}},'linkedin_personal',null),false);
 });
 
 test('source preserves existing single owner and does not create a new dispatch loop',()=>{
+  assert.match(source,/function shouldPreserveExisting\([^)]*consumedCapabilityChannels:Set<string>/);
+  assert.match(helper,/recoverableUniquenessDenial\(row\)/);
+  assert.match(helper,/recoverableObligationUniquenessDenial\(row,obligation,consumedCapabilityChannels\.has\(channel\)\)/);
   assert.match(source,/eq\('state',\s*'decided'\)/);
   assert.match(source,/order\('priority',\{ascending:false\}\)/);
   assert.match(source,/PERSONAL_SOURCE_UNVERIFIED/);

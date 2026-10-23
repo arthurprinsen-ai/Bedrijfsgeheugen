@@ -1,0 +1,77 @@
+{
+  "fingerprint": "ci|brain-baseline|parser-errors|20261021",
+  "obligation_id": "ci-inherited-brain-parser-syntax-20261021",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "source_main_sha": "d18ef16edac0e62058a51afee21cfe0b52a91e20",
+  "evidence": {
+    "run_id": 39554866582,
+    "backend_job_id": 119072398429,
+    "original_failed_tests": 355,
+    "baseline_equivalent": true,
+    "root_causes": [
+      {
+        "test": "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+        "failure": "SyntaxError: Unexpected number",
+        "cause": "Three executable-line Markdown receipt notes after the last test are not JavaScript."
+      },
+      {
+        "test": "tests/supabase-migration-history-terminal-closure-v1.test.mjs",
+        "failure": "SyntaxError: Invalid regular expression flags",
+        "cause": "Overescaped regular-expression literals and stale pattern for current canonical Supabase recovery policy."
+      },
+      {
+        "test": "tests/brain-content-blocked-channel-fairness-v1.test.mjs",
+        "failure": "SyntaxError: Unexpected token ':'",
+        "cause": "The test dynamically compiled an outdated three-argument signature while the actual helper takes five typed arguments including a consumed-capability Set and obligation."
+      }
+    ],
+    "historical_ledger_drift": {
+      "closure_row_count": 568,
+      "current_ledger_row_count_observed": 634,
+      "checked_repaired_version_names": 4,
+      "checked_all_present": true
+    }
+  },
+  "fix": "Remove unparsed historical notes from executable heartbeat test (retain in human change log). Match canonical Supabase parity recovery ownership and production-baseline paths against current exact source using literal checks. Retain all six heartbeat behavioral assertions and all three migration-history closure tests, ledger-count assertions and mandatory release gates. Execute the current five-parameter fairness helper in its existing behavioral tests after normalizing only the TypeScript parameter declaration, injecting test-only no-op uniqueness collaborators, and verify consumed capability prevents blind republishing. The historical 568-row closure receipt is immutable while the current 634-row ledger has legitimately grown; require monotonic count, unique versions and all four exact repaired identities instead of asserting the current ledger never grows.",
+  "prevention_rule": "Keep dated incident receipts in append-only docs, never as bare Markdown inside Node tests; source-contract assertions must be JavaScript-parseable and grounded in the current executable authority, without relaxing migration/readback policy.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+      "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+      "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+      "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "test_evidence": {
+    "before": "BRAIN run 39554866582: both test files fail before executing assertions; total 355 inherited failures.",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "full_brain": "NOT_GREEN",
+    "production": "UNCHANGED",
+    "learning_eval_note": "Learning canonicalizer only accepts tests/brain-*.test.mjs; the supabase migration closure test stays in the existing full backend/BRAIN and direct test coverage, not omitted from the repository."
+  },
+  "acceptance": [
+    "All three prior Node module loading errors disappear while all original behavioral and source-contract checks remain active",
+    "Exact-head Required and Powerhouse CodeQL and full BRAIN gates succeed before protected merge",
+    "No duplicate/placeholder migration, policy bypass or production change",
+    "Full portal #4215 requires separately authenticated two real-customer tests after release"
+  ]
+}
