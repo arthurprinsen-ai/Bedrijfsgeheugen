@@ -6,30 +6,32 @@ const root=new URL('../',import.meta.url);
 const config=readFileSync(new URL('netlify.toml',root),'utf8');
 
 function section(header){
-  const escaped=header.replace(/[.*+?^$()|[\]\\]/g,'\\$&');
-  const found=config.match(new RegExp('^\\['+escaped+'\\]\\r?\\n([\\s\\S]*?)(?=^\\[|$(?![\\s\\S]))','m'));
-  assert.ok(found,header+' configuration must exist');
-  return found[1];
+  const anchor='['+header+']';
+  const start=config.indexOf(anchor+'\n');
+  assert.ok(start>=0,header+' configuration must exist');
+  const after=config.slice(start+anchor.length+1);
+  const next=after.search(/\r?\n\[/);
+  return next>=0?after.slice(0,next):after;
 }
 
-test('No global FFmpeg binary in every serverless and social learning function',()=>{
+test('No globally included FFmpeg for all scheduled Netlify functions',()=>{
   const global=section('functions');
-  assert.doesNotMatch(global,/^\\s*included_files\\s*=/m);
-  assert.doesNotMatch(global,/^\\s*external_node_modules\\s*=/m);
-  assert.match(global,/^\\s*node_bundler\\s*=\\s*"esbuild"/m);
+  assert.doesNotMatch(global,/^\s*included_files\s*=/m);
+  assert.doesNotMatch(global,/^\s*external_node_modules\s*=/m);
+  assert.match(global,/^\s*node_bundler\s*=\s*"esbuild"/m);
 });
 
-test('Only the original Mira frame extractor explicitly carries the binary',()=>{
+test('Original Mira frame extractor alone explicitly includes ffmpeg-static',()=>{
   const frames=section('functions."instagram-video-frames"');
-  assert.match(frames,/^\\s*external_node_modules\\s*=\\s*\\["ffmpeg-static"\\]/m);
-  assert.match(frames,/^\\s*included_files\\s*=\\s*\\["node_modules\\/ffmpeg-static\\/ffmpeg"\\]/m);
-  const original=readFileSync(new URL('netlify/functions/instagram-video-frames.mjs',root),'utf8');
-  assert.match(original,/import ffmpegPath from 'ffmpeg-static';/);
+  assert.match(frames,/^\s*external_node_modules\s*=\s*\["ffmpeg-static"\]/m);
+  assert.match(frames,/^\s*included_files\s*=\s*\["node_modules\/ffmpeg-static\/ffmpeg"\]/m);
+  const source=readFileSync(new URL('netlify/functions/instagram-video-frames.mjs',root),'utf8');
+  assert.match(source,/import ffmpegPath from 'ffmpeg-static';/);
 });
 
-test('Existing social evaluator scheduler remains owned and unchanged',()=>{
+test('Canonical learning scheduler and Supabase store are unchanged',()=>{
   const evaluator=readFileSync(new URL('netlify/functions/social-learning-evaluate.mjs',root),'utf8');
-  assert.match(evaluator,/schedule:\\s*'@hourly'/);
+  assert.match(evaluator,/schedule:\s*'@hourly'/);
   assert.match(evaluator,/createSocialLearningStore/);
   assert.doesNotMatch(evaluator,/ffmpeg-static/);
 });
