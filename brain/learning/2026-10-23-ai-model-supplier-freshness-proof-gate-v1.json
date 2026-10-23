@@ -26,8 +26,22 @@
     "regression": "tests/ai-model-intelligence-freshness-v1.test.mjs",
     "maximum_supplier_receipt_age_days": 7,
     "no_date_rewrite_without_source_proof": true,
-    "no_second_scheduler": true
+    "no_second_scheduler": true,
+    "canonical_regression": "tests/brain-ai-model-supplier-freshness-proof-gate-v1.test.mjs"
   },
   "prevention": "Fail closed on stale, missing, impossible or independently unreviewed supplier claim receipts and do not conflate updated_at with source truth; keep daily learning independent of audit failure.",
-  "result_boundary": "No supplier claims were reverified and no financial or customer outcomes were manufactured; production verified only after required CI, merge and exact deploy readback."
+  "result_boundary": "No supplier claims were reverified and no financial or customer outcomes were manufactured; production verified only after required CI, merge and exact deploy readback.",
+  "compiler": {
+    "failure_class": "SOURCE_FRESHNESS",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 16,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-supplier-freshness-proof-gate-v1.test.mjs"
+    ]
+  },
+  "canonicalization_requirement": "Executable historical replay required before fail-closed policy promotion. Required CI and exact production readback remain independent release gates."
 }
