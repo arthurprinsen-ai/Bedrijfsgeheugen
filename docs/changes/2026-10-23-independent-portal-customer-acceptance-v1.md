@@ -15,7 +15,7 @@ The evaluator checks two distinct pseudonymous real tenant/principal identities,
 ## Runtime wiring and tests
 The only workflow edit is adding regression assertions to the **existing** scheduled `Universal Closed-loop Learning` workflow. Its existing cron remains unchanged. The evaluator itself does not run a scheduler, collect credentials, bypass authentication, create tenants, issue approvals, write Brain state, or trigger deployments. Its tests use *ephemeral local test keys and simulated fixtures*, not real customer proof.
 
-Run: `node --test tests/portal-independent-customer-production-acceptance-v1.test.mjs`.
+Run: `node --test tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs`.
 
 ## Required remaining proof
 A separately authorized production validation must obtain two real customers' consent and independently check both journeys without leaking PII. The current missing connector/forecast evidence must be populated through their existing canonical business flows, not artificial inserts. Exact-head Required, CodeQL, protected merge, release readback and genuine measurable customer outcomes remain mandatory. Keep #4215/#4547/#4585 open pending that proof.
