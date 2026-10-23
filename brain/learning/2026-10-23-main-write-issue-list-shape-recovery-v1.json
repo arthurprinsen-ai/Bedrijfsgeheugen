@@ -1,0 +1,31 @@
+{
+  "fingerprint": "delivery|main-write|unverifiable-pr-association-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3191",
+  "prior_verified_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4657",
+  "incident_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39940563356",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "original_sha": "03bf825a6f4207df397f045ba0a3630faef34170",
+  "independently_verified_provider_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4762",
+  "root_cause": "An eventually available exact GitHub merged-PR association could not be read during five bounded checks. The separate canonical issue-upsert shell assumed every paginated GitHub response was an array of issue objects and jq crashed upon an unexpected string/object, preventing the incident deduplication flow.",
+  "correction": "In the same existing Main Write Integrity workflow, retrieve the complete provider issue response with set -euo pipefail, reject any non-array or non-object page with explicit error and no issue mutation, then fingerprint-match only object records with text bodies.",
+  "safeguard": "The independent classifyMainWrite and exact immutable SHA/merged-PR checks remain fail-closed; this patch neither marks unverifiable commits green nor retries source writes, touches branch protections, starts schedulers or creates parallel issue registries.",
+  "regression": "tests/brain-main-write-integrity.test.mjs",
+  "evidence": {
+    "live_provider_readback": "https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/commits/03bf825a6f4207df397f045ba0a3630faef34170/pulls",
+    "expected_issue_fingerprint": "delivery|main-write|unverifiable-pr-association-v1",
+    "provider_association_lag_not_forged": true,
+    "actual_production_outcome_verified": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ],
+    "invariants": [
+      "Malformed or partial API response cannot create a duplicate incident",
+      "Missing legitimate provider association remains UNKNOWN not GOVERNED",
+      "Valid issue lists retain dedupe across canonical fingerprint and skip PR objects",
+      "No CI/CodeQL/production release gate relaxation"
+    ]
+  },
+  "next_action": "Exact-head protected Required and CodeQL, protected merge and next actual Main Write Integrity provider readback."
+}
