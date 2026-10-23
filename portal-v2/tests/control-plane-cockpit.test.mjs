@@ -22,3 +22,37 @@ test('cockpit metrics include first-time-right and false-success visibility',()=
   assert.match(html,/75\.0%/);
   assert.match(html,/False-success risk/);
 });
+
+test('FULFILLED without an actual outcome receipt is red rather than a green release',()=>{
+  const html=controlPlaneCockpitMarkup({
+    metrics:{obligations_total:1,obligations_fulfilled:1},
+    obligations:[{obligation_key:'customer-value',requested_goal:'Waarde leveren',current_state:'FULFILLED',
+      outcome_verified:false,migration_readback_verified:true,evidence_count:9,red_evidence_count:0}]
+  });
+  assert.match(html,/data-state="bad"/);
+  assert.match(html,/FULFILLED · UITKOMST ONBEWEZEN/);
+  assert.match(html,/Geclaimd afgerond/);
+  assert.match(html,/Geen productiesucces bewezen/);
+  assert.doesNotMatch(html,/data-state="ok"/);
+});
+
+test('Only literal outcome_verified=true promotes FULFILLED to green',()=>{
+  const verified=controlPlaneCockpitMarkup({obligations:[
+    {obligation_key:'done',current_state:'FULFILLED',outcome_verified:true}
+  ]});
+  assert.match(verified,/data-state="ok"/);
+  assert.doesNotMatch(verified,/UITKOMST ONBEWEZEN|Geen productiesucces bewezen/);
+  const forged=controlPlaneCockpitMarkup({obligations:[
+    {obligation_key:'forged',current_state:'FULFILLED',outcome_verified:'true'}
+  ]});
+  assert.match(forged,/data-state="bad"/);
+  assert.match(forged,/Outcome open/);
+});
+
+test('Unverified outcomes do not allow HTML injection into the control-plane screen',()=>{
+  const html=controlPlaneCockpitMarkup({obligations:[
+    {obligation_key:'<script>alert(1)</script>',current_state:'FULFILLED',outcome_verified:null}
+  ]});
+  assert.doesNotMatch(html,/<script>/);
+  assert.match(html,/&lt;script&gt;/);
+});
