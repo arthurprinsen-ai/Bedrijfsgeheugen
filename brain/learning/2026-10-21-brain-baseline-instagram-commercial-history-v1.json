@@ -1,0 +1,74 @@
+{
+  "fingerprint": "ci|brain-baseline|instagram-commercial-historical-sql-source|20261021-v1",
+  "obligation_id": "ci-inherited-instagram-commercial-history-source-20261021",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "source_main_sha": "9130957e1f444dddc2cd512eab74b575125f7428",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "run_id": 39660607012,
+    "backend_job_id": 119432847782,
+    "latest_full_brain": {
+      "tests": 3500,
+      "pass": 3171,
+      "fail": 329
+    },
+    "root_cause": "Five inherited ENOENT failures across two unchanged source-contract tests still open immutable historic SQL under executable migrations instead of repository-only historical sources.",
+    "archived_sources": [
+      {
+        "path": "supabase/migration-history/repository-only/20260920110000_instagram_daily_winner_lineage_v1.sql",
+        "blob_sha": "d66c4119fe0e75a4622f35fd7d420f31bd7dadf8",
+        "retained_source_assertions": 13,
+        "negative_guard": true,
+        "expected_failing_tests": 3
+      },
+      {
+        "path": "supabase/migration-history/repository-only/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+        "blob_sha": "18876bf5a51efe00d948f6652899477535b910a4",
+        "retained_source_assertions": 21,
+        "candidate_filter_order_guard": true,
+        "expected_failing_tests": 2
+      }
+    ],
+    "source_only": true
+  },
+  "fix": "Change only four historic SQL path references across two existing BRAIN test files; preserve full original test bodies, regex guards, provider and tenant boundaries.",
+  "prevention_rule": "Source-contract tests for immutable historical Supabase SQL must read the authentic repository-only archive, never restore old migrations under executable migrations or drop a safety assertion.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "status": "CANDIDATE_SOURCE_PROVEN_CI_PENDING",
+  "test_evidence": {
+    "before": "Full BRAIN at 50be8613: 3500 total, 3171 pass, 329 fail. Three Instagram and two human-commercial failures are ENOENT on archived SQL.",
+    "after": "Verified exact original archive object SHAs; Instagram 13/13 positive + negative guard; human commercial 21/21 source markers plus candidate-filter ordering. Original two BRAIN test files unchanged except path literals. Exact-head Node, Required, CodeQL and full BRAIN runner receipts pending.",
+    "full_brain": "NOT_GREEN",
+    "production": "UNCHANGED"
+  },
+  "acceptance": [
+    "Focused original test files pass on exact head",
+    "Required+Powerhouse CodeQL+full Unified BRAIN all terminal-success on exact head before protected merge",
+    "No historic SQL copied into executable migrations; no weakening of positive or negative assertions",
+    "Real two-customer Portal A/B and delivery readback independently required under #4215"
+  ]
+}
