@@ -1,6 +1,7 @@
 // One frozen winner governs Instagram media and caption lineage. Never replace
 // an externally sourced daily problem with an unrelated modulo PH-P rotation.
 import {MIRA_CASES,selectMiraProblem,miraCaption as legacyCaption,miraProductionEvidence as legacyEvidence,validateMiraCaptionForDelivery as legacyValidate} from './mira-entrepreneur-caption.mjs';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL} from './mira-canonical-face.mjs';
 // Source-specific editorial approval is immutable repository policy, NOT a
 // user-controllable property of the external complaint/recommendation.
 export const MIRA_SOURCE_LED_CAPTION_CONTRACT='mira-source-led-illustrated-privacy-case-v1';
@@ -143,8 +144,8 @@ export function sourceLedAutoVerifyCandidate({runDate,resolved,job,ob,postType,r
    scene:resolved.scene,
    asset_url:resolved.asset_url,
    openart_history_id:resolved.openart_history_id,
-   openart_reference_id:'Yjqu4D7v76HABNPmQPj1',
-   openart_reference_url:'https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg',
+   openart_reference_id:MIRA_MASTER_REFERENCE_ID,
+   openart_reference_url:MIRA_MASTER_REFERENCE_URL,
    generation_mode:'image2video',
    duration:8
  }};
