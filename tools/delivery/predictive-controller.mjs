@@ -51,12 +51,19 @@ export const QUEUE_PRESSURE_DEFAULTS = Object.freeze({ softActive:8, softQueued:
 
 export function assessQueuePressure({queued=0,inProgress=0,pending=0,waiting=0,requested=0,projectedNewRuns=0,queueEvidence=null,limits=QUEUE_PRESSURE_DEFAULTS}={}){
   const split=queueEvidence?partitionVerifiedProviderGhostQueue(queueEvidence):null;
-  const rawQueued=Math.max(0,Number(queued)||0);
+  // Provider counts are evidence, not user input. Unknown, fractional, negative or
+  // string counts must never silently become zero and open optional CI capacity.
+  const suppliedCounts={queued,inProgress,pending,waiting,requested,projectedNewRuns};
+  const invalidCountKeys=Object.keys(suppliedCounts).filter(key=>
+    !Number.isSafeInteger(suppliedCounts[key]) || suppliedCounts[key]<0
+  );
+  const count=key=>invalidCountKeys.includes(key)?0:suppliedCounts[key];
+  const rawQueued=count('queued');
   // Collection counts outrank any partial/inconsistent proof snapshot.
   const eligible=split && split.snapshotComplete && split.rawQueued===rawQueued ? split.verifiedProviderGhostQueued : 0;
-  // No optional dispatch if independent exact-ID reads contradict the queued listing.
-  const providerQueueUnknown=Boolean(split && (split.collectionInconsistent || split.rawQueued!==rawQueued));
-  const counts={queued:Math.max(0,rawQueued-eligible),rawQueued,verifiedProviderGhostQueued:eligible,inProgress:Math.max(0,Number(inProgress)||0),pending:Math.max(0,Number(pending)||0),waiting:Math.max(0,Number(waiting)||0),requested:Math.max(0,Number(requested)||0),projectedNewRuns:Math.max(0,Number(projectedNewRuns)||0)};
+  // Invalid provider counts or contradictory exact-ID reads fail closed.
+  const providerQueueUnknown=Boolean(invalidCountKeys.length || (split && (split.collectionInconsistent || split.rawQueued!==rawQueued)));
+  const counts={queued:Math.max(0,rawQueued-eligible),rawQueued,verifiedProviderGhostQueued:eligible,inProgress:count('inProgress'),pending:count('pending'),waiting:count('waiting'),requested:count('requested'),projectedNewRuns:count('projectedNewRuns')};
   const active=counts.queued+counts.inProgress+counts.pending+counts.waiting+counts.requested;
   const projectedActive=active+counts.projectedNewRuns;
   const projectedQueued=counts.queued+counts.projectedNewRuns;
@@ -65,7 +72,7 @@ export function assessQueuePressure({queued=0,inProgress=0,pending=0,waiting=0,r
   else if(active>=limits.hardActive||counts.queued>=limits.hardQueued){state='CIRCUIT_OPEN';action='NO_NEW_RECOVERY_OR_OPTIONAL_WORK_REUSE_DEDUPE_REAP';}
   else if(counts.projectedNewRuns>limits.maxProjectedNewRuns||projectedActive>=limits.hardActive||projectedQueued>=limits.hardQueued){state='PROJECTED_OVERLOAD';action='BATCH_NARROW_OR_DEFER_BEFORE_MUTATION';}
   else if(active>=limits.softActive||counts.queued>=limits.softQueued){state='PRESSURE_HIGH';action='ESSENTIAL_SINGLE_FLIGHT_ONLY_BATCH_WRITES';}
-  return Object.freeze({state,action,active,projectedActive,projectedQueued,allowOptionalDispatch:state==='HEALTHY',allowRecoveryFanout:false,providerGhostIncidentOpen:split?.providerIncidentStillOpen===true,queueSnapshotInconsistent:providerQueueUnknown,shouldBatchWrites:state!=='HEALTHY'||counts.projectedNewRuns>1,counts,limits});
+  return Object.freeze({state,action,active,projectedActive,projectedQueued,allowOptionalDispatch:state==='HEALTHY',allowRecoveryFanout:false,providerGhostIncidentOpen:split?.providerIncidentStillOpen===true,queueSnapshotInconsistent:providerQueueUnknown,invalidCountKeys:Object.freeze(invalidCountKeys),shouldBatchWrites:state!=='HEALTHY'||counts.projectedNewRuns>1,counts,limits});
 }
 
 export const DEFAULT_SLO = Object.freeze({
