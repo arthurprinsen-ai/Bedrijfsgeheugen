@@ -56,7 +56,7 @@ test('the production router calls the strict resolver before it can verify media
  assert.match(src,/resolveMiraFrozenWinner\(runDate,/);
  assert.match(src,/if\(!winnerContract\.ok\)/);
  assert.match(src,/action==='submit_asset'\)return json\(\{ok:false,error:winnerContract\.code/);
- assert.match(src,/winnerContract\.winner_recommendation_id&&clean\(manifest\.recommendation_id\)/);
+ assert.match(src,/winnerContract\.winner_recommendation_id\|\|clean\(manifest\.recommendation_id\)/);
  assert.match(src,/powerhouse-instagram-media-verifier/);
  assert.match(src,/MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES/);
  assert.match(src,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
