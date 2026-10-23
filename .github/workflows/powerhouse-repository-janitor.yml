@@ -61,7 +61,7 @@ jobs:
             let uniqueCommits=true;
             let compareEvidence={status:'UNPROVEN'};
             try {
-              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/main...${pr.head.sha}`);
+              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/${process.env.GITHUB_SHA}...${pr.head.sha}`);
               uniqueCommits=Number(compare.ahead_by || 0) > 0;
               compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
             } catch (error) {
@@ -82,6 +82,7 @@ jobs:
           const evidence={
             observed_at:new Date().toISOString(),
             repository:process.env.GITHUB_REPOSITORY,
+            main_epoch_sha:process.env.GITHUB_SHA,
             open_pr_count:candidates.length,
             candidates:candidates.map(({number,headSha,uniqueCommits,compareEvidence})=>({number,headSha,uniqueCommits,compareEvidence})),
             ...plan,
@@ -89,6 +90,10 @@ jobs:
           await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
           console.log(JSON.stringify(evidence,null,2));
           NODE
+      - name: Diagnose read-only merge freshness from existing Janitor snapshot
+        if: always()
+        continue-on-error: true
+        run: node tools/delivery/ci-merge-freshness.mjs
       - name: Apply deterministic safe PR cleanup
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
@@ -338,5 +343,6 @@ jobs:
             .artifacts/janitor-runtime-actions.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
+            .artifacts/powerhouse-merge-freshness.json
             .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error
