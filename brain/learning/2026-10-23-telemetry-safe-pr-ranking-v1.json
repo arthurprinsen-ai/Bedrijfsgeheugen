@@ -1,0 +1,17 @@
+{
+  "fingerprint": "ci-adaptive-pr-ranking:canonical-evidence:20261023-v1",
+  "title": "Single-writer PR ordering and bounded CI observation; independent AI release evidence",
+  "obligation_id": "delivery|ci-adaptive-evidence-pr-ranking|20261023-v1",
+  "parent_issue": 4661,
+  "detection": "Repeated Required run observations, bottlenecks and main drift must be measured from provider identity",
+  "root_cause": "Provider ordering alone does not express evidence-qualified sync priority; run repetition can be misread as safely skippable",
+  "correction": "Pure advisory ranks existing PR snapshot; keeps existing required-gate lease CAS on authority; precise repeat grouping; paired job measurements; AI evidence hold",
+  "prevention_rule": "Never infer safe sync, duplicate test to skip or AI production approval from an advisory or partial sample",
+  "regression_tests": [
+    "tests/delivery-ci-adaptive-pr-planner.test.mjs",
+    "tests/delivery-powerhouse-supervisor.test.mjs"
+  ],
+  "independent_proof": "Pending exact-head protected Required, CodeQL, provider run and post-merge observation",
+  "release_status": "CANDIDATE_UNVERIFIED",
+  "reuse": "Existing Janitor, CI Intelligence, Recovery Supervisor, quality admission and canonical memory; no new scheduler"
+}

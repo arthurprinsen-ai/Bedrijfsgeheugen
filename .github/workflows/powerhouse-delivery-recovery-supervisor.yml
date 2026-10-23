@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify recovery controller
-        run: node --test tests/delivery-powerhouse-supervisor.test.mjs
+        run: node --test tests/delivery-powerhouse-supervisor.test.mjs tests/delivery-ci-adaptive-pr-planner.test.mjs
       - name: Recover exact-head canonical Required gate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -168,6 +168,15 @@ jobs:
             exit 0
           fi
           gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          # Read-only priority planning from the same GitHub provider signals.
+          # Fail closed to original PR order if telemetry is unavailable; all
+          # existing live merge-base, lease, overlap, CAS and test gates remain.
+          if gh api "repos/$repo/actions/runs?per_page=100" > /tmp/adaptive-ci-actions.json &&
+             node tools/delivery/ci-adaptive-pr-planner.mjs --rank /tmp/open-prs.json /tmp/adaptive-ci-actions.json > /tmp/adaptive-ranked-prs.json; then
+            mv /tmp/adaptive-ranked-prs.json /tmp/open-prs.json
+          else
+            echo "::warning::ADAPTIVE_PRIORITY_UNAVAILABLE: retaining canonical provider order; no gates changed."
+          fi
           recovered_prs=0
           while read -r pr; do
             if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
