@@ -58,6 +58,7 @@ jobs:
           EVENT_PR_BODY: ${{ github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           EXPECTED_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+          TRUSTED_WORKFLOW_SHA: ${{ github.workflow_sha }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
@@ -71,6 +72,28 @@ jobs:
             printf '{"state":"MANUAL_DIAGNOSTIC","admitted":true,"head_sha":"%s"}\n' "$GITHUB_SHA" > .artifacts/powerhouse-delivery-hygiene.json
             exit 0
           fi
+          # BEGIN TRUSTED_ADMISSION_POLICY_SOURCE
+          # The workflow can run against an older immutable PR HEAD. Fetch only
+          # its trusted admission policy from the exact workflow revision;
+          # never use a PR-controlled fallback or the moving main ref.
+          fail_trusted_policy() {
+            mkdir -p .artifacts
+            printf '{"state":"CONTROL_PLANE_POLICY_SOURCE_UNAVAILABLE","ok":false,"admitted":false}\n' > .artifacts/powerhouse-delivery-hygiene.json
+            printf 'state=CONTROL_PLANE_POLICY_SOURCE_UNAVAILABLE\nadmitted=false\nobligation_id=\ncandidate_head_sha=%s\n' "$EXPECTED_HEAD_SHA" >> "$GITHUB_OUTPUT"
+            echo "::error::TRUSTED_ADMISSION_POLICY_SOURCE_UNAVAILABLE" >&2
+            exit 78
+          }
+          [[ "$TRUSTED_WORKFLOW_SHA" =~ ^[0-9a-f]{40}$ ]] || fail_trusted_policy
+          if ! git cat-file -e "$TRUSTED_WORKFLOW_SHA^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$TRUSTED_WORKFLOW_SHA" || fail_trusted_policy
+          fi
+          TRUSTED_ADMISSION_CLASSIFIER="$RUNNER_TEMP/powerhouse-trusted-admission-$TRUSTED_WORKFLOW_SHA.mjs"
+          if ! git show "$TRUSTED_WORKFLOW_SHA:tools/delivery/github-admission-rate-limit.mjs" > "$TRUSTED_ADMISSION_CLASSIFIER"; then
+            fail_trusted_policy
+          fi
+          test -s "$TRUSTED_ADMISSION_CLASSIFIER" || fail_trusted_policy
+          export TRUSTED_ADMISSION_CLASSIFIER
+          # END TRUSTED_ADMISSION_POLICY_SOURCE
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
@@ -78,7 +101,9 @@ jobs:
           import { parseDeliveryMetadata, parseWriterLease, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
           import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
-          import { classifyGitHubAdmissionReadError } from './tools/delivery/github-admission-rate-limit.mjs';
+          import { pathToFileURL } from 'node:url';
+          if (!process.env.TRUSTED_ADMISSION_CLASSIFIER) throw new Error('TRUSTED_ADMISSION_CLASSIFIER_MISSING');
+          const { classifyGitHubAdmissionReadError } = await import(pathToFileURL(process.env.TRUSTED_ADMISSION_CLASSIFIER).href);
 
           const LOCAL_COMMAND_MAX_BUFFER = 64 * 1024 * 1024;
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8',maxBuffer:LOCAL_COMMAND_MAX_BUFFER}).trim();
