@@ -78,10 +78,11 @@ jobs:
           import { parseDeliveryMetadata, parseWriterLease, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
           import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
+          import { classifyGitHubAdmissionReadError } from './tools/delivery/github-admission-rate-limit.mjs';
 
           const LOCAL_COMMAND_MAX_BUFFER = 64 * 1024 * 1024;
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8',maxBuffer:LOCAL_COMMAND_MAX_BUFFER}).trim();
-          const transientApiFailure = error => /HTTP\s+(?:502|503|504)\b|upstream connect error|connection (?:refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up/i.test(`${error?.message || ''}\n${error?.stderr || ''}\n${error?.stdout || ''}`);
+          const transientApiFailure = error => classifyGitHubAdmissionReadError(error).retry_immediately;
           const GH_MAX_BUFFER = LOCAL_COMMAND_MAX_BUFFER;
           const gh = async path => {
             const delays = [250, 500, 1000];
@@ -134,7 +135,8 @@ jobs:
               state,
               ok: false,
               admitted: false,
-              failure_fingerprint: transientApiFailure(error) ? 'github-api-transient-unavailable-v1' : 'delivery-hygiene-admission-error-v1',
+              failure_fingerprint: classifyGitHubAdmissionReadError(error).fingerprint,
+              provider_recovery: classifyGitHubAdmissionReadError(error).next_action,
               error: errorSummary(error),
             };
             await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);
@@ -334,7 +336,7 @@ jobs:
             console.log(JSON.stringify(evidence,null,2));
             if (!result.ok) process.exitCode = 78;
           } catch (error) {
-            const state = transientApiFailure(error) ? 'CONTROL_PLANE_API_UNAVAILABLE' : 'CONTROL_PLANE_ADMISSION_ERROR';
+            const state = classifyGitHubAdmissionReadError(error).state;
             await writeFailureEvidence(state, error);
             process.exitCode = 1;
           }
