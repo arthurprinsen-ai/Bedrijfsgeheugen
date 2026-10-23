@@ -37,6 +37,9 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
      rows.length!==telemetry.sample_jobs){
     return deny('INSUFFICIENT_EVIDENCE','INCOMPLETE_OR_UNTRUSTED_TELEMETRY');
   }
+  const repeatFloor=Number.isSafeInteger(minRepeatedRuns)&&minRepeatedRuns>=3?minRepeatedRuns:3;
+  const medianFloor=Number.isSafeInteger(minMedianMs)&&minMedianMs>=60000?minMedianMs:60000;
+  const priorityBound=Number.isSafeInteger(maxPriorities)&&maxPriorities>=1?Math.min(5,maxPriorities):5;
   const unique=new Set(),groups=new Map(),attempts=new Set();
   for(const row of rows){
     const run=row?.run_id,attempt=row?.run_attempt,job=row?.job_id;
@@ -64,7 +67,7 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
   const ranked=[];
   for(const [key,group] of groups){
     const attemptsCount=group.attempts.size;
-    if(attemptsCount<Math.max(3,minRepeatedRuns))continue;
+    if(attemptsCount<repeatFloor)continue;
     // A matrix can create several same-named jobs in ONE workflow attempt.
     // Treat its slowest executed job as the conservative per-attempt wall-time
     // representative, never as multiple statistically independent runs.
@@ -83,7 +86,7 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
       return deny('EVIDENCE_REJECTED','REPEATED_ATTEMPT_IDENTITY_MISMATCH',rows.length);
     const durations=independent.map(row=>row.execution_ms);
     const median=percentile(durations,.5);
-    if(median<Math.max(60000,minMedianMs))continue;
+    if(median<medianFloor)continue;
     ranked.push(Object.freeze({
       signature:key,workflow_name:group.workflow,job_name:group.job,
       suggested_lane:group.lane,independent_run_attempts:attemptsCount,
@@ -106,7 +109,7 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
     reason:ranked.length?'MULTIPLE_DISTINCT_WORKFLOW_ATTEMPTS':'NO_THRESHOLD_CROSSING_GROUP',
     observed_at:telemetry.observed_at||null,sampled_jobs:rows.length,
     distinct_runs:attempts.size,min_repeated_runs:minRepeatedRuns,min_median_ms:minMedianMs,
-    priorities:Object.freeze(ranked.slice(0,maxPriorities)),
+    priorities:Object.freeze(ranked.slice(0,priorityBound)),
     provenance:'EXISTING_JANITOR_PROVIDER_TIMESTAMPS',
     can_mutate:false,can_dispatch:false,can_promote:false
   });
