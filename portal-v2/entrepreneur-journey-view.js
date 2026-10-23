@@ -24,6 +24,41 @@ export function renderEntrepreneurJourney(host,journey){
     add(card,'strong','',item.label);
     add(card,'p','',item.detail);
   }
+  // Show what Powerhouse has verifiably proposed, measured and learned.
+  // Counts use the existing tenant-authorized owner projection; absent data is
+  // not presented as zero, and no progress bar can imply self-driving success.
+  const pilot=journey.autopilot;
+  if(pilot){
+    const section=add(shell,'section','eh-autopilot');
+    section.dataset.entrepreneurAutopilot='proof-v1';
+    section.setAttribute('aria-label','Automatische ondersteuning en bewijs');
+    add(section,'span','eh-eyebrow','JOUW AUTOPILOOT · TRANSPARANT BEWIJS');
+    add(section,'h4','','Wat regelt Bedrijfsgeheugen voor mij?');
+    add(section,'p','eh-muted',pilot.freshRuntime
+      ?'Een recente tenantgebonden Brain-runtime is waargenomen. Alleen onderstaande afzonderlijk bewezen stappen tellen mee.'
+      :'De actuele Brain-runtime is niet bevestigd. Historische bewijsregistraties zeggen niets over wat nu automatisch draait.');
+    const grid=add(section,'div','eh-autopilot-grid');
+    for(const [label,value] of [
+      ['Onderbouwde voorstellen',pilot.proposals],
+      ['Besluiten die aandacht vragen',pilot.approvals],
+      ['Geverifieerde resultaten',pilot.outcomes],
+      ['Bewezen leerkring',pilot.learned]
+    ]){
+      const tile=add(grid,'div','eh-autopilot-tile');
+      add(tile,'strong','',value===null?'Onbekend':String(value));
+      add(tile,'span','',label);
+    }
+    const execution=add(section,'p','eh-autopilot-proof',pilot.autonomousExecutionVerified
+      ?'Autonome uitvoering is afzonderlijk bevestigd door de bestaande uitvoeringsketen.'
+      :'Zelfstandige uitvoering is nog niet end-to-end bewezen. Een voorstel, geplande taak of bronupdate geldt niet als afgeronde actie.');
+    execution.setAttribute('role','status');
+    add(section,'p','eh-autopilot-note','Een leerkring telt alleen wanneer een brongeverifieerde uitkomst, leerbewijs én een volgende beslissing zijn gekoppeld. Resultaat is niet automatisch aan jouw gekozen doel toe te rekenen.');
+    const links=add(section,'div','eh-autopilot-links');
+    const actions=add(links,'button','eh-text-action','Bekijk acties en toestemming →');
+    actions.type='button';actions.dataset.entrepreneurPage='actieve-acties';
+    const evidence=add(links,'button','eh-text-action','Bekijk resultaten en bewijs →');
+    evidence.type='button';evidence.dataset.entrepreneurPage='outcomes-evidence';
+  }
   const bottom=add(shell,'div','eh-journey-links');
   const cockpit=add(bottom,'article','eh-journey-panel');
   add(cockpit,'strong','','Mijn ondernemerscockpit');
