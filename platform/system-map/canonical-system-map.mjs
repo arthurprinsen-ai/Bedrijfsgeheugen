@@ -1,13 +1,13 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-22T19:08:44.155Z',
+  observedAt:'2026-10-23T09:31:43.301Z',
   requiredGateWatchdogResilience:Object.freeze({owner:'Required Gate Watchdog',source:'.github/scripts/required-gate-watchdog.mjs',cron:'*/5 * * * *',boundedGetAttempts:2,readTimeoutMs:8000,perPrErrorIsolation:true,ambiguousWriteRetry:false,productionVerified:false}),
   brainFullFailureTriage:Object.freeze({fingerprint:'delivery|brain|first-failure-only-learning-blindspot|20261022-v1',source:'tools/delivery/brain-failure-clustering.mjs',workflow:'.github/workflows/unified-brain-delivery.yml',authority:'existing-failed-lane-artifact',maxCases:5000,model:'observation-only',productionVerified:false}),
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'5f5af6a1e7078be58cba271e54bb18b508ad387074c4cf35149a792070ad2535',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'f1d72df432f3f0a838cd82da4e48bcfc6ed7e59cf4326f6134a9e57d9cfbf01c',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
