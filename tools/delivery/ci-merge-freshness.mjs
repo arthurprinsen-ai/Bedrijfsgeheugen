@@ -40,7 +40,7 @@ export function assessObservedMergeFreshness({snapshot={},openPrs=[],mainSha=''}
       return base('WITHHELD_PR_IDENTITY_MISMATCH');
     const retired=/^\s*RETIRED\b/i.test(pr.title||'')||
       /Retirement-State:\s*RETIRED_DO_NOT_MERGE|\nRETIRED:/i.test(pr.body||'');
-    if(retired||pr.draft===true||c.uniqueCommits===false)continue;
+    if(retired||pr.draft===true)continue;
     const cmp=c.compareEvidence;
     if(!cmp||!['ahead','diverged','behind','identical'].includes(cmp.status)||
       !validCount(cmp.ahead_by)||!validCount(cmp.behind_by)||
