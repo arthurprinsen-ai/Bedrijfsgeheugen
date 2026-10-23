@@ -54,6 +54,7 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
     ...summary,
     // A provider error suppresses even attribution-only hotspots.
     diagnostic_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',jobs:[]}:summary.diagnostic_hotspots,
+    recurrent_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',minimum_distinct_attempts:3,jobs:[]}:summary.recurrent_hotspots,
     observed_at:new Date(now).toISOString(),
     repository:repo,
     workflow_runs_sampled:sampledRuns,
@@ -83,6 +84,7 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       p50_wait_to_start_ms:result.p50_wait_to_start_ms,
       p95_wait_to_start_ms:result.p95_wait_to_start_ms,
       slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
+      recurring_slow_jobs:result.recurrent_hotspots.jobs.length,
       read_errors:result.read_errors.length
     }));
     if(result.read_errors.length)process.exitCode=2;
