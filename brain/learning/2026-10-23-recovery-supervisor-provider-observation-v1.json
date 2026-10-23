@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|recovery-supervisor|missing-repeat-drift-observations|20261023-v1",
+  "status": "CANDIDATE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4120",
+  "root_cause": "Safe CAS recovery live but aggregate repeated-drift, lease-denial and CAS effectiveness metrics were absent. Agents could not distinguish a green supervisor job from actually recovered branches.",
+  "baseline": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "wall_seconds_approx": 246,
+    "unleased_drift_denials": 58,
+    "failed_gate_unleased_denials": 24,
+    "observed_native_cas_attempts": 0
+  },
+  "fix": "Count runtime events inside existing supervisor and emit JSON to existing GitHub Actions log and job summary; no changes to branch-recovery decisions.",
+  "prevention_rule": "No false speedup/green claim absent actual provider metrics; retain one writer per PR, immutable expected-head CAS, bounded retries and required CI.",
+  "regression": [
+    "tests/brain-recovery-supervisor-provider-observation-v1.test.mjs"
+  ],
+  "revenue_proven": false,
+  "throughput_gain_proven": false,
+  "metrics": [
+    "repeated_drift_seen",
+    "cas_update_attempts",
+    "main_sync_proven",
+    "drift_budget_exhausted",
+    "drift_without_terminal_lease",
+    "sweep_elapsed_seconds"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

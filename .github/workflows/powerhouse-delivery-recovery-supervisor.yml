@@ -169,6 +169,18 @@ jobs:
           fi
           gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
           recovered_prs=0
+          # Observation only: reuse the existing GitHub job; never grant recovery authority.
+          sweep_started_epoch="$(date -u +%s)"
+          drift_or_conflict_seen=0
+          drift_without_terminal_lease=0
+          repeated_drift_seen=0
+          drift_budget_exhausted=0
+          cas_update_attempts=0
+          cas_update_failed=0
+          main_sync_pending_seen=0
+          main_sync_proven=0
+          main_sync_async_pending=0
+          failed_gate_unleased=0
           while read -r pr; do
             if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
               echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$RECOVERY_PR_BUDGET"
@@ -184,6 +196,7 @@ jobs:
             # Reconcile only the same native CAS writer; never create a second update.
             early_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
             if [ "$early_state" = MAIN_SYNC ] && grep -Eq '^Writer-Lease-Drift-Refreshes: [0-9]+$' <<<"$body"; then
+              main_sync_pending_seen=$((main_sync_pending_seen + 1))
               old_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
               sync_epoch="$(sed -n 's/^Writer-Lease-Main-Epoch: //p' <<<"$body" | tail -n1)"
               if [ "$head" = "$old_head" ]; then
@@ -229,6 +242,7 @@ jobs:
                 END {if(s!=1||hd!=1||bs!=1||e!=1)exit 42}
               ')"
               gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
+              main_sync_proven=$((main_sync_proven + 1))
               echo "::notice::MAIN_DRIFT_SYNC_RECONCILED:PR#$number; new exact-head Required and CodeQL still mandatory."
               recovered_prs=$((recovered_prs + 1))
               continue
@@ -306,6 +320,7 @@ jobs:
                 lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
                 lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
                 if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ "$lease_head" != "$head" ]; then
+                  failed_gate_unleased=$((failed_gate_unleased + 1))
                   echo "::notice::PR#$number failed gate remains fail-closed; current metadata is not an exact terminal lease."
                   continue
                 fi
@@ -334,6 +349,7 @@ jobs:
                 echo "::notice::PR#$number current-head workflow is long-running but still in progress; do not cancel without concrete stalled-job evidence."
                 ;;
               MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY)
+                drift_or_conflict_seen=$((drift_or_conflict_seen + 1))
                 echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
                 if [ "$head_repo" != "$repo" ]; then
                   echo "::warning::PR#$number is not a same-repository branch; automatic refresh forbidden."
@@ -344,6 +360,7 @@ jobs:
                 lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
                 lease_obligation="$(sed -n 's/^Writer-Lease-Obligation: //p' <<<"$body" | tail -n1)"
                 if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ -z "$lease_owner" ] || [ "$lease_head" != "$head" ] || [ -z "$lease_obligation" ]; then
+                  drift_without_terminal_lease=$((drift_without_terminal_lease + 1))
                   echo "::warning::PR#$number has no exact active terminal writer lease; automatic refresh forbidden."
                   continue
                 fi
@@ -352,7 +369,9 @@ jobs:
                   echo "::warning::MAIN_DRIFT_COUNTER_INVALID:PR#$number"; continue
                 fi
                 [ -n "$drift_count" ] || drift_count=0
+                if [ "$drift_count" -gt 0 ]; then repeated_drift_seen=$((repeated_drift_seen + 1)); fi
                 if [ "$drift_count" -ge "$MAX_MAIN_DRIFT_REFRESHES" ]; then
+                  drift_budget_exhausted=$((drift_budget_exhausted + 1))
                   echo "::warning::MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED:PR#$number"; continue
                 fi
                 default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
@@ -414,6 +433,7 @@ jobs:
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   continue
                 fi
+                cas_update_attempts=$((cas_update_attempts + 1))
                 if gh api --method PUT "repos/$repo/pulls/$number/update-branch" -f expected_head_sha="$head" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
                   new_head="$head"
                   for readback_attempt in 1 2 3 4 5 6 7 8; do
@@ -422,6 +442,7 @@ jobs:
                     sleep 2
                   done
                   if [ "$new_head" = "$head" ]; then
+                    main_sync_async_pending=$((main_sync_async_pending + 1))
                     echo "::warning::MAIN_DRIFT_ASYNC_PENDING:PR#$number; held for reconciliation."
                     continue
                   fi
@@ -451,10 +472,12 @@ jobs:
           NODE
                   )"
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
+                  main_sync_proven=$((main_sync_proven + 1))
                   echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; MAIN_SYNC lease returned to exact TERMINAL_DELIVERY."
                   recovered_prs=$((recovered_prs + 1))
                   echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 else
+                  cas_update_failed=$((cas_update_failed + 1))
                   echo "::warning::PR#$number could not be refreshed automatically; restoring terminal lease fail-closed."
                   rejected_head="$(gh api "repos/$repo/pulls/$number" --jq '.head.sha' 2>/dev/null || echo unknown)"
                   rejected_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""' 2>/dev/null || echo '')"
@@ -472,6 +495,27 @@ jobs:
               echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
             fi
           done < <(jq -c '.[]' /tmp/open-prs.json)
+          # This receipt is an observation, not a promotion or success certificate.
+          sweep_elapsed_seconds="$(( $(date -u +%s) - sweep_started_epoch ))"
+          metrics="$(jq -nc \
+            --arg sha "$GITHUB_SHA" \
+            --argjson drift "$drift_or_conflict_seen" \
+            --argjson refused "$drift_without_terminal_lease" \
+            --argjson repeated "$repeated_drift_seen" \
+            --argjson exhausted "$drift_budget_exhausted" \
+            --argjson cas "$cas_update_attempts" \
+            --argjson cas_failed "$cas_update_failed" \
+            --argjson pending "$main_sync_pending_seen" \
+            --argjson proven "$main_sync_proven" \
+            --argjson async "$main_sync_async_pending" \
+            --argjson gates "$failed_gate_unleased" \
+            --argjson actions "$recovered_prs" \
+            --argjson duration "$sweep_elapsed_seconds" \
+            '{version:"powerhouse-recovery-supervisor-observation-v1",source_sha:$sha,drift_or_conflict_seen:$drift,drift_without_terminal_lease:$refused,repeated_drift_seen:$repeated,drift_budget_exhausted:$exhausted,cas_update_attempts:$cas,cas_update_failed_unclassified:$cas_failed,main_sync_pending_seen:$pending,main_sync_proven:$proven,main_sync_async_pending:$async,failed_gate_unleased:$gates,recovered_prs:$actions,sweep_elapsed_seconds:$duration,causal_speedup_proven:false,customer_value_proven:false}')"
+          echo "::notice::RECOVERY_SUPERVISOR_OBSERVATION_V1:$metrics"
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            printf '### Recovery Supervisor provider observations\n\n```json\n%s\n```\n' "$metrics" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Recover merged obligations missing terminal closure
         env:
