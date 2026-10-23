@@ -44,16 +44,24 @@ test('historical evidence is not current live autonomic execution',()=>{
 });
 
 test('learning requires verified outcome, learning evidence and next decision',()=>{
- const invalid=[{...verified,learning_evidence_refs:[]},
-   {...verified,next_decision_id:''},
-   {...verified,learning_verified:false},
-   {...verified,verification_status:'PROVIDER_VERIFIED'},
-   {...verified,evidence_health:{status:'stale'}},
-   {...verified,source_refs:[]}];
+ const invalid=[{...verified,id:'no-learning-evidence',learning_evidence_refs:[]},
+   {...verified,id:'no-next-decision',next_decision_id:''},
+   {...verified,id:'not-learned',learning_verified:false},
+   {...verified,id:'provider-only',verification_status:'PROVIDER_VERIFIED'},
+   {...verified,id:'stale-evidence',evidence_health:{status:'stale'}},
+   {...verified,id:'no-source',source_refs:[]}];
  const m=buildAutopilotEvidence(owner([...invalid,verified]),'TENANT_RUNTIME_OBSERVED');
  assert.equal(m.outcomes,4);
  assert.equal(m.learned,1);
  assert.equal(m.status,'RUNTIME_OBSERVED');
+});
+
+test('one outcome cannot inflate proven value or learning through repeated records',()=>{
+ const duplicates=[verified,{...verified,learning_evidence_refs:['learning:duplicate']},
+   {...verified,id:'',outcome_id:''}];
+ const m=buildAutopilotEvidence(owner(duplicates),'TENANT_RUNTIME_OBSERVED');
+ assert.equal(m.outcomes,1);
+ assert.equal(m.learned,1);
 });
 
 test('guest and unauthenticated journeys never render tenant autopilot state',()=>{
