@@ -76,3 +76,35 @@ test('existing hourly collector embeds only advisory priorities; never dispatche
   assert.equal(x.agent_priority_advice.may_dispatch,false);
   assert.deepEqual(x.agent_priority_advice.priorities.map(p=>p.lane),['backend-supabase','powerhouse']);
 });
+
+
+test('real CodeQL JS security hotspot routes to CodeQL analysis, never unrelated preflight',()=>{
+  const sha='4'.repeat(40);
+  const jobs=[
+    {run_id:39927850261,run_attempt:1,job_id:120328545101,head_sha:sha,
+      workflow_name:'Powerhouse CodeQL',job_name:'CodeQL javascript-typescript',conclusion:'success',execution_ms:199000,wait_to_start_ms:3000},
+    {run_id:39927728654,run_attempt:1,job_id:120328733393,head_sha:'6'.repeat(40),
+      workflow_name:'Required test PR #4740',job_name:'netlify_build_parity',conclusion:'success',execution_ms:106000,wait_to_start_ms:3000}
+  ];
+  const evidence={status:'SAMPLED_METRICS_NOT_SLO',sample_jobs:21,distinct_runs:11,read_errors:[],
+    diagnostic_hotspots:{status:'SAMPLED_DIAGNOSTIC_NOT_CRITICAL_PATH',jobs}};
+  const advice=routeObservedCiHotspots(evidence);
+  assert.equal(advice.status,'EVIDENCE_BACKED_INVESTIGATION_ONLY');
+  assert.deepEqual(advice.priorities.map(x=>x.lane),['powerhouse','website']);
+  assert.equal(advice.priorities[0].action,'PROFILE_CODEQL_ANALYSIS_RUNTIME_PRESERVING_FULL_SECURITY_GATES');
+  assert.equal(advice.priorities[0].job_id,120328545101);
+  assert.equal(advice.priorities[0].observed_execution_ms,199000);
+  assert.equal(advice.priorities[1].action,'COMPARE_EXACT_SHA_COLD_WARM_BUILD_AND_CONTENT_PARITY');
+  assert.equal(advice.may_mutate,false);
+  assert.equal(advice.may_dispatch,false);
+  assert.equal(advice.may_promote,false);
+  assert.ok(advice.mandatory_release_gates.includes('CodeQL'));
+});
+
+test('only CodeQL hotspots change the security-specific advice; ordinary preflight stays unchanged',()=>{
+  const row={...observed.diagnostic_hotspots.jobs[0],job_name:'preflight',workflow_name:'Required test'};
+  const advice=routeObservedCiHotspots({...observed,diagnostic_hotspots:{
+    status:'SAMPLED_DIAGNOSTIC_NOT_CRITICAL_PATH',jobs:[row]}});
+  assert.equal(advice.priorities[0].action,'MEASURE_EXISTING_REQUIRED_PREFLIGHT_PHASE_WITHOUT_SKIPPING_GATES');
+  assert.equal(advice.priorities[0].lane,'powerhouse');
+});

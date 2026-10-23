@@ -10,6 +10,17 @@ const ACTIONS=Object.freeze({
   powerhouse:'MEASURE_EXISTING_REQUIRED_PREFLIGHT_PHASE_WITHOUT_SKIPPING_GATES',
   'owner-unresolved':'RESOLVE_CANONICAL_WORKFLOW_OWNER_BEFORE_MUTATION'
 });
+// Security analysis cannot be optimized by changing an unrelated preflight step.
+// Job and workflow names are advisory provider data, never execution instructions.
+function advisoryActionFor(lane,job){
+  const jobName=String(job?.job_name||'');
+  const workflowName=String(job?.workflow_name||'');
+  if(/\bcodeql\b/i.test(jobName)||/\bcodeql\b/i.test(workflowName)){
+    return 'PROFILE_CODEQL_ANALYSIS_RUNTIME_PRESERVING_FULL_SECURITY_GATES';
+  }
+  return ACTIONS[lane];
+}
+
 function laneOf(job){
   // Advisory string routing only: no permissions or test selections derive from these labels.
   const name=String(job.job_name||'').toLowerCase();
@@ -73,7 +84,7 @@ export function routeObservedCiHotspots(telemetry={}, {maxOwners=3}={}){
   const priorities=[...byLane].slice(0,bound).map(([lane,job],rank)=>({
     rank:rank+1,lane,
     owner_resolution_required:lane==='owner-unresolved',
-    action:ACTIONS[lane],
+    action:advisoryActionFor(lane,job),
     run_id:job.run_id,run_attempt:job.run_attempt,job_id:job.job_id,
     head_sha:job.head_sha,
     job_name:job.job_name,workflow_name:job.workflow_name,
