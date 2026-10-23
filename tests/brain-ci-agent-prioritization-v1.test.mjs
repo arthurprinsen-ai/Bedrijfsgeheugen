@@ -67,7 +67,7 @@ test('existing hourly collector embeds only advisory priorities; never dispatche
     if(path.includes('status=completed'))return {workflow_runs:runs};
     const id=Number(path.match(/runs\/(\d+)\/jobs/)[1]);
     return {total_count:3,jobs:Array.from({length:3},(_,i)=>({
-      id:id*100+i,name:i===0?'preflight':'backend',status:'completed',conclusion:'success',
+      id:id*100+i,name:id%2===0?'preflight':'backend',status:'completed',conclusion:'success',
       created_at:iso(0),started_at:iso(1000),completed_at:iso(3000+i*100)
     }))};
   }});
