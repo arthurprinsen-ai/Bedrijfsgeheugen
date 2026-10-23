@@ -1,6 +1,7 @@
 import { chromium, firefox, webkit } from 'playwright';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { planMobileClsReplay, summarizeMobileClsReplay } from './mobile-cls-repeatability.mjs';
 
 const contractPath=process.env.WEBSITE_ASSURANCE_CONTRACT||'config/powerhouse-website-cross-browser-assurance-v1.json';
 const contract=JSON.parse(await fs.readFile(contractPath,'utf8'));
@@ -289,7 +290,45 @@ for(const browserName of contract.screenshot_matrix.browsers){
   }
 }
 
-const report={version:contract.version,generatedAt:new Date().toISOString(),baseUrl:base,routeCount:routes.length,resultCount:results.length,interactionCount:interactions.length,failures:failures.length,results,interactions};
+// Extra cold-load sampling runs INSIDE the existing daily production workflow.
+// The full public-sitemap sweep above still fails independently with the original threshold.
+async function replayMobileClsForDailyProduction(){
+  if(process.env.ASSURANCE_MODE!=='daily') return null;
+  const policy=JSON.parse(await fs.readFile('config/powerhouse-mobile-cls-repeatability-v1.json','utf8'));
+  const plan=planMobileClsReplay(routes,policy);
+  const records=[];
+  const replayBrowser=await chromium.launch({headless:true});
+  try{
+    for(const mode of plan.modes){
+      for(let round=1;round<=plan.rounds;round++){
+        const width=mode==='parallel'?2:1;
+        for(let start=0;start<plan.routes.length;start+=width){
+          const batch=plan.routes.slice(start,start+width);
+          const got=await Promise.all(batch.map(route=>checkOne({
+            browserName:'chromium',browser:replayBrowser,viewportName:'mobile',route
+          })));
+          got.forEach((result,index)=>{
+            const route=batch[index];
+            records.push({route,mode,round,status:result.status,
+              cls:result.state?.cls??null,violations:result.violations,
+              // Diagnostic-only sanitized element geometry; no page text.
+              sources:(result.state?.clsEntries||[]).slice(0,12)});
+            if(result.violations.length) failures.push(result);
+          });
+        }
+      }
+    }
+  }finally{await replayBrowser.close()}
+  const summary=summarizeMobileClsReplay(plan,records);
+  if(!summary.healthy) failures.push({
+    browser:'chromium',viewport:'mobile',route:'CLS_REPEATABILITY',
+    violations:['Independent isolated/parallel cold-load CLS repeatability exceeded the unchanged 0.100 quality gate']
+  });
+  return {summary,records};
+}
+const mobileClsRepeatability=await replayMobileClsForDailyProduction();
+
+const report={version:contract.version,generatedAt:new Date().toISOString(),baseUrl:base,routeCount:routes.length,resultCount:results.length,interactionCount:interactions.length,failures:failures.length,results,interactions,mobileClsRepeatability};
 await fs.writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));
 console.log(JSON.stringify({version:report.version,routeCount:report.routeCount,resultCount:report.resultCount,interactionCount:report.interactionCount,failures:failures.length,failed:failures.slice(0,50).map(x=>({browser:x.browser,viewport:x.viewport,route:x.route,interaction:x.interaction||null,violations:x.violations,failedCore:x.failedCore||[],clsEntries:x.state?.clsEntries||[]}))},null,2));
 if(failures.length)process.exitCode=1;
