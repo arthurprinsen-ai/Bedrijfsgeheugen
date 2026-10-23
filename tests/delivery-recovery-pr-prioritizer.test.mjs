@@ -60,3 +60,34 @@ test('unrankable PRs preserve original default recovery order',()=>{
   assert.deepEqual(rank([pr(10,{state:'ACTIVE'}),pr(11,{state:'ACTIVE'})])
     .ordered_prs.map(p=>p.number),[10,11]);
 });
+
+test('MAIN_SYNC with the second bounded drift attempt still ranks for reconciliation',()=>{
+  const x=rank([pr(10),pr(11,{state:'MAIN_SYNC',drift:2})]);
+  assert.deepEqual(x.ordered_prs.map(p=>p.number),[11,10]);
+  assert.equal(x.rankings[0].lease_valid,true);
+  assert.equal(x.rankings[0].advisory_stage,'RECONCILE_EXISTING_MAIN_SYNC');
+  assert.equal(x.safety.max_drift_refreshes,2);
+  const excessive=rank([pr(11,{state:'MAIN_SYNC',drift:3}),pr(10)]);
+  assert.equal(excessive.rankings.at(-1).lease_valid,false);
+});
+test('fresh exact-head Required success is advisory priority over old unobserved PR',()=>{
+  const old={...pr(3120),updated_at:'2026-10-01T08:00:00Z'};
+  const x=rank([old,pr(4789)],[run(4789),run(3120,{id:22,event:'workflow_dispatch'})]);
+  assert.deepEqual(x.ordered_prs.map(p=>p.number),[4789,3120]);
+  assert.equal(x.rankings[0].observed_completed_exact_head_required_success,true);
+  assert.equal(x.rankings[1].observed_completed_exact_head_required_success,false);
+  assert.equal(x.safety.skip_required_or_codeql,false);
+});
+test('unknown bounded Required evidence is not treated as failed; recent PRs get priority',()=>{
+  const old={...pr(3120),updated_at:'2026-09-01T00:00:00Z'};
+  const x=rank([old,pr(4789)],[]);
+  assert.deepEqual(x.ordered_prs.map(p=>p.number),[4789,3120]);
+  assert.equal(x.sample,'BOUNDED_GITHUB_REQUIRED_RUNS_NOT_FULL_CI_HISTORY');
+  assert.ok(x.rankings.every(r=>r.observed_completed_exact_head_required_success===false));
+});
+test('an active exact-head Required check defers even after a previous successful run',()=>{
+  const x=rank([pr(4789),pr(4798)],
+    [run(4789),run(4789,{id:2,status:'queued',conclusion:null})]);
+  assert.deepEqual(x.ordered_prs.map(p=>p.number),[4798,4789]);
+  assert.equal(x.rankings[1].observed_active_required,true);
+});
