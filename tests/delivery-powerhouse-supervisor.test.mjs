@@ -370,3 +370,13 @@ test('cross-lane impact remains available for queue-held agent work',()=>{
   assert.equal(held.state,'BATCH_BEFORE_MUTATION');
   assert.deepEqual(held.deliveryImpact.lanes,['website','cms']);
 });
+
+
+test('native drift sync uses expected-head CAS and bounded attempts',()=>{
+ const y=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+ assert.match(y,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
+ assert.match(y,/expected_head_sha="\$head"/);
+ assert.doesNotMatch(y,/--method POST "repos\/\$repo\/merges"/);
+ assert.match(y,/MAIN_DRIFT_UPDATE_UNVERIFIED/);
+ assert.match(y,/MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED/);
+});
