@@ -1,13 +1,14 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate} from '../_shared/mira-frozen-winner-contract.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+declare const EdgeRuntime:{waitUntil(promise:Promise<unknown>):void};
 const FRAME_EXTRACTOR='https://www.bedrijfsgeheugen.nl/.netlify/functions/instagram-video-frames';
 async function digest(bytes:Uint8Array){const h=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function hashRemote(url:string,max=120*1024*1024){const r=await fetch(url,{redirect:'follow'});if(!r.ok)throw new Error('MEDIA_FETCH_FAILED');const bytes=new Uint8Array(await r.arrayBuffer());if(!bytes.length||bytes.length>max)throw new Error('MEDIA_SIZE_INVALID');return{sha256:await digest(bytes),contentType:clean(r.headers.get('content-type')).split(';')[0].toLowerCase()};}
@@ -166,6 +167,55 @@ Deno.serve(async req=>{
  }
 
  const allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[],readyProviders=allowed.filter((p:string)=>ready(p));
+
+ // Heartbeat's existing preflight reuses the ONE immutable source-backed video.
+ // One compare-and-swap claim, then the SAME authenticated media router checks
+ // the true bytes, t=0/mid/end face >=0.940 and temporal movement in background.
+ // No generation spend, additional scheduler, alternate publisher or auto-PASS.
+ if(action==='preflight'&&sourceLed&&postType==='reel'&&!historical){
+  const candidate=sourceLedAutoVerifyCandidate({runDate,resolved:winnerContract,job,ob,postType,readyProviders});
+  if(candidate.ok){
+   if(typeof EdgeRuntime==='undefined'||typeof EdgeRuntime.waitUntil!=='function')
+    return json({ok:false,error:'MIRA_PROOF_BACKGROUND_RUNTIME_UNAVAILABLE'},503);
+   const claim=await db.from('powerhouse_instagram_media_jobs_v1')
+    .update({status:'WAITING_PROOF',attempts:1,selected_provider:'openart',
+      provider_connection_state:'ASSET_MATERIALIZED',asset_manifest:candidate.assetManifest,
+      last_error:null,next_action:'Original router verifying existing OpenArt video: face and temporal proof.',
+      updated_at:new Date().toISOString()})
+    .eq('id',job.id).eq('updated_at',job.updated_at)
+    .eq('status','WAITING_ASSET').eq('attempts',0)
+    .select('id').maybeSingle();
+   if(claim.error)return json({ok:false,error:'MIRA_AUTO_PROOF_CLAIM_FAILED'},503);
+   if(!claim.data)return json({ok:true,ready:false,status:'STATE_CHANGED_RETRY',runDate},409);
+   const background=invoke(base,token,'powerhouse-instagram-media-router',{
+     runDate,action:'submit_asset',postType:'reel',provider:'openart',
+     assetManifest:candidate.assetManifest
+   }).then(async result=>{
+     if(result.http===200&&result.body?.ready===true)return;
+     const code=clean(result.body?.error||'MIRA_EXACT_VIDEO_PROOF_INCOMPLETE').slice(0,150);
+     console.error('MIRA_SOURCE_AUTO_VERIFY_REJECTED',runDate,code);
+     const u=await db.from('powerhouse_instagram_media_jobs_v1')
+      .update({last_error:'MIRA_AUTO_PROOF_FAILED:'+code,
+        next_action:'Inspect real frame and temporal proof; never substitute or duplicate this video.',
+        updated_at:new Date().toISOString()})
+      .eq('id',job.id).eq('status','WAITING_PROOF').is('last_error',null);
+     if(u.error)console.error('MIRA_AUTO_PROOF_WRITE_FAILED',u.error.code);
+   }).catch(async error=>{
+     console.error('MIRA_AUTO_PROOF_TRANSPORT_ERROR',clean(error?.message||error).slice(0,100));
+     const u=await db.from('powerhouse_instagram_media_jobs_v1')
+      .update({last_error:'MIRA_AUTO_PROOF_TRANSPORT_FAILED',
+        next_action:'Recover verifier transport within existing Heartbeat; no new generation.',
+        updated_at:new Date().toISOString()})
+      .eq('id',job.id).eq('status','WAITING_PROOF').is('last_error',null);
+     if(u.error)console.error('MIRA_AUTO_PROOF_WRITE_FAILED',u.error.code);
+   });
+   EdgeRuntime.waitUntil(background);
+   return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',
+     openart_history_id:candidate.assetManifest.openart_history_id,
+     next_action:'One existing video accepted for genuine frame/temporal verification; no Instagram provider create yet.'});
+  }
+ }
+
  const existingAssetUrl=clean(job?.asset_manifest?.asset_url||job?.asset_manifest?.assetUrl);
  const existingProvider=clean(job?.asset_manifest?.provider||job?.selected_provider).toLowerCase();
  const assetMaterialized=!!existingAssetUrl && !!existingProvider && allowed.includes(existingProvider);
