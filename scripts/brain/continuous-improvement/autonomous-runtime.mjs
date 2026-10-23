@@ -156,9 +156,11 @@ export function findSimplificationCandidates({ capabilities = [], helpers = [], 
 
 function freshnessWeight(observedAt, now) {
   if (!observedAt) return null;
-  const ageMs = Math.max(0, new Date(now).getTime() - new Date(observedAt).getTime());
-  if (!Number.isFinite(ageMs)) return null;
-  const days = ageMs / 86400000;
+  const observedMs = new Date(observedAt).getTime();
+  const referenceMs = new Date(now).getTime();
+  // Never turn future-dated claims into fresh, measured business outcomes.
+  if (!Number.isFinite(observedMs) || !Number.isFinite(referenceMs) || observedMs > referenceMs) return null;
+  const days = (referenceMs - observedMs) / 86400000;
   return Math.exp(-days / 30);
 }
 
@@ -167,7 +169,7 @@ export function prioritizeByBusinessValue({ candidates = [], now = new Date().to
     const value = candidate.realized_value;
     const confidence = candidate.confidence;
     const freshness = freshnessWeight(candidate.observed_at, now);
-    const known = finite(value) && finite(confidence) && finite(freshness);
+    const known = finite(value) && finite(confidence) && confidence >= 0 && confidence <= 1 && finite(freshness);
     return {
       ...candidate,
       value_priority: known ? value * Math.max(0, Math.min(1, confidence)) * freshness : null,
