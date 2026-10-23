@@ -40,10 +40,28 @@
     "snapshot": "a45fa2fb2ae1d55b80540c862c82a4b5973b8e17",
     "localNode22Tests": "51/51 PASS",
     "initialRequiredAdmission": "LEARNING_FAILURE_CLASS_REQUIRED",
-    "exactHeadCI": "NOT_YET_GREEN",
+    "exactHeadCI": "REVERIFY_AFTER_CORRECTION",
     "productionReadback": "NOT_PROVEN",
-    "customerOutcome": "UNKNOWN"
+    "customerOutcome": "UNKNOWN",
+    "secondRequiredAdmission": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning"
   },
   "prevention": "Reject wrong tenant, stale/unproven, blocked, completed or in-flight actions; require canonical learning compiler fields and executable historical replay before admission; never treat recommendation as realized value.",
-  "promotion": "Protected exact-head Required + CodeQL, BG169, Netlify SHA readback, independent tenant A/B evidence and canonical learning writeback; no bypass."
+  "promotion": "Protected exact-head Required + CodeQL, BG169, Netlify SHA readback, independent tenant A/B evidence and canonical learning writeback; no bypass.",
+  "root_cause": "The homepage originally selected the first matching action; the first candidate failed Required on missing learning failure class, and its same-lineage repair passed canonicalization but failed semantic closure because root_cause, prevention_rule and evidence keys were not present.",
+  "prevention_rule": "Before remote release, run both learning-canonicalization and material-writeback semantic closure preflights; require root_cause, prevention_rule, evidence, compiler failure_class and executable historical_replay in the same file and exact candidate.",
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-goal-next-action-v1.test.mjs",
+      "portal-v2/tests/entrepreneur-home.test.mjs"
+    ],
+    "source_snapshot_sha": "a45fa2fb2ae1d55b80540c862c82a4b5973b8e17",
+    "local_preflight_status": "READY",
+    "local_regression_passed": 51,
+    "local_semantic_closure": "PASS (6/6 semantic checks, zero missing)",
+    "local_integration_bundle": "ready=true, missing=[]",
+    "first_required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39972423341",
+    "second_required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39973254076",
+    "latest_exact_head_ci": "PENDING",
+    "independent_customer_outcome": "NOT_PROVEN"
+  }
 }
