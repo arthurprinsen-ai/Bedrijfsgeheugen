@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "netlify|revenue-learning|oldest-50-repeated-serial-rpc-503|20261023-v1",
+  "obligation_id": "growth|revenue-learning|bounded-atomic-sales-action-reconcile|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "RUNTIME",
+  "root_cause": "Observed Netlify revenue-learning-evaluate HTTP 502 correlates with Supabase revenue-learning-store 503/timeout. Active store selects the oldest 50 among 340 executed sales actions on every run and serially awaits a database RPC for each, so later evidence can starve and a slow call aborts the entire hourly evaluation.",
+  "fix": "Existing Edge store now delegates to one service-role-only PostgreSQL transaction using advisory singleflight and the existing three per-action evidence obligations as durable least-recently-checked receipts. Batch cap 16; backend returns bounded coverage only. This is a protected candidate until migration+Edge+Netlify parity and real runtime telemetry are independently proven.",
+  "prevention_rule": "Never select only the oldest N indefinitely. Never mark error, BUSY, missing migration, missing evidence or empty provider result as successfully realized customer value. Preserve existing schedule, token, RLS, idempotent obligation identifiers and service-role permissions.",
+  "compiler": {
+    "failure_class": "RUNTIME",
+    "scope": "SUPABASE_NETLIFY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evidence": {
+    "netlify_request_id": "01M5MDK5YSNXA4R7XW25EVZ5EV",
+    "observed_http_status": 502,
+    "downstream_http_status": 503,
+    "observed_executed_sales_actions": 340,
+    "source": "supabase/functions/revenue-learning-store/index.ts",
+    "actual_production_database_change": false,
+    "independent_performance_gain_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-bounded-reconcile-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-learning-bounded-reconcile-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-bounded-reconcile-v1.test.mjs"
+    ],
+    "metrics": [
+      "reconciled_per_invocation",
+      "source_executed_actions",
+      "last_checked_fairness",
+      "downstream_503_rate",
+      "netlify_502_rate",
+      "p95_duration",
+      "revenue_learning_due_backlog"
+    ],
+    "expected_behaviors": [
+      "service-role-only SQL RPC",
+      "no extra scheduled worker",
+      "no anonymous access",
+      "same three canonical obligation IDs",
+      "atomic failure and fail closed",
+      "bounded incomplete result not declared fully reconciled"
+    ]
+  },
+  "runtime_verification": "PROTECTED_CANDIDATE_PENDING"
+}
