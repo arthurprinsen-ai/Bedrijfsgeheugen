@@ -20,7 +20,8 @@
   "prevention_rule": "A schedule declaration and manual workflow_dispatch do not prove actual scheduler liveness. Measure real GitHub event=schedule starts and successful completions across representative time windows; do not claim 100% scheduling or auto-recovery without observed provider evidence.",
   "tests": [
     "tests/brain-ci-admission-single-flight.test.mjs",
-    "tests/delivery-powerhouse-supervisor.test.mjs"
+    "tests/delivery-powerhouse-supervisor.test.mjs",
+    "tests/brain-actions-queue-storm-guard-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
@@ -41,7 +42,8 @@
       "no misleading schedule-success claim"
     ],
     "additional_regression": [
-      "tests/delivery-powerhouse-supervisor.test.mjs"
+      "tests/delivery-powerhouse-supervisor.test.mjs",
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
     ]
   },
   "compiler": {
