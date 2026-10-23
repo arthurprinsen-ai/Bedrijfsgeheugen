@@ -114,6 +114,22 @@ test('no unverified outcome can upgrade the goal stage or cockpit',()=>{
  assert.equal(journey.steps.find(item=>item.id==='outcome').confirmed,false);
 });
 
+test('foreign-tenant evidence never verifies this entrepreneur goal or changes cockpit results',()=>{
+ const now=Date.parse('2026-10-23T09:00:00.000Z');
+ const state={tenant_id:'tenant-a',powerhouse:{executive:{outcomes:[{
+   id:'foreign-customer-outcome',tenant_id:'tenant-b',entity_type:'outcome',
+   source_refs:['provider:tenant-b:receipt'],provenance:{source:'tenant-b'},
+   freshness_at:'2026-10-23T08:59:00.000Z',confidence:0.99,
+   model_or_formula_version:'v1',observed_at:'2026-10-23T08:59:00.000Z',
+   updated_at:'2026-10-23T08:59:00.000Z',verification_status:'OUTCOME_VERIFIED'
+ }]}}};
+ const home={authenticated:true,selectedGoal:'profit',scan:{verified:false},next:{kind:'measure'}};
+ const journey=buildEntrepreneurJourneyModel(state,{authenticated:true,home,now});
+ assert.equal(journey.autopilot.outcomes,0);
+ assert.equal(journey.cockpit.outcomes,0);
+ assert.equal(journey.steps.find(item=>item.id==='outcome').confirmed,false);
+});
+
 test('guest and unauthenticated journeys never render tenant autopilot state',()=>{
  const guest=buildEntrepreneurJourneyModel({
    tenant_id:'tenant-private',powerhouse:{executive:{outcomes:[verified]}}
