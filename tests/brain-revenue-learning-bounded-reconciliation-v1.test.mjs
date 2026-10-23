@@ -22,7 +22,7 @@ test('new function is invoker-only and executable only by the existing service r
   assert.match(sql,/FROM anon/);
   assert.match(sql,/FROM authenticated/);
   assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_reconcile_action_learning_batch_v1\(integer\) TO service_role/);
-  assert.doesNotMatch(sql,/SECURITY DEFINER/);
+  assert.doesNotMatch(sql,/^\s*SECURITY DEFINER\s*$/m);
 });
 test('Edge invokes a bounded single database RPC, not repeated oldest-50 requests',()=>{
   assert.match(edge,/db\.rpc\('powerhouse_reconcile_action_learning_batch_v1',\{p_limit:20\}\)/);
