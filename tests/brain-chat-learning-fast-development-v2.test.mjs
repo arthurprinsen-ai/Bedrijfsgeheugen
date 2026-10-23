@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
+import { selectSkillProjection } from '../scripts/brain/powerhouse-skill-projection.mjs';
 
 test('Fast Development v2 is the current chat/agent preflight authority', () => {
   const packet = compileChatLearningPreflight({ executionContext: { intent: 'inspect current deploy status' } });
@@ -64,4 +65,42 @@ test('preflight telemetry reports observed startup timings without fabricated do
     assert.equal(packet.telemetry[key], null, key);
   }
   assert.equal(packet.telemetry.unobserved, true);
+});
+
+test('Dutch portal intent retrieves relevant canonical learning plus mandatory prevention', () => {
+  const entries = [
+    { fingerprint: 'mandatory', mandatory_preflight: true, skill_targets: ['continuity'] },
+    { fingerprint: 'portal-fix', skill_targets: ['portal'], sources: ['brain/learning/portal-fix.json'] },
+    { fingerprint: 'security-fix', skill_targets: ['security'], sources: ['brain/learning/security-fix.json'] }
+  ];
+  const index = { entries, entry_count: entries.length, projection_digest: 'canonical' };
+  const result = selectSkillProjection(index, { intent: 'Verbeter het klantportaal voor ondernemers' });
+  assert.deepEqual(result.selected_entries.map(x => x.fingerprint), ['mandatory','portal-fix']);
+  assert.ok(result.retrieval_evidence.inferred_targets.includes('portal'));
+  assert.equal(result.retrieval_evidence.status, 'COMPLETE_FOR_MATCHED_HINTS');
+  assert.equal(result.retrieval_evidence.interpretation, 'retrieved_not_applied_or_outcome_verified');
+  assert.deepEqual(selectSkillProjection(index).selected_entries.map(x => x.fingerprint), ['mandatory']);
+});
+
+test('bounded implicit retrieval leaves visible debt and never drops explicit learning', () => {
+  const entries = [
+    { fingerprint: 'mandatory', mandatory_preflight: true, skill_targets: ['continuity'] },
+    ...Array.from({length:17}, (_, i) => ({
+      fingerprint: 'portal-lesson-' + String(i).padStart(2,'0'),
+      skill_targets: ['portal'], sources: ['brain/learning/portal-lesson.json']
+    }))
+  ];
+  const result = selectSkillProjection({entries,entry_count:18,projection_digest:'fixture'}, {
+    intent: 'Fix portaal', fingerprints: ['portal-lesson-16','not-found']
+  });
+  assert.ok(result.selected_entries.some(x => x.fingerprint === 'portal-lesson-16'));
+  assert.equal(result.retrieval_evidence.inferred_loaded_count, 12);
+  assert.equal(result.retrieval_evidence.deferred_count, 4);
+  assert.deepEqual(result.retrieval_evidence.unresolved_explicit_fingerprints, ['not-found']);
+  assert.equal(result.retrieval_evidence.status, 'PARTIAL_REQUIRES_TARGETED_RETRIEVAL');
+});
+
+test('agent preflight forwards intent to task-scoped skill reuse', () => {
+  const packet = compileChatLearningPreflight({executionContext:{intent:'Verbeter het portaal voor klanten'}});
+  assert.ok(packet.skill_projection.selection.retrieval_evidence.inferred_targets.includes('portal'));
 });
