@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "content|learning|research-signal-mixed-with-performance|20261023-v1",
+  "obligation_id": "content|learning|research-signal-mixed-with-performance|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "CONTENT_GROWTH_EVENT_TYPE_BOUNDARY",
+  "root_cause": "The native scheduled content-growth-learning materializer fed a valid upstream problem_radar_signal_accepted research event with no content_id into aggregateContentPerformance; the correctly strict aggregator rejected it with content_id is required. The research signal is not a published or measured event.",
+  "source_evidence": [
+    "2026-10-23 native Content growth learning run #39931429624 failed at tools/content-growth/materialize-learning.mjs with content_id is required",
+    "Current production data/content-growth-events.json contains a source-only problem_radar_signal_accepted event with no content_id",
+    "Existing growth event schema defines content_id as required for attributable performance; no fabricated ID is permitted"
+  ],
+  "fix": "At the existing materialize-learning input boundary, partition only the recognized source-only research event_type from performance events. Preserve research IDs and counted exclusions as bounded provenance; keep all other invalid events fail closed. Empty performance cohorts produce zero observations, revenue and proven learning.",
+  "prevention_rule": "Only exact canonical content IDs with actual content performance may enter attribution. Source research never becomes clicks, orders, income, or a model performance score. Missing content_id for revenue and other measured events must still throw, no dummy or synthesized identifiers. Reuse existing daily workflow, event file, source policies and Brain registry.",
+  "tests": [
+    "tests/content-growth-source-boundary.test.mjs",
+    "tests/content-growth-attribution.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_GROWTH_EVENT_TYPE_BOUNDARY",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/content-growth-source-boundary.test.mjs"
+    ],
+    "invariants": [
+      "Source signal does not create revenue or learning",
+      "Malformed measurable revenue remains blocked",
+      "Actual content engagement counts once",
+      "Existing canonical event source retained",
+      "No new scheduler, data storage or publisher"
+    ]
+  },
+  "readback": {
+    "candidate": true,
+    "live": false,
+    "customer_revenue_proven": false,
+    "provider_evaluation_proven": false
+  }
+}
