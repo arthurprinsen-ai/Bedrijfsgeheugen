@@ -1,0 +1,47 @@
+{
+  "fingerprint": "brain|historical-codeql-source-contract|20261021-v1",
+  "date": "2026-10-21",
+  "type": "BRAIN_LEARNING",
+  "status": "CANDIDATE",
+  "parent_issue": 3742,
+  "blocked_pr": 4573,
+  "baseline_run_id": 39554866582,
+  "baseline_backend_job_id": 119072398429,
+  "baseline_failed_tests": 355,
+  "distinct_failure_files_observed": 254,
+  "root_cause": "Historical BRAIN contract test reads retired .github/workflows/powerhouse-codeql.yml and expects an obsolete scoped CodeQL workflow. Protected current main instead runs .github/workflows/codeql.yml with unconditional analyze matrix on PR, merge_group, and main pushes.",
+  "prevention_rule": "Bind release security source contracts to the authoritative current workflow filename and assert actual required CodeQL scan languages, protected triggers, analysis, and error-on-missing SARIF; do not create alias/shadow workflows or relax CodeQL.",
+  "regression_test": "tests/brain-ci-critical-path-acceleration-v2.test.mjs",
+  "source_checks_verified": 11,
+  "node_test_receipt": "NOT_RUN",
+  "full_brain_receipt": "NOT_RUN",
+  "production_verified": false,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md"
+  ],
+  "test_evidence": {
+    "original_red": "BRAIN run 39554866582 job 119072398429: ENOENT while reading removed .github/workflows/powerhouse-codeql.yml from tests/brain-ci-critical-path-acceleration-v2.test.mjs",
+    "source_green": "11/11 CodeQL properties checked against current exact-base .github/workflows/codeql.yml; no production/workflow mutation",
+    "canonical_learning_evaluation": "Historical replay, shadow and canary passed on candidate HEAD aae0d90f807caacc7d1c0e9f27ee8d51fa2ac734 in Required run 39658440167",
+    "full_brain": "NOT_GREEN",
+    "production": "UNCHANGED"
+  }
+}
