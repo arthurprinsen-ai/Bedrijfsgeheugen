@@ -1,4 +1,5 @@
 import {buildOwnerOperatingModel} from './owner-operating-model.js';
+import {selectGoalAlignedAction,countDistinctActionSources} from './goal-action-selector.js';
 
 export const ENTREPRENEUR_GOALS=Object.freeze([
   Object.freeze({id:'profit',label:'Meer winst / minder kosten',headline:'Meer verdienen aan het werk dat je al doet',reason:'Meet eerst je huidige winst en bepaal welke kosten en marges invloed hebben.',categories:['finance'],page:'cijfers-maatstaven'}),
@@ -35,13 +36,13 @@ export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Da
   const target=primary?context?.goal_targets?.[primary]||{}:{};
   const hasTarget=hasValue(target.target_value)&&validIsoDate(target.target_date);
   const intelligence=authenticated?buildOwnerOperatingModel(safe,{now}):null;
-  const recommended=chosen&&intelligence?.ready?intelligence.actions.find(item=>chosen.categories.includes(item.ownerCategory)&&item?.evidence_health?.status==='healthy'&&Array.isArray(item?.source_refs)&&item.source_refs.length>0):null;
+  const recommended=chosen&&intelligence?.ready?selectGoalAlignedAction(intelligence.actions,chosen.categories,intelligence.tenantId):null;
   const next=!chosen
     ?{title:'Kies wat jij wilt bereiken',explanation:'Daarna stellen we één passende vervolgstap voor.',page:null,kind:'choose'}
     :!hasTarget
       ?{title:'Maak jouw doel concreet en meetbaar',explanation:chosen.reason,page:'bedrijfssituatie',kind:'measure'}
       :recommended
-        ?{title:String(recommended.title||'Bekijk jouw onderbouwde voorstel'),explanation:String(recommended.explanation||recommended.summary||recommended.next_action||'Dit voorstel heeft actueel bronbewijs. Controleer de onderbouwing en eventuele vereiste goedkeuring.'),page:'actieve-acties',kind:'verified-proposal',requiresApproval:recommended.ownerSafety?.level==='goedkeuring',evidenceCount:recommended.source_refs.length}
+        ?{title:String(recommended.title||'Bekijk jouw onderbouwde voorstel'),explanation:String(recommended.explanation||recommended.summary||recommended.next_action||'Dit voorstel heeft actueel bronbewijs. Controleer de onderbouwing en eventuele vereiste goedkeuring.'),page:'actieve-acties',kind:'verified-proposal',requiresApproval:recommended.ownerSafety?.level==='goedkeuring',evidenceCount:countDistinctActionSources(recommended)}
         :{title:'Bepaal wat jouw doel nu tegenhoudt',explanation:chosen.reason+' Er is nog geen passende, actuele aanbeveling met controleerbaar bronbewijs.',page:chosen.page,kind:'explore'};
   return Object.freeze({
     authenticated:Boolean(authenticated),
