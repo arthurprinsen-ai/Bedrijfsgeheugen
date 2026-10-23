@@ -380,3 +380,12 @@ test('native drift sync uses expected-head CAS and bounded attempts',()=>{
  assert.match(y,/MAIN_DRIFT_UPDATE_UNVERIFIED/);
  assert.match(y,/MAIN_DRIFT_REFRESH_BUDGET_EXHAUSTED/);
 });
+
+test('accepted asynchronous native drift updates reconcile by immutable ancestry',()=>{
+ const y=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+ assert.match(y,/MAIN_DRIFT_SYNC_RECONCILED/);
+ assert.match(y,/MAIN_DRIFT_SYNC_TIMED_OUT/);
+ assert.match(y,/MAIN_DRIFT_SYNC_RACE/);
+ assert.match(y,/compare\/\$old_head\.\.\.\$head/);
+ assert.match(y,/new exact-head Required and CodeQL still mandatory/);
+});
