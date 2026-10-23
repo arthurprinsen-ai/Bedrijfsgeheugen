@@ -1,5 +1,17 @@
 project_id = "bedrijfsgeheugen"
 
+[functions.powerhouse-blog-export]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-export/index.ts"
+# Approved read-only source; no provider write.
+
+[functions.powerhouse-blog-queue]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-queue/index.ts"
+# Existing privileged write protected by x-powerhouse-token.
+
 [functions.powerhouse-predictive-engine]
 enabled = true
 verify_jwt = false
