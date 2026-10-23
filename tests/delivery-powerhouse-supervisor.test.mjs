@@ -99,7 +99,7 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.doesNotMatch(yaml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
   assert.match(yaml,/workflow_dispatch:/);
-  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
+  assert.match(yaml,/schedule:\s*\n\s*- cron: '2-57\/5 \* \* \* \*'/);
   assert.match(yaml,/ACTIVE_RUN_CIRCUIT_BREAKER: '12'/);
   assert.match(yaml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
   assert.match(yaml,/RECOVERY_PR_BUDGET: '1'/);
@@ -391,4 +391,14 @@ test('accepted asynchronous native drift updates reconcile by immutable ancestry
  assert.match(y,/MAIN_DRIFT_SYNC_RACE/);
  assert.match(y,/compare\/\$old_head\.\.\.\$head/);
  assert.match(y,/new exact-head Required and CodeQL still mandatory/);
+});
+
+test('supervisor schedule keeps one off-hour five-minute owner and strict CAS',()=>{
+ const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+ assert.equal((yaml.match(/^\s+- cron:/gm)||[]).length,1);
+ assert.match(yaml,/2-57\/5 \* \* \* \*/);
+ assert.doesNotMatch(yaml,/cron:\s*'\*\/5 \* \* \* \*'/);
+ assert.equal((yaml.match(/^name: Powerhouse Delivery Recovery Supervisor$/gm)||[]).length,1);
+ assert.match(yaml,/cancel-in-progress: false/);
+ assert.match(yaml,/expected_head_sha="\$head"/);
 });

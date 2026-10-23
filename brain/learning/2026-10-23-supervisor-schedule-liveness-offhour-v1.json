@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|recovery-supervisor|schedule-cadence-missed|20261023-v1",
+  "obligation_id": "github|recovery-supervisor|five-minute-offhour-schedule-liveness|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4120",
+  "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4781",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "CI_SCHEDULE_LIVENESS_NOT_PROVEN",
+  "root_cause": "Recent provider history showed few schedule-triggered executions of the one Recovery Supervisor compared with its existing five-minute cron. GitHub docs say scheduled Actions can be delayed/dropped under high load, especially at top of hour. Provider-side actor/dispatch availability and causal mechanism remain unconfirmed.",
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "baseline_window": "2026-10-21T18:34:17Z/2026-10-23T13:20:37Z",
+    "baseline_selected_schedule_runs": 4,
+    "baseline_manual_or_dispatch_not_schedule": "workflow_dispatch run 39960974891 on merged CAS main is not independent cron liveness proof",
+    "provider_doc": "https://docs.github.com/en/actions/how-tos/troubleshoot-workflows"
+  },
+  "fix": "Retain exactly one existing Recovery Supervisor and five-minute interval; move native schedule from minute 0,5,...,55 to minute 2,7,...,57. Commit cron configuration to main via strict PR controls and avoid top-of-hour load while retaining native expected-head CAS, one writer, bounded retries, CI and release checks.",
+  "prevention_rule": "A schedule declaration and manual workflow_dispatch do not prove actual scheduler liveness. Measure real GitHub event=schedule starts and successful completions across representative time windows; do not claim 100% scheduling or auto-recovery without observed provider evidence.",
+  "tests": [
+    "tests/brain-ci-admission-single-flight.test.mjs",
+    "tests/delivery-powerhouse-supervisor.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs",
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ],
+    "invariants": [
+      "exactly one Recovery Supervisor",
+      "no added schedule or push fanout",
+      "5-minute off-hour cadence",
+      "native expected-head CAS preserved",
+      "bounded per-PR retries preserved",
+      "no misleading schedule-success claim"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_SCHEDULE_LIVENESS_NOT_PROVEN",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "runtime_verified": false,
+  "customer_outcome_verified": false
+}

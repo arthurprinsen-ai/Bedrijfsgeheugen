@@ -6,7 +6,9 @@ on:
   # another repository-wide recovery scan.
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    # Shift identical five-minute cadence off the hour's overloaded minute zero.
+    # One existing owner: do not introduce a second scheduler or workflow.
+    - cron: '2-57/5 * * * *'
 
 permissions:
   contents: write
