@@ -112,7 +112,7 @@ test('one-shot Heartbeat source-led reuse never generates or publishes',()=>{
 test('the original media preflight has a CAS claim and background actual-proof call',()=>{
  const src=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
  assert.match(src,/sourceLedAutoVerifyCandidate/);
- assert.match(src,/\.eq\('status','WAITING_ASSET'\)\.eq\('attempts',0\)/);
+ assert.match(src,/\.eq\('status',job.status\)\.eq\('attempts',job.attempts\)/);
  assert.match(src,/\.eq\('id',job\.id\)\.eq\('updated_at',job\.updated_at\)/);
  assert.match(src,/EdgeRuntime\.waitUntil\(background\)/);
  assert.match(src,/action:'submit_asset'/);
