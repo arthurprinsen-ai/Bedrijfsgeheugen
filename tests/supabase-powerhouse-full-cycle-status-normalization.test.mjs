@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const normalizationUrl = new URL('../supabase/migrations/20260915140200_powerhouse_full_cycle_status_normalization_v1.sql', import.meta.url);
-const timingGapUrl = new URL('../supabase/migrations/20260915140300_powerhouse_forecast_calibrator_timing_gap_fix_v1.sql', import.meta.url);
+const normalizationUrl = new URL('../supabase/migration-history/repository-only/20260915140200_powerhouse_full_cycle_status_normalization_v1.sql', import.meta.url);
+const timingGapUrl = new URL('../supabase/migration-history/repository-only/20260915140300_powerhouse_forecast_calibrator_timing_gap_fix_v1.sql', import.meta.url);
 const sql = fs.readFileSync(normalizationUrl, 'utf8');
 const timingSql = fs.readFileSync(timingGapUrl, 'utf8');
 

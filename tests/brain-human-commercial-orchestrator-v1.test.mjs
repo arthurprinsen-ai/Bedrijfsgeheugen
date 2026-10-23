@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migration='supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql';
+const migration='supabase/migration-history/repository-only/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql';
 const composer='supabase/functions/powerhouse-commercial-message-composer/index.ts';
 const compat='supabase/functions/powerhouse-human-sales-composer/index.ts';
 const email='supabase/functions/powerhouse-autonomous-outreach/index.ts';
