@@ -54,26 +54,38 @@ export function prioritizeObservedCiWork(telemetry,{minRepeatedRuns=3,minMedianM
     }
     unique.add(id);attempts.add(run+':'+attempt);
     const key=(Number.isSafeInteger(row.workflow_id)?'id:'+row.workflow_id:'name:'+workflow)+'|'+name;
-    if(!groups.has(key))groups.set(key,{workflow,job:name,lane:laneOf(workflow,name),jobs:[],attempts:new Set(),shaSet:new Set()});
+    if(!groups.has(key))groups.set(key,{workflow,job:name,lane:laneOf(workflow,name),jobs:[],perAttempt:new Map(),shaSet:new Set()});
     const group=groups.get(key);
-    group.jobs.push({run_id:run,run_attempt:attempt,job_id:job,head_sha:sha,execution_ms:duration,wait_to_start_ms:wait});
-    group.attempts.add(run+':'+attempt);group.shaSet.add(sha);
+    const observed={run_id:run,run_attempt:attempt,job_id:job,head_sha:sha,execution_ms:duration,wait_to_start_ms:wait};
+    group.jobs.push(observed);
+    const attemptKey=run+':'+attempt;
+    const prior=group.perAttempt.get(attemptKey);
+    // A matrix fan-out contributes one conservative observation per independent
+    // workflow attempt, not N votes in the median or in p95.
+    if(!prior||observed.execution_ms>prior.execution_ms||
+       (observed.execution_ms===prior.execution_ms&&observed.job_id<prior.job_id)){
+      group.perAttempt.set(attemptKey,observed);
+    }
+    group.shaSet.add(sha);
   }
   if(attempts.size!==telemetry.distinct_runs)
     return deny('EVIDENCE_REJECTED','DISTINCT_ATTEMPT_COUNT_MISMATCH',rows.length);
   const ranked=[];
   for(const [key,group] of groups){
-    const attemptsCount=group.attempts.size;
+    const independentJobs=[...group.perAttempt.values()];
+    const attemptsCount=independentJobs.length;
     if(attemptsCount<minRepeatedRuns)continue;
-    const median=percentile(group.jobs.map(j=>j.execution_ms),.5);
+    const median=percentile(independentJobs.map(j=>j.execution_ms),.5);
     if(median<minMedianMs)continue;
     ranked.push(Object.freeze({
       signature:key,workflow_name:group.workflow,job_name:group.job,
       suggested_lane:group.lane,independent_run_attempts:attemptsCount,
-      sample_jobs:group.jobs.length,distinct_head_shas:group.shaSet.size,
-      median_execution_ms:median,p95_execution_ms:percentile(group.jobs.map(j=>j.execution_ms),.95),
-      median_wait_ms:percentile(group.jobs.map(j=>j.wait_to_start_ms),.5),
-      evidence:Object.freeze([...group.jobs].sort((a,b)=>b.execution_ms-a.execution_ms)
+      sample_jobs:group.jobs.length,independent_attempt_samples:independentJobs.length,
+      matrix_replica_samples_excluded:group.jobs.length-independentJobs.length,
+      distinct_head_shas:group.shaSet.size,
+      median_execution_ms:median,p95_execution_ms:percentile(independentJobs.map(j=>j.execution_ms),.95),
+      median_wait_ms:percentile(independentJobs.map(j=>j.wait_to_start_ms),.5),
+      evidence:Object.freeze([...independentJobs].sort((a,b)=>b.execution_ms-a.execution_ms||a.job_id-b.job_id)
         .slice(0,3).map(j=>Object.freeze(j))),
       proposed_action:'INVESTIGATE_AND_BENCHMARK_WITH_EXISTING_OWNER',
       proof_level:'REPEATED_OBSERVATION_NOT_CAUSAL_OR_PERFORMANCE_GAIN'
