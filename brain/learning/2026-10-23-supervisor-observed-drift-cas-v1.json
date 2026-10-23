@@ -8,7 +8,8 @@
     "Reuse one existing hourly Janitor for read-only observation",
     "Preserve native expected-head CAS, one writer per PR and two-attempt budget",
     "Require complete provider job/log reads for summary statistics",
-    "Use independently validated release and production baselines before tuning"
+    "Use independently validated release and production baselines before tuning",
+    "Classify native expected-head update rejection from independently read HEAD and HTTP status inside the same supervisor, then deduplicate the typed GitHub annotation against legacy generic rejection within the ONE Janitor collector; 422 with changed HEAD remains causally unverified."
   ],
   "evidence": {
     "source": "GitHub Actions real workflow jobs, job log annotations and exact PR identifiers",
@@ -16,7 +17,16 @@
     "sampled_schedule_runs": "NOT_YET_VERIFIED_POST_MERGE",
     "time_to_green": "UNMEASURED",
     "time_to_production": "UNMEASURED",
-    "speedup": "NOT_PROVEN"
+    "speedup": "NOT_PROVEN",
+    "native_rejection_annotation": "CANDIDATE_PR_4795_PENDING_PROTECTED_CI",
+    "native_rejection_classes": [
+      "HTTP_422_AND_HEAD_CHANGED_CAUSALITY_UNVERIFIED",
+      "HTTP_422_CAUSE_UNVERIFIED",
+      "HTTP_403_PERMISSION_OR_POLICY",
+      "HTTP_409_CONFLICT_UNVERIFIED",
+      "PROVIDER_5XX_UNAVAILABLE",
+      "NATIVE_UPDATE_REJECTION_CAUSE_UNVERIFIED"
+    ]
   },
   "compiler": {
     "failure_class": "CI",
