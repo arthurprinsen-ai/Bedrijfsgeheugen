@@ -14,11 +14,13 @@ export function createCheckoutHandler({storeFactory=createPortalProjectStore,fet
   const billingCycle=String(body.billing_cycle||'monthly').toLowerCase()==='yearly'?'yearly':'monthly';
   const email=String(body.email||'').trim().toLowerCase(),company=String(body.company_name||'').trim();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||company.length<2)return out(400,{error:'invalid_request'});
+  // No Stripe authority means no customer-storage or payment-provider access.
+  // Keep cheap public plan and contact-input validation before this gate.
+  const readiness=billingReadiness(env);
+  if(!readiness.selfServeAvailable)return out(503,{error:'billing_not_configured'});
   let store,plan;try{store=storeFactory();plan=await store.getPlan(code)}catch{return out(503,{error:'storage_unavailable'})}
   if(!plan||!plan.direct_checkout||!plan.monthly_price_cents)return out(400,{error:'plan_not_self_serve'});
   if(Number(plan.monthly_price_cents)!==publicPlan.monthly_price_cents)return out(503,{error:'catalogue_sync_required'});
-  const readiness=billingReadiness(env);
-  if(!readiness.selfServeAvailable)return out(503,{error:'billing_not_configured'});
   const key=env.STRIPE_SECRET_KEY;
   const origin='https://www.bedrijfsgeheugen.nl';
   const attemptId=String(body.attempt_id||randomUUID());
