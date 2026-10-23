@@ -5,6 +5,11 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Uurlijkse leerbare CI-telemetrie — 23 oktober 2026
+
+De bestaande Repository Janitor observeert GitHub-workflowjobtijdstempels via `tools/delivery/ci-throughput-telemetry.mjs` met per sweep maximaal 12 run-reads, en bewaart uitsluitend `.artifacts/powerhouse-ci-throughput.json`. Dat zijn vroege diagnostische signalen, geen nieuwe scheduler, controlepoort, service of tweede waarheid. `summarizeObservedCiJobs` weigert p50/p95 zonder minstens 20 complete jobs en 5 onafhankelijke runpogingen; incomplete GitHub readback blijft expliciet onbekend. Agents vergelijken pas na meerdere tijdstippen, lane-, cache- en commitprovenance en zonder gesuggereerd prestatiewinstbewijs. Nooit Required, hygiene, CodeQL, provider, CLS, RLS of tenant/finance gates overslaan, extra queues of betaalde compute starten, of GitHub provider-ghosts als opgelost markeren. Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). Test: `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+
 ## Cross-lane preflight van samenwerkende agents — 23 oktober 2026
 
 Canonieke eigenaar [issue #4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). Alle bestaande agents gebruiken `classifyDeliveryImpact(changedPaths)` via `planConcurrentAgentWork` om vroege, gerichte tests te kiezen. CMS → website, `brain/contracts/**` → Portal/Powerhouse/Heartbeat en `supabase/migrations/**` → Brain/Portal/Heartbeat. Onbekende of onveilige paden krijgen volledige preflight. Ook bij een capacity hold wordt de impact getoond, zodat niet-conflicterende agents onafhankelijk kunnen voorbereiden. Deze impactkaart is adviserend: nooit Required/hygiene/CodeQL, provider, CLS, RLS, tenantisolatie, financiële pariteit of productieverificatie overslaan. Geen tweede writer/queue/scheduler; geen claim dat code live is zonder beschermde merge en onafhankelijke main/providerreadback.
