@@ -44,6 +44,9 @@
     ],
     "negative_canary": [
       "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
     ]
   },
   "prevention": [
