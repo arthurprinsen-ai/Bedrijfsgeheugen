@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-20",
+  "obligationId": "portal-tenant-model-connector-auth-causal-bridge-20261020",
+  "fingerprint": "powerhouse|portal|tenant-ai-connector-auth-missing|20261020",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "canonical Netlify Identity portal-state, connector runtime and ONE BRAIN",
+  "root_cause": "Existing AI readiness and inference browser requests and connector wizard requests lacked the signed portal bearer token. Connector function resolved identity without incoming Request. AI model preference and activation-request state lacked a first-class impact source mapping.",
+  "prevention_rule": "Require stateClient.authHeaders bearer on all customer-owned AI and connector network actions; bind Netlify Identity to incoming Request; fail closed without identity. Treat selected AI models and activation requests as review/invalidation impacts only, never verified runtime or financial outcomes.",
+  "compiler": {
+    "failure_class": "TENANT_AUTH_TRANSPORT_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
+      "tests/brain-portal-model-connector-impact-20261020.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
+      "tests/brain-portal-model-connector-impact-20261020.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
+      "tests/brain-portal-model-connector-impact-20261020.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
+    "tests/brain-portal-model-connector-impact-20261020.test.mjs"
+  ],
+  "production_readback": "NOT_PERFORMED; pending protected merge, exact deployment SHA and separate customer A/B verified sessions",
+  "provider_activation": "NOT_PROVEN",
+  "two_tenant_acceptance": "NOT_PROVEN",
+  "financial_predictions": "NOT_PROVEN",
+  "release_gates": [
+    "Required CI and CodeQL on exact PR SHA",
+    "Netlify immutable preview and protected merge",
+    "signed tenant A/B: AI readiness, safe refusal without provider proof, connector test and execution receipts, Brain ACK and affected pages",
+    "external source and financial forecast acceptance remains in issue #4215"
+  ]
+}

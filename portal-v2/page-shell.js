@@ -9,6 +9,7 @@ import { loadRuntimeEvidence } from './runtime-evidence.js';
 import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
+import { createConnectorApi } from '../assets/js/koppelingen/api.js';
 import { getCapabilityContract } from './capability-contracts.js';
 import { mountWorkspace } from './workspace-shell.js';
 import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
@@ -348,7 +349,7 @@ export function openPortalPage(pageId){
   else if(pageId==='ondernemerscockpit'){native.innerHTML='';mountOwnerOperatingSystem(native,{state:portalStateSnapshot(),stateClient:portalContext.stateClient});}
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
-  else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
+  else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native,{api:createConnectorApi({authHeaders:()=>portalContext.stateClient?.authHeaders?.()})});}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
   else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
    else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
