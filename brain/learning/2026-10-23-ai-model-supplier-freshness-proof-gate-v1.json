@@ -1,0 +1,33 @@
+{
+  "fingerprint": "brain|ai-model-intelligence|supplier-freshness-expired-v1",
+  "date": "2026-10-23",
+  "type": "CANONICAL_FAILURE_LEARNING",
+  "status": "CANDIDATE_AWAITING_VERIFICATION",
+  "new_failure_registry": false,
+  "scope": [
+    "ai-model-intelligence",
+    "daily-self-evolution",
+    "public-ai-model-advisor"
+  ],
+  "root_cause": "Historical VERIFIED status and a database update timestamp do not establish recency of independently captured supplier claims. A fourteen-day automatic recommendation eligibility window can outlive the canonical seven-day freshness requirement.",
+  "observed_production_evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "supplier_models": 110,
+    "historical_verified": 83,
+    "partial": 26,
+    "conflicts": 1,
+    "receipt_dates_older_than_seven_days": 110,
+    "observed_on": "2026-10-23"
+  },
+  "correction": {
+    "canonical_policy": "config/powerhouse-ai-model-intelligence-v1.json",
+    "daily_audit": "scripts/brain/ai-model-intelligence-audit.mjs",
+    "advisor": "ai-modelwijzer.html",
+    "regression": "tests/ai-model-intelligence-freshness-v1.test.mjs",
+    "maximum_supplier_receipt_age_days": 7,
+    "no_date_rewrite_without_source_proof": true,
+    "no_second_scheduler": true
+  },
+  "prevention": "Fail closed on stale, missing, impossible or independently unreviewed supplier claim receipts and do not conflate updated_at with source truth; keep daily learning independent of audit failure.",
+  "result_boundary": "No supplier claims were reverified and no financial or customer outcomes were manufactured; production verified only after required CI, merge and exact deploy readback."
+}
