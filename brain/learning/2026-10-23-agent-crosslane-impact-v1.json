@@ -21,7 +21,8 @@
   "fix": "Project deterministic cross-domain dependency impact from changedPaths in the existing predictive controller and expose it on every agent plan including capacity holds.",
   "prevention_rule": "Unknown paths receive full cross-lane preflight; advisory classification never waives hygiene, Required, CodeQL, provider preview, RLS, CLS, tenant isolation, financial parity or production readback. No second scheduler, queue, incident authority or writer.",
   "tests": [
-    "tests/delivery-powerhouse-supervisor.test.mjs"
+    "tests/delivery-powerhouse-supervisor.test.mjs",
+    "tests/brain-agent-crosslane-impact-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity"
@@ -35,13 +36,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-powerhouse-supervisor.test.mjs"
+      "tests/brain-agent-crosslane-impact-v1.test.mjs"
     ],
     "shadow": [
-      "tests/delivery-powerhouse-supervisor.test.mjs"
+      "tests/brain-agent-crosslane-impact-v1.test.mjs"
     ],
     "canary": [
-      "tests/delivery-powerhouse-supervisor.test.mjs"
+      "tests/brain-agent-crosslane-impact-v1.test.mjs"
     ],
     "invariants": [
       "CMS propagates to website",
