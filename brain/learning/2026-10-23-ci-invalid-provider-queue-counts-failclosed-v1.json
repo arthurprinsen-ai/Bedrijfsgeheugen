@@ -27,5 +27,22 @@
     "protected_merge": "PENDING",
     "production_readback": "PENDING",
     "measured_throughput_gain": false
+  },
+  "compiler": {
+    "failure_class": "MALFORMED_GITHUB_PROVIDER_QUEUE_TELEMETRY_FALSE_FREE_CAPACITY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs"
+    ],
+    "invariants": [
+      "invalid non-integer queue telemetry blocks optional dispatch and write mutations",
+      "positive or zero trusted integers retain original bounded capacity semantics",
+      "no extra scheduler or API lookups"
+    ]
   }
 }
