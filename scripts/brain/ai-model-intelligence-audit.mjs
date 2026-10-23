@@ -13,7 +13,7 @@ const missingVerifiedAt=catalog.models.filter(m=>!m.verified_at).map(m=>m.id);
 // A repo commit or database updated_at is never proof of fresh supplier claims.
 // Both catalog verification and independently recorded supplier claim receipts age out.
 const evidenceAgeDays=value=>{
-  if(typeof value!=='string'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(value))return NaN;
+  if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return NaN;
   return (now-new Date(value+'T00:00:00Z'))/86400000;
 };
 const isStaleEvidence=value=>{
