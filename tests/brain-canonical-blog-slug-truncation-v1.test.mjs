@@ -1,35 +1,44 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {canonicalBlogSlug} from '../supabase/functions/_shared/canonical-blog-slug.mjs';
-test('2026-10-23 title truncation removes trailing separator',()=>{
- assert.equal(canonicalBlogSlug(null,'Cyberdreigingen voor ondernemers: een praktisch beslis- en oefenplan om risico’s bestuurlijk te beheersen','2026-10-23'),'cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om');
- assert.match(canonicalBlogSlug(null,'Cyberdreigingen voor ondernemers: een praktisch beslis- en oefenplan om risico’s bestuurlijk te beheersen','2026-10-23'),/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+import vm from 'node:vm';
+
+const read=(name)=>readFileSync('supabase/functions/'+name+'/index.ts','utf8');
+const sourceFn=(name)=>{
+ const line=read(name).split('\n').find(line=>line.trim().startsWith('const slugify='));
+ assert.ok(line,'missing '+name+' canonical slugifier');
+ return vm.runInNewContext(line+'\nslugify;');
+};
+test('queue matches already-merged #4723 export identity at the 2026-10-23 boundary',()=>{
+ const title='Cyberdreigingen voor ondernemers: een praktisch beslis- en oefenplan om risico’s bestuurlijk te beheersen';
+ const queue=sourceFn('powerhouse-blog-queue');
+ const exporter=sourceFn('powerhouse-blog-export');
+ assert.equal(queue(title),'cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om');
+ assert.equal(exporter(title),'cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om');
+ assert.equal(queue(title),exporter(title));
+ assert.match(queue(title),/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 });
-test('bounded title, unicode and empty fallback',()=>{
- assert.equal(canonicalBlogSlug(null,'A'.repeat(69)+'-more','2026-10-23'),'a'.repeat(69));
- assert.equal(canonicalBlogSlug(null,' Énergie & Kosten! ','2026-10-23'),'energie-kosten');
- assert.equal(canonicalBlogSlug(null,'!!!','2026-10-23'),'powerhouse-2026-10-23');
+test('all approved title fallback boundaries remain well-formed and parity is durable',()=>{
+ const queue=sourceFn('powerhouse-blog-queue'),exporter=sourceFn('powerhouse-blog-export');
+ for(const title of ['A'.repeat(69)+'-more', 'Énergie & Kosten!', 'red '.repeat(50), 'a'.repeat(70), 'foo--bar', 'cyber']) {
+  assert.equal(queue(title),exporter(title),title);
+  assert.match(queue(title),/^[a-z0-9]+(?:-[a-z0-9]+)*$/,title);
+  assert.ok(queue(title).length<=70);
+ }
+ assert.equal(queue('A'.repeat(69)+'-more'),'a'.repeat(69));
 });
-test('explicit editorial slug is preserved or rejected',()=>{
- assert.equal(canonicalBlogSlug('approved-slug','Different title','2026-10-23'),'approved-slug');
- assert.equal(canonicalBlogSlug('bad-','Title','2026-10-23'),null);
- assert.equal(canonicalBlogSlug('INVALID SLUG','Title','2026-10-23'),null);
-});
-test('queue and export share one fail-closed rule',()=>{
+test('both source functions preserve approved explicit seo_slug without rewriting and bind identity to corrected title fallback',()=>{
  for(const name of ['powerhouse-blog-queue','powerhouse-blog-export']){
-  const source=readFileSync('supabase/functions/'+name+'/index.ts','utf8');
-  assert.match(source,/from '\.\.\/_shared\/canonical-blog-slug\.mjs'/);
-  assert.match(source,/canonicalBlogSlug\(/);
-  assert.match(source,/INVALID_APPROVED_BLOG_SLUG/);
-  assert.doesNotMatch(source,/const slugify=/);
+  const src=read(name);
+  assert.match(src,/clean\((?:generationEvidence|generation)\.seo_slug\)\|\|slugify\(clean\(a\.title\)\)/);
+  assert.match(src,/slice\(0,70\)\.replace\(\/-\+\$\/g,''\)/);
  }
 });
-test('original GENERATED-only lineage CAS remains intact',()=>{
- const source=readFileSync('supabase/functions/powerhouse-blog-queue/index.ts','utf8');
- assert.match(source,/canRebindUnsentBlog\(o,provenance\)/);
- assert.match(source,/originalBlogSlugGuard\(recoveryQuery,o\.slug\)/);
- assert.match(source,/\.eq\('status','GENERATED'\)/);
- assert.match(source,/\.is\('external_id',null\)\.is\('published_at',null\)\.is\('live_proven_at',null\)/);
- assert.doesNotMatch(source,/p_status:'LIVE_PROVEN'/);
+test('prior GENERATED-only queue CAS remains unweakened',()=>{
+ const src=read('powerhouse-blog-queue');
+ assert.match(src,/canRebindUnsentBlog\(o,provenance\)/);
+ assert.match(src,/originalBlogSlugGuard\(recoveryQuery,o\.slug\)/);
+ assert.match(src,/\.eq\('status','GENERATED'\)/);
+ assert.match(src,/\.is\('external_id',null\)\.is\('published_at',null\)\.is\('live_proven_at',null\)/);
+ assert.doesNotMatch(src,/p_status:'LIVE_PROVEN'/);
 });

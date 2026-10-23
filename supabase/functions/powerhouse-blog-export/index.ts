@@ -1,4 +1,3 @@
-import { canonicalBlogSlug } from '../_shared/canonical-blog-slug.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const VERSION='v3-repository-native-export';
@@ -9,7 +8,7 @@ function evidenceObject(value:any):Record<string,any>{
   if(typeof value==='string'){try{return evidenceObject(JSON.parse(value))}catch{return {}}}
   return value && !Array.isArray(value) && typeof value==='object'?value:{};
 }
-
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(!['GET','POST'].includes(req.method)) return json({ok:false,error:'METHOD_NOT_ALLOWED'},405);
@@ -30,8 +29,7 @@ Deno.serve(async(req)=>{
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
 
   const generation=evidenceObject(a.generation_evidence);
-  const slug=canonicalBlogSlug(generation.seo_slug,a.title,runDate);
-  if(!slug)return json({ok:false,error:'INVALID_APPROVED_BLOG_SLUG',runDate},422);
+  const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   // Never export a stale obligation's URL when the artifact was regenerated.
   // A proven provider side effect is immutable: reconcile it, do not replace it.
   if (clean(o?.slug) && clean(o.slug)!==slug

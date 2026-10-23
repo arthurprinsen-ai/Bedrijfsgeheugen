@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|blog-export|slug-trailing-hyphen-after-70-char-cap|20261023-v1",
+  "obligation_id": "content|daily-blog|export-slug-boundary|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "title": "Bound generated blog slugs after truncation, never publish an invalid URL",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "Existing Edge slugify normalizes and trims separators before slicing to 70 characters. A hyphen exactly at the truncation boundary remains trailing and is rejected downstream as INVALID_SLUG.",
+  "impact": "2026-10-23 approved daily blog artifact is GENERATED but cannot enter the protected repository blog publishing flow; it has not been published.",
+  "evidence": {
+    "failed_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39883989350",
+    "failed_job": 120187759613,
+    "observed_invalid_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om-",
+    "current_obligation_status": "GENERATED",
+    "has_external_id": false,
+    "source_function": "supabase/functions/powerhouse-blog-export/index.ts",
+    "source_live_version": 9
+  },
+  "fix": "Keep original 70-character limit and normalized slug but strip a trailing hyphen after truncation; never relax Python publication slug validator or alter approved article text.",
+  "prevention_rule": "After normalization and length capping every generated public slug must match [a-z0-9]+(-[a-z0-9]+)*; test real boundary, long titles, accented inputs and path safety.",
+  "regression_contract": "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+  ],
+  "release_gates": [
+    "Exact-head protected Required CI and CodeQL",
+    "Supabase provider-preview and production Edge source parity readback",
+    "Same daily blog publisher obligation, unique URL/content ID and protected merge",
+    "Public Netlify canonical article readback before LIVE_PROVEN",
+    "Do not create/replay provider publication when external ID exists"
+  ],
+  "outcome": "CANDIDATE_ONLY_NO_PRODUCTION_DEPLOY_YET",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "BACKEND",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}

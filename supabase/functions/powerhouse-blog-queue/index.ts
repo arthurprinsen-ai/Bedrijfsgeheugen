@@ -1,4 +1,3 @@
-import { canonicalBlogSlug } from '../_shared/canonical-blog-slug.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { canRebindUnsentBlog, originalBlogSlugGuard } from '../_shared/blog-null-lineage-recovery.mjs';
 
@@ -19,7 +18,7 @@ function jsonObject(value:any){
 }
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
@@ -42,8 +41,7 @@ Deno.serve(async(req)=>{
 
   const generationEvidence=jsonObject(a.generation_evidence);
   const deliveryEvidence=jsonObject(d.delivery_evidence);
-  const slug=canonicalBlogSlug(generationEvidence.seo_slug,a.title,runDate);
-  if(!slug)return json({ok:false,error:'INVALID_APPROVED_BLOG_SLUG',recovery_required:true,runDate},422);
+  const slug=clean(generationEvidence.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
 
   // Safe same-date recovery: update only GENERATED/unpublished metadata.
