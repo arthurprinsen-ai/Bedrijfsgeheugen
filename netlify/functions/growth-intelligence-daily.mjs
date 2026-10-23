@@ -1,5 +1,6 @@
 import seoOrderMap from '../../site/seo-order-map.json' with { type: 'json' };
 import { planDailyConversion } from '../../tools/seo-growth/daily-conversion-planner.mjs';
+import { createGrowthDailyBatch } from '../../tools/seo-growth/daily-batched-writeback.mjs';
 import {evidenceConvergence,latentDemandScore,choosePortfolio,offerLearning,buildPrediction,intelligenceScorecard,learningLifecycle,buildRelationshipRecord,companyIntelligenceProfile,whitespaceScore,calibratePrediction,decayConfidence,attributionSummary} from '../../platform/growth-intelligence-engine.mjs';
 
 const isoDay=d=>d.toISOString().slice(0,10);
@@ -22,6 +23,8 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
   const read=(table,query)=>call(`/${table}?${query}`);
   const upsert=(table,rows,onConflict)=>call(`/${table}?on_conflict=${encodeURIComponent(onConflict)}`,{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(Array.isArray(rows)?rows:[rows])});
   const patch=(table,query,row)=>call(`/${table}?${query}`,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(row)});
+  // Queue only within THIS invocation; durable writes still go to existing Supabase tables.
+  const batch=createGrowthDailyBatch({upsert,patch,maxRows:40});
   return {
     async listInputs(){const [signals,keywords,bilingualKeywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes,growthEvents,growthPageDaily,seoSearch]=await Promise.all([
       read('bg_externe_signalen','select=*&toegestaan=eq.true&order=opgehaald_op.desc&limit=200'),
@@ -42,14 +45,15 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
       read('growth_page_daily', 'select=day,canonical,intent_owner,page_views,cta_clicks,qualified_leads,won_orders,revenue_eur,updated_at&day=gte.'+new Date(Date.now()-28*86400000).toISOString().slice(0,10)+'&order=day.desc&limit=1500'),
       read('bg_zoekprestaties', 'select=datum,pagina,zoekterm,klikken,vertoningen,ctr,positie,opgehaald_op&datum=gte.'+new Date(Date.now()-35*86400000).toISOString().slice(0,10)+'&order=opgehaald_op.desc&limit=2000')]);
       return {signals,keywords,bilingualKeywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes,growthEvents,growthPageDaily,seoSearch};},
-    upsertOpportunity:r=>upsert('powerhouse_opportunities',r,'opportunity_key'),
-    recordDecision:r=>upsert('revenue_learning_decisions',r,'tenant_id,decision_id'),
-    recordObligation:r=>upsert('revenue_learning_obligations',r,'tenant_id,obligation_id'),
-    recordBrain:r=>upsert('brain_records',r,'tenant_id,record_id'),
-    recordOfferEvidence:r=>upsert('revenue_learning_evidence',r,'tenant_id,evidence_id'),
-    recordApplication:r=>upsert('revenue_learning_applications',r,'tenant_id,application_id'),
-    updateObligation:(id,row)=>patch('revenue_learning_obligations',`tenant_id=eq.canonical&obligation_id=eq.${encodeURIComponent(id)}`,row),
-    reviewLearning:(id,row)=>patch('revenue_learnings',`tenant_id=eq.canonical&learning_id=eq.${encodeURIComponent(id)}`,row)
+    upsertOpportunity:r=>batch.queueUpsert('powerhouse_opportunities',r,'opportunity_key'),
+    recordDecision:r=>batch.queueUpsert('revenue_learning_decisions',r,'tenant_id,decision_id'),
+    recordObligation:r=>batch.queueUpsert('revenue_learning_obligations',r,'tenant_id,obligation_id'),
+    recordBrain:r=>batch.queueUpsert('brain_records',r,'tenant_id,record_id'),
+    recordOfferEvidence:r=>batch.queueUpsert('revenue_learning_evidence',r,'tenant_id,evidence_id'),
+    recordApplication:r=>batch.queueUpsert('revenue_learning_applications',r,'tenant_id,application_id'),
+    updateObligation:(id,row)=>batch.queuePatch('revenue_learning_obligations',`tenant_id=eq.canonical&obligation_id=eq.${encodeURIComponent(id)}`,row),
+    reviewLearning:(id,row)=>batch.queuePatch('revenue_learnings',`tenant_id=eq.canonical&learning_id=eq.${encodeURIComponent(id)}`,row),
+    flush:()=>batch.flush()
   };
 }
 
@@ -110,7 +114,9 @@ export function createGrowthIntelligenceDaily({store,now=()=>new Date()}={}){
     const recentOutcomes=(input.growthOutcomes||[]).filter(x=>Number.isFinite(Date.parse(x.occurred_at))&&Date.parse(x.occurred_at)>=at.getTime()-28*86400000);
     const cro=planDailyConversion({searchRows:input.seoSearch||[],events:input.growthEvents||[],pageDailyRows:input.growthPageDaily||[],outcomes:recentOutcomes,registry:seoOrderMap,now:at});
     for(const candidate of cro.candidates){const id='growth-cro-candidate:'+day+':'+slug(candidate.canonical);await active.recordBrain({tenant_id:'canonical',record_id:id,record_type:'CurrentState',record_kind:'current_state',subject_id:'growth-revenue-os-1m-2027-v1',status:'VERIFIED',observed_at:atIso,executed:true,verified:true,result:{state:candidate.terminal.state,reason_code:candidate.terminal.reason_code,canonical:candidate.canonical,action:candidate.action,target_metric:candidate.target_metric,site_change_executed:false},evidence_ids:candidate.evidence_refs,provenance:{runtime:'growth-intelligence-daily-v2',date:day,source_status:cro.sourceStatus},payload:{candidate,approval_required:true,release_proof_required:true,source_freshness:cro.sourceFreshness},idempotency_key:id,source_revision:'growth-intelligence-cro-v1',updated_at:atIso});}
-    const scoreId=`growth-intelligence-scorecard-${day}`;await active.recordBrain({tenant_id:'canonical',record_id:scoreId,record_type:'CurrentState',record_kind:'current_state',subject_id:'growth-revenue-os-1m-2027-v1',status:'VERIFIED',observed_at:atIso,executed:true,verified:true,result:{state:'DAILY_INTELLIGENCE_EXECUTED',companies_scored:scored.length,predictions_written:portfolio.slice(0,10).length,offer_evidence_written:offerEvidence,learnings_reviewed:reviewed,cross_source_types:convergence.independentTypes,graph_entities_written:graphEntities,graph_relations_written:graphRelations,market_whitespace_records:whitespaceRecords,calibrations_evaluated:calibrations,calibration_insufficient_evidence:insufficient,realized_revenue_eur:attribution.realizedRevenueEur,order_value_eur:attribution.orderValueEur,attribution_counts:attribution.counts,explore_count:portfolio.filter(x=>x.portfolioRole==='EXPLORE').length,exploit_count:portfolio.filter(x=>x.portfolioRole==='EXPLOIT').length,scorecard,cro_source_status:cro.sourceStatus,cro_pages_reviewed:cro.pagesReviewed,cro_candidates_generated:cro.candidates.length,cro_rejected_with_evidence:cro.candidates.filter(c=>c.terminal.state==='REJECTED_WITH_EVIDENCE').length,cro_live_changes_verified:null},evidence_ids:[],provenance:{runtime:'growth-intelligence-daily-v2',date:day},payload:{exploration_rate:.25,counterfactual_required:true,attribution_classes:['DIRECT','ASSISTED','INFLUENCED','UNKNOWN'],cro_source_freshness:cro.sourceFreshness,cro_page_observations:cro.pages,cro_publication_status:cro.publicationStatus},idempotency_key:scoreId,source_revision:'v2',updated_at:atIso});return {day,companiesScored:scored.length,predictions:portfolio.slice(0,10).length,offerEvidence,learningsReviewed:reviewed,crossSourceTypes:convergence.independentTypes,graphEntities,graphRelations,calibrations,insufficient,attribution,scorecard,cro:{sourceStatus:cro.sourceStatus,pagesReviewed:cro.pagesReviewed,candidates:cro.candidates.length,publicationStatus:cro.publicationStatus}};};
+    const scoreId=`growth-intelligence-scorecard-${day}`;await active.recordBrain({tenant_id:'canonical',record_id:scoreId,record_type:'CurrentState',record_kind:'current_state',subject_id:'growth-revenue-os-1m-2027-v1',status:'VERIFIED',observed_at:atIso,executed:true,verified:true,result:{state:'DAILY_INTELLIGENCE_EXECUTED',companies_scored:scored.length,predictions_written:portfolio.slice(0,10).length,offer_evidence_written:offerEvidence,learnings_reviewed:reviewed,cross_source_types:convergence.independentTypes,graph_entities_written:graphEntities,graph_relations_written:graphRelations,market_whitespace_records:whitespaceRecords,calibrations_evaluated:calibrations,calibration_insufficient_evidence:insufficient,realized_revenue_eur:attribution.realizedRevenueEur,order_value_eur:attribution.orderValueEur,attribution_counts:attribution.counts,explore_count:portfolio.filter(x=>x.portfolioRole==='EXPLORE').length,exploit_count:portfolio.filter(x=>x.portfolioRole==='EXPLOIT').length,scorecard,cro_source_status:cro.sourceStatus,cro_pages_reviewed:cro.pagesReviewed,cro_candidates_generated:cro.candidates.length,cro_rejected_with_evidence:cro.candidates.filter(c=>c.terminal.state==='REJECTED_WITH_EVIDENCE').length,cro_live_changes_verified:null},evidence_ids:[],provenance:{runtime:'growth-intelligence-daily-v2',date:day},payload:{exploration_rate:.25,counterfactual_required:true,attribution_classes:['DIRECT','ASSISTED','INFLUENCED','UNKNOWN'],cro_source_freshness:cro.sourceFreshness,cro_page_observations:cro.pages,cro_publication_status:cro.publicationStatus},idempotency_key:scoreId,source_revision:'v2',updated_at:atIso});// A daily run is not complete until every buffered canonical write is durably acknowledged.
+    const durableWriteback=typeof active.flush==='function'?await active.flush():null;
+    return {day,durableWriteback,companiesScored:scored.length,predictions:portfolio.slice(0,10).length,offerEvidence,learningsReviewed:reviewed,crossSourceTypes:convergence.independentTypes,graphEntities,graphRelations,calibrations,insufficient,attribution,scorecard,cro:{sourceStatus:cro.sourceStatus,pagesReviewed:cro.pagesReviewed,candidates:cro.candidates.length,publicationStatus:cro.publicationStatus}};};
 }
 
 export default async()=>Response.json(await createGrowthIntelligenceDaily()());
