@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 const ref='adhjwmvyoixzjtmiroln';
 export const queries={
   social:[
@@ -50,10 +49,11 @@ export async function collect({token=process.env.SUPABASE_ACCESS_TOKEN,fetcher=f
  return out;
 }
 if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){
- const output=process.argv[2]||'/tmp/content-growth-provider-evidence.json';
  let report;
  try{report=await collect();}
  catch(e){report={state:'SOURCE_ERROR',failure_class:'PROVIDER_READ_ONLY_QUERY_FAILED',collected_at:new Date().toISOString(),social:[],pages:[],sources:[],coverage:'NOT_OBSERVED'};}
- fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n',{mode:0o600});
- console.log(JSON.stringify({state:report.state,social:report.social.length,pages:report.pages.length,sources:report.sources.length}));
+ // Do not emit raw provider rows to Actions logs or write network content to an attacker-selected file.
+ // The trusted workflow redirects stdout into a private, fixed /tmp path.
+ process.stdout.write(JSON.stringify(report)+'\n');
+ process.stderr.write(JSON.stringify({state:report.state,social:report.social.length,pages:report.pages.length,sources:report.sources.length})+'\n');
 }
