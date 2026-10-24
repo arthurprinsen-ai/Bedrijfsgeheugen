@@ -36,7 +36,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40045993025"
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/content-growth-blog-publisher-root-contract.test.mjs"
     ],
     "shadow": [
       "tests/brain-material-writeback-closure-guard.test.mjs"
