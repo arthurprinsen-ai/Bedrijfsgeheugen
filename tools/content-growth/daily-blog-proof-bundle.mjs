@@ -78,10 +78,15 @@ export function writeDailyBlogProofBundle({ date, artifact, root = process.cwd()
   for (const [relative, content] of [[learningPath, JSON.stringify(learning, null, 2) + '\n'], [ledgerPath, ledger], [changePath, change]]) {
     const target = path.join(root, relative);
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    if (fs.existsSync(target)) {
-      if (fs.readFileSync(target, 'utf8') !== content) throw new Error('BLOG_PROOF_EXISTING_EVIDENCE_MISMATCH:' + relative);
-    } else {
-      fs.writeFileSync(target, content, { flag: 'wx' });
+    // Atomic create avoids the prior exists-then-open TOCTOU race.
+    // On an existing reviewed file, inspect without ever overwriting it.
+    try {
+      fs.writeFileSync(target, content, { flag: 'wx', mode: 0o600 });
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error;
+      if (fs.readFileSync(target, 'utf8') !== content) {
+        throw new Error('BLOG_PROOF_EXISTING_EVIDENCE_MISMATCH:' + relative);
+      }
     }
     written.push(relative);
   }
