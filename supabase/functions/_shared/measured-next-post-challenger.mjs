@@ -71,7 +71,7 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
    causal_lift_proven:false,commercial_outcome:'UNKNOWN',
    execution_owner:'existing canonical content orchestrator and protected publisher',
    additional_publications:0};
- if(!['blog','linkedin_company'].includes(channel))return {...base,reason:'CHANNEL_EXCLUDED'};
+ if(!['blog','linkedin_company','instagram_company'].includes(channel))return {...base,reason:'CHANNEL_EXCLUDED'};
  const stamp=Date.parse(String(runDate||'')+'T00:00:00Z');
  if(!Number.isFinite(stamp)||new Date(stamp).toISOString().slice(0,10)!==runDate)return {...base,reason:'DATE_INVALID'};
  if(freshness?.ok!==true)return {...base,reason:'SOURCE_NOT_CURRENT_OR_VERIFIED'};
@@ -89,7 +89,12 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
   {name:'EXAMPLE',change:'Verduidelijk één stap met een uitdrukkelijk hypothetisch ondernemer-voorbeeld zonder verzonnen statistiek of case.'},
   {name:'READERS_NEXT_STEP',change:'Maak één optionele, brongetrouwe vervolgstap concreter zonder conversiedruk.'}
  ];
- const variants=channel==='blog'?blog:company;
+ const instagram=[
+  {name:'SCENE_HOOK',change:'Verduidelijk alleen de opening van de bestaande fictieve Mira-scène.'},
+  {name:'CONSEQUENCE',change:'Verhelder uitsluitend één mogelijk zakelijk gevolg zonder claims over echte klanten.'},
+  {name:'RELEVANT_QUESTION',change:'Stel een nuttige vraag bij de bestaande vrijwillige vervolgstap zonder engagementbait.'}
+ ];
+ const variants=channel==='blog'?blog:channel==='instagram_company'?instagram:company;
  const choice=variants[Math.floor(stamp/86400000)%variants.length];
  return {...base,state:'ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS',channel,run_date:runDate,
    source_recommendation_id:String(recommendation.recommendation_id||'')||null,
@@ -98,7 +103,7 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
    other_components:'UNCHANGED',experiment_type:'OBSERVATIONAL_SINGLE_CANDIDATE_NOT_RANDOMIZED_AB',
    compare_to:'prior channel-native editorial baseline; no causal inference',
    measure_after_days:[1,3,7,30],
-   lead_metric:channel==='blog'?'verified_qualified_cta_progression':'verified_clicks_and_substantive_comments',
+   lead_metric:channel==='blog'?'verified_qualified_cta_progression':channel==='instagram_company'?'provider_observed_comments_per_verified_exposure':'verified_clicks_and_substantive_comments',
    primary_business_metric:'attributed_verified_paid_orders',
    requires_readback:true,control:'never promote a winner from unknown denominators'};
 }

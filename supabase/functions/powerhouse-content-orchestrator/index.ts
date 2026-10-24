@@ -780,7 +780,11 @@ Deno.serve(async (req) => {
     if (pending.channel==='instagram_company') {
       // The caption is deterministic from the canonical PH-P problem, not a random consumer-complaint winner.
       bodyText=miraCaption(miraBusinessProblem);
-      const check=validateMiraCaptionForDelivery(runDate,bodyText,miraProductionEvidence(miraBusinessProblem));
+      // The identical evidence-bound variant is recalculated by the independent publisher.
+      if(creativeExploration?.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS' && creativeExploration.channel==='instagram_company'){
+        bodyText=miraCaption(miraBusinessProblem,creativeExploration);
+      }
+      const check=validateMiraCaptionForDelivery(runDate,bodyText,{...miraProductionEvidence(miraBusinessProblem),editorial_exploration:creativeExploration,recommendation_id:recommendation?.recommendation_id||null});
       if(!check.ok)throw new Error(check.reason);
       if(clean(instagramProof?.mira_business_problem_id)!==miraBusinessProblem.id)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
     }

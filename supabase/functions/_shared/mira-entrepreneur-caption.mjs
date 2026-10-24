@@ -531,24 +531,40 @@ export function selectMiraProblem(runDate){
  // Fixed deterministic rotation, no AI inventing which canonical problem exists.
  return MIRA_CASES[((epoch%MIRA_CASES.length)+MIRA_CASES.length)%MIRA_CASES.length];
 }
-export function miraCaption(problem){
+/** Exactly one whitelisted, source-linked, date-bound caption hypothesis. */
+export function miraExplorationKind(exploration,runDate){
+ if(!exploration||exploration.state!=='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'||exploration.channel!=='instagram_company'||exploration.run_date!==runDate)return null;
+ if(exploration.causal_lift_proven!==false||exploration.additional_publications!==0||exploration.requires_readback!==true)return null;
+ for(const key of ['SCENE_HOOK','CONSEQUENCE','RELEVANT_QUESTION']){
+  if(exploration.hypothesis_id===`instagram_company:${key}:${runDate}`)return key;
+ }
+ return null;
+}
+export function miraCaption(problem,exploration=null){
  if(!problem?.id||!/^PH-P\d{3}$/.test(problem.id))throw new Error('MIRA_CANONICAL_PROBLEM_REQUIRED');
  const effects={revenue:'een gemiste verkoopkans',risk:'onnodig risico',cost:'extra kosten',capacity:'oplopende werkdruk',strategic:'besluiten zonder opvolging',people:'werkdruk en afhankelijkheid',operational:'vertraging',financial:'onverwachte financiële druk'};
  const effect=effects[problem.impact]||'vertraging en onzekerheid';
+ const kind=miraExplorationKind(exploration,exploration?.run_date);
+ const scene=kind==='SCENE_HOOK'?'Een gewone werkdag. '+problem.scene:problem.scene;
+ const consequence=kind==='CONSEQUENCE'?'Als niemand dit oppakt, kan het gevolg '+effect+' zijn. Dit is een herkenbare situatie, geen gemeten klantresultaat.':'Het gevolg kan '+effect+' zijn. Dit is een herkenbare situatie, geen gemeten klantresultaat.';
+ const nextStep=kind==='RELEVANT_QUESTION'?'Wie heeft dit bij jullie in beeld? Kijk eerst welke informatie nu nergens samenkomt. https://www.bedrijfsgeheugen.nl/frisse-blik':'Herkenbaar in jouw bedrijf? Kijk eerst welke informatie nu nergens samenkomt. https://www.bedrijfsgeheugen.nl/frisse-blik';
  return [
- problem.scene,
+ scene,
  'Wat hierachter zit: '+problem.description,
- 'Het gevolg kan '+effect+' zijn. Dit is een herkenbare situatie, geen gemeten klantresultaat.',
+ consequence,
  'Het Bedrijfsgeheugen-portaal kan dit aandachtspunt op de pagina '+problem.page+' in verband brengen met de beschikbare gegevens. Als die zijn gekoppeld, kan de voorgestelde actie «'+problem.action+'» met eigenaar en prioriteit worden beoordeeld. De relevante capaciteit is '+problem.capability+'.',
  'Wat je daarna volgt: '+problem.metric+'. Een signaal is pas bruikbaar als duidelijk is wat de volgende stap is.',
- 'Herkenbaar in jouw bedrijf? Kijk eerst welke informatie nu nergens samenkomt. https://www.bedrijfsgeheugen.nl/frisse-blik',
+ nextStep,
  'Mira is een fictief AI-personage. Voorbeeld gebaseerd op ondernemersprobleem '+problem.id+'; geen klantervaring of bewezen omzet.'
  ].join('\n\n');
 }
 export function miraProductionEvidence(problem){return {contentPersona:'mira',contentClass:'mira_daily_life',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT,canonical_problem_id:problem.id,problem_name:problem.name,problem_description:problem.description,problem_signal:problem.signal,portal_page:problem.page,portal_capability:problem.capability,portal_action:problem.action,portal_metric:problem.metric,portal_impact_label:'POTENTIAL',source_catalog:MIRA_CANONICAL_LIBRARY_PATH,fictional_scene:true,source_evidence_status:'CANONICAL_PROBLEM_HYPOTHESIS',scene:problem.scene};}
 export function validateMiraCaptionForDelivery(runDate,body,evidence={}){
  let problem;try{problem=selectMiraProblem(runDate)}catch(e){return {ok:false,reason:String(e.message||e)};}
- const expected=miraCaption(problem);const normalized=v=>String(v||'').replace(/\s+/g,' ').trim();
+ const exploration=evidence?.editorial_exploration;
+ const active=miraExplorationKind(exploration,runDate)&&typeof exploration?.source_recommendation_id==='string'
+  &&exploration.source_recommendation_id.length>0&&exploration.source_recommendation_id===evidence?.recommendation_id;
+ const expected=miraCaption(problem,active?exploration:null);const normalized=v=>String(v||'').replace(/\s+/g,' ').trim();
  const actual=normalized(body);
  if(actual!==normalized(expected))return {ok:false,reason:'MIRA_CAPTION_FIVE_PARTS_OR_EXACT_SOURCE_MISSING',problem_id:problem.id};
  if(evidence.caption_contract!==MIRA_ENTREPRENEUR_CAPTION_CONTRACT||evidence.canonical_problem_id!==problem.id||evidence.source_catalog!==MIRA_CANONICAL_LIBRARY_PATH||evidence.portal_capability!==problem.capability||evidence.portal_page!==problem.page||evidence.portal_action!==problem.action||evidence.portal_metric!==problem.metric||evidence.portal_impact_label!=='POTENTIAL')return {ok:false,reason:'MIRA_PORTAL_LINEAGE_OR_IMPACT_NOT_VERIFIED',problem_id:problem.id};
