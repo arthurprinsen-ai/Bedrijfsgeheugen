@@ -4,6 +4,7 @@ import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/co
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
 import {selectMeasuredNextPostTest} from '../_shared/measured-next-post-challenger.mjs';
+import {classifyCurrentSource} from '../_shared/content-source-freshness.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
@@ -304,6 +305,7 @@ function recommendationEligible(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const evidence = row?.evidence || {};
   if (!['suggested',''].includes(clean(row?.status))) return false;
+  if (['linkedin_company','blog'].includes(channel) && !classifyCurrentSource(row).ok) return false;
   if (channel === 'linkedin_company') {
     if (target === 'linkedin_personal' || topic.includes('linkedin_personal')) return false;
     if (evidence?.identity_contract === PERSONAL_CONTRACT || evidence?.personal_truth_verified === true) return false;
@@ -630,7 +632,7 @@ Deno.serve(async (req) => {
     const requiredRecommendationId = pending.channel==='instagram_company'
       ? clean(instagramWinner?.recommendation_id)
       : clean(pending.delivery_evidence?.fallback_recommendation_id);
-    const recommendation = requiredRecommendationId
+    const pinnedRecommendation = requiredRecommendationId
       ? recs.find((r:any)=>{
           if(clean(r.recommendation_id)!==requiredRecommendationId) return false;
           if(pending.channel==='instagram_company'){
@@ -642,6 +644,10 @@ Deno.serve(async (req) => {
           return recommendationEligible(r,pending.channel);
         }) || null
       : pickRecommendation(recs,pending.channel);
+    const recommendation = pinnedRecommendation || (['linkedin_company','blog'].includes(pending.channel)
+      ? pickRecommendation(recs,pending.channel,requiredRecommendationId?[requiredRecommendationId]:[]):null);
+    const sourceFreshnessFallback = !!requiredRecommendationId && !pinnedRecommendation && !!recommendation;
+    if(sourceFreshnessFallback)console.warn('HISTORICAL_SOURCE_FALLBACK',pending.channel);
     if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
     let recentCompanyPosts:string[]=[];
     if(pending.channel==='linkedin_company'){
@@ -734,7 +740,7 @@ Deno.serve(async (req) => {
       : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
-    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
+    const artifactInput={channel:pending.channel,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
@@ -859,8 +865,8 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
-      measured_next_post_test:measuredNextPostTest,
+      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      measured_next_post_test:measuredNextPostTest,source_freshness_fallback:sourceFreshnessFallback,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
