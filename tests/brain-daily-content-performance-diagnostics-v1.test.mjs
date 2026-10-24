@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {diagnoseDailyPerformance} from '../tools/content-growth/daily-performance-diagnostics.mjs';
-import {queries,collect} from '../tools/content-growth/collect-canonical-evidence.mjs';
+import {queries,collect,readBoundedCanonicalSource} from '../tools/content-growth/collect-canonical-evidence.mjs';
 const now=new Date('2026-10-24T10:00:00Z');
 const feed={state:'READ_ONLY_PROVIDER_OBSERVED',social:[
  {post_id:'ig1',platform:'instagram',published_at:'2026-10-20T10:00:00Z',observed_at:'2026-10-24T08:00:00Z',data_quality:'OBSERVED',metrics:{views:158,reach:138,likes:0,comments:0,saved:0,shares:0}},
@@ -42,4 +42,30 @@ test('tenant filter and consented human aggregate are hardcoded in bounded read-
  assert.equal(requests.length,3);
  assert.ok(requests.every(x=>x.url.endsWith('/database/query/read-only')&&x.options.method==='POST'));
  assert.equal((await collect({token:'',now})).state,'AUTH_REQUIRED');
+});
+test('transient 429/503 errors receive exactly two bounded read-only retries and preserve canonical provider evidence',async()=>{
+ const attempts=[];const waits=[];
+ const output=await readBoundedCanonicalSource({kind:'social',query:queries.social,token:'dummy',
+  fetcher:async(url,request)=>{attempts.push({url,request});return attempts.length===3?{ok:true,status:200,json:async()=>[{post_id:'verified'}]}:{ok:false,status:attempts.length===1?429:503};},
+  wait:async ms=>waits.push(ms)});
+ assert.equal(output[0].post_id,'verified');
+ assert.deepEqual(waits,[300,900]);
+ assert.equal(attempts.length,3);
+ assert.ok(attempts.every(a=>a.request.method==='POST'&&a.url.endsWith('/database/query/read-only')));
+});
+test('read-only retry fails closed after maximum three transient attempts',async()=>{
+ let calls=0;const waits=[];
+ await assert.rejects(readBoundedCanonicalSource({kind:'pages',query:queries.pages,token:'dummy',
+  fetcher:async()=>{calls++;return {ok:false,status:502};},wait:async n=>waits.push(n)}),/PROVIDER_READONLY_RETRY_EXHAUSTED/);
+ assert.equal(calls,3);assert.deepEqual(waits,[300,900]);
+});
+test('auth failures and malformed provider responses do not retry or pretend to be observed',async()=>{
+ let calls=0;
+ await assert.rejects(readBoundedCanonicalSource({kind:'sources',query:queries.sources,token:'dummy',
+  fetcher:async()=>{calls++;return {ok:false,status:403};},wait:async()=>{throw Error('should not sleep');}}),/PROVIDER_AUTH_OR_SCOPE_DENIED/);
+ assert.equal(calls,1);
+ await assert.rejects(readBoundedCanonicalSource({kind:'sources',query:queries.sources,token:'dummy',
+  fetcher:async()=>{calls++;return {ok:true,status:200,json:async()=>({fake:'data'})};},wait:async()=>{throw Error('should not sleep');}}),/EVIDENCE_RESPONSE_SHAPE_UNVERIFIED/);
+ assert.equal(calls,2);
+ await assert.rejects(readBoundedCanonicalSource({kind:'sources',query:'drop table anything',token:'dummy',fetcher:async()=>{throw Error('no network');},wait:async()=>{}}),/UNAUTHORIZED_SOURCE_QUERY/);
 });
