@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|daily-read-only-source|transient-provider-stop-without-bounded-retry|20261024-v1",
+  "obligation_id": "growth:one-existing-daily-source-retry-and-proof:v1",
+  "failure_class": "DAILY_GROWTH_LEARNING_SINGLE_TRANSIENT_PROVIDER_FAILURE_NOT_RECOVERED",
+  "root_cause": "The existing daily read-only canonical source collector made one network request per social/page/source dataset, so 429/502/503 or timeout immediately invalidated the entire daily growth evidence artifact even when a bounded idempotent read retry could recover. This produced a false absence of actionable evidence; not a justification for relabeling missing metrics as zero.",
+  "observed_evidence": {
+    "workflow": ".github/workflows/content-growth-learning.yml",
+    "collector": "tools/content-growth/collect-canonical-evidence.mjs",
+    "tests": "tests/brain-daily-content-performance-diagnostics-v1.test.mjs",
+    "provider_specific_incident": "Source failures already surfaced as SOURCE_ERROR and fail-closed; no observed production proof that this caused a particular daily 2026-10-24 outage.",
+    "safety": "read-only management SQL endpoint, no external posts sent"
+  },
+  "fix": "Add up to two bounded retries (three attempts maximum) for only retryable provider HTTP statuses and timeouts, in the existing collector and existing daily workflow. 300ms/900ms fixed delay. Explicitly classify authentication and exhausted retries. No new scheduler, additional producer or data sink.",
+  "prevention_rule": "Never retry authorization/permission failure, unknown query, malformed source response, program bugs, a publisher POST, or an already-sent provider action. No growth success or publication attribution without provider readback. Keep the existing daily job scheduled even when one source is unavailable.",
+  "tests": [
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_GROWTH_LEARNING_SINGLE_TRANSIENT_PROVIDER_FAILURE_NOT_RECOVERED",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required+CodeQL, protected merge, next actual scheduled 04:20 UTC workflow provider artifact and independently observed partial/failure status when impossible to recover."
+}
