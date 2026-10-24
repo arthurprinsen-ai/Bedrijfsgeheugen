@@ -68,6 +68,14 @@ jobs:
             echo "SAME_OBLIGATION_CANDIDATE_PRESERVED:$DATE:$pr"
             echo "SAME_OBLIGATION_WRITER_ACTIVE:$DATE:$pr"
           fi
+          # The canonical same-date blog was already protected-merged. Do not
+          # re-render it and create a second publication candidate on an hourly retry.
+          merged_pr="$(gh pr list --head "$branch" --base main --state merged --json number --jq '.[0].number // empty')"
+          if [ -n "$merged_pr" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "SAME_DATE_BLOG_PROTECTED_MERGE_PRESENT:$DATE:$merged_pr"
+            exit 0
+          fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Render canonical Powerhouse artifact
