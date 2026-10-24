@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260928152400_powerhouse_persuasion_revenue_optimizer_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260928133343_powerhouse_persuasion_revenue_optimizer_v1.sql','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-persuasion-revenue/SKILL.md','utf8');
 
 test('persuasion optimizer has bounded strategies',()=>{
