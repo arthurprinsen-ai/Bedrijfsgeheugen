@@ -27,22 +27,49 @@ function rows(body){
  if(Array.isArray(body?.result))return body.result;
  throw Error('EVIDENCE_RESPONSE_SHAPE_UNVERIFIED');
 }
-export async function collect({token=process.env.SUPABASE_ACCESS_TOKEN,fetcher=fetch,now=new Date()}={}){
- const out={state:'AUTH_REQUIRED',collected_at:now.toISOString(),social:[],pages:[],sources:[],coverage:'NOT_OBSERVED'};
- if(!token)return out;
- for(const [kind,query] of Object.entries(queries)){
+const transientStatuses=new Set([408,429,500,502,503,504]);
+export async function readBoundedCanonicalSource({kind,query,token,fetcher,wait}){
+ if(!Object.hasOwn(queries,kind)||query!==queries[kind])throw new TypeError('UNAUTHORIZED_SOURCE_QUERY');
+ if(!token)throw Error('PROVIDER_AUTH_REQUIRED');
+ const endpoint='https://api.supabase.com/v1/projects/'+ref+'/database/query/read-only';
+ for(let attempt=0;attempt<3;attempt++){
    const controller=new AbortController();
    const timer=setTimeout(()=>controller.abort(),15000);
+   let retry=false;
    try{
-     const result=await fetcher('https://api.supabase.com/v1/projects/'+ref+'/database/query/read-only',{
+     const response=await fetcher(endpoint,{
        method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},
        body:JSON.stringify({query}),signal:controller.signal
      });
-     if(!result.ok)throw Error('PROVIDER_HTTP_'+result.status);
-     const records=rows(await result.json());
-     if(records.length>300)throw Error('SOURCE_ROW_LIMIT_EXCEEDED');
-     out[kind]=records;
+     if(response.status===401||response.status===403)throw Error('PROVIDER_AUTH_OR_SCOPE_DENIED');
+     if(!response.ok){
+       if(!transientStatuses.has(response.status))throw Error('PROVIDER_NONRETRYABLE_HTTP_'+response.status);
+       retry=attempt<2;
+       if(!retry)throw Error('PROVIDER_READONLY_RETRY_EXHAUSTED');
+     }else{
+       const result=rows(await response.json());
+       if(result.length>300)throw Error('SOURCE_ROW_LIMIT_EXCEEDED');
+       return result;
+     }
+   }catch(error){
+     const msg=String(error?.message||'');
+     const isTimeout=error?.name==='AbortError'||error?.name==='TimeoutError';
+     // Only a READ-ONLY provider timeout is safe to retry. Bad auth, shape,
+     // validation or programming bugs must fail closed instead.
+     if(!isTimeout&&!retry)throw error;
+     if(attempt===2)throw Error('PROVIDER_READONLY_RETRY_EXHAUSTED');
+     retry=true;
    }finally{clearTimeout(timer);}
+   if(retry)await wait(attempt===0?300:900);
+ }
+ throw Error('PROVIDER_READONLY_RETRY_EXHAUSTED');
+}
+export async function collect({token=process.env.SUPABASE_ACCESS_TOKEN,fetcher=fetch,now=new Date(),
+  wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}){
+ const out={state:'AUTH_REQUIRED',collected_at:now.toISOString(),social:[],pages:[],sources:[],coverage:'NOT_OBSERVED'};
+ if(!token)return out;
+ for(const [kind,query] of Object.entries(queries)){
+   out[kind]=await readBoundedCanonicalSource({kind,query,token,fetcher,wait});
  }
  out.state='READ_ONLY_PROVIDER_OBSERVED';
  out.coverage='OWNED_POSTS_AND_CONSENTED_HUMAN_PAGE_AGGREGATES_ONLY';
@@ -51,7 +78,7 @@ export async function collect({token=process.env.SUPABASE_ACCESS_TOKEN,fetcher=f
 if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){
  let report;
  try{report=await collect();}
- catch(e){report={state:'SOURCE_ERROR',failure_class:'PROVIDER_READ_ONLY_QUERY_FAILED',collected_at:new Date().toISOString(),social:[],pages:[],sources:[],coverage:'NOT_OBSERVED'};}
+ catch(e){report={state:'SOURCE_ERROR',failure_class:String(e?.message||'')==='PROVIDER_AUTH_OR_SCOPE_DENIED'?'PROVIDER_AUTH_OR_SCOPE_DENIED':String(e?.message||'')==='PROVIDER_READONLY_RETRY_EXHAUSTED'?'PROVIDER_READONLY_RETRY_EXHAUSTED':'PROVIDER_READ_ONLY_QUERY_FAILED',collected_at:new Date().toISOString(),social:[],pages:[],sources:[],coverage:'NOT_OBSERVED'};}
  // Do not emit raw provider rows to Actions logs or write network content to an attacker-selected file.
  // The trusted workflow redirects stdout into a private, fixed /tmp path.
  process.stdout.write(JSON.stringify(report)+'\n');
