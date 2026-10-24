@@ -31,7 +31,7 @@ jobs:
       - name: Read existing canonical provider snapshots and human page aggregates
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: node tools/content-growth/collect-canonical-evidence.mjs /tmp/content-growth-provider-evidence.json
+        run: node tools/content-growth/collect-canonical-evidence.mjs > /tmp/content-growth-provider-evidence.json
       - name: Materialize bounded blog linkedin social learning
         run: |
           set -euo pipefail
