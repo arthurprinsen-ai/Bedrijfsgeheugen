@@ -29,19 +29,40 @@ export function selectDueEvaluationBatch(due=[],{now=new Date(),limit=2}={}){
   const valid=due.filter(p=>p&&p.postId&&Number.isFinite(Date.parse(p.publishedAt||''))&&[24,48,72].includes(Number(p.dueWindow||p.windowHours)));
   const sorted=[...valid].sort((a,b)=>String(a.postId).localeCompare(String(b.postId))||
     Number(a.dueWindow||a.windowHours)-Number(b.dueWindow||b.windowHours));
-  const recent=sorted.filter(p=>clock.getTime()-Date.parse(p.publishedAt)<=96*3600000);
-  const old=sorted.filter(p=>clock.getTime()-Date.parse(p.publishedAt)>96*3600000);
-  const slots=Math.min(recent.length,Math.max(1,Math.ceil(bound/2)));
-  const selected=recent.slice(0,slots);
-  const oldCapacity=bound-selected.length;
-  if(oldCapacity>0&&old.length){
-    const pages=Math.ceil(old.length/oldCapacity);
-    const tick=Math.floor(clock.getTime()/3600000);
-    const start=(tick%pages)*oldCapacity;
-    selected.push(...old.slice(start,start+oldCapacity));
+  // Existing one-hour supervisor stays authoritative. The canonical store
+  // marks a window evidence-backed only when an actual provider observation
+  // occurred within ±6 hours of the 24/48/72h measurement window.
+  const withEvidence=sorted.filter(p=>p.hasWindowSnapshot===true);
+  const withoutEvidence=sorted.filter(p=>p.hasWindowSnapshot!==true);
+  function rotatedMissing(list,n){
+    if(n<=0||!list.length)return [];
+    const recent=list.filter(p=>clock.getTime()-Date.parse(p.publishedAt)<=96*3600000);
+    const old=list.filter(p=>clock.getTime()-Date.parse(p.publishedAt)>96*3600000);
+    const selected=recent.slice(0,n);
+    const left=n-selected.length;
+    if(left>0&&old.length){
+      const pages=Math.ceil(old.length/left);
+      const tick=Math.floor(clock.getTime()/3600000);
+      const start=(tick%pages)*left;
+      selected.push(...old.slice(start,start+left));
+    }
+    if(selected.length<n)selected.push(...recent.slice(n-(selected.length),n));
+    return selected.slice(0,n);
   }
-  if(selected.length<bound)selected.push(...recent.slice(slots,slots+bound-selected.length));
-  return selected.slice(0,bound);
+  if(!withEvidence.length)return rotatedMissing(sorted,bound);
+  const sortedProven=[...withEvidence].sort((a,b)=>
+    Date.parse(b.publishedAt)-Date.parse(a.publishedAt)||
+    String(a.postId).localeCompare(String(b.postId))||
+    Number(a.dueWindow||a.windowHours)-Number(b.dueWindow||b.windowHours));
+  const tick=Math.floor(clock.getTime()/3600000);
+  // Reserve one proof-debt slot every fourth hour while evidence is available:
+  // measured posts should finally produce learning, but absent snapshots
+  // must remain visible as obligations, never fabricated as zero.
+  const missingQuota=withoutEvidence.length&&bound>1&&tick%4===0?1:0;
+  const chosen=sortedProven.slice(0,bound-missingQuota);
+  chosen.push(...rotatedMissing(withoutEvidence,bound-chosen.length));
+  if(chosen.length<bound)chosen.push(...sortedProven.slice(chosen.length,chosen.length+(bound-chosen.length)));
+  return chosen.slice(0,bound);
 }
 
 export async function runEvaluation({store,now=new Date(),config=defaultConfig(),maxDuePosts=2}={}){
