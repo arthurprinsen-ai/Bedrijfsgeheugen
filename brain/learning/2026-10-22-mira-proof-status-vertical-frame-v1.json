@@ -1,0 +1,109 @@
+{
+  "fingerprint": "mira|prepublish-status-fail-contradiction|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "related_pr": "fix/4439-instagram-proof-status-consistency-20261022",
+  "problem": "Historical media proof records can contradict themselves: FAIL identity verdict with provisional prepublish_verified. The existing SQL validator also misclassifies 1080x1920 'video_frame' as a static 1080x1350 image. A historical 0.95 score frame had BOTH the shape classification problem and a stale August master, so it must remain rejected with the fixed September master gate.",
+  "proof": {
+    "production_ledger_rows": 46,
+    "status_gate_contradictions": 21,
+    "representative_record_date": "2026-10-19",
+    "representative_media_type": "video_frame",
+    "representative_height": 1920,
+    "representative_face_identity_confidence": 0.95,
+    "original_sql_validator_as_video_frame": false,
+    "same_proof_as_reel": true,
+    "current_oct22_verdict": "BLOCKED: 6 same-day video-frame proof rows remain identity_gate_result=FAIL; 0 PASS. Latest one shows 0.97 face score with approved September master, 1080x1920 and two-image vision, but the still-deployed SQL frame classifier rejects it; remaining five scores <=0.93. A single high-score frame does not establish independent start/middle/end temporal continuity or an Instagram provider ID.",
+    "representative_stale_master_url": "https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg",
+    "representative_stale_master_sha256": "ab32dfce37ffdc25bb3f10ba62927442d055792bce6f77d987ca936b8c53e33d",
+    "official_current_master_sha256": "e32863f391e01dba910bf396ad13eb23c4a74b53f2614f1563b0fc332b1dd4e2",
+    "observed_candidate_readonly_simulation": {
+      "historical_rows": 46,
+      "oct22_rows": 6,
+      "oct22_proposed_passes": 0,
+      "previously_rejected_history_that_passes_all_new_guards": 0,
+      "explanation": "Historical snapshot of the previous 46-row read-only simulation before the later 0.97 video-frame re-verification; not a current count of proof candidates. Latest high-confidence row is still stored FAIL and must not be promoted without actual deployed validator/trigger plus full video and provider proof."
+    },
+    "newest_production_readback": {
+      "observed_date": "2026-10-22",
+      "day_records": 6,
+      "day_passes": 0,
+      "day_provisional_verified_but_fail": 1,
+      "overall_provisional_verified_but_fail": 22,
+      "day_highest_face_confidence": 0.97,
+      "current_migration_applied": false,
+      "high_score_frame_master_valid": true,
+      "high_score_frame_stored_verdict": "FAIL",
+      "high_score_frame_media_type": "video_frame",
+      "publication_live_proven": false
+    }
+  },
+  "root_cause": "Two independent defects: SQL validator omitted video_frame in its 9:16 type discriminator, and BEFORE trigger demoted identity_gate_result but not the contradictory provisional status. The historical 0.95 record also used the separate stale August master fixed by #4634; it cannot be promoted based on format alone.",
+  "remediation": "Apply strict source parity for video_frame=1080x1920, pin September official Mira ID, URL, sha256, require two-image vision and >=0.94 face confidence; prevent a fail identity verdict from retaining prepublish_verified and related nested flags. Preserve historical provider receipts. Never reclassify the 0.95 stale-master record as PASS.",
+  "prevention": [
+    "Treat format/proof tokens as a shared contract across producer, vision verifier, SQL trigger, and router.",
+    "Never count provider_status prepublish_verified as proof if identity_gate_result is not PASS.",
+    "Keep exact start/middle/end temporal+face verification and 0.94 minimum; no threshold lowering or random retry until PASS.",
+    "Protect real provider receipts on already published media, reconcile separately.",
+    "Execute synthetic predicate checks and CI before protected merge; production and exact provider readback only after deployment.",
+    "Test stale August reference URL/hash as explicit negative controls even if face score is >=0.94.",
+    "Before proposing a material PR, autonomous agents must run both canonical learning evaluation and material-writeback semantic closure with the exact changed paths; repair missing compiler/evaluation/evidence in the same existing fingerprint before CI, never suppress the guard.",
+    "Agents must distinguish current readback from immutable historical snapshots, re-evaluate observed scores before release, and never promote a single valid-looking video frame to a three-frame terminal video PASS or claim provider publication."
+  ],
+  "verification": {
+    "source_test": "tests/brain-mira-media-proof-status-truth-v1.test.mjs",
+    "migration": "supabase/migrations/20261022161000_instagram_proof_status_truth_v1.sql",
+    "historical_replay": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs",
+      "SQL embedded negative controls: reject stale August master, wrong hash, absent face score"
+    ],
+    "canary": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "deployment": "PENDING_REQUIRED_CI_AND_PROTECTED_MERGE",
+    "instagram_post": "NOT_LIVE_PROVEN",
+    "historical_real_data_query": "READ_ONLY_INSPECTION_FINISHED_NO_NEW_VALID_OCT22_MEDIA"
+  },
+  "status": "CANDIDATE_PENDING_RELEASE",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 21,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_readback": {
+      "query_type": "read_only",
+      "date": "2026-10-22",
+      "historical_proof_rows": 46,
+      "contradictory_provisional_statuses": 22,
+      "october_22_passes": 0,
+      "maximum_october_22_identity_confidence": 0.97,
+      "identity_minimum_required": 0.94,
+      "october_22_proof_rows": 6,
+      "high_score_frame_still_stored_fail": true,
+      "full_video_temporal_proof": "NOT_INDEPENDENTLY_PROVEN"
+    },
+    "tests": [
+      "tests/brain-mira-media-proof-status-truth-v1.test.mjs"
+    ],
+    "canonical_learning_gate": "GitHub Required CI run 39811932831, historical_replay/shadow/canary passed (LEARNING_CANONICALIZATION_GREEN)",
+    "database_candidate": "Previously smoke-tested using a rolled-back transaction in an isolated preview; NOT a production deploy",
+    "release_proof": "MISSING_REQUIRED_CI_AND_PRODUCTION_AND_PROVIDER_READBACK"
+  }
+}
