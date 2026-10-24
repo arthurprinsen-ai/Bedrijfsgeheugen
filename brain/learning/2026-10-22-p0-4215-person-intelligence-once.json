@@ -1,0 +1,188 @@
+{
+  "fingerprint": "powerhouse|p0-4215-person-intelligence-once|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "relation": "parallel non-overlapping source plan refinement to protected draft #4558",
+  "failure_pattern": "818 business opportunities repeatedly expand a 23,295-contact person-intelligence view inside a LATERAL next-best-action route. Revenue snapshot often times out at 120s.",
+  "root_cause": "Uncorrelated source view is fully expanded per LATERAL opportunity; its own aliases/events/actions/outcomes and aggregated calculations are recomputed.",
+  "proposed_fix": "Canonical single-owner forward-only two-arm equijoin migration 20261022221500 is active release candidate. One-arm alias set-join 20261022222500 was identified as a conflicting parallel successor and retired before preview/production deployment. Keep standalone read-only performance evidence.",
+  "evidence": {
+    "baseline_explain_cost": 32713172.61,
+    "candidate_explain_cost": 1597888.41,
+    "sample_read_only_person_rows_compared": 60,
+    "sample_person_mismatches": 0,
+    "old_source_md5": "2ce1ab1122390af0f51c5aa8b318600f",
+    "financial_parity": "NOT_YET_VERIFIED",
+    "two_tenant_session_parity": "NOT_YET_VERIFIED",
+    "customer_output": "NO_PROVIDER_SEND",
+    "synthetic_rollback_parity_20261022": {
+      "status": "VERIFIED_SYNTHETIC_ONLY",
+      "preview_project_ref": "nqyptchljoucghdihmqy",
+      "transaction": "BEGIN / ROLLBACK; no stored customer or fixture records",
+      "provenance": "Two successfully completed Supabase execute_sql transactions; advanced case includes keyed and LinkedIn alias person lookup plus forecast; catalog/readback afterward",
+      "rows_compared": 3,
+      "ordered_columns": 50,
+      "bidirectional_jsonb_except_all_differences": 0,
+      "known_person_matches": 2,
+      "unmatched_person_cases": 1,
+      "forecast_matched_cases": 1,
+      "positive_financial_outputs": 3,
+      "initial_basic_case": "2 unmatched-person synthetic opportunities, 50-column comparison, zero differences and two positive finance outputs",
+      "final_readback": "public.powerhouse_opportunities=0; public.bg_connecties=0; public.powerhouse_forecasts=0; candidate view MD5 6a7a20df1f24b4333986ba9b2da09314",
+      "release_limitation": "NOT live acceptance: synthetic smoke does not prove representative >=2-tenant 50-column/finance parity, real authenticated customer isolation, or real end-to-end runtime improvements."
+    },
+    "financial_source_readiness_20261022": {
+      "status": "OBSERVED_ZERO_EUR_RELEASE_BLOCKER",
+      "production_opportunities": 818,
+      "positive_expected_value_eur_rows": 0,
+      "positive_expected_revenue_value_rows": 0,
+      "confirmed_from": "read-only Supabase production SQL readback",
+      "canonical_registry_fingerprint": "powerhouse|opportunities|all-zero-expected-value-source|20261022",
+      "code_guard": "BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED",
+      "regression": "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "meaning": "no actual positive-valued financial parity; no fabricated revenue or PII copied"
+    },
+    "two_arm_trial_20261022": {
+      "status": "SQL_COMPILED_ROLLED_BACK_ON_EXISTING_PREVIEW",
+      "preview_ref": "kvygrqnkhhidwbaugnqp",
+      "old_hash": "6a7a20df1f24b4333986ba9b2da09314",
+      "new_hash": "8a9b316a512dcf55889b0a56e7026170",
+      "column_count": 50,
+      "anon_select": false,
+      "authenticated_select": false,
+      "service_role_select": true,
+      "actual_cron_sla": "NOT_TESTED",
+      "full_finance_and_tenant_parity": "NOT_PROVEN",
+      "production_applied": false
+    },
+    "set_join_read_only_20261022": {
+      "status": "RESEARCH_ONLY_ALTERNATIVE_RETIRED_NOT_DEPLOYED",
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "opportunities": 818,
+      "linked": 650,
+      "bidirectional_person_selection_mismatches": 0,
+      "observed_top_timestamp_ambiguities": 0,
+      "selected_person_baseline_ms": 14623,
+      "selected_person_set_join_ms": 1291,
+      "full_50_column_parity": "TIMEOUT_45_SECONDS_NOT_VERIFIED",
+      "original_first_candidate_md5": "6a7a20df1f24b4333986ba9b2da09314",
+      "forward_set_join_candidate_md5": "dcac5a8d2543147d3d5e294cc14a599e",
+      "preview_data": "ZERO_OPPORTUNITIES",
+      "production_deploy": "NOT_AUTHORIZED_OR_DEPLOYED",
+      "restrictions": "Sample timings are not entire snapshot runtimes. SQL compilation confirmed 50 columns in temp view and rollback. No financial or tenant proof.",
+      "parity_runner_path": "tests/brain-p0-4215-buying-window-full-parity.mjs",
+      "shadow_test_path": "tests/brain-p0-4215-person-two-arm-match.test.mjs",
+      "recovery_note": "Retired conflicting unmerged 20261022222500 migration and related tests so canonical earlier 20261022221500 two-arm migration can remain single successor of 20261022120800; historical measured alias performance preserved as learning, not an executable second migration."
+    }
+  },
+  "prevention": [
+    "Root cause is never declared solved by increasing work_mem or timeouts.",
+    "No production migration before representative financial result parity, isolation verification, Required CI and CodeQL.",
+    "Existing daily executor, scheduler and social lineage remain active.",
+    "Synthetic parity fixtures must run transactionally with verified ROLLBACK and must never be mistaken for authorized two-tenant financial parity or release acceptance.",
+    "Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim.",
+    "Do not fan out Supabase provider runs with sequential one-file commits; batch same-lineage changes and inspect provider configuration failures before bounded retry.",
+    "Planner cost reduction alone never earns release: bounded real runtime on 5/25 opportunities regressed for materialized OR-LATERAL; also measure full 818 cohort for keyed alias set join.",
+    "For aliases or timestamp ties after source changes, compare canonical selection and investigate ambiguities before release; no simulated positive financial values may be promoted as realized revenue.",
+    "Never stack two forward migrations which both assert the same predecessor hash and replace the same view. Supersede alternatives on one owner branch before allowing provider preview; preserve research evidence."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-person-two-arm-match.test.mjs"
+    ]
+  },
+  "current_state": "HOLD_DRAFT_UNVERIFIED_PRODUCTION",
+  "parity_runner_incident": {
+    "fingerprint": "p0-4215-parity-runner-migrated-preview-and-process-shadow-20261022",
+    "observed_at": "2026-10-22",
+    "state": "SOURCE_CORRECTED_FULL_RESULT_PARITY_UNVERIFIED",
+    "causes": [
+      "Runner assumed public buying-window remained pre-migration on provider-owned preview and incorrectly incorporated the migration REVOKE statement in the extracted view SQL.",
+      "Local variable named process shadowed global process; preview environment preflight would fail in the temporal-dead-zone before opening the DB connection.",
+      "The full-parity SQL array accidentally contained candidateSql twice, raising relation-already-exists on a populated preview before row/financial comparison.",
+      "The full parity runner accepted nonempty but all-zero financial input because equality of two zero-euro datasets satisfied bidirectional 50-column and aggregate comparisons without any positive-value scenario."
+    ],
+    "fixes": [
+      "Use exactly extracted canonical view definition and reconstruct immutable baseline/candidate as transaction-local TEMP VIEWs.",
+      "Assert exact both canonical MD5s, installed source identity, original browser role denial, 50 ordered columns, nonzero complete row-set and financial EXCEPT ALL; always ROLLBACK.",
+      "Name the spawned child childResult, never process, and retain global process env/output.",
+      "Create each transaction-local baseline/candidate TEMP VIEW exactly once; verify that the source array contains precisely one candidateSql token.",
+      "Add a fail-closed test in the existing 50-column isolated-preview runner: both original and candidate must contain an actual row with expected_value_eur>0 AND expected_commercial_value_eur>0 before reporting full parity; reject zero-only datasets as BUYING_POSITIVE_FINANCIAL_SCENARIO_REQUIRED."
+    ],
+    "evidence": [
+      "On existing isolated preview nqyptchljoucghdihmqy, temporary restored original md5 2ce1ab1122390af0f51c5aa8b318600f and candidate md5 6a7a20df1f24b4333986ba9b2da09314 matched installed candidate; SQL transaction rolled back.",
+      "Six local source/regression contract assertions passed after the correction; not an end-to-end parity receipt.",
+      "Current preview has zero opportunities; empty result is explicitly fail-closed; no authentic two-tenant acceptance or scheduler runtime success claimed.",
+      "Regression verifies exactly one candidate TEMP VIEW creation, and Node child-process tests independently prove missing-authorization and production-ref preflight rejection.",
+      "On existing preview, transaction-only 3-row synthetic advanced parity passed all 50 columns, bidirectional EXCEPT ALL with zero mismatches; keyed and URL-alias person joins, unmatched person, forecast and nonzero financial outputs were exercised; rollback readback confirmed zero opportunities, contacts and forecasts. This is NOT actual customer or runtime parity.",
+      "Production observed 818 opportunity inputs, 0 positive expected_value_eur and 0 positive expected_revenue_value, so previous all-zero parity could be true without testing positive-valued money output. Existing preview remains empty. Guard and regression added on PR #4630; exact-head CI/CodeQL and nonempty real multi-tenant acceptance still pending."
+    ],
+    "regression": [
+      "tests/brain-p0-4215-person-intelligence-once.test.mjs",
+      "tests/brain-p0-4215-buying-window-full-parity.mjs"
+    ],
+    "prevention": "All parity harnesses must be executable, mutation-free on production, reject empty or mismatched datasets, detect preview migration state without weakening hash gates, and forbid shadowing Node process. Prevent duplicate transient SQL objects and cover explicit fail-closed CLI entry paths with real subprocess smoke tests. Zero-difference SQL parity is insufficient when all money inputs are zero. Require explicit positive observed financial input and positive computed output in both variants, plus authenticated 2-tenant isolation and a measured scheduler run, before any FULL_PARITY_PASSED claim.",
+    "verified_at": "2026-10-22",
+    "release_gate": "DRAFT until exact-head Required/CodeQL and populated authorized 2-tenant full and financial parity plus two independently authenticated HTTP checks and measured runtime succeed",
+    "latest_candidate_commit": "5437c48ebad6948f5883a33747c7bd26e699d021",
+    "current_state": "ZERO_FINANCIAL_FALSE_GREEN_GUARD_ADDED_PENDING_EXACT_HEAD_CI_AND_REAL_TWO_TENANT_ACCEPTANCE"
+  },
+  "preview_provider_incident": {
+    "fingerprint": "supabase|preview-config|provider-failure-overlapping-runs|20261022-v1",
+    "observed_at": "2026-10-22",
+    "maturity": "VALIDATED_OBSERVATION_NOT_PROVEN_RECOVERY",
+    "symptom": "Exact candidate b8463e0 Supabase Preview GitHub check 119941888607 failed at provider configure stage, causing Required CI aggregator failure even though backend/source/security tests passed.",
+    "provider_branch": "fix/powerhouse-person-intelligence-once-20261022-v1",
+    "provider_project": "nqyptchljoucghdihmqy",
+    "evidence": {
+      "check_id": 119941888607,
+      "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812348612",
+      "codeql_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39812348505",
+      "config_blob_identical_to_main": "f5e90adb23c2f531262b3cb54c70bd513aa4aad1",
+      "preview_health": "ACTIVE_HEALTHY",
+      "overlapping_provider_workflow_runs": [
+        "5263748d7f0e45feb15a1b7b7feb5688",
+        "1d054772dc734aa389ce65b43ea36e5a"
+      ],
+      "workflow_logs": "16:14:34–16:15:27 UTC, both config paths reported remote DB/API/Auth/Storage up to date; exact provider failure origin remains unknown"
+    },
+    "root_cause": "Not yet proven. Multiple commits within a short interval triggered overlapping Supabase branch workflows; overlap may have contributed to configuration failure but logs have not established causality.",
+    "prevention": "Before expensive CI, coalesce source/regression/learning into one immutable integration commit. Never trigger overlapping Supabase previews or blind reruns; inspect exact provider check + workflow_run_logs, deduplicate and preserve strong release gate. One bounded recovery commit only after overlapping workflows are terminal. Stop if provider remains unhealthy; do not reset/delete/recreate a paid branch, bypass protected CI, touch auth/RLS or claim green.",
+    "bounded_recovery": "A single same-branch append-only learning commit after observed previous workflow completion, to obtain one new exact-head provider result. No repeated retries on the same provider failure.",
+    "next_proof": "Require genuine provider success on the new exact head and all independent existing financial/tenant/performance release obligations; keep draft until then."
+  },
+  "shared_buying_snapshot_candidate_20261023": {
+    "fingerprint": "powerhouse|revenue-snapshot|cron-120s-statement-timeout|v1",
+    "status": "CANDIDATE_NOT_LIVE",
+    "root_cause": "Repeated buying-window expansion through commercial NBA v2, account strategy and research queue; avoid three full executions by one statement-local MATERIALIZED buying CTE",
+    "production_source_opportunities": 838,
+    "source_unique_opportunity_keys": 838,
+    "historic_snapshot_rows": 818,
+    "historic_refreshed_at_utc": "2026-10-22T05:55:01.519459Z",
+    "cron_last_failed_runid": 122081,
+    "exact_snapshot_select_measured_ms": 77606.088,
+    "measured_method": "Rollback-free read-only EXPLAIN ANALYZE on real production data, exact function projected columns; no production function rewrite",
+    "migration": "supabase/migrations/20261023054900_p0_4215_revenue_snapshot_shared_buying_v1.sql",
+    "regression": "tests/brain-p0-4215-snapshot-shared-buying-v1.test.mjs",
+    "actual_cron_full_refresh_under_90s": "NOT_VERIFIED",
+    "financial_parity": "NOT_VERIFIED",
+    "authenticated_two_tenant_isolation": "NOT_VERIFIED",
+    "release": "HOLD until protected exact-head checks + provider/money/tenant/performance/prod readback"
+  }
+}
