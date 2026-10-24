@@ -2,6 +2,9 @@ const nonneg=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0?v:(typeof v==='str
 const metric=(m,key)=>m&&Object.hasOwn(m,key)?nonneg(m[key]):null;
 const ms=v=>{const n=Date.parse(v||'');return Number.isFinite(n)?n:null;};
 const fraction=(a,b)=>a!==null&&b!==null&&b>0?Number((a/b).toFixed(4)):null;
+const recentReceipt=(value,clock,hours=72)=>{const time=ms(value);return time!==null&&time<=clock+300000&&clock-time<=hours*3600000;};
+const trustedPostQualities=new Set(['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED']);
+const trustedSourceQualities=new Set(['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED']);
 export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  const at=now instanceof Date?now:new Date(now);
  if(Number.isNaN(at.getTime()))throw Error('INVALID_DIAGNOSTIC_CLOCK');
@@ -12,9 +15,14 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    .filter(x=>['ga4','search_console','website_interactions','instagram','linkedin'].includes(x.source_key))
    .map(x=>[x.source_key,{quality:x.quality||'UNKNOWN',observed_at:x.source_observed_at||null}]));
  for(const key of ['ga4','search_console','website_interactions','instagram','linkedin']){
-   if(!authoritative||!sourceMap[key]||['MISSING','STALE_PROVIDER','AWAITING_PROVIDER','EMPTY_SOURCE_BATCH'].includes(sourceMap[key].quality)){
-      gaps.push({source:key,quality:sourceMap[key]?.quality||'NOT_OBSERVED',action:'VERIFY_OR_REPAIR_CANONICAL_PROVIDER_READBACK'});
-   }
+   const source=sourceMap[key];
+   const reason=!authoritative?'PROVIDER_READBACK_UNAVAILABLE':
+     !source?'SOURCE_MISSING':
+     source.quality==='OBSERVED_LEGACY'?'LEGACY_AGGREGATE_NOT_VERIFIED':
+     !trustedSourceQualities.has(source.quality)?'SOURCE_QUALITY_NOT_VERIFIED':
+     !recentReceipt(source.observed_at,at.getTime(),key==='search_console'?168:72)?'STALE_OR_FUTURE_SOURCE_RECEIPT':
+     source.quality==='OBSERVED_PARTIAL_SCOPE'?'PARTIAL_SOURCE_COVERAGE':null;
+   if(reason)gaps.push({source:key,quality:source?.quality||'NOT_OBSERVED',reason,action:'VERIFY_OR_REPAIR_CANONICAL_PROVIDER_READBACK'});
  }
  const seen=new Set();
  for(const item of (Array.isArray(evidence.social)?evidence.social:[]).slice(0,300)){
@@ -24,11 +32,11 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    seen.add(id);
    const age=ms(item.published_at),observed=ms(item.observed_at);
    const mature=age!==null&&at.getTime()-age>=86400000;
-   const fresh=observed!==null&&at.getTime()-observed<=72*3600000&&observed>=age;
+   const fresh=recentReceipt(item.observed_at,at.getTime())&&observed>=age;
    const status=String(item.data_quality||'MISSING');
-   const observedSource=authoritative&&mature&&fresh&&['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED'].includes(status);
+   const observedSource=authoritative&&mature&&fresh&&trustedPostQualities.has(status);
    const m=observedSource&&item.metrics&&typeof item.metrics==='object'?item.metrics:{};
-   const views=metric(m,'views'),reach=metric(m,'reach'),likes=metric(m,'likes'),
+   const views=m.views_unavailable===true?null:metric(m,'views'),reach=m.reach_unavailable===true?null:metric(m,'reach'),likes=metric(m,'likes'),
      comments=metric(m,'comments'),reactions=metric(m,'reactions'),
      saved=metric(m,'saved'),shares=metric(m,'shares');
    const exposure=reach??views;
@@ -54,10 +62,14 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    const path=item?.page_path;
    if(typeof path!=='string'||!path.startsWith('/')||path.startsWith('//')||path.includes('?')||path.includes('\\')||path.length>240)continue;
    const sessions=nonneg(item.human_page_sessions),click_sessions=nonneg(item.human_click_sessions);
-   const enough=authoritative&&sessions!==null&&sessions>=20;
+   const websiteSource=sourceMap.website_interactions;
+   const verifiedRecentHumanEvents=authoritative&&recentReceipt(item.observed_at,at.getTime())&&
+     trustedSourceQualities.has(websiteSource?.quality)&&recentReceipt(websiteSource?.observed_at,at.getTime());
+   const enough=verifiedRecentHumanEvents&&sessions!==null&&sessions>=20;
    const hypothesis=enough&&click_sessions===0?'TEST_PAGE_MESSAGE_AND_PRIMARY_CTA':'COLLECT_CTA_AND_QUALIFIED_CONVERSION_EVENTS';
    pages.push({path,url:'https://www.bedrijfsgeheugen.nl'+path,human_page_sessions:sessions,human_click_sessions:click_sessions,
      click_session_ratio:fraction(click_sessions,sessions),hypothesis,
+     verified_recent_human_events:Boolean(verifiedRecentHumanEvents),
      observed_at:item.observed_at||null,attribution:'CONSENTED_NONROBOT_EVENTS_ONLY',sales_and_dropoff_not_inferred:true});
    if(hypothesis.startsWith('TEST_'))actions.push({scope:'website',identity:path,hypothesis,
      test:'Compare one reversible intent-aligned proof/CTA change; retain control',
