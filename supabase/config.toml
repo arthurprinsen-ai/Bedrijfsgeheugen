@@ -157,10 +157,9 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/revenue-learning-store/index.ts"
 
-# Canonical tenant-isolated social-learning gateway. The existing entrypoint
-# validates the x-bg-service-token SHA-256 hash; preserve its current
-# verify_jwt=false setting, do not open anonymous reads or writes.
 [functions.social-learning-store]
+# Canonical tenant-isolated social-learning gateway. Existing SHA-256
+# x-bg-service-token authentication preserves verify_jwt=false; no anonymous access.
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/social-learning-store/index.ts"

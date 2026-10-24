@@ -17,7 +17,7 @@ test('preserves deployed non-JWT mode only because original service token is cry
  assert.ok(store.includes("return json({error:'UNAUTHORIZED'},401)"));
 });
 test('canonical production authority resolves only newly declared social-learning-store on config section change',()=>{
- const before=config.replace(/\n# Canonical tenant-isolated social-learning gateway[\s\S]*?\[functions\.social-learning-store\][\s\S]*$/,'');
+ const before=config.slice(0,config.indexOf('\n[functions.social-learning-store]'));
  const files=resolveEdgeRuntimeFunctions({
    changedPaths:['supabase/config.toml'],configText:config,baseConfigText:before
  });
