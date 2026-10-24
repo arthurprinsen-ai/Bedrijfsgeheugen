@@ -116,23 +116,35 @@ export async function runScheduledTenants({
   maxDuePosts=2,
   config=defaultConfig()
 }={}){
-  const done=[];
-  for(const tenantId of [...new Set(tenants)]){
-    if(!['canonical','bedrijfsgeheugen'].includes(tenantId))throw new Error('UNAUTHORIZED_SOCIAL_TENANT_SCOPE');
-    const store=storeFactory({tenantId});
-    const result=await runEvaluation({store,now,maxDuePosts,config});
-    done.push({tenantId,...result});
+  const distinct=[...new Set(tenants)];
+  // Validate ALL tenant authorities before invoking any provider or writing
+  // data. Every scoped worker remains independently bounded to two windows.
+  if(!distinct.length||distinct.some(id=>!['canonical','bedrijfsgeheugen'].includes(id))){
+    throw new Error('UNAUTHORIZED_SOCIAL_TENANT_SCOPE');
   }
-  return {contract:'SOCIAL_LEARNING_HOURLY_BOUNDED_MULTI_TENANT-v1',tenants:done,healthy:true,
+  const settled=await Promise.allSettled(distinct.map(async tenantId=>{
+    const store=storeFactory({tenantId});
+    return runEvaluation({store,now,maxDuePosts,config});
+  }));
+  const done=settled.map((result,i)=>result.status==='fulfilled'
+    ? {tenantId:distinct[i],...result.value,ok:true}
+    : {tenantId:distinct[i],ok:false,error_class:'TENANT_EVALUATION_FAILED',
+       evaluated:0,missedObligations:0,learningsUpdated:0,unprocessedDue:null});
+  const healthy=done.every(result=>result.ok);
+  return {contract:'SOCIAL_LEARNING_HOURLY_BOUNDED_MULTI_TENANT-v1',
+    tenants:done,healthy,
     totals:{evaluated:done.reduce((a,x)=>a+x.evaluated,0),
       missedObligations:done.reduce((a,x)=>a+x.missedObligations,0),
-      dueBacklog:done.reduce((a,x)=>a+x.unprocessedDue,0)}};
+      dueBacklog:healthy?done.reduce((a,x)=>a+x.unprocessedDue,0):null,
+      failedTenantScopes:done.filter(x=>!x.ok).length},
+    status:healthy?'COMPLETE':'PARTIAL_FAILURE_RETRY_EXISTING_HOURLY_OWNER'};
 }
 export default async ()=>{
   try{
     const result=await runScheduledTenants();
     console.log('SOCIAL_LEARNING_WINDOW_SUMMARY',JSON.stringify(result.totals));
-    return new Response(null,{status:204});
+    if(!result.healthy)console.error('SOCIAL_LEARNING_SCOPED_FAILURE',result.tenants.filter(x=>!x.ok).map(x=>x.tenantId));
+    return new Response(null,{status:result.healthy?204:503});
   }catch(error){
     console.error('SOCIAL_LEARNING_EVALUATION_FAILED',String(error?.message||'error'));
     return new Response(null,{status:503});
