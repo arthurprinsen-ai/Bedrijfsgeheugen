@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|daily-diagnostics|verified-company-impressions-source-consumer-bridge|20261024-v1",
+  "obligation_id": "growth:daily-diagnostics-company-post-impressions-consumer:v1",
+  "failure_class": "DAILY_GROWTH_METRICS_LINKED_BUT_NOT_ACCEPTED_BY_NEXT_DAY_DIAGNOSTICS",
+  "root_cause": "Once identity-proven Windsor LinkedIn company post impressions are reconciled into social_metric_snapshots with data_quality PROVIDER_OBSERVED_LINKED, the existing daily content-growth analyzer recognizes only OBSERVED/OBSERVED_PARTIAL_SCOPE/PROVIDER_OBSERVED and uses reach/views as exposure. It would discard verified provider impression counts and fail to measure the same canonical business post in the next-day learning artifact.",
+  "observed_evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4841",
+    "source_type": "Windsor company post share_impression_count",
+    "consumer": "tools/content-growth/daily-performance-diagnostics.mjs",
+    "post_quality": "PROVIDER_OBSERVED_LINKED",
+    "provider_values": "Observed 1,5,10,13 impressions; these are small samples not evidence of poor content."
+  },
+  "fix": "Extend the EXISTING daily Content growth learning diagnostic to accept independently linked company-post source quality and explicit impression denominators while preserving views/reach as unknown when absent. Require >=50 exposure per post before flagging no engagement, with explicit denominator type and no imaginary conversions.",
+  "prevention_rule": "LinkedIn impressions, reach, video views and social reactions are different provider metrics; do not manufacture views from impressions or assume causality. Do not compare cohorts across denominator types, promote creative winners or change customer permissions based on five impressions.",
+  "tests": [
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_GROWTH_METRICS_LINKED_BUT_NOT_ACCEPTED_BY_NEXT_DAY_DIAGNOSTICS",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected exact-head Required+CodeQL and merge, next actual daily Content growth learning workflow provider readback with LINKED post metrics; 24/48/72h post evaluation and paid outcome readback remain separate."
+}

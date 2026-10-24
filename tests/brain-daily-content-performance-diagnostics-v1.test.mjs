@@ -69,3 +69,21 @@ test('auth failures and malformed provider responses do not retry or pretend to 
  assert.equal(calls,2);
  await assert.rejects(readBoundedCanonicalSource({kind:'sources',query:'drop table anything',token:'dummy',fetcher:async()=>{throw Error('no network');},wait:async()=>{}}),/UNAUTHORIZED_SOURCE_QUERY/);
 });
+
+test('LinkedIn independently linked real post impressions are analyzed without inventing video views or audience reach',()=>{
+ const linked={
+   post_id:'urn:li:share:7519277505673986048',platform:'linkedin',
+   published_at:'2026-10-23T06:04:20Z',observed_at:'2026-10-24T13:18:19Z',
+   data_quality:'PROVIDER_OBSERVED_LINKED',
+   metrics:{impressions:5,comments:0,likes:0,clicks:1}
+ };
+ const x=diagnoseDailyPerformance({evidence:{...feed,social:[linked]},now:new Date('2026-10-24T17:00:00Z')});
+ const post=x.social_posts[0];
+ assert.equal(post.impressions,5);
+ assert.equal(post.exposure_kind,'impressions');
+ assert.equal(post.views,null);
+ assert.equal(post.reach,null);
+ assert.equal(post.engagement_rate,0);
+ assert.equal(post.suggestion,'COLLECT_COMPARABLE_PROVIDER_EVIDENCE');
+ assert.equal(x.next_day_hypotheses.filter(t=>t.scope==='social').length,0);
+});

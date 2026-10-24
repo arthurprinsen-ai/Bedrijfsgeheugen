@@ -26,24 +26,26 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    const mature=age!==null&&at.getTime()-age>=86400000;
    const fresh=observed!==null&&at.getTime()-observed<=72*3600000&&observed>=age;
    const status=String(item.data_quality||'MISSING');
-   const observedSource=authoritative&&mature&&fresh&&['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED'].includes(status);
+   const observedSource=authoritative&&mature&&fresh&&['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED'].includes(status);
    const m=observedSource&&item.metrics&&typeof item.metrics==='object'?item.metrics:{};
-   const views=metric(m,'views'),reach=metric(m,'reach'),likes=metric(m,'likes'),
+   const views=metric(m,'views'),reach=metric(m,'reach'),impressions=metric(m,'impressions'),likes=metric(m,'likes'),
      comments=metric(m,'comments'),reactions=metric(m,'reactions'),
      saved=metric(m,'saved'),shares=metric(m,'shares');
-   const exposure=reach??views;
+   const exposure=reach??views??impressions;
+   const exposure_kind=reach!==null?'reach':views!==null?'views':impressions!==null?'impressions':'unknown';
    const engagement=comments!==null&&likes!==null?comments+likes+(saved||0)+(shares||0):reactions;
    const rate=fraction(engagement,exposure);
    const signals=[];
    if(!observedSource)signals.push('MISSING_STALE_OR_IMMATURE_PROVIDER_OBSERVATION');
    if(views===null)signals.push('VIEWS_UNAVAILABLE');
+   if(exposure===null)signals.push('EXPOSURE_DENOMINATOR_UNAVAILABLE');
    if(comments===null)signals.push('COMMENTS_UNAVAILABLE');
    if(observedSource&&exposure!==null&&exposure>=50&&comments===0)signals.push('OBSERVED_ZERO_COMMENTS');
    if(observedSource&&exposure!==null&&exposure>=50&&engagement===0)signals.push('OBSERVED_ZERO_ENGAGEMENT');
    const suggestion=signals.includes('OBSERVED_ZERO_ENGAGEMENT')?'TEST_SITUATION_CONSEQUENCE_CLEAR_POINTE':
      signals.includes('OBSERVED_ZERO_COMMENTS')?'TEST_RELEVANT_NON_MANIPULATIVE_QUESTION':'COLLECT_COMPARABLE_PROVIDER_EVIDENCE';
    social.push({post_id:id,platform,format:item.format||null,hook_type:item.hook_type||null,cta_type:item.cta_type||null,
-     views,reach,likes,comments,reactions,saved,shares,engagement_rate:rate,provider_quality:status,
+     views,reach,impressions,exposure_kind,likes,comments,reactions,saved,shares,engagement_rate:rate,provider_quality:status,
      observed_at:item.observed_at||null,signals,suggestion,
      not_a_causal_explanation:true,conversion_outcome:'UNKNOWN_UNLESS_ATTRIBUTED'});
    if(suggestion.startsWith('TEST_'))actions.push({scope:'social',identity:id,hypothesis:suggestion,
