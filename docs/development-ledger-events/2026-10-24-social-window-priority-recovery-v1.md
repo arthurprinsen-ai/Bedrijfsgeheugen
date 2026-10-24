@@ -1,0 +1,7 @@
+# Canonical hourly social learning — prioritize 71 measured windows (24 October 2026)
+
+Production incident evidence: `bedrijfsgeheugen` had 390 matured, unevaluated social post-window candidates; 71 had actual 24/48/72h observations within ±6 hours, 319 had no valid in-window evidence. Old selection consumed its 2-slot hourly budget on missing windows rather than 71 actual candidates. `canonical` had 21 evaluated windows and 108 due evidence gaps.
+
+Repair in the EXISTING hourly social evaluator and EXISTING Supabase social-learning-store. A tenant-scoped, bounded metadata-only query marks valid original timestamps with `OBSERVED`/ `PROVIDER_OBSERVED` quality. The evaluator privileges measured candidates with periodic debt-rotation fairness, still obtains the original actual snapshots at evaluation time, and retains idempotent IDs and single authoritative scheduler. A capped/truncated lookup fails closed to legacy behavior.
+
+No external customer data, provider credential, fabricated 24/48/72h snapshots, virtual likes/comments, duplicate scheduler, fake sale or automatic publication. Source-bearing evaluations must be independently read back from production after protected deployment.

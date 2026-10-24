@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse-social|71-observed-windows-not-evaluated|missing-window-selection-starvation|20261024-v1",
+  "obligation_id": "social-learning:observed-window-priority-existing-hourly:v1",
+  "failure_class": "BOUNDED_SOCIAL_LEARNING_STARVATION_BY_MISSING_SNAPSHOT_DEBT",
+  "root_cause": "Production readback on 2026-10-24: bedrijfsgeheugen had 390 due 24/48/72-hour windows, 71 independently observed in-window provider snapshots still not evaluated, and 319 unmatched windows. Legacy hourly evaluator picked at most 2 due windows per tenant from sorted/rotated candidate IDs without evidence preference, repeatedly spending its full budget on missing snapshots. Canonical had 21 already-evaluated available windows and 108 missing.",
+  "observed_evidence": {
+    "brand_due": 390,
+    "brand_observed_unevaluated": 71,
+    "brand_missing": 319,
+    "canonical_evaluated": 21,
+    "canonical_unmatched": 108,
+    "source_tables": [
+      "public.social_posts",
+      "public.social_metric_snapshots",
+      "public.social_learning_evaluations"
+    ],
+    "provider_time_window_hours": [
+      24,
+      48,
+      72
+    ],
+    "tolerance_hours": 6
+  },
+  "fix": "Extend existing social-learning-store list_due_posts with one tenant-bound metadata-only, capped (900) snapshot read; annotate exact in-window OBSERVED / PROVIDER_OBSERVED evidence. Existing hourly Netlify evaluator preferentially processes verified observation windows but reserves recurring capacity for absent-snapshot obligations. Fallback to original behavior when provider-index read is truncated. No new cron, provider sync, publisher or learning table.",
+  "prevention_rule": "Do not manufacture or backfill missing metrics; quality PARTIAL_SCOPE and provider-unlinked are ineligible as verified window hints. Always validate matched snapshot again inside evaluator. Preserve tenant isolation, source evidence and bounded per-hour work. A measured window remains a sampled observation, never proven causal lift or new customer by itself.",
+  "tests": [
+    "tests/brain-social-learning-observed-window-priority-v1.test.mjs",
+    "tests/brain-social-learning-daily-tenant-coverage-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "BOUNDED_SOCIAL_LEARNING_STARVATION_BY_MISSING_SNAPSHOT_DEBT",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected exact-HEAD Required+CodeQL, merged Supabase and Netlify deploys, first new social_learning_evaluations in bedrijfsgeheugen with real snapshot links, no fabricated 0, and future next-post/outcome readback required for conversion claims."
+}
