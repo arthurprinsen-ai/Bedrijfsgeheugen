@@ -3,7 +3,8 @@ import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-re
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
-import {selectMeasuredNextPostTest} from '../_shared/measured-next-post-challenger.mjs';
+import {selectMeasuredNextPostTest,proposeBoundedCreativeExploration} from '../_shared/measured-next-post-challenger.mjs';
+import {classifyCurrentSource} from '../_shared/content-source-freshness.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
@@ -304,6 +305,7 @@ function recommendationEligible(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const evidence = row?.evidence || {};
   if (!['suggested',''].includes(clean(row?.status))) return false;
+  if (['linkedin_company','blog'].includes(channel) && !classifyCurrentSource(row).ok) return false;
   if (channel === 'linkedin_company') {
     if (target === 'linkedin_personal' || topic.includes('linkedin_personal')) return false;
     if (evidence?.identity_contract === PERSONAL_CONTRACT || evidence?.personal_truth_verified === true) return false;
@@ -630,7 +632,7 @@ Deno.serve(async (req) => {
     const requiredRecommendationId = pending.channel==='instagram_company'
       ? clean(instagramWinner?.recommendation_id)
       : clean(pending.delivery_evidence?.fallback_recommendation_id);
-    const recommendation = requiredRecommendationId
+    const pinnedRecommendation = requiredRecommendationId
       ? recs.find((r:any)=>{
           if(clean(r.recommendation_id)!==requiredRecommendationId) return false;
           if(pending.channel==='instagram_company'){
@@ -642,6 +644,10 @@ Deno.serve(async (req) => {
           return recommendationEligible(r,pending.channel);
         }) || null
       : pickRecommendation(recs,pending.channel);
+    const recommendation = pinnedRecommendation || (['linkedin_company','blog'].includes(pending.channel)
+      ? pickRecommendation(recs,pending.channel,requiredRecommendationId?[requiredRecommendationId]:[]):null);
+    const sourceFreshnessFallback = !!requiredRecommendationId && !pinnedRecommendation && !!recommendation;
+    if(sourceFreshnessFallback)console.warn('HISTORICAL_SOURCE_FALLBACK',pending.channel);
     if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
     let recentCompanyPosts:string[]=[];
     if(pending.channel==='linkedin_company'){
@@ -726,16 +732,23 @@ Deno.serve(async (req) => {
     const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
       ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
       : '';
+    const creativeExploration=proposeBoundedCreativeExploration({
+      channel:pending.channel,runDate,recommendation,measured:measuredNextPostTest,
+      freshness:classifyCurrentSource(recommendation)
+    });
+    const creativeExplorationGuide=creativeExploration.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'
+      ? ' De editorial_exploration is uitsluitend een klein te testen idee: pas exact de ene single_change toe binnen hetzelfde onderwerp. Nooit een tweede post, verzonnen conversie, garantie of bewezen winnaar. Behoud alle kanaal-, bron-, identiteit- en redactie-eisen.'
+      : '';
     const verifiedBrandLearningGuide = verifiedBrandLearnings.length
       ? ' Leer van de meegeleverde verified_brand_content_learnings als begrensde patronen. Gebruik hoogstens één relevant bewezen patroon voor opening, begrijpelijke pointe of nuttige CTA; behoud de actuele feitelijke aanbeveling. Geen percentages, garanties of nepklantresultaten uit historische engagementdata. Noem dit niet in de publieke tekst.'
       : '';
     const editorialSystem = pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
-      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide;
+      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide + creativeExplorationGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide + creativeExplorationGuide;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
-    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+    const artifactInput={channel:pending.channel,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
+      verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
@@ -859,8 +872,8 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
-      measured_next_post_test:measuredNextPostTest,
+      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,source_freshness_fallback:sourceFreshnessFallback,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
