@@ -687,12 +687,16 @@ Deno.serve(async (req) => {
     // Next-day creative decisions consume fresh, comparable OWNED brand provider metrics only.
     // Lack of permission/snapshots is an explicit evidence gap, never an invented winner.
     let measuredNextPostTest:any={state:'NOT_APPLICABLE',mode:'READ_ONLY_DECISION_CONTEXT'};
-    if(pending.channel==='linkedin_company'){
+    if(['linkedin_company','instagram_company'].includes(pending.channel)){
       try{
-        const {data:brandPosts,error:postError}=await db.from('social_posts')
+        let postQuery=db.from('social_posts')
           .select('tenant_id,post_id,platform,channel_kind,published_at')
-          .eq('tenant_id','bedrijfsgeheugen').eq('platform','linkedin')
-          .eq('channel_kind','linkedin_company')
+          .eq('tenant_id','bedrijfsgeheugen')
+          .eq('platform',pending.channel==='instagram_company'?'instagram':'linkedin');
+        postQuery=pending.channel==='instagram_company'
+          ?postQuery.in('channel_kind',['instagram_business','instagram_company'])
+          :postQuery.eq('channel_kind','linkedin_company');
+        const {data:brandPosts,error:postError}=await postQuery
           .not('published_at','is',null)
           .order('published_at',{ascending:false}).limit(24);
         if(postError)throw new Error('MEASURED_BRAND_POST_READ:'+postError.message);
@@ -707,7 +711,7 @@ Deno.serve(async (req) => {
           if(snapshotError)throw new Error('MEASURED_BRAND_SNAPSHOT_READ:'+snapshotError.message);
           sourceSnapshots=data||[];
         }
-        measuredNextPostTest=selectMeasuredNextPostTest({posts:brandPosts||[],snapshots:sourceSnapshots,now:new Date()});
+        measuredNextPostTest=selectMeasuredNextPostTest({posts:brandPosts||[],snapshots:sourceSnapshots,now:new Date(),channel:pending.channel});
       }catch(error){
         measuredNextPostTest={state:'SOURCE_UNAVAILABLE',mode:'READ_ONLY_DECISION_CONTEXT',
           error_class:'COMPANY_PROVIDER_EVIDENCE_READ_FAILED',
