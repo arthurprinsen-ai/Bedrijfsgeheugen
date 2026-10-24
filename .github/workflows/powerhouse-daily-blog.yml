@@ -68,6 +68,14 @@ jobs:
             echo "SAME_OBLIGATION_CANDIDATE_PRESERVED:$DATE:$pr"
             echo "SAME_OBLIGATION_WRITER_ACTIVE:$DATE:$pr"
           fi
+          # The canonical same-date blog was already protected-merged. Do not
+          # re-render it and create a second publication candidate on an hourly retry.
+          merged_pr="$(gh pr list --head "$branch" --base main --state merged --json number --jq '.[0].number // empty')"
+          if [ -n "$merged_pr" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "SAME_DATE_BLOG_PROTECTED_MERGE_PRESENT:$DATE:$merged_pr"
+            exit 0
+          fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Render canonical Powerhouse artifact
@@ -248,3 +256,14 @@ jobs:
               ;;
           esac
           gh pr merge "$pr" --auto --squash
+
+      - name: Reconcile merged daily blog only after production HTTP and immutable release proof
+        if: always() && steps.day.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BUSINESS_DATE: ${{ steps.day.outputs.date }}
+        run: |
+          node --test tests/brain-daily-blog-production-closure-v1.test.mjs
+          node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"
