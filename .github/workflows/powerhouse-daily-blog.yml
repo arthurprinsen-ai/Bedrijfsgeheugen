@@ -248,3 +248,14 @@ jobs:
               ;;
           esac
           gh pr merge "$pr" --auto --squash
+
+      - name: Reconcile merged daily blog only after production HTTP and immutable release proof
+        if: always() && steps.day.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BUSINESS_DATE: ${{ steps.day.outputs.date }}
+        run: |
+          node --test tests/brain-daily-blog-production-closure-v1.test.mjs
+          node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"
