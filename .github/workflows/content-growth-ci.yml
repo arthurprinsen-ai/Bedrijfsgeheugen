@@ -41,6 +41,8 @@ jobs:
         run: node --test tests/content-growth-*.test.mjs
       - name: Trusted Lean Startup + advisor regression
         run: node --test tests/brain-trusted-lean-loop-v1.test.mjs
+      - name: Verified brand learning handoff regression
+        run: node --test tests/brain-verified-brand-content-learnings-v1.test.mjs
       - name: Policy validation
         run: node tools/content-growth/validate-policy.mjs
       - name: LinkedIn company growth regression
