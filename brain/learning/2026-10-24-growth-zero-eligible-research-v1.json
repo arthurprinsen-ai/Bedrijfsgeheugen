@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "production_verified": false,
+  "fingerprint": "growth|zero-eligible|research-gated-in-existing-heartbeat|20261024-v1",
+  "obligation_id": "growth|zero-eligible|internal-source-research-v1",
+  "root_cause": "On 24 Oct 2026 the existing growth cycle scored 837 open opportunities; all expected_revenue_value=0 and all probability*confidence<0.20, so none qualified to become a new action. Four recent verified trigger-intelligence signals across three topic classes are nevertheless eligible for strictly INTERNAL qualification research, not sales contact or revenue claims.",
+  "observed_evidence": {
+    "open_opportunities": 837,
+    "commercial_eligible": 0,
+    "verified_recent_trigger_signals": 4,
+    "distinct_topics": 3,
+    "canonical_owner": "powerhouse_autonomous_growth_revenue_cycle(date)"
+  },
+  "fix": "Preserve existing commercial eligibility but append at most three source-backed, tenant-internal, zero-value research_enrichment candidates in existing canonical action table and heartbeat function. Do not create a scheduler, customer outreach, duplicated CRM, external publication or fake revenue. Keep separately named internal_research_tasks_materialized and canonical commercial actions_materialized counters.",
+  "prevention_rule": "Exactly 72h verified trigger evidence, confidence>=0.70, 3 unique topic types/day, idempotent dedupe_key. No external contact/publication permission; original buyer/consent/provider/CI gates remain mandatory. Deployment requires protected Required+CodeQL and Supabase source readback, then real scheduled outcome.",
+  "tests": [
+    "tests/brain-growth-zero-eligible-research-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-zero-eligible-research-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-zero-eligible-research-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-zero-eligible-research-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Only actual merged migration, exact PostgreSQL function source readback, and existing schedule producing 1–3 new internal source validation actions prove this path operational; no implied new customer or revenue."
+}
