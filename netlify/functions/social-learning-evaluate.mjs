@@ -19,11 +19,37 @@ function deriveEvidence(target,cohort,config){
   return {metric:selected.metric,effectMetricKey:selected.key,effectSize:selected.effectSize,baseline:selected.baseline,sampleSize,confidence,directionConsistent:selected.effectSize>0,higherPriorityContradiction,publicationDates:[dateOnly(target.observedAt),...cohort.map(x=>dateOnly(x.observedAt||x.publishedAt))]};
 }
 
-export async function runEvaluation({store,now=new Date(),config=defaultConfig()}={}){
+/** Bounded hourly evaluation with separate fresh/overdue fairness lanes.
+ * Never equate a missing 24/48/72h snapshot to zero engagement. */
+export function selectDueEvaluationBatch(due=[],{now=new Date(),limit=2}={}){
+  if(!Array.isArray(due))throw new TypeError('DUE_EVALUATIONS_MUST_BE_ARRAY');
+  const bound=Math.max(1,Math.min(8,Math.floor(Number(limit)||2)));
+  const clock=now instanceof Date?now:new Date(now);
+  if(Number.isNaN(clock.getTime()))throw new TypeError('EVALUATION_CLOCK_INVALID');
+  const valid=due.filter(p=>p&&p.postId&&Number.isFinite(Date.parse(p.publishedAt||''))&&[24,48,72].includes(Number(p.dueWindow||p.windowHours)));
+  const sorted=[...valid].sort((a,b)=>String(a.postId).localeCompare(String(b.postId))||
+    Number(a.dueWindow||a.windowHours)-Number(b.dueWindow||b.windowHours));
+  const recent=sorted.filter(p=>clock.getTime()-Date.parse(p.publishedAt)<=96*3600000);
+  const old=sorted.filter(p=>clock.getTime()-Date.parse(p.publishedAt)>96*3600000);
+  const slots=Math.min(recent.length,Math.max(1,Math.ceil(bound/2)));
+  const selected=recent.slice(0,slots);
+  const oldCapacity=bound-selected.length;
+  if(oldCapacity>0&&old.length){
+    const pages=Math.ceil(old.length/oldCapacity);
+    const tick=Math.floor(clock.getTime()/3600000);
+    const start=(tick%pages)*oldCapacity;
+    selected.push(...old.slice(start,start+oldCapacity));
+  }
+  if(selected.length<bound)selected.push(...recent.slice(slots,slots+bound-selected.length));
+  return selected.slice(0,bound);
+}
+
+export async function runEvaluation({store,now=new Date(),config=defaultConfig(),maxDuePosts=2}={}){
   if(!store) throw new TypeError('runEvaluation requires store');
   const due=await store.listDuePosts(now.toISOString?.()||String(now));
   let evaluated=0,missedObligations=0,learningsUpdated=0;
-  for(const post of due){
+  const bounded=selectDueEvaluationBatch(due,{now,limit:maxDuePosts});
+  for(const post of bounded){
     const tenantId=post.tenantId||'canonical';
     const windowHours=Number(post.dueWindow||post.windowHours||24);
     const snapshots=await store.getSnapshots(post.postId);
@@ -48,11 +74,38 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
     }
     if(store.reconcileApplications) await store.reconcileApplications({tenantId,postId:post.postId,windowHours,evaluationId,effect:evidence?.effectSize??null,verificationStatus:evidence?'VERIFIED':'INSUFFICIENT_EVIDENCE'});
   }
-  return {evaluated,missedObligations,learningsUpdated};
+  return {evaluated,missedObligations,learningsUpdated,dueTotal:due.length,attempted:bounded.length,unprocessedDue:Math.max(0,due.length-bounded.length)};
 }
 
+/** Keep ONE existing hourly Netlify scheduler; process both isolated brand/canonical
+ * scopes without merging their post, learning or customer evidence. */
+export async function runScheduledTenants({
+  storeFactory=createSocialLearningStore,
+  tenants=['canonical','bedrijfsgeheugen'],
+  now=new Date(),
+  maxDuePosts=2,
+  config=defaultConfig()
+}={}){
+  const done=[];
+  for(const tenantId of [...new Set(tenants)]){
+    if(!['canonical','bedrijfsgeheugen'].includes(tenantId))throw new Error('UNAUTHORIZED_SOCIAL_TENANT_SCOPE');
+    const store=storeFactory({tenantId});
+    const result=await runEvaluation({store,now,maxDuePosts,config});
+    done.push({tenantId,...result});
+  }
+  return {contract:'SOCIAL_LEARNING_HOURLY_BOUNDED_MULTI_TENANT-v1',tenants:done,healthy:true,
+    totals:{evaluated:done.reduce((a,x)=>a+x.evaluated,0),
+      missedObligations:done.reduce((a,x)=>a+x.missedObligations,0),
+      dueBacklog:done.reduce((a,x)=>a+x.unprocessedDue,0)}};
+}
 export default async ()=>{
-  try{await runEvaluation({store:createSocialLearningStore()});return new Response(null,{status:204});}
-  catch(error){console.error('SOCIAL_LEARNING_EVALUATION_FAILED',error);return new Response(null,{status:500});}
+  try{
+    const result=await runScheduledTenants();
+    console.log('SOCIAL_LEARNING_WINDOW_SUMMARY',JSON.stringify(result.totals));
+    return new Response(null,{status:204});
+  }catch(error){
+    console.error('SOCIAL_LEARNING_EVALUATION_FAILED',String(error?.message||'error'));
+    return new Response(null,{status:503});
+  }
 };
 export const config={schedule:'@hourly'};
