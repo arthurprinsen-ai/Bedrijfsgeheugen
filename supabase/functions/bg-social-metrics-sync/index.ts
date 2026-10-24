@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
+import { verifiedLinkedinCompanySourceBatch } from '../_shared/verified-linkedin-organic-snapshot.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -115,6 +116,40 @@ async function registerCompanyProofs(db:any){
     authority:'canonical_content_publication_obligations'};
 }
 
+// Reuse only already stored external provider observations. The organic
+// organization ID must match independent Composio author+readback proof AND
+// an indexed company post. Never claim clicks are leads or publish a post.
+async function reconcileVerifiedLinkedInOrganicDaySnapshots(db:any){
+ const from=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
+ const {data:sources,error:a}=await db.from('powerhouse_growth_source_daily_v1')
+   .select('tenant_id,source_key,quality,source_observed_at,metric_date,evidence,metrics')
+   .eq('tenant_id','bedrijfsgeheugen').like('source_key','linkedin_company_post:%')
+   .gte('metric_date',from).order('source_observed_at',{ascending:false}).limit(80);
+ if(a)throw new Error('WINDSOR_OBSERVATION_READ:'+a.message);
+ const {data:posts,error:b}=await db.from('social_posts')
+   .select('tenant_id,post_id,external_post_id,platform,channel_kind,published_at')
+   .eq('tenant_id','bedrijfsgeheugen').eq('platform','linkedin')
+   .eq('channel_kind','linkedin_company').gte('published_at',new Date(Date.now()-35*86400000).toISOString()).limit(40);
+ if(b)throw new Error('WINDSOR_POST_INDEX_READ:'+b.message);
+ const {data:proofs,error:c}=await db.from('content_publication_obligations')
+   .select('tenant_id,channel,status,external_id,live_proven_at,evidence')
+   .eq('tenant_id','canonical').eq('channel','linkedin_company')
+   .eq('status','LIVE_PROVEN').gte('publication_date',from).limit(40);
+ if(c)throw new Error('WINDSOR_CANONICAL_PROOF_READ:'+c.message);
+ const verified=verifiedLinkedinCompanySourceBatch({sources:sources||[],posts:posts||[],
+   obligations:proofs||[],now:new Date(),limit:25});
+ if(!verified.length)return {status:'NO_TRIPLE_VERIFIED_PROVIDER_DAY_SNAPSHOTS',
+   source_rows:(sources||[]).length,verified:0,created:0};
+ const {data:written,error:d}=await db.from('social_metric_snapshots')
+   .upsert(verified,{onConflict:'tenant_id,source_event_id',ignoreDuplicates:true})
+   .select('snapshot_id');
+ if(d)throw new Error('WINDSOR_TRIPLE_LINKED_SNAPSHOT_WRITE:'+d.message);
+ return {status:'TRIPLE_ATTESTED_COMPANY_PROVIDER_DAY_SNAPSHOTS',
+   source_rows:(sources||[]).length,verified:verified.length,created:(written||[]).length,
+   time_scope:'PROVIDER_DATE_NOT_24_48_72_HOURS',
+   org_account_verified:true,qualified_leads_or_revenue_not_inferred:true};
+}
+
 async function instagram(db:any,apiKey:string,day:string){
   const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
   const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
@@ -180,9 +215,12 @@ Deno.serve(async(req:Request)=>{
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const day=localDay();
-    let ig:any,li:any,companyRegistry:any;
+    let ig:any,li:any,companyRegistry:any,windsorCompanyMetrics:any;
     try{companyRegistry=await registerCompanyProofs(db);}catch(e){
       companyRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
+    try{windsorCompanyMetrics=await reconcileVerifiedLinkedInOrganicDaySnapshots(db);}catch(e){
+      windsorCompanyMetrics={status:'CANONICAL_SOURCE_RECONCILIATION_FAILED',error:clean((e as Error).message).slice(0,120)};
     }
     try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
@@ -190,7 +228,7 @@ Deno.serve(async(req:Request)=>{
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',company_post_registry:companyRegistry,
+      linkedin_company:'COMPOSIO_ORGANIZATION_INSIGHTS_UNAVAILABLE',company_post_registry:companyRegistry,linkedin_company_windsor_provider_day:windsorCompanyMetrics,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',

@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "provider-social|windsor-account-verified-company-post-unlinked|20261024-v1",
+  "obligation_id": "social:verified-organic-company-metric-triple-attribution:v1",
+  "failure_class": "VERIFIED_COMPANY_PROVIDER_INSIGHTS_DISCONNECTED_FROM_SOCIAL_LEARNING",
+  "root_cause": "Fresh Windsor LinkedIn organic per-post metric rows were marked PROVIDER_OBSERVED_UNLINKED, even after exact company post URNs were indexed into social_posts. Independent Composio provider readback of LIVE_PROVEN posts supplies organization author URN 18234216; Windsor LinkedIn organic account 18234216 is independently connected as 'Bedrijfsgeheugen'. Production SQL found 7 recent organic post-source rows; 5 have exact registered post, canonical LIVE_PROVEN publication and matching provider-truth organization account. The other 2 must remain unlinked.",
+  "observed_evidence": {
+    "windsor_account_id": "18234216",
+    "provider_organization_urn": "urn:li:organization:18234216",
+    "source_rows": 7,
+    "exactly_three_way_matched": 5,
+    "unverified_rows": 2,
+    "linkedin_company_post_id_example": "urn:li:share:7518915119540576256",
+    "exact_metric_example": {
+      "share_impression_count": 13,
+      "share_comment_count": 0,
+      "share_like_count": 0
+    },
+    "has_paid_orders_evidence": false
+  },
+  "fix": "Use existing 6-hour bg-social-metrics-sync to map only verified 3-way Windsor source+ Composio LIVE_PROVEN author/readback + brand social_posts URN into social_metric_snapshots. Preserve provider reporting date as partial scope and do NOT feed provider-day observation to causal 24/48/72h evaluation. Teach existing daily diagnostics to use a real impression denominator separately from views.",
+  "prevention_rule": "No provider source is considered verified solely from matching URN or account display name. Require actual organization author+readback, provider_truth_verified and live_proven timestamp. Never synthesize views, qualified leads or orders. Store bounded, idempotent source observations. No new scheduler, paid engagement manipulation, cross-tenant data or LinkedIn publishing.",
+  "tests": [
+    "tests/brain-linkedin-company-organic-provider-proof-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "VERIFIED_COMPANY_PROVIDER_INSIGHTS_DISCONNECTED_FROM_SOCIAL_LEARNING",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-organic-provider-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-company-organic-provider-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-organic-provider-proof-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Required/CodeQL, protected merge, active exact Supabase bg-social-metrics-sync code, next existing 6-hour cron readback of 3-way validated source snapshots, then next daily proof-gated learning artifact. Commercial outcome remains unproven."
+}
