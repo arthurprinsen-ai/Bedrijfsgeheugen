@@ -77,7 +77,7 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
  if(freshness?.ok!==true)return {...base,reason:'SOURCE_NOT_CURRENT_OR_VERIFIED'};
  if(measured?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST')return {...base,reason:'MEASURED_CHALLENGER_ALREADY_OWNS_EXPERIMENT'};
  if(measured?.state==='SOURCE_UNAVAILABLE')return {...base,reason:'PROVIDER_SOURCE_UNAVAILABLE'};
- if(!recommendation?.reason||!recommendation?.evidence||typeof recommendation.evidence!=='object')
+ if(!recommendation?.reason||!recommendation?.evidence||typeof recommendation.evidence!=='object'||Array.isArray(recommendation.evidence)||Object.keys(recommendation.evidence).length===0)
    return {...base,reason:'CANONICAL_RECOMMENDATION_EVIDENCE_REQUIRED'};
  const company=[
   {name:'FIRST_SENTENCE',change:'Maak uitsluitend de eerste zin een herkenbare, concrete ondernemer-situatie. Behoud overige bronclaims, onderwerp en CTA.'},
