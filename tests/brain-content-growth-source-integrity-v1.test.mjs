@@ -33,3 +33,10 @@ test('external research needs a dated, traceable URL and cannot masquerade as fr
   assert.throws(()=>partitionContentGrowthInputs([{...research,source:{...research.source,url:'javascript:alert(1)'}}]),/EXTERNAL_EVIDENCE_INVALID/);
   assert.throws(()=>partitionContentGrowthInputs([{...research,source:{...research.source,source_date:'2026-02-30'}}]),/EXTERNAL_EVIDENCE_INVALID/);
 });
+
+test('a source dated in the future is never promoted as current market truth', () => {
+  const input={event_type:'problem_radar_signal_accepted',source:{publisher:'RVO',url:'https://www.rvo.nl/',source_date:'2026-12-01'},signal:{problem_summary:'source future'}};
+  const p=partitionContentGrowthInputs([input],{now:new Date('2026-10-24T08:00:00Z')});
+  assert.equal(p.researchObservations[0].source_freshness,'FUTURE_OR_UNVERIFIED');
+  assert.equal(p.provenance.performance_event_count,0);
+});
