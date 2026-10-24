@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {proposeBoundedCreativeExploration} from '../supabase/functions/_shared/measured-next-post-challenger.mjs';
+import {proposeBoundedCreativeExploration,selectMeasuredNextPostTest} from '../supabase/functions/_shared/measured-next-post-challenger.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,miraExplorationKind,validateMiraCaptionForDelivery} from '../supabase/functions/_shared/mira-entrepreneur-caption.mjs';
 const rec={recommendation_id:'known-canonical',reason:'Geverifieerd ondernemersprobleem',evidence:{source:'canonical-library'}};
 const proposal=date=>proposeBoundedCreativeExploration({channel:'instagram_company',runDate:date,recommendation:rec,freshness:{ok:true},measured:{state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS'}});
@@ -47,4 +47,26 @@ test('the existing owner and protected publisher recompute the same exact source
  assert.ok(source.includes('editorial_exploration:creativeExploration'));
  assert.ok(pub.includes('validateMiraCaptionForDelivery(runDate,art.body,art.generation_evidence||{})'));
  assert.ok(pub.includes('MIRA_MEDIA_CAPTION_SCENE_MISMATCH'));
+});
+
+test('Instagram metrics are read from owned-business posts only; two comparable observations produce a hypothesis, not proof of lift',()=>{
+ const now=new Date('2026-10-24T18:20:00Z');
+ const posts=[
+  {tenant_id:'bedrijfsgeheugen',post_id:'ig-1',platform:'instagram',channel_kind:'instagram_business',published_at:'2026-10-20T09:00:00Z'},
+  {tenant_id:'bedrijfsgeheugen',post_id:'ig-2',platform:'instagram',channel_kind:'instagram_company',published_at:'2026-10-20T09:00:00Z'},
+  {tenant_id:'bedrijfsgeheugen',post_id:'li-1',platform:'linkedin',channel_kind:'linkedin_company',published_at:'2026-10-20T09:00:00Z'},
+  {tenant_id:'other-company',post_id:'not-ours',platform:'instagram',channel_kind:'instagram_business',published_at:'2026-10-20T09:00:00Z'}
+ ];
+ const metric=id=>({tenant_id:'bedrijfsgeheugen',post_id:id,data_quality:'OBSERVED',observed_at:'2026-10-24T18:00:00Z',metrics:{reach:110,views:125,comments:0,likes:0}});
+ const outcome=selectMeasuredNextPostTest({posts,snapshots:[metric('ig-1'),metric('ig-2'),metric('li-1'),metric('not-ours')],now,channel:'instagram_company'});
+ assert.equal(outcome.evidence_scope,'SAME_OWNED_BRAND_INSTAGRAM_ONLY');
+ assert.equal(outcome.state,'ELIGIBLE_BOUNDED_NEXT_POST_TEST');
+ assert.equal(outcome.verified_comparable_posts,2);
+ assert.equal(outcome.cumulative_verified_exposure,220);
+ assert.equal(outcome.proposed_test.hypothesis_id,'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION');
+ assert.equal(outcome.hypothesis_not_caused_or_proven,true);
+ const missing=selectMeasuredNextPostTest({posts,snapshots:[metric('ig-1'),{...metric('ig-2'),metrics:{reactions:3,views_unavailable:true}}],now,channel:'instagram_company'});
+ assert.equal(missing.state,'WAIT_FOR_COMPARABLE_PROVIDER_METRICS');
+ assert.equal(missing.verified_comparable_posts,1);
+ assert.throws(()=>selectMeasuredNextPostTest({posts,snapshots:[],now,channel:'linkedin_personal'}),/MEASURED_CREATIVE_CHANNEL_INVALID/);
 });
