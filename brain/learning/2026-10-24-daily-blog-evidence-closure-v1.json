@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "content-publication|blog|missing-material-writeback-closure|20261024-v1",
+  "obligation_id": "content-publication:2026-10-24:blog",
+  "status": "CANDIDATE",
+  "failure_class": "CONTENT_PUBLICATION_MATERIAL_WRITEBACK_CLOSURE_MISSING",
+  "root_cause": "The canonical Powerhouse daily-blog candidate initially contained the rendered blog, sitemap, RSS, index and translation patch but did not include the required Brain learning, append-only activity ledger and human-readable change documentation. Required admission failed closed with INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE (activity_ledger, brain_learning, human_documentation). The exact reason those files were not generated automatically needs a publisher implementation fix.",
+  "observed_evidence": {
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4820",
+    "candidate_original_head": "805e5ca70e326546010152ac996dd9a645a59ffd",
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40045993025",
+    "required_conclusion": "failure",
+    "required_error": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation",
+    "artifact_source": "public.powerhouse_content_artifacts (Supabase)",
+    "business_date": "2026-10-24",
+    "channel": "blog",
+    "artifact_status": "content_ready",
+    "publication_state": "NOT_YET_LIVE_VERIFIED",
+    "concurrent_owner": "existing Powerhouse Daily Publisher obligation, no new scheduler"
+  },
+  "fix": "Attach the three real source-backed closure files in the existing 2026-10-24 publication PR; keep original blog, protected checks, source commit lineage and public readback. Do not mark the blog live before provider proof.",
+  "prevention_rule": "Every future material daily-blog candidate must be constructed as one atomic publish bundle containing rendered artifact, semantic Brain learning (actual source and limits), append-only development event and user-readable documentation before protected admission; writer must not overwrite reviewed candidates; no invented publication evidence, no CI/CodeQL bypass, one owner per daily obligation.",
+  "tests": [
+    "tests/brain-material-writeback-closure-guard.test.mjs",
+    "tests/brain-integration-bundle-compiler-v1.test.mjs",
+    "tests/content-growth-blog-publisher-root-contract.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_PUBLICATION_MATERIAL_WRITEBACK_CLOSURE_MISSING",
+    "scope": "CONTENT_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40045993025"
+    ],
+    "shadow": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      "protected Required test + CodeQL + production URL readback"
+    ]
+  },
+  "terminal_rule": "The PR must pass Required and CodeQL on its exact head, merge via protected path, deploy exact merged commit and prove public URL and CMS obligation LIVE_PROVEN. Documentation-only repair is not evidence of production publication."
+}
