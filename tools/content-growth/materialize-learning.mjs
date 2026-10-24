@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { aggregateContentPerformance } from './aggregate.mjs';
 import { buildLearningContext } from './learning.mjs';
 import { partitionContentGrowthInputs } from './source-integrity.mjs';
+import { buildTrustedLeanLoop } from './trusted-lean-loop.mjs';
 
 const [eventsPath = 'data/content-growth-events.json', policyPath = 'config/content-growth-policy.json', outputPath = 'data/content-growth-learning.json'] = process.argv.slice(2);
 const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
@@ -12,6 +13,7 @@ const performance = aggregateContentPerformance(partition.performanceEvents, pol
 const learning = buildLearningContext({ performance, now: new Date(), policy });
 learning.source_integrity = partition.provenance;
 learning.external_research = partition.researchObservations;
+learning.trusted_lean_loop = buildTrustedLeanLoop({ performance, learning, externalResearch: partition.researchObservations, sourceIntegrity: partition.provenance, policy, now: new Date() });
 fs.mkdirSync(outputPath.split('/').slice(0, -1).join('/') || '.', { recursive: true });
 fs.writeFileSync(outputPath, `${JSON.stringify(learning, null, 2)}\n`);
 console.log(JSON.stringify({ output: outputPath, observed_items: learning.confidence.observed_items, revenue: learning.commercial_totals.revenue, orders: learning.commercial_totals.orders }));
