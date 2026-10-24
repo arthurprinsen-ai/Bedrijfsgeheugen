@@ -14,10 +14,11 @@
     "affected_channels": [
       "blog",
       "linkedin_company"
-    ]
+    ],
+    "exploration_state": "NO_COMPARABLE_OWNED_LINKEDIN_COMPANY_METRICS_FOR_DAILY_CHALLENGER"
   },
-  "fix": "Use independent original publication date and crawl freshness for sources classified as CURRENT market/search, reject absent/stale original date and safely select the next existing channel recommendation. The content brief now follows chosen source, never the rejected pinned recommendation.",
-  "prevention_rule": "A crawler observation cannot prove freshness of the underlying information. No fabricated modernized facts. Fallback only within existing channel, preserving editor/identity/publication constraints, and record fallback as existing artifact evidence.",
+  "fix": "Use independent original publication date and crawl freshness for sources classified as CURRENT market/search, reject absent/stale original date and safely select the next existing channel recommendation. The content brief now follows chosen source, never the rejected pinned recommendation. In the same canonical generation lane, a deterministic bounded exploratory creative hypothesis is proposed when source-backed material is admissible but a valid measurable comparison is not yet available. Existing measured challenger takes precedence and a provider source error suppresses exploration.",
+  "prevention_rule": "A crawler observation cannot prove freshness of the underlying information. No fabricated modernized facts. Fallback only within existing channel, preserving editor/identity/publication constraints, and record fallback as existing artifact evidence. No causal win without observed comparison. No extra social publish. Always one reversible change per scheduled company/blog item.",
   "tests": [
     "tests/brain-content-fresh-source-gate-v1.test.mjs"
   ],

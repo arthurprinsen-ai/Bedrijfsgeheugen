@@ -1,3 +1,5 @@
 # 2026-10-24 — Current market source freshness correction
 
 Canonical Powerhouse current-market content recommendations ranked a June 2020 government excerpt highly after a fresh October 2026 crawl. The latest fetch date was not the original publication date. Corrected the existing recommendation eligibility to require a dated current original source for current news/search signals, preserving historical references only as historical context. When the canonical pinned candidate fails the gate, choose an already-existing eligible same-channel recommendation; keep identity and publication gates and record the fallback in existing generation evidence. No new scheduler, second publisher, new DB, or guaranteed outcomes. Verification: tests/brain-content-fresh-source-gate-v1.test.mjs plus production provider exact-source readback.
+
+- Bounded creative exploration: one deterministic single-component copy test when measured comparable provider evidence is unavailable; never an A/B winner or extra publication.

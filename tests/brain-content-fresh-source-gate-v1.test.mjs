@@ -34,3 +34,31 @@ test('canonical generator must apply freshness before scoring and retain source-
  assert.ok(src.includes('pickRecommendation(recs,pending.channel,requiredRecommendationId?'));
  assert.ok(src.includes('brief:recommendation?.reason'));
 });
+
+import {proposeBoundedCreativeExploration} from '../supabase/functions/_shared/measured-next-post-challenger.mjs';
+
+test('bounded daily company/blog exploration is deterministic, one component only and not a winner',()=>{
+ for(const channel of ['linkedin_company','blog']){
+  const rec={recommendation_id:'r1',reason:'A current verified business-friction topic',evidence:{source_backed:false}};
+  const input={channel,runDate:'2026-10-24',recommendation:rec,measured:{state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS'},freshness:{ok:true}};
+  const x=proposeBoundedCreativeExploration(input),y=proposeBoundedCreativeExploration(input);
+  assert.deepEqual(x,y);assert.equal(x.state,'ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS');
+  assert.equal(x.additional_publications,0);assert.equal(x.causal_lift_proven,false);
+  assert.equal(x.commercial_outcome,'UNKNOWN');
+  assert.ok(x.single_change.length>30);
+ }
+});
+test('measured challenger, unverified sources and personal/Mira content are never overridden',()=>{
+ const args={channel:'linkedin_company',runDate:'2026-10-24',recommendation:{reason:'Verified',evidence:{source_backed:true}}};
+ assert.equal(proposeBoundedCreativeExploration({...args,measured:{state:'ELIGIBLE_BOUNDED_NEXT_POST_TEST'}}).state,'NO_EXPLORATION');
+ assert.equal(proposeBoundedCreativeExploration({...args,measured:{state:'SOURCE_UNAVAILABLE'}}).state,'NO_EXPLORATION');
+ assert.equal(proposeBoundedCreativeExploration({...args,freshness:{ok:false}}).state,'NO_EXPLORATION');
+ assert.equal(proposeBoundedCreativeExploration({...args,channel:'instagram_company'}).state,'NO_EXPLORATION');
+ assert.equal(proposeBoundedCreativeExploration({...args,channel:'linkedin_personal'}).state,'NO_EXPLORATION');
+});
+test('daily measured-or-exploratory metadata is stored on the existing artifact',()=>{
+ const src=fs.readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
+ assert.ok(src.includes('editorial_exploration:creativeExploration'));
+ assert.ok(src.includes('proposeBoundedCreativeExploration({'));
+ assert.ok(src.includes('measured_next_post_test:measuredNextPostTest'));
+});

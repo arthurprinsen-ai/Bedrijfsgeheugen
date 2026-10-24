@@ -62,3 +62,43 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
       evaluation_horizons_hours:[24,48,72]
    },decision:'SUGGEST_CHALLENGER_IN_EXISTING_EDITORIAL_GENERATION_NO_AUTONOMOUS_WIN_PROMOTION'};
 }
+
+
+/** Daily controlled exploration WHEN no calibrated comparable provider cohort
+ * exists. This is a single copy hypothesis, never a causal winner. */
+export function proposeBoundedCreativeExploration({runDate,channel,recommendation,measured={state:'NOT_APPLICABLE'},freshness={ok:true}}={}){
+ const base={contract:'POWERHOUSE-DAILY-CREATIVE-EXPLORATION-v1',state:'NO_EXPLORATION',
+   causal_lift_proven:false,commercial_outcome:'UNKNOWN',
+   execution_owner:'existing canonical content orchestrator and protected publisher',
+   additional_publications:0};
+ if(!['blog','linkedin_company'].includes(channel))return {...base,reason:'CHANNEL_EXCLUDED'};
+ const stamp=Date.parse(String(runDate||'')+'T00:00:00Z');
+ if(!Number.isFinite(stamp)||new Date(stamp).toISOString().slice(0,10)!==runDate)return {...base,reason:'DATE_INVALID'};
+ if(freshness?.ok!==true)return {...base,reason:'SOURCE_NOT_CURRENT_OR_VERIFIED'};
+ if(measured?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST')return {...base,reason:'MEASURED_CHALLENGER_ALREADY_OWNS_EXPERIMENT'};
+ if(measured?.state==='SOURCE_UNAVAILABLE')return {...base,reason:'PROVIDER_SOURCE_UNAVAILABLE'};
+ if(!recommendation?.reason||!recommendation?.evidence||typeof recommendation.evidence!=='object')
+   return {...base,reason:'CANONICAL_RECOMMENDATION_EVIDENCE_REQUIRED'};
+ const company=[
+  {name:'FIRST_SENTENCE',change:'Maak uitsluitend de eerste zin een herkenbare, concrete ondernemer-situatie. Behoud overige bronclaims, onderwerp en CTA.'},
+  {name:'CONSEQUENCE',change:'Maak één al ondersteund concreet tijd-, geld- of risicogevolg explicieter. Verzin geen cijfers of klantcases.'},
+  {name:'USEFUL_NEXT_ACTION',change:'Maak één vrijwillige, bruikbare vervolgstap begrijpelijker, zonder druk of onbewezen productclaim.'}
+ ];
+ const blog=[
+  {name:'READER_QUESTION',change:'Maak één tussenkop een duidelijke vraag van de lezer, gebaseerd op hetzelfde bronprobleem.'},
+  {name:'EXAMPLE',change:'Verduidelijk één stap met een uitdrukkelijk hypothetisch ondernemer-voorbeeld zonder verzonnen statistiek of case.'},
+  {name:'READERS_NEXT_STEP',change:'Maak één optionele, brongetrouwe vervolgstap concreter zonder conversiedruk.'}
+ ];
+ const variants=channel==='blog'?blog:company;
+ const choice=variants[Math.floor(stamp/86400000)%variants.length];
+ return {...base,state:'ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS',channel,run_date:runDate,
+   source_recommendation_id:String(recommendation.recommendation_id||'')||null,
+   hypothesis_id:channel+':'+choice.name+':'+runDate,
+   single_change:choice.change,
+   other_components:'UNCHANGED',experiment_type:'OBSERVATIONAL_SINGLE_CANDIDATE_NOT_RANDOMIZED_AB',
+   compare_to:'prior channel-native editorial baseline; no causal inference',
+   measure_after_days:[1,3,7,30],
+   lead_metric:channel==='blog'?'verified_qualified_cta_progression':'verified_clicks_and_substantive_comments',
+   primary_business_metric:'attributed_verified_paid_orders',
+   requires_readback:true,control:'never promote a winner from unknown denominators'};
+}
