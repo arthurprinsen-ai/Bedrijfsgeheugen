@@ -36,14 +36,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-material-writeback-closure-guard.test.mjs",
-      "tests/content-growth-blog-publisher-root-contract.test.mjs"
-    ],
-    "shadow": [
       "tests/brain-material-writeback-closure-guard.test.mjs"
     ],
+    "shadow": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ],
     "canary": [
-      "protected Required test + CodeQL + production URL readback"
+      "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   },
   "terminal_rule": "The PR must pass Required and CodeQL on its exact head, merge via protected path, deploy exact merged commit and prove public URL and CMS obligation LIVE_PROVEN. Documentation-only repair is not evidence of production publication."
