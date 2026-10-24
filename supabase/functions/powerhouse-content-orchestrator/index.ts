@@ -3,6 +3,7 @@ import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-re
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
+import {selectMeasuredNextPostTest} from '../_shared/measured-next-post-challenger.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
@@ -677,6 +678,37 @@ Deno.serve(async (req) => {
         verifiedBrandLearnings=selectVerifiedBrandLearnings(pastLearnings||[],{now:new Date(),max:3});
       }
     }
+    // Next-day creative decisions consume fresh, comparable OWNED brand provider metrics only.
+    // Lack of permission/snapshots is an explicit evidence gap, never an invented winner.
+    let measuredNextPostTest:any={state:'NOT_APPLICABLE',mode:'READ_ONLY_DECISION_CONTEXT'};
+    if(pending.channel==='linkedin_company'){
+      try{
+        const {data:brandPosts,error:postError}=await db.from('social_posts')
+          .select('tenant_id,post_id,platform,channel_kind,published_at')
+          .eq('tenant_id','bedrijfsgeheugen').eq('platform','linkedin')
+          .eq('channel_kind','linkedin_company')
+          .not('published_at','is',null)
+          .order('published_at',{ascending:false}).limit(24);
+        if(postError)throw new Error('MEASURED_BRAND_POST_READ:'+postError.message);
+        const postIds=(brandPosts||[]).map((p:any)=>clean(p.post_id)).filter(Boolean);
+        let sourceSnapshots:any[]=[];
+        if(postIds.length){
+          const {data, error:snapshotError}=await db.from('social_metric_snapshots')
+            .select('tenant_id,post_id,data_quality,observed_at,metrics')
+            .eq('tenant_id','bedrijfsgeheugen').in('post_id',postIds)
+            .gte('observed_at',new Date(Date.now()-72*3600000).toISOString())
+            .order('observed_at',{ascending:false}).limit(100);
+          if(snapshotError)throw new Error('MEASURED_BRAND_SNAPSHOT_READ:'+snapshotError.message);
+          sourceSnapshots=data||[];
+        }
+        measuredNextPostTest=selectMeasuredNextPostTest({posts:brandPosts||[],snapshots:sourceSnapshots,now:new Date()});
+      }catch(error){
+        measuredNextPostTest={state:'SOURCE_UNAVAILABLE',mode:'READ_ONLY_DECISION_CONTEXT',
+          error_class:'COMPANY_PROVIDER_EVIDENCE_READ_FAILED',
+          decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
+        console.warn('MEASURED_BRAND_TEST_READ_UNAVAILABLE',clean((error as Error)?.message).slice(0,140));
+      }
+    }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
     const personalBuilder = pending.channel==='linkedin_personal' && personalSource?.evidence?.ai_native_builder_story_verified === true;
     const personalObservational = pending.channel==='linkedin_personal' && personalSource?.evidence?.observational_personal_theme_verified === true;
@@ -691,16 +723,19 @@ Deno.serve(async (req) => {
       : pending.channel==='blog' ? BLOG_READER_READY_PROMPT
       : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
+    const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
+      ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
+      : '';
     const verifiedBrandLearningGuide = verifiedBrandLearnings.length
       ? ' Leer van de meegeleverde verified_brand_content_learnings als begrensde patronen. Gebruik hoogstens één relevant bewezen patroon voor opening, begrijpelijke pointe of nuttige CTA; behoud de actuele feitelijke aanbeveling. Geen percentages, garanties of nepklantresultaten uit historische engagementdata. Noem dit niet in de publieke tekst.'
       : '';
     const editorialSystem = pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
-      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide;
+      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
     const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      verified_brand_content_learnings:verifiedBrandLearnings,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+      verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
@@ -825,6 +860,7 @@ Deno.serve(async (req) => {
     stage = 'write-artifact';
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
       content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      measured_next_post_test:measuredNextPostTest,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
