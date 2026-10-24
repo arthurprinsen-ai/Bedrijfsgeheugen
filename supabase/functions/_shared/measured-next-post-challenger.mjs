@@ -3,11 +3,14 @@
 const number=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0?v:
   typeof v==='string'&&/^\d+(\.\d+)?$/.test(v)?Number(v):null;
 const instant=x=>{const t=Date.parse(String(x||''));return Number.isFinite(t)?t:null;};
-export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()}={}){
+export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date(),channel='linkedin_company'}={}){
  const date=now instanceof Date?now:new Date(now);
  if(Number.isNaN(date.getTime()))throw new TypeError('MEASURED_CREATIVE_INVALID_CLOCK');
  if(!Array.isArray(posts)||!Array.isArray(snapshots))throw new TypeError('MEASURED_CREATIVE_SOURCE_ARRAYS_REQUIRED');
- const sample=posts.filter(p=>p?.tenant_id==='bedrijfsgeheugen'&&p?.platform==='linkedin'&&p?.channel_kind==='linkedin_company'
+ if(!['linkedin_company','instagram_company'].includes(channel))throw new TypeError('MEASURED_CREATIVE_CHANNEL_INVALID');
+ const sample=posts.filter(p=>p?.tenant_id==='bedrijfsgeheugen'
+   &&(channel==='instagram_company'?(p?.platform==='instagram'&&['instagram_business','instagram_company'].includes(p?.channel_kind))
+     :(p?.platform==='linkedin'&&p?.channel_kind==='linkedin_company'))
    &&typeof p.post_id==='string'&&p.post_id.length<220&&instant(p.published_at)!==null
    &&date.getTime()-instant(p.published_at)>=24*3600000
    &&date.getTime()-instant(p.published_at)<=21*86400000).slice(0,24);
@@ -32,7 +35,7 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
    qualifying.push({post_id:p.post_id,exposure,comments,likes,observed_at:s.observed_at});
  }
  const base={contract:'POWERHOUSE-MEASURED-NEXT-POST-CHALLENGER-v1',
-  evidence_scope:'SAME_OWNED_BRAND_LINKEDIN_COMPANY_ONLY',mode:'READ_ONLY_DECISION_CONTEXT',
+  evidence_scope:channel==='instagram_company'?'SAME_OWNED_BRAND_INSTAGRAM_ONLY':'SAME_OWNED_BRAND_LINKEDIN_COMPANY_ONLY',mode:'READ_ONLY_DECISION_CONTEXT',
   eligible_published_posts:sample.length,verified_comparable_posts:qualifying.length,
   hypothesis_not_caused_or_proven:true,source_owner:'public.social_posts and public.social_metric_snapshots',
   execution_authority:'existing powerhouse-content-orchestrator and protected social publisher',
@@ -42,7 +45,7 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
  const reach=qualifying.reduce((a,x)=>a+x.exposure,0);
  const comments=qualifying.reduce((a,x)=>a+x.comments,0);
  if(qualifying.length<2||reach<200)return {...base,state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS',
-    reason:'No two independently comparable mature company-post observations with trustworthy exposure and comments',
+    reason:'No two independently comparable mature posts on the same owned platform with trustworthy exposure and comments',
     cumulative_verified_exposure:reach,proposed_test:null,decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
  const candidate=comments===0?'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION':
     comments/reach<0.005?'TEST_CONCRETE_PROBLEM_CONSEQUENCE_HOOK':'TEST_CONCRETE_NEXT_STEP_CTA';
