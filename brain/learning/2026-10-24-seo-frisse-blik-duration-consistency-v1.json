@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "seo|cro|frisse-blik-duration-consistency|20261024-v1",
+  "fingerprint": "seo|money-page|contradictory-consultation-duration|20261024-v1",
+  "canonical_owner": "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
+  "compiler": {
+    "failure_class": "CONTRADICTORY_FIRST_CONSULTATION_DURATION",
+    "scope": "SEO_CRO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing canonical money page described the same free first conversation as 30 minutes in three sections but as half a day at its closing CTA. This is inconsistent information scent and increases uncertainty at the decision point.",
+  "observed_evidence": {
+    "public_page": "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
+    "observed_on": "2026-10-24",
+    "confirmed_30_minute_sections": [
+      "hero support copy",
+      "price explanation",
+      "three-step offer"
+    ],
+    "contradictory_closing_copy": "In een halve dag zien we samen waar het handwerk zit en wat het kost om het eruit te halen.",
+    "canonical_keyword": "bedrijfsprocessen automatiseren",
+    "keyword_intelligence_volume": 480,
+    "keyword_intelligence_cpc_eur": 14.53,
+    "keyword_intelligence_observed_at": "2026-09-30T10:00:00Z",
+    "keyword_metrics_not_current": true,
+    "search_console_page_sample_insufficient": true,
+    "actual_conversion_lift_proven": false
+  },
+  "fix": "Replace only the closing half-day promise with a truthful 30-minute exploratory conversation. Preserve canonical, money-page ownership, CTA destination, commercial offer and all privacy/security controls.",
+  "prevention_rule": "On a money page, first-step offer duration must be consistent at hero, price, process and closing CTA; no claims of conversion lift without independent post-release outcomes.",
+  "tests": [
+    "tests/brain-seo-frisse-blik-duration-consistency-20261024.test.mjs",
+    "tests/brain-seo-money-pages-commercial-intent-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-frisse-blik-duration-consistency-20261024.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-frisse-blik-duration-consistency-20261024.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-frisse-blik-duration-consistency-20261024.test.mjs"
+    ],
+    "invariants": [
+      "canonical money page unchanged",
+      "30-minute introduction consistent",
+      "no fabricated lead or revenue",
+      "protected Required and CodeQL",
+      "public production readback required"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_sales_proven": false
+  }
+}
