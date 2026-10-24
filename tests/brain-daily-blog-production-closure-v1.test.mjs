@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {reconcileMergedDailyBlog} from '../tools/content-growth/reconcile-merged-blog-live.mjs';
 const date='2026-10-24',slug='cyberdreigingen-voor-ondernemers-van-signaal-naar-besluit-in-een-geslo';
 const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
@@ -74,4 +75,16 @@ test('inconsistent tenant canonical URL/identifier or unknown provider token nev
  }
  const t=mock();await assert.rejects(reconcileMergedDailyBlog({...expected,gitHubToken:'',fetcher:t.fetcher}),/AUTH_REQUIRED/);
  assert.equal(t.calls.length,0);
+});
+
+
+test('the one hourly blog writer does not recreate a same-date candidate after protected merge',()=>{
+ const workflow=fs.readFileSync(new URL('../.github/workflows/powerhouse-daily-blog.yml',import.meta.url),'utf8');
+ assert.ok(workflow.includes("cron: '11 * * * *'"));
+ assert.ok(workflow.includes('SAME_DATE_BLOG_PROTECTED_MERGE_PRESENT'));
+ assert.ok(workflow.includes('gh pr list --head "$branch" --base main --state merged'));
+ assert.ok(workflow.includes("steps.writer.outputs.available == 'true'"));
+ assert.ok(workflow.includes('node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"'));
+ assert.ok(workflow.includes("secrets.SUPABASE_SERVICE_ROLE_KEY"));
+ assert.ok(!workflow.includes('supabase database password'));
 });
