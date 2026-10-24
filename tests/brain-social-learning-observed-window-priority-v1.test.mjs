@@ -23,7 +23,7 @@ test('only actual observations in the exact 24/48/72h interval earn provider evi
 });
 test('existing hourly evaluator prioritizes independently timed snapshots instead of only empty old debt',()=>{
  const p=tagDuePostsWithObservedWindows(posts,snapshots);
- const selected=selectDueEvaluationBatch(p,{now,limit:2});
+ const selected=selectDueEvaluationBatch(p,{now:new Date(now.getTime()+3600000),limit:2});
  assert.equal(selected.length,2);
  assert.ok(selected.some(x=>x.postId==='observed-new'));
  assert.ok(selected.every(x=>x.hasWindowSnapshot===true));
