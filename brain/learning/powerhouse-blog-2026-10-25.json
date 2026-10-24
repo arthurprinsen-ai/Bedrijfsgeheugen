@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "fingerprint": "content-publication|blog|2026-10-25|source-and-outcome-proof-v1",
+  "obligation_id": "content-publication:2026-10-25:blog",
+  "status": "CANDIDATE",
+  "failure_class": "BLOG_SOURCE_TO_LIVE_PROOF_GAP",
+  "root_cause": "A source-backed rendered page is a publication candidate, not proof of protected merge, live URL, traffic, leads or revenue. The daily writer must preserve this distinction until independent readback.",
+  "observed_evidence": {
+    "source": "canonical Supabase powerhouse_content_artifacts via powerhouse-blog-export",
+    "business_date": "2026-10-25",
+    "content_id": "blog:publiceren-voor-de-circular-plastics-nl-kans-beslis-alleen-als-kanaalg",
+    "canonical_url": "https://www.bedrijfsgeheugen.nl/blog/publiceren-voor-de-circular-plastics-nl-kans-beslis-alleen-als-kanaalg/",
+    "source_artifact_digest": "05ca9011ed2299773f5fd3c9fdbc16c1b694cadbcfe3d0092dfc8d17007b2ebd",
+    "publication_state": "NOT_YET_LIVE_VERIFIED"
+  },
+  "fix": "Carry durable source-backed Brain learning, append-only development activity and human-readable documentation with this exact daily candidate. Hand off to existing protected Required/CodeQL and live readback.",
+  "prevention_rule": "Do not merge a material daily publication candidate without all three closure artifacts. Keep one writer per date and never label prepared content as published, live or monetized without independent production and attribution evidence.",
+  "tests": [
+    "tests/brain-daily-blog-proof-bundle-v1.test.mjs",
+    "tests/brain-material-writeback-closure-guard.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "BLOG_SOURCE_TO_LIVE_PROOF_GAP",
+    "scope": "CONTENT_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Required/CodeQL exact-head success, protected merge, exact merged Netlify deploy, canonical public readback and recorded outcome are separately required."
+}
