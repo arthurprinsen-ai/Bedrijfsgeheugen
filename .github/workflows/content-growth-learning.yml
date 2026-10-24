@@ -23,17 +23,26 @@ jobs:
           node --check tools/content-growth/learning.mjs
           node --check tools/content-growth/source-integrity.mjs
           node --check tools/content-growth/trusted-lean-loop.mjs
+          node --check tools/content-growth/collect-canonical-evidence.mjs
+          node --check tools/content-growth/daily-performance-diagnostics.mjs
+          node --test tests/brain-daily-content-performance-diagnostics-v1.test.mjs
           node --test tests/brain-trusted-lean-loop-v1.test.mjs
           node --test tests/brain-content-growth-source-integrity-v1.test.mjs
+      - name: Read existing canonical provider snapshots and human page aggregates
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: node tools/content-growth/collect-canonical-evidence.mjs > /tmp/content-growth-provider-evidence.json
       - name: Materialize bounded blog linkedin social learning
         run: |
           set -euo pipefail
-          node tools/content-growth/materialize-learning.mjs data/content-growth-events.json config/content-growth-policy.json /tmp/content-growth-learning.json
-          node -e "const x=require('/tmp/content-growth-learning.json'); if(!x.version || !x.source_integrity || !x.external_research || x.trusted_lean_loop?.mode !== 'READ_ONLY_ADVISORY_PROJECTION') process.exit(1)"
+          node tools/content-growth/materialize-learning.mjs data/content-growth-events.json config/content-growth-policy.json /tmp/content-growth-learning.json /tmp/content-growth-provider-evidence.json
+          node -e "const x=require('/tmp/content-growth-learning.json'); if(!x.version || !x.source_integrity || !x.external_research || x.trusted_lean_loop?.mode !== 'READ_ONLY_ADVISORY_PROJECTION' || !x.daily_performance_diagnostics?.source_state) process.exit(1)"
           echo 'content_types=blog,linkedin,social'
       - name: Upload learning evidence
         uses: actions/upload-artifact@v4
         with:
           name: content-growth-learning
-          path: /tmp/content-growth-learning.json
+          path: |
+            /tmp/content-growth-learning.json
+            /tmp/content-growth-provider-evidence.json
           retention-days: 30
