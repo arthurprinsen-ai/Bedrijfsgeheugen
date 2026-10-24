@@ -284,6 +284,21 @@ A closed predecessor and a merged successor do not by themselves prove that the 
 
 Reference production recovery: PR #2158 / merge `7d0442b517c80c51f69ebcaba6328d731a309459`.
 
+## Canonical blog publication proof after final Netlify HTML transform — 2026-10-22
+
+Fingerprint: `powerhouse|daily-blog|postbuild-marker-lost|20261022-v1`.
+A source-controlled <body data-content-id> is **not** live evidence. The sole
+Netlify build entry applies existing `applyLedgerPublicationMarkers` only
+after **all** HTML transformers, both after full build and prebuilt release
+stamping; only records in `data/content-publication-ledger.json` are
+recognized. Missing article, malformed ID or conflicting marker fails the
+build. The sole Native daily blog live watchdog still requires an independent
+public HTTP 200, exact canonical, exact source content ID, JSON-LD and H1,
+before its existing protected proof/ledger owner can mark LIVE. Historical
+missing proof remains unfulfilled; never skip a date, spoof a marker on the
+wrong article or create a second publisher. Regression:
+`tests/content-growth-v18-content-id-build-parity.test.mjs`.
+
 ## GitHub obligation terminalization
 
 Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
