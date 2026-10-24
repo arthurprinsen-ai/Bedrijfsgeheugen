@@ -5,7 +5,7 @@ export const queries={
     "with ranked as (select s.post_id,s.platform,s.published_at,s.format,s.hook_type,s.cta_type,m.observed_at,m.data_quality,m.source,m.metrics,",
     "row_number() over (partition by s.tenant_id,s.post_id order by m.observed_at desc nulls last,m.snapshot_id desc) rn",
     "from public.social_posts s left join public.social_metric_snapshots m on m.tenant_id=s.tenant_id and m.post_id=s.post_id",
-    "where s.tenant_id='bedrijfsgeheugen' and s.published_at>=now()-interval '60 days')",
+    "where s.tenant_id='bedrijfsgeheugen' and s.published_at>=now()-interval '180 days')",
     "select post_id,platform,published_at,format,hook_type,cta_type,observed_at,data_quality,source,metrics from ranked where rn=1 order by published_at desc limit 300"
   ].join(' '),
   pages:[
