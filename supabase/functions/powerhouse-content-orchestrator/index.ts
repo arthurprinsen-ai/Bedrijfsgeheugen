@@ -2,6 +2,7 @@ import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/
 import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-reserve.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
+import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
@@ -64,7 +65,7 @@ const executor_capabilities: Record<string, { executable: boolean; executor: str
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
-const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1"]);
+const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1","social_learnings"]);
 const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2"]);
 const DB_JSON_COLUMNS=new Set([
  'bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload',
@@ -662,6 +663,20 @@ Deno.serve(async (req) => {
       },{onConflict:'key'});
       if(linkError) throw new Error('COMPANY_TRACKING_LINK_WRITE_FAILED');
     }
+    let verifiedBrandLearnings:any[]=[];
+    if (['linkedin_company','blog'].includes(pending.channel)) {
+      // Source-of-truth is the existing social learning store. Unknown/missing metrics
+      // must NOT be promoted to winning creative patterns or shared across tenants.
+      const {data:pastLearnings,error:learningError}=await db.from('social_learnings')
+        .select('tenant_id,learning_id,component_scope,status,fingerprint,claim,effect_metric,effect_size,sample_size,confidence,last_validated_at,expires_or_review_at,evidence_refs')
+        .eq('tenant_id','bedrijfsgeheugen').eq('status','PROVEN')
+        .order('last_validated_at',{ascending:false}).limit(30);
+      if (learningError) {
+        console.warn('BRAND_LEARNING_READ_UNAVAILABLE',clean(learningError.message).slice(0,120));
+      } else {
+        verifiedBrandLearnings=selectVerifiedBrandLearnings(pastLearnings||[],{now:new Date(),max:3});
+      }
+    }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
     const personalBuilder = pending.channel==='linkedin_personal' && personalSource?.evidence?.ai_native_builder_story_verified === true;
     const personalObservational = pending.channel==='linkedin_personal' && personalSource?.evidence?.observational_personal_theme_verified === true;
@@ -676,13 +691,16 @@ Deno.serve(async (req) => {
       : pending.channel==='blog' ? BLOG_READER_READY_PROMPT
       : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
+    const verifiedBrandLearningGuide = verifiedBrandLearnings.length
+      ? ' Leer van de meegeleverde verified_brand_content_learnings als begrensde patronen. Gebruik hoogstens één relevant bewezen patroon voor opening, begrijpelijke pointe of nuttige CTA; behoud de actuele feitelijke aanbeveling. Geen percentages, garanties of nepklantresultaten uit historische engagementdata. Noem dit niet in de publieke tekst.'
+      : '';
     const editorialSystem = pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
-      : pending.channel==='linkedin_company' ? system : system + ' ' + STEERING_BRAND_CONTRACT;
+      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
     const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+      verified_brand_content_learnings:verifiedBrandLearnings,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
