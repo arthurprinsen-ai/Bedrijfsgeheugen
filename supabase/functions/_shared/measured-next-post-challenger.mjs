@@ -13,7 +13,7 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
    &&date.getTime()-instant(p.published_at)<=21*86400000).slice(0,24);
  const ids=new Set(sample.map(p=>p.post_id));
  const recent=snapshots.filter(s=>s?.tenant_id==='bedrijfsgeheugen'&&ids.has(s.post_id)
-   &&['OBSERVED','PROVIDER_OBSERVED'].includes(s.data_quality)
+   &&['OBSERVED','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED'].includes(s.data_quality)
    &&instant(s.observed_at)!==null
    &&date.getTime()-instant(s.observed_at)<=72*3600000
    &&date.getTime()-instant(s.observed_at)>=-300000)
@@ -26,7 +26,7 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
    if(!s||instant(s.observed_at)<instant(p.published_at))continue;
    const metrics=s.metrics;
    if(!metrics||typeof metrics!=='object'||metrics.metric_scope==='reactions_only'||metrics.views_unavailable===true)continue;
-   const exposure=number(metrics.reach)??number(metrics.views);
+   const exposure=number(metrics.reach)??number(metrics.views)??number(metrics.impressions);
    const comments=number(metrics.comments),likes=number(metrics.likes);
    if(exposure===null||exposure<50||comments===null||likes===null)continue;
    qualifying.push({post_id:p.post_id,exposure,comments,likes,observed_at:s.observed_at});
