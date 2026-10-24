@@ -140,7 +140,7 @@ jobs:
         run: |
           node --test tests/brain-security-operations-closure-v1.test.mjs tests/security-operations-proof.test.mjs
           node scripts/security-operations-proof.mjs --check
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
@@ -598,14 +598,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22.12.0'
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             npm-${{ runner.os }}-
       - name: Restore and extend content-addressed static i18n render cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .cache/bg-static-i18n-v1
           key: static-i18n-render-v1-${{ runner.os }}-${{ github.run_id }}
