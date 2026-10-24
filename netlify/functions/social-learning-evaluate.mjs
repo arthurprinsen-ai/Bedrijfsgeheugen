@@ -74,10 +74,19 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
     const tenantId=post.tenantId||'canonical';
     const windowHours=Number(post.dueWindow||post.windowHours||24);
     const snapshots=await store.getSnapshots(post.postId);
-    const snapshot=selectSnapshotForWindow({snapshots,publishedAt:post.publishedAt,windowHours,toleranceHours:Number(config.windowToleranceHours??6)});
+    // Provider-date reports, old unlinked sources and partial-scope metrics
+    // cannot become an exact 24/48/72-hour experiment observation even if
+    // their retrieval timestamp happens to fall inside the window.
+    const sourceQualified=(Array.isArray(snapshots)?snapshots:[])
+      .filter(x=>['OBSERVED','PROVIDER_OBSERVED'].includes(x?.dataQuality));
+    const snapshot=selectSnapshotForWindow({snapshots:sourceQualified,publishedAt:post.publishedAt,windowHours,toleranceHours:Number(config.windowToleranceHours??6)});
     if(!snapshot){
       missedObligations++;
-      if(store.recordObligation) await store.recordObligation({tenantId,id:`social-snapshot:${post.postId}:${windowHours}`,type:'MISSED_OBLIGATION',owner:'POWERHOUSE_SOCIAL_LEARNING',postId:post.postId,windowHours,dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
+      const hadUnqualified=(Array.isArray(snapshots)?snapshots:[]).length>0;
+      if(store.recordObligation) await store.recordObligation({tenantId,id:`social-snapshot:${post.postId}:${windowHours}`,
+        type:hadUnqualified?'UNVERIFIED_OR_PARTIAL_WINDOW':'MISSED_OBLIGATION',
+        owner:'POWERHOUSE_SOCIAL_LEARNING',postId:post.postId,windowHours,
+        dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
       continue;
     }
     const evaluationId=`evaluation:${post.postId}:${windowHours}`;
