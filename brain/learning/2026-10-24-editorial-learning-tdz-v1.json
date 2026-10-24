@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "brand-editorial|verifiedBrandLearningGuide|temporal-dead-zone|20261024-v1",
+  "obligation_id": "content-orchestrator:editorial-verified-learning-tdz-v1",
+  "failure_class": "CONTENT_GENERATION_TDZ_UNINITIALIZED_LEARNING_GUIDE",
+  "root_cause": "The live-released brand learning integration placed 'const editorialSystem' before 'const verifiedBrandLearningGuide', while the editorial expression reads the guide for all non-personal channels. This produces a Temporal Dead Zone ReferenceError when company LinkedIn, blog, or Instagram generation reaches the editorial stage.",
+  "observed_evidence": {
+    "source": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "original_expression": "pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide",
+    "production_runtime_invocation": "NOT_REPRODUCED_AGAINST_AUTHORIZED_LIVE_CONTENT_EVENT",
+    "static_runtime_failure": "UNINITIALIZED_CONST_READ"
+  },
+  "fix": "Move construction of verifiedBrandLearningGuide immediately before editorialSystem, after verifiedBrandLearnings has been selected. Preserve existing proven-only tenant-scoped evidence, prompts, authorizations, publication gates and schedule.",
+  "prevention_rule": "Construct dependent lexical constants before evaluation of any conditional branch referencing them; regression tests enforce declaration/read sequence and customer-source gating. Never report publication or next-day lift from passing source tests alone.",
+  "tests": [
+    "tests/brain-brand-learning-editorial-tdz-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_GENERATION_TDZ_UNINITIALIZED_LEARNING_GUIDE",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Required and CodeQL exact head green, protected merge, GitHub-integrated production deployment and subsequent genuine daily content generation + publication/outcome readback separately."
+}
