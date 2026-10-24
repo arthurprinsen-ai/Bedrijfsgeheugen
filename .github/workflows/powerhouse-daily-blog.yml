@@ -88,6 +88,12 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "slug=$slug" >> "$GITHUB_OUTPUT"
 
+      - name: Persist one Brain evidence bundle with the daily candidate
+        if: steps.render.outputs.changed == 'true'
+        env:
+          DATE: ${{ steps.day.outputs.date }}
+        run: node tools/content-growth/daily-blog-proof-bundle.mjs "$DATE" /tmp/powerhouse-blog.json
+
       - name: Create exactly one protected candidate
         if: steps.render.outputs.changed == 'true'
         env:
@@ -111,6 +117,7 @@ jobs:
           git fetch origin "$branch" || true
           git checkout -B "$branch"
           git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
+          git add "brain/learning/powerhouse-blog-$DATE.json" "docs/development-ledger-events/powerhouse-blog-$DATE.md" "docs/changes/powerhouse-blog-$DATE.md"
           git commit -m "blog: publish Powerhouse daily artifact $DATE"
 
           # Before creating the PR, replay the exact production transforms,
