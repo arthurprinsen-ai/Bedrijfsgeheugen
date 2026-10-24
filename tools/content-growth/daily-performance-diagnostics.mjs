@@ -58,7 +58,7 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    const hypothesis=enough&&click_sessions===0?'TEST_PAGE_MESSAGE_AND_PRIMARY_CTA':'COLLECT_CTA_AND_QUALIFIED_CONVERSION_EVENTS';
    pages.push({path,url:'https://www.bedrijfsgeheugen.nl'+path,human_page_sessions:sessions,human_click_sessions:click_sessions,
      click_session_ratio:fraction(click_sessions,sessions),hypothesis,
-     attribution:'CONSENTED_NONROBOT_EVENTS_ONLY',sales_and_dropoff_not_inferred:true});
+     observed_at:item.observed_at||null,attribution:'CONSENTED_NONROBOT_EVENTS_ONLY',sales_and_dropoff_not_inferred:true});
    if(hypothesis.startsWith('TEST_'))actions.push({scope:'website',identity:path,hypothesis,
      test:'Compare one reversible intent-aligned proof/CTA change; retain control',
      next_measurement:'qualified leads and paid orders with validated event linkage'});
