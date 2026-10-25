@@ -25,3 +25,30 @@ test('historical 20-minute absolute clock formula skipped some topics forever',(
  }
  assert.ok(visited.size<44);
 });
+
+test('20-minute windows also advance, while retry in one window is deterministic',()=>{
+ const visited=new Set();
+ for(let step=0;step<15;step++){
+  const tick=time+step*1200000;
+  const first=selectExternalTopics(topics,{now:tick,batch:3});
+  const again=selectExternalTopics(topics,{now:tick+30000,batch:3});
+  assert.deepEqual(first,again);
+  assert.equal(new Set(first.selected.map(x=>x.onderwerp)).size,3);
+  for(const x of first.selected)visited.add(x.onderwerp);
+ }
+ assert.equal(visited.size,44);
+});
+
+test('bound work, preserve original search strings, and reject invalid schedule state',()=>{
+ const snapshot=JSON.stringify(topics);
+ const result=selectExternalTopics(topics,{now:time,batch:500});
+ assert.equal(result.selected.length,12);
+ assert.equal(result.contract,'EXTERNAL_TOPIC_DAILY_FAIR_ROTATION-v1');
+ assert.equal(JSON.stringify(topics),snapshot);
+ assert.deepEqual(selectExternalTopics([],{now:time}).selected,[]);
+ assert.equal(selectExternalTopics([],{now:time}).staticFullCoverageDays,0);
+ assert.equal(selectExternalTopics([topics[0]],{now:time}).selected.length,1);
+ assert.throws(()=>selectExternalTopics('invalid',{now:time}),/EXTERNAL_TOPICS_ARRAY_REQUIRED/);
+ assert.throws(()=>selectExternalTopics(topics,{now:-1}),/EXTERNAL_TOPICS_CLOCK_INVALID/);
+ assert.throws(()=>selectExternalTopics(topics,{now:time,batch:0}),/EXTERNAL_TOPIC_BATCH_INVALID/);
+});
