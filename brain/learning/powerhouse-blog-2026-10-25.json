@@ -13,13 +13,25 @@
     "content_id": "blog:publiceren-voor-de-circular-plastics-nl-kans-beslis-alleen-als-kanaalg",
     "canonical_url": "https://www.bedrijfsgeheugen.nl/blog/publiceren-voor-de-circular-plastics-nl-kans-beslis-alleen-als-kanaalg/",
     "source_artifact_digest": "05ca9011ed2299773f5fd3c9fdbc16c1b694cadbcfe3d0092dfc8d17007b2ebd",
-    "publication_state": "NOT_YET_LIVE_VERIFIED"
+    "publication_state": "NOT_YET_LIVE_VERIFIED",
+    "external_source_verification": {
+      "verified_at": "2026-10-25",
+      "source_urls": [
+        "https://www.rvo.nl/subsidies-financiering/cpnl",
+        "https://www.rvo.nl/onderwerpen/circulaire-economie/financiele-steun"
+      ],
+      "cpnl_opening": "2026-04-21",
+      "cpnl_deadline": "2026-10-06T17:00:00+02:00",
+      "original_candidate_factual_status": "INCORRECT_STALE_OPENING_CLAIM",
+      "corrected_candidate_status": "READER_ORIENTED_FACTUAL_CORRECTION_PENDING_PROTECTED_RELEASE"
+    }
   },
-  "fix": "Carry durable source-backed Brain learning, append-only development activity and human-readable documentation with this exact daily candidate. Hand off to existing protected Required/CodeQL and live readback.",
-  "prevention_rule": "Do not merge a material daily publication candidate without all three closure artifacts. Keep one writer per date and never label prepared content as published, live or monetized without independent production and attribution evidence.",
+  "fix": "Carry durable source-backed Brain learning, append-only development activity and human-readable documentation with this exact daily candidate. Hand off to existing protected Required/CodeQL and live readback. Same-day editorial factual recovery: replace stale forecast-derived subsidy opening and internal growth operating instructions with official RVO-verified closed dates, current options (SOPV/EKOO), customer-relevant checklist and correctly sourced public article/SEO/RSS metadata.",
+  "prevention_rule": "Do not merge a material daily publication candidate without all three closure artifacts. Keep one writer per date and never label prepared content as published, live or monetized without independent production and attribution evidence. Reject any public blog that presents an already past application deadline as upcoming, contains unearned model revenue probabilities or leaks internal growth strategy jargon.",
   "tests": [
     "tests/brain-daily-blog-proof-bundle-v1.test.mjs",
-    "tests/brain-material-writeback-closure-guard.test.mjs"
+    "tests/brain-material-writeback-closure-guard.test.mjs",
+    "tests/brain-blog-official-source-staleness-20261025.test.mjs"
   ],
   "compiler": {
     "failure_class": "BLOG_SOURCE_TO_LIVE_PROOF_GAP",
@@ -30,13 +42,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs",
+      "tests/brain-blog-official-source-staleness-20261025.test.mjs"
     ],
     "shadow": [
-      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs",
+      "tests/brain-blog-official-source-staleness-20261025.test.mjs"
     ],
     "canary": [
-      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs",
+      "tests/brain-blog-official-source-staleness-20261025.test.mjs"
     ]
   },
   "terminal_rule": "Required/CodeQL exact-head success, protected merge, exact merged Netlify deploy, canonical public readback and recorded outcome are separately required."
