@@ -1,0 +1,20 @@
+{
+  "fingerprint": "delivery|netlify|release-readback-applicability-status|20261025-v1",
+  "compiler": {
+    "failure_class": "DEPLOYMENT_STATUS_NOT_PROPAGATED",
+    "scope": "CI"
+  },
+  "root_cause": "The shared Netlify applicability classifier was merged but the production readback workflow did not emit its NOT_REQUIRED/UNKNOWN distinction.",
+  "prevention": "Reuse the existing production readback workflow; emit explicit deployment_status on scope evaluation and keep provider-verification gates untouched.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-readback-deploy-status.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "Regression committed; Required/CodeQL pending",
+    "production_readback": "NOT_VERIFIED",
+    "merge": "NOT_MERGED"
+  },
+  "regression_contract": "Explicit NOT_REQUIRED for governance-only changes; never report live without independent provider proof."
+}
