@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "production_verified": false,
+  "fingerprint": "portal|external-signal|missing-next-action-and-unbound-navigation|20261025-v1",
+  "obligation_id": "portal:relevance-source-to-tenant-action:20261025-v1",
+  "parent_issue": 4547,
+  "root_cause": "Omgevingsradar showed scores and URLs without a per-signal next step; buttons carrying data-open-page on the action shortlist did not have click handlers. Candidate suggestions were not visibly distinct from a tenant-specific actual action.",
+  "fix": "Reuse tenant-scoped portal-state-eu signal_key and actionCandidates; show exact tenant action if source-current and relevant, otherwise explicit context/source review. Bind existing portal open-page callbacks. No extra AI, scheduler, CRM, customer write, invented outcome or public URL from untrusted protocol.",
+  "prevention_rule": "No customer action navigates unless same exact signal_key, TENANT overlay, SCORED impact, source publication <=45d, observation <=7d and current deadline; canonicals remain review-only.",
+  "tests": [
+    "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_EXTERNAL_RELEVANCE_ACTION_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Exact-head Required/CodeQL, protected merge, Netlify production revision, authenticated tenant portal action click/readback; no claims of lead/order/revenue without downstream evidence."
+}
