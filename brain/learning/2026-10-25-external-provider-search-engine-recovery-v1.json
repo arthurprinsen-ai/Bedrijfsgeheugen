@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "parent_issue": 4198,
+  "fingerprint": "external-intelligence|dataforseo-internal-se-40101|failed-topic|20261025-v1",
+  "failure_class": "EXTERNAL_SOURCE_SEARCH_ENGINE_TRANSIENT_40101",
+  "root_cause": "Tavily reports upstream plan limit. DataForSEO fallback handles the selected topics independently but the long skills/capabilities query generated status 40101 (Internal SE Server Error), observed in the genuine 2026-10-25 Supabase HTTP 207 run. The wrapper swallowed the precise provider status in DATAFORSEO_REMOTE_FAILURE, had no bounded keyword recovery and replayed all three topics rather than only the failed one.",
+  "observed_evidence": {
+    "source_request_id": 12486,
+    "topic": "Skills en capabilities",
+    "topic_original_query": "skills vaardigheden opleidingen certificeringen AI literacy management arbeidsmarkt Nederland",
+    "provider_error": "40101 Internal SE Server Error independently reproduced for original long query",
+    "recovery_query": "skills vaardigheden opleidingen certificeringen AI Nederland",
+    "recovery_query_status": "20000 (separate DataForSEO connector check; not yet native Edge proof)",
+    "original_run": {
+      "http_status": 207,
+      "selected": 3,
+      "success": 2,
+      "failed": 1,
+      "found": 18,
+      "allowed": 1
+    },
+    "upstream_limit": "UPSTREAM_PLAN_LIMIT in Tavily; DataForSEO fallback on two successful topics"
+  },
+  "fix": "In existing bg-externe-signalen Edge Function: status-code-aware one-shot DataForSEO recovery, deterministic shorter keyword only for search-engine internal 40101/40103, one exact-payload retry for known transient 5xx, no retries for billing/auth/invalid input. Add authenticated retry_topic request allowed only when latest immutable canonical source-run evidence proves that exact topic failed in prior 24h. Keep provider identity and recovery strategy in source lineage; preserve original scheduled topic selection and upsert idempotency.",
+  "prevention_rules": [
+    "Never treat HTTP 200 alone as DataForSEO success: require outer and task status_code=20000; a true 40102 no-results response is zero results, not synthetic data.",
+    "Do not retry 401/402/403, billing, account verification or invalid input; do not exceed one additional provider call per failed topic.",
+    "Never rerun already-successful topics in a manual recovery; require the latest producer observation for the requested topic to be a failure and use the existing Powerhouse scheduler token.",
+    "On replay, keep canonical observation fingerprints distinct from normal scheduled runs, and preserve all actual provider and source provenance.",
+    "Retain the same source catalog, canonical Brain error memory, protected Required + CodeQL, original scheduler and tenant-isolated portal; no second queue, CRM or outbound send."
+  ],
+  "tests": [
+    "tests/brain-external-provider-targeted-recovery-v1.test.mjs",
+    "tests/brain-external-topic-rotation-v1.test.mjs",
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-provider-targeted-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-provider-targeted-recovery-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "EXTERNAL_SOURCE_SEARCH_ENGINE_TRANSIENT_40101",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required+CodeQL, protected main merge, actual Supabase Edge version/readback, canonical one-topic replay with provider HTTP 200 and persisted source observation. Mark single-topic recovery PROVEN only with genuine provider evidence; total 44-topic future coverage and paid sales attribution are separately unproven."
+}
