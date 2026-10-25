@@ -57,6 +57,10 @@ jobs:
         run: node scripts/brain/continuous-improvement/run-autonomous-improvement.mjs
       - name: Run capability inventory
         run: node scripts/brain/continuous-improvement/capability-inventory.mjs
+      - name: Verify improvement evidence and record missing capability data
+        run: |
+          node --test tests/powerhouse-improvement-evidence-inventory.test.mjs
+          node scripts/brain/continuous-improvement/improvement-evidence-inventory.mjs
       - name: Run Engineering OS self-test
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
       - name: Verify autonomous engineering fabric v3
