@@ -99,7 +99,12 @@ export function createGrowthIntelligenceDaily({store,now=()=>new Date()}={}){
     // External signals and social attention cannot qualify a buyer without independently linked first-party proof.
     const commercialReadiness=prioritizeCommercialOpportunities(input.opportunities||[],{salesOutcomes:input.salesOutcomes||[],now:atIso});
     const commercialReadinessByKey=new Map(commercialReadiness.prioritized.map(item=>[item.opportunityKey,item]));
-    for(const item of commercialReadiness.prioritized.slice(0,12)){
+    const immediate=commercialReadiness.prioritized.filter(item=>item.classification!=='RESEARCH_REQUIRED'&&item.classification!=='NO_CONTACT').slice(0,8);
+    const research=commercialReadiness.prioritized.filter(item=>item.classification==='RESEARCH_REQUIRED');
+    const researchStart=research.length?(Math.floor(Date.parse(day+'T00:00:00Z')/86400000)*12)%research.length:0;
+    const dailyResearch=Array.from({length:Math.min(Math.max(0,12-immediate.length),research.length)},
+      (_,index)=>research[(researchStart+index)%research.length]);
+    for(const item of [...immediate,...dailyResearch]){
       const id='commercial-readiness:'+day+':'+slug(item.opportunityKey);
       await active.recordBrain({tenant_id:'canonical',record_id:id,record_type:'CurrentState',record_kind:'current_state',
         subject_id:'growth-revenue-os-1m-2027-v1',status:'OBSERVED',observed_at:atIso,executed:false,verified:false,
