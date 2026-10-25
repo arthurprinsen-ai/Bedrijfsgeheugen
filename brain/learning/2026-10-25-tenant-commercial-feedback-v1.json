@@ -19,10 +19,10 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-commercial-feedback-tenant.test.mjs"
+      "tests/brain-portal-commercial-feedback-tenant.test.mjs"
     ],
     "canary": [
-      "tests/portal-commercial-feedback-tenant.test.mjs"
+      "tests/brain-portal-commercial-feedback-tenant.test.mjs"
     ]
   },
   "machine_enforceable": true,
