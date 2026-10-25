@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|unified-learning|delivery-closure|20261025-v1",
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+  },
+  "root_cause": "PR #4907 material change contained no required three closure artifacts; earlier admission failures were missing machine metadata and an unclassified docs/architecture path.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "run_id": 40204851327,
+        "result": "FAILED",
+        "reason": "PR_MACHINE_METADATA_INVALID; subsequently unclassified delivery path",
+        "evidence": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40204851327"
+      },
+      {
+        "run_id": 40205797355,
+        "result": "FAILED",
+        "reason": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
+        "evidence": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40205797355"
+      }
+    ]
+  },
+  "prevention_rule": "For every material change, include canonical Brain learning JSON with historical replay and source-backed evidence, append-only activity ledger and human-readable docs/changes item; keep standard admission and protected CI enforced.",
+  "evidence": {
+    "observed_runs": [
+      40204851327,
+      40205797355
+    ],
+    "codeql_on_prior_head": "success",
+    "current_required": "NOT_YET_VERIFIED",
+    "production_readback": "NOT_YET_VERIFIED"
+  },
+  "outcome": {
+    "status": "RECOVERY_IN_PROGRESS",
+    "revenue": "NOT_EVALUATED"
+  }
+}
