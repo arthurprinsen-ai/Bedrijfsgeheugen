@@ -174,7 +174,8 @@ Deno.serve(async(req)=>{
       && Number(verdict.face_identity_confidence)>=MIRA_IDENTITY_MIN_CONFIDENCE;
     const evidenceRef=`vision:openai:${gov.data.model_id}:face-compare:${masterSha.slice(0,16)}:${hash.slice(0,16)}`;
     const visual={
-      verified:pass,semantic_verified:verdict.semantic_verified===true,mira_present:verdict.mira_present===true,
+      verified:!referenceCandidate&&pass,reference_candidate_visually_matched:referenceCandidate&&pass,
+      reference_candidate_only:referenceCandidate,semantic_verified:verdict.semantic_verified===true,mira_present:verdict.mira_present===true,
       identity_class:clean(verdict.identity_class),evidence_method:'vision',
       placeholder_detected:verdict.placeholder_detected===true,visual_complete:verdict.visual_complete===true,
       daily_life_scene:verdict.daily_life_scene===true,mira_central_subject:verdict.mira_central_subject===true,
@@ -192,7 +193,9 @@ Deno.serve(async(req)=>{
       format_verified:dimsOk,evidence_refs:[evidenceRef]
     };
     const providerPostId=clean(body.providerPostId)||`preflight:${hash.slice(0,24)}`;
-    const fingerprint=`instagram-vision-proof:${publicationDate}:${hash}`;
+    const fingerprint=referenceCandidate
+      ?`mira-reference-candidate-vision-proof:${publicationDate}:${hash}`
+      :`instagram-vision-proof:${publicationDate}:${hash}`;
     const proof={
       fingerprint,publication_date:publicationDate,channel:'instagram',provider,provider_post_id:providerPostId,
       provider_external_url:null,media_url:mediaUrl,provider_status:referenceCandidate
@@ -200,7 +203,7 @@ Deno.serve(async(req)=>{
         :(pass?'prepublish_verified':'prepublish_rejected'),
       canonical_copy:null,exact_copy_verified:false,exact_media_retrievable:true,exact_media_sha256:hash,
       exact_media_verified_at:new Date().toISOString(),identity_contract:CONTRACT,
-      identity_gate_result:pass?'PASS':'FAIL',
+      identity_gate_result:referenceCandidate?'UNPROVEN':pass?'PASS':'FAIL',
       proof_lineage:{contract:CONTRACT,media_type:referenceCandidate?'reference_candidate':verificationRole==='video_frame'?'video_frame':'image',verification_role:verificationRole,media_source:provider,instagram_visual:visual,exact_final_media_proven:!referenceCandidate&&pass,reference_candidate_only:referenceCandidate},
       failure_reason:pass?null:`MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED: ${visual.reason}`,
       updated_at:new Date().toISOString()
