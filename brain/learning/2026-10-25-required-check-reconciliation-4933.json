@@ -30,5 +30,10 @@
     "historical_replay": [
       "tests/brain-learning-canonicalization-gate-v1.test.mjs"
     ]
-  }
+  },
+  "prevention": "Require exact SHA, effective branch protection and ruleset context/App identity reconciliation, with regression and canonical owner routing before protected merge; never infer green from partial checks.",
+  "regression_contract": [
+    "tests/required-check-reconciliation.test.mjs",
+    "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+  ]
 }
