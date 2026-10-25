@@ -55,3 +55,14 @@ test('action shortlist is prioritized but still distinguishes candidate from exe
   assert.match(workspace,/Eigenaar nog niet toegewezen/);
   assert.match(workspace,/Streefdatum/);
 });
+
+
+test('source-bound tenant advice is visible while unsupported claims stay blocked',()=>{
+  assert.match(workspace,/buildExternalSignalAdvice/);
+  assert.match(workspace,/Waarom relevant voor mij\\?/);
+  assert.match(workspace,/Wat moet ik doen\\?/);
+  assert.match(workspace,/Geen recente bronwaarneming aangetoond/);
+  assert.match(workspace,/catalogus, niet allemaal live/);
+  assert.match(workspace,/Broncatalogus met waarneming in 24 uur/);
+  assert.match(workspace,/projection_scope==='TENANT'/);
+});
