@@ -13,8 +13,8 @@
     "candidate_failure": "SUPERSEDES_INVALID,WRITER_LEASE_HEAD_DRIFT"
   },
   "root_cause": "PR-delivery planner assumes base SHA even for verification-only dispatch on main.",
-  "fix": "Independent main-only manually dispatched immutable-SHA BRAIN regression job, with read-only repository access and full test log artifact; no deployment.",
-  "prevention_rule": "Never use stale PR writer leases to verify main regression. Keep standalone full BRAIN measurement independent from release authority.",
+  "fix": "Extend existing brain-foundation-verify.yml with workflow_dispatch, exact SHA assertion and full BRAIN test artifact, no additional workflow, no deployment.",
+  "prevention_rule": "Manual full BRAIN verification must reuse existing workflow (123 workflow cap) rather than create new workflow or use stale PR leases.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-migration-source-preflight-20261025.test.mjs"
