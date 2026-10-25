@@ -24,3 +24,8 @@ test('done internal action is not external verified revenue',()=>{
  const result=explainExternalSignal(signal,[{signal_key:'regulatory:42',tenant_specific:true,status:'DONE',canonical_action_ref:'action:42'}],now);
  assert.equal(result.actionStatus,'DONE');assert.equal(result.canOpenAction,false);assert.equal(result.outcomeVerified,false);
 });
+
+test('recent ingestion without source publication date must not be labeled fresh news',()=>{
+ const result=explainExternalSignal({...signal,published_at:null,observed_at:'2026-10-25T11:00:00Z'},[],now);
+ assert.equal(result.sourceState,'BRON_PUBLICATIEDATUM_ONBEKEND');
+});
