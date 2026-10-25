@@ -113,7 +113,7 @@ begin
       < p_now - make_interval(secs=>p_timeout_seconds);
   v_guard_pass := v_stale_unreconciled=0;
 
-  foreach v_stage in array array['action','readback','outcome','measurement','learning','guard'] loop
+  foreach v_stage in array array['input','decision','action','readback','outcome','measurement','learning','guard'] loop
     perform public.powerhouse_record_loop_stage_v1(
       'execution-resilience',v_stage,
       jsonb_build_object(
@@ -121,6 +121,9 @@ begin
         'evidence_type','verified_existing_watchdog_execution',
         'source_task','execution-resilience-watchdog',
         'watchdog_invocation_at',p_now,
+        'watchdog_actual_input','brain_operations / execution_resilience original service-only selector',
+        'decision_policy','bounded stale-heartbeat recovery before true downstream result',
+        'decision_outcome',case when v_guard_pass then 'WATCHDOG_GUARD_PASS' else 'RECOVERY_PENDING' end,
         'stale_unreconciled_operations',v_stale_unreconciled,
         'recovery_jobs_scheduled_this_run',v_recovery_scheduled,
         'pass',case when v_stage='guard' then v_guard_pass else null end,
