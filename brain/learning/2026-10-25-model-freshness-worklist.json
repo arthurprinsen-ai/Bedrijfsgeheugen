@@ -10,5 +10,15 @@
     "source": "Existing model catalog source URLs only; not proof of renewed independent verification.",
     "production": "NOT_CLAIMED"
   },
-  "safe_action": "Review each supplier model and individual claim independently, then update source receipts, evidence classification and dates only with real source evidence."
+  "safe_action": "Review each supplier model and individual claim independently, then update source receipts, evidence classification and dates only with real source evidence.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/ai-model-intelligence-freshness-v1.test.mjs"
+    ]
+  }
 }
