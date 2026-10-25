@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|frisse-blik|free-offer-structured-data-conflict|20261025-v1",
+  "obligation_id": "growth-cro:frisse-blik-metadata-price-truth:20261025",
+  "failure_class": "COMMERCIAL_LANDING_PAGE_FALSE_FREE_METADATA",
+  "root_cause": "The Frisse Blik landing page describes a service with a fixed price and offset on later implementation, but its open-graph description and JSON-LD WebApplication offers describe a free scan/price 0. This contradicts public page intent and may create misleading search/share expectations for LinkedIn visitors.",
+  "observed_evidence": {
+    "source": "frisse-blik.html",
+    "live_route": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+    "old_structured_offer_eur": "0",
+    "site_body": "Frisse Blik Scan is offset if implementation follows; the separate Zelfscan is explicitly free.",
+    "conversion_attribution": "UNAVAILABLE_LOW_SAMPLE"
+  },
+  "fix": "Remove the unsupported offer €0 from the service JSON-LD and distinguish paid/price-agreed Frisse Blik Scan from free self-scan in meta/OG descriptions. Do not invent any numeric price, lead, uplift or customer case.",
+  "prevention_rule": "Schema.org price/offers and search/social meta claims must reflect the actual product, not a neighboring free lead magnet. Never imply a causal conversion lift without attributed lead/order evidence. Do not create another scheduler.",
+  "tests": [
+    "tests/brain-frisse-blik-commercial-price-truth-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_LANDING_PAGE_FALSE_FREE_METADATA",
+    "scope": "WEBSITE_CONVERSION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-frisse-blik-commercial-price-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-frisse-blik-commercial-price-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-frisse-blik-commercial-price-truth-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact PR Required and CodeQL, protected merge, Netlify production deploy and independent view-source/meta parity. Conversion lift remains an unproven future measurement obligation."
+}
