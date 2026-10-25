@@ -60,7 +60,7 @@ export async function recordMediaProofRejection(db,{job,ob,code,position,history
   const score=Number(confidence);
   const admissibleScore=Number.isFinite(score)&&score>=0&&score<=1;
   // Never turn a failed/timeout verifier transport into a fake quality verdict.
-  if(temporal&&!admissibleScore)return {kind:'ignored'};
+  if(temporal&&(confidence===null||confidence===undefined||confidence===''||!admissibleScore))return {kind:'ignored'};
   const face=admissibleScore?score.toFixed(3):'unknown';
   const last_error=temporal
     ? 'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED:confidence='+face+':openart='+hist
