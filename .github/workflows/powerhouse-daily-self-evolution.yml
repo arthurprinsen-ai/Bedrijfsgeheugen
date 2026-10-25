@@ -65,6 +65,12 @@ jobs:
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
       - name: Verify autonomous engineering fabric v3
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+      - name: Capture immutable skill source inventory in the same daily run
+        if: always()
+        run: |
+          mkdir -p artifacts/quality
+          node tools/delivery-skillops-inventory.mjs --output=artifacts/quality/skillops-inventory.json
+          node --test tests/brain-skillops-inventory.test.mjs
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
         env:
