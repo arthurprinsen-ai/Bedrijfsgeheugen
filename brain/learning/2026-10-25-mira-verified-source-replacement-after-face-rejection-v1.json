@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|instagram-mira|rejected-original-pinned-history-replacement-deadlock|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "obligation_id": "mira|frozen-winner-verified-replacement-after-visual-rejection|20261025-v1",
+  "title": "A genuine Mira face rejection must enable a new same-winner candidate to be independently verified, not permanently pin rejected original media",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "The compile-time frozen external source winner bound its immutable editorial source and scene to a single OpenArt history/MP4. Independent 0.920 face rejection was correctly fail-closed, but different original-master retakes could not enter final-media verification at all, leaving an unrepairable daily Instagram obligation.",
+  "impact": "Even a valid same-source new candidate was hard rejected before three-frame and temporal verification. Canonical Instagram remains BLOCKED with no actual Meta provider ID.",
+  "evidence": {
+    "run_date": "2026-10-25",
+    "frozen_recommendation_id": "0a56f150-2954-4355-a3d0-fc65396f8152",
+    "rejected_openart_history_id": "qAUQW2ZzqdasS0ePb1PD",
+    "observed_start_face_confidence": 0.92,
+    "minimum_mira_face_confidence": 0.94,
+    "existing_retake_history_id": "a6sdR46HDe58uRlardNl",
+    "retake_status": "GENERATION_COMPLETED_NOT_VISUALLY_APPROVED",
+    "media_job_status": "WAITING_PROOF",
+    "provider_post_id": null,
+    "posted_or_live_proven": false,
+    "linkedin_personal_provider_ack_id": "urn:li:share:7520059104178925568",
+    "linkedin_personal_readback_status": "403_PERMISSION_LIMITED_NO_REPUBLISH"
+  },
+  "fix": "Admit only same-source, same-project, official-master, distinct image2video replacements following an actual identity rejection. Promote only the existing router's independently verified exact-media SHA, three face frames >=0.940 and temporal proof, with unchanged frozen source/caption, original publisher and one-time provider capability.",
+  "prevention_rule": "A frozen editorial winner freezes topic/source/caption, never permanently freezes an independently rejected video. Do not classify a candidate as approved before real exact-media vision and temporal verification; never replay a known provider post; do not create duplicate schedulers or writers.",
+  "regression_contract": "tests/brain-mira-verified-replacement-after-identity-failure-20261025.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-verified-replacement-after-identity-failure-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-verified-replacement-after-identity-failure-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-verified-replacement-after-identity-failure-20261025.test.mjs"
+    ]
+  },
+  "release_gates": [
+    "Required CI and CodeQL exact head",
+    "Native Supabase Preview where required and protected merge",
+    "Exact production Edge deployment readback",
+    "Existing canonical media verifier actual independent start/middle/end >=0.940 and temporal proof",
+    "Authorized one-time Instagram publish and external Meta ID/permalink/readback"
+  ],
+  "outcome": "Source PR only. Does not claim a new video passed or that Instagram was published.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}
