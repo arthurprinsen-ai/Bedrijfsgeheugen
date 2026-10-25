@@ -12,7 +12,8 @@
     "readback": "Production green requires independent fresh matching version evidence."
   },
   "regression": [
-    "tests/netlify/release-status.test.mjs"
+    "tests/netlify/release-status.test.mjs",
+    "tests/brain-release-status-three-stage.test.mjs"
   ],
   "status": "IMPLEMENTED_IN_DRAFT_NOT_INTEGRATED",
   "compiler": {
@@ -22,13 +23,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/netlify/release-status.test.mjs"
+      "tests/brain-release-status-three-stage.test.mjs"
     ],
     "shadow": [
-      "tests/netlify/release-status.test.mjs"
+      "tests/brain-release-status-three-stage.test.mjs"
     ],
     "canary": [
-      "tests/netlify/release-status.test.mjs"
+      "tests/brain-release-status-three-stage.test.mjs"
     ]
   },
   "evidence": {
