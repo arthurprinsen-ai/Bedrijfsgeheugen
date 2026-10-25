@@ -84,3 +84,23 @@ test('one bounded retry is wired into unchanged secured collector',()=>{
   assert.match(source,/isTransientDataforseoStatus\(r\.status,apiStatus,taskStatus\)/);
   assert.match(source,/req\.headers\.get\('x-powerhouse-token'\)!==expected/);
 });
+
+test('partial provider failure and recovered success within the same hour keep distinct run evidence',()=>{
+ const upstream="p_dedupe_key:'external-source-run:'+sourceKey+':'+observedAt+':'+start";
+ const canonical="p_dedupe_key:'external-intelligence-producer:'+observedAt+':'+start";
+ assert.ok(source.includes(upstream),'upstream receipt must use full invocation event time');
+ assert.ok(source.includes(canonical),'canonical receipt must not share hourly dedupe key');
+ assert.ok(source.includes("p_external_event_id:'external-intelligence:'+observedAt"));
+ const failedAt='2026-10-25T09:49:17.092Z';
+ const recoveredAt='2026-10-25T09:50:47.474Z';
+ const key=(time)=>'external-intelligence-producer:'+time+':'+42;
+ assert.notEqual(key(failedAt),key(recoveredAt));
+ assert.equal(key(recoveredAt),key(recoveredAt),'same source event remains idempotent');
+ assert.ok(!source.includes("p_dedupe_key:'external-intelligence-producer:'+observedAt.slice(0,13)"));
+ assert.ok(!source.includes("p_dedupe_key:'external-source-run:'+observedAt.slice(0,13)"));
+});
+
+test('no-topic producer observations use full event time rather than hour dedupe',()=>{
+ assert.ok(source.includes("p_dedupe_key:'external-intelligence-empty:'+observedAt"));
+ assert.ok(!source.includes("p_dedupe_key:'external-intelligence-empty:'+observedAt.slice(0,13)"));
+});

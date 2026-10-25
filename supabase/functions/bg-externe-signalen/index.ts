@@ -97,7 +97,7 @@ Deno.serve(async(req:Request)=>{
     const topics=all||[];
     if(!topics.length){
       const observedAt=new Date().toISOString();
-      await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-empty:'+observedAt.slice(0,13),p_external_event_id:'producer-run:'+observedAt,p_observed_at:observedAt,p_evidence:{contract:CONTRACT,provider:'tavily',producer_run:true,active_topics:0,no_data_returned:true}});
+      await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-empty:'+observedAt,p_external_event_id:'producer-run:'+observedAt,p_observed_at:observedAt,p_evidence:{contract:CONTRACT,provider:'tavily',producer_run:true,active_topics:0,no_data_returned:true}});
       const out={ok:true,contract:CONTRACT,active_topics:0,processed:0};await bewijs(true,out);return json(out);
     }
     const topicRotation=selectExternalTopics(topics,{now:Date.now(),batch:BATCH});
@@ -143,11 +143,14 @@ Deno.serve(async(req:Request)=>{
     const found=ok.reduce((a:number,x:any)=>a+x.found,0),allowed=ok.reduce((a:number,x:any)=>a+x.allowed,0),noise=ok.reduce((a:number,x:any)=>a+x.noise,0);
     const observedAt=new Date().toISOString();
     if(ok.length){
+      // One immutable observation per REAL producer invocation, not one per clock hour.
+    // Distinct partial failure and recovered success within the same hour must both
+    // remain measurable. Canonical source rows themselves still dedupe on URL.
       const providers=[...new Set(ok.map((x:any)=>x.provider))];
       const sourceKey=providers.includes('tavily')?'tavily-intelligence':'dataforseo-intelligence';
       const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason})),relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),selection_contract:topicRotation.contract,selection_epoch_day:topicRotation.epochDay,selection_window_20m:topicRotation.window20m,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,successful_topics:ok.length,failed_topics:failed.length,found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
-      await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:sourceKey,p_dedupe_key:'external-source-run:'+observedAt.slice(0,13)+':'+start,p_external_event_id:sourceKey+':'+observedAt,p_observed_at:observedAt,p_evidence:evidence});
-      await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-producer:'+observedAt.slice(0,13)+':'+start,p_external_event_id:'external-intelligence:'+observedAt,p_observed_at:observedAt,p_evidence:{...evidence,authority:'bg_externe_signalen'}});
+      await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:sourceKey,p_dedupe_key:'external-source-run:'+sourceKey+':'+observedAt+':'+start,p_external_event_id:sourceKey+':'+observedAt,p_observed_at:observedAt,p_evidence:evidence});
+      await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-producer:'+observedAt+':'+start,p_external_event_id:'external-intelligence:'+observedAt,p_observed_at:observedAt,p_evidence:{...evidence,authority:'bg_externe_signalen'}});
     }
     const out={ok:failed.length===0,contract:CONTRACT,selection_contract:topicRotation.contract,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,active_topics:topics.length,processed:selected.length,successful:ok.length,failed:failed.length,found,allowed,noise,results};
     await bewijs(ok.length>0,out,ok.length?'PARTIAL':'REMOTE');
