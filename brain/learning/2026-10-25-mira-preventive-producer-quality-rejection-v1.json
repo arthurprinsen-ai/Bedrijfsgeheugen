@@ -37,5 +37,23 @@
     "No guarantee future generative output will pass quality",
     "No paid-order evidence implied"
   ],
-  "created_by": "existing original Mira publisher/producer P0 #4439"
+  "created_by": "existing original Mira publisher/producer P0 #4439",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-preventive-producer-qa-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-preventive-producer-qa-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-preventive-producer-qa-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 3,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
 }
