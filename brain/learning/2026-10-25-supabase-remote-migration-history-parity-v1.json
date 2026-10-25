@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|main|remote-only-manual-company-news-migration-version|20261025-v1",
+  "obligation_id": "growth:company-news-provider-history-parity:20261025-v1",
+  "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
+  "observed_evidence": {
+    "provider": "supabase",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "failed_provider_workflow_at": "2026-10-25T11:42:42Z",
+    "provider_error": "Remote migration versions not found in local migrations directory",
+    "remote_only_version": "20261025112658",
+    "already_versioned_canonical": "20261025101500",
+    "blocked_next_version": "20261025110200",
+    "remote_sql_exact_byte_equal_to_canonical": true,
+    "production_company_news_candidate_limit": 1500,
+    "production_acl_anon": false,
+    "production_acl_authenticated": false,
+    "production_acl_service_role": true
+  },
+  "root_cause": "An already-applied manual/provider migration recorded a second timestamp for precisely the same SQL after its canonical Git version was applied. Supabase native GitHub main deploy compared the remote ledger to local migrations and stopped before deploying the commercial provider-proof SQL.",
+  "fix": "Reconstruct the exact already-applied SQL as a historical 20261025112658 Git migration, byte identical to 20261025101500, so protected GitOps replay and remote version history reconcile without changing production data or editing migration tracking directly.",
+  "prevention_rule": "Prohibit parallel manual/provider and native main migration releases. A single authorized Git version is release authority. Before release compare local/remote version identities, exact source and actual function/grant readback, hold if any remote-only identities appear; never issue a duplicate provider write. Historical remote-only entries require guarded, independently verified provider/GitOps parity repair.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+  ],
+  "productionVerificationsRequired": [
+    "exact-head Required, CodeQL, native Supabase preview",
+    "protected merge",
+    "native production migration deploy after version parity",
+    "schema_migrations contains 20261025110200",
+    "powerhouse_execution_status(date) deployed SQL and real canonical publication readback"
+  ],
+  "compiler": {
+    "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
