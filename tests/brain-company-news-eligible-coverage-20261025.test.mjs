@@ -19,7 +19,12 @@ test('company news selector widens prefilter but retains bounded provider budget
   assert.match(sql,/distinct on \(k\.bedrijf\)/);
 });
 test('no new job, privileged role, push, external sender, or new source table',()=>{
-  assert.doesNotMatch(sql,/cron\.schedule|create table|insert into|net\.http_post|grant execute|create trigger|create policy|security invoker/i);
+  assert.doesNotMatch(sql,/cron\.schedule|create table|insert into|net\.http_post|create trigger|create policy|security invoker/i);
+  assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\.bg_inhaak_kandidaten\(text\[\], integer\) FROM PUBLIC, anon, authenticated/);
+  assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\.bg_bedrijven_voor_nieuws\(integer\) FROM PUBLIC, anon, authenticated/);
+  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.bg_inhaak_kandidaten\(text\[\], integer\) TO service_role/);
+  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.bg_bedrijven_voor_nieuws\(integer\) TO service_role/);
+  assert.doesNotMatch(sql,/GRANT EXECUTE ON FUNCTION .* TO (PUBLIC|anon|authenticated)/);
   assert.match(sql,/SECURITY DEFINER/);
   assert.match(sql,/SET search_path TO ''/);
 });
