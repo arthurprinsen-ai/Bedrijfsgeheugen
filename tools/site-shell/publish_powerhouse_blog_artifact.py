@@ -273,10 +273,10 @@ def assert_reader_ready(data, business_date=None):
                   "mei": 5, "juni": 6, "juli": 7, "augustus": 8,
                   "september": 9, "oktober": 10, "november": 11, "december": 12}
         future_opening = re.compile(
-            r"(?i)\\b(?:waarschijnlijk|naar verwachting|verwacht)\\b[^\\n.!?]{0,100}?"
-            r"\\b(?:op|vanaf)\\s+(\\d{1,2})\\s+("
-            + "|".join(months) + r")\\s+(\\d{4})[^\\n.!?]{0,100}?"
-            r"\\b(?:opengaan|openen|starten|beginnen)\\b"
+            r"(?i)\b(?:waarschijnlijk|naar verwachting|verwacht)\b[^\n.!?]{0,100}?"
+            r"\b(?:op|vanaf)\s+(\d{1,2})\s+("
+            + "|".join(months) + r")\s+(\d{4})[^\n.!?]{0,100}?"
+            r"\b(?:opengaan|openen|starten|beginnen)\b"
         )
         for match in future_opening.finditer(body):
             try:
