@@ -39,7 +39,7 @@
   "links": [
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
   ],
-  "failure_class": "FOLLOWUP_COVERAGE_GAP",
+  "failure_class": "OPPORTUNITY_FOLLOWUP_COVERAGE_GAP",
   "scope": "GENERAL",
   "machine_enforceable": true,
   "repeat_count": 1,
@@ -49,5 +49,27 @@
       "tests/brain-opportunity-followup-coverage-20261025.test.mjs",
       "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
     ]
-  }
+  },
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "commercial|opportunity|no-next-action-date-or-overdue|20261025-v1",
+  "obligation_id": "growth|canonical-opportunity-followup-coverage|20261025-v1",
+  "parent_issue": 4198,
+  "related_pr": 4895,
+  "root_cause": "Canonical opportunities are qualified daily, but many have neither a future scheduled next action nor an accountable durable review; status and action evidence must remain separate.",
+  "fix": "Use canonical daily growth assessment to produce idempotent, bounded internal review obligations and guarded future next_action_at writeback, without granting contact authority.",
+  "tests": [
+    "tests/brain-opportunity-followup-coverage-20261025.test.mjs",
+    "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "OPPORTUNITY_FOLLOWUP_COVERAGE_GAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Required and CodeQL on exact head, protected merge and independent production next_action_at and obligation readback are mandatory; planning is not outreach or realized revenue."
 }
