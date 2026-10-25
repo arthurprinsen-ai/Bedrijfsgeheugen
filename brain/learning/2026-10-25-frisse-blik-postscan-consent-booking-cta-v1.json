@@ -33,5 +33,13 @@
       "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
     ]
   },
-  "terminal_rule": "Exact-head Required+CodeQL and targeted Netlify preview, protected merge, production readback, then independently observed consented bookings and orders. No fabricated lift."
+  "terminal_rule": "Exact-head Required+CodeQL and targeted Netlify preview, protected merge, production readback, then independently observed consented bookings and orders. No fabricated lift.",
+  "root_cause": "The on-dashboard report booking action was buried in a toolbar while anonymous completed-scan traffic had no independently observed consented booking handoff; the exact cause of zero opt-in leads remains unproven, so CTA visibility is a bounded conversion hypothesis.",
+  "compiler": {
+    "failure_class": "POST_SCAN_CONSENT_BOOKING_CTA_VISIBILITY_GAP",
+    "scope": "WEBSITE_CONVERSION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
