@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "seo|afas|oci-intent-owner-answer|20261025-v1",
+  "fingerprint": "seo|afas-oci|search-intent-mismatch|20261025-v1",
+  "canonical_owner": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+  "compiler": {
+    "failure_class": "AFAS_OCI_SEARCH_INTENT_GAP",
+    "scope": "SEO_CRO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "observed_evidence": {
+    "gsc_window": "2026-10-15/2026-10-22",
+    "gsc_fetched_at": "2026-10-25T05:16:01Z",
+    "oci_queries": [
+      {
+        "query": "afas oci koppelingen",
+        "impressions": 12,
+        "clicks": 0,
+        "avg_position": 66.3
+      },
+      {
+        "query": "oci koppeling afas",
+        "impressions": 7,
+        "clicks": 0,
+        "avg_position": 70
+      }
+    ],
+    "observed_page": "https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/",
+    "keyword_data": {
+      "query": "oci koppeling afas",
+      "monthly_volume_nl": 50,
+      "cpc_eur": 4.32,
+      "observed_at": "2026-09-28",
+      "is_current": false
+    },
+    "technical_source": "https://www.afas.help/vraagantwoordafas/NL/SE/Ord_Purch_Config_Req_OCI_All.htm",
+    "commercial_outcome": "NO_VERIFIED_NEW_LEADS_OR_REVENUE",
+    "evidence_quality": "GSC_QUERY_PAGE_OBSERVED; NO_CAUSAL_UPLIFT_PROVEN"
+  },
+  "root_cause": "Search Console observes OCI procurement-intent queries reaching the general AFAS price explainer, while the canonical AFAS commercial page lacks an explicit OCI/InSite explanation. A separate OCI doorway page is not justified.",
+  "fix": "Add a short AFAS Help Center sourced OCI decision answer on the existing canonical AFAS money page and one contextual supporting link from the existing cost explainer. Preserve canonicals, pricing, offer, tracking and schema.",
+  "prevention_rule": "Map commercial integration subintents to existing money owners first; cite vendor documentation for protocol requirements; never invent OCI capability, fixed prices, ranking lift, lead or revenue.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs"
+    ]
+  },
+  "target_metric": "GSC OCI query clicks/impressions/position; primary CTA, qualified lead, won order and realized revenue only when observed",
+  "rollback_condition": "Any incorrect AFAS vendor claim, broken CTA, English translation regression, SEO/indexability regression or reduced qualified conversions",
+  "terminal_rule": "Exact-head Required and CodeQL, protected merge, matching Netlify production identity, public AFAS+blog content readback and real outcomes independent."
+}
