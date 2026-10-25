@@ -19,17 +19,18 @@
   "change": "Add one visible post-result booking CTA calling the existing openLead() consent modal, using existing 30-minute Calendly event after consent; no new form, provider, scheduler, lead record, cookie or forced booking.",
   "prevention_rule": "A completed scan is anonymous until voluntary opt-in, verified provider booking and independent downstream paid-order evidence. Reuse the original consent and publishing gates. Do not create contacts from anonymous scan IDs.",
   "tests": [
+    "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs",
     "tests/site-shell-cta-conversie.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-cta-conversie.test.mjs"
+      "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
     ],
     "shadow": [
-      "tests/site-shell-cta-conversie.test.mjs"
+      "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
     ],
     "canary": [
-      "tests/site-shell-cta-conversie.test.mjs"
+      "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
     ]
   },
   "terminal_rule": "Exact-head Required+CodeQL and targeted Netlify preview, protected merge, production readback, then independently observed consented bookings and orders. No fabricated lift."
