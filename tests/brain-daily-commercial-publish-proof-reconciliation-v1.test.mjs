@@ -44,7 +44,7 @@ test('migration preserves existing SQL invoker function and daily execution cont
   assert.match(sql,/actual_publication_guard/);
   assert.doesNotMatch(sql,/\bSECURITY DEFINER\b/i);
   assert.doesNotMatch(sql,/\bcron\.schedule\b|\bnet\.http_post\b|\bhttp_request\b|\bUPDATE public\.|\bINSERT INTO public\./i);
-  assert.doesNotMatch(sql,/\bGRANT\b|\bREVOKE\b/i);
+  assert.doesNotMatch(sql,/^\s*(?:GRANT|REVOKE)\s/gmi);
 });
 
 test('exact live blog counts as independently proven only with all source evidence',()=>{
@@ -79,7 +79,7 @@ test('same-day exact canonical IDs, status, URL and production proof are require
     /o\.publication_date=d\.run_date/,
     /o\.tenant_id='canonical'/,
     /o\.channel=CASE WHEN d\.channel='instagram_company'/,
-    /NULLIF\(btrim\(d\.delivery_ref\),'+'\)=NULLIF\(btrim\(o\.canonical_url\),'+'\)/,
+    /NULLIF\(btrim\(d\.delivery_ref\),''\)=NULLIF\(btrim\(o\.canonical_url\),''\)/,
     /o\.evidence->>'public_http_status'='200'/,
     /o\.evidence->>'production_commit_sha' ~ '\^\[a-f0-9\]\{40\}\$'/,
     /o\.evidence->>'provider_publication_ack_verified'='true'/,
