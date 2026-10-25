@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "content-orchestrator|DB_TABLE_REJECTED:social_posts|missing-gte|20261025-v1",
+  "obligation_id": "growth:owned-brand-measurement-source-adapter-repair:20261025-v1",
+  "failure_class": "GROWTH_NEXT_POST_EVIDENCE_BLOCKED_BY_DIRECT_DB_ADAPTER",
+  "root_cause": "Supabase function_logs for 2026-10-24T22:25:13.089Z contain MEASURED_BRAND_TEST_READ_UNAVAILABLE DB_TABLE_REJECTED:social_posts. The existing content orchestrator had just added read-only social_posts/social_metric_snapshots queries for measured-next-post intelligence but its internal DIRECT_TABLES allowlist did not include either table, and its DirectQuery adapter did not implement the subsequent .gte(observed_at) filter. Consequently the public-brand generator recorded SOURCE_UNAVAILABLE and suppressed both measured challenger and existing safe creative exploration.",
+  "observed_evidence": {
+    "log_time": "2026-10-24T22:25:13.089Z",
+    "log_message": "MEASURED_BRAND_TEST_READ_UNAVAILABLE DB_TABLE_REJECTED:social_posts",
+    "provider_scope": "tenant_id=bedrijfsgeheugen; exact 2 read-only tables",
+    "daily_evidence": "2026-10-25 LinkedIn company generation_evidence.measured_next_post_test.state=SOURCE_UNAVAILABLE; 4 provider-linked posts with observed impressions (1,13,5,10), below promotion thresholds",
+    "runtime_readback": "PENDING"
+  },
+  "fix": "Add only existing social_posts/social_metric_snapshots to content orchestrator's DIRECT_TABLES; normalize provider metrics JSON; implement SQL-bound observed_at >= timestamptz filter for snapshot table only; explicitly ban inserts, updates and upserts on both measurement sources. Keep exact tenant filtering, 72-hour freshness, minimum exposure and independent promotion guardrails unchanged. Reuse existing orchestrator cadence and publishing lane.",
+  "prevention_rule": "Cross-check every newly added .from(table) call against the live direct SQL adapter table allowlist and every query method against DirectQuery; regression tests must prove read-only authority and bounded timestamp filter before production. Zero impressions/likes or revenue must never be synthesized from missing sources. No second scheduler, bypass, or new data store.",
+  "tests": [
+    "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs",
+    "tests/brain-measured-next-post-challenger-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_NEXT_POST_EVIDENCE_BLOCKED_BY_DIRECT_DB_ADAPTER",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact HEAD Required+CodeQL, protected merge, Supabase deployed code parity, genuine subsequent orchestrator readback must stop returning DB_TABLE_REJECTED and show real measured or WAIT_FOR_COMPARABLE_PROVIDER_METRICS; actual post/lead/revenue improvement remains unproven."
+}
