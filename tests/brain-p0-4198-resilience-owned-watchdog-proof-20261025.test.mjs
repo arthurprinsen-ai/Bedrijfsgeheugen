@@ -12,13 +12,15 @@ test('one original watchdog and one existing scheduler; no queue, parallel agent
   assert.doesNotMatch(migration,/cron\.schedule|CREATE\s+TABLE|CREATE\s+MATERIALIZED\s+VIEW|CREATE\s+EXTENSION/i);
   assert.match(migration,/operational watchdog only; never provider output or customer revenue/);
 });
-test('real watchdog writes all six own stages at exact invocation time, not by synthetic scheduling',()=>{
+test('real watchdog writes all eight required stages at exact invocation time, not by synthetic scheduling',()=>{
   assert.match(migration,/v_recovery_scheduled := v_recovery_scheduled \+ 1/);
-  assert.match(migration,/foreach v_stage in array array\['action','readback','outcome','measurement','learning','guard'\]/);
+  assert.match(migration,/foreach v_stage in array array\['input','decision','action','readback','outcome','measurement','learning','guard'\]/);
   assert.match(migration,/public\.powerhouse_record_loop_stage_v1\(/);
   assert.match(migration,/\),p_now\s*\)/);
   assert.match(migration,/'evidence_type','verified_existing_watchdog_execution'/);
   assert.match(migration,/'watchdog_invocation_at',p_now/);
+  assert.match(migration,/'watchdog_actual_input','brain_operations \/ execution_resilience original service-only selector'/);
+  assert.match(migration,/'decision_outcome',case when v_guard_pass then 'WATCHDOG_GUARD_PASS' else 'RECOVERY_PENDING' end/);
 });
 test('guard preserves stale-operation truth, selftest suppression and bounded recovery',()=>{
   for(const clause of [
