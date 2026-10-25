@@ -28,7 +28,7 @@ test('records exact provider lineage in canonical source observation',()=>{
 });
 test('never treats both providers failing as a successful run',()=>{
  assert.match(source,/return json\(out,ok\.length\?\(failed\.length\?207:200\):502\)/);
- assert.match(source,/await bewijs\(ok\.length>0,out/);
+ assert.match(source,/await bewijs\(verdict\.green,out,verdict\.errorClass\)/);
 });
 test('sanitizes upstream provider errors before public JSON or Brain evidence',()=>{
  assert.match(source,/const safeFailure=/);
