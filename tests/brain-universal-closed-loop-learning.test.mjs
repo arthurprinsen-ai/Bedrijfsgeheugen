@@ -59,3 +59,21 @@ test('portal learning record satisfies canonical semantic material closure', () 
   assert.equal(result.evaluated.length, 1);
   assert.deepEqual(result.evaluated[0].missing, []);
 });
+
+test('retired Make BG169 is never treated as the live production transport', () => {
+  assert.equal(canonical.canonical.production_authority.transport, 'github-native');
+  assert.equal(canonical.canonical.production_authority.workflow, '.github/workflows/unified-brain-delivery.yml');
+  assert.equal(canonical.retired_make_routes.bg169_production_controller.status, 'RETIRED_NO_REACTIVATION');
+  assert.equal(canonical.runtime_evidence_boundaries.contract_validation_is_not_live_proof, true);
+  assert.equal(canonical.runtime_evidence_boundaries.verified_provider_outcome_required, true);
+});
+
+test('fail closed on retired Make restoration or on a static green claim without live outcome proof', () => {
+  const restoredMake = structuredClone(canonical);
+  restoredMake.canonical.production_authority = { scenario_id: 7137190, name: 'BG 169 - Make controller' };
+  assert.ok(validateContract(restoredMake).errors.includes('canonical.production_authority.github_native_only'));
+  const soft = structuredClone(canonical);
+  soft.runtime_evidence_boundaries.contract_validation_is_not_live_proof = false;
+  soft.runtime_evidence_boundaries.verified_provider_outcome_required = false;
+  assert.ok(validateContract(soft).errors.includes('runtime_evidence_boundaries'));
+});

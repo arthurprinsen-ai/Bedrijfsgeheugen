@@ -23,8 +23,11 @@
       "name": "BG 167"
     },
     "production_authority": {
-      "scenario_id": 7137190,
-      "name": "BG 169 - Production Promotion Controller"
+      "transport": "github-native",
+      "workflow": ".github/workflows/unified-brain-delivery.yml",
+      "exact_head_required": true,
+      "protected_main_required": true,
+      "production_readback_required": true
     }
   },
   "required_lifecycle": [
@@ -111,7 +114,8 @@
     "reintroduce_retired_runtime_error_guards",
     "skip_bg168_for_material_learning",
     "skip_bg166_dedupe_writer",
-    "production_green_without_bg169_and_exact_production_identity"
+    "production_green_without_bg169_and_exact_production_identity",
+    "production_green_without_github_native_exact_production_identity"
   ],
   "hard_boundaries": [
     "credentials_oauth_permissions",
@@ -153,5 +157,15 @@
       "canonical_learning_writeback"
     ],
     "no_unverified_green": true
+  },
+  "retired_make_routes": {
+    "bg169_production_controller": {
+      "scenario_id": 7137190,
+      "status": "RETIRED_NO_REACTIVATION"
+    }
+  },
+  "runtime_evidence_boundaries": {
+    "contract_validation_is_not_live_proof": true,
+    "verified_provider_outcome_required": true
   }
 }
