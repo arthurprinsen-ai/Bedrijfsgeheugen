@@ -8,27 +8,34 @@
   "parent_issue": 4198,
   "related_pr": 4851,
   "failure_class": "REVENUE_EVIDENCE_REGRESSION_NOT_EXECUTED",
-  "root_cause": "The canonical Revenue Learning workflow only selected tests/revenue-learning-*.test.mjs. The newly added exact verified-source and fair-batch regression test was named tests/brain-revenue-learning-fair-verified-20261025.test.mjs; initial Required backend job green did not show its execution. The separate focused workflow was push-only, leaving no independent premerge regression check on that exact code path.",
-  "fix": "Retain the existing Revenue Learning CI workflow, add a path-scoped pull_request event and run the exact new regression test alongside existing full revenue-learning suite. No new scheduled jobs; @hourly runtime remains unchanged.",
+  "root_cause": "The canonical Revenue Learning workflow only selected tests/revenue-learning-*.test.mjs. The newly added exact verified-source and fair-batch regression test was named tests/brain-revenue-learning-fair-verified-20261025.test.mjs; initial Required backend job green did not show its execution. The separate focused workflow was push-only, leaving no independent premerge regression check on that exact code path. First attempted focused PR trigger was correctly rejected by the existing CI ratchet; historical evaluator unit fixtures omitted mandatory dataQuality/sourceRefs, exposing missing coverage.",
+  "fix": "Reuse the existing Required test PR admission (no extra direct PR trigger) and explicitly execute verified-source fairness regression plus adapted prior evaluator fixtures. Restore the original Revenue Learning workflow unchanged. Respect the CI-control-plane budget: no additional PR workflow authority, and no new runtime scheduler.",
   "observed_evidence": {
     "code_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4851",
     "required_backend_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40174431234",
-    "missing_test": "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+    "missing_test": "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
+    "failed_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40175013135",
+    "failed_revenue_suite": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40175013091"
   },
   "prevention_rules": [
     "Every novel CI regression must be selected by an executable premerge workflow in addition to being stored in Brain.",
     "Never claim new behavior tested solely from aggregate CI green if the new test path was not exercised.",
-    "Reuse scoped existing workflow and preserve exact-head Required, CodeQL and protected merge."
+    "Reuse scoped existing workflow and preserve exact-head Required, CodeQL and protected merge.",
+    "Respect CI ratchets by adding targeted verification inside existing Required gate, not a ninth direct PR workflow.",
+    "Fixtures representing observed revenue must contain explicit data quality and immutable source references; do not weaken production source-verification to satisfy tests."
   ],
   "tests": [
-    "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+    "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
+    "tests/revenue-learning-evaluate.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
+      "tests/revenue-learning-evaluate.test.mjs"
     ],
     "shadow": [
-      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
+      "tests/revenue-learning-evaluate.test.mjs"
     ]
   },
   "compiler": {
@@ -38,5 +45,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "terminal_rule": "Exact test explicitly appears in Revenue Learning workflow logs on PR head, Required+CodeQL green, protected merge; independent Netlify deployment and real hourly log readback required separately."
+  "terminal_rule": "Run both exact tests in existing Required preflight on PR head, plus CodeQL; preserve PR-trigger ratchet, protected merge, and independent Netlify production and genuine hourly readback. Existing migration-history parity failure is a separate obligation; never suppress it."
 }
