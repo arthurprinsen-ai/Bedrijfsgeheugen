@@ -1,11 +1,11 @@
 {
   "fingerprint": "brain|skill-runtime|byte-audit|20261025",
   "compiler": {
-    "failure_class": "FALSE_SUCCESS",
+    "failure_class": "CI",
     "scope": "CI",
     "machine_enforceable": true
   },
-  "root_cause": "The existing skill evidence validator was only a pure record-shape checker; daily jobs lacked an auditable observation of exact skill-file bytes read on the actual GitHub run.",
+  "root_cause": "The existing skill evidence validator was only a pure record-shape checker; daily jobs lacked an auditable observation of exact skill-file bytes read on the actual GitHub run. This is a missing CI audit observation, not an observed production false-success incident.",
   "prevention": "Read real skill files on the existing daily job, hash exact bytes and attach the run-bound artifact; never equate loaded bytes with agent application or independently authenticated provider proof.",
   "evaluation": {
     "historical_replay": [
