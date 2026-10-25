@@ -3,6 +3,7 @@
 // publisher. Only independent exact-media verification can promote a candidate.
 const FACE=/^VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH:(start|middle|end):face=(\d+(?:\.\d+)?):openart=([A-Za-z0-9]+)$/;
 const MOTION=/^MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED:confidence=(\d+(?:\.\d+)?):openart=([A-Za-z0-9]+)$/;
+const NATIVE=/^MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH:(\d{2,5})x(\d{2,5}):openart=([A-Za-z0-9]+)$/;
 const clean=value=>String(value??'').trim();
 export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generation-quality-feedback-v1';
 
