@@ -1,0 +1,10 @@
+{
+  "id": "2026-10-05-supabase-production-baseline-proof-v1",
+  "issue": 3742,
+  "contract": "supabase-production-baseline-proof-v1",
+  "observed_failure": "Production SQL can be queried through provider tooling, but reconstructing a full schema from pg_catalog is not equivalent to an official Supabase/pg_dump baseline and cannot close a reproducibility obligation.",
+  "structural_resolution": "Run the official Supabase CLI production dump and migration-list commands only from trusted main workflow code, isolate production credentials from candidate code, replay the candidate from scratch without production credentials, and compare normalized provider dumps plus migration ledgers fail-closed.",
+  "security_boundary": "Untrusted PR-controlled code never receives SUPABASE_ACCESS_TOKEN or production DB password. Production credentials exist only in trusted main steps and a sanitized migration-list workspace.",
+  "terminal_rule": "#3742 remains OPEN until official baseline parity, fresh replay, exact-head required checks, protected merge and post-merge production readback all succeed.",
+  "regression_test": "tests/supabase-production-baseline-proof-workflow.test.mjs"
+}
