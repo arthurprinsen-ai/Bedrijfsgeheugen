@@ -1,0 +1,48 @@
+{
+  "version": "powerhouse-self-improvement-readiness-causality-2026-10-25-v1",
+  "fingerprint": "self-improvement|quality-ready-masks-unmeasured-candidate|20261025-v1",
+  "canonicalParentIssue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_NOT_LIVE",
+  "detection": {
+    "date": "2026-10-25",
+    "productionSelfImprovementState": "READY_FOR_CONTROLLED_PROMOTION",
+    "optimizationCandidates": 9,
+    "measuredCandidates": 0,
+    "compilerReadyQualityEvents": 9,
+    "compilerEvidencePendingOptimizationCandidates": 9,
+    "independentCandidateObservations": 0,
+    "candidateReviewsProven": 0,
+    "candidateDeliveryProven": 0,
+    "candidateLearningProven": 0,
+    "dailyGrowthState": "degraded",
+    "openOpportunities": 837,
+    "revenueTruth": {
+      "realizedEuro": 0,
+      "attributedEuro": 0
+    },
+    "scheduledDailyCompoundLearning": "succeeded",
+    "scheduledDailySelfImprovement": "succeeded"
+  },
+  "rootCause": "The canonical self_improvement_control view uses compiler_ready across ALL source types, including unrelated quality_event records, to label optimization candidates READY_FOR_CONTROLLED_PROMOTION. The nine READY rows are quality events while all nine optimization candidates lack independent measurements and outcome proof.",
+  "correction": "Maintain existing read-only, service-role-only security-invoker view and all schedules. Promote READY_FOR_CONTROLLED_PROMOTION only when a real optimization candidate matches its own READY compiler row by candidate_id AND independently observed, reviewed, delivered, learned, cycle-verified closure evidence.",
+  "preventiveRules": [
+    "A READY quality_event cannot substitute for a READY optimization_candidate",
+    "Promotion readiness must be joined by exact candidate_id and independently observed closure",
+    "Cron succeeded is transport completion, not verified commercial progress",
+    "Revenue and paid-order claims require canonical observed payment/order outcome",
+    "Do not create new schedulers, queues, registries, self-deployers or parallel sale executors",
+    "Protected Required/CodeQL + migration deployment + production readback are mandatory before claiming corrected live state"
+  ],
+  "regressionTests": [
+    "tests/brain-self-improvement-layer-v1.test.mjs"
+  ],
+  "anticipatedRuntimeState": "LEARNING unless at least one candidate has same-id verified evidence and READY compiler",
+  "verificationPending": [
+    "Exact-head Required and CodeQL",
+    "Protected merge",
+    "Supabase migration/readback",
+    "Existing daily 02:02/03:02 learning cron next-run evidence",
+    "Actual order/revenue outcomes"
+  ],
+  "noRevenueLiftClaim": true
+}
