@@ -63,7 +63,7 @@ jobs:
             try {
               const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/${process.env.GITHUB_SHA}...${pr.head.sha}`);
               uniqueCommits=Number(compare.ahead_by || 0) > 0;
-              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
+              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0),changedFiles:Array.isArray(compare.files)?compare.files.map(file=>file.filename):[]};
             } catch (error) {
               compareEvidence={status:'UNPROVEN',error:String(error?.message||error)};
             }
@@ -89,6 +89,31 @@ jobs:
           };
           await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
           console.log(JSON.stringify(evidence,null,2));
+          NODE
+      - name: Advise owner-safe current-main reconstruction from Janitor snapshot
+        if: always()
+        continue-on-error: true
+        run: |
+          node --input-type=module - <<'NODE'
+          import {readFile,writeFile} from 'node:fs/promises';
+          import {planCurrentMainReconstruction} from './tools/delivery/current-main-reconstruction.mjs';
+          const snapshot=JSON.parse(await readFile('.artifacts/powerhouse-repository-janitor.json','utf8'));
+          const raw=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+          const indexed=new Map(snapshot.candidates.map(p=>[p.number,p]));
+          const pulls=raw.map(pr=>{
+            const evidence=indexed.get(pr.number)?.compareEvidence||{};
+            const body=pr.body||'';
+            const lease=/^Writer-Lease-Owner:\s*\S+/m.test(body) && !/^Writer-Lease-State:\s*(?:RETIRED|CLOSED)/m.test(body);
+            return {number:pr.number,behind_by:evidence.status==='UNPROVEN'?null:evidence.behind_by,
+              sameRepository:pr.head?.repo?.full_name===process.env.GITHUB_REPOSITORY,
+              optedIn:(pr.labels||[]).some(label=>label.name==='autonomous-sync'),
+              writerLeaseOwned:lease,
+              draft:pr.draft===true,
+              changedFiles:evidence.changedFiles||[]};
+          });
+          const plan=planCurrentMainReconstruction({pulls,mainSha:snapshot.main_epoch_sha});
+          await writeFile('.artifacts/powerhouse-current-main-reconstruction.json',JSON.stringify({source:'repository-janitor',mainSha:snapshot.main_epoch_sha,advisoryOnly:true,plan},null,2)+'\n');
+          console.log(JSON.stringify({advisoryOnly:true,plans:plan.length,ownerHandoffs:plan.filter(p=>p.action==='OWNER_HANDOFF').length}));
           NODE
       - name: Diagnose read-only merge freshness from existing Janitor snapshot
         if: always()
