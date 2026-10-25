@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
@@ -87,11 +87,19 @@ Deno.serve(async req=>{
 
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
+  // A real identity rejection permits a DIFFERENT source-matched candidate to
+  // enter the exact same independent verifier. It never approves that candidate.
+  // Editorial winner, source hash, frozen scene and master identity remain fixed.
+  const replacementEligible=sourceLed&&eligibleSourceLedMediaReplacement({
+   resolved:winnerContract,job,ob,manifest
+  });
   const storyMatches=clean(manifest.scene)===expectedScene
    &&(!winnerContract.winner_recommendation_id||clean(manifest.recommendation_id)===winnerContract.winner_recommendation_id)
    &&(sourceLed
-     ? (!clean(manifest.canonical_problem_id) && clean(manifest.asset_url||manifest.assetUrl)===winnerContract.asset_url
-       && clean(manifest.openart_history_id)===winnerContract.openart_history_id)
+     ? (!clean(manifest.canonical_problem_id) && (
+       (clean(manifest.asset_url||manifest.assetUrl)===winnerContract.asset_url
+        &&clean(manifest.openart_history_id)===winnerContract.openart_history_id)
+       ||replacementEligible))
      : clean(manifest.canonical_problem_id)===expectedProblemId);
   if(!storyMatches)return json({ok:false,error:'MIRA_MEDIA_MUST_MATCH_FROZEN_WINNER_SCENE_AND_EXACT_ASSET',
    expected_problem_id:expectedProblemId,winner_recommendation_id:winnerContract.winner_recommendation_id},422);
