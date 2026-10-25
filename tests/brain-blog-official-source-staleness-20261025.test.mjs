@@ -9,7 +9,7 @@ const schema=JSON.parse(schemaSource||'{}');
 test('daily article correctly marks expired CPNL and cites official sources',()=>{
  assert.ok(article.includes('21 april om 09.00 uur tot en met 6 oktober om 17.00 uur'));
  assert.ok(article.includes('25 oktober 2026 is die aanvraagtermijn dus verlopen'));
- assert.ok(article.includes('https://www.rvo.nl/subsidies-financiering/cpnl'));
+ assert.match(article, /<a\s+[^>]*href="https:\/\/www\.rvo\.nl\/subsidies-financiering\/cpnl"/);
  assert.ok(article.includes('SOPV'));
  assert.ok(article.includes('EKOO: Circulaire economie'));
 });
@@ -25,6 +25,7 @@ test('RSS/index/JSON-LD carry the same corrected page identity',()=>{
  assert.ok(index.includes(heading));
  assert.ok(rss.includes(heading));
  assert.equal(schema['@graph'][0].headline,heading);
- assert.ok(schema['@graph'][0].citation.includes('https://www.rvo.nl/subsidies-financiering/cpnl'));
+ assert.ok(Array.isArray(schema['@graph'][0].citation));
+ assert.ok(schema['@graph'][0].citation.some(url => url === 'https://www.rvo.nl/subsidies-financiering/cpnl'));
  assert.equal(schema['@graph'][1]['@type'],'FAQPage');
 });
