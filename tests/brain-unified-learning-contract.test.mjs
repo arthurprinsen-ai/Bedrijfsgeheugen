@@ -18,7 +18,7 @@ test('missing or weakened evidence requirements fail closed',()=>{
 });
 test('broken skill reference and lost scheduled guard cannot silently pass',()=>{
   const files=Object.fromEntries(REQUIRED.map(p=>[p,fs.readFileSync(p,'utf8')]));
-  files['AGENTS.md']=files['AGENTS.md'].replaceAll('docs/architecture/unified-brain-heartbeat-learning-revenue-contract-20261025.md','missing-contract.md');
+  files['AGENTS.md']=files['AGENTS.md'].replaceAll('docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md','missing-contract.md');
   files['.github/workflows/powerhouse-daily-self-evolution.yml']=files['.github/workflows/powerhouse-daily-self-evolution.yml'].replace('node scripts/brain/validate-unified-learning-contract.mjs','echo skipped');
   const r=validateUnifiedLearningContract({read:p=>files[p]});
   assert.ok(r.errors.some(x=>x.includes('AGENTS.md')));
