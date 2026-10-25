@@ -42,5 +42,21 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "status_note": "Code candidate only, not live until protected merge and production re-read."
+  "status_note": "Code candidate only, not live until protected merge and production re-read.",
+  "evidence": {
+    "production_readback": {
+      "request_id": 12791,
+      "http_status": 200,
+      "independent_vision_face_score": 0.95,
+      "threshold": 0.94,
+      "exact_image_sha256": "242119866b6eaf9c142331e46b878df08c4f206fb4106fab2f48065b121b3b0a",
+      "canonical_master_sha256": "e32863f391e01dba910bf396ad13eb23c4a74b53f2614f1563b0fc332b1dd4e2",
+      "verified_reference_only": true,
+      "instagram_live_proven": false
+    },
+    "tests": [
+      "tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs"
+    ],
+    "evidence_scope": "Reference-only independent visual input proof; not a paid generation, final media proof or Meta post."
+  }
 }
