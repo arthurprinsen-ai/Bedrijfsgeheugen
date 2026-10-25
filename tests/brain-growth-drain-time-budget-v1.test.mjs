@@ -244,3 +244,58 @@ test('legacy fallback skips indexed pointers and does not double report read fai
   assert.equal(result.indexIntegrityFailures,0);
   assert.equal(result.persisted,1);
 });
+
+test('a stale eventual source miss is recovered only by strong provider evidence',async()=>{
+  const key='event/source-consistency',ptr='pending/'+key,f=fixture([key]);
+  f.data.set(ptr,{source_key:key});
+  const original=f.store.get.bind(f.store);let weak=0,strong=0,writes=0;
+  f.store.get=async(k,options={})=>{
+    if(k===key&&options.consistency==='strong'){strong++;return original(k)}
+    if(k===key){weak++;return null}
+    return original(k);
+  };
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{writes++;return {persisted:true,readback:{queue_id:'verified'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(weak,1);assert.equal(strong,1);
+  assert.equal(result.sourceStrongRecovery,1);assert.equal(result.indexSourceMissing,0);
+  assert.equal(result.persisted,1);assert.equal(result.failed,0);assert.equal(writes,1);
+  assert.equal(f.data.get(key).datahub.persisted,true);assert.equal(f.data.has(ptr),false);
+});
+
+test('a stale eventual pointer miss is revalidated strongly before retirement',async()=>{
+  const key='event/pointer-consistency',ptr='pending/'+key,f=fixture([key]);
+  f.data.set(ptr,{source_key:key});
+  const original=f.store.get.bind(f.store);let strong=0;
+  f.store.get=async(k,options={})=>{
+    if(k===ptr&&options.consistency==='strong'){strong++;return original(k)}
+    if(k===ptr)return null;
+    return original(k);
+  };
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>({persisted:true,readback:{queue_id:'verified'}}),
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(strong,1);assert.equal(result.pointerStrongRecovery,1);
+  assert.equal(result.indexPointerGone,0);assert.equal(result.persisted,1);
+  assert.equal(result.healthy,true);
+});
+
+test('strong source read failure stays red and retains pending pointer',async()=>{
+  const key='event/provider-stale',ptr='pending/'+key,f=fixture([key]);
+  f.data.set(ptr,{source_key:key});
+  const orig=f.store.get.bind(f.store);
+  f.store.get=async(k,options={})=>{
+    if(k===key&&options.consistency==='strong')throw Error('strong backend unavailable');
+    if(k===key)return null;
+    return orig(k);
+  };
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{throw Error('must not invoke DataHub')} ,
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(result.indexReadFailures,1);assert.equal(result.failed,1);
+  assert.equal(result.healthy,false);assert.equal(result.persisted,0);
+  assert.equal(f.data.has(ptr),true);assert.equal(f.data.has(key),true);
+});
