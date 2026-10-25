@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|frisse-blik|consented-lead-not-persisted|20261025-v1",
+  "obligation_id": "growth-cro-frisse-blik-consented-lead-record-20261025",
+  "failure_class": "POST_SCAN_EXPLICIT_CONSENTED_LEAD_READBACK_MISSING",
+  "observed_evidence": {
+    "unverified_scan_registrations": 39,
+    "frisse_blik_unverified": 26,
+    "bedrijfslek_unverified": 13,
+    "commercial_leads_records": 0,
+    "explicit_contact_permission_from_historical_scans_proven": false,
+    "causal_conversion_uplift_proven": false,
+    "source": "Supabase scan_inzendingen/commercial_leads + main frisse-blik.html source"
+  },
+  "hypothesis": "The completed-scan CTA now appears following #4882, but a consented contact submission cannot be measured as a canonical lead because the existing browser route had no commercial_leads write/readback before Calendly.",
+  "root_cause": "The voluntary modal has contact fields and purpose-specific checkbox but routes through external email after a provisional booking signal; no canonical persistent lead intake or attribution readback exists.",
+  "change": "One first-party validated Netlify intake reuses existing private commercial_leads and current postscan UI; separate optional marketing consent plus initial source/session → readback before existing Calendly booking; no extra sink, scheduler or historical marketing contacts.",
+  "prevention_rule": "Never treat an anonymous scan or click as contactable; consent to scan follow-up and optional marketing email are separate. Require exact stored private lead DB readback before counting. Require provider-owned invitee booking and independent payment receipt for meetings and revenue.",
+  "tests": [
+    "tests/brain-frisse-blik-consented-lead-readback-20261025.test.mjs",
+    "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs",
+    "tests/site-shell-cta-conversie.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-frisse-blik-consented-lead-readback-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-frisse-blik-consented-lead-readback-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-frisse-blik-consented-lead-readback-20261025.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required+BRAIN+CodeQL and Netlify preview, protected merge, production exact-SHA and genuinely opted-in customer+provider readback; no synthetic marketing consent, booking or paid order.",
+  "compiler": {
+    "failure_class": "POST_SCAN_EXPLICIT_CONSENTED_LEAD_READBACK_MISSING",
+    "scope": "WEBSITE_CONVERSION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
