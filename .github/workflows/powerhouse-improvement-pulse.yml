@@ -1,0 +1,26 @@
+name: Powerhouse improvement pulse
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+permissions:
+  contents: read
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s automation/self_improvement -p 'test_*.py'
+      - name: Analyze approved snapshot if present
+        run: python automation/self_improvement/engine.py
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: improvement-candidates
+          path: automation/self_improvement/report.json
+          retention-days: 30
