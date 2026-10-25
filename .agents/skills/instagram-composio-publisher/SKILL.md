@@ -137,6 +137,16 @@ Wan 2.7 image2video's `resolution=1080p` is a PIXEL-TIER, not a promise of 1080x
 
 The evidence and restrictions live in the same original Mira preventive module and Brain learning. No new publisher, scheduler, unlimited retries, paid speculative attempts or fake GREEN statuses.
 
+## Derived 9:16 reference is NOT Mira master until independently verified (2026-10-25)
+
+**Fingerprint:** `mira-outpainted-reference-independent-face-proof-v1`. The completed single-image OpenArt outpaint `4aOsUdQyAheL3wmex9Uq`, resource `aTtGOimC7CyaexG5cyTh`, is 1296x2304 (true 9:16). It remains an UNAPPROVED staging reference, not a Reel, a new original master or proof of pixel-exact face preservation. The original immutable fictional Mira master stays `Yjqu4D7v76HABNPmQPj1`.
+
+To test it once, call the **existing original** authenticated `powerhouse-instagram-media-verifier` with `publicationDate` matching the frozen source, `provider:"openart"`, `mediaType:"image"`, `verificationRole:"reference_candidate"`, `writeObligation:false` and the exact OpenArt-generated PNG URL. This role accepts **only** the real 1296x2304 PNG/JPEG from the trusted original OpenArt CDN, and performs real independent two-image identity vision against the unchanged original Mira master; minimum face confidence remains **0.940**. A role-specific result `pass:true` proves only visual reference similarity, **not** pixel preservation, video validity, camera motion, Instagram upload, Meta provider proof or publication.
+
+Every response has `reference_candidate_only=true`, `may_publish=false`, `final_media_proven=false`; the original daily Instagram obligation is never changed. A failed vision verdict or unavailable provider keeps the candidate quarantined: no OpenArt video spend. If the image passes, the original owner may propose a **separate protected PR** that explicitly registers the independently verified SHA, original-master lineage and exact derived-reference usage, while preserving the original source winner, image/video format and face/temporal thresholds. Neither a passing reference nor this skill silently rewrites `validMiraGenerationReference`, the publisher or the Mira master. A future video still must independently pass native 1080x1920, first/middle/end ≥0.940 and temporal ≥0.900, then a real Meta ID/permalink/readback.
+
+The existing owner, Brain learning, original scheduler and publisher remain single-writer; no extra scheduler, speculative multiple provider attempts, arbitrary crop, identity swap, fake success or unlimited credits.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
