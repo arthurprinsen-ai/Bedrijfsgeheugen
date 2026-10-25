@@ -7,9 +7,9 @@ const resolver=readFileSync('supabase/functions/powerhouse-seo-opportunity-resol
 const owners=JSON.parse(readFileSync('supabase/functions/powerhouse-seo-opportunity-resolver/intent-owners.json','utf8'));
 
 test('canonical Twinfield resolver is declared for protected Supabase Edge deployment',()=>{
-  const sections=[...config.matchAll(/^\[functions\.powerhouse-seo-opportunity-resolver\]([\s\S]*?)(?=^\[|$)/gm)];
-  assert.equal(sections.length,1,'exactly one Edge function declaration');
-  const section=sections[0][1];
+  const markers=[...config.matchAll(/^\[functions\.powerhouse-seo-opportunity-resolver\]$/gm)];
+  assert.equal(markers.length,1,'exactly one Edge function declaration');
+  const section=config.slice(markers[0].index+markers[0][0].length).split(/^\[/m)[0];
   assert.match(section,/^enabled\s*=\s*true\s*$/m);
   assert.match(section,/^verify_jwt\s*=\s*false\s*$/m);
   assert.match(section,/^entrypoint\s*=\s*"\.\/functions\/powerhouse-seo-opportunity-resolver\/index\.ts"\s*$/m);
