@@ -32,10 +32,14 @@ for (const file of walk(path.join(root, 'tests'))) {
     // Read once rather than stat-then-read: archive may change between syscalls.
     let archiveText = null;
     try {
-      const stat = fs.lstatSync(archive);
-      if (stat.isFile() && !stat.isSymbolicLink()) archiveText = fs.readFileSync(archive, 'utf8');
+      const fd = fs.openSync(archive, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+      try {
+        if (fs.fstatSync(fd).isFile()) archiveText = fs.readFileSync(fd, 'utf8');
+      } finally {
+        fs.closeSync(fd);
+      }
     } catch (error) {
-      if (error?.code !== 'ENOENT') throw error;
+      if (!['ENOENT', 'ELOOP'].includes(error?.code)) throw error;
     }
     if (archiveText?.trim()) {
       const suggestedPath = `supabase/migration-history/repository-only/${name}`;
