@@ -141,7 +141,22 @@ Deno.serve(async req=>{
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
    const temporalCheck=await invoke(base,token,'powerhouse-instagram-temporal-verifier',{publicationDate:runDate,videoSha256:final.sha256,frames});
-   if(!temporalCheck.body?.pass)return json({ok:false,error:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',detail:temporalCheck.body},422);
+   if(!temporalCheck.body?.pass){
+     // A transport error is not a measured temporal quality failure.
+     // Preserve genuine rejected candidate history under the existing Brain.
+     const verdict=temporalCheck.body?.temporal_proof||{};
+     if(temporalCheck.http===200&&temporalCheck.body?.ok===true
+        &&verdict.verified===false
+        &&Number.isFinite(Number(verdict.confidence))){
+       const diagnostic=await recordMediaProofRejection(db,{
+         job,ob,code:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',position:'temporal',
+         historyId:manifest.openart_history_id,confidence:verdict.confidence
+       });
+       if(diagnostic.kind==='failed'||diagnostic.kind==='partial')
+         console.error('MIRA_TEMPORAL_REJECTION_DIAGNOSTIC_FAILED',diagnostic.code);
+     }
+     return json({ok:false,error:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',detail:temporalCheck.body},422);
+   }
    const temporal=temporalCheck.body.temporal_proof||{};
    const temporalRefs=Array.isArray(temporal.evidence_refs)?temporal.evidence_refs.map(clean).filter(Boolean):[];
    if(!['start','middle','end'].every(position=>fps.some(frame=>frame.position===position&&miraFaceProofValid(frame,'image'))))return json({ok:false,error:'MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES'},422);
