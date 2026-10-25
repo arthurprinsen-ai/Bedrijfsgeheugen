@@ -7,14 +7,7 @@
   "prevention": "All material agent development must include canonical learning, append-only ledger and human-readable change documentation; classify new modules narrowly without bypassing delivery checks.",
   "evaluation": {
     "historical_replay": [
-      {
-        "case": "initial-path-classification",
-        "outcome": "CI rejected unclassified tools/growth-intelligence paths"
-      },
-      {
-        "case": "after-scoped-lane-mapping",
-        "outcome": "CI progressed, required closure evidence"
-      }
+      "tests/brain-growth-intelligence-delivery-closure.test.mjs"
     ]
   },
   "test_evidence": {
