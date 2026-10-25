@@ -1,0 +1,39 @@
+{
+  "fingerprint": "delivery|system-map|integrated-tree-drift|20261025-v1",
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+  },
+  "root_cause": "System Map guard and delivery workflow changes did not carry canonical machine-readable learning, ledger event and human documentation in one PR. Previous admissions also identified invalid PR machine metadata and unclassified test path.",
+  "prevention": "Retain one integration owner; validate changed-path classifier and material writeback bundle before CI; deterministic map generation must use exact merged tree and verify dirty diff; no green until exact SHA gates and production readback.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "PR 4934 missing metadata",
+        "observed": "PR_MACHINE_METADATA_INVALID",
+        "expected": "fail closed"
+      },
+      {
+        "scenario": "PR 4934 unclassified test file",
+        "observed": "unclassified delivery path",
+        "expected": "test placed in existing delivery test lane"
+      },
+      {
+        "scenario": "Required attempt 40223051109",
+        "observed": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation",
+        "expected": "require semantic same-lineage closure"
+      }
+    ]
+  },
+  "evidence": {
+    "github_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40223051109",
+    "github_codeql_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40223051122",
+    "tests": [
+      "tests/delivery-system-map-merge-integrity.test.mjs"
+    ],
+    "state": "source changes only; required rerun, exact merge SHA and production evidence pending"
+  },
+  "production_readback": {
+    "verified": false,
+    "reason": "Not merged; no independent production readback"
+  }
+}
