@@ -41,5 +41,11 @@
       "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ]
   },
-  "terminal_rule": "Protected exact-HEAD Required and CodeQL success; protected merge; Skill Projection run on main; deterministic next-agent preflight and source digest readback. Real runtime skill-consumption and commercial outcomes require independent receipts and may remain unproven."
+  "terminal_rule": "Protected exact-HEAD Required and CodeQL success; protected merge; Skill Projection run on main; deterministic next-agent preflight and source digest readback. Real runtime skill-consumption and commercial outcomes require independent receipts and may remain unproven.",
+  "evidence": {
+    "actual_ci_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40197005206",
+    "historical_replay": "PASS: 2026-10-25 13:18:50Z, evaluated historical regression tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs; canonical_eligible=true",
+    "remaining_gate": "Overall Required failed separately at semantic_learning due to missing explicit evidence key. The independent test PASS does not imply protected release PASS.",
+    "source": "GitHub Required hygiene job 121179938512 logs; no synthetic runtime consumption or commercial outcome"
+  }
 }
