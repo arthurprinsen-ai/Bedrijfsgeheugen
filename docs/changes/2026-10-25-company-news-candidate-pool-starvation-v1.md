@@ -16,6 +16,6 @@ Use the same helper with an explicit 1500-person internal candidate pool before 
 - Migration must pass existing Supabase migration checks, Required/CodeQL and protected merge.
 - After deployment, compare actual `net._http_response` for original cron #20: `bedrijven` should approach configured 15 when enough eligible unique companies exist, NOT just HTTP 200.
 - Follow with `bg_bedrijfsnieuws` accepted source links, freshness, company match and protected suggested actions / consent plus independently proven orders. News can still be zero if no credible article exists; no fabricated green.
-- Internal code stays restricted: `anon` and `authenticated` currently lack EXECUTE, `service_role` retains execution. No GRANT changes.
+- Internal code stays restricted: `anon` and `authenticated` currently lack EXECUTE, `service_role` retains execution. Explicit REVOKE from PUBLIC/anon/authenticated and GRANT only to service_role preserve the current effective RPC permissions without expanding access.
 
 Candidate state only; source freshness/revenue not yet live-proven.
