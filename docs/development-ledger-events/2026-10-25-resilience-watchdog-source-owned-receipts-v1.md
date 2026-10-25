@@ -15,3 +15,5 @@ CodeQL-Required: PENDING
 Protected-Merge: NOT_EXECUTED
 Post-Deploy-Verification: NOT_EXECUTED
 No invented provider IDs, contacts, customer money or user-specific authorization.
+
+2026-10-25T11:01Z: independent preview readback revealed input and decision remained stale (10:59 and 10:51 respectively) while the six watchdog stages were 11:01. Candidate changed the SAME migration/test to timestamp all eight from genuine watchdog invocation. Not merged or live.
