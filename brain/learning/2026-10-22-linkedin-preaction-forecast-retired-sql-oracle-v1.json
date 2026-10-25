@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|brain|linkedin-preaction-forecast-retired-sql-oracle|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation_id": "ci-brain-linkedin-preaction-forecast-retired-sql-oracle-20261022",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "root_causes": [
+    "Historical LinkedIn forecast contract test attempted to open applied SQL from retired executable supabase/migrations path, causing ENOENT in full BRAIN."
+  ],
+  "prevention": [
+    "Read exact retained non-executable repository-only SQL source; preserve all original positive and negative outreach/forecast assertions.",
+    "Keep archived SQL nonempty and refuse reintroducing already applied history as executable migration."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-forecast-retired-source-guard-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-forecast-retired-source-guard-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-forecast-retired-source-guard-20261022.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755490943/job/119746782219",
+    "historical_sql_blob": "8daf835dc5ff3f79fc11c7c4505755b436ed9522",
+    "historical_sql_path": "supabase/migration-history/repository-only/20260915125800_powerhouse_linkedin_sales_prediction_activation_v1.sql",
+    "contract_test": "tests/supabase-powerhouse-linkedin-sales-prediction-activation.test.mjs",
+    "positive_assertions_preserved": 4,
+    "negative_assertions_preserved": 2,
+    "full_brain": "NOT_VERIFIED",
+    "production_readback": "NOT_APPLICABLE_TEST_ONLY"
+  },
+  "current_state": "CANDIDATE_UNVERIFIED"
+}
