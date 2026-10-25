@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 export const REQUIRED = [
-  'docs/architecture/unified-brain-heartbeat-learning-revenue-contract-20261025.md',
+  'docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md',
   'AGENTS.md',
   '.agents/skills/powerhouse-continuity/SKILL.md',
   'config/powerhouse-daily-self-evolution.json',
@@ -14,7 +14,7 @@ export function validateUnifiedLearningContract({read=(p)=>fs.readFileSync(p,'ut
   const texts={};
   for(const p of REQUIRED){try{texts[p]=read(p)}catch{errors.push('Missing contract surface: '+p)}}
   const cfg=(()=>{try{return JSON.parse(texts['config/powerhouse-daily-self-evolution.json'])}catch{errors.push('Invalid daily learning config');return {}}})();
-  const doc='docs/architecture/unified-brain-heartbeat-learning-revenue-contract-20261025.md';
+  const doc='docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md';
   for(const p of ['AGENTS.md','.agents/skills/powerhouse-continuity/SKILL.md']){
     if(texts[p] && !texts[p].includes(doc)) errors.push(p+' must link canonical contract');
   }
