@@ -12,11 +12,12 @@
     "canonical_projection": "scripts/brain/powerhouse-skill-projection.mjs",
     "previous_gap": "Projected Brain learning did not separately attest actual SKILL.md file digest or a required load-readback boundary.",
     "legacy_metadata_warning": "At least one existing skill has no frontmatter; it must remain discoverable without a false modern-metadata claim.",
-    "source": "GitHub current main repository skill directory and canonical runtime preflight, 2026-10-25"
+    "source": "GitHub current main repository skill directory and canonical runtime preflight, 2026-10-25",
+    "first_ci_guard_failure": "2026-10-25: social-task preflight 277017 bytes exceeded existing 256000 budget; historical_replay correctly rejected before promotion."
   },
   "root_cause": "Task-specific learning projection was derived from Brain JSON, but the actual repository skill source inventory and consumption claim were not independently version-pinned in the existing preflight packet.",
-  "fix": "Extend existing deterministic projection + preflight with bounded repository SKILL.md source inventory, SHA-256 digests, four mandatory baseline skill selections, legacy metadata warnings, and honest SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED state.",
-  "prevention_rule": "Before any material agent execution, pin selected repository skill sources by exact SHA-256 in the existing preflight. A discovered source is not proof of skill loading or application: require existing actor/execution activity evidence with source digest before claiming consumed; keep provider and production outcome gates independent. External standards or new tools enter as evaluated candidates only.",
+  "fix": "Extend existing deterministic projection + preflight with bounded repository SKILL.md source inventory, SHA-256 digests, four mandatory baseline skill selections, legacy metadata warnings, and honest SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED state. Preserve mandatory and exact-fingerprint learning in compact context; defer excess task-matched entries with canonical digest, count and lazy-readback obligation within the existing preflight byte budget.",
+  "prevention_rule": "Before any material agent execution, pin selected repository skill sources by exact SHA-256 in the existing preflight. A discovered source is not proof of skill loading or application: require existing actor/execution activity evidence with source digest before claiming consumed; keep provider and production outcome gates independent. External standards or new tools enter as evaluated candidates only. A partially selected task projection must expose deferred source authority, count and digest; never represent it as complete learning consumption.",
   "skill_targets": [
     "continuity",
     "delivery",
