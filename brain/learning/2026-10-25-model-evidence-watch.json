@@ -3,7 +3,7 @@
   "root_cause": "Supplier evidence expired because the existing model catalog lacked an early warning/evidence recovery workflow and admission metadata/closure were incomplete.",
   "prevention": "Single existing AI Model Intelligence schedule monitors evidence age daily with warning at day 10, preserves immutable 14-day freshness policy, creates read-only worklists and source URL reachability receipts without approving model-specific claims.",
   "tests": {
-    "path": "tests/model-evidence-delivery-admission.test.mjs",
+    "path": "tests/brain-model-evidence-delivery-admission.test.mjs",
     "result": "REQUIRES_PROTECTED_CI"
   },
   "evidence": {
@@ -19,7 +19,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/model-evidence-delivery-admission.test.mjs"
+      "tests/brain-model-evidence-delivery-admission.test.mjs"
     ]
   },
   "fingerprint": "ai-model|freshness-watch|prevent-stale-evidence|20261025-v2"
