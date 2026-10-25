@@ -22,20 +22,18 @@
     "Never claim new behavior tested solely from aggregate CI green if the new test path was not exercised.",
     "Reuse scoped existing workflow and preserve exact-head Required, CodeQL and protected merge.",
     "Respect CI ratchets by adding targeted verification inside existing Required gate, not a ninth direct PR workflow.",
-    "Fixtures representing observed revenue must contain explicit data quality and immutable source references; do not weaken production source-verification to satisfy tests."
+    "Fixtures representing observed revenue must contain explicit data quality and immutable source references; do not weaken production source-verification to satisfy tests.",
+    "Canonical learning evaluation links only allowed new immutable Brain regression fixture paths; historical compatibility fixtures execute independently in Required but are not registered as replay targets."
   ],
   "tests": [
-    "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
-    "tests/revenue-learning-evaluate.test.mjs"
+    "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
-      "tests/revenue-learning-evaluate.test.mjs"
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
     ],
     "shadow": [
-      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
-      "tests/revenue-learning-evaluate.test.mjs"
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
     ]
   },
   "compiler": {
