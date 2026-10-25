@@ -688,7 +688,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div id="calWidget" style="height:560px;border:1px solid var(--line,#DCE4EE);border-radius:12px;overflow:hidden"></div>
   </div>
   <div id="leadDone" hidden>
-    <span class="eyebrow" style="color:var(--green)">✓ Gelukt</span>
+    <span class="eyebrow" style="color:var(--amberG)">Afspraakverificatie</span>
     <h3 style="margin:.3rem 0 .5rem">Je afspraakbevestiging wordt gecontroleerd</h3>
     <p style="font-size:.84rem;color:var(--mut)" id="doneMsg"></p>
     <ul style="font-size:.82rem;color:var(--mut);margin:12px 0 0 1.1rem;line-height:1.6">
@@ -1897,7 +1897,7 @@ async function onBooked(via,providerSignal=null){
   unlockDash();
   $('leadCal').hidden=true; $('leadForm').hidden=true; $('leadDone').hidden=false;
   const L=LEVELS[userLevel-1];
-  setHTML('doneMsg','Bedankt, '+esc(p.lead.naam.split(' ')[0])+'! '+(via==='calendly'?'Je afspraakbevestiging wordt gecontroleerd. ':'')
+  setHTML('doneMsg','Bedankt, '+esc(p.lead.naam.split(' ')[0])+'! '+(via==='calendly-ui-pending'?'Controleer de bevestigingsmail van Calendly. Een afspraak telt pas mee na onafhankelijke providercontrole. ':'')
     +'<b>Je samenvatting:</b> '+esc(p.lead.bedrijf)+' staat op <b>niveau '+userLevel+' — '+esc(L.name)+'</b> met score <b>'+$('donutTxt').textContent+'/100</b>. Je samenvatting staat bovenin de cockpit.');
   setHTML('doneDevops','Het <b>volledige adviesrapport</b> — met businesscase, stappenplan en use-cases — bespreken we bij een bevestigde afspraak. Je ontvangt dan verdere informatie per e-mail.'
     +(p.devopsOk?' De opvolging is automatisch geregistreerd.':''));
