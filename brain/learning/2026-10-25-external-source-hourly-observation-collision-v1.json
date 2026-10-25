@@ -34,7 +34,31 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
     ]
   },
-  "terminal_rule": "Exact-head Required and CodeQL, protected merge, Supabase Edge deployment, then independent successive provider runs within same hour with distinct canonical source observation records. Do not claim future 44-topic completeness or paid customer orders."
+  "terminal_rule": "Exact-head Required and CodeQL, protected merge, Supabase Edge deployment, then independent successive provider runs within same hour with distinct canonical source observation records. Do not claim future 44-topic completeness or paid customer orders.",
+  "compiler": {
+    "failure_class": "EXTERNAL_SOURCE_OBSERVATION_SAME_HOUR_COLLISION",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "initial_provider_failure": "2026-10-25T09:49:17.092Z; same-topic set 2 succeeded, 1 failed in external-intelligence producer record",
+    "recovery_request_id": 12509,
+    "recovery_provider_status": 200,
+    "recovery_completed": "2026-10-25T09:50:47.474Z",
+    "recovery_processed_topics": 3,
+    "recovery_successful_topics": 3,
+    "recovery_failed_topics": 0,
+    "recovery_received_search_results": 27,
+    "recovery_allowed_signals": 1,
+    "recovery_saved_source_rows": true,
+    "missing_recovered_run_observation": true,
+    "canonical_dedupe_behavior": "powerhouse_record_source_observation_v1 on conflict (dedupe_key) do nothing"
+  }
 }
