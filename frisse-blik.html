@@ -544,6 +544,14 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
     </div><!-- einde dashveil (kop-samenvatting) -->
     <div class="g hov" id="remKaart" style="margin-bottom:14px"><div id="remBlok"></div></div>
+
+    <div class="g hov" id="scan-next-step-booking" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+      <div>
+        <b style="font-size:1rem">Plan je adviesgesprek</b>
+        <p style="font-size:.85rem;opacity:.75;margin-top:2px">Plan het adviesgesprek (30 min, gratis) — daar lopen we je uitkomst samen door.</p>
+      </div>
+      <button type="button" class="cta" id="scanAdviceBooking" onclick="openLead()">Volgende: plan je adviesgesprek →</button>
+    </div>
     <div class="g hov" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
       <div><b style="font-size:1rem">Verder werken met deze uitkomst</b>
         <div style="font-size:.85rem;opacity:.75;margin-top:2px">In je portaal zet je er cijfers naast, vergelijk je met je branche en plan je de stappen.</div></div>
@@ -680,8 +688,8 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div id="calWidget" style="height:560px;border:1px solid var(--line,#DCE4EE);border-radius:12px;overflow:hidden"></div>
   </div>
   <div id="leadDone" hidden>
-    <span class="eyebrow" style="color:var(--green)">✓ Gelukt</span>
-    <h3 style="margin:.3rem 0 .5rem">Je adviesgesprek is geboekt</h3>
+    <span class="eyebrow" style="color:var(--amberG)">Afspraakverificatie</span>
+    <h3 style="margin:.3rem 0 .5rem">Je afspraakbevestiging wordt gecontroleerd</h3>
     <p style="font-size:.84rem;color:var(--mut)" id="doneMsg"></p>
     <ul style="font-size:.82rem;color:var(--mut);margin:12px 0 0 1.1rem;line-height:1.6">
       <li id="doneDevops">De opvolging (feature + user story) is automatisch aangemaakt in ons systeem.</li>
@@ -1833,6 +1841,23 @@ async function submitLead(){
   _pending={lead,payload,consultant,devopsOk,devopsInfo,devopsErr};
   if(CONTACT.calendly){ showCalStep(lead); } else { onBooked('geen-calendly-geconfigureerd'); }
 }
+function isTrustedCalendlyScheduledMessage(e){
+  const iframe=$('calWidget')?.querySelector('iframe');
+  if(e?.origin!=='https://calendly.com'||!iframe||e.source!==iframe.contentWindow||e.data?.event!=='calendly.event_scheduled') return false;
+  const payload=e.data.payload;
+  if(typeof payload?.event?.uri!=='string'||typeof payload?.invitee?.uri!=='string') return false;
+  try{
+    const booked=new URL(payload.event.uri),invitee=new URL(payload.invitee.uri);
+    if(booked.protocol!=='https:'||invitee.protocol!=='https:'||booked.origin!==invitee.origin) return false;
+    if(!['api.calendly.com','calendly.com'].includes(booked.hostname)||booked.username||booked.password||invitee.username||invitee.password) return false;
+    if(booked.search||booked.hash||invitee.search||invitee.hash) return false;
+    const normalize=u=>u.pathname.replace(/^\/api\/v2/,'');
+    const eventPath=normalize(booked);
+    return /^\/scheduled_events\/[A-Za-z0-9_-]+$/.test(eventPath)
+      &&normalize(invitee).startsWith(eventPath+'/invitees/')
+      &&/^\/scheduled_events\/[A-Za-z0-9_-]+\/invitees\/[A-Za-z0-9_-]+$/.test(normalize(invitee));
+  }catch(_){return false;}
+}
 function showCalStep(lead){
   $('leadForm').hidden=true; $('leadCal').hidden=false;
   if(!_calReady){
@@ -1840,7 +1865,7 @@ function showCalStep(lead){
     const s=document.createElement('script');s.src='https://assets.calendly.com/assets/external/widget.js';s.async=true;
     s.onload=()=>initCal(lead);document.head.appendChild(s);
     window.addEventListener('message',e=>{
-      if(e.data&&e.data.event==='calendly.event_scheduled') onBooked('calendly');
+      if(isTrustedCalendlyScheduledMessage(e)) onBooked('calendly-ui-pending',e.data.payload);
     });
   } else initCal(lead);
 }
@@ -1851,7 +1876,7 @@ function initCal(lead){
     prefill:{name:lead.naam,email:lead.email}
   });
 }
-async function onBooked(via){
+async function onBooked(via,providerSignal=null){
   const p=_pending; if(!p||p.done)return; p.done=true;
   /* snapshot → volledige rapportlink, ALLEEN voor de adviseur (staat enkel in de mail) */
   const dims=[...document.querySelectorAll('.dimrow')].map(r=>({n:r.querySelector('.n').textContent,
@@ -1862,18 +1887,19 @@ async function onBooked(via){
     iFte:$('iFte').value, iOmz:$('iOmz').value, iUur:$('iUur').value, afas:hasAFAS, ahead:aheadPct(userLevel)};
   const rptLink=location.origin+location.pathname+'#rpt='+btoa(unescape(encodeURIComponent(JSON.stringify(snap))));
   const flat={ naam:p.lead.naam, email:p.lead.email, bedrijf:p.lead.bedrijf, relatieId:p.lead.relatieId,
-    gesprek_geboekt_via:via, niveau:p.payload.scan.niveau+' — '+p.payload.scan.niveauNaam,
+    booking_signal_source:via, booking_status:'PENDING_PROVIDER_READBACK',
+    booking_event_candidate_uri:providerSignal?.event?.uri||'',booking_invitee_candidate_uri:providerSignal?.invitee?.uri||'', niveau:p.payload.scan.niveau+' — '+p.payload.scan.niveauNaam,
     score:p.payload.scan.score, branche:p.payload.scan.branche, dimensies:JSON.stringify(p.payload.scan.dims),
     businesscase_netto3jr:p.payload.businesscase.nettoNa3Jaar, breakeven:p.payload.businesscase.breakEven,
     investering:p.payload.businesscase.investering, prijsVanWachten:p.payload.businesscase.prijsVanWachten,
     VOLLEDIG_RAPPORT_alleen_voor_adviseur:rptLink };
-  await deliverToContact('DATA & AI-SCAN + GESPREK GEBOEKT: '+p.lead.bedrijf+' (niveau '+p.payload.scan.niveau+')',flat);
+  await deliverToContact('DATA & AI-SCAN + BOEKING NOG TE VERIFIËREN: '+p.lead.bedrijf+' (niveau '+p.payload.scan.niveau+')',flat);
   unlockDash();
   $('leadCal').hidden=true; $('leadForm').hidden=true; $('leadDone').hidden=false;
   const L=LEVELS[userLevel-1];
-  setHTML('doneMsg','Bedankt, '+esc(p.lead.naam.split(' ')[0])+'! '+(via==='calendly'?'Je adviesgesprek is geboekt. ':'')
+  setHTML('doneMsg','Bedankt, '+esc(p.lead.naam.split(' ')[0])+'! '+(via==='calendly-ui-pending'?'Controleer de bevestigingsmail van Calendly. Een afspraak telt pas mee na onafhankelijke providercontrole. ':'')
     +'<b>Je samenvatting:</b> '+esc(p.lead.bedrijf)+' staat op <b>niveau '+userLevel+' — '+esc(L.name)+'</b> met score <b>'+$('donutTxt').textContent+'/100</b>. Je samenvatting staat bovenin de cockpit.');
-  setHTML('doneDevops','Het <b>volledige adviesrapport</b> — met businesscase, stappenplan en use-cases — bespreken we samen in het gesprek. Daarna ontvang je het per e-mail als presentatie (te bewaren als PDF).'
+  setHTML('doneDevops','Het <b>volledige adviesrapport</b> — met businesscase, stappenplan en use-cases — bespreken we bij een bevestigde afspraak. Je ontvangt dan verdere informatie per e-mail.'
     +(p.devopsOk?' De opvolging is automatisch geregistreerd.':''));
 }
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
