@@ -1,7 +1,7 @@
 // Provider quota exhaustion is explicit; fallback uses independently observed DataForSEO SERP results, not synthetic signals.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectExternalTopics } from './topic-selection.mjs';
-import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry,safeDataforseoDiagnostic} from './provider-retry.mjs';
+import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry,safeDataforseoDiagnostic,sourceBatchEvidenceVerdict} from './provider-retry.mjs';
 
 const BRON='bg-externe-signalen';
 const CONTRACT='tavily-signal-ingest-v2-bounded';
@@ -155,7 +155,8 @@ Deno.serve(async(req:Request)=>{
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-producer:'+observedAt+':'+start,p_external_event_id:'external-intelligence:'+observedAt,p_observed_at:observedAt,p_evidence:{...evidence,authority:'bg_externe_signalen'}});
     }
     const out={ok:failed.length===0,contract:CONTRACT,selection_contract:topicRotation.contract,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,active_topics:topics.length,processed:selected.length,successful:ok.length,failed:failed.length,found,allowed,noise,results};
-    await bewijs(ok.length>0,out,ok.length?'PARTIAL':'REMOTE');
+    const verdict=sourceBatchEvidenceVerdict(results);
+    await bewijs(verdict.green,out,verdict.errorClass);
     return json(out,ok.length?(failed.length?207:200):502);
   }catch(e:any){
     const out={ok:false,contract:CONTRACT,error:safeFailure(e)};
