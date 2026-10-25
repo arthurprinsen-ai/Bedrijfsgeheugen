@@ -34,7 +34,9 @@ function verifiedOutcome(row,opportunityKey,now){
   if(!id)return null;
   return {id,stage,type,ref:txt(ref),occurredAt:row.occurred_at,
     revenueEur:ORDER_TYPES.has(type)&&evidence.payment_confirmed===true&&hasRef(evidence.payment_receipt_id)&&finite(row.revenue_eur)&&Number(row.revenue_eur)>0
-      ?Number(row.revenue_eur):null};
+      ?Number(row.revenue_eur):null,
+    paymentReceiptId:ORDER_TYPES.has(type)&&evidence.payment_confirmed===true&&hasRef(evidence.payment_receipt_id)
+      ?txt(evidence.payment_receipt_id):null};
 }
 
 /**
@@ -58,7 +60,16 @@ export function qualifyCommercialOpportunity(opportunity={}, {salesOutcomes=[],n
   const unique=[...new Map(exactRows.map(o=>[o.id,o])).values()];
   const funnel=Object.freeze(Object.fromEntries(['reply','request','meeting','proposal','order'].map(
     stage=>[stage,unique.filter(o=>o.stage===stage).length])));
-  const observedRevenue=unique.reduce((sum,o)=>sum+(o.revenueEur||0),0);
+  // Provider retries may create distinct outcome IDs for one payment receipt.
+  // Conflicting amounts for a receipt are held as unknown rather than counted.
+  const payments=new Map();
+  for(const outcome of unique){
+    if(outcome.revenueEur===null||!outcome.paymentReceiptId)continue;
+    const id=outcome.paymentReceiptId;
+    if(!payments.has(id))payments.set(id,outcome.revenueEur);
+    else if(payments.get(id)!==outcome.revenueEur)payments.set(id,null);
+  }
+  const observedRevenue=[...payments.values()].reduce((sum,value)=>sum+(value||0),0);
   const hasProposal=funnel.proposal>0,hasOrder=funnel.order>0;
   const firstPartyIntent=unique.some(o=>['request','meeting','proposal','order'].includes(o.stage));
   const missing=[];
