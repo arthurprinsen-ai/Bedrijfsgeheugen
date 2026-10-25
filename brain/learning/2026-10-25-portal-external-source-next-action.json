@@ -26,7 +26,7 @@
     "Every release requires exact-head Required/CodeQL, protected merge and independent authenticated production readback"
   ],
   "regressionTests": [
-    "portal-v2/tests/external-signal-advice.test.mjs",
+    "tests/brain-portal-external-signal-advice-v1.test.mjs",
     "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
   ],
   "nextVerification": [
@@ -35,5 +35,17 @@
     "Authenticated portal readback for scored and unscored tenants",
     "Check existing daily source cadence and independently measured customer outcomes"
   ],
-  "learningBoundary": "Code/test success is not production or revenue success; source catalogue availability is not daily crawl evidence."
+  "learningBoundary": "Code/test success is not production or revenue success; source catalogue availability is not daily crawl evidence.",
+  "compiler": {
+    "failure_class": "EVIDENCE_LINEAGE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-external-signal-advice-v1.test.mjs"
+    ]
+  }
 }
