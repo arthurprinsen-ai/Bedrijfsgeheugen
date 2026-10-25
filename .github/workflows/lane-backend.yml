@@ -37,7 +37,9 @@ jobs:
           tests/brain-adapter-conformance.test.mjs
           tests/brain-platform-adapters.test.mjs
           tests/brain-error-learning-contract.test.mjs
+          tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs
           tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
+          tests/brain-intent-skill-preflight-20261025.test.mjs
           tests/brain-social-metrics-verified-binding-20261019.test.mjs
           tests/brain-control-plane-terminal-descendant-recovery-v1.test.mjs
           tests/universal-event-envelope.test.mjs

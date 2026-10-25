@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "parent_issue": 4198,
+  "fingerprint": "external-intelligence|partial-provider-run-marked-green|20261025-v1",
+  "failure_class": "EXTERNAL_SOURCE_PARTIAL_FALSE_GREEN",
+  "root_cause": "The Edge function correctly returns HTTP 207 and a canonical producer observation with failed_topics=1 but also called bg_bewijs(p_groen=true) whenever at least one of three topics succeeded. bg_bewijs uses p_groen to store brain_delivery_evidence.status=GREEN, creating contradictory delivery proof and training input.",
+  "observed_evidence": {
+    "real_request_id": 12523,
+    "http_status": 207,
+    "successful_topics": 2,
+    "failed_topics": 1,
+    "internal_provider_code": 40101,
+    "origin_proof": "2026-10-25T10:12:40.367Z",
+    "existing_delivery_writer": "public.bg_bewijs",
+    "no_realized_sales_claim": true
+  },
+  "fix": "Reuse the existing provider outcome results: canonical GREEN if and only if all nonempty selected topics are actually successful. Preserve successful source rows, return 207 on partial, store RED with REMOTE errorClass on partial or total failures. No additional scheduler, queue, provider requests or duplicate incident ledger.",
+  "prevention_rules": [
+    "A partial provider execution is never independent GREEN delivery even when useful source rows were saved.",
+    "Runtime status, producer source evidence and Brain delivery outcome must share one fail-closed verdict.",
+    "Do not change authentication, provider retry cap, three-topic budget, full URL attribution or paid outcome accounting."
+  ],
+  "tests": [
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "EXTERNAL_SOURCE_PARTIAL_FALSE_GREEN",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required+CodeQL, protected merge, active Supabase Edge source exact-match, live 2/3 case logs RED delivery and 3/3 case GREEN. Existing earlier false-GREEN receipts must not be erased or reclassified."
+}

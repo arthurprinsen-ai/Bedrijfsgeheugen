@@ -89,6 +89,24 @@ jobs:
         run: |
           node tools/ci/check-control-plane-budget.mjs
           node tools/ci/check-pr-trigger-ratchet.mjs
+      - name: Verify bounded source-backed revenue learning in existing Required gate
+        run: |
+          node --test tests/revenue-learning-evaluate.test.mjs tests/brain-revenue-learning-fair-verified-20261025.test.mjs tests/brain-revenue-learning-no-starvation-20261025.test.mjs
+          node --test tests/brain-commercial-opportunity-evidence-20261025.test.mjs tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs
+      - name: Verify daily external search coverage without topic starvation
+        run: node --test tests/brain-external-topic-rotation-v1.test.mjs tests/brain-external-signal-quota-failover-20261019.test.mjs
+      - name: Verify customer-visible external signal relevance and safe next actions
+        run: node --test tests/brain-portal-external-source-action-20261025.test.mjs
+      - name: Verify existing daily company-news candidate coverage and cooldown
+        run: node --test tests/brain-company-news-eligible-coverage-20261025.test.mjs
+      - name: Verify preventative source-locked Mira producer feedback on genuine video rejects
+        run: node --test tests/brain-mira-preventive-producer-qa-20261025.test.mjs
+      - name: Verify real native Mira MP4 dimensions before expensive vision calls
+        run: node --test tests/brain-mira-native-format-before-vision-20261025.test.mjs
+      - name: Reject every historically failed Mira OpenArt asset before costly vision
+        run: node --test tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs
+      - name: Verify exact canonical commercial publication evidence reconciliation
+        run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness
         run: |
           node tools/ci/portal-auth-evidence-freshness.mjs

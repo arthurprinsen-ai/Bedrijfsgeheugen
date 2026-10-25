@@ -71,6 +71,40 @@ Hard rules:
 Learning fingerprint: `mira-human-problem-fresh-openart-reel-v1`.
 
 
+## Preventive producer quality recovery (2026-10-25)
+
+**Fingerprint:** `mira-original-owner-pre-generation-quality-feedback-v1`.
+Never solve recurring verification rejects by lowering an identity/temporal score or reusing the same failed OpenArt history. The original Heartbeat should call the existing `powerhouse-instagram-media-router` **preflight** for a frozen source-led day. When the canonical media job contains a genuine quality rejection, the response exposes typed `preventive_recovery` with the original source, project, failed provider history, observed score and **one** bounded next-generation brief.
+
+The one existing Mira producer must consume this production-derived brief **before buying another generation**:
+
+- **Face failure** (`VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH`): confirm original immutable master in both original OpenArt image references; require native full-bleed 1080x1920, visible uncut face, no black bars/letterboxing/cropped head, stable expression/age and approved daily source-led scene. Reject unsupported input modes or provider output dimensions without spending on verification. If a native-portrait derivative becomes necessary, first request a separately reviewed, independent master-face PASS and update the protected media contract; **do not lie about the provider's original input reference**.
+- **Temporal failure** (`MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED`): revise the next storyboard to depict one uninterrupted real scene with natural facial, hand and object motion, not a slideshow, pan/zoom or still-image animation. Keep the original reference identity and exactly the frozen source/scene/caption.
+- Before buying: check today's existing OpenArt histories and the original Brain failure fingerprints. Reuse neither the rejected bytes/hash nor their provider history. Never continuously retry; at most one **new** candidate per independently classified failure and configured provider credit cap. A new generation is an opportunity to verify, not proof.
+- After generation: check real OpenArt project/history, native 1080x1920 MP4, correct master references and source winner; then call the **same** original router with `submit_asset` (not a second publisher). Require real first/middle/end facial scores each ≥0.940, real temporal confidence ≥0.900, matching SHA and exact final caption before any one-shot Meta create.
+- A quality failure keeps the channel `BLOCKED` with an actionable producer plan and original Brain incident; continue independent channels. No generic brand posts, fake PASS, hard-coded bogus media IDs or silent substitution of a static image for a promised Reel. Escalate human/provider credential or exhausted-budget constraints without infinite regeneration.
+- A quality-complete generation still does not prove publication. Only provider media ID, permalink and independent readback may mark the Instagram obligation `LIVE_PROVEN`.
+
+This plan is returned by the current router rather than creating a new scheduler, publisher, queue, customer data store or parallel agent. A successful production simulation is not a future guarantee; subsequent runs must repeat actual provider checks.
+
+## Native MP4 quality gate before vision (2026-10-25)
+
+**Fingerprint:** `mira-exact-native-mp4-before-vision-v1`. The original Mira media router and the existing Netlify `instagram-video-frames` function enforce this rule. The agent must never trust OpenArt response metadata, manifest width/height, or a padded 1080x1920 screenshot as evidence of the original video format.
+
+Before spending credits on AI face/temporal evaluations, the existing frame extractor downloads the **exact original MP4**, probes the first real encoded video stream with the already installed ffmpeg binary and requires **native 1080x1920**. Failed/unknown stream metadata remains blocked; actual non-native dimensions are recorded on the same CAS media job and immutable Brain failure register with their exact provider history. A frame submitted by a caller cannot bypass this original-byte extraction. Only matching actual video dimensions allow independent start/middle/end face >=0.940 and temporal >=0.900 verification.
+
+If the real format fails, use the existing original producer's `preventive_recovery` contract to choose a new genuinely native portrait output. The current failed candidate must not be resubmitted or claimed as verified by reframing, JPEG padding or an unapproved master/source switch. Limit regeneration to one distinct attempt per observed failure and the configured daily provider budget. Never spend new credits merely because preflight was polled again.
+
+No additional scheduler, queue, sender, privileged connector or fake post ID. Even a correctly sized, quality-proven Reel is not live until the original authorized publisher returns Meta media ID/permalink and independent readback.
+
+## Previously rejected OpenArt assets are permanently ineligible (2026-10-25)
+
+**Fingerprint:** `mira-immutable-brain-rejected-history-before-vision-v1`. The canonical Brain `brain_failure_occurrences` row is the cross-run evidence, **not** the current media job's last_error. Two independently rejected histories must never be alternated to make an older failed clip eligible again. The ORIGINAL media router now looks up `router:openart:<history>:instagram:<date>:<failure stage>` by provider history prefix before MP4 download, native video probe and expensive AI identity/temporal verification. It blocks any previously rejected history **across all dates**, including exact photo, motion and native-video-format rejects. If the Brain read fails, no blind resend is allowed.
+
+The same agent must load and deduplicate all real past provider histories before selecting a next candidate. A provider `COMPLETED` response is not a vision/identity PASS. After the original source-locked producer obtains a genuinely new history under the configured budget, send it only once through the canonical router; log the true independent outcome and never requeue a rejected candidate. A current-day Reel winner remains frozen; never silently replace it with a static visual. For new days, any image-vs-Reel format decision must occur **before** the daily winner is frozen and must satisfy the channel's current approved policy.
+
+This prevents repeat evaluation charges and status loops; it does not guarantee generative videos pass the independent 0.940 face / 0.900 temporal gates, and it never permits unproven Instagram publication claims.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.

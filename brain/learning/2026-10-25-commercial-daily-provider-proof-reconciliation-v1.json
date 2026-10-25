@@ -1,0 +1,49 @@
+{
+  "version": "2026-10-25-commercial-daily-provider-proof-reconciliation-v1",
+  "fingerprint": "powerhouse|commercial-daily|canonical-live-blog-evidence-not-counted|20261025-v1",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observation": {
+    "day": "2026-10-25",
+    "blog": "LIVE_PROVEN with canonical URL, missing top-level daily provider status",
+    "linkedinCompany": "LIVE_PROVEN independently read back",
+    "linkedinPersonal": "immutable provider-create ACK with provider readback forbidden",
+    "instagram": "BLOCKED MEDIA_ASSET_REQUIRED",
+    "gmail": "STALE",
+    "overdueForecastCalibration": 977,
+    "verifiedRevenueEur": 0
+  },
+  "cause": "Daily execution status relied on overwritten per-decision provider fields rather than same-day canonical publication obligations.",
+  "fix": "Join the existing obligation authority by exact date/channel/provider ID, keep independent proof distinct from permission-limited ACK; never count false, future, cross-channel or missing receipts.",
+  "tests": [
+    "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
+  ],
+  "status": "CANDIDATE_EVIDENCE_GATE_PENDING",
+  "next": [
+    "Required and CodeQL",
+    "protected merge and canonical SQL migration application",
+    "independent deployed SQL and next true execution status readback",
+    "remaining Instagram, Gmail, overdue forecast and revenue outcomes"
+  ],
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 8,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Exact identity and observed provider proof before terminal claim",
+    "Preserve no-republish for provider-created LinkedIn side effects",
+    "Unknown/NULL is unresolved, not success",
+    "Do not suppress media, forecast, Gmail and independently measured revenue blockers",
+    "Use existing Required/CodeQL/protected migration and independent production readback"
+  ]
+}
