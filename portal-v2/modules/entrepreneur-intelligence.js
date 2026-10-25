@@ -1,6 +1,6 @@
 import { REGELGEVING, CATEGORIEEN, komendeMijlpalen } from '../regelgeving.js';
 import { ensureIdentityWidget } from '../portal-state.js';
-import { signalDecision } from './external-signal-decisions.js';
+import { signalDecision, verifiedExternalUrl } from './external-signal-decisions.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
@@ -38,10 +38,12 @@ function error(view,message){return shell(view.title,view.subtitle,`${nav()}<sec
 function sourceCard(item,sourceMap){
   const publisher=sourcePublisher(sourceMap,item.bron_id);
   const source=sourceName(sourceMap,item.bron_id);
-  return `<article class="eicard"><div class="eimeta"><span>${esc(publisher)}</span><time>${esc(nlDate(item.publicatiedatum||item.opgehaald_op))}</time></div><h4>${esc(item.titel||source)}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${esc(source)}</span>${item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
+  const safeUrl=verifiedExternalUrl(item.url);
+  return `<article class="eicard"><div class="eimeta"><span>${esc(publisher)}</span><time>${esc(nlDate(item.publicatiedatum||item.opgehaald_op))}</time></div><h4>${esc(item.titel||source)}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${esc(source)}</span>${safeUrl?`<a href="${esc(safeUrl)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
 }
 function signalCard(item){
-  return `<article class="eicard"><div class="eimeta"><span>${esc(item.domein||item.onderwerp||'Extern signaal')}</span><time>${esc(nlDate(item.gepubliceerd_op||item.opgehaald_op))}</time></div><h4>${esc(item.titel||item.onderwerp||'Signaal')}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${item.vertrouwen!=null?`vertrouwen ${Math.round(Number(item.vertrouwen)*100)}%`:'extern signaal'}</span>${item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
+  const safeUrl=verifiedExternalUrl(item.url);
+  return `<article class="eicard"><div class="eimeta"><span>${esc(item.domein||item.onderwerp||'Extern signaal')}</span><time>${esc(nlDate(item.gepubliceerd_op||item.opgehaald_op))}</time></div><h4>${esc(item.titel||item.onderwerp||'Signaal')}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${item.vertrouwen!=null?`vertrouwen ${Math.round(Number(item.vertrouwen)*100)}%`:'extern signaal'}</span>${safeUrl?`<a href="${esc(safeUrl)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
 }
 function lawCard(item){
   const next=arr(item.mijlpalen).filter(m=>m.datum>=new Date().toISOString().slice(0,10)).sort((a,b)=>a.datum.localeCompare(b.datum))[0];
@@ -78,7 +80,8 @@ function intelligenceSignalCard(item,domains,actions=[]){
 function sourceCapabilityCard(item){
   const mode=item.activation_mode==='PUBLIC_ALWAYS'?'publieke bron':item.activation_mode==='CONNECTOR_REQUIRED'?'koppeling nodig':item.activation_mode==='PROVIDER_REQUIRED'?'provider nodig':'handmatig bewijs';
   const availability=item.availability_state||'CATALOGUED';
-  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(mode)} · ${esc(availability)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen</span>${item.canonical_url?`<a href="${esc(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
+  const safeUrl=verifiedExternalUrl(item.canonical_url);
+  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(mode)} · ${esc(availability)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen</span>${safeUrl?`<a href="${esc(safeUrl)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
 }
 function renderEnvironmentRadar(data){
   const {intelligence}=enrich(data),domains=arr(intelligence.domains),catalog=arr(intelligence.sourceCatalog),signals=arr(intelligence.signals),actions=arr(intelligence.actionCandidates),snap=intelligence.snapshot||{};
