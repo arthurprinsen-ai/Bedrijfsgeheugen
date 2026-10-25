@@ -11,17 +11,17 @@
   "fix": "Reuse tenant-scoped portal-state-eu signal_key and actionCandidates; show exact tenant action if source-current and relevant, otherwise explicit context/source review. Bind existing portal open-page callbacks. No extra AI, scheduler, CRM, customer write, invented outcome or public URL from untrusted protocol.",
   "prevention_rule": "No customer action navigates unless same exact signal_key, TENANT overlay, SCORED impact, source publication <=45d, observation <=7d and current deadline; canonicals remain review-only.",
   "tests": [
-    "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+    "tests/brain-portal-relevance-next-action-source-20261025.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+      "tests/brain-portal-relevance-next-action-source-20261025.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+      "tests/brain-portal-relevance-next-action-source-20261025.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs"
+      "tests/brain-portal-relevance-next-action-source-20261025.test.mjs"
     ]
   },
   "compiler": {
