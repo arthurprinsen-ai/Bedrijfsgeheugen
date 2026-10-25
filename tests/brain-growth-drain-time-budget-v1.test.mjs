@@ -23,14 +23,15 @@ function fixture(keys){
   }]));
   let writes=0,lists=0;
   const store={
-    list(){
+    list({prefix}={}){
       lists++;
       return (async function*(){
-        yield {blobs:[...data.keys()].map(key=>({key}))};
+        yield {blobs:[...data.keys()].filter(key=>!prefix||key.startsWith(prefix)).map(key=>({key}))};
       })();
     },
     async get(key){return data.get(key)},
-    async setJSON(key,record){writes++;data.set(key,record)}
+    async setJSON(key,record){writes++;data.set(key,record)},
+    async delete(key){data.delete(key)}
   };
   return {data,store,stats:()=>({writes,lists})};
 }
@@ -111,4 +112,37 @@ test('previously persisted transport can resume when a delivery channel becomes 
   assert.equal(deliveries,1);
   assert.equal(persists,1);
   assert.equal(f.data.get('saved').state,'delivered');
+});
+
+test('indexed new event beats 500 immutable archived receipts',async()=>{
+  const archived=Array.from({length:500},(_,i)=>'event/old-'+i),key='event/fresh',p='pending/'+key;
+  const f=fixture([...archived,key]);
+  for(const k of archived)f.data.set(k,{envelope:{event_id:k},state:'datahub-persisted',datahub:{persisted:true},delivery:noDelivery()});
+  f.data.set(p,{source_key:key});
+  let now=0,persistCalls=0;const read=f.store.get.bind(f.store);f.store.get=async k=>{now+=35;return read(k)};
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>now,storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{persistCalls++;return {persisted:true,readback:{queue_id:'real'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(result.persisted,1);assert.equal(persistCalls,1);assert.equal(result.indexedCompleted,1);
+  assert.equal(f.data.has(p),false);assert.equal(f.data.get(key).datahub.persisted,true);
+  assert.ok(archived.every(k=>f.data.has(k)),'historical receipts must remain');
+});
+
+test('failed provider keeps durable pointer for a safe later retry',async()=>{
+  const key='event/retry',p='pending/'+key,f=fixture([key]);f.data.set(p,{source_key:key});
+  const options={includeOutcomes:false,clock:()=>0,storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite};
+  const first=await drainGrowthQueue({...options,persistFn:async()=>({persisted:false,reason:'offline'})});
+  assert.equal(first.failed,1);assert.equal(f.data.has(p),true);
+  const next=await drainGrowthQueue({...options,persistFn:async()=>({persisted:true,readback:{queue_id:'ack'}})});
+  assert.equal(next.persisted,1);assert.equal(f.data.has(p),false);assert.equal(f.data.get(key).datahub.persisted,true);
+});
+
+test('already-persisted receipt cleans index without duplicate provider effect',async()=>{
+  const key='event/durable',p='pending/'+key,f=fixture([key]);
+  f.data.set(key,{envelope:{event_id:key},state:'datahub-persisted',datahub:{persisted:true},delivery:noDelivery()});
+  f.data.set(p,{source_key:key});let writes=0;
+  await drainGrowthQueue({includeOutcomes:false,clock:()=>0,storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{writes++;return {persisted:true}},dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(writes,0);assert.equal(f.data.has(p),false);assert.equal(f.data.has(key),true);
 });
