@@ -11,7 +11,9 @@ const dateMs=value=>{
 export function verifiedExternalUrl(value){
   try{
     const u=new URL(String(value||''));
-    if(u.protocol!=='https:'||u.username||u.password||!u.hostname||/^(localhost|127\\.|10\\.|192\\.168\\.|0\\.|::1$)/i.test(u.hostname))return null;
+    const host=u.hostname.toLowerCase();
+    const privateHost=/^(localhost|(?:127|10|0|169\.254)\.|192\.168\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|\[?::1\]?$)/i.test(host)||host.endsWith('.local');
+    if(u.protocol!=='https:'||u.username||u.password||!host||privateHost)return null;
     return u.href;
   }catch{return null;}
 }
