@@ -743,6 +743,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         requiredGate:'.github/workflows/required-test.yml',
         recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
         terminalClosure:'.github/workflows/obligation-terminal-closure.yml',
+        canonicalBlogFinalBuildMarker:'tools/ci/netlify-build-entry.mjs#NETLIFY_FINAL_PUBLICATION_MARKERS_PROVEN',
+        canonicalBlogPublicReadback:'.github/workflows/daily-blog-live-watchdog.yml',
         terminalSupersessionMigrationProof:'tools/delivery/terminal-migration-identity.mjs',
         terminalSupersessionMigrationRegression:'tests/brain-terminal-migration-identity-v1.test.mjs',
         learningProjectionDescendantProof:Object.freeze({
