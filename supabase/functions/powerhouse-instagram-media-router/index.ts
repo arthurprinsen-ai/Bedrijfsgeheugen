@@ -3,7 +3,7 @@ import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
 import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
 import {planMiraPreventiveRecovery} from '../_shared/mira-preventive-quality-recovery.mjs';
-import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
+import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -107,6 +107,21 @@ Deno.serve(async req=>{
   if(!validMiraGenerationReference(manifest))return json({ok:false,error:'MIRA_CANONICAL_REFERENCE_VIDEO_REQUIRED',allowed_generation_modes:MIRA_ALLOWED_REFERENCE_VIDEO_MODES,master_reference_id:MIRA_MASTER_REFERENCE_ID,master_reference_url:MIRA_MASTER_REFERENCE_URL},422);
   if(!allowed.includes(provider))return json({ok:false,error:'MEDIA_PROVIDER_NOT_ALLOWED',provider,postType},422);
   if(policy?.required_provider&&provider!==policy.required_provider)return json({ok:false,error:'MEDIA_PROVIDER_REQUIRED',required:policy.required_provider},422);
+
+  // No known rejected history may be re-submitted, even if it is not the most
+  // recent failure. Check durable Brain occurrences before downloading the MP4
+  // or charging vision/temporal AI. Unknown Brain state fails closed.
+  if(postType==='reel'){
+    const historyProof=await checkHistoricalMiraHistoryRejection(db,manifest.openart_history_id);
+    if(historyProof.kind==='invalid')return json({ok:false,error:'MIRA_OPENART_HISTORY_REQUIRED_FOR_DEDUPE'},422);
+    if(historyProof.kind==='unavailable')return json({ok:false,error:'MIRA_REJECTED_HISTORY_READBACK_UNAVAILABLE'},503);
+    if(historyProof.kind==='rejected')return json({
+      ok:false,error:'MIRA_OPENART_HISTORY_PREVIOUSLY_REJECTED',
+      openart_history_id:historyProof.historyId,
+      proof:'CANONICAL_BRAIN_REJECTED_HISTORY',
+      next_action:'No repeated AI verification or publication of previously rejected provider bytes. Only a genuinely new source-locked, budget-approved candidate may be examined.'
+    },422);
+  }
   let proof:any={};
 
   if(postType==='image'){

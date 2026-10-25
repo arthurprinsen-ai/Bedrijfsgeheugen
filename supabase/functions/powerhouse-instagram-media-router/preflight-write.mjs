@@ -129,3 +129,22 @@ export async function recordMediaProofRejection(db,{job,ob,code,position,history
   }
   return {kind:'applied',last_error};
 }
+
+/**
+ * Canonical Brain rejects are permanent for exact OpenArt provider history.
+ * A media candidate rejected on Monday cannot be quietly retried on Tuesday,
+ * nor can alternating two rejected histories reset the verifier. Read-only.
+ */
+export async function checkHistoricalMiraHistoryRejection(db,historyId){
+  const hist=String(historyId??'').trim();
+  if(!/^[A-Za-z0-9]{8,64}$/.test(hist))
+    return {kind:'invalid'};
+  const prefix='router:openart:'+hist+':instagram:';
+  try {
+    const {data,error}=await db.from('brain_failure_occurrences')
+      .select('occurrence_id').like('occurrence_id',prefix+'%').limit(1);
+    if(error)return {kind:'unavailable'};
+    if(!Array.isArray(data))return {kind:'unavailable'};
+    return data.length>0?{kind:'rejected',historyId:hist}:{kind:'clear',historyId:hist};
+  }catch{return {kind:'unavailable'};}
+}

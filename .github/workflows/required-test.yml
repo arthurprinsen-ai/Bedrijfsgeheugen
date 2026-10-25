@@ -103,6 +103,8 @@ jobs:
         run: node --test tests/brain-mira-preventive-producer-qa-20261025.test.mjs
       - name: Verify real native Mira MP4 dimensions before expensive vision calls
         run: node --test tests/brain-mira-native-format-before-vision-20261025.test.mjs
+      - name: Reject every historically failed Mira OpenArt asset before costly vision
+        run: node --test tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs
       - name: Verify exact canonical commercial publication evidence reconciliation
         run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness
