@@ -1,0 +1,15 @@
+{
+  "obligation_id": "growth-cro-frisse-blik-consented-lead-record-20261025",
+  "date": "2026-10-25",
+  "trigger": "39 unverified anonymous scans cannot establish a contactable lead",
+  "root_cause": "Existing visible post-scan CTA opened the consent modal and Calendly, but didn't write into private canonical commercial_leads; only email delivery after a provisional booking signal",
+  "change": "Explicit voluntary follow-up and separate optional marketing consent -> first-party server intake -> private commercial_leads -> database readback -> Calendly attribution via existing session UTM",
+  "guardrails": [
+    "Do not backfill anonymous scans into marketing contacts",
+    "Never infer marketing consent",
+    "Do not treat booking widget message as provider-verified meeting",
+    "No lead without matching DB readback",
+    "No revenue claims without provider payment proof"
+  ],
+  "acceptance": "Exact-head Required+CodeQL+Netlify deploy/readback and a real opt-in form outcome required; no test PII inserted to production"
+}
