@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Read-only SQL test oracle preflight. No schema changes or migration repair.
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { resolve, join, basename } from 'node:path';
 import { existsSync } from 'node:fs';
 
