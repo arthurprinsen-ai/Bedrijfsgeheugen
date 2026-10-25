@@ -72,3 +72,12 @@ test('hard limits fail closed and missing canonical assessment cannot create an 
   assert.equal(plan.planned,0);
   assert.equal(plan.remainingDue,1);
 });
+
+test('malformed model suggestion cannot turn internal research into automatic outreach',()=>{
+  const plan=planOpportunityFollowups({now,
+    opportunities:[entry('weak-buying-signal')],
+    assessments:[assess('weak-buying-signal','RESEARCH_REQUIRED',{nextAction:'SEND_COLD_EMAIL'})]
+  });
+  assert.equal(plan.actions[0].action,'VERIFY_NEED_IMPACT_AND_URGENCY');
+  assert.equal(plan.actions[0].obligation.payload.outreach_authorized,false);
+});
