@@ -1,0 +1,15 @@
+{
+  "fingerprint": "github-ci-hygiene|admission-closure|20261025-v1",
+  "obligation_id": "github-ci-hygiene-evidence-contract-20261025",
+  "status": "RECOVERING",
+  "observed": {
+    "run_id": 40225204852,
+    "admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
+    "codeql": "success"
+  },
+  "cause": "Initial candidate omitted the material writeback closure files; admission appropriately failed closed.",
+  "fix": "Add canonical learning, human documentation and development ledger to the same protected candidate.",
+  "prevent": "Agent skill requires closure evidence and exact SHA required checks before merge.",
+  "verification": "PENDING exact-head Required/BRAIN/CodeQL; protected merge and production readback not yet proven",
+  "owner": "github-ci-hygiene-evidence-contract-20261025"
+}
