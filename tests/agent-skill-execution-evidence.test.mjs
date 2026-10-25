@@ -42,3 +42,8 @@ test('every run is required', () => {
 });
 test('no runs is unknown, not green', () =>
   assert.equal(summarizeAgentCoverage([], {'growth-agent':manifest}).status, 'UNPROVEN'));
+
+test('run-bound receipt cannot be reused for another execution', () => {
+  const x = good(); x.runId = 'run-999';
+  assert.equal(validateSkillExecutionEvidence(x, manifest).status, 'UNPROVEN');
+});
