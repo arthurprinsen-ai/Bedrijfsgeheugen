@@ -228,3 +228,19 @@ test('missing source is still a real independent integrity failure',async()=>{
   assert.equal(result.persisted,1);
   assert.equal(f.data.has(broken),true);
 });
+test('legacy fallback skips indexed pointers and does not double report read failures',async()=>{
+  const event='event/new',pointer='pending/'+event,f=fixture([event]);
+  f.data.set(pointer,{source_key:event});
+  let pointerReads=0;
+  const originalGet=f.store.get.bind(f.store);
+  f.store.get=async key=>{if(key===pointer)pointerReads++;return originalGet(key)};
+  let persistCalls=0;
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{persistCalls++;return{persisted:true,readback:{queue_id:'ok'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(pointerReads,1,'pending pointer only read in indexed lane');
+  assert.equal(persistCalls,1,'source only sent once');
+  assert.equal(result.indexIntegrityFailures,0);
+  assert.equal(result.persisted,1);
+});

@@ -89,7 +89,10 @@ export async function drainGrowthQueue({
         if(replayed>=maxReplay)break;
         if(!canStart()){budgetExpired=true;break;}
         scanned++;
-      if(blob.key.startsWith('_control/'))continue;
+      // The legacy scan must ignore disposable pointers already visited by the
+      // dedicated indexed lane. They are not immutable source events and could
+      // disappear between list() and get() as another invocation finishes.
+      if(blob.key.startsWith('_control/')||(!indexed&&blob.key.startsWith('pending/')))continue;
       let sourceKey=blob.key;
       if(indexed){
         indexedSeen++;

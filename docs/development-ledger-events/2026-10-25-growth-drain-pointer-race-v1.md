@@ -8,3 +8,5 @@
 - Technical correction: successful null `get` is benign concurrency, thrown `get` is an error, corrupted non-null pointer stays an error; keep source records and cron.
 - Regression: `node --test tests/brain-growth-drain-time-budget-v1.test.mjs` and full Required+CodeQL+Netlify.
 - Terminal proof: protected release matching production SHA, independent minute `indexPointerGone` counter, persisted events and no false 503; qualified conversions and paid invoices separately.
+
+- CI-failed replay repaired: exclude indexed `pending/` keys from legacy fallback to prevent duplicate read-failure counts; historical event sources still processed.

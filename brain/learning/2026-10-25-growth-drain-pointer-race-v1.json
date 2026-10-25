@@ -19,7 +19,8 @@
     "A thrown provider read is NOT a missing pointer and remains a visible integrity error",
     "Never delete original source receipts or fabricate visitor conversion",
     "Preserve backpressure, at-least-once idempotency and fail-closed real corruption",
-    "Do not add duplicate cron or parallel executor"
+    "Do not add duplicate cron or parallel executor",
+    "Legacy fallback must exclude all pending/ disposable index records; otherwise provider exceptions are counted twice and snapshot races become false failures."
   ],
   "evaluation": {
     "historical_replay": [
