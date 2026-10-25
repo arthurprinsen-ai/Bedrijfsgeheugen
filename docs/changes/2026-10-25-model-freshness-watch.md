@@ -1,0 +1,3 @@
+# Model evidence watch and guarded branch integration
+
+Adds a daily read-only model freshness monitor, evidence backlog, supplier-link availability probe and a delivery-admission regression. Main integration was performed via a two-parent merge commit with GitHub Git objects and an expected-head ref update, preserving existing 27-model recovery lane mappings. Supplier HTTP reachability is not proof of model claims. Existing 14-day auto-recommendation freshness gate is unchanged. Required initially failed due to missing integration bundle evidence; this document accompanies the canonical Brain learning and activity ledger to close that requirement. No production release or independent supplier verification is claimed.
