@@ -1,0 +1,445 @@
+{
+  "schema": "model-freshness-recovery-worklist-v1",
+  "observed_date": "2026-10-25",
+  "catalog_path": "data/ai-model-catalog-v1.json",
+  "catalog_size": 110,
+  "stale_after_days": 14,
+  "stale_count": 27,
+  "source_urls_are_existing_catalog_references_not_new_verification": true,
+  "verified_at_must_not_be_advanced_without_fresh_per_claim_receipts": true,
+  "no_auto_activation": true,
+  "models": [
+    {
+      "id": "deepseek-flash",
+      "provider": "DeepSeek",
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "provider": "DeepSeek",
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "command-a-plus",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/docs/command-a-plus",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "embed-4",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/docs/cohere-embed",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "rerank-4-pro",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/v2/docs/rerank",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "embed-multilingual-v3.0",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/docs/cohere-embed",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "gemini-3.7-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/pricing",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-2-lite",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-2-sonic",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-premier",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-pro",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-lite",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-micro",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-sonic",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-multimodal-embeddings",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-canvas",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-nova-reel",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-titan-text-embeddings-v2",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-titan-image-generator-g1-v2",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "amazon-titan-multimodal-embeddings-g1",
+      "provider": "Amazon",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "falcon-h1-0.5b-instruct",
+      "provider": "TII/Falcon",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "falcon-h1-1.5b-instruct",
+      "provider": "TII/Falcon",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "falcon-h1-3b-instruct",
+      "provider": "TII/Falcon",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "falcon-h1-7b-instruct",
+      "provider": "TII/Falcon",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "falcon-h1-34b-instruct",
+      "provider": "TII/Falcon",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    },
+    {
+      "id": "falcon-h1r-7b",
+      "provider": "TII/Falcon",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+      "previous_verified_at": "2026-09-30",
+      "review_state": "PENDING_INDEPENDENT_REVIEW",
+      "automatic_recommendation_eligible": false,
+      "claims_to_recheck": [
+        "model_id",
+        "status",
+        "pricing",
+        "capabilities",
+        "deployment",
+        "governance"
+      ]
+    }
+  ]
+}

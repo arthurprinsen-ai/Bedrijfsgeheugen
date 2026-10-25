@@ -111,6 +111,8 @@ jobs:
         run: node --test tests/brain-mira-provider-native-prespend-20261025.test.mjs
       - name: Verify 9:16 derived Mira reference cannot bypass canonical identity and publication controls
         run: node --test tests/brain-mira-portrait-reference-proof-20261025.test.mjs
+      - name: Verify pinned Mira derivative is eligible only with independent real identity proof
+        run: node --test tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs
       - name: Verify exact canonical commercial publication evidence reconciliation
         run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness
