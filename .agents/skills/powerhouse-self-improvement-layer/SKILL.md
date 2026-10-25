@@ -124,3 +124,11 @@ Fingerprint: powerhouse|learning-preflight|intent-only-target-inference|20261025
 The existing Brain preflight forwards natural-language intent to the canonical skill projection. Even without explicit delivery-lane labels, it reads the latest relevant historical prevention rules. Every mandatory and exact-fingerprint rule remains; other lessons are bounded. The receipt contains source-backed fingerprints, digest, inferred targets, match and truncation counts. A search miss never proves that no relevant prior fix exists.
 
 New AI models, tools, skills and innovations are versioned candidates until freshness, provenance, tenant/privacy, cost, benchmark, Required+CodeQL and independent production proof pass. Do not create a second memory, scheduler, authority or unverified green status.
+
+## Canonical skill source attestation (2026-10-25)
+
+Fingerprint: `powerhouse|agent-skill-source-attestation|preflight-digest-load-boundary|20261025-v1`.
+
+Before material execution, use the existing `scripts/brain/chat-learning-preflight.mjs` to obtain the latest deterministic inventory of `.agents/skills/*/SKILL.md`. Its `skill_projection.source_attestation` carries the source SHA-256, inventory digest, source path and task-matched selection. The four mandatory baseline skills are continuity, self-improvement, System Map governance and toolchain authority. Load the actual selected skill text and record actor, execution ID, source path, exact source digest and load timestamp in the existing canonical activity/learning evidence before claiming that a skill was consumed. `SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED` is not a successful consumption claim; old skills without frontmatter remain visible as metadata warnings, not automatically upgraded.
+
+External Agent Skills, MCP and OpenTelemetry conventions may be assessed as evidence-backed versioned candidates, **never auto-installed or promoted** on search results alone. Check official specification provenance, version, security/privacy, tool authority, cost and isolated regression before a protected release. Reuse current Brain, skills, Heartbeat, delivery and learning authorities; no parallel knowledge store or extra scheduler.

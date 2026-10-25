@@ -197,7 +197,7 @@ export function verifySkillProjectionIndex({ rootDir = process.cwd(), index } = 
   };
 }
 
-export function selectSkillProjection(index, { fingerprints = [], targets = [], intent = '', maxEntries = null } = {}) {
+export function selectSkillProjection(index, { fingerprints = [], targets = [], intent = '', maxEntries = null, maxSelectedBytes = null } = {}) {
   const wantedFingerprints = new Set(stableUnique(fingerprints));
   const inferredTargets = inferSkillTargetsFromIntent(intent);
   const wantedTargets = new Set(stableUnique([...targets, ...inferredTargets]));
@@ -208,20 +208,32 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [], 
     if (wantedFingerprints.has(entry.fingerprint)) return true;
     return (entry.skill_targets ?? []).some(target => wantedTargets.has(target));
   });
-  let selected = matching;
-  if (Number.isInteger(maxEntries) && maxEntries > 0) {
-    const mandatory = matching.filter(entry => entry.mandatory_preflight === true);
-    const exact = matching.filter(entry => entry.mandatory_preflight !== true && wantedFingerprints.has(entry.fingerprint));
-    const other = matching
-      .filter(entry => entry.mandatory_preflight !== true && !wantedFingerprints.has(entry.fingerprint))
-      .sort((a, b) => {
-        const recentB = (b.sources ?? []).at(-1) ?? '';
-        const recentA = (a.sources ?? []).at(-1) ?? '';
-        return recentB.localeCompare(recentA) || a.fingerprint.localeCompare(b.fingerprint);
-      });
-    // Mandatory rules and exact requests cannot be lost to the retrieval budget.
-    selected = [...mandatory, ...exact,
-      ...other.slice(0, Math.max(0, maxEntries - mandatory.length - exact.length))];
+  const mandatory = matching.filter(entry => entry.mandatory_preflight === true);
+  const exact = matching.filter(entry => entry.mandatory_preflight !== true && wantedFingerprints.has(entry.fingerprint));
+  const other = matching.filter(entry => !mandatory.includes(entry) && !exact.includes(entry))
+    .sort((a, b) => {
+      const recentB = (b.sources ?? []).at(-1) ?? '';
+      const recentA = (a.sources ?? []).at(-1) ?? '';
+      return recentB.localeCompare(recentA) || a.fingerprint.localeCompare(b.fingerprint);
+    });
+  const optionalLimit = Number.isInteger(maxEntries) && maxEntries > 0
+    ? Math.max(0, maxEntries - mandatory.length - exact.length) : other.length;
+  const preferred = [...mandatory, ...exact, ...other.slice(0, optionalLimit)];
+  const deferred = other.slice(optionalLimit);
+  if (maxSelectedBytes !== null && (!Number.isInteger(maxSelectedBytes) || maxSelectedBytes < 1))
+    throw new Error('SKILL_PROJECTION_INVALID_BYTE_BUDGET');
+  let consumedBytes = 2;
+  const selected = [];
+  for (const entry of preferred) {
+    const bytes = Buffer.byteLength(JSON.stringify(entry), 'utf8') + 1;
+    if (maxSelectedBytes !== null && consumedBytes + bytes > maxSelectedBytes) {
+      if (entry.mandatory_preflight === true || wantedFingerprints.has(entry.fingerprint))
+        throw new Error('maxBytes exceeded: SKILL_PROJECTION_REQUIRED_ENTRY_EXCEEDS_BUDGET:' + entry.fingerprint);
+      deferred.push(entry);
+      continue;
+    }
+    consumedBytes += bytes;
+    selected.push(entry);
   }
   return {
     fingerprint: SKILL_PROJECTION_FINGERPRINT,
@@ -231,9 +243,94 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [], 
     inferred_targets: inferredTargets,
     matched_count: matching.length,
     truncated_count: matching.length - selected.length,
-    selected_entries: selected
+    selected_entries: selected,
+    deferred_entry_count: deferred.length,
+    deferred_digest: sha256(JSON.stringify(deferred.map(entry => [entry.fingerprint, entry.source_digest]))),
+    deferred_source_authority: 'brain/learning/**/*.json',
+    deferred_readback_required: deferred.length > 0,
+    projection_completeness: deferred.length > 0 ? 'PARTIAL_REQUIRES_LAZY_LOAD' : 'FULLY_SELECTED'
   };
 }
+
+export const MANDATORY_SKILL_SOURCE_NAMES = Object.freeze([
+  'powerhouse-continuity',
+  'powerhouse-self-improvement-layer',
+  'powerhouse-system-map-governance',
+  'powerhouse-toolchain-authority'
+]);
+
+/**
+ * Inventory actual repository skill sources. Knowing the digest does not
+ * prove that an agent loaded the instructions during an execution.
+ */
+export function buildSkillSourceManifest({ rootDir = process.cwd() } = {}) {
+  const skillRoot = path.join(rootDir, '.agents', 'skills');
+  if (!fs.existsSync(skillRoot)) throw new Error('SKILL_SOURCE_ROOT_MISSING');
+  const entries = [];
+  for (const directory of fs.readdirSync(skillRoot, { withFileTypes: true }).filter(item => item.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const file = path.join(skillRoot, directory.name, 'SKILL.md');
+    if (!fs.existsSync(file)) throw new Error('SKILL_SOURCE_MISSING:' + directory.name);
+    const source = fs.readFileSync(file, 'utf8');
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1] ?? '';
+    const named = frontmatter.match(/^name:\s*(.+?)\s*$/m)?.[1]?.replace(/^['"]|['"]$/g, '') ?? '';
+    const description = frontmatter.match(/^description:\s*(.+?)\s*$/m)?.[1] ?? '';
+    const metadata_status = !frontmatter ? 'LEGACY_MISSING_FRONTMATTER'
+      : named !== directory.name ? 'NAME_MISMATCH'
+      : !description.trim() ? 'MISSING_DESCRIPTION'
+      : 'VALID';
+    entries.push({
+      name: directory.name,
+      source: '.agents/skills/' + directory.name + '/SKILL.md',
+      source_sha256: sha256(source),
+      metadata_status
+    });
+  }
+  if (!entries.length) throw new Error('SKILL_SOURCE_INVENTORY_EMPTY');
+  const inventory_digest = sha256(JSON.stringify(entries));
+  return {
+    fingerprint: 'powerhouse-skill-source-attestation-v1',
+    authority: 'REPOSITORY_SKILL_FILES_NOT_PARALLEL_MEMORY',
+    entry_count: entries.length,
+    inventory_digest,
+    entries,
+    metadata_warnings: entries.filter(entry => entry.metadata_status !== 'VALID').map(entry => ({
+      name: entry.name,
+      reason: entry.metadata_status
+    }))
+  };
+}
+
+export function selectSkillSourceManifest(manifest, { targets = [] } = {}) {
+  const entries = manifest?.entries ?? [];
+  const wanted = stableUnique(targets).map(target => target.toLowerCase());
+  const selected = entries.filter(entry => {
+    if (MANDATORY_SKILL_SOURCE_NAMES.includes(entry.name)) return true;
+    return wanted.some(target => {
+      if (entry.name.includes(target)) return true;
+      if (target === 'delivery') return /github|delivery|engineering|netlify|browser-gate/.test(entry.name);
+      if (target === 'social') return /instagram|linkedin|social|mira/.test(entry.name);
+      if (target === 'data') return /source|company-intelligence|connector|seo|model-intelligence/.test(entry.name);
+      if (target === 'foresight') return /foresight|self-improvement|ai-model/.test(entry.name);
+      if (target === 'security') return /security|toolchain|browser-gate/.test(entry.name);
+      if (target === 'continuity') return /continuity|system-map|self-improvement/.test(entry.name);
+      return false;
+    });
+  });
+  for (const required of MANDATORY_SKILL_SOURCE_NAMES) {
+    const source = selected.find(entry => entry.name === required);
+    if (!source) throw new Error('MANDATORY_SKILL_SOURCE_MISSING:' + required);
+    if (source.metadata_status !== 'VALID') throw new Error('MANDATORY_SKILL_SOURCE_INVALID:' + required);
+  }
+  return {
+    inventory_digest: manifest.inventory_digest,
+    selection_mode: wanted.length ? 'TASK_MATCHED_PLUS_MANDATORY' : 'MANDATORY_BASELINE',
+    selected_sources: selected,
+    consumption_status: 'SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED',
+    required_readback_fields: ['source', 'source_sha256', 'actor_id', 'execution_id', 'loaded_at'],
+    no_claim_of_use_without_readback: true
+  };
+}
+
 
 const isCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isCli) {
