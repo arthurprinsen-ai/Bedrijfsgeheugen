@@ -8,5 +8,11 @@
   "Bespreek je AFAS-koppeling": "Discuss your AFAS integration",
   "Zoek je specifiek een AFAS OCI-koppeling om bij leveranciers te bestellen? Dat is een andere route dan webshoporders naar AFAS sturen. Op de ": "Specifically looking for an AFAS OCI integration to purchase from suppliers? That is a different flow from sending webshop orders into AFAS. On the ",
   "AFAS-koppelingspagina": "AFAS integration page",
-  " lees je welke OCI-, InSite- en goedkeuringsvragen je vooraf moet beantwoorden. We bepalen de benodigde scope voordat we een prijs noemen.": " you can see which OCI, InSite and approval questions to answer first. We establish the required scope before quoting a price."
+  " lees je welke OCI-, InSite- en goedkeuringsvragen je vooraf moet beantwoorden. We bepalen de benodigde scope voordat we een prijs noemen.": " you can see which OCI, InSite and approval questions to answer first. We establish the required scope before quoting a price.",
+  "Bron:": "Source: ",
+  ". Wil je weten welke inrichting bij jouw proces past?": ". Want to know which setup suits your process? ",
+  "Zoek je specifiek een AFAS OCI-koppeling om bij leveranciers te bestellen? Dat is een andere route dan webshoporders naar AFAS sturen. Op de": "Specifically looking for an AFAS OCI integration to purchase from suppliers? That is a different flow from sending webshop orders into AFAS. On the ",
+  "lees je welke OCI-, InSite- en goedkeuringsvragen je vooraf moet beantwoorden. We bepalen de benodigde scope voordat we een prijs noemen.": " you can see which OCI, InSite and approval questions to answer first. We establish the required scope before quoting a price.",
+  "Bij een OCI-koppeling opent een medewerker vanuit": "With an OCI integration, an employee opens a supplier webshop from",
+  "InSite de webshop van een leverancier. Het winkelmandje komt terug in AFAS Profit als inkoopaanvraag; na goedkeuring kan de bestelling naar de leverancier. Hiervoor moeten inkoopaanvragen via InSite zijn ingericht.": "InSite. The shopping basket returns to AFAS Profit as a purchase request; after approval, the order can be sent to the supplier. Purchase requests through InSite must be configured first."
 }
