@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
 import {verifierProbeAuthorizesToken} from './_instagram-frame-auth-contract.mjs';
 import {instagramFrameSamplePoints} from './_instagram-frame-sampling.mjs';
+import {parseNativeVideoDimensions,checkNativeMiraReelDimensions} from './_instagram-native-reel-probe.mjs';
 
 const execFileAsync=promisify(execFile);
 const SUPABASE='https://adhjwmvyoixzjtmiroln.supabase.co';
@@ -72,6 +73,21 @@ export default async (request)=>{
     const input=join(dir,'source.mp4');
     await writeFile(input,bytes);
 
+    // Probe the ORIGINAL MP4 before any resize/pad or expensive vision call.
+    // Never trust caller-provided dimensions or infer native size from 1080x1920 JPG output.
+    const result=await execFileAsync(ffmpegPath,[
+      '-hide_banner','-i',input,'-map','0:v:0','-frames:v','0','-f','null','-'
+    ],{timeout:20000,maxBuffer:1024*1024});
+    const actual=checkNativeMiraReelDimensions(parseNativeVideoDimensions(result.stderr||''));
+    if(!actual.ok)return json({ok:false,error:actual.error,
+       native_dimensions_verified:actual.error==='MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',
+       actual_width:actual.width??null,actual_height:actual.height??null,
+       required_width:1080,required_height:1920,contract:actual.contract},422);
+    if(body.probeOnly===true){
+      return json({ok:true,contract:actual.contract,mediaUrl,
+        native_dimensions_verified:true,native_width:actual.width,native_height:actual.height,
+        frames:[]});
+    }
     const points=instagramFrameSamplePoints(duration);
     const frames=[];
     for(const [position,seconds] of points){
@@ -79,7 +95,7 @@ export default async (request)=>{
       const frame=await extractFrame(input,out,seconds);
       frames.push({position,seconds,mediaType:'image/jpeg',imageBase64:frame.toString('base64')});
     }
-    return json({ok:true,contract:'instagram-exact-video-frame-extraction-v1',mediaUrl,duration,frames});
+    return json({ok:true,contract:'instagram-exact-video-frame-extraction-v2',native_contract:actual.contract,native_dimensions_verified:true,native_width:actual.width,native_height:actual.height,mediaUrl,duration,frames});
   }catch(error){
     return json({ok:false,error:clean(error?.message||error).slice(0,200)},422);
   }finally{
