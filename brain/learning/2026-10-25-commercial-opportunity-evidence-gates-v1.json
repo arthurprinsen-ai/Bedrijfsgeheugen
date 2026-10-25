@@ -1,0 +1,40 @@
+{
+  "version": "growth-daily-opportunity-evidence-gates-20261025-v1",
+  "fingerprint": "growth|daily|latent-demand-2900-without-buyer-proof|20261025-v1",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "observedProduction": {
+    "date": "2026-10-25",
+    "openOpportunities": 837,
+    "opportunityStage": 618,
+    "signalStage": 219,
+    "offersSubmitted": 9,
+    "signedOffers": 4,
+    "verifiedSalesRevenueEur": 0
+  },
+  "rootCause": "The existing daily Social/Latent-Demand growth builder uses a €2900 assumption and global engagement confidence when writing per-company opportunity economic fields; no exact confirmed buyer need, decision process, offer fit or first-party intent receipt is required. Production powerhouse_opportunities expected_value_eur and expected_revenue_value are NOT NULL with nonnegative checks; writing null would fail the whole existing daily batch.",
+  "prevention": [
+    "Only exact opportunity_key matched, independently verified buyer/funnel evidence qualifies saleability",
+    "Apply need-discovery stages before proposal selection",
+    "Do not infer revenue or conversion from comments, likes, website hits, signed quote, unproved outcomes or estimates",
+    "Unknown financial value is null in advice, but database NOT NULL numeric fields are 0 sentinels, explicitly labeled economic_value_verified=false",
+    "Match payment evidence to a verified provider receipt and exact opportunity",
+    "Rotate candidate research fairly inside the existing daily scheduler; no parallel queue",
+    "Do not execute outreach or protected deployment from a readiness decision",
+    "Require Required, CodeQL and authenticated production readback before LIVE_PROVEN",
+    "Count the same verified payment receipt only once even across different outcome events; conflicting amounts block realized value"
+  ],
+  "tests": [
+    "tests/brain-commercial-opportunity-evidence-20261025.test.mjs",
+    "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs",
+    "tests/growth-intelligence-daily.test.mjs"
+  ],
+  "learningTarget": "Each next daily run reranks by proven saleability, lists missing proof and records independent stage receipts before learning from actual customer actions; status remains evidence-dependent.",
+  "businessSuccessDefinition": "Verified requests, proposals, orders and independently paid revenue linked to one canonical opportunity, with measured impact on future decisions.",
+  "noNewScheduler": true,
+  "noNewCRM": true,
+  "noNewGrowthQueue": true,
+  "noUnauthorizedOutreach": true,
+  "independentRevenueProofRequired": true,
+  "releaseStatus": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+}
