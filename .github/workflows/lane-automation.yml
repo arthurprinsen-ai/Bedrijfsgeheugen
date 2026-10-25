@@ -27,6 +27,7 @@ jobs:
             tests/delivery-*.test.mjs \
             tests/brain-delivery-system.test.mjs \
             tests/agent-skill-execution-evidence.test.mjs \
+            tests/brain-skill-byte-audit.test.mjs \
             tests/brain-agent-skill-execution-evidence.test.mjs \
             tests/powerhouse-one-loop-*.test.mjs \
             tests/powerhouse-organism-propagation.test.mjs \
