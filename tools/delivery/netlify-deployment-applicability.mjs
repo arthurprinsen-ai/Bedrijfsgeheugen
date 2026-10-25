@@ -118,3 +118,33 @@ export function deriveNetlifyDeploymentApplicability({
     reason:deploymentRequired?'netlify-impact':'non-netlify-impact',
   });
 }
+
+/**
+ * Classify production evidence separately from source-level release success.
+ * A governance-only change does not require a new Netlify deploy, so differing
+ * provider/main SHAs are expected and must not be called a deployment failure.
+ * This function never treats an unverified provider response as LIVE.
+ */
+export function classifyNetlifyDeploymentEvidence({applicability,headSha,providerCommitSha,providerState}={}) {
+  if (!applicability || typeof applicability.deploymentRequired !== 'boolean') {
+    return Object.freeze({status:'UNKNOWN',reason:'missing-applicability'});
+  }
+  if (applicability.reason === 'explicit-no-deploy') {
+    return Object.freeze({status:'UNKNOWN',reason:'explicit-deployment-skip-requires-independent-proof'});
+  }
+  if (!applicability.deploymentRequired) {
+    return Object.freeze({status:'NOT_REQUIRED',reason:'governance-only-change',productionVerified:false});
+  }
+  const target=String(headSha||'').trim().toLowerCase();
+  const observed=String(providerCommitSha||'').trim().toLowerCase();
+  if (!/^[0-9a-f]{40}$/.test(target) || !/^[0-9a-f]{40}$/.test(observed)) {
+    return Object.freeze({status:'UNKNOWN',reason:'missing-exact-commit-evidence',productionVerified:false});
+  }
+  if (providerState !== 'ready' && providerState !== 'current') {
+    return Object.freeze({status:'PENDING',reason:'provider-deploy-not-ready',productionVerified:false});
+  }
+  if (target !== observed) {
+    return Object.freeze({status:'PENDING',reason:'production-sha-mismatch',productionVerified:false});
+  }
+  return Object.freeze({status:'SHA_MATCHED',reason:'provider-sha-match-needs-runtime-readback',productionVerified:false});
+}
