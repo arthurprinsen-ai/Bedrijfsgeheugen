@@ -31,7 +31,7 @@ export function planOpportunityFollowups({
   const byKey=new Map((Array.isArray(assessments)?assessments:[])
     .filter(x=>txt(x?.opportunityKey)).map(x=>[txt(x.opportunityKey),x]));
   const seen=new Set(),due=[],future=[];
-  let nullDates=0,overdueDates=0,open=0;
+  let nullDates=0,overdueDates=0,open=0,unqualifiedDue=0;
   for(const source of Array.isArray(opportunities)?opportunities:[]){
     if(txt(source?.status)!=='open'||!txt(source?.opportunity_key))continue;
     const key=txt(source.opportunity_key);
@@ -41,7 +41,7 @@ export function planOpportunityFollowups({
     if(dueTime!==null&&dueTime>at){future.push(key);continue;}
     if(dueTime===null)nullDates++;else overdueDates++;
     const assessment=byKey.get(key);
-    if(!assessment)continue; // Never generate a task without canonical commercial qualification.
+    if(!assessment){unqualifiedDue++;continue;} // Keep it in the uncovered tally, never invent qualification.
     const classification=txt(assessment.classification);
     if(!(classification in classifications))continue;
     due.push({
@@ -101,8 +101,9 @@ export function planOpportunityFollowups({
   return Object.freeze({
     contract:'opportunity-next-action-coverage-v1',open,
     withoutNextActionDate:nullDates,overdue:overdueDates,
-    alreadyScheduled:future.length,uncovered:due.length,
-    planned:actions.length,remainingDue:Math.max(0,due.length-actions.length),
+    alreadyScheduled:future.length,uncovered:nullDates+overdueDates,
+    missingQualification:unqualifiedDue,
+    planned:actions.length,remainingDue:Math.max(0,nullDates+overdueDates-actions.length),
     actions:Object.freeze(actions),
     schedulingIsNotExecution:true,
     revenueVerifiedByPlanner:false
