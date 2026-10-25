@@ -1,6 +1,7 @@
 // Provider quota exhaustion is explicit; fallback uses independently observed DataForSEO SERP results, not synthetic signals.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectExternalTopics } from './topic-selection.mjs';
+import { dataforseoRecoveryPlan,isRecentFailedSourceTopic } from './provider-recovery.mjs';
 
 const BRON='bg-externe-signalen';
 const CONTRACT='tavily-signal-ingest-v2-bounded';
@@ -21,6 +22,8 @@ const safeFailure=(error:unknown)=>{
   if(/HTTP_429|rate.limit/i.test(detail))return 'UPSTREAM_RATE_LIMIT';
   if(/TimeoutError|TAVILY_TIMEOUT|timed? ?out/i.test(detail))return 'UPSTREAM_TIMEOUT';
   if(/DATAFORSEO_CREDENTIALS_UNAVAILABLE/.test(detail))return 'DATAFORSEO_CREDENTIALS_UNAVAILABLE';
+  if(/DATAFORSEO_STATUS_40101/.test(detail))return 'DATAFORSEO_SEARCH_ENGINE_INTERNAL';
+  if(/DATAFORSEO_STATUS_(402|40100|40200)/.test(detail))return 'DATAFORSEO_BILLING_OR_AUTH_REQUIRED';
   if(/DATAFORSEO/.test(detail))return 'DATAFORSEO_REMOTE_FAILURE';
   return 'UPSTREAM_OR_VALIDATION_FAILURE';
 };
@@ -34,24 +37,39 @@ const DATAFORSEO_ENDPOINT='https://api.dataforseo.com/v3/serp/google/organic/liv
 const DATAFORSEO_TIMEOUT_MS=35000; // Existing pg_net scheduler transport allows 120s; Tavily remains 12s.
 async function dataforseoSerp(query:string,login:string,password:string){
   if(!login||!password)throw new Error('DATAFORSEO_CREDENTIALS_UNAVAILABLE');
-  const r=await fetch(DATAFORSEO_ENDPOINT,{
-    method:'POST',
-    headers:{authorization:'Basic '+btoa(login+':'+password),'content-type':'application/json'},
-    body:JSON.stringify([{keyword:query,location_name:'Netherlands',language_code:'nl',depth:10}]),
-    signal:AbortSignal.timeout(DATAFORSEO_TIMEOUT_MS)
-  });
-  const b:any=await r.json().catch(()=>({}));
-  if(!r.ok||Number(b.status_code)!==20000)throw new Error('DATAFORSEO_REMOTE_FAILURE');
-  const task=b.tasks?.[0];
-  if(task&&Number(task.status_code)!==20000)throw new Error('DATAFORSEO_TASK_'+String(task.status_code));
-  const items:any[]=task?.result?.[0]?.items||[];
-  // Paid listings are not market-truth signals. Unknown dates remain unknown.
-  return items.filter(x=>x.type==='organic'&&/^https?:\/\//.test(String(x.url||''))).slice(0,10).map(x=>({
-    url:String(x.url),title:String(x.title||''),content:String(x.description||''),
-    published_date:typeof x.timestamp==='string'?x.timestamp:null,
-    // Explicit rank proxy, not a claimed provider relevance score.
-    score:1/Math.max(1,Number(x.rank_group)||10)
-  }));
+  const once=async(keyword:string)=>{
+    const r=await fetch(DATAFORSEO_ENDPOINT,{
+      method:'POST',
+      headers:{authorization:'Basic '+btoa(login+':'+password),'content-type':'application/json'},
+      body:JSON.stringify([{keyword,location_name:'Netherlands',language_code:'nl',depth:10}]),
+      signal:AbortSignal.timeout(DATAFORSEO_TIMEOUT_MS)
+    });
+    const b:any=await r.json().catch(()=>({}));
+    const task=b.tasks?.[0];
+    const code=Number(task?.status_code||b?.status_code||0);
+    if(r.ok&&code===40102)return []; // Genuine no-results observation, not a fabricated SERP.
+    if(!r.ok||Number(b.status_code)!==20000||(task&&Number(task.status_code)!==20000)){
+      const err:any=new Error('DATAFORSEO_STATUS_'+(code||r.status));
+      err.statusCode=code;err.httpStatus=r.status;
+      throw err;
+    }
+    const items:any[]=task?.result?.[0]?.items||[];
+    return items.filter(x=>x.type==='organic'&&/^https?:\/\//.test(String(x.url||''))).slice(0,10).map(x=>({
+      url:String(x.url),title:String(x.title||''),content:String(x.description||''),
+      published_date:typeof x.timestamp==='string'?x.timestamp:null,
+      // Explicit SERP position proxy; no invented provider relevance or source date.
+      score:1/Math.max(1,Number(x.rank_group)||10)
+    }));
+  };
+  try{return {rows:await once(query),recovery:null};}
+  catch(error:any){
+    const plan=dataforseoRecoveryPlan({httpStatus:error?.httpStatus,statusCode:error?.statusCode,keyword:query});
+    if(!plan.retry)throw error;
+    // At most ONE additional provider request, for this failed topic only.
+    // Never replay successful topics or retry billing/authentication errors.
+    const rows=await once(plan.keyword);
+    return {rows,recovery:plan.reason};
+  }
 }
 
 Deno.serve(async(req:Request)=>{
@@ -78,12 +96,30 @@ Deno.serve(async(req:Request)=>{
       const out={ok:true,contract:CONTRACT,active_topics:0,processed:0};await bewijs(true,out);return json(out);
     }
     const topicRotation=selectExternalTopics(topics,{now:Date.now(),batch:BATCH});
-    const {selected,start}=topicRotation;
+    let {selected,start}=topicRotation;
+    const body:any=await req.json().catch(()=>({}));
+    const retryTopic=typeof body?.retry_topic==='string'?body.retry_topic.trim():'';
+    if(body?.retry_topic!==undefined&&(!retryTopic||retryTopic.length>120))
+      return json({ok:false,error:'RETRY_TOPIC_INVALID'},422);
+    if(retryTopic){
+      const active=topics.find((o:any)=>o.onderwerp===retryTopic);
+      if(!active)return json({ok:false,error:'RETRY_TOPIC_NOT_ACTIVE'},422);
+      const {data:recent,error:readError}=await db.from('powerhouse_evidence_source_observations')
+        .select('observed_at,evidence').eq('source_key','external-intelligence')
+        .contains('evidence',{producer_run:true})
+        .gte('observed_at',new Date(Date.now()-24*3600000).toISOString())
+        .order('observed_at',{ascending:false}).limit(30);
+      if(readError)throw new Error('RETRY_PROOF_READ_FAILED');
+      if(!isRecentFailedSourceTopic(recent,retryTopic))
+        return json({ok:false,error:'NO_RECENT_FAILED_TOPIC_EVIDENCE'},409);
+      selected=[active];start=topics.indexOf(active);
+    }
     const results=await Promise.all(selected.map(async(o:any)=>{
       try{
         let res:any[]=[];
         let provider='tavily';
         let fallbackReason:string|null=null;
+        let providerRecovery:string|null=null;
         if(tavily){
           try{
             const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:`Bearer ${tavily}`,'content-type':'application/json'},body:JSON.stringify({query:o.zoekvraag,topic:'news',days:7,max_results:6,search_depth:'basic',include_answer:false}),signal:AbortSignal.timeout(TAVILY_TIMEOUT_MS)});
@@ -94,12 +130,14 @@ Deno.serve(async(req:Request)=>{
             if(!dataforseoReady)throw error;
             fallbackReason=safeFailure(error);
             provider='dataforseo';
-            res=await dataforseoSerp(o.zoekvraag,dataforseoLogin,dataforseoPassword);
+            {const recovered=await dataforseoSerp(o.zoekvraag,dataforseoLogin,dataforseoPassword);
+            res=recovered.rows;providerRecovery=recovered.recovery;}
           }
         }else{
           provider='dataforseo';
           fallbackReason='TAVILY_CREDENTIAL_UNAVAILABLE';
-          res=await dataforseoSerp(o.zoekvraag,dataforseoLogin,dataforseoPassword);
+          {const recovered=await dataforseoSerp(o.zoekvraag,dataforseoLogin,dataforseoPassword);
+            res=recovered.rows;providerRecovery=recovered.recovery;}
         }
         const echt=res.filter(x=>!SOCIAAL.test(domeinVan(x.url)));
         const bevestiging=Math.min(1,Math.max(0,new Set(echt.map(x=>domeinVan(x.url))).size-1)/3);
@@ -113,7 +151,7 @@ Deno.serve(async(req:Request)=>{
           return{url:x.url,onderwerp:o.onderwerp,titel:titel.slice(0,300),samenvatting:String(x.content||'').slice(0,1500),domein:d,gepubliceerd_op:heeftDatum?pub!.toISOString():null,brontrouw:bt,bevestiging,versheid:Math.round(versheid*1000)/1000,relevantie,vertrouwen:v,ruis_reden:reden,toegestaan:!reden&&v>=DREMPEL,opgehaald_op:new Date().toISOString()};
         });
         if(rows.length){const {error:ue}=await db.from('bg_externe_signalen').upsert(rows,{onConflict:'url'});if(ue)throw new Error('UPSERT:'+ue.message)}
-        return{ok:true,topic:o.onderwerp,provider,fallback_reason:fallbackReason,found:rows.length,allowed:rows.filter(x=>x.toegestaan).length,noise:rows.filter(x=>x.ruis_reden).length};
+        return{ok:true,topic:o.onderwerp,provider,fallback_reason:fallbackReason,provider_recovery:providerRecovery,found:rows.length,allowed:rows.filter(x=>x.toegestaan).length,noise:rows.filter(x=>x.ruis_reden).length};
       }catch(e:any){return{ok:false,topic:o.onderwerp,error:safeFailure(e)}}
     }));
     const ok=results.filter((x:any)=>x.ok),failed=results.filter((x:any)=>!x.ok);
@@ -122,11 +160,11 @@ Deno.serve(async(req:Request)=>{
     if(ok.length){
       const providers=[...new Set(ok.map((x:any)=>x.provider))];
       const sourceKey=providers.includes('tavily')?'tavily-intelligence':'dataforseo-intelligence';
-      const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason})),relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),selection_contract:topicRotation.contract,selection_epoch_day:topicRotation.epochDay,selection_window_20m:topicRotation.window20m,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,successful_topics:ok.length,failed_topics:failed.length,found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
+      const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason,provider_recovery:x.provider_recovery})),failed_routes:failed.map((x:any)=>({topic:x.topic,error:x.error})),replay_of_observed_failed_topic:retryTopic||null,relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),selection_contract:retryTopic?'EXTERNAL_SOURCE_FAILED_TOPIC_REPLAY-v1':topicRotation.contract,selection_epoch_day:topicRotation.epochDay,selection_window_20m:topicRotation.window20m,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,successful_topics:ok.length,failed_topics:failed.length,found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:sourceKey,p_dedupe_key:'external-source-run:'+observedAt.slice(0,13)+':'+start,p_external_event_id:sourceKey+':'+observedAt,p_observed_at:observedAt,p_evidence:evidence});
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-producer:'+observedAt.slice(0,13)+':'+start,p_external_event_id:'external-intelligence:'+observedAt,p_observed_at:observedAt,p_evidence:{...evidence,authority:'bg_externe_signalen'}});
     }
-    const out={ok:failed.length===0,contract:CONTRACT,selection_contract:topicRotation.contract,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,active_topics:topics.length,processed:selected.length,successful:ok.length,failed:failed.length,found,allowed,noise,results};
+    const out={ok:failed.length===0,contract:CONTRACT,selection_contract:retryTopic?'EXTERNAL_SOURCE_FAILED_TOPIC_REPLAY-v1':topicRotation.contract,retry_topic:retryTopic||null,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,active_topics:topics.length,processed:selected.length,successful:ok.length,failed:failed.length,found,allowed,noise,results};
     await bewijs(ok.length>0,out,ok.length?'PARTIAL':'REMOTE');
     return json(out,ok.length?(failed.length?207:200):502);
   }catch(e:any){
