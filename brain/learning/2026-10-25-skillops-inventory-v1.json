@@ -1,0 +1,16 @@
+{
+  "id": "skillops-daily-inventory-4912",
+  "date": "2026-10-25",
+  "status": "candidate_not_live",
+  "obligation": "skillops|daily-inventory|immutable-skill-provenance|20261025-v1",
+  "observation": "Skill source inventory must be deterministic and verifiable before autonomous updates.",
+  "implementation": "Read-only inventory of .agents/skills and brain/skills using SHA-256 with regression assertions.",
+  "evidence": "tests/brain-skillops-inventory.test.mjs",
+  "limitations": [
+    "No daily schedule connected",
+    "No runtime loading evidence",
+    "No portal dashboard deployed",
+    "No production readback"
+  ],
+  "next_action": "Protected CI merge only after Required and CodeQL pass"
+}
