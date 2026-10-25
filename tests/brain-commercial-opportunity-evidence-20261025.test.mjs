@@ -17,7 +17,7 @@ const opportunity=(extra={})=>({opportunity_key:'opp:verified-1',company_key:'be
   },...extra});
 const outcome=(type,ext={})=>({opportunity_key:'opp:verified-1',outcome_id:'out:'+type,
   outcome_type:type,occurred_at:'2026-10-25T08:30:00Z',revenue_eur:0,
-  evidence:{verified:true,provider_receipt_id:'provider:ack-004',...ext.evidence},...ext});
+  ...ext,evidence:{verified:true,provider_receipt_id:'provider:ack-004',...ext.evidence}});
 
 test('engagement and forecast alone are not a sellable opportunity or 2900 euro truth',()=>{
   const candidate=qualifyCommercialOpportunity({
