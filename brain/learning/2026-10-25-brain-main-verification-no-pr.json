@@ -1,10 +1,39 @@
 {
-  "id": "brain-main-regression-no-pr-20261025",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
   "date": "2026-10-25",
-  "source": "github-actions:40218283550",
-  "failure_fingerprint": "brain-main-verify-empty-base-sha",
-  "root_cause": "Unified Brain Delivery assumes PR base SHA during verification-only main dispatch and invokes git rev-parse with an empty argument.",
-  "prevention": "Use independent main-only read-only regression workflow with immutable github.sha verification and uploaded logs; do not bypass PR admission for releases.",
-  "verification": "Required CI and CodeQL on exact PR head; first post-merge main workflow run with retained result.",
-  "status": "CANDIDATE_UNVERIFIED"
+  "status": "CANDIDATE",
+  "fingerprint": "brain|main-regression|missing-base-sha|20261025-v1",
+  "obligation_id": "ci-brain-independent-main-verification-20261025",
+  "failure_class": "BRAIN_MAIN_VERIFICATION_MISSING_BASE_SHA",
+  "observed_evidence": {
+    "failed_main_verification_run": "40218283550",
+    "failure": "git rev-parse with empty base SHA",
+    "failed_stale_candidate_run": "40218550793",
+    "candidate_failure": "SUPERSEDES_INVALID,WRITER_LEASE_HEAD_DRIFT"
+  },
+  "root_cause": "PR-delivery planner assumes base SHA even for verification-only dispatch on main.",
+  "fix": "Independent main-only manually dispatched immutable-SHA BRAIN regression job, with read-only repository access and full test log artifact; no deployment.",
+  "prevention_rule": "Never use stale PR writer leases to verify main regression. Keep standalone full BRAIN measurement independent from release authority.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-migration-source-preflight-20261025.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "BRAIN_MAIN_VERIFICATION_MISSING_BASE_SHA",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
