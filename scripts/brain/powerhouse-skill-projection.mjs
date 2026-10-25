@@ -16,6 +16,23 @@ const TARGET_RULES = [
   ['continuity', /continuity|learning|memory|agent|chat|skill|preflight|writeback|recovery/i]
 ];
 
+const TASK_INTENT_TARGET_RULES = Object.freeze([
+  ['delivery', /\b(?:github|gitops|ci|deployment|deploy|release|merge|codeql|productie|livegang|preview|migratie)\b/i],
+  ['social', /\b(?:instagram|linkedin|mira|social|reels?|posts?|video|publicatie|publiceren|publish(?:ing)?)\b/i],
+  ['portal', /\b(?:portaal|portal|dashboard|tenant|klantportaal)\b/i],
+  ['data', /\b(?:data|analytics|metingen?|seo|supabase|database|bronnen|brondata|evidence)\b/i],
+  ['foresight', /\b(?:innovatie(?:s)?|innovation|experiment(?:en)?|prediction|predictive|voorspellend|ai.modellen?|modelcatalogus)\b/i],
+  ['security', /\b(?:beveiliging|security|privacy|toestemming|consent|auth|identity|codeql)\b/i],
+  ['continuity', /\b(?:agents?|skills?|leren|learning|geheugen|memory|borging|borgen|vastleggen|logging|logboek|documentatie|incidenten?|continuity|preflight)\b/i]
+]);
+// Intent is an untrusted retrieval hint, never authority to deploy, send or override gates.
+export function inferSkillTargetsFromIntent(intent) {
+  if (typeof intent !== 'string' || !intent.trim()) return [];
+  return stableUnique(TASK_INTENT_TARGET_RULES
+    .filter(([, expression]) => expression.test(intent.slice(0, 2048)))
+    .map(([target]) => target));
+}
+
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
@@ -180,23 +197,40 @@ export function verifySkillProjectionIndex({ rootDir = process.cwd(), index } = 
   };
 }
 
-export function selectSkillProjection(index, { fingerprints = [], targets = [] } = {}) {
+export function selectSkillProjection(index, { fingerprints = [], targets = [], intent = '', maxEntries = null } = {}) {
   const wantedFingerprints = new Set(stableUnique(fingerprints));
-  const wantedTargets = new Set(stableUnique(targets));
+  const inferredTargets = inferSkillTargetsFromIntent(intent);
+  const wantedTargets = new Set(stableUnique([...targets, ...inferredTargets]));
   const hasHints = wantedFingerprints.size > 0 || wantedTargets.size > 0;
-  // Universal prevention is mandatory even when a default/CLI caller provides no task hints.
-  // Other learning remains task-targeted; this is not a full-registry dump.
-  const selected = (index.entries ?? []).filter(entry => {
+  const matching = (index.entries ?? []).filter(entry => {
     if (entry.mandatory_preflight === true) return true;
     if (!hasHints) return false;
     if (wantedFingerprints.has(entry.fingerprint)) return true;
-    return entry.skill_targets.some(target => wantedTargets.has(target));
+    return (entry.skill_targets ?? []).some(target => wantedTargets.has(target));
   });
+  let selected = matching;
+  if (Number.isInteger(maxEntries) && maxEntries > 0) {
+    const mandatory = matching.filter(entry => entry.mandatory_preflight === true);
+    const exact = matching.filter(entry => entry.mandatory_preflight !== true && wantedFingerprints.has(entry.fingerprint));
+    const other = matching
+      .filter(entry => entry.mandatory_preflight !== true && !wantedFingerprints.has(entry.fingerprint))
+      .sort((a, b) => {
+        const recentB = (b.sources ?? []).at(-1) ?? '';
+        const recentA = (a.sources ?? []).at(-1) ?? '';
+        return recentB.localeCompare(recentA) || a.fingerprint.localeCompare(b.fingerprint);
+      });
+    // Mandatory rules and exact requests cannot be lost to the retrieval budget.
+    selected = [...mandatory, ...exact,
+      ...other.slice(0, Math.max(0, maxEntries - mandatory.length - exact.length))];
+  }
   return {
     fingerprint: SKILL_PROJECTION_FINGERPRINT,
     projection_digest: index.projection_digest,
     total_entries: index.entry_count ?? index.entries?.length ?? 0,
     selection_mode: hasHints ? 'TASK_RELEVANT_WITH_MANDATORY_BASELINE' : 'MANDATORY_BASELINE_NO_TASK_HINTS',
+    inferred_targets: inferredTargets,
+    matched_count: matching.length,
+    truncated_count: matching.length - selected.length,
     selected_entries: selected
   };
 }
