@@ -59,7 +59,11 @@ test('postscan Frisse Blik action uses existing consent-gated 30-minute Calendly
   assert.match(html, /id="scanAdviceBooking" onclick="openLead\(\)"/, 'uses the existing consent modal');
   assert.match(html, /id="ldOk"/, 'explicit consent remains mandatory');
   assert.match(html, /!\$\('ldOk'\)\.checked/, 'no bypass of consent validation');
-  assert.match(html, /https:\/\/calendly\.com\/arthur-prinsen\/adviesgesprek-slimmer-geregeld/, 'reuse existing genuine provider scheduling route');
+  assert.match(html, const match = html.match(/calendly:'([^']+)'/);
+  assert.ok(match, 'original provider scheduling URL exists');
+  const eventUrl = new URL(match[1]);
+  assert.equal(eventUrl.origin, 'https://calendly.com', 'provider host must match exactly');
+  assert.equal(eventUrl.pathname, '/arthur-prinsen/adviesgesprek-slimmer-geregeld', 'reuse original event type');, 'reuse existing genuine provider scheduling route');
   assert.match(html, /function showCalStep\(lead\)/, 'reuse original booking flow');
   assert.match(html, /<button type="button" class="cta" id="scanAdviceBooking"/, 'real keyboard-activatable button');
 });

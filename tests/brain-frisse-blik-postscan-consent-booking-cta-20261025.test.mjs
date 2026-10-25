@@ -18,7 +18,11 @@ test('CTA routes through existing validated consent and real Calendly event',()=
  assert.match(page, /!\$\('ldOk'\)\.checked/);
  assert.match(page, /function openLead\(\)/);
  assert.match(page, /function showCalStep\(lead\)/);
- assert.match(page, /https:\/\/calendly\.com\/arthur-prinsen\/adviesgesprek-slimmer-geregeld/);
+ assert.match(page, const match=page.match(/calendly:'([^']+)'/);
+ assert.ok(match,'existing provider URL required');
+ const eventUrl=new URL(match[1]);
+ assert.equal(eventUrl.origin,'https://calendly.com','exact provider origin');
+ assert.equal(eventUrl.pathname,'/arthur-prinsen/adviesgesprek-slimmer-geregeld','exact approved advisory booking event'););
  assert.match(page, /calendly\.event_scheduled/);
 });
 
