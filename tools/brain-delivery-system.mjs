@@ -18,6 +18,8 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 
   'config/powerhouse-adaptive-delivery-v1.json': 'backend',
   'AGENTS.md': 'automation',
+  'tools/delivery/required-check-reconciliation.mjs': 'automation',
+  'tests/required-check-reconciliation.test.mjs': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',
   'tools/ci/netlify-ignore-build.mjs': 'backend',
