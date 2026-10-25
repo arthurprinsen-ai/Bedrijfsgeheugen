@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const workflow=readFileSync(new URL('../.github/workflows/autonomous-branch-sync.yml',import.meta.url),'utf8');
+const workflow=readFileSync(new URL('../.github/workflows/powerhouse-repository-janitor.yml',import.meta.url),'utf8');
 
-test('branch sync runs on main pushes and serializes reconciliation',()=>{
-  assert.match(workflow,/push:\s*\n\s*branches: \[main\]/);
-  assert.match(workflow,/group: autonomous-branch-sync/);
+test('branch sync reuses the existing serial hourly janitor rather than adding a workflow',()=>{
+  assert.match(workflow,/cron: '17 \* \* \* \*'/);
+  assert.match(workflow,/group: powerhouse-repository-janitor/);
+  assert.match(workflow,/name: Reconcile explicitly enrolled PR branches with main/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
 
