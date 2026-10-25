@@ -4,7 +4,8 @@ import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
-import {selectMiraProblem,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
+import {selectMiraProblem} from '../_shared/mira-entrepreneur-caption.mjs';
+import {validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
 
@@ -1382,15 +1383,35 @@ Deno.serve(async (req) => {
       reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem', mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
     }
     if(row.channel==='instagram_company') {
-      const verdict=validateMiraCaptionForDelivery(runDate,art.body,art.generation_evidence||{});
-      const masterFaceOk=miraFaceProofValid((art.generation_evidence?.instagram_media_proof||{}).instagram_visual||{},'reel');
-      const selected=selectMiraProblem(runDate);
-      const media=reviewPayload||{};
-      const mediaMatches=clean((art.generation_evidence?.instagram_media_proof||{}).mira_business_problem_id)===selected.id
-        && clean((art.generation_evidence?.instagram_media_proof||{}).mira_entrepreneur_scene)===selected.scene;
-      if(!verdict.ok||!mediaMatches||!masterFaceOk){
-        const error=!verdict.ok?verdict.reason:!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
-        const ev={...(row.delivery_evidence||{}),mira_entrepreneur_caption_contract:'mira-entrepreneur-problem-to-portal-caption-v1',canonical_problem_id:selected.id,provider_truth_verified:false,error,republish_forbidden:false};
+      const captionEvidence=art.generation_evidence||{};
+      const proof=captionEvidence.instagram_media_proof||{};
+      const verdict=validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence);
+      const masterFaceOk=miraFaceProofValid(proof.instagram_visual||{},'reel');
+      const sourceLed=captionEvidence.mira_source_led===true;
+      const selected=sourceLed?null:selectMiraProblem(runDate);
+      const [{data:dailyWinner,error:winnerError},{data:dailyLineage,error:lineageError}]=await Promise.all([
+        db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id').eq('run_date',runDate).maybeSingle(),
+        db.from('powerhouse_mira_problem_lineage_v1').select('winner_recommendation_id,source_evidence,state').eq('run_date',runDate).maybeSingle()
+      ]);
+      const sourceConsistent=!winnerError&&!lineageError
+        &&(!sourceLed||(!!dailyWinner&&!!dailyLineage
+          &&clean(dailyWinner.recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
+          &&clean(dailyLineage.winner_recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
+          &&clean(dailyLineage.source_evidence?.source_hash)===clean(captionEvidence.mira_source_hash)
+          &&dailyLineage.state==='WINNER_FROZEN'));
+      const mediaMatches=sourceLed
+        ? (proof.mira_source_led===true
+          &&clean(proof.mira_winner_recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
+          &&clean(proof.mira_source_hash)===clean(captionEvidence.mira_source_hash)
+          &&clean(proof.mira_entrepreneur_scene)===clean(captionEvidence.mira_entrepreneur_scene)
+          &&clean(proof.media_url)===clean(captionEvidence.mira_source_asset_url)
+          &&clean(proof.mira_generation_source?.openart_history_id)===clean(captionEvidence.mira_openart_history_id))
+        : (clean(proof.mira_business_problem_id)===clean(selected?.id)
+           &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
+           &&!dailyWinner);
+      if(!verdict.ok||!mediaMatches||!masterFaceOk||!sourceConsistent){
+        const error=!verdict.ok?verdict.reason:!sourceConsistent?'MIRA_FROZEN_SOURCE_PUBLISHER_REJECTED':!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
+        const ev={...(row.delivery_evidence||{}),mira_entrepreneur_caption_contract:clean(captionEvidence.caption_contract),canonical_problem_id:selected?.id||null,provider_truth_verified:false,error,republish_forbidden:false};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:ev,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,ev,'Repair source-bound caption and matching exact-final Mira media before any provider call.',error);
         results.push({channel:row.channel,status:'blocked',reason:error});continue;
