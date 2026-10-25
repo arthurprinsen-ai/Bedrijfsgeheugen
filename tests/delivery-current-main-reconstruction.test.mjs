@@ -16,3 +16,11 @@ test('unverified comparison fails closed',()=>{
  assert.equal(planCurrentMainReconstruction({mainSha:sha,pulls:[{...pr,behind_by:null}]} )[0].action,'READ_ONLY');
  assert.throws(()=>planCurrentMainReconstruction({mainSha:'main',pulls:[]}),/MAIN_SHA_REQUIRED/);
 });
+
+test('existing Janitor consumes advisory planner without a new scheduler',async()=>{
+ const fs=await import('node:fs/promises');
+ const workflow=await fs.readFile('.github/workflows/powerhouse-repository-janitor.yml','utf8');
+ assert.match(workflow,/planCurrentMainReconstruction/);
+ assert.match(workflow,/powerhouse-current-main-reconstruction\.json/);
+ assert.match(workflow,/advisoryOnly:true/);
+});
