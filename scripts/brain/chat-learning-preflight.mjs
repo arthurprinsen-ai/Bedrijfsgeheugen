@@ -210,7 +210,10 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   if (!skillProjectionVerification.ok) throw new Error(`SKILL_PROJECTION_DRIFT:${JSON.stringify(skillProjectionVerification.drift)}`);
   const skillProjection = selectSkillProjection(skillProjectionIndex, {
     fingerprints: executionContext.relevantLearningFingerprints ?? [],
-    targets: executionContext.deliveryLanes ?? []
+    targets: executionContext.deliveryLanes ?? [],
+    // Reserve packet capacity for provenance, runtime state, mandatory prevention and evidence.
+    // Deferred task-relevant learning stays discoverable by the canonical Brain source/digest.
+    maxSelectedBytes: Math.min(65_536, Math.floor(effectiveMaxBytes / 3))
   });
   const skillSourceManifest = buildSkillSourceManifest({ rootDir });
   const selectedSkillSources = selectSkillSourceManifest(skillSourceManifest, {
