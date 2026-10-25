@@ -54,5 +54,12 @@
       "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
     ]
   },
-  "admissionLearning": "2026-10-25: protected admission blocked due to absent failure_class; corrective metadata and historical/canary executable tests added without removing the original business root cause"
+  "admissionLearning": "2026-10-25: protected admission blocked due to absent failure_class; corrective metadata and historical/canary executable tests added without removing the original business root cause",
+  "root_cause": "The existing daily Social/Latent-Demand growth builder uses a €2900 assumption and global engagement confidence when writing per-company opportunity economic fields; no exact confirmed buyer need, decision process, offer fit or first-party intent receipt is required. Production powerhouse_opportunities expected_value_eur and expected_revenue_value are NOT NULL with nonnegative checks; writing null would fail the whole existing daily batch.",
+  "evidence": {
+    "production_readback": "2026-10-25: 837 open opportunities; no positive sourced expected euro; signed offers are not paid revenue",
+    "historical_replay": "tests/brain-commercial-opportunity-evidence-20261025.test.mjs",
+    "canary": "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs",
+    "release_truth": "exact-head Required/CodeQL, protected merge, authenticated production readback are still required"
+  }
 }
