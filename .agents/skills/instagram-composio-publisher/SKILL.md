@@ -147,6 +147,20 @@ Every response has `reference_candidate_only=true`, `may_publish=false`, `final_
 
 The existing owner, Brain learning, original scheduler and publisher remain single-writer; no extra scheduler, speculative multiple provider attempts, arbitrary crop, identity swap, fake success or unlimited credits.
 
+## Proof-pinned approved derivative input: original Mira master stays immutable (2026-10-25)
+
+**Fingerprint:** `mira-source-locked-pinned-portrait-video-input-v1`.
+
+Actual protected original verifier (PR #4935) independently compared the completed outpainted OpenArt `4aOsUdQyAheL3wmex9Uq` 1296x2304 PNG to unchanged original Mira master. Production pg_net #12791 HTTP 200 returned face identity confidence **0.950 ≥0.940**, face match, exact SHA-256 `242119866b6eaf9c142331e46b878df08c4f206fb4106fab2f48065b121b3b0a` and canonical original-master SHA `e32863f391e01dba910bf396ad13eb23c4a74b53f2614f1563b0fc332b1dd4e2`. Evidence resides in `powerhouse_media_proof_evidence_v1` as `reference_candidate_verified` but `identity_gate_result=UNPROVEN` for Instagram, `exact_final_media_proven=false`; original Instagram obligation is BLOCKED. This is only a visually matched **derived production input**, not pixel-level master identity or provider publication.
+
+The existing producer may submit `generation_preflight` with `derivedReference` matching **exact** `MIRA_APPROVED_DERIVED_INPUT` history/resource/URL/SHA. The same original authenticated router queries canonical stored independent proof and verifies original immutable source winner/date/project/master and face evidence. It must return `derived_reference_proof.ok=true` and still separately pass `provider_generation_preflight.ok=true`; old non-native Wan 2.7 remains barred, only documented actual 9:16/no-audio-capable mode may be used. Then check current OpenArt quote, provider credits and configured one-candidate budget. Do not generate if any check fails.
+
+When producing, the official original master remains `openart_reference_id=Yjqu4D7v76HABNPmQPj1` **for final visual comparison**. The actual OpenArt start/end input may use the explicitly certified DERIVED image, but it MUST be declared separately as `assetManifest.derived_reference` with the exact four pinned fields and read back from the original OpenArt provider response; never pass the derived ID as if it were the original canonical ID. The same original submit_asset verifies this evidence and writes a separate `mira_derived_generation_input` lineage record ONLY after full final-media proofs. A provider `COMPLETED` receipt is neither input readback proof nor a quality PASS.
+
+The frozen parking-app source, caption, canonical master, SHA lineage, no historical rejected video history, native 1080x1920 muted output, start/middle/end face ≥0.940, real temporal movement ≥0.900 and one-shot actual Meta post-ID/permalink/readback remain mandatory. If the still-image composition does not physically contain the original approved smartphone/parking-app scene, do not invent altered elements or fake scene compliance. Classify this as a source-scene mismatch and seek an independently verified scene-compatible replacement from the ORIGINAL content owner before spending on video.
+
+No second publishing lane, scheduler, arbitrary visual, unbounded retries, direct status green or status check bypass.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
