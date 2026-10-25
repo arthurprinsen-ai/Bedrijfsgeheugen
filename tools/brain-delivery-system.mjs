@@ -9,6 +9,8 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'data/ai-model-stale-review-worklist-20261025.json': 'automation',
+  'tests/brain-ai-model-stale-worklist.test.mjs': 'automation',
   'tools/growth-intelligence/decision-core.mjs': 'automation',
   'tools/growth-intelligence/decision-core.test.mjs': 'automation',
   'tools/growth-intelligence/heartbeat-adapter.mjs': 'automation',
@@ -18,6 +20,13 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 
   'config/powerhouse-adaptive-delivery-v1.json': 'backend',
   'AGENTS.md': 'automation',
+  'tools/delivery/required-check-reconciliation.mjs': 'automation',
+  'tests/required-check-reconciliation.test.mjs': 'automation',
+  'scripts/brain/skill-byte-audit.mjs': 'automation',
+  'tests/brain-skill-byte-audit.test.mjs': 'automation',
+  'tools/brain/agent-skill-execution-evidence.mjs': 'automation',
+  'tests/agent-skill-execution-evidence.test.mjs': 'automation',
+  'tests/brain-agent-skill-execution-evidence.test.mjs': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',
   'tools/ci/netlify-ignore-build.mjs': 'backend',
@@ -75,6 +84,7 @@ const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'docs/superpowers/changes/',
   'docs/engineering-intelligence-trust-',
   'docs/plans/',
+  'docs/agent-skill-evidence-contract.md',
   'platform/system-map/canonical-system-map.mjs'
 ]);
 function effectiveNonExecutableSharedPaths(policy = {}) { return unique([...(policy.nonExecutableSharedPaths || []), ...BUILT_IN_NON_EXECUTABLE_SHARED_PATHS]); }

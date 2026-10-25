@@ -2,6 +2,10 @@
 
 Elke agent die release, merge, deploy, Netlify, GitHub Actions of productiereadback uitvoert, MOET vooraf `.agents/skills/deployment-capability-recovery/SKILL.md` laden, de geselecteerde fallback en skill-content-SHA in de bestaande bewijsketen vastleggen, en de bestaande Git-CD/Heartbeat/Janitor-route hergebruiken. Ontbrekende connector-write-acties worden `DELIVERY_CONTROL_PLANE_CAPABILITY_GAP`, niet stilzwijgend succes en niet een nieuwe scheduler. Behoud Required, CodeQL, Supabase-preview en beschermde merge. Alleen exact-productieproviderreadback bewijst livegang. Heropen bij herhaling dezelfde canonieke obligation, niet een duplicaat.
 
+## GitHub required-check drift — detecteer eerst, herstel via bestaande owner (#4929)
+
+Bij `3 of 3 required status checks are expected` of andere required-context-mismatch: lees eerst `.agents/skills/release-check-reconciliation/SKILL.md`, voer read-only diagnose uit via `tools/delivery/required-check-reconciliation.mjs`, en registreer fingerprint `github|required-status-expected|context-source-sha` in het bestaande incident/Brain. De diagnose mag nooit zichzelf als doorslaggevend ruleset- of merge-bewijs behandelen: effectieve regels kunnen afzonderlijke rulesets bevatten en beheerrechten kunnen ontbreken. Herstel alleen bewezen verouderde checknamen/app-bronnen met bevoegde repositoryrechten; geen branchkopieën, tweede queue, extra scheduler, groene mockchecks of verzwakte protection. De bestaande Recovery Supervisor blijft writer. Bewijs: exacte SHA, echte Required/CodeQL, beschermde merge en productie-readback. Regressie: `tests/required-check-reconciliation.test.mjs`.
+
 ## Eén bewijsvaste Brain–Powerhouse–Heartbeat leerlus — 25 oktober 2026
 
 Voor alle agents en toekomstige wijzigingen geldt het integratiecontract `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md`. Gebruik de bestaande canonieke Brain-registraties, Heartbeat/Janitor-cadans, incidentfingerprints, obligations en geëvalueerde skillprojectie. Koppel bron → besluit → uitvoering → providerbewijs → klant-/omzetuitkomst → learning en skill-evaluatie met tenantisolatie en toestemming. Meet echte leads, klanten, klantwaarde en onafhankelijk betaalde omzet in plaats van bereik of acknowledgements als resultaat te behandelen. De nieuwe contracttekst is uitsluitend ontwerp tot integratie, geslaagde tests, beschermde merge, productiereadback en echte opvolgcycli bewezen zijn. Geen tweede scheduler, ongecontroleerde outreach, extra write-owner, groene status zonder bewijs of omzeiling van Required/CodeQL/RLS/preview en privacycontroles.
@@ -1113,3 +1117,17 @@ Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remot
 - succesvolle of skipped sibling jobs worden niet steeds opnieuw uitgelezen;
 - een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
 - remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
+
+
+## Growth Intelligence — bewezen signalen, skills en releases (25 oktober 2026)
+
+Releasebewijs: PR #4917 (main fb6918446e265b87778dd68d260b286beebf6605) en PR #4926 (main c66670ea339f25cdd847f57a23175ba09b1bc4b0) zijn afzonderlijk beschermd gemerged; hun onafhankelijke productie-readback en skillprojectie zijn geslaagd. Dit bewijst de library/advisory contracts, **niet** dagelijkse externe research, actieve klantportaalweergave, provider-opvolging of omzet.
+
+Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies raakt:
+- Lees eerst `tools/growth-intelligence/decision-core.mjs`, `heartbeat-adapter.mjs` en `learning-store.mjs` plus het actuele unified Brain/Heartbeat-contract. Hergebruik de bestaande scheduler, writers, tenantidentiteit, skills en canonical learning.
+- Gebruik `createCustomerSignalCards` alleen voor geverifieerde provider-events met recent meetbewijs, exact tenantId, rechtmatige persoonsgegevensbasis en onafhankelijke betalingsverificatie voor omzetclaims. Een advieskaart is uitsluitend adviserend; geen automatische outreach of publicatie.
+- Verifieer per actie: bron/evidence-id → score en besluit → eigenaar/goedkeuring → provider readback → uitkomst en onafhankelijk betaalbewijs → leerregistratie → beoordeelde skillprojectie. Als een schakel ontbreekt, label de uitkomst eerlijk `UNKNOWN` of `BLOCKED` en open een herstelverplichting.
+- Een geslaagde PR-preview is nooit productiebewijs. Eis beschermde Required, hygiene, CodeQL, eventuele native preview, productie-readback op de gemergede SHA en skillcontract-evaluatie.
+- De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
+
+Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.
