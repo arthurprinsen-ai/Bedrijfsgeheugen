@@ -20,5 +20,8 @@
       "tests/brain-ci-observation-coverage-20261025.test.mjs"
     ]
   },
-  "prevention_rule": "Never lower job coverage thresholds or infer successes from missing timestamps; all changes remain advisory without mutation."
+  "prevention_rule": "Never lower job coverage thresholds or infer successes from missing timestamps; all changes remain advisory without mutation.",
+  "test_evidence": [
+    "tests/brain-ci-observation-coverage-20261025.test.mjs"
+  ]
 }
