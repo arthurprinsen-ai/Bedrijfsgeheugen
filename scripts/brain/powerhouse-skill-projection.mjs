@@ -204,7 +204,7 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [], 
     const requiredEntry = entry.mandatory_preflight === true || wantedFingerprints.has(entry.fingerprint);
     const bytes = Buffer.byteLength(JSON.stringify(entry), 'utf8') + 1;
     if (bounded && consumedBytes + bytes > maxSelectedBytes) {
-      if (requiredEntry) throw new Error('SKILL_PROJECTION_REQUIRED_ENTRY_EXCEEDS_BUDGET:' + entry.fingerprint);
+      if (requiredEntry) throw new Error('maxBytes exceeded: SKILL_PROJECTION_REQUIRED_ENTRY_EXCEEDS_BUDGET:' + entry.fingerprint);
       deferred.push(entry);
       continue;
     }
