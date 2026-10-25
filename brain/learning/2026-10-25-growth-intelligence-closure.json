@@ -1,0 +1,20 @@
+{
+  "fingerprint": "growth-intelligence-delivery-path-and-closure-20261025",
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+  },
+  "root_cause": "Growth Intelligence source changes lacked canonical activity, learning, and human-readable change evidence; new module paths initially had no scoped automation lane classification.",
+  "prevention": "All material agent development must include canonical learning, append-only ledger and human-readable change documentation; classify new modules narrowly without bypassing delivery checks.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-intelligence-delivery-closure.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Growth module tests passed at 6c6a4bc9; Required admission rejected missing closure artifacts.",
+    "pending": "Exact-head Required, CodeQL, native preview, merge and production readback still required."
+  },
+  "production_readback": {
+    "verified": false
+  }
+}
