@@ -36,5 +36,23 @@
   "noNewGrowthQueue": true,
   "noUnauthorizedOutreach": true,
   "independentRevenueProofRequired": true,
-  "releaseStatus": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+  "releaseStatus": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "compiler": {
+    "failure_class": "FALSE_SUCCESS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-opportunity-evidence-20261025.test.mjs",
+      "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-opportunity-evidence-20261025.test.mjs",
+      "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
+    ]
+  },
+  "admissionLearning": "2026-10-25: protected admission blocked due to absent failure_class; corrective metadata and historical/canary executable tests added without removing the original business root cause"
 }
