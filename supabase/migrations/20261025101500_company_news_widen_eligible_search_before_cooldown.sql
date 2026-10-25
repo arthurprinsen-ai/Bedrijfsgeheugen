@@ -48,3 +48,10 @@ AS $function$
   limit greatest(1, least(p_limiet, 20));
 $function$
 ;
+
+-- Preserve the production least-privilege contract even if default function grants drift.
+-- Only the canonical service scheduler may call these existing definer functions.
+REVOKE EXECUTE ON FUNCTION public.bg_inhaak_kandidaten(text[], integer) FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.bg_bedrijven_voor_nieuws(integer) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.bg_inhaak_kandidaten(text[], integer) TO service_role;
+GRANT EXECUTE ON FUNCTION public.bg_bedrijven_voor_nieuws(integer) TO service_role;
