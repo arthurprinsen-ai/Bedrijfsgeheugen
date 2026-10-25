@@ -44,3 +44,13 @@ export function safeDataforseoDiagnostic(error){
     retryable:error?.retryable===true
   };
 }
+
+/** An executed batch is healthy only if EVERY intended topic succeeded.
+ * A partial provider failure may retain good source rows, but cannot issue
+ * a canonical GREEN completion receipt for the whole batch.
+ */
+export function sourceBatchEvidenceVerdict(results){
+  if(!Array.isArray(results))throw new TypeError('SOURCE_BATCH_RESULTS_REQUIRED');
+  const complete=results.length>0&&results.every(item=>item?.ok===true);
+  return {green:complete,errorClass:complete?null:'REMOTE'};
+}
