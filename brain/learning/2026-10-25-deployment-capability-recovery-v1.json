@@ -22,5 +22,16 @@
     ]
   },
   "scope": "CI",
-  "machine_enforceable": true
+  "machine_enforceable": true,
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE_CAPABILITY_GAP",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40219876670",
+    "codeql_success": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40219876544",
+    "historical_replay": "tests/brain-deployment-capability-recovery.test.mjs",
+    "production_readback": "PENDING"
+  }
 }
