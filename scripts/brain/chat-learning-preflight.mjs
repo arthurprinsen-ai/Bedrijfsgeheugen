@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
-import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection } from './powerhouse-skill-projection.mjs';
+import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection, buildSkillSourceManifest, selectSkillSourceManifest } from './powerhouse-skill-projection.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const LEGACY_FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
@@ -212,6 +212,10 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     fingerprints: executionContext.relevantLearningFingerprints ?? [],
     targets: executionContext.deliveryLanes ?? []
   });
+  const skillSourceManifest = buildSkillSourceManifest({ rootDir });
+  const selectedSkillSources = selectSkillSourceManifest(skillSourceManifest, {
+    targets: executionContext.deliveryLanes ?? []
+  });
 
   const contextLoadMs = Math.max(0, nowMs() - preflightStarted);
 
@@ -280,7 +284,13 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
       verification: skillProjectionVerification,
       registry_source: SKILL_PROJECTION_INDEX_SOURCE,
       registry_mode: skillIndexManifest.mode ?? null,
-      selection: skillProjection
+      selection: skillProjection,
+      source_attestation: {
+        inventory_digest: skillSourceManifest.inventory_digest,
+        entry_count: skillSourceManifest.entry_count,
+        metadata_warnings: skillSourceManifest.metadata_warnings,
+        selection: selectedSkillSources
+      }
     },
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
