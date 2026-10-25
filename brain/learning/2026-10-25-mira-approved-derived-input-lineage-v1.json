@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "mira|proof-pinned-outpainted-video-generation-input|20261025-v1",
+  "obligation_id": "mira|approved-derived-input-source-lineage|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_cause": "A new OpenArt 9:16 Mira reference passed independent real two-image master-face vision at 0.950 but the existing video producer only had the unchanged original master reference, no protected separate derived-input provenance and no DB readback of the accepted source SHA.",
+  "real_proof": {
+    "production_request_id": 12791,
+    "verifier_http": 200,
+    "face_score": 0.95,
+    "face_threshold": 0.94,
+    "image_sha256": "242119866b6eaf9c142331e46b878df08c4f206fb4106fab2f48065b121b3b0a",
+    "master_sha256": "e32863f391e01dba910bf396ad13eb23c4a74b53f2614f1563b0fc332b1dd4e2",
+    "history": "4aOsUdQyAheL3wmex9Uq",
+    "resource": "aTtGOimC7CyaexG5cyTh",
+    "dims": "1296x2304",
+    "proof_provider_status": "reference_candidate_verified",
+    "instagram_identity_gate": "UNPROVEN",
+    "external_instagram_id": null
+  },
+  "prevention_rule": "Only exact SHA-pinned, original-master-linked, separately independently vision-proven derived reference may be declared as a new generation INPUT. It must not masquerade as canonical Mira master or approve any final content. Verify same lineage twice, before paid generation and at final submit. Provider input readback, scene/source conformity and real MP4/3-face/temporal/Meta provider evidence remain mandatory.",
+  "fix": "Pure validatePinnedMiraDerivedInput with canonical proof and exact image identity. Same original router reads proof from existing table during generation_preflight and submit_asset and writes explicit derivative provenance after independent video proof.",
+  "safety": "No new database schema, scheduler, second publisher, user consent bypass or direct Instagram post. Single-candidate bounded provider budget unchanged.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 3,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "status_note": "Code candidate only, not live until protected merge and production re-read."
+}
