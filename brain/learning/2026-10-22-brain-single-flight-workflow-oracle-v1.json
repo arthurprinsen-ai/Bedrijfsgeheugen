@@ -1,0 +1,43 @@
+{
+  "fingerprint": "ci|brain|single-flight-current-job-identity|20261022-v1",
+  "obligation_id": "ci-brain-single-flight-oracle-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "source_baseline_run": 39671036043,
+  "observed": {
+    "total": 3511,
+    "pass": 3190,
+    "fail": 321,
+    "run": 39671036043,
+    "failed_case": "expensive PR workflows are single-flight and bounded"
+  },
+  "root_cause": "BRAIN test hardcoded canonical brand-shell job 'test', but actual current workflow has job 'brand-shell-contracts'; manual workflow_dispatch full-build correctly groups by github.ref_name rather than PR number.",
+  "change": "Update only the BRAIN workflow contract oracle to inspect actual jobs and correct event-dependent concurrency scopes; preserve cancel-in-progress and positive timeout checks on every listed workflow.",
+  "prevention_rule": "Tests must validate current canonical workflow job names and event-driven concurrency scope, not stale job IDs or a universal pull_request selector.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "before": "GitHub BRAIN run 39671036043: test not ok 39; 321 failing total",
+    "source_validation": "Four actual GitHub workflow files independently read; matched job IDs, correct concurrency selectors, cancel-in-progress and bounded timeouts.",
+    "after": "PENDING_EXACT_HEAD_RUN",
+    "full_brain": "PENDING_0_FAIL",
+    "production": "UNCHANGED",
+    "skill_prevention": "DEFERRED_UNTIL_SOCIAL_BRAIN_ORACLE_RECOVERY",
+    "deferred_reason": "Changing delivery-concurrency skill activates unrelated preflight tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs with 2 inherited known failures; repair belongs to existing PR #4608, do not overwrite that writer."
+  },
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "skill_targets": []
+}
