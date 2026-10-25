@@ -2092,6 +2092,25 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     invariant:'Engagement is interest only. An offer requires a buyer-confirmed problem, impact and urgency.',
     outcomeLoop:Object.freeze(['reply','confirmed_problem','confirmed_impact','qualified_conversation','meeting','scan','proposal','paid_order','realized_revenue','learning'])
   }),
+  commercialQualification:Object.freeze({
+    fingerprint:'growth|daily|latent-demand-2900-without-buyer-proof|20261025-v1',
+    label:'One daily Growth Intelligence buyer-evidence qualification',
+    owner:'powerhouse-commercial-learning-v1',
+    status:'CANDIDATE_NOT_PRODUCTION_PROVEN',
+    authority:'github+supabase-canonical-brain+verified-provider-outcomes',
+    dailyExecutor:'netlify/functions/growth-intelligence-daily.mjs',
+    engine:'brain/revenue/commercial-opportunity-qualification.mjs',
+    discovery:'brain/revenue/need-discovery.mjs',
+    memory:'public.brain_records',
+    sourceOfTruth:'public.powerhouse_opportunities',
+    outcomes:'public.powerhouse_sales_outcomes',
+    proofBoundary:'buyer-need, fit, budget and exact first-party receipt before proposal; payment receipt before realized revenue',
+    unknownFinancialValue:'database numeric zero sentinel, unverified fact explicitly marked, never a forecast',
+    privacyBoundary:'read-only advice; approved commercial Heartbeat owns any actual outreach',
+    noNewScheduler:true,
+    nextStage:'protected Required/CodeQL, merge, Netlify daily-run and exact commercial outcome readback',
+    tests:Object.freeze(['tests/brain-commercial-opportunity-evidence-20261025.test.mjs','tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs'])
+  }),
   socialPublicationGovernance:Object.freeze({
     fingerprint:'linkedin-company-historical-dedupe-v5',
     rule:'Every social post must use a genuinely new underlying story family; LinkedIn company and personal both require durable historical story fingerprints before provider write.',
