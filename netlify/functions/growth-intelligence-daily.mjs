@@ -135,8 +135,8 @@ export function createGrowthIntelligenceDaily({store,now=()=>new Date()}={}){
         ...score,expectedRevenueValue:expectedValue==null?null:score.expectedRevenueValue,expectedValue,
         commercialQualified:qualified?.sellable===true});
       await active.upsertOpportunity({opportunity_key:oppKey,company_key:company,stage:'signal',
-        expected_value_eur:expectedValue,probability:score.probability,confidence:convergence.score,
-        expected_revenue_value:expectedValue==null?null:score.expectedRevenueValue,
+        expected_value_eur:expectedValue??0,probability:score.probability,confidence:convergence.score,
+        expected_revenue_value:expectedValue==null?0:score.expectedRevenueValue,
         score_components:{...(existing?.score_components||{}),...score.components,
           cross_source_types:convergence.independentTypes,engagement_events:ev.events,
           novelty:n(existing?.score_components?.novelty)||.5,
@@ -144,6 +144,8 @@ export function createGrowthIntelligenceDaily({store,now=()=>new Date()}={}){
           qualification_is_execution_authority:false},
         evidence:{...(existing?.evidence||{}),inference:true,source_refs:companyRefs,
           economic_model_hypothesis_not_revenue:true,
+          economic_value_verified:expectedValue!==null,
+          economic_unknown_database_zero_sentinel:expectedValue===null,
           commercial_missing_evidence:qualified?.missingEvidence||['verified_first_party_buying_signal'],
           falsifier:'no verified opportunity-linked intent or commercial outcome in evaluation window'},
         last_evidence_at:ev.latest||existing?.last_evidence_at||null,status:'open',updated_at:atIso});
