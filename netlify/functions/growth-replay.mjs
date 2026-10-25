@@ -62,7 +62,7 @@ export async function drainGrowthQueue({
   dispatchFn=deliver,brainQueueFn=markBrainQueue,
   deliveryEnabledFn=()=>env('BG211_DELIVERY_ENABLED')==='true'&&Boolean(env('BG211_WEBHOOK_URL'))
 }={}){
-  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0;
+  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0,indexedSeen=0,indexedCompleted=0,indexIntegrityFailures=0,indexSourceMissing=0,indexPointerInvalid=0,indexPointerGone=0,indexReadFailures=0,pointerStrongRecovery=0,sourceStrongRecovery=0,providerFailed=false;
   const results=[];
   const startedAt=clock();
   const budgetMs=Math.max(1_000,Math.min(12_000,Number(maxRunMs)||10_500));
@@ -74,40 +74,109 @@ export async function drainGrowthQueue({
     ? ['bg-growth-outcomes','bg-growth-events']
     : ['bg-growth-events','bg-growth-outcomes']):['bg-growth-events'];
 
-  for(const storeName of stores){
+  // Same minute executor: fresh, server-filtered index before archived receipts.
+  const scans=stores.flatMap(storeName=>storeName==='bg-growth-events'
+    ?[{storeName,prefix:'pending/',indexed:true},{storeName,indexed:false}]
+    :[{storeName,indexed:false}]);
+  for(const {storeName,prefix,indexed} of scans){
     if(!canStart()){budgetExpired=true;break;}
     const store=storeFactory(storeName);
     // Netlify's explicit pagination avoids downloading the entire historical blob catalog.
     // Delivered items are immutable receipts; scanning never deletes or replays them.
-    for await(const page of store.list({paginate:true})){
+    for await(const page of store.list({paginate:true,...(prefix?{prefix}:{})})){
       pages++;
       for(const blob of page.blobs||[]){
         if(replayed>=maxReplay)break;
         if(!canStart()){budgetExpired=true;break;}
         scanned++;
-      if(blob.key.startsWith('_control/'))continue;
-      const record=await store.get(blob.key,{type:'json'}).catch(()=>null);
-      if(!record?.envelope||record?.state==='delivered'||record?.delivery?.delivered)continue;
+      // The legacy scan must ignore disposable pointers already visited by the
+      // dedicated indexed lane. They are not immutable source events and could
+      // disappear between list() and get() as another invocation finishes.
+      if(blob.key.startsWith('_control/')||(!indexed&&blob.key.startsWith('pending/')))continue;
+      let sourceKey=blob.key;
+      if(indexed){
+        indexedSeen++;
+        // list() is a snapshot. Another concurrent invocation may finish and delete
+        // this disposable pointer before get(); a successful null is NOT corruption.
+        let pointer;
+        try{
+          pointer=await store.get(blob.key,{type:'json'});
+          // Default edge reads can be eventually consistent (Netlify documentation).
+          // Before treating a disappeared listed pointer as concurrently retired,
+          // consult the authoritative strong read without changing any receipt.
+          if(pointer===null||pointer===undefined){
+            pointer=await store.get(blob.key,{type:'json',consistency:'strong'});
+            if(pointer!==null&&pointer!==undefined)pointerStrongRecovery++;
+          }
+        }
+        catch{
+          failed++;indexIntegrityFailures++;indexReadFailures++;
+          results.push({kind:'event',persisted:false,reason:'pending-index-provider-read-failed'});
+          continue;
+        }
+        if(pointer===null||pointer===undefined){
+          indexPointerGone++; // Concurrent retirement; no source receipt was touched.
+          continue;
+        }
+        if(typeof pointer.source_key!=='string'||!pointer.source_key.startsWith('event/')){
+          failed++;indexIntegrityFailures++;indexPointerInvalid++;
+          results.push({kind:'event',persisted:false,reason:'pending-pointer-invalid'});
+          // Preserve malformed pointer; only a verified owner may reconcile it.
+          continue;
+        }
+        sourceKey=pointer.source_key;
+      }
+      let record;
+      try{
+        record=await store.get(sourceKey,{type:'json'});
+        // A freshly written durable source may not be in this edge cache yet.
+        // Escalate only absent indexed sources; do not silently bless malformed
+        // non-null receipts or suppress failures from the strong provider read.
+        if(indexed&&(record===null||record===undefined)){
+          record=await store.get(sourceKey,{type:'json',consistency:'strong'});
+          if(record?.envelope)sourceStrongRecovery++;
+        }
+      }
+      catch{
+        failed++;indexIntegrityFailures++;indexReadFailures++;
+        results.push({kind:'event',persisted:false,reason:'pending-source-provider-read-failed'});
+        continue;
+      }
+      if(!record?.envelope){
+        if(indexed){
+          failed++;indexIntegrityFailures++;indexSourceMissing++;
+          results.push({kind:'event',persisted:false,reason:'pending-source-missing'});
+          // Missing source can be a transient read inconsistency; never delete the pointer.
+          continue;
+        }
+        continue;
+      }
+      if(record.state==='delivered'||record.delivery?.delivered){
+        if(indexed){await store.delete(blob.key);indexedCompleted++;}
+        continue;
+      }
       // Preserve the persisted receipt without repeating futile writes every minute.
       // If an authorized delivery channel becomes configured later, the item is retried.
       if(record?.datahub?.persisted&&record?.state==='datahub-persisted'&&
         record?.delivery?.reason==='delivery-disabled'&&!deliveryEnabledFn()){
-        skippedPersisted++;continue;
+        skippedPersisted++;
+        if(indexed){await store.delete(blob.key);indexedCompleted++;}
+        continue;
       }
       const kind=storeName==='bg-growth-events'?'event':'outcome';
       replayed++;
 
       const datahub=await persistFn(kind,record);
       if(!datahub.persisted){
-        failed++;
-        await store.setJSON(blob.key,{
+        failed++;providerFailed=true;
+        await store.setJSON(sourceKey,{
           ...record,
           state:'queued',
           datahub,
           last_attempt_at:new Date().toISOString(),
           attempts:Number(record?.attempts||0)+1
         });
-        results.push({kind,key:blob.key,persisted:false,delivered:false,reason:datahub.reason});
+        results.push({kind,key:sourceKey,persisted:false,delivered:false,reason:datahub.reason});
         break;
       }
       persisted++;
@@ -119,7 +188,7 @@ export async function drainGrowthQueue({
       const brainQueue=await brainQueueFn(queueId,delivery,attempts);
       const state=delivery.delivered?'delivered':'datahub-persisted';
 
-      await store.setJSON(blob.key,{
+      await store.setJSON(sourceKey,{
         ...record,
         state,
         datahub,
@@ -128,17 +197,23 @@ export async function drainGrowthQueue({
         last_attempt_at:new Date().toISOString(),
         attempts
       });
+      // Never delete the canonical receipt: retire index only after original is persisted.
+      if(indexed&&(delivery.delivered||!delivery.attempted)){
+        await store.delete(blob.key);indexedCompleted++;
+      }
       results.push({kind,source_id:sourceId,persisted:true,delivered:delivery.delivered,reason:delivery.reason});
       if(delivery.delivered)delivered++;
-      if(delivery.attempted&&!delivery.delivered){failed++;break;}
+      if(delivery.attempted&&!delivery.delivered){failed++;providerFailed=true;break;}
       }
-      if(failed||budgetExpired||replayed>=maxReplay)break;
+      if(providerFailed||budgetExpired||replayed>=maxReplay)break;
     }
-    if(failed||budgetExpired||replayed>=maxReplay)break;
+    if(providerFailed||budgetExpired||replayed>=maxReplay)break;
   }
 
   return {accepted:true,replayed,persisted,delivered,failed,results,
-    budgetExpired,elapsedMs:Math.max(0,clock()-startedAt),scanned,pages,skippedPersisted};
+    budgetExpired,elapsedMs:Math.max(0,clock()-startedAt),scanned,pages,skippedPersisted,indexedSeen,indexedCompleted,
+    indexIntegrityFailures,indexSourceMissing,indexPointerInvalid,indexPointerGone,indexReadFailures,pointerStrongRecovery,sourceStrongRecovery,providerFailed,
+    healthy:failed===0};
 
 }
 

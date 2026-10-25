@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "brain|ci|historical-migration-test-source-missing|20261025-v1",
+  "obligation_id": "ci-brain-migration-source-preflight-20261025",
+  "failure_class": "HISTORICAL_SQL_TEST_SOURCE_MISSING",
+  "observed_evidence": {
+    "original_brain_run": "40200653220",
+    "original_failed": 376,
+    "admission_run": "40205365319",
+    "admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning"
+  },
+  "root_cause": "Legacy SQL tests point at retired executable migration locations; recovery candidates require classified CI paths and canonical Brain learning/ledger writeback.",
+  "fix": "Read-only classification and explicitly opted-in literal archive path repair on disposable PR branch, without SQL replay or changed test assertions.",
+  "prevention_rule": "Classify and validate literal historical SQL test-source references before expensive BRAIN; preserve original SQL identity, all required security gates and single-writer ownership.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-migration-source-preflight-20261025.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "HISTORICAL_SQL_TEST_SOURCE_MISSING",
+    "scope": "SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
