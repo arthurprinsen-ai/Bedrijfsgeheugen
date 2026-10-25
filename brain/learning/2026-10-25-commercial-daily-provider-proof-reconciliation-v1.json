@@ -24,11 +24,26 @@
   "tests": [
     "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
   ],
-  "status": "CANDIDATE_NOT_LIVE",
+  "status": "CANDIDATE_EVIDENCE_GATE_PENDING",
   "next": [
     "Required and CodeQL",
     "protected merge and canonical SQL migration application",
     "independent deployed SQL and next true execution status readback",
     "remaining Instagram, Gmail, overdue forecast and revenue outcomes"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 8,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
+    ]
+  }
 }
