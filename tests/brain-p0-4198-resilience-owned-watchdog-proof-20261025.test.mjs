@@ -44,3 +44,13 @@ test('same original 5-minute task cadence, strict ownership and atomic fail-clos
   assert.match(migration,/COMMIT;/);
   assert.doesNotMatch(migration,/GRANT\s+ALL|GRANT\s+EXECUTE\s+TO\s+(PUBLIC|anon|authenticated)/i);
 });
+
+test('clean-room preview and current production both converge to the same actual mux authority',()=>{
+  assert.match(migration,/RESILIENCE_CANONICAL_MUX_TASK_NOT_PROVEN/);
+  assert.match(migration,/position\('execution-resilience-watchdog' in pg_get_functiondef/);
+  assert.match(migration,/position\('if \(m % 5\) = 1' in pg_get_functiondef/);
+  assert.match(migration,/powerhouse-execution-resilience-watchdog-v1' AND expected_cadence_minutes=1/);
+  assert.match(migration,/powerhouse-runtime-scheduler-mux-v1' AND expected_cadence_minutes IN \(2,5\)/);
+  assert.match(migration,/cron_jobname='powerhouse-runtime-scheduler-mux-v1'/);
+  assert.match(migration,/RESILIENCE_ASSURANCE_OWNER_DRIFT/);
+});
