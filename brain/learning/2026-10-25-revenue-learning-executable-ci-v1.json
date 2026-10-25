@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "ci|revenue-learning|new-evidence-regression-unwired|20261025-v1",
+  "obligation_id": "growth:revenue-learning-hourly-regression-coverage:20261025-v1",
+  "parent_issue": 4198,
+  "related_pr": 4851,
+  "failure_class": "REVENUE_EVIDENCE_REGRESSION_NOT_EXECUTED",
+  "root_cause": "The canonical Revenue Learning workflow only selected tests/revenue-learning-*.test.mjs. The newly added exact verified-source and fair-batch regression test was named tests/brain-revenue-learning-fair-verified-20261025.test.mjs; initial Required backend job green did not show its execution. The separate focused workflow was push-only, leaving no independent premerge regression check on that exact code path.",
+  "fix": "Retain the existing Revenue Learning CI workflow, add a path-scoped pull_request event and run the exact new regression test alongside existing full revenue-learning suite. No new scheduled jobs; @hourly runtime remains unchanged.",
+  "observed_evidence": {
+    "code_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4851",
+    "required_backend_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40174431234",
+    "missing_test": "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+  },
+  "prevention_rules": [
+    "Every novel CI regression must be selected by an executable premerge workflow in addition to being stored in Brain.",
+    "Never claim new behavior tested solely from aggregate CI green if the new test path was not exercised.",
+    "Reuse scoped existing workflow and preserve exact-head Required, CodeQL and protected merge."
+  ],
+  "tests": [
+    "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "REVENUE_EVIDENCE_REGRESSION_NOT_EXECUTED",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact test explicitly appears in Revenue Learning workflow logs on PR head, Required+CodeQL green, protected merge; independent Netlify deployment and real hourly log readback required separately."
+}
