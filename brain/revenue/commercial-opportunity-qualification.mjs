@@ -60,6 +60,7 @@ export function qualifyCommercialOpportunity(opportunity={}, {salesOutcomes=[],n
     stage=>[stage,unique.filter(o=>o.stage===stage).length])));
   const observedRevenue=unique.reduce((sum,o)=>sum+(o.revenueEur||0),0);
   const hasProposal=funnel.proposal>0,hasOrder=funnel.order>0;
+  const firstPartyIntent=unique.some(o=>['request','meeting','proposal','order'].includes(o.stage));
   const missing=[];
   if(!verifiedDiscovery||!need.problemConfirmed)missing.push('confirmed_problem_with_source');
   if(!verifiedDiscovery||!need.impactConfirmed)missing.push('measured_business_impact');
@@ -67,14 +68,14 @@ export function qualifyCommercialOpportunity(opportunity={}, {salesOutcomes=[],n
   if(!offerFit)missing.push('product_or_service_fit');
   if(!confirmedBuyer)missing.push('decision_maker_or_process');
   if(!budget)missing.push('budget_or_investment_process');
-  if(!unique.some(o=>['request','meeting','proposal','order'].includes(o.stage)))missing.push('verified_first_party_buying_signal');
+  if(!firstPartyIntent)missing.push('verified_first_party_buying_signal');
   if(!hasOrder)missing.push('order_or_win_receipt');
   if(observedRevenue<=0)missing.push('verified_payment_and_revenue');
   let classification='RESEARCH_REQUIRED';
   if(suppression)classification='NO_CONTACT';
   else if(hasOrder)classification='ORDER_OBSERVED';
-  else if(confirmedNeed&&offerFit&&confirmedBuyer&&budget&&hasProposal)classification='PROPOSAL_FOLLOW_UP';
-  else if(confirmedNeed&&offerFit&&confirmedBuyer&&budget)classification='PROPOSAL_CANDIDATE';
+  else if(confirmedNeed&&offerFit&&confirmedBuyer&&budget&&hasProposal&&firstPartyIntent)classification='PROPOSAL_FOLLOW_UP';
+  else if(confirmedNeed&&offerFit&&confirmedBuyer&&budget&&firstPartyIntent)classification='PROPOSAL_CANDIDATE';
   else if(confirmedNeed&&offerFit)classification='DISCOVERY_CANDIDATE';
   // First choose a missing evidence task, not a speculative outbound send.
   let nextAction='VERIFY_CUSTOMER_PROBLEM';
