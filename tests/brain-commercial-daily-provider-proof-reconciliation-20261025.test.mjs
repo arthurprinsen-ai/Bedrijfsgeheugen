@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const migration=readFileSync('supabase/migrations/20261025110200_commercial_daily_provider_evidence_reconciliation.sql','utf8');
+const migration=readFileSync('supabase/migrations/20261025130000_commercial_daily_provider_evidence_reconciliation_after_history_parity.sql','utf8');
 
 test('same-date, same-tenant and exact channel identity are mandatory for canonical proof',()=>{
   assert.match(migration,/o\.tenant_id='canonical'/);
