@@ -59,7 +59,7 @@ export function eligibleSourceLedMediaReplacement({resolved,job,ob,manifest}={})
  return resolved?.kind==='approved_source_led'
   &&job?.status==='WAITING_PROOF'
   &&qualityRejection
-  &&rejectedHistory
+  &&Boolean(rejectedHistory)
   &&String(next.openart_history_id||'')!==rejectedHistory
   &&previous.source_led_auto_verify_started===true
   &&String(previous.openart_history_id||'')===original
