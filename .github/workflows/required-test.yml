@@ -97,6 +97,8 @@ jobs:
         run: node --test tests/brain-external-topic-rotation-v1.test.mjs tests/brain-external-signal-quota-failover-20261019.test.mjs
       - name: Verify customer-visible external signal relevance and safe next actions
         run: node --test tests/brain-portal-external-source-action-20261025.test.mjs
+      - name: Verify existing daily company-news candidate coverage and cooldown
+        run: node --test tests/brain-company-news-eligible-coverage-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness
         run: |
           node tools/ci/portal-auth-evidence-freshness.mjs
