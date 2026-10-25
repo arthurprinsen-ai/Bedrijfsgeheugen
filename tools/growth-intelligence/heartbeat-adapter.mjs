@@ -48,3 +48,42 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
   revenueVerified:false
  };
 }
+
+
+/**
+ * Render-safe, tenant-isolated guidance for customer-facing external signals.
+ * Existing Heartbeat supplies already verified, lawful source observations.
+ * This function does not fetch, contact prospects, mutate state or claim revenue.
+ */
+const CUSTOMER_GUIDANCE=Object.freeze({
+ search_opportunity:{title:"Zoekvraag in de markt",action:"Beoordeel een gerichte landingspagina en meet offerteaanvragen"},
+ page_dropoff:{title:"Uitval op website",action:"Onderzoek de uitval en test één duidelijke vervolgstap"},
+ scan_abandonment:{title:"Scan niet afgerond",action:"Verbeter de scan en bied vrijwillige opvolging aan"},
+ cta_underperformance:{title:"Weinig aanvragen",action:"Test een concretere call-to-action en meet conversie"},
+ social_reply:{title:"Relevante reactie",action:"Beoordeel de reactie; antwoord alleen vanuit een geldige contactbasis"},
+ warm_connection:{title:"Mogelijke klantrelatie",action:"Kwalificeer de behoefte; geen ongevraagde berichten"},
+ offer_stalled:{title:"Offerte wacht op vervolg",action:"Controleer opvolgmoment en toestemming"},
+ paid_order:{title:"Betaalde order",action:"Controleer onafhankelijk betalingsbewijs vóór omzetregistratie"}
+});
+export function createCustomerSignalCards(events,{tenantId,now=Date.now(),maxAgeDays=30}={}){
+ if(typeof tenantId!=="string"||!tenantId.trim())throw new Error("TENANT_REQUIRED");
+ const {accepted,quarantined}=ingestSignals(events,{now,maxAgeDays});
+ const cards=[],rejected=[...quarantined],seen=new Set();
+ for(const signal of accepted){
+  if(signal.tenantId!==tenantId){rejected.push({id:signal.id,reason:"TENANT_SCOPE_MISMATCH"});continue;}
+  if(signal.containsPersonalData===true && signal.consentOrBasisVerified!==true){rejected.push({id:signal.id,reason:"PERSONAL_DATA_GUARD"});continue;}
+  if(signal.type==="paid_order" && signal.independentPaymentVerified!==true){rejected.push({id:signal.id,reason:"PAYMENT_PROOF_REQUIRED"});continue;}
+  const key=signal.source+":"+signal.id;
+  if(seen.has(key))continue;
+  seen.add(key);
+  const guidance=CUSTOMER_GUIDANCE[signal.type];
+  cards.push(Object.freeze({
+   id:key,tenantId,category:signal.type,title:guidance.title,
+   whyRelevant:typeof signal.relevanceExplanation==="string" && signal.relevanceExplanation.trim()?signal.relevanceExplanation.slice(0,500):"Vereist beoordeling tegen de actuele bedrijfscontext",
+   recommendedAction:guidance.action,sourceEvidence:signal.source,
+   observedAt:new Date(signal.observedAt).toISOString(),
+   status:"ADVISORY_UNVERIFIED_OUTCOME",automatedActionAllowed:false
+  }));
+ }
+ return {schemaVersion:1,tenantId,cards,rejected};
+}
