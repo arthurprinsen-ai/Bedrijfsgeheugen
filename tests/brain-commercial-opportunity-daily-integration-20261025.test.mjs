@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createGrowthIntelligenceDaily } from '../netlify/functions/growth-intelligence-daily.mjs';
 
 test('existing daily Brain loop analyzes canonical opportunity gaps and does not invent EUR 2900 or an outbound execution',async()=>{
-  const observed={opportunities:[],brain:[],decisions:[],obligations:[]};
+  const observed={opportunities:[],scheduled:[],brain:[],decisions:[],obligations:[]};
   const store={
     listInputs:async()=>({
       signals:[],keywords:[],bilingualKeywords:[],
@@ -18,6 +18,7 @@ test('existing daily Brain loop analyzes canonical opportunity gaps and does not
       growthPageDaily:[],seoSearch:[]
     }),
     upsertOpportunity:async x=>observed.opportunities.push(x),
+    scheduleOpportunity:async (key,dueAt,cutoff)=>observed.scheduled.push({key,dueAt,cutoff}),
     recordDecision:async x=>observed.decisions.push(x),
     recordObligation:async x=>observed.obligations.push(x),
     recordBrain:async x=>observed.brain.push(x),
@@ -30,7 +31,12 @@ test('existing daily Brain loop analyzes canonical opportunity gaps and does not
   assert.equal(result.commercialQualified,0);
   assert.equal(result.predictions,0);
   assert.equal(observed.decisions.length,0);
-  assert.equal(observed.obligations.length,0);
+  assert.equal(observed.obligations.length,1,'evidence-only next action must be durably planned');
+  assert.equal(observed.obligations[0].type,'COMMERCIAL_NEXT_ACTION_REVIEW');
+  assert.equal(observed.obligations[0].payload.outreach_authorized,false);
+  assert.equal(observed.obligations[0].payload.execution_state,'PLANNED_NOT_EXECUTED');
+  assert.equal(observed.scheduled.length,1);
+  assert.equal(result.followupCoverage.executionVerified,false);
   assert.equal(observed.opportunities.length,1);
   assert.equal(observed.opportunities[0].expected_value_eur,0);
   assert.equal(observed.opportunities[0].expected_revenue_value,0);
