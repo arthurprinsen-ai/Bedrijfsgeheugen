@@ -23,13 +23,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "anonymous growth_events scan_completed vs zero commercial_leads"
+      "tests/site-shell-cta-conversie.test.mjs"
     ],
     "shadow": [
-      "no new provider contact or event"
+      "tests/site-shell-cta-conversie.test.mjs"
     ],
     "canary": [
-      "approved CTA in dashboard + provider booking readback"
+      "tests/site-shell-cta-conversie.test.mjs"
     ]
   },
   "terminal_rule": "Exact-head Required+CodeQL and targeted Netlify preview, protected merge, production readback, then independently observed consented bookings and orders. No fabricated lift."
