@@ -20,5 +20,6 @@
     "historical_replay": [
       "tests/brain-ai-model-stale-worklist.test.mjs"
     ]
-  }
+  },
+  "fingerprint": "ai-model|supplier-freshness|27-stale-models|20261025-v1"
 }
