@@ -68,7 +68,9 @@
       "config/pr-trigger-baseline.json",
       "config/supabase-edge-functions.json",
       "supabase/migration-history.lock.json",
-      "config/powerhouse-runtime-backpressure-v1.json"
+      "config/powerhouse-runtime-backpressure-v1.json",
+      "config/powerhouse-adaptive-delivery-v1.json",
+      "tools/controleer-technische-seo.mjs"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
@@ -106,7 +108,10 @@
       "tools/bouw-v18-chrome-alles.mjs",
       "tools/prijzen-uit-de-homepage.mjs",
       "tools/normaliseer-site-ui.mjs",
-      "tools/genereer-sitemap.mjs"
+      "tools/genereer-sitemap.mjs",
+      "afsluiten.html",
+      "zelfscan.html",
+      "tools/bouw-v18-production-core.mjs"
     ],
     "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json",
     "netlifyApplicabilityAuthority": "tools/delivery/netlify-deployment-applicability.mjs",
@@ -116,6 +121,7 @@
       "docs/",
       ".agents/",
       "tests/",
+      "supabase/tests/",
       ".github/",
       "brain/learning/",
       "brain/policies/",

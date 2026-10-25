@@ -1,12 +1,13 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
 import { ensureIdentityWidget } from '../portal-state.js';
+import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['live','Live uitvoering'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['live','Live uitvoering'],['agent-learning','Leerintelligentie'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
@@ -85,11 +86,11 @@ function errorView(events){
 }
 function layerView(events,observability){
   const components=arr(observability.components);
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Activiteit per laag</h4>${bars(groupCount(events,'layer').slice(0,16),events.length)}</section><section class="poc-panel"><h4>Platform- en componentstatus</h4>${components.length?components.map(c=>`<article class="poc-component"><div><b>${esc(c.name||c.component||c.platform||'Component')}</b><small>${esc(c.kind||c.layer||'')}</small></div><span class="poc-dot ${c.healthy===false?'bad':'good'}"></span></article>`).join(''):empty('Nog geen componentstatus in de runtimeprojectie.')}</section></div>`;
+  return `<div class="poc-grid2"><section class="poc-panel"><h4>Activiteit per laag</h4><p class="poc-note">Brein: context, verbanden en leren. Powerhouse: beoordelen, beslissen en uitvoeren. Heartbeat: geplande taken en resultaatcontrole. Hieronder staat alleen activiteit die in de geladen runtimegegevens is vastgelegd.</p>${bars(groupCount(events,'layer').slice(0,16),events.length)}</section><section class="poc-panel"><h4>Platform- en componentstatus</h4>${components.length?components.map(c=>`<article class="poc-component"><div><b>${esc(c.name||c.component||c.platform||'Component')}</b><small>${esc(c.kind||c.layer||'')}</small></div><span class="poc-dot ${c.healthy===false?'bad':'good'}"></span></article>`).join(''):empty('Nog geen componentstatus in de runtimeprojectie.')}</section></div>`;
 }
 function knowledgeView(events){
   const knowledge=events.filter(isKnowledge);
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Learning & documentatie</h4>${knowledge.length?timeline(knowledge):empty('Geen learning/documentatie-events binnen deze filters.')}</section><section class="poc-panel"><h4>Wat wordt vastgelegd</h4><div class="poc-checks"><span>Brain learning</span><span>Development ledger</span><span>Menselijke documentatie</span><span>Root cause</span><span>Prevention rule</span><span>Outcome/evidence</span></div></section></div>`;
+  return `<div class="poc-grid2"><section class="poc-panel"><h4>Learning & documentatie</h4>${knowledge.length?timeline(knowledge):empty('Geen learning/documentatie-events binnen deze filters.')}</section><section class="poc-panel"><h4>Wat wordt vastgelegd</h4><p class="poc-note">Een wijziging hoort samen te gaan met uitleg, bron, eigenaar, test, resultaat en een leerregel. De systeemkaart volgt de broncode van deze release. Het handboek in Notion is een aparte menselijke weergave; een bijgewerkte Notion-pagina betekent niet automatisch dat het portaal of een koppeling is bijgewerkt.</p><div class="poc-checks"><span>Brain learning</span><span>Development ledger</span><span>Menselijke documentatie</span><span>Root cause</span><span>Prevention rule</span><span>Outcome/evidence</span></div></section></div>`;
 }
 function skillsView(events){
   const skills=events.filter(isSkill);
@@ -151,14 +152,15 @@ function systemMapView(systemMap,events){
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
   const inventory=(title,items)=>`<details class="psm-inventory"><summary><b>${esc(title)}</b><span>${arr(items).length}</span></summary><div>${arr(items).map(item=>`<code>${esc(item)}</code>`).join('')}</div></details>`;
   const contract=systemMap.agentRegistrationContract||{};
-  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>GitHub definieert en levert, Netlify ontsluit, Supabase is de canonieke runtime, Notion projecteert de menselijke waarheid en Portal V2 maakt alles bestuurbaar. Runtime-actors worden automatisch toegevoegd zodra zij evidence met actor-identiteit leveren.</p></div><small>Snapshot ${esc(fmtTime(systemMap.observedAt))}</small></section>
+  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>Het Brein bewaart en verbindt bedrijfscontext, bronnen en geleerde lessen. Powerhouse gebruikt die context om signalen te beoordelen, acties te kiezen en resultaten te volgen. Heartbeat laat de bestaande taken op hun eigen ritme uitvoeren en controleert hun uitkomst. Het portaal toont de beschikbare gegevens en bewijsstatus; GitHub levert de code, Supabase verwerkt en bewaart, Netlify ontsluit en Notion documenteert. Een geplande taak of opgeslagen keuze bewijst nog geen uitgevoerde actie.</p></div><small>Broninventaris gecontroleerd: ${esc(fmtTime(systemMap.observedAt))}</small></section>
+  <p class="poc-note">De uitleg en broninventaris volgen dezelfde gecontroleerde release als dit portaal. Dit registreert wat is gebouwd; live werking vereist afzonderlijk runtime- en resultaatbewijs. Broncontrole: ${esc(systemMap.explanationInventory?.contentHash?.slice(0,12)||'nog geen controlebewijs')}. Supabase-catalogus waargenomen: ${esc(fmtTime(liveSupabase.generatedAt))}.</p>
   <div class="poc-kpis psm-kpis">
     ${kpi('Supabase tabellen',liveSupabase.status==='LIVE'?liveTables.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('Supabase views',liveSupabase.status==='LIVE'?liveViews.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('DB functions',liveSupabase.status==='LIVE'?liveDbFunctions.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('Actieve cron-jobs',liveSupabase.status==='LIVE'?liveCron.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
-    ${kpi('GitHub workflows',snapshot.github?.workflows??arr(inventories.githubWorkflows).length,'delivery + intelligence')}
-    ${kpi('Netlify functions',snapshot.netlify?.functions??arr(inventories.netlifyFunctions).length,'API + portal boundary')}
+    ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
+    ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
@@ -317,7 +319,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
     if(state.tab==='integrations'){
       body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
       body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));

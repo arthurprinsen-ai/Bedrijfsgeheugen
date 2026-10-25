@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-20",
+  "obligationId": "p0-4215-lossless-cross-domain-input-impacts-20261008",
+  "fingerprint": "powerhouse|portal|lossless-canonical-impacts-brain-ack-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing Portal V2 -> portal-state-eu -> canonical BusinessInput -> ONE BRAIN / Powerhouse -> impact engine",
+  "root_cause": "Previous portal domain-state boundary silently dropped pending impacts after fifty mutations and could attach concurrent edits to the wrong persistence snapshot. Finance and external-signal mutations did not mark the complete set of affected downstream pages for review.",
+  "prevention_rule": "Preserve all pending mutation impacts without cap; freeze before async authenticated write; clear only ACKed generation; leave newer edits queued and failed writes for retry; map finance and external sources to affected pages, explicitly label review-only and never infer financial outcomes or tenant acceptance.",
+  "compiler": {
+    "failure_class": "LOSSY_PORTAL_BRAIN_CAUSAL_IMPACT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-lossless-form-impact-closure.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-lossless-form-impact-closure.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-lossless-form-impact-closure.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-p0-4215-lossless-form-impact-closure.test.mjs",
+    "portal-v2/tests/all-field-brain-delivery-lossless.test.mjs"
+  ],
+  "release_gates": [
+    "Required CI and CodeQL exact SHA",
+    "immutable Netlify preview and protected merge",
+    "two independently authorized customer tenant writes, sourceRevision, Brain ACK, Heartbeat and all influenced dashboards readbacks",
+    "negative cross-tenant authentication and read test",
+    "financial forecasts derived from legitimate source points with verified provider/provenance, never generated money"
+  ],
+  "two_customer_acceptance": "NOT_PROVEN",
+  "financial_forecast_acceptance": "NOT_PROVEN",
+  "external_delivery_acceptance": "NOT_PROVEN",
+  "production_verified": false,
+  "read_only_prod_observations": {
+    "supabase_auth_accounts": 1,
+    "portal_state_tenants": 1,
+    "brain_record_tenants": 3,
+    "financial_forecast_rows": 0,
+    "observed_date": "2026-10-20",
+    "caution": "Counts are not authorizations. Brain tenant IDs are not proof of two authenticated customers. External authentication providers might differ."
+  }
+}

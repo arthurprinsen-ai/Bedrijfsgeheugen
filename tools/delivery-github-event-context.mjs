@@ -42,9 +42,16 @@ export function normalizeGitHubDeliveryEvent({
     const group = event.merge_group || {};
     mode = 'merge_group';
     baseSha = group.base_sha;
-    changeHeadSha = group.head_sha || githubSha;
-    candidateSha = group.head_sha || githubSha;
-    prNumber = safeRunId;
+    const declaredHeadSha = requireSha('mergeGroupHeadSha', group.head_sha);
+    const workflowHeadSha = requireSha('githubSha', githubSha);
+    if (declaredHeadSha !== workflowHeadSha) {
+      throw new Error('MERGE_GROUP_HEAD_SHA_MISMATCH');
+    }
+    changeHeadSha = declaredHeadSha;
+    candidateSha = declaredHeadSha;
+    // A workflow run ID is not a PR number. Multi-PR group membership
+    // needs separate provider-verified lineage before admission.
+    prNumber = null;
     changeId = `merge-group-${String(candidateSha || '').slice(0, 12)}`;
   } else if (eventName === 'workflow_dispatch') {
     const dispatchPr = event.pull_request || {};

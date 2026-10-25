@@ -1,0 +1,44 @@
+{
+  "contract": "powerhouse-contact-authority-bounded-v2",
+  "date": "2026-10-20",
+  "fingerprint": "commercial|authority|queue-preselect-skip-locked|20261020",
+  "parent_issue": 4198,
+  "compiler": {
+    "failure_class": "UNBOUNDED_CONTACT_AUTHORITY_JOIN_UNDER_DATABASE_PRESSURE",
+    "scope": "SQL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-contact-authority-bounded-queue-v2.test.mjs"
+    ]
+  },
+  "root_cause": "Canonical authority-review SQL evaluated join and suppression on an entire enrichment state before ordering/limiting; under multiple active cron owners this repeatedly timed out. Manual bounded Cron operations alone did not eliminate SQL pressure.",
+  "evidence": {
+    "review_source": "pg_get_functiondef powerhouse_contact_authority_review_batch_v1(date,integer)",
+    "observed": "2026-10-20 production logs repeated statement timeout, cron job 138 startup timeout, email dispatch lock timeout",
+    "current_job": "powerhouse-identity-graph-v1 active with one bounded pulse and one authority batch; schedule preserved",
+    "external_messages_sent": 0
+  },
+  "tests": [
+    "tests/brain-commercial-contact-authority-bounded-queue-v2.test.mjs"
+  ],
+  "prevention": [
+    "Materialize and SKIP LOCKED bound select before CRM join.",
+    "Preserve the original function's exact suppression and explicit per-contact authority guards by fail-closed source rewrite.",
+    "Reconcile the existing active Cron and preserve its current schedule; never create another sender.",
+    "Require provider delivery readback and daily coverage, not only a successful schema deployment."
+  ],
+  "change": "Versioned SQL source rewrite with guard, queue index, original Cron reconciliation, existing Brain learning and tests.",
+  "verification_required": [
+    "Required CI",
+    "CodeQL",
+    "Supabase Preview",
+    "protected merge",
+    "production migration and exact source readback",
+    "observed successful real batch with daily coverage"
+  ],
+  "state": "SOURCE_CANDIDATE"
+}

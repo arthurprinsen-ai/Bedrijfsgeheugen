@@ -1,0 +1,7 @@
+# External intelligence provider failover — 2026-10-19
+
+The canonical `bg-externe-signalen` producer was deployed in Supabase but not represented in protected GitHub source. It failed all three selected topics with Tavily `HTTP 432` (provider usage limit), leaving `external-intelligence` stale since 14 October. A separate authenticated DataForSEO organic SERP request succeeded with `status_code=20000`, establishing an alternative existing provider.
+
+This patch versions the currently deployed producer's exact baseline plus a bounded fallback in the **same producer**. Prefer Tavily. If Tavily fails or lacks a credential, request DataForSEO organic live results using existing `DATAFORSEO_LOGIN` and `DATAFORSEO_PASSWORD` from the same Supabase secrets infrastructure. Filter all paid/other result types. Preserve publication timestamps only if actually provided, annotate SERP rank proxy as a proxy rather than source relevance, and record canonical external-intelligence provider-lineage with the exact source and successful-topic counts. If both providers fail, the producer remains failed; never claim fresh insights on a cron tick alone.
+
+Security: scheduler-only `x-powerhouse-token` remains mandatory. Credentials never enter log evidence. BATCH=3 and external timeouts remain unchanged. No new scheduler, provider, table or authentication bypass. The production function is not to be deployed except after required checks, protected merge and exact source readback. Regression: `tests/brain-external-signal-quota-failover-20261019.test.mjs`.

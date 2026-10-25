@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { canRebindUnsentBlog, originalBlogSlugGuard } from '../_shared/blog-null-lineage-recovery.mjs';
 
-const VERSION='v7-repository-native-prewrite';
+const VERSION='v8-null-safe-blog-lineage-cas';
 const clean=(v:unknown)=>String(v??'').trim();
 function jsonObject(value:any){
   if(value===null||value===undefined)return {};
@@ -17,7 +18,7 @@ function jsonObject(value:any){
 }
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
@@ -47,16 +48,18 @@ Deno.serve(async(req)=>{
   // A live, dispatched or ambiguous provider side effect must NEVER be rebound.
   if(o && clean(o.slug)!==slug){
     const provenance=jsonObject(o.evidence);
-    if(clean(o.status)!=='GENERATED' || clean(o.external_id) || o.published_at || o.live_proven_at
-        || provenance.provider_create_success===true || provenance.republish_forbidden===true
-        || provenance.possible_provider_side_effect===true){
+    if(!canRebindUnsentBlog(o,provenance)){
       return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_EXTERNAL_STATE',recovery_required:true,runDate},409);
     }
-    const {data:rebound,error:reboundError}=await db.from('content_publication_obligations')
+    // CAS by the ACTUAL old value. PostgREST equality with '' does not match
+    // SQL NULL; that mismatch stranded the 22 Oct daily blog metadata.
+    // Every external side-effect bound stays in force before this selection.
+    const recoveryQuery=db.from('content_publication_obligations')
       .update({slug,content_id:'blog:'+slug,canonical_url:canonical,updated_at:new Date().toISOString()})
       .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog')
-      .eq('status','GENERATED').eq('slug',clean(o.slug))
-      .is('external_id',null).is('published_at',null).is('live_proven_at',null)
+      .eq('status','GENERATED')
+      .is('external_id',null).is('published_at',null).is('live_proven_at',null);
+    const {data:rebound,error:reboundError}=await originalBlogSlugGuard(recoveryQuery,o.slug)
       .select('slug,content_id,canonical_url').maybeSingle();
     if(reboundError || !rebound || clean(rebound.slug)!==slug){
       return json({ok:false,error:'BLOG_LINEAGE_REBIND_FAILED',recovery_required:true,runDate},409);

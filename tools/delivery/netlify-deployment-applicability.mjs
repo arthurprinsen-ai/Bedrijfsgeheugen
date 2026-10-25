@@ -35,11 +35,15 @@ export const NETLIFY_RUNTIME_PREFIXES = Object.freeze([
   'platform/saas/',
   'platform/connectors/',
   'platform/read-models/',
+  // Imported by netlify/functions/brain-operating-loop.mjs via store.mjs.
+  'brain/operating-loop/',
 ]);
 
 // These modules are imported transitively by Netlify's tenant-ai-inference and
 // data-sovereignty functions. Backend lane != no hosted runtime impact.
 export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
+  // Changing function bundling/runtime config requires a real Netlify build.
+  'netlify.toml',
   'platform/runtime/attested-cloud-ai.mjs',
   'platform/runtime/attested-vertex-adapter.mjs',
   'platform/brain/verified-ai-runtime.mjs',
@@ -48,6 +52,16 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
 ]));
 
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
+
+// A Netlify-deployed Brain source path can require authenticated tenant proof
+// even when the generic delivery lane is 'backend' rather than 'portal'.
+export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
+  return unique(changedPaths).some(path =>
+    path.startsWith('brain/operating-loop/') ||
+    path === 'netlify/functions/brain-operating-loop.mjs' ||
+    path === 'platform/api/brain-operating-loop-handler.mjs'
+  );
+}
 
 export function deriveNetlifyDeploymentApplicability({
   changedPaths=[],

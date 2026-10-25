@@ -1,0 +1,15 @@
+{
+  "skill": "powerhouse-portal-dom-bridge-only-override-v1",
+  "fingerprint": "powerhouse|delivery|portal-dom-bridge-only-successor|v1",
+  "owner": "ONE BRAIN / Protected Portal Production Readback",
+  "authority": "GitHub protected approved PR ancestry + Netlify immutable site release SHA + independently verified Supabase bridge source",
+  "instruction": "Permit manual portal-v2 DOM and Chromium acceptance against an earlier site SHA only if no portal/website/Netlify runtime has changed on main since that SHA. Only strictly named supabase/functions/netlify-deploy-bridge/index.ts and this PR's exact governance skill/System Map records are independent of the site and may be admitted after exact Supabase parity proof. Never allow arbitrary Edge functions or bypass protected PR provenance, immutable alias, login/tenant tests, or actual browser execution.",
+  "routing": [
+    ".github/workflows/portal-v2-production-dom-readback.yml"
+  ],
+  "tests": [
+    "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}

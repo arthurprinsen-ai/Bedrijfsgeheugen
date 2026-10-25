@@ -1,0 +1,71 @@
+{
+  "fingerprint": "brain|incident-observe|evidence-overwrite-and-crosswriter-runid-dup|20261022-v1",
+  "status": "CANDIDATE",
+  "failure_class": "BRAIN_INCIDENT_DURABILITY",
+  "scope": "BACKEND",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4681",
+  "root_cause": "Existing brain_observe_failure overwrites promoted registry evidence on next event; alias occurrence_id formats duplicate a single cron run. Production audit observed 20 raw rows for 11 distinct run IDs, with conflicting raw hashes; never collapse historical distinct evidence.",
+  "fix": "Preserve promoted summary and immutable raw observations; retain explicit source project in cron semantic keys, support scoped job aliases, reject ambiguous legacy/scoped arrival in both orders, and serialize scope boundary plus full project event identity. Preserve historical conflicts and existing scheduler.",
+  "prevention_rule": "Read canonical fingerprints before writes, never replace verified summary evidence with new event metadata, use one normalized provider event identity and idempotent transaction lock across agents; preserve raw historic conflicts and report raw versus semantic counts independently, keep role restrictions. No fake green without runtime verified snapshot and tenant proof.",
+  "expected_benefit": "No new silent evidence loss; newly arriving equivalent provider event ID does not increment occurrence count when verified hash is identical.",
+  "remaining_risks": [
+    "Historic events with conflicting hashes require investigation and cannot be automatically merged",
+    "Unknown provider formats use existing raw-id uniqueness only",
+    "Two concurrent database sessions require independent integration proof",
+    "Production SQL migration and real agent writeback are not yet released"
+  ],
+  "compiler": {
+    "failure_class": "BRAIN_INCIDENT_DURABILITY",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
+    ],
+    "sql_rollback_preview": [
+      "supabase/tests/brain_failure_observe_semantic_recovery_v1.sql"
+    ]
+  },
+  "evidence": {
+    "preview_transaction": "ROLLBACK_ONLY",
+    "production_state": "UNMODIFIED",
+    "verified_historical_raw_events": 20,
+    "verified_distinct_cron_runs": 11,
+    "distinct_hash_pairs": 20
+  },
+  "ownership": "One canonical #4681 writer; #4215 cron performance and PR #4630 remain independent.",
+  "source_repair": {
+    "predecessor_pr": 4686,
+    "predecessor_head": "cf6ca3f5f3453c7691a2abbaf1aa63dfe3e17b7a",
+    "node_red": {
+      "pass": 6,
+      "fail": 1
+    },
+    "node_green": {
+      "pass": 7,
+      "fail": 0
+    },
+    "postgres_red": "CROSS_PROJECT_EVENT_COLLISION",
+    "postgres_green": "rollback-only complete behavioral SQL PASS",
+    "post_rollback_fixture_registry": 0,
+    "post_rollback_fixture_occurrences": 0,
+    "prevention": [
+      "Different explicit source projects are never equal event identities",
+      "Project-qualified cron:job and cron:numeric aliases are equivalent within the same project",
+      "Ambiguous legacy/scoped job/run matches reject without guessed project",
+      "Missing JSON proof marker is rejected with IS DISTINCT FROM; SQL NULL is not proof",
+      "One current-main successor and one bundled integration commit; reuse existing dedicated preview"
+    ],
+    "review_patch": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4686#issuecomment-6347722783",
+    "release_status": "NOT_LIVE_PENDING_NEW_EXACT_HEAD_GATES"
+  }
+}

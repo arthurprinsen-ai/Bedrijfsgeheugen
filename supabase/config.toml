@@ -1,5 +1,17 @@
 project_id = "bedrijfsgeheugen"
 
+[functions.powerhouse-blog-export]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-export/index.ts"
+# Approved read-only source; no provider write.
+
+[functions.powerhouse-blog-queue]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-queue/index.ts"
+# Existing privileged write protected by x-powerhouse-token.
+
 [functions.powerhouse-predictive-engine]
 enabled = true
 verify_jwt = false
@@ -114,3 +126,40 @@ entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-content-loop/index.ts"
+
+# Existing exact-Mira production stages. Entrypoints enforce the scheduler token.
+[functions.powerhouse-instagram-media-router]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-router/index.ts"
+
+[functions.powerhouse-instagram-media-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-verifier/index.ts"
+
+[functions.powerhouse-instagram-temporal-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-temporal-verifier/index.ts"
+
+# Read-only Composio analytics ingestion; only the verified scheduler may invoke.
+[functions.bg-social-metrics-sync]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-social-metrics-sync/index.ts"
+
+# Existing revenue learning store: preserve its current non-JWT invocation
+# because its entrypoint requires a validated x-bg-service-token SHA-256 hash.
+# Register it in canonical preview and release deployment for source parity.
+[functions.revenue-learning-store]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/revenue-learning-store/index.ts"
+
+[functions.social-learning-store]
+# Canonical tenant-isolated social-learning gateway. Existing SHA-256
+# x-bg-service-token authentication preserves verify_jwt=false; no anonymous access.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/social-learning-store/index.ts"

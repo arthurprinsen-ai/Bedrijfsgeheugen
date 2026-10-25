@@ -10,10 +10,26 @@ permissions:
 
 concurrency:
   group: powerhouse-daily-self-evolution-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
+  # Single shared admission for both independent daily jobs. The scheduled
+  # GitHub event may arrive hours after a manual recovery: do not run twice.
+  daily-admission:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Prove first daily GitHub workflow run before any learning or catalog audit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/daily-learning-run-admission.mjs
+
   improve:
+    needs: daily-admission
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,16 +37,20 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify portal explanation source freshness
+        run: |
+          node scripts/brain/portal-explanation-inventory.mjs --check
+          node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Verify canonical incident learning and portal relevance
+        run: |
+          node scripts/brain/validate-universal-closed-loop-learning.mjs
+          node --test tests/brain-universal-closed-loop-learning.test.mjs portal-v2/tests/relevance-learning-closed-loop.test.mjs
       - name: Verify self-evolution contract
         run: node --test tests/powerhouse-daily-self-evolution.test.mjs
       - name: Verify Powerhouse self-improvement layer
         run: node --test tests/brain-self-improvement-layer-v1.test.mjs
-      - name: Verify AI model intelligence freshness
-        run: |
-          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
-          node scripts/brain/ai-model-intelligence-audit.mjs
       - name: Build universal chat-agent-skill snapshot
         run: node scripts/brain/daily-self-evolution.mjs
       - name: Run canonical autonomous improvement probe
@@ -41,9 +61,57 @@ jobs:
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
       - name: Verify autonomous engineering fabric v3
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+      - name: Persist exact-run daily agent-learning checkpoint even after a failed step
+        if: always()
+        env:
+          DAILY_JOB_STATUS: ${{ job.status }}
+        run: |
+          mkdir -p artifacts/quality
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const snapshot={
+            contract:'powerhouse-daily-learning-execution-checkpoint-v1',
+            observed_at:new Date().toISOString(),
+            run_id:process.env.GITHUB_RUN_ID,
+            run_attempt:process.env.GITHUB_RUN_ATTEMPT,
+            head_sha:process.env.GITHUB_SHA,
+            job:'improve',
+            job_status:process.env.DAILY_JOB_STATUS||'unknown',
+            provider_catalog_authority:'independent model-freshness job',
+            terminal_proof:false,
+            next_safe_action:'Inspect exact failed step and resume the existing canonical learning obligation; never infer success from the checkpoint alone'
+          };
+          fs.writeFileSync('artifacts/quality/daily-learning-execution-checkpoint.json',JSON.stringify(snapshot,null,2)+'\n');
+          NODE
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: powerhouse-daily-self-evolution-${{ github.run_id }}
           path: artifacts/quality/
           if-no-files-found: error
+          retention-days: 30
+
+  # The catalog remains fail-closed, but a stale supplier receipt must not
+  # suppress independent daily chat/agent/skill/engineering learning tasks.
+  # Both jobs are part of this SAME scheduled workflow: no second scheduler.
+  model-freshness:
+    needs: daily-admission
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify AI model intelligence contract and source-backed freshness
+        run: |
+          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
+          node scripts/brain/ai-model-intelligence-audit.mjs
+      - name: Preserve AI model freshness failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-model-freshness-${{ github.run_id }}
+          path: artifacts/quality/ai-model-intelligence-audit.json
+          if-no-files-found: warn
           retention-days: 30

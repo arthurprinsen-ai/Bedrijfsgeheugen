@@ -1,0 +1,15 @@
+{
+  "skill": "powerhouse-netlify-session-health-v1",
+  "fingerprint": "netlify|composio|pinned-session-health|v1",
+  "owner": "ONE BRAIN / production delivery",
+  "authority": "existing GitHub OIDC + Supabase Vault COMPOSIO_API_KEY + specific approved Netlify site",
+  "instruction": "Never interpret a Composio ACTIVE account as proof that the Netlify provider tool call succeeded. Constrain session tools explicitly to existing approved read and deploy operations; on provider 400, collect only an allowlisted validation field/type and read-only session tool-exposure boolean, never raw response, credentials, tokens, account identities, proxy URLs or unapproved scopes. Verify exact provider project before a source-pinned production release. Close only after CI/CodeQL, protected merge, exact Supabase provider deployment and readback, OIDC health, Netlify SHA and browser acceptance.",
+  "routing": [
+    "supabase/functions/netlify-deploy-bridge/index.ts"
+  ],
+  "tests": [
+    "tests/brain-netlify-session-tool-exposure-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437"
+}

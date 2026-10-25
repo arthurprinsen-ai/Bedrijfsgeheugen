@@ -1,0 +1,7 @@
+# Development ledger — 2026-10-23 — P0 #4215 applied migration history
+
+- Owner: existing P0 #4215. Original forecast source PR #4558; narrow source synchronization PR #4733. No duplicate production repair owner, no second scheduler, no new incident fingerprint.
+- Production schema already contains `ph_forecasts_active_scope_lower_p0`; source control `main` was missing exactly its 20261023070053 applied migration. Remote SQL (1,620 bytes) is exact Git blob `3e6af2848e72d8733b73900eff7174315427a55c`. Supabase workflow run `684bf4d1b4aa48dcb78f50a32ce194c7` failed with remote migration version absent from local files.
+- Restored only its immutable source file, with test `tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs` and Brain-learning evidence `brain/learning/2026-10-23-p0-4215-prod-migration-source-history-sync.json`. No product SQL write, new forecast index, remote history mutation, ACL changes, cron edits or additional preview branch.
+- Independent product result: native cron #46 run #122338 SUCCESS, 109.766s, 838/838 complete rows at `2026-10-23T07:55:01.279174Z`; do not confuse a single succeeded run with a permanent SLA guarantee (10.23s outer budget remains).
+- All release and follow-up assertions remain fail-closed: native provider preview and protected PR merge, then exact migration source/readback and clean provider main deployment. Until then, PR #4733 is SOURCE_SYNC_PENDING, not deployed.

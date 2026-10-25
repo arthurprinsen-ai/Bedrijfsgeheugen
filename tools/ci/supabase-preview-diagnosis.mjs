@@ -16,7 +16,13 @@ export function diagnosePreviewCheckRuns(payload) {
   const evidence = safe([check.output?.summary, check.output?.text].filter(Boolean).join(' '));
   let code = 'PREVIEW_PROVIDER_NON_SUCCESS';
   let remediation = 'Inspect the exact-head Supabase provider check; never treat a skipped or neutral check as success.';
-  if (/SQLSTATE\s*42P01|relation\s+["']?[\w.]+["']?\s+does not exist/i.test(evidence)) {
+  if (/CRON_PRESSURE_CONTRACT_JOB_MISSING|SQLSTATE\s*P0001[^.]*cron[^.]*job/i.test(evidence)) {
+    code = 'MIGRATION_ARCHIVED_CRON_PRECONDITION';
+    remediation = 'An archived Supabase migration expects a cron job absent on clean replay. Compare the archived provider SQL to Git SQL and reconcile through provider-supported migration replay; never rewrite the applied ledger, fabricate a cron success, or bypass Preview.';
+  } else if (/limit of concurrent preview branches|reaching the limit of concurrent preview branches|maximum number of concurrent (?:preview )?branches reached/i.test(evidence)) {
+    code = 'PREVIEW_CAPACITY_EXHAUSTED';
+    remediation = 'Provider preview capacity reached. Check existing branch ownership and the Project Integrations Automatic branching limit; raise capacity only within authorized spend. Do not delete another PR owner\'s preview, forge a passing check, or treat skipped/cancelled provider checks as green.';
+  } else if (/SQLSTATE\s*42P01|relation\s+["']?[\w.]+["']?\s+does not exist/i.test(evidence)) {
     code = 'MIGRATION_MISSING_RELATION';
     remediation = 'Restore a versioned, dependency-ordered schema baseline before the first migration using the absent table; replay in an isolated preview.';
   } else if (/not associated with any Supabase Branch|not associated with.*Supabase.*Branch/i.test(evidence)) {

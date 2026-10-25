@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "social-learning|sequential-scope-starvation-and-runtime-budget|20261024-v1",
+  "obligation_id": "social-learning:scoped-parallel-evaluation-original-hourly-owner-v1",
+  "failure_class": "CANONICAL_FIRST_SEQUENTIAL_SOCIAL_EVALUATOR_STARVES_BRAND_ON_FAILURE",
+  "root_cause": "Existing hourly Netlify social-learning-evaluate processed canonical before bedrijfsgeheugen serially. A canonical store failure prevents any brand evaluation; elapsed durations of 10–12 seconds approach the platform's prior 15 second timeout. Runtime 20:00 UTC HTTP 204 took 10.2s with 1 evaluated, 3 missed, due backlog 488; upstream evidence includes historical HTTP 499 timeouts.",
+  "observed_evidence": {
+    "provider": "Netlify social-learning-evaluate request 2026-10-24T20:00:47.813Z",
+    "http_status": 204,
+    "duration_seconds": 10.208,
+    "registered_brand_learning": "one TESTING brand learning by 2026-10-24T20:00:48Z",
+    "production_readback": "CURRENT_SERIAL_VERSION; NOT YET DEPLOYED",
+    "backlog": 488
+  },
+  "fix": "Within the one existing @hourly Netlify function, validate both allowed tenant IDs before side effects, run the two scoped bounded evaluator invocations concurrently with Promise.allSettled, preserve independently successful scope work, and return HTTP 503 plus explicit failed scope class when either fails. No fan-out queue, no second scheduler, and no false fully green status.",
+  "prevention_rule": "No cross-tenant reads or writes; no synthetic 24/48/72 window results; max two due windows per tenant; scoped error evidence without secrets; independent remaining scope must progress after other provider failure; 204 only when every scope fulfilled; retries occur through the original hourly schedule only.",
+  "tests": [
+    "tests/brain-social-learning-scoped-failure-isolation-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CANONICAL_FIRST_SEQUENTIAL_SOCIAL_EVALUATOR_STARVES_BRAND_ON_FAILURE",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-learning-scoped-failure-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-scoped-failure-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-scoped-failure-isolation-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required and CodeQL checks on exact SHA, merge, production Netlify deploy exact commit, independently observed successful next @hourly invocation with brand/canonical tenant evidence; 204 alone cannot establish increased engagement or revenue."
+}

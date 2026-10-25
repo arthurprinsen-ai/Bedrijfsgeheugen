@@ -1,6 +1,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
+import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
+import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -78,7 +80,11 @@ Deno.serve(async req=>{
      if(frameUrl)payload.mediaUrl=frameUrl;
      else {payload.imageBase64=frameBase64;payload.mediaMime=clean(f.mediaType||'image/jpeg');}
      const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',payload);
-     if(!fv.body?.pass||!miraFaceProofValid(fv.body?.visual||{},'image'))return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,detail:fv.body},422);
+     if(!fv.body?.pass||!miraFaceProofValid(fv.body?.visual||{},'image')){
+     const diagnostic=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,historyId:manifest.openart_history_id,confidence:fv.body?.visual?.face_identity_confidence});
+     if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_REJECTION_DIAGNOSTIC_WRITE_FAILED',diagnostic.code);
+     return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,detail:fv.body},422);
+   }
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
    const temporalCheck=await invoke(base,token,'powerhouse-instagram-temporal-verifier',{publicationDate:runDate,videoSha256:final.sha256,frames});
@@ -140,8 +146,12 @@ Deno.serve(async req=>{
  const preservingWork=assetMaterialized&&['CLAIMED','GENERATING','VERIFYING','WAITING_PROOF'].includes(clean(job?.status));
  const state=verifiedMedia?clean(job.status):preservingWork?clean(job.status):assetMaterialized?'WAITING_PROOF':readyProviders.length?'WAITING_ASSET':'WAITING_PROVIDER_CONNECTION';
  const providerState=verifiedMedia?'READY':assetMaterialized?'ASSET_MATERIALIZED':readyProviders.length?'READY':'UNAVAILABLE';
- const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:state,required_provider:policy?.required_provider||null,selected_provider:job?.selected_provider||existingProvider||null,asset_manifest:job?.asset_manifest||{},proof_manifest:job?.proof_manifest||{},republish_forbidden:false,provider_connection_state:providerState,attempts:(job?.attempts||0)+1,last_error:assetMaterialized?null:(readyProviders.length?null:'MEDIA_PROVIDER_UNAVAILABLE'),next_action:assetMaterialized?'Exact asset already materialized; submit it with required frame/image evidence for canonical vision proof.':readyProviders.length?'Producer must submit exact asset manifest to this router.':'Connect required OpenArt/Placid producer; fallback publication is forbidden.',updated_at:new Date().toISOString()};
- await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});
- if(!verifiedMedia)await db.from('content_publication_obligations').update({status:'BLOCKED',last_error:row.last_error||'MEDIA_ASSET_REQUIRED',evidence:{...(ob?.evidence||{}),provider_routing_policy:policy,media_job_status:state},next_action:row.next_action,updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram');
+ const baseRow={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:state,required_provider:policy?.required_provider||null,selected_provider:job?.selected_provider||existingProvider||null,asset_manifest:job?.asset_manifest||{},proof_manifest:job?.proof_manifest||{},republish_forbidden:false,provider_connection_state:providerState,attempts:unchangedMediaPreflightAttempts(job),last_error:assetMaterialized?null:(readyProviders.length?null:'MEDIA_PROVIDER_UNAVAILABLE'),next_action:assetMaterialized?'Exact asset already materialized; submit it with required frame/image evidence for canonical vision proof.':readyProviders.length?'Producer must submit exact asset manifest to this router.':'Connect required OpenArt/Placid producer; fallback publication is forbidden.',updated_at:new Date().toISOString()};
+ const row=retainMediaProofFailure(job,ob,baseRow);
+ const write=await writeMediaPreflight(db,job,row);
+ if(write.kind==='preserved')return json({ok:true,ready:false,runDate,postType,status:write.status,next_action:job?.next_action||'Existing producer owns this media job; resume its exact provider history.'});
+ if(write.kind==='stale')return json({ok:true,ready:false,runDate,postType,status:'STATE_CHANGED_RETRY',next_action:'Reread the canonical job; never replay the stale snapshot.'},409);
+ if(write.kind==='failed')return json({ok:false,error:'MEDIA_PREFLIGHT_WRITE_FAILED',code:write.code},500);
+ if(!verifiedMedia&&ob?.updated_at)await db.from('content_publication_obligations').update({status:'BLOCKED',last_error:row.last_error||'MEDIA_ASSET_REQUIRED',evidence:{...(ob?.evidence||{}),provider_routing_policy:policy,media_job_status:state},next_action:row.next_action,updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').eq('updated_at',ob.updated_at).is('external_id',null);
  return json({ok:true,ready:verifiedMedia,runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL,allowed_generation_modes:MIRA_ALLOWED_REFERENCE_VIDEO_MODES,canonical_problem_id:miraBusinessProblem.id,mira_business_scene:miraBusinessProblem.scene,source_catalog:'config/powerhouse-problem-library.json',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT});
 });

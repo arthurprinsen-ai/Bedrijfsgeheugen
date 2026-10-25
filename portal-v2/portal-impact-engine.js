@@ -12,7 +12,9 @@ const REVIEW_RULES=Object.freeze([
   {pattern:/^portal\.profile\.(?:employees|sector)(?:\.|$)/,domains:['organization-size','regulatory-applicability','csrd-esrs'],pages:['profiel','compliance-governance','csrd-impact','wet-regelgeving','due-diligence','advies']},
   {pattern:/^portal\.(?:data-ai-passport|dataAi|aiScan|aiCapabilities|aiCapabilitySources|aiAct|ai-capabilities|ai-technologie-actueel|koppelingen|trust-center|eu-ai-act-audit|csrd-impact|instellingen)(?:\.|$)/,domains:['ai-runtime','data-residency','privacy-security','supplier','finance','csrd-esrs'],pages:['data-ai-passport','koppelingen','trust-center','compliance-governance','csrd-impact','businesscase','roadmap','data-ai','ai-capabilities','powerhouse-control-center','wet-regelgeving']},
   {pattern:/^portal\.(?:wet-regelgeving|bronnenbibliotheek|bronnenstatus|compliance-command-center)(?:\.|$)/,domains:['regulatory','privacy-security','csrd-esrs'],pages:['compliance-governance','csrd-impact','due-diligence','roadmap','advies']},
-  {pattern:/^portal\.(?:metrics|valueFinance|waarde-financiering|businesscase|billing)(?:\.|$)/,domains:['finance','impact-economics'],pages:['businesscase','waarde-financiering','csrd-impact','roadmap']}
+  {pattern:/^portal\.(?:metrics|valueFinance|waarde-financiering|cijfers-maatstaven|businesscase|billing)(?:\.|$)/,domains:['finance','impact-economics'],pages:['businesscase','waarde-financiering','cijfers-maatstaven','due-diligence','csrd-impact','roadmap']},
+  // Review only: input changes are not evidence of a financial or legal outcome.
+  {pattern:/^portal\.(?:external|sources|regulatory|ondernemersdata|omgevingsradar|arbeidsmarkt-personeel|subsidies-regelingen|economie-branche-actueel|ai-technologie-actueel|deadlines)(?:\.|$)/,domains:['external-intelligence','finance','people','regulatory','csrd-esrs'],pages:['omgevingsradar','branche-markt','mensen','cijfers-maatstaven','businesscase','waarde-financiering','compliance-governance','csrd-impact','due-diligence','roadmap','advies','audittrail']}
 ]);
 
 const CALCS=Object.freeze([

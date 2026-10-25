@@ -32,16 +32,47 @@ function evidenceCount(item={}){
     (item.productionEvidenceRef||item.production_evidence_ref?1:0);
 }
 
+// A reference is only a claim until a trusted CALLER verifies its identity,
+// independent authority, candidate revision and provider observation. This
+// pure evaluator NEVER fetches providers or grants production release access.
+function independentlyVerifiedEvidence(candidate,verifyEvidenceRef,now){
+  const refs=arr(candidate.evidenceRefs||candidate.evidence_refs||candidate.evidence||[]);
+  const revision=String(candidate.sourceSha||candidate.source_sha||'');
+  if(typeof verifyEvidenceRef!=='function'||!/^[0-9a-f]{40}$/i.test(revision)||
+     !Number.isFinite(Date.parse(now||'')))return 0;
+  const unique=new Set();
+  let verified=0;
+  for(const ref of refs){
+    if(typeof ref!=='string'||!ref.trim()||ref.length>512||unique.has(ref))continue;
+    unique.add(ref);
+    let proof;
+    try{proof=verifyEvidenceRef(ref,{candidateSha:revision});}catch{continue;}
+    const at=Date.parse(proof?.verified_at||'');
+    if(proof?.verified!==true||proof?.independent!==true||
+       proof?.evidence_ref!==ref||String(proof?.candidate_sha||'').toLowerCase()!==revision.toLowerCase()||
+       !['PROVIDER_READBACK','INDEPENDENT_EVALUATION','PROTECTED_CI'].includes(proof?.authority)||
+       !Number.isFinite(at)||at>Date.parse(now)||at<0)continue;
+    verified++;
+  }
+  return verified;
+}
+
 export function evaluatePromotionCandidate({
   baseline={},
   candidate={},
   minEvidence=2,
   requiredGates=['quality','security','regression'],
   maxCostRegression=0.15,
-  maxLatencyRegression=0.15
+  maxLatencyRegression=0.15,
+  verifyEvidenceRef=null,
+  now=new Date().toISOString()
 }={}){
+  // Custom callers can strengthen, never drop, the three mandatory gates.
+  const mandatoryGates=[...new Set(['quality','security','regression',...arr(requiredGates)])];
+  const minimum=Math.max(2,Number.isSafeInteger(minEvidence)?minEvidence:2);
+  const verifiedEvidence=independentlyVerifiedEvidence(candidate,verifyEvidenceRef,now);
   const gates={};
-  for(const gate of requiredGates){
+  for(const gate of mandatoryGates){
     const value=candidate?.gates?.[gate];
     gates[gate]=value===true?'pass':value===false?'fail':'unknown';
   }
@@ -67,22 +98,27 @@ export function evaluatePromotionCandidate({
 
   const hardReject=
     failing.length>0||
-    evidence<minEvidence||
     (qualityDelta!=null&&qualityDelta<0)||
     (costRegression!=null&&costRegression>maxCostRegression)||
     (latencyRegression!=null&&latencyRegression>maxLatencyRegression);
 
   const improved=(businessDelta!=null&&businessDelta>0)||(qualityDelta!=null&&qualityDelta>0);
-  const promotable=!hardReject&&unknownComparisons.length===0&&improved;
+  const promotable=!hardReject&&verifiedEvidence>=minimum&&unknownComparisons.length===0&&improved;
 
   return freeze({
     schemaVersion:'self-improvement-promotion-eval.v1',
     promotable,
+    // PROMOTE is an advisory evaluation verdict, NOT deployment authorization.
     decision:promotable?'PROMOTE':hardReject?'REJECT':'GATHER_MORE_EVIDENCE',
+    releaseAuthorized:false,
+    protectedReleaseRequired:true,
     gates:freeze(gates),
     failingGates:freeze(failing),
     evidenceCount:evidence,
-    minEvidence,
+    independentlyVerifiedEvidenceCount:verifiedEvidence,
+    minimumVerifiedEvidence:minimum,
+    evidenceVerification:'EXTERNAL_CALLER_ATTESTATIONS_NOT_RELEASE_AUTHORITY',
+    minEvidence:minimum,
     comparisons:freeze({
       qualityDelta,
       businessDelta,

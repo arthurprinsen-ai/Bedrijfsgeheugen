@@ -7,7 +7,7 @@ export function buildCompanyCockpit(runtime = {}) {
   const approvals = selectApprovalNeeded(runtime);
   const blocked = selectBlocked(runtime);
   const timeline = items(runtime.timeline);
-  const economics = runtime.economics || {expectedValue:0, actualCost:0, realizedValue:0, realizedProfit:0, currency:'EUR'};
+  const economics = {expectedValue:null, actualCost:null, realizedValue:null, realizedProfit:null, currency:'EUR', ...(runtime.economics || {})};
   const now = Array.isArray(runtime?.portfolio?.NOW) ? runtime.portfolio.NOW : [];
   const verifiedValueByProblem = Array.isArray(runtime?.verifiedValueByProblem) ? runtime.verifiedValueByProblem : [];
 

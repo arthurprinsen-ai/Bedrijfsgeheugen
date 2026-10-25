@@ -83,3 +83,81 @@ test('source wiring preserves tenant-switch isolation and verified ownership',()
  assert.match(scan,/bg_last_scan_receipt_v2/);
  assert.doesNotMatch(source,/x-bg-service-token/);
 });
+
+
+test('verified Frisse Blik/Bedrijfslek claim updates the existing Brain dashboards immediately',async()=>{
+ const {doc,nodes}=fakeDom();
+ const local=fakeStore({[REC]:JSON.stringify({submission_key:KEY,received_at:Date.now()})});
+ const updates=[];
+ const fetcher=async(_url,options={})=>({ok:true,status:200,json:async()=>options.method==='POST'
+   ?{ok:true,claimed:true,scan:{tenant_identity_status:'verified'},bedrijfslek_portal_projected:true}
+   :{ok:true,scans:[{tenant_identity_status:'verified',soort:'bedrijfslek_scan',score:64}]}});
+ const bridge=createScanClaimBridge({doc,storage:local,session:fakeStore(),fetcher,
+  authHeaders:async()=>({authorization:'Bearer valid.jwt'}),
+  onClaimed:async payload=>{updates.push(payload);return {applied:true,changed:true};}});
+ bridge.setAuthenticated(true,'customer-A');
+ await new Promise(resolve=>setImmediate(resolve));
+ await nodes.find(x=>x.tag==='button').listeners.click();
+ assert.equal(updates.length,1);
+ assert.deepEqual(updates[0],{tenantIdentity:'customer-A',serverVerified:true,portalProjected:true});
+ assert.equal(local.peek(REC),undefined);
+});
+test('rejected provider claim never propagates unverified scan data',async()=>{
+ const {doc,nodes}=fakeDom();
+ const local=fakeStore({[REC]:JSON.stringify({submission_key:KEY,received_at:Date.now()})});
+ let propagated=0;
+ const bridge=createScanClaimBridge({doc,storage:local,session:fakeStore(),authHeaders:async()=>({authorization:'Bearer valid.jwt'}),
+  fetcher:async(_url,options={})=>({ok:true,status:200,json:async()=>options.method==='POST'
+    ?{ok:true,claimed:false,scan:{tenant_identity_status:'unverified'}}:{ok:true,scans:[]}}),
+  onClaimed:async()=>{propagated++;}});
+ bridge.setAuthenticated(true,'customer-A');
+ await new Promise(resolve=>setImmediate(resolve));
+ await nodes.find(x=>x.tag==='button').listeners.click();
+ assert.equal(propagated,0);
+ assert.notEqual(local.peek(REC),undefined);
+});
+test('scan identity switched before claim response does not refresh the new customer',async()=>{
+ const {doc,nodes}=fakeDom();
+ const local=fakeStore({[REC]:JSON.stringify({submission_key:KEY,received_at:Date.now()})});
+ let release,triggered=0,calledResolve;
+ const pending=new Promise(resolve=>{release=resolve;});
+ const bridge=createScanClaimBridge({doc,storage:local,session:fakeStore(),authHeaders:async()=>({authorization:'Bearer valid.jwt'}),
+  fetcher:async(_url,options={})=>{
+   if(options.method==='POST'){calledResolve=true;await pending;}
+   return{ok:true,status:200,json:async()=>options.method==='POST'?{ok:true,claimed:true,scan:{tenant_identity_status:'verified'}}:{ok:true,scans:[]}};
+  },
+  onClaimed:async()=>{triggered++;}});
+ bridge.setAuthenticated(true,'customer-A');
+ await new Promise(resolve=>setImmediate(resolve));
+ const claim=nodes.find(x=>x.tag==='button').listeners.click();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(calledResolve,true);
+ bridge.setAuthenticated(true,'customer-B');
+ release();
+ await claim;
+ assert.equal(triggered,0);
+ assert.notEqual(local.peek(REC),undefined,'new tenant cannot consume the old tenants pending receipt');
+});
+test('successful claim remains claimed when downstream dashboard readback is delayed or fails',async()=>{
+ const {doc,nodes}=fakeDom();
+ const local=fakeStore({[REC]:JSON.stringify({submission_key:KEY,received_at:Date.now()})});
+ const bridge=createScanClaimBridge({doc,storage:local,session:fakeStore(),authHeaders:async()=>({authorization:'Bearer valid.jwt'}),
+  fetcher:async(_url,options={})=>({ok:true,status:200,json:async()=>options.method==='POST'
+    ?{ok:true,claimed:true,scan:{tenant_identity_status:'verified'}}:{ok:true,scans:[]}}),
+  onClaimed:async()=>{throw new Error('READBACK_UNAVAILABLE')}});
+ bridge.setAuthenticated(true,'customer-A');
+ await new Promise(resolve=>setImmediate(resolve));
+ await nodes.find(x=>x.tag==='button').listeners.click();
+ assert.equal(local.peek(REC),undefined,'provider-confirmed claim must not be sent twice');
+ const status=nodes.find(x=>x.tag==='p'&&x.textContent.includes('Scan gekoppeld'));
+ assert.ok(status);
+});
+test('Portal V2 claim flow uses stable tenant-scoped canonical state rather than a new connector or scheduler',()=>{
+ const app=readFileSync('portal-v2/app.js','utf8');
+ const bridge=readFileSync('portal-v2/scan-claim-bridge.js','utf8');
+ assert.match(app,/onClaimed:async\(\{tenantIdentity\}\)/);
+ assert.match(app,/portalDomainState\.refresh\(\)/);
+ assert.match(bridge,/data\?\.claimed!==true/);
+ assert.match(bridge,/portalProjected:data\?\.bedrijfslek_portal_projected===true/);
+ assert.doesNotMatch(app,/cron\.schedule\(/);
+});

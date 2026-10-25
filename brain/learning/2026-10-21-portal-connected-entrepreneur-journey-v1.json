@@ -1,0 +1,102 @@
+{
+  "fingerprint": "portal|eight-outcomes|connected-entrepreneur-journey|v1",
+  "date": "2026-10-21",
+  "type": "IMPROVEMENT",
+  "status": "LIVE_PROVEN_PROVIDER_TRUTH",
+  "problem": "The goal-first homepage, cockpit, Winstnavigator, authenticated scan, Brain impact events and contextual portal pages were independently implemented but were not one clearly guided, source-aware entrepreneur experience.",
+  "root_cause": "The existing Winstnavigator was not mounted in the current Portal V2 app and the homepage did not project the dependency/ACK lineage, source limits and consistent contextual guidance from the canonical tenant state.",
+  "prevention": [
+    "Re-use /api/portal-state, signed scan claims and Brain BusinessInput ACK; never invent another tenant store, scheduler or connector fallback.",
+    "Preview real tenant metrics only after current authenticated snapshot; reset UI impact evidence on principal change.",
+    "Use the existing source-backed Winstnavigator on the owner's selected goal and never project hypothetical what-if values as realized margin or cash.",
+    "Mark affected pages as recalculation dependencies, not as computed financial outcomes.",
+    "Use GitHub, Notion and Netlify only as code, documentation and release authorities; Composio outputs require existing approved connector runtime/provider receipts.",
+    "Do not close the two-real-customer E2E acceptance until scan, goal, sourceRevision/Brain ACK, refresh/relogin and tenant isolation are proven.",
+    "Across every verified Bedrijfslek/Frisse Blik overview and goal-first page, missing or blank score remains UNKNOWN: Number(null), Number(undefined) or Number('') must never fabricate 0/100. Only explicitly supplied numeric zero is a valid zero.",
+    "Owner-facing fresh Brain/Heartbeat readbacks are transient: always bind runtime to current authenticated principal, invalidate on principal changes and never use them as proof of connector execution or financial outcomes."
+  ],
+  "change": {
+    "entry": "portal-v2/entrepreneur-home.js",
+    "journeyModel": "portal-v2/entrepreneur-journey-model.js",
+    "journeyView": "portal-v2/entrepreneur-journey-view.js",
+    "navigator": "portal-v2/winstnavigator.js",
+    "originalMount": "portal-v2/app.js",
+    "sourceAuthority": "existing authenticated tenant state + Brain ACK; source-backed Powerhouse actions and Foresight trend"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+      "portal-v2/tests/entrepreneur-journey.test.mjs"
+    ],
+    "source": "new registered System Map capability, existing reusable model and page registry, protected CI"
+  },
+  "tests": [
+    "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+    "portal-v2/tests/entrepreneur-journey.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_EIGHT_OUTCOME_UNIFIED_TENANT_JOURNEY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+      "tests/brain-portal-claim-propagation-v1.test.mjs",
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ]
+  },
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585",
+  "customerAcceptance": {
+    "status": "PENDING_TWO_REAL_AUTHENTICATED_TENANT_JOURNEYS",
+    "verified": false
+  },
+  "productionEvidenceVerified": true,
+  "productionEvidence": {
+    "proofType": "GITHUB_PROTECTED_MAIN_AND_NETLIFY_CURRENT_DEPLOY",
+    "pullRequest": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4588",
+    "exactMainSha": "20abd485e7956bf8f1aa541a52076533269e4569",
+    "deployId": "6ad88550dd76a312a37b77fc",
+    "siteId": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "state": "ready",
+    "branch": "main",
+    "context": "production",
+    "publishedAt": "2026-10-21T09:28:54.780Z",
+    "candidateChecks": "Required, Portal, Backend, website browser 265 routes x 3 viewports, build parity, CodeQL Python+JavaScript success"
+  },
+  "prevention_rule": "Do not conflate a verified GitHub/Netlify exact-main product deployment with verified real tenant scans, connector executions, customer forecasts or end-to-end outcomes. Keep separate statuses in Brain, System Map and Notion.",
+  "followUpFixes": [
+    {
+      "fingerprint": "portal|eight-outcomes|principal-bound-live-runtime|v1",
+      "status": "LIVE_PROVEN_PROVIDER_TRUTH",
+      "problem": "Fresh tenant Brain runtime was setDerived into domainState, but the owner journey rendered only the stateClient server snapshot, so valid observability could remain invisible until another page reload.",
+      "rootCause": "Missing explicit principal-bound bridge of transient runtime into the overview journey model. DomainState transient overlays were intentionally not promoted to persistent canonical state.",
+      "repair": "Use existing authenticated onRuntime callback to bind runtime to exact current user; clear envelope on principal switch; publish no customer data in UI update event; inject only current principal runtime in journey and page guidance; protect guest/demo/stale/other-provider cases.",
+      "tests": [
+        "portal-v2/tests/entrepreneur-journey.test.mjs",
+        "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+      ],
+      "customerE2EVerified": false,
+      "providerLiveVerified": true,
+      "providerReleaseEvidence": {
+        "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4599",
+        "mainSha": "dafece9841bcc248f455f0b9beb2520ac13b18fa",
+        "netlifyDeployId": "6ad910c695b04087a1c90a26",
+        "siteId": "fd527056-493a-4d8a-8125-d00370104fa3",
+        "branch": "main",
+        "context": "production",
+        "state": "ready",
+        "publishedAt": "2026-10-21T19:23:50.367Z",
+        "verification": "Netlify get current site + get deploy, PR terminal metadata readback, exact source SHA"
+      }
+    }
+  ]
+}

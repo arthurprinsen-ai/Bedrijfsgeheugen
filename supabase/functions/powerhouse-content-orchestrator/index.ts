@@ -1,11 +1,33 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-reserve.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
+import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
+import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
+import {selectMeasuredNextPostTest,proposeBoundedCreativeExploration} from '../_shared/measured-next-post-challenger.mjs';
+import {assertMeasurementSourceReadOnly,assertObservedSnapshotFloor} from '../_shared/measured-provider-db-policy.mjs';
+import {classifyCurrentSource} from '../_shared/content-source-freshness.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
-import {incompleteStructuredArtifactReason,largerArtifactTokenBudget} from '../_shared/content-artifact-incomplete-retry.mjs';
+import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
 const STEERING_BRAND_CONTRACT='Merkcategorie: dagelijkse ondernemingssturing, geen afzonderlijke AI-tool, chatbot, dashboard of automatiseringspakket. Leg in menselijke ondernemerstermen uit hoe interne én externe veranderingen worden verbonden met strategie, doelen, geld, processen, mensen en risico’s; benoem vervolgens een passende beslissing, de eigenaar van een actie en een controleerbare uitkomst of meetpunt. Het onderscheid is de gesloten verbeterlus: signaal → context → gevolg → beslissing → actie → resultaat → leren. POWERHOUSE is de motor, niet het hoofdproduct. AI-agenten, modelnamen en modulelijsten zijn hoogstens uitleg ná concrete ondernemerswaarde. Nooit verzonnen klantbewijs, gegarandeerde omzet, automatische beslissingen zonder toestemming of onbewezen productcapaciteit. Gebruik per uiting één aantoonbare bron of waarheidsgetrouw voorbeeld en een andere invalshoek dan vorige posts.';
+const BLOG_READER_READY_POLICY='openai-blog-reader-ready-v1';
+const BLOG_READER_READY_PROMPT="Schrijf uitsluitend definitieve, voor bezoekers geschikte Nederlandstalige blogcontent voor ondernemers. Lever een helder lezersgericht title, body, cta, hook_type, focus_keyword en meta_description. Minimaal 3 concrete ## tussenkoppen en voldoende inhoud om een toepasbaar stappenplan uit te leggen. Geen redactienotities, publicatie-instructies, URL-eigenaarschap-checks, SEO-plannen voor de uitgever, concept/draft-verwijzingen, reviewer-to-do's of stappen die nog vóór publicatie moeten gebeuren. Zet '(canonieke pagina)' of '(concept)' nooit in de titel. Een CTA is een nuttige volgende stap voor de ondernemer, geen taak voor een contentbeheerder. Bewijs externe feiten uit de meegeleverde recommendation.evidence, gebruik geen verzonnen statistieken, cases of onafhankelijk onbewezen leveranciersclaims. Een productaankondiging is een claim van de leverancier, geen gemeten klantresultaat. Schrijf het artikel als openbare tekst, niet als briefing aan een redacteur.";
+function blogReaderReadyViolations(artifact:any):string[]{
+  const title=String(artifact?.title||'').trim(),body=String(artifact?.body||'').trim(),cta=String(artifact?.cta||'').trim();
+  const errors:string[]=[];
+  if(body.length<1600)errors.push('BODY_TOO_SHORT');
+  if((body.match(/^##\s+/gm)||[]).length<3)errors.push('READER_STRUCTURE_MISSING');
+  if(/(?:^|\n)\s*(?:Voordat u publiceert\s*:|Publicatiestap\s*\(vereist|Publicatie-\s*en\s*SEO-aanpak\s*\(|Wat te publiceren als follow-up documenten\s*\()/im.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
+  if(/Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie|Gebruik dit als technisch bewijs voor het algemene probleem/i.test(body))errors.push('EDITORIAL_SOURCE_DIRECTIONS');
+  if(/\((?:canonieke pagina|canonieke upgrade|concept|draft)\)/i.test(title))errors.push('DRAFT_TITLE');
+  if(/URL-eigenaarschap-check|plan één content.upgrade of publicatie/i.test(cta))errors.push('EDITORIAL_CTA');
+  if(!title||!cta)errors.push('TITLE_OR_CTA_MISSING');
+  return errors;
+}
+
 const PERSONAL_STEERING_STORY='In een geverifieerd ondernemersbouwverhaal is AI het technische middel, niet de propositie. Mijn overtuiging gaat over bedrijven die continu veranderen en daarom iedere dag beter moeten kunnen anticiperen, besluiten, uitvoeren en leren. Alleen bronbevestigde persoonlijke ervaringen; geen reclame, jargon of ongevraagde salespitch.';
 
 function compactLinkedInCommentary(value:string,maxLength=2800):string{
@@ -46,7 +68,7 @@ const executor_capabilities: Record<string, { executable: boolean; executor: str
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
-const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1"]);
+const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1","social_learnings","social_posts","social_metric_snapshots"]);
 const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2"]);
 const DB_JSON_COLUMNS=new Set([
  'bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload',
@@ -56,7 +78,7 @@ const DB_JSON_COLUMNS=new Set([
  'powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence',
  'powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest',
  'powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage',
- 'powerhouse_sales_actions.evidence'
+ 'powerhouse_sales_actions.evidence', 'social_metric_snapshots.metrics'
 ]);
 const DB_ARRAY_CASTS=new Map([
  ['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],
@@ -112,15 +134,16 @@ class DirectQuery{
  upsert(payload:any,options:any={}){this.op='upsert';this.payload=payload||{};this.conflict=String(options?.onConflict||DB_DEFAULT_CONFLICT.get(this.table)||'');this.ignoreDuplicates=options?.ignoreDuplicates===true;return this;}
  eq(column:string,value:any){this.filters.push({kind:'eq',column,value});return this;}
  in(column:string,values:any[]){this.filters.push({kind:'in',column,values:Array.isArray(values)?values:[]});return this;}
+ gte(column:string,value:any){this.filters.push({kind:'gte',column,value:assertObservedSnapshotFloor(this.table,column,value)});return this;}
  not(column:string,operator:string,value:any){this.filters.push({kind:'not',column,operator,value});return this;}
  order(column:string,options:any={}){this.orders.push({column,ascending:options?.ascending!==false});return this;}
  limit(value:number){this.limitValue=Number(value);return this;}
  maybeSingle(){this.singleMode='maybe';return this.execute();}
  single(){this.singleMode='single';return this.execute();}
  then(resolve:any,reject:any){return this.execute().then(resolve,reject);}
- where(values:any[]){const parts:string[]=[];for(const f of this.filters){const col=dbIdent(f.column);if(f.kind==='eq'){parts.push(f.value===null?col+' is null':col+' = '+scalarParam(f.value,values));}else if(f.kind==='in'){if(!f.values.length){parts.push('false');continue;}parts.push(col+' in ('+f.values.map((v:any)=>scalarParam(v,values)).join(',')+')');}else if(f.kind==='not'&&f.operator==='is'&&f.value===null){parts.push(col+' is not null');}else throw new Error('DB_FILTER_REJECTED');}return parts.length?' where '+parts.join(' and '):'';}
+ where(values:any[]){const parts:string[]=[];for(const f of this.filters){const col=dbIdent(f.column);if(f.kind==='eq'){parts.push(f.value===null?col+' is null':col+' = '+scalarParam(f.value,values));}else if(f.kind==='in'){if(!f.values.length){parts.push('false');continue;}parts.push(col+' in ('+f.values.map((v:any)=>scalarParam(v,values)).join(',')+')');}else if(f.kind==='gte'){parts.push(col+' >= '+scalarParam(f.value,values,'timestamptz'));}else if(f.kind==='not'&&f.operator==='is'&&f.value===null){parts.push(col+' is not null');}else throw new Error('DB_FILTER_REJECTED');}return parts.length?' where '+parts.join(' and '):'';}
  selectList(raw:string){if(raw.trim()==='*')return '*';return raw.split(',').map(x=>dbIdent(x.trim())).join(',');}
- async execute(){try{const values:any[]=[];let q='';if(this.op==='select'){q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);if(this.orders.length)q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');if(Number.isFinite(this.limitValue as number))q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));}
+ async execute(){try{assertMeasurementSourceReadOnly(this.table,this.op);const values:any[]=[];let q='';if(this.op==='select'){q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);if(this.orders.length)q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');if(Number.isFinite(this.limitValue as number))q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));}
  else if(this.op==='insert'){const items=Array.isArray(this.payload)?this.payload:[this.payload];if(!items.length||!items[0])throw new Error('DB_EMPTY_INSERT');const cols=Object.keys(items[0]);q='insert into public.'+dbIdent(this.table)+' ('+cols.map(dbIdent).join(',')+') values '+items.map((item:any)=>'('+cols.map(c=>valueExpr(this.table,c,item[c],values)).join(',')+')').join(',');if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='update'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPDATE');q='update public.'+dbIdent(this.table)+' set '+entries.map(([k,v])=>dbIdent(k)+' = '+valueExpr(this.table,k,v,values)).join(',')+this.where(values);if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='upsert'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPSERT');const cols=entries.map(([k])=>dbIdent(k));const vals=entries.map(([k,v])=>valueExpr(this.table,k,v,values));q='insert into public.'+dbIdent(this.table)+' ('+cols.join(',')+') values ('+vals.join(',')+')';const conflict=this.conflict.split(',').map(x=>x.trim()).filter(Boolean);if(!conflict.length)throw new Error('DB_UPSERT_CONFLICT_REQUIRED');q+=' on conflict ('+conflict.map(dbIdent).join(',')+') ';if(this.ignoreDuplicates)q+='do nothing';else{const set=new Set(conflict);const ups=entries.map(([k])=>k).filter(k=>!set.has(k));q+=ups.length?'do update set '+ups.map(k=>dbIdent(k)+' = excluded.'+dbIdent(k)).join(','):'do nothing';}if(this.returning)q+=' returning '+this.selectList(this.returning);}
@@ -284,6 +307,7 @@ function recommendationEligible(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const evidence = row?.evidence || {};
   if (!['suggested',''].includes(clean(row?.status))) return false;
+  if (['linkedin_company','blog'].includes(channel) && !classifyCurrentSource(row).ok) return false;
   if (channel === 'linkedin_company') {
     if (target === 'linkedin_personal' || topic.includes('linkedin_personal')) return false;
     if (evidence?.identity_contract === PERSONAL_CONTRACT || evidence?.personal_truth_verified === true) return false;
@@ -351,7 +375,7 @@ function instagramVisibleIdentityProven(proof:any) {
 function plannedDecision(channel:string, recs:any[], personalSource:any, instagramProof:any, excludedRecommendationIds:string[]=[]) {
   if (!executor_capabilities[channel]?.executable) return hardBoundary(channel);
   if (channel === 'linkedin_personal') {
-    if (!personalSource) return hardBoundary(channel,'PERSONAL_TRUTH_SOURCE_UNVERIFIED');
+    if (!personalSource) return hardBoundary(channel,excludedRecommendationIds.length ? 'NO_UNIQUE_VERIFIED_PERSONAL_SOURCE' : 'PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     return { channel,decision:'publish',state:'decided',priority:Math.max(70,num(personalSource.priority)),confidence:1,topic_key:clean(personalSource.topic_key),
       rationale:'Verified personal truth source available.',scheduled_hour_local:11,content_brief:clean(personalSource.reason),capability_state:'READY',capability_reason:null,
       decision_source:'verified-personal-source',fallback_recommendation_id:personalSource.recommendation_id };
@@ -380,13 +404,35 @@ function recoverableUniquenessDenial(row:any){
     && evidence.possible_provider_side_effect!==true;
 }
 
-function shouldPreserveExisting(row:any, channel:string, personalSource:any, consumedCapabilityChannels:Set<string>) {
+// Recover a pre-provider duplicate even if the channel decision was normalized to "hold"
+// while the authoritative daily publication obligation retained the actual denial.
+// Fail closed on consumed capabilities, unknown authority or any possible provider send.
+function recoverableObligationUniquenessDenial(row:any,obligation:any,consumedCapability:boolean){
+  if(!row||clean(row.state)!=='blocked'||clean(row.delivery_ref)||consumedCapability)return false;
+  if(!obligation||clean(obligation.status).toUpperCase()!=='BLOCKED'||clean(obligation.external_id))return false;
+  const evidence=obligation.evidence||{},rowEvidence=row.delivery_evidence||{};
+  const authority=evidence.publication_authority||{};
+  if(!clean(obligation.last_error).startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:')||
+     evidence.global_uniqueness_gate!=='blocked'||
+     authority.issued!==true||authority.consumed!==false)return false;
+  for(const candidate of [evidence,rowEvidence]){
+    if(candidate.provider_create_success===true||
+       candidate.provider_publication_ack_verified===true||
+       candidate.provider_truth_verified===true||
+       candidate.possible_provider_side_effect===true||
+       candidate.republish_forbidden===true)return false;
+  }
+  return true;
+}
+
+function shouldPreserveExisting(row:any, channel:string, personalSource:any, consumedCapabilityChannels:Set<string>,obligation:any=null) {
   if (!row) return false;
   // A consumed daily authority is not proof of a post, but it IS evidence of a
   // possibly attempted provider mutation. Never re-decide or resend until
   // provider-side reconciliation resolves that exact earlier attempt.
   if(consumedCapabilityChannels.has(channel) && !clean(row.delivery_ref)) return true;
   if(recoverableUniquenessDenial(row)) return false;
+  if(recoverableObligationUniquenessDenial(row,obligation,consumedCapabilityChannels.has(channel))) return false;
   const evidence=row.delivery_evidence||{};
   const personalNoGapReopen = channel === 'linkedin_personal'
     && clean(row.state) === 'skipped'
@@ -398,10 +444,9 @@ function shouldPreserveExisting(row:any, channel:string, personalSource:any, con
   // independently eligible company/blog priority-99 channels. The same personal
   // obligation remains BLOCKED, never a fake SKIP or provider-side effect.
   // A newly proven source reopens the exact same canonical claim automatically.
-  const verifiedPersonalSource = personalSource?.evidence?.personal_truth_verified === true
-    || (personalSource?.evidence?.observational_personal_theme_verified === true
-      && personalSource?.evidence?.public_theme_source_verified === true
-      && personalSource?.evidence?.first_person_claims_present === false);
+  // Reopen only when the very same canonical source eligibility gate accepts it.
+  // This also covers verified AI-native founder/build events, not just older life/observation modes.
+  const verifiedPersonalSource = !!personalSource && validPersonalSource(personalSource);
   if (channel === 'linkedin_personal'
       && clean(row.state) === 'blocked'
       && clean(evidence.error) === 'PERSONAL_SOURCE_UNVERIFIED'
@@ -436,6 +481,24 @@ Deno.serve(async (req) => {
     if(!channelScope){
       const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
       if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
+      // Existing canonical writer, same recommendation table, no new scheduler or RPC.
+      try{
+        const {data:sources,error:sourceError}=await db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,run_date,target_channel,status,priority,evidence')
+          .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+          .order('priority',{ascending:false}).limit(10);
+        if(sourceError)throw new Error('PERSONAL_RESERVE_BASE_READ_FAILED');
+        const verified=(sources||[]).find(validPersonalSource);
+        for(const alternative of buildVerifiedFounderReserve(verified,runDate)){
+          const {error}=await db.from('powerhouse_content_recommendations')
+            .upsert(alternative,{onConflict:'dedupe_key',ignoreDuplicates:true});
+          if(error)throw new Error('PERSONAL_RESERVE_WRITE_FAILED:'+error.message);
+        }
+      }catch(error){
+        // Other independently approved channel lanes must remain operational.
+        console.error('PERSONAL_RESERVE_RECOVERY_DEGRADED',
+          clean((error as Error)?.message||error).slice(0,120));
+      }
     }
     stage = 'load-context';
     const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult,capabilitiesResult] = await Promise.all([
@@ -444,7 +507,7 @@ Deno.serve(async (req) => {
       db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status').eq('status','actief').order('vertrouwen',{ascending:false}).order('bijgewerkt_op',{ascending:false}).limit(30),
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle(),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,priority,delivery_ref,delivery_evidence').eq('run_date',runDate),
-      db.from('content_publication_obligations').select('channel,evidence').eq('tenant_id','canonical').eq('publication_date',runDate),
+      db.from('content_publication_obligations').select('channel,evidence,status,last_error,external_id').eq('tenant_id','canonical').eq('publication_date',runDate),
       (!channelScope || channelScope==='instagram_company')
         ? db.from('powerhouse_media_proof_evidence_v1').select('exact_media_retrievable,exact_media_sha256,identity_gate_result,media_url,proof_lineage,fingerprint').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle()
         : Promise.resolve({data:null,error:null}),
@@ -470,7 +533,28 @@ Deno.serve(async (req) => {
     const apiKey = clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data);
 
 
-    const personalSource = recs.filter(validPersonalSource)[0] || null;
+    // A pre-provider semantic-duplicate rejection must rotate to a DIFFERENT,
+    // independently verified personal source. Retrying the same source in a new
+    // paraphrase loops forever and can never satisfy global story uniqueness.
+    const priorPersonal = existing.find((row:any)=>clean(row.channel)==='linkedin_personal') || null;
+    const priorPersonalObligation=obligations.find((row:any)=>clean(row.channel)==='linkedin_personal')||null;
+    const personalDuplicateRecovery = recoverableUniquenessDenial(priorPersonal)
+      || recoverableObligationUniquenessDenial(priorPersonal,priorPersonalObligation,consumedCapabilityChannels.has('linkedin_personal'));
+    const personalRejectedSourceIds = personalDuplicateRecovery
+      ? [...new Set([
+          ...(Array.isArray(priorPersonal?.delivery_evidence?.rejected_recommendation_ids)
+            ? priorPersonal.delivery_evidence.rejected_recommendation_ids : []),
+          priorPersonal?.delivery_evidence?.personal_source_recommendation_id,
+          priorPersonal?.delivery_evidence?.fallback_recommendation_id,
+          priorPersonalObligation?.evidence?.personal_source_recommendation_id,
+          priorPersonalObligation?.evidence?.fallback_recommendation_id,
+          ...(Array.isArray(priorPersonalObligation?.evidence?.rejected_recommendation_ids)
+            ? priorPersonalObligation.evidence.rejected_recommendation_ids : []),
+        ].map(clean).filter(Boolean))]
+      : [];
+    const personalSource = recs.filter(validPersonalSource).find((source:any)=>
+      !personalRejectedSourceIds.includes(clean(source.recommendation_id))
+    ) || null;
     const instagramObligation = obligations.find((o:any) => o.channel === 'instagram') || null;
     const instagramProof = {
       ...(instagramObligation?.evidence || {}),
@@ -488,15 +572,23 @@ Deno.serve(async (req) => {
     stage = 'reconcile-decisions';
     for (const channel of (channelScope ? [] : CHANNELS)) {
       const previous:any = existingByChannel.get(channel);
-      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels)) continue;
-      const recoverableDuplicate=recoverableUniquenessDenial(previous);
+      const currentObligation=obligations.find((item:any)=>clean(item.channel)===(channel==='instagram_company'?'instagram':channel))||null;
+      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels,currentObligation)) continue;
+      const recoverableDuplicate=recoverableUniquenessDenial(previous)
+        || recoverableObligationUniquenessDenial(previous,currentObligation,consumedCapabilityChannels.has(channel));
       const priorRejected=Array.isArray(previous?.delivery_evidence?.rejected_recommendation_ids)
         ? previous.delivery_evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
+      const obligationRejected=Array.isArray(currentObligation?.evidence?.rejected_recommendation_ids)
+        ? currentObligation.evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
       const rejectedRecommendationIds=recoverableDuplicate
-        ? [...new Set([...priorRejected,clean(previous?.delivery_evidence?.fallback_recommendation_id)].filter(Boolean))]
+        ? [...new Set([...priorRejected,...obligationRejected,
+            clean(previous?.delivery_evidence?.fallback_recommendation_id),
+            clean(previous?.delivery_evidence?.personal_source_recommendation_id),
+            clean(currentObligation?.evidence?.personal_source_recommendation_id),
+            clean(currentObligation?.evidence?.fallback_recommendation_id)].filter(Boolean))]
         : [];
       const decision:any = plannedDecision(channel,recs,personalSource,instagramProof,
-        channel==='linkedin_company'?rejectedRecommendationIds:[]);
+        channel==='linkedin_company'||channel==='linkedin_personal'?rejectedRecommendationIds:[]);
       const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
         && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
       const stale = personalNoGapReopen || recoverableDuplicate || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
@@ -508,11 +600,11 @@ Deno.serve(async (req) => {
         daily_winner_score_version:channel==='instagram_company'?instagramWinner?.score_version||null:null,
         daily_winner_format:channel==='instagram_company'?instagramWinner?.selected_format||null:null,
         personal_source_recommendation_id:channel==='linkedin_personal'?personalSource?.recommendation_id||null:null,
-        rejected_recommendation_ids:channel==='linkedin_company' ? rejectedRecommendationIds : [],
+        rejected_recommendation_ids:channel==='linkedin_company'||channel==='linkedin_personal' ? rejectedRecommendationIds : [],
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
         stale_delivery_ref:false,recovery_from_provider_missing:stale };
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
-        confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:`${runDate}T${hour}:00:00+02:00`,delivery_ref:stale?null:previous?.delivery_ref||null,
+        confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:amsterdamScheduledFor(runDate,Number(hour)),delivery_ref:stale?null:previous?.delivery_ref||null,
         delivery_evidence:evidence,source_recommendation_ids:recs.map((r:any)=>r.recommendation_id),updated_at:new Date().toISOString() });
       if (error) throw new Error(`DECISION_WRITE:${channel}`);
     }
@@ -542,7 +634,7 @@ Deno.serve(async (req) => {
     const requiredRecommendationId = pending.channel==='instagram_company'
       ? clean(instagramWinner?.recommendation_id)
       : clean(pending.delivery_evidence?.fallback_recommendation_id);
-    const recommendation = requiredRecommendationId
+    const pinnedRecommendation = requiredRecommendationId
       ? recs.find((r:any)=>{
           if(clean(r.recommendation_id)!==requiredRecommendationId) return false;
           if(pending.channel==='instagram_company'){
@@ -554,7 +646,22 @@ Deno.serve(async (req) => {
           return recommendationEligible(r,pending.channel);
         }) || null
       : pickRecommendation(recs,pending.channel);
+    const recommendation = pinnedRecommendation || (['linkedin_company','blog'].includes(pending.channel)
+      ? pickRecommendation(recs,pending.channel,requiredRecommendationId?[requiredRecommendationId]:[]):null);
+    const sourceFreshnessFallback = !!requiredRecommendationId && !pinnedRecommendation && !!recommendation;
+    if(sourceFreshnessFallback)console.warn('HISTORICAL_SOURCE_FALLBACK',pending.channel);
     if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
+    let recentCompanyPosts:string[]=[];
+    if(pending.channel==='linkedin_company'){
+      const {data:publishedHistory,error:historyError}=await db.from('powerhouse_content_artifacts')
+        .select('run_date,body').eq('channel','linkedin_company').eq('status','published')
+        .order('run_date',{ascending:false}).limit(28);
+      if(historyError)throw new Error('COMPANY_EDITORIAL_HISTORY_UNAVAILABLE:'+historyError.message);
+      const current=Date.parse(runDate+'T00:00:00Z');
+      recentCompanyPosts=(publishedHistory||[])
+        .filter((p:any)=>{const days=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;return days>=1&&days<=21;})
+        .map((p:any)=>clean(p.body)).filter(Boolean);
+    }
     let companyTrackingUrl:string|null=null;
     if (pending.channel==='linkedin_company') {
       const key=`li-company-${runDate.replaceAll('-','')}`;
@@ -564,6 +671,55 @@ Deno.serve(async (req) => {
         status:'active',updated_at:new Date().toISOString()
       },{onConflict:'key'});
       if(linkError) throw new Error('COMPANY_TRACKING_LINK_WRITE_FAILED');
+    }
+    let verifiedBrandLearnings:any[]=[];
+    if (['linkedin_company','blog'].includes(pending.channel)) {
+      // Source-of-truth is the existing social learning store. Unknown/missing metrics
+      // must NOT be promoted to winning creative patterns or shared across tenants.
+      const {data:pastLearnings,error:learningError}=await db.from('social_learnings')
+        .select('tenant_id,learning_id,component_scope,status,fingerprint,claim,effect_metric,effect_size,sample_size,confidence,last_validated_at,expires_or_review_at,evidence_refs')
+        .eq('tenant_id','bedrijfsgeheugen').eq('status','PROVEN')
+        .order('last_validated_at',{ascending:false}).limit(30);
+      if (learningError) {
+        console.warn('BRAND_LEARNING_READ_UNAVAILABLE',clean(learningError.message).slice(0,120));
+      } else {
+        verifiedBrandLearnings=selectVerifiedBrandLearnings(pastLearnings||[],{now:new Date(),max:3});
+      }
+    }
+    // Next-day creative decisions consume fresh, comparable OWNED brand provider metrics only.
+    // Lack of permission/snapshots is an explicit evidence gap, never an invented winner.
+    let measuredNextPostTest:any={state:'NOT_APPLICABLE',mode:'READ_ONLY_DECISION_CONTEXT'};
+    if(['linkedin_company','instagram_company'].includes(pending.channel)){
+      try{
+        let postQuery=db.from('social_posts')
+          .select('tenant_id,post_id,platform,channel_kind,published_at')
+          .eq('tenant_id','bedrijfsgeheugen')
+          .eq('platform',pending.channel==='instagram_company'?'instagram':'linkedin');
+        postQuery=pending.channel==='instagram_company'
+          ?postQuery.in('channel_kind',['instagram_business','instagram_company'])
+          :postQuery.eq('channel_kind','linkedin_company');
+        const {data:brandPosts,error:postError}=await postQuery
+          .not('published_at','is',null)
+          .order('published_at',{ascending:false}).limit(24);
+        if(postError)throw new Error('MEASURED_BRAND_POST_READ:'+postError.message);
+        const postIds=(brandPosts||[]).map((p:any)=>clean(p.post_id)).filter(Boolean);
+        let sourceSnapshots:any[]=[];
+        if(postIds.length){
+          const {data, error:snapshotError}=await db.from('social_metric_snapshots')
+            .select('tenant_id,post_id,data_quality,observed_at,metrics')
+            .eq('tenant_id','bedrijfsgeheugen').in('post_id',postIds)
+            .gte('observed_at',new Date(Date.now()-72*3600000).toISOString())
+            .order('observed_at',{ascending:false}).limit(100);
+          if(snapshotError)throw new Error('MEASURED_BRAND_SNAPSHOT_READ:'+snapshotError.message);
+          sourceSnapshots=data||[];
+        }
+        measuredNextPostTest=selectMeasuredNextPostTest({posts:brandPosts||[],snapshots:sourceSnapshots,now:new Date(),channel:pending.channel});
+      }catch(error){
+        measuredNextPostTest={state:'SOURCE_UNAVAILABLE',mode:'READ_ONLY_DECISION_CONTEXT',
+          error_class:'COMPANY_PROVIDER_EVIDENCE_READ_FAILED',
+          decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
+        console.warn('MEASURED_BRAND_TEST_READ_UNAVAILABLE',clean((error as Error)?.message).slice(0,140));
+      }
     }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
     const personalBuilder = pending.channel==='linkedin_personal' && personalSource?.evidence?.ai_native_builder_story_verified === true;
@@ -575,16 +731,30 @@ Deno.serve(async (req) => {
         ? `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn als herkenbare observatie uit het dagelijks leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. Gebruik source_text alleen als feitelijke inspiratie. Gebruik GEEN ik/mijn/mij/me-vorm, suggereer niet dat Arthur dit zelf heeft meegemaakt en verzin geen persoonlijke ervaring. Toegestaan: telefoon/schermtijd, huis, vervoer, boodschappen, sport, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Schrijf menselijk, concreet en met lichte humor waar passend.`
         : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
-      ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
+      ? 'Schrijf een direct publiceerbare Nederlandstalige LinkedIn-bedrijfspost voor Bedrijfsgeheugen, voor de eigenaar of directeur van een MKB-bedrijf. Tussen 90 en 145 woorden; maximaal 1.450 tekens. Begin met één herkenbare, concrete ondernemersfrictie uit bijvoorbeeld een verloren offerte, foutieve planning, trage facturatie, ontbrekende kennis, achterblijvende klantopvolging of onvoorspelbare cashflow. Toon in gewone spreektaal het gevolg (geld, tijd, risico, klant), een haalbare eerste stap en waarom verbonden bedrijfskennis, bestaande systemen en dagelijkse sturing helpen. De lezer moet zich herkennen en weten wat hij morgen anders kan doen. Positioneer het portaal of Powerhouse alleen waar relevant en aantoonbaar; nooit als intern systeemrapport of als losse AI-tool. GEEN beleidsmemo met kopjes Signaal/Context/Gevolg/Beslissing/Actie/Resultaat/Leren, geen checklist voor het MT, geen marketingjargon, geen technische AI-release, geen niet-onderbouwde claim en geen verzonnen klantcase. Kies een andere invalshoek dan recent_company_posts. Hergebruik een subsidie, bronbericht, sector of nieuwsgebeurtenis uit die posts nooit als hoofdonderwerp binnen 21 dagen. Externe actualiteit is hoogstens ondersteunend bewijs bij een breed ondernemersprobleem; een subsidieregeling is geen hoofdproduct. Neem de tracking_url exact één keer op en sluit af met een nuttige uitnodiging of natuurlijke vraag. Gebruik een warme, geloofwaardige, menselijke bedrijfsstem, geen Arthur-ik-verhaal. Vertrouw alleen op aangeleverde feitelijke evidence.'
+      : pending.channel==='blog' ? BLOG_READER_READY_PROMPT
       : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
+    const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
+      ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
+      : '';
+    const creativeExploration=proposeBoundedCreativeExploration({
+      channel:pending.channel,runDate,recommendation,measured:measuredNextPostTest,
+      freshness:classifyCurrentSource(recommendation)
+    });
+    const creativeExplorationGuide=creativeExploration.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'
+      ? ' De editorial_exploration is uitsluitend een klein te testen idee: pas exact de ene single_change toe binnen hetzelfde onderwerp. Nooit een tweede post, verzonnen conversie, garantie of bewezen winnaar. Behoud alle kanaal-, bron-, identiteit- en redactie-eisen.'
+      : '';
+    const verifiedBrandLearningGuide = verifiedBrandLearnings.length
+      ? ' Leer van de meegeleverde verified_brand_content_learnings als begrensde patronen. Gebruik hoogstens één relevant bewezen patroon voor opening, begrijpelijke pointe of nuttige CTA; behoud de actuele feitelijke aanbeveling. Geen percentages, garanties of nepklantresultaten uit historische engagementdata. Noem dit niet in de publieke tekst.'
+      : '';
     const editorialSystem = pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
-      : system + ' ' + STEERING_BRAND_CONTRACT;
+      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide + creativeExplorationGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide + creativeExplorationGuide;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
-    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+    const artifactInput={channel:pending.channel,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
+      verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
@@ -616,7 +786,11 @@ Deno.serve(async (req) => {
     if (pending.channel==='instagram_company') {
       // The caption is deterministic from the canonical PH-P problem, not a random consumer-complaint winner.
       bodyText=miraCaption(miraBusinessProblem);
-      const check=validateMiraCaptionForDelivery(runDate,bodyText,miraProductionEvidence(miraBusinessProblem));
+      // The identical evidence-bound variant is recalculated by the independent publisher.
+      if(creativeExploration?.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS' && creativeExploration.channel==='instagram_company'){
+        bodyText=miraCaption(miraBusinessProblem,creativeExploration);
+      }
+      const check=validateMiraCaptionForDelivery(runDate,bodyText,{...miraProductionEvidence(miraBusinessProblem),editorial_exploration:creativeExploration,recommendation_id:recommendation?.recommendation_id||null});
       if(!check.ok)throw new Error(check.reason);
       if(clean(instagramProof?.mira_business_problem_id)!==miraBusinessProblem.id)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
     }
@@ -632,10 +806,19 @@ Deno.serve(async (req) => {
           + 'Geen interne technische termen, geen statusrapport, geen verkooppraatje, geen fictieve ervaringen. '
           + 'Gebruik uitsluitend de geverifieerde persoonlijke bron. Eindig bij een oprichtersverhaal met één open vraag. '
           + 'Controleer zelf de woordlengte en brontrouw voordat je de definitieve body teruggeeft.';
-        const revision=await callAI(apiKey,gov.model_id,correctionPrompt,{
+        // Editorial revisions need the same bounded truncation recovery as the
+        // initial structured artifact. No retry for rejected prose, identity,
+        // schema, authorization or provider HTTP errors.
+        const revisionInput={
           ...artifactInput,rejected_draft:bodyText,
           editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
-        },artifactTool,2400);
+        };
+        const revision=await retryIncompleteEditorialDraft(
+          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget),
+          2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
+          largerArtifactTokenBudget,
+          (first:number,next:number)=>console.warn('PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY',gov.model_id,first,next)
+        );
         const revisedText=compactLinkedInCommentary(clean(revision?.body));
         if (revisedText
           && personalEditorialViolations(revisedText,personalSource?.evidence||{}).length===0
@@ -648,9 +831,38 @@ Deno.serve(async (req) => {
       if(editorialViolations.length) throw new Error('PERSONAL_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map(x=>x.code).join(','));
       if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     }
+    if(pending.channel==='blog'){
+      let violations=blogReaderReadyViolations({...artifact,body:bodyText});
+      if(violations.length && generationProvider==='OpenAI' && apiKey){
+        const revised=await callAI(apiKey,gov.model_id,
+          editorialSystem+' EINDREDACTIE HERZIEN: de vorige versie bevat geen lezersklare tekst ('+violations.join(', ')+'). Schrijf een geheel afgerond publiek artikel zonder uitgeversinstructies, met een duidelijke ondernemerstitel, ten minste drie ## koppen en een passende lezers-CTA. Gebruik uitsluitend de al gevalideerde recommendation-evidence. Maak geen onbewezen claims en geef geen technisch release- of SEO-werk aan de lezer.',
+          {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:violations},artifactTool,6500);
+        const revisedBody=clean(revised?.body);
+        if(blogReaderReadyViolations({...revised,body:revisedBody}).length===0){
+          artifact={...artifact,...revised,body:revisedBody};
+          bodyText=revisedBody;
+          violations=[];
+        }
+      }
+      if(violations.length)throw new Error('BLOG_READER_READY_CONTRACT_FAILED:'+violations.join(','));
+    }
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
+      let editorialViolations=companyEditorialViolations(bodyText,{recentPosts:recentCompanyPosts});
+      if(editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
+        const revision=await callAI(apiKey,gov.model_id,editorialSystem+
+          ' HERSCHRIJF VOOR PUBLICATIE: afgekeurd op '+editorialViolations.map((v:any)=>v.code).join(', ')+
+          '. Maak één geheel nieuwe zakelijke LinkedIn-post van 100–135 woorden en maximaal 1.450 tekens: herkenbaar ondernemersprobleem, zakelijk gevolg, concreet eerste advies, begrijpelijke bedrijfswaarde. Geen rapportkoppen, technisch jargon of eerder onderwerp. Voeg tracking_url exact één keer toe. Geen verzonnen bewijs.',
+          {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:editorialViolations.map((v:any)=>v.code)},artifactTool,2400);
+        let revised=compactLinkedInCommentary(clean(revision?.body));
+        if(revised && companyTrackingUrl && !revised.includes(companyTrackingUrl)) revised+=`\n\n${companyTrackingUrl}`;
+        const revisedViolations=companyEditorialViolations(revised,{recentPosts:recentCompanyPosts});
+        if(revised && revisedViolations.length===0) {
+          bodyText=revised;artifact={...artifact,...revision,body:revised};editorialViolations=[];
+        }
+      }
+      if(editorialViolations.length)throw new Error('COMPANY_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map((v:any)=>v.code).join(','));
     }
     const finalTextHash = await digest(bodyText);
     const personalEvidence = pending.channel==='linkedin_personal' ? {...(personalSource.evidence||{}),content_id:clean(personalSource.evidence?.content_id)||`${runDate}:linkedin_personal`,calendar_date:runDate,
@@ -670,12 +882,13 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,source_freshness_fallback:sourceFreshnessFallback,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,

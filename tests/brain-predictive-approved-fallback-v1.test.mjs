@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const transport=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs'),'utf8');
 const src=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/index.ts'),'utf8');
 
 test('predictive fallback only for explicit provider exhaustion, rate limits or outages',async()=>{
@@ -39,10 +40,10 @@ test('fallback only accepts evidence-bound schema-conformant forecast plans',asy
  assert.throws(()=>parseForecastPlan(JSON.stringify({forecasts:[{...sample,probability:4}]}),['external:a','search:b']),/FALLBACK_FORECAST_SCHEMA_INVALID/);
 });
 
-test('predictive production source routes only through approved Anthropic',()=>{
- assert.ok(src.includes("gov.provider!=='Anthropic'"));
- assert.match(src, /fetch\('https:\/\/api\.anthropic\.com\/v1\/messages'/);
- assert.ok(src.includes("generationProvider='Anthropic'"));
+test('predictive production source routes only through approved OpenAI',()=>{
+ assert.ok(src.includes("gov.provider!=='OpenAI'"));
+ assert.match(transport, /fetchImpl\('https:\/\/api\.openai\.com\/v1\/responses'/);
+ assert.ok(src.includes("generationProvider='OpenAI'"));
  assert.ok(src.includes('generation_provider:generationProvider'));
  for(const banned of ['Composio/Groq','runValidatedApprovedFallback','fallbackGov','COMPOSIO_SEARCH_GROQ_CHAT','predictive-approved-fallback']){
    assert.ok(!src.includes(banned),banned);

@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|multi-agent|ci-advice-observation-freshness|20261023-v1",
+  "obligation_id": "delivery|multi-agent|ci-advice-observation-freshness|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_AGENT_ADVICE_STALE_OBSERVATION_BYPASS",
+  "root_cause": "The existing read-only owner recommendation accepted a structurally valid old Janitor artifact without checking whether its captured provider observation was recent, allowing stale or future-dated advice to masquerade as current measurement.",
+  "observed_evidence": {
+    "source": "tools/delivery/ci-agent-priority.mjs#routeObservedCiHotspots",
+    "production_collector": "tools/delivery/ci-throughput-telemetry.mjs",
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "earlier_proven_measured_job_ms": 353000,
+    "evidence_limitation": "One observed job is not a persistent bottleneck, causal critical path, performance SLO or production business outcome.",
+    "discrepancy_type": "REPRODUCIBLE_SOURCE_OMISSION_NOT_YET_PROVEN_PRODUCTION_INCIDENT"
+  },
+  "failed_approaches": [
+    "Trust a copied hourly JSON snapshot indefinitely",
+    "Treat future/unknown sampling timestamps as evidence of healthy live capacity",
+    "Make agents re-run or merge CI candidates solely because one stale job was once expensive"
+  ],
+  "fix": "Validate a canonical millisecond UTC ISO observed_at independently against the observation clock. Withhold all cross-agent priorities if the time is missing, malformed, future-dated or more than two hours old. Preserve existing >=20 executed jobs/5 runs, exact SHA/run/job provenance, recurrent proof and no-mutation/release constraints.",
+  "prevention_rule": "No autonomous CI investment, lane writer selection or quality gate relaxation from stale or undated observations; re-observe through the existing single hourly Janitor and compare repeat samples. Never add another scheduler or log. Never treat advisory output as protected merge or deployed-product success.",
+  "tests": [
+    "tests/brain-ci-agent-prioritization-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_AGENT_ADVICE_STALE_OBSERVATION_BYPASS",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "invariants": [
+      "2-hour maximum age after UTC observed_at, including bound equality",
+      "missing/malformed/future-dated timestamps are untrusted",
+      "no recommendations on stale provider samples",
+      "existing single Janitor scheduler and exact-SHA release gate unchanged",
+      "no user-facing speedup claim or unauthorized autonomous mutation"
+    ]
+  },
+  "terminal_rule": "Exact-head Required + CodeQL, protected auto-merge, source and skill readback, real next Janitor confirmation. Broader #4661 remains open; #4655 provider queue ghosts independent."
+}

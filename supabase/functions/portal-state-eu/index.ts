@@ -3,8 +3,12 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 import { boundedReads } from './bounded-reads.js';
+import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
+// Accept the approved production Netlify gateway token by hash, never by plaintext.
+// Preserve the original hash until all dependent internal callers are proven migrated.
+const NETLIFY_PORTAL_TOKEN_HASH='95827ae5b67419121961a7e1e144bb0702b8568997c531df00b8505e8338b63e';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const AI_PROFILE_OPTIONS:Record<string,string[]>={
@@ -36,9 +40,9 @@ async function sha256(value:string){const bytes=new TextEncoder().encode(value);
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
 
 const list=(value:any)=>Array.isArray(value)?value:[];
-const finite=(value:any)=>{const n=Number(value);return Number.isFinite(n)?n:null};
-const sumKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?known.reduce((a,b)=>a+b,0):null};
-const maxKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?Math.max(...known):null};
+const finite=finiteEvidence;
+const sumKnown=sumKnownEvidence;
+const maxKnown=maxKnownEvidence;
 function groupBy(rows:any[],key:string){
   const map=new Map<any,any[]>();
   for(const row of list(rows)){
@@ -94,6 +98,7 @@ function mergeEntrepreneurActions(canonicalActions:any[],tenantActions:any[]){
 }
 function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:any[],tenantImpacts:any[],actions:any[]){
   const now=Date.now();
+  const sourceTruth=entrepreneurSnapshotFreshness({base,signals,now});
   const ageDays=(value:any)=>{
     if(!value)return Infinity;
     const time=new Date(value).getTime();
@@ -104,7 +109,7 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
   return {
     ...(base||{}),
     tenant_id:'authenticated',
-    refreshed_at:base?.refreshed_at||new Date().toISOString(),
+    refreshed_at:sourceTruth.refreshed_at,
     catalog_source_count:catalog.length,
     public_source_count:catalog.filter((item:any)=>item.activation_mode==='PUBLIC_ALWAYS').length,
     connector_source_count:catalog.filter((item:any)=>item.activation_mode==='CONNECTOR_REQUIRED').length,
@@ -117,14 +122,16 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
     action_candidate_count:actions.filter((item:any)=>['CANDIDATE','READY','MATERIALIZED'].includes(item.status)).length,
     known_opportunity_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_value_eur)),
     known_risk_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_loss_eur)),
-    source_health:{...(base?.source_health||{}),availability},
-    status:signals.length?'CURRENT':'EMPTY'
+    source_health:{...(base?.source_health||{}),availability,snapshot_freshness:sourceTruth},
+    status:sourceTruth.status
   };
 }
 function readRows(label:string,query:any){
   // Lazy: database requests are issued only when boundedReads schedules a job.
-  return async()=>{
-    const {data,error}=await query;
+  return async(signal:AbortSignal)=>{
+    // PostgREST supports AbortSignal; abort the underlying HTTP/database read
+    // on its deadline rather than keeping an abandoned 150s+ request alive.
+    const {data,error}=await query.abortSignal(signal);
     if(error)throw new Error(label);
     return Array.isArray(data)?data:[];
   };
@@ -133,7 +140,8 @@ function readRows(label:string,query:any){
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
   const token=req.headers.get('x-bg-service-token')||'';
-  if(await sha256(token)!==TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
+  const serviceTokenHash=await sha256(token);
+  if(serviceTokenHash!==TOKEN_HASH&&serviceTokenHash!==NETLIFY_PORTAL_TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();

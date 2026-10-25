@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|failed-gate|watchdog-observation-only|20261022-v1",
+  "obligation_id": "delivery|failed-gate|watchdog-observation-only|20261022-v1",
+  "title": "Route failed current-head critical gates to one durable existing PR owner instead of treating completed red runs as coverage",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Verified existing five-minute Required Gate Watchdog checks only for absence of a Required run; a completed failed run is considered present, with no owner signal. Prior website mobile CLS 0.168 > 0.100 was detected on #4656 without auto handoff to canonical website owner #4651.",
+  "impact": "Failed Required / CodeQL outcomes can persist unnoticed by owner agents; repeated source-test retries or duplicate PRs risk queue pressure and obscured real layout defects.",
+  "failed_approaches": [
+    "Treating any completed Required test as successful coverage",
+    "Blind rerun-failed-jobs on no-job CodeQL startup_failure (GitHub HTTP 403)",
+    "Creating a parallel workflow/scheduler or new same-file PR",
+    "Waiving browser CLS 0.100 gate to force green"
+  ],
+  "fix": "Existing Required Gate Watchdog now classifies latest exact-head Required and CodeQL, emits deduplicated structured PR owner recovery notes with immutable failing job refs and no blind retry, while keeping missing-run dispatch unchanged.",
+  "prevention_rule": "A current-head failed critical gate must remain RECOVERY_REQUIRED until the original writer fixes proven source and verifies exact-head Required, CodeQL and deployment. Detect one fail signal per immutable gate/head in the existing five-minute watchdog; never create duplicate recovery writer or scheduler; preserve CLS<=0.100, tenancy, security and all real gates.",
+  "regression_contract": "tests/brain-required-failed-gate-owner-routing-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+  ],
+  "evidence": {
+    "failed_required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39800626684",
+    "failed_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39800626684/job/119901773175",
+    "existing_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4651",
+    "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742#issuecomment-6344661054",
+    "observed_source": ".github/scripts/required-gate-watchdog.mjs",
+    "source_fix_proven": false,
+    "autonomous_general_purpose_code_repair_proven": false,
+    "production_readback": "PENDING"
+  },
+  "outcome": "CANDIDATE owner signal routing, not arbitrary autonomous code repair or live deployment",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+    ],
+    "shadow": [
+      "Failed Required and CodeQL signal should route to only the original writer once per immutable head"
+    ],
+    "negative_canary": [
+      "Queued and in_progress must not be retried",
+      "Failed source test must not be marked green or bypassed",
+      "Duplicate signal on same head must not create second comment",
+      "Sitewide phone CLS 0.168 > 0.100 must remain a failing gate"
+    ]
+  },
+  "prevention": [
+    "SAME_OWNER_REPAIR",
+    "NO_SECOND_SCHEDULER",
+    "NO_DUPLICATE_GATE_SIGNAL",
+    "NO_WEAKENED_CLS_OR_SECURITY_GATES",
+    "REQUIRE_EXACT_SHA_PRODUCTION_PROOF"
+  ]
+}

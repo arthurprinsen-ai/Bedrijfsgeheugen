@@ -9,6 +9,9 @@ on:
       - 'config/universal-closed-loop-learning.json'
       - 'scripts/brain/validate-universal-closed-loop-learning.mjs'
       - 'tests/brain-universal-closed-loop-learning.test.mjs'
+      - 'tools/delivery/customer-portal-production-acceptance.mjs'
+      - 'tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs'
+      - '.github/workflows/universal-closed-loop-learning.yml'
 
 jobs:
   universal-closed-loop:
@@ -22,5 +25,11 @@ jobs:
         run: node scripts/brain/validate-universal-closed-loop-learning.mjs
       - name: Regression tests
         run: node --test tests/brain-universal-closed-loop-learning.test.mjs
+      - name: Verify tenant relevance UI projection
+        run: node --test portal-v2/tests/relevance-learning-closed-loop.test.mjs
+      - name: Verify false-green control-plane obligation guard
+        run: node --test portal-v2/tests/control-plane-cockpit.test.mjs
+      - name: Verify signed independent customer production acceptance contract
+        run: node --test tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs
       - name: Compound learning integration regression
         run: node --test tests/brain-powerhouse-daily-compound-learning-v1.test.mjs

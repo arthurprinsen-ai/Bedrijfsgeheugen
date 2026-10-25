@@ -136,3 +136,30 @@ Powerhouse projecteert de publieke categorie `Company Brain` als acquisitiesigna
 `Company Brain / knowledge-context → signals → impact → decision → action → observed outcome → learning`.
 
 De publieke hoofdclaim **Een Company Brain is waar Bedrijfsgeheugen begint** beschrijft dus de productarchitectuur: context is een inputlaag, niet de terminale capability. Company-Brain-intentie, CTA-progressie, scanuitkomst, lead/proposal/order en gerealiseerde omzet moeten als één lineage terugstromen naar bestaande evidence, outcome memory en compound learning. Verkeer zonder downstream outcome mag nooit als bewezen commerciële waarde worden opgeslagen.
+
+## Ondernemershomepage na Frisse Blik — verplichte doelgestuurde entry
+
+Fingerprint: `portal|frisse-blik|goal-first-entrepreneur-home|v1`.
+
+De **bestaande V2** toont na inloggen eerst: (1) door de klant gekozen ambitie, (2) alleen daadwerkelijk gekoppelde scan/bedrijfsgegevens, (3) één volgende stap met begrijpelijke reden en (4) link naar het bestaande besluit- of invulscherm. Status van een doelkeuze is niet gelijk aan een bevestigd bedrijfsprofiel.
+
+Canonieke opslag: `portal.business_context.goals` + `primary_goal` via bestaande `portalDomainState.patch/flush`, met tenant state plus Brain BusinessInput ACK. Geen tweede onboarding-state, lokale browser data of nieuw portaal. Bij ontbrekende target: eerst doel meetbaar maken. Alleen onderbouwde Powerhouse-voorstellen met gezonde bronstatus en bronreferenties mogen als zodanig verschijnen; nooit uitvoerings- of ROI-bewijs verzinnen.
+
+Elke toekomstige herbouw van het portaal moet `portal-v2/tests/entrepreneur-home.test.mjs` en de twee-tenant productiecontrole blijven behouden. Source: `docs/changes/portal-entrepreneur-goal-home-20261021-v1.md`. Obligation: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578.
+
+## Eén samenhangende ondernemersreis — acht uitkomsten en bronbewijs
+
+Fingerprint: `portal|eight-outcomes|connected-entrepreneur-journey|v1`. Verplichte source-authority: alleen de ingelogde tenantstate, gecontroleerde scanclaims, Brain BusinessInput ACK, brononderbouwde Powerhouse-voorstellen en bestaande Foresight-historie leveren bedrijfswaarheid. Frisse Blik koppelen mag geen herinvoer van bewaarde antwoorden afdwingen; een onbekend of anoniem claimbewijs vereist een geautoriseerde één-klik koppelbevestiging.
+
+De homepage projecteert scan → doel → bedrijfsgegevens → eerstvolgende besluit/actie → gemeten uitkomst in één ervaring. De bestaande ondernemerscockpit en Winstnavigator zijn bereikbaar vanuit diezelfde ervaring. Alle in de page registry geregistreerde pagina's moeten contextuele uitleg bij het gekozen ondernemersdoel tonen. Mutatie-events en aangedane pagina's zijn *afhankelijkheidskennis*, geen doorberekende euro's; uitsluitend bevestigde Brain-write en onafhankelijke outcomes leveren uitvoerings- of waardeclaims.
+
+Notion en GitHub bevatten beheerde documentatie, broncode en leer-/releaseregistraties; Netlify bewijst welke versie draait; Supabase geeft de canonieke geautoriseerde tenantstaat; Composio en externe bronnen geven alleen klantresultaten via bestaande goedgekeurde connectors en provider-readback. Gebruik hun inhoud nooit als onbewezen directe live klantmetric. Geen parallelle opslag, schaduwkoppelingen, nieuwe scheduler of bypass van tenant/RLS. Live release en twee onafhankelijke echte klantacceptaties zijn afzonderlijke statusvelden.
+
+Regressies: `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs` (importeert de geïntegreerde `portal-v2/tests/entrepreneur-journey.test.mjs`), protected Required, CodeQL, exacte Netlify-SHA, en de bestaande #4215/#4547 acceptatie.
+
+### Nulmeting-scores: ontbrekend is nooit nul
+Elke overzichtskaart, inclusief de historische Bedrijfslek-weergave, moet ontbrekende, `null`, lege of witruimte-scores als **onbekend** behandelen. Alleen expliciet aangeleverde `0` mag als gemeten 0/100 verschijnen, mits de eigen tenant-claim en herkomst bevestigd zijn. Bron: `portal-v2/modules/overview.js` en `portal-v2/tests/entrepreneur-journey.test.mjs`. Dit is een regressieregel op de bestaande acht-onderdelen-lineage #4585, geen nieuwe dataautoriteit.
+
+### Veilige vluchtige Brain-runtime in de ondernemersreis
+
+Fingerprint `portal|eight-outcomes|principal-bound-live-runtime|v1`. De geautoriseerde `/api/brain-operating-loop`-projectie is géén duurzaam `portal.business_context`-antwoord. Bied live runtime uitsluitend aan de **huidige** geauthenticeerde principal aan; bij accountwisseling of logout direct wissen en de frontend opnieuw projecteren zonder identiteit of payload in browser-events. Nooit via `domainState`-data van een vorige gebruiker hergebruiken. Brain-runtime-observatie mag niet als bewijs voor connector-provideracties, Heartbeat-SLA, financiële forecast of gerealiseerde winst gelden. Houd de oorspronkelijke Supabase/Brain-writeautoriteit en tenant/RLS intact. Regressie via `portal-v2/tests/entrepreneur-journey.test.mjs` en root-learning-replay.

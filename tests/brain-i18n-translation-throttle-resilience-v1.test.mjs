@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
+const transport=fs.readFileSync('tools/site-shell/static-i18n-openai-fallback.mjs','utf8');
 const workflow=fs.readFileSync('.github/workflows/production-source-snapshot.yml','utf8');
 
 test('static translation defaults to a single provider stream',()=>{
@@ -12,7 +13,7 @@ test('static translation defaults to a single provider stream',()=>{
 });
 
 test('static translation honors Retry-After and exponential backoff',()=>{
-  assert.match(source,/retry-after/);
+  assert.match(transport,/retry-after/);
   assert.match(source,/retryAfterMs/);
   assert.match(source,/STATIC_I18N_PROVIDER_ERROR/);
   assert.match(source,/\[429,500,502,503,504,529\]/);

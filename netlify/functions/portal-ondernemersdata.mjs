@@ -3,9 +3,11 @@ import { resolveIdentityTenant } from '../../platform/read-models/portal-server-
 import { createSupabasePortalProjectionStore } from './_portal-supabase-store.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{
-  'cache-control':'private, max-age=60, stale-while-revalidate=240',
+  // Never cache authentication failures, upstream failures or temporary 503s.
+  'cache-control':status>=400?'no-store':'private, max-age=60, stale-while-revalidate=240',
   'content-type':'application/json; charset=utf-8',
-  'vary':'authorization, cookie'
+  'vary':'authorization, cookie',
+  ...(status===503?{'retry-after':'20'}:{})
 }});
 
 export default async request=>{
@@ -22,7 +24,22 @@ export default async request=>{
   }catch(error){
     const message=String(error?.message||error||'');
     const configMissing=/configuration missing/i.test(message);
-    return json({error:configMissing?'PORTAL_GATEWAY_CONFIG_MISSING':'ENTREPRENEUR_INTELLIGENCE_GATEWAY_FAILED'},configMissing?503:502);
+    const timedOut=/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/.test(message);
+    // Operator-only failure categories, never raw messages, tenant IDs, credentials or query payloads.
+    const upstreamMatch=/^EU portal store gateway failed \((401|403|429|500|502|503|504)\)(?: \[(SOURCES|PUBLICATIONS|EXTERNAL_SIGNALS|DOMAIN_REGISTRY|SOURCE_CATALOG|SIGNAL_PROJECTION|COMPANY_IMPACT|CANONICAL_ACTIONS|TENANT_ACTIONS|INTELLIGENCE_SNAPSHOT|PORTAL_READ_DEADLINE_EXCEEDED)\])?$/.exec(message);
+    const upstreamStatus=upstreamMatch?.[1]||null;
+    const upstreamStage=upstreamMatch?.[2]||null;
+    const failureCategory=configMissing?'CONFIG_MISSING'
+      :timedOut?'UPSTREAM_DEADLINE'
+      :upstreamStatus?'UPSTREAM_HTTP_'+upstreamStatus+(upstreamStage?'_STAGE_'+upstreamStage:'')
+      :/tenant scope mismatch/i.test(message)?'TENANT_SCOPE_MISMATCH'
+      :/response shape invalid/i.test(message)?'UPSTREAM_RESPONSE_SHAPE'
+      :error?.name==='TypeError'?'UPSTREAM_NETWORK_FETCH'
+      :'UPSTREAM_UNKNOWN_FAILURE';
+    console.error('PORTAL_ENTREPRENEUR_GATEWAY_FAILED category='+failureCategory);
+    const code=configMissing?'PORTAL_GATEWAY_CONFIG_MISSING'
+      :timedOut?'PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT':'ENTREPRENEUR_INTELLIGENCE_GATEWAY_FAILED';
+    return json({error:code},configMissing||timedOut?503:502);
   }
 };
 

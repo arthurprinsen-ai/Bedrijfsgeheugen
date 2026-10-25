@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "powerhouse|parallel-wave-admission|bounded-epochs-settlement|20261022-v1",
+  "obligation_id": "powerhouse|parallel-wave-admission|bounded-epochs-settlement|20261022-v1",
+  "canonical_related_obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE_PENDING_PROTECTED_GATES",
+  "component": "existing parallel-engineering-fabric; no new scheduler/queue/memory",
+  "observed_failure_mode": "Scheduler admitted unlimited independent work packages per wave, accepted mixed base epochs, and Promise.all returned on first failure before all already-started workers settled.",
+  "root_cause": "Missing bounded admission, main-epoch coherence invariant, and sibling-settlement barrier in existing deterministic plan.",
+  "repair": [
+    "Cap each independent wave using the existing four-package tuning baseline (policy range 1..6)",
+    "Fail closed on mixed base SHAs before any worker begins",
+    "Wait for all in-flight siblings to settle, report failed/completed package IDs and block downstream wave on failure",
+    "Serialize identical candidate heads and shared obligation writers even when paths do not overlap",
+    "Executor revalidates bounded wave admission for manually forged execution plans"
+  ],
+  "prevention": [
+    "Tests enforce deterministic 4+2 wave splitting",
+    "Tests reject mixed-main plans and invalid wave budgets",
+    "Tests assert failed wave completion barrier and no downstream work",
+    "Regression prevents duplicate head/obligation writers and over-budget forged plans"
+  ],
+  "proof": {
+    "local_tests": "NOT_EXECUTED_CONNECTOR_ONLY",
+    "github_required": "RECHECK_REQUIRED_AFTER_CONSOLIDATION",
+    "github_codeql": "RECHECK_REQUIRED_AFTER_CONSOLIDATION",
+    "protected_merge": "PENDING",
+    "production_readback": "PENDING",
+    "measured_speed_gain": "NOT_MEASURED"
+  },
+  "safety": {
+    "release_gate_unchanged": true,
+    "security_gate_unchanged": true,
+    "no_duplicate_scheduler": true,
+    "no_auto_promotion": true
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-parallel-engineering-fabric.test.mjs"
+    ]
+  },
+  "admission_failure_observed": {
+    "fingerprint": "github|learning-canonicalization|missing-compiler-class|20261022-v1",
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39833493397",
+    "evidence": "LEARNING_CANONICALIZATION_FAILED: LEARNING_FAILURE_CLASS_REQUIRED",
+    "root_cause": "New learning file omitted the canonical compiler/evaluation contract.",
+    "repair": "Added CI/GITHUB compiler identity and required historical replay against existing Brain parallel-engineering regression tests.",
+    "prevention": "Future delivery learning records must declare compiler.failure_class and runnable evaluation.historical_replay before PR creation.",
+    "status": "REPAIR_CANDIDATE_PENDING_REMOTE_GATE"
+  },
+  "integration_source": "Existing overlapping PR #4708, consolidated into PR #4705; avoid competing parallel auto-merges"
+}

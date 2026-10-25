@@ -24,8 +24,9 @@ import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
+import {mountWinstnavigator} from './winstnavigator.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
-import { mountSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
+import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 import { mountAiModelChoice } from './modules/ai-model-choice.js';
 
 const COPY = {
@@ -82,13 +83,14 @@ const COPY = {
   audit:['Audit','Maak besluiten, wijzigingen, bewijs, controles en verantwoordelijkheden auditbaar.'],
   bronnenstatus:['Bronnenstatus','Zie welke bronnen beschikbaar zijn, welke aandacht vragen en waar bewijs ontbreekt.'],
   datahubstatus:['Datahubstatus','Volg structurering, verrijking en verbinding van bedrijfsdata zonder onbewezen live-status te tonen.'],
-  'brain-verwerking':['Brain-verwerking','Maak zichtbaar wat het bedrijfsbrein met context doet: begrijpen, verbinden, prioriteren en adviseren.'],
+  'brain-verwerking':['Brain-verwerking','Het Brein verbindt jouw invoer, bronnen en geleerde lessen. Powerhouse vertaalt die context naar beslissingen en acties; Heartbeat verwerkt geplande taken. Dit scherm toont de vastgelegde stappen en hun bewijsstatus.'],
   agentstatus:['Agenta · jouw data & acties','Bekijk welke bedrijfsdata de agents gebruiken, welke acties zijn uitgevoerd en welk bewijs daarvan beschikbaar is.'],
+  rekenwijze:['Hoe dit portaal rekent','Bekijk de formule, benodigde invoer en uitkomst van de getoonde berekeningen. Dit zijn berekeningen op basis van beschikbare gegevens; een berekende baat is nog geen gerealiseerde winst en een scenario is geen gemeten resultaat.'],
   'powerhouse-control-center':['Powerhouse Control Center','Volg dagelijks wat AI, chats, agents, workflows en infrastructuur doen: activiteit, fouten, learnings, skills, delivery, kosten en bewijs in één filterbare cockpit.'],
   'actieve-acties':['Actieve acties','Van inzicht naar concrete uitvoering, eigenaar, voortgang en bewijs.'],
   'recovery-obligations':['Open recovery obligations','Elke containment of blokkade blijft zichtbaar totdat root cause, fix, test en heractivatie aantoonbaar gesloten zijn.'],
   'outcomes-evidence':['Outcomes & evidence','Koppel acties aan gemeten resultaat en bewijs zodat effect niet op aannames rust.'],
-  'learning-writeback':['Learning/writeback','Zet geverifieerde outcomes om in herbruikbare learnings voor volgende beslissingen.'],
+  'learning-writeback':['Relevantie & verbeteringen','Bekijk de relevante Brain-leerrecords uit je eigen omgeving, wat bewezen is en welke verbeteringen nog verificatie vragen.'],
   'self-heal':['Self-heal / recovery','Detecteer problemen, herstel binnen grenzen, verifieer en heractiveer gecontroleerd.'],
   audittrail:['Audittrail','Maak besluiten, acties, wijzigingen en bewijs terugvindbaar in één traceerbare keten.']
 };
@@ -167,7 +169,7 @@ function ensureShell(){
   if(root) return root;
   root=document.createElement('div');
   root.id='portalView';root.className='portalview';root.setAttribute('aria-hidden','true');
-  root.innerHTML=`<section class="pvpanel" role="region" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Terug naar overzicht">← <span>Overzicht</span></button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
+  root.innerHTML=`<section class="pvpanel" role="region" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Terug naar overzicht">← <span>Overzicht</span></button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div id="pvImpactMap" aria-live="polite" hidden></div><div class="pvnative" id="pvNative"></div></div></section>`;
   document.body.appendChild(root);
   root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>{
     closePortalPage();
@@ -180,10 +182,24 @@ function ensureShell(){
 
 export function closePortalPage(){
   const root=document.getElementById('portalView');if(!root)return;
+  disposeSecurityTrustWorkspace(root.querySelector('#pvNative'));
   root.classList.remove('open','impact-mode');root.setAttribute('aria-hidden','true');
   document.documentElement.classList.remove('portalview-open');
 }
 
+function renderImpactMap(root,impact,phase='pending'){
+  const panel=root?.querySelector?.('#pvImpactMap');
+  if(!panel||!Array.isArray(impact?.affectedPages)||impact.affectedPages.length===0)return;
+  // The persisted causal graph is a review plan, not automatically measured value.
+  const targets=[...new Set(impact.affectedPages)].filter(id=>findPage(id)&&id!=='powerhouse-control-center'&&(!isProtectedTrustPage(id)||hasProtectedTrustAccess()));
+  const visible=targets.slice(0,8);
+  const label=phase==='confirmed'?'Opgeslagen in het bedrijfsbrein':'Wijziging — verwerking nog te bevestigen';
+  const source=findPage(impact.sourcePage)?.label||'dit onderdeel';
+  const reviews=(impact.reviewDomains||[]).filter(Boolean);
+  panel.hidden=false;
+  panel.innerHTML=`<details class="pv-impact-map"><summary><b>${esc(label)}</b> · ${targets.length} gekoppelde onderdelen</summary><p>Gewijzigd: ${esc(source)}. De onderstaande onderdelen vragen mogelijk herberekening of beoordeling. Niet alle gevolgen zijn al bewezen.</p><div class="pvactions">${visible.map(id=>`<button type="button" data-impact-target="${esc(id)}">${esc(findPage(id).label||id)} →</button>`).join('')}</div>${targets.length>visible.length?`<small>En nog ${targets.length-visible.length} andere onderdelen.</small>`:''}${reviews.length?`<p>Te beoordelen: ${esc(reviews.join(', '))}</p>`:''}</details>`;
+  panel.querySelectorAll('[data-impact-target]').forEach(button=>button.addEventListener('click',()=>openPortalPage(button.dataset.impactTarget)));
+}
 function impactSummary(impact){
   const changes=Array.isArray(impact?.changes)?impact.changes:[];
   const preferred=changes.find(x=>x.unit==='money')||changes.find(x=>x.unit==='fte')||changes.find(x=>x.unit==='months')||changes.find(x=>x.unit==='percent')||changes[0];
@@ -301,6 +317,7 @@ export function openPortalPage(pageId){
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
   root.dataset.pageId=pageId;
   const native=root.querySelector('#pvNative');
+  disposeSecurityTrustWorkspace(native);
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
     const snapshot=impactSnapshotFromPortalState(portalStateSnapshot(),{
@@ -335,7 +352,7 @@ export function openPortalPage(pageId){
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
   else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
    else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
-  else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});}
+  else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
@@ -385,6 +402,8 @@ function ensureStylesheetLast(href){
 export function enhancePortalShell(){
   ensureShell();
   ensureStylesheet('./interaction.css');
+  ensureStylesheet('./winstnavigator.css');
+  mountWinstnavigator({domainState:portalContext.domainState,stateClient:portalContext.stateClient});
   ensureStylesheet('./workspace.css');
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
@@ -420,20 +439,41 @@ export function enhancePortalShell(){
       if(!impact.affectedPages?.includes(current))return;
       const status=root.querySelector('#pvStatus');
       if(status)status.textContent=impactSummary(impact);
+      if(impact.changed)renderImpactMap(root,impact,'pending');
       // Tijdens typen blijft het bronformulier stabiel. Andere open afgeleide
       // pagina's mogen direct opnieuw renderen, net als teken() in het oude portaal.
       if(current!==impact.sourcePage)requestAnimationFrame(()=>openPortalPage(current));
     });
+    // A fresh authenticated server projection invalidates open derived pages.
+    // Do not replace active form controls while the customer is editing them.
+    globalThis.addEventListener?.('bg:portal-server-refreshed',()=>{
+      const root=document.getElementById('portalView');
+      if(!root?.classList.contains('open'))return;
+      if(portalContext.domainState?.status?.()==='dirty'||portalContext.domainState?.status?.()==='saving')return;
+      const active=document.activeElement;
+      if(active&&root.contains(active)&&active.matches?.('input, textarea, select, [contenteditable="true"]'))return;
+      const page=root.dataset.pageId;
+      if(page)requestAnimationFrame(()=>{
+        if(root.classList.contains('open')&&root.dataset.pageId===page
+           &&!['dirty','saving'].includes(portalContext.domainState?.status?.()))openPortalPage(page);
+      });
+    });
     globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
-      const impact=event.detail?.impact;
+      // Only an impact explicitly listed among the canonical ACKs may render as confirmed.
+      const impact=event.detail?.impacts?.at?.(-1)||null;
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact||{}}));
       const root=document.getElementById('portalView');
       if(!root?.classList.contains('open'))return;
+      renderImpactMap(root,impact,'confirmed');
       const current=root.dataset.pageId;
       if(!impact?.affectedPages?.includes(current))return;
       // Na Opslaan is het veilig ook de bronpagina opnieuw op te bouwen:
       // canonieke state + Brain-record zijn dan bevestigd.
       requestAnimationFrame(()=>openPortalPage(current));
+    });
+    globalThis.addEventListener?.('bg:portal-brain-pending',event=>{
+      const root=document.getElementById('portalView');
+      if(root?.classList.contains('open'))renderImpactMap(root,event.detail?.impact||event.detail?.impacts?.at?.(-1),'pending');
     });
   }
 

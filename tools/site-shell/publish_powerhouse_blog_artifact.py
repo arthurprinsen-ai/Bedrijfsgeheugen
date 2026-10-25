@@ -55,12 +55,29 @@ def seo_focus(data):
     raw = re.sub(r"\s+", " ", str(data.get("focus_keyword") or "")).strip()
     title = re.sub(r"\s+", " ", str(data.get("title") or "")).strip()
     body = re.sub(r"\s+", " ", str(data.get("body") or "")).strip()
-    candidates = [raw]
+    # A question opener is not a search topic: "Hoe Nederlandse" was being
+    # extracted from a valid longer title and led to nonsensical SEO headings.
+    # Prefer the first two substantive, contiguous words; never create a
+    # one-word fallback that is merely a question/article/preposition.
     words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title)
-    if len(words) >= 2:
-        candidates.append(" ".join(words[:2]))
-    if words:
-        candidates.append(words[0])
+    starters = {"hoe", "wat", "waarom", "wanneer", "welke", "wie",
+                "de", "het", "een", "dit", "die", "als", "voor"}
+    leading = 0
+    while leading < len(words) and words[leading].casefold() in starters:
+        leading += 1
+    meaningful = words[leading:]
+    # Editorial verbs + prepositions are not a meaningful search topic.
+    if [word.casefold() for word in meaningful[:2]] == ["publiceren", "voor"]:
+        meaningful = meaningful[2:]
+        while meaningful and meaningful[0].casefold() in {"de", "het", "een"}:
+            meaningful = meaningful[1:]
+    raw_words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", raw)
+    raw_ok = raw_words and raw_words[0].casefold() not in starters and raw_words[-1].casefold() not in starters
+    candidates = [raw] if raw_ok else []
+    if len(meaningful) >= 2:
+        candidates.append(" ".join(meaningful[:2]))
+    if meaningful and meaningful[0].casefold() not in starters:
+        candidates.append(meaningful[0])
     haystack = (title + " " + body).casefold()
     for candidate in candidates:
         if candidate and candidate.casefold() in haystack:
@@ -109,41 +126,48 @@ def first_plain_paragraph(body):
     return ""
 
 def faq_items(data):
+    """Only source-authored, explicit questions qualify as FAQs.
+
+    The first line of a section is the heading; adjacent answer text must not
+    be mistaken for part of the question or copied into schema.org Question.name.
+    """
     blocks = [x.strip() for x in re.split(r"\n\s*\n", data.get("body") or "") if x.strip()]
     items = []
     for i, block in enumerate(blocks):
         if not block.startswith("## "):
             continue
-        heading = re.sub(r"\*\*([^*]+)\*\*", r"\1", block[3:]).strip()
-        answer = ""
-        for nxt in blocks[i + 1:]:
-            if nxt.startswith("#"):
-                break
-            if nxt == "---":
-                continue
-            plain = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", nxt)
-            plain = re.sub(r"\*\*([^*]+)\*\*", r"\1", plain)
-            plain = re.sub(r"\s+", " ", plain).strip()
-            if plain:
-                answer = plain
-                break
-        if heading and answer:
-            question = heading if heading.endswith("?") else f"Wat betekent {heading.lower()}?"
+        lines = block.splitlines()
+        question = re.sub(r"\*\*([^*]+)\*\*", r"\1", lines[0][3:]).strip()
+        if not question.endswith("?") or len(question) > 130:
+            continue
+        answer = "\n".join(lines[1:]).strip()
+        if not answer:
+            for nxt in blocks[i + 1:]:
+                if nxt.startswith("#"):
+                    break
+                if nxt != "---":
+                    answer = nxt
+                    break
+        answer = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", answer)
+        answer = re.sub(r"\*\*([^*]+)\*\*", r"\1", answer)
+        answer = re.sub(r"\s+", " ", answer).strip()
+        if answer:
             items.append((question, answer[:700]))
         if len(items) == 3:
             break
-    if not items:
-        lead = first_plain_paragraph(data.get("body") or "")
-        focus = seo_focus(data)
-        items = [(f"Wat betekent {focus} in de praktijk?", lead[:700] or f"{focus} vraagt om een beoordeling van de feitelijke situatie.")]
     return items
 
+
 def faq_html(data):
+    items = faq_items(data)
+    if not items:
+        return ""
     rows = ['<section class="faq-blok" aria-labelledby="faq-title"><h2 id="faq-title">Veelgestelde vragen</h2>']
-    for question, answer in faq_items(data):
+    for question, answer in items:
         rows.append(f'<div class="faq-item"><h3>{html.escape(question)}</h3><p>{html.escape(answer)}</p></div>')
     rows.append("</section>")
     return "\n".join(rows)
+
 
 def functional_figures(focus):
     f = html.escape(focus)
@@ -231,6 +255,51 @@ def body_html(data):
         )
     return "\n".join(result)
 
+def assert_reader_ready(data, business_date=None):
+    """Fail closed on author/editor instructions accidentally exported as customer copy.
+
+    Do not quietly delete these paragraphs: such content must be corrected at the
+    source, then re-exported with the same canonical evidence and obligation.
+    """
+    body = str(data.get("body") or "")
+    title = str(data.get("title") or "")
+    cta = str(data.get("cta") or "")
+    if len(body.strip()) < 450:
+        fail("BLOG_ARTIFACT_NOT_READER_READY:BODY_TOO_SHORT")
+    # A forecast about a future opening cannot keep that tense once the named
+    # event date has passed. Never silently rewrite the claim or its provenance.
+    if business_date:
+        months = {"januari": 1, "februari": 2, "maart": 3, "april": 4,
+                  "mei": 5, "juni": 6, "juli": 7, "augustus": 8,
+                  "september": 9, "oktober": 10, "november": 11, "december": 12}
+        future_opening = re.compile(
+            r"(?i)\b(?:waarschijnlijk|naar verwachting|verwacht)\b[^\n.!?]{0,100}?"
+            r"\b(?:op|vanaf)\s+(\d{1,2})\s+("
+            + "|".join(months) + r")\s+(\d{4})[^\n.!?]{0,100}?"
+            r"\b(?:opengaan|openen|starten|beginnen)\b"
+        )
+        for match in future_opening.finditer(body):
+            try:
+                opening = dt.date(int(match.group(3)), months[match.group(2).lower()], int(match.group(1)))
+            except ValueError:
+                fail("BLOG_ARTIFACT_NOT_READER_READY:INVALID_EVENT_DATE")
+            if opening < dt.date.fromisoformat(business_date):
+                fail("BLOG_ARTIFACT_NOT_READER_READY:EXPIRED_FUTURE_EVENT_CLAIM")
+    checks = (
+        ("PUBLISH_FIRST_INSTRUCTION", body, r"(?im)^\s*Voordat u publiceert\s*:"),
+        ("RELEASE_STEP", body, r"(?im)^\s*Publicatiestap\s*\(vereist (?:voor|vóór) live\)"),
+        ("EDITORIAL_SEO_PLAN", body, r"(?im)^\s*Publicatie-\s*en\s*SEO-aanpak\s*\("),
+        ("EDITORIAL_FOLLOWUP", body, r"(?im)^\s*Wat te publiceren als follow-up documenten\s*\("),
+        ("DRAFT_PUBLICATION", body, r"(?im)Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie"),
+        ("EDITORIAL_SOURCE_DIRECTION", body, r"(?im)Gebruik dit als technisch bewijs voor het algemene probleem"),
+        ("TITLE_DRAFT_MARKER", title, r"(?i)\((?:canonieke pagina|canonieke upgrade|concept|draft)\)"),
+        ("CTA_PUBLISH_INSTRUCTION", cta, r"(?i)Voer eerst een canonieke URL-eigenaarschap-check uit"),
+    )
+    for code, value, pattern in checks:
+        if re.search(pattern, value):
+            fail("BLOG_ARTIFACT_NOT_READER_READY:" + code)
+
+
 def main():
     business_date = sys.argv[1] if len(sys.argv) > 1 else dt.date.today().isoformat()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", business_date):
@@ -239,6 +308,7 @@ def main():
     if data is None:
         print(f"NO_ACTION:NO_APPROVED_BLOG_ARTIFACT:{business_date}")
         return
+    assert_reader_ready(data, business_date)
     slug = data["slug"]
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
         fail("INVALID_SLUG")
@@ -349,6 +419,9 @@ def main():
             },
         ],
     }
+    # Do not publish fabricated/empty FAQ structured data.
+    schema["@graph"] = [node for node in schema["@graph"]
+                        if node.get("@type") != "FAQPage" or node.get("mainEntity")]
     schema_json = json.dumps(schema, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     template = replace_one(
         template,

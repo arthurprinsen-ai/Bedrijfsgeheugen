@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { tagDuePostsWithObservedWindows } from '../_shared/social-learning-due-evidence.mjs';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -32,9 +33,30 @@ Deno.serve(async(req:Request)=>{
     if(action==='get_snapshots'){const {data,error}=await db.from('social_metric_snapshots').select('*').eq('tenant_id',tenantId).eq('post_id',body.postId).order('observed_at',{ascending:true});if(error)throw error;return json({snapshots:(data||[]).map((r:any)=>({snapshotId:r.snapshot_id,postId:r.post_id,tenantId:r.tenant_id,observedAt:r.observed_at,ageHours:r.age_hours,source:r.source,sourceEventId:r.source_event_id,dataQuality:r.data_quality,metrics:r.metrics}))});}
     if(action==='list_due_posts'){
       const now=new Date(body.now||Date.now());const {data:posts,error}=await db.from('social_posts').select('*').eq('tenant_id',tenantId).not('published_at','is',null).lte('published_at',new Date(now.getTime()-24*36e5).toISOString());if(error)throw error;
-      const {data:evals,error:e2}=await db.from('social_learning_evaluations').select('post_id,window_hours').eq('tenant_id',tenantId);if(e2)throw e2;const done=new Set((evals||[]).map((e:any)=>`${e.post_id}:${e.window_hours}`)),out:any[]=[];
+      const {data:evals,error:e2}=await db.from('social_learning_evaluations').select('post_id,window_hours,metric_vector').eq('tenant_id',tenantId);
+      if(e2)throw e2;
+      // Historical evaluations made before provider field normalization can
+      // contain an all-null vector. Such a record is NOT a measured result.
+      // Re-open only those windows, then upsert the SAME deterministic ID
+      // when the exact original source snapshot can be re-normalized.
+      const observedKeys=['impressions','reach','likes','reactions','comments','shares','saves','clicks','views','qualified_leads','orders','revenue'];
+      const measured=(evals||[]).filter((e:any)=>observedKeys.some(k=>
+        typeof e.metric_vector?.[k]==='number'&&Number.isFinite(e.metric_vector[k])&&e.metric_vector[k]>=0));
+      const done=new Set(measured.map((e:any)=>`${e.post_id}:${e.window_hours}`)),out:any[]=[];
       for(const p of posts||[])for(const w of [24,48,72])if(now.getTime()>=new Date(p.published_at).getTime()+w*36e5&&!done.has(`${p.post_id}:${w}`))out.push({...camelPost(p),dueWindow:w});
-      return json({posts:out});
+      // One bounded extra read in the EXISTING store, not a second
+      // metric-ingestion engine. No provider credentials, visitor data, or
+      // synthetic timestamps are introduced.
+      const since=new Date(now.getTime()-100*86400000).toISOString();
+      const {data:observations,error:snapshotError}=await db.from('social_metric_snapshots')
+        .select('post_id,observed_at,data_quality').eq('tenant_id',tenantId)
+        .gte('observed_at',since).order('observed_at',{ascending:false}).limit(900);
+      if(snapshotError)throw snapshotError;
+      // Fail closed on read truncation. The evaluator falls back to existing
+      // rotating debt handling rather than misclassifying unseen observations.
+      const complete=(observations||[]).length<900;
+      const annotated=complete?tagDuePostsWithObservedWindows(out,observations||[],{toleranceHours:6}):out;
+      return json({posts:annotated,source_window_evidence:complete?'OBSERVED_WINDOW_INDEX':'COVERAGE_TRUNCATED_FALLBACK',provider_rows_scanned:(observations||[]).length});
     }
     if(action==='get_cohort'){
       const input=body.query||{},target=input.post||{},windowHours=Number(input.windowHours||24),tolerance=Number(input.toleranceHours||6);

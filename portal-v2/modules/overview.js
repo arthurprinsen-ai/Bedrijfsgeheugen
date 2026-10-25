@@ -30,6 +30,7 @@ export function legacyOverviewInsights(state={}){
  const profile=state?.portal?.profile||{};
  if(!profile.maturity||typeof profile.maturity!=='object')return null;
  const metrics=profileOverviewMetrics(state);
+ if(metrics.evidenceStatus!=='MODEL_ESTIMATE_FROM_ENTERED_INPUTS')return null;
  const dimensions=PROFILE_DIMENSION_LABELS.map(([id,label])=>({id,label,level:Number(profile.maturity?.[id])||2}));
  const blockers=[...dimensions].sort((a,b)=>a.level-b.level).slice(0,3);
  const level=Math.max(1,Math.min(5,Math.round(metrics.averageMaturity)));
@@ -46,13 +47,14 @@ export function overviewViewModel(state={}){
  const profile=state?.portal?.profile;
  if(!profile||typeof profile!=='object'||!profile.maturity)return null;
  const metrics=profileOverviewMetrics(state);
+ if(metrics.evidenceStatus!=='MODEL_ESTIMATE_FROM_ENTERED_INPUTS')return null;
  return Object.freeze({
   weeksPerYear:metrics.weeksPerYear,
   capacityNotCash:metrics.capacityNotCash,
   cards:Object.freeze([
-   Object.freeze({label:'Gemiddelde volwassenheid',value:`${nl1(metrics.averageMaturity)}/5`,note:'gemiddeld over 13 bedrijfsonderdelen'}),
-   Object.freeze({label:'Handmatig werk per jaar',value:`${nl0(metrics.annualManualHours)} uur`,note:'46 weken als conservatieve jaarbasis'}),
-   Object.freeze({label:'Vermijdbare capaciteit',value:`${nl1(metrics.fteLost)} fte`,note:'ruimte die je terugkrijgt'}),
+   Object.freeze({label:'Gemiddelde volwassenheid',value:`${nl1(metrics.averageMaturity)}/5`,note:'modelberekend uit 13 ingevulde bedrijfsonderdelen'}),
+   Object.freeze({label:'Handmatig werk per jaar',value:`${nl0(metrics.annualManualHours)} uur`,note:'modelaanname: 46 werkweken; geen gemeten tijd'}),
+   Object.freeze({label:'Vermijdbare capaciteit',value:`${nl1(metrics.fteLost)} fte`,note:'indicatieve capaciteit, niet gerealiseerd'}),
    Object.freeze({label:'Indicatieve capaciteitswaarde',value:euro(metrics.annualManualCost),note:'capaciteitswaarde; geen cashbesparing'})
   ])
  });
@@ -100,8 +102,12 @@ function renderBedrijfslekIntelligence(root,state){
  const main=root?.querySelector?.('.main');if(!main)return false;
  const scan=state?.portal?.assessments?.bedrijfslekScan;
  let section=main.querySelector('[data-bedrijfslek-intelligence]');
- const score=Number(scan?.score);
- if(scan?.verifiedIdentity!==true||!Number.isFinite(score)||score<0||score>100){
+ // A verified scan with an absent score is NOT a measured zero. Preserve
+ // unknown status on every owner overview surface, not just the new entry.
+ const rawScore=scan?.score;
+ const hasExplicitScore=rawScore!==null&&rawScore!==undefined&&(typeof rawScore!=='string'||rawScore.trim().length>0);
+ const score=hasExplicitScore?Number(rawScore):NaN;
+ if(scan?.verifiedIdentity!==true||!hasExplicitScore||!Number.isFinite(score)||score<0||score>100){
   section?.remove?.();return false;
  }
  const doc=root.ownerDocument||document;

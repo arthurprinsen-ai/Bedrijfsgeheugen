@@ -1,5 +1,6 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {canRecoverExpiredCompanyClaim} from '../_shared/social-publish-claim-recovery.mjs';
+import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
+import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
@@ -1129,12 +1130,12 @@ function instagramInput(art:any,due:Date,future:boolean){
  * without being consumed and BOTH decision + obligation prove zero provider side effects.
  * This is not a new sender, scheduler, daily claim, or authorization bypass.
  */
-async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,channels:string[]) {
-  if(runDate!==today()||!channels.includes('linkedin_company'))
-    return {recovered:false,reason:'NOT_SAME_DAY_COMPANY_LANE'};
+async function recoverExpiredOriginalLinkedInClaim(db:any,runDate:string,channel:string) {
+  if(runDate!==today()||!['linkedin_company','linkedin_personal'].includes(channel))
+    return {recovered:false,reason:'NOT_SAME_DAY_LINKEDIN_LANE'};
   const {data:decision,error:de}=await db.from('powerhouse_channel_decisions')
     .select('run_date,channel,decision,state,delivery_ref,delivery_evidence,updated_at')
-    .eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle();
+    .eq('run_date',runDate).eq('channel',channel).maybeSingle();
   if(de)throw new Error('RECOVERY_DECISION_READ:'+de.message);
   if(!decision || decision.state!=='blocked' ||
      decision.delivery_evidence?.error!=='PUBLICATION_AUTHORITY_DENIED:DAILY_CHANNEL_PUBLICATION_ALREADY_CLAIMED')
@@ -1142,15 +1143,15 @@ async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,c
   const [{data:obligation,error:oe},{data:capabilities,error:ce},{data:reservations,error:re}]=await Promise.all([
     db.from('content_publication_obligations')
       .select('channel,status,external_id,live_proven_at,evidence')
-      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','linkedin_company').maybeSingle(),
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel',channel).maybeSingle(),
     db.from('powerhouse_social_publish_capabilities_v1')
       .select('capability_id,expires_at,consumed_at,revoked_at,evidence')
-      .eq('run_date',runDate).eq('channel','linkedin_company'),
+      .eq('run_date',runDate).eq('channel',channel),
     db.from('powerhouse_publication_uniqueness_v1')
-      .select('id').eq('publication_date',runDate).eq('channel','linkedin_company').limit(1)
+      .select('id').eq('publication_date',runDate).eq('channel',channel).limit(1)
   ]);
   if(oe||ce||re)throw new Error('RECOVERY_GUARD_READ:'+(oe?.message||ce?.message||re?.message));
-  const verdict=canRecoverExpiredCompanyClaim({
+  const verdict=(channel==='linkedin_personal'?canRecoverExpiredPersonalClaim:canRecoverExpiredCompanyClaim)({
     runDate,currentDate:today(),decision,obligation,capabilities,reservations,nowMs:Date.now()
   });
   if(!verdict.authorized)return {recovered:false,reason:verdict.reason};
@@ -1176,12 +1177,28 @@ async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,c
       recovery_reason:'EXPIRED_UNCONSUMED_PUBLICATION_AUTHORITY',recovered_at:now,
       provider_create_success:false,provider_publication_ack_verified:false,
       possible_provider_side_effect:false,republish_forbidden:false}})
-    .eq('run_date',runDate).eq('channel','linkedin_company')
+    .eq('run_date',runDate).eq('channel',channel)
     .eq('decision','publish').eq('state','blocked')
     .eq('updated_at',decision.updated_at).is('delivery_ref',null)
     .select('channel').maybeSingle();
   if(resumeError)throw new Error('RECOVERY_ORIGINAL_CLAIM_CAS:'+resumeError.message);
   return {recovered:!!resumed,revoked,reason:resumed?'ORIGINAL_CLAIM_RESUMED':'CANONICAL_CLAIM_CHANGED'};
+}
+
+// Reuse the SAME provider-authority restoration for both LinkedIn lanes.
+// One channel's failure is isolated; every lease check remains scoped by date
+// and channel. No second publisher, no extra send, no cross-channel permission.
+async function recoverExpiredLinkedInPublicationAuthority(db:any,runDate:string,channels:string[]) {
+  const selected=[...new Set(channels.filter(c=>c==='linkedin_company'||c==='linkedin_personal'))];
+  if(!selected.length)return {recovered:false,reason:'NO_LINKEDIN_LANE_SELECTED',channels:[]};
+  const results=[];
+  for(const channel of selected){
+    const result=await recoverExpiredOriginalLinkedInClaim(db,runDate,channel);
+    results.push({channel,...result});
+  }
+  return {recovered:results.some(r=>r.recovered===true),
+    reason:results.some(r=>r.recovered===true)?'ORIGINAL_CLAIM_RESUMED':'NO_ELIGIBLE_EXPIRED_LEASE',
+    channels:results};
 }
 
 Deno.serve(async (req) => {
@@ -1235,7 +1252,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const authority_recovery=await recoverExpiredCompanyPublicationAuthority(db,runDate,channels);
+  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
@@ -1261,6 +1278,21 @@ Deno.serve(async (req) => {
     const art: any = artifactByChannel.get(row.channel) || null;
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
+      continue;
+    }
+    const dispatchReady=linkedinDispatchReadiness(row.channel,row.scheduled_for);
+    if(dispatchReady.status==='not_due'){
+      // Do not start review, claim an authority or call an external provider before due.
+      // The existing canonical hourly loop will retry this same content_ready decision.
+      results.push({channel:row.channel,status:'deferred_until_due',due_at:dispatchReady.due_at});
+      continue;
+    }
+    if(dispatchReady.status==='invalid_schedule'){
+      const evidence={...row.delivery_evidence,error:'LINKEDIN_SCHEDULE_INVALID',provider_create_success:false,possible_provider_side_effect:false,republish_forbidden:false};
+      await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
+        'Repair the canonical LinkedIn scheduled_for timestamp; never publish without a valid due time.',
+        'LINKEDIN_SCHEDULE_INVALID');
+      results.push({channel:row.channel,status:'blocked_invalid_schedule',reason:'LINKEDIN_SCHEDULE_INVALID'});
       continue;
     }
     if(row.channel==='linkedin_company'){
@@ -1334,6 +1366,17 @@ Deno.serve(async (req) => {
         results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_SOURCE_UNVERIFIED' }); continue;
       }
       reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, ai_native_builder_story_verified: builderMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash), final_copy_approved:art.generation_evidence?.final_copy_approved===true,editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version) };
+    } else if (row.channel === 'linkedin_company') {
+      // Never rely on the legacy automatic final_copy_approved flag alone.
+      // The independent pre-publish function rechecks this exact text and
+      // historical published company stories before any provider side effect.
+      reviewPayload = {
+        channel: COMPANY, channel_kind:'linkedin_company',
+        post_text:art.body,run_date:runDate,
+        hook_type:clean(art.generation_evidence?.hook_type)||'Probleem',
+        editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version),
+        final_copy_approved:art.generation_evidence?.final_copy_approved===true,
+      };
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
       reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem', mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
@@ -1485,7 +1528,7 @@ Deno.serve(async (req) => {
     let uniqueness:any;
     try{
       const storyFingerprint=await publicationStoryFingerprint(db,row,art);
-      const uniquenessBody=clean(art.body);
+      const uniquenessBody=row.channel==='linkedin_company'?canonicalPublicationStorySource(art.body):clean(art.body);
       uniqueness=await reserveGlobalUniquePublication(db,runDate,row.channel,uniquenessBody,storyFingerprint);
       const uniquenessEvidence={...gatePassedEvidence,global_uniqueness_gate:'passed',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',global_uniqueness:uniqueness,story_fingerprint:storyFingerprint,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
       await db.from('powerhouse_channel_decisions').update({delivery_evidence:uniquenessEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');

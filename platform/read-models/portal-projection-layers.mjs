@@ -6,19 +6,40 @@ const identity=(x,i)=>String(x?.id??x?.key??x?.label??x?.title??x?.name??JSON.st
 function mergeArray(legacy,canonical){const map=new Map();arr(legacy).forEach((x,i)=>map.set(identity(x,i),x));arr(canonical).forEach((x,i)=>{const k=identity(x,i);map.set(k,typeof x==='object'&&typeof map.get(k)==='object'?{...map.get(k),...x}:x)});return [...map.values()]}
 function mergeGraph(a,b){const left=obj(a),right=obj(b);return{...left,...right,nodes:mergeArray(left.nodes,right.nodes),edges:[...new Map([...arr(left.edges),...arr(right.edges)].map(x=>[JSON.stringify(x),x])).values()]}}
 function mergeAdmin(a,b){const left=obj(a),right=obj(b);const out={...left,...right};for(const k of new Set([...Object.keys(left),...Object.keys(right)]))if(typeof left[k]==='object'&&typeof right[k]==='object'&&!Array.isArray(left[k])&&!Array.isArray(right[k]))out[k]={...left[k],...right[k]};return out}
+
+// Tenant portal values are customer-owned; canonical Brain observations remain
+// authoritative in their separate read-model arrays. When both projections
+// contain a portal object, reconcile nested fields by source revision rather
+// than letting a stale top-level object replace a confirmed customer edit.
+const sourceClock=record=>{
+ const candidates=[record?.sourceUpdatedAt,record?.data?.sourceMeta?.updatedAt,record?.updatedAt];
+ for(const candidate of candidates){
+  const time=Date.parse(candidate||'');
+  if(Number.isFinite(time))return time;
+ }
+ return null;
+};
+function mergeCustomerPortal(legacy,canonical,legacyRecord,canonicalRecord){
+ const legacyAt=sourceClock(legacyRecord),canonicalAt=sourceClock(canonicalRecord);
+ const legacyNewer=legacyAt!==null&&(canonicalAt===null||legacyAt>canonicalAt);
+ return legacyNewer
+   ?mergePreservedBusinessInputAnswers(obj(canonical),obj(legacy))
+   :mergePreservedBusinessInputAnswers(obj(legacy),obj(canonical));
+}
 const ARRAY_KEYS=new Set(['healthCards','roadmap','recommendedActions','monthlyImpact','activities','quickLinks','signals','decisions','actions','valueItems','memories','agents','audit','businessInputs']);
 export function composePortalProjectionLayers({legacy=null,canonical=null}={}){
+ const legacyTenant=String(legacy?.tenantId||'').trim(),canonicalTenant=String(canonical?.tenantId||'').trim();
+ if(legacyTenant&&canonicalTenant&&legacyTenant!==canonicalTenant)throw new Error('PORTAL_PROJECTION_TENANT_MISMATCH');
  const l=obj(legacy?.data||legacy),c=obj(canonical?.data||canonical);const out={...l};
  for(const [key,value] of Object.entries(c)){
    if(ARRAY_KEYS.has(key))out[key]=mergeArray(l[key],value);
    else if(key==='company')out.company={...obj(l.company),...obj(value)};
    else if(key==='graph')out.graph=mergeGraph(l.graph,value);
    else if(key==='admin')out.admin=mergeAdmin(l.admin,value);
-   // The legacy tenant projection owns customer AI preferences and activation
-   // requests. Canonical Brain pages may also contain `portal`, but must not
-   // erase these tenant choices merely by being present. For matching fields
-   // the newer canonical value still wins, so no stale legacy override occurs.
-   else if(key==='portal')out.portal={...obj(l.portal),...obj(value)};
+   // Nested customer-owned settings follow the newest confirmed source
+   // revision. Distinct fields survive; canonical signals/decisions stay in
+   // their separate authoritative read-model fields.
+   else if(key==='portal')out.portal=mergeCustomerPortal(l.portal,value,legacy,canonical);
    else if(key==='sourceMeta')out.sourceMeta={...obj(l.sourceMeta),...obj(value)};
    else out[key]=value;
  }

@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-session-validation-evidence-20261019",
+  "fingerprint": "netlify-fallback|composio-session-create-400|ambiguous-diagnostic",
+  "observation": "Production run 39219312774 using Supabase Edge v165 verified GitHub OIDC, discovered an active Netlify account after 2 pages and 54 accounts, then Composio session creation returned provider HTTP 400. The coarse existing TOOL_ALLOWLIST_INVALID error classification persisted after removal of tools filter and cannot support a definite cause.",
+  "cause_class": "diagnostic false specificity, precise provider rejection not yet known",
+  "root_cause_hypothesis": "Composio project/session validates a field of toolkits, connected_accounts, user_id, or related account constraint. Do not claim which field until provider-safe evidence proves it.",
+  "intervention": "Replace broad regex with distinct typed field and signal booleans. Emit only enum category, allowlisted field, JSON format and booleans; never raw body, ids, tokens or freeform provider text. OIDC and account pinned scope unchanged.",
+  "expected": "Future authorized OIDC run classifies the exact provider-rejected session field without disclosure and enables a narrow correction.",
+  "state": "OPEN_PENDING_LIVE_PROVIDER_EVIDENCE",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "regression_test": "tests/brain-netlify-session-diagnostics.test.mjs",
+    "production_readback": "pending",
+    "provider_success": false
+  },
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39219312774"
+  ],
+  "root_cause": "The provider HTTP 400 rejection remains unresolved; the definite diagnostic defect was that /tool...invalid/ interpreted toolkit validation text as a tool allowlist failure after the tool-level filter had been removed. The classifier could not reliably identify the invalid request field.",
+  "prevention": "Require independently matched toolkit versus tool field parsing and schema-restricted diagnostic logs on provider errors, without disabling OIDC, account pinning, Required CI or source/deploy proof."
+}

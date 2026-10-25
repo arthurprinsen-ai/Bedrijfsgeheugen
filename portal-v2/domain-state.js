@@ -41,7 +41,7 @@ function writePath(source,path,value,{merge=false}={}){
 
 function publicSnapshot(state,status,error){return Object.freeze({state:clone(state),status,error:error||null});}
 
-export function createDomainState({load,save}={}){
+export function createDomainState({load,save,refreshLoad=load}={}){
  if(typeof load!=='function')throw new TypeError('DOMAIN_STATE_LOAD_REQUIRED');
  if(typeof save!=='function')throw new TypeError('DOMAIN_STATE_SAVE_REQUIRED');
  let state={};let currentStatus='idle';let currentError=null;let revision=0;let initialized=false;const listeners=new Set();let activeFlush=null;
@@ -61,6 +61,21 @@ export function createDomainState({load,save}={}){
  const asError=(error,fallback)=>error instanceof Error?error:new Error(String(error||fallback));
  const markDirty=()=>{revision+=1;currentStatus='dirty';currentError=null;publish();};
  async function init(){derived.clear();try{const loaded=normalizeState(await load());const needsMigration=hasLegacyPortalData(loaded);state=upgradeLegacyPortalState(loaded);if(needsMigration){currentStatus='saving';publish();state=upgradeLegacyPortalState(normalizeState(await save(clone(state))));currentStatus='saved';}else currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
+ // Revalidate server truth without overwriting unsaved changes or an in-flight ACK.
+ // Refresh is not an init/migration, and never persists derived/runtime data.
+ async function refresh({canApply=()=>true}={}){
+  if(!initialized)return Object.freeze({applied:false,reason:'NOT_INITIALIZED'});
+  if(!['idle','saved'].includes(currentStatus)||!canApply())return Object.freeze({applied:false,reason:'UNSAVED_OR_UNAUTHORIZED'});
+  const startedRevision=revision;
+  const received=upgradeLegacyPortalState(normalizeState(await refreshLoad()));
+  if(revision!==startedRevision||!['idle','saved'].includes(currentStatus)||!canApply()){
+   return Object.freeze({applied:false,reason:'CHANGED_DURING_READBACK'});
+  }
+  // A provider with unchanged state must not rerender open customer forms.
+  if(JSON.stringify(received)===JSON.stringify(state))return Object.freeze({applied:true,changed:false});
+  state=received;currentStatus='idle';currentError=null;publish();
+  return Object.freeze({applied:true,changed:true});
+ }
  function get(path=''){const view=visibleState();return path?readPath(view,path):view;}
  function set(path,value){state=writePath(state,path,value);markDirty();return get(path);}
  function project(path,value){state=writePath(state,path,value);currentError=null;publish();return get(path);}
@@ -77,7 +92,7 @@ export function createDomainState({load,save}={}){
  if(isObject(candidate.portal))delete candidate.portal.runtime;
  currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=upgradeLegacyPortalState(confirmed);currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
  function flush(){if(activeFlush)return activeFlush;activeFlush=performFlush().finally(()=>{activeFlush=null});return activeFlush;}
- return Object.freeze({init,initialized:()=>initialized,get,set,project,setDerived,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(visibleState(),currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
+ return Object.freeze({init,refresh,initialized:()=>initialized,get,set,project,setDerived,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(visibleState(),currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
 }
 
 const SECTION_BINDINGS=Object.freeze({
@@ -145,6 +160,12 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    browserLegacyLiftPending=true;
    return mergeLegacyPortalStateIntoCanonical(canonical,legacy);
   },
+  // Refresh reads only authenticated canonical state, never repeats browser legacy migration.
+  refreshLoad:async()=>{
+   const snap=await stateClient.load();
+   if(snap?.mode!=='authenticated'||!snap?.state)throw new Error('PORTAL_REFRESH_AUTHENTICATED_READBACK_REQUIRED');
+   return snap.state;
+  },
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
  const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
@@ -189,7 +210,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   for(const page of organismPages){
    if(!effectDetails.some(detail=>detail.page===page))effectDetails.push(Object.freeze({page,label:page,viaCalculation:[],viaRule:['organism'],relation:'organism'}));
   }
-  const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
+  // Expose the exact causal mutation revision; a generic later Brain ACK must
+  // never be credited to an unrelated or newer customer edit.
+  const generation=impact.changed?impactRevision+1:null;
+  const enriched=Object.freeze({...impact,generation,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
   if(impact.changed){
    pendingImpacts.push({generation:++impactRevision,path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
   }
@@ -198,14 +222,17 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
     globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:enriched}));
     globalThis.dispatchEvent(new CustomEvent('bg:portal-pages-invalidated',{detail:{path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],effectDetails:[...enriched.effectDetails]}}));
-    if(impact.changed)globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
+    if(impact.changed){
+      globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
+      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length}}));
+     }
    }
   }
   return enriched;
  }
- function set(path,value){const before=domain.get();const result=domain.set(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function set(path,value){const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  function setDerived(path,value){return domain.setDerived(path,value);}
- function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function patch(path,value){const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  async function performPortalFlush(){
   // Snapshot causal lineage before any await: edits made during the state or
   // Brain write must remain pending and cannot be reported as synchronized.
@@ -242,7 +269,27 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return stateResult;
  }
  function flush(){if(activePortalFlush)return activePortalFlush;activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});return activePortalFlush;}
- const portalDomain=Object.freeze({...domain,init,set,setDerived,patch,flush,saveBusinessInput});
+ let activeRefresh=null;
+ function refresh(){
+  if(activeRefresh)return activeRefresh;
+  const principal=stateClient.currentUser?.();
+  const principalKey=String(principal?.id||principal?.email||'').trim();
+  const samePrincipal=()=>{
+   const current=stateClient.currentUser?.();
+   return Boolean(principalKey)&&String(current?.id||current?.email||'').trim()===principalKey
+     &&!stateClient.isDemo?.()&&!activeInit&&!activePortalFlush
+     &&pendingBusinessInputs.size===0&&pendingImpacts.length===0&&!browserLegacyLiftPending;
+  };
+  if(!samePrincipal())return Promise.resolve(Object.freeze({applied:false,reason:'UNVERIFIED_OR_UNSAVED_TENANT'}));
+  activeRefresh=domain.refresh({canApply:samePrincipal}).then(result=>{
+   if(result.applied&&result.changed&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-server-refreshed',{detail:{source:'authenticated_canonical_readback',customerScoped:true}}));
+   }
+   return result;
+  }).finally(()=>{activeRefresh=null});
+  return activeRefresh;
+ }
+ const portalDomain=Object.freeze({...domain,init,refresh,set,setDerived,patch,flush,saveBusinessInput});
  if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=portalDomain;
  return portalDomain;
 }

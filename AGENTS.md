@@ -1,3 +1,41 @@
+## Adaptieve, bewijsvaste CI-meting — 23 oktober 2026
+
+De echte Repository Janitor-run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) bewees 12 runs, 17 geldige jobs, 0 providerfouten, maar nog geen p95 (minimaal 20 jobs). De bestaande `ci-throughput-telemetry.mjs` leest voortaan maximaal 24 recente runs en stopt zodra 20 jobs uit minstens 5 runs zonder eerdere providerleesfout zijn bewezen. Verlaag deze grenzen niet om kunstmatig cijfers of groene status te tonen. Een eerdere fout blijft `PARTIAL_PROVIDER_OBSERVATION`, geen p95. Geen extra scheduler, CI/CodeQL-omzeiling, parallel geheugen of betaalde capaciteit. Volgende agent controleert eerst het bestaande Janitor-artefact en de canonieke regressie `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+## CI-doorlooptijd: leren van echte GitHub-jobtijdmetingen — 23 oktober 2026
+
+Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661), geen tweede observatiescheduler. De bestaande uurlijkse Repository Janitor verzamelt read-only `powerhouse-ci-throughput.json` via `tools/delivery/ci-throughput-telemetry.mjs`. Agents gebruiken uitsluitend geldige identiteiten, volledige jobtijdstempels, minimaal 20 jobs en 5 afzonderlijke workflowpogingen voor steekproef-p50/p95, en tonen onvolledige waarnemingen als onbekend. Jobwachttijd is geen DORA change lead time en één sample bewijst geen snelheidswinst. Geen extra runner, wachtrij, CI-fanout, automatische betaalde capaciteit, security/CodeQL-bypass of status groen op basis van meetdata. Echte verbetering is pas bewezen na herhaalde vergelijkbare metingen, regressies en exact-head protected productiecontrole. Regressie: `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+## Agent-samenwerking: automatische cross-lane impact — 23 oktober 2026
+
+Canonieke eigenaar: [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). De bestaande `planConcurrentAgentWork` levert vóór iedere write een conservatieve `classifyDeliveryImpact`-projectie: CMS → website, Brain-contract → Portal/Powerhouse/Heartbeat, Supabase-schema → runtime-consumenten. Onbekende paden krijgen volledige preflight. Dit is uitsluitend vroege testselectie: niets mag Required, hygiene, CodeQL, Supabase-preview, RLS, CLS, financiële pariteit, tenantisolatie of daadwerkelijke provider-/productie-readback overslaan. Eén writer, één Brain-geheugen en één bestaande Heartbeat/Janitor-cadans; geen nieuwe scheduler, agentregistratie, extra queue of kunstmatig groen. Regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+## Dagelijkse leercontinuïteit bij externe freshnessfouten — 22 oktober 2026
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`. Alle agents en chats raadplegen het bestaande modelcatalogusincident [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367), de gedeelde learning en `.agents/skills/powerhouse-continuity/SKILL.md`. Bij stale/onbewezen AI-leveranciersclaims mag de strenge aparte `model-freshness`-gate niet worden versoepeld of als groen worden gepresenteerd; **onafhankelijke** dagelijkse learning/skills/engineering-evals moeten in de bestaande dagelijkse workflow wel uitgevoerd blijven. Geen tweede scheduler, geen fictieve verificatie of modelactivatie. Meet de twee jobuitkomsten afzonderlijk en behoud de overall RED-status zolang vereiste catalogusbewijzen ontbreken. Regressie: `tests/powerhouse-daily-self-evolution.test.mjs`.
+
+## Voorspellende GitHub-capaciteit: provider-ghosts blijven incident-rood (22 oktober 2026)
+
+Fingerprint `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`, eigenaar #4661, gekoppeld aan platformincident #4655. Iedere huidige en toekomstige agent gebruikt de bestaande `tools/delivery/predictive-controller.mjs` en de bestaande uurlijkse Repository Janitor; maak geen tweede scheduler, wachtrij of herstelowner. De ruwe GitHub-queued-lijst telt volledig mee, tenzij **per exacte run** de actuele queued/null-status, zero-job readback, 24u onveranderde timestamps, niet-huidige main/PR-head, canonieke provider 409/403-blokkademarkering en maximaal tien minuten oude readback allemaal bewezen zijn. Alleen dan mag die run in de `verifiedProviderGhostQueued`-categorie in plaats van `actionableQueued` meetellen. `rawQueued` blijft altijd zichtbaar. Een lege lijst zonder exact-ID-readback is geen bewijs van GitHub-verwijdering. Zonder voldoende bewijs blijft elk record uitvoerbare queue-capaciteit belasten. Vereiste Required/CodeQL-controles, daadwerkelijke jobs en lopende PR-heads zijn nooit ghost-candidates. Geen status groen maken op capaciteitsnormalisatie; #4655 blijft open tot GitHub exact-ID-terminal/deletion bewijst. Machinebron: `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+Alle huidige/toekomstige agents en chats behandelen GitHub queued+zero-job+409/403 niet als gewone runner-capaciteit. Gebruik uitsluitend het bestaande Repository Janitor-pad en incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655). De uitvoerbare procedure staat in `.agents/skills/powerhouse-continuity/SKILL.md#github-actions-provider-ghost-autonomie--22-oktober-2026`. Slechts na exacte niet-actieve SHA-, nul-job- en 24u-stabiliteitscontrole geldt bounded cancel→force-cancel→DELETE; stop na providerweigering en dedupliceer per run-ID. De agents lezen dezelfde provider-ID's periodiek terug. Nooit huidige Required/CodeQL gates beïnvloeden, geen provider 403 omzeilen, geen nieuwe scheduler, geen nep-groen of tweede eigenaar. GitHub Support blijft de enige autoriteit voor een server-side platformfout.
+
+
+## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
+
+Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
+
+**Verplicht vóór iedere materiële wijziging of herstelactie:** lees actuele runtime-/providerwaarheid, open obligations, `public.brain_failure_registry`, relevante `brain/learning/**/*.json`, `docs/learning/known-error-preflight-contract.md` en de automatisch afgeleide skillprojectie. Vergelijk component, operatie, foutklasse, genormaliseerd symptoom en root cause met bestaande fingerprints. Een zoekmiss is geen bewijs dat de fout nieuw is. Eerst hergebruik, dan pas nieuw bouwen.
+
+**Bij iedere fout, inclusief CI-fout, streaming/toolonderbreking, ontbrekend bewijs, providerfout en een herhaalde historische testfout:** behoud evidence en exacte lineage; classificeer OBSERVED/HISTORICAL/ACTIVE/RECOVERING/PROVEN; upsert één canonieke fingerprint en verhoog het occurrence-aantal in plaats van een dubbel incident of een tweede herstelowner te starten. Leg impact, aannemelijke/bewezen oorzaak, mislukte pogingen, fix, preventieregel, regressietest, eigenaar, volgende veilige actie en exacte verificatie-/readbackreferenties vast. Onbekende oorzaak blijft een open onderzoeksverplichting, nooit een verzonnen conclusie.
+
+**Geen closure op alleen documenten:** `PROVEN` vereist echte regressie plus toepasselijke exact-SHA CI/security en productie-/providerreadback, duurzaam Brain-writeback, ledger, documentatie, skillprojectie en aantoonbare ontdekbaarheid in de volgende preflight. Overkoepelende groenstatus volgt niet uit één lokale fix. Houd veilige bounded recovery actief binnen dezelfde obligation, zonder dubbele dispatch of publicatie, zonder uitgezette scheduler, zonder Make/Buffer-fallback en zonder beveiligingspoorten te verzwakken. Menselijke OAuth/consent, destructieve beslissingen en kostenverhoging worden niet omzeild.
+
+Lees voor de uitvoerbare procedure `.agents/skills/powerhouse-continuity/SKILL.md#universele-incidentherkenning--preventie`; het Brain-register blijft de enige operationele foutwaarheid.
+
 ## External observer isolation — provider truth blijft autoritatief
 
 Fingerprint: `delivery|external-observer|provider-truth-fallback|v1`.

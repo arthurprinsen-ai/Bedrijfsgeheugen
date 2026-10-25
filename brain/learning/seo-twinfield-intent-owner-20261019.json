@@ -3,24 +3,35 @@
   "compiler": {
     "failure_class": "SEO_INTENT_OWNER_VARIANT_OMITTED"
   },
-  "root_cause": "Plural and reversed Twinfield search terms absent from canonical intent-owner projection, risking duplicate page recommendations.",
-  "prevention_rule": "Resolve plural and reversed Twinfield variants to existing /twinfield-koppeling money page before suggesting new pages.",
+  "root_cause": "Canonical SEO map and runtime intent-owner projection omitted plural/reversed Twinfield commercial intent variants; projection-only patch was incomplete.",
+  "prevention_rule": "Update source SEO map and runtime projection together, with real executable single-owner regression before protected delivery.",
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-seo-opportunity-resolver.test.mjs"
+      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs",
+      "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-seo-opportunity-resolver.test.mjs"
+      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-seo-opportunity-resolver.test.mjs"
+      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
     ]
   },
   "evidence": {
-    "source": "GitHub PR #4443 canonical intent owners update",
-    "commit": "06c66ebec27fbf0176f548818c82c4a6970b18ff",
-    "ci": "pending",
-    "production_readback": "not yet performed"
+    "source": "Canonical Powerhouse GSC and keyword intelligence 2026-10-25",
+    "gsc_period": "2026-10-01..2026-10-22",
+    "variant_impressions": {
+      "koppeling twinfield": 10,
+      "twinfield koppelingen": 6
+    },
+    "variant_clicks": 0,
+    "keyword_volume_each": 40,
+    "keyword_cpc_eur_each": 16.49,
+    "keyword_observed_at": "2026-10-25T05:02:00Z",
+    "canonical_source": "site/seo-order-map.json",
+    "runtime_projection": "supabase/functions/powerhouse-seo-opportunity-resolver/intent-owners.json",
+    "ci": "PENDING_EXACT_HEAD",
+    "production_readback": "NOT_PROVEN"
   },
   "outcome": "No conversion, order, or revenue uplift claimed; validate after protected merge."
 }

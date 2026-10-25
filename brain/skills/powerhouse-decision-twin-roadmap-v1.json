@@ -1,0 +1,16 @@
+{
+  "skill": "powerhouse-decision-twin-roadmap-v1",
+  "fingerprint": "powerhouse|portal-v2|decision-twin-roadmap-proposal|v1",
+  "owner": "ONE BRAIN / Portal V2 / Foresight",
+  "authority": "existing authenticated tenant portal domain-state roadmap and protected GitHub/Netlify deployment",
+  "instruction": "For any explainable what-if with at least three distinct customer evidence references, allow the user to save a clearly labeled draft on the existing tenant roadmap. The draft must include bounded assumptions, provenance, tenant, a stable duplicate-prevention key, owner-review requirement, null expected/realized value, and zero permission to dispatch external providers. Re-read current secure customer state at click time; never treat a simulated value as causal effect or provider receipt.",
+  "routing": [
+    "portal-v2/foresight-scenario-studio.js",
+    "portal-v2/decision-twin-receipt.js"
+  ],
+  "tests": [
+    "tests/brain-decision-twin-roadmap-proposal-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}

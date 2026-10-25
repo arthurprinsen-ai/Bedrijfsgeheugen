@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
     inputs:
       functions:
-        description: 'Comma-separated function slugs to attest from exact current main; blank derives from the current main commit'
-        required: false
+        description: 'Required for manual runs: comma-separated registered function slugs, e.g. netlify-deploy-bridge'
+        required: true
         type: string
 
 permissions:
@@ -74,6 +74,13 @@ jobs:
           : > /tmp/functions.txt
           target_pr=""
           target_merge_sha=""
+          # A manual run without explicit functions can silently skip provider parity if
+          # the latest main commit only modified Portal or other non-Edge files.
+          # Prevent a vacuous green status before the Supabase PAT is exercised.
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -z "${REQUESTED_FUNCTIONS//[[:space:]]/}" ]; then
+            echo "::error::SUPABASE_EDGE_MANUAL_SCOPE_REQUIRED"
+            exit 78
+          fi
           if [ -n "${REQUESTED_FUNCTIONS// /}" ]; then
             tr ',' '\n' <<<"$REQUESTED_FUNCTIONS" | sed 's/^ *//;s/ *$//' | grep -E '^[a-z0-9][a-z0-9-]*$' | sort -u > /tmp/functions.txt
           else
