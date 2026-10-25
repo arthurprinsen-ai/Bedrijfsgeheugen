@@ -163,3 +163,10 @@ entrypoint = "./functions/revenue-learning-store/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/social-learning-store/index.ts"
+
+# Existing canonical SEO opportunity resolver: internal x-powerhouse-token gate.
+# Preserve deployed verify_jwt=false; never expose the scheduler token.
+[functions.powerhouse-seo-opportunity-resolver]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-seo-opportunity-resolver/index.ts"
