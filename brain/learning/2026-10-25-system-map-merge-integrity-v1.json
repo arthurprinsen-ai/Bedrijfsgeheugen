@@ -7,21 +7,12 @@
   "prevention": "Retain one integration owner; validate changed-path classifier and material writeback bundle before CI; deterministic map generation must use exact merged tree and verify dirty diff; no green until exact SHA gates and production readback.",
   "evaluation": {
     "historical_replay": [
-      {
-        "scenario": "PR 4934 missing metadata",
-        "observed": "PR_MACHINE_METADATA_INVALID",
-        "expected": "fail closed"
-      },
-      {
-        "scenario": "PR 4934 unclassified test file",
-        "observed": "unclassified delivery path",
-        "expected": "test placed in existing delivery test lane"
-      },
-      {
-        "scenario": "Required attempt 40223051109",
-        "observed": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation",
-        "expected": "require semantic same-lineage closure"
-      }
+      "tests/delivery-system-map-merge-integrity.test.mjs"
+    ],
+    "observed_incidents": [
+      "Missing PR machine metadata on 40221452874",
+      "Unclassified test path on 40223051109",
+      "Missing same-lineage closure on 40223051109"
     ]
   },
   "evidence": {
