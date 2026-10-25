@@ -1,0 +1,24 @@
+{
+  "fingerprint": "brain|skill-runtime|byte-audit|20261025",
+  "compiler": {
+    "failure_class": "FALSE_SUCCESS",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "root_cause": "The existing skill evidence validator was only a pure record-shape checker; daily jobs lacked an auditable observation of exact skill-file bytes read on the actual GitHub run.",
+  "prevention": "Read real skill files on the existing daily job, hash exact bytes and attach the run-bound artifact; never equate loaded bytes with agent application or independently authenticated provider proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skill-byte-audit.test.mjs"
+    ]
+  },
+  "tests": {
+    "path": "tests/brain-skill-byte-audit.test.mjs",
+    "result": "PENDING_REQUIRED"
+  },
+  "evidence": {
+    "release": "NOT_MERGED",
+    "live_runtime": "UNPROVEN"
+  },
+  "prevention_rule": "LOADED_BYTES_ONLY must never be promoted to VERIFIED_EVIDENCE without independent agent-specific assertions and verifier provenance."
+}
