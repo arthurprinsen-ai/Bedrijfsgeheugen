@@ -27,5 +27,22 @@
     "exact canonical public readback",
     "Supabase publication LIVE_PROVEN"
   ],
-  "verified_outcomes": []
+  "verified_outcomes": [],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "failure_class": "DAILY_BLOG_EXISTING_EN_CACHE_EARLY_EXIT",
+  "obligation_id": "daily-blog:existing-candidate-i18n-cache-resume:20261025-v1",
+  "compiler": {
+    "failure_class": "DAILY_BLOG_EXISTING_EN_CACHE_EARLY_EXIT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-existing-candidate-i18n-resume-20261025.test.mjs"
+    ]
+  },
+  "prevention_rule": "The existing canonical blog PR must reconcile all missing translation keys after source transforms, never infer completeness from patch existence, and require offline CI validation before protected merge."
 }
