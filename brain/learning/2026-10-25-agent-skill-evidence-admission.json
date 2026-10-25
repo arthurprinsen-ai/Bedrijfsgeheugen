@@ -7,21 +7,7 @@
   "prevention_rule": "Every material Brain code delta must include the canonically formatted learning, development ledger, and human-readable change artifact in the same PR; neither successful validation nor provider execution is inferred from fixture records.",
   "evaluation": {
     "historical_replay": [
-      {
-        "run_id": 40208562933,
-        "outcome": "FAIL",
-        "cause": "machine PR metadata absent"
-      },
-      {
-        "run_id": 40209336442,
-        "outcome": "FAIL",
-        "cause": "new paths unclassified"
-      },
-      {
-        "run_id": 40209635001,
-        "outcome": "FAIL",
-        "cause": "activity_ledger, brain_learning and human_documentation absent"
-      }
+      "tests/brain-agent-skill-execution-evidence.test.mjs"
     ]
   },
   "tests": {
