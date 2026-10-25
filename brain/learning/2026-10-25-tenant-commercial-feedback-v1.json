@@ -1,0 +1,30 @@
+{
+  "version": "tenant-commercial-feedback-20261025-v1",
+  "obligation_id": "tenant-commercial-feedback-20261025",
+  "failure_class": "MISSING_INDEPENDENT_EVIDENCE",
+  "scope": "RUNTIME",
+  "root_cause": "Portal did not expose tenant-scoped commercial time-series evidence and commercial registered orders were at risk of being described as independently paid revenue.",
+  "change": "Expose tenant-bound read-only evidence from revenue_learning_evidence via authenticated EU portal gateway with bounded 1-365 day filtering; independent verified revenue stays zero until separate payment receipt authority exists.",
+  "evidence": {
+    "source": "public.revenue_learning_evidence",
+    "quality": "INFERRED/OBSERVED are not proof of payment",
+    "tenant_isolation": "tenant_id matched server-side; no requested tenant accepted from URL",
+    "production_status": "CANDIDATE_NOT_DEPLOYED"
+  },
+  "prevention": [
+    "Never use canonical/global rows as a tenant's financial evidence",
+    "Never claim paid revenue from observed web/marketing activity",
+    "Reject tenant mismatch, invalid periods and unavailable upstream",
+    "Require Required and CodeQL and authenticated production readback"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-commercial-feedback-tenant.test.mjs"
+    ],
+    "canary": [
+      "tests/portal-commercial-feedback-tenant.test.mjs"
+    ]
+  },
+  "machine_enforceable": true,
+  "releaseStatus": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+}
