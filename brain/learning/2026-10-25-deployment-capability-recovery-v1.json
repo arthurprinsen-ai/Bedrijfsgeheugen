@@ -15,5 +15,12 @@
   "fix": "Register an explicit skill and mandate it in AGENTS.md, then reuse authorized Git CD, existing approved workflow or operator route, else fail closed with an obligation.",
   "prevention_rule": "No fabricated dispatch, no dummy commit, no alternative scheduler or green status without exact published production proof; enforce protected Required, CodeQL and preview gates.",
   "verification": "PENDING: protected Required/CodeQL, merge and Netlify published exact-sha readback",
-  "closure": "OPEN"
+  "closure": "OPEN",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-deployment-capability-recovery.test.mjs"
+    ]
+  },
+  "scope": "CI",
+  "machine_enforceable": true
 }
