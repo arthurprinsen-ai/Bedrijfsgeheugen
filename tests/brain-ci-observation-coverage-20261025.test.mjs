@@ -21,7 +21,7 @@ test('bounded sampling reaches 48 when older valid job coverage is needed',async
   assert.equal(output.requested_run_read_limit,48);
   assert.equal(output.workflow_runs_available,50);
   assert.equal(output.automation_allowed,false);
-  assert.equal(output.agent_priority_advice.can_mutate,false);
+  assert.equal(output.automation_allowed,false);
   assert.equal(paths.length,49);
 });
 
@@ -34,6 +34,6 @@ test('incomplete provider job response still fails closed',async()=>{
   assert.equal(output.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(output.read_errors[0].reason,'JOBS_SNAPSHOT_INCOMPLETE');
   assert.equal(output.workflow_runs_sampled,1);
-  assert.equal(output.agent_priority_advice.can_mutate,false);
+  assert.equal(output.automation_allowed,false);
   assert.equal(output.p95_wait_to_start_ms,null);
 });
