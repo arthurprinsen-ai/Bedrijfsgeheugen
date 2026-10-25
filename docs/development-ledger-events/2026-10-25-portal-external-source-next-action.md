@@ -1,7 +1,7 @@
 # 2026-10-25 — Omgevingsradar source→action customer proof (candidate)
 
 - Canonical parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215
-- Source PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4859
+- Source PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4863
 - Fingerprint: portal|omgevingsradar|generic-signal-without-specific-next-action|20261025-v1
 - Obligation: portal:source-universe:tenant-safe-next-best-action:20261025-v1
 - Scope: portal. No second queue, task registry, scheduler, crawler, provider, or permission widening.
@@ -14,3 +14,8 @@ A pure read-side projector joins recommendations only by exact signal_key; a gen
 
 ## Independent verification still required
 Required and CodeQL on the exact PR head; protected merge; Netlify production commit readback; authenticated portal readback for scored and unknown tenant contexts; daily source freshness observations, order conversions and outcomes. STATUS: CANDIDATE_UNVERIFIED. No live or green claim.
+
+## Protected delivery supersession
+- Prior candidate: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4859 (closed unmerged, branch behind main).
+- Successor: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4863, immutable main baseline 387814c7db6dcaa76ba2193b7f81d4cf87d5d3d3.
+- The eight original content blobs were preserved unchanged on latest main; only this append-only ledger records the protected handoff. GitHub can merge only after fresh exact-head Required and CodeQL checks.
