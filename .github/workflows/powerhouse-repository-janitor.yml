@@ -63,7 +63,7 @@ jobs:
             try {
               const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/${process.env.GITHUB_SHA}...${pr.head.sha}`);
               uniqueCommits=Number(compare.ahead_by || 0) > 0;
-              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
+              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0),changedFiles:Array.isArray(compare.files)?compare.files.map(file=>file.filename):[]};
             } catch (error) {
               compareEvidence={status:'UNPROVEN',error:String(error?.message||error)};
             }
@@ -109,7 +109,7 @@ jobs:
               optedIn:(pr.labels||[]).some(label=>label.name==='autonomous-sync'),
               writerLeaseOwned:lease,
               draft:pr.draft===true,
-              changedFiles:[]};
+              changedFiles:evidence.changedFiles||[]};
           });
           const plan=planCurrentMainReconstruction({pulls,mainSha:snapshot.main_epoch_sha});
           await writeFile('.artifacts/powerhouse-current-main-reconstruction.json',JSON.stringify({source:'repository-janitor',mainSha:snapshot.main_epoch_sha,advisoryOnly:true,plan},null,2)+'\n');
