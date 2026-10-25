@@ -121,6 +121,22 @@ Our actual failed paid generations exposed contradictory instructions: prompts d
 
 No new scheduler, agent runner, second publisher, customer data, threshold bypass, fake success or unlimited automatic regeneration. Do not substitute a static image for an already frozen Reel obligation.
 
+## Proven provider output geometry BEFORE any OpenArt credits (2026-10-25)
+
+**Fingerprint:** `mira-native-provider-output-prespend-v1`.
+
+Wan 2.7 image2video's `resolution=1080p` is a PIXEL-TIER, not a promise of 1080x1920. Official model documentation says original first-frame aspect determines resulting geometry. **Actual** original-master project history `4y4xrXvVDidv9gUDQZea` was billed and COMPLETED yet returned **1292x1604, 8.08s, with audio** instead of the canonical exact native **1080x1920, silent 8s Reel**. The OpenArt `wan2-7:image2video` form has no output aspect-ratio parameter or mute parameter. Putting `9:16` in the prompt or inventing unsupported `aspectRatio`/`generateAudio` properties DOES NOT control the original MP4.
+
+**Required original producer workflow before every NEW generation spend:**
+1. Read the actual immutable Mira source winner/master, original Brain prior failures and original production router `preflight`; no new winner or static-image substitution for frozen Reel.
+2. Call the EXISTING authenticated `powerhouse-instagram-media-router` action `generation_preflight` with `runDate`, `postType:"reel"`, `model`, `mode`, and EXACT proposed generation `params`. This action does not charge, generate, publish or mutate state. Refuse to call OpenArt generate_video unless it returns `provider_generation_preflight.ok=true`. Additional existing provider budget and dedupe checks are STILL required.
+3. `wan2-7:image2video` with the immutable canonical master and `resolution=1080p` is a KNOWN BLOCKED configuration. Provider evidence and native output dimensions are linked in the returned failure. Do not reissue it, pad/crop the original reference, swap the Mira identity or relax the native-video gate.
+4. Unknown model/modes require independently verified original OpenArt control surface and a protected policy update — do NOT guess that "1080p" means "9:16" or trust the render prompt as proof. Veo 3.1 with literal `aspectRatio:"9:16"` and `generateAudio:false` has verified **FORMAT** only; previous Veo faces failed, so a format-compatible response is NOT a recommendation to retry previous histories.
+5. Actual generated MP4 is re-measured independently by original ffmpeg worker before expensive frame recognition; require real 1080x1920, original same face on first/middle/end >=0.940, real temporal movement >=0.900, and true one-shot Meta provider media ID/permalink/readback for publication. Never claim that a provider's `COMPLETED` receipt or a 1080p label means Reel acceptance.
+6. To fix the recurring source aspect issue, any new 9:16 compositional derivative of the original master needs separate identity verification, source licensing and a protected original-master contract change **BEFORE** using it. This is not permission to bypass the original unmodified master reference.
+
+The evidence and restrictions live in the same original Mira preventive module and Brain learning. No new publisher, scheduler, unlimited retries, paid speculative attempts or fake GREEN statuses.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
