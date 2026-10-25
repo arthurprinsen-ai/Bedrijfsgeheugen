@@ -47,5 +47,26 @@
     "historical_replay": [
       "tests/brain-portal-external-signal-advice-v1.test.mjs"
     ]
+  },
+  "root_cause": "Canonical signal and tenant impact/action candidates were shown separately, without exact signal_key matching, source state and tenant-specific next step on the same card.",
+  "evidence": {
+    "observations": {
+      "date": "2026-10-25",
+      "cataloguedSources": 156,
+      "catalogueSourcesObserved24h": 3,
+      "canonicalSignals": 197,
+      "signalsObserved24h": 6,
+      "connectionsTotal": 23295,
+      "connectionsEnrichedToday": 17400,
+      "verifiedOrdersFromThisChange": null,
+      "verifiedRevenueFromThisChange": null
+    },
+    "sourceAuthority": "production Supabase read-only query 2026-10-25",
+    "release": {
+      "requiredCi": "UNVERIFIED",
+      "codeql": "UNVERIFIED",
+      "productionReadback": "UNVERIFIED"
+    },
+    "verifiedBehavior": "Executable historical replay for no cross-tenant claim, no false link or euro and no stale source freshness"
   }
 }
