@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "date": "2026-10-25",
+  "fingerprint": "github|required-status-expected|context-source-sha",
+  "issue": 4929,
+  "pr": 4933,
+  "symptom": "required status checks expected despite successful visible jobs",
+  "root_cause": "exact protection ruleset expectations not yet independently read; PR admission also initially missed Base-SHA, then had unclassified test path",
+  "changes": [
+    "read-only exact SHA/context/app diagnostic",
+    "six negative tests",
+    "canonical skill and AGENTS routing",
+    "explicit automation lane classifier paths"
+  ],
+  "evidence": {
+    "admission": "Run 40220426662 ADMITTED, integration closure incomplete",
+    "codeql": "fresh head run in progress",
+    "protected_merge": "NOT_PROVEN",
+    "production": "NOT_PROVEN"
+  },
+  "next_action": "complete integration closure, exact-head CI, authorized ruleset reconciliation and protected release"
+}
