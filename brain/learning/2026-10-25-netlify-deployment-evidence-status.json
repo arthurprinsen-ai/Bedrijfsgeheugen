@@ -1,0 +1,20 @@
+{
+  "fingerprint": "delivery|netlify|governance-skip-vs-production-proof|20261025-v1",
+  "compiler": {
+    "failure_class": "DEPLOYMENT_EVIDENCE_MISCLASSIFICATION",
+    "scope": "CI"
+  },
+  "root_cause": "A governance-only merged commit was incorrectly interpreted as a stale website deployment when the source classifier intentionally allows no Netlify runtime rebuild.",
+  "prevention": "Classify deployment applicability independently from provider commit equality; never call a skipped build a production failure or matching SHA complete runtime verification.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/netlify/deployment-evidence-status.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "Four regression tests committed to candidate; native Required and CodeQL must confirm",
+    "production_readback": "NOT_REQUIRED_FOR_GOVERNANCE_CHANGE; no new production deploy asserted",
+    "merge": "NOT_MERGED"
+  },
+  "regression_contract": "Required and CodeQL must pass on exact head; provider SHA+runtime readback is mandatory for changed website/runtime artifact."
+}
