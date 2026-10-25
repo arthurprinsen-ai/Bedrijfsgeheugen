@@ -24,9 +24,10 @@ export function explainExternalSignal(signal={},actionCandidates=[],now=Date.now
     :isTenant
       ?str(action.rationale||action.title||'Toets de impact en leg de vervolgstap vast.')
       :'Toets of dit signaal jouw bedrijf raakt, controleer de oorspronkelijke bron en wijs een eigenaar aan.';
-  const date=str(signal.published_at||signal.observed_at);
-  const timestamp=Date.parse(date);
-  const dateValid=Number.isFinite(timestamp)&&timestamp<=now+3600000;
+  // A fresh observation does NOT prove the original article was published recently.
+  const publishedDate=str(signal.published_at);
+  const timestamp=Date.parse(publishedDate);
+  const dateValid=Boolean(publishedDate)&&Number.isFinite(timestamp)&&timestamp<=now+3600000;
   const age=dateValid?Math.max(0,now-timestamp):null;
   const url=sourceUrl(signal.external_url);
   return Object.freeze({
@@ -40,7 +41,7 @@ export function explainExternalSignal(signal={},actionCandidates=[],now=Date.now
     owner:isTenant?str(action.owner_hint):null,
     canOpenAction:Boolean(isTenant&&str(action.canonical_action_ref)&&action.status!=='DONE'),
     sourceUrl:url,
-    sourceState:!url?'BRON_URL_ONTBREEKT':!dateValid?'BRONDATUM_NIET_BEVESTIGD':age>14*86400000?'BRON_OUDER_DAN_14_DAGEN':'RECENTE_BRON',
+    sourceState:!url?'BRON_URL_ONTBREEKT':!publishedDate?'BRON_PUBLICATIEDATUM_ONBEKEND':!dateValid?'BRONDATUM_NIET_BEVESTIGD':age>14*86400000?'BRON_OUDER_DAN_14_DAGEN':'RECENTE_BRON',
     outcomeVerified:false
   });
 }
