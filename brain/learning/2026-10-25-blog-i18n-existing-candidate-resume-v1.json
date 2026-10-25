@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|daily-blog|existing-candidate-partial-en-cache-starvation|20261025-v1",
+  "date": "2026-10-25",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "observed": {
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4848",
+    "required_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40177039881/job/121119929113",
+    "failure_class": "STATIC_I18N_PREPARE_NETWORK_REQUIRED",
+    "missing_en_strings": 57,
+    "first_missing": "Circulaire economie"
+  },
+  "root_cause": "A canonical existing-candidate early exit treated an English patch file as proof of complete translations. A content-quality revision added new Dutch phrases, leaving protected CI incomplete.",
+  "fix": "Reuse the canonical same-day writer and approved translation provider. Append only newly missing translations after exact production transforms. Retain fail-closed offline validation, existing PR identity, and source-content review.",
+  "prevention": [
+    "Patch existence is not cache completeness",
+    "Require post-transform offline validation and exact-head Required/CodeQL",
+    "Never add a second scheduler, blog candidate, or synthetic live evidence"
+  ],
+  "tests": [
+    "tests/brain-blog-existing-candidate-i18n-resume-20261025.test.mjs"
+  ],
+  "required_proofs": [
+    "protected exact-head CI",
+    "review gate",
+    "protected merge",
+    "Netlify production deploy",
+    "exact canonical public readback",
+    "Supabase publication LIVE_PROVEN"
+  ],
+  "verified_outcomes": []
+}
