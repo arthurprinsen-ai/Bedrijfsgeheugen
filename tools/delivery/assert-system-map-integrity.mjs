@@ -30,5 +30,11 @@ if(first!==second) fail('nondeterministic generator output');
 let changed;
 try { changed=execFileSync('git',['diff','--exit-code','--',mapPath],{stdio:'pipe'}).length>0; }
 catch(e){ if(e.status===1) changed=true; else fail('git diff failed'); }
-if(changed) fail('regenerated System Map differs from integrated tracked version');
+if(changed) {
+  try {
+    const patch = execFileSync('git',['diff','--unified=1','--',mapPath],{encoding:'utf8',maxBuffer:1024*1024});
+    console.error('SYSTEM_MAP_GENERATED_DIFF_BEGIN\\n'+patch.slice(0,20000)+'\\nSYSTEM_MAP_GENERATED_DIFF_END');
+  } catch (e) { console.error('SYSTEM_MAP_DIFF_UNAVAILABLE',String(e.message)); }
+  fail('regenerated System Map differs from integrated tracked version; commit the generated changes in the authorized integration candidate before retrying');
+}
 console.log(JSON.stringify({status:'SYSTEM_MAP_INTEGRITY_PROVEN',head_sha:sha,map_path:mapPath,sha256:second}));
