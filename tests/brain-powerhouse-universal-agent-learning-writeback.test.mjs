@@ -519,4 +519,9 @@ test('material agent preflight includes live skill source digests without fabric
   assert.ok(receipt.selection.selected_sources.length >= MANDATORY_SKILL_SOURCE_NAMES.length);
   assert.equal(receipt.selection.consumption_status, 'SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED');
   assert.equal(receipt.selection.no_claim_of_use_without_readback, true);
+  assert.equal(packet.skill_projection.selection.projection_completeness, 'PARTIAL_REQUIRES_LAZY_LOAD');
+  assert.ok(packet.skill_projection.selection.deferred_entry_count > 0);
+  assert.equal(packet.skill_projection.selection.deferred_readback_required, true);
+  assert.equal(packet.skill_projection.selection.deferred_source_authority, 'brain/learning/**/*.json');
+  assert.ok(packet.totalBytes <= 256_000, 'task-relevant projection must stay within normal preflight budget');
 });
