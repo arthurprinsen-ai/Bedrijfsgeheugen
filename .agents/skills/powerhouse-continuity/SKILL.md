@@ -1703,3 +1703,17 @@ Wanneer de post-merge main-write-controle faalt met `unexpected end of JSON inpu
 - Agent prediction must not infer success from `GET /actions/runs?status=queued` returning 0 when individual known runs still report queued. Preserve the cross-endpoint inconsistency `collectionMissingKnownProviderIds`.
 - Regression: `tests/delivery-powerhouse-supervisor.test.mjs`. Brain learning `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; human doc `docs/changes/ghost-aware-predictive-queue-pressure-20261022-v1.md`.
 - Only protected merge + exact-main Janitor readback proves this scoped improvement. Overall throughput/lane prediction, statistically measured speedup and all four GitHub run removals have separate open acceptance obligations.
+
+
+## Growth Intelligence — bewezen signalen, skills en releases (25 oktober 2026)
+
+Releasebewijs: PR #4917 (main fb6918446e265b87778dd68d260b286beebf6605) en PR #4926 (main c66670ea339f25cdd847f57a23175ba09b1bc4b0) zijn afzonderlijk beschermd gemerged; hun onafhankelijke productie-readback en skillprojectie zijn geslaagd. Dit bewijst de library/advisory contracts, **niet** dagelijkse externe research, actieve klantportaalweergave, provider-opvolging of omzet.
+
+Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies raakt:
+- Lees eerst `tools/growth-intelligence/decision-core.mjs`, `heartbeat-adapter.mjs` en `learning-store.mjs` plus het actuele unified Brain/Heartbeat-contract. Hergebruik de bestaande scheduler, writers, tenantidentiteit, skills en canonical learning.
+- Gebruik `createCustomerSignalCards` alleen voor geverifieerde provider-events met recent meetbewijs, exact tenantId, rechtmatige persoonsgegevensbasis en onafhankelijke betalingsverificatie voor omzetclaims. Een advieskaart is uitsluitend adviserend; geen automatische outreach of publicatie.
+- Verifieer per actie: bron/evidence-id → score en besluit → eigenaar/goedkeuring → provider readback → uitkomst en onafhankelijk betaalbewijs → leerregistratie → beoordeelde skillprojectie. Als een schakel ontbreekt, label de uitkomst eerlijk `UNKNOWN` of `BLOCKED` en open een herstelverplichting.
+- Een geslaagde PR-preview is nooit productiebewijs. Eis beschermde Required, hygiene, CodeQL, eventuele native preview, productie-readback op de gemergede SHA en skillcontract-evaluatie.
+- De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
+
+Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.
