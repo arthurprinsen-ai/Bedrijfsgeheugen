@@ -7,8 +7,7 @@
   "prevention_rule": "Update source SEO map and runtime projection together, with real executable single-owner regression before protected delivery.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs",
-      "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
