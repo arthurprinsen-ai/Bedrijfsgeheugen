@@ -13,12 +13,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-daily-self-evolution-improvement-evidence.test.mjs"
+      "tests/powerhouse-daily-self-evolution.test.mjs"
     ],
     "required": "PENDING",
     "codeql": "SUCCESS_PRIOR_HEAD",
     "protected_merge": "PENDING",
-    "production_readback": "NOT_PROVEN"
+    "production_readback": "NOT_PROVEN",
+    "candidate_tests": [
+      "tests/powerhouse-daily-self-evolution-improvement-evidence.test.mjs"
+    ],
+    "learning_contract_correction": "Historical replay must be available on immutable base main; new evidence test is candidate-only"
   },
   "evidence": {
     "required_run_failures": [
