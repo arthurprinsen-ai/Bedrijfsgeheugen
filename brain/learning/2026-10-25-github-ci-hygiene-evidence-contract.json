@@ -1,0 +1,35 @@
+{
+  "fingerprint": "github-ci-hygiene|admission-closure|20261025-v1",
+  "obligation_id": "github-ci-hygiene-evidence-contract-20261025",
+  "status": "RECOVERING",
+  "observed": {
+    "run_id": 40225204852,
+    "admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
+    "codeql": "success"
+  },
+  "cause": "Initial candidate omitted the material writeback closure files; admission appropriately failed closed.",
+  "fix": "Add canonical learning, human documentation and development ledger to the same protected candidate.",
+  "prevent": "Agent skill requires closure evidence and exact SHA required checks before merge.",
+  "verification": "PENDING exact-head Required/BRAIN/CodeQL; protected merge and production readback not yet proven",
+  "owner": "github-ci-hygiene-evidence-contract-20261025",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Initial candidate omitted the material writeback closure files; admission appropriately failed closed.",
+  "prevention": "Agent skill requires closure evidence and exact SHA required checks before merge.",
+  "evidence": {
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40225631129",
+    "result": "learning canonicalization green; semantic closure previously failed due to missing explicit semantic keys",
+    "regression_test": "tests/brain-observed-ci-throughput-v1.test.mjs",
+    "release": "PENDING exact-head required checks and protected main merge"
+  }
+}
