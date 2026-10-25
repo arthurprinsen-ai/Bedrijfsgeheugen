@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
+import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -39,7 +40,7 @@ Deno.serve(async(req:Request)=>{
    if(tavily){
      const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'general',search_depth:'basic',max_results:6,include_answer:false})});
      const b:any=await r.json().catch(()=>({}));
-     if(r.ok) return {provider:'tavily',results:(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score}))};
+     if(r.ok) return {provider:'tavily',results:(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score,publishedAt:x.published_date||x.published_at||null}))};
      if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
    }
    if(dfsUser&&dfsPass){
@@ -47,7 +48,7 @@ Deno.serve(async(req:Request)=>{
      const b:any=await r.json().catch(()=>({}));
      if(!r.ok||Number(b?.status_code||0)!==20000) throw new Error('DATAFORSEO_'+r.status);
      const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
-     return {provider:'dataforseo',results:items.filter((x:any)=>x.type==='organic'&&x.url).slice(0,6).map((x:any)=>({url:x.url,title:x.title,content:x.description||'',score:1/Math.max(1,Number(x.rank_absolute||10))}))};
+     return {provider:'dataforseo',results:items.filter((x:any)=>x.type==='organic'&&x.url).slice(0,6).map((x:any)=>({url:x.url,title:x.title,content:x.description||'',score:1/Math.max(1,Number(x.rank_absolute||10)),publishedAt:x.date||x.published_date||null}))};
    }
    return {provider:'none',results:[]};
  };
@@ -65,12 +66,13 @@ Deno.serve(async(req:Request)=>{
    const personal=/(ik|mijn|thuis|kind|school|parkeren|pakket|wachtwoord|app|abonnement|klantenservice|chatbot)/.test(all)?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
    const evidence=clamp(Number(x.score)||0.5);
-   const recency=0.8;
+   const publication=evaluateMiraPublicationFreshness({providerPublishedAt:x.publishedAt,title,excerpt,observedAt:Date.now()});
+   const recency=publication.score;
    const originality=0.8;
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,contract:'mira-public-complaint-source-loop-v1'}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:'mira-public-complaint-source-loop-v1'}};
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
    stored++; if(row.eligible) eligible++;
   }
