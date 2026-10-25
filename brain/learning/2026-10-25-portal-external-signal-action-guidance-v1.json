@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|portal-external-signal-to-tenant-action-disconnected|20261025-v1",
+  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "event_kind": "RECOVERY",
+  "observed_at": "2026-10-25",
+  "component_type": "portal-entrepreneur-intelligence",
+  "root_cause": "Existing source catalog, canonical signal projection, authenticated tenant impacts and action candidates were read by the portal but displayed in disconnected widgets: each signal card omitted exact tenant impact and next best action; unsafe raw external URLs could be rendered without HTTPS protocol restriction.",
+  "failedApproach": "Counting provider transport success or canonical source novelty as customer-relevant intelligence, or claiming an action candidate is an executed commercial outcome.",
+  "fix": "Reuse one authenticated Portal V2 entrepreneur_intelligence response, join each source signal to its already tenant-scoped company_impacts and exact signal_key action candidate; show the customer rationale, next step, source freshness and evidence status with strict HTTPS links. Never expose a generic candidate as a materialized tenant action.",
+  "prevention_rule": "All new portal signals must render source->tenant-specific reason (or explicit context gap)->action/review->truth label; cross-tenant data must never enter the response, and no action DONE or hypothetical value may be labeled provider-proven outcome. Reuse existing schedulers, repository lease and regression gates.",
+  "compiler": {
+    "failure_class": "PORTAL_SOURCE_ACTION_PROVENANCE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/external-signal-action-context.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "portal-v2/tests/external-signal-action-context.test.mjs",
+    "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
+  ],
+  "evidence": [
+    "supabase/functions/portal-state-eu/index.ts",
+    "portal-v2/modules/entrepreneur-intelligence.js",
+    "portal-v2/modules/external-signal-action-context.js"
+  ],
+  "productionVerified": false,
+  "lifecycle": "PR candidate; Required/CodeQL and authenticated tenant Netlify production readback not yet completed",
+  "guards": {
+    "tenant_data": "SERVER_AUTHENTICATED_EXISTING_SCOPE",
+    "global_source": "PUBLIC_BASELINE_ONLY",
+    "action_dispatch": "NONE",
+    "money": "NOT_REALIZED",
+    "source_url": "HTTPS_ONLY"
+  }
+}
