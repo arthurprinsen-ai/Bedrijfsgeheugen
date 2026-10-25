@@ -18,7 +18,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/ai-model-intelligence-freshness-v1.test.mjs"
+      "tests/brain-ai-model-stale-worklist.test.mjs"
     ]
   }
 }
