@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-25T13:45:00.000Z',
+  observedAt:'2026-10-25T19:01:33.088Z',
   intentLearningPreflight:Object.freeze({fingerprint:'powerhouse|learning-preflight|intent-only-target-inference|20261025-v1',authority:'canonical Brain learning and skill projection',entrypoint:'scripts/brain/chat-learning-preflight.mjs',selector:'scripts/brain/powerhouse-skill-projection.mjs',skill:'.agents/skills/powerhouse-self-improvement-layer/SKILL.md',boundedRelevantEntries:24,mandatoryAndExactUncapped:true,receipt:'skill_projection.selection',productionVerified:false}),
   requiredGateWatchdogResilience:Object.freeze({owner:'Required Gate Watchdog',source:'.github/scripts/required-gate-watchdog.mjs',cron:'*/5 * * * *',boundedGetAttempts:2,readTimeoutMs:8000,perPrErrorIsolation:true,ambiguousWriteRetry:false,productionVerified:false}),
   brainFullFailureTriage:Object.freeze({fingerprint:'delivery|brain|first-failure-only-learning-blindspot|20261022-v1',source:'tools/delivery/brain-failure-clustering.mjs',workflow:'.github/workflows/unified-brain-delivery.yml',authority:'existing-failed-lane-artifact',maxCases:5000,model:'observation-only',productionVerified:false}),
