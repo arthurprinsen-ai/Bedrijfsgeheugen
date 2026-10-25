@@ -8,9 +8,9 @@ export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generati
 
 export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
  const error=clean(job?.last_error);
- const face=FACE.exec(error),motion=MOTION.exec(error);
- const rejected=face?.[3]||motion?.[2]||'';
- const failureClass=face?'FACE_REFERENCE_OR_FRAMING_DRIFT':motion?'TEMPORAL_HUMAN_MOTION_INSUFFICIENT':null;
+ const face=FACE.exec(error),motion=MOTION.exec(error),native=NATIVE.exec(error);
+ const rejected=face?.[3]||motion?.[2]||native?.[3]||'';
+ const failureClass=native?'NATIVE_VIDEO_FORMAT_INVALID':face?'FACE_REFERENCE_OR_FRAMING_DRIFT':motion?'TEMPORAL_HUMAN_MOTION_INSUFFICIENT':null;
  const immutableWinner=clean(resolved?.winner_recommendation_id);
  const sourceLocked=resolved?.kind==='approved_source_led' && !!immutableWinner &&
    !!clean(resolved?.scene) && !!clean(resolved?.openart_history_id);
@@ -25,7 +25,9 @@ export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
  // Concrete model feedback based on actual measured failure. Do NOT rewrite
  // the source winner or old evidence; only a newly generated distinct history
  // may be submitted for all the original verifier/publisher gates.
- const producerInstructions=face
+ const producerInstructions=native
+  ? 'Real original MP4 is '+native[1]+'x'+native[2]+', not native 1080x1920. Select a model/setting that emits actual 9:16 full-bleed 1080x1920 video. Do not trust input manifest, letterbox, pad JPEG frames or rescale a previous history. Keep the fixed approved Mira master, frozen source and natural one-take motion.'
+  :face
   ? 'Before requesting a new 9:16 generation, prevent letterboxing, black bars and face crops. Use the unchanged official Mira master as literal start/end reference. Keep her full recognizable face clear, centered and in stable light throughout; preserve approved parking-app scene, with authentic natural hand and expression motion. Reject a model output that is not full-bleed native portrait. Never relabel or re-score rejected frames.'
   : 'Create a single uninterrupted photorealistic 9:16 live scene with subtle but visible real human head, hand, blink and object interaction and consistent perspective; avoid slideshow, still-image pan/zoom, scene cuts and morphing. Use the unchanged official Mira master as literal start/end reference. Do not recycle this temporal-failed history.';
  return {
@@ -34,7 +36,9 @@ export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
   state:'AWAITING_NEW_SOURCE_LOCKED_CANDIDATE',
   failure_class:failureClass,
   rejected_history_id:rejected,
-  observed_confidence:Number(face?.[2]||motion?.[1]),
+  observed_confidence:native?null:Number(face?.[2]||motion?.[1]),
+  observed_native_width:native?Number(native[1]):null,
+  observed_native_height:native?Number(native[2]):null,
   required_face_confidence:0.94,
   required_temporal_confidence:0.90,
   frozen_run_date:runDate,
