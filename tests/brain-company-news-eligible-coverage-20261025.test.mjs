@@ -28,3 +28,10 @@ test('no new job, privileged role, push, external sender, or new source table',(
   assert.match(sql,/SECURITY DEFINER/);
   assert.match(sql,/SET search_path TO ''/);
 });
+
+test('provider-applied second migration identity is committed byte-for-byte for replay parity',()=>{
+  const mirror=readFileSync(new URL('../supabase/migrations/20261025112658_company_news_widen_eligible_search_before_cooldown.sql',import.meta.url),'utf8');
+  assert.equal(mirror,sql,'recovered 11:26:58 provider history must reproduce the independently proven original SQL without changing function or ACL semantics');
+  assert.match(mirror,/limit greatest\(1, least\(p_limiet, 20\)\)/);
+  assert.match(mirror,/REVOKE EXECUTE ON FUNCTION public\.bg_bedrijven_voor_nieuws\(integer\) FROM PUBLIC, anon, authenticated/);
+});
