@@ -17,9 +17,9 @@ export function checkMiraProducerPromptCompatibility(prompt=''){
  const source=String(prompt??'');
  const p=source.toLowerCase().replace(/\\s+/g,' ');
  const violations=[];
- if(/(?:frozen (?:facial|face|head|portrait)|freeze (?:the )?(?:face|head|person|entire person)|(?:lock|preserve) (?:every|all) (?:facial|face) pixels?|(?:pixel-perfect|identical) (?:facial|face) pixels?)/i.test(p))
+ if(/(?:frozen (?:facial|face|head|portrait)|freeze (?:the )?(?:face|head|person|entire person)|(?:lock|preserve) (?:every|all) (?:facial|face) (?:landmarks(?: and pixels?)?|pixels?)|(?:face|facial area|entire head) (?:is|are|must be|as) (?:a )?(?:photographically )?frozen (?:photographic )?plate|(?:pixel-perfect|identical) (?:facial|face) pixels?)/i.test(p))
    violations.push('IMPOSSIBLE_FROZEN_FACE_REQUIREMENT');
- if(/(?:no (?:blinking|blink|breathing|human motion|facial movement|head movement|hand movement)|(?:do not|never) (?:blink|breathe|move (?:her |the )?(?:head|hands|face)))/i.test(p))
+ if(/(?:no (?:blinking|blink|breathing|human motion|facial animation|facial movement|head movement|hand movement)|(?:do not|never) (?:blink|breathe|move (?:her |the )?(?:head|hands|face)|have her move))/i.test(p))
    violations.push('SUPPRESSED_NATURAL_HUMAN_MOTION');
  if(/(?:motion only (?:in|on|of) (?:the )?(?:background|desk|phone|object)|(?:entire person|whole body) (?:perfectly |completely )?(?:still|static)|still (?:portrait|photo) (?:with|on) (?:moving|animated) background)/i.test(p))
    violations.push('BACKGROUND_ONLY_FAKE_VIDEO');
