@@ -44,5 +44,20 @@
     "Existing daily 02:02/03:02 learning cron next-run evidence",
     "Actual order/revenue outcomes"
   ],
-  "noRevenueLiftClaim": true
+  "noRevenueLiftClaim": true,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ]
+  }
 }
