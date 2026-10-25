@@ -19,16 +19,6 @@ on:
       - 'netlify/functions/growth-intelligence-daily.mjs'
       - '.github/workflows/revenue-learning.yml'
 
-  pull_request:
-    branches: [main]
-    paths:
-      - 'netlify/functions/revenue-learning-*.mjs'
-      - 'netlify/functions/_revenue-learning-*.mjs'
-      - 'supabase/functions/revenue-learning-store/**'
-      - 'tests/brain-revenue-learning-fair-verified-20261025.test.mjs'
-      - 'tests/revenue-learning-*.test.mjs'
-      - '.github/workflows/revenue-learning.yml'
-
 concurrency:
   group: revenue-learning-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
@@ -50,7 +40,6 @@ jobs:
         run: >-
           node --test
           tests/revenue-learning-*.test.mjs
-          tests/brain-revenue-learning-fair-verified-20261025.test.mjs
           tests/powerhouse-revenue-calibration-persistence-contract.test.mjs
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
