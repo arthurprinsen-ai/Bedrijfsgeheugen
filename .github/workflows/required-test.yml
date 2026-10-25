@@ -85,6 +85,7 @@ jobs:
         run: |
           node scripts/brain/portal-explanation-inventory.mjs --check
           node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
+          node --test tests/brain-portal-external-next-action-v1.test.mjs
       - name: Enforce control-plane growth ratchets
         run: |
           node tools/ci/check-control-plane-budget.mjs
