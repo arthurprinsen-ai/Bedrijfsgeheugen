@@ -99,6 +99,8 @@ jobs:
         run: node --test tests/brain-portal-external-source-action-20261025.test.mjs
       - name: Verify existing daily company-news candidate coverage and cooldown
         run: node --test tests/brain-company-news-eligible-coverage-20261025.test.mjs
+      - name: Verify preventative source-locked Mira producer feedback on genuine video rejects
+        run: node --test tests/brain-mira-preventive-producer-qa-20261025.test.mjs
       - name: Verify exact canonical commercial publication evidence reconciliation
         run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness

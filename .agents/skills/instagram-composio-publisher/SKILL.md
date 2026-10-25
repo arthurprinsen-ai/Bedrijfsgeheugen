@@ -71,6 +71,22 @@ Hard rules:
 Learning fingerprint: `mira-human-problem-fresh-openart-reel-v1`.
 
 
+## Preventive producer quality recovery (2026-10-25)
+
+**Fingerprint:** `mira-original-owner-pre-generation-quality-feedback-v1`.
+Never solve recurring verification rejects by lowering an identity/temporal score or reusing the same failed OpenArt history. The original Heartbeat should call the existing `powerhouse-instagram-media-router` **preflight** for a frozen source-led day. When the canonical media job contains a genuine quality rejection, the response exposes typed `preventive_recovery` with the original source, project, failed provider history, observed score and **one** bounded next-generation brief.
+
+The one existing Mira producer must consume this production-derived brief **before buying another generation**:
+
+- **Face failure** (`VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH`): confirm original immutable master in both original OpenArt image references; require native full-bleed 1080x1920, visible uncut face, no black bars/letterboxing/cropped head, stable expression/age and approved daily source-led scene. Reject unsupported input modes or provider output dimensions without spending on verification. If a native-portrait derivative becomes necessary, first request a separately reviewed, independent master-face PASS and update the protected media contract; **do not lie about the provider's original input reference**.
+- **Temporal failure** (`MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED`): revise the next storyboard to depict one uninterrupted real scene with natural facial, hand and object motion, not a slideshow, pan/zoom or still-image animation. Keep the original reference identity and exactly the frozen source/scene/caption.
+- Before buying: check today's existing OpenArt histories and the original Brain failure fingerprints. Reuse neither the rejected bytes/hash nor their provider history. Never continuously retry; at most one **new** candidate per independently classified failure and configured provider credit cap. A new generation is an opportunity to verify, not proof.
+- After generation: check real OpenArt project/history, native 1080x1920 MP4, correct master references and source winner; then call the **same** original router with `submit_asset` (not a second publisher). Require real first/middle/end facial scores each ≥0.940, real temporal confidence ≥0.900, matching SHA and exact final caption before any one-shot Meta create.
+- A quality failure keeps the channel `BLOCKED` with an actionable producer plan and original Brain incident; continue independent channels. No generic brand posts, fake PASS, hard-coded bogus media IDs or silent substitution of a static image for a promised Reel. Escalate human/provider credential or exhausted-budget constraints without infinite regeneration.
+- A quality-complete generation still does not prove publication. Only provider media ID, permalink and independent readback may mark the Instagram obligation `LIVE_PROVEN`.
+
+This plan is returned by the current router rather than creating a new scheduler, publisher, queue, customer data store or parallel agent. A successful production simulation is not a future guarantee; subsequent runs must repeat actual provider checks.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
