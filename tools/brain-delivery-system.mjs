@@ -12,6 +12,7 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'data/ai-model-stale-review-worklist-20261025.json': 'automation',
   'tests/brain-ai-model-stale-worklist.test.mjs': 'automation',
   'scripts/ai-model-freshness-watch.mjs': 'automation',
+  'tests/model-evidence-delivery-admission.test.mjs': 'automation',
   'scripts/ai-model-source-probe.mjs': 'automation',
   'docs/skills/supplier-evidence-recovery-v2.md': 'automation',
   'tools/growth-intelligence/decision-core.mjs': 'automation',
