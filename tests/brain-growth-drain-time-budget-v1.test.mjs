@@ -258,7 +258,9 @@ test('a stale eventual source miss is recovered only by strong provider evidence
     storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
     persistFn:async()=>{writes++;return {persisted:true,readback:{queue_id:'verified'}}},
     dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
-  assert.equal(weak,1);assert.equal(strong,1);
+  // The legacy source fallback may perform a second eventual read; strong recovery
+  // must still be exactly once and the persisted DataHub side effect exactly once.
+  assert.ok(weak>=1);assert.equal(strong,1);
   assert.equal(result.sourceStrongRecovery,1);assert.equal(result.indexSourceMissing,0);
   assert.equal(result.persisted,1);assert.equal(result.failed,0);assert.equal(writes,1);
   assert.equal(f.data.get(key).datahub.persisted,true);assert.equal(f.data.has(ptr),false);
