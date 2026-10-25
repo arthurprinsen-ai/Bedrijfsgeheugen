@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|agent-skill-source-attestation|preflight-digest-load-boundary|20261025-v1",
+  "obligation_id": "brain-agent-skill-source-attestation-20261025",
+  "failure_class": "SKILL_SOURCE_CONSUMPTION_UNVERIFIED",
+  "observed_evidence": {
+    "repository_skill_directories_observed": 35,
+    "canonical_preflight": "scripts/brain/chat-learning-preflight.mjs",
+    "canonical_projection": "scripts/brain/powerhouse-skill-projection.mjs",
+    "previous_gap": "Projected Brain learning did not separately attest actual SKILL.md file digest or a required load-readback boundary.",
+    "legacy_metadata_warning": "At least one existing skill has no frontmatter; it must remain discoverable without a false modern-metadata claim.",
+    "source": "GitHub current main repository skill directory and canonical runtime preflight, 2026-10-25"
+  },
+  "root_cause": "Task-specific learning projection was derived from Brain JSON, but the actual repository skill source inventory and consumption claim were not independently version-pinned in the existing preflight packet.",
+  "fix": "Extend existing deterministic projection + preflight with bounded repository SKILL.md source inventory, SHA-256 digests, four mandatory baseline skill selections, legacy metadata warnings, and honest SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED state.",
+  "prevention_rule": "Before any material agent execution, pin selected repository skill sources by exact SHA-256 in the existing preflight. A discovered source is not proof of skill loading or application: require existing actor/execution activity evidence with source digest before claiming consumed; keep provider and production outcome gates independent. External standards or new tools enter as evaluated candidates only.",
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "foresight"
+  ],
+  "mandatory_preflight": true,
+  "compiler": {
+    "scope": "ALL_POWERHOUSE_AGENTS_CHATS",
+    "machine_enforceable": true,
+    "failure_class": "SKILL_SOURCE_CONSUMPTION_UNVERIFIED",
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected exact-HEAD Required and CodeQL success; protected merge; Skill Projection run on main; deterministic next-agent preflight and source digest readback. Real runtime skill-consumption and commercial outcomes require independent receipts and may remain unproven."
+}
