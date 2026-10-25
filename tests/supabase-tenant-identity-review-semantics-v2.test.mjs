@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918105000_tenant_identity_review_semantics_v2.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918105000_tenant_identity_review_semantics_v2.sql','utf8');
 
 test('smoke scans are classified as test evidence',()=>{
   assert.match(sql,/branche[\s\S]*like '%smoke%'/i);
@@ -25,4 +25,11 @@ test('production rows remain fail-closed when identity evidence exists but does 
 test('browser roles cannot query identity review directly',()=>{
   assert.match(sql,/revoke all on public\.powerhouse_tenant_identity_review_v1 from anon, authenticated/i);
   assert.match(sql,/grant select on public\.powerhouse_tenant_identity_review_v1 to service_role/i);
+});
+
+
+test('tenant identity source stays archived with original access controls', () => {
+  assert.equal(fs.existsSync('supabase/migrations/20260918105000_tenant_identity_review_semantics_v2.sql'), false, 'historical migration cannot be reintroduced as executable SQL');
+  assert.match(sql, /revoke all on public\.powerhouse_tenant_identity_review_v1 from anon, authenticated/i);
+  assert.match(sql, /grant select on public\.powerhouse_tenant_identity_review_v1 to service_role/i);
 });
