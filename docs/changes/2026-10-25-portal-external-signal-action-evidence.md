@@ -16,7 +16,7 @@ De Omgevingsradar koppelde bestaande canonieke signalen, tenantimpact en actievo
 - Alleen SCORED tenantimpact met werkelijke company_impacts maakt bedrijfsspecifieke impact mogelijk. Eurobedragen zijn verwachtingen, geen gerealiseerde omzet. Zonder bewijs blijft het onbekend.
 - Bronkaarten tonen uitgever, bronstatus, observatieactualiteit en absolute HTTPS-bronlink. Dekking 24 uur staat apart van snapshotverversing.
 - Generieke signalen leveren verificatiestappen op, geen verzonnen aanbeveling, marketingactie of koopintentie. Contactbenadering blijft via bestaande Growth/Relationship-gates.
-- Tests bewaken cross-signal isolation, generic-versus-tenant, geldclaims, tijdsverval en onveilige URLs.
+- De canonieke Brain historical replay in tests/brain-portal-external-signal-advice-v1.test.mjs bewaakt cross-signal isolation, generic-versus-tenant, geldclaims, tijdsverval en onveilige URLs.
 
 ## Open afhankelijkheden
 powerhouse_runtime_scheduler_mux_v3 en powerhouse-commercial-learning-v1 blijven de enige geplande eigenaren. Dagelijkse internetdekking per bron, tenantuitvoering, provider-ACK, orders, omzet en outcome-learning moeten afzonderlijk door canonieke telemetry bewezen worden. Geen bewering dat 156/156 bronnen vandaag zijn bezocht of dat alle connecties gepersonaliseerd waren.
