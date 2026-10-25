@@ -7,3 +7,6 @@ CI admission originally rejected unclassified delivery paths. After introducing 
 
 ## Evidence and limitations
 Growth module tests succeeded on previous head. Required, CodeQL, and Netlify must run against the new exact commit. The actual Heartbeat and customer portal are not yet connected to these libraries; production publication, revenue, and external customer research are not proven. Do not mark these live until protected merge and independent production/provider readback.
+
+## Customer-scoped external guidance increment (2026-10-25)
+Existing Heartbeat adapter now creates evidence-linked, tenant-isolated advice cards for verified events. Rejected: cross-tenant, unsupported/unverified, stale, personal data without lawful basis, and paid orders lacking independent verification. No scheduled web crawler, portal endpoint, automatic publication or contact, live source connector, or verified order is asserted. Added module regression test. Requires full protected CI and production readback.

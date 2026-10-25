@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse-improvement-inventory-evidence-4918-v1",
+  "date": "2026-10-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "obligation_id": "powerhouse-self-improvement-4918",
+  "root_cause": "Material automation improvements initially omitted canonical PR metadata, lane-compatible test naming and the required activity/Brain/human closure bundle.",
+  "prevention_rule": "Before protected candidate delivery, include delivery metadata, lane-classified paths, append-only activity ledger, Brain learning record and human change documentation. Never call repository presence production proof.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "required": "PENDING",
+    "codeql": "SUCCESS_PRIOR_HEAD",
+    "protected_merge": "PENDING",
+    "production_readback": "NOT_PROVEN",
+    "candidate_tests": [
+      "tests/powerhouse-daily-self-evolution-improvement-evidence.test.mjs"
+    ],
+    "learning_contract_correction": "Historical replay must be available on immutable base main; new evidence test is candidate-only"
+  },
+  "evidence": {
+    "required_run_failures": [
+      40212108275,
+      40216013978
+    ],
+    "issue_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+    "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4919",
+    "no_live_claim": true
+  }
+}
