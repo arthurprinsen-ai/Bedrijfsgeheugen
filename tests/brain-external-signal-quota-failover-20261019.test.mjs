@@ -104,3 +104,32 @@ test('no-topic producer observations use full event time rather than hour dedupe
  assert.ok(source.includes("p_dedupe_key:'external-intelligence-empty:'+observedAt"));
  assert.ok(!source.includes("p_dedupe_key:'external-intelligence-empty:'+observedAt.slice(0,13)"));
 });
+
+test('documented temporary DataForSEO upstream and update 503xx can retry once',()=>{
+  for(const status of [50301,50302,50303,50304]){
+    assert.equal(policy.isTransientDataforseoStatus(200,20000,status),true);
+    assert.equal(policy.isTransientDataforseoStatus(200,status,0),true);
+  }
+});
+
+test('sanitized diagnostics retain numeric class, but never a raw provider response or credentials',()=>{
+ const failure=Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{
+  retryable:true,http_status:200,api_status:20000,task_status:50303,
+  secret:'private-api-key',raw:'upstream account billing response'
+ });
+ assert.deepEqual(policy.safeDataforseoDiagnostic(failure),{
+   http_status:200,api_status:20000,task_status:50303,retryable:true
+ });
+ assert.doesNotMatch(JSON.stringify(policy.safeDataforseoDiagnostic(failure)),/private-api-key|upstream account/);
+ assert.equal(policy.safeDataforseoDiagnostic(new Error('unrelated')),null);
+ assert.deepEqual(policy.safeDataforseoDiagnostic(Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{
+   retryable:false,http_status:'invalid',api_status:-99,task_status:1000000
+ })),{http_status:null,api_status:null,task_status:null,retryable:false});
+});
+
+test('per-topic failed provider codes reach canonical observation without weakening strict response status',()=>{
+ assert.match(source,/provider_diagnostics:safeDataforseoDiagnostic\(e\)/);
+ assert.match(source,/failed_source_diagnostics:failed\.map/);
+ assert.match(source,/return json\(out,ok\.length\?\(failed\.length\?207:200\):502\)/);
+ assert.match(source,/x-powerhouse-token/);
+});
