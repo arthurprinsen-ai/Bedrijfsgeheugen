@@ -11,5 +11,17 @@
   "fix": "Add canonical learning, human documentation and development ledger to the same protected candidate.",
   "prevent": "Agent skill requires closure evidence and exact SHA required checks before merge.",
   "verification": "PENDING exact-head Required/BRAIN/CodeQL; protected merge and production readback not yet proven",
-  "owner": "github-ci-hygiene-evidence-contract-20261025"
+  "owner": "github-ci-hygiene-evidence-contract-20261025",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ]
+  }
 }
