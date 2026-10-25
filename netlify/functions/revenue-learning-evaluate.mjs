@@ -8,31 +8,45 @@ const rank=l=>Number(l.confidence||0)*Math.abs(Number(l.effectSize||0));
 
 // One existing hourly evaluator; never evaluate an unbounded store page.
 // Rotate channels by hour and prefer real provider-/source-backed observations.
+/** Deterministic no-starvation fairness for the ONE existing @hourly owner.
+ * A static evidence queue must progress across consecutive hours, even when
+ * its earliest observed rows cannot yet pass the verification/cohort gate.
+ * Scope is the bounded canonical store page; missing provider data is NEVER zero.
+ */
 export function selectDueRevenueBatch(due=[],{now=new Date(),limit=8}={}){
   if(!Array.isArray(due))throw new TypeError('REVENUE_DUE_EVIDENCE_MUST_BE_ARRAY');
   const bound=Math.max(1,Math.min(16,Math.floor(Number(limit)||8)));
   const clock=now instanceof Date?now:new Date(now);
-  if(!Number.isFinite(clock.getTime()))throw new TypeError('REVENUE_EVALUATION_CLOCK_INVALID');
+  if(Number.isNaN(clock.getTime()))throw new TypeError('REVENUE_EVALUATION_CLOCK_INVALID');
+  const tick=Math.floor(clock.getTime()/3600000);
   const valid=due.filter(row=>row&&row.evidenceId&&row.contentId&&row.channel);
-  const quality=row=>String(row.dataQuality||'').toUpperCase()==='OBSERVED'?1:0;
+  const quality=row=>['OBSERVED','PROVIDER_OBSERVED'].includes(String(row.dataQuality||'').toUpperCase())?1:0;
   const time=row=>Date.parse(row.updatedAt||row.publishedAt||'')||0;
   const sorted=[...valid].sort((a,b)=>quality(b)-quality(a)||time(b)-time(a)||
     String(a.evidenceId).localeCompare(String(b.evidenceId)));
-  const channels=[...new Set(sorted.map(row=>row.channel))].sort();
-  const tick=Math.floor(clock.getTime()/3600000);
-  const rotated=channels.slice(tick%Math.max(channels.length,1))
-    .concat(channels.slice(0,tick%Math.max(channels.length,1)));
+  const channels=[...new Set(sorted.map(row=>String(row.channel)))].sort();
+  if(!channels.length)return [];
+  const rotated=channels.slice(tick%channels.length).concat(channels.slice(0,tick%channels.length));
+  const stride=Math.max(1,Math.ceil(bound/channels.length));
+  const pools=new Map(channels.map(channel=>{
+    const rows=sorted.filter(row=>String(row.channel)===channel);
+    const start=(tick*stride)%rows.length;
+    return [channel,rows.slice(start).concat(rows.slice(0,start))];
+  }));
   const chosen=[];const seen=new Set();
-  const add=row=>{if(row&&!seen.has(row.evidenceId)&&chosen.length<bound){
-    seen.add(row.evidenceId);chosen.push(row);
-  }};
-  // Every eligible channel gets a fair chance rather than letting website
-  // inference monopolize the newest-150 source page.
-  for(const channel of rotated) add(sorted.find(row=>row.channel===channel));
-  const remainder=sorted.filter(row=>!seen.has(row.evidenceId));
-  if(remainder.length&&chosen.length<bound){
-    const start=(tick*(bound-chosen.length))%remainder.length;
-    for(const row of remainder.slice(start).concat(remainder.slice(0,start)))add(row);
+  // Round-robin by channel AND cursor by evidence row. Repeated source/cohort
+  // failures remain typed, idempotent obligations without monopolizing slots.
+  for(let round=0;chosen.length<bound;round++){
+    let progressed=false;
+    for(const channel of rotated){
+      const row=pools.get(channel)?.[round];
+      if(!row)continue;
+      progressed=true;
+      if(seen.has(row.evidenceId))continue;
+      seen.add(row.evidenceId);chosen.push(row);
+      if(chosen.length===bound)break;
+    }
+    if(!progressed)break;
   }
   return chosen;
 }
