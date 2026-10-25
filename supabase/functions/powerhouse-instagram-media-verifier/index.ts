@@ -1,6 +1,7 @@
 import {requestMiraVision} from '../_shared/mira-openai-vision.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_IDENTITY_MIN_CONFIDENCE} from '../_shared/mira-canonical-face.mjs';
+import {miraProofDimensions,MIRA_DERIVED_PORTRAIT_ROLE} from '../_shared/mira-reference-candidate-proof.mjs';
 
 const USE_CASE='supabase-powerhouse-instagram-media-verifier-v1';
 const CONTRACT='mira-visible-identity-vision-v1';
@@ -103,10 +104,15 @@ Deno.serve(async(req)=>{
   const provider=clean(body.provider)||'unknown';
   const mediaType=clean(body.mediaType||'image').toLowerCase();
   const verificationRole=clean(body.verificationRole)||'static_image';
-  const writeObligation=body.writeObligation!==false;
+  const referenceCandidate=verificationRole===MIRA_DERIVED_PORTRAIT_ROLE;
+  // Never modify the actual Instagram daily obligation during reference QA.
+  const writeObligation=!referenceCandidate && body.writeObligation!==false;
   const inlineInput=clean(body.imageBase64);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)||(!mediaUrl&&!inlineInput))return json({ok:false,error:'INVALID_INPUT'},400);
   if(mediaType!=='image')return json({ok:false,error:'IMAGE_OR_VIDEO_FRAME_REQUIRED'},422);
+  if(referenceCandidate&&(!mediaUrl||inlineInput||provider!=='openart'||
+    new URL(mediaUrl).hostname!=='cdn.openart.ai'))
+    return json({ok:false,error:'MIRA_REFERENCE_PROVIDER_ASSET_REQUIRED'},422);
 
   try{
     const inlineBase64=clean(body.imageBase64);
@@ -148,8 +154,9 @@ Deno.serve(async(req)=>{
     if(!masterBytes.length||masterBytes.length>MAX_BYTES||!masterDimensions)throw new Error('MIRA_CANONICAL_MASTER_UNREADABLE');
     const masterSha=await sha256(masterBytes);
     const verdict=await visionVerdict(apiKey,gov.data.model_id,bytes,ct,masterBytes);
-    const expectedHeight=verificationRole==='video_frame'?1920:1350;
-    const dimsOk=size.width===1080&&size.height===expectedHeight;
+    const dimensionPolicy=miraProofDimensions(size.width,size.height,verificationRole);
+    if(dimensionPolicy.error)return json({ok:false,error:dimensionPolicy.error},422);
+    const dimsOk=dimensionPolicy.ok;
     const pass=dimsOk
       && verdict.semantic_verified===true
       && verdict.mira_present===true
@@ -188,11 +195,13 @@ Deno.serve(async(req)=>{
     const fingerprint=`instagram-vision-proof:${publicationDate}:${hash}`;
     const proof={
       fingerprint,publication_date:publicationDate,channel:'instagram',provider,provider_post_id:providerPostId,
-      provider_external_url:null,media_url:mediaUrl,provider_status:pass?'prepublish_verified':'prepublish_rejected',
+      provider_external_url:null,media_url:mediaUrl,provider_status:referenceCandidate
+        ?(pass?'reference_candidate_verified':'reference_candidate_rejected')
+        :(pass?'prepublish_verified':'prepublish_rejected'),
       canonical_copy:null,exact_copy_verified:false,exact_media_retrievable:true,exact_media_sha256:hash,
       exact_media_verified_at:new Date().toISOString(),identity_contract:CONTRACT,
       identity_gate_result:pass?'PASS':'FAIL',
-      proof_lineage:{contract:CONTRACT,media_type:verificationRole==='video_frame'?'video_frame':'image',verification_role:verificationRole,media_source:provider,instagram_visual:visual,exact_final_media_proven:pass},
+      proof_lineage:{contract:CONTRACT,media_type:referenceCandidate?'reference_candidate':verificationRole==='video_frame'?'video_frame':'image',verification_role:verificationRole,media_source:provider,instagram_visual:visual,exact_final_media_proven:!referenceCandidate&&pass,reference_candidate_only:referenceCandidate},
       failure_reason:pass?null:`MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED: ${visual.reason}`,
       updated_at:new Date().toISOString()
     };
@@ -228,7 +237,10 @@ Deno.serve(async(req)=>{
       if(update.error)throw new Error('OBLIGATION_WRITE_FAILED');
     }
     }
-    return json({ok:true,publicationDate,pass,fingerprint,sha256:hash,width:size.width,height:size.height,confidence:visual.confidence,evidence_ref:evidenceRef,visual});
+    return json({ok:true,publicationDate,pass,fingerprint,sha256:hash,width:size.width,height:size.height,confidence:visual.confidence,evidence_ref:evidenceRef,visual,
+      reference_candidate_only:referenceCandidate,final_media_proven:!referenceCandidate&&pass,
+      may_publish:!referenceCandidate&&pass,
+      canonical_master_unchanged:true});
   }catch(error){
     const message=String((error as Error)?.message||error).slice(0,300);
     return json({ok:false,error:message},500);
