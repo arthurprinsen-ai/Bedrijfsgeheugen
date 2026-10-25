@@ -13,7 +13,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-daily-self-evolution.test.mjs"
+      "tests/brain-self-improvement-layer-v1.test.mjs"
     ],
     "required": "PENDING",
     "codeql": "SUCCESS_PRIOR_HEAD",
