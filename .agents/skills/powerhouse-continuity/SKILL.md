@@ -5,6 +5,10 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Unified learning-to-customer-value and verified revenue — 25 October 2026
+
+Read `docs/architecture/unified-brain-heartbeat-learning-revenue-contract-20261025.md` before work on any agent, portal, customer insight, content, CRO, CRM, SEO, Heartbeat, Brain, Powerhouse, learning, sales or release pathway. This is a proposed integration contract, not proof of implementation or LIVE status. Reuse existing canonical memory, failure fingerprints, obligations, skills, owner and scheduler. Every action must retain provenance, scope, decision, proof, result and learning; independently verify customer value and actual paid revenue before claiming success. Project only evaluated and source-grounded lessons into skills. Never loosen permission, security, tenant separation, protected merge, provider readback or financial controls to obtain green status. Work remaining in the contract is an open obligation.
+
 ## Adaptief lezen op basis van echt meetbewijs — 23 oktober 2026
 
 Bestaande run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823): 12 runs, 17 jobs, 10 distinct, 0 providerleesfouten, dus p50/p95 correct NULL. Hergebruik exact hetzelfde meetartefact en dezelfde uurlijkse Repository Janitor, niet een nieuwe scheduler. Bounded adaptieve selectie leest tot maximaal 24 runs, stopt alleen bij minimaal 20 valide jobs uit 5 distinct runpogingen zonder enige eerdere read-error, en houdt onvolledige readback volledig rood/onbekend. Geen wijziging aan Required, CodeQL, provider, Supabase, RLS, CLS of releaseautorisatie. Originele regressie `tests/brain-observed-ci-throughput-v1.test.mjs`; canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661).
