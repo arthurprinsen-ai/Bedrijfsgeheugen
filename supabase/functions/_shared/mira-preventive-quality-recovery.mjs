@@ -15,7 +15,7 @@ export const MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT='mira-recognizable-face
 // are spent. Stable identity is not the same as a literal frozen facial plate.
 export function checkMiraProducerPromptCompatibility(prompt=''){
  const source=String(prompt??'');
- const p=source.toLowerCase().replace(/\\s+/g,' ');
+ const p=source.toLowerCase().replace(/\s+/g,' ');
  const violations=[];
  if(/(?:frozen (?:facial|face|head|portrait)|freeze (?:the )?(?:face|head|person|entire person)|(?:lock|preserve) (?:every|all) (?:facial|face) (?:landmarks(?: and pixels?)?|pixels?)|(?:face|facial area|entire head) (?:is|are|must be|as) (?:a )?(?:photographically )?frozen (?:photographic )?plate|(?:pixel-perfect|identical) (?:facial|face) pixels?)/i.test(p))
    violations.push('IMPOSSIBLE_FROZEN_FACE_REQUIREMENT');
@@ -31,14 +31,14 @@ export function checkMiraProducerPromptCompatibility(prompt=''){
 export function buildMiraSourceLockedMotionBrief({scene,masterReferenceId,runDate}={}){
  const frozenScene=String(scene??'').trim();
  const master=String(masterReferenceId??'').trim();
- if(!frozenScene||!master||!/^20\\d{2}-\\d{2}-\\d{2}$/.test(String(runDate??'')))
+ if(!frozenScene||!master||!/^20\d{2}-\d{2}-\d{2}$/.test(String(runDate??'')))
    return {ok:false,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,reason:'MISSING_FROZEN_SOURCE_OR_ORIGINAL_MASTER'};
  const prompt=[
   'Produce ONE photorealistic 8-second continuous-shot Instagram Reel, true native full-bleed 1080x1920 portrait 9:16. No black bars, text overlays, camera cuts, pan, zoom, reframing or identity swaps.',
   'Use only the original approved Mira master reference as the actual original start/end frame input according to the currently permitted image2video contract. Preserve the SAME recognizable adult woman: face structure, age, hair, skin features and clothing. Keep her entire face unobscured, naturally framed and consistently illuminated, without redesign, morphing, beautifying, flicker or extreme head turns.',
   'Keep the already-frozen source scene exactly: '+frozenScene,
   'The character must be visibly alive throughout the shot: subtle natural blinking, small plausible breathing and one small unhurried HAND/finger interaction with the existing object already present in the approved scene. One continuous human action with physically coherent face and hand movement, no slideshow, still photograph animation or background-only motion.',
-  'Prioritize identity and a coherent living human over exaggerated expression. No deliberate face lock, pixel-frozen face, mannequin pose or motionless human. Keep motion restrained enough for the actual original-master face verification at first, middle and last frame.',
+  'Prioritize identity and a coherent living human over exaggerated expression. Keep the person clearly alive yet physically realistic, with limited, coherent natural micro-expressions. Avoid static slideshow effects while keeping movement restrained enough for original-master face verification at first, middle and last frame.',
   'No voice, music, logos, legible third-party app brands, new characters, invented claims or altered editorial context. Output a genuinely NEW OpenArt provider history in the original project; do not reuse a rejected history.'
  ].join(' ');
  const compatibility=checkMiraProducerPromptCompatibility(prompt);
