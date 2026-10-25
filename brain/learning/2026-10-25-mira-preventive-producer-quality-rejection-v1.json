@@ -55,5 +55,21 @@
     "repeat_count": 3,
     "machine_enforceable": true,
     "security_sensitive": false
+  },
+  "prevention_rule": "Read the exact failed video-frame or temporal score before new provider spend. The existing canonical producer receives the source-locked typed prevention plan; never replay a rejected OpenArt history, change Mira's immutable identity or source, bypass facial/temporal thresholds, or claim LIVE_PROVEN without a genuine Meta receipt.",
+  "evidence": {
+    "historical_failure_ids": [
+      "qAUQW2ZzqdasS0ePb1PD",
+      "a6sdR46HDe58uRlardNl",
+      "oGeS7GbhttgNCxnq0tCg"
+    ],
+    "real_native_router_request_id": 12638,
+    "actual_http_status": 422,
+    "identity_threshold": 0.94,
+    "temporal_threshold": 0.9,
+    "producer_evaluation_tests": [
+      "tests/brain-mira-preventive-producer-qa-20261025.test.mjs"
+    ],
+    "no_oct25_instagram_provider_id": true
   }
 }
