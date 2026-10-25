@@ -36,7 +36,7 @@ test('publisher and materializer must reject stale or unknown records',()=>{
  assert.match(sql,/x\.source_published_at\s+>=/);
  assert.match(sql,/s\.source_published_at\s+IS NULL/);
  assert.match(sql,/source_publication_date_status/);
- assert.match(sql,/end \\$function\\$;\\s+REVOKE EXECUTE/);
+ assert.match(sql,/end \$function\$;\s+REVOKE EXECUTE/);
  assert.match(sql,/REVOKE EXECUTE/);
  assert.match(sql,/GRANT EXECUTE.*service_role/);
  assert.doesNotMatch(sql,/cron\.schedule|create table|create trigger|net\.http_post/i);
