@@ -18,5 +18,17 @@
     "protected_merge": "NOT_PROVEN",
     "production": "NOT_PROVEN"
   },
-  "next_action": "complete integration closure, exact-head CI, authorized ruleset reconciliation and protected release"
+  "next_action": "complete integration closure, exact-head CI, authorized ruleset reconciliation and protected release",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
+  }
 }
