@@ -1,0 +1,36 @@
+{
+  "fingerprint": "brain|agent-skill-evidence|admission-closure|20261025",
+  "compiler": {
+    "failure_class": "MISSING_CANONICAL_CLOSURE_ARTIFACTS"
+  },
+  "root_cause": "PR #4910 changed executable Brain assurance code without the three mandated evidence artifacts; prior CI also rejected unclassified delivery paths.",
+  "prevention_rule": "Every material Brain code delta must include the canonically formatted learning, development ledger, and human-readable change artifact in the same PR; neither successful validation nor provider execution is inferred from fixture records.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "run_id": 40208562933,
+        "outcome": "FAIL",
+        "cause": "machine PR metadata absent"
+      },
+      {
+        "run_id": 40209336442,
+        "outcome": "FAIL",
+        "cause": "new paths unclassified"
+      },
+      {
+        "run_id": 40209635001,
+        "outcome": "FAIL",
+        "cause": "activity_ledger, brain_learning and human_documentation absent"
+      }
+    ]
+  },
+  "tests": {
+    "command": "node --test tests/agent-skill-execution-evidence.test.mjs",
+    "status": "NOT_YET_CONFIRMED_ON_CURRENT_HEAD"
+  },
+  "evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40209635001",
+    "production_readback": "NOT_VERIFIED"
+  },
+  "prevention": "Retain fail-closed integration and trusted-loader validation; preserve protected merge gates."
+}
