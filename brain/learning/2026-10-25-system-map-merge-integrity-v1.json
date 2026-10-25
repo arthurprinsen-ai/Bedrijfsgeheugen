@@ -7,12 +7,15 @@
   "prevention": "Retain one integration owner; validate changed-path classifier and material writeback bundle before CI; deterministic map generation must use exact merged tree and verify dirty diff; no green until exact SHA gates and production readback.",
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-system-map-merge-integrity.test.mjs"
+      "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
     ],
     "observed_incidents": [
       "Missing PR machine metadata on 40221452874",
       "Unclassified test path on 40223051109",
       "Missing same-lineage closure on 40223051109"
+    ],
+    "additional_regressions": [
+      "tests/delivery-system-map-merge-integrity.test.mjs"
     ]
   },
   "evidence": {
