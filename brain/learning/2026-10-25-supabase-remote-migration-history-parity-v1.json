@@ -20,11 +20,22 @@
     "production_acl_authenticated": false,
     "production_acl_service_role": true,
     "original_unapplied_version": "20261025110200",
-    "resequenced_unapplied_version": "20261025130000"
+    "second_remote_only_version": "20261025120522",
+    "second_remote_only_name": "commercial_daily_provider_evidence_reconciliation",
+    "second_remote_sql_byte_equal_to_merged_pr_4879": true,
+    "second_sql_bytes": 4687,
+    "second_function_live": true,
+    "second_production_readback": {
+      "date": "2026-10-25",
+      "delivered_publish_count": 2,
+      "terminal_permission_limited_count": 1,
+      "unresolved_publish_count": 0,
+      "instagram_independent_provider_proof": false
+    }
   },
   "root_cause": "An already-applied manual/provider migration recorded a second timestamp for precisely the same SQL after its canonical Git version was applied. Supabase native GitHub main deploy compared the remote ledger to local migrations and stopped before deploying the commercial provider-proof SQL.",
-  "fix": "Reconstruct exact already-applied remote 20261025112658 SQL byte-for-byte as historical Git migration; resequence the never-applied 20261025110200 publisher-proof SQL to 20261025130000 with identical SQL bytes so native chronological migrations remain monotonic. Preserve production migration history unchanged; deploy only through protected GitOps.",
-  "prevention_rule": "Reject remote-only version drift and a local-only migration older than the latest remote version; one authorized migration release owner, no direct/manual and native concurrent apply. Historical already-applied version is reconstructed verbatim; pending not-yet-applied migrations may be resequenced with exact SQL identity and audited lineage.",
+  "fix": "Restore two independently observed, already-applied, remote-only provider-history migrations byte-for-byte under their actual versions 20261025112658 (company news) and 20261025120522 (commercial status). Remove proposed never-applied 20261025130000 and original never-applied 20261025110200 paths; never send SQL again or alter remote migration tracking. This closes GitOps source-versus-remote version drift rather than replaying a live schema function.",
+  "prevention_rule": "A single authorized migration release owner; after every provider SQL deployment, reconcile native migration ledger to Git. Forbid direct/manual + native concurrent writes and remote-only versions; preserve immutable content/hash readback and chronological version identities. Never replay SQL already applied merely to green CI.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
@@ -41,16 +52,16 @@
     "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
   ],
   "productionVerificationsRequired": [
-    "Exact-head Required + CodeQL + Supabase preview and chronological replay",
-    "Protected merge of reconciled Git migration history",
-    "Native production deploy installs previously unapplied 20261025130000",
-    "Deployed powerhouse_execution_status(date) preserves independent proof and terminal ACK distinction"
+    "Exact-head Required + CodeQL + provider-owned native Supabase preview when preview capacity is available",
+    "Protected merge of exact historical Git files",
+    "Native Supabase main migration readback (no remote-only or local-only versions)",
+    "Runtime same-date independent publication counts and no invented provider/social/revenue evidence"
   ],
   "compiler": {
     "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
     "scope": "RUNTIME",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": true
   }
 }
