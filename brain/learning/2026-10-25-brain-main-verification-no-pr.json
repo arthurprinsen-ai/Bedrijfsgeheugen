@@ -1,0 +1,10 @@
+{
+  "id": "brain-main-regression-no-pr-20261025",
+  "date": "2026-10-25",
+  "source": "github-actions:40218283550",
+  "failure_fingerprint": "brain-main-verify-empty-base-sha",
+  "root_cause": "Unified Brain Delivery assumes PR base SHA during verification-only main dispatch and invokes git rev-parse with an empty argument.",
+  "prevention": "Use independent main-only read-only regression workflow with immutable github.sha verification and uploaded logs; do not bypass PR admission for releases.",
+  "verification": "Required CI and CodeQL on exact PR head; first post-merge main workflow run with retained result.",
+  "status": "CANDIDATE_UNVERIFIED"
+}
