@@ -1,0 +1,48 @@
+{
+  "fingerprint": "seo|twinfield|canonical-intent-owner|2026-10-19",
+  "compiler": {
+    "failure_class": "SEO_INTENT_OWNER_VARIANT_OMITTED"
+  },
+  "root_cause": "Canonical SEO map and runtime intent-owner projection omitted plural/reversed Twinfield commercial intent variants; projection-only patch was incomplete.",
+  "prevention_rule": "Update source SEO map and runtime projection together, with real executable single-owner regression before protected delivery.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-twinfield-edge-authority-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-twinfield-edge-authority-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-twinfield-edge-authority-20261025.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Canonical Powerhouse GSC and keyword intelligence 2026-10-25",
+    "gsc_period": "2026-10-01..2026-10-22",
+    "variant_impressions": {
+      "koppeling twinfield": 10,
+      "twinfield koppelingen": 6
+    },
+    "variant_clicks": 0,
+    "keyword_volume_each": 40,
+    "keyword_cpc_eur_each": 16.49,
+    "keyword_observed_at": "2026-10-25T05:02:00Z",
+    "canonical_source": "site/seo-order-map.json",
+    "runtime_projection": "supabase/functions/powerhouse-seo-opportunity-resolver/intent-owners.json",
+    "ci": "PENDING_EXACT_HEAD_RECOVERY",
+    "production_readback": "NOT_PROVEN",
+    "regression": "tests/brain-seo-twinfield-canonical-owner-20261025.test.mjs",
+    "previous_failed_replay": "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs imports a missing historic migration fixture; independent regression isolates exact alias contract without weakening old test."
+  },
+  "outcome": "No conversion, order, or revenue uplift claimed; validate after protected merge.",
+  "edge_authority_recovery": {
+    "fingerprint": "supabase-edge|powerhouse-seo-opportunity-resolver|config-declaration-missing|20261025",
+    "observed_at": "2026-10-25T08:30:19Z",
+    "source": "GitHub Supabase Edge Production Authority run 40176867934",
+    "failure": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:powerhouse-seo-opportunity-resolver",
+    "root_cause": "Existing active Supabase Edge function absent from canonical supabase/config.toml, so protected main provider attestation fails.",
+    "recovery": "Declare exact existing function with deployed verify_jwt=false, preserve x-powerhouse-token authorization, protected merge and independent Edge provider version+source readback.",
+    "regression": "tests/brain-seo-twinfield-edge-authority-20261025.test.mjs",
+    "status": "PENDING_EXACT_HEAD_AND_PROVIDER_READBACK"
+  }
+}

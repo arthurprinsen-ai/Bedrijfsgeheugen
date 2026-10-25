@@ -1,5 +1,6 @@
 // Provider quota exhaustion is explicit; fallback uses independently observed DataForSEO SERP results, not synthetic signals.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { selectExternalTopics } from './topic-selection.mjs';
 
 const BRON='bg-externe-signalen';
 const CONTRACT='tavily-signal-ingest-v2-bounded';
@@ -76,9 +77,8 @@ Deno.serve(async(req:Request)=>{
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-empty:'+observedAt.slice(0,13),p_external_event_id:'producer-run:'+observedAt,p_observed_at:observedAt,p_evidence:{contract:CONTRACT,provider:'tavily',producer_run:true,active_topics:0,no_data_returned:true}});
       const out={ok:true,contract:CONTRACT,active_topics:0,processed:0};await bewijs(true,out);return json(out);
     }
-    const slot=Math.floor(Date.now()/1200000);
-    const start=(slot*BATCH)%topics.length;
-    const selected=Array.from({length:Math.min(BATCH,topics.length)},(_,i)=>topics[(start+i)%topics.length]);
+    const topicRotation=selectExternalTopics(topics,{now:Date.now(),batch:BATCH});
+    const {selected,start}=topicRotation;
     const results=await Promise.all(selected.map(async(o:any)=>{
       try{
         let res:any[]=[];
@@ -122,11 +122,11 @@ Deno.serve(async(req:Request)=>{
     if(ok.length){
       const providers=[...new Set(ok.map((x:any)=>x.provider))];
       const sourceKey=providers.includes('tavily')?'tavily-intelligence':'dataforseo-intelligence';
-      const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason})),relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),successful_topics:ok.length,failed_topics:failed.length,found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
+      const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason})),relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),selection_contract:topicRotation.contract,selection_epoch_day:topicRotation.epochDay,selection_window_20m:topicRotation.window20m,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,successful_topics:ok.length,failed_topics:failed.length,found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:sourceKey,p_dedupe_key:'external-source-run:'+observedAt.slice(0,13)+':'+start,p_external_event_id:sourceKey+':'+observedAt,p_observed_at:observedAt,p_evidence:evidence});
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-producer:'+observedAt.slice(0,13)+':'+start,p_external_event_id:'external-intelligence:'+observedAt,p_observed_at:observedAt,p_evidence:{...evidence,authority:'bg_externe_signalen'}});
     }
-    const out={ok:failed.length===0,contract:CONTRACT,active_topics:topics.length,processed:selected.length,successful:ok.length,failed:failed.length,found,allowed,noise,results};
+    const out={ok:failed.length===0,contract:CONTRACT,selection_contract:topicRotation.contract,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,active_topics:topics.length,processed:selected.length,successful:ok.length,failed:failed.length,found,allowed,noise,results};
     await bewijs(ok.length>0,out,ok.length?'PARTIAL':'REMOTE');
     return json(out,ok.length?(failed.length?207:200):502);
   }catch(e:any){
