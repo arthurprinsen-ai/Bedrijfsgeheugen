@@ -26,7 +26,7 @@ WITH source_decisions AS (
   WHERE d.run_date=p_run_date
 ), proofs AS (
   SELECT *,
-    (
+    COALESCE((
       decision='publish'
       AND state IN ('published','measured','learned')
       AND nullif(btrim(delivery_ref),'') IS NOT NULL
@@ -40,7 +40,7 @@ WITH source_decisions AS (
           AND delivery_ref=coalesce(external_id,canonical_url)
         )
       )
-    ) AS independently_proven,
+    ),false) AS independently_proven,
     (
       decision='publish'
       AND state IN ('published','measured','learned')
@@ -54,7 +54,7 @@ WITH source_decisions AS (
       AND obligation_evidence->>'terminal_provider_side_effect'='true'
       AND obligation_evidence->>'readback_permission_limited'='true'
       AND obligation_evidence->>'republish_forbidden'='true'
-    ) AS terminal_permission_limited_ack
+    ),false) AS terminal_permission_limited_ack
   FROM source_decisions
 ), summary AS (
   SELECT
