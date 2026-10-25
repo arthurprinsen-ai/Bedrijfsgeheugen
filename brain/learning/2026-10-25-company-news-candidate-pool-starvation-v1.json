@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "parent_issue": 4198,
+  "obligation_id": "growth:company-news-eligible-candidate-coverage:20261025-v1",
+  "fingerprint": "growth|company-news|top-200-before-30d-filter-starvation|20261025-v1",
+  "failure_class": "RELATIONSHIP_SOURCE_CANDIDATE_STARVATION",
+  "observed_evidence": {
+    "cron_job_id": 20,
+    "observed_at": "2026-10-25T06:31:00Z",
+    "transport_status": "HTTP_200",
+    "scanned_companies": 5,
+    "accepted_news": 0,
+    "provider_budget_per_day": 15,
+    "source_record_count": 65,
+    "source_last_ingested_at": "2026-10-12",
+    "upstream_capped_count": 200,
+    "still_open": "External news result relevance and publication delivery remain independently unproven."
+  },
+  "root_cause": "bg_bedrijven_voor_nieuws calls bg_inhaak_kandidaten with p_limiet 200, which truncates to 200 highest-score people before the 30-day company research cooldown is applied, leaving only 5 companies on 2026-10-25. The pg_cron transport was green although actual business evidence was stale.",
+  "fix": "Safely widen existing eligible candidate list to 1500 before filtering company cooldown and keep original target result cap of 20 and existing Edge default 15. Preserve all existing anti-spam/person-status restrictions, suppression, and contact-pressure rules; do not create a new scheduler.",
+  "prevention_rule": "Always measure source-pool eligibility after cooldown against daily target, producer HTTP success separately from accepted fresh news, resulting company/person link, logged follow-up and independently verified lead/order. If coverage below target for two consecutive runs, canonical Brain captures a fingerprint and invokes same owner bounded safe recovery, not retry storms or fake green.",
+  "compiler": {
+    "failure_class": "RELATIONSHIP_SOURCE_CANDIDATE_STARVATION",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+  ],
+  "productionVerified": false
+}
