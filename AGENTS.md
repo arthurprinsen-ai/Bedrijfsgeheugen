@@ -1,3 +1,7 @@
+## System Map release-integriteit — 25 oktober 2026
+
+Volg `.agents/skills/system-map-merge-integrity/SKILL.md`: één integratie-eigenaar voor workflow, System Map, testbewijs en exact candidate SHA. Regeneratie vanuit geïntegreerde boom; Required/BRAIN/CodeQL op dezelfde commit; geen groen zonder beschermde merge en onafhankelijke readback.
+
 ## Eén bewijsvaste Brain–Powerhouse–Heartbeat leerlus — 25 oktober 2026
 
 Voor alle agents en toekomstige wijzigingen geldt het integratiecontract `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md`. Gebruik de bestaande canonieke Brain-registraties, Heartbeat/Janitor-cadans, incidentfingerprints, obligations en geëvalueerde skillprojectie. Koppel bron → besluit → uitvoering → providerbewijs → klant-/omzetuitkomst → learning en skill-evaluatie met tenantisolatie en toestemming. Meet echte leads, klanten, klantwaarde en onafhankelijk betaalde omzet in plaats van bereik of acknowledgements als resultaat te behandelen. De nieuwe contracttekst is uitsluitend ontwerp tot integratie, geslaagde tests, beschermde merge, productiereadback en echte opvolgcycli bewezen zijn. Geen tweede scheduler, ongecontroleerde outreach, extra write-owner, groene status zonder bewijs of omzeiling van Required/CodeQL/RLS/preview en privacycontroles.
