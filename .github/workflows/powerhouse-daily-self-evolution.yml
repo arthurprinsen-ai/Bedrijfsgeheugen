@@ -42,7 +42,9 @@ jobs:
           node scripts/brain/portal-explanation-inventory.mjs --check
           node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
       - name: Enforce unified Brain Heartbeat skill and revenue learning contract
-        run: node scripts/brain/validate-unified-learning-contract.mjs
+        run: | 
+          node scripts/brain/validate-unified-learning-contract.mjs
+          node --test tests/brain-unified-learning-contract.test.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
       - name: Verify canonical incident learning and portal relevance
