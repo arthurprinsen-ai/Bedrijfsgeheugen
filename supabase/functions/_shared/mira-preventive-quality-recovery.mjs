@@ -9,6 +9,55 @@ export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generati
 
 export const MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT='mira-recognizable-face-and-genuine-human-motion-v1';
 
+export const MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT='mira-native-provider-output-prespend-v1';
+export const MIRA_WAN27_PROVIDER_OBSERVATION=Object.freeze({
+  model:'wan2-7',mode:'image2video',requested_resolution:'1080p',
+  actual_width:1292,actual_height:1604,actual_duration:8.08,
+  actual_has_audio:true,history_id:'4y4xrXvVDidv9gUDQZea',
+  authoritative_reference:'https://www.alibabacloud.com/help/en/model-studio/image-to-video-general-api-reference'
+});
+
+/**
+ * Prevent billing when the original fixed master cannot yield a provable
+ * EXACT 1080x1920 mute Reel with the selected provider control surface.
+ * This is an output-format preflight, NOT an identity or publication approval.
+ * Never accept caller assertions about the native output as evidence.
+ */
+export function assessMiraProviderBeforeSpend({model,mode,params,masterReferenceId}={}){
+  const name=String(model??'').trim().toLowerCase();
+  const kind=String(mode??'').trim().toLowerCase();
+  const p=params&&typeof params==='object'?params:{};
+  const base={contract:MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT,approved_for_publish:false,
+    actual_media_verified:false,requires_identity_and_motion_proofs:true,
+    output_requirement:'native-1080x1920-mp4-no-audio'};
+  if(masterReferenceId!=='Yjqu4D7v76HABNPmQPj1')
+    return {...base,ok:false,code:'MIRA_ORIGINAL_MASTER_REQUIRED'};
+  if(!['image2video','element2video'].includes(kind))
+    return {...base,ok:false,code:'MIRA_SOURCE_ANCHORED_GENERATION_REQUIRED'};
+  if(String(p.resolution??'').toLowerCase()!=='1080p'||Number(p.duration)!==8||Number(p.videoCount)!==1)
+    return {...base,ok:false,code:'MIRA_NATIVE_REEL_SETTINGS_REQUIRED'};
+  if(name==='wan2-7'&&kind==='image2video'){
+    return {...base,ok:false,code:'MIRA_WAN27_IMAGE_RATIO_NOT_EXACT_REEL',
+      observed:MIRA_WAN27_PROVIDER_OBSERVATION,
+      reason:'Wan 2.7 I2V resolution is a pixel-count tier. The provider preserves input aspect ratio; OpenArt Wan image2video has no aspect-ratio or mute output control. Actual 1080p result was 1292x1604 with audio.',
+      recommended_action:'Use a verified native-9:16, mute-capable provider mode with immutable Mira master, or obtain a separately approved original-master-preserving 9:16 input workflow.'};
+  }
+  // Only the observed Veo3.1 control surface has both explicit 9:16 and mute
+  // settings and a historical actual native 1080x1920 result. Its past face
+  // failures remain valid; compatibility here does NOT endorse retrying Veo.
+  if(name==='veo3-1'&&kind==='image2video'&&
+     p.aspectRatio==='9:16'&&p.generateAudio===false){
+    return {...base,ok:true,code:'FORMAT_CONTROLS_PROVEN_ONLY',
+      evidence:'Prior original OpenArt Veo3.1 image2video returned native 1080x1920 without audio; facial continuity still failed independent validation.',
+      do_not_reuse_rejected_history:true,
+      eligible_for_new_approved_candidate_only:true};
+  }
+  return {...base,ok:false,code:'MIRA_PROVIDER_OUTPUT_CONTRACT_UNPROVEN',
+    reason:'This model/mode has no independently verified native 1080x1920 and mute output contract for the canonical original master. Do not incur generation credits by guessing its response dimensions.',
+    recommended_action:'Inspect actual model form and producer controls, then add provider-backed exact-media evidence under the existing guarded PR before enabling spending.'};
+}
+
+
 // The previous real model prompts asked to lock the face and every facial pixel
 // throughout the video while the actual independent temporal gate required
 // natural visible HUMAN movement. Reject that impossible brief BEFORE credits
