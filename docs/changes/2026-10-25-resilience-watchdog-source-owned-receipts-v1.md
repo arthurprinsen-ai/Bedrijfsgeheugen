@@ -22,3 +22,9 @@ The assurance registry's expected cadence becomes **5 minutes**, matching the in
 - Full 15-loop GREEN and realized euro value remain **UNPROVEN**; this is only a bounded operational repair.
 
 Source of truth: [P0 #4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198).
+
+## Native Supabase clean-room acceptance: two pre-existing registry generations
+
+The first native preview migration failed safely with `RESILIENCE_ASSURANCE_OWNER_DRIFT` on 2026-10-25 10:52 UTC. Independent preview SQL showed `powerhouse_loop_assurance_registry_v1` still contains `execution-resilience` using the **original** `powerhouse-execution-resilience-watchdog-v1` job name and cadence **1 minute**. The real preview `cron.job` already has the **active** `powerhouse-runtime-scheduler-mux-v1`, whose source explicitly calls the watchdog at `m % 5 = 1`. Production instead has the mux registry at cadence **2 minutes**. This is clean-room migration-history drift, not a missing watchdog.
+
+The corrected migration accepts **only** these two demonstrated old states (legacy 1-minute registry or current mux 2-/5-minute registry) and only after checking the existing active mux job and its actual watchdog task in `pg_get_functiondef`. It then converges to mux + 5-minute task cadence. Unknown states fail closed; no new cron is created and no production DDL was applied manually. The revised HEAD must still pass native Supabase Preview and all protected checks.
