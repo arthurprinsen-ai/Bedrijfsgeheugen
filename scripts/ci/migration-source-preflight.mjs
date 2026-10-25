@@ -29,7 +29,15 @@ for (const file of walk(path.join(root, 'tests'))) {
     const item = { test: path.relative(root, file), path: `supabase/migrations/${name}`, line: source.slice(0, match.index).split('\n').length };
     report.missing.push(item);
     const archive = path.join(archiveDir, name);
-    if (fs.existsSync(archive) && fs.statSync(archive).size > 0 && fs.readFileSync(archive, 'utf8').trim()) {
+    // Read once rather than stat-then-read: archive may change between syscalls.
+    let archiveText = null;
+    try {
+      const stat = fs.lstatSync(archive);
+      if (stat.isFile() && !stat.isSymbolicLink()) archiveText = fs.readFileSync(archive, 'utf8');
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    if (archiveText?.trim()) {
       const suggestedPath = `supabase/migration-history/repository-only/${name}`;
       report.archivalCandidates.push({ ...item, suggestedPath });
       replacements.set(item.path, suggestedPath);
