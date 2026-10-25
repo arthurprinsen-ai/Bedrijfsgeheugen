@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "parent_issue": 4198,
+  "obligation_id": "portal:external-signals-customer-next-action:20261025-v1",
+  "fingerprint": "portal|external-signal|customer-next-action-and-deadline-visibility-gap|20261025-v1",
+  "failure_class": "PORTAL_EXTERNAL_SIGNAL_NEXT_ACTION_NOT_ACTIONABLE",
+  "observed_evidence": {
+    "source_repository": "portal-v2/modules/entrepreneur-intelligence.js",
+    "canonical_signal_count": 197,
+    "tenant_scored_impact_rows": 7,
+    "canonical_action_candidate_count": 121,
+    "tenant_action_count": 7,
+    "related_source": "bg_externe_signalen (1,169 rows, 176 allowed; latest fetch 2026-10-25)",
+    "failure": "Portal radar renders a source signal title and score but no immediately adjacent customer-specific why/next-step. General action candidate list is sorted by priority only and can crowd out tenant actions. Existing data-open-page=actieve-acties CTA lacked event binding in mountEntrepreneurIntelligence.",
+    "user_impact": "A customer can read general external market data but lacks a complete and safe signal-to-action decision."
+  },
+  "root_cause": "External radar UI separated general signal cards from action candidates and failed to bind data-open-page buttons. It did not differentiate a scored tenant exposure from canonical generic evidence, verify source URLs and publication-date recency before actionable wording, or suppress expired-deadline CTAs.",
+  "fix": "Reuse authenticated portal-state-eu entrepreneur_intelligence tenant projection and existing daily external source and company relationship agents. Render source, date, assessed tenant relevance, rationale, next step, status and linked executable action together. Bind the existing action-navigation button, prioritize tenant-specific candidates, never promote unverified generic news to a paid opportunity.",
+  "prevention_rules": [
+    "Only tenant-scored and source-verified records can present an existing linked company action as executable; otherwise explain missing context/source and ask for assessment.",
+    "Expired subsidies or dated publication cannot be marketed as an open opportunity; keep the source visible but warn the user and require current official verification.",
+    "External URLs in rendered cards must be absolute HTTPS, no embedded credentials or private/local targets; source content is escaped.",
+    "Never merge canonical generic action candidates into a tenant-specific proven outcome or infer paid revenue/connection consent.",
+    "Every displayed action CTA must have an actual event listener and an existing destination; no dummy buttons.",
+    "Keep one authenticated read path, source search scheduler, Brain registry and protected Required+CodeQL+Netlify release; no duplicate CRM, scheduler or records."
+  ],
+  "tests": [
+    "tests/brain-portal-external-source-action-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-external-source-action-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-external-source-action-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_EXTERNAL_SIGNAL_NEXT_ACTION_NOT_ACTIONABLE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required executes the six source/deadline/company/CTA regressions; CodeQL and protected merge succeed, Netlify deploy READY with exact SHA. Production authenticated tenant readback must independently show real source and next-step, never a fake marketing order or invented impact."
+}
