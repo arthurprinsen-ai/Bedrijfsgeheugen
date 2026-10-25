@@ -35,6 +35,9 @@
     ],
     "shadow": [
       "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
     ]
   },
   "test_evidence": [
