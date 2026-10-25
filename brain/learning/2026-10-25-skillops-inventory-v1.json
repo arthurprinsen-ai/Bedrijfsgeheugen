@@ -12,5 +12,17 @@
     "No portal dashboard deployed",
     "No production readback"
   ],
-  "next_action": "Protected CI merge only after Required and CodeQL pass"
+  "next_action": "Protected CI merge only after Required and CodeQL pass",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skillops-inventory.test.mjs"
+    ]
+  }
 }
