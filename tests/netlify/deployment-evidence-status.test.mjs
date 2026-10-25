@@ -29,3 +29,16 @@ test('missing evidence or explicit manual skip never becomes green', () => {
   assert.equal(classifyNetlifyDeploymentEvidence({applicability:{deploymentRequired:true},headSha:a}).status,'UNKNOWN');
   assert.equal(classifyNetlifyDeploymentEvidence({applicability:{deploymentRequired:false,reason:'explicit-no-deploy'},headSha:a,providerCommitSha:a,providerState:'ready'}).status,'UNKNOWN');
 });
+
+
+test('manual browser readback does not force a deployment for governance changes', () => {
+  const applicability=deriveNetlifyDeploymentApplicability({changedPaths:['.github/workflows/production-release-readback.yml','tools/delivery/netlify-deployment-applicability.mjs'],headSha:a,forceBrowser:true});
+  assert.equal(applicability.browserRequired,true);
+  assert.equal(applicability.deploymentRequired,false);
+  assert.equal(classifyNetlifyDeploymentEvidence({applicability,headSha:a,providerCommitSha:b,providerState:'ready'}).status,'NOT_REQUIRED');
+});
+
+test('manual browser check preserves necessary runtime deployment', () => {
+  const applicability=deriveNetlifyDeploymentApplicability({changedPaths:['netlify/functions/brain-operating-loop.mjs'],headSha:a,forceBrowser:true});
+  assert.equal(applicability.deploymentRequired,true);
+});
