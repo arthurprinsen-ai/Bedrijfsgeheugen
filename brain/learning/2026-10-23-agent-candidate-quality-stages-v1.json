@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|agents|seven-stage-innovation-quality-admission|20261023-v1",
+  "obligation_id": "delivery|agents|seven-stage-innovation-quality-admission|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "AUTONOMOUS_NEW_TECHNIQUE_WITHOUT_MEASURABLE_QUALITY_STAGES",
+  "root_cause": "Existing parallel engineering fabric validated shared main epoch, changed paths, dependent tests and writer conflicts, but innovation/model-upgrade proposals did not require an explicit source/baseline/replay/shadow/canary/rollback envelope before autonomous candidate planning.",
+  "observed_evidence": {
+    "parallel_fabric_source": "scripts/brain/parallel-engineering-fabric.mjs",
+    "portal_agent_intelligence_verified_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747",
+    "last_successful_ci_observation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "independent_external_references": [
+      "https://dora.dev/guides/dora-metrics/",
+      "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches"
+    ],
+    "caveat": "This is planning preflight only; metadata are not independently verified provider evidence. No business value or performance uplift has been demonstrated.",
+    "website_preview_status_403_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39940228593"
+  },
+  "fix": "Reuse the existing parallel-engineering fabric to evaluate innovation/model_upgrade/new_technique/autonomous_optimization packets before wave admission. Require exact canonical writer lease and captured SHA, 30-day source observation, baseline >=30 observations, executable canonical replay paths, shadow/control/canary/rollback plans, and tenant/CI/CodeQL/provider/cost security intent. Surface seven stage statuses and forbid claims of external verification or production promotion from self-authored metadata. Ordinary work packages retain the existing protected path. Companion repair in the original required website lane: when GitHub preview status is access denied (403/404) or rate-limited (429), select the pre-existing exact candidate local browser proof, never interpret the provider preview as green; preserve full browser checks.",
+  "failed_approaches": [
+    "Treat a source link or positive hypothesis as proven outcomes",
+    "Let an autonomous model upgrade run without existing experiment controls",
+    "Mark proposed shadow and canary plans as completed",
+    "Duplicate schedulers or weaken protected CI to ship innovations faster",
+    "Treat GitHub commit-status API 403 as an immediate release gate crash even though existing exact local browser fallback can still validate the immutable candidate"
+  ],
+  "prevention_rule": "Every explicit innovation/model upgrade/new technique/autonomous optimization work package must pass structure gate before entering the parallel development wave. Stage 1 is pre-registered, not provider-verified; replay, shadow, canary, protected release, outcome readback and canonical Brain writeback remain separate proof stages. No producer can self-approve a cost/permission/tenant boundary or mark customer outcomes proven without the original providers.",
+  "tests": [
+    "tests/brain-agent-quality-stages-v1.test.mjs",
+    "tests/brain-parallel-engineering-fabric.test.mjs",
+    "tests/brain-preview-read-denied-local-fallback-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "AUTONOMOUS_NEW_TECHNIQUE_WITHOUT_MEASURABLE_QUALITY_STAGES",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-quality-stages-v1.test.mjs",
+      "tests/brain-preview-read-denied-local-fallback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-agent-quality-stages-v1.test.mjs",
+      "tests/brain-preview-read-denied-local-fallback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-agent-quality-stages-v1.test.mjs",
+      "tests/brain-preview-read-denied-local-fallback-v1.test.mjs"
+    ],
+    "invariants": [
+      "new technique label with missing quality packet is blocked",
+      "candidate with canonical owner + controls may plan nonproduction replay only",
+      "false or stale source, out-of-range baseline, missing replay/control, risk high, or missing security/tenant protections fail closed",
+      "seven distinct stages never claim actual execution, promotion or business impact",
+      "existing unlabelled/legacy work packets keep original protected planning",
+      "no duplicate scheduler, agent, skill registry or automatic cost escalation",
+      "GitHub 403/404/429 preview-status observations never become green preview; exact candidate local browser tests remain mandatory"
+    ]
+  },
+  "terminal_rule": "Protected required checks and CodeQL on immutable candidate HEAD; merge only under branch protection, verify source on main, skill projection and existing Brain learning. Post-merge proof of admitted candidate planning does not prove production safety or customer revenue."
+}
