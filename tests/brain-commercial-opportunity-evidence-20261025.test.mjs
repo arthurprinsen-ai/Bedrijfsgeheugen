@@ -76,6 +76,12 @@ test('order is not payment, and payment may be counted only once with external r
   assert.equal(withPayment.observedRevenueEur,5000);
   assert.equal(withPayment.verifiedFunnel.order,1);
   assert.equal(withPayment.nextAction,'MEASURE_REALIZED_RESULT_AND_LEARN');
+  const secondId={...paid,outcome_id:'second-provider-event-for-same-payment'};
+  const deduped=qualifyCommercialOpportunity(opportunity(),{now,salesOutcomes:[paid,secondId]});
+  assert.equal(deduped.observedRevenueEur,5000,'same immutable payment may never double-count');
+  const contradictory={...secondId,revenue_eur:6000};
+  const conflict=qualifyCommercialOpportunity(opportunity(),{now,salesOutcomes:[paid,contradictory]});
+  assert.equal(conflict.observedRevenueEur,null,'mismatching amounts on the same receipt stay unverified');
 });
 
 test('old / future self-attested evidence never counts, and no-contact suppresses external action',()=>{
