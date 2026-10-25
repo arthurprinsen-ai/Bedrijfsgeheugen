@@ -41,7 +41,7 @@ WITH source_decisions AS (
         )
       )
     ),false) AS independently_proven,
-    (
+    COALESCE((
       decision='publish'
       AND state IN ('published','measured','learned')
       AND nullif(btrim(delivery_ref),'') IS NOT NULL
