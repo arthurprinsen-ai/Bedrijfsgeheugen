@@ -1,0 +1,39 @@
+{
+  "version": "2026-10-25-portal-external-source-next-action-v1",
+  "fingerprint": "portal|omgevingsradar|generic-signal-without-specific-next-action|20261025-v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "canonicalParent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "affectedSurface": "portal-v2/omgevingsradar",
+  "observedProduction": {
+    "date": "2026-10-25",
+    "cataloguedSources": 156,
+    "catalogueSourcesObserved24h": 3,
+    "canonicalSignals": 197,
+    "signalsObserved24h": 6,
+    "connectionsTotal": 23295,
+    "connectionsEnrichedToday": 17400,
+    "verifiedOrdersFromThisChange": null,
+    "verifiedRevenueFromThisChange": null
+  },
+  "rootCause": "Canonical signal and tenant impact/action candidates were shown separately, without exact signal_key matching, source state and tenant-specific next step on the same card.",
+  "fix": "Tenant-scoped advice derived from current authenticated authority only; unknown financial impact remains null; source freshness never inherited from snapshot refresh; canonical review is never displayed as assigned customer action.",
+  "prevention": [
+    "Always join action suggestions to the exact observed signal_key and tenant projection scope",
+    "Never promote general market signals into company impact without SCORED company_impacts evidence",
+    "Never display expected value as realized revenue",
+    "Never claim source visitation on the basis of catalogued source status or snapshot freshness",
+    "Keep absolute HTTPS source URLs, reject untrusted link schemes",
+    "Every release requires exact-head Required/CodeQL, protected merge and independent authenticated production readback"
+  ],
+  "regressionTests": [
+    "portal-v2/tests/external-signal-advice.test.mjs",
+    "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
+  ],
+  "nextVerification": [
+    "Check exact-head Required and CodeQL",
+    "Check Netlify deploy SHA equals protected merge SHA",
+    "Authenticated portal readback for scored and unscored tenants",
+    "Check existing daily source cadence and independently measured customer outcomes"
+  ],
+  "learningBoundary": "Code/test success is not production or revenue success; source catalogue availability is not daily crawl evidence."
+}
