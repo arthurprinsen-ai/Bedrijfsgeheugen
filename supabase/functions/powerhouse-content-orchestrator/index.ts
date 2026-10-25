@@ -707,7 +707,7 @@ Deno.serve(async (req) => {
     let fallbackReason:string|null=null;
     if(pending.channel==='instagram_company'&&resolvedMira?.kind==='approved_source_led'){
       // Reuse the immutable source-reviewed copy: no wasteful second generative draft.
-      artifact={title:'Mira: waar blijven kopieën van persoonsgegevens?',body:miraResolvedCaption(resolvedMira),cta:'Controleer ook de kopieën.',hook_type:'Herkenbare situatie',focus_keyword:'persoonsgegevens verwijderen',meta_description:'Fictieve Mira-situatie over verwijderverzoeken en achtergebleven kopieën.'};
+      artifact={title:resolvedMira.title,body:miraResolvedCaption(resolvedMira),cta:resolvedMira.cta,hook_type:'Herkenbare situatie',focus_keyword:resolvedMira.focus_keyword,meta_description:resolvedMira.meta_description};
       generationProvider='approved-frozen-source';
       generationModel='mira-source-led-deterministic-v1';
     }else{

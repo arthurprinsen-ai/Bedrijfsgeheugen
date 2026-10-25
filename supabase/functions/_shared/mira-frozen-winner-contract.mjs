@@ -20,6 +20,26 @@ const APPROVED_SOURCE_LED=Object.freeze({
    'De pointe: iets wissen is eenvoudig. Zeker weten dat het overal weg is, vraagt overzicht.',
    'Een fictieve Mira-situatie, geïnspireerd op een openbare klacht over persoonsgegevens. Geen echte klantervaring en geen bewezen uitkomst.'
   ].join('\n\n')
+ }),
+ '2026-10-25:0a56f150-2954-4355-a3d0-fc65396f8152':Object.freeze({
+  source_hash:'9d111ed60c5510e7fe41e8e9184c4055dd01363dd2ae78dc20c64845a1572665',
+  source_url:'https://www.nu.nl/auto/6227593/steeds-meer-betaalapps-voor-het-parkeren-dit-zijn-de-verschillen.html',
+  source_title:'Steeds meer betaalapps voor het parkeren: dit zijn de ...',
+  openart_history_id:'qAUQW2ZzqdasS0ePb1PD',
+  asset_url:'https://cdn.openart.ai/openart-ai/production/2026-10/create-video/WZvuT1BzGx566fWaFo8F/sample_0_1792920844481_30d6b469.mp4',
+  caption_contract:'mira-source-led-illustrated-parking-friction-v1',
+  scene:'Mira kijkt in een rustige Nederlandse werkkamer naar haar telefoon met meerdere generieke parkeerapp-icoontjes op een scherm; haar gezicht blijft onveranderd.',
+  title:'Mira: hoeveel parkeerapps heb je nodig?',
+  cta:'Hoeveel parkeerapps staan er op jouw telefoon?',
+  focus_keyword:'parkeerapps',
+  meta_description:'Een fictief herkenbaar Mira-moment over verschillende parkeerapps. Geen klantclaim of advies over een aanbieder.',
+  caption:[
+   'Parkeerplek gevonden. En dan moet je bedenken: met welke app betaal ik hier ook alweer?',
+   'Op de telefoon staan er meerdere. Ze lijken hetzelfde te doen, maar de keuze is niet altijd vanzelfsprekend.',
+   'Mira kijkt naar het scherm. Nog een icoontje erbij? Ze wilde gewoon haar auto parkeren.',
+   'De pointe: soms wordt iets eenvoudigs ingewikkeld door alle manieren waarop je het kunt regelen.',
+   'Een fictieve Mira-situatie, geïnspireerd op een NU.nl-artikel uit oktober 2022 over parkeerapps. Geen echte klantervaring of uitspraak over een specifieke parkeerapp.'
+  ].join('\n\n')
  })
 });
 const normalize = value => String(value??'').replace(/\s+/g,' ').trim();
@@ -33,7 +53,7 @@ export function miraResolvedCaption(resolved) {
 export function miraResolvedEvidence(resolved){
  if(resolved?.kind==='approved_source_led')return {
   contentPersona:'mira',contentClass:'mira_daily_life',fictional_scene:true,
-  caption_contract:MIRA_SOURCE_LED_CAPTION_CONTRACT,
+  caption_contract:resolved.caption_contract||MIRA_SOURCE_LED_CAPTION_CONTRACT,
   mira_source_led:true,mira_source_hash:resolved.source_hash,
   mira_winner_recommendation_id:resolved.winner_recommendation_id,
   mira_entrepreneur_scene:resolved.scene,mira_openart_history_id:resolved.openart_history_id,
@@ -48,7 +68,7 @@ export function validateResolvedMiraCaptionForDelivery(runDate,body,evidence={})
  const id=clean(evidence.mira_winner_recommendation_id);
  const approved=APPROVED_SOURCE_LED[runDate+':'+id];
  if(evidence.mira_source_led===true){
-  if(!approved||evidence.caption_contract!==MIRA_SOURCE_LED_CAPTION_CONTRACT||
+  if(!approved||evidence.caption_contract!==(approved.caption_contract||MIRA_SOURCE_LED_CAPTION_CONTRACT)||
     clean(evidence.mira_source_hash)!==approved.source_hash||
     clean(evidence.mira_entrepreneur_scene)!==approved.scene||
     clean(evidence.mira_openart_history_id)!==approved.openart_history_id||
@@ -100,7 +120,11 @@ export function resolveMiraFrozenWinner(runDate,{winner=null,lineage=null,recomm
       winner_recommendation_id:id,source_url:approved.source_url,
       source_hash:approved.source_hash,scene:approved.scene,
       caption:approved.caption,openart_history_id:approved.openart_history_id,asset_url:approved.asset_url,
-      caption_contract:MIRA_SOURCE_LED_CAPTION_CONTRACT};
+      caption_contract:approved.caption_contract||MIRA_SOURCE_LED_CAPTION_CONTRACT,
+      title:approved.title||'Mira: een herkenbare situatie',
+      cta:approved.cta||'Wat zou jij doen?',
+      focus_keyword:approved.focus_keyword||'dagelijks digitaal gedoe',
+      meta_description:approved.meta_description||'Een fictieve Mira-situatie geïnspireerd op een openbaar bericht.'};
   }
   const approvedId=clean(evidence.approved_canonical_problem_id);
   const approvedScene=clean(evidence.approved_mira_scene);
