@@ -27,6 +27,7 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
   const patch=(table,query,row)=>call(`/${table}?${query}`,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(row)});
   // Queue only within THIS invocation; durable writes still go to existing Supabase tables.
   const batch=createGrowthDailyBatch({upsert,patch,maxRows:40});
+  const scheduledOpportunityDates=new Map();
   return {
     async listInputs(){const [signals,keywords,bilingualKeywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes,growthEvents,growthPageDaily,seoSearch]=await Promise.all([
       read('bg_externe_signalen','select=*&toegestaan=eq.true&order=opgehaald_op.desc&limit=200'),
@@ -50,10 +51,10 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
     upsertOpportunity:r=>batch.queueUpsert('powerhouse_opportunities',r,'opportunity_key'),
     // Compare-and-set guarded by the exact opportunity and the original due-date cut-off:
     // a newer independently scheduled follow-up may never be overwritten.
-    scheduleOpportunity:(key,dueAt,cutoff)=>batch.queuePatch('powerhouse_opportunities',
-      'opportunity_key=eq.'+encodeURIComponent(key)+'&status=eq.open&or='+encodeURIComponent(
-        '(next_action_at.is.null,next_action_at.lte.'+cutoff+')'),
-      {next_action_at:dueAt,updated_at:new Date().toISOString()}),
+    scheduleOpportunity:(key,dueAt,cutoff)=>{
+      scheduledOpportunityDates.set(key,{key,dueAt,cutoff});
+      return Promise.resolve();
+    },
     recordDecision:r=>batch.queueUpsert('revenue_learning_decisions',r,'tenant_id,decision_id'),
     recordObligation:r=>batch.queueUpsert('revenue_learning_obligations',r,'tenant_id,obligation_id'),
     recordBrain:r=>batch.queueUpsert('brain_records',r,'tenant_id,record_id'),
@@ -61,7 +62,28 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
     recordApplication:r=>batch.queueUpsert('revenue_learning_applications',r,'tenant_id,application_id'),
     updateObligation:(id,row)=>batch.queuePatch('revenue_learning_obligations',`tenant_id=eq.canonical&obligation_id=eq.${encodeURIComponent(id)}`,row),
     reviewLearning:(id,row)=>batch.queuePatch('revenue_learnings',`tenant_id=eq.canonical&learning_id=eq.${encodeURIComponent(id)}`,row),
-    flush:()=>batch.flush()
+    flush:async()=>{
+      // Complete existing canonical upserts first: never race a generated opportunity
+      // upsert against its next-action-date update.
+      const durable=await batch.flush();
+      let applied=0,concurrent=0;
+      const items=[...scheduledOpportunityDates.values()];
+      for(let i=0;i<items.length;i+=4){
+        const group=await Promise.all(items.slice(i,i+4).map(async item=>{
+          const query='opportunity_key=eq.'+encodeURIComponent(item.key)+
+            '&status=eq.open&or='+encodeURIComponent(
+              '(next_action_at.is.null,next_action_at.lte.'+item.cutoff+')');
+          const rows=await patch('powerhouse_opportunities',query,{
+            next_action_at:item.dueAt,updated_at:item.cutoff
+          });
+          if(!Array.isArray(rows))throw new Error('FOLLOWUP_PROVIDER_READBACK_MISSING');
+          return rows.length===1;
+        }));
+        applied+=group.filter(Boolean).length;
+        concurrent+=group.filter(v=>!v).length;
+      }
+      return {...durable,followupDatesApplied:applied,followupDatesConcurrentlyChanged:concurrent};
+    }
   };
 }
 
