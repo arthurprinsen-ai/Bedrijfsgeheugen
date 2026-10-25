@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { classifyNetlifyDeploymentEvidence, deriveNetlifyDeploymentApplicability } from '../../tools/delivery/netlify-deployment-applicability.mjs';
 
 const a='a'.repeat(40), b='b'.repeat(40);
@@ -39,6 +40,6 @@ test('manual browser readback does not force a deployment for governance changes
 });
 
 test('manual browser check preserves necessary runtime deployment', () => {
-  const applicability=deriveNetlifyDeploymentApplicability({changedPaths:['netlify/functions/brain-operating-loop.mjs'],headSha:a,forceBrowser:true});
+  const applicability=deriveNetlifyDeploymentApplicability({changedPaths:['netlify/functions/brain-operating-loop.mjs'],headSha:a,forceBrowser:true,policy:JSON.parse(readFileSync('config/brain-delivery-system.json','utf8'))});
   assert.equal(applicability.deploymentRequired,true);
 });
