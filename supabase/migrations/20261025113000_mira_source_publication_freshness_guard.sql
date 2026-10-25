@@ -100,7 +100,7 @@ begin
 
   return jsonb_build_object('ok',true,'state','RECOMMENDATION_MATERIALIZED','run_date',p_date,
     'signal_id',s.signal_id,'recommendation_id',rid,'score',s.total_score,'source_url',s.source_url);
-end $function$
+end $function$;
 
 REVOKE EXECUTE ON FUNCTION public.powerhouse_materialize_mira_problem_recommendation_v1(date) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_materialize_mira_problem_recommendation_v1(date) TO service_role;
