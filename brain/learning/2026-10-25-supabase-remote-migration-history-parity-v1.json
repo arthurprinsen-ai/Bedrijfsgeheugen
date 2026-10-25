@@ -18,11 +18,13 @@
     "production_company_news_candidate_limit": 1500,
     "production_acl_anon": false,
     "production_acl_authenticated": false,
-    "production_acl_service_role": true
+    "production_acl_service_role": true,
+    "original_unapplied_version": "20261025110200",
+    "resequenced_unapplied_version": "20261025130000"
   },
   "root_cause": "An already-applied manual/provider migration recorded a second timestamp for precisely the same SQL after its canonical Git version was applied. Supabase native GitHub main deploy compared the remote ledger to local migrations and stopped before deploying the commercial provider-proof SQL.",
-  "fix": "Reconstruct the exact already-applied SQL as a historical 20261025112658 Git migration, byte identical to 20261025101500, so protected GitOps replay and remote version history reconcile without changing production data or editing migration tracking directly.",
-  "prevention_rule": "Prohibit parallel manual/provider and native main migration releases. A single authorized Git version is release authority. Before release compare local/remote version identities, exact source and actual function/grant readback, hold if any remote-only identities appear; never issue a duplicate provider write. Historical remote-only entries require guarded, independently verified provider/GitOps parity repair.",
+  "fix": "Reconstruct exact already-applied remote 20261025112658 SQL byte-for-byte as historical Git migration; resequence the never-applied 20261025110200 publisher-proof SQL to 20261025130000 with identical SQL bytes so native chronological migrations remain monotonic. Preserve production migration history unchanged; deploy only through protected GitOps.",
+  "prevention_rule": "Reject remote-only version drift and a local-only migration older than the latest remote version; one authorized migration release owner, no direct/manual and native concurrent apply. Historical already-applied version is reconstructed verbatim; pending not-yet-applied migrations may be resequenced with exact SQL identity and audited lineage.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
@@ -32,17 +34,17 @@
     ],
     "canary": [
       "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
-    ]
+    ],
+    "resequence_only_when_unapplied": true
   },
   "test_evidence": [
     "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
   ],
   "productionVerificationsRequired": [
-    "exact-head Required, CodeQL, native Supabase preview",
-    "protected merge",
-    "native production migration deploy after version parity",
-    "schema_migrations contains 20261025110200",
-    "powerhouse_execution_status(date) deployed SQL and real canonical publication readback"
+    "Exact-head Required + CodeQL + Supabase preview and chronological replay",
+    "Protected merge of reconciled Git migration history",
+    "Native production deploy installs previously unapplied 20261025130000",
+    "Deployed powerhouse_execution_status(date) preserves independent proof and terminal ACK distinction"
   ],
   "compiler": {
     "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
