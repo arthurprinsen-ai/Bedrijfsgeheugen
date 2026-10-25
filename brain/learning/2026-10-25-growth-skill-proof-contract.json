@@ -24,5 +24,23 @@
     "advisory-library-only",
     "no-proof-of-live-daily-research",
     "no-proof-of-actual-revenue"
-  ]
+  ],
+  "fingerprint": "growth-skill-proof-contract-20261025",
+  "compiler": {
+    "failure_class": "AGENT_SKILL_PROOF_CONTRACT_MISSING"
+  },
+  "root_cause": "Growth Intelligence production library evidence was not expressly mandated as runtime skill and agent usage evidence in global agent instructions.",
+  "prevention": "Require source evidence, tenant isolation, independent readback, verified release status and evaluated skill projection for every Growth Intelligence handoff.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-skill-proof-contract.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Previous PR admission failed LEARNING_FAILURE_CLASS_REQUIRED; canonical failure class restored.",
+    "pending": "Required, CodeQL, protected merge and production readback required."
+  },
+  "production_readback": {
+    "verified": false
+  }
 }
