@@ -8,7 +8,7 @@
   "prevention": "Classify deployment applicability independently from provider commit equality; never call a skipped build a production failure or matching SHA complete runtime verification.",
   "evaluation": {
     "historical_replay": [
-      "tests/netlify/deployment-evidence-status.test.mjs"
+      "tests/brain-netlify-deployment-evidence-status.test.mjs"
     ]
   },
   "evidence": {
