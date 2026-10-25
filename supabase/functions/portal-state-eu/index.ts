@@ -165,7 +165,7 @@ Deno.serve(async(req:Request)=>{
     const daysByDate=new Map<string,any>();
     for(const row of rows){
       const date=String(row.evaluated_at||'').slice(0,10);
-      if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date))continue;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;
       const record=daysByDate.get(date)||{date,exposures:0,clicks:0,leads:0,qualifiedLeads:0,meetings:0,proposals:0,reportedOrders:0,verifiedOrders:0,verifiedRevenueEur:0};
       const safe=(v:any)=>Number.isFinite(Number(v))&&Number(v)>0?Number(v):0;
       record.exposures+=safe(row.exposures);
