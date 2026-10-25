@@ -11,3 +11,7 @@
 ## Existing CI admission learning — bounded progressive disclosure
 
 The original historical replay intentionally failed: a social-lane preflight serialized 277,017 bytes against the canonical 256,000-byte cap. The same PR now bounds the directly selected learning payload (up to 64 KiB), always retains mandatory and exact-fingerprint items, and records every deferred count/digest plus the canonical lazy-load source. This is not permission to drop mandatory evidence, expand context limits silently or call a partial selection complete. The regression exercises the real social-lane packet and its retained 256 KB cap.
+
+## Contract-compatibility replay
+
+Automation lane in actual Required run 40197132828 passed 94/95 Brain test files; the remaining `test-chat-learning-preflight-compiler.mjs` expected the existing `maxBytes` fail-closed error family under a deliberately impossible budget. The selector now retains the same `maxBytes exceeded` error classification and additionally identifies the mandatory skill fingerprint. No capacity expansion, no ignored prevention, no skipped gate.
