@@ -8,7 +8,7 @@
   "prevention": "Reuse canonical Repository Janitor comparison, produce deterministic owner-guarded reconstruction advice and validate source-derived System Map before exact-head protected release.",
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-current-main-reconstruction.test.mjs"
+      "tests/brain-current-main-reconstruction.test.mjs"
     ]
   },
   "evidence": {
