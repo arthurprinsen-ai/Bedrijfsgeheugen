@@ -29,6 +29,9 @@ test('provider-create ack and permission limitation never forge independently re
   assert.match(migration,/COALESCE\(\(/);
   assert.match(migration,/false\) AS independently_proven/);
   assert.match(migration,/false\) AS terminal_permission_limited_ack/);
+  // Fail closed on the exact SQL parser regression observed in native preview.
+  assert.match(migration,/\),false\) AS independently_proven,\s+COALESCE\(\(\s+decision='publish'/);
+  assert.doesNotMatch(migration,/\),false\) AS independently_proven,\s+\(\s+decision='publish'/);
 });
 test('a channel hold is not a fabricated publish, and day remains protected by separate publication/predictive guards',()=>{
   assert.match(migration,/decision='publish'/);
