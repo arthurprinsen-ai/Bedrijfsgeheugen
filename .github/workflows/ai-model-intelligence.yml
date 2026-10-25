@@ -3,12 +3,6 @@ on:
   schedule:
     - cron: '17 5 * * *'
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'data/ai-model-catalog-v1.json'
-      - 'scripts/ai-model-freshness-watch.mjs'
-      - 'scripts/ai-model-source-probe.mjs'
-      - '.github/workflows/ai-model-intelligence.yml'
   push:
     branches: [main]
     paths:
