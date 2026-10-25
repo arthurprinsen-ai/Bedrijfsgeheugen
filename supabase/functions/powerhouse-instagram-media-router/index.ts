@@ -107,6 +107,27 @@ Deno.serve(async req=>{
   if(!validMiraGenerationReference(manifest))return json({ok:false,error:'MIRA_CANONICAL_REFERENCE_VIDEO_REQUIRED',allowed_generation_modes:MIRA_ALLOWED_REFERENCE_VIDEO_MODES,master_reference_id:MIRA_MASTER_REFERENCE_ID,master_reference_url:MIRA_MASTER_REFERENCE_URL},422);
   if(!allowed.includes(provider))return json({ok:false,error:'MEDIA_PROVIDER_NOT_ALLOWED',provider,postType},422);
   if(policy?.required_provider&&provider!==policy.required_provider)return json({ok:false,error:'MEDIA_PROVIDER_REQUIRED',required:policy.required_provider},422);
+
+  // Never re-verify a previously rejected OpenArt history. The previous policy
+  // compared only with the LAST error, so swapping between two failed histories
+  // could repeatedly invoke chargeable video-frame vision. Read the canonical
+  // immutable Brain occurrence trail across ALL publication days first.
+  // Absence of readable proof is not proof that a rejected asset is eligible.
+  if(postType==='reel'){
+    const proposedHistory=clean(manifest.openart_history_id);
+    if(!/^[A-Za-z0-9]{8,64}$/.test(proposedHistory))
+      return json({ok:false,error:'MIRA_OPENART_HISTORY_REQUIRED_FOR_DEDUPE'},422);
+    const rejectedPrefix='router:openart:'+proposedHistory+':instagram:';
+    const {data:priorRejects,error:priorRejectError}=await db.from('brain_failure_occurrences')
+      .select('occurrence_id').like('occurrence_id',rejectedPrefix+'%').limit(1);
+    if(priorRejectError)return json({ok:false,error:'MIRA_REJECTED_HISTORY_READBACK_UNAVAILABLE'},503);
+    if(priorRejects?.length)return json({
+      ok:false,error:'MIRA_OPENART_HISTORY_PREVIOUSLY_REJECTED',
+      openart_history_id:proposedHistory,
+      proof:'CANONICAL_BRAIN_REJECTED_HISTORY',
+      next_action:'Do not regenerate, re-verify or publish these exact rejected bytes. The original source-locked producer must propose a genuinely new candidate within its budget.'
+    },422);
+  }
   let proof:any={};
 
   if(postType==='image'){
