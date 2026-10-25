@@ -30,5 +30,17 @@
     "historical_replay": [
       "tests/brain-merge-capability-guard.test.mjs"
     ]
+  },
+  "fingerprint": "github|merge-queue|user-owned-repository|422|20261025-v1",
+  "root_cause": "Native GitHub Merge Queue rule was submitted to a personal User-owned repository despite feature ineligibility.",
+  "prevention_rules": [
+    "Check live owner.type and feature eligibility before preparing ruleset payload",
+    "Reject merge_queue on User-owned repositories and halt identical 422 retries",
+    "Use protected pull request and exact-head checks without bypass"
+  ],
+  "test_evidence": {
+    "historical_replay": "tests/brain-merge-capability-guard.test.mjs",
+    "run_status": "CI replay success observed on prior Required run; latest exact-head verification pending",
+    "provider_production_readback": "NOT_VERIFIED"
   }
 }
