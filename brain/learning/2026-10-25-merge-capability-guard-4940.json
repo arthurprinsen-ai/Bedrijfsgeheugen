@@ -18,5 +18,17 @@
     "Not yet integrated into actual ruleset writer",
     "Required and CodeQL plus merge and production readback not proven on new head"
   ],
-  "lesson": "Validate repository capabilities before constructing ruleset mutations; fail closed for unverified feature entitlement."
+  "lesson": "Validate repository capabilities before constructing ruleset mutations; fail closed for unverified feature entitlement.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-merge-capability-guard.test.mjs"
+    ]
+  }
 }
