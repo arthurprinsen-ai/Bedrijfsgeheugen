@@ -9,6 +9,8 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'data/ai-model-stale-review-worklist-20261025.json': 'automation',
+  'tests/brain-ai-model-stale-worklist.test.mjs': 'automation',
   'tools/growth-intelligence/decision-core.mjs': 'automation',
   'tools/growth-intelligence/decision-core.test.mjs': 'automation',
   'tools/growth-intelligence/heartbeat-adapter.mjs': 'automation',
@@ -18,6 +20,8 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 
   'config/powerhouse-adaptive-delivery-v1.json': 'backend',
   'AGENTS.md': 'automation',
+  'scripts/brain/skill-byte-audit.mjs': 'automation',
+  'tests/brain-skill-byte-audit.test.mjs': 'automation',
   'tools/brain/agent-skill-execution-evidence.mjs': 'automation',
   'tests/agent-skill-execution-evidence.test.mjs': 'automation',
   'tests/brain-agent-skill-execution-evidence.test.mjs': 'automation',

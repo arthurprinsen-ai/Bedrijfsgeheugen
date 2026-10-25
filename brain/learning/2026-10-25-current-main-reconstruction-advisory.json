@@ -1,0 +1,22 @@
+{
+  "fingerprint": "delivery|current-main-reconstruction|owner-safe-advisory|20261025-v1",
+  "compiler": {
+    "failure_class": "PR_DRIFT_WITH_SHARED_SYSTEM_MAP",
+    "scope": "CI"
+  },
+  "root_cause": "Repeated stale PR integration compounded by source inventory drift and incomplete admission writeback.",
+  "prevention": "Reuse canonical Repository Janitor comparison, produce deterministic owner-guarded reconstruction advice and validate source-derived System Map before exact-head protected release.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-current-main-reconstruction.test.mjs"
+    ]
+  },
+  "evidence": {
+    "implementation_commit": "af5cba5013957555187d48b77af1f3864d34da6d",
+    "required": "FAILURE_INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "codeql": "SUCCESS_ON_PREVIOUS_HEAD",
+    "production_readback": "NOT_VERIFIED",
+    "merge": "NOT_MERGED"
+  },
+  "regression_contract": "No cross-owner writes, no synthetic green, System Map generator and Required/BRAIN/CodeQL must run on final exact head"
+}
