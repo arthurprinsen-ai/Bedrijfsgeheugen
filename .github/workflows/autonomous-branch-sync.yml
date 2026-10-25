@@ -1,0 +1,67 @@
+name: Autonomous Branch Sync
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: autonomous-branch-sync
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    if: github.repository == 'arthurprinsen-ai/Bedrijfsgeheugen'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Reconcile open branches with current main (native GitHub API)
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            let updated = 0, current = 0, blocked = 0, skipped = 0;
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', base: 'main', per_page: 100
+            });
+            for (const pr of prs) {
+              // Never mutate forks or draft work without the branch owner's approval.
+              if (pr.draft || pr.head.repo?.full_name !== context.repo.owner + '/' + repo) {
+                skipped++;
+                continue;
+              }
+              // Observe every PR, but mutate only branches explicitly enrolled by their owners.
+              // No automatic update of another agent's branch without an opt-in label.
+              const optedIn = (pr.labels || []).some(label => label.name === 'autonomous-sync');
+              if (!optedIn) {
+                core.info(`PR #${pr.number}: not enrolled in autonomous-sync; read-only`);
+                skipped++;
+                continue;
+              }
+              try {
+                const comparison = await github.rest.repos.compareCommits({
+                  owner, repo, base: 'main', head: pr.head.ref
+                });
+                const behind = comparison.data.behind_by;
+                if (behind === 0) { current++; continue; }
+                core.info(`PR #${pr.number} behind main by ${behind} commits; requesting safe GitHub-native update`);
+                // expected_head_sha is a compare-and-swap lease: never overwrite newer work.
+                await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch', {
+                  owner, repo, pull_number: pr.number,
+                  expected_head_sha: pr.head.sha
+                });
+                updated++;
+              } catch (error) {
+                blocked++;
+                core.warning(`PR #${pr.number} not safely updated: ${error.status || 'unknown'} ${error.message}`);
+              }
+            }
+            const report = `Autonomous Branch Sync: ${prs.length} open PRs; ${updated} native update requests accepted, ${current} current, ${blocked} blocked, ${skipped} skipped. Accepted is not verified: check PR-head SHA and Required checks before claiming success.`;
+            core.summary.addHeading('Branch synchronization evidence').addRaw(report).write();
+            if (blocked > 0) core.setFailed(report);
