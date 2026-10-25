@@ -55,8 +55,8 @@ test('original router exposes read-only authorized generation_preflight BEFORE s
  const submit=s.indexOf("if(action==='submit_asset')",pre);
  assert.ok(pre>0&&submit>pre);
  assert.match(s,/assessMiraProviderBeforeSpend\(\{/);
- assert.match(s,/const eligible=config\\.ok&&\\(derivedInput===null\\|\\|derivedInput\\.ok===true\\)/);
- assert.match(s,/eligible\\?200:422/);
+ assert.match(s,/const eligible=config\.ok&&\(derivedInput===null\|\|derivedInput\.ok===true\)/);
+ assert.match(s,/eligible\?200:422/);
  assert.match(s,/MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED/);
  assert.match(s,/A passing output-config or derived-input check is NOT final visual proof/);
 });
