@@ -22,3 +22,7 @@ Een agent mag een nieuwe technologie/skill alleen promoten met verifieerbare off
 
 ## Productie-acceptatie
 Exact-head Required + CodeQL, beschermde merge, Skill Projection-main-run en vervolgende preflight-readback. De source-digest bewijst **wel detectie**, maar **geen werkelijk geladen skill**. Pas een aparte activity/readback-receipt kan applicatie bewijzen. Geen onterechte FULL_GREEN-claim voor Instagram/omzet.
+
+## Existing CI admission learning — bounded progressive disclosure
+
+The original historical replay intentionally failed: a social-lane preflight serialized 277,017 bytes against the canonical 256,000-byte cap. The same PR now bounds the directly selected learning payload (up to 64 KiB), always retains mandatory and exact-fingerprint items, and records every deferred count/digest plus the canonical lazy-load source. This is not permission to drop mandatory evidence, expand context limits silently or call a partial selection complete. The regression exercises the real social-lane packet and its retained 256 KB cap.
