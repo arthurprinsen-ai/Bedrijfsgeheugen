@@ -18,7 +18,7 @@
   "closure": "OPEN",
   "evaluation": {
     "historical_replay": [
-      "tests/netlify/deployment-evidence-status.test.mjs"
+      "tests/brain-netlify-deployment-evidence-status.test.mjs"
     ]
   },
   "scope": "CI",
@@ -30,7 +30,7 @@
   },
   "evidence": {
     "required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40233753638",
-    "historical_replay": "tests/netlify/deployment-evidence-status.test.mjs",
+    "historical_replay": "tests/brain-netlify-deployment-evidence-status.test.mjs",
     "production_readback": "PENDING"
   }
 }
