@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
@@ -87,11 +87,19 @@ Deno.serve(async req=>{
 
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
+  // A real identity rejection permits a DIFFERENT source-matched candidate to
+  // enter the exact same independent verifier. It never approves that candidate.
+  // Editorial winner, source hash, frozen scene and master identity remain fixed.
+  const replacementEligible=sourceLed&&eligibleSourceLedMediaReplacement({
+   resolved:winnerContract,job,ob,manifest
+  });
   const storyMatches=clean(manifest.scene)===expectedScene
    &&(!winnerContract.winner_recommendation_id||clean(manifest.recommendation_id)===winnerContract.winner_recommendation_id)
    &&(sourceLed
-     ? (!clean(manifest.canonical_problem_id) && clean(manifest.asset_url||manifest.assetUrl)===winnerContract.asset_url
-       && clean(manifest.openart_history_id)===winnerContract.openart_history_id)
+     ? (!clean(manifest.canonical_problem_id) && (
+       (clean(manifest.asset_url||manifest.assetUrl)===winnerContract.asset_url
+        &&clean(manifest.openart_history_id)===winnerContract.openart_history_id)
+       ||replacementEligible))
      : clean(manifest.canonical_problem_id)===expectedProblemId);
   if(!storyMatches)return json({ok:false,error:'MIRA_MEDIA_MUST_MATCH_FROZEN_WINNER_SCENE_AND_EXACT_ASSET',
    expected_problem_id:expectedProblemId,winner_recommendation_id:winnerContract.winner_recommendation_id},422);
@@ -133,7 +141,22 @@ Deno.serve(async req=>{
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
    const temporalCheck=await invoke(base,token,'powerhouse-instagram-temporal-verifier',{publicationDate:runDate,videoSha256:final.sha256,frames});
-   if(!temporalCheck.body?.pass)return json({ok:false,error:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',detail:temporalCheck.body},422);
+   if(!temporalCheck.body?.pass){
+     // A transport error is not a measured temporal quality failure.
+     // Preserve genuine rejected candidate history under the existing Brain.
+     const verdict=temporalCheck.body?.temporal_proof||{};
+     if(temporalCheck.http===200&&temporalCheck.body?.ok===true
+        &&verdict.verified===false
+        &&Number.isFinite(Number(verdict.confidence))){
+       const diagnostic=await recordMediaProofRejection(db,{
+         job,ob,code:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',position:'temporal',
+         historyId:manifest.openart_history_id,confidence:verdict.confidence
+       });
+       if(diagnostic.kind==='failed'||diagnostic.kind==='partial')
+         console.error('MIRA_TEMPORAL_REJECTION_DIAGNOSTIC_FAILED',diagnostic.code);
+     }
+     return json({ok:false,error:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',detail:temporalCheck.body},422);
+   }
    const temporal=temporalCheck.body.temporal_proof||{};
    const temporalRefs=Array.isArray(temporal.evidence_refs)?temporal.evidence_refs.map(clean).filter(Boolean):[];
    if(!['start','middle','end'].every(position=>fps.some(frame=>frame.position===position&&miraFaceProofValid(frame,'image'))))return json({ok:false,error:'MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES'},422);

@@ -1,7 +1,7 @@
 // One frozen winner governs Instagram media and caption lineage. Never replace
 // an externally sourced daily problem with an unrelated modulo PH-P rotation.
 import {MIRA_CASES,selectMiraProblem,miraCaption as legacyCaption,miraProductionEvidence as legacyEvidence,validateMiraCaptionForDelivery as legacyValidate} from './mira-entrepreneur-caption.mjs';
-import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL} from './mira-canonical-face.mjs';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid,validMiraGenerationReference} from './mira-canonical-face.mjs';
 // Source-specific editorial approval is immutable repository policy, NOT a
 // user-controllable property of the external complaint/recommendation.
 export const MIRA_SOURCE_LED_CAPTION_CONTRACT='mira-source-led-illustrated-privacy-case-v1';
@@ -42,6 +42,79 @@ const APPROVED_SOURCE_LED=Object.freeze({
   ].join('\n\n')
  })
 });
+
+/**
+ * A frozen winner fixes the editorial source and scene, not a demonstrably
+ * rejected OpenArt generation forever. This is ONLY an admission to run the
+ * existing independent final-media verifier, never a PASS or publish right.
+ */
+export function eligibleSourceLedMediaReplacement({resolved,job,ob,manifest}={}){
+ const previous=job?.asset_manifest||{};
+ const rejected=String(job?.last_error||'');
+ const qualityRejection=/(?:VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH|MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED)/.test(rejected);
+ const rejectedHistory=/:openart=([A-Za-z0-9]+)$/.exec(rejected)?.[1]||'';
+ const next=manifest||{};
+ const original=String(resolved?.original_openart_history_id||resolved?.openart_history_id||'');
+ const newUrl=String(next.asset_url||'');
+ return resolved?.kind==='approved_source_led'
+  &&job?.status==='WAITING_PROOF'
+  &&qualityRejection
+  &&Boolean(rejectedHistory)
+  &&String(next.openart_history_id||'')!==rejectedHistory
+  &&previous.source_led_auto_verify_started===true
+  &&String(previous.openart_history_id||'')===original
+  &&(!job?.proof_manifest?.exact_final_media_proven)
+  &&!ob?.external_id&&!ob?.live_proven_at&&!ob?.evidence?.republish_forbidden
+  &&job?.republish_forbidden!==true
+  &&String(next.recommendation_id||'')===String(resolved.winner_recommendation_id)
+  &&String(next.daily_winner_recommendation_id||'')===String(resolved.winner_recommendation_id)
+  &&String(next.scene||'')===String(resolved.scene)
+  &&String(next.replacement_of_openart_history_id||'')===original
+  &&String(next.openart_history_id||'')!==original
+  &&Boolean(String(next.openart_history_id||''))
+  &&String(next.openart_project_id||'')===String(previous.openart_project_id||'')
+  &&Boolean(String(next.openart_project_id||''))
+  &&next.generation_mode==='image2video'
+  &&validMiraGenerationReference(next)
+  &&newUrl.startsWith('https://cdn.openart.ai/')
+  &&newUrl.endsWith('.mp4')
+  &&newUrl!==String(resolved.asset_url||'');
+}
+
+/**
+ * Promote only evidence written by the SAME canonical router after real
+ * SHA-256, three-frame master-face and temporal verification. Never trust
+ * a proposed replacement's input metadata as production media truth.
+ */
+export function verifiedSourceLedMediaReplacement(approved,winnerId,job){
+ const manifest=job?.asset_manifest||{};
+ const proof=job?.proof_manifest||{};
+ const url=String(manifest.asset_url||''),id=String(manifest.openart_history_id||'');
+ const valid= ['PROOF_VERIFIED','READY_TO_PUBLISH','LIVE_PROVEN'].includes(String(job?.status||''))
+  &&job?.republish_forbidden!==true
+  &&!job?.replacement_of_external_id
+  &&manifest.replacement_of_openart_history_id===approved.openart_history_id
+  &&id&&id!==approved.openart_history_id
+  &&url.startsWith('https://cdn.openart.ai/')&&url.endsWith('.mp4')
+  &&url!==approved.asset_url
+  &&validMiraGenerationReference(manifest)
+  &&proof.exact_final_media_proven===true
+  &&proof.mira_source_led===true
+  &&proof.mira_source_hash===approved.source_hash
+  &&proof.mira_winner_recommendation_id===winnerId
+  &&proof.mira_entrepreneur_scene===approved.scene
+  &&proof.media_provider==='openart'&&proof.media_type==='reel'
+  &&proof.media_url===url
+  &&proof.mira_generation_source?.openart_history_id===id
+  &&proof.mira_generation_source?.openart_reference_id===MIRA_MASTER_REFERENCE_ID
+  &&proof.mira_generation_source?.openart_reference_url===MIRA_MASTER_REFERENCE_URL
+  &&/^[a-f0-9]{64}$/.test(String(proof.final_media_sha256||''))
+  &&proof.temporal_proof?.verified===true
+  &&miraFaceProofValid(proof.instagram_visual||{},'reel');
+ return valid?{asset_url:url,openart_history_id:id,
+  replacement_media_verified:true,original_openart_history_id:approved.openart_history_id}:null;
+}
+
 const normalize = value => String(value??'').replace(/\s+/g,' ').trim();
 export function miraResolvedCaption(resolved) {
  if(resolved?.kind==='approved_source_led')return resolved.caption;
@@ -58,6 +131,7 @@ export function miraResolvedEvidence(resolved){
   mira_winner_recommendation_id:resolved.winner_recommendation_id,
   mira_entrepreneur_scene:resolved.scene,mira_openart_history_id:resolved.openart_history_id,
   mira_source_asset_url:resolved.asset_url,
+  mira_replacement_of_openart_history_id:resolved.replacement_media_verified===true?resolved.original_openart_history_id:null,
   source_evidence_status:'FROZEN_PUBLIC_EXTERNAL_SOURCE',
   source_url:resolved.source_url
  };
@@ -68,15 +142,36 @@ export function validateResolvedMiraCaptionForDelivery(runDate,body,evidence={})
  const id=clean(evidence.mira_winner_recommendation_id);
  const approved=APPROVED_SOURCE_LED[runDate+':'+id];
  if(evidence.mira_source_led===true){
+  const proof=evidence.instagram_media_proof||{};
+  const approvedOriginal=clean(evidence.mira_openart_history_id)===approved?.openart_history_id
+    &&clean(evidence.mira_source_asset_url)===approved?.asset_url
+    &&!clean(evidence.mira_replacement_of_openart_history_id);
+  const verifiedReplacement=!!approved
+    &&clean(evidence.mira_replacement_of_openart_history_id)===approved.openart_history_id
+    &&clean(evidence.mira_openart_history_id)!==approved.openart_history_id
+    &&clean(evidence.mira_source_asset_url)!==approved.asset_url
+    &&clean(evidence.mira_source_asset_url).startsWith('https://cdn.openart.ai/')
+    &&proof.exact_final_media_proven===true
+    &&proof.mira_source_led===true
+    &&clean(proof.mira_source_hash)===approved.source_hash
+    &&clean(proof.mira_winner_recommendation_id)===id
+    &&clean(proof.mira_entrepreneur_scene)===approved.scene
+    &&clean(proof.media_url)===clean(evidence.mira_source_asset_url)
+    &&clean(proof.mira_generation_source?.openart_history_id)===clean(evidence.mira_openart_history_id)
+    &&clean(proof.mira_generation_source?.openart_reference_id)===MIRA_MASTER_REFERENCE_ID
+    &&clean(proof.mira_generation_source?.openart_reference_url)===MIRA_MASTER_REFERENCE_URL
+    &&/^[a-f0-9]{64}$/.test(clean(proof.final_media_sha256))
+    &&proof.temporal_proof?.verified===true
+    &&miraFaceProofValid(proof.instagram_visual||{},'reel');
   if(!approved||evidence.caption_contract!==(approved.caption_contract||MIRA_SOURCE_LED_CAPTION_CONTRACT)||
     clean(evidence.mira_source_hash)!==approved.source_hash||
     clean(evidence.mira_entrepreneur_scene)!==approved.scene||
-    clean(evidence.mira_openart_history_id)!==approved.openart_history_id||
-    clean(evidence.mira_source_asset_url)!==approved.asset_url||
+    !(approvedOriginal||verifiedReplacement)||
     clean(evidence.source_url)!==approved.source_url||
     normalize(body)!==normalize(approved.caption))
    return {ok:false,reason:'MIRA_FROZEN_SOURCE_LED_CAPTION_PROOF_FAILED'};
-  return {ok:true,kind:'approved_source_led',winner_recommendation_id:id};
+  return {ok:true,kind:'approved_source_led',winner_recommendation_id:id,
+   verified_replacement:verifiedReplacement};
  }
  if(id)return {ok:false,reason:'MIRA_FROZEN_WINNER_REQUIRES_EXPLICIT_CAPTION_ROUTE'};
  return legacyValidate(runDate,body,evidence);
@@ -116,10 +211,14 @@ export function resolveMiraFrozenWinner(runDate,{winner=null,lineage=null,recomm
       clean(source.source_url)!==approved.source_url||
       clean(evidence.source_title)!==approved.source_title)
       return blocked('SOURCE_BACKED_MIRA_SCENE_ROUTE_REQUIRED',id);
+    const replacement=verifiedSourceLedMediaReplacement(approved,id,job);
     return {ok:true,kind:'approved_source_led',
       winner_recommendation_id:id,source_url:approved.source_url,
       source_hash:approved.source_hash,scene:approved.scene,
-      caption:approved.caption,openart_history_id:approved.openart_history_id,asset_url:approved.asset_url,
+      caption:approved.caption,openart_history_id:replacement?.openart_history_id||approved.openart_history_id,
+      asset_url:replacement?.asset_url||approved.asset_url,
+      replacement_media_verified:replacement?.replacement_media_verified===true,
+      original_openart_history_id:approved.openart_history_id,
       caption_contract:approved.caption_contract||MIRA_SOURCE_LED_CAPTION_CONTRACT,
       title:approved.title||'Mira: een herkenbare situatie',
       cta:approved.cta||'Wat zou jij doen?',
