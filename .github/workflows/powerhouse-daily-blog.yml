@@ -193,13 +193,11 @@ jobs:
           npm install --prefer-offline --no-audit --no-fund --silent
           patch="config/bg-static-i18n-en.d/powerhouse-blog-$DATE.json"
           if [ -n "${EXISTING_PR:-}" ] && [ -f "$patch" ]; then
-            # A verified candidate is not a scratch workspace. Validate the
-            # existing English translation cache offline, without generating
-            # a new provider translation or overwriting approved keys.
-            STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 \
-              node tools/site-shell/build-localized-routes.mjs --validate-cache
-            echo "CANONICAL_EXISTING_CANDIDATE_CACHE_PRESERVED:$pr:$DATE"
-            exit 0
+            # Existing candidate content can change after review. The stored
+            # patch is an append-only translation authority, not evidence that
+            # every current source phrase is translated. Never skip full
+            # transformed-source validation because the patch file exists.
+            echo "CANONICAL_EXISTING_CANDIDATE_I18N_RECONCILE:$pr:$DATE"
           fi
 
           # Replay exact production SEO/site transforms before extracting Dutch copy.
