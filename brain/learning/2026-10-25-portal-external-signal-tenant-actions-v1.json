@@ -18,7 +18,21 @@
   ],
   "tests": [
     "portal-v2/tests/external-signal-action-context.test.mjs",
-    "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
+    "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs",
+    "tests/brain-portal-external-signal-action-v1.test.mjs"
   ],
-  "terminal_rule": "Exact-head Required+CodeQL PASS, protected merge, Netlify deployed exact revision, authenticated tenant portal readback, and actual conversion evidence measured separately."
+  "terminal_rule": "Exact-head Required+CodeQL PASS, protected merge, Netlify deployed exact revision, authenticated tenant portal readback, and actual conversion evidence measured separately.",
+  "failure_class": "PORTAL_CUSTOMER_ACTION_CONTEXT_GAP",
+  "compiler": {
+    "failure_class": "PORTAL_CUSTOMER_ACTION_CONTEXT_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-external-signal-action-v1.test.mjs"
+    ]
+  }
 }
