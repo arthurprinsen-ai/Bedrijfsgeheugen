@@ -1,0 +1,3 @@
+# CI coverage without fabricated green
+
+The existing hourly Repository Janitor's observational collector formerly sampled no more than 24 completed runs and saw only 15 valid jobs. It can now examine up to 48 recent completed runs from a bounded listing of 80. The strict minimum 20 valid jobs and five independent workflow attempts is unchanged. The collector remains read-only, halts at sufficient evidence and withholds advice on incomplete provider snapshots. Regression tests cover the budget and fail-closed behavior. This change does not itself claim that the CI throughput benchmark is proven or any optional deployment is required.
