@@ -92,6 +92,9 @@ jobs:
       - name: Verify bounded source-backed revenue learning in existing Required gate
         run: |
           node --test tests/revenue-learning-evaluate.test.mjs tests/brain-revenue-learning-fair-verified-20261025.test.mjs tests/brain-revenue-learning-no-starvation-20261025.test.mjs
+          node --test tests/brain-commercial-opportunity-evidence-20261025.test.mjs tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs
+      - name: Verify daily external search coverage without topic starvation
+        run: node --test tests/brain-external-topic-rotation-v1.test.mjs tests/brain-external-signal-quota-failover-20261019.test.mjs
       - name: Verify customer-visible external signal relevance and safe next actions
         run: node --test tests/brain-portal-external-source-action-20261025.test.mjs
       - name: Verify existing daily company-news candidate coverage and cooldown
