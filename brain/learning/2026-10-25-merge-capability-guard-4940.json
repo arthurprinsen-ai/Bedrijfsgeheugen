@@ -1,0 +1,22 @@
+{
+  "version": "merge-capability-guard-learning-v1",
+  "date": "2026-10-25",
+  "obligationId": "github-merge-capability-guard-20261025",
+  "pullRequest": 4940,
+  "incident": {
+    "httpStatus": 422,
+    "error": "Invalid rule 'merge_queue'",
+    "cause": "User-owned GitHub repository is ineligible for native Merge Queue"
+  },
+  "decision": "Protected pull requests; reject merge_queue rules before provider API writes",
+  "implementation": [
+    "tools/delivery/merge-capability-guard.mjs",
+    "tests/merge-capability-guard.test.mjs",
+    ".agents/skills/merge-capability-guard/SKILL.md"
+  ],
+  "limitations": [
+    "Not yet integrated into actual ruleset writer",
+    "Required and CodeQL plus merge and production readback not proven on new head"
+  ],
+  "lesson": "Validate repository capabilities before constructing ruleset mutations; fail closed for unverified feature entitlement."
+}
