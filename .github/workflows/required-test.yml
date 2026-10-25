@@ -81,6 +81,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify System Map integrity on exact candidate tree
+        run: |
+          node --test tests/delivery-system-map-merge-integrity.test.mjs
+          SYSTEM_MAP_GENERATE_COMMAND='node scripts/brain/portal-explanation-inventory.mjs --write' SYSTEM_MAP_PATH='platform/system-map/canonical-system-map.mjs' EXPECTED_INTEGRATION_SHA="$(git rev-parse HEAD)" node tools/delivery/assert-system-map-integrity.mjs
       - name: Verify portal explanation source freshness
         run: |
           node scripts/brain/portal-explanation-inventory.mjs --check
