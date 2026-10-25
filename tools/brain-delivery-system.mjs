@@ -10,6 +10,7 @@ function matches(path, patterns = []) { return patterns.some(pattern => pattern.
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'data/ai-model-stale-review-worklist-20261025.json': 'automation',
+  'tests/brain-ai-model-stale-worklist.test.mjs': 'automation',
   'tools/growth-intelligence/decision-core.mjs': 'automation',
   'tools/growth-intelligence/decision-core.test.mjs': 'automation',
   'tools/growth-intelligence/heartbeat-adapter.mjs': 'automation',
