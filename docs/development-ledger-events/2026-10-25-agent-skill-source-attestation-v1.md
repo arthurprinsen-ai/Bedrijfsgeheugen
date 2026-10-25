@@ -7,3 +7,7 @@
 - Technology scanning: consider standards with official source/version and evidence, security/privacy, regressions, cost and rollback. Do not install external skills on discovery alone.
 - No new scheduler, autonomous runtime, competing store, migration, personal data read, public content or side-effect provider call.
 - Release: exact-head Required/CodeQL → protected merge → existing main Skill Projection → next-agent preflight digest readback. If blocked, retain same PR with the precise failed gate; no false-green.
+
+## Existing CI admission learning — bounded progressive disclosure
+
+The original historical replay intentionally failed: a social-lane preflight serialized 277,017 bytes against the canonical 256,000-byte cap. The same PR now bounds the directly selected learning payload (up to 64 KiB), always retains mandatory and exact-fingerprint items, and records every deferred count/digest plus the canonical lazy-load source. This is not permission to drop mandatory evidence, expand context limits silently or call a partial selection complete. The regression exercises the real social-lane packet and its retained 256 KB cap.
