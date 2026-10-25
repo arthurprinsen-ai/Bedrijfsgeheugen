@@ -61,7 +61,15 @@ export function planOpportunityFollowups({
   if(selected.length<limit)selected.push(...urgent.slice(highPriorityLimit,highPriorityLimit+limit-selected.length));
   const actions=selected.map(x=>{
     const dueAt=new Date(at+(delays[x.classification]||72)*HOUR).toISOString();
-    const action=txt(x.assessment.nextAction)||'VERIFY_NEED_IMPACT_AND_URGENCY';
+    const suggested=txt(x.assessment.nextAction)||'VERIFY_NEED_IMPACT_AND_URGENCY';
+    const internalResearch=new Set([
+      'VERIFY_CUSTOMER_PROBLEM','VERIFY_NEED_IMPACT_AND_URGENCY',
+      'VERIFY_SOLUTION_FIT','IDENTIFY_DECISION_MAKER',
+      'VALIDATE_INVESTMENT_PROCESS','VALIDATE_FIRST_PARTY_INTENT'
+    ]);
+    const action=x.classification==='NO_CONTACT'?'SUPPRESS_EXTERNAL_CONTACT':
+      x.classification==='RESEARCH_REQUIRED'&&!internalResearch.has(suggested)
+        ?'VERIFY_NEED_IMPACT_AND_URGENCY':suggested;
     const missing=Array.isArray(x.assessment.missingEvidence)?x.assessment.missingEvidence:[];
     return Object.freeze({
       opportunityKey:x.key,classification:x.classification,action,dueAt,
