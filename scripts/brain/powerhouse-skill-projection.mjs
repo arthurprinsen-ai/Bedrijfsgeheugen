@@ -201,6 +201,86 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [] }
   };
 }
 
+
+export const MANDATORY_SKILL_SOURCE_NAMES = Object.freeze([
+  'powerhouse-continuity',
+  'powerhouse-self-improvement-layer',
+  'powerhouse-system-map-governance',
+  'powerhouse-toolchain-authority'
+]);
+
+/**
+ * Inventory actual repository skill sources. Knowing the digest does not
+ * prove that an agent loaded the instructions during an execution.
+ */
+export function buildSkillSourceManifest({ rootDir = process.cwd() } = {}) {
+  const skillRoot = path.join(rootDir, '.agents', 'skills');
+  if (!fs.existsSync(skillRoot)) throw new Error('SKILL_SOURCE_ROOT_MISSING');
+  const entries = [];
+  for (const directory of fs.readdirSync(skillRoot, { withFileTypes: true }).filter(item => item.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+    const file = path.join(skillRoot, directory.name, 'SKILL.md');
+    if (!fs.existsSync(file)) throw new Error('SKILL_SOURCE_MISSING:' + directory.name);
+    const source = fs.readFileSync(file, 'utf8');
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1] ?? '';
+    const named = frontmatter.match(/^name:\s*(.+?)\s*$/m)?.[1]?.replace(/^['"]|['"]$/g, '') ?? '';
+    const description = frontmatter.match(/^description:\s*(.+?)\s*$/m)?.[1] ?? '';
+    const metadata_status = !frontmatter ? 'LEGACY_MISSING_FRONTMATTER'
+      : named !== directory.name ? 'NAME_MISMATCH'
+      : !description.trim() ? 'MISSING_DESCRIPTION'
+      : 'VALID';
+    entries.push({
+      name: directory.name,
+      source: '.agents/skills/' + directory.name + '/SKILL.md',
+      source_sha256: sha256(source),
+      metadata_status
+    });
+  }
+  if (!entries.length) throw new Error('SKILL_SOURCE_INVENTORY_EMPTY');
+  const inventory_digest = sha256(JSON.stringify(entries));
+  return {
+    fingerprint: 'powerhouse-skill-source-attestation-v1',
+    authority: 'REPOSITORY_SKILL_FILES_NOT_PARALLEL_MEMORY',
+    entry_count: entries.length,
+    inventory_digest,
+    entries,
+    metadata_warnings: entries.filter(entry => entry.metadata_status !== 'VALID').map(entry => ({
+      name: entry.name,
+      reason: entry.metadata_status
+    }))
+  };
+}
+
+export function selectSkillSourceManifest(manifest, { targets = [] } = {}) {
+  const entries = manifest?.entries ?? [];
+  const wanted = stableUnique(targets).map(target => target.toLowerCase());
+  const selected = entries.filter(entry => {
+    if (MANDATORY_SKILL_SOURCE_NAMES.includes(entry.name)) return true;
+    return wanted.some(target => {
+      if (entry.name.includes(target)) return true;
+      if (target === 'delivery') return /github|delivery|engineering|netlify|browser-gate/.test(entry.name);
+      if (target === 'social') return /instagram|linkedin|social|mira/.test(entry.name);
+      if (target === 'data') return /source|company-intelligence|connector|seo|model-intelligence/.test(entry.name);
+      if (target === 'foresight') return /foresight|self-improvement|ai-model/.test(entry.name);
+      if (target === 'security') return /security|toolchain|browser-gate/.test(entry.name);
+      if (target === 'continuity') return /continuity|system-map|self-improvement/.test(entry.name);
+      return false;
+    });
+  });
+  for (const required of MANDATORY_SKILL_SOURCE_NAMES) {
+    const source = selected.find(entry => entry.name === required);
+    if (!source) throw new Error('MANDATORY_SKILL_SOURCE_MISSING:' + required);
+    if (source.metadata_status !== 'VALID') throw new Error('MANDATORY_SKILL_SOURCE_INVALID:' + required);
+  }
+  return {
+    inventory_digest: manifest.inventory_digest,
+    selection_mode: wanted.length ? 'TASK_MATCHED_PLUS_MANDATORY' : 'MANDATORY_BASELINE',
+    selected_sources: selected,
+    consumption_status: 'SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED',
+    required_readback_fields: ['source', 'source_sha256', 'actor_id', 'execution_id', 'loaded_at'],
+    no_claim_of_use_without_readback: true
+  };
+}
+
 const isCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isCli) {
   try {
