@@ -18,6 +18,9 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 
   'config/powerhouse-adaptive-delivery-v1.json': 'backend',
   'AGENTS.md': 'automation',
+  'docs/agent-skills/repository-merge-capability-guard.md': 'automation',
+  'tests/merge-capability-guard.test.mjs': 'automation',
+  'tools/delivery/merge-capability-guard.mjs': 'automation',
   'scripts/brain/skill-byte-audit.mjs': 'automation',
   'tests/brain-skill-byte-audit.test.mjs': 'automation',
   'tools/brain/agent-skill-execution-evidence.mjs': 'automation',
