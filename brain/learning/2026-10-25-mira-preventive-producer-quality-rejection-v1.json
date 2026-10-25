@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "parent_issue": 4439,
+  "obligation_id": "mira|prevent-repeated-provider-quality-rejections|20261025-v1",
+  "fingerprint": "mira|production-real-face-and-temporal-feedback-not-used-pre-generation|20261025-v1",
+  "failure_class": "MIRA_PRODUCER_QUALITY_REJECTION_FEEDBACK_NOT_ACTIONABLE",
+  "observed_evidence": {
+    "source": "production canonical Instagram media job + native net.http_post 12638 + OpenArt project",
+    "original_history": "qAUQW2ZzqdasS0ePb1PD",
+    "original_face": 0.92,
+    "first_retake": "a6sdR46HDe58uRlardNl",
+    "temporal_confidence": 0.89,
+    "second_retake": "oGeS7GbhttgNCxnq0tCg",
+    "start_face": 0.92,
+    "face_minimum": 0.94,
+    "temporal_minimum": 0.9,
+    "latest_provider_result": "HTTP_422",
+    "instagram_external_id": null,
+    "source_winner_recommendation_id": "0a56f150-2954-4355-a3d0-fc65396f8152",
+    "user_impact": "Three distinct OpenArt videos were generated without a machine-readable, cause-specific pre-generation quality plan; all failed their real independent gate."
+  },
+  "root_cause": "Existing router persisted genuine rejected candidate diagnostics, but original agent preflight returned only WAITING_PROOF without machine-readable producer-specific guidance. Repeated generation could reproduce portrait geometry/letterbox and missing natural human motion.",
+  "candidate_fix": {
+    "new_shared_pure_policy": "supabase/functions/_shared/mira-preventive-quality-recovery.mjs",
+    "router_integration": "Read-only preventive_recovery response from original authenticated router; never authorizes provider side effects.",
+    "producer_skill": ".agents/skills/instagram-composio-publisher/SKILL.md",
+    "security": "Exact frozen source, original master, photo/temporal scores, original publisher remain unchanged.",
+    "credit_policy": "One different provider history per independent failure subject to existing budget; no automatic unbounded spend."
+  },
+  "regressions": "tests/brain-mira-preventive-producer-qa-20261025.test.mjs",
+  "acceptance": "Required and CodeQL on exact PR head; protected merge + active Supabase router source readback; future distinct original-master clip independent frame/temporal proof; Meta ID and readback before LIVE_PROVEN.",
+  "open_dependencies": [
+    "No new verified Instagram Reel after latest face=0.92 failure",
+    "No guarantee future generative output will pass quality",
+    "No paid-order evidence implied"
+  ],
+  "created_by": "existing original Mira publisher/producer P0 #4439"
+}
