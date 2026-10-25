@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "mira|derived-portrait-916-identity-proof-role-missing|20261025-v1",
+  "obligation_id": "mira|independently-review-outpainted-916-reference|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_cause": "Actual outpainted OpenArt Mira reference is native 1296x2304 PNG (9:16), but the existing image verifier accepts only 1080x1350 ordinary Instagram images or 1080x1920 original-video frames. Without a separate staging reference proof role, a real new source-locked 9:16 image cannot be independently visually compared to the immutable Mira master. Treating it directly as a Reel frame or promoting a master would bypass provenance.",
+  "evidence": {
+    "openart_project": "rUF5anXD47gVokckYjf9",
+    "history_id": "4aOsUdQyAheL3wmex9Uq",
+    "asset_id": "aTtGOimC7CyaexG5cyTh",
+    "source_asset_url": "https://cdn.openart.ai/openart-ai/production/2026-10/create-image/WZvuT1BzGx566fWaFo8F/gpt-image-2-edit-1_1792950927245_6b325cb9.png",
+    "actual_width": 1296,
+    "actual_height": 2304,
+    "format": "png",
+    "status": "COMPLETED",
+    "immutable_original_reference_id": "Yjqu4D7v76HABNPmQPj1",
+    "required_face_threshold": 0.94,
+    "instagram_external_post_id": null
+  },
+  "prevention_rule": "Outpainted 9:16 source is staging only. Independently review exact OpenArt image against immutable Mira master under explicit reference_candidate-only dimensions 1296x2304. Never write Instagram obligation or claim an approved Reel. A passing vision face similarity is NOT pixel identity; source promotion requires separate protected contract change and original evidence readback.",
+  "fix": "Add read-only `reference_candidate` role to original Supabase independent visual verifier with exact dimensions, source restriction, canonical master unchanged and no Instagram obligation write; deterministic CI regression and original agent skill.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-portrait-reference-proof-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-portrait-reference-proof-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-portrait-reference-proof-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "outcome": "Candidate until Required/CodeQL, native Supabase provider preview, protected merge, active Edge source readback and a real one-time identity-verifier response. No Meta post and no further paid video generation."
+}
