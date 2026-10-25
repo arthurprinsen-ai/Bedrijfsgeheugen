@@ -7,12 +7,12 @@
     "evidence": "CI release can pass while Netlify deployment is deliberately skipped; previous dashboard interpretation reported a false failure."
   },
   "prevention": {
-    "classifier": "lib/release-status/derive-release-status.mjs distinguishes passed,pending,failed,not_required,unknown across GitHub,Netlify,production.",
+    "classifier": "tools/netlify/release-status.mjs distinguishes passed,pending,failed,not_required,unknown across GitHub,Netlify,production.",
     "skip": "Explicit not-required with reason is neutral; missing deployment requirement remains unknown.",
     "readback": "Production green requires independent fresh matching version evidence."
   },
   "regression": [
-    "lib/release-status/derive-release-status.test.mjs"
+    "tests/netlify/release-status.test.mjs"
   ],
   "status": "IMPLEMENTED_IN_DRAFT_NOT_INTEGRATED",
   "compiler": {
@@ -22,18 +22,18 @@
   },
   "evaluation": {
     "historical_replay": [
-      "lib/release-status/derive-release-status.test.mjs"
+      "tests/netlify/release-status.test.mjs"
     ],
     "shadow": [
-      "lib/release-status/derive-release-status.test.mjs"
+      "tests/netlify/release-status.test.mjs"
     ],
     "canary": [
-      "lib/release-status/derive-release-status.test.mjs"
+      "tests/netlify/release-status.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
-      "lib/release-status/derive-release-status.test.mjs"
+      "tests/netlify/release-status.test.mjs"
     ],
     "observed_failure": "False red on intentional deployment skip.",
     "proof_boundary": "Full dashboard adapter and production readback still require integration and provider verification."
