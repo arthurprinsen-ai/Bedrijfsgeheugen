@@ -24,7 +24,7 @@ export async function audit(){
   const failures=[];
   for(const file of candidates){
     const src=await readFile(file,'utf8');
-    const re=/supabase\\/migrations\\/([A-Za-z0-9_.-]+\\.sql)/g;
+    const re=new RegExp('supabase/migrations/([A-Za-z0-9_.-]+[.]sql)','g');
     for(const m of src.matchAll(re)){
       const name=m[1], original=join(active,name);
       if(existsSync(original)) continue;
@@ -40,6 +40,6 @@ export async function audit(){
 }
 if(process.argv[1] && resolve(process.argv[1])===resolve(import.meta.filename)){
   const result=await audit();
-  process.stdout.write(JSON.stringify(result,null,2)+'\\n');
+  console.log(JSON.stringify(result,null,2));
   if(result.unresolved_references) process.exitCode=1;
 }
