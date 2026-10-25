@@ -8,11 +8,26 @@ BEGIN
   IF to_regprocedure('public.powerhouse_execution_resilience_watchdog_v1(timestamp with time zone,integer,integer)') IS NULL
     OR to_regprocedure('public.powerhouse_record_loop_stage_v1(text,text,jsonb,timestamp with time zone)') IS NULL
   THEN RAISE EXCEPTION 'RESILIENCE_CANONICAL_SOURCE_MISSING'; END IF;
+  -- Clean-room migration replay can hold the original pre-mux registry row
+  -- (1-minute, old job name) even though the existing 5-minute mux task is real.
+  -- Accept only those two independently observed state families.
+  IF NOT EXISTS (
+    SELECT 1 FROM cron.job j
+    WHERE j.jobname='powerhouse-runtime-scheduler-mux-v1' AND j.active
+  ) OR NOT EXISTS (
+    SELECT 1 FROM pg_proc p
+    WHERE p.pronamespace='public'::regnamespace
+      AND p.proname='powerhouse_runtime_scheduler_mux_v1'
+      AND position('execution-resilience-watchdog' in pg_get_functiondef(p.oid))>0
+      AND position('if (m % 5) = 1' in pg_get_functiondef(p.oid))>0
+  ) THEN RAISE EXCEPTION 'RESILIENCE_CANONICAL_MUX_TASK_NOT_PROVEN'; END IF;
   IF NOT EXISTS (
     SELECT 1 FROM public.powerhouse_loop_assurance_registry_v1
     WHERE loop_key='execution-resilience'
-      AND cron_jobname='powerhouse-runtime-scheduler-mux-v1'
-      AND expected_cadence_minutes IN (2,5)
+      AND (
+        (cron_jobname='powerhouse-execution-resilience-watchdog-v1' AND expected_cadence_minutes=1)
+        OR (cron_jobname='powerhouse-runtime-scheduler-mux-v1' AND expected_cadence_minutes IN (2,5))
+      )
   ) THEN RAISE EXCEPTION 'RESILIENCE_ASSURANCE_OWNER_DRIFT'; END IF;
 END
 $guard$;
@@ -126,6 +141,7 @@ $function$
 -- the actual watchdog, so 2x a 5-minute task cadence is evidence-based.
 UPDATE public.powerhouse_loop_assurance_registry_v1
 SET expected_cadence_minutes=5,
+    cron_jobname='powerhouse-runtime-scheduler-mux-v1',
     evidence_contract=coalesce(evidence_contract,'{}'::jsonb) ||
       jsonb_build_object('authority','real watchdog + original stage receipts',
         'watchdog_task_cadence_minutes',5,
@@ -134,8 +150,10 @@ SET expected_cadence_minutes=5,
         'no_new_scheduler',true),
     updated_at=now()
 WHERE loop_key='execution-resilience'
-  AND cron_jobname='powerhouse-runtime-scheduler-mux-v1'
-  AND expected_cadence_minutes IN (2,5);
+  AND (
+    (cron_jobname='powerhouse-execution-resilience-watchdog-v1' AND expected_cadence_minutes=1)
+    OR (cron_jobname='powerhouse-runtime-scheduler-mux-v1' AND expected_cadence_minutes IN (2,5))
+  );
 
 DO $post$
 BEGIN
@@ -143,6 +161,7 @@ BEGIN
     SELECT 1 FROM public.powerhouse_loop_assurance_registry_v1
     WHERE loop_key='execution-resilience'
       AND expected_cadence_minutes=5
+      AND cron_jobname='powerhouse-runtime-scheduler-mux-v1'
       AND evidence_contract->>'watchdog_task_cadence_minutes'='5'
   ) THEN RAISE EXCEPTION 'RESILIENCE_CADENCE_PARITY_NOT_PROVEN'; END IF;
 END
