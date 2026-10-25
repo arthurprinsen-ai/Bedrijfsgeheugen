@@ -1,3 +1,7 @@
+## Merge capability guard (25 October 2026)
+
+All agents modifying GitHub rulesets or releases must load `.agents/skills/merge-capability-guard/SKILL.md`. User-owned repositories cannot enable native `merge_queue`; protected PR checks and independent production evidence remain mandatory. The new helper must still be integrated into any actual ruleset writer; policy alone is not enforcement.
+
 ## Eén bewijsvaste Brain–Powerhouse–Heartbeat leerlus — 25 oktober 2026
 
 Voor alle agents en toekomstige wijzigingen geldt het integratiecontract `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md`. Gebruik de bestaande canonieke Brain-registraties, Heartbeat/Janitor-cadans, incidentfingerprints, obligations en geëvalueerde skillprojectie. Koppel bron → besluit → uitvoering → providerbewijs → klant-/omzetuitkomst → learning en skill-evaluatie met tenantisolatie en toestemming. Meet echte leads, klanten, klantwaarde en onafhankelijk betaalde omzet in plaats van bereik of acknowledgements als resultaat te behandelen. De nieuwe contracttekst is uitsluitend ontwerp tot integratie, geslaagde tests, beschermde merge, productiereadback en echte opvolgcycli bewezen zijn. Geen tweede scheduler, ongecontroleerde outreach, extra write-owner, groene status zonder bewijs of omzeiling van Required/CodeQL/RLS/preview en privacycontroles.
