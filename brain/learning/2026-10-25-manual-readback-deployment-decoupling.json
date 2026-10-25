@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "fingerprint": "delivery|manual-browser-readback|false-netlify-promotion|20261025-v1",
+  "obligation_id": "manual-readback-deployment-decoupling-20261025",
+  "status": "CANDIDATE",
+  "failure_class": "FALSE_REQUIRED_NETLIFY_DEPLOYMENT",
+  "observed_evidence": {
+    "workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40232109458",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4953",
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40233753638"
+  },
+  "root_cause": "forceBrowser was reused when computing deploymentRequired, turning manual readback into a false required production release for governance-only diffs.",
+  "fix": "Derive deploymentRequired only from forceDeployment, websiteRequired, portalRequired, or netlifyRuntimeRequired. Keep forceBrowser limited to browser proof.",
+  "prevention_rule": "Manual readback does not assert exact new Netlify SHA for governance-only changes. Runtime changes still require real deployment and proof.",
+  "verification": "PENDING: protected Required, CodeQL, merge and manual readback",
+  "closure": "OPEN",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-deployment-evidence-status.test.mjs"
+    ]
+  },
+  "scope": "CI",
+  "machine_enforceable": true,
+  "compiler": {
+    "failure_class": "FALSE_REQUIRED_NETLIFY_DEPLOYMENT",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40233753638",
+    "historical_replay": "tests/brain-netlify-deployment-evidence-status.test.mjs",
+    "production_readback": "PENDING"
+  }
+}

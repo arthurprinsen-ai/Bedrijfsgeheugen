@@ -63,7 +63,7 @@ test('Portal V2 changes require exact Netlify deployment and browser readback of
   ]);
   assert.match(authority, /portalRequired=requiredSuites\.portal === true/);
   assert.match(authority, /browserRequired=forceBrowser \|\| websiteRequired \|\| portalRequired/);
-  assert.match(authority, /deploymentRequired=forceDeployment \|\| browserRequired \|\| netlifyRuntimeRequired/);
+  assert.match(authority, /deploymentRequired=forceDeployment \|\| websiteRequired \|\| portalRequired \|\| netlifyRuntimeRequired/);
   assert.match(workflow, /portalRequired && !routes\.includes\('\/portal-v2\/'\)/);
   assert.match(workflow, /routes\.push\('\/portal-v2\/'\)/);
   assert.match(workflow, /portal_required=/);

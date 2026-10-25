@@ -103,7 +103,7 @@ export function deriveNetlifyDeploymentApplicability({
   const netlifyRuntimeRequired=runtimeChangedPaths.some(path =>
     NETLIFY_RUNTIME_EXACT.has(path) || NETLIFY_RUNTIME_PREFIXES.some(prefix => path.startsWith(prefix))
   );
-  const deploymentRequired=forceDeployment || browserRequired || netlifyRuntimeRequired;
+  const deploymentRequired=forceDeployment || websiteRequired || portalRequired || netlifyRuntimeRequired;
 
   return Object.freeze({
     changedPaths:Object.freeze(changed),
