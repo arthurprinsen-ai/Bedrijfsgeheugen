@@ -1,0 +1,59 @@
+{
+  "fingerprint": "powerhouse|brain|canonical-renamed-production-sql-oracles|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation_id": "ci-brain-renamed-production-sql-oracles-20261022",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "root_causes": [
+    "Four inherited BRAIN test cases read obsolete filenames of existing already-applied production SQL after supported canonical migration timestamp reconciliation."
+  ],
+  "prevention": [
+    "Reference the exact renamed existing migration versions; never copy old file names into executable migrations or alter SQL bodies.",
+    "Retain original privacy, service-role, source provenance, suppression and no-contact contract assertions and add a fail-closed source identity guard."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "TEST_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-renamed-production-sql-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-canonical-renamed-production-sql-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-canonical-renamed-production-sql-20261022.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39755490943/job/119746782219",
+    "source_blobs": [
+      {
+        "old_path": "supabase/migrations/20261009185500_bedrijfslek_runtime_signal_cycle_v1.sql",
+        "current_path": "supabase/migrations/20261009190719_bedrijfslek_runtime_signal_cycle_v1.sql",
+        "identical_historical_and_current_blob": "c45901a1e162cb8936508018abc02416ad268364",
+        "failures": 2
+      },
+      {
+        "old_path": "supabase/migrations/20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
+        "current_path": "supabase/migrations/20261012074151_20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
+        "identical_historical_and_current_blob": "135a2a08eddfed78aa1e888e8f697ec9edbee34d",
+        "failures": 1
+      },
+      {
+        "old_path": "supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql",
+        "current_path": "supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql",
+        "surviving_source_blob": "c290810df7eca707114409cec5fa31baf7254288",
+        "all_original_source_assertions_verified": true,
+        "failures": 1
+      }
+    ],
+    "original_assertions_preserved": true,
+    "sql_edits": 0,
+    "full_brain": "NOT_VERIFIED"
+  },
+  "current_state": "CANDIDATE_UNVERIFIED"
+}

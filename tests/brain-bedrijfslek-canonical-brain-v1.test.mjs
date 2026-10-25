@@ -77,7 +77,7 @@ test('Portal V2 only exposes scans after authenticated tenancy and explicit clai
 });
 
 test('existing ONE BRAIN decision-cycle trigger admits only the three canonical scan signals',async()=>{
-  const sql=await readFile(new URL('../supabase/migrations/20261009185500_bedrijfslek_runtime_signal_cycle_v1.sql',import.meta.url),'utf8');
+  const sql=await readFile(new URL('../supabase/migrations/20261009190719_bedrijfslek_runtime_signal_cycle_v1.sql',import.meta.url),'utf8');
   for(const source of ['website.frisse_blik','website.workshop_scan','website.bedrijfslek'])assert.ok(sql.includes(source));
   assert.match(sql,/powerhouse_open_cycle_from_runtime_signal_v1\(p_event_id uuid\)/);
   assert.match(sql,/powerhouse_runtime_signal_cycle_trigger_v1\(\)/);
@@ -90,7 +90,7 @@ test('existing ONE BRAIN decision-cycle trigger admits only the three canonical 
 });
 
 test('privileged runtime-cycle function denies browser roles and keeps service-role execution',async()=>{
-  const sql=await readFile(new URL('../supabase/migrations/20261009185500_bedrijfslek_runtime_signal_cycle_v1.sql',import.meta.url),'utf8');
+  const sql=await readFile(new URL('../supabase/migrations/20261009190719_bedrijfslek_runtime_signal_cycle_v1.sql',import.meta.url),'utf8');
   assert.match(sql,/revoke all on function public\.powerhouse_open_cycle_from_runtime_signal_v1\(uuid\) from public, anon, authenticated/i);
   assert.match(sql,/grant execute on function public\.powerhouse_open_cycle_from_runtime_signal_v1\(uuid\) to service_role/i);
   assert.match(sql,/e\.source not in \('website\.frisse_blik','website\.workshop_scan','website\.bedrijfslek'\)/);
