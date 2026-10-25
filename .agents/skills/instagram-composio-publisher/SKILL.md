@@ -105,6 +105,22 @@ The same agent must load and deduplicate all real past provider histories before
 
 This prevents repeat evaluation charges and status loops; it does not guarantee generative videos pass the independent 0.940 face / 0.900 temporal gates, and it never permits unproven Instagram publication claims.
 
+## Original Mira producer — reconcile facial identity AND real movement (2026-10-25)
+
+**Fingerprint:** `mira-recognizable-face-and-genuine-human-motion-v1`.
+
+Our actual failed paid generations exposed contradictory instructions: prompts demanded that every facial landmark/pixel be frozen, with no blink, breathing or movement, while the true independent temporal gate requires living continuous human movement. An immobile facial image surrounded by a moving phone or background is not a valid proof of human video. Three-frame face scores alone are insufficient, and a model's `COMPLETED` response is not approval.
+
+**Mandatory original-producer behavior before one further OpenArt expenditure:**
+- Read the canonical `preventive_recovery` from the current source-locked router. Consume its `motion_compatible_brief` only if `ok=true`; never independently reselect the topic, new source, master identity, post date or caption.
+- Submit the exact *final* OpenArt prompt to `checkMiraProducerPromptCompatibility` in `supabase/functions/_shared/mira-preventive-quality-recovery.mjs`. Fail any request for frozen facial pixels/landmarks, no blink/breathing/hand movement, wholly static person or background-only animation. Real identity preservation means the same recognisable face **with small physically plausible movement**; it does not mean literal facial pixels are stationary.
+- Render an uncut, genuinely native 1080x1920, 8-second, single-take `image2video` Reel. Use the immutable approved master as the actual OpenArt start/end input, retain approved scene and Mira's recognisable face, clothing, skin and hair. Request restrained natural blinking/breathing and a small finger/hand interaction with an object already in that scene; never invent scene props, logos, third-party claims, a second person or unfamiliar elements.
+- Independent original-byte native MP4, actual start/middle/end face >=0.940, **temporal human-motion confidence >=0.900**, original Brain historical no-reuse check and exact-media hash remain mandatory. Start/end master input by itself is never evidence that the middle frame passes.
+- Reconcile exact model/format and credit estimate with OpenArt before generating; use the existing single owner and bounded **one** genuinely different history within the configured budget. A failed or unavailable budget contract blocks provider expenditure; do not guess at entitlement.
+- Any mismatch feeds the original Brain, provider provenance, and next producer brief. A successful candidate still is not `LIVE_PROVEN`: the existing Composio/Meta one-shot publisher must return authentic media ID, permalink and independent readback.
+
+No new scheduler, agent runner, second publisher, customer data, threshold bypass, fake success or unlimited automatic regeneration. Do not substitute a static image for an already frozen Reel obligation.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.

@@ -7,6 +7,52 @@ const NATIVE=/^MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH:(\d{2,5})x(\d{2,5}):openart
 const clean=value=>String(value??'').trim();
 export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generation-quality-feedback-v1';
 
+export const MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT='mira-recognizable-face-and-genuine-human-motion-v1';
+
+// The previous real model prompts asked to lock the face and every facial pixel
+// throughout the video while the actual independent temporal gate required
+// natural visible HUMAN movement. Reject that impossible brief BEFORE credits
+// are spent. Stable identity is not the same as a literal frozen facial plate.
+export function checkMiraProducerPromptCompatibility(prompt=''){
+ const source=String(prompt??'');
+ const p=source.toLowerCase().replace(/\s+/g,' ');
+ const violations=[];
+ if(/(?:frozen (?:facial|face|head|portrait)|freeze (?:the )?(?:face|head|person|entire person)|(?:lock|preserve) (?:every|all) (?:facial|face) (?:landmarks(?: and pixels?)?|pixels?)|(?:face|facial area|entire head) (?:is|are|must be|as) (?:a )?(?:photographically )?frozen (?:photographic )?plate|(?:pixel-perfect|identical) (?:facial|face) pixels?)/i.test(p))
+   violations.push('IMPOSSIBLE_FROZEN_FACE_REQUIREMENT');
+ if(/(?:no (?:blinking|blink|breathing|human motion|facial animation|facial movement|head movement|hand movement)|(?:do not|never) (?:blink|breathe|move (?:her |the )?(?:head|hands|face)|have her move))/i.test(p))
+   violations.push('SUPPRESSED_NATURAL_HUMAN_MOTION');
+ if(/(?:motion only (?:in|on|of) (?:the )?(?:background|desk|phone|object)|(?:entire person|whole body) (?:perfectly |completely )?(?:still|static)|still (?:portrait|photo) (?:with|on) (?:moving|animated) background)/i.test(p))
+   violations.push('BACKGROUND_ONLY_FAKE_VIDEO');
+ if(!/(?:finger|hand|blink|breathing|human|head|gesture|interact)/i.test(source))
+   violations.push('NO_GROUNDED_HUMAN_ACTION');
+ return {ok:violations.length===0,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,violations};
+}
+
+export function buildMiraSourceLockedMotionBrief({scene,masterReferenceId,runDate}={}){
+ const frozenScene=String(scene??'').trim();
+ const master=String(masterReferenceId??'').trim();
+ if(!frozenScene||!master||!/^20\d{2}-\d{2}-\d{2}$/.test(String(runDate??'')))
+   return {ok:false,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,reason:'MISSING_FROZEN_SOURCE_OR_ORIGINAL_MASTER'};
+ const prompt=[
+  'Produce ONE photorealistic 8-second continuous-shot Instagram Reel, true native full-bleed 1080x1920 portrait 9:16. No black bars, text overlays, camera cuts, pan, zoom, reframing or identity swaps.',
+  'Use only the original approved Mira master reference as the actual original start/end frame input according to the currently permitted image2video contract. Preserve the SAME recognizable adult woman: face structure, age, hair, skin features and clothing. Keep her entire face unobscured, naturally framed and consistently illuminated, without redesign, morphing, beautifying, flicker or extreme head turns.',
+  'Keep the already-frozen source scene exactly: '+frozenScene,
+  'The character must be visibly alive throughout the shot: subtle natural blinking, small plausible breathing and one small unhurried HAND/finger interaction with the existing object already present in the approved scene. One continuous human action with physically coherent face and hand movement, no slideshow, still photograph animation or background-only motion.',
+  'Prioritize identity and a coherent living human over exaggerated expression. Keep the person clearly alive yet physically realistic, with limited, coherent natural micro-expressions. Avoid static slideshow effects while keeping movement restrained enough for original-master face verification at first, middle and last frame.',
+  'No voice, music, logos, legible third-party app brands, new characters, invented claims or altered editorial context. Output a genuinely NEW OpenArt provider history in the original project; do not reuse a rejected history.'
+ ].join(' ');
+ const compatibility=checkMiraProducerPromptCompatibility(prompt);
+ if(!compatibility.ok)return {ok:false,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,reason:'PRODUCER_BRIEF_SELF_CONTRADICTORY',violations:compatibility.violations};
+ return {ok:true,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,
+  run_date:runDate,official_master_reference_id:master,scene:frozenScene,
+  permitted_generation_mode:'image2video',native_dimensions:'1080x1920',
+  duration_seconds:8,requires_real_human_motion:true,
+  source_and_identity_unchanged:true,openart_credits_cap_enforced_externally:true,
+  prompt,compatibility};
+}
+
+
+
 export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
  const error=clean(job?.last_error);
  const face=FACE.exec(error),motion=MOTION.exec(error),native=NATIVE.exec(error);
@@ -53,6 +99,11 @@ export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
   bounded_new_generations_per_decision:1,
   approved_executor:'EXISTING_CANONICAL_MIRA_PRODUCER_ONLY',
   producer_instructions:producerInstructions,
+  // Compatible human-motion brief follows the existing frozen source. Before
+  // any paid provider call, original producer must also lint its FINAL prompt.
+  motion_compatible_brief:buildMiraSourceLockedMotionBrief({
+    scene:resolved.scene,masterReferenceId:job.asset_manifest.openart_reference_id,runDate
+  }),
   candidate_must_have_distinct_history:true,
   source_and_caption_must_remain_unchanged:true,
   verified_actual_three_frames_required:true,

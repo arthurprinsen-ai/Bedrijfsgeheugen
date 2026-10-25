@@ -105,6 +105,8 @@ jobs:
         run: node --test tests/brain-mira-native-format-before-vision-20261025.test.mjs
       - name: Reject every historically failed Mira OpenArt asset before costly vision
         run: node --test tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs
+      - name: Refuse contradiction between frozen face and real human motion before OpenArt cost
+        run: node --test tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs
       - name: Verify exact canonical commercial publication evidence reconciliation
         run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness
