@@ -211,13 +211,13 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const skillProjection = selectSkillProjection(skillProjectionIndex, {
     fingerprints: executionContext.relevantLearningFingerprints ?? [],
     targets: executionContext.deliveryLanes ?? [],
-    // Reserve packet capacity for provenance, runtime state, mandatory prevention and evidence.
-    // Deferred task-relevant learning stays discoverable by the canonical Brain source/digest.
+    intent: executionContext.intent ?? '',
+    maxEntries: 24,
     maxSelectedBytes: Math.min(65_536, Math.floor(effectiveMaxBytes / 3))
   });
   const skillSourceManifest = buildSkillSourceManifest({ rootDir });
   const selectedSkillSources = selectSkillSourceManifest(skillSourceManifest, {
-    targets: executionContext.deliveryLanes ?? []
+    targets: [...(executionContext.deliveryLanes ?? []), ...skillProjection.inferred_targets]
   });
 
   const contextLoadMs = Math.max(0, nowMs() - preflightStarted);

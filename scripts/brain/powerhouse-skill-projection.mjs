@@ -16,6 +16,23 @@ const TARGET_RULES = [
   ['continuity', /continuity|learning|memory|agent|chat|skill|preflight|writeback|recovery/i]
 ];
 
+const TASK_INTENT_TARGET_RULES = Object.freeze([
+  ['delivery', /\b(?:github|gitops|ci|deployment|deploy|release|merge|codeql|productie|livegang|preview|migratie)\b/i],
+  ['social', /\b(?:instagram|linkedin|mira|social|reels?|posts?|video|publicatie|publiceren|publish(?:ing)?)\b/i],
+  ['portal', /\b(?:portaal|portal|dashboard|tenant|klantportaal)\b/i],
+  ['data', /\b(?:data|analytics|metingen?|seo|supabase|database|bronnen|brondata|evidence)\b/i],
+  ['foresight', /\b(?:innovatie(?:s)?|innovation|experiment(?:en)?|prediction|predictive|voorspellend|ai.modellen?|modelcatalogus)\b/i],
+  ['security', /\b(?:beveiliging|security|privacy|toestemming|consent|auth|identity|codeql)\b/i],
+  ['continuity', /\b(?:agents?|skills?|leren|learning|geheugen|memory|borging|borgen|vastleggen|logging|logboek|documentatie|incidenten?|continuity|preflight)\b/i]
+]);
+// Intent is an untrusted retrieval hint, never authority to deploy, send or override gates.
+export function inferSkillTargetsFromIntent(intent) {
+  if (typeof intent !== 'string' || !intent.trim()) return [];
+  return stableUnique(TASK_INTENT_TARGET_RULES
+    .filter(([, expression]) => expression.test(intent.slice(0, 2048)))
+    .map(([target]) => target));
+}
+
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
@@ -180,42 +197,52 @@ export function verifySkillProjectionIndex({ rootDir = process.cwd(), index } = 
   };
 }
 
-export function selectSkillProjection(index, { fingerprints = [], targets = [], maxSelectedBytes = null } = {}) {
+export function selectSkillProjection(index, { fingerprints = [], targets = [], intent = '', maxEntries = null, maxSelectedBytes = null } = {}) {
   const wantedFingerprints = new Set(stableUnique(fingerprints));
-  const wantedTargets = new Set(stableUnique(targets));
+  const inferredTargets = inferSkillTargetsFromIntent(intent);
+  const wantedTargets = new Set(stableUnique([...targets, ...inferredTargets]));
   const hasHints = wantedFingerprints.size > 0 || wantedTargets.size > 0;
-  // Universal prevention is mandatory even when a default/CLI caller provides no task hints.
-  // Other learning remains task-targeted; this is not a full-registry dump.
-  const matched = (index.entries ?? []).filter(entry => {
+  const matching = (index.entries ?? []).filter(entry => {
     if (entry.mandatory_preflight === true) return true;
     if (!hasHints) return false;
     if (wantedFingerprints.has(entry.fingerprint)) return true;
-    return entry.skill_targets.some(target => wantedTargets.has(target));
+    return (entry.skill_targets ?? []).some(target => wantedTargets.has(target));
   });
-  const bounded = maxSelectedBytes !== null;
-  if (bounded && (!Number.isInteger(maxSelectedBytes) || maxSelectedBytes < 1)) throw new Error('SKILL_PROJECTION_INVALID_BYTE_BUDGET');
-  const required = matched.filter(entry => entry.mandatory_preflight === true || wantedFingerprints.has(entry.fingerprint));
-  const optional = matched.filter(entry => !required.includes(entry));
-  const candidates = bounded ? [...required, ...optional] : matched;
-  const selected = [];
-  const deferred = [];
+  const mandatory = matching.filter(entry => entry.mandatory_preflight === true);
+  const exact = matching.filter(entry => entry.mandatory_preflight !== true && wantedFingerprints.has(entry.fingerprint));
+  const other = matching.filter(entry => !mandatory.includes(entry) && !exact.includes(entry))
+    .sort((a, b) => {
+      const recentB = (b.sources ?? []).at(-1) ?? '';
+      const recentA = (a.sources ?? []).at(-1) ?? '';
+      return recentB.localeCompare(recentA) || a.fingerprint.localeCompare(b.fingerprint);
+    });
+  const optionalLimit = Number.isInteger(maxEntries) && maxEntries > 0
+    ? Math.max(0, maxEntries - mandatory.length - exact.length) : other.length;
+  const preferred = [...mandatory, ...exact, ...other.slice(0, optionalLimit)];
+  const deferred = other.slice(optionalLimit);
+  if (maxSelectedBytes !== null && (!Number.isInteger(maxSelectedBytes) || maxSelectedBytes < 1))
+    throw new Error('SKILL_PROJECTION_INVALID_BYTE_BUDGET');
   let consumedBytes = 2;
-  for (const entry of candidates) {
-    const requiredEntry = entry.mandatory_preflight === true || wantedFingerprints.has(entry.fingerprint);
+  const selected = [];
+  for (const entry of preferred) {
     const bytes = Buffer.byteLength(JSON.stringify(entry), 'utf8') + 1;
-    if (bounded && consumedBytes + bytes > maxSelectedBytes) {
-      if (requiredEntry) throw new Error('maxBytes exceeded: SKILL_PROJECTION_REQUIRED_ENTRY_EXCEEDS_BUDGET:' + entry.fingerprint);
+    if (maxSelectedBytes !== null && consumedBytes + bytes > maxSelectedBytes) {
+      if (entry.mandatory_preflight === true || wantedFingerprints.has(entry.fingerprint))
+        throw new Error('maxBytes exceeded: SKILL_PROJECTION_REQUIRED_ENTRY_EXCEEDS_BUDGET:' + entry.fingerprint);
       deferred.push(entry);
       continue;
     }
-    selected.push(entry);
     consumedBytes += bytes;
+    selected.push(entry);
   }
   return {
     fingerprint: SKILL_PROJECTION_FINGERPRINT,
     projection_digest: index.projection_digest,
     total_entries: index.entry_count ?? index.entries?.length ?? 0,
     selection_mode: hasHints ? 'TASK_RELEVANT_WITH_MANDATORY_BASELINE' : 'MANDATORY_BASELINE_NO_TASK_HINTS',
+    inferred_targets: inferredTargets,
+    matched_count: matching.length,
+    truncated_count: matching.length - selected.length,
     selected_entries: selected,
     deferred_entry_count: deferred.length,
     deferred_digest: sha256(JSON.stringify(deferred.map(entry => [entry.fingerprint, entry.source_digest]))),
@@ -224,7 +251,6 @@ export function selectSkillProjection(index, { fingerprints = [], targets = [], 
     projection_completeness: deferred.length > 0 ? 'PARTIAL_REQUIRES_LAZY_LOAD' : 'FULLY_SELECTED'
   };
 }
-
 
 export const MANDATORY_SKILL_SOURCE_NAMES = Object.freeze([
   'powerhouse-continuity',
@@ -304,6 +330,7 @@ export function selectSkillSourceManifest(manifest, { targets = [] } = {}) {
     no_claim_of_use_without_readback: true
   };
 }
+
 
 const isCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isCli) {

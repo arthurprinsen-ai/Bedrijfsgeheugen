@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
 import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
+import {planMiraPreventiveRecovery} from '../_shared/mira-preventive-quality-recovery.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
@@ -270,9 +271,14 @@ Deno.serve(async req=>{
  // The CAS retry above is the ONLY automatic transition from WAITING_PROOF.
  if(action==='preflight'&&sourceLed&&job?.status==='WAITING_PROOF'&&
     job?.asset_manifest?.source_led_auto_verify_started===true){
+  // A measured quality failure is not a transport retry. Supply the original
+  // producer a source-locked preventative plan instead of repeating bad bytes.
+  // This read-only plan never generates, approves or dispatches content.
+  const preventive=planMiraPreventiveRecovery({runDate,resolved:winnerContract,job,ob});
   return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',
    proof_attempt:Number(job.attempts)||0,
-   last_error:job.last_error||null,next_action:job.next_action||'Wait for original exact-media verifier.'});
+   last_error:job.last_error||null,next_action:job.next_action||'Wait for original exact-media verifier.',
+   preventive_recovery:preventive.eligible?preventive:null});
  }
 
  const existingAssetUrl=clean(job?.asset_manifest?.asset_url||job?.asset_manifest?.assetUrl);

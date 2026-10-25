@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse|learning-preflight|intent-only-target-inference|20261025-v1",
+  "obligation_id": "brain:universal-reuse-intent-skill-projection:20261025-v1",
+  "root_cause": "The existing preflight selected projected Brain learning by explicit fingerprint and lane but did not use task intent when those labels were absent.",
+  "observed_evidence": {
+    "source": "scripts/brain/chat-learning-preflight.mjs",
+    "proof": "source readback before change",
+    "new_outcomes_proven": false
+  },
+  "prevention": [
+    "Preserve all mandatory prevention and exact requested learning fingerprints in every preflight.",
+    "Infer task-relevant skill targets from bounded natural language, return recent matching Brain prevention with digest, count and transparent truncation.",
+    "Treat new AI models, external tools and innovation as evaluated candidates, not automatically approved production technology.",
+    "Reuse one canonical Brain index, shared context, System Map and append-only ledger; never start a parallel learning scheduler."
+  ],
+  "skill_targets": [
+    "continuity",
+    "foresight",
+    "delivery"
+  ],
+  "mandatory_preflight": true,
+  "compiler": {
+    "scope": "ALL_POWERHOUSE_AGENTS_CHATS",
+    "machine_enforceable": true,
+    "failure_class": "MISSING_TASK_RELEVANT_LEARNING_PREFLIGHT"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-intent-skill-preflight-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-intent-skill-preflight-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-intent-skill-preflight-20261025.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-intent-skill-preflight-20261025.test.mjs",
+    "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  ],
+  "terminal_rule": "Protected latest SHA Required+CodeQL, reviewed merge, exact production/source readback, preflight receipt with digest and provenance. No fake paid outcomes."
+}

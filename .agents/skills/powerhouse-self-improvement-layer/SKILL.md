@@ -117,6 +117,14 @@ Fingerprint: `portal|learning-memory|proven-without-verified-outcome-evidence|20
 
 Success/healthy van een transport- of runtimeprojectie is **geen bewezen bronherstel**. De canonieke tenant-geautoriseerde Brain-projectie moet expliciet een `PROVEN`-maturity, een echte productie/provider-readback en een onveranderlijke toegestane bewijsreferentie dragen voordat `Relevantie & verbeteringen` een item als `Bewezen in Brain` telt. Ontbreekt een van die drie, toon `Nog te verifiëren in Brain`; registreer hetzelfde fingerprint en herstel in dezelfde lineage. Een UI-label, testfixture, eigenaarcomment of merge is nooit op zichzelf productiebewijs. Regressie: `portal-v2/tests/relevance-learning-closed-loop.test.mjs`. Geen tweede registry of cron.
 
+## Task-specific canonical learning reuse (25 October 2026)
+
+Fingerprint: powerhouse|learning-preflight|intent-only-target-inference|20261025-v1.
+
+The existing Brain preflight forwards natural-language intent to the canonical skill projection. Even without explicit delivery-lane labels, it reads the latest relevant historical prevention rules. Every mandatory and exact-fingerprint rule remains; other lessons are bounded. The receipt contains source-backed fingerprints, digest, inferred targets, match and truncation counts. A search miss never proves that no relevant prior fix exists.
+
+New AI models, tools, skills and innovations are versioned candidates until freshness, provenance, tenant/privacy, cost, benchmark, Required+CodeQL and independent production proof pass. Do not create a second memory, scheduler, authority or unverified green status.
+
 ## Canonical skill source attestation (2026-10-25)
 
 Fingerprint: `powerhouse|agent-skill-source-attestation|preflight-digest-load-boundary|20261025-v1`.
