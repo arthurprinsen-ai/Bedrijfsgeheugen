@@ -20,3 +20,8 @@ test('branch sync excludes forks and draft PRs and does not claim API acceptance
   assert.match(workflow,/pr\.draft \|\| pr\.head\.repo\?\.full_name/);
   assert.match(workflow,/Accepted is not verified/);
 });
+
+test('branch mutations require explicit owner enrollment',()=>{
+  assert.match(workflow,/label\.name === 'autonomous-sync'/);
+  assert.match(workflow,/if \(!optedIn\)/);
+});
