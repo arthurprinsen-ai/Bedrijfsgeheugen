@@ -1,8 +1,8 @@
 {
   "fingerprint": "powerhouse|skillops|daily-heartbeat-source-receipt|20261025-v1",
   "compiler": {
-    "failure_class": "RUNTIME_INVARIANT",
-    "scope": "GENERAL",
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
