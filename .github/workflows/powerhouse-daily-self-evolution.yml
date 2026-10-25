@@ -55,6 +55,8 @@ jobs:
         run: node --test tests/powerhouse-daily-self-evolution.test.mjs
       - name: Verify Powerhouse self-improvement layer
         run: node --test tests/brain-self-improvement-layer-v1.test.mjs
+      - name: Capture trusted GitHub-run skill byte audit (NOT application proof)
+        run: node scripts/brain/skill-byte-audit.mjs
       - name: Build universal chat-agent-skill snapshot
         run: node scripts/brain/daily-self-evolution.mjs
       - name: Run canonical autonomous improvement probe
