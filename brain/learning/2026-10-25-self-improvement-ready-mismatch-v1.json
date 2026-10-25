@@ -59,5 +59,46 @@
     "canary": [
       "tests/brain-self-improvement-layer-v1.test.mjs"
     ]
+  },
+  "root_cause": "The canonical self_improvement_control view uses compiler_ready across ALL source types, including unrelated quality_event records, to label optimization candidates READY_FOR_CONTROLLED_PROMOTION. The nine READY rows are quality events while all nine optimization candidates lack independent measurements and outcome proof.",
+  "prevention_rules": [
+    "A READY quality_event cannot substitute for a READY optimization_candidate",
+    "Promotion readiness must be joined by exact candidate_id and independently observed closure",
+    "Cron succeeded is transport completion, not verified commercial progress",
+    "Revenue and paid-order claims require canonical observed payment/order outcome",
+    "Do not create new schedulers, queues, registries, self-deployers or parallel sale executors",
+    "Protected Required/CodeQL + migration deployment + production readback are mandatory before claiming corrected live state"
+  ],
+  "evidence": {
+    "production_snapshot": {
+      "date": "2026-10-25",
+      "productionSelfImprovementState": "READY_FOR_CONTROLLED_PROMOTION",
+      "optimizationCandidates": 9,
+      "measuredCandidates": 0,
+      "compilerReadyQualityEvents": 9,
+      "compilerEvidencePendingOptimizationCandidates": 9,
+      "independentCandidateObservations": 0,
+      "candidateReviewsProven": 0,
+      "candidateDeliveryProven": 0,
+      "candidateLearningProven": 0,
+      "dailyGrowthState": "degraded",
+      "openOpportunities": 837,
+      "revenueTruth": {
+        "realizedEuro": 0,
+        "attributedEuro": 0
+      },
+      "scheduledDailyCompoundLearning": "succeeded",
+      "scheduledDailySelfImprovement": "succeeded"
+    },
+    "sql_preview": {
+      "candidate_ready": 0,
+      "projected_status": "LEARNING",
+      "compiler_quality_ready": 9,
+      "candidate_compiler_ready": 0
+    },
+    "regression_tests": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "production_readback_required": true
   }
 }
