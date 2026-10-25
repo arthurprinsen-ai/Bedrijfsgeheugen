@@ -31,6 +31,10 @@ test('candidate-only verifier is provider-specific, cannot rewrite Instagram obl
  assert.match(s,/reference_candidate_verified/);
  assert.match(s,/exact_final_media_proven:!referenceCandidate&&pass/);
  assert.match(s,/reference_candidate_only:referenceCandidate/);
+ assert.match(s,/reference_candidate_visually_matched:referenceCandidate&&pass/);
+ assert.match(s,/identity_gate_result:referenceCandidate\?'UNPROVEN'/);
+ assert.match(s,/mira-reference-candidate-vision-proof:/);
+ assert.match(s,/verified:!referenceCandidate&&pass/);
  assert.match(s,/may_publish:!referenceCandidate&&pass/);
  assert.match(s,/canonical_master_unchanged:true/);
 });
