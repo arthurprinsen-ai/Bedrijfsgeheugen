@@ -35,3 +35,14 @@ test('the portal links are always full secure external URLs',()=>{
  assert.equal(x.sourceUrl,'https://www.rvo.nl/subsidies-financiering');
  assert.equal(signalNextStep({...item,external_url:'http://www.rvo.nl'},[action],now).sourceUrl,'');
 });
+
+test('portal home and environment radar join each relevant signal to its action evidence',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const ui=await readFile(new URL('../portal-v2/modules/entrepreneur-intelligence.js',import.meta.url),'utf8');
+ assert.match(ui,/Relevant voor jouw bedrijf: bron, reden en actie/);
+ assert.match(ui,/Waarom is dit voor mij relevant/);
+ assert.match(ui,/Wat moet ik nu doen/);
+ assert.match(ui,/intelligenceSignalCard\(x,domainMap,actions\)/);
+ assert.match(ui,/tenant_specific_impact===true&&s.impact_status==='SCORED'/);
+ assert.match(ui,/guidance\.linked\?/);
+});
