@@ -58,5 +58,8 @@
   },
   "target_metric": "GSC OCI query clicks/impressions/position; primary CTA, qualified lead, won order and realized revenue only when observed",
   "rollback_condition": "Any incorrect AFAS vendor claim, broken CTA, English translation regression, SEO/indexability regression or reduced qualified conversions",
-  "terminal_rule": "Exact-head Required and CodeQL, protected merge, matching Netlify production identity, public AFAS+blog content readback and real outcomes independent."
+  "terminal_rule": "Exact-head Required and CodeQL, protected merge, matching Netlify production identity, public AFAS+blog content readback and real outcomes independent.",
+  "tests": [
+    "tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs"
+  ]
 }
