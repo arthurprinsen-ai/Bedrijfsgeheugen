@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|ci-agent-priorities|immutable-thresholds-and-sha-integrity|20261023-v1",
+  "obligation_id": "delivery|ci-agent-priorities|immutable-thresholds-and-sha-integrity|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_merged_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4809",
+  "retired_overlapping_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4808",
+  "status": "CANDIDATE",
+  "failure_class": "CI_AGENT_ADVISORY_EVIDENCE_TAMPERING_OR_THRESHOLD_DOWNGRADE",
+  "root_cause": "The matrix-independent advisory merged in #4809 accepted contradictory commit SHAs on two distinct matrix jobs belonging to the same workflow run attempt. Optional caller-provided minimum repetitions, minimum median and priority limit were not bounded at the mandatory evidence floor, enabling an advisory to be called from a weakened local configuration.",
+  "observed_evidence": {
+    "source": "tools/delivery/ci-agent-priorities.mjs",
+    "provider_truth": "GitHub Actions workflow run attempt is a single immutable commit scope; a sibling job's inconsistent SHA cannot be accepted as the same attempt",
+    "historical_proof": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39971461584",
+    "status": "DETERMINISTIC_SOURCE_REPLAY_ISSUE_NOT_PROVEN_REAL_ATTACK",
+    "speedup_proven": false
+  },
+  "failed_approaches": [
+    "Attempt to merge older #4808 matrix voter after #4809 already live; retired to avoid overwriting canonical owner",
+    "Treat optional minRepeatedRuns=1 or minMedianMs=0 as authority to bypass established statistical evidence threshold",
+    "Rank mixed-commit samples from the same run attempt despite a conflicting recorded head SHA"
+  ],
+  "fix": "Extend only existing read-only ci-agent-priorities.mjs with run+attempt SHA consistency validation; clamp repeated-run floor >=3, median execution floor >=60000ms, and priority count 1..5. Keep #4809's one-vote-per-workflow-attempt matrix logic and existing Janitor/Brain scheduler unchanged.",
+  "prevention_rule": "If provider job evidence claims conflicting HEAD SHAs for one immutable run+attempt, fail closed without ranking. Caller options may make advisory stricter but may not loosen the statistical minimum or output cap. Advisory remains non-authoritative read-only guidance; never mutate PRs, dispatch CI, promote unverified build/portal changes or fabricate independent customer outcomes.",
+  "tests": [
+    "tests/brain-ci-agent-priorities-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_AGENT_ADVISORY_EVIDENCE_TAMPERING_OR_THRESHOLD_DOWNGRADE",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "invariants": [
+      "all matrix rows from one GitHub run+attempt have identical 40-character commit identity",
+      "never lower >=3 independent attempts, >=60000ms median, or <=5 advisory priorities by caller options",
+      "retain matrix-independent one vote per attempt from #4809",
+      "no new workflow or scheduler, no extra provider API reads",
+      "read-only can_mutate/can_dispatch/can_promote flags stay false",
+      "partial provider read cannot become an authorized optimization",
+      "exact-head Required/CodeQL and independent main + Janitor readback before live claim"
+    ]
+  },
+  "terminal_rule": "Exact-head hygiene, Required, CodeQL, protected merge, current-main source parity, skill projection, and real subsequent Janitor run; no claim of improved CI p95 or customer results without comparisons."
+}

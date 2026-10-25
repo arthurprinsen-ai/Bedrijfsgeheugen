@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "external-intelligence|tavily-limit-dataforseo-fallback-remote-failure|20261025-v1",
+  "parent_issue": 4198,
+  "failure_class": "EXTERNAL_PROVIDER_LIMIT_AND_TRANSIENT_FALLBACK_FAILURE",
+  "root_cause": "During actual authorized canonical bg-externe-signalen invocation 12486 (2026-10-25 09:23 UTC), Tavily quota blocked its source and one of three DataForSEO fallbacks returned DATAFORSEO_REMOTE_FAILURE. Two topics succeeded and one failed; the old DataForSEO code conflated transient HTTP/provider errors with non-retryable account, quota, validation and no-result outcomes.",
+  "evidence": {
+    "supabase_function_version": 14,
+    "request_id": 12486,
+    "real_http_status": 207,
+    "topics_attempted": 3,
+    "successful": 2,
+    "failed": 1,
+    "found": 18,
+    "allowed": 1,
+    "source_rotator_contract": "EXTERNAL_TOPIC_DAILY_FAIR_ROTATION-v1",
+    "live_paid_order_proof": false
+  },
+  "fix": "Use one canonical edge function and one bounded retry of a DataForSEO call only for documented temporary transport/HTTP 5xx and retryable provider task errors. Do not retry billing, auth, rate-limit, credit or input errors. Confirmed 40102 no results is a real empty SERP. Record previous and new observations in same Brain lineage, never invent a success.",
+  "prevention_rules": [
+    "Classify provider errors before retrying; one retry maximum per failed DataForSEO topic and no extra scheduler or queue.",
+    "Never retry subscriptions, billing, credential or rate-limit errors as a way to hide red status.",
+    "Preserve provider-specific real-source references and independent, date-stamped quality checks; zero results is not an order.",
+    "Only raise to PROVEN after Required+CodeQL, protected merge, exact production edge readback and actual new invocation response."
+  ],
+  "tests": [
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER_LIMIT_AND_TRANSIENT_FALLBACK_FAILURE",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required and CodeQL; protected merge; published Supabase function files and version; actual pg_net readback. A genuinely non-retryable provider failure remains DEGRADED, not false green."
+}

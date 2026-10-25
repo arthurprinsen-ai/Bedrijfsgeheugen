@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "instagram|final-caption-overwrites-all-creative-learning|20261024-v1",
+  "obligation_id": "instagram|canonical-mira-daily-creative-test|20261024-v1",
+  "status": "CANDIDATE",
+  "failure_class": "DAILY_SOCIAL_LEARNING_NOT_APPLIED_TO_INSTAGRAM_CAPTION",
+  "root_cause": "Daily content improvement supports bounded source-backed blog/LinkedIn copy tests, but Instagram's AI draft is always overwritten with exactly the same fixed canonical Mira caption. This prevented a measured creative test from ever influencing a safe eventual Instagram post.",
+  "observed_evidence": {
+    "social": "Latest 24 October canonical Instagram metrics show 6 observed posts with little engagement; 1 like and zero comments. No controlled causal explanation.",
+    "publication": "24 October Instagram is BLOCKED/WAITING_ASSET, and no approved provider MP4 or successful publisher side effect is proven.",
+    "owner": "Existing powerhouse-content-orchestrator with canonical media identity router and social publisher."
+  },
+  "fix": "Permit one deterministic change to the scene opening, potential-consequence wording or non-manipulative question in the existing PH-P Mira caption only from date-bound and recommendation-linked exploration evidence. Independent existing publisher recalculates exact text and refuses forged or unmatched evidence.",
+  "prevention_rule": "Do not change the canonical problem, capabilities, metric, source, fictional disclaimer, media identity thresholds, publishing authority or scheduler. No claims of improved views/leads/orders before actual source readback. No second post; hard block remains when exact OpenArt video is not proven.",
+  "tests": [
+    "tests/brain-instagram-daily-canonical-caption-exploration-v1.test.mjs",
+    "tests/brain-mira-entrepreneur-caption-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_SOCIAL_LEARNING_NOT_APPLIED_TO_INSTAGRAM_CAPTION",
+    "scope": "SOCIAL_CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-daily-canonical-caption-exploration-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-daily-canonical-caption-exploration-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-daily-canonical-caption-exploration-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact HEAD Required, CodeQL and independent Supabase function/source deployment parity; only a genuinely published approved media+caption and provider-observed outcomes prove live benefit."
+}

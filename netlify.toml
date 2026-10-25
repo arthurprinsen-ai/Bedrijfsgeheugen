@@ -36,6 +36,11 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# Scope the binary to the *only* frame-extraction function, rather than shipping
+# a ~32 MB FFmpeg executable with every social-learning and revenue function.
+# Keep the original provider/frame identity verifier unchanged.
+[functions."instagram-video-frames"]
   external_node_modules = ["ffmpeg-static"]
   included_files = ["node_modules/ffmpeg-static/ffmpeg"]
 # Legacy /nl/* locale URLs zijn niet canoniek. Nederlands leeft op de
@@ -374,8 +379,11 @@
 # Deploy previews zijn bewust een exacte kopie van de productie-build.
 # Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
 # alternatieve preview-composer meer die een andere website kan tonen.
+# Required independent deploy-preview evidence must not be suppressed by a
+# cached-commit heuristic. Production continues using its selective ignore.
 [context.deploy-preview]
   command = "node tools/ci/netlify-build-entry.mjs"
+  ignore = "exit 1"
 
 [[redirects]]
   from = "/aanmelden.html"

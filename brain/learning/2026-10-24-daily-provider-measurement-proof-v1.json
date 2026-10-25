@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "growth|daily-provider-proof|transport-accepted-without-measured-post-or-page|20261024-v1",
+  "obligation_id": "growth:daily-content-observed-proof-coverage-v1",
+  "status": "CANDIDATE",
+  "failure_class": "DAILY_GROWTH_LEARNER_FALSE_GREEN_EMPTY_METRIC_COVERAGE",
+  "root_cause": "The scheduled 04:20 UTC growth learner's source proof gate required only READ_ONLY_PROVIDER_OBSERVED, nonempty registered social posts, and any source health record. Because social data joins posts LEFT JOIN metric snapshots, an API 200 with zero actual metrics could incorrectly pass and advertise observed growth learning; the website diagnostic dropped page observed_at so recent consented human observations could not be independently validated.",
+  "observed_evidence": {
+    "source": "tools/content-growth/daily-provider-proof-gate.mjs",
+    "query_contract": "LEFT JOIN social_metric_snapshots",
+    "quality_issues": [
+      "GA4 MISSING 2026-10-24",
+      "Search Console AWAITING_PROVIDER",
+      "social partial/legacy scope"
+    ],
+    "prod_status": "SOURCE_PROOF_GAP_CONFIRMED_STATICALLY_NOT_CLAIMING_A_FAILED_SCHEDULED_RUN"
+  },
+  "fix": "Require at least one genuinely recent observed owned-brand provider metric or recently observed consented nonrobot page aggregate backed by fresh website_interactions source; expose partial-channel coverage separately. Retain page observed_at from bounded daily diagnostics. No new schedule, source write, model or publisher.",
+  "prevention_rule": "No daily all-green from API HTTP 200, post registration, source health metadata alone, stale snapshots, unknown metrics, bot events or raw engagement treated as paid conversions. Always upload evidence even when the proof gate fails and route existing owner to canonical provider recovery.",
+  "tests": [
+    "tests/brain-daily-provider-proof-gate-v1.test.mjs",
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_GROWTH_LEARNER_FALSE_GREEN_EMPTY_METRIC_COVERAGE",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required/CodeQL, protected merge, next actual 04:20 UTC workflow artifact reports recorded post or page measurements with source-state readback. Neither passing gate nor publication equals paid order."
+}

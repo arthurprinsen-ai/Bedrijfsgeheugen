@@ -22,7 +22,7 @@ test('48 hour evaluation rejects a distant 72 hour snapshot as missing evidence'
 
 test('same post/window evaluation uses deterministic identity',async()=>{
   const ids=[];
-  const store={listDuePosts:async()=>[{postId:'p1',publishedAt:'2026-09-01T10:00:00Z',dueWindow:24}],getSnapshots:async()=>[{snapshotId:'s1',postId:'p1',observedAt:'2026-09-02T10:00:00Z',metrics:{impressions:100,comments:5}}],getCohort:async()=>[],putEvaluation:async e=>ids.push(e.evaluationId),upsertLearning:async()=>{},reconcileApplications:async()=>{}};
+  const store={listDuePosts:async()=>[{postId:'p1',publishedAt:'2026-09-01T10:00:00Z',dueWindow:24}],getSnapshots:async()=>[{snapshotId:'s1',postId:'p1',observedAt:'2026-09-02T10:00:00Z',dataQuality:'OBSERVED',metrics:{impressions:100,comments:5}}],getCohort:async()=>[],putEvaluation:async e=>ids.push(e.evaluationId),upsertLearning:async()=>{},reconcileApplications:async()=>{}};
   await runEvaluation({store,now:new Date('2026-09-02T11:00:00Z'),config});
   await runEvaluation({store,now:new Date('2026-09-02T11:05:00Z'),config});
   assert.deepEqual(ids,['evaluation:p1:24','evaluation:p1:24']);
@@ -32,7 +32,7 @@ test('commercial contradiction prevents engagement-led PROVEN learning',async()=
   const learnings=[];
   const store={
     listDuePosts:async()=>[{postId:'p1',tenantId:'t1',platform:'linkedin_company',publishedAt:'2026-09-01T10:00:00Z',dueWindow:24,hookType:'tension'}],
-    getSnapshots:async()=>[{snapshotId:'target',postId:'p1',observedAt:'2026-09-02T10:00:00Z',metrics:{impressions:100,revenue:50,comments:20,shares:5,saves:5}}],
+    getSnapshots:async()=>[{snapshotId:'target',postId:'p1',observedAt:'2026-09-02T10:00:00Z',dataQuality:'OBSERVED',metrics:{impressions:100,revenue:50,comments:20,shares:5,saves:5}}],
     getCohort:async()=>Array.from({length:5},(_,i)=>({postId:`c${i}`,observedAt:`2026-08-${20+i}T10:00:00Z`,metrics:{impressions:100,revenue:100,comments:5,shares:1,saves:1}})),
     putEvaluation:async()=>{},upsertLearning:async l=>learnings.push(l),reconcileApplications:async()=>{}
   };

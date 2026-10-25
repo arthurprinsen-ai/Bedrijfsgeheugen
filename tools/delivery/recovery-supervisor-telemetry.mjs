@@ -1,7 +1,9 @@
 // Read-only evidence of ACTUAL Recovery Supervisor runs for the EXISTING hourly Repository Janitor.
 // Never mutate a PR, start CI, relax gates, declare a deployment, or add a scheduler.
 import {execFileSync} from 'node:child_process';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {buildSupervisorDailyLearning} from './recovery-supervisor-daily-learning.mjs';
+import {assessSupervisorOwnerClaims} from './recovery-supervisor-owner-claims.mjs';
 import {pathToFileURL} from 'node:url';
 
 const WF='powerhouse-delivery-recovery-supervisor.yml';
@@ -25,11 +27,36 @@ function read(path){
     encoding:'utf8',timeout:12000,maxBuffer:5_000_000,stdio:['ignore','pipe','pipe']
   }));
 }
-function log(path){
-  return execFileSync('gh',['api',path],{
-    encoding:'utf8',timeout:12000,maxBuffer:2_000_000,stdio:['ignore','pipe','pipe']
-  });
+// GitHub's job-log REST endpoint returns a short-lived 302 redirect. Prefer
+// the direct API, then the GitHub CLI's supported run-view fallback. Never
+// invent empty logs on provider errors and never read an unbounded response.
+export function readSupervisorJobLog(path,runCommand=execFileSync){
+  const matched=String(path||'').match(/^repos\/([a-z0-9_.-]+\/[a-z0-9_.-]+)\/actions\/jobs\/([1-9]\d*)\/logs$/i);
+  if(!matched)throw Error('SUPERVISOR_JOB_LOG_ENDPOINT_INVALID');
+  const opts={encoding:'utf8',timeout:16000,maxBuffer:2_000_000,stdio:['ignore','pipe','pipe']};
+  const valid=text=>typeof text==='string'&&text.length>0&&text.length<=2_000_000&&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+/m.test(text);
+  try{
+    const direct=runCommand('gh',['api',path],opts);
+    if(valid(direct))return direct;
+  }catch{}
+  let cli;
+  try{
+    cli=runCommand('gh',['run','view','--job',matched[2],'--log','--repo',matched[1]],opts);
+  }catch{
+    throw Error('SUPERVISOR_JOB_LOG_PROVIDER_READ_FAILED');
+  }
+  if(typeof cli!=='string'||cli.length>2_000_000)throw Error('SUPERVISOR_JOB_LOG_UNBOUNDED');
+  const normalized=cli.split('\n').map(line=>{
+    // gh run view prints job-name and step-name columns before the genuine
+    // timestamp. Strip those columns only; keep actual runner lines intact.
+    const prefixed=line.match(/^(?:[^\t\r\n]*\t){1,4}(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+.*)$/);
+    return prefixed?prefixed[1]:line;
+  }).join('\n');
+  if(!valid(normalized))throw Error('SUPERVISOR_JOB_LOG_TIMESTAMP_EVIDENCE_MISSING');
+  return normalized;
 }
+function log(path){return readSupervisorJobLog(path);}
 const date=v=>{const n=Date.parse(v||'');return Number.isFinite(n)?n:null;};
 const percentile=(ns,fraction)=>{
   if(ns.length===0)return null;
@@ -59,9 +86,12 @@ export function parseSupervisorAnnotations(content,runId){
     // GitHub log lines must carry real ISO runtime timestamps; arbitrary prefixes
     // or shell-echoed commands cannot act as provider evidence.
     const actual=line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+##\[(?:warning|notice|error)\](.+)$/);
-    if(!actual)continue;
-    const note=actual[1];
+    const marker=line.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z\s+PR#([1-9]\d{0,9})\s+[a-f0-9]{40}\s+MAIN_DRIFT_RECOVERY$/i);
+    if(!actual&&!marker)continue;
+    const note=actual?.[1]||'';
     let pr=null,code=null;
+    if(marker)[code,pr]=['MAIN_DRIFT_RECOVERY',Number(marker[1])];
+    if(!marker){
     const named=note.match(/^(MAIN_DRIFT_[A-Z_]+):PR#([1-9]\d{0,9})/);
     if(named&&KNOWN.has(named[1])){
       [code,pr]=[named[1],Number(named[2])];
@@ -74,6 +104,7 @@ export function parseSupervisorAnnotations(content,runId){
       else if(rejected)[code,pr]=['NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED',Number(rejected[1])];
       else if(successful)[code,pr]=['MAIN_DRIFT_SYNC_CONFIRMED',Number(successful[1])];
       else if(needed)[code,pr]=['MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED',Number(needed[1])];
+    }
     }
     if(code===null||!Number.isSafeInteger(pr))continue;
     const identity=runId+':'+pr+':'+code;
@@ -102,7 +133,8 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     const p=prMap.get(e.pr_number);
     p.observed_run_ids.add(e.run_id);
     if(e.code==='MAIN_DRIFT_RECOVERY_ELIGIBLE_UNVERIFIED'||
-      e.code.startsWith('MAIN_DRIFT_')||e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')
+      (e.code.startsWith('MAIN_DRIFT_')&&!['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))||
+      e.code==='NATIVE_UPDATE_REJECTED_CAUSE_UNVERIFIED')
       p.drift_run_ids.add(e.run_id);
     if(['MAIN_DRIFT_SYNC_CONFIRMED','MAIN_DRIFT_SYNC_RECONCILED'].includes(e.code))
       p.successful_run_ids.add(e.run_id);
@@ -138,7 +170,7 @@ export function summarizeSupervisorEvidence({runs=[],events=[],available=0,obser
     p50_supervisor_job_duration_ms:timed?percentile(durations,.5):null,
     p95_supervisor_job_duration_ms:timed?percentile(durations,.95):null,
     per_pr:byPr,
-    repeated_drift_prs:complete?byPr.filter(p=>p.repeated_drift_observed).map(p=>p.pr_number):[],
+    repeated_drift_prs:complete?byPr.filter(p=>p.repeated_drift_observed).map(p=>p.pr_number):null,
     observed_event_categories:classes,
     runs,read_errors:readErrors,
     time_to_green_ms:null,time_to_production_ms:null,
@@ -197,6 +229,17 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
       sampled_completed_runs:0,per_pr:[],read_errors:[{reason:'PROVIDER_READ_FAILED'}],
       time_to_green_ms:null,time_to_production_ms:null,
       release_cycle_speedup_proven:false,can_dispatch:false,can_mutate:false,can_promote:false};
+  }
+  // Use only Janitor snapshots already available on this run.
+  let ci=null;
+  try{ci=JSON.parse(await readFile('.artifacts/powerhouse-ci-throughput.json','utf8'));}
+  catch{ci=null;}
+  result.daily_learning=buildSupervisorDailyLearning({supervisor:result,ci});
+  try{
+    const openPrs=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+    result.daily_learning.declared_writer_ownership=assessSupervisorOwnerClaims(openPrs);
+  }catch{
+    result.daily_learning.declared_writer_ownership=assessSupervisorOwnerClaims(null);
   }
   await mkdir('.artifacts',{recursive:true});
   await writeFile(OUT,JSON.stringify(result,null,2)+'\n');

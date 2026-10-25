@@ -42,6 +42,8 @@ export const NETLIFY_RUNTIME_PREFIXES = Object.freeze([
 // These modules are imported transitively by Netlify's tenant-ai-inference and
 // data-sovereignty functions. Backend lane != no hosted runtime impact.
 export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
+  // Changing function bundling/runtime config requires a real Netlify build.
+  'netlify.toml',
   'platform/runtime/attested-cloud-ai.mjs',
   'platform/runtime/attested-vertex-adapter.mjs',
   'platform/brain/verified-ai-runtime.mjs',

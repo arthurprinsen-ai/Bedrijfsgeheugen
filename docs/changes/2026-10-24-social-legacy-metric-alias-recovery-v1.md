@@ -1,0 +1,7 @@
+# Real social observations must produce useful measured metric vectors
+
+Production after the previous hourly recovery produced one formally stored brand evaluation, but its metric vector was **entirely null**. A verified Buffer historical provider snapshot reported `Impressions=1125`, `Reach=857`, `Reactions=5`, `Comments=0`, using human-readable capitalized keys. The existing model recognized only lowercase, so the learning result was inadvertently vacuous.
+
+The original canonical model now normalizes those exact semantics. It does not equate LinkedIn reactions with likes or views, and it ignores provider `Eng. Rate` because the units are not independently established. The normalizer preserves explicit observed zeros and keeps unknown orders, revenue, and comments nullable. `reactions` is a lower-priority optimization signal after actual commercial and substantive interaction outcomes.
+
+Existing Supabase `social-learning-store` treats all-null previous evaluation vectors as **not yet measured**, making the same exact post and window eligible for idempotent re-evaluation from the original stored snapshot. No new external metrics, scheduler, data lake, publisher or commercial proof are created. Terminal verification: protected merge, Netlify and Supabase production source parity, new non-null social_learning_evaluations metrics and separate learning applications/paid orders evidence.

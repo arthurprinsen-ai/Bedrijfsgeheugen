@@ -156,3 +156,17 @@ entrypoint = "./functions/bg-social-metrics-sync/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/revenue-learning-store/index.ts"
+
+[functions.social-learning-store]
+# Canonical tenant-isolated social-learning gateway. Existing SHA-256
+# x-bg-service-token authentication preserves verify_jwt=false; no anonymous access.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/social-learning-store/index.ts"
+
+# Existing canonical SEO opportunity resolver: internal x-powerhouse-token gate.
+# Preserve deployed verify_jwt=false; never expose the scheduler token.
+[functions.powerhouse-seo-opportunity-resolver]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-seo-opportunity-resolver/index.ts"

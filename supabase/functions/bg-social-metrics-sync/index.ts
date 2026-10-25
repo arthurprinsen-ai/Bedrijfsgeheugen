@@ -1,4 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
+import { buildVerifiedCompanyMetricSnapshots } from '../_shared/linked-company-analytics.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -93,6 +95,62 @@ async function resolveInstagram(db:any,media:any){
   if(error)throw new Error('IG_PROVIDER_POST_REGISTER:'+error.message);
   return {tenant_id:'bedrijfsgeheugen',post_id:postId};
 }
+// Shares only already LIVE_PROVEN organization publications into the existing
+// owned-brand social_posts index. No external publish, no metrics and no consent bypass.
+async function registerCompanyProofs(db:any){
+  const since=new Date(Date.now()-35*86400000).toISOString().slice(0,10);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at')
+    .eq('tenant_id','canonical').eq('channel','linkedin_company').eq('status','LIVE_PROVEN')
+    .gte('publication_date',since).not('live_proven_at','is',null)
+    .order('publication_date',{ascending:false}).limit(35);
+  if(proofError)throw new Error('COMPANY_PUBLICATION_PROOF_READ:'+proofError.message);
+  const batch=verifiedCompanyPostBatch(proofs||[],new Date(),30);
+  if(!batch.length)return {status:'NO_ELIGIBLE_VERIFIED_COMPANY_POST',eligible:0,registered:0};
+  const {data:inserted,error:writeError}=await db.from('social_posts')
+    .upsert(batch,{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
+    .select('post_id');
+  if(writeError)throw new Error('COMPANY_SOCIAL_REGISTRY_WRITE:'+writeError.message);
+  return {status:'VERIFIED_POSTS_INDEXED_ONLY',eligible:batch.length,registered:(inserted||[]).length,
+    metrics_scope:'UNKNOWN_NO_ORGANIZATION_ANALYTICS_PERMISSION',
+    authority:'canonical_content_publication_obligations'};
+}
+
+// Reuse the same six-hour provider sync. Link read-only third-party post metrics
+// only when canonical LIVE_PROVEN + independent organization author exactly match.
+async function reconcileCompanyMetricEvidence(db:any){
+  const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
+  const {data:observations,error:sourceError}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('tenant_id,metric_date,source_key,quality,source_observed_at,metrics,evidence')
+    .eq('tenant_id','bedrijfsgeheugen').eq('quality','PROVIDER_OBSERVED_UNLINKED')
+    .like('source_key','linkedin_company_post:%')
+    .gte('metric_date',since).order('source_observed_at',{ascending:false}).limit(60);
+  if(sourceError)throw new Error('COMPANY_ANALYTICS_SOURCE_READ:'+sourceError.message);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,external_id,published_at,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_company').eq('status','LIVE_PROVEN')
+    .gte('publication_date',since).not('live_proven_at','is',null)
+    .order('publication_date',{ascending:false}).limit(35);
+  if(proofError)throw new Error('COMPANY_ANALYTICS_INDEPENDENT_PROOF_READ:'+proofError.message);
+  const {data:posts,error:postError}=await db.from('social_posts')
+    .select('tenant_id,post_id,platform,channel_kind,external_post_id,published_at')
+    .eq('tenant_id','bedrijfsgeheugen').eq('platform','linkedin')
+    .eq('channel_kind','linkedin_company').order('published_at',{ascending:false}).limit(40);
+  if(postError)throw new Error('COMPANY_ANALYTICS_CANONICAL_INDEX_READ:'+postError.message);
+  const matched=buildVerifiedCompanyMetricSnapshots({
+    observations:observations||[],publicationProofs:proofs||[],ownedPosts:posts||[],now:new Date(),max:30
+  });
+  if(!matched.length)return {state:'NO_EXACT_INDEPENDENTLY_LINKABLE_ANALYTICS',
+    source_rows:(observations||[]).length,linked:0,unlinked_cannot_be_inferred:true};
+  const {error:writeError}=await db.from('social_metric_snapshots')
+    .upsert(matched,{onConflict:'tenant_id,source_event_id'});
+  if(writeError)throw new Error('COMPANY_ANALYTICS_CANONICAL_SNAPSHOT_WRITE:'+writeError.message);
+  return {state:'VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED',
+    source_rows:(observations||[]).length,linked:matched.length,
+    source:'windsor.ai',verified_by:'canonical LIVE_PROVEN organization author and exact post URN',
+    inference_limits:'impressions are not customers and video views are not reach'};
+}
+
 async function instagram(db:any,apiKey:string,day:string){
   const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
   const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
@@ -158,14 +216,20 @@ Deno.serve(async(req:Request)=>{
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const day=localDay();
-    let ig:any,li:any;
+    let ig:any,li:any,companyRegistry:any,companyMetricLink:any;
+    try{companyRegistry=await registerCompanyProofs(db);}catch(e){
+      companyRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
+    try{companyMetricLink=await reconcileCompanyMetricEvidence(db);}catch(e){
+      companyMetricLink={state:'COMPANY_METRIC_LINK_SOURCE_ERROR',error:clean((e as Error).message).slice(0,120)};
+    }
     try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     const total=(ig?.snapshots||0)+(li?.snapshots||0);
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',
+      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
