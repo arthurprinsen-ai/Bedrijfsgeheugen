@@ -24,3 +24,7 @@ Do not delete or modify `supabase_migrations.schema_migrations` directly. Do not
 4. Prevent recurrence: a single migration writer and GitOps release authority, deterministic preflight on remote-only identities, no simultaneous manual `apply_migration` plus native Git deploy, and an owner-evidence gate before any repair.
 
 No full-cycle green or paid-order claim is made by this migration history repair.
+
+## Follow-up: preserve chronological order of never-applied publisher-proof SQL
+
+Supabase applies pending migrations in timestamp order. Production already records `20261025112658`, whereas the independently verified, never-deployed publisher-proof migration from merged #4879 was named `20261025110200`. After reconstructing the already-applied remote history, that earlier timestamp would remain out of order. On this same protected repair PR, the **identical 4,687-byte SQL** has therefore been re-versioned as `20261025130000_commercial_daily_provider_evidence_reconciliation_after_history_parity.sql`, and its regression test now reads the new path. The previously unapplied `20261025110200` file has been retired from Git, **not** marked applied or altered in production. The migration's function semantics and ACL remain unchanged. Native Supabase preview, Required, CodeQL, protected merge, and real production readback are still mandatory.
