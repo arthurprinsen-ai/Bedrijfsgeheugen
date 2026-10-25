@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "growth-drain|list-get-concurrent-retirement|false-index-invalid|20261025",
+  "obligation_id": "netlify|growth-drain|concurrent-pointer-retirement-proof|20261025-v1",
+  "parent_issue": 4446,
+  "related_issue": 4198,
+  "failure_class": "GROWTH_DRAIN_INDEX_POINTER_RACE_FALSE_FAILURE",
+  "root_cause": "Independent Netlify logs following protected #4909 show 2-3 growth-drain invocations per minute. Mixed runs persist 3-4 events and register 3-7 indexPointerInvalid but zero indexSourceMissing/providerFailed. A list() snapshot key may be deleted by another invocation before get(); code previously collapsed a valid null result into malformed-pointer failure. This is a probable race, not proof that every pointer is corrupt.",
+  "fix": "Treat a successful null indexed pointer read as concurrent completed retirement, no false-green provider outcome; separately count indexPointerGone. Treat malformed non-null pointer, missing original, and provider get exceptions as distinct remaining integrity errors, emitting HTTP503 and retaining evidence. Same scheduler and original source receipt retention.",
+  "evidence": {
+    "netlify": "2026-10-25T15:51–15:55Z growth-drain 503 interleaved with 204, indexPointerInvalid 3-7 while 3-4 events persisted, indexSourceMissing=0, providerFailed=false",
+    "independent_db": "Supabase 45 new events created after #4909 released at 15:50:51Z"
+  },
+  "prevention_rules": [
+    "A successfully missing disposable index pointer after list() is an expected concurrent-retirement race",
+    "A thrown provider read is NOT a missing pointer and remains a visible integrity error",
+    "Never delete original source receipts or fabricate visitor conversion",
+    "Preserve backpressure, at-least-once idempotency and fail-closed real corruption",
+    "Do not add duplicate cron or parallel executor"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GROWTH_DRAIN_INDEX_POINTER_RACE_FALSE_FAILURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required, CodeQL, Netlify, protected merge then provider logs showing indexPointerGone with no false 503 and independent events in Supabase; remaining genuine corruption and realized revenue must stay separately open."
+}

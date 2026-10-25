@@ -173,3 +173,58 @@ test('scheduled drain does not emit a false-green 204 when pointer integrity is 
   assert.match(code,/result\.failed>0\?503:204/);
   assert.match(code,/indexIntegrityFailures:result\.indexIntegrityFailures/);
 });
+
+test('concurrent index retirement after a list snapshot is benign; real work continues',async()=>{
+  const gone='pending/event/already-finished',good='event/new',goodPointer='pending/'+good;
+  const f=fixture([good]);
+  f.data.set(gone,{source_key:'event/already-finished'});
+  f.data.set(goodPointer,{source_key:good});
+  const realGet=f.store.get.bind(f.store);
+  f.store.get=async key=>{if(key===gone){f.data.delete(gone);return null;}return realGet(key)};
+  let calls=0;
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{calls++;return {persisted:true,readback:{queue_id:'ok'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(result.indexPointerGone,1);
+  assert.equal(result.indexIntegrityFailures,0);
+  assert.equal(result.failed,0);
+  assert.equal(result.healthy,true);
+  assert.equal(result.persisted,1);
+  assert.equal(calls,1);
+  assert.equal(f.data.get(good).datahub.persisted,true);
+  assert.equal(f.data.has(goodPointer),false);
+});
+
+test('provider exception when reading an indexed pointer never masquerades as concurrent completion',async()=>{
+  const key='event/good',bad='pending/event/unreadable',f=fixture([key]);
+  f.data.set(bad,{source_key:'event/unreadable'});
+  f.data.set('pending/'+key,{source_key:key});
+  const realGet=f.store.get.bind(f.store);
+  f.store.get=async p=>{if(p===bad)throw Error('provider unavailable');return realGet(p)};
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>({persisted:true,readback:{queue_id:'ok'}}),
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(result.indexReadFailures,1);
+  assert.equal(result.indexPointerGone,0);
+  assert.equal(result.failed,1);
+  assert.equal(result.healthy,false);
+  assert.equal(result.persisted,1,'independent valid event still persists');
+  assert.equal(f.data.has(bad),true);
+});
+
+test('missing source is still a real independent integrity failure',async()=>{
+  const good='event/ok',broken='pending/event/missing',f=fixture([good]);
+  f.data.set(broken,{source_key:'event/not-there'});
+  f.data.set('pending/'+good,{source_key:good});
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>({persisted:true,readback:{queue_id:'ok'}}),
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(result.indexSourceMissing,1);
+  assert.equal(result.failed,1);
+  assert.equal(result.indexPointerGone,0);
+  assert.equal(result.persisted,1);
+  assert.equal(f.data.has(broken),true);
+});
