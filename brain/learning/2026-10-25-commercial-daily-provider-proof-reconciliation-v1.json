@@ -14,13 +14,6 @@
   },
   "cause": "Daily execution status relied on overwritten per-decision provider fields rather than same-day canonical publication obligations.",
   "fix": "Join the existing obligation authority by exact date/channel/provider ID, keep independent proof distinct from permission-limited ACK; never count false, future, cross-channel or missing receipts.",
-  "prevent": [
-    "Exact identity and observed provider proof before terminal claim",
-    "Preserve no-republish for provider-created LinkedIn side effects",
-    "Unknown/NULL is unresolved, not success",
-    "Do not suppress media, forecast, Gmail and independently measured revenue blockers",
-    "Use existing Required/CodeQL/protected migration and independent production readback"
-  ],
   "tests": [
     "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
   ],
@@ -45,5 +38,12 @@
     "canary": [
       "tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs"
     ]
-  }
+  },
+  "prevention": [
+    "Exact identity and observed provider proof before terminal claim",
+    "Preserve no-republish for provider-created LinkedIn side effects",
+    "Unknown/NULL is unresolved, not success",
+    "Do not suppress media, forecast, Gmail and independently measured revenue blockers",
+    "Use existing Required/CodeQL/protected migration and independent production readback"
+  ]
 }
