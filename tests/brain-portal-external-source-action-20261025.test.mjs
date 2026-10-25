@@ -81,4 +81,8 @@ test('portal cards must show customer relevance and action; their open-page cont
  assert.match(src,/signal\.company_impacts|company_impacts|companyImpact/);
  assert.match(src,/Wat betekent dit voor jouw bedrijf\?/);
  assert.match(src,/prioritizedActions=\[\.\.\.actions\]\.sort/);
+ assert.match(src,/const safeUrl=verifiedExternalUrl\(item\.url\)/);
+ assert.match(src,/const safeUrl=verifiedExternalUrl\(item\.canonical_url\)/);
+ assert.doesNotMatch(src,/href="\$\{esc\(item\.url\)\}"/);
+ assert.doesNotMatch(src,/href="\$\{esc\(item\.canonical_url\)\}"/);
 });
