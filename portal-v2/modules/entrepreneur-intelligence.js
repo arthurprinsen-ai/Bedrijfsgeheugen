@@ -37,7 +37,7 @@ function error(view,message){return shell(view.title,view.subtitle,`${nav()}<sec
 function sourceCard(item,sourceMap){
   const publisher=sourcePublisher(sourceMap,item.bron_id);
   const source=sourceName(sourceMap,item.bron_id);
-  return `<article class="eicard"><div class="eimeta"><span>${esc(publisher)}</span><time>${esc(nlDate(item.publicatiedatum||item.opgehaald_op))}</time></div><h4>${esc(item.titel||source)}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${esc(source)}</span>${item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
+  return `<article class="eicard"><div class="eimeta"><span>${esc(publisher)}</span><time>${esc(nlDate(item.publicatiedatum||item.opgehaald_op))}</time></div><h4>${esc(item.titel||source)}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${esc(source)}</span>${item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">Controleer bron ↗</a>`:''}${guidance.linked?'<button type="button" data-open-page="actieve-acties">Open gekoppelde actie →</button>':''}</footer></article>`;
 }
 function signalCard(item){
   return `<article class="eicard"><div class="eimeta"><span>${esc(item.domein||item.onderwerp||'Extern signaal')}</span><time>${esc(nlDate(item.gepubliceerd_op||item.opgehaald_op))}</time></div><h4>${esc(item.titel||item.onderwerp||'Signaal')}</h4>${item.samenvatting?`<p>${esc(item.samenvatting).slice(0,520)}</p>`:''}<footer><span>${item.vertrouwen!=null?`vertrouwen ${Math.round(Number(item.vertrouwen)*100)}%`:'extern signaal'}</span>${item.url?`<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
@@ -62,12 +62,58 @@ function euro(value){
   return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
 }
 function score(value){const n=Number(value);return Number.isFinite(n)?Math.round(n):0;}
-function intelligenceSignalCard(item,domains){
+
+export function safeExternalSourceUrl(value){
+  try{
+    const u=new URL(String(value||''));
+    return u.protocol==='https:'&&u.hostname&&!u.username&&!u.password?u.href:'';
+  }catch{return '';}
+}
+
+// Source observation != client-specific impact != executable action != paid order.
+export function signalNextStep(item,allActions=[],now=new Date()){
+  const key=String(item?.signal_key||'').trim();
+  const matching=key?arr(allActions).filter(a=>String(a?.signal_key||'')===key):[];
+  const tenant=matching.filter(a=>a?.tenant_specific===true||a?.projection_scope==='TENANT');
+  const selected=tenant[0]||matching[0]||null;
+  const companyImpacts=arr(item?.company_impacts).filter(x=>x?.status==='SCORED'&&String(x?.rationale||'').trim());
+  const specific=item?.tenant_specific_impact===true&&item?.impact_status==='SCORED'&&companyImpacts.length>0;
+  const t=now instanceof Date?now:new Date(now);
+  const nowTime=t.getTime();
+  const today=Number.isFinite(nowTime)?t.toISOString().slice(0,10):'';
+  const deadline=String(item?.deadline||'').slice(0,10);
+  const expired=!!(deadline&&today&&deadline<today);
+  const sourceTime=new Date(item?.published_at||item?.observed_at||'').getTime();
+  const stale=!Number.isFinite(sourceTime)||!Number.isFinite(nowTime)
+    ||sourceTime>nowTime||nowTime-sourceTime>90*86400000;
+  const linked=Boolean(specific&&tenant.length&&selected?.canonical_action_ref);
+  const why=specific?String(companyImpacts[0].rationale):
+    'Dit is een marktsignaal. Er is nog geen geverifieerde koppeling met jouw bedrijfsgegevens of bewezen bedrijfseffect.';
+  let nextStep;
+  if(expired)nextStep='De genoemde deadline is verstreken. Controleer bij de officiële bron of een nieuwe ronde bestaat; gebruik de oude datum niet voor een aanvraag.';
+  else if(stale)nextStep='De bronpublicatie is ouder dan 90 dagen of niet betrouwbaar gedateerd. Controleer eerst de actualiteit en voorwaarden bij de bron.';
+  else if(linked)nextStep='Open de bestaande actie, voer de afgesproken vervolgstap uit en leg het werkelijke resultaat vast.';
+  else if(selected?.title&&specific)nextStep='Beoordeel voor jouw bedrijf: '+String(selected.title)+'. Ken pas daarna een uitvoerbare taak toe met eigenaar en resultaatmeting.';
+  else if(selected?.title)nextStep='Onderzoek eerst de relevantie van dit voorstel: '+String(selected.title)+'. Dit is nog geen toegewezen of uitgevoerde actie.';
+  else if(/REGULATION|COMPLIANCE|LAW|POLICY/.test(String(item?.signal_type||'').toUpperCase()))nextStep='Controleer bij de officiële bron of deze regel voor jouw organisatie geldt. Leg daarna pas een concrete compliance-actie vast.';
+  else if(/OPPORTUNITY|DEMAND|MARKET|SEARCH|TECH_CHANGE/.test(String(item?.signal_type||'').toUpperCase()))nextStep='Toets de klantvraag aan je aanbod en capaciteit. Leg daarna een concrete kans en eventuele rechtmatige opvolgactie vast.';
+  else nextStep='Vergelijk dit externe signaal met jouw doelen en cijfers. Maak alleen bij aantoonbare relevantie een concrete vervolgstap.';
+  return {why,nextStep,linked:linked&&!expired&&!stale,tenantSpecific:Boolean(specific),expired,stale,
+    sourceUrl:safeExternalSourceUrl(item?.external_url),
+    actionStatus:linked&&!expired&&!stale?'GEKOPPELDE_ACTIE':specific?'BEDRIJFSSIGNAAL_NOG_TE_BEOORDELEN':'MARKTSIGNAAL_NOG_TE_TOETSEN'};
+}
+
+function intelligenceSignalCard(item,domains,actions=[]){
+  const guidance=signalNextStep(item,actions);
+  const guidanceHtml='<div class="eifact"><b>Waarom is dit voor mij relevant?</b><span>'+esc(guidance.why)+'</span></div>'+
+    '<div class="eifact"><b>Wat moet ik nu doen?</b><span>'+esc(guidance.nextStep)+'</span></div>'+
+    '<div class="eifact"><b>Actiestatus</b><span>'+esc(guidance.expired?'DEADLINE_VERSTREKEN':guidance.stale?'BRONCONTROLE_NODIG':guidance.actionStatus)+'</span></div>';
+
   const domain=domains.get(item.domain_key)?.label||item.domain_key||'Signaal';
   const money=item.estimated_value_eur!=null||item.estimated_loss_eur!=null
-    ? `<div class="eifact"><b>Bekende waarde</b><span>${item.estimated_value_eur!=null?`kans ${esc(euro(item.estimated_value_eur))}`:''}${item.estimated_value_eur!=null&&item.estimated_loss_eur!=null?' · ':''}${item.estimated_loss_eur!=null?`risico ${esc(euro(item.estimated_loss_eur))}`:''}</span></div>`
+    ? `<div class="eifact"><b>Geschatte impact · niet gerealiseerd</b><span>${item.estimated_value_eur!=null?`kans ${esc(euro(item.estimated_value_eur))}`:''}${item.estimated_value_eur!=null&&item.estimated_loss_eur!=null?' · ':''}${item.estimated_loss_eur!=null?`risico ${esc(euro(item.estimated_loss_eur))}`:''}</span></div>`
     : `<div class="eifact"><b>€ impact</b><span>Nog niet bewezen · eigen bedrijfscontext nodig</span></div>`;
-  return `<article class="eicard"><div class="eimeta"><span>${esc(domain)}</span><time>${esc(nlDate(item.observed_at||item.published_at))}</time></div><h4>${esc(item.title||'Signaal')}</h4>${item.summary?`<p>${esc(item.summary).slice(0,520)}</p>`:''}<div class="eifact"><b>Signaalscore</b><span>${esc(score(item.signal_score))}/100 · impact ${item.impact_score==null?'nog niet gescoord':esc(score(item.impact_score)+'/100')}</span></div>${money}<footer><span>${esc(item.impact_status||'NEEDS_COMPANY_CONTEXT')}</span>${item.external_url?`<a href="${esc(item.external_url)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
+  return `<article class="eicard"><div class="eimeta"><span>${esc(domain)}</span><time>${esc(nlDate(item.observed_at||item.published_at))}</time></div><h4>${esc(item.title||'Signaal')}</h4>${item.summary?`<p>${esc(item.summary).slice(0,520)}</p>`:''}<div class="eifact"><b>Signaalscore</b><span>${esc(score(item.signal_score))}/100 · impact ${item.impact_score==null?'nog niet gescoord':esc(score(item.impact_score)+'/100')}</span></div>${money}${guidanceHtml}<footer><span>${esc(item.impact_status||'NEEDS_COMPANY_CONTEXT')}</span>${guidance.sourceUrl?`<a href="${esc(guidance.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
 }
 function sourceCapabilityCard(item){
   const mode=item.activation_mode==='PUBLIC_ALWAYS'?'publieke bron':item.activation_mode==='CONNECTOR_REQUIRED'?'koppeling nodig':item.activation_mode==='PROVIDER_REQUIRED'?'provider nodig':'handmatig bewijs';
@@ -85,7 +131,7 @@ function renderEnvironmentRadar(data){
   const latestObservedAt=signals.map(s=>s.observed_at).filter(Boolean).sort((a,b)=>new Date(b)-new Date(a))[0]||null;
   const noFreshObservations=sinceYesterday.length===0;
   const prioritizedActions=[...actions].sort((a,b)=>(Number(b.priority_score)||0)-(Number(a.priority_score)||0));
-  const companyImpact=signals.filter(s=>s.impact_status==='SCORED');
+  const companyImpact=signals.filter(s=>s.tenant_specific_impact===true&&s.impact_status==='SCORED').sort((a,b)=>(Number(b.impact_score)||0)-(Number(a.impact_score)||0));
   const opportunities=signals.filter(s=>/(OPPORTUNITY|SEARCH_DEMAND|DEMAND_CHANGE|TECH_CHANGE|IP_CHANGE)/.test(String(s.signal_type||'').toUpperCase()));
   const risks=signals.filter(s=>/(RISK|CYBER|FRAUD|DISRUPTION|PHYSICAL|SUPPLY_RISK)/.test(String(s.signal_type||'').toUpperCase()));
   const contextGaps=signals.filter(s=>s.impact_status!=='SCORED'&&score(s.signal_score)>=65);
@@ -98,11 +144,11 @@ function renderEnvironmentRadar(data){
     <button type="button"><small>Risico €</small><strong>${esc(knownRisk)}</strong><span>alleen bewezen bedragen</span></button>
   </section>
   <section class="eisection"><div class="pvmodulehead"><span>•</span><h3>Van buitenwereld naar bedrijfsactie</h3></div><article class="eicard"><h4>Source → evidence → signal → impact → actie → outcome → learning</h4><p>Een nieuwsfeit is nog geen bedrijfsimpact. De radar scheidt bronbewijs, signaalscore en bedrijfsspecifieke impact. Bedragen blijven onbekend totdat eigen exposure en bewijs bestaan.</p><div class="eifact"><b>Projectiescope</b><span>${esc(intelligence.projectionScope||'canonical')}</span></div><div class="eifact"><b>Truth policy</b><span>${esc(intelligence.truthPolicy||'measured_or_evidence_backed_else_unknown')}</span></div></article></section>
-  ${section('Sinds gisteren veranderd',sinceYesterday.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Sinds gisteren zijn geen nieuwe verwerkte signalen beschikbaar.')}
-  ${section('Wat raakt mijn bedrijf?',companyImpact.slice(0,12).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen signalen hebben voldoende eigen bedrijfscontext om bedrijfsspecifieke impact te claimen.')}
-  ${section('Kansen',opportunities.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele kanssignalen met voldoende bronbewijs.')}
-  ${section('Risico’s',risks.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele risicosignalen met voldoende bronbewijs.')}
-  ${section('Context nodig vóór impactclaim',contextGaps.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Geen open contextgaten bij hoog scorende signalen.')}
+  ${section('Sinds gisteren veranderd',sinceYesterday.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap,actions)),'Sinds gisteren zijn geen nieuwe verwerkte signalen beschikbaar.')}
+  ${section('Wat raakt mijn bedrijf?',companyImpact.slice(0,12).map(x=>intelligenceSignalCard(x,domainMap,actions)),'Nog geen signalen hebben voldoende eigen bedrijfscontext om bedrijfsspecifieke impact te claimen.')}
+  ${section('Kansen',opportunities.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap,actions)),'Nog geen actuele kanssignalen met voldoende bronbewijs.')}
+  ${section('Risico’s',risks.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap,actions)),'Nog geen actuele risicosignalen met voldoende bronbewijs.')}
+  ${section('Context nodig vóór impactclaim',contextGaps.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap,actions)),'Geen open contextgaten bij hoog scorende signalen.')}
   ${section('Geprioriteerde beoordeling en opvolging',prioritizedActions.slice(0,10).map(a=>`<article class="eicard"><div class="eimeta"><span>${esc(domainMap.get(a.domain_key)?.label||a.domain_key)}</span><span class="eistatus">Signaalprioriteit ${esc(score(a.priority_score))}/100</span></div><h4>${esc(a.title)}</h4><p>${esc(a.rationale)}</p><p><b>Volgende stap:</b> ${a.canonical_action_ref?'Open de toegewezen actie en leg het resultaat vast.':'Beoordeel eerst bedrijfsspecifieke relevantie, maak daarna pas een uitvoerbare actie.'}</p><footer><span>${a.canonical_action_ref?'Gekoppeld aan bestaande actie':'Voorstel · nog geen uitvoeringsactie'}</span><span>${a.owner_hint?`Eigenaar: ${esc(a.owner_hint)}`:'Eigenaar nog niet toegewezen'}</span><span>${a.due_at?`Streefdatum ${esc(nlDate(a.due_at))}`:'Geen streefdatum vastgelegd'}</span>${a.canonical_action_ref?'<button type="button" data-open-page="actieve-acties">Bekijk actieve acties →</button>':''}</footer></article>`),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
   ${section('Volledig domeinuniversum',domainGroups)}
   ${section('Bronuniversum',catalog.slice(0,24).map(sourceCapabilityCard),'Nog geen broncatalogus beschikbaar.')}
@@ -110,7 +156,10 @@ function renderEnvironmentRadar(data){
   return shell(VIEWS.omgevingsradar.title,VIEWS.omgevingsradar.subtitle,body);
 }
 function renderHub(data){
-  const {sourceMap,publications,signals,sources,stats}=enrich(data);
+  const {sourceMap,publications,signals,sources,stats,intelligence}=enrich(data);
+  const domains=new Map(arr(intelligence.domains).map(d=>[d.domain_key,d]));
+  const relevanceActions=arr(intelligence.actionCandidates);
+  const relevant=arr(intelligence.signals).filter(s=>s.tenant_specific_impact===true&&s.impact_status==='SCORED').sort((a,b)=>(Number(b.impact_score)||0)-(Number(a.impact_score)||0));
   const uwv=publisherFilter(publications,['UWV']);
   const rvo=publisherFilter(publications,['RVO']);
   const cbs=publisherFilter(publications,['CBS']);
@@ -126,6 +175,7 @@ function renderHub(data){
   ];
   const body=`${nav()}<section class="eikpis">${cards.map(([label,n,unit,id])=>`<button type="button" data-ei-page="${id}"><small>${esc(label)}</small><strong>${esc(n)}</strong><span>${esc(unit)} →</span></button>`).join('')}</section>
     ${section('Wat verandert als eerste',nextLaws.map(m=>`<article class="eicard compact"><div class="eimeta"><span>Wetgeving</span><time>${esc(nlDate(m.datum))}</time></div><h4>${esc(m.regel)}</h4><p>${esc(m.wat)}</p></article>`))}
+    ${section('Relevant voor jouw bedrijf: bron, reden en actie',relevant.slice(0,6).map(x=>intelligenceSignalCard(x,domains,relevanceActions)),'Nog geen bron heeft bewezen bedrijfsspecifieke impact. Open Omgevingsradar om marktsignalen op jouw situatie te toetsen.')}
     ${section('Nieuw uit externe bronnen',publications.slice(0,6).map(x=>sourceCard(x,sourceMap)))}
     <p class="eifootnote">Live read-only projectie · ${esc(stats.generatedAt||'zojuist')} · alleen publieke bronmetadata en publicatie-inhoud.</p>`;
   return shell(VIEWS.ondernemersdata.title,VIEWS.ondernemersdata.subtitle,body);
