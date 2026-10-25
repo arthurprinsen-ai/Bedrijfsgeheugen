@@ -1,6 +1,7 @@
 // Provider quota exhaustion is explicit; fallback uses independently observed DataForSEO SERP results, not synthetic signals.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectExternalTopics } from './topic-selection.mjs';
+import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry} from './provider-retry.mjs';
 
 const BRON='bg-externe-signalen';
 const CONTRACT='tavily-signal-ingest-v2-bounded';
@@ -32,26 +33,48 @@ const trouw=(d:string)=>{if(SOCIAAL.test(d))return 0.1;for(const[k,v]of Object.e
 
 const DATAFORSEO_ENDPOINT='https://api.dataforseo.com/v3/serp/google/organic/live/advanced';
 const DATAFORSEO_TIMEOUT_MS=35000; // Existing pg_net scheduler transport allows 120s; Tavily remains 12s.
-async function dataforseoSerp(query:string,login:string,password:string){
+async function dataforseoSerpOnce(query:string,login:string,password:string){
   if(!login||!password)throw new Error('DATAFORSEO_CREDENTIALS_UNAVAILABLE');
-  const r=await fetch(DATAFORSEO_ENDPOINT,{
-    method:'POST',
-    headers:{authorization:'Basic '+btoa(login+':'+password),'content-type':'application/json'},
-    body:JSON.stringify([{keyword:query,location_name:'Netherlands',language_code:'nl',depth:10}]),
-    signal:AbortSignal.timeout(DATAFORSEO_TIMEOUT_MS)
-  });
+  let r:Response;
+  try{
+    r=await fetch(DATAFORSEO_ENDPOINT,{
+      method:'POST',
+      headers:{authorization:'Basic '+btoa(login+':'+password),'content-type':'application/json'},
+      body:JSON.stringify([{keyword:query,location_name:'Netherlands',language_code:'nl',depth:10}]),
+      signal:AbortSignal.timeout(DATAFORSEO_TIMEOUT_MS)
+    });
+  }catch(error){
+    // Only the fetch transport failed. A code/parser bug must not be retried.
+    const reason=String((error as Error)?.name||'');
+    const transient=reason==='TimeoutError'||reason==='AbortError'||error instanceof TypeError;
+    throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{retryable:transient});
+  }
   const b:any=await r.json().catch(()=>({}));
-  if(!r.ok||Number(b.status_code)!==20000)throw new Error('DATAFORSEO_REMOTE_FAILURE');
-  const task=b.tasks?.[0];
-  if(task&&Number(task.status_code)!==20000)throw new Error('DATAFORSEO_TASK_'+String(task.status_code));
+  const apiStatus=Number(b.status_code);
+  const task=b.tasks?.[0],taskStatus=Number(task?.status_code);
+  if(!r.ok||apiStatus!==20000){
+    throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{
+      retryable:isTransientDataforseoStatus(r.status,apiStatus,taskStatus)
+    });
+  }
+  // A confirmed empty provider SERP is an observed zero, never fabricated hits.
+  if(task&&isEmptyDataforseoResult(taskStatus))return [];
+  if(task&&taskStatus!==20000){
+    throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{
+      retryable:isTransientDataforseoStatus(r.status,apiStatus,taskStatus)
+    });
+  }
   const items:any[]=task?.result?.[0]?.items||[];
   // Paid listings are not market-truth signals. Unknown dates remain unknown.
-  return items.filter(x=>x.type==='organic'&&/^https?:\/\//.test(String(x.url||''))).slice(0,10).map(x=>({
+  return items.filter(x=>x.type==='organic'&&/^https?:\\/\\//.test(String(x.url||''))).slice(0,10).map(x=>({
     url:String(x.url),title:String(x.title||''),content:String(x.description||''),
     published_date:typeof x.timestamp==='string'?x.timestamp:null,
     // Explicit rank proxy, not a claimed provider relevance score.
     score:1/Math.max(1,Number(x.rank_group)||10)
   }));
+}
+async function dataforseoSerp(query:string,login:string,password:string){
+  return withOneTransientDataforseoRetry(()=>dataforseoSerpOnce(query,login,password));
 }
 
 Deno.serve(async(req:Request)=>{
