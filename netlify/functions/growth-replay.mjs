@@ -62,7 +62,7 @@ export async function drainGrowthQueue({
   dispatchFn=deliver,brainQueueFn=markBrainQueue,
   deliveryEnabledFn=()=>env('BG211_DELIVERY_ENABLED')==='true'&&Boolean(env('BG211_WEBHOOK_URL'))
 }={}){
-  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0,indexedSeen=0,indexedCompleted=0,indexIntegrityFailures=0,indexSourceMissing=0,indexPointerInvalid=0,providerFailed=false;
+  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0,indexedSeen=0,indexedCompleted=0,indexIntegrityFailures=0,indexSourceMissing=0,indexPointerInvalid=0,indexPointerGone=0,indexReadFailures=0,providerFailed=false;
   const results=[];
   const startedAt=clock();
   const budgetMs=Math.max(1_000,Math.min(12_000,Number(maxRunMs)||10_500));
@@ -89,21 +89,41 @@ export async function drainGrowthQueue({
         if(replayed>=maxReplay)break;
         if(!canStart()){budgetExpired=true;break;}
         scanned++;
-      if(blob.key.startsWith('_control/'))continue;
+      // The legacy scan must ignore disposable pointers already visited by the
+      // dedicated indexed lane. They are not immutable source events and could
+      // disappear between list() and get() as another invocation finishes.
+      if(blob.key.startsWith('_control/')||(!indexed&&blob.key.startsWith('pending/')))continue;
       let sourceKey=blob.key;
       if(indexed){
         indexedSeen++;
-        const pointer=await store.get(blob.key,{type:'json'}).catch(()=>null);
-        if(!pointer||typeof pointer.source_key!=='string'||!pointer.source_key.startsWith('event/')){
+        // list() is a snapshot. Another concurrent invocation may finish and delete
+        // this disposable pointer before get(); a successful null is NOT corruption.
+        let pointer;
+        try{pointer=await store.get(blob.key,{type:'json'});}
+        catch{
+          failed++;indexIntegrityFailures++;indexReadFailures++;
+          results.push({kind:'event',persisted:false,reason:'pending-index-provider-read-failed'});
+          continue;
+        }
+        if(pointer===null||pointer===undefined){
+          indexPointerGone++; // Concurrent retirement; no source receipt was touched.
+          continue;
+        }
+        if(typeof pointer.source_key!=='string'||!pointer.source_key.startsWith('event/')){
           failed++;indexIntegrityFailures++;indexPointerInvalid++;
           results.push({kind:'event',persisted:false,reason:'pending-pointer-invalid'});
-          // Preserve both the pointer and original receipt for reconciliation, and keep
-          // scanning other entries; one defective pointer must not starve new events.
+          // Preserve malformed pointer; only a verified owner may reconcile it.
           continue;
         }
         sourceKey=pointer.source_key;
       }
-      const record=await store.get(sourceKey,{type:'json'}).catch(()=>null);
+      let record;
+      try{record=await store.get(sourceKey,{type:'json'});}
+      catch{
+        failed++;indexIntegrityFailures++;indexReadFailures++;
+        results.push({kind:'event',persisted:false,reason:'pending-source-provider-read-failed'});
+        continue;
+      }
       if(!record?.envelope){
         if(indexed){
           failed++;indexIntegrityFailures++;indexSourceMissing++;
@@ -174,7 +194,7 @@ export async function drainGrowthQueue({
 
   return {accepted:true,replayed,persisted,delivered,failed,results,
     budgetExpired,elapsedMs:Math.max(0,clock()-startedAt),scanned,pages,skippedPersisted,indexedSeen,indexedCompleted,
-    indexIntegrityFailures,indexSourceMissing,indexPointerInvalid,providerFailed,
+    indexIntegrityFailures,indexSourceMissing,indexPointerInvalid,indexPointerGone,indexReadFailures,providerFailed,
     healthy:failed===0};
 
 }
