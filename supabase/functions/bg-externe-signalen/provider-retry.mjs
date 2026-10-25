@@ -2,7 +2,7 @@
 //
 // DataForSEO documents transient HTTP 5xx and internal/task processing errors.
 // Billing, authentication and rate-limit errors must never be retried here.
-const RETRYABLE_TASK_CODES=new Set([40101,40103,50000,50001,50401,50402]);
+const RETRYABLE_TASK_CODES=new Set([40101,40103,50000,50001,50301,50302,50303,50304,50401,50402]);
 
 export function isTransientDataforseoStatus(httpStatus,apiStatus,taskStatus){
   const http=Number(httpStatus);
@@ -25,4 +25,22 @@ export async function withOneTransientDataforseoRetry(operation,{sleep,delayMs=3
     await pause(Math.min(800,Math.max(0,Number(delayMs)||0)));
     return await operation();
   }
+}
+
+/** Diagnostic fields that are safe for public Brain evidence: numbers only.
+ * Never include upstream bodies, messages, credentials or payment metadata.
+ */
+export function safeDataforseoDiagnostic(error){
+  if(String(error?.message||'')!=='DATAFORSEO_REMOTE_FAILURE')return null;
+  const code=(value,max)=>{
+    if(value==null)return null;
+    const n=Number(value);
+    return Number.isInteger(n)&&n>=0&&n<=max?n:null;
+  };
+  return {
+    http_status:code(error?.http_status,599),
+    api_status:code(error?.api_status,99999),
+    task_status:code(error?.task_status,99999),
+    retryable:error?.retryable===true
+  };
 }

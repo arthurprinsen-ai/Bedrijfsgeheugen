@@ -1,7 +1,7 @@
 // Provider quota exhaustion is explicit; fallback uses independently observed DataForSEO SERP results, not synthetic signals.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectExternalTopics } from './topic-selection.mjs';
-import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry} from './provider-retry.mjs';
+import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry,safeDataforseoDiagnostic} from './provider-retry.mjs';
 
 const BRON='bg-externe-signalen';
 const CONTRACT='tavily-signal-ingest-v2-bounded';
@@ -47,21 +47,23 @@ async function dataforseoSerpOnce(query:string,login:string,password:string){
     // Only the fetch transport failed. A code/parser bug must not be retried.
     const reason=String((error as Error)?.name||'');
     const transient=reason==='TimeoutError'||reason==='AbortError'||error instanceof TypeError;
-    throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{retryable:transient});
+    throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{retryable:transient,http_status:null,api_status:null,task_status:null});
   }
   const b:any=await r.json().catch(()=>({}));
   const apiStatus=Number(b.status_code);
   const task=b.tasks?.[0],taskStatus=Number(task?.status_code);
   if(!r.ok||apiStatus!==20000){
     throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{
-      retryable:isTransientDataforseoStatus(r.status,apiStatus,taskStatus)
+      retryable:isTransientDataforseoStatus(r.status,apiStatus,taskStatus),
+      http_status:r.status,api_status:Number.isFinite(apiStatus)?apiStatus:null,task_status:Number.isFinite(taskStatus)?taskStatus:null
     });
   }
   // A confirmed empty provider SERP is an observed zero, never fabricated hits.
   if(task&&isEmptyDataforseoResult(taskStatus))return [];
   if(task&&taskStatus!==20000){
     throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{
-      retryable:isTransientDataforseoStatus(r.status,apiStatus,taskStatus)
+      retryable:isTransientDataforseoStatus(r.status,apiStatus,taskStatus),
+      http_status:r.status,api_status:Number.isFinite(apiStatus)?apiStatus:null,task_status:Number.isFinite(taskStatus)?taskStatus:null
     });
   }
   const items:any[]=task?.result?.[0]?.items||[];
@@ -137,7 +139,7 @@ Deno.serve(async(req:Request)=>{
         });
         if(rows.length){const {error:ue}=await db.from('bg_externe_signalen').upsert(rows,{onConflict:'url'});if(ue)throw new Error('UPSERT:'+ue.message)}
         return{ok:true,topic:o.onderwerp,provider,fallback_reason:fallbackReason,found:rows.length,allowed:rows.filter(x=>x.toegestaan).length,noise:rows.filter(x=>x.ruis_reden).length};
-      }catch(e:any){return{ok:false,topic:o.onderwerp,error:safeFailure(e)}}
+      }catch(e:any){return{ok:false,topic:o.onderwerp,error:safeFailure(e),provider_diagnostics:safeDataforseoDiagnostic(e)}}
     }));
     const ok=results.filter((x:any)=>x.ok),failed=results.filter((x:any)=>!x.ok);
     const found=ok.reduce((a:number,x:any)=>a+x.found,0),allowed=ok.reduce((a:number,x:any)=>a+x.allowed,0),noise=ok.reduce((a:number,x:any)=>a+x.noise,0);
@@ -148,7 +150,7 @@ Deno.serve(async(req:Request)=>{
     // remain measurable. Canonical source rows themselves still dedupe on URL.
       const providers=[...new Set(ok.map((x:any)=>x.provider))];
       const sourceKey=providers.includes('tavily')?'tavily-intelligence':'dataforseo-intelligence';
-      const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason})),relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),selection_contract:topicRotation.contract,selection_epoch_day:topicRotation.epochDay,selection_window_20m:topicRotation.window20m,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,successful_topics:ok.length,failed_topics:failed.length,found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
+      const evidence={contract:CONTRACT,provider:providers.length===1?providers[0]:'multi',providers,source_routes:ok.map((x:any)=>({topic:x.topic,provider:x.provider,fallback_reason:x.fallback_reason})),relevance_basis:providers.includes('dataforseo')?'rank_proxy_not_provider_relevance':null,producer_run:true,active_topics:topics.length,selected_topics:selected.map((x:any)=>x.onderwerp),selection_contract:topicRotation.contract,selection_epoch_day:topicRotation.epochDay,selection_window_20m:topicRotation.window20m,static_topic_coverage_horizon_days:topicRotation.staticFullCoverageDays,successful_topics:ok.length,failed_topics:failed.length,failed_source_diagnostics:failed.map((e:any)=>({topic:e.topic,error:e.error,provider_diagnostics:e.provider_diagnostics||null})),found,allowed,noise,bounded_batch:true,timeout_ms:TAVILY_TIMEOUT_MS};
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:sourceKey,p_dedupe_key:'external-source-run:'+sourceKey+':'+observedAt+':'+start,p_external_event_id:sourceKey+':'+observedAt,p_observed_at:observedAt,p_evidence:evidence});
       await db.rpc('powerhouse_record_source_observation_v1',{p_source_key:'external-intelligence',p_dedupe_key:'external-intelligence-producer:'+observedAt+':'+start,p_external_event_id:'external-intelligence:'+observedAt,p_observed_at:observedAt,p_evidence:{...evidence,authority:'bg_externe_signalen'}});
     }
