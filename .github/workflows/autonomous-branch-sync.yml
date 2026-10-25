@@ -36,6 +36,14 @@ jobs:
                 skipped++;
                 continue;
               }
+              // Observe every PR, but mutate only branches explicitly enrolled by their owners.
+              // No automatic update of another agent's branch without an opt-in label.
+              const optedIn = (pr.labels || []).some(label => label.name === 'autonomous-sync');
+              if (!optedIn) {
+                core.info(`PR #${pr.number}: not enrolled in autonomous-sync; read-only`);
+                skipped++;
+                continue;
+              }
               try {
                 const comparison = await github.rest.repos.compareCommits({
                   owner, repo, base: 'main', head: pr.head.ref
