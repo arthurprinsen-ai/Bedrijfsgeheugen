@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
+const aclMigration=readFileSync(new URL('../supabase/migrations/20261025114200_resilience_stage_writer_service_role_acl_parity_v1.sql',import.meta.url),'utf8');
+
 const migration=readFileSync(new URL('../supabase/migrations/20261025114100_resilience_watchdog_owned_stage_receipts_v1.sql',import.meta.url),'utf8');
 
 test('one original watchdog and one existing scheduler; no queue, parallel agent or false revenue',()=>{
@@ -53,4 +55,15 @@ test('clean-room preview and current production both converge to the same actual
   assert.match(migration,/powerhouse-runtime-scheduler-mux-v1' AND expected_cadence_minutes IN \(2,5\)/);
   assert.match(migration,/cron_jobname='powerhouse-runtime-scheduler-mux-v1'/);
   assert.match(migration,/RESILIENCE_ASSURANCE_OWNER_DRIFT/);
+});
+
+test('preview and production have exactly the same service-only receipt writer boundary',()=>{
+  assert.match(aclMigration,/REVOKE EXECUTE ON FUNCTION public\.powerhouse_record_loop_stage_v1/);
+  assert.match(aclMigration,/FROM PUBLIC, anon, authenticated/);
+  assert.match(aclMigration,/GRANT EXECUTE ON FUNCTION public\.powerhouse_record_loop_stage_v1/);
+  assert.match(aclMigration,/TO service_role/);
+  assert.match(aclMigration,/has_function_privilege\('service_role',v_oid,'EXECUTE'\)/);
+  assert.match(aclMigration,/has_function_privilege\('anon',v_oid,'EXECUTE'\)/);
+  assert.match(aclMigration,/has_function_privilege\('authenticated',v_oid,'EXECUTE'\)/);
+  assert.match(aclMigration,/RESILIENCE_STAGE_WRITER_ROLE_PARITY_FAILED/);
 });
