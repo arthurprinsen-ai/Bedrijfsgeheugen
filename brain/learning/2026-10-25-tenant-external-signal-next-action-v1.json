@@ -1,0 +1,24 @@
+{
+  "fingerprint": "portal|external-signals|next-action-disconnected|20261025-v1",
+  "status": "CANDIDATE",
+  "type": "POWERHOUSE_LEARNING",
+  "root_cause": "External source observations, company-specific impact evidence and action candidates were presented in separate portal sections rather than as one actionable customer card.",
+  "fix": "Join a signal with its scoped company impact and matching existing action in the authenticated Portal V2 UI. Show reason, source, next step and proof maturity; block stale sources and expired deadlines.",
+  "prevention_rule": "A public signal is not proven buying intent; link to an executable action only when tenant-specific evidence and an existing canonical action reference exist. Do not synthesize sales.",
+  "tests": [
+    "tests/brain-portal-external-next-action-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_EXTERNAL_SIGNAL_ACTION_DISCONNECTED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-external-next-action-v1.test.mjs"
+    ]
+  },
+  "productionVerified": false
+}
