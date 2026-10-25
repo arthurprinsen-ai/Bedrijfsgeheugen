@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-25",
+  "obligationId": "growth-skill-proof-contract-20261025",
+  "status": "RELEASE_CANDIDATE",
+  "source": "growth-advisory-contract",
+  "evidence": {
+    "productionReleases": [
+      "fb6918446e265b87778dd68d260b286beebf6605",
+      "c66670ea339f25cdd847f57a23175ba09b1bc4b0"
+    ],
+    "issue": 4929
+  },
+  "guardrails": [
+    "verified-source",
+    "exact-tenant",
+    "consent-basis",
+    "provider-readback",
+    "independent-payment-proof",
+    "protected-merge",
+    "skill-execution-evidence"
+  ],
+  "limitations": [
+    "advisory-library-only",
+    "no-proof-of-live-daily-research",
+    "no-proof-of-actual-revenue"
+  ]
+}
