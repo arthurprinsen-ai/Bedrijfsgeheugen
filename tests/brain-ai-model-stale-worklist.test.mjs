@@ -23,7 +23,7 @@ test('regional AWS EOL evidence is model-specific and cannot renew stale catalog
  for(const m of flagged){
   assert.equal(m.lifecycle_risk.state,'EOL_IN_LISTED_REGIONS');
   assert.equal(m.lifecycle_risk.eol_date,expected.get(m.id));
-  assert.match(m.lifecycle_risk.model_id,/^amazon\\.nova-/);
+  assert.ok(m.lifecycle_risk.model_id.startsWith('amazon.nova-'));
   assert.ok(m.lifecycle_risk.regions.length>=1);
   assert.equal(m.lifecycle_risk.account_and_other_regions,'UNVERIFIED');
   assert.equal(m.lifecycle_risk.claim_scope,'lifecycle_only');
