@@ -1,0 +1,60 @@
+{
+  "fingerprint": "ci|inherited-baseline|revenue-content-immutable-archive-sources|20261022-v1",
+  "obligation_id": "ci-brain-archived-revenue-content-source-20261022",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "source_main_sha": "64104acf8402d65dcfd7359a152eaf6f305b9ffe",
+  "observed": {
+    "full_brain_run": 39671036043,
+    "failed_tests": 321,
+    "affected_existing_failures": 2,
+    "changed_sql_migrations": 0,
+    "changed_runtime_files": 0
+  },
+  "source_evidence": [
+    {
+      "file": "supabase/migration-history/repository-only/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql",
+      "blob_sha": "f37aa930e2f2b89602a6878fc4714a88c5e46392",
+      "original_test": "tests/brain-one-million-revenue-operating-contract-v1.test.mjs"
+    },
+    {
+      "file": "supabase/migration-history/repository-only/20260917235907_social_content_integrity_invalidation_guard.sql",
+      "blob_sha": "c653d64b4724fb654f610effd2ce6422c17269e9",
+      "original_test": "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
+    }
+  ],
+  "root_cause": "Two inherited BRAIN source-contract tests dereference retired executable Supabase migration paths although exact immutable source SQL resides in repository-only migration history.",
+  "change": "Update exactly two test read-path strings; retain every original assertion. Add a two-case regression against archived SQL and non-executable history, including canonical scheduler and service-role security checks.",
+  "prevention_rule": "Always resolve active BRAIN historical SQL source-contracts against authenticated immutable repository-only archives; never restore archived SQL as new executable migrations or weaken authorization and provider gates.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-inherited-archived-revenue-content-source-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-inherited-archived-revenue-content-source-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-inherited-archived-revenue-content-source-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "Unified BRAIN exact-head run 39671036043: 321 failing, including two ENOENT cases in the named existing tests.",
+    "source_validation": "Both referenced archived SQL blobs read from current main; original scheduler/function termination/source markers and service-role ACL read back without changing SQL.",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "full_brain": "NOT_YET_GREEN",
+    "production": "NOT_CHANGED",
+    "customer_acceptance": "NOT_PROVEN"
+  },
+  "status": "CANDIDATE_UNVERIFIED_CI"
+}

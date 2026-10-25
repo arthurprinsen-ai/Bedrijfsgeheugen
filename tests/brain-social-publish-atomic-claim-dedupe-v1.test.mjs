@@ -21,6 +21,6 @@ test('retryable Buffer 429 restores readiness only from the claimed dispatching 
 });
 
 test('content reconciler migration is syntactically terminated before privilege statements',()=>{
-  const migration=readFileSync('supabase/migrations/20260917235907_social_content_integrity_invalidation_guard.sql','utf8');
+  const migration=readFileSync('supabase/migration-history/repository-only/20260917235907_social_content_integrity_invalidation_guard.sql','utf8');
   assert.match(migration,/\$function\$;\s*revoke execute on function public\.powerhouse_reconcile_content_outcomes_v1/);
 });
