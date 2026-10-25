@@ -544,6 +544,14 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
     </div><!-- einde dashveil (kop-samenvatting) -->
     <div class="g hov" id="remKaart" style="margin-bottom:14px"><div id="remBlok"></div></div>
+
+    <div class="g hov" id="scan-next-step-booking" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+      <div>
+        <b style="font-size:1rem">Plan je adviesgesprek</b>
+        <p style="font-size:.85rem;opacity:.75;margin-top:2px">Plan het adviesgesprek (30 min, gratis) — daar lopen we je uitkomst samen door.</p>
+      </div>
+      <button type="button" class="cta" id="scanAdviceBooking" onclick="openLead()">Volgende: plan je adviesgesprek →</button>
+    </div>
     <div class="g hov" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
       <div><b style="font-size:1rem">Verder werken met deze uitkomst</b>
         <div style="font-size:.85rem;opacity:.75;margin-top:2px">In je portaal zet je er cijfers naast, vergelijk je met je branche en plan je de stappen.</div></div>

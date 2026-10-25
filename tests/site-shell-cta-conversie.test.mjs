@@ -48,3 +48,18 @@ test('de laatste buildstap roept de conversieknop aan vóór de contractcontrole
   assert.ok(cta > 0);
   assert.ok(cta < bron.indexOf('await finalizeSiteContracts()'));
 });
+
+
+test('postscan Frisse Blik action uses existing consent-gated 30-minute Calendly booking', async () => {
+  const html = await readFile(new URL('../frisse-blik.html', import.meta.url), 'utf8');
+  const dashboardAt = html.indexOf('<section class="screen" id="dash">');
+  const bookingAt = html.indexOf('id="scan-next-step-booking"');
+  const modalAt = html.indexOf('id="leadForm"');
+  assert.ok(dashboardAt >= 0 && bookingAt > dashboardAt && bookingAt < modalAt, 'booking CTA sits in the completed-scan result, outside the lead modal');
+  assert.match(html, /id="scanAdviceBooking" onclick="openLead\(\)"/, 'uses the existing consent modal');
+  assert.match(html, /id="ldOk"/, 'explicit consent remains mandatory');
+  assert.match(html, /!\$\('ldOk'\)\.checked/, 'no bypass of consent validation');
+  assert.match(html, /https:\/\/calendly\.com\/arthur-prinsen\/adviesgesprek-slimmer-geregeld/, 'reuse existing genuine provider scheduling route');
+  assert.match(html, /function showCalStep\(lead\)/, 'reuse original booking flow');
+  assert.match(html, /<button type="button" class="cta" id="scanAdviceBooking"/, 'real keyboard-activatable button');
+});
