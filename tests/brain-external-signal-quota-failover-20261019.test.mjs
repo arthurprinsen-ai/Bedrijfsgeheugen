@@ -133,3 +133,18 @@ test('per-topic failed provider codes reach canonical observation without weaken
  assert.match(source,/return json\(out,ok\.length\?\(failed\.length\?207:200\):502\)/);
  assert.match(source,/x-powerhouse-token/);
 });
+
+test('independent Brain source completion never claims GREEN for a partial provider batch',()=>{
+  assert.deepEqual(policy.sourceBatchEvidenceVerdict([{ok:true},{ok:true},{ok:true}]),{green:true,errorClass:null});
+  assert.deepEqual(policy.sourceBatchEvidenceVerdict([{ok:true},{ok:false},{ok:true}]),{green:false,errorClass:'REMOTE'});
+  assert.deepEqual(policy.sourceBatchEvidenceVerdict([{ok:false},{ok:false},{ok:false}]),{green:false,errorClass:'REMOTE'});
+  assert.deepEqual(policy.sourceBatchEvidenceVerdict([]),{green:false,errorClass:'REMOTE'});
+  assert.throws(()=>policy.sourceBatchEvidenceVerdict(null),/SOURCE_BATCH_RESULTS_REQUIRED/);
+});
+
+test('HTTP 207 and provider receipts cannot be relabeled success by the delivery evidence writer',()=>{
+ assert.match(source,/const verdict=sourceBatchEvidenceVerdict\(results\)/);
+ assert.match(source,/await bewijs\(verdict\.green,out,verdict\.errorClass\)/);
+ assert.doesNotMatch(source,/await bewijs\(ok\.length>0,out/);
+ assert.match(source,/return json\(out,ok\.length\?\(failed\.length\?207:200\):502\)/);
+});
