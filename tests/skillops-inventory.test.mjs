@@ -16,6 +16,7 @@ test('SkillOps inventory is deterministic, source-bound and read-only', () => {
   assert.equal(result.read_only, true);
   assert.equal(result.count, result.skills.length);
   assert.ok(result.count > 0);
+  assert.deepEqual([...new Set(result.skills.map(s => s.path))].length, result.count, 'no duplicate skill paths');
   for (const skill of result.skills) {
     assert.match(skill.path, /^(?:\.agents\/skills|brain\/skills)\//);
     assert.match(skill.sha256, /^[a-f0-9]{64}$/);
