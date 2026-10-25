@@ -114,9 +114,8 @@ SELECT jsonb_build_object(
 FROM d;
 $function$;
 
--- Preserve original invoker privileges; never make service-role data browser-visible.
-REVOKE ALL ON FUNCTION public.powerhouse_execution_status(date) FROM PUBLIC, anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.powerhouse_execution_status(date) TO service_role;
+-- The original function is SQL SECURITY INVOKER and retains its existing grants.
+-- This migration does not expand or revoke any authenticated/public permissions.
 
 COMMENT ON FUNCTION public.powerhouse_execution_status(date) IS
 'Exact same-day source-to-decision reconciliation with strict blog Netlify proof and separately labeled immutable ACK-only provider creation. Never counts skips/unknown as a publish, never authorizes sending or relaxes downstream proof guards.';
