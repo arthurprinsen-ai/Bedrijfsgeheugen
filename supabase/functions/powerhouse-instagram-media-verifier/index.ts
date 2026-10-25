@@ -111,7 +111,7 @@ Deno.serve(async(req)=>{
   if(!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)||(!mediaUrl&&!inlineInput))return json({ok:false,error:'INVALID_INPUT'},400);
   if(mediaType!=='image')return json({ok:false,error:'IMAGE_OR_VIDEO_FRAME_REQUIRED'},422);
   if(referenceCandidate&&(!mediaUrl||inlineInput||provider!=='openart'||
-    new URL(mediaUrl).hostname!=='cdn.openart.ai'))
+    !mediaUrl.startsWith('https://cdn.openart.ai/openart-ai/production/')))
     return json({ok:false,error:'MIRA_REFERENCE_PROVIDER_ASSET_REQUIRED'},422);
 
   try{
