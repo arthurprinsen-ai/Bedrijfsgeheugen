@@ -1,5 +1,13 @@
 name: AI Model Intelligence
 on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'data/ai-model-catalog-v1.json'
+      - 'scripts/ai-model-freshness-watch.mjs'
+      - '.github/workflows/ai-model-intelligence.yml'
   push:
     branches: [main]
     paths:
@@ -16,6 +24,7 @@ on:
       - 'chatgpt-vs-gemini/**'
       - 'claude-vs-gemini/**'
       - '.github/workflows/ai-model-intelligence.yml'
+      - 'scripts/ai-model-freshness-watch.mjs'
 permissions:
   contents: read
 jobs:
@@ -27,5 +36,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Supplier freshness early-warning (read-only)
+        run: node scripts/ai-model-freshness-watch.mjs
       - name: AI Model Intelligence contracts
         run: node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs
