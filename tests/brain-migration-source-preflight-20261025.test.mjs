@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const tool = new URL('../tools/brain/migration-source-preflight.mjs', import.meta.url);
+const tool = new URL('../scripts/ci/migration-source-preflight.mjs', import.meta.url);
 function fixture(archived = true) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'migration-preflight-'));
   fs.mkdirSync(path.join(root, 'tests'), { recursive: true });
