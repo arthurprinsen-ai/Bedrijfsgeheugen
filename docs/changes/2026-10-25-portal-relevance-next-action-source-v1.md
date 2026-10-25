@@ -11,4 +11,4 @@ Fix in the existing Portal V2 specialist workspace:
 - Bind the already-existing page navigation callback to `[data-open-page]`. Validate external URL protocol so source strings cannot inject executable links.
 - No new scheduler, source table, customer mutation, sales send or synthetic business outcomes.
 
-Verification: `node --test portal-v2/tests/relevance-next-action-source-truth-20261025.test.mjs` plus existing Portal CI, security and production readback. A compiled candidate is not live; do not claim tenant usability until authenticated click/readback.
+Verification: `node --test tests/brain-portal-relevance-next-action-source-20261025.test.mjs` plus existing Portal CI, security and production readback. A compiled candidate is not live; do not claim tenant usability until authenticated click/readback.
