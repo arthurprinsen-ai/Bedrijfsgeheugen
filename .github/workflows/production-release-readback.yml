@@ -56,6 +56,7 @@ jobs:
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          // Manual dispatch requests browser proof, not a deployment of governance-only code.
           const manualReadback=process.env.EVENT_NAME === 'workflow_dispatch';
           const applicability=deriveNetlifyDeploymentApplicability({
             changedPaths,
