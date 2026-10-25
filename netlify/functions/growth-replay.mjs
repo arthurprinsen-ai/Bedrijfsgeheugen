@@ -62,7 +62,7 @@ export async function drainGrowthQueue({
   dispatchFn=deliver,brainQueueFn=markBrainQueue,
   deliveryEnabledFn=()=>env('BG211_DELIVERY_ENABLED')==='true'&&Boolean(env('BG211_WEBHOOK_URL'))
 }={}){
-  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0,indexedSeen=0,indexedCompleted=0,indexIntegrityFailures=0,indexSourceMissing=0,indexPointerInvalid=0,indexPointerGone=0,indexReadFailures=0,pointerStrongRecovery=0,sourceStrongRecovery=0,providerFailed=false;
+  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0,indexedSeen=0,indexedCompleted=0,indexIntegrityFailures=0,indexSourceMissing=0,indexPointerInvalid=0,indexPointerGone=0,indexReadFailures=0,pointerStrongRecovery=0,sourceStrongRecovery=0,providerFailed=false,sourceTimeFreshPersisted=0,sourceTimeDelayedPersisted=0,sourceTimeBacklogPersisted=0,sourceTimeUnknownPersisted=0,maxSourceLagMinutes=0;
   const results=[];
   const startedAt=clock();
   const budgetMs=Math.max(1_000,Math.min(12_000,Number(maxRunMs)||10_500));
@@ -180,6 +180,20 @@ export async function drainGrowthQueue({
         break;
       }
       persisted++;
+      // Separate real occurrence from queue ingestion. Historical replay is a useful
+      // recovery operation, not evidence that a human visited right now. No identities
+      // or extra event records are retained by this aggregate-only proof.
+      if(kind==='event'){
+        const occurred=Date.parse(record?.datahub_event?.occurred_at||'');
+        const lagMs=Number.isFinite(occurred)?clock()-occurred:NaN;
+        if(!Number.isFinite(lagMs)||lagMs<0)sourceTimeUnknownPersisted++;
+        else{
+          maxSourceLagMinutes=Math.max(maxSourceLagMinutes,Math.ceil(lagMs/60_000));
+          if(lagMs<=5*60_000)sourceTimeFreshPersisted++;
+          else if(lagMs<=60*60_000)sourceTimeDelayedPersisted++;
+          else sourceTimeBacklogPersisted++;
+        }
+      }
 
       const delivery=record?.delivery?.delivered?record.delivery:await dispatchFn(record.envelope);
       const attempts=Number(record?.attempts||0)+(delivery.attempted?1:0);
@@ -213,6 +227,8 @@ export async function drainGrowthQueue({
   return {accepted:true,replayed,persisted,delivered,failed,results,
     budgetExpired,elapsedMs:Math.max(0,clock()-startedAt),scanned,pages,skippedPersisted,indexedSeen,indexedCompleted,
     indexIntegrityFailures,indexSourceMissing,indexPointerInvalid,indexPointerGone,indexReadFailures,pointerStrongRecovery,sourceStrongRecovery,providerFailed,
+    sourceTimeFreshPersisted,sourceTimeDelayedPersisted,sourceTimeBacklogPersisted,sourceTimeUnknownPersisted,maxSourceLagMinutes,
+    backlogClearanceUnproven:budgetExpired||replayed>=maxReplay,
     healthy:failed===0};
 
 }

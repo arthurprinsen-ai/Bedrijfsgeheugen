@@ -301,3 +301,45 @@ test('strong source read failure stays red and retains pending pointer',async()=
   assert.equal(result.healthy,false);assert.equal(result.persisted,0);
   assert.equal(f.data.has(ptr),true);assert.equal(f.data.has(key),true);
 });
+
+test('provider-persisted old events are never counted as fresh source activity',async()=>{
+  const now=Date.parse('2026-10-25T17:00:00Z');
+  const k=['event/fresh','event/delayed','event/backlog','event/unknown'];
+  const f=fixture(k);
+  const at=[new Date(now-60_000).toISOString(),new Date(now-20*60_000).toISOString(),
+    new Date(now-2*3_600_000).toISOString(),'not-a-date'];
+  k.forEach((key,i)=>{f.data.get(key).datahub_event.occurred_at=at[i]});
+  const r=await drainGrowthQueue({includeOutcomes:false,clock:()=>now,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>({persisted:true,readback:{queue_id:'independently-persisted'}}),
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(r.persisted,4);
+  assert.equal(r.sourceTimeFreshPersisted,1);
+  assert.equal(r.sourceTimeDelayedPersisted,1);
+  assert.equal(r.sourceTimeBacklogPersisted,1);
+  assert.equal(r.sourceTimeUnknownPersisted,1);
+  assert.equal(r.maxSourceLagMinutes,120);
+  assert.equal(r.healthy,true);
+});
+
+test('budget-exhaustion remains distinct from provider write success',async()=>{
+  const now=Date.parse('2026-10-25T17:00:00Z');
+  const f=fixture(['event/past','event/pending']);
+  for(const x of f.data.values())x.datahub_event.occurred_at=new Date(now-2*3_600_000).toISOString();
+  let clockValue=now;
+  const r=await drainGrowthQueue({includeOutcomes:false,clock:()=>clockValue,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{clockValue+=3000;return {persisted:true,readback:{queue_id:'ok'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(r.persisted,1);assert.equal(r.sourceTimeBacklogPersisted,1);
+  assert.equal(r.budgetExpired,true);
+  assert.equal(r.backlogClearanceUnproven,true);
+  assert.equal(r.healthy,true,'a successful write does not imply that the backlog was cleared');
+});
+
+test('scheduled log exposes independent source-time freshness and incomplete backlog',()=>{
+  const source=readFileSync(new URL('../netlify/functions/growth-drain.mjs',import.meta.url),'utf8');
+  assert.match(source,/sourceTimeFreshPersisted:result\.sourceTimeFreshPersisted/);
+  assert.match(source,/sourceTimeBacklogPersisted:result\.sourceTimeBacklogPersisted/);
+  assert.match(source,/backlogClearanceUnproven:result\.backlogClearanceUnproven/);
+});

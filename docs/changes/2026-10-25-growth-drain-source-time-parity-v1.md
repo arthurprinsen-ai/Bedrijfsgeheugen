@@ -1,0 +1,7 @@
+# 25 October 2026 — separate source occurrence from ingestion success
+
+Parent #4446 and commercial P0 #4198. The existing Netlify minute growth-drain is saving valid events and is currently processing historical backlog. Independent SQL readback: of 176 events inserted after the 16:28:51 UTC release, 168 were created in source more than one hour before being inserted, only 7 genuinely occurred after the deployment, and 0 were first-party non-robot CTA clicks. The apparent 145 robot pageviews on /over-ons are part of this old backlog; new inserts are not new visits.
+
+Within the same existing drain, measure provider-persisted event source timestamp age at the moment of persistence: 0–5 minutes fresh, 5–60 minutes delayed, over 60 minutes historic, and missing/future timestamp unknown. Log only bounded aggregate counts and max lag minutes. Also report `backlogClearanceUnproven` whenever the cooperative budget or maxReplay ends a scan; never label the entire backlog drained merely because HTTP204 and `failed=0`.
+
+Maintain the already verified queue/source receipt retention, 503 integrity/provider failures, 10.5s runtime budget, BG211 delivery policy, privacy constraints, and singular minute scheduler. Regression tests cover historical-but-newly-ingested rows, recent events, missing source age, provider success and incomplete scan. This instrumentation cannot invent visitors, contacts, paid orders, or authorize external outreach. Only protected merge, exact production deploy and independent Netlify+Supabase readback establish release completion.
