@@ -673,11 +673,13 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <label class="fld"><span>Zakelijke e-mail *</span><input id="ldMail" type="email" autocomplete="email"></label>
     <label class="fld"><span>Bedrijf *</span><input id="ldBedrijf" type="text" autocomplete="organization"></label>
     <label class="fld"><span>Klantrelatie-ID (indien bekend)</span><input id="ldRelatie" type="text" placeholder="bijv. KR-10234 — leeg laten mag"></label>
-    <label class="chk"><input type="checkbox" id="ldOk"> <span>Ik ga akkoord dat mijn gegevens worden gebruikt voor opvolging van deze scan.</span></label>
+    <label class="chk"><input type="checkbox" id="ldOk"> <span>Ja, ik wil dat Bedrijfsgeheugen mij benadert over mijn scan en een mogelijk adviesgesprek. *</span></label>
+    <label class="chk"><input type="checkbox" id="ldMarketing"> <span>Ik ontvang daarnaast graag tips en productnieuws per e-mail (optioneel).</span></label>
+    <input id="ldWebsite" type="text" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px" placeholder="Laat dit veld leeg">
     <p class="fld-err" id="ldErr" hidden>Vul naam, e-mail en bedrijf in en vink akkoord aan.</p>
     <div style="display:flex;gap:10px;margin-top:14px">
       <p style="font-size:.83rem;color:#64748B;margin:0 0 10px">📬 Je bespreekt de uitkomst in een gratis adviesgesprek; gegevens worden alleen daarvoor gebruikt — <a href="/privacy" style="color:#2742D6" target="_blank">privacyverklaring</a>.</p>
-<button class="cta" style="padding:12px 22px;font-size:.92rem" onclick="submitLead()">Volgende: plan je adviesgesprek →</button>
+<button class="cta" data-bg-lead-submit style="padding:12px 22px;font-size:.92rem" onclick="submitLead()">Volgende: plan je adviesgesprek →</button>
       <button class="pillbtn" onclick="closeLead()">Annuleren</button>
     </div>
   </div>
@@ -1187,7 +1189,7 @@ function go(id){
   window.scrollTo({top:0,behavior:prefersReduced?'auto':'smooth'});
 }
 const buzz=ms=>{try{if(navigator.vibrate)navigator.vibrate(ms);}catch(_){}};
-function restart(){ cur=0; answers.fill(null); renderQ(); go('wizard'); }
+function restart(){ try{sessionStorage.removeItem('bg_frisse_blik_lead_key');}catch(_){} cur=0; answers.fill(null); renderQ(); go('wizard'); }
 
 /* countdown */
 function tick(){
@@ -1297,7 +1299,7 @@ function lockDash(){
   if(dashUnlocked)return;
   if(typeof PREVIEW!=='undefined' && PREVIEW){ unlockDash(); return; }
   $('dash').classList.add('locked');
-  setTimeout(()=>{ if(!dashUnlocked && !PREVIEW) openLead(); }, 900);
+  // Laat de bezoeker zelf kiezen voor de zichtbare vrijwillige advies-CTA.
 }
 function unlockDash(){
   dashUnlocked=true;
@@ -1822,11 +1824,53 @@ function scanPayload(lead){
 }
 
 let _pending=null,_calReady=false;
+function scanLeadAttribution(){
+  let sessie='',herkomst='';
+  try{sessie=sessionStorage.getItem('bg_meting_sessie')||'';herkomst=sessionStorage.getItem('bg_meting_herkomst')||'';}catch(_){}
+  const params=new URLSearchParams(location.search);
+  let referrerDomain='';
+  try{if(document.referrer)referrerDomain=new URL(document.referrer).hostname;}catch(_){}
+  return {
+    session_id:sessie,landing_source:herkomst,referrer_domain:referrerDomain,
+    utm_source:params.get('utm_source')||'',utm_medium:params.get('utm_medium')||'',
+    utm_campaign:params.get('utm_campaign')||'',utm_content:params.get('utm_content')||''
+  };
+}
+async function captureScanLead(lead){
+  let key='';
+  try{key=sessionStorage.getItem('bg_frisse_blik_lead_key')||'';}catch(_){}
+  if(!/^[0-9a-f-]{36}$/i.test(key)){key=crypto.randomUUID();try{sessionStorage.setItem('bg_frisse_blik_lead_key',key);}catch(_){}}
+  const response=await fetch('/.netlify/functions/frisse-blik-lead-intake',{
+    method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      idempotency_key:key,contact_name:lead.naam,email:lead.email,
+      company_name:lead.bedrijf,relationship_id:lead.relatieId,
+      scan_followup_consent:$('ldOk').checked,marketing_consent:$('ldMarketing').checked,
+      website:$('ldWebsite').value,attribution:scanLeadAttribution(),
+      scan_score:Number($('donutTxt').textContent)
+    })
+  });
+  const result=await response.json().catch(()=>null);
+  if(!response.ok||result?.stored!==true||!result?.lead_id)throw new Error('LEAD_NOT_STORED');
+  return result;
+}
 async function submitLead(){
   const lead={ naam:$('ldNaam').value.trim(), email:$('ldMail').value.trim(),
     bedrijf:$('ldBedrijf').value.trim(), relatieId:$('ldRelatie').value.trim() };
   if(!lead.naam||!lead.email.includes('@')||!lead.bedrijf||!$('ldOk').checked){ $('ldErr').hidden=false; return; }
   $('ldErr').hidden=true;
+  const submitButton=document.querySelector('[data-bg-lead-submit]');
+  if(submitButton?.disabled)return;
+  if(submitButton)submitButton.disabled=true;
+  let leadReceipt;
+  try{leadReceipt=await captureScanLead(lead);}
+  catch(_){
+    $('ldErr').textContent='Je aanvraag is niet veilig geregistreerd. Probeer het opnieuw; je gegevens worden niet als lead geteld.';
+    $('ldErr').hidden=false;
+    if(submitButton)submitButton.disabled=false;
+    return;
+  }
+  if(submitButton)submitButton.disabled=false;
   const payload=scanPayload(lead);
   let consultant=null, devopsOk=false, devopsInfo=null, devopsErr=null;
   if(ADO.pat && ADO.org && ADO.project){
@@ -1838,7 +1882,7 @@ async function submitLead(){
       if(res.ok){ devopsOk=true; try{const j=await res.json(); consultant=j.consultant||null;}catch(_){}}
     }catch(_){ /* registratie mag de flow nooit blokkeren */ }
   }
-  _pending={lead,payload,consultant,devopsOk,devopsInfo,devopsErr};
+  _pending={lead,payload,leadReceipt,consultant,devopsOk,devopsInfo,devopsErr};
   if(CONTACT.calendly){ showCalStep(lead); } else { onBooked('geen-calendly-geconfigureerd'); }
 }
 function isTrustedCalendlyScheduledMessage(e){
@@ -1871,7 +1915,17 @@ function showCalStep(lead){
 }
 function initCal(lead){
   if(window.Calendly)Calendly.initInlineWidget({
-    url:CONTACT.calendly+'?hide_gdpr_banner=1',
+    url:(()=>{
+      const u=new URL(CONTACT.calendly);
+      u.searchParams.set('hide_gdpr_banner','1');
+      const attr=scanLeadAttribution();
+      u.searchParams.set('utm_source','bedrijfsgeheugen');
+      u.searchParams.set('utm_medium','frisse_blik');
+      if(attr.landing_source)u.searchParams.set('utm_campaign',attr.landing_source.slice(0,60));
+      if(attr.session_id)u.searchParams.set('utm_content',attr.session_id.slice(0,100));
+      u.searchParams.set('utm_term','/frisse-blik');
+      return u.toString();
+    })(),
     parentElement:$('calWidget'),
     prefill:{name:lead.naam,email:lead.email}
   });
