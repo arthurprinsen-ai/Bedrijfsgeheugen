@@ -32,6 +32,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
     ]
   },
   "test_evidence": [
