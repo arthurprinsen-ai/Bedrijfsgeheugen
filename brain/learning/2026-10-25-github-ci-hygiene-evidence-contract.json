@@ -23,5 +23,13 @@
     "historical_replay": [
       "tests/brain-observed-ci-throughput-v1.test.mjs"
     ]
+  },
+  "root_cause": "Initial candidate omitted the material writeback closure files; admission appropriately failed closed.",
+  "prevention": "Agent skill requires closure evidence and exact SHA required checks before merge.",
+  "evidence": {
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40225631129",
+    "result": "learning canonicalization green; semantic closure previously failed due to missing explicit semantic keys",
+    "regression_test": "tests/brain-observed-ci-throughput-v1.test.mjs",
+    "release": "PENDING exact-head required checks and protected main merge"
   }
 }
