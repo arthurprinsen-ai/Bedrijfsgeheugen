@@ -32,9 +32,11 @@ test('existing daily Brain loop analyzes canonical opportunity gaps and does not
   assert.equal(observed.decisions.length,0);
   assert.equal(observed.obligations.length,0);
   assert.equal(observed.opportunities.length,1);
-  assert.equal(observed.opportunities[0].expected_value_eur,null);
-  assert.equal(observed.opportunities[0].expected_revenue_value,null);
+  assert.equal(observed.opportunities[0].expected_value_eur,0);
+  assert.equal(observed.opportunities[0].expected_revenue_value,0);
   assert.equal(observed.opportunities[0].score_components.commercial_evidence_status,'RESEARCH_REQUIRED');
+  assert.equal(observed.opportunities[0].evidence.economic_value_verified,false);
+  assert.equal(observed.opportunities[0].evidence.economic_unknown_database_zero_sentinel,true);
   assert.deepEqual(observed.opportunities[0].evidence.source_refs,['activity:1234']);
   const item=observed.brain.find(x=>x.record_id.startsWith('commercial-readiness:'));
   assert.ok(item,'same daily Brain must record the missing-information decision');
