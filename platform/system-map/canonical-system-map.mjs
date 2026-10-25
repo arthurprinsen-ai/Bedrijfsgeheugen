@@ -9,7 +9,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'d98395660e6e3f59607e02d90c86c40acd9280a3e98141ea8383b7ff15321b44',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'240467ad92975af00826b369f84f4fdabf171c68eceba38c43b15c9a41cdca13',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
