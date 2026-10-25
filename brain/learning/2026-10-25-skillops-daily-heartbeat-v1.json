@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|skillops|daily-heartbeat-source-receipt|20261025-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skillops-inventory.test.mjs"
+    ]
+  },
+  "root_cause": "Skill inventory existed but the canonical daily self-evolution workflow did not persist its immutable source hashes in the run artifact.",
+  "prevention": "Existing daily Heartbeat now generates skillops-inventory.json on every improve job attempt, alongside current checkpoint; no second scheduler or mutation.",
+  "evidence": {
+    "tests": [
+      "tests/brain-skillops-inventory.test.mjs"
+    ],
+    "workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "runtime_status": "unverified until protected merge and exact scheduled run artifact readback"
+  },
+  "limitations": [
+    "Hash evidence is not proof agents loaded skill text",
+    "No automatic skill rewriting",
+    "No realtime portal chart yet"
+  ]
+}
