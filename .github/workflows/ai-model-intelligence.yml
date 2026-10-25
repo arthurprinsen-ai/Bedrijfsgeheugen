@@ -26,6 +26,7 @@ on:
       - 'claude-vs-gemini/**'
       - '.github/workflows/ai-model-intelligence.yml'
       - 'scripts/ai-model-freshness-watch.mjs'
+      - 'scripts/ai-model-source-probe.mjs'
 permissions:
   contents: read
 jobs:
