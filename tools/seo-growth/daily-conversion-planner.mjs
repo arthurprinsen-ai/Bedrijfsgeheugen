@@ -22,7 +22,7 @@ function moneyPages(registry) {
  * event and verified business-outcome sources. Never deploys or publishes copy.
  * Source gaps, truncation and poor sampling prevent false zero-conversion claims.
  */
-export function planDailyConversion({ searchRows = [], events = [], pageDailyRows = [], outcomes = [], registry = {}, now = new Date(),
+export function planDailyConversion({ searchRows = [], events = [], humanViewProbe = [], pageDailyRows = [], outcomes = [], registry = {}, now = new Date(),
   searchLimit = 2000, eventLimit = 2500, dailyLimit = 1500, outcomeLimit = 500 } = {}) {
   const at = now instanceof Date ? now : new Date(now);
   if (Number.isNaN(at.getTime())) throw new Error('INVALID_CRO_OBSERVATION_TIME');
@@ -32,6 +32,19 @@ export function planDailyConversion({ searchRows = [], events = [], pageDailyRow
   const search = new Map(), seen = new Set(), behavior = new Map(), results = new Map(), daily = new Map(), dailySeen = new Set();
   let newestSearch = null, newestEvent = null;
   const startSearch = at.getTime() - 35 * DAY, startEvents = at.getTime() - 28 * DAY;
+  // A bounded, non-PII first-party human page-view freshness probe is not a full
+  // denominator. Legacy daily rollups lack independently proved human/bot parity.
+  // Never infer visitor drop-off or low CTA rate from them until a validated
+  // human-only denominator + click-attribution contract exists.
+  let lastHumanView = null;
+  for(const ev of humanViewProbe){
+    const timestamp=Date.parse(String(ev?.occurred_at||''));
+    if(ev?.event_type!=='page_view'||ev?.is_robot!==false||!canonical(ev?.canonical)||
+      !Number.isFinite(timestamp)||timestamp<startEvents||timestamp>at.getTime())continue;
+    lastHumanView=Math.max(lastHumanView??0,timestamp);
+  }
+  const rawHumanFresh=lastHumanView!==null&&at.getTime()-lastHumanView<=3*DAY;
+  const measurementStatus=rawHumanFresh?'HUMAN_ROLLUP_PARITY_UNVERIFIED':'RAW_HUMAN_PAGEVIEW_STALE_OR_MISSING';
   for (const row of searchRows) {
     const page = canonical(row.pagina || row.canonical);
     const date = Date.parse(String(row.datum || ''));
@@ -81,7 +94,7 @@ export function planDailyConversion({ searchRows = [], events = [], pageDailyRow
     if (event.event_id) observedEvents.add(event.event_id);
     if (newestEvent === null || timestamp > newestEvent) newestEvent = timestamp;
     const item = behavior.get(page) || { views: 0, engaged: 0, cta: 0 };
-    if (event.event_type === 'page_view') item.views++;
+    if (event.event_type === 'page_view' && event.is_robot === false) item.views++;
     if (event.event_type === 'engaged_view') item.engaged++;
     if (event.event_type === 'primary_cta_click') item.cta++;
     behavior.set(page, item);
@@ -99,9 +112,8 @@ export function planDailyConversion({ searchRows = [], events = [], pageDailyRow
   const latestBehavior = Math.max(newestEvent ?? 0, latestDaily ?? 0);
   const eventFresh = latestBehavior > 0 && at.getTime() - latestBehavior <= 3 * DAY;
   const sourceStatus = incomplete ? 'PARTIAL_TRUNCATED' :
-    gscFresh && eventFresh ? 'GSC_AND_BEHAVIOR_FRESH' :
-    gscFresh ? 'BEHAVIOR_MISSING_OR_STALE' :
-    eventFresh ? 'GSC_MISSING_OR_STALE' : 'MISSING_OR_STALE';
+    gscFresh ? 'GSC_FRESH_CRO_DENOMINATOR_UNVERIFIED' :
+    eventFresh ? 'GSC_MISSING_CRO_DENOMINATOR_UNVERIFIED' : 'MISSING_OR_STALE';
   const candidates = [];
   const pageSummaries = [];
   for (const page of pages) {
@@ -109,27 +121,31 @@ export function planDailyConversion({ searchRows = [], events = [], pageDailyRow
     const observed = behavior.get(page.canonical) || { views: 0, engaged: 0, cta: 0 };
     const rollup = daily.get(page.canonical) || null;
     const rollupFresh = Boolean(rollup && at.getTime() - rollup.latestUpdated <= 7 * DAY && at.getTime() - rollup.latestDay <= 7 * DAY);
-    const ev = { views: rollupFresh ? rollup.views : observed.views, engaged: observed.engaged,
-      cta: rollupFresh ? Math.max(rollup.cta, observed.cta) : observed.cta };
+    // No verified human-only visitor denominator is available yet.
+    // Keep raw and rollup observations separate; never calculate an apparent CTA rate.
+    const ev = { views: null, engaged: observed.engaged, cta: rollupFresh ? Math.max(rollup.cta, observed.cta) : observed.cta };
     const pageEventFresh = rollupFresh || (eventFresh && observed.views > 0);
     const pageGscFresh = Boolean(gsc.latestUpdated && at.getTime() - gsc.latestUpdated <= 7 * DAY);
     const business = results.get(page.canonical) || { qualifiedLeads: 0, orders: 0, realizedRevenueEur: 0 };
     const ctr = gsc.impressions ? gsc.clicks / gsc.impressions : null;
-    const ctaRate = ev.views ? ev.cta / ev.views : null;
+    const ctaRate = null; // Fail closed: page daily rollup has no proven human/bot parity.
     const position = gsc.weight ? gsc.weightedPosition / gsc.weight : null;
     pageSummaries.push({ canonical: page.canonical, impressions: pageGscFresh ? gsc.impressions : null,
       clicks: pageGscFresh ? gsc.clicks : null, ctr: pageGscFresh ? ctr : null,
-      views: pageEventFresh ? ev.views : null, ctaClicks: pageEventFresh ? ev.cta : null,
-      ctaRate: pageEventFresh ? ctaRate : null,
+      views: null, ctaClicks: pageEventFresh ? ev.cta : null,
+      unverifiedRollupViews:rollupFresh?rollup.views:null,
+      ctaRate,
+      ctaRateEvidenceStatus:'HUMAN_DENOMINATOR_NOT_VERIFIED',
       qualifiedLeads: incomplete ? null : results.has(page.canonical) ? business.qualifiedLeads : rollupFresh ? rollup.qualifiedLeads : null,
       orders: incomplete ? null : results.has(page.canonical) ? business.orders : rollupFresh ? rollup.orders : null,
       realizedRevenueEur: incomplete ? null : results.has(page.canonical) ? Number(business.realizedRevenueEur.toFixed(2)) : rollupFresh ? Number(rollup.realizedRevenueEur.toFixed(2)) : null });
     if (incomplete) continue;
     let action = null, reason = null, target = null, priority = 0, refs = [];
-    if (pageEventFresh && ev.views >= 50 && ev.engaged >= 15 && ctaRate < 0.04) {
-      action = 'cta-copy-position'; reason = 'observed-low-primary-cta-rate';
-      target = 'primary_cta_click_rate'; priority = 100 + ev.views * (0.04 - ctaRate);
-      refs = ['growth_events:' + page.canonical + ':' + day];
+    if(rollupFresh && rollup.views>=50){
+      // Measurement integrity, not bad human conversion, is the observed opportunity.
+      action='evidence-gap';reason='human-pageview-and-cta-denominator-parity-unverified';
+      target='human_primary_cta_measurement_coverage';priority=120+Math.log1p(rollup.views);
+      refs=['growth_page_daily:'+page.canonical+':'+day];
     } else if (pageGscFresh && gsc.impressions >= 200 && ctr < 0.025) {
       action = position !== null && position > 10 ? 'content-gap' : 'title-meta';
       reason = position !== null && position > 10 ? 'observed-ranking-gap' : 'observed-low-organic-ctr';
@@ -144,14 +160,23 @@ export function planDailyConversion({ searchRows = [], events = [], pageDailyRow
       evidence_safe: true, proposed_change: { kind: 'human-validation-required', primary_cta: page.primary_cta || null },
       priority: Number(priority.toFixed(2)), observation_day: day, source_status: sourceStatus,
       actual_business_outcomes: results.has(page.canonical) ? { ...business, realizedRevenueEur: Number(business.realizedRevenueEur.toFixed(2)) } : null,
-      terminal: { state: 'REJECTED_WITH_EVIDENCE', reason_code: 'NO_SAFE_REVERSIBLE_CHANGE',
-        missing_or_conflicting_evidence: 'No independently validated challenger copy or protected delivery/readback for this observation',
-        future_execution_condition: 'Validated reversible challenger with exact-head CI, protected delivery, and independent production readback' }
+      terminal: { state: 'REJECTED_WITH_EVIDENCE',
+        reason_code:action==='evidence-gap'?'HUMAN_CONVERSION_MEASUREMENT_UNVERIFIED':'NO_SAFE_REVERSIBLE_CHANGE',
+        missing_or_conflicting_evidence:action==='evidence-gap'
+          ? 'Daily page rollup and non-robot raw pageview/CTA attribution have no independently verified matching denominator; do not infer abandonment'
+          : 'No independently validated challenger copy or protected delivery/readback for this observation',
+        future_execution_condition:action==='evidence-gap'
+          ? 'Verify first-party human-only pageview cohort and CTA tracking parity; preserve existing instrumentation PR ownership and provider readback'
+          : 'Validated reversible challenger with exact-head CI, protected delivery, and independent production readback' }
     };
     if (validateOptimizationCandidate(proposal).length === 0) candidates.push(proposal);
   }
   candidates.sort((a, b) => b.priority - a.priority || a.canonical.localeCompare(b.canonical));
-  return { day, sourceStatus, sourceFreshness: { gscFresh, eventFresh, truncated: incomplete },
+  return { day, sourceStatus, sourceFreshness: { gscFresh, eventFresh, truncated: incomplete,
+      lastHumanPageViewAt:lastHumanView===null?null:new Date(lastHumanView).toISOString(),
+      rawHumanPageViewFresh:rawHumanFresh,
+      measurementStatus,ctaRateDenominatorVerified:false,
+      botTrafficExcludedFromCtaDecision:true },
     pagesReviewed: pages.length, candidates: candidates.slice(0, 3), pages: pageSummaries,
     publicationStatus: 'NOT_PUBLISHED_REQUIRES_PROTECTED_DELIVERY',
     revenueEvidenceStatus: incomplete ? 'INCOMPLETE' : 'OBSERVED_ONLY' };
