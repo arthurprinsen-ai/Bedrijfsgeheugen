@@ -2,7 +2,7 @@
 // Read-only, fail-closed required-check reconciliation for the existing Recovery Supervisor.
 import { execFileSync } from 'node:child_process';
 export function reconcile(expected, observed, sha) {
-  if (!sha || !Array.isArray(expected) || !Array.isArray(observed)) return {state:'UNKNOWN',reason:'INCOMPLETE_EVIDENCE',sha};
+  if (!sha || !Array.isArray(expected) || expected.length===0 || !Array.isArray(observed)) return {state:'UNKNOWN',reason:'INCOMPLETE_EVIDENCE',sha};
   const missing=[], ambiguous=[], wrongSource=[], incomplete=[];
   for (const req of expected) {
     if (!req.context) { incomplete.push('REQUIRED_CONTEXT_UNSPECIFIED'); continue; }
