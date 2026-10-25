@@ -97,6 +97,14 @@ If the real format fails, use the existing original producer's `preventive_recov
 
 No additional scheduler, queue, sender, privileged connector or fake post ID. Even a correctly sized, quality-proven Reel is not live until the original authorized publisher returns Meta media ID/permalink and independent readback.
 
+## Previously rejected OpenArt assets are permanently ineligible (2026-10-25)
+
+**Fingerprint:** `mira-immutable-brain-rejected-history-before-vision-v1`. The canonical Brain `brain_failure_occurrences` row is the cross-run evidence, **not** the current media job's last_error. Two independently rejected histories must never be alternated to make an older failed clip eligible again. The ORIGINAL media router now looks up `router:openart:<history>:instagram:<date>:<failure stage>` by provider history prefix before MP4 download, native video probe and expensive AI identity/temporal verification. It blocks any previously rejected history **across all dates**, including exact photo, motion and native-video-format rejects. If the Brain read fails, no blind resend is allowed.
+
+The same agent must load and deduplicate all real past provider histories before selecting a next candidate. A provider `COMPLETED` response is not a vision/identity PASS. After the original source-locked producer obtains a genuinely new history under the configured budget, send it only once through the canonical router; log the true independent outcome and never requeue a rejected candidate. A current-day Reel winner remains frozen; never silently replace it with a static visual. For new days, any image-vs-Reel format decision must occur **before** the daily winner is frozen and must satisfy the channel's current approved policy.
+
+This prevents repeat evaluation charges and status loops; it does not guarantee generative videos pass the independent 0.940 face / 0.900 temporal gates, and it never permits unproven Instagram publication claims.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
