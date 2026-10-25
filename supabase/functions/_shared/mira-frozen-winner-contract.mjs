@@ -51,7 +51,7 @@ const APPROVED_SOURCE_LED=Object.freeze({
 export function eligibleSourceLedMediaReplacement({resolved,job,ob,manifest}={}){
  const previous=job?.asset_manifest||{};
  const rejected=String(job?.last_error||'');
- const qualityRejection=/(?:VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH|MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED)/.test(rejected);
+ const qualityRejection=/(?:VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH|MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED|MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH)/.test(rejected);
  const rejectedHistory=/:openart=([A-Za-z0-9]+)$/.exec(rejected)?.[1]||'';
  const next=manifest||{};
  const original=String(resolved?.original_openart_history_id||resolved?.openart_history_id||'');

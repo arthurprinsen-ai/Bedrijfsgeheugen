@@ -87,6 +87,16 @@ The one existing Mira producer must consume this production-derived brief **befo
 
 This plan is returned by the current router rather than creating a new scheduler, publisher, queue, customer data store or parallel agent. A successful production simulation is not a future guarantee; subsequent runs must repeat actual provider checks.
 
+## Native MP4 quality gate before vision (2026-10-25)
+
+**Fingerprint:** `mira-exact-native-mp4-before-vision-v1`. The original Mira media router and the existing Netlify `instagram-video-frames` function enforce this rule. The agent must never trust OpenArt response metadata, manifest width/height, or a padded 1080x1920 screenshot as evidence of the original video format.
+
+Before spending credits on AI face/temporal evaluations, the existing frame extractor downloads the **exact original MP4**, probes the first real encoded video stream with the already installed ffmpeg binary and requires **native 1080x1920**. Failed/unknown stream metadata remains blocked; actual non-native dimensions are recorded on the same CAS media job and immutable Brain failure register with their exact provider history. A frame submitted by a caller cannot bypass this original-byte extraction. Only matching actual video dimensions allow independent start/middle/end face >=0.940 and temporal >=0.900 verification.
+
+If the real format fails, use the existing original producer's `preventive_recovery` contract to choose a new genuinely native portrait output. The current failed candidate must not be resubmitted or claimed as verified by reframing, JPEG padding or an unapproved master/source switch. Limit regeneration to one distinct attempt per observed failure and the configured daily provider budget. Never spend new credits merely because preflight was polled again.
+
+No additional scheduler, queue, sender, privileged connector or fake post ID. Even a correctly sized, quality-proven Reel is not live until the original authorized publisher returns Meta media ID/permalink and independent readback.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.

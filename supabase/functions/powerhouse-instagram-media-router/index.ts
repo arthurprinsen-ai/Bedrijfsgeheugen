@@ -119,14 +119,27 @@ Deno.serve(async req=>{
    if(provider!=='openart')return json({ok:false,error:'OPENART_REQUIRED_FOR_VIDEO'},422);
    const u=clean(manifest.asset_url||manifest.assetUrl);if(!u)return json({ok:false,error:'VIDEO_ASSET_URL_REQUIRED'},422);
    const final=await hashRemote(u);if(final.contentType!=='video/mp4')return json({ok:false,error:'VIDEO_MP4_REQUIRED'},422);
-   let frames=Array.isArray(manifest.frames)?manifest.frames:[];
-   if(!['start','middle','end'].every(p=>frames.some((f:any)=>f.position===p&&(clean(f.asset_url||f.assetUrl)||clean(f.imageBase64))))){
-     const duration=Number(manifest.duration||job?.asset_manifest?.duration||0);
-     const fx=await fetch(FRAME_EXTRACTOR,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify({mediaUrl:u,duration})});
-     const fb=await fx.json().catch(()=>({}));
-     if(!fx.ok||fb?.ok!==true||!Array.isArray(fb.frames))return json({ok:false,error:'VIDEO_FRAME_EXTRACTION_FAILED',detail:fb},422);
-     frames=fb.frames;
+   // Exact native MP4 stream check is upstream of EVERY AI vision call.
+   // Even if a caller supplied frames, ignore them: frames must come directly
+   // from the original hashed MP4, never a padded JPEG or asserted manifest.
+   const duration=Number(manifest.duration||job?.asset_manifest?.duration||0);
+   const fx=await fetch(FRAME_EXTRACTOR,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify({mediaUrl:u,duration})});
+   const fb=await fx.json().catch(()=>({}));
+   if(fx.status===422&&fb?.error==='MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH'&&fb?.native_dimensions_verified===true){
+     const diagnostic=await recordMediaProofRejection(db,{
+       job,ob,code:'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',position:'native',
+       historyId:manifest.openart_history_id,width:fb.actual_width,height:fb.actual_height
+     });
+     if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_NATIVE_DIMENSION_DIAGNOSTIC_FAILED',diagnostic.code);
+     return json({ok:false,error:'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',
+       actual_width:fb.actual_width,actual_height:fb.actual_height,
+       required_width:1080,required_height:1920,detail:fb},422);
    }
+   if(!fx.ok||fb?.ok!==true||fb?.native_dimensions_verified!==true||
+      Number(fb.native_width)!==1080||Number(fb.native_height)!==1920||
+      !Array.isArray(fb.frames)||!['start','middle','end'].every(p=>fb.frames.some((f:any)=>f.position===p&&clean(f.imageBase64))))
+     return json({ok:false,error:'VIDEO_NATIVE_FRAME_PROOF_UNAVAILABLE',detail:fb},422);
+   const frames=fb.frames;
    const fps:any[]=[];
    for(const f of frames){
      const payload:any={publicationDate:runDate,provider:'openart',mediaType:'image',verificationRole:'video_frame',writeObligation:false};
