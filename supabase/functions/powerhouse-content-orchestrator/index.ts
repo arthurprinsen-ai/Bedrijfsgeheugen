@@ -660,7 +660,7 @@ Deno.serve(async (req) => {
     if(pending.channel==='instagram_company'){
       const [{data:lineage,error:lineageError},{data:job,error:jobError}]=await Promise.all([
         db.from('powerhouse_mira_problem_lineage_v1').select('run_date,winner_recommendation_id,state,source_evidence').eq('run_date',runDate).maybeSingle(),
-        db.from('powerhouse_instagram_media_jobs_v1').select('asset_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
+        db.from('powerhouse_instagram_media_jobs_v1').select('status,asset_manifest,proof_manifest,republish_forbidden,replacement_of_external_id').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
       ]);
       if(lineageError||jobError)throw new Error('MIRA_WINNER_LINEAGE_READ_FAILED');
       resolvedMira=resolveMiraFrozenWinner(runDate,{winner:instagramWinner,lineage,recommendation,job});
