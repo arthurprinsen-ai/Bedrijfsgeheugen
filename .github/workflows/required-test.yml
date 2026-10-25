@@ -107,6 +107,10 @@ jobs:
         run: node --test tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs
       - name: Refuse contradiction between frozen face and real human motion before OpenArt cost
         run: node --test tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs
+      - name: Prevent OpenArt Wan 2.7 wrong-native-ratio credits before generation
+        run: node --test tests/brain-mira-provider-native-prespend-20261025.test.mjs
+      - name: Verify 9:16 derived Mira reference cannot bypass canonical identity and publication controls
+        run: node --test tests/brain-mira-portrait-reference-proof-20261025.test.mjs
       - name: Verify exact canonical commercial publication evidence reconciliation
         run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness

@@ -121,6 +121,32 @@ Our actual failed paid generations exposed contradictory instructions: prompts d
 
 No new scheduler, agent runner, second publisher, customer data, threshold bypass, fake success or unlimited automatic regeneration. Do not substitute a static image for an already frozen Reel obligation.
 
+## Proven provider output geometry BEFORE any OpenArt credits (2026-10-25)
+
+**Fingerprint:** `mira-native-provider-output-prespend-v1`.
+
+Wan 2.7 image2video's `resolution=1080p` is a PIXEL-TIER, not a promise of 1080x1920. Official model documentation says original first-frame aspect determines resulting geometry. **Actual** original-master project history `4y4xrXvVDidv9gUDQZea` was billed and COMPLETED yet returned **1292x1604, 8.08s, with audio** instead of the canonical exact native **1080x1920, silent 8s Reel**. The OpenArt `wan2-7:image2video` form has no output aspect-ratio parameter or mute parameter. Putting `9:16` in the prompt or inventing unsupported `aspectRatio`/`generateAudio` properties DOES NOT control the original MP4.
+
+**Required original producer workflow before every NEW generation spend:**
+1. Read the actual immutable Mira source winner/master, original Brain prior failures and original production router `preflight`; no new winner or static-image substitution for frozen Reel.
+2. Call the EXISTING authenticated `powerhouse-instagram-media-router` action `generation_preflight` with `runDate`, `postType:"reel"`, `model`, `mode`, and EXACT proposed generation `params`. This action does not charge, generate, publish or mutate state. Refuse to call OpenArt generate_video unless it returns `provider_generation_preflight.ok=true`. Additional existing provider budget and dedupe checks are STILL required.
+3. `wan2-7:image2video` with the immutable canonical master and `resolution=1080p` is a KNOWN BLOCKED configuration. Provider evidence and native output dimensions are linked in the returned failure. Do not reissue it, pad/crop the original reference, swap the Mira identity or relax the native-video gate.
+4. Unknown model/modes require independently verified original OpenArt control surface and a protected policy update — do NOT guess that "1080p" means "9:16" or trust the render prompt as proof. Veo 3.1 with literal `aspectRatio:"9:16"` and `generateAudio:false` has verified **FORMAT** only; previous Veo faces failed, so a format-compatible response is NOT a recommendation to retry previous histories.
+5. Actual generated MP4 is re-measured independently by original ffmpeg worker before expensive frame recognition; require real 1080x1920, original same face on first/middle/end >=0.940, real temporal movement >=0.900, and true one-shot Meta provider media ID/permalink/readback for publication. Never claim that a provider's `COMPLETED` receipt or a 1080p label means Reel acceptance.
+6. To fix the recurring source aspect issue, any new 9:16 compositional derivative of the original master needs separate identity verification, source licensing and a protected original-master contract change **BEFORE** using it. This is not permission to bypass the original unmodified master reference.
+
+The evidence and restrictions live in the same original Mira preventive module and Brain learning. No new publisher, scheduler, unlimited retries, paid speculative attempts or fake GREEN statuses.
+
+## Derived 9:16 reference is NOT Mira master until independently verified (2026-10-25)
+
+**Fingerprint:** `mira-outpainted-reference-independent-face-proof-v1`. The completed single-image OpenArt outpaint `4aOsUdQyAheL3wmex9Uq`, resource `aTtGOimC7CyaexG5cyTh`, is 1296x2304 (true 9:16). It remains an UNAPPROVED staging reference, not a Reel, a new original master or proof of pixel-exact face preservation. The original immutable fictional Mira master stays `Yjqu4D7v76HABNPmQPj1`.
+
+To test it once, call the **existing original** authenticated `powerhouse-instagram-media-verifier` with `publicationDate` matching the frozen source, `provider:"openart"`, `mediaType:"image"`, `verificationRole:"reference_candidate"`, `writeObligation:false` and the exact OpenArt-generated PNG URL. This role accepts **only** the real 1296x2304 PNG/JPEG from the trusted original OpenArt CDN, and performs real independent two-image identity vision against the unchanged original Mira master; minimum face confidence remains **0.940**. A role-specific result `pass:true` proves only visual reference similarity, **not** pixel preservation, video validity, camera motion, Instagram upload, Meta provider proof or publication.
+
+Every response has `reference_candidate_only=true`, `may_publish=false`, `final_media_proven=false`; the original daily Instagram obligation is never changed. A failed vision verdict or unavailable provider keeps the candidate quarantined: no OpenArt video spend. If the image passes, the original owner may propose a **separate protected PR** that explicitly registers the independently verified SHA, original-master lineage and exact derived-reference usage, while preserving the original source winner, image/video format and face/temporal thresholds. Neither a passing reference nor this skill silently rewrites `validMiraGenerationReference`, the publisher or the Mira master. A future video still must independently pass native 1080x1920, first/middle/end ≥0.940 and temporal ≥0.900, then a real Meta ID/permalink/readback.
+
+The existing owner, Brain learning, original scheduler and publisher remain single-writer; no extra scheduler, speculative multiple provider attempts, arbitrary crop, identity swap, fake success or unlimited credits.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
