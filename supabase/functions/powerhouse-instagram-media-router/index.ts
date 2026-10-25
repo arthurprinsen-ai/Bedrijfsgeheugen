@@ -2,7 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
 import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
-import {planMiraPreventiveRecovery} from '../_shared/mira-preventive-quality-recovery.mjs';
+import {planMiraPreventiveRecovery,assessMiraProviderBeforeSpend} from '../_shared/mira-preventive-quality-recovery.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
@@ -85,6 +85,25 @@ Deno.serve(async req=>{
  const miraBusinessProblem=winnerContract.problem||null;
  const expectedScene=sourceLed?winnerContract.scene:miraBusinessProblem.scene;
  const expectedProblemId=sourceLed?null:miraBusinessProblem.id;
+
+ // PRE-SPEND only: never create media, spend credits, change frozen winner or
+ // touch a post. This must be called by the ORIGINAL Mira producer before any
+ // OpenArt generate_video request. Reject the observed Wan 2.7 config even
+ // though OpenArt calls it '1080p': its real output was NOT native 9:16.
+ if(action==='generation_preflight'){
+   if(postType!=='reel'||!sourceLed||clean(ob?.external_id)||ob?.live_proven_at||
+      clean(ob?.status)==='LIVE_PROVEN')
+     return json({ok:false,error:'MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED'},422);
+   const config=assessMiraProviderBeforeSpend({
+     model:input.model,mode:input.mode,params:input.params,
+     masterReferenceId:clean(job?.asset_manifest?.openart_reference_id)
+   });
+   return json({ok:config.ok,runDate,postType,source_recommendation_id:winnerContract.winner_recommendation_id,
+     original_master_id:clean(job?.asset_manifest?.openart_reference_id),
+     provider_generation_preflight:config,
+     note:'A passing output-config check is not a visual PASS, publication receipt or permission for unbounded credit spending.'
+   },config.ok?200:422);
+ }
 
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];

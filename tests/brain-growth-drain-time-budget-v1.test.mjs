@@ -244,3 +244,102 @@ test('legacy fallback skips indexed pointers and does not double report read fai
   assert.equal(result.indexIntegrityFailures,0);
   assert.equal(result.persisted,1);
 });
+
+test('a stale eventual source miss is recovered only by strong provider evidence',async()=>{
+  const key='event/source-consistency',ptr='pending/'+key,f=fixture([key]);
+  f.data.set(ptr,{source_key:key});
+  const original=f.store.get.bind(f.store);let weak=0,strong=0,writes=0;
+  f.store.get=async(k,options={})=>{
+    if(k===key&&options.consistency==='strong'){strong++;return original(k)}
+    if(k===key){weak++;return null}
+    return original(k);
+  };
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{writes++;return {persisted:true,readback:{queue_id:'verified'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  // The legacy source fallback may perform a second eventual read; strong recovery
+  // must still be exactly once and the persisted DataHub side effect exactly once.
+  assert.ok(weak>=1);assert.equal(strong,1);
+  assert.equal(result.sourceStrongRecovery,1);assert.equal(result.indexSourceMissing,0);
+  assert.equal(result.persisted,1);assert.equal(result.failed,0);assert.equal(writes,1);
+  assert.equal(f.data.get(key).datahub.persisted,true);assert.equal(f.data.has(ptr),false);
+});
+
+test('a stale eventual pointer miss is revalidated strongly before retirement',async()=>{
+  const key='event/pointer-consistency',ptr='pending/'+key,f=fixture([key]);
+  f.data.set(ptr,{source_key:key});
+  const original=f.store.get.bind(f.store);let strong=0;
+  f.store.get=async(k,options={})=>{
+    if(k===ptr&&options.consistency==='strong'){strong++;return original(k)}
+    if(k===ptr)return null;
+    return original(k);
+  };
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>({persisted:true,readback:{queue_id:'verified'}}),
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(strong,1);assert.equal(result.pointerStrongRecovery,1);
+  assert.equal(result.indexPointerGone,0);assert.equal(result.persisted,1);
+  assert.equal(result.healthy,true);
+});
+
+test('strong source read failure stays red and retains pending pointer',async()=>{
+  const key='event/provider-stale',ptr='pending/'+key,f=fixture([key]);
+  f.data.set(ptr,{source_key:key});
+  const orig=f.store.get.bind(f.store);
+  f.store.get=async(k,options={})=>{
+    if(k===key&&options.consistency==='strong')throw Error('strong backend unavailable');
+    if(k===key)return null;
+    return orig(k);
+  };
+  const result=await drainGrowthQueue({includeOutcomes:false,clock:()=>0,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{throw Error('must not invoke DataHub')} ,
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(result.indexReadFailures,1);assert.equal(result.failed,1);
+  assert.equal(result.healthy,false);assert.equal(result.persisted,0);
+  assert.equal(f.data.has(ptr),true);assert.equal(f.data.has(key),true);
+});
+
+test('provider-persisted old events are never counted as fresh source activity',async()=>{
+  const now=Date.parse('2026-10-25T17:00:00Z');
+  const k=['event/fresh','event/delayed','event/backlog','event/unknown'];
+  const f=fixture(k);
+  const at=[new Date(now-60_000).toISOString(),new Date(now-20*60_000).toISOString(),
+    new Date(now-2*3_600_000).toISOString(),'not-a-date'];
+  k.forEach((key,i)=>{f.data.get(key).datahub_event.occurred_at=at[i]});
+  const r=await drainGrowthQueue({includeOutcomes:false,clock:()=>now,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>({persisted:true,readback:{queue_id:'independently-persisted'}}),
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(r.persisted,4);
+  assert.equal(r.sourceTimeFreshPersisted,1);
+  assert.equal(r.sourceTimeDelayedPersisted,1);
+  assert.equal(r.sourceTimeBacklogPersisted,1);
+  assert.equal(r.sourceTimeUnknownPersisted,1);
+  assert.equal(r.maxSourceLagMinutes,120);
+  assert.equal(r.healthy,true);
+});
+
+test('budget-exhaustion remains distinct from provider write success',async()=>{
+  const now=Date.parse('2026-10-25T17:00:00Z');
+  const f=fixture(['event/past','event/pending']);
+  for(const x of f.data.values())x.datahub_event.occurred_at=new Date(now-2*3_600_000).toISOString();
+  let clockValue=now;
+  const r=await drainGrowthQueue({includeOutcomes:false,clock:()=>clockValue,
+    storeFactory:()=>f.store,deliveryEnabledFn:()=>false,
+    persistFn:async()=>{clockValue+=3000;return {persisted:true,readback:{queue_id:'ok'}}},
+    dispatchFn:async()=>noDelivery(),brainQueueFn:noBrainWrite});
+  assert.equal(r.persisted,1);assert.equal(r.sourceTimeBacklogPersisted,1);
+  assert.equal(r.budgetExpired,true);
+  assert.equal(r.backlogClearanceUnproven,true);
+  assert.equal(r.healthy,true,'a successful write does not imply that the backlog was cleared');
+});
+
+test('scheduled log exposes independent source-time freshness and incomplete backlog',()=>{
+  const source=readFileSync(new URL('../netlify/functions/growth-drain.mjs',import.meta.url),'utf8');
+  assert.match(source,/sourceTimeFreshPersisted:result\.sourceTimeFreshPersisted/);
+  assert.match(source,/sourceTimeBacklogPersisted:result\.sourceTimeBacklogPersisted/);
+  assert.match(source,/backlogClearanceUnproven:result\.backlogClearanceUnproven/);
+});
