@@ -38,5 +38,6 @@
     ],
     "observed_failure": "False red on intentional deployment skip.",
     "proof_boundary": "Full dashboard adapter and production readback still require integration and provider verification."
-  }
+  },
+  "fingerprint": "powerhouse|release-dashboard|three-stage-proof-separation|20261025-v1"
 }
