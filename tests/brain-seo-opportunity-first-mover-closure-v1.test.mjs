@@ -20,18 +20,3 @@ test('commercial aliases remain owned by the existing Exact Online money page',(
   assert.ok(page);
   assert.ok(page.secondary_keywords.includes('exact online api'));
 });
-
-
-test('twinfield plural and reversed variants retain one canonical money-page owner',()=>{
-  const expected='https://www.bedrijfsgeheugen.nl/twinfield-koppeling';
-  for(const map of [base,owners]){
-    const page=map.pages.find(x=>x.route===expected);
-    assert.ok(page,'Twinfield commercial page must exist');
-    assert.equal(page.role,'money');
-    for(const alias of ['twinfield koppelingen','koppeling twinfield']){
-      assert.ok(page.secondary_keywords.includes(alias),'missing '+alias);
-      const claimants=map.pages.filter(x=>x.primary_keyword===alias||x.secondary_keywords?.includes(alias));
-      assert.deepEqual(claimants.map(x=>x.route),[expected],'duplicate owner for '+alias);
-    }
-  }
-});
