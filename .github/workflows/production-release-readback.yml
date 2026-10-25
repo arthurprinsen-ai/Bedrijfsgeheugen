@@ -50,7 +50,7 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
-          import { deriveNetlifyDeploymentApplicability, requiresBrainRuntimeAuthenticatedProof } from './tools/delivery/netlify-deployment-applicability.mjs';
+          import { deriveNetlifyDeploymentApplicability, requiresBrainRuntimeAuthenticatedProof, classifyNetlifyDeploymentEvidence } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
 
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
@@ -87,6 +87,9 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`brain_runtime_auth_proof_required=${brainRuntimeAuthProofRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
+          const deployEvidence=classifyNetlifyDeploymentEvidence({applicability,headSha:process.env.GITHUB_SHA});
+          await appendFile(process.env.GITHUB_OUTPUT,`deployment_status=${deployEvidence.status}\n`);
+          console.log(`NETLIFY_DEPLOYMENT_APPLICABILITY: ${deployEvidence.status} (${deployEvidence.reason})`);
           console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:applicability.deliveryLanes,required_suites:applicability.requiredSuites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,brain_runtime_auth_proof_required:brainRuntimeAuthProofRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
