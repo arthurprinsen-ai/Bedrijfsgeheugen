@@ -42,7 +42,7 @@
       "red": 5
     }
   },
-  "fix": "Bind existing watchdog to original immutable stage receipt writer at each genuine invocation, using exact stale unreconciled predicate and bounded recovery count. Align freshness window with actual 5-minute internal task while retaining the original guard truth; no new cron/sender/queue.",
+  "fix": "Bind all EIGHT loop stage receipts (input, decision, action, readback, outcome, measurement, learning, guard) to the original genuine watchdog invocation with actual input context, decision policy, stale operation selector and guard result. The separate cron transport receipt remains independently verifiable. No new scheduler or synthetic revenue.",
   "prevention_rule": "Always model the outer cron schedule, inner mux task schedule, and stage-evidence writer schedule separately; never derive all-stage freshness from successful cron transport alone.",
   "tests": [
     "tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs"
@@ -54,7 +54,8 @@
     "protected_merge": "NOT_EXECUTED",
     "production_sql": "NOT_EXECUTED",
     "post_deploy_live_runtime": "NOT_EXECUTED",
-    "consumer_outcomes": "NOT_FABRICATED"
+    "consumer_outcomes": "NOT_FABRICATED",
+    "note": "Preview at 11:01 UTC showed six watchdog-sourced stage receipts but stale input and decision. Candidate now binds all eight to the same real operation."
   },
   "version": "v1",
   "obligation_id": "powerhouse|execution-resilience|proof-cadence|20261025-v1",
