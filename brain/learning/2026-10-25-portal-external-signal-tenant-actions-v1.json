@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|portal-external-signal|no-per-signal-tenant-action-guidance|20261025-v1",
+  "parent_issue": 4198,
+  "scope": "PORTAL_V2",
+  "incident": "External signals shown without exact tenant action or impact reasoning on their cards",
+  "root_cause": "Existing authenticated authority delivered tenant impact and exact action candidate separately, but UI rendered them on disconnected lists.",
+  "prevention_rules": [
+    "Use exact signal_key join in authenticated response",
+    "Tenant-specific action must not be inferred from canonical generic proposal",
+    "Never fabricate revenue, provider sending or realized outcome",
+    "Require HTTPS source, source freshness and impact verification labels",
+    "Preserve RLS and existing Netlify token authority",
+    "Protected CI/CodeQL and authenticated production readback before LIVE_PROVEN"
+  ],
+  "tests": [
+    "portal-v2/tests/external-signal-action-context.test.mjs",
+    "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
+  ],
+  "terminal_rule": "Exact-head Required+CodeQL PASS, protected merge, Netlify deployed exact revision, authenticated tenant portal readback, and actual conversion evidence measured separately."
+}
