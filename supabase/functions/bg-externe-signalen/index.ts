@@ -66,7 +66,7 @@ async function dataforseoSerpOnce(query:string,login:string,password:string){
   }
   const items:any[]=task?.result?.[0]?.items||[];
   // Paid listings are not market-truth signals. Unknown dates remain unknown.
-  return items.filter(x=>x.type==='organic'&&/^https?:\\/\\//.test(String(x.url||''))).slice(0,10).map(x=>({
+  return items.filter(x=>x.type==='organic'&&['https://','http://'].some(prefix=>String(x.url||'').startsWith(prefix))).slice(0,10).map(x=>({
     url:String(x.url),title:String(x.title||''),content:String(x.description||''),
     published_date:typeof x.timestamp==='string'?x.timestamp:null,
     // Explicit rank proxy, not a claimed provider relevance score.
