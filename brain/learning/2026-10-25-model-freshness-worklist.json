@@ -1,0 +1,14 @@
+{
+  "id": "ai-model-freshness-27-worklist-20261025",
+  "root_cause": "27/110 catalog model records were last verified on 2026-09-30 and fail the immutable 14-day source freshness rule.",
+  "prevention": "Canonical 27-record worklist with existing supplier URLs and explicit PENDING_INDEPENDENT_REVIEW, no accidental advancement of verification dates or automatic model activation.",
+  "tests": {
+    "path": "tests/ai-model-intelligence-freshness-v1.test.mjs",
+    "result": "REQUIRES_PROTECTED_CI"
+  },
+  "evidence": {
+    "source": "Existing model catalog source URLs only; not proof of renewed independent verification.",
+    "production": "NOT_CLAIMED"
+  },
+  "safe_action": "Review each supplier model and individual claim independently, then update source receipts, evidence classification and dates only with real source evidence."
+}
