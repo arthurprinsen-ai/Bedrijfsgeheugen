@@ -37,3 +37,50 @@ test('sanitizes upstream provider errors before public JSON or Brain evidence',(
  assert.match(source,/contract:CONTRACT,error:safeFailure\(e\)/);
  assert.doesNotMatch(source,/String\(b\.status_message\|\|'error'\)/);
 });
+
+const policy = await import('../supabase/functions/bg-externe-signalen/provider-retry.mjs');
+test('DataForSEO temporary server and documented processing errors are retryable once',()=>{
+  assert.equal(policy.isTransientDataforseoStatus(503,0,0),true);
+  assert.equal(policy.isTransientDataforseoStatus(200,50000,0),true);
+  assert.equal(policy.isTransientDataforseoStatus(200,20000,40103),true);
+  assert.equal(policy.isTransientDataforseoStatus(200,20000,50401),true);
+});
+test('auth, billing, quota, rate limit and invalid field are never silently retried',()=>{
+  for(const status of [401,402,403,429])
+    assert.equal(policy.isTransientDataforseoStatus(status,20000,0),false);
+  for(const code of [40100,40104,40202,40203,40506])
+    assert.equal(policy.isTransientDataforseoStatus(200,code,0),false);
+});
+test('single transient error recovers once, with bounded delay',async()=>{
+  let calls=0;const delays=[];
+  const result=await policy.withOneTransientDataforseoRetry(async()=>{
+    calls++;if(calls===1)throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{retryable:true});
+    return [{url:'https://www.rvo.nl'}];
+  },{sleep:async ms=>delays.push(ms),delayMs:300});
+  assert.equal(calls,2);
+  assert.deepEqual(delays,[300]);
+  assert.equal(result.length,1);
+});
+test('repeated provider failure stops after two calls; never creates retry queue',async()=>{
+  let calls=0;
+  await assert.rejects(policy.withOneTransientDataforseoRetry(async()=>{
+    calls++;throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{retryable:true});
+  },{sleep:async()=>{}}),/DATAFORSEO_REMOTE_FAILURE/);
+  assert.equal(calls,2);
+});
+test('provider plan or billing failure is never retried even once',async()=>{
+  let calls=0;await assert.rejects(policy.withOneTransientDataforseoRetry(async()=>{
+    calls++;throw Object.assign(new Error('DATAFORSEO_REMOTE_FAILURE'),{retryable:false});
+  },{sleep:async()=>{}}),/DATAFORSEO_REMOTE_FAILURE/);
+  assert.equal(calls,1);
+});
+test('no SERP results is observed empty; cannot fabricate positive market signals',()=>{
+  assert.equal(policy.isEmptyDataforseoResult(40102),true);
+  assert.equal(policy.isEmptyDataforseoResult(40103),false);
+  assert.match(source,/if\(task&&isEmptyDataforseoResult\(taskStatus\)\)return \[\]/);
+});
+test('one bounded retry is wired into unchanged secured collector',()=>{
+  assert.match(source,/withOneTransientDataforseoRetry\(\(\)=>dataforseoSerpOnce/);
+  assert.match(source,/isTransientDataforseoStatus\(r\.status,apiStatus,taskStatus\)/);
+  assert.match(source,/req\.headers\.get\('x-powerhouse-token'\)!==expected/);
+});
