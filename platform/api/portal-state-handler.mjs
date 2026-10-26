@@ -16,7 +16,15 @@ export function createPortalStateHandler({getUser,store,maxBytes=1_500_000,now=(
      if(!record) return json({error:'NOT_FOUND'},404);
      const state=portalProjectionToState(record,user);
      const dataAiRuntime=buildRuntimePassportEvidence(state,{env,now});
-     return json({...state,dataAiRuntime});
+     const daysRaw=new URL(request.url).searchParams.get('commercialDays')||'30';
+     const days=Number(daysRaw);
+     if(!Number.isInteger(days)||days<1||days>365)return json({error:'INVALID_COMMERCIAL_PERIOD'},400);
+     const commercialFeedback=typeof store.getCommercialFeedback==='function'
+       ?await store.getCommercialFeedback(tenantId,{days})
+       :{verificationStatus:'UNAVAILABLE',series:[]};
+     if(commercialFeedback?.tenantId&&commercialFeedback.tenantId!==tenantId)
+       return json({error:'COMMERCIAL_TENANT_MISMATCH'},502);
+     return json({...state,dataAiRuntime,commercialFeedback});
    }
    const declared=Number(request.headers.get('content-length')||0);
    if(declared>maxBytes) return json({error:'PAYLOAD_TOO_LARGE'},413);
