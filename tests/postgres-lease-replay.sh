@@ -32,5 +32,5 @@ psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -Atqc "SELECT generation FROM deliver
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -Atqc "SELECT generation FROM delivery_control.acquire_writer_lease('arthurprinsen-ai/Bedrijfsgeheugen','test-writer-four',repeat('4',64),30)" >"$tmp/2" 2>&1 & b=$!
 wait "$a"; ea=$?; wait "$b"; eb=$?
 set -e
-if ! { { [[ "$ea" -eq 0 ]] && [[ "$eb" -ne 0 ]]; } || { [[ "$eb" -eq 0 ]] && [[ "$ea" -ne 0 ]]; }; then echo 'Exactly one claimant must win' >&2; exit 1; fi
+if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then :; elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then :; else echo 'Exactly one claimant must win' >&2; exit 1; fi
 echo "POSTGRES_LEASE_REPLAY_PASSED"
