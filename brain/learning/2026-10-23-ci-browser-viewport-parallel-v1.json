@@ -1,0 +1,79 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "ci|required-browser|serial-three-viewport-sweep-causes-main-drift-retest|20261023-v1",
+  "obligation_id": "ci|browser-viewport-parallel|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4753",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "CI_REPEATED_BROWSER_CRITICAL_PATH",
+  "root_cause": "Provider jobs showed serial website browser checks took 223-225s in two complete Required CI runs, whereas backend took 11-14s. Three viewport sweeps ran sequentially within one browser job while other agents advanced protected main.",
+  "source_evidence": [
+    "GitHub Required run 39938653908 browser=225s, overall=339s, backend=11s",
+    "GitHub Required run 39939651165 browser=223s, overall=355s, backend=14s",
+    "Existing lane-website browser job executes all sitemap routes in phone, tablet, desktop serial viewport batches",
+    "Repository owner is personal User; native GitHub organization merge queue cannot be assumed available on this repo"
+  ],
+  "prevention_rule": "Run existing sitemap visibility/CLS checks for phone, tablet, desktop as three independent fail-closed matrix jobs on exact candidate SHA, while retaining checkout, route, menu, header, accessibility/checkout browser tests, and protected aggregate Required/CodeQL. Never skip a shard or reduce CLS 0.100.",
+  "regression_ref": "tests/brain-website-browser-parallel-v1.test.mjs",
+  "compiler": {
+    "failure_class": "CI_REPEATED_BROWSER_CRITICAL_PATH",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-browser-parallel-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-browser-parallel-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-website-browser-parallel-v1.test.mjs"
+    ],
+    "invariants": [
+      "Exactly phone/tablet/desktop shards",
+      "Every public sitemap route per shard",
+      "No swallowed assertion or missing matrix",
+      "CLS threshold remains <=0.100",
+      "Original checkout and high-risk browser checks remain",
+      "Required aggregate fails when any matrix shard fails",
+      "No second scheduler or external publish side effect"
+    ]
+  },
+  "test_evidence": {
+    "candidate_status": "NOT_LIVE",
+    "baseline_browser_seconds": [
+      225,
+      223
+    ],
+    "baseline_required_wall_seconds": [
+      339,
+      355
+    ],
+    "measured_new_browser_seconds": [],
+    "target_metric": "provider wall-clock for all successful required browser checks including parallel viewport jobs; never compare only one shard",
+    "estimated_improvement_unverified": true,
+    "node_regressions": [
+      "tests/brain-website-browser-parallel-v1.test.mjs"
+    ],
+    "required_checks": [
+      "hygiene/admission",
+      "preflight",
+      "Required",
+      "CodeQL"
+    ],
+    "protected_release": true
+  },
+  "skill_targets": [
+    "ci-cd",
+    "powerhouse-self-improvement-layer"
+  ],
+  "no_new_scheduler": true,
+  "no_new_agent": true,
+  "no_new_registry": true,
+  "no_new_provider_auth": true
+}

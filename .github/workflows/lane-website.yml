@@ -100,6 +100,8 @@ jobs:
           node-version: '22'
       - name: Fail fast on broken inline JavaScript
         run: node tools/site-shell/website-static-syntax-preflight.mjs
+      - name: Fail closed on missing browser matrix or incomplete viewport coverage
+        run: node --test tests/brain-website-browser-parallel-v1.test.mjs
 
   baseline:
     needs: [classify, syntax-preflight]
@@ -209,6 +211,57 @@ jobs:
           console.log(`Netlify preview was absent, failed, or was not route-ready for ${process.env.HEAD_SHA}; browser verification will use the exact checked-out candidate locally.`);
           NODE
 
+  # Parallel fail-closed sweep: each viewport tests every public sitemap route
+  # and the same >=120 characters, visibility, occlusion and CLS <=0.100 limits.
+  # Matrix failure propagates through the reusable Website job into Required.
+  browser-visibility:
+    needs: [classify, syntax-preflight, preview-ready]
+    timeout-minutes: 25
+    if: needs.classify.outputs.requires_preview == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        viewport: [phone, tablet, desktop]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.candidate_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Build and serve exact local candidate only when Netlify preview is unavailable
+        if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate'
+        env:
+          COMMIT_REF: ${{ inputs.candidate_sha }}
+          CONTEXT: deploy-preview
+          DEPLOY_ID: required-browser-local
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+          STATIC_I18N_BUILD_CACHE_DIR: .cache/bg-static-i18n-v1
+        run: |
+          npm install --prefer-offline --no-audit --no-fund --silent
+          node tools/ci/netlify-build-entry.mjs
+          nohup python3 tools/ci/serve-clean-urls.py --port 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/ai-act >/dev/null && curl -fsS http://127.0.0.1:4173/benchmark >/dev/null; then
+              echo 'Exact local candidate clean URLs are reachable.'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bg-local-site.log || true
+          echo "::error::Exact local website candidate did not become reachable on /, /ai-act and /benchmark within 20 seconds. See /tmp/bg-local-site.log output above."
+          exit 1
+      - name: Install shared website browser runtime
+        run: |
+          PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
+      - name: Verify all public pages are visibly rendered
+        env:
+          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+          UI_VR_VIEWPORT_SHARD: ${{ matrix.viewport }}
+        run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
   browser:
     needs: [classify, syntax-preflight, preview-ready]
     timeout-minutes: 25
@@ -264,10 +317,6 @@ jobs:
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: node tools/site-shell/checkout-browser-check.mjs
-      - name: Verify all public pages are visibly rendered
-        env:
-          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
-        run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
