@@ -10,19 +10,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "source": "GitHub Actions",
-        "run_id": 40322072979,
-        "outcome": "failure",
-        "reason": "Bash syntax in race condition"
-      },
-      {
-        "source": "GitHub Actions",
-        "run_id": 40322683206,
-        "job": "lease-postgres-pr-replay",
-        "outcome": "success",
-        "exact_head": "591e5b807ab85181a2d2d57023e4d77c9a4df6ca"
-      }
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ]
   },
   "evidence": {
