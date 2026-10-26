@@ -1,3 +1,4 @@
+import {summarizeObservedCiStepPhases} from './ci-step-phase-evidence.mjs';
 // A provider-denied zero-job record may be excluded from *actionable* work
 // only on a complete and consistent, independently rechecked GitHub snapshot.
 // A provider incident is never closed by this capacity classification.
@@ -603,6 +604,7 @@ export function summarizeObservedCiJobs(observations=[],{minJobs=20,minRuns=5}={
       minimum_distinct_attempts:3,
       jobs:Object.freeze(recurrent)
     }),
+    step_phase_evidence:summarizeObservedCiStepPhases(rows,valid,{minJobs,minRuns}),
     job_evidence:Object.freeze(valid)
   });
 }
