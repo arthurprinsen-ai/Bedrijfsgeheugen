@@ -36,6 +36,38 @@ async function loadSupabaseSystemMapInventory(){
   }
 }
 
+// Provider calls are bounded and run only after the admin/tenant authorization gate.
+// Each provider supplies independent identity. Unknown is never treated as passed.
+async function releaseProviderEvidence(){
+  const ghToken=String(Netlify.env.get('GITHUB_TOKEN')||'').trim();
+  const netlifyToken=String(Netlify.env.get('NETLIFY_AUTH_TOKEN')||'').trim();
+  const siteId='fd527056-493a-4d8a-8125-d00370104fa3';
+  const read=async(url,token)=>{
+    if(!token)return null;
+    try{
+      const result=await fetch(url,{headers:{authorization:`Bearer ${token}`,accept:'application/json'},signal:AbortSignal.timeout(5000)});
+      if(!result.ok)return null;
+      return await result.json();
+    }catch{return null;}
+  };
+  const [main,site]=await Promise.all([
+    read('https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/main',ghToken),
+    read(`https://api.netlify.com/api/v1/sites/${siteId}`,netlifyToken)
+  ]);
+  const head=main?.object?.sha||null;
+  const deployId=site?.published_deploy?.id||null;
+  const deploy=deployId?await read(`https://api.netlify.com/api/v1/deploys/${deployId}`,netlifyToken):null;
+  const published=deploy?.commit_ref||null;
+  const identitiesProven=Boolean(head&&published&&deploy?.state==='ready');
+  return {
+    github:{merged:identitiesProven&&head===published,requiredChecks:'unknown'},
+    deployment:{required:null,state:deploy?.state==='ready'?'success':deploy?.state==='error'?'failed':'unknown'},
+    production:{checked:Boolean(deploy),fresh:Boolean(deploy?.published_at),matchesExpectedRelease:identitiesProven?head===published:null},
+    providerIdentity:{githubHeadSha:head,netlifyPublishedSha:published,netlifyDeployId:deployId},
+    evidenceStatus:identitiesProven?'IDENTITIES_OBSERVED':'PROVIDER_READBACK_INCOMPLETE'
+  };
+}
+
 export default async request=>{
   if(request.method!=='GET')return new Response('Method Not Allowed',{status:405,headers:{allow:'GET'}});
   const authorization=request.headers.get('authorization')||'';
@@ -54,8 +86,8 @@ export default async request=>{
   const principal=principalFromUser(user,tenantId);
   try{
     const projection=await store.getProjection(tenantId,{principal});
-    const supabaseInventory=await loadSupabaseSystemMapInventory();
-    return reply({ ...projection, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory} },200);
+    const [supabaseInventory,releaseEvidence]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence()]);
+    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory} },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
