@@ -31,5 +31,6 @@
     "historical_replay": [
       "tests/brain-required-check-reconciler-v2.test.mjs"
     ]
-  }
+  },
+  "root_cause": "Required-check drift was assessed from partial PR job signals without reliably resolving effective inherited rulesets, exact commit SHA and GitHub App identity. Earlier v2 admission failures arose from missing canonical closure evidence and an invalid replay-test filename."
 }
