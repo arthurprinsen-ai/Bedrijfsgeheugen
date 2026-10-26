@@ -25,5 +25,10 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "next_action": "run exact-head Required/BRAIN/CodeQL and verify protected merge/readback"
+  "next_action": "run exact-head Required/BRAIN/CodeQL and verify protected merge/readback",
+  "evaluation": {
+    "historical_replay": [
+      "tests/required-check-reconciliation.test.mjs"
+    ]
+  }
 }
