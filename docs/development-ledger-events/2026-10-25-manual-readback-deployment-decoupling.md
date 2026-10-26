@@ -6,5 +6,8 @@
 - Code: delivery applicability and existing production readback workflow.
 - Regression: tests/netlify/deployment-evidence-status.test.mjs.
 - Required run: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40233753638 (initial closure admission incomplete).
-- Follow-up: Required/CodeQL and protected merge; separate evidence that an actual deployed runtime is healthy.
-- State: CANDIDATE, no false-green provider proof.
+- Protected merge: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/commit/72e3afef2c02e22835d2b711ecec65298fc96e62.
+- Production readback: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40278768820 (workflow_dispatch on main, exact merge SHA, production-readback job success).
+- Deployment applicability: NOT_REQUIRED; production routes and non-deployment evidence succeeded. Pricing-interactions step was skipped; do not infer its completion.
+- Skill projection: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40241041144 (success).
+- State: EVIDENCE_VERIFIED; administrative record promoted through protected PR with original provider run references.
