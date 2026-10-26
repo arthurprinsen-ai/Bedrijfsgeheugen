@@ -1,0 +1,35 @@
+{
+  "fingerprint": "delivery|postgres17-fenced-writer-bootstrap|20261026-v35",
+  "component": "Powerhouse Delivery Recovery Supervisor",
+  "compiler": {
+    "failure_class": "POSTGRES17_LEASE_BOOTSTRAP_CI_ADMISSION_AND_REPLAY"
+  },
+  "root_cause": "Existing PR path classifier did not cover fenced-lease SQL and replay; first PostgreSQL execution exposed Bash race assertion syntax; material writeback required learning, ledger and human change evidence.",
+  "prevention": {
+    "rule": "Require isolated PostgreSQL 17 real race replay on exact PR commit; classify source paths; preserve exact-head Required/BRAIN/CodeQL and Supabase Preview, independent approval for writer adoption."
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "source": "GitHub Actions",
+        "run_id": 40322072979,
+        "outcome": "failure",
+        "reason": "Bash syntax in race condition"
+      },
+      {
+        "source": "GitHub Actions",
+        "run_id": 40322683206,
+        "job": "lease-postgres-pr-replay",
+        "outcome": "success",
+        "exact_head": "591e5b807ab85181a2d2d57023e4d77c9a4df6ca"
+      }
+    ]
+  },
+  "evidence": {
+    "postgres17_provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40322683206",
+    "required_check": "PENDING_FIX_INTEGRATION_CLOSURE",
+    "protected_merge": "NOT_MERGED",
+    "production_readback": "NOT_LIVE"
+  },
+  "outcome": "Real isolated PostgreSQL 17 lease concurrency replay succeeded, while Required closure still needs artifacts and subsequent independent revalidation."
+}
