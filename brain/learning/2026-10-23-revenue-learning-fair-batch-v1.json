@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "revenue-learning-store|oldest-50-replay|serial-rpcs-503|20261023-v1",
+  "obligation_id": "netlify|revenue-learning-evaluate|bounded-fair-reconcile|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "RUNTIME",
+  "root_cause": "The existing hourly evaluator calls revenue-learning-store reconciliation, which repeatedly selects the oldest 50 of 340 executed sales actions, then serially performs 50 individual RPCs. Netlify returned 502 for revenue-learning-evaluate with a correlated downstream Supabase 503. The serial loop is a source-level performance/fairness defect, not yet exclusive 503 causation.",
+  "fix": "One SECURITY INVOKER service-role-only Postgres RPC processes at most 20 source actions atomically, prioritizing absent/least-recently-updated existing outcome obligations; existing stable obligation identities provide durable progress. Edge returns bounded receipt, rejects malformed receipts and other-tenant calls.",
+  "prevention_rule": "No second cron/store, no blind timeouts/retries, no fabricated revenue; deploy reviewed migration before Edge source switch and verify the actual 503 rate, batch coverage, action outcome readback, backlogs and rollback.",
+  "evidence": {
+    "netlify_request_id": "01M5MDK5YSNXA4R7XW25EVZ5EV",
+    "netlify_status": 502,
+    "provider_timestamp": "2026-10-23T13:00:53.081Z",
+    "supabase_observed_503_at": "2026-10-23T13:00:57.870Z",
+    "executed_sales_actions": 340,
+    "prior_batch_oldest": 50,
+    "exact_prod_version_at_observation": "revenue-learning-store/v115",
+    "independent_before_after_latency_proven": false,
+    "production_release_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-bounded-reconciliation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-learning-bounded-reconciliation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-bounded-reconciliation-v1.test.mjs"
+    ],
+    "metrics": [
+      "verified_5xx_per_hour",
+      "batch_selected",
+      "total_executed",
+      "oldest_unvisited_obligation_age",
+      "tenant_scope_denials",
+      "full_day_evaluator_completion",
+      "verified_outcome_rate"
+    ],
+    "expected_behaviors": [
+      "service-role-only privilege",
+      "at most twenty reconciliations in one atomic DB transaction",
+      "fair oldest-obligation priority",
+      "no false 204/PROVEN on invalid receipt",
+      "no customer value inferred from obligation coverage"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RUNTIME",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "PENDING_PROTECTED_CI_MIGRATION_EDGE_RELEASE_AND_NETLIFY_READBACK"
+}
