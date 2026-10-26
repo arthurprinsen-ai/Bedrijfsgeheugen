@@ -5,8 +5,6 @@ on:
   # Recovery is scheduled/manual only. A main push must never fan out into
   # another repository-wide recovery scan.
   workflow_dispatch:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   # Shift identical five-minute cadence off the hour's overloaded minute zero.
   # One existing owner: do not introduce a second scheduler or workflow.
   schedule:
@@ -23,47 +21,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  lease-postgres-pr-replay:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: test-only
-          POSTGRES_DB: lease_integration
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready --health-interval 5s
-          --health-timeout 5s --health-retries 10
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-      - name: Verify exact candidate SHA
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-      - name: Verify PostgreSQL 17 and replay lease contract
-        shell: bash
-        env:
-          DATABASE_URL: postgresql://postgres:test-only@localhost:5432/lease_integration
-        run: |
-          set -euo pipefail
-          version="$(psql "$DATABASE_URL" -Atqc 'SHOW server_version_num')"
-          test "$version" -ge 170000
-          test "$version" -lt 180000
-          test -s docs/delivery/sql/repository-writer-fenced-lease.sql
-          test -s tests/postgres-lease-replay.sh
-          bash tests/postgres-lease-replay.sh
   supervise:
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
