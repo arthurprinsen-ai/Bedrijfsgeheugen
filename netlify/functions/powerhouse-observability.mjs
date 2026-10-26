@@ -6,6 +6,8 @@ import { resolveIdentityTenant } from '../../platform/read-models/portal-server-
 import { principalFromUser } from '../../brain/operating-loop/object-access-policy.mjs';
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import { POWERHOUSE_SYSTEM_MAP } from '../../platform/system-map/canonical-system-map.mjs';
+import { deriveNetlifyDeploymentApplicability } from '../../tools/delivery/netlify-deployment-applicability.mjs';
+import deliveryPolicy from '../../config/brain-delivery-system.json' with { type: 'json' };
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
@@ -54,17 +56,39 @@ async function releaseProviderEvidence(){
     read('https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/main',ghToken),
     read(`https://api.netlify.com/api/v1/sites/${siteId}`,netlifyToken)
   ]);
-  const head=main?.object?.sha||null;
+  const head=/^[a-f0-9]{40}$/.test(main?.object?.sha||'')?main.object.sha:null;
   const deployId=site?.published_deploy?.id||null;
   const deploy=deployId?await read(`https://api.netlify.com/api/v1/deploys/${deployId}`,netlifyToken):null;
-  const published=deploy?.commit_ref||null;
-  const identitiesProven=Boolean(head&&published&&deploy?.state==='ready');
+  const published=/^[a-f0-9]{40}$/.test(deploy?.commit_ref||'')?deploy.commit_ref:null;
+  const repoUrl='https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen';
+  const [checks,compare]=await Promise.all([
+    head?read(`${repoUrl}/commits/${head}/check-runs?per_page=100`,ghToken):null,
+    head&&published&&head!==published?read(`${repoUrl}/compare/${published}...${head}`,ghToken):null
+  ]);
+  const requiredContexts=['CodeQL javascript-typescript','hygiene / admission','test'];
+  const matching=requiredContexts.map(name=>(checks?.check_runs||[]).filter(run=>run.name===name&&run.app?.id===15368).sort((a,b)=>String(b.completed_at||'').localeCompare(String(a.completed_at||'')))[0]);
+  const requiredChecks=matching.every(run=>run?.conclusion==='success')?'passed':matching.some(run=>run&&run.conclusion&&run.conclusion!=='success')?'failed':'unknown';
+  // If provider commits are equal, no deployment is necessary. Otherwise
+  // rely on the canonical path classifier, never on the SHA mismatch alone.
+  let required=null,reason='APPLICABILITY_UNVERIFIED';
+  if(head&&published&&head===published){required=false;reason='production-sha-matches-main';}
+  else if(head&&published&&compare?.status==='ahead'&&Array.isArray(compare.files)&&compare.truncated!==true){
+    const paths=compare.files.map(file=>file.filename);
+    try{
+      const outcome=deriveNetlifyDeploymentApplicability({changedPaths:paths,headSha:head,policy:deliveryPolicy});
+      required=outcome.deploymentRequired;
+      reason=outcome.reason;
+    }catch{reason='APPLICABILITY_CLASSIFIER_FAILED';}
+  }
+  const deploymentReady=deploy?.state==='ready';
+  // A successful published deploy does not prove it contains the newest commit.
+  const matches=Boolean(head&&published&&head===published&&deploymentReady);
   return {
-    github:{merged:identitiesProven&&head===published,requiredChecks:'unknown'},
-    deployment:{required:null,state:deploy?.state==='ready'?'success':deploy?.state==='error'?'failed':'unknown'},
-    production:{checked:Boolean(deploy),fresh:Boolean(deploy?.published_at),matchesExpectedRelease:identitiesProven?head===published:null},
+    github:{merged:Boolean(head),requiredChecks},
+    deployment:{required,reason,state:required===true&&matches?'success':required===true?'pending':'unknown'},
+    production:{checked:Boolean(deploy),fresh:Boolean(deploy?.published_at&&Date.now()-Date.parse(deploy.published_at)<86400000),matchesExpectedRelease:matches},
     providerIdentity:{githubHeadSha:head,netlifyPublishedSha:published,netlifyDeployId:deployId},
-    evidenceStatus:identitiesProven?'IDENTITIES_OBSERVED':'PROVIDER_READBACK_INCOMPLETE'
+    evidenceStatus:head&&published&&checks?'PROVIDER_IDENTITIES_AND_CHECKS_READ':'PROVIDER_READBACK_INCOMPLETE'
   };
 }
 
