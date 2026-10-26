@@ -59,8 +59,8 @@ test('collector stops at first provider error, preserves partial proof and suppr
     return {total_count:1,jobs:[sample(id,1000+id).job]};
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
-  assert.equal(calls,3);
-  assert.equal(x.provider_reads_attempted,3);
+  assert.equal(calls,4);
+  assert.equal(x.provider_reads_attempted,4);
   assert.equal(x.workflow_runs_sampled,2);
   assert.equal(x.read_errors.length,1);
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
@@ -94,7 +94,7 @@ test('adaptive sampling stops as soon as 20 independent jobs across five runs ex
   assert.equal(x.sample_jobs,21);
   assert.equal(x.distinct_runs,7);
   assert.equal(x.workflow_runs_sampled,7);
-  assert.equal(requests,8);
+  assert.equal(requests,9);
   assert.equal(x.p95_wait_to_start_ms,1200);
   assert.deepEqual(x.read_errors,[]);
 });
@@ -113,8 +113,8 @@ test('first denied provider read fails closed without exhausting unnecessary GET
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10_000,read});
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(x.workflow_runs_sampled,1);
-  assert.equal(count,2);
-  assert.equal(x.provider_reads_attempted,2);
+  assert.equal(count,3);
+  assert.equal(x.provider_reads_attempted,3);
   assert.equal(x.p95_execution_ms,null);
 });
 
@@ -127,7 +127,7 @@ test('incomplete job-list pagination stops bounded collector immediately',async(
     return {total_count:2,jobs:[sample(1,1001).job]};
   };
   const x=await collectObservedCiThroughput({repo:'example/repo',now:T+10000,read});
-  assert.equal(reads,2);
+  assert.equal(reads,3);
   assert.equal(x.status,'PARTIAL_PROVIDER_OBSERVATION');
   assert.equal(x.workflow_runs_sampled,1);
   assert.equal(x.read_errors[0].reason,'JOBS_SNAPSHOT_INCOMPLETE');

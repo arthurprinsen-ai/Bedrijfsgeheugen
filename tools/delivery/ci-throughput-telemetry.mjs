@@ -1,10 +1,11 @@
 // Existing hourly Powerhouse Repository Janitor's READ-ONLY GitHub CI observation.
-// 1 completed-runs GET and at most 24 job-list GETs; stop on the first provider error. No new scheduler, dispatch,
+// 1 general completed-runs GET, 1 targeted Required-runs GET, and <=24 job GETs. No new scheduler, dispatch,
 // check/run mutation, provider-ghost classification or "green" state write.
 import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { summarizeObservedCiJobs } from './predictive-controller.mjs';
 import { routeObservedCiHotspots } from './ci-agent-priority.mjs';
+import { observeRequiredHeadChurn } from './ci-required-head-churn.mjs';
 import { projectObservedCicdTaskRuns, reconcileCicdProjectionWithCanonical } from './ci-cicd-semconv-projection.mjs';
 
 const MAX_RUNS=24;
@@ -22,6 +23,18 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
   if(!/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(repo||''))throw new Error('CI_THROUGHPUT_REPOSITORY_MISSING');
   const records=read('repos/'+repo+'/actions/runs?status=completed&per_page=40');
   if(!Array.isArray(records?.workflow_runs))throw new Error('CI_THROUGHPUT_PROVIDER_LIST_INVALID');
+  // The general top-40 provider page was observed to contain just 4 Required
+  // runs among unrelated workflows. Obtain one bounded, workflow-scoped page
+  // instead of pretending the general page proves PR-head recurrence.
+  // Failure here affects only this independent advisory; job latency retains
+  // its existing fail-closed validity rules and separate provider receipts.
+  let requiredRuns=null;
+  let headHistoryError=null;
+  try {
+    requiredRuns=read('repos/'+repo+'/actions/workflows/required-test.yml/runs?status=completed&per_page=40');
+  } catch {
+    headHistoryError='REQUIRED_WORKFLOW_HISTORY_READ_UNAVAILABLE';
+  }
   const cutoff=now-MAX_AGE_MS;
   const selected=records.workflow_runs.filter(run=>
     run?.status==='completed' &&
@@ -51,18 +64,32 @@ export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOS
     }
   }
   const summary=summarizeObservedCiJobs(observations);
+  // Independent evidence: run-list head versions do not require job-list success.
+  // Uses the exact original provider response; never requests a second page/API.
+  const projectedChurn=observeRequiredHeadChurn({
+    workflowRuns:requiredRuns?.workflow_runs,totalCount:requiredRuns?.total_count,now
+  });
+  const requiredHeadChurn={
+    ...projectedChurn,
+    provider_query_scope:'required-test.yml/completed-runs-first-40',
+    provider_read_error:headHistoryError,
+    source_authority:'GITHUB_WORKFLOW_SCOPED_COMPLETED_RUNS'
+  };
   const incomplete=readErrors.length>0;
   const result={
     ...summary,
+    required_head_churn:requiredHeadChurn,
     // A provider error suppresses even attribution-only hotspots.
     diagnostic_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',jobs:[]}:summary.diagnostic_hotspots,
     recurrent_hotspots:incomplete?{status:'PARTIAL_PROVIDER_OBSERVATION',minimum_distinct_attempts:3,jobs:[]}:summary.recurrent_hotspots,
     observed_at:new Date(now).toISOString(),
     repository:repo,
     workflow_runs_sampled:sampledRuns,
-    provider_reads_attempted:sampledRuns+1,
+    provider_reads_attempted:sampledRuns+2,
+    required_head_history_reads_attempted:1,
     requested_run_read_limit:MAX_RUNS,
     workflow_runs_available:records.workflow_runs.length,
+    required_head_history_runs_available:Array.isArray(requiredRuns?.workflow_runs)?requiredRuns.workflow_runs.length:null,
     read_errors:readErrors,
     status:incomplete?'PARTIAL_PROVIDER_OBSERVATION':summary.status,
     // Never report p50/p95 as valid if selected run reads were incomplete.
@@ -91,6 +118,8 @@ if(process.argv[1] && import.meta.url===new URL('file://'+process.argv[1]).href)
       p95_wait_to_start_ms:result.p95_wait_to_start_ms,
       slowest_executed_job_ms:result.diagnostic_hotspots.jobs[0]?.execution_ms??null,
       recurring_slow_jobs:result.recurrent_hotspots.jobs.length,
+      observed_pr_head_rechecks:result.required_head_churn.additional_head_versions_lower_bound,
+      merge_queue_review:result.required_head_churn.merge_queue_advice,
       agent_advice_status:result.agent_priority_advice.status,
       cicd_semconv_evidence_status:result.cicd_semconv_evidence.status,
       cicd_semconv_tasks:result.cicd_semconv_evidence.sampled_tasks||0,
