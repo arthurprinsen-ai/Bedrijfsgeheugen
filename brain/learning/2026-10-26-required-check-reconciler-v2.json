@@ -16,7 +16,8 @@
   },
   "prevention": "Check exact source/app/context/sha, refuse incomplete permissions and provider data; never create green status",
   "regression_contract": [
-    "tests/required-check-reconciliation.test.mjs"
+    "tests/required-check-reconciliation.test.mjs",
+    "tests/brain-required-check-reconciler-v2.test.mjs"
   ],
   "compiler": {
     "failure_class": "CI",
@@ -28,7 +29,7 @@
   "next_action": "run exact-head Required/BRAIN/CodeQL and verify protected merge/readback",
   "evaluation": {
     "historical_replay": [
-      "tests/required-check-reconciliation.test.mjs"
+      "tests/brain-required-check-reconciler-v2.test.mjs"
     ]
   }
 }
