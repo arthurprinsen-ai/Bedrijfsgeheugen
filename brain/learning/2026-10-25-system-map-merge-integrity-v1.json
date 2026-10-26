@@ -261,5 +261,61 @@
       "tests_skipped": false,
       "security_exemptions": false
     }
+  },
+  "execution_recovery_20261026": {
+    "state": "CANDIDATE_NOT_PROVEN",
+    "obligation": "system-map-merge-integrity-20261025",
+    "source_head": "d2b4036101df83d9d318202a53bc9aeac6f2f574",
+    "full_backend": {
+      "run_id": 40339416392,
+      "failed": 228,
+      "coverage_complete": true,
+      "artifact_id": 12658824886
+    },
+    "root_cause": "Targeted route navigation retried TimeoutError but treated a real Netlify ERR_CONNECTION_RESET as immediately terminal; the existing bounded navigation budget was never used for that transport error.",
+    "fix": "Retry only exact net::ERR_CONNECTION_RESET alongside existing TimeoutError within the existing navigation attempt count. Never classify certificate, runtime, content, identity or exhausted transport failures as success.",
+    "prevention_rule": "Use bounded transport recovery and require a real successful final response; preserve route identity, visible content, hard asset and page-error checks. Do not infer a healthy suite from selected tests.",
+    "regressions": [
+      "tests/targeted-website-route-regression.test.mjs",
+      "tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs",
+      "tests/brain-browser-settled-document-request-failure-v1.test.mjs"
+    ],
+    "observed_red": {
+      "tests": 12,
+      "pass": 10,
+      "fail": 2
+    },
+    "additional_contract_recovery": "AI ecosystem projection oracle now checks the protected-main intelligence- en uitvoeringsmotor wording and the Company Brain distinction; projection idempotence and route assertions remain.",
+    "evidence": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40339416328",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40339416392"
+    ],
+    "remaining": "228 full Backend failures on parent SHA remain unresolved except individually retested contract changes. Catalog freshness is real and is not waived.",
+    "skill_targets": [
+      ".agents/skills/powerhouse-continuity/SKILL.md"
+    ],
+    "protected_merge": false,
+    "production_verified": false,
+    "verification": {
+      "route_and_copy_regressions": {
+        "tests": 17,
+        "pass": 17,
+        "fail": 0
+      },
+      "relationship_regressions": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0
+      },
+      "full_parent_backend_failures": 228,
+      "system_map_source_check": "PORTAL_EXPLANATION_SOURCE_CURRENT"
+    },
+    "source_provenance": {
+      "test": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "canonical_path": "supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql",
+      "git_blob": "c290810df7eca707114409cec5fa31baf7254288",
+      "sql_modified_or_executed": false
+    },
+    "review": "Independent read-only review found no critical or important defects. The pre-existing English-only vendor-optional text oracle was subsequently corrected to assert the actual Dutch optional-vendor boundary and prohibition on vendor canonical authority."
   }
 }
