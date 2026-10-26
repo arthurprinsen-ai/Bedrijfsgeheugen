@@ -10,5 +10,17 @@
     "codeql": "PENDING",
     "production": "NOT_PROVEN"
   },
-  "learning": "Accepted update-branch responses do not prove integration; compare new PR head against current base before reporting verified."
+  "learning": "Accepted update-branch responses do not prove integration; compare new PR head against current base before reporting verified.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-reconciler.test.mjs"
+    ]
+  }
 }
