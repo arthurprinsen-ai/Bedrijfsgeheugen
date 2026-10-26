@@ -1,0 +1,27 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "ci-observation-coverage-insufficient-jobs-20261025-v1",
+  "obligation_id": "ci-observation-coverage-20261025",
+  "failure_class": "CI_OBSERVATION_SAMPLE_COVERAGE",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A bounded sample of 24 completed runs contained only 15 valid executed jobs, below the unchanged 20-job and five-attempt advisory policy.",
+  "fix": "Broaden observed completed-run window from 24 to 48, list 80 records, stop on sufficient independently validated evidence and fail closed on provider errors.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-observation-coverage-20261025.test.mjs"
+    ]
+  },
+  "prevention_rule": "Never lower job coverage thresholds or infer successes from missing timestamps; all changes remain advisory without mutation.",
+  "test_evidence": [
+    "tests/brain-ci-observation-coverage-20261025.test.mjs"
+  ]
+}

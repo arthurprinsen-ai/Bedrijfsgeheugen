@@ -1,5 +1,5 @@
 // Existing hourly Powerhouse Repository Janitor's READ-ONLY GitHub CI observation.
-// 1 completed-runs GET and at most 24 job-list GETs; stop on the first provider error. No new scheduler, dispatch,
+// 1 completed-runs GET and at most 48 job-list GETs; stop on the first provider error. No new scheduler, dispatch,
 // check/run mutation, provider-ghost classification or "green" state write.
 import { execFileSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -7,7 +7,7 @@ import { summarizeObservedCiJobs } from './predictive-controller.mjs';
 import { routeObservedCiHotspots } from './ci-agent-priority.mjs';
 import { projectObservedCicdTaskRuns, reconcileCicdProjectionWithCanonical } from './ci-cicd-semconv-projection.mjs';
 
-const MAX_RUNS=24;
+const MAX_RUNS=48;
 const MAX_AGE_MS=7*24*60*60*1000;
 const OUT='.artifacts/powerhouse-ci-throughput.json';
 function readJson(path){
@@ -20,7 +20,7 @@ function readJson(path){
 
 export async function collectObservedCiThroughput({repo=process.env.GITHUB_REPOSITORY,now=Date.now(),read=readJson}={}){
   if(!/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(repo||''))throw new Error('CI_THROUGHPUT_REPOSITORY_MISSING');
-  const records=read('repos/'+repo+'/actions/runs?status=completed&per_page=40');
+  const records=read('repos/'+repo+'/actions/runs?status=completed&per_page=80');
   if(!Array.isArray(records?.workflow_runs))throw new Error('CI_THROUGHPUT_PROVIDER_LIST_INVALID');
   const cutoff=now-MAX_AGE_MS;
   const selected=records.workflow_runs.filter(run=>
