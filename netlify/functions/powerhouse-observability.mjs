@@ -40,7 +40,10 @@ async function loadSupabaseSystemMapInventory(){
 
 // Provider calls are bounded and run only after the admin/tenant authorization gate.
 // Each provider supplies independent identity. Unknown is never treated as passed.
+let releaseEvidenceCache=null;
+let releaseEvidenceCacheAt=0;
 async function releaseProviderEvidence(){
+  if(releaseEvidenceCache&&Date.now()-releaseEvidenceCacheAt<300000)return releaseEvidenceCache;
   // Public repository checks and the Netlify-published release manifest need no long-lived credentials.
   const read=async(url)=>{
     try{
@@ -81,13 +84,15 @@ async function releaseProviderEvidence(){
   const deploymentReady=Boolean(validManifest);
   // A successful published deploy does not prove it contains the newest commit.
   const matches=Boolean(head&&published&&head===published&&deploymentReady);
-  return {
+  const evidence={
     github:{merged:Boolean(head),requiredChecks},
     deployment:{required,reason,state:required===true&&matches?'success':required===true?'pending':'unknown'},
     production:{checked:Boolean(validManifest),fresh:Boolean(validManifest&&Date.now()-Date.parse(manifest.generated_at)>=0&&Date.now()-Date.parse(manifest.generated_at)<31536000000),matchesExpectedRelease:matches},
     providerIdentity:{githubHeadSha:head,netlifyPublishedSha:published,netlifyDeployId:deployId},
     evidenceStatus:head&&published&&checks?'PROVIDER_IDENTITIES_AND_CHECKS_READ':'PROVIDER_READBACK_INCOMPLETE'
   };
+  if(head&&published&&checks){releaseEvidenceCache=evidence;releaseEvidenceCacheAt=Date.now();}
+  return evidence;
 }
 
 export default async request=>{
