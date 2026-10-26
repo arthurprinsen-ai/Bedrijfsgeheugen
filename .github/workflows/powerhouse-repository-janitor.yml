@@ -27,6 +27,7 @@ concurrency:
 
 jobs:
   janitor:
+    timeout-minutes: 15
     # GitHub 2026 cache-token least privilege: this privileged Janitor never uses Actions caches.
     cache-mode: none
     runs-on: ubuntu-latest
@@ -151,8 +152,19 @@ jobs:
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JANITOR_RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
+          # Deterministic, bounded round-robin cursor. A stable workflow run number
+          # makes reruns idempotently visit the same page; next scheduled runs advance.
+          # Mutations always re-read live provider state before taking action.
+          page_for_cycle() {
+            local cycle="$1"
+            echo "$(( ((JANITOR_RUN_NUMBER - 1) % cycle) + 1 ))"
+          }
+          actions_page="$(page_for_cycle 32)"
+          branches_page="$(page_for_cycle 32)"
+          echo "JANITOR_BOUNDED_CURSOR:actions_page=$actions_page:branches_page=$branches_page:run=$JANITOR_RUN_NUMBER"
           gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs-after.json
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
@@ -205,7 +217,7 @@ jobs:
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
               run_id="$(jq -r '.id' <<<"$run_json")"
               branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
               run_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
@@ -293,7 +305,7 @@ jobs:
           done
 
           # Delete only unprotected non-main refs with no open PR and zero commits ahead of main.
-          gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name' | while IFS= read -r branch; do
+          gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=30&page=${branches_page}" --jq '.[].name' | while IFS= read -r branch; do
             [ -n "$branch" ] || continue
             [ "$branch" != main ] || continue
             open_pr_count="$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)"
