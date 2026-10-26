@@ -11,6 +11,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-janitor-final-readback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-final-readback.test.mjs"
     ]
   },
   "root_cause": "Run 40301736078 logged JANITOR_READBACK_FAILED:#3995:open after a legitimate same-run AUTO_REOPEN_TERMINAL_LEASE follows planned CLOSE_PR. The readback assumed every planned close must remain closed and ignored the authoritative subsequent reopen action.",
