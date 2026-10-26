@@ -36,9 +36,9 @@ test('goal scenario exposes evidence-adjusted effect without rewriting raw assum
       goal_scenarios:{profit:{levers:{'gross-margin':{effect:2}}}}
     },
     outcomes:[
-      {goalId:'profit',leverId:'gross-margin',expectedEffect:2,realizedEffect:1,status:'VERIFIED'},
-      {goalId:'profit',leverId:'gross-margin',expectedEffect:2,realizedEffect:1.2,status:'VERIFIED'},
-      {goalId:'profit',leverId:'gross-margin',expectedEffect:2,realizedEffect:1.4,status:'VERIFIED'}
+      {goalId:'profit',leverId:'gross-margin',expectedEffect:2,realizedEffect:1,status:'VERIFIED',evidenceIds:['scenario-proof-1']},
+      {goalId:'profit',leverId:'gross-margin',expectedEffect:2,realizedEffect:1.2,status:'VERIFIED',evidenceIds:['scenario-proof-2']},
+      {goalId:'profit',leverId:'gross-margin',expectedEffect:2,realizedEffect:1.4,status:'VERIFIED',evidenceIds:['scenario-proof-3']}
     ]
   }};
   const scenario=buildGoalScenario(state,'profit',{now:'2026-09-22T12:00:00Z'});
