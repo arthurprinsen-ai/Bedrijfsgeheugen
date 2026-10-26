@@ -869,6 +869,7 @@ jobs:
     env:
       EVENT_NAME: ${{ github.event_name }}
       HYGIENE: ${{ needs.hygiene.result }}
+      POSTGRES_LEASE: ${{ needs.lease-postgres-pr-replay.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
       MERGE_SPECIALIST: ${{ needs.merge_specialist.result }}
@@ -895,6 +896,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$HYGIENE" = success
+          [ "$EVENT_NAME" != pull_request ] || [ "$POSTGRES_LEASE" = success ]
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
           [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST" = success ]
