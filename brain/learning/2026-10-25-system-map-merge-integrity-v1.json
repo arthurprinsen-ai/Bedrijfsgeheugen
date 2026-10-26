@@ -29,5 +29,42 @@
   "production_readback": {
     "verified": false,
     "reason": "Not merged; no independent production readback"
+  },
+  "local_recovery_20261026": {
+    "status": "LOCAL_CANDIDATE_NOT_RELEASED",
+    "obligation": "system-map-merge-integrity-20261025",
+    "source_head": "0fdda5a23e2b7b0fe0925dc2c6061bb440410ec4",
+    "integrated_main": "76afbb94f6526ed0ccccebd35ab27ccbba604f2c",
+    "root_causes": [
+      "Automation oracles assert retired marker/helper names while canonical classifiers retain fail-closed behavior",
+      "84 Backend test modules read retired executable paths although exact historical SQL is tracked in repository-only archive",
+      "Live migration ledger snapshot is stale; provider readback reports 755 applied migrations on PostgreSQL 17.6"
+    ],
+    "changes": [
+      "Union both AGENTS instruction sections and all current-main changes; deterministically regenerate System Map",
+      "Update four terminal-closure oracle cases and the tightened WIP expectation without production policy changes",
+      "Change 98 SQL test-source literals in 84 test files; no SQL or existing security assertions changed"
+    ],
+    "verification": {
+      "automation": {
+        "tests": 325,
+        "pass": 325,
+        "fail": 0
+      },
+      "backend": {
+        "tests": 4492,
+        "pass": 4212,
+        "fail": 280
+      },
+      "integration_and_tenant_tests": {
+        "tests": 11,
+        "pass": 11,
+        "fail": 0
+      }
+    },
+    "production_mutation": false,
+    "protected_merge": false,
+    "production_verified": false,
+    "prevention": "Validate current canonical helpers and historical source provenance rather than retired implementation spelling; retain all gates and classify each remaining failure."
   }
 }

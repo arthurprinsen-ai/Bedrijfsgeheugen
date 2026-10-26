@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql = fs.readFileSync('supabase/migrations/20260918094000_runtime_health_truth_v1.sql','utf8');
+const sql = fs.readFileSync('supabase/migration-history/repository-only/20260918094000_runtime_health_truth_v1.sql','utf8');
 
 test('edge-function health only treats recent invocation evidence as current',()=>{
   assert.match(sql,/v_30m constant text :=/);

@@ -28,7 +28,7 @@ test('runtime, website, portal and governance are wired',()=>{
   for(const path of [
     'netlify/functions/need-discovery.mjs',
     'portal-v2/modules/need-discovery.js',
-    'supabase/migrations/20260930202000_powerhouse_need_discovery_v1.sql',
+    'supabase/migration-history/repository-only/20260930202000_powerhouse_need_discovery_v1.sql',
     '.agents/skills/powerhouse-need-discovery/SKILL.md'
   ])assert.ok(fs.existsSync(path),path);
   assert.match(fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8'),/powerhouse_apply_need_discovery_v1/);

@@ -1,0 +1,26 @@
+{
+  "id": "ai-model-evidence-watch-20261025",
+  "root_cause": "Supplier evidence expired because the existing model catalog lacked an early warning/evidence recovery workflow and admission metadata/closure were incomplete.",
+  "prevention": "Single existing AI Model Intelligence schedule monitors evidence age daily with warning at day 10, preserves immutable 14-day freshness policy, creates read-only worklists and source URL reachability receipts without approving model-specific claims.",
+  "tests": {
+    "path": "tests/brain-model-evidence-delivery-admission.test.mjs",
+    "result": "REQUIRES_PROTECTED_CI"
+  },
+  "evidence": {
+    "source": "GitHub PR #4945, native Git-object integration commit a1ee9bd23d277f910e32d8a40a4219189edfaa69 and Required admission run 40230981730",
+    "supplier_verification": "NOT_CLAIMED",
+    "production": "NOT_CLAIMED"
+  },
+  "safe_action": "Integrate closure evidence, rerun Required and CodeQL on exact final SHA. Revalidate 27 claims using independent official supplier evidence before stamping records.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-model-evidence-delivery-admission.test.mjs"
+    ]
+  },
+  "fingerprint": "ai-model|freshness-watch|prevent-stale-evidence|20261025-v2"
+}
