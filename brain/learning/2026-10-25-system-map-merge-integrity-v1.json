@@ -391,5 +391,32 @@
       7,
       8
     ]
+  },
+  "canonical_gate_prerequisite_recovery_20261026": {
+    "state": "CANDIDATE_NOT_PROVEN",
+    "source_parent": "7fe21a0b64485d9b928a865629474d9dbe3b52e3",
+    "failed_run": 40346876089,
+    "writer_generation": 10,
+    "root_cause": [
+      "Regulatory writer oracle ignored the four mandatory closure-evidence patterns already required by canonical policy.",
+      "V18 promotion oracle expected a direct Netlify command rather than the canonical entry that retains the pinned V18 phase."
+    ],
+    "production_policy_changed": false,
+    "regressions": {
+      "shared_memory_writer_contracts": {
+        "pass": 35,
+        "fail": 0,
+        "skipped": 0
+      },
+      "v18_portal": {
+        "pass": 70,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    "review": "No critical or important concern found.",
+    "full_backend": "PENDING",
+    "protected_merge": false,
+    "production_readback": false
   }
 }
