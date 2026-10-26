@@ -1,0 +1,15 @@
+{
+  "skill": "powerhouse-netlify-single-account-session-v1",
+  "fingerprint": "powerhouse|deploy|composio-single-account-pinned-v1",
+  "owner": "ONE BRAIN / Powerhouse Protected Release",
+  "authority": "GitHub main-only OIDC → Supabase Vault Composio project → positive toolkit+account pinned session → Netlify exact-site provider acknowledgment",
+  "instruction": "For the established Netlify_mcp tool-router session pin exactly one verified ACTIVE connected account and allowed Netlify read/deploy services. Execute the provider tool without a redundant multi-account selection parameter. Require session result_type=completed and provider result plus exact Netlify site readback, and never treat mere toolkit visibility or a green GitHub push-only snapshot as successful deployment.",
+  "routing": [
+    "supabase/functions/netlify-deploy-bridge/index.ts"
+  ],
+  "tests": [
+    "tests/brain-netlify-single-account-execution-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437"
+}

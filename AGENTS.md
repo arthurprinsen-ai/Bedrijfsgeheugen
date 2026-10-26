@@ -1,3 +1,70 @@
+## Deployment-tool ontbreekt: verplichte agent-fallback — 25 oktober 2026
+
+Elke agent die release, merge, deploy, Netlify, GitHub Actions of productiereadback uitvoert, MOET vooraf `.agents/skills/deployment-capability-recovery/SKILL.md` laden, de geselecteerde fallback en skill-content-SHA in de bestaande bewijsketen vastleggen, en de bestaande Git-CD/Heartbeat/Janitor-route hergebruiken. Ontbrekende connector-write-acties worden `DELIVERY_CONTROL_PLANE_CAPABILITY_GAP`, niet stilzwijgend succes en niet een nieuwe scheduler. Behoud Required, CodeQL, Supabase-preview en beschermde merge. Alleen exact-productieproviderreadback bewijst livegang. Heropen bij herhaling dezelfde canonieke obligation, niet een duplicaat.
+
+## GitHub required-check drift — detecteer eerst, herstel via bestaande owner (#4929)
+
+Bij `3 of 3 required status checks are expected` of andere required-context-mismatch: lees eerst `.agents/skills/release-check-reconciliation/SKILL.md`, voer read-only diagnose uit via `tools/delivery/required-check-reconciliation.mjs`, en registreer fingerprint `github|required-status-expected|context-source-sha` in het bestaande incident/Brain. De diagnose mag nooit zichzelf als doorslaggevend ruleset- of merge-bewijs behandelen: effectieve regels kunnen afzonderlijke rulesets bevatten en beheerrechten kunnen ontbreken. Herstel alleen bewezen verouderde checknamen/app-bronnen met bevoegde repositoryrechten; geen branchkopieën, tweede queue, extra scheduler, groene mockchecks of verzwakte protection. De bestaande Recovery Supervisor blijft writer. Bewijs: exacte SHA, echte Required/CodeQL, beschermde merge en productie-readback. Regressie: `tests/required-check-reconciliation.test.mjs`.
+
+## Eén bewijsvaste Brain–Powerhouse–Heartbeat leerlus — 25 oktober 2026
+
+Voor alle agents en toekomstige wijzigingen geldt het integratiecontract `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md`. Gebruik de bestaande canonieke Brain-registraties, Heartbeat/Janitor-cadans, incidentfingerprints, obligations en geëvalueerde skillprojectie. Koppel bron → besluit → uitvoering → providerbewijs → klant-/omzetuitkomst → learning en skill-evaluatie met tenantisolatie en toestemming. Meet echte leads, klanten, klantwaarde en onafhankelijk betaalde omzet in plaats van bereik of acknowledgements als resultaat te behandelen. De nieuwe contracttekst is uitsluitend ontwerp tot integratie, geslaagde tests, beschermde merge, productiereadback en echte opvolgcycli bewezen zijn. Geen tweede scheduler, ongecontroleerde outreach, extra write-owner, groene status zonder bewijs of omzeiling van Required/CodeQL/RLS/preview en privacycontroles.
+
+## Adaptieve, bewijsvaste CI-meting — 23 oktober 2026
+
+De echte Repository Janitor-run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) bewees 12 runs, 17 geldige jobs, 0 providerfouten, maar nog geen p95 (minimaal 20 jobs). De bestaande `ci-throughput-telemetry.mjs` leest voortaan maximaal 24 recente runs en stopt zodra 20 jobs uit minstens 5 runs zonder eerdere providerleesfout zijn bewezen. Verlaag deze grenzen niet om kunstmatig cijfers of groene status te tonen. Een eerdere fout blijft `PARTIAL_PROVIDER_OBSERVATION`, geen p95. Geen extra scheduler, CI/CodeQL-omzeiling, parallel geheugen of betaalde capaciteit. Volgende agent controleert eerst het bestaande Janitor-artefact en de canonieke regressie `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+## CI-doorlooptijd: leren van echte GitHub-jobtijdmetingen — 23 oktober 2026
+
+Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661), geen tweede observatiescheduler. De bestaande uurlijkse Repository Janitor verzamelt read-only `powerhouse-ci-throughput.json` via `tools/delivery/ci-throughput-telemetry.mjs`. Agents gebruiken uitsluitend geldige identiteiten, volledige jobtijdstempels, minimaal 20 jobs en 5 afzonderlijke workflowpogingen voor steekproef-p50/p95, en tonen onvolledige waarnemingen als onbekend. Jobwachttijd is geen DORA change lead time en één sample bewijst geen snelheidswinst. Geen extra runner, wachtrij, CI-fanout, automatische betaalde capaciteit, security/CodeQL-bypass of status groen op basis van meetdata. Echte verbetering is pas bewezen na herhaalde vergelijkbare metingen, regressies en exact-head protected productiecontrole. Regressie: `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+## Agent-samenwerking: automatische cross-lane impact — 23 oktober 2026
+
+Canonieke eigenaar: [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). De bestaande `planConcurrentAgentWork` levert vóór iedere write een conservatieve `classifyDeliveryImpact`-projectie: CMS → website, Brain-contract → Portal/Powerhouse/Heartbeat, Supabase-schema → runtime-consumenten. Onbekende paden krijgen volledige preflight. Dit is uitsluitend vroege testselectie: niets mag Required, hygiene, CodeQL, Supabase-preview, RLS, CLS, financiële pariteit, tenantisolatie of daadwerkelijke provider-/productie-readback overslaan. Eén writer, één Brain-geheugen en één bestaande Heartbeat/Janitor-cadans; geen nieuwe scheduler, agentregistratie, extra queue of kunstmatig groen. Regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+## Dagelijkse leercontinuïteit bij externe freshnessfouten — 22 oktober 2026
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`. Alle agents en chats raadplegen het bestaande modelcatalogusincident [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367), de gedeelde learning en `.agents/skills/powerhouse-continuity/SKILL.md`. Bij stale/onbewezen AI-leveranciersclaims mag de strenge aparte `model-freshness`-gate niet worden versoepeld of als groen worden gepresenteerd; **onafhankelijke** dagelijkse learning/skills/engineering-evals moeten in de bestaande dagelijkse workflow wel uitgevoerd blijven. Geen tweede scheduler, geen fictieve verificatie of modelactivatie. Meet de twee jobuitkomsten afzonderlijk en behoud de overall RED-status zolang vereiste catalogusbewijzen ontbreken. Regressie: `tests/powerhouse-daily-self-evolution.test.mjs`.
+
+## Voorspellende GitHub-capaciteit: provider-ghosts blijven incident-rood (22 oktober 2026)
+
+Fingerprint `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`, eigenaar #4661, gekoppeld aan platformincident #4655. Iedere huidige en toekomstige agent gebruikt de bestaande `tools/delivery/predictive-controller.mjs` en de bestaande uurlijkse Repository Janitor; maak geen tweede scheduler, wachtrij of herstelowner. De ruwe GitHub-queued-lijst telt volledig mee, tenzij **per exacte run** de actuele queued/null-status, zero-job readback, 24u onveranderde timestamps, niet-huidige main/PR-head, canonieke provider 409/403-blokkademarkering en maximaal tien minuten oude readback allemaal bewezen zijn. Alleen dan mag die run in de `verifiedProviderGhostQueued`-categorie in plaats van `actionableQueued` meetellen. `rawQueued` blijft altijd zichtbaar. Een lege lijst zonder exact-ID-readback is geen bewijs van GitHub-verwijdering. Zonder voldoende bewijs blijft elk record uitvoerbare queue-capaciteit belasten. Vereiste Required/CodeQL-controles, daadwerkelijke jobs en lopende PR-heads zijn nooit ghost-candidates. Geen status groen maken op capaciteitsnormalisatie; #4655 blijft open tot GitHub exact-ID-terminal/deletion bewijst. Machinebron: `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+Alle huidige/toekomstige agents en chats behandelen GitHub queued+zero-job+409/403 niet als gewone runner-capaciteit. Gebruik uitsluitend het bestaande Repository Janitor-pad en incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655). De uitvoerbare procedure staat in `.agents/skills/powerhouse-continuity/SKILL.md#github-actions-provider-ghost-autonomie--22-oktober-2026`. Slechts na exacte niet-actieve SHA-, nul-job- en 24u-stabiliteitscontrole geldt bounded cancel→force-cancel→DELETE; stop na providerweigering en dedupliceer per run-ID. De agents lezen dezelfde provider-ID's periodiek terug. Nooit huidige Required/CodeQL gates beïnvloeden, geen provider 403 omzeilen, geen nieuwe scheduler, geen nep-groen of tweede eigenaar. GitHub Support blijft de enige autoriteit voor een server-side platformfout.
+
+
+## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
+
+Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
+
+**Verplicht vóór iedere materiële wijziging of herstelactie:** lees actuele runtime-/providerwaarheid, open obligations, `public.brain_failure_registry`, relevante `brain/learning/**/*.json`, `docs/learning/known-error-preflight-contract.md` en de automatisch afgeleide skillprojectie. Vergelijk component, operatie, foutklasse, genormaliseerd symptoom en root cause met bestaande fingerprints. Een zoekmiss is geen bewijs dat de fout nieuw is. Eerst hergebruik, dan pas nieuw bouwen.
+
+**Bij iedere fout, inclusief CI-fout, streaming/toolonderbreking, ontbrekend bewijs, providerfout en een herhaalde historische testfout:** behoud evidence en exacte lineage; classificeer OBSERVED/HISTORICAL/ACTIVE/RECOVERING/PROVEN; upsert één canonieke fingerprint en verhoog het occurrence-aantal in plaats van een dubbel incident of een tweede herstelowner te starten. Leg impact, aannemelijke/bewezen oorzaak, mislukte pogingen, fix, preventieregel, regressietest, eigenaar, volgende veilige actie en exacte verificatie-/readbackreferenties vast. Onbekende oorzaak blijft een open onderzoeksverplichting, nooit een verzonnen conclusie.
+
+**Geen closure op alleen documenten:** `PROVEN` vereist echte regressie plus toepasselijke exact-SHA CI/security en productie-/providerreadback, duurzaam Brain-writeback, ledger, documentatie, skillprojectie en aantoonbare ontdekbaarheid in de volgende preflight. Overkoepelende groenstatus volgt niet uit één lokale fix. Houd veilige bounded recovery actief binnen dezelfde obligation, zonder dubbele dispatch of publicatie, zonder uitgezette scheduler, zonder Make/Buffer-fallback en zonder beveiligingspoorten te verzwakken. Menselijke OAuth/consent, destructieve beslissingen en kostenverhoging worden niet omzeild.
+
+Lees voor de uitvoerbare procedure `.agents/skills/powerhouse-continuity/SKILL.md#universele-incidentherkenning--preventie`; het Brain-register blijft de enige operationele foutwaarheid.
+
+## External observer isolation — provider truth blijft autoritatief
+
+Fingerprint: `delivery|external-observer|provider-truth-fallback|v1`.
+
+Een chat-, browser- of publieke web-fetcher is een **observer**, geen productieautoriteit. Wanneer zo'n observer een directe HTTP-fetch naar `bedrijfsgeheugen.nl` weigert, blokkeert of niet ondersteunt, mag dat een reeds bewezen productie-release nooit terugzetten naar onbewezen status.
+
+Verplicht gedrag:
+- onderscheid `ORIGIN_UNHEALTHY` van `OBSERVER_UNAVAILABLE`; een tool-policy/refusal zonder origin-response is uitsluitend `OBSERVER_UNAVAILABLE`;
+- gebruik bij `OBSERVER_UNAVAILABLE` de canonieke provider-truth via Netlify: production/current deploy, `state=ready`, production alias, exact `commit_ref`, production context en — wanneer runtime-functions onderdeel van de wijziging zijn — de daadwerkelijk gedeployde function inventory;
+- koppel provider-truth aan de immutable GitHub delivery-lineage/readback-evidence; provider-state zonder exact SHA/lineage is nooit voldoende;
+- de fallback verzwakt de normale `Production Release Readback` workflow niet: wanneer de origin vanuit de canonieke runner wél bereikbaar hoort te zijn, blijven live content/routes en connector-readiness fail-closed;
+- een externe observer mag nooit een onbewezen origin-success fabriceren. Status wordt `LIVE_PROVEN_PROVIDER_TRUTH` alleen wanneer provider + lineage exact kloppen; anders blijft de release niet terminal groen;
+- leg `observer_status`, `provider_deploy_id`, `provider_commit_ref`, alias en function evidence vast zodat iedere volgende agent dezelfde conclusie kan reproduceren.
+
+Canonieke evaluator: `tools/delivery/external-observer-production-proof.mjs`.
+Contract: `brain/contracts/production-readback-v1.json#externalObserverReadback`.
+
 ## Terminal closure heeft één eigenaar
 
 Voor `Writer-Lease-State: TERMINAL_DELIVERY` is `Powerhouse Obligation Terminalizer` de enige automatische post-merge owner. Start geen tweede terminal-closure lineage voor dezelfde obligation. Governance-only scheduler/System Map/delivery-classifier wijzigingen starten geen Netlify productiesnapshot of productie-readback; runtimewijzigingen behouden alle normale productie-evidence.
@@ -1050,3 +1117,17 @@ Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remot
 - succesvolle of skipped sibling jobs worden niet steeds opnieuw uitgelezen;
 - een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
 - remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
+
+
+## Growth Intelligence — bewezen signalen, skills en releases (25 oktober 2026)
+
+Releasebewijs: PR #4917 (main fb6918446e265b87778dd68d260b286beebf6605) en PR #4926 (main c66670ea339f25cdd847f57a23175ba09b1bc4b0) zijn afzonderlijk beschermd gemerged; hun onafhankelijke productie-readback en skillprojectie zijn geslaagd. Dit bewijst de library/advisory contracts, **niet** dagelijkse externe research, actieve klantportaalweergave, provider-opvolging of omzet.
+
+Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies raakt:
+- Lees eerst `tools/growth-intelligence/decision-core.mjs`, `heartbeat-adapter.mjs` en `learning-store.mjs` plus het actuele unified Brain/Heartbeat-contract. Hergebruik de bestaande scheduler, writers, tenantidentiteit, skills en canonical learning.
+- Gebruik `createCustomerSignalCards` alleen voor geverifieerde provider-events met recent meetbewijs, exact tenantId, rechtmatige persoonsgegevensbasis en onafhankelijke betalingsverificatie voor omzetclaims. Een advieskaart is uitsluitend adviserend; geen automatische outreach of publicatie.
+- Verifieer per actie: bron/evidence-id → score en besluit → eigenaar/goedkeuring → provider readback → uitkomst en onafhankelijk betaalbewijs → leerregistratie → beoordeelde skillprojectie. Als een schakel ontbreekt, label de uitkomst eerlijk `UNKNOWN` of `BLOCKED` en open een herstelverplichting.
+- Een geslaagde PR-preview is nooit productiebewijs. Eis beschermde Required, hygiene, CodeQL, eventuele native preview, productie-readback op de gemergede SHA en skillcontract-evaluatie.
+- De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
+
+Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.

@@ -1,0 +1,29 @@
+{
+  "id": "canonical-contact-review-scheduler-wiring-20261013",
+  "date": "2026-10-13",
+  "fingerprint": "powerhouse|contact-authority|canonical-cron-wiring|v1",
+  "root_cause": "Production runner v139 included contact review, but the active identity-graph cron command continued to invoke only the older daily connection pulse, so the new review remained at 500 records until manually invoked.",
+  "prevention": [
+    "Attach contact review to the existing active powerhouse-identity-graph-v1 job without creating another scheduler.",
+    "Use bounded four-by-500 batches per existing scheduled execution; preserve older identity-graph work.",
+    "Keep provider send authority and suppression checks untouched; review is never proof of outreach."
+  ],
+  "compiler": {
+    "failure_class": "CONTACT_AUTHORITY_REVIEW_NOT_SCHEDULED",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contact-authority-review-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_migration_applied": true,
+    "original_job": "powerhouse-identity-graph-v1",
+    "cron_active_readback": true,
+    "reviewed_today_at_first_readback": 1000,
+    "provider_send_verified": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}

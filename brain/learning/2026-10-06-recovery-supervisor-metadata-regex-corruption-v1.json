@@ -1,0 +1,36 @@
+{
+  "version": "RECOVERY-SUPERVISOR-METADATA-REGEX-CORRUPTION-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|recovery-supervisor|embedded-workflow-in-regex|v1",
+  "obligation_id": "recovery-supervisor-metadata-regex-20261006-v1",
+  "root_cause": "PR #3974 accidentally inserted the full recovery workflow into the JavaScript RegExp used to update Base-SHA and writer-lease metadata. The workflow remained partially parseable but same-lineage refresh became fragile and could create metadata/ref races and repeated synchronize events.",
+  "prevention": "The metadata updater now uses one line-anchored regex per machine-readable field. A regression test asserts the recovery workflow has exactly one workflow header, one jobs block and one replaceOne generator, and forbids embedding the queue-storm marker inside the regex.",
+  "compiler": {
+    "failure_class": "RECOVERY_SUPERVISOR_SELF_EMBEDDED_REGEX",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-recovery-supervisor-metadata-regex-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_before": {
+      "lines": 512,
+      "workflow_headers": 2,
+      "jobs_blocks": 2,
+      "metadata_generators": 1
+    },
+    "repaired": {
+      "lines": 298,
+      "workflow_headers": 1,
+      "jobs_blocks": 1,
+      "metadata_generators": 1
+    },
+    "regression": "tests/delivery-recovery-supervisor-metadata-regex-v1.test.mjs",
+    "invariant": "Same-lineage recovery metadata updates may only replace exact machine-readable lines and must never capture or duplicate YAML workflow content."
+  },
+  "status": "ACTIVE_PREVENTION"
+}

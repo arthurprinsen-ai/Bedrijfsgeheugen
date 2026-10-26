@@ -1,0 +1,27 @@
+{
+  "fingerprint": "powerhouse|config-watch|protected-admission-error-annotations|v1",
+  "obligationId": "one-brain-config-watch-notification-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "GitHub required admission could exit nonzero without a ::error:: annotation, triggering the configuration watcher even though Netlify TOML, redirect rules and sitemap were parseable.",
+  "prevention": [
+    "preserve security and learning fail-closed exits while emitting actionable GitHub ::error:: annotations",
+    "require the real configuration watcher to pass in the regression suite",
+    "check the post-merge watcher, main SHA and Netlify production SHA before terminal closure"
+  ],
+  "evidence": {
+    "historical_red": "Run #37790182998 reported .github/workflows/powerhouse-delivery-hygiene.yml",
+    "regression_test": "tests/brain-protected-integration-closure-v1.test.mjs",
+    "config_watch": "python3 tools/config-wacht.py",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-protected-integration-closure-v1.test.mjs"]
+  }
+}

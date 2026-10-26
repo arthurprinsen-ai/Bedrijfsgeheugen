@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
 
 concurrency:
   group: obligation-terminalizer-${{ github.event.pull_request.number }}
@@ -17,6 +17,7 @@ jobs:
   terminalize:
     if: "${{ github.event.pull_request.merged == true && contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY') }}"
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
@@ -133,6 +134,9 @@ jobs:
         env:
           MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
           PR_BODY: ${{ steps.target.outputs.pr_body }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
@@ -144,14 +148,24 @@ jobs:
           for (const path of contract?.productionTruth?.verifierOnlyPaths || []) console.log(String(path));
           NODE
           )"
+          verifier_only_prefixes="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const contract=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
+          for (const prefix of contract?.productionTruth?.verifierOnlyPrefixes || []) console.log(String(prefix));
+          NODE
+          )"
 
           is_governance_path() {
-            case "$1" in
-              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|tools/ci/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json|config/powerhouse-quality-surface-contracts.json)
+            if grep -Fxq -- "$1" <<< "$verifier_only_paths"; then
+              return 0
+            fi
+            while IFS= read -r prefix; do
+              [ -z "$prefix" ] && continue
+              if [[ "$1" == "$prefix"* ]]; then
                 return 0
-                ;;
-            esac
-            grep -Fxq -- "$1" <<< "$verifier_only_paths"
+              fi
+            done <<< "$verifier_only_prefixes"
+            return 1
           }
 
           observed="$(git rev-parse origin/main)"
@@ -210,10 +224,11 @@ jobs:
           runtime_classes="$(NON_GOVERNANCE_PATHS="$non_governance_paths" node --input-type=module - <<'NODE'
           import { isNetlifyRuntimePath } from './tools/site-shell/production-supersession.mjs';
           const paths=String(process.env.NON_GOVERNANCE_PATHS||'').split(/\r?\n/).filter(Boolean);
-          const supabase=paths.filter(path=>/^supabase\/functions\/[^/]+\//.test(path));
+          const supabase=paths.filter(path=>path==='supabase/config.toml'||/^supabase\/functions\/[^/]+\//.test(path));
+          const migrations=paths.filter(path=>/^supabase\/migrations\/\d{14}_[^/]+\.sql$/.test(path));
           const netlify=paths.filter(path=>isNetlifyRuntimePath(path));
-          const unknown=paths.filter(path=>!supabase.includes(path)&&!netlify.includes(path));
-          process.stdout.write(JSON.stringify({supabase,netlify,unknown}));
+          const unknown=paths.filter(path=>!supabase.includes(path)&&!migrations.includes(path)&&!netlify.includes(path));
+          process.stdout.write(JSON.stringify({supabase,migrations,netlify,unknown}));
           NODE
           )"
           unknown_runtime_paths="$(jq -r '.unknown[]?' <<<"$runtime_classes")"
@@ -223,14 +238,27 @@ jobs:
             exit 78
           fi
 
-          mapfile -t changed_functions < <(jq -r '.supabase[]?' <<<"$runtime_classes" | sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' | sort -u)
+          jq -r '.supabase[]?' <<<"$runtime_classes" > /tmp/supabase-runtime-paths.txt
+          mapfile -t changed_functions < <(node tools/supabase/edge-runtime-scope.mjs /tmp/supabase-runtime-paths.txt)
           supabase_required=false
           printf '[]\n' > .artifacts/supabase-provider-readbacks.json
           if [ "${#changed_functions[@]}" -gt 0 ]; then
             supabase_required=true
-            provider_lines="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
-            if [ -z "$provider_lines" ]; then
-              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING"
+            provider_lines=""
+            complete=false
+            for attempt in $(seq 1 24); do
+              live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+              provider_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
+              complete=true
+              for fn in "${changed_functions[@]}"; do
+                line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+                if [ -z "$line" ]; then complete=false; break; fi
+              done
+              [ "$complete" = true ] && break
+              sleep 5
+            done
+            if [ "$complete" != true ]; then
+              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING:functions=${changed_functions[*]}"
               exit 78
             fi
             readbacks='[]'
@@ -248,16 +276,63 @@ jobs:
             printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
           fi
 
+          mapfile -t changed_migrations < <(jq -r '.migrations[]?' <<<"$runtime_classes")
+          migration_required=false
+          printf '[]\n' > .artifacts/supabase-migration-readbacks.json
+          if [ "${#changed_migrations[@]}" -gt 0 ]; then
+            migration_required=true
+            printf '%s\n' "${changed_migrations[@]}" > /tmp/migrations.txt
+            test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
+              echo "::error::SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_MIGRATION_PROVIDER_READBACK"
+              exit 78
+            }
+
+            PROJECT_REF=adhjwmvyoixzjtmiroln \
+            SUPABASE_ACCESS_TOKEN="$SUPABASE_ACCESS_TOKEN" \
+            GITHUB_TOKEN="$GH_TOKEN" \
+            GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
+            GITHUB_SHA="$MERGE_SHA" \
+            TARGET_PR_NUMBER="$PR_NUMBER" \
+              node tools/supabase/publish-migration-provider-readback.mjs
+
+            live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+            migration_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Migration-Readback:[[:space:]]*//p')"
+            migration_readbacks='[]'
+            for migration_path in "${changed_migrations[@]}"; do
+              file="$(basename "$migration_path")"
+              version="${file%%_*}"
+              name="${file#${version}_}"
+              name="${name%.sql}"
+              line="$(printf '%s\n' "$migration_lines" | grep -E "^version=${version};name=${name};state=APPLIED;project=adhjwmvyoixzjtmiroln;observed_at=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" | tail -n1 || true)"
+              [ -n "$line" ] || {
+                echo "::error::SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE:$migration_path"
+                exit 78
+              }
+              observed_at="$(sed -nE 's/.*;observed_at=([^;]+)$/\1/p' <<<"$line")"
+              migration_readbacks="$(jq -c --arg path "$migration_path" --arg version "$version" --arg name "$name" --arg observed_at "$observed_at" '. + [{path:$path,version:$version,name:$name,state:"APPLIED",project:"adhjwmvyoixzjtmiroln",observed_at:$observed_at}]' <<<"$migration_readbacks")"
+              echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:$line"
+            done
+            printf '%s\n' "$migration_readbacks" > .artifacts/supabase-migration-readbacks.json
+          fi
+
           netlify_required="$(jq -r '(.netlify|length)>0' <<<"$runtime_classes")"
           if [ "$netlify_required" != true ]; then
-            [ "$supabase_required" = true ] || {
+            if [ "$supabase_required" != true ] && [ "$migration_required" != true ]; then
               echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
               printf '%s' "$non_governance_paths"
               exit 78
-            }
+            fi
             prove_main_containment
-            echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
-            echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            if [ "$supabase_required" = true ] && [ "$migration_required" = true ]; then
+              echo "readback_mode=supabase_edge_and_migration_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_AND_MIGRATION_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} migrations=${changed_migrations[*]} merge=$MERGE_SHA"
+            elif [ "$supabase_required" = true ]; then
+              echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            else
+              echo "readback_mode=supabase_migration_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:migrations=${changed_migrations[*]} merge=$MERGE_SHA"
+            fi
             exit 0
           fi
 
@@ -315,7 +390,10 @@ jobs:
           const providerReadbacks=existsSync('.artifacts/supabase-provider-readbacks.json')
             ? JSON.parse(readFileSync('.artifacts/supabase-provider-readbacks.json','utf8'))
             : [];
-          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider'];
+          const migrationReadbacks=existsSync('.artifacts/supabase-migration-readbacks.json')
+            ? JSON.parse(readFileSync('.artifacts/supabase-migration-readbacks.json','utf8'))
+            : [];
+          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider'];
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -333,12 +411,14 @@ jobs:
               deploy_promotion_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               runtime_function_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
-              supabase_provider_readback:['supabase_edge_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
+              supabase_provider_readback:['supabase_edge_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
+              supabase_migration_readback:['supabase_migration_provider','supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
             },
-            supabase_provider_readbacks:providerReadbacks
+            supabase_provider_readbacks:providerReadbacks,
+            supabase_migration_readbacks:migrationReadbacks
           };
           if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
@@ -347,6 +427,9 @@ jobs:
           }
           if(evidence.checks.supabase_provider_readback && providerReadbacks.length===0) {
             throw new Error('TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING');
+          }
+          if(evidence.checks.supabase_migration_readback && migrationReadbacks.length===0) {
+            throw new Error('TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING');
           }
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));

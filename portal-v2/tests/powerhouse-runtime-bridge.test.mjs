@@ -44,7 +44,7 @@ test('runtime bridge authenticates readback, writes same-lineage evidence and re
   const stateClient={
     authHeaders:async()=>({authorization:'Bearer identity-token'}),
     subscribe(fn){subscribers.add(fn);return()=>subscribers.delete(fn);},
-    getSnapshot:()=>({mode:'authenticated'})
+    getSnapshot:()=>({mode:'authenticated',user:{id:'user-tenant-a'}})
   };
   const domainState={
     get:()=>({portal:{}}),
@@ -97,7 +97,7 @@ test('runtime bridge persists action intents and reads the Brain projection back
   const stateClient={
     authHeaders:async()=>({authorization:'Bearer identity-token'}),
     subscribe(){return()=>{};},
-    getSnapshot:()=>({mode:'authenticated'})
+    getSnapshot:()=>({mode:'authenticated',user:{id:'user-tenant-a'}})
   };
   const domainState={get:()=>({portal:{}}),setDerived:()=>{}};
   const fetchImpl=async(url,options={})=>{

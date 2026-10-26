@@ -3,10 +3,12 @@ import {buildCompanyCockpit} from './company-cockpit.js';
 import {renderCompanyIntelligenceContext} from './operating-system/company-intelligence-context.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const eur=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)||0);
-const pct=value=>`${Math.round((Number(value)||0)*100)}%`;
+const known=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));
+const eur=value=>known(value)?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)):'—';
+const pct=value=>known(value)?`${Math.round(Number(value)*100)}%`:'—';
 const safeText=value=>esc(value||'—');
 const randomKey=()=>globalThis.crypto?.randomUUID?.()||`${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+const isBlocked=item=>Boolean(item?.blockedBy)||String(item?.dependencyState||'').startsWith('BLOCKED')||item?.dependencyState==='WAITING_FOR_DEPENDENCIES';
 
 export function sanitizePortalEvent(input={}){
   const output={};
@@ -16,6 +18,7 @@ export function sanitizePortalEvent(input={}){
 
 function priorityCard(item){
   const pending=item.status==='PROPOSED';
+  const blocked=isBlocked(item);
   return `<article class="company-decision-card" data-decision-id="${esc(item.id)}">
     <div class="company-decision-head"><span class="company-bucket">${esc(item.portfolioBucket||'')}</span><strong>${safeText(item.title)}</strong><span>#${esc(item.rank??'—')}</span></div>
     <p>${safeText((item.reasons||[]).join(' · ')||item.nextAction)}</p>
@@ -27,8 +30,9 @@ function priorityCard(item){
       <span><small>Gerealiseerd</small><b>${eur(item.realizedValue)}</b></span>
     </div>
     <div class="company-decision-actions">
-      ${pending?`<button type="button" data-company-command="APPROVE" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Goedkeuren</button><button type="button" data-company-command="REJECT" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Afwijzen</button>`:''}
-      <button type="button" data-company-command="START" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Starten</button>
+      ${pending&&!blocked?`<button type="button" data-company-command="APPROVE" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Goedkeuren</button><button type="button" data-company-command="REJECT" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Afwijzen</button>`:''}
+      ${!pending&&!blocked?`<button type="button" data-company-command="START" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Starten</button>`:''}
+      ${blocked?`<span class="company-bucket">Geblokkeerd: ${esc(item.blockedBy||item.dependencyState||'afhankelijkheid')}</span>`:''}
     </div>
   </article>`;
 }
@@ -36,12 +40,15 @@ function priorityCard(item){
 export function renderCompanyCockpitHtml(runtime={}){
   const cockpit=buildCompanyCockpit(runtime);
   const priorities=cockpit.sections.find(x=>x.key==='priorities')?.items||[];
+  const topThree=priorities.filter(item=>!isBlocked(item)).slice(0,3);
+  const selected=new Set(topThree.map(item=>item.id));
+  const morePriorities=priorities.filter(item=>!selected.has(item.id));
   const approvals=cockpit.sections.find(x=>x.key==='approvals')?.items||[];
   const economics=cockpit.sections.find(x=>x.key==='economics')?.data||{};
   const verifiedValue=cockpit.sections.find(x=>x.key==='verified-value')?.items||[];
   const blocked=cockpit.sections.find(x=>x.key==='blocked')?.items||[];
   const audit=cockpit.sections.find(x=>x.key==='audit')?.items||[];
-  return `${renderCompanyIntelligenceContext(runtime,'company-cockpit')}<div class="company-cockpit-head"><div><h2>Wat moet eerst</h2><p>Één prioriteitenlijst uit Brein & Powerhouse — met bewijs, goedkeuring, kosten en gerealiseerde waarde.</p></div><span class="company-live">Brain runtime</span></div>
+  return `${renderCompanyIntelligenceContext(runtime,'company-cockpit')}<div class="company-cockpit-head"><div><h2>Wat moet eerst — en wat verdient vandaag aandacht?</h2><p>De drie belangrijkste uitvoerbare prioriteiten uit één Brain & Powerhouse-lijst. Extra acties blijven beschikbaar; onbekende bedragen blijven onbekend.</p></div><span class="company-live">Brain runtime</span></div>
     <div class="company-economics">
       <span><small>Verwachte waarde</small><b>${eur(economics.expectedValue)}</b></span>
       <span><small>Werkelijke kosten</small><b>${eur(economics.actualCost)}</b></span>
@@ -55,7 +62,8 @@ export function renderCompanyCockpitHtml(runtime={}){
         <p>${esc((item.evidenceIds||[]).length)} bewijsreferenties · gerealiseerde waarde telt alleen mee na verificatie.</p>
       </article>`).join(''):'<p class="company-empty">Nog geen geverifieerde gerealiseerde waarde per probleem.</p>'}
     </section>
-    <div class="company-priorities">${priorities.length?priorities.map(priorityCard).join(''):'<p class="company-empty">Nog geen bewezen bedrijfsprioriteiten. Vul bedrijfsdata aan of wacht op Brain-evidence.</p>'}</div>
+    <div class="company-priorities" aria-label="Drie belangrijkste prioriteiten">${topThree.length?topThree.map(priorityCard).join(''):'<p class="company-empty">Nog geen bewezen bedrijfsprioriteiten. Vul bedrijfsdata aan of wacht op Brain-evidence.</p>'}</div>
+    ${morePriorities.length?`<details class="company-details"><summary>Overige prioriteiten (${morePriorities.length})</summary>${morePriorities.map(priorityCard).join('')}</details>`:''}
     <details class="company-details"><summary>Goedkeuring nodig (${approvals.length})</summary>${approvals.length?approvals.map(a=>`<p><b>${safeText(a.decisionId)}</b> · ${safeText(a.approval?.state||a.status)} · ${safeText(a.actor)}</p>`).join(''):'<p>Geen open goedkeuringen.</p>'}</details>
     <details class="company-details"><summary>Geblokkeerd (${blocked.length})</summary>${blocked.length?blocked.map(b=>`<p><b>${safeText(b.title)}</b> · ${safeText(b.blockedBy||b.dependencyState)}</p>`).join(''):'<p>Geen geblokkeerde prioriteiten.</p>'}</details>
     <details class="company-details"><summary>Wie deed wat (${audit.length})</summary>${audit.length?audit.slice(0,12).map(e=>`<p><b>${safeText(e.actor)}</b> · ${safeText(e.type||e.status)} · ${safeText(e.owner)} · <time>${safeText(e.occurredAt)}</time></p>`).join(''):'<p>Nog geen audit-events.</p>'}</details>`;

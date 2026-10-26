@@ -1,0 +1,12 @@
+# 2026-10-09 Bedrijfslek first-party production provider proof
+- Obligation-ID: bedrijfslek-live-production-provider-proof-v1
+- Parent-P0: #4198
+- Delivery-Lane: automation
+- Candidate-Type: recovery
+- Base-SHA: 9a3eecd6afad3099649401c860bfdfdc5c9ea333
+- Existing state: protected merged #4286, Netlify live, Edge v12 source parity, SQL Brain trigger and service-only rights; base scan production smoke succeeded, edge authority recovery independently merged and attested.
+- Evidence gap: real `bedrijfslek_scan` POST, no-PII provider readback, idempotent same-ID replay not yet source-specifically proven.
+- Safe delta: add Bedrijfslek fixture to existing Powerhouse Scan Production Proof; include Supabase config in same workflow trigger paths. No new executor or datastore.
+- Regression: tests/brain-bedrijfslek-production-provider-proof-v1.test.mjs.
+- Acceptance: protected CI + CodeQL + merge + real new-source provider test on current main; parent P0 remains OPEN without full customer commercial revenue evidence.
+- Writer-Lease-State: CANDIDATE_WRITING

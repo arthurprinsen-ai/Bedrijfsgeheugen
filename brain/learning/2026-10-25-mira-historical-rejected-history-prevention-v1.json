@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "mira|reverify-previously-rejected-provider-history|20261025-v1",
+  "obligation_id": "mira|immutable-rejected-history-preflight|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "title": "Block previously rejected OpenArt history across all publication dates before expensive face verification",
+  "root_cause": "Previously the canonical asset replacement guard rejected the most recently failed provider history but had no Brain cross-day rejection lookup. Re-offering an earlier history after a later rejected candidate consumed another image-verification evaluation. A 2026-10-25 Veo history 7lGMacfGJcGL3WGCF4XN was independently rejected on start and middle frames.",
+  "failure_class": "RECOVERY",
+  "evidence": {
+    "canonical_source": "public.brain_failure_occurrences",
+    "observed_history": "7lGMacfGJcGL3WGCF4XN",
+    "independent_occurrences": [
+      "router:openart:7lGMacfGJcGL3WGCF4XN:instagram:2026-10-25:start",
+      "router:openart:7lGMacfGJcGL3WGCF4XN:instagram:2026-10-25:middle"
+    ],
+    "last_measured_middle_face": 0.86,
+    "minimum_required_face": 0.94,
+    "frozen_winner": "0a56f150-2954-4355-a3d0-fc65396f8152",
+    "real_external_instagram_id": null,
+    "other_rejected_histories": [
+      "qAUQW2ZzqdasS0ePb1PD",
+      "a6sdR46HDe58uRlardNl",
+      "oGeS7GbhttgNCxnq0tCg",
+      "K3NqiqlKMGWDM3UEJGu0"
+    ],
+    "parent_prs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4891",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4894"
+    ]
+  },
+  "prevention_rule": "For every original Mira router submit_asset Reel, query canonical Brain immutable failure occurrences by exact OpenArt history prefix across dates before downloading MP4 or running expensive AI. Any prior face/temporal/native-format rejection disqualifies exact provider history permanently; unknown Brain read fail closed. Preserve source winner, identity and confidence thresholds, original publisher authority and no-duplicate Meta write.",
+  "fix": "Existing router uses read-only checkHistoricalMiraHistoryRejection in existing preflight-write.mjs; deterministic tests require cross-day dedupe, provider outage fail-closed and guard-before-expensive-work order.",
+  "outcome": "Candidate PR only; no claim of production live, quality approval, or Instagram publication",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

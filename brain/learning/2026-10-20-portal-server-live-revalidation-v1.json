@@ -1,0 +1,38 @@
+{
+  "fingerprint": "portal|authenticated-refresh|safe-domain-state-revalidation|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|safe-server-revalidation|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "STALE_OPEN_PORTAL_PAGES",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing Portal V2 only loaded authenticated tenant state on initial identity transition; domain subscriptions updated the overview for local changes but never revalidated remote portal state while the page remained open. Derived workspaces can therefore display pre-refresh forecasts, scan-backed context and signal projections until reload even when the canonical source has changed.",
+  "prevention_rule": "Revalidate via the existing authenticated /api/portal-state contract on visibility/focus and every 15 minutes only for an identified active customer. Do not replace dirty/saving input or incomplete BusinessInput/organism receipts. Abort stale reads if revision/identity changed in flight, never mix tenants, skip demo/offline/error as verified refresh, and invalidate opened derived pages only after changed canonical server readback with no focused editor. No new scheduler, browser data store or fake metrics.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "static_regression": "tests/brain-portal-live-revalidation-v1.test.mjs",
+    "readback_precondition": "Signed-in tenant and latest authenticated source revision",
+    "production_browser": "PENDING_EXACT_SOURCE",
+    "two_customer_writeback": "PENDING_AUTHENTICATED_RECEIPTS",
+    "merge": "PENDING_REQUIRED_CI_CODEQL",
+    "measurement": "MISSING_REFRESH_LOOP_PREVENTED"
+  },
+  "production_verified": false,
+  "scope": "SOURCE_REVALIDATION_ONLY_NO_TOTAL_PORTAL_ACCEPTANCE"
+}

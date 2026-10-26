@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|email-learning-scoped-refresh|20261020",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4478",
+  "observed_at": "2026-10-20T16:23:44Z",
+  "root_cause": "Unqualified DELETE in existing derived-email statistics refresh violates active database safe-update guard and clears foreign owners.",
+  "fix": "Single existing owner lock, upsert source-backed 180-day aggregates, prune only absent email-contract keys, preserve invoker execution and existing service-role grants.",
+  "evidence": {
+    "production_request_id": 8678,
+    "http_status": 503,
+    "error": "LEARNING_REFRESH:DELETE requires a WHERE clause",
+    "baseline_definition_md5": "f9ff58f839c1233ffd1b85fa4e86ec73",
+    "regression_engine": "PGlite 0.3.14 (PostgreSQL)",
+    "baseline_result": "EMAIL_LEARNING_FOREIGN_OWNER_LOSS",
+    "candidate_result": "PASS",
+    "full_migration_and_repeat_privilege_readback": "PASS (PostgreSQL engine; role ACLs and baseline hash verified)",
+    "transactional_sql_fixture": "supabase/tests/email_learning_scoped_refresh_v1.sql"
+  },
+  "prevention": [
+    "No unqualified deletion or WHERE TRUE workaround",
+    "Temporary-clone fixture verifies foreign-owner preservation, aggregation, repeated refresh, expiration and source retention",
+    "No send or revenue claims inferred from learning refresh",
+    "Keep SQL regression fixtures under classified supabase/tests paths and validate actual material-closure metadata before candidate publication.",
+    "Execute the complete migration, including adjacent DO readback blocks and terminators, before publishing; standalone function validation does not validate file concatenation."
+  ],
+  "acceptance": {
+    "native_preview": "REQUIRED",
+    "required_ci": "REQUIRED",
+    "codeql": "REQUIRED",
+    "protected_merge": "REQUIRED",
+    "production_reply_loop": "REQUIRED"
+  },
+  "truth_boundary": "Code validation does not prove provider delivery, approved recipient eligibility, Instagram media or forecast outcomes.",
+  "compiler": {
+    "failure_class": "DERIVED_LEARNING_REFRESH_UNQUALIFIED_DELETE",
+    "scope": "DATABASE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-email-learning-scoped-refresh-v1.test.mjs"
+    ],
+    "baseline": "PostgreSQL fixture fails EMAIL_LEARNING_FOREIGN_OWNER_LOSS",
+    "candidate": "PostgreSQL fixture passes aggregation, preservation, repeat, expiry and foreign-key-collision checks"
+  }
+}

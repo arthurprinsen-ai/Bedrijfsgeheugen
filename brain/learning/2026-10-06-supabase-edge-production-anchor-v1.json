@@ -1,0 +1,47 @@
+{
+  "fingerprint": "supabase-edge|manual-attestation|missing-current-sha-production-check|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-production-anchor-20261006-v1",
+  "root_cause": "A manual authority dispatch on current protected main 03156e2b had only a skipped Supabase Preview check pointing at /branches because that commit did not change Supabase runtime. The authority filtered correctly for the production /project check, but then waited for a check that could never appear even though provider source was already byte-identical to current main.",
+  "prevention_rule": "Manual/current-main Edge authority must accept only either an exact-SHA successful production check or a bounded recent successful Supabase production deployment anchor that is an ancestor and has zero diff versus current main across supabase/config.toml and every selected function tree. Provider byte parity via --use-api remains mandatory.",
+  "compiler": {
+    "failure_class": "SUPABASE_CURRENT_MAIN_PRODUCTION_CHECK_NOT_APPLICABLE",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "failed_or_cancelled_run": 37487286439,
+    "current_main": "03156e2b875718d20a9a3369f1f68f3660c721f4",
+    "current_main_supabase_check": {
+      "id": 112350343970,
+      "conclusion": "skipped",
+      "details_url": "https://supabase.com/dashboard/project/adhjwmvyoixzjtmiroln/branches"
+    },
+    "proven_deployment_anchor": {
+      "sha": "2b0539cb729b658bc5e85184406d8421e56f9d35",
+      "check_run_id": 112296747565,
+      "conclusion": "success",
+      "details_url": "https://supabase.com/dashboard/project/adhjwmvyoixzjtmiroln"
+    },
+    "independent_provider_parity": {
+      "publisher_version": 130,
+      "recovery_version": 21,
+      "byte_equal": true
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}

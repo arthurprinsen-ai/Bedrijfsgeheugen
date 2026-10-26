@@ -16,6 +16,30 @@ header.v17-header{background:rgba(12,16,20,.98)!important;border-bottom:1px soli
 header.v17-header a,header.v17-header a:visited,header.v17-header a:hover,header.v17-header .brand,header.v17-header .navbtn,header.v17-header .login{color:#fff}
 header.v17-header .brand{text-decoration:none}
 @media(min-width:641px) and (max-width:1024px){.bg-uniform-trust{height:39px;min-height:39px;max-height:39px;overflow:hidden;box-sizing:border-box}.bg-uniform-trust-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));height:38px;min-height:38px;max-height:38px;box-sizing:border-box;gap:12px}.bg-uniform-trust-in span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;line-height:18px}}\n@media(max-width:640px){.bg-uniform-trust{font-size:12px}.bg-uniform-trust-in{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,16px);justify-content:stretch;align-items:center;padding:8px 18px;gap:5px;min-height:64px;box-sizing:border-box}.bg-uniform-trust-in span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:16px}}
+
+/* Mobile first-screen contract: one navigational control, readable proposition and unobstructed content. */
+@media(max-width:700px){
+  .bg-uniform-trust,.bgtop,.announcement{display:none!important}
+  header.v17-header{position:sticky!important;top:0!important;z-index:1100!important;min-height:64px!important;height:64px!important;max-height:64px!important}
+  header.v17-header .v17-nav{width:100%!important;max-width:100%!important;min-height:64px!important;height:64px!important;max-height:64px!important;padding:0 16px!important;gap:10px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
+  header.v17-header .v17-nav>.brand{flex:1 1 auto!important;min-width:0!important;max-width:calc(100% - 80px)!important;font-size:clamp(16px,4.8vw,21px)!important;letter-spacing:-.035em!important;line-height:1.1!important;white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important}
+  /* Hide the decorative hamburger-shaped brand ornament BEFORE first paint to avoid mobile CLS. */
+  header.v17-header .v17-nav>.brand>:first-child:not(:last-child){display:none!important}
+  header.v17-header .brand .bg-mobile-ornament-hidden{display:none!important}
+  header.v17-header .v17-nav>.mobile-toggle{flex:0 0 65px!important;min-width:65px!important;max-width:65px!important;width:65px!important;height:42px!important;min-height:42px!important;display:inline-flex!important;justify-content:center!important;align-items:center!important;padding:0!important;margin:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:11px!important;background:#22262d!important;color:#fff!important;box-shadow:none!important;font-size:0!important}
+  header.v17-header .v17-nav>.mobile-toggle>*{display:none!important}
+  header.v17-header .v17-nav>.mobile-toggle::before{content:none!important}
+  header.v17-header .v17-nav>.mobile-toggle::after{content:"Menu"!important;font:700 13px/1 'Instrument Sans',system-ui,sans-serif!important;color:#fff!important;letter-spacing:0!important}
+  header.v17-header .v17-nav>.mobile-toggle[aria-expanded="true"]::after{content:"Sluit"!important}
+  header.v17-header .v17-nav>.mobile-toggle:focus-visible{outline:3px solid #FFE86B!important;outline-offset:2px!important}
+  main [data-bg-daily-steering-title="v2"]{font-size:clamp(32px,8.8vw,43px)!important;line-height:1.09!important;letter-spacing:-.048em!important;max-width:100%!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;text-wrap:pretty!important}
+  main [data-bg-daily-steering-title="v2"] .mark{display:inline!important;background:transparent!important;background-image:none!important;box-shadow:none!important;border:0!important;padding:0!important;margin:0!important;color:#FFE86B!important;line-height:inherit!important;white-space:normal!important;word-break:normal!important;overflow-wrap:normal!important;transform:none!important}
+  main [data-bg-daily-steering-title="v2"] .mark::before,main [data-bg-daily-steering-title="v2"] .mark::after{content:none!important;display:none!important}
+  .paginakop,.inhoud-kop{padding-top:36px!important;padding-bottom:40px!important}
+  .paginakop h1,.inhoud-kop h1{font-size:clamp(30px,8.5vw,42px)!important;line-height:1.13!important;letter-spacing:-.04em!important;overflow-wrap:normal!important;hyphens:none!important;max-width:100%!important}
+  .paginakop p,.inhoud-kop p{font-size:16px!important;line-height:1.55!important}
+  .bg-whatsapp-contact{right:14px!important;bottom:18px!important}
+}
 </style>`;
 
 export function renderFooterContact() {

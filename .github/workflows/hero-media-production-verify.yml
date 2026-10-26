@@ -11,15 +11,6 @@ on:
       - .github/workflows/hero-media-production-verify.yml
       - docs/openart-hero-production-foundation.md
       - docs/openart-hero-production-foundation-acceptance.md
-  pull_request:
-    branches:
-      - main
-    paths:
-      - assets/openart-hero-iphone-safe-v1.mp4
-      - assets/openart-hero-production.json
-      - .github/workflows/hero-media-production-verify.yml
-      - docs/openart-hero-production-foundation.md
-      - docs/openart-hero-production-foundation-acceptance.md
   workflow_dispatch:
 
 permissions:

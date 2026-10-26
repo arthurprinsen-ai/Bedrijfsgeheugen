@@ -3,8 +3,10 @@ import {getUser} from '@netlify/identity';
 import {handlePortalConnectorsRequest} from '../../platform/api/portal-connectors-handler.mjs';
 import {createPortalConnectorsStore} from './_portal-connectors-store.mjs';
 import {createConnectorRuntime,createEnvironmentConnectorProviders} from '../../platform/connectors/connector-runtime.mjs';
+import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
 
 const store=createPortalConnectorsStore();
 const engine=createConnectorRuntime({providers:createEnvironmentConnectorProviders()});
-export default async request=>handlePortalConnectorsRequest({request,user:await getUser(),store,engine});
+const sovereignty=createDataSovereigntyClient();
+export default async request=>handlePortalConnectorsRequest({request,user:await getUser(),store,engine,sovereignty});
 export const config={path:'/api/connectors/*',excludedPath:'/api/connectors/readiness'};

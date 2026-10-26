@@ -1,0 +1,42 @@
+{
+  "version": "powerhouse-live-owner-customer-control-center-v1",
+  "date": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse-control-center-missing-live-tenant-visibility-v1",
+  "root_cause": "The existing admin observability and customer Brain pages did not present a continuously refreshing, evidence-first operations view; customers lacked an account-scoped explanation of agent activity.",
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4145",
+    "admin_source": "portal-v2/modules/powerhouse-observability.js",
+    "customer_source": "portal-v2/modules/customer-agent-activity.js",
+    "known_limit": "Provider-independent real-time delivery is not implied by a canonical Brain projection.",
+    "feature_regression_test": "portal-v2/tests/powerhouse-live-control-center-v1.test.mjs",
+    "canonical_admin_gate_regression": "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
+  },
+  "intervention": "Extend existing protected owner cockpit with read-only live evidence refresh and add customer-facing Agenta activity from tenant-authorized Brain API, without internal telemetry on the customer surface.",
+  "prevention": "Only report fresh recorded facts; count proven activities only when executed and verified; keep admin route out of customer navigation and test isolation/projection contracts.",
+  "compiler": {
+    "failure_class": "OBSERVABILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "Required portal tests",
+    "Powerhouse CodeQL",
+    "Netlify deploy preview",
+    "protected merge",
+    "exact main production readback",
+    "authenticated admin and customer validation"
+  ]
+}

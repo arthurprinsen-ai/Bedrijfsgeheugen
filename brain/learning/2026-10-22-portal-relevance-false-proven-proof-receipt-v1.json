@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "portal|relevance|false-proven-healthy-status-without-readback|20261022-v1",
+  "obligation_id": "powerhouse|agent-incident-relevance-daily-evolution|20261022-v1",
+  "status": "CANDIDATE",
+  "title": "Prevent false PROVEN labels on canonical tenant Brain learning projection",
+  "root_cause": "Protected main #4673 counted healthy=true and status=ok as proven even when no actual provider/production receipt existed; authenticated runtime mapper flattened source PROVEN into ok while discarding evidence. Real tenant impact is unverified.",
+  "prevention_rule": "For every agent and tenant portal, PROVEN requires authoritative PROVEN maturity plus explicit actual production/provider readback and immutable allowlisted source receipt from the existing authenticated Brain projection. Successful transport status or a green test fixture alone is never proof; retain occurrence fingerprint and negative regression.",
+  "failed_approaches": [
+    "Original #4673 test fixture asserted a green label from status ok + healthy true with no proof.",
+    "Tenant runtime mapper dropped original source maturity and evidence reference."
+  ],
+  "fix": [
+    "Preserve evidence reference, source maturity, and actual productionVerified flag in portal-v2/runtime-evidence.js.",
+    "Require the three proof fields before any Bewezen in Brain label and fail closed on missing / untrusted proof.",
+    "Add positive and negative regressions and preserve the existing skill and ledger."
+  ],
+  "owner": "Existing Portal V2 Relevantie/Powerhouse self-improvement owner; corrective successor to merged #4673",
+  "compiler": {
+    "failure_class": "PORTAL_FALSE_VERIFIED_LEARNING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-relevance-proof-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-relevance-proof-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-relevance-proof-readback-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "tests/brain-portal-relevance-proof-readback-v1.test.mjs"
+    ],
+    "invariants": [
+      "no success label for healthy+ok without PROVEN and receipt",
+      "no proof without explicit production/provider readback",
+      "unchanged authenticated per-tenant source",
+      "no second scheduler or data authority"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-portal-relevance-proof-readback-v1.test.mjs",
+    "portal-v2/tests/relevance-learning-closed-loop.test.mjs"
+  ],
+  "evidence": {
+    "observed_main_sha": "1e1b68559f07f77156314c07d32256ef9fb40484",
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4673",
+    "observed_deploy_id": "6ada44c2d3baa4c3282f3c22",
+    "corrective_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4684",
+    "actual_affected_tenant_verified": false,
+    "protected_merge_verified": false,
+    "production_readback_verified": false
+  },
+  "terminal_rule": "Only exact-head protected Required+CodeQL, main merge, matching production Netlify deploy and independent authenticated tenant evidence justify final closure; do not claim all 321/355 other incidents solved."
+}

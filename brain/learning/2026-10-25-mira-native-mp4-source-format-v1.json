@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "mira|native-video-source-dimensions-masquerading-as-padded-frame|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "obligation_id": "mira|native-mp4-first-identity-proof|20261025-v1",
+  "title": "Check real original OpenArt MP4 stream dimensions before padded frames and AI verification",
+  "failure_class": "RECOVERY",
+  "root_cause": "Netlify's original frame extractor always converted any aspect ratio into padded 1080x1920 JPEGs. The downstream router called AI face/temporal verification on these derived frames and accepted caller-supplied frames without independent original native MP4 stream verification. The OpenArt Kling original was 1292x1604, but generated JPEG was padded to 1080x1920, causing irrelevant frame-face failures.",
+  "evidence": {
+    "original_provider_history": "K3NqiqlKMGWDM3UEJGu0",
+    "provider_confirmed_width": 1292,
+    "provider_confirmed_height": 1604,
+    "expected_native_width": 1080,
+    "expected_native_height": 1920,
+    "production_obligation": "BLOCKED",
+    "external_instagram_id": null,
+    "related_original_rejections": [
+      {
+        "history": "qAUQW2ZzqdasS0ePb1PD",
+        "face": 0.92
+      },
+      {
+        "history": "a6sdR46HDe58uRlardNl",
+        "temporal": 0.89
+      },
+      {
+        "history": "oGeS7GbhttgNCxnq0tCg",
+        "face": 0.92
+      }
+    ],
+    "source_provenance": "OpenArt media metadata + production router and Netlify source readback"
+  },
+  "prevention_rule": "Before generating any image comparison, independently inspect original MP4 first stream dimensions via ffmpeg, reject or quarantine every non-native / unknown stream, record immutable rejected history in original Brain+CAS job, never trust padded JPEG or caller frames, and then allow only fresh original-master source-locked correctly-sized history subject to provider budget. Existing 0.940 face/0.900 temporal and Meta provider proof remain mandatory.",
+  "fix": "Introduce native-MP4 stream probe in original Netlify extractor, require every Reel router submission to use extracted original-byte frames with native 1080x1920 proof before vision, write real mismatches to existing CAS/Brain and provide failure-specific next-generation action in original Mira producer plan.",
+  "outcome": "Candidate PR only until exact-head Required, CodeQL, native Supabase/Netlify preview, protected merge and independently deployed sources; not evidence of new published Reel or revenue.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-native-format-before-vision-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-native-format-before-vision-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-native-format-before-vision-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 3,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "regression_contract": "tests/brain-mira-native-format-before-vision-20261025.test.mjs"
+}

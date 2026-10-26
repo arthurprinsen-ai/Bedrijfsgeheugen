@@ -1,0 +1,26 @@
+{
+  "routes": [
+    "/7-bedrijfslekken",
+    "/zelfscan",
+    "/frisse-blik"
+  ],
+  "change_class": "revenue-first-qualified-booking-entry",
+  "preserve": [
+    "free ungated PDF",
+    "original selfscan CTA",
+    "existing Calendly host and event",
+    "optional visitor choice",
+    "NL/EN translation parity",
+    "first-party consent-aware click tracking",
+    "no fake booked-call or revenue conversion",
+    "no additional sender"
+  ],
+  "hypothesis": "Removing one navigation step from interested workbook visitors to verified appointment calendar increases real confirmed qualified calls without sacrificing the free scan.",
+  "target_metric": "free_workbook_landing -> booking-page intent -> provider-confirmed booking -> attended call -> accepted paid order",
+  "rollback_condition": "invalid Calendly scheduling URL or closed event, translation regression, mobile layout regression, decreased verified call/order conversion or falsified conversion events",
+  "evidence_refs": [
+    "P0 #4198",
+    "PR #4294",
+    "powerhouse|revenue|seven-leaks-qualified-booking-route|v1"
+  ]
+}

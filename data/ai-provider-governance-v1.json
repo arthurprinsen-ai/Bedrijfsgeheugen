@@ -127,7 +127,7 @@
           "id": "mistral-api-eu",
           "label": "Mistral API — default EU",
           "storage_residency": "EU by default",
-          "inference_residency": "EU/default service path; verify feature-specific subprocessors",
+          "inference_residency": "EU regional inference only when the independently verified, tenant-approved api.eu.mistral.ai endpoint is used; global api.mistral.ai gives no specific regional inference guarantee. Regional processing may include EU/EFTA; verify exact residency controls and subprocessors.",
           "training_on_api_data": "contract/service dependent; verify current terms",
           "default_content_retention": "service/feature dependent",
           "zero_data_retention": "supported for eligible paid stateless API calls",
@@ -135,7 +135,7 @@
           "private_networking": "enterprise/deployment dependent",
           "self_host": false,
           "sovereignty_level": "eu-managed",
-          "source": "https://docs.mistral.ai/deployment/laplateforme/data_residency"
+          "source": "https://docs.mistral.ai/inference/regional-inference"
         },
         {
           "id": "mistral-selfhost",

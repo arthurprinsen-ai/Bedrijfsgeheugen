@@ -1,0 +1,9 @@
+# Preserve predictive uncertainty across canonical reconciliation
+Obligation-ID: predictive-calibration-uncertainty-retention-20261019
+Parent incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+Real production OpenAI run8058 returned12 uncertain public calibrations, while durable attempt-marker readback later returned0. At19:57 the periodic writer rewrote314 public obligations. Both existing forecast-trigger and periodic refresh used payload=excluded.payload,due_at=excluded.due_at, deleting the attempt and backoff. This is separate from the successfully stored3 OpenAI forecasts and provider delivery.
+
+Use one immutable pure PostgreSQL state merge from both existing writers. A signature of forecast ID/key,event,horizon and evidence IDs binds an attempt to its actual prediction. Unchanged revisions preserve uncertainty metadata and the later of existing/canonical due date. Changed/unbound revisions archive the prior attempt in the existing payload before invalidating its active marker. CLOSED payload and due date stay immutable. Canonical forecast fields still refresh; no fabricated missed/materialized outcome, customer data/provider activation or new scheduler/queue.
+
+Regression first: helper presence returnedfalse and both source-contract guards failed before implementation. Six pure-function SQL cases exercise unchanged uncertainty, changed revision, closed evidence, new obligation, unbound old attempt and later canonical deadline. Execute the actual fixture on native Supabase Preview and production, then run the existing public calibrator once and prove its audit survives the existing canonical refresh. Required/CodeQL/provider Preview, protected SQL promotion, learning/projection and dashboard closure remain mandatory. No terminal success from code or model receipt alone.

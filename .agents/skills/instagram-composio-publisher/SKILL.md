@@ -71,6 +71,96 @@ Hard rules:
 Learning fingerprint: `mira-human-problem-fresh-openart-reel-v1`.
 
 
+## Preventive producer quality recovery (2026-10-25)
+
+**Fingerprint:** `mira-original-owner-pre-generation-quality-feedback-v1`.
+Never solve recurring verification rejects by lowering an identity/temporal score or reusing the same failed OpenArt history. The original Heartbeat should call the existing `powerhouse-instagram-media-router` **preflight** for a frozen source-led day. When the canonical media job contains a genuine quality rejection, the response exposes typed `preventive_recovery` with the original source, project, failed provider history, observed score and **one** bounded next-generation brief.
+
+The one existing Mira producer must consume this production-derived brief **before buying another generation**:
+
+- **Face failure** (`VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH`): confirm original immutable master in both original OpenArt image references; require native full-bleed 1080x1920, visible uncut face, no black bars/letterboxing/cropped head, stable expression/age and approved daily source-led scene. Reject unsupported input modes or provider output dimensions without spending on verification. If a native-portrait derivative becomes necessary, first request a separately reviewed, independent master-face PASS and update the protected media contract; **do not lie about the provider's original input reference**.
+- **Temporal failure** (`MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED`): revise the next storyboard to depict one uninterrupted real scene with natural facial, hand and object motion, not a slideshow, pan/zoom or still-image animation. Keep the original reference identity and exactly the frozen source/scene/caption.
+- Before buying: check today's existing OpenArt histories and the original Brain failure fingerprints. Reuse neither the rejected bytes/hash nor their provider history. Never continuously retry; at most one **new** candidate per independently classified failure and configured provider credit cap. A new generation is an opportunity to verify, not proof.
+- After generation: check real OpenArt project/history, native 1080x1920 MP4, correct master references and source winner; then call the **same** original router with `submit_asset` (not a second publisher). Require real first/middle/end facial scores each ≥0.940, real temporal confidence ≥0.900, matching SHA and exact final caption before any one-shot Meta create.
+- A quality failure keeps the channel `BLOCKED` with an actionable producer plan and original Brain incident; continue independent channels. No generic brand posts, fake PASS, hard-coded bogus media IDs or silent substitution of a static image for a promised Reel. Escalate human/provider credential or exhausted-budget constraints without infinite regeneration.
+- A quality-complete generation still does not prove publication. Only provider media ID, permalink and independent readback may mark the Instagram obligation `LIVE_PROVEN`.
+
+This plan is returned by the current router rather than creating a new scheduler, publisher, queue, customer data store or parallel agent. A successful production simulation is not a future guarantee; subsequent runs must repeat actual provider checks.
+
+## Native MP4 quality gate before vision (2026-10-25)
+
+**Fingerprint:** `mira-exact-native-mp4-before-vision-v1`. The original Mira media router and the existing Netlify `instagram-video-frames` function enforce this rule. The agent must never trust OpenArt response metadata, manifest width/height, or a padded 1080x1920 screenshot as evidence of the original video format.
+
+Before spending credits on AI face/temporal evaluations, the existing frame extractor downloads the **exact original MP4**, probes the first real encoded video stream with the already installed ffmpeg binary and requires **native 1080x1920**. Failed/unknown stream metadata remains blocked; actual non-native dimensions are recorded on the same CAS media job and immutable Brain failure register with their exact provider history. A frame submitted by a caller cannot bypass this original-byte extraction. Only matching actual video dimensions allow independent start/middle/end face >=0.940 and temporal >=0.900 verification.
+
+If the real format fails, use the existing original producer's `preventive_recovery` contract to choose a new genuinely native portrait output. The current failed candidate must not be resubmitted or claimed as verified by reframing, JPEG padding or an unapproved master/source switch. Limit regeneration to one distinct attempt per observed failure and the configured daily provider budget. Never spend new credits merely because preflight was polled again.
+
+No additional scheduler, queue, sender, privileged connector or fake post ID. Even a correctly sized, quality-proven Reel is not live until the original authorized publisher returns Meta media ID/permalink and independent readback.
+
+## Previously rejected OpenArt assets are permanently ineligible (2026-10-25)
+
+**Fingerprint:** `mira-immutable-brain-rejected-history-before-vision-v1`. The canonical Brain `brain_failure_occurrences` row is the cross-run evidence, **not** the current media job's last_error. Two independently rejected histories must never be alternated to make an older failed clip eligible again. The ORIGINAL media router now looks up `router:openart:<history>:instagram:<date>:<failure stage>` by provider history prefix before MP4 download, native video probe and expensive AI identity/temporal verification. It blocks any previously rejected history **across all dates**, including exact photo, motion and native-video-format rejects. If the Brain read fails, no blind resend is allowed.
+
+The same agent must load and deduplicate all real past provider histories before selecting a next candidate. A provider `COMPLETED` response is not a vision/identity PASS. After the original source-locked producer obtains a genuinely new history under the configured budget, send it only once through the canonical router; log the true independent outcome and never requeue a rejected candidate. A current-day Reel winner remains frozen; never silently replace it with a static visual. For new days, any image-vs-Reel format decision must occur **before** the daily winner is frozen and must satisfy the channel's current approved policy.
+
+This prevents repeat evaluation charges and status loops; it does not guarantee generative videos pass the independent 0.940 face / 0.900 temporal gates, and it never permits unproven Instagram publication claims.
+
+## Original Mira producer — reconcile facial identity AND real movement (2026-10-25)
+
+**Fingerprint:** `mira-recognizable-face-and-genuine-human-motion-v1`.
+
+Our actual failed paid generations exposed contradictory instructions: prompts demanded that every facial landmark/pixel be frozen, with no blink, breathing or movement, while the true independent temporal gate requires living continuous human movement. An immobile facial image surrounded by a moving phone or background is not a valid proof of human video. Three-frame face scores alone are insufficient, and a model's `COMPLETED` response is not approval.
+
+**Mandatory original-producer behavior before one further OpenArt expenditure:**
+- Read the canonical `preventive_recovery` from the current source-locked router. Consume its `motion_compatible_brief` only if `ok=true`; never independently reselect the topic, new source, master identity, post date or caption.
+- Submit the exact *final* OpenArt prompt to `checkMiraProducerPromptCompatibility` in `supabase/functions/_shared/mira-preventive-quality-recovery.mjs`. Fail any request for frozen facial pixels/landmarks, no blink/breathing/hand movement, wholly static person or background-only animation. Real identity preservation means the same recognisable face **with small physically plausible movement**; it does not mean literal facial pixels are stationary.
+- Render an uncut, genuinely native 1080x1920, 8-second, single-take `image2video` Reel. Use the immutable approved master as the actual OpenArt start/end input, retain approved scene and Mira's recognisable face, clothing, skin and hair. Request restrained natural blinking/breathing and a small finger/hand interaction with an object already in that scene; never invent scene props, logos, third-party claims, a second person or unfamiliar elements.
+- Independent original-byte native MP4, actual start/middle/end face >=0.940, **temporal human-motion confidence >=0.900**, original Brain historical no-reuse check and exact-media hash remain mandatory. Start/end master input by itself is never evidence that the middle frame passes.
+- Reconcile exact model/format and credit estimate with OpenArt before generating; use the existing single owner and bounded **one** genuinely different history within the configured budget. A failed or unavailable budget contract blocks provider expenditure; do not guess at entitlement.
+- Any mismatch feeds the original Brain, provider provenance, and next producer brief. A successful candidate still is not `LIVE_PROVEN`: the existing Composio/Meta one-shot publisher must return authentic media ID, permalink and independent readback.
+
+No new scheduler, agent runner, second publisher, customer data, threshold bypass, fake success or unlimited automatic regeneration. Do not substitute a static image for an already frozen Reel obligation.
+
+## Proven provider output geometry BEFORE any OpenArt credits (2026-10-25)
+
+**Fingerprint:** `mira-native-provider-output-prespend-v1`.
+
+Wan 2.7 image2video's `resolution=1080p` is a PIXEL-TIER, not a promise of 1080x1920. Official model documentation says original first-frame aspect determines resulting geometry. **Actual** original-master project history `4y4xrXvVDidv9gUDQZea` was billed and COMPLETED yet returned **1292x1604, 8.08s, with audio** instead of the canonical exact native **1080x1920, silent 8s Reel**. The OpenArt `wan2-7:image2video` form has no output aspect-ratio parameter or mute parameter. Putting `9:16` in the prompt or inventing unsupported `aspectRatio`/`generateAudio` properties DOES NOT control the original MP4.
+
+**Required original producer workflow before every NEW generation spend:**
+1. Read the actual immutable Mira source winner/master, original Brain prior failures and original production router `preflight`; no new winner or static-image substitution for frozen Reel.
+2. Call the EXISTING authenticated `powerhouse-instagram-media-router` action `generation_preflight` with `runDate`, `postType:"reel"`, `model`, `mode`, and EXACT proposed generation `params`. This action does not charge, generate, publish or mutate state. Refuse to call OpenArt generate_video unless it returns `provider_generation_preflight.ok=true`. Additional existing provider budget and dedupe checks are STILL required.
+3. `wan2-7:image2video` with the immutable canonical master and `resolution=1080p` is a KNOWN BLOCKED configuration. Provider evidence and native output dimensions are linked in the returned failure. Do not reissue it, pad/crop the original reference, swap the Mira identity or relax the native-video gate.
+4. Unknown model/modes require independently verified original OpenArt control surface and a protected policy update — do NOT guess that "1080p" means "9:16" or trust the render prompt as proof. Veo 3.1 with literal `aspectRatio:"9:16"` and `generateAudio:false` has verified **FORMAT** only; previous Veo faces failed, so a format-compatible response is NOT a recommendation to retry previous histories.
+5. Actual generated MP4 is re-measured independently by original ffmpeg worker before expensive frame recognition; require real 1080x1920, original same face on first/middle/end >=0.940, real temporal movement >=0.900, and true one-shot Meta provider media ID/permalink/readback for publication. Never claim that a provider's `COMPLETED` receipt or a 1080p label means Reel acceptance.
+6. To fix the recurring source aspect issue, any new 9:16 compositional derivative of the original master needs separate identity verification, source licensing and a protected original-master contract change **BEFORE** using it. This is not permission to bypass the original unmodified master reference.
+
+The evidence and restrictions live in the same original Mira preventive module and Brain learning. No new publisher, scheduler, unlimited retries, paid speculative attempts or fake GREEN statuses.
+
+## Derived 9:16 reference is NOT Mira master until independently verified (2026-10-25)
+
+**Fingerprint:** `mira-outpainted-reference-independent-face-proof-v1`. The completed single-image OpenArt outpaint `4aOsUdQyAheL3wmex9Uq`, resource `aTtGOimC7CyaexG5cyTh`, is 1296x2304 (true 9:16). It remains an UNAPPROVED staging reference, not a Reel, a new original master or proof of pixel-exact face preservation. The original immutable fictional Mira master stays `Yjqu4D7v76HABNPmQPj1`.
+
+To test it once, call the **existing original** authenticated `powerhouse-instagram-media-verifier` with `publicationDate` matching the frozen source, `provider:"openart"`, `mediaType:"image"`, `verificationRole:"reference_candidate"`, `writeObligation:false` and the exact OpenArt-generated PNG URL. This role accepts **only** the real 1296x2304 PNG/JPEG from the trusted original OpenArt CDN, and performs real independent two-image identity vision against the unchanged original Mira master; minimum face confidence remains **0.940**. A role-specific result `pass:true` proves only visual reference similarity, **not** pixel preservation, video validity, camera motion, Instagram upload, Meta provider proof or publication.
+
+Every response has `reference_candidate_only=true`, `may_publish=false`, `final_media_proven=false`; the original daily Instagram obligation is never changed. A failed vision verdict or unavailable provider keeps the candidate quarantined: no OpenArt video spend. If the image passes, the original owner may propose a **separate protected PR** that explicitly registers the independently verified SHA, original-master lineage and exact derived-reference usage, while preserving the original source winner, image/video format and face/temporal thresholds. Neither a passing reference nor this skill silently rewrites `validMiraGenerationReference`, the publisher or the Mira master. A future video still must independently pass native 1080x1920, first/middle/end ≥0.940 and temporal ≥0.900, then a real Meta ID/permalink/readback.
+
+The existing owner, Brain learning, original scheduler and publisher remain single-writer; no extra scheduler, speculative multiple provider attempts, arbitrary crop, identity swap, fake success or unlimited credits.
+
+## Proof-pinned approved derivative input: original Mira master stays immutable (2026-10-25)
+
+**Fingerprint:** `mira-source-locked-pinned-portrait-video-input-v1`.
+
+Actual protected original verifier (PR #4935) independently compared the completed outpainted OpenArt `4aOsUdQyAheL3wmex9Uq` 1296x2304 PNG to unchanged original Mira master. Production pg_net #12791 HTTP 200 returned face identity confidence **0.950 ≥0.940**, face match, exact SHA-256 `242119866b6eaf9c142331e46b878df08c4f206fb4106fab2f48065b121b3b0a` and canonical original-master SHA `e32863f391e01dba910bf396ad13eb23c4a74b53f2614f1563b0fc332b1dd4e2`. Evidence resides in `powerhouse_media_proof_evidence_v1` as `reference_candidate_verified` but `identity_gate_result=UNPROVEN` for Instagram, `exact_final_media_proven=false`; original Instagram obligation is BLOCKED. This is only a visually matched **derived production input**, not pixel-level master identity or provider publication.
+
+The existing producer may submit `generation_preflight` with `derivedReference` matching **exact** `MIRA_APPROVED_DERIVED_INPUT` history/resource/URL/SHA. The same original authenticated router queries canonical stored independent proof and verifies original immutable source winner/date/project/master and face evidence. It must return `derived_reference_proof.ok=true` and still separately pass `provider_generation_preflight.ok=true`; old non-native Wan 2.7 remains barred, only documented actual 9:16/no-audio-capable mode may be used. Then check current OpenArt quote, provider credits and configured one-candidate budget. Do not generate if any check fails.
+
+When producing, the official original master remains `openart_reference_id=Yjqu4D7v76HABNPmQPj1` **for final visual comparison**. The actual OpenArt start/end input may use the explicitly certified DERIVED image, but it MUST be declared separately as `assetManifest.derived_reference` with the exact four pinned fields and read back from the original OpenArt provider response; never pass the derived ID as if it were the original canonical ID. The same original submit_asset verifies this evidence and writes a separate `mira_derived_generation_input` lineage record ONLY after full final-media proofs. A provider `COMPLETED` receipt is neither input readback proof nor a quality PASS.
+
+The frozen parking-app source, caption, canonical master, SHA lineage, no historical rejected video history, native 1080x1920 muted output, start/middle/end face ≥0.940, real temporal movement ≥0.900 and one-shot actual Meta post-ID/permalink/readback remain mandatory. If the still-image composition does not physically contain the original approved smartphone/parking-app scene, do not invent altered elements or fake scene compliance. Classify this as a source-scene mismatch and seek an independently verified scene-compatible replacement from the ORIGINAL content owner before spending on video.
+
+No second publishing lane, scheduler, arbitrary visual, unbounded retries, direct status green or status check bypass.
+
 ## Atomic publication claim and duplicate prevention
 
 Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
@@ -438,3 +528,65 @@ Hard rules:
 - Once a daily winner exists it remains immutable; provider/media recovery must reuse it.
 - Social outcomes and learning write back to the exact source/recommendation/winner lineage.
 - Provider search fallback is bounded Tavily -> DataForSEO; no Make.
+
+
+## Mira ondernemingsprobleem → portal caption, harde publicatiepoort (2026-10-09)
+
+Fingerprint: `mira-entrepreneur-problem-to-portal-caption-v1`. Deze recente expliciete opdracht heeft voorrang op de oudere private-consumer-complaint only-regel. Mira blijft een openlijk fictief, herkenbaar mens in een gewone scène; haar caption gaat nu over één **bestaand canoniek PH-Pxxx ondernemersprobleem**, niet een willekeurige consumentenklacht.
+
+Elke Mira-publicatie bestaat uit exact één passende, origineel geverifieerde Mira-visual/Reel én één volledige Nederlandstalige caption: herkenbare concrete scène → aantoonbare oorzaak of probleemhypothese → **potentieel** zakelijk gevolg → relevante Bedrijfsgeheugen-portaalpagina met capaciteit en voorgestelde actie/eigenaar → te volgen resultaat/meetpunt + begrijpelijke pointe. De caption vermeldt dat Mira fictief is; geen verzonnen klantervaring, geldbedrag of bewezen live-portaalfunctie. De bestaande `config/powerhouse-problem-library.json` is de enige canonieke probleemtaxonomie; ondersteunende externe signalen zijn context, nooit ongetoetst feit.
+
+De bestaande content-orchestrator produceert de source-bound caption, de bestaande Instagram-media-router retourneert de PH-P-scène aan OpenArt en weigert media zonder die lineage, en de bestaande social-publisher voert de machinecheck uit vóór elke provider-side-effect. De bron/portal/scene moeten overeenkomen. Geen extra executor, scheduler, Buffer/Make fallback of tweede taxonomie. De bevroren dagwinnaar wordt niet herschreven; ongeschikte bestaande assets worden niet 'goed' verklaard.
+
+Canonical runtime: `supabase/functions/_shared/mira-entrepreneur-caption.mjs` en test `tests/brain-mira-entrepreneur-caption-v1.test.mjs`. Succes vraagt nog steeds exacte provider-ID, permalink, readback en outcome-evidence.
+
+## Immutable fictional Mira face — same person in every episode (2026-10-09)
+
+Fingerprint: `mira-master-two-image-face-continuity-v1`. The sole canonical fictional OpenArt master is `Yjqu4D7v76HABNPmQPj1`, at `config/instagram-canonical-mira-identity-v1.json`. Original pixels (not text prompts) are authoritative. The same source image is required as the actual OpenArt `image2video` reference for new Reels. Do not select a different stock woman, regenerated master, user photo or unrelated uploaded reference.
+
+After generating, compare exact final media (or each start/middle/end frame in an MP4) alongside the original Mira master using the existing approved vision verifier. Approve only if `face_identity_match=true`, confidence >=0.94, and all three Reel frames match the same canonical SHA; face/age/hairline/identity must not drift. Clothes, gestures, setting and expression may vary. If the comparison is uncertain, hold rather than post. All original exact-media, PH-P entrepreneur problem, full caption, scene-match, dedupe, provider-ack and independent permalink-readback checks remain mandatory.
+
+Canonical code: `supabase/functions/_shared/mira-canonical-face.mjs`. Regressions: `tests/brain-mira-canonical-face-consistency-v1.test.mjs`. No new scheduler, publisher, CRM, or alternate Instagram identity.
+
+
+## Mira image proof provider recovery — 19 October 2026
+Fingerprint: `mira-openai-exact-media-verification-20261019`.
+The existing image/temporal verifiers use the governance-approved OpenAI Responses route and OPENAI_API_KEY. Provider changes never alter identity confidence, frame continuity, dimensions, source references, exact hashes or publisher capability gates. Incomplete output, refusal, schema mismatch and provider errors fail closed. Preserve the generated OpenArt history/resource/URL in the same media job; retry verification of those bytes rather than generating another video. A provider outage is not evidence that the face differs. Both vision stages must migrate together; governance remains scoped to the fictional Mira use case. Never deploy Edge source outside protected main and its Supabase Integration.
+
+
+## Production registration and proof scope
+Fingerprint: `mira-production-stage-registration-20261019`.
+The router, image verifier and temporal verifier must all be explicitly enabled in supabase/config.toml before protected-main provider delivery can attest this chain. An attestation for other functions never proves Mira source parity. Shared-helper changes must retain explicitly edited undeclared slugs in the resolved scope so the existing registration guard rejects them; never silently drop the very function being repaired. Require exact function inventory/source parity plus a genuine same-video proof request after promotion.
+
+
+## Producer claim preservation under readiness polling
+
+Fingerprint: `mira-media-preflight-preserve-worker-cas-v1`.
+
+A CLAIMED/GENERATING media job legitimately has no final URL while the external provider runs. Readiness/preflight must preserve its owner/history and never reset it to WAITING_ASSET. All other existing-job projections require exact id+updated_at CAS; if state changed, reread before touching obligation evidence. Concurrent first insert is a typed retry. Completion remains owner-bound and proof remains verifier-owned. Never generate a duplicate because a poll lost a worker claim.
+
+## 2026-10-22 — daily builder recovery and media-poll no-spin
+
+Fingerprint: `powerhouse|daily-social-builder-reopen-media-preflight|20261022-v1`.
+
+A blocked personal LinkedIn `PERSONAL_SOURCE_UNVERIFIED` claim may be
+reconsidered by the EXISTING content-loop only when its identity evidence
+contains a verified AI-native builder event and the decision has no provider
+side effect, consumed publication authority, or republish prohibition.
+The content orchestrator must use its full `validPersonalSource` contract
+for ALL accepted personal modes: verified personal-life, observation, and
+verified founder-builder evidence. Reconsideration never bypasses fresh
+copy/source validation, global uniqueness, OAuth, independent prepublish review
+or provider receipts.
+
+For Instagram, `WAITING_ASSET` means asset generation has NOT occurred.
+A readiness/preflight check must not increment a provider-attempt counter or
+rewrite identical business state. Real worker submissions, asset verification
+and actual provider proof may increment their own attempts; a media router
+cannot manufacture an OpenArt asset or a Mira identity result. Continue
+other approved lanes when this media proof is missing. No second scheduler,
+no Buffer/Make fallback and no duplicate posting.
+
+
+## 2026-10-22 — Netlify Mira video-frame authorization must fail closed
+Fingerprint `powerhouse|instagram-frame-extractor-auth-oracle-fail-open|20261022-v1`: Original Supabase verifier checks the existing scheduler token BEFORE answering 400/INVALID_INPUT for the purposely blank POST. Treat only HTTP 400 JSON ok=false/error=INVALID_INPUT as proof of a valid caller. Deny 401/403/404/429/5xx/200, malformed JSON and network errors; never trust status!=401. Keep existing OpenArt video allowlist, strict master-face 0.94 and temporal proof. No new scheduler or sender.

@@ -1,0 +1,36 @@
+{
+  "fingerprint": "portal|entrepreneur-intelligence|untraced-http-504|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|authenticated-entrepreneur-stage-latency-isolation|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "PORTAL_READ_STAGE_LATENCY_UNOBSERVABLE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Ten batched read operations had no separate slow-stage timing while an authenticated Netlify request timed out; database timeout and connection failures were observed independently.",
+  "prevention_rule": "Log only anonymous stage names, trace and latency when slow or failed; preserve full result or failure; do not fake tenant projections.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "regression": "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs",
+    "production_endpoint_ack": "PENDING",
+    "deploy_readback": "PENDING",
+    "two_authenticated_tenants": "PENDING"
+  },
+  "production_verified": false,
+  "production_scope": "PORTAL_STAGE_TELEMETRY_ONLY"
+}

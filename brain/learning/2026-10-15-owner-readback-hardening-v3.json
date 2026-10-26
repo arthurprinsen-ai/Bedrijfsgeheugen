@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|owner-tenant-empty-forecast|stable-approval-idempotency|20261015-v3",
+  "compiler": {
+    "failure_class": "PORTAL_OWNER_TENANT_READBACK_AND_DUPLICATE_DECISION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "After successful financial dashboard production release, forecast replies with no validated rows omitted tenantId and the handler invoked the Netlify Identity helper without the request argument. The compact dashboard retained delegated closures across tenant hydration; APPROVE/REJECT generated a fresh idempotency key after an ambiguous response.",
+  "prevention_rule": "Every 200 financial forecast reply includes authenticated server tenantId, including zero rows; pass the precise request to getUser. Block missing or mismatched tenant readback of Brain decisions. Rebuild compact delegated handlers on model refresh and preserve deterministic idempotency per human decision transition, never infer external send or verified revenue.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4414",
+    "regression": "tests/portal-owner-tenant-readback-v3.test.mjs",
+    "baseline_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4411",
+    "customer_proof": "AWAITING_PROTECTED_CI_AND_EXACT_DEPLOY"
+  },
+  "outcome": {
+    "proposed": "SAFE_RUNTIME_HARDENING",
+    "external_actions_executed": false,
+    "financial_values_invented": false
+  }
+}

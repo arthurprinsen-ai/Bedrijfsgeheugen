@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-19",
+  "obligation": "blog-reader-ready-content-guard-20261019",
+  "fingerprint": "blog|OpenAI|generated-content-ready-but-editorial-only-instructions-in-live-candidate",
+  "root_cause": "The canonical daily blog exporter treated content_ready as publication-ready even though the generated article included internal publication, SEO and reviewer instructions. A protected blog PR rendered those instructions directly to readers; the generation evidence also reported final_copy_approved=false.",
+  "intervention": "Close unsafe blog candidate PR #4483 before merge. Add source-level reader-ready checks in the canonical static publisher before filesystem writes, and a regression test. Never silently delete editorial content or spoof approval.",
+  "prevention": "Dated blog releases fail closed with BLOG_ARTIFACT_NOT_READER_READY when draft/publication-only instructions appear. Source remediation and valid public evidence are required before protected merge and public content-ID readback.",
+  "compiler": {
+    "failure_class": "UNAPPROVED_EDITORIAL_COPY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "BLOG_READER_READY_NO_EDITORIAL_INSTRUCTIONS_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "unsafe_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483",
+    "publisher": "tools/site-shell/publish_powerhouse_blog_artifact.py",
+    "live_blog_verified": false
+  },
+  "status": "SOURCE_CANDIDATE_AWAITING_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483"
+  ]
+}

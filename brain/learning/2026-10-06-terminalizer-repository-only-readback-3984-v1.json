@@ -1,0 +1,47 @@
+{
+  "id": "terminalizer-repository-only-readback-3984-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "pr-3984-post-merge-terminalizer",
+  "fingerprint": "powerhouse|terminalizer|repository-only-readback-contract|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "PR #3984 protected-merged with Required and Powerhouse CodeQL green, but its post-merge terminalizer classified repository-only control-plane files as unknown runtime because verifier-only classification was split between hardcoded workflow paths and a contract that only supported exact paths.",
+  "prevention": "Make brain/contracts/production-readback-v1.json the canonical verifier-only authority for both exact paths and safe repository-only prefixes. Keep config/ fail-closed by allowing only explicit control-plane config files, preserve UNWIRED_NON_NETLIFY_RUNTIME_READBACK for unknown runtime paths, and replay immutable merged PR #3984 after the classifier fix lands.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs",
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ],
+    "expected": "Repository-only control-plane changes are terminalized through main-containment evidence without fictitious runtime readback, while unknown runtime paths remain fail-closed."
+  },
+  "evidence": {
+    "source_pr": 3984,
+    "merge_sha": "2c3664a5882303b68ad174b2b35ebb769f2fa41b",
+    "failed_terminalizer_run": 37515221054,
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "misclassified_paths": [
+      "config/build-contract.json",
+      "config/control-plane-budget.json",
+      "config/netlify-project-registry.json",
+      "config/notion-root-lifecycle.json",
+      "config/pr-trigger-baseline.json",
+      "config/supabase-edge-functions.json",
+      "schemas/delivery-evidence.schema.json",
+      "scripts/brain/test-writer-verification-modes.mjs",
+      "scripts/ci/blog_technical_seo_gate.py",
+      "tools/build/artifact-id.mjs",
+      "tools/build/release-evidence.mjs",
+      "tools/netlify/ephemeral-janitor.mjs",
+      "tools/notion/root-lifecycle.mjs",
+      "tools/supabase/edge-function-registry.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

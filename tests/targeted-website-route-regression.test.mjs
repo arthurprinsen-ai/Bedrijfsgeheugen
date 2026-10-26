@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures, isHardAssetFailure } from '../tools/site-shell/verify-targeted-website-routes.mjs';
+import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures, isHardAssetFailure, shouldRetryTransientAssetObservation } from '../tools/site-shell/verify-targeted-website-routes.mjs';
 
 test('existing baseline page errors do not become a release regression', () => {
   const baseline = ['Unexpected end of input', 'missing ) after argument list'];
@@ -78,4 +78,32 @@ test('benign aborted document request is not treated as a hard asset failure', (
   assert.equal(isHardAssetFailure({ type:'document', errorText:'net::ERR_CONNECTION_RESET' }), true);
   assert.equal(isHardAssetFailure({ type:'script', errorText:'net::ERR_ABORTED' }), true);
   assert.equal(isHardAssetFailure({ type:'stylesheet', errorText:'net::ERR_ABORTED' }), true);
+});
+
+
+test('successful route with only failed assets gets a bounded fresh-page retry', () => {
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:true,
+    identity:{ok:true},
+    observedPageErrors:[],
+    failedAssets:['script:/assets/app.js'],
+  }), true);
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:true,
+    identity:{ok:true},
+    observedPageErrors:[],
+    failedAssets:[],
+  }), false);
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:false,
+    identity:{ok:true},
+    observedPageErrors:[],
+    failedAssets:['script:/assets/app.js'],
+  }), false);
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:true,
+    identity:{ok:true},
+    observedPageErrors:['runtime regression'],
+    failedAssets:['script:/assets/app.js'],
+  }), false);
 });

@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|tenant-ai-default|workload-inheritance-fail-closed|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Portal required a separate AI model choice for each workload; the attested Brain route ignored a selected tenant-wide default model when Brain override was unset. Customers could not define a single common model as desired state.",
+  "prevention_rule": "Persist one tenant defaultModelId alongside optional workload overrides. Resolve strict override-first, default-second only for named workloads; then match catalog/API ID, signed proof, route, supplier status, tenant and sovereignty before any provider call. A preference never grants permission and forecast computations remain canonical.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "paths": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs",
+      "tests/portal-ai-model-choice.test.mjs"
+    ],
+    "status": "Pending protected CI, not reported as passing prior to run"
+  },
+  "outcome": {
+    "implementation": "Default-model frontend and tenant routing gate code candidate",
+    "production_status": "NOT_YET_PROVEN",
+    "customer_provider_activation": "NOT_CLAIMED"
+  }
+}

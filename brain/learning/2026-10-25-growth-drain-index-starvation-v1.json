@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "growth-drain|http204-zero-progress|archive-scan-starvation|20261025",
+  "obligation_id": "netlify|growth-drain|durable-pending-fast-lane|20261025-v1",
+  "parent_issue": 4446,
+  "related_issue": 4198,
+  "failure_class": "GROWTH_DRAIN_ARCHIVED_RECEIPT_STARVATION",
+  "root_cause": "Production 2026-10-25 14:48-14:55 UTC growth-drain HTTP204 with 0 replayed/persisted, budgetExpired true and 72-141 immutable receipts scanned. Legacy bounded scan starves fresh queue behind completed receipts.",
+  "fix": "Within same minute scheduler, use an indexed non-PII pending pointer to prioritize new provider-queued source events. Source record stays immutable. Indexed pointers are removed only after provider receipt and source write; legacy backlog fallback and BG211-disabled policy remain.",
+  "evidence": {
+    "netlify": "7+ consecutive HTTP204 zero-progress drain calls, 72-141 persisted scans",
+    "supabase": "last first-party nonrobot page_view Oct 6, CTA Oct 1",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4446"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GROWTH_DRAIN_ARCHIVED_RECEIPT_STARVATION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "prevention_rules": [
+    "Never equate 202/204 with persisted DataHub event",
+    "Prioritize index over immutable archived receipt",
+    "Never delete original event or bypass provider receipts",
+    "No extra scheduler, contact outreach or fabricated revenue"
+  ],
+  "terminal_rule": "Exact-head CI, CodeQL, Netlify, protected merge, matching production deploy and fresh first-party DataHub readback; historical backlog proof separate."
+}

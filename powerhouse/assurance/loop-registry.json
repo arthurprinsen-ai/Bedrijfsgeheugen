@@ -238,6 +238,23 @@
         "learning",
         "guard"
       ]
+    },
+    {
+      "loop_key": "external-intelligence-universe",
+      "runtime_source": "powerhouse-external-intelligence-universe-v1",
+      "cron_jobname": "powerhouse-runtime-scheduler-mux-v1",
+      "expected_cadence_minutes": 60,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
     }
   ]
 }

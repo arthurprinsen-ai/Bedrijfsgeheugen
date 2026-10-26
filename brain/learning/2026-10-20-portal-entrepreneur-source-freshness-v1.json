@@ -1,0 +1,42 @@
+{
+  "fingerprint": "portal|entrepreneur-source|stale-current-and-null-eur-zero|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|entrepreneur-snapshot-evidence-freshness|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "STALE_PORTAL_SNAPSHOT_FALSE_GREEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The tenant entrepreneur intelligence Edge projection recomputed status=CURRENT for any nonempty signals regardless of the last successfully refreshed canonical Source Universe snapshot. It also substituted new Date() for absent source time and Number(null) = 0 in monetary aggregation, hiding stale/no evidence behind a current green label and fake measured €0.",
+  "prevention_rule": "In the existing tenant overlay, preserve null for unknown numeric evidence while preserving a literal measured zero; canonical Source Universe must have a valid observed source timestamp within the explicit freshness SLA and a recent external observation before the projection can be CURRENT. Never synthesize a source refresh time from request time, and retain STALE/PARTIAL with source metadata when freshness fails. Catalog available is not a customer connector.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-entrepreneur-source-freshness-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-entrepreneur-source-freshness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-entrepreneur-source-freshness-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "production_reproduction": {
+      "canonical_snapshot_at": "2026-10-20T07:02:56.38006Z",
+      "next_expected_auto_slot_unproven": true,
+      "tenant_financial_forecasts_rows": 0,
+      "linked_intelligence_outcomes": 0
+    },
+    "regression": "tests/brain-portal-entrepreneur-source-freshness-v1.test.mjs",
+    "production_endpoint_ack": "NOT_YET_VERIFIED",
+    "deploy_readback": "PENDING",
+    "two_authenticated_tenants": "PENDING"
+  },
+  "production_verified": false,
+  "production_scope": "EDGE_SOURCE_FRESHNESS_AND_NULL_MONETARY_AGGREGATION_ONLY"
+}

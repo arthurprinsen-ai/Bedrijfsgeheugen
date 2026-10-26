@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|p0-4198|i18n-preflight-transform-parity|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "CI_STAGE_ORDER_MISMATCH",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-protected-i18n-source-parity.test.mjs"
+    ]
+  },
+  "root_cause": "The fail-closed protected preflight ran build-localized-routes.mjs against raw source HTML, although the canonical publisher prepared the cached English translations after all production SEO and UI transformations. The two source corpora had different text fragments, causing false STATIC_I18N_CACHE_INCOMPLETE errors despite a complete authorized patch.",
+  "prevention_rule": "Before the protected cache-only verification, replay the exact approved production transformations with STATIC_I18N_REQUIRE_CACHE=1 and STATIC_I18N_NETWORK=0, then validate the transformed corpus. Do not waive translation completeness or use network providers.",
+  "evidence": {
+    "source": ".github/workflows/required-test.yml",
+    "test": "tests/brain-protected-i18n-source-parity.test.mjs",
+    "seen_missing": 5
+  },
+  "outcome": {
+    "provider_publication_proven": false,
+    "protected_ci_required": true
+  }
+}

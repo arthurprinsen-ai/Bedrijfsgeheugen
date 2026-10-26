@@ -8,8 +8,12 @@ const sec=value=>{
   if(n<86400)return `${(n/3600).toFixed(1)}u`;
   return `${(n/86400).toFixed(1)}d`;
 };
-const stateClass=value=>{
-  const v=String(value||'').toUpperCase();
+// Only a positive server-side outcome receipt permits a green FULFILLED badge.
+const isUnverifiedCompletion=item=>String(item?.current_state||'').toUpperCase()==='FULFILLED'
+  && item?.outcome_verified!==true;
+const stateClass=item=>{
+  const v=String(item?.current_state||'').toUpperCase();
+  if(isUnverifiedCompletion(item))return 'bad';
   if(v==='FULFILLED')return 'ok';
   if(['BREACHED','FAILED','CANCELLED'].includes(v))return 'bad';
   return 'active';
@@ -18,26 +22,29 @@ const stateClass=value=>{
 export function controlPlaneCockpitMarkup(data={}){
   const obligations=Array.isArray(data.obligations)?data.obligations:[];
   const metrics=data.metrics||{};
-  const rows=obligations.slice(0,20).map(item=>`<article class="cp-obligation" data-state="${esc(stateClass(item.current_state))}">
-    <div class="cp-obligation-head"><div><small>${esc(item.obligation_key||item.obligation_id)}</small><h4>${esc(item.requested_goal||item.obligation_key||'Obligation')}</h4></div><span>${esc(item.current_state||'UNKNOWN')}</span></div>
+  const visible=obligations.slice(0,20);
+  const unverifiedFulfilled=visible.filter(isUnverifiedCompletion).length;
+  const rows=visible.map(item=>`<article class="cp-obligation" data-state="${esc(stateClass(item))}">
+    <div class="cp-obligation-head"><div><small>${esc(item.obligation_key||item.obligation_id)}</small><h4>${esc(item.requested_goal||item.obligation_key||'Obligation')}</h4></div><span>${esc(isUnverifiedCompletion(item)?'FULFILLED · UITKOMST ONBEWEZEN':item.current_state||'UNKNOWN')}</span></div>
     <dl>
       <div><dt>Bewijs</dt><dd>${num(item.evidence_count)} groen/records · ${num(item.red_evidence_count)} rood</dd></div>
       <div><dt>Blokkade</dt><dd>${esc(item.blocker||'Geen')}</dd></div>
       <div><dt>Volgende actie</dt><dd>${esc(item.next_action||'—')}</dd></div>
       <div><dt>Resultaat</dt><dd>${esc(item.actual_result||'Nog niet bewezen')}</dd></div>
     </dl>
-    <footer><span>Retries ${num(item.retry_count)}</span><span>Reconciliations ${num(item.reconciliation_jobs)}</span><span>${item.outcome_verified?'Outcome bewezen':'Outcome open'}</span><span>${item.migration_readback_verified?'DB readback ✓':'DB readback —'}</span></footer>
+    <footer><span>Retries ${num(item.retry_count)}</span><span>Reconciliations ${num(item.reconciliation_jobs)}</span><span>${item.outcome_verified===true?'Outcome bewezen':'Outcome open'}</span><span>${item.migration_readback_verified?'DB readback ✓':'DB readback —'}</span></footer>
   </article>`).join('');
 
   return `<section class="cp-admin-cockpit" data-bg-component="powerhouse-control-plane-cockpit">
     <div class="cp-head"><div><small>Intern · Powerhouse control plane</small><h2>Obligations</h2><p>Één read-only projectie van de canonical Brain-state, bewijs, recovery en outcome.</p></div><span>${esc(data.generatedAt||'')}</span></div>
     <div class="cp-metrics">
-      <article><small>Fulfilled</small><b>${num(metrics.obligations_fulfilled)}</b><span>van ${num(metrics.obligations_total)}</span></article>
+      <article><small>Geclaimd afgerond</small><b>${num(metrics.obligations_fulfilled)}</b><span>van ${num(metrics.obligations_total)} · uitkomstbewijs apart</span></article>
       <article><small>First time right</small><b>${pct(metrics.first_time_right_pct)}</b><span>${num(metrics.first_time_right_count)} obligations</span></article>
       <article><small>Retries</small><b>${num(metrics.retries_total)}</b><span>${num(metrics.escalations_total)} escalaties</span></article>
       <article><small>False-success risk</small><b>${num(metrics.false_success_risk_count)}</b><span>${num(metrics.human_intervention_count)} human interventions</span></article>
       <article><small>Mediaan naar terminal</small><b>${sec(metrics.median_time_to_terminal_seconds)}</b><span>P90 ${sec(metrics.p90_time_to_terminal_seconds)}</span></article>
     </div>
+    ${unverifiedFulfilled?`<p class="cp-proof-warning" role="status">${num(unverifiedFulfilled)} getoonde obligations claimen FULFILLED zonder geverifieerde uitkomst. Geen productiesucces bewezen.</p>`:''}
     <div class="cp-obligations">${rows||'<p class="cp-empty">Nog geen obligations in de canonical cockpit.</p>'}</div>
   </section>`;
 }
@@ -45,7 +52,7 @@ export function controlPlaneCockpitMarkup(data={}){
 function ensureStyles(doc){
   if(!doc?.head||doc.getElementById('bg-control-plane-cockpit-style'))return;
   const style=doc.createElement('style');style.id='bg-control-plane-cockpit-style';
-  style.textContent=`.cp-admin-cockpit{margin:28px 0;padding:20px;border:1px solid #d9e2ef;border-radius:18px;background:#fff}.cp-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.cp-head h2{margin:2px 0 4px}.cp-head p{margin:0;color:#5c6675}.cp-head>span{font-size:11px;color:#7b8492}.cp-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.cp-metrics article{padding:12px;border-radius:12px;background:#f6f8fb}.cp-metrics small,.cp-metrics span{display:block;color:#697386}.cp-metrics b{display:block;font-size:20px;margin:3px 0}.cp-obligations{display:grid;gap:10px}.cp-obligation{padding:14px;border:1px solid #e0e6ef;border-left:4px solid #6b7280;border-radius:12px}.cp-obligation[data-state="ok"]{border-left-color:#27845a}.cp-obligation[data-state="bad"]{border-left-color:#b42318}.cp-obligation[data-state="active"]{border-left-color:#2f6fdd}.cp-obligation-head{display:flex;justify-content:space-between;gap:12px}.cp-obligation-head h4{margin:2px 0 8px}.cp-obligation-head small{color:#6c7685}.cp-obligation-head>span{font-size:12px;font-weight:700}.cp-obligation dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}.cp-obligation dl>div{background:#f8fafc;padding:8px;border-radius:8px}.cp-obligation dt{font-size:11px;color:#727c8a}.cp-obligation dd{margin:3px 0 0;font-size:13px}.cp-obligation footer{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#697386}@media(max-width:900px){.cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-obligation dl{grid-template-columns:1fr}.cp-head{display:block}.cp-head>span{display:block;margin-top:8px}}`;
+  style.textContent=`.cp-proof-warning{padding:12px 14px;margin:0 0 14px;border:1px solid #f0b4ae;border-radius:10px;color:#8b1e18;background:#fff5f3;font-weight:600}.cp-admin-cockpit{margin:28px 0;padding:20px;border:1px solid #d9e2ef;border-radius:18px;background:#fff}.cp-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.cp-head h2{margin:2px 0 4px}.cp-head p{margin:0;color:#5c6675}.cp-head>span{font-size:11px;color:#7b8492}.cp-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.cp-metrics article{padding:12px;border-radius:12px;background:#f6f8fb}.cp-metrics small,.cp-metrics span{display:block;color:#697386}.cp-metrics b{display:block;font-size:20px;margin:3px 0}.cp-obligations{display:grid;gap:10px}.cp-obligation{padding:14px;border:1px solid #e0e6ef;border-left:4px solid #6b7280;border-radius:12px}.cp-obligation[data-state="ok"]{border-left-color:#27845a}.cp-obligation[data-state="bad"]{border-left-color:#b42318}.cp-obligation[data-state="active"]{border-left-color:#2f6fdd}.cp-obligation-head{display:flex;justify-content:space-between;gap:12px}.cp-obligation-head h4{margin:2px 0 8px}.cp-obligation-head small{color:#6c7685}.cp-obligation-head>span{font-size:12px;font-weight:700}.cp-obligation dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}.cp-obligation dl>div{background:#f8fafc;padding:8px;border-radius:8px}.cp-obligation dt{font-size:11px;color:#727c8a}.cp-obligation dd{margin:3px 0 0;font-size:13px}.cp-obligation footer{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#697386}@media(max-width:900px){.cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-obligation dl{grid-template-columns:1fr}.cp-head{display:block}.cp-head>span{display:block;margin-top:8px}}`;
   doc.head.appendChild(style);
 }
 

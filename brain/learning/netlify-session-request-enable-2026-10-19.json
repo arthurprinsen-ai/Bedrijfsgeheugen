@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-composio-request-toolkit-enable-20261019",
+  "fingerprint": "netlify-bridge|composio-session-toolkit-request-shape|enabled-vs-enable",
+  "root_cause": "The original Composio v3.1 session-create request used toolkits.enabled, taken from a normalized RESPONSE field. The official session CREATE request and SDK require toolkits.enable. The 400 TOOLKIT_CONSTRAINT is consistent with this mistake, although causal resolution still requires an authenticated live retry. The earlier legacy direct-execution fallback returned successful:false, but does not prove the API key lacks permissions. The owner displayed two Full access project API keys; no underlying Vault secret value was inspected.",
+  "failure_class": "AUTH",
+  "prevention": "Use documented create-request wire contract {toolkits:{enable:['netlify_mcp']}}. Never derive request parameters from normalized response examples. Require static regression rejecting 'toolkits.enabled', preserve one OIDC-authorized user/account/site and read-only health vs deploy separation. Keep strict existing GitHub checks and provider readback, no synthetic green.",
+  "state": "OPEN_AWAITING_PROTECTED_MERGE_AND_LIVE_PROBE",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs",
+      "tests/brain-netlify-composio-session-contract.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs",
+      "tests/brain-netlify-composio-session-contract.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs",
+      "tests/brain-netlify-composio-session-contract.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "tests": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs",
+      "tests/brain-netlify-composio-session-contract.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "required_ci": "pending",
+    "codeql": "pending",
+    "session_health": "pending",
+    "fallback_deploy_readback": "pending",
+    "exact_source_runtime": "pending"
+  },
+  "evidence_urls": [
+    "https://docs.composio.dev/docs/configuring-sessions",
+    "https://docs.composio.dev/reference/api-reference/tool-router/postToolRouterSession",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447"
+  ]
+}

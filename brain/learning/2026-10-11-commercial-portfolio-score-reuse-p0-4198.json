@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|p0-4198|duplicate-expensive-portfolio-score-view|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "COMMERCIAL_PORTFOLIO_REPEATED_24K_CONTACT_JOIN_TIMEOUT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-portfolio-score-reuse-p0-4198.test.mjs"
+    ]
+  },
+  "root_cause": "Original hourly commercial cron job 116 passed the previous forecast scoring bottleneck after index repair, but timed out after 120s on a second portfolio allocator view evaluation within powerhouse_commercial_learning_cycle_v1. The first UPDATE already persisted the same model outputs into opportunity score_components; the WITH ranked INSERT unnecessarily recomputed the full joined 24k+ contact intelligence portfolio.",
+  "prevention_rule": "Materialize each expensive score once into the canonical opportunity's commercial_learning_v1 score_components, preserving original source_updated_at for rank tie breaks and fresh scored_at for same-cycle selection; read those exact scores from opportunities for existing top-five sales-action ranking. Never treat modeled value as realized revenue or bypass prospect identity/consent/dedupe/pressure/provider proof.",
+  "evidence": {
+    "production_cron_job_id": 116,
+    "prior_failure": "2026-10-11T09:27:00Z with scored as",
+    "subsequent_failure": "2026-10-11T10:27:00Z with ranked as (select pa.* ... powerhouse_portfolio_allocator_v1)",
+    "read_only_explain": "portfolio view expands person_intelligence over 24k contacts",
+    "tests": [
+      "tests/brain-commercial-portfolio-score-reuse-p0-4198.test.mjs"
+    ]
+  },
+  "outcome": {
+    "protected_merge_pending": true,
+    "production_deployment_pending": true,
+    "original_cron_success_pending": true,
+    "external_provider_results_proven": false
+  }
+}

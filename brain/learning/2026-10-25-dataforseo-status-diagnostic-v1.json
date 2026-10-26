@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "external-intelligence|tavily-limit-dataforseo-fallback-remote-failure|20261025-v1",
+  "parent_issue": 4198,
+  "related_recoveries": [
+    4869,
+    4873,
+    4874
+  ],
+  "failure_class": "DATAFORSEO_PROVIDER_FAILURE_UNCLASSIFIED",
+  "root_cause": "Production Edge v16 still returns HTTP 207 for 1 of 3 source topics (request 12518: Wet DBA en zelfstandigen). The collector collapsed all DataForSEO error status codes to DATAFORSEO_REMOTE_FAILURE with no safe numeric status evidence. The bounded retry list missed documented temporary 50301-50304 provider errors, so the agent cannot distinguish transient service outage from billing, quota or malformed request.",
+  "observed_evidence": {
+    "edge_version": 16,
+    "canonical_http_request_id": 12518,
+    "processed": 3,
+    "successful": 2,
+    "failed": 1,
+    "found": 18,
+    "allowed": 2,
+    "provider_fallback": "TAVILY_UPSTREAM_PLAN_LIMIT_TO_DATAFORSEO",
+    "paid_order_evidence": "not established"
+  },
+  "fix": "Preserve existing canonical @scheduler source owner. Recognize documented temporary DataForSEO 50301-50304 for at most one retry; store only provider numeric HTTP/API/task statuses and retryable flag in the existing source observation and run response. Never log provider texts, credentials, payload or billing details. No second scheduler, CRM, queue, no unsupported success or paid revenue.",
+  "prevention_rules": [
+    "Classify documented temporary provider codes before dispatching a bounded retry, never retry 401/402/403/429, payment, cost-cap, rate-limit or invalid-payload failures.",
+    "Every degraded source run must capture privacy-safe numeric provider error and distinguish valid zero results from failed searches.",
+    "Existing raw provider secrets and full responses must never enter Brain or portal.",
+    "Do not declare FULL_GREEN until independent provider success, portal action, order and realized revenue evidence are present."
+  ],
+  "tests": [
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DATAFORSEO_PROVIDER_FAILURE_UNCLASSIFIED",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required + CodeQL + protected merge, Supabase Edge ACTIVE deploy matching source revisions, next actual existing bg_roep_functie execution and source-observation numeric readback; remain DEGRADED if provider still fails."
+}

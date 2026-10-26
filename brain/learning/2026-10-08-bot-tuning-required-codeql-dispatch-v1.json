@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|engineering|bot-candidate-protected-dispatch|v1",
+  "obligationId": "powerhouse-bot-tuning-protected-dispatch-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The recovered daily optimizer successfully opened PR #4182 with GITHUB_TOKEN, but the automatic pull_request workflow runs concluded action_required without executing jobs. The existing Required and CodeQL gates were only released through a separate authorized GitHub approval action.",
+  "failureModes": [
+    "Bot-created PR has workflow run conclusion action_required with zero test jobs",
+    "Protected auto-merge cannot proceed despite complete canonical closure",
+    "Scheduled optimizer reports successful PR creation without the required check execution"
+  ],
+  "prevention": [
+    "Use GitHub-documented workflow_dispatch for existing Required and CodeQL workflows on exact candidate branch/HEAD, with actions:write scoped to the trusted optimizer workflow",
+    "Verify provider PR head equals the local committed SHA before dispatch; include exact PR, base and head identities in Required invocation",
+    "Never bypass branch protection, skip CodeQL, auto-approve untrusted fork code or claim green before the real protected gates pass"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-engineering-tuning-candidate.test.mjs"
+    ]
+  },
+  "evidence": {
+    "prior_optimizer_run": 37797973046,
+    "prior_bot_pr": 4182,
+    "unapproved_required_run": 37798131907,
+    "unapproved_codeql_run": 37798131167,
+    "proof_of_later_execution": "AUTHORIZED_APPROVAL_AND_EXACT_HEAD_SYNC",
+    "direct_dispatch_proof": "PENDING_PROTECTED_RUN",
+    "terminal_state": "NOT_YET_PROVEN"
+  },
+  "rollback": "Revert this protected workflow change if dispatched exact-head checks fail; never weaken Required or CodeQL."
+}

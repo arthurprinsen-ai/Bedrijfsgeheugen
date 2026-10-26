@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-composio-session-execute-v3-envelope-20261019",
+  "fingerprint": "netlify-fallback|v3.1-session-execute|result_type-mismatch-and-provider-400",
+  "root_cause": "Production run 39228785972 with Supabase v172 proves OIDC validity, exact ACTIVE Netlify account discovery in one page (50 records), success at session creation, then Composio v3.1 /session/{id}/execute returns HTTP400 on a read-only Netlify get-project tool. Independently, bridge code incorrectly interpreted the documented session.execute response {result_type,data,error,log_id} as legacy {successful}, which would falsely reject a successful 200 completed response. The precise 400 cause remains unproven because the previous code failed to classify the provider error.",
+  "failure_class": "AUTH",
+  "intervention": "Correct session execute result checking to result_type=completed with data and no error or nested failure; keep HTTP400 fail-closed and emit allowlisted error_kind plus validated Composio log_id for exact provider troubleshooting, never raw response/identifiers. Retain pinned Netlify account, user, site, fixed tool selection and OIDC-only origin.",
+  "prevention": "Separate Composio session execute response contracts from legacy direct tool envelopes in CI regression. Require provider log ID on non-2xx when available, and forbid raw credential/error body in logs; never claim recovery absent real provider read and deploy proof.",
+  "state": "AWAITING_PROTECTED_RELEASE_AND_V3_PROVIDER_ACCEPTANCE",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-session-execute-result-v3.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-session-execute-result-v3.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-session-execute-result-v3.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "tests": [
+      "tests/brain-netlify-session-execute-result-v3.test.mjs",
+      "tests/brain-netlify-session-diagnostics.test.mjs"
+    ],
+    "required_checks": "pending",
+    "health": "pending",
+    "fallback_deploy_id": null,
+    "production_readback": "pending"
+  },
+  "evidence_urls": [
+    "https://docs.composio.dev/reference/api-reference/tool-router/postToolRouterSessionBySessionIdExecute",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39228785972",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|portal-v2|lossless-causal-input-brain-ack|v1",
+  "obligationId": "portal-universal-input-causal-lossless-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "supabase:brain-operating-authority",
+  "failureModes": [
+    "portal causal input mutation queue silently dropped all but latest 50 changes",
+    "async Brain acceptance cleared new mutations that arrived while an older write was in flight",
+    "page-specific nested inputs were stored under one generic pages binding",
+    "dirty state races could be misrepresented as confirmed Brain synchronization"
+  ],
+  "prevention": [
+    "never trim unacknowledged causal impact queue",
+    "snapshot change generations before await and remove only acknowledged mutations",
+    "require saved or idle confirmed portal state before Brain dispatch",
+    "write separate PortalPageModel for each native portal.pages source",
+    "always preserve newer mutations for retry"
+  ],
+  "closureRequired": [
+    "protected GitHub merge",
+    "exact source Netlify production release readback",
+    "authenticated customer Portal V2 state and Brain readback",
+    "external data adapter mapping inventory (separate scope)"
+  ],
+  "externalActionEvidence": "NOT_PROVEN",
+  "compiler": {
+    "failure_class": "CAUSAL_LINEAGE_LOSS",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-causal-lossless-writeback.test.mjs"
+    ]
+  },
+  "root_causes": [
+    "hard-coded last-50 truncation destroyed older causal changes before canonical acceptance",
+    "blind clear-all after asynchronous Brain writes removed newer user mutations",
+    "generic pages-level model binding discarded per-native-page source identity",
+    "portal state was not required to be current/saved before submitting model snapshots"
+  ],
+  "tests": [
+    "tests/brain-portal-causal-lossless-writeback.test.mjs",
+    "portal-v2/tests/portal-causal-propagation.test.mjs"
+  ]
+}

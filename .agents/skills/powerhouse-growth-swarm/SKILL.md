@@ -281,3 +281,39 @@ Verplicht:
 - geen commerciële traffic-bridge via het persoonlijke LinkedIn-profiel;
 - views/followers zijn tussenmetingen; paid order en realized revenue blijven terminale north star;
 - dezelfde bestaande commerciële scheduler blijft owner; een parallelle LinkedIn-growth scheduler is verboden.
+
+## SalesRobot unknown-send result — 20 oktober 2026
+
+Fingerprint: `commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020`.
+Een SalesRobot-fout na het versturen kan betekenen dat de provider de DM al heeft geplaatst. De canonieke `powerhouse-linkedin-sales-machine` moet de oorspronkelijke action-ID op `waiting` houden en `needs_readback=true`, `republish_forbidden=true` registreren. Geen fallback-kanaal, automatisch opnieuw verzenden of status `done` zonder onafhankelijke ontvangst-/inbox-ID. Pas bij echte providerreadback mag de bestaande outcome-reconciler afronden. Als de providerlicentie/cookie/campagne ontbreekt: `UNAVAILABLE/CONFIG_REQUIRED`, nooit groen. Bestaande consent, human approval, suppressions, cooldown, berichtkwaliteit en één scheduler blijven bindend. P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
+## Provider readiness onafhankelijk van content en AI — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|early-truth-readonly-canary|20261020`.
+De bestaande `powerhouse-linkedin-sales-machine` moet de werkelijke SalesRobot-licentie, cookie, actieve campagne en uitvoeringsdagen vóór voorbereidende AI-/composer-acties controleren en de bestaande `powerhouse_channel_capabilities_v1` registraties voor DM én campagnes bijwerken. Een upstream AI-storing mag de providerstatus niet bevriezen. Een `dry_run` is alleen lezen: geen SQL-materialisatie, composer, send of evidence-mutatie. Geen tweede scheduler, sender of CRM. Echte verzending blijft afhankelijk van individuele toestemming, human approval, kwaliteit, suppressions, cooldown, providerbevestiging en onafhankelijke readback. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
+## Composio v3.1 SalesRobot user-identity gate — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|composio-user-id-required|20261020`.
+Het Composio-v3.1-executecontract van de bestaande Powerhouse LinkedIn-salesmachine vereist zowel de echte `connected_account_id` als de bijbehorende `user_id` uit dezelfde actieve Composio-accountregistratie. Zonder `user_id` gaf de echte productieruntime bij `SALESROBOT_LIST_LINKEDIN_ACCOUNTS` HTTP 400, terwijl beide gecontroleerde accountregistraties met die `user_id` HTTP 200 gaven. Behoud de bestaande licentie/cookie/campagne- en ontvangersautorisatievoorwaarden; de API-fix is geen toestemming om DM's te versturen. Geen secret- of account-ID hardcoding; één bestaand transport en één scheduler.
+
+
+## Provider-verifieerbare LinkedIn-DM closed loop — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|receipt-before-done|20261020`.
+`SALESROBOT_SEND_MESSAGE` kan bij een geslaagde HTTP-response nog geen onafhankelijk verzendbewijs opleveren. De bestaande Powerhouse LinkedIn-salesmachine houdt na de ack de originele action op `waiting`, slaat de provideridentificatie op, markeert `needs_readback=true` en `republish_forbidden=true`; er mag geen `done`/sent-outcome ontstaan uit alleen de ack. Reconcile uitsluitend met een uniek `salesrobot_linkedin_dm_sent`-event met exacte provider-inbox-message-ID, prospect-UUID, sent-by-me, SENT, readback en passend tijdstip; schrijf dan de canonieke `powerhouse_sales_outcomes` en markeer dezelfde action done. Een ontvanger vereist bovendien `bg_connecties.extra.human_approved=true` en mag niet geblokkeerd of uitgesloten zijn. In afwezigheid van onafhankelijke provider readback: wachten/blocked, niet herversturen of groen verklaren. Eén bestaand CRM, scheduler en agent blijven owner. Parent #4198.
+
+
+## Bestaande hourly assurance — SalesRobot herstel zonder extra scheduler (20-10-2026)
+Fingerprint: `commercial|salesrobot|existing-hourly-provider-preflight|20261020`. De bestaande `powerhouse-autonomous-outreach-assurance-hourly-v1` Cron-taak verricht ook een veilig `provider_preflight`-readback bij de bestaande `powerhouse-linkedin-sales-machine`. Er komt geen aparte scheduler, direct-message-executor of dubbele campagne. Uitsluitend providerstatus + blokkades worden in `powerhouse_channel_capabilities_v1` bijgewerkt. Lokaal Composio ACTIVE zegt niets over SalesRobot-license, cookies of campagne. Bewaar deze oorzaken los en expliciet, maak 10 suggested acties nooit gelijk aan 10 verzendbare DM's. Alle bestaande autorisatie-, anti-dubbel-, compositie- en providerreadbackguards blijven. Parent P0 #4198.
+
+
+## 20-10-2026 — Sociale omissies, herstel van dubbele persoonlijke bron
+Fingerprint `social|linkedin-personal|obligation-hold-dedupe-reconciliation|20261020`.
+Een `content_publication_obligations` met `GLOBAL_POST_DUPLICATE_BLOCKED` is alleen herstelbaar wanneer exact de oude dagbeslissing `blocked`/zonder `delivery_ref` is, de oorspronkelijke publicatieautoriteit wel uitgegeven maar **niet** verbruikt is, en geen provider create/ack/readback of mogelijk neveneffect aanwezig is. Na een afwijkende `hold`-normalisatie moet de centrale orchestrator die twee canonieke staten reconciliëren, eerder geweigerde bronidentiteiten uitsluiten en pas opnieuw genereren vanuit een andere onafhankelijk geverifieerde bron. Herhaal nooit hetzelfde verhaal. De bedrijfspagina met bevestigd provider-ID mag niet opnieuw worden gepost; Instagram vereist aantoonbaar eindmediabewijs; e-mailcontacten vereisen toestemming. Geen nieuwe scheduler, Buffer-route of duplicaat.
+
+
+## Productieherstel — bounded contact authority & identity Cron (20-10-2026)
+Fingerprint: `commercial|contacts|bounded-review-cron|20261020`. Behoud exact bestaande Cron-job `powerhouse-identity-graph-v1` (jobid uit huidige database, geen nieuwe job), dagelijks alle 23k+ relaties beoordelen zonder piek van 2×500 enrichment + 4×500 autoriteitsupdates per slot. Eén pulse van 200 plus één contactautoriteitsbatch van 200 per slot, zes slots per uur `2,17,32,42,47,57 * * * *`; minuut 52 blijft vrij voor bestaande outreach assurance; identiteitsgrafiek-reconciliatie om minuut 32 blijft intact. Dagcapaciteit per stroom = 200×6×24=28.800 theoretisch; geen voltooiingsbewijs zonder readback van werkelijke dagtellers. Sla `BUSY` bij advisory lock niet als voltooid op, probeer dezelfde canonical taak bij volgend normaal tijdslot. Geen tweede scheduler, geen uitgeschakelde executor, geen automatische e-mail- of DM-toestemming. Herstelmigratie `20261020114500_identity_review_bounded_cron_v1.sql` accepteert originele én handmatig begrensde toestand, faalt gesloten bij code- of schedule-drift. Logiek plus regression in `tests/brain-identity-review-bounded-cron-v1.test.mjs`. P0 #4198.
+
+## P0 #4198: bounded authority queue, no duplicate sends (2026-10-20)
+Fingerprint: `commercial|authority|queue-preselect-skip-locked|20261020`. Live SQL contact authority review was joining/suppression-evaluating 23k contacts before applying the candidate batch bound. After repeated 30-second statement timeouts and existing single-owner Cron reduction to a 200-row pulse and one 200-row authority batch, the canonical DB migration now materializes a small queue FIRST with `FOR UPDATE SKIP LOCKED` before the original contact join, preserving every existing authorization/suppression/cooldown gate. Cron job `powerhouse-identity-graph-v1` remains active and existing; do not invent consent or disable a scheduled executor. Test exactly on the existing SQL function and real patient rolling coverage, not on a synthetic green response. Parent #4198.

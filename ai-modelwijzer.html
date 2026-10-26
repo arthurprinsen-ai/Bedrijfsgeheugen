@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI modellen vergelijken 2026 | AI Modelwijzer | Bedrijfsgeheugen</title>
-<meta name="description" content="Vergelijk 110 AI-modellen op doel, gebruik, kosten, snelheid, privacy, governance en data-soevereiniteit. Ontdek welk AI-model bij jouw bedrijf past.">
+<meta name="description" content="Vergelijk 110 AI-modelrecords (inclusief aliassen) op doel, gebruik, kosten, snelheid, privacy, governance en data-soevereiniteit. Ontdek welk AI-model bij jouw bedrijf past.">
 <meta name="bg-zoekwoord" content="AI modellen vergelijken">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/ai-modelwijzer">
 <meta property="og:type" content="website">
@@ -77,7 +77,7 @@
 <div class="eyebrow">AI Modelwijzer · actueel modelregister</div>
 <h1>AI-modellen vergelijken: welk model past bij wat je wilt bereiken?</h1>
 <p>Niet alleen OpenAI versus Claude. Vergelijk modellen op taak, kwaliteit, snelheid, context, maandkosten, privacy, hosting, open weights, dataresidentie, inferentielocatie en data-soevereiniteit — met de officiële bron per model.</p>
-<div class="facts"><span class="fact"><b id="modelCount">—</b> modellen in register</span><span class="fact"><b id="providerCount">—</b> providers</span><span class="fact">Prijs + lifecycle + governance</span><span class="fact">Laatst gecontroleerd: <b>30 september 2026</b></span></div>
+<div class="facts"><span class="fact"><b id="modelCount">—</b> modelrecords in register</span><span class="fact"><b id="providerCount">—</b> providers</span><span class="fact">Prijs + lifecycle + governance</span><span class="fact">Laatste bronregistratie: <b id="catalogEvidenceDate">—</b> <small>(niet alle claims geverifieerd)</small></span></div>
 </div></section>
 
 <section class="wrap">
@@ -309,6 +309,12 @@ function scoreModel(m,text,priority){
  if(m.status==='retired'||m.status==='deprecated')score-=80;
  return score;
 }
+function priceDescriptor(m){
+ const basis=m.pricing_basis;
+ if(basis&&basis.unit==='audio_minute'&&Number.isFinite(basis.usd_per_minute)&&basis.usd_per_minute>0)
+   return 'USD '+basis.usd_per_minute.toFixed(3)+' per audiominuut (publiek API-tarief; klantvoorwaarden controleren)';
+ return m.unit_price||'Prijs: actuele endpoint/contractprijs controleren';
+}
 function monthlyCost(m){
  if(m.input_usd_m==null||m.output_usd_m==null)return null;
  const tasks=+$('tasks').value||0, tin=+$('inputTokens').value||0, tout=+$('outputTokens').value||0;
@@ -316,11 +322,11 @@ function monthlyCost(m){
 }
 function governanceBadges(m){
  const b=[];
- b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie optie</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
+ b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie mogelijk; klantregio niet bevestigd</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
  if(m.self_host)b.push('<span class="badge good">Self-host mogelijk</span>');
  if(m.open_weights)b.push('<span class="badge good">Open weights</span>');
- if(supportsZdr(m))b.push('<span class="badge good">ZDR-pad beschikbaar</span>');
- if(customerControlled(m))b.push('<span class="badge good">Customer-controlled pad</span>');
+ if(supportsZdr(m))b.push('<span class="badge good">ZDR mogelijk; niet aantoonbaar ingeschakeld</span>');
+ if(customerControlled(m))b.push('<span class="badge good">Customer-controlled mogelijk; niet gevalideerd</span>');
  b.push('<span class="badge">'+m.jurisdiction+'</span>');
  return b.join('');
 }
@@ -339,7 +345,7 @@ function bestGovernancePath(m){
 }
 function governancePathHtml(m){
  const g=bestGovernancePath(m);
- if(!g)return '<div class="badge warn">Deployment-governance: nog niet afzonderlijk geverifieerd</div>';
+ if(!g)return '<div class="badge warn">Deployment-governance: geen klantgebonden contract/configuratie bevestigd</div>';
  const val=x=>x==null?'onbekend':String(x);
  return '<div class="why"><strong>Deploymentpad:</strong> '+g.label+
    '<br><strong>Opslag:</strong> '+val(g.storage_residency)+
@@ -348,7 +354,7 @@ function governancePathHtml(m){
    '<br><strong>Retentie:</strong> '+val(g.default_content_retention)+
    '<br><strong>ZDR:</strong> '+val(g.zero_data_retention)+
    '<br><strong>Soevereiniteit:</strong> '+val(g.sovereignty_level)+
-   ' · <a href="'+g.source+'" target="_blank" rel="noopener">governancebron ↗</a></div>';
+   ' · <a href="'+g.source+'" target="_blank" rel="noopener">leveranciersbeleid ↗</a><br><strong>Klantspecifieke afspraken en actieve instellingen:</strong> niet geverifieerd</div>';
 }
 function renderProviderGovernance(){
  const holder=$('providerGovernanceGrid'); if(!holder)return;
@@ -366,7 +372,26 @@ function why(m,text){
  if(m.self_host)reasons.push('meer deploymentcontrole mogelijk');
  return reasons.slice(0,3).join(' · ')||m.strengths.slice(0,3).join(' · ');
 }
+function fullSupplierEvidence(m){
+ // The independent supplier audit can veto recommendation even when catalog labels say full.
+ if(m.supplier_audit?.automatic_recommendation_eligible!==true||m.supplier_audit?.independent_verification_required===true)return false;
+ const e=m.verification_evidence;
+ if(!e||e.claim_scope!=='full'||e.source_url!==m.source||e.checked_on!==m.verified_at)return false;
+ const age=(Date.now()-Date.parse(e.checked_on+'T00:00:00Z'))/86400000;
+ if(!Number.isFinite(age)||age<0||age>14)return false;
+ const required=['model_id','status','pricing','capabilities','deployment','governance'];
+ if(!Array.isArray(e.verified_claims)||!Array.isArray(e.claim_evidence)||(e.not_verified||[]).length)return false;
+ return required.every(claim=>e.verified_claims.includes(claim)&&e.claim_evidence.some(r=>r.claim===claim&&r.checked_on===e.checked_on&&typeof r.url==='string'&&r.url.startsWith('https://')&&typeof r.locator==='string'&&r.locator.trim()&&typeof r.observed_value==='string'&&r.observed_value.trim()&&r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'&&!String(r.scope??'').includes('NOT model-specific')&&(claim!=='pricing'||!/UNVERIFIED|NOT_LIVE|HISTORICAL|PARTIAL|EXAMPLE|UNKNOWN|BASIS_ONLY/.test(String(r.verification_status??'').toUpperCase()))));
+}
 function eligible(m){
+ // EOL models and non-runnable family placeholders must never be auto-recommended.
+ if(m.status==='eol'||m.auto_recommendation_eligible===false||m.record_kind==='model_family_placeholder')return false;
+ // Canonical API entry takes precedence over its user-friendly catalog alias; never recommend the same underlying model twice.
+ if(m.provider_api_id&&catalog.models.some(other=>other!==m&&other.provider===m.provider&&other.id===m.provider_api_id&&other.provider_api_id===m.provider_api_id))return false;
+ // Public model and provider claims cannot attest customer-specific enabled controls.
+ // A private, authenticated tenant acceptance API is required before any restricted recommendation.
+ if($('euOnly').checked||$('zdr').checked||$('customerControl').checked)return false;
+ if(!fullSupplierEvidence(m))return false;
  if($('euOnly').checked&&m.eu_processing!==true)return false;
  if($('selfHost').checked&&!m.self_host)return false;
  if($('openWeights').checked&&!m.open_weights)return false;
@@ -383,8 +408,8 @@ function advise(){
  const allRanked=catalog.models.filter(eligible).map(m=>({...m,_score:scoreModel(m,text,priority),_cost:monthlyCost(m)})).sort((a,b)=>b._score-a._score);
  const ranked=allRanked.slice(0,3);
  const holder=$('recommendations');
- if(!ranked.length){holder.innerHTML='<div class="rec"><h3>Geen model voldoet aan alle harde filters.</h3><p class="why">Versoepel één constraint of kies een self-host/cloudpad dat nog niet volledig in het register is geverifieerd.</p></div>';$('route').innerHTML='<h3>Fail-closed</h3><p>De advisor gaat geen residency- of governance-eigenschap verzinnen om toch een uitkomst te tonen.</p>';$('result').classList.add('on');return;}
- holder.innerHTML=ranked.map((m,i)=>`<article class="rec"><div class="recHead"><span class="rank">${i+1}</span><div><h3>${m.id}</h3><div class="provider">${m.provider} · ${m.tier} · ${m.status}</div></div></div><div class="badges">${governanceBadges(m)}</div><p class="why">${why(m,text)}</p>${governancePathHtml(m)}<div class="money">${m._cost==null?(m.unit_price||'Prijsstructuur niet token-based'):`${money(m._cost)} / maand indicatief`}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">Officiële bron ↗</a></div></article>`).join('');
+ if(!ranked.length){holder.innerHTML='<div class="rec"><h3>Geen automatisch geverifieerde aanbeveling beschikbaar.</h3><p class="why">De onafhankelijke leveranciersaudit is nog niet volledig afgerond of de gekozen eisen zijn nog niet aantoonbaar voldaan. EU-residentie, ZDR of klantbeheer vereisen bovendien een afzonderlijke geauthenticeerde klantacceptatie; publieke leveranciersgegevens zijn hiervoor onvoldoende. Gebruik het register ter oriëntatie, niet als productieautorisatie.</p></div>';$('route').innerHTML='<h3>Fail-closed</h3><p>De advisor gaat geen residency- of governance-eigenschap verzinnen om toch een uitkomst te tonen.</p>';$('result').classList.add('on');return;}
+ holder.innerHTML=ranked.map((m,i)=>`<article class="rec"><div class="recHead"><span class="rank">${i+1}</span><div><h3>${m.id}</h3><div class="provider">${m.provider} · ${m.tier} · ${m.status}</div></div></div><div class="badges">${governanceBadges(m)}</div><p class="why">${why(m,text)}</p>${governancePathHtml(m)}<div class="money">${m._cost==null?priceDescriptor(m):`${money(m._cost)} / maand indicatief`}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">Officiële bron ↗</a></div></article>`).join('');
  const top=ranked[0];
  const qualityFloor=Math.max(1,top._score*.68);
  const lightCandidates=allRanked.filter(m=>m._cost!=null&&m._score>=qualityFloor);
@@ -415,15 +440,18 @@ function renderModels(){
  $('modelGrid').innerHTML=rows.map(m=>{
    const gov=m.governance||{};
    const unknowns=['storage_residency','inference_residency','training_on_customer_data','retention','zero_data_retention','subprocessors'].filter(k=>!gov[k]||String(gov[k]).toLowerCase().includes('unknown')||String(gov[k]).toLowerCase().includes('verify'));
-   return `<article class="model"><h3>${m.id}</h3><div class="meta">${m.provider} · ${m.status} · context ${m.context_k?m.context_k+'k':'n.v.t./onbekend'} · ${(m.modalities||[]).join(', ')}</div><div class="badges">${governanceBadges(m)}</div>${['reasoning','code','writing','speed','cost'].map(k=>`<div class="scoreRow"><span>${k}</span><span class="bar"><i style="width:${m.scores[k]*10}%"></i></span><b>${m.scores[k]}</b></div>`).join('')}<div class="price">${m.input_usd_m!=null?`Input ${money(m.input_usd_m)}/M · Output ${money(m.output_usd_m)}/M`:(m.unit_price||'Prijs: actuele endpoint/contractprijs controleren')}<br>Deployment: ${(m.deployment||[]).join(', ')||'onbekend'}</div><p class="why"><strong>Sterk:</strong> ${(m.strengths||[]).join(' · ')||'nog te classificeren'}</p><p class="why"><strong>Minder geschikt / valkuilen:</strong> ${(m.limitations||[]).join(' · ')||'geen specifieke beperking vastgelegd'}</p><p class="why"><strong>Governance:</strong> opslag=${gov.storage_residency||'onbekend'} · inferentie=${gov.inference_residency||'onbekend'} · training=${gov.training_on_customer_data||'onbekend'} · retentie=${gov.retention||'onbekend'}</p>${unknowns.length?`<div class="badge warn">${unknowns.length} governancevelden te verifiëren</div>`:''}<div class="source"><a href="${m.source}" target="_blank" rel="noopener">officiële bron ↗</a> · gecontroleerd ${m.verified_at||catalog.verified_at}</div></article>`;
+   return `<article class="model"><h3>${m.id}</h3><div class="meta">${m.provider} · ${m.status} · context ${m.context_k?m.context_k+'k':'n.v.t./onbekend'} · ${(m.modalities||[]).join(', ')}</div><div class="badges">${governanceBadges(m)}</div>${['reasoning','code','writing','speed','cost'].map(k=>`<div class="scoreRow"><span>${k}</span><span class="bar"><i style="width:${m.scores[k]*10}%"></i></span><b>${m.scores[k]}</b></div>`).join('')}<div class="price">${m.input_usd_m!=null?`Input ${money(m.input_usd_m)}/M · Output ${money(m.output_usd_m)}/M`:priceDescriptor(m)}<br>Deployment: ${(m.deployment||[]).join(', ')||'onbekend'}</div><p class="why"><strong>Sterk:</strong> ${(m.strengths||[]).join(' · ')||'nog te classificeren'}</p><p class="why"><strong>Minder geschikt / valkuilen:</strong> ${(m.limitations||[]).join(' · ')||'geen specifieke beperking vastgelegd'}</p><p class="why"><strong>Governance:</strong> opslag=${gov.storage_residency||'onbekend'} · inferentie=${gov.inference_residency||'onbekend'} · training=${gov.training_on_customer_data||'onbekend'} · retentie=${gov.retention||'onbekend'}</p>${unknowns.length?`<div class="badge warn">${unknowns.length} governancevelden te verifiëren</div>`:''}<div class="source"><a href="${m.source}" target="_blank" rel="noopener">officiële bron ↗</a> · ${fullSupplierEvidence(m)?'volledig geverifieerd '+m.verified_at:'gedeeltelijk/onvoldoende geverifieerd; laatste historische datum '+(m.verified_at||catalog.verified_at)}</div></article>`;
  }).join('');
  $('modelCount').textContent=rows.length===catalog.models.length?catalog.models.length:`${rows.length}/${catalog.models.length}`;
 }
 async function init(){
- try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
- catch{try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'reload'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
- try{const g=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-provider-governance-v1.json',{cache:'no-store'});providerGovernance=await g.json();}catch{providerGovernance={providers:[]};}
+ try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
+ catch{try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'reload'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
+ try{const g=await fetch('/data/ai-provider-governance-v1.json',{cache:'no-store'});providerGovernance=await g.json();}catch{providerGovernance={providers:[]};}
  $('modelCount').textContent=catalog.models.length;$('providerCount').textContent=new Set(catalog.models.map(m=>m.provider)).size;
+ const dates=catalog.models.map(m=>m.verification_evidence?.checked_on).filter(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x));
+ const latest=dates.sort().at(-1);
+ $('catalogEvidenceDate').textContent=latest?new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(latest+'T12:00:00Z')):'onbekend';
  const providers=[...new Set(catalog.models.map(m=>m.provider))].sort();$('providerFilter').innerHTML='<option value="">Alle providers</option>'+providers.map(p=>`<option>${p}</option>`).join('');
  renderModels();renderProviderGovernance();simpleProfile();
 }
@@ -435,7 +463,7 @@ document.querySelectorAll('.goalCard').forEach(card=>card.addEventListener('clic
 ['cadence','people','volume','dataSensitivity','errorImpact','integration','priority','budget','deploymentPreference'].forEach(id=>$(id)?.addEventListener('change',simpleProfile));
 $('advise').addEventListener('click',advise);
 ['search','providerFilter','tierFilter','governanceFilter','modalityFilter','taskFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderModels));
-$('leadForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('email').value.trim(),status=$('leadStatus');status.textContent='Opslaan…';const advice=lastAdvice||{model:'not-selected',goal:$('goalInput').value.trim()};const idempotencyKey='ai-modelwijzer:'+email.toLowerCase()+':'+advice.model;try{const r=await fetch('https://www.bedrijfsgeheugen.nl/api/ai-modelwijzer-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,model:advice.model,goal:advice.goal,idempotencyKey})});const j=await r.json();status.textContent=j.ok?'Opgeslagen. Je modelkeuze zit nu in de vervolgstap.':'Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}catch{status.textContent='Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}});
+$('leadForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('email').value.trim(),status=$('leadStatus');status.textContent='Opslaan…';const advice=lastAdvice||{model:'not-selected',goal:$('goalInput').value.trim()};const idempotencyKey='ai-modelwijzer:'+email.toLowerCase()+':'+advice.model;try{const r=await fetch('/api/ai-modelwijzer-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,model:advice.model,goal:advice.goal,idempotencyKey})});const j=await r.json();status.textContent=j.ok?'Opgeslagen. Je modelkeuze zit nu in de vervolgstap.':'Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}catch{status.textContent='Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}});
 init();
 </script>
 <script data-bg-page-runtime="modelwijzer-flow-autoplay-v1">

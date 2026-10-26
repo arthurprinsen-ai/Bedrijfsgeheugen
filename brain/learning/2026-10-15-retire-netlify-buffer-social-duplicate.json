@@ -1,0 +1,41 @@
+{
+  "id": "retire-netlify-buffer-social-duplicate-20261015",
+  "date": "2026-10-15",
+  "type": "incident_prevention",
+  "fingerprint": "production|netlify|legacy-buffer-social-writer|missing-json-502|duplicate-sender",
+  "compiler": {
+    "failure_class": "NETLIFY_LEGACY_SOCIAL_WRITER_IMPORT_ENOENT",
+    "scope": "CONTENT_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Netlify edge logs show /var/task/netlify/config/social-channel-identity-contract.json ENOENT in the scheduled and deploy-triggered legacy Buffer sender. Reviving a duplicate Buffer writer is prohibited because canonical provider publication already occurs via Supabase powerhouse-social-publisher.",
+  "prevention": [
+    "Retire the legacy Netlify 10-minute Buffer social scheduler and deploySucceeded publisher hook; do not repackage its missing config to restart the duplicate transport.",
+    "Provide a truthful HTTP 410 retired compatibility response with no provider side effect and no delivery claim.",
+    "Preserve the read-only time-window and provider-state helper exports needed by historical regression tests.",
+    "Keep the canonical Supabase Composio publisher and its exact-identity, reviewer and provider-proof gates unchanged.",
+    "Accept only protected merge, verified new Netlify deploy, and absence of legacy duplicate provider writes; no fake GREEN publication status."
+  ],
+  "evidence": {
+    "provider": "netlify-observability",
+    "observed_at": "2026-10-15T16:10:25Z",
+    "error": "ENOENT: /var/task/netlify/config/social-channel-identity-contract.json",
+    "http": 502,
+    "canonical_live_function": "powerhouse-social-publisher",
+    "canonical_function_version": 296
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-retire-netlify-buffer-social-sender.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-retire-netlify-buffer-social-sender.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-retire-netlify-buffer-social-sender.test.mjs"
+    ]
+  },
+  "status": "PENDING_PROTECTED_CI_AND_PRODUCTION_READBACK"
+}

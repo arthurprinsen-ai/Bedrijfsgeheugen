@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-19",
+  "obligation": "mira-production-stage-registration-20261019",
+  "fingerprint": "mira-production-stage-registration-20261019",
+  "root_cause": "Three existing Mira stages were not production-declared, and shared-helper scope returned before including explicitly edited undeclared functions. Attestation of other functions did not prove the repaired chain.",
+  "intervention": "Register existing three token-authenticated stages and retain explicitly edited slugs in shared/config scope, allowing existing undeclared-function guard to reject missing registration.",
+  "prevention": "Require exact stage inventory and provider source parity, then real same-asset proof. Never equate unrelated successful attestation with whole-chain promotion.",
+  "compiler": {
+    "failure_class": "EXPLICIT_EDGE_FUNCTION_OMITTED_BY_SHARED_SCOPE",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-production-stage-registration-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-production-stage-registration-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-production-stage-registration-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "production_readback_verified": false
+  },
+  "status": "CODE_CANDIDATE_UNDER_PROTECTED_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39302298702",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4492"
+  ],
+  "prevention_rule": "MIRA_STAGE_INVENTORY_AND_EXPLICIT_SCOPE_V1"
+}

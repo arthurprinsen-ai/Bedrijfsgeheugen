@@ -1,12 +1,13 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
 import { ensureIdentityWidget } from '../portal-state.js';
+import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['live','Live uitvoering'],['agent-learning','Leerintelligentie'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
@@ -85,11 +86,11 @@ function errorView(events){
 }
 function layerView(events,observability){
   const components=arr(observability.components);
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Activiteit per laag</h4>${bars(groupCount(events,'layer').slice(0,16),events.length)}</section><section class="poc-panel"><h4>Platform- en componentstatus</h4>${components.length?components.map(c=>`<article class="poc-component"><div><b>${esc(c.name||c.component||c.platform||'Component')}</b><small>${esc(c.kind||c.layer||'')}</small></div><span class="poc-dot ${c.healthy===false?'bad':'good'}"></span></article>`).join(''):empty('Nog geen componentstatus in de runtimeprojectie.')}</section></div>`;
+  return `<div class="poc-grid2"><section class="poc-panel"><h4>Activiteit per laag</h4><p class="poc-note">Brein: context, verbanden en leren. Powerhouse: beoordelen, beslissen en uitvoeren. Heartbeat: geplande taken en resultaatcontrole. Hieronder staat alleen activiteit die in de geladen runtimegegevens is vastgelegd.</p>${bars(groupCount(events,'layer').slice(0,16),events.length)}</section><section class="poc-panel"><h4>Platform- en componentstatus</h4>${components.length?components.map(c=>`<article class="poc-component"><div><b>${esc(c.name||c.component||c.platform||'Component')}</b><small>${esc(c.kind||c.layer||'')}</small></div><span class="poc-dot ${c.healthy===false?'bad':'good'}"></span></article>`).join(''):empty('Nog geen componentstatus in de runtimeprojectie.')}</section></div>`;
 }
 function knowledgeView(events){
   const knowledge=events.filter(isKnowledge);
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Learning & documentatie</h4>${knowledge.length?timeline(knowledge):empty('Geen learning/documentatie-events binnen deze filters.')}</section><section class="poc-panel"><h4>Wat wordt vastgelegd</h4><div class="poc-checks"><span>Brain learning</span><span>Development ledger</span><span>Menselijke documentatie</span><span>Root cause</span><span>Prevention rule</span><span>Outcome/evidence</span></div></section></div>`;
+  return `<div class="poc-grid2"><section class="poc-panel"><h4>Learning & documentatie</h4>${knowledge.length?timeline(knowledge):empty('Geen learning/documentatie-events binnen deze filters.')}</section><section class="poc-panel"><h4>Wat wordt vastgelegd</h4><p class="poc-note">Een wijziging hoort samen te gaan met uitleg, bron, eigenaar, test, resultaat en een leerregel. De systeemkaart volgt de broncode van deze release. Het handboek in Notion is een aparte menselijke weergave; een bijgewerkte Notion-pagina betekent niet automatisch dat het portaal of een koppeling is bijgewerkt.</p><div class="poc-checks"><span>Brain learning</span><span>Development ledger</span><span>Menselijke documentatie</span><span>Root cause</span><span>Prevention rule</span><span>Outcome/evidence</span></div></section></div>`;
 }
 function skillsView(events){
   const skills=events.filter(isSkill);
@@ -100,6 +101,36 @@ function deliveryView(events,observability){
   const economics=observability.economics||{};
   return `<div class="poc-grid2"><section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
+function liveView(events,observability,refreshError=''){
+  const now=Date.now();
+  const groups=[
+    ['GitHub / CI',/github|pull request|commit|merge|codeql|branch protection|required check/i],
+    ['Netlify / productie',/netlify|deploy|website|production release|site release/i],
+    ['Supabase / data',/supabase|edge function|migration|database|postgres/i],
+    ['Heartbeat / Brein',/heartbeat|brain|powerhouse|obligation|reconciliation/i],
+    ['Commerciële kanalen',/email|e-mail|linkedin|instagram|post|social|lead|commerc|dm\b|sales/i],
+    ['Agents / workflows',/agent|worker|workflow|automation|autonom|orchestrat/i]
+  ];
+  const latest=events.slice().sort((a,b)=>timeMs(b.occurredAt)-timeMs(a.occurredAt));
+  const proof=event=>/verified|proven|delivered|confirmed|fulfilled/i.test(String(event?.status||''))&&timeMs(event?.occurredAt)&&now-timeMs(event.occurredAt)<=7200000;
+  const blocks=groups.map(([label,re])=>{
+    const list=latest.filter(e=>re.test([e.source,e.layer,e.title,e.rawType,e.detail].join(' ')));
+    const last=list[0],fresh=last&&timeMs(last.occurredAt)&&now-timeMs(last.occurredAt)<=7200000;
+    const lastTone=!last?'neutral':!fresh?'warn':tone(last.status,last.severity);
+    const desc=!last?'Geen onafhankelijke observatie in deze projectie':!fresh?'Waarneming ouder dan twee uur':proof(last)?'Recent terminal bewijs geregistreerd':'Recente activiteit; terminal resultaat niet bewezen';
+    return `<article class="poc-panel"><div class="poc-panelhead"><h4>${esc(label)}</h4><span class="poc-badge ${lastTone}">${esc(!last?'Onbekend':!fresh?'Niet actueel':last.status||'Waargenomen')}</span></div><p class="poc-note">${esc(desc)}</p><p><b>${esc(last?.title||'Geen event')}</b></p><small>${esc(fmtTime(last?.occurredAt))} · ${esc(last?.source||'—')}</small></article>`;
+  }).join('');
+  const blockers=latest.filter(e=>isError(e)||tone(e.status,e.severity)==='warn').slice(0,15);
+  const recent=latest.filter(e=>isDelivery(e)||/email|linkedin|instagram|social|lead|commercial|heartbeat|agent/i.test([e.layer,e.source,e.title].join(' '))).slice(0,40);
+  const eventLine=e=>`<article class="poc-error"><div>${statusBadge(e)}<b>${esc(e.title||e.rawType||'Activiteit')}</b></div><p>${esc(e.detail||e.subjectId||'Geen nadere oorzaak of actie vastgelegd.')}</p><small>${esc(fmtTime(e.occurredAt))} · ${esc(e.actor||'Onbekend')} · ${esc(e.source||'Onbekend')}${e.referenceUrl?` · <a href="${esc(e.referenceUrl)}" target="_blank" rel="noopener noreferrer">Open bronbewijs ↗</a>`:''}</small></article>`;
+  const time=observability.updatedAt||latest[0]?.occurredAt;
+  const outdated=!timeMs(time)||now-timeMs(time)>7200000;
+  return `<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
+  <div class="poc-grid3">${blocks}</div>
+  <div class="poc-grid2"><section class="poc-panel"><h4>Blokkades en herstel</h4>${blockers.length?blockers.map(eventLine).join(''):empty('Geen blokkades geregistreerd in deze selectie; dit bewijst niet dat alle externe systemen probleemloos draaien.')}</section>
+  <section class="poc-panel"><h4>Actuele werkstroom en bewijslinks</h4>${recent.length?recent.map(eventLine).join(''):empty('Geen actuele uitvoering in de canonieke projectie. Er worden geen werkzaamheden gesuggereerd.')}</section></div>`;
+}
+
 function overview(events,observability){
   const s=summary(events,observability);
   const errors=events.filter(isError).sort((a,b)=>timeMs(b.occurredAt)-timeMs(a.occurredAt));
@@ -121,14 +152,15 @@ function systemMapView(systemMap,events){
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
   const inventory=(title,items)=>`<details class="psm-inventory"><summary><b>${esc(title)}</b><span>${arr(items).length}</span></summary><div>${arr(items).map(item=>`<code>${esc(item)}</code>`).join('')}</div></details>`;
   const contract=systemMap.agentRegistrationContract||{};
-  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>GitHub definieert en levert, Netlify ontsluit, Supabase is de canonieke runtime, Notion projecteert de menselijke waarheid en Portal V2 maakt alles bestuurbaar. Runtime-actors worden automatisch toegevoegd zodra zij evidence met actor-identiteit leveren.</p></div><small>Snapshot ${esc(fmtTime(systemMap.observedAt))}</small></section>
+  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>Het Brein bewaart en verbindt bedrijfscontext, bronnen en geleerde lessen. Powerhouse gebruikt die context om signalen te beoordelen, acties te kiezen en resultaten te volgen. Heartbeat laat de bestaande taken op hun eigen ritme uitvoeren en controleert hun uitkomst. Het portaal toont de beschikbare gegevens en bewijsstatus; GitHub levert de code, Supabase verwerkt en bewaart, Netlify ontsluit en Notion documenteert. Een geplande taak of opgeslagen keuze bewijst nog geen uitgevoerde actie.</p></div><small>Broninventaris gecontroleerd: ${esc(fmtTime(systemMap.observedAt))}</small></section>
+  <p class="poc-note">De uitleg en broninventaris volgen dezelfde gecontroleerde release als dit portaal. Dit registreert wat is gebouwd; live werking vereist afzonderlijk runtime- en resultaatbewijs. Broncontrole: ${esc(systemMap.explanationInventory?.contentHash?.slice(0,12)||'nog geen controlebewijs')}. Supabase-catalogus waargenomen: ${esc(fmtTime(liveSupabase.generatedAt))}.</p>
   <div class="poc-kpis psm-kpis">
     ${kpi('Supabase tabellen',liveSupabase.status==='LIVE'?liveTables.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('Supabase views',liveSupabase.status==='LIVE'?liveViews.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('DB functions',liveSupabase.status==='LIVE'?liveDbFunctions.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('Actieve cron-jobs',liveSupabase.status==='LIVE'?liveCron.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
-    ${kpi('GitHub workflows',snapshot.github?.workflows??arr(inventories.githubWorkflows).length,'delivery + intelligence')}
-    ${kpi('Netlify functions',snapshot.netlify?.functions??arr(inventories.netlifyFunctions).length,'API + portal boundary')}
+    ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
+    ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
@@ -255,10 +287,11 @@ function accessState(root,status,onLogin){
 }
 
 export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
-  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map',composio:{loading:false,data:null,error:null,polling:false,resumed:false}};
+  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'live',refreshError:'',composio:{loading:false,data:null,error:null,polling:false,resumed:false}};
   const root=document.createElement('section');root.className='poc';container.innerHTML='';container.appendChild(root);
   let securedRuntime=null;
   let destroyed=false;
+  let livePollTimer=null;
   let composioPollTimer=null;
   let composioPollCount=0;
 
@@ -267,7 +300,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     const obs=securedRuntime.observability||{};
     const all=arr(obs.events);const events=filterEvents(all,state);
     const actors=unique(all.map(e=>e.actor)),layers=unique(all.map(e=>e.layer)),sources=unique(all.map(e=>e.source));
-    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>Admin runtime gekoppeld</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
+    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>${state.refreshError?'Vernieuwen mislukt':'Beveiligde readback'}</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
       <section class="poc-filters">
         <label>Periode<select data-filter="period"><option value="today">Vandaag</option><option value="week">7 dagen</option><option value="month">30 dagen</option><option value="all">Alles</option></select></label>
         <label>Actor<select data-filter="actor"><option value="all">Alle actors</option>${actors.map(v=>`<option>${esc(v)}</option>`).join('')}</select></label>
@@ -286,7 +319,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
     if(state.tab==='integrations'){
       body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
       body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));
@@ -349,11 +382,20 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     }
   }
 
-  async function refresh(){
-    root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
-    const result=await adminRuntimeEvidence(fetchImpl);
+  async function refresh({quiet=false}={}){
+    if(!quiet)root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
+    let result;
+    try{result=await adminRuntimeEvidence(fetchImpl);}catch{result={status:'error',runtime:null};}
     if(destroyed)return;
-    if(result.status!=='ready'){securedRuntime=null;accessState(root,result.status,()=>openAdminLogin());return;}
+    if(result.status==='unauthenticated'||result.status==='forbidden'){
+      securedRuntime=null;state.refreshError=result.status;accessState(root,result.status,()=>openAdminLogin());return;
+    }
+    if(result.status!=='ready'){
+      state.refreshError='OBSERVABILITY_READBACK_FAILED';
+      if(securedRuntime)render();else accessState(root,'error',()=>openAdminLogin());
+      return;
+    }
+    state.refreshError='';
     securedRuntime=result.runtime;render();
   }
 
@@ -361,5 +403,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
   globalThis.netlifyIdentity?.on?.('login',onAuth);
   globalThis.netlifyIdentity?.on?.('logout',onAuth);
   refresh();
-  return {render:refresh,destroy:()=>{destroyed=true;stopComposioPolling();globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
+  // Read-only bounded polling: no chat session required, no mutation or retry storm.
+  livePollTimer=setInterval(()=>{if(!root.isConnected){clearInterval(livePollTimer);livePollTimer=null;return;}if(document.visibilityState==='hidden'||!root.closest('#portalView')?.classList.contains('open'))return;refresh({quiet:true});},30000);
+  return {render:refresh,destroy:()=>{destroyed=true;if(livePollTimer!==null)clearInterval(livePollTimer);stopComposioPolling();globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
 }

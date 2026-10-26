@@ -1,0 +1,109 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-10-25",
+  "contract": "execution-resilience-proof-cadence-v1",
+  "parent_p0": 4198,
+  "fingerprint": "powerhouse|execution-resilience|regression-stage-30m-vs-4m-assurance-window|20261025-v1",
+  "status": "CANDIDATE",
+  "owner": "powerhouse-existing-scheduler-and-assurance",
+  "terminal_maturity": "CANDIDATE",
+  "root_cause": "Real pg_cron mux executes at interleaved 1-2m slots. Internal recovery watchdog runs every 5 minutes (m % 5 = 1), but actual full 8-stage evidence bridge runs only at minutes 23 and 53. The loop registry expects 2 minutes and expires six receipts after 4 minutes.",
+  "false_diagnosis_retired": "powerhouse|execution-resilience|assurance-cadence-2m-vs-5m|20261025-v1",
+  "measured_before": {
+    "as_of": "2026-10-25T10:36:29Z",
+    "status": "AMBER",
+    "guard_prior": true,
+    "missing_stages": [
+      "action",
+      "readback",
+      "outcome",
+      "measurement",
+      "learning",
+      "guard"
+    ]
+  },
+  "real_runtime_evidence": {
+    "watchdog_cron_slots_utc": [
+      "10:21",
+      "10:26",
+      "10:31",
+      "10:36"
+    ],
+    "regression_evidence_slots_utc": [
+      "10:23",
+      "10:53"
+    ],
+    "canonical_refresh_at": "2026-10-25T10:37:12Z",
+    "refreshed_receipts": 48,
+    "refreshed_loop_state": "GREEN",
+    "all_loops": {
+      "green": 9,
+      "amber": 1,
+      "red": 5
+    }
+  },
+  "fix": "Bind all EIGHT loop stage receipts (input, decision, action, readback, outcome, measurement, learning, guard) to the original genuine watchdog invocation with actual input context, decision policy, stale operation selector and guard result. The separate cron transport receipt remains independently verifiable. No new scheduler or synthetic revenue.",
+  "prevention_rule": "Always model the outer cron schedule, inner mux task schedule, and stage-evidence writer schedule separately; never derive all-stage freshness from successful cron transport alone.",
+  "tests": [
+    "tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs"
+  ],
+  "release": {
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "supabase_preview": "PREVIOUS_HEAD_FAILED_OWNER_DRIFT_REVISED_HEAD_PENDING",
+    "protected_merge": "NOT_EXECUTED",
+    "production_sql": "NOT_EXECUTED",
+    "post_deploy_live_runtime": "NOT_EXECUTED",
+    "consumer_outcomes": "NOT_FABRICATED",
+    "note": "Preview at 11:01 UTC showed six watchdog-sourced stage receipts but stale input and decision. Candidate now binds all eight to the same real operation."
+  },
+  "version": "v1",
+  "obligation_id": "powerhouse|execution-resilience|proof-cadence|20261025-v1",
+  "failure_class": "RUNTIME",
+  "compiler": {
+    "failure_class": "RUNTIME",
+    "scope": "SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs"
+    ],
+    "metrics": [
+      "stage_receipt_source",
+      "guard_fail_closed",
+      "watchdog_slot_cadence",
+      "unresolved_reconciliation_escalations",
+      "false_amber_rate"
+    ]
+  },
+  "productionVerified": false,
+  "preview_clean_room_evidence": {
+    "observed_at": "2026-10-25T10:52:01Z",
+    "original_native_migration_failure": "RESILIENCE_ASSURANCE_OWNER_DRIFT",
+    "source_project": "qeapwmzmopjmewwawovy",
+    "preview_preexisting_registry": {
+      "loop_key": "execution-resilience",
+      "cron_jobname": "powerhouse-execution-resilience-watchdog-v1",
+      "expected_cadence_minutes": 1
+    },
+    "preview_existing_mux_job": {
+      "jobname": "powerhouse-runtime-scheduler-mux-v1",
+      "active": true
+    },
+    "production_existing_registry": {
+      "cron_jobname": "powerhouse-runtime-scheduler-mux-v1",
+      "expected_cadence_minutes": 2
+    },
+    "revised_guard": "Accept only the observed pre-mux (1m/legacy-job) or mux (2m/5m) registry state if active mux job and exact watchdog-slot function already exist. Then converge to mux/5m. Fail closed for unknown state.",
+    "current_status": "REVISED_CANDIDATE_PENDING_NATIVE_PREVIEW"
+  }
+}

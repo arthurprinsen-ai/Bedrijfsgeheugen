@@ -8,7 +8,8 @@ on:
 permissions:
   actions: write
   contents: read
-  pull-requests: read
+  pull-requests: write
+  issues: write
 
 concurrency:
   group: required-gate-watchdog
@@ -25,7 +26,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Recover missing canonical PR gates
+      - name: Verify fail-closed watchdog owner routing before GitHub writes
+        run: node --test tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs tests/brain-required-failed-gate-owner-routing-v1.test.mjs
+      - name: Recover missing gates and route failed gates to existing agent owner
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node .github/scripts/required-gate-watchdog.mjs

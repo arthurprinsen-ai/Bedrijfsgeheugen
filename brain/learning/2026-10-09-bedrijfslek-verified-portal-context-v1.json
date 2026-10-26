@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|bedrijfslek|verified-portal-context-projection|v1",
+  "obligation_id": "bedrijfslek-verified-portal-context-v1",
+  "date": "2026-10-09",
+  "root_cause": "Anonymous Bedrijfslek runtime scan correctly reached ONE BRAIN; authenticated claim only updated scan ownership and an event. With no workshop preprovision, the score/dimensions were absent from tenant canonical portal read model and contextual insight/action surfaces.",
+  "prevention": {
+    "rule": "After verified scan claim, project a provenance-tagged SELF_REPORTED BusinessInput, signal, health domains and unexecuted proposed actions to existing tenant canonical-brain layer without replacing richer company facts; require actual provider stored receipt.",
+    "regression_contract": "tests/brain-bedrijfslek-verified-portal-context-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "MISSING_INTEGRATION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-verified-portal-context-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfslek-verified-portal-context-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfslek-verified-portal-context-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "tests/brain-bedrijfslek-verified-portal-context-v1.test.mjs",
+    "live_authenticated_tenant_claim": "PENDING",
+    "actual_revenue": "NOT_PROVEN"
+  },
+  "architecture": {
+    "original_provider": "powerhouse-scan-ingest",
+    "canonical_portal_layer": "canonical-brain",
+    "read_model_api": "/api/portal-state",
+    "no_new_executors": true,
+    "proposed_actions_not_executed": true
+  },
+  "status": "CANDIDATE_NOT_LIVE_PROVEN"
+}

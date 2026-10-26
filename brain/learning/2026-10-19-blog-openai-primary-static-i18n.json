@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-19",
+  "obligation": "blog-openai-primary-static-i18n-20261019",
+  "fingerprint": "blog|static-nl-en|provider-anthropic-to-openai-only|billing-dependency",
+  "root_cause": "The protected daily blog publisher uses OPENAI_API_KEY, but tools/site-shell/build-localized-routes.mjs still chose ANTHROPIC_API_KEY first. On 2026-10-18/19 Anthropic credit exhaustion interrupted static English translation preparation and prevented creation of the protected blog candidate.",
+  "intervention": "Make OpenAI Responses the only provider for validated static translation-cache preparation. Reuse the already-existing privacy-safe OpenAI blog generator on main; do not duplicate it. Keep immutable URL/placeholder checks, complete source coverage and offline cache-only production builds; classify 400/402/429 quota failures without repeated retries.",
+  "prevention": "Provider-specific billing for retired Anthropic cannot block the blog. With no valid OpenAI key, complete OpenAI output, protected CI or exact live Netlify readback, keep the blog not-live and report the gate. Never create unauthorized emails or repost duplicate content.",
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER_DEPENDENCY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "prevention_rule": "STATIC_I18N_OPENAI_ONLY_COMPLETE_CACHE_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-i18n-credit-fail-fast.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "github_blog_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39174978217",
+    "error_class": "STATIC_I18N_PROVIDER_BILLING_BLOCKED",
+    "blog_artifact_state": "GENERATED",
+    "runtime_deployed": false,
+    "live_blog_verified": false
+  },
+  "status": "SOURCE_CANDIDATE_AWAITING_REQUIRED_TESTS_PROTECTED_MERGE_AND_LIVE_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39174978217"
+  ]
+}

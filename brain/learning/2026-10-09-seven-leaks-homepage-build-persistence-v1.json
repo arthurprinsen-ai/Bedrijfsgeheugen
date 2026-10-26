@@ -1,0 +1,63 @@
+{
+  "fingerprint": "powerhouse|revenue|seven-leaks-homepage-final-build-persistence|v1",
+  "date": "2026-10-09",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "PR #4287 protected-merged the free PDF entry in checked-in index.html and zelfscan.html, and Netlify correctly published that SHA, but fresh direct production HTML proved only the selfscan link survived. The homepage static build rewrote view-home and silently erased the source-only homepage link.",
+  "root_cause": "tools/bouw-v18-production-core.mjs regenerates the final V18 homepage after checked-in index.html; the existing final money-page order converter preserved primary and secondary CTAs but had no tertiary PDF projection. The source-level test looked at historical index source, not final generated HTML, so it missed the silent loss.",
+  "fix": "Extend the existing final tools/site-shell/apply-money-page-order-conversion.mjs to insert a single tangible gratis direct PDF link into the generated home view after its accepted risk-reversal paragraph. Verify its stable asset target, idempotence and fail-closed missing-state semantics. Keep scan, portal CTAs and one canonical source.",
+  "prevention": [
+    "Marketing CTA acceptance requires independently inspecting final generated production DOM, not only protected source SHA.",
+    "All recurring homepage conversion links must be projected through final existing canonical build phase; no second homepage generator.",
+    "Do not skip broken visual, SEO or localization checks to publish.",
+    "Do not classify scans, PDF downloads or provider ACKs as realized orders.",
+    "This repair touches no customer, provider authorization, scheduler, CRM or sales campaign."
+  ],
+  "evidence": {
+    "parent_issue": 4198,
+    "previous_merged_pr": 4287,
+    "previous_main_sha": "3c469c7c824e9e81d46e0b46ca27b0b09011af74",
+    "previous_live_deploy": "6ac9405b67d5080008d2d4ac",
+    "production_probe": "Zenrows direct HTML: /zelfscan includes asset+CTA, / homepage exact SHA lacks free PDF source CTA",
+    "existing_release_readback": 37980460454,
+    "build_authority": "tools/site-shell/apply-money-page-order-conversion.mjs",
+    "test": "tests/brain-seven-leaks-homepage-build-persistence-v1.test.mjs"
+  },
+  "outcome": "Candidate final build correction, not yet proved live. No real paid order, realized revenue or learning from customer receipt proven.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seven-leaks-homepage-build-persistence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seven-leaks-homepage-build-persistence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seven-leaks-homepage-build-persistence-v1.test.mjs"
+    ],
+    "invariants": [
+      "V18 generated homepage contains exactly one accessible ungated PDF CTA",
+      "CTA remains after repeated final projection",
+      "primary selfscan and secondary portal unchanged",
+      "no landing redirects requiring email",
+      "site canonical, localization and header preserved",
+      "no fake revenue or duplicate executor"
+    ],
+    "regressions": [
+      "tests/brain-seven-leaks-homepage-build-persistence-v1.test.mjs"
+    ],
+    "productionCriteria": [
+      "protected CI passes",
+      "exact merge SHA live Netlify deployed",
+      "independent fresh HTML probe of / and /zelfscan both contain the actual direct PDF CTA",
+      "download asset publicly accessible and four-page PDF valid",
+      "track genuine user click to scan to verifiable paid order only when real",
+      "Brain learns only observed customer outcomes"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CANONICAL_BUILD_ERASES_MARKETING_CTA_FROM_HOMEPAGE",
+    "scope": "WEBSITE_COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

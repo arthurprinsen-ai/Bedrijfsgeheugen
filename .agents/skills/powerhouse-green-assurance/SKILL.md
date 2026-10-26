@@ -200,3 +200,16 @@ For public i18n:
 - every behavioral change to `assets/js/i18n.js` requires a matching `I18N_ASSET_VERSION` rotation in `tools/site-shell/apply-i18n.mjs`;
 - production readback must prove the HTML references the rotated asset and the NL→EN→NL interaction works;
 - do not classify repeated old behavior as a new runtime defect until cache identity has been disproven.
+
+## Netlify runtime dependency assurance — 22 oktober 2026
+Fingerprint: `delivery|netlify|brain-operating-loop-import-deployment-misclassified|20261022-v1`. Een wijziging in `brain/operating-loop/` raakt de bestaande Netlify brain-operating-loop functie, via `store.mjs`. Verplicht `deployment_required=true` met provider exact-SHA en tenant-authenticated API readback. Success met `not_applicable` is geen bewijs. Test `tests/brain-netlify-imported-brain-runtime-deploy-v1.test.mjs`; geen extra scheduler, geen valse groene status.
+
+## Brain runtime cannot skip existing authenticated production readback (22 October 2026)
+
+Fingerprint: `delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1`. A successful exact Netlify deployment of `brain/operating-loop/` is not sufficient proof that authenticated tenant Brain outcomes work. Existing `.github/workflows/production-release-readback.yml` must run its **same** authenticated Portal production proof after successful exact deploy for changes to this imported source, its Netlify entrypoint or handler; missing/invalid provider or tenant proof stays red. Reuse `tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs`, canonical Brain learning, development ledger and System Map. Never add a second scheduler, parallel proof endpoint, cross-tenant token or synthetic receipt. A fully signed-in two-tenant readback remains a separate obligation.
+
+## 23 oktober 2026 — interne cockpit claimt nooit uitkomst zonder bewijs
+
+Fingerprint: `portal|control-plane|fulfilled-without-outcome-proof|20261023-v1`; eigenaar [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198).
+
+Het bestaande portaal projecteert read-only de canonieke /api/powerhouse-control-plane. Een obligation met `current_state=FULFILLED` is géén bewezen uitkomst wanneer `outcome_verified !== true`. Markeer die rood, toon uitkomst onbewezen en label de aggregate teller 'Geclaimd afgerond'. Een string 'true', workflowgroen, zero red_evidence_count of migration_readback zijn onvoldoende. Een echte boolean true uit dezelfde geauthenticeerde backend is noodzakelijk voor groen. De regressietest `portal-v2/tests/control-plane-cockpit.test.mjs` draait ook in de bestaande dagelijkse Universal Closed-loop Learning, zonder extra cron of second Brain. Vereist beschermd GitHub- en productie-readback; premerge nooit LIVE_BEWEZEN claimen.

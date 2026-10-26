@@ -1,6 +1,10 @@
 {
   "version": "SOCIAL-LEARNING-v2",
-  "windowsHours": [24, 48, 72],
+  "windowsHours": [
+    24,
+    48,
+    72
+  ],
   "windowToleranceHours": 6,
   "promotion": {
     "minSampleSize": 5,
@@ -17,18 +21,34 @@
     "dms",
     "substantive_interactions",
     "clicks",
-    "likes"
+    "likes",
+    "reactions"
   ],
   "creativePolicy": {
     "personalLinkedIn": {
       "defaultTextType": "observational_business_standup",
-      "requiredDimensions": ["emotion", "comedy_device", "pain_trigger", "cta_type", "commercial_hypothesis"],
+      "requiredDimensions": [
+        "emotion",
+        "comedy_device",
+        "pain_trigger",
+        "cta_type",
+        "commercial_hypothesis"
+      ],
       "ctaMode": "conversation_first",
       "objective": "commercial_conversation"
     },
     "companyLinkedIn": {
-      "preferredFormats": ["carousel", "case_proof", "diagnostic"],
-      "requiredDimensions": ["proof_type", "offer_type", "pain_trigger", "commercial_hypothesis"],
+      "preferredFormats": [
+        "carousel",
+        "case_proof",
+        "diagnostic"
+      ],
+      "requiredDimensions": [
+        "proof_type",
+        "offer_type",
+        "pain_trigger",
+        "commercial_hypothesis"
+      ],
       "objective": "qualified_demand"
     },
     "blog": {
@@ -38,7 +58,20 @@
     },
     "latentProblemActivation": true,
     "generateFinalCopyNearPublish": true,
-    "avoid": ["fabricated_story", "generic_ai_slogan", "manufactured_outrage", "repetitive_cta"]
+    "avoid": [
+      "fabricated_story",
+      "generic_ai_slogan",
+      "manufactured_outrage",
+      "repetitive_cta"
+    ]
   },
-  "sourceSignals": ["social_learning", "revenue_learning", "seo_growth", "site_analytics", "network_relationships", "sales_outcomes", "powerhouse_opportunities"]
+  "sourceSignals": [
+    "social_learning",
+    "revenue_learning",
+    "seo_growth",
+    "site_analytics",
+    "network_relationships",
+    "sales_outcomes",
+    "powerhouse_opportunities"
+  ]
 }

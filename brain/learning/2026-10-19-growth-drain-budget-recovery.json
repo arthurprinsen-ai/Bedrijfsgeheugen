@@ -1,0 +1,34 @@
+{
+  "fingerprint": "growth-drain|scheduled-499|cooperative-budget|2026-10-19",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-growth-drain-15s-client-cutoff-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4446",
+  "compiler": {
+    "failure_class": "REPLAY_OVER_RUNTIME_BUDGET",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Up to ten sequential Netlify Blob/Supabase/webhook read-write roundtrips per cron invocation exceeded observed ~15-second edge-request client cutoff; full-store list() and event-first ordering increased read cost and outcome starvation. HTTP 499 does not prove server-side rollback.",
+  "prevention_rule": "Budget every scheduled replay before starting another external side effect; use paginated Blob listing, fair event/outcome priority and durable per-item idempotency/readback. Respect provider receipt even when HTTP observer times out. Do not mark delivery complete without provider acknowledgment.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-growth-drain-time-budget-v1.test.mjs",
+    "provider_observation": "Netlify 2026-10-19: growth-drain 1316 HTTP499/1422 HTTP204, P99 ~15s; observation includes function log after 499",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

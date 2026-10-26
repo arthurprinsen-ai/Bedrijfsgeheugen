@@ -1,0 +1,29 @@
+{
+  "id": "openai-content-provider-migration-20261013",
+  "date": "2026-10-13",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|content-generation|anthropic-billing-block|openai-migration|v1",
+  "root_cause": "Canonical content orchestrator remained hardcoded to Anthropic despite an existing OpenAI key and approved predictive OpenAI route; provider billing rejection prevented creating personal LinkedIn artifact.",
+  "prevention": [
+    "Content governance provider, credential lookup and model invocation must agree before production release.",
+    "An API billing failure must not be retried indefinitely; classify and surface for remediation.",
+    "Never consider LinkedIn content live without provider post ID and external readback."
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_PROVIDER_BILLING_HARDCODED",
+    "scope": "CONTENT",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-openai-content-provider-migration-20261013.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_pull_request": 4360,
+    "source_commit": "2d14d77ea10ee8e828ae374819d478dec8a5347b",
+    "production_openai_run": "PENDING",
+    "linkedin_external_post_id": "PENDING"
+  },
+  "status": "PENDING_PRODUCTION_VALIDATION"
+}

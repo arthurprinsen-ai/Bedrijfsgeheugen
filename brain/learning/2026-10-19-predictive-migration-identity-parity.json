@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-19",
+  "obligation": "predictive-calibration-uncertainty-retention-20261019",
+  "fingerprint": "predictive-production-migration-identity-parity-20261019",
+  "root_cause": "Protected4508 passed native Preview and six PostgreSQL behaviors but production provider118292987939 failed: actual growth measurement migration20261019203052 was absent from repository, which retained the byte-identical later223000 revision from4509. Native CLI correctly refused remote versions missing locally.",
+  "intervention": "Restore exact actual provider-applied version203052 and source bytes SHA256f267cda0725f4020c47e4ec6511e84a4f4e527327f1b417490a80564f74fb521. Keep existing Preview-applied223000 revision immutable; it is an idempotent create-if-not-exists/create-or-replace plus same named cron replay. No migration tracking SQL or direct production DDL.",
+  "prevention": "Capture CLI/provider-generated version with its exact applied source. Never invent a second timestamp as its only repository identity. Require actual remote-version containment before a new protected migration claims production.",
+  "compiler": {
+    "failure_class": "SUPABASE_REMOTE_MIGRATION_IDENTITY_ABSENT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PREDICTIVE_MIGRATION_IDENTITY_PARITY_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-migration-history-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-migration-history-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-migration-history-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "actual_provider_sql_byte_equal_existing_source": true,
+    "applied_version": "20261019203052",
+    "compatibility_version": "20261019223000",
+    "source_sha256": "f267cda0725f4020c47e4ec6511e84a4f4e527327f1b417490a80564f74fb521",
+    "six_case_postgresql_retention_fixture_passed": true
+  },
+  "status": "CANDIDATE_REQUIRES_NATIVE_PREVIEW_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4508",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4509"
+  ]
+}

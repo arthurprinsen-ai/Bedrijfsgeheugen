@@ -1,13 +1,8 @@
 name: Blog Technical SEO Gate
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'blog/**'
-      - 'sitemap.xml'
-      - 'robots.txt'
-      - '.github/workflows/weekblog.yml'
+  merge_group:
+    types: [checks_requested]
   workflow_dispatch:
 
 permissions:
@@ -35,8 +30,8 @@ jobs:
           from urllib.parse import urlparse
 
           ROOT = pathlib.Path('.')
-          BASE = '${{ github.event.pull_request.base.sha }}'.strip()
-          HEAD = '${{ github.event.pull_request.head.sha }}'.strip()
+          BASE = '${{ github.event.merge_group.base_sha }}'.strip()
+          HEAD = '${{ github.event.merge_group.head_sha }}'.strip()
           if not BASE or not HEAD:
               changed = subprocess.check_output(['git','diff','--name-only','HEAD~1','HEAD'], text=True).splitlines()
           else:
@@ -180,8 +175,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          BASE='${{ github.event.pull_request.base.sha }}'
-          HEAD='${{ github.event.pull_request.head.sha }}'
+          BASE='${{ github.event.merge_group.base_sha }}'
+          HEAD='${{ github.event.merge_group.head_sha }}'
           slug=$(git diff --name-only "$BASE" "$HEAD" | sed -nE 's#^blog/([^/]+)/index\.html$#\1#p' | head -n1)
           echo "slug=$slug" >> "$GITHUB_OUTPUT"
       - name: Serve static site

@@ -33,6 +33,15 @@ export function isHardAssetFailure({ type = '', errorText = '' } = {}) {
   return ['document','stylesheet','script'].includes(resourceType);
 }
 
+export function shouldRetryTransientAssetObservation(observation = {}) {
+  return Boolean(
+    observation.httpOk
+    && observation.identity?.ok
+    && (observation.observedPageErrors || []).length === 0
+    && (observation.failedAssets || []).length > 0
+  );
+}
+
 export function summarizeRouteResult({ visibleText = '', html = '', pageErrors = [], failedAssets = [], httpOk = true, identityOk = true } = {}) {
   const hasVisibleContent = String(visibleText).trim().length > 0 && String(html).trim().length > 0;
   const ok = Boolean(httpOk && identityOk && hasVisibleContent && pageErrors.length === 0 && failedAssets.length === 0);
@@ -118,15 +127,20 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
 
 async function observeRoute(browser, baseUrl, route, viewport, { attempts = 3 } = {}) {
   let lastError;
+  let lastObservation;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      return await observeRouteAttempt(browser, baseUrl, route, viewport);
+      const observation = await observeRouteAttempt(browser, baseUrl, route, viewport);
+      lastObservation = observation;
+      if (!shouldRetryTransientAssetObservation(observation) || attempt >= attempts) return observation;
+      await new Promise(resolve => setTimeout(resolve, 750 * attempt));
     } catch (error) {
       lastError = error;
       if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
       await new Promise(resolve => setTimeout(resolve, 1_000 * attempt));
     }
   }
+  if (lastObservation) return lastObservation;
   throw lastError;
 }
 

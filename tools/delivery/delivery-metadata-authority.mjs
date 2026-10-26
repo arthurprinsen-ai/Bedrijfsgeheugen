@@ -47,7 +47,13 @@ function normalizeManifest(manifest = {}) {
   return Object.freeze({ delivery, expectedPaths: Object.freeze(expectedPaths), maxFiles });
 }
 
-export function resolveDeliveryMetadataAuthority({ prBody = '', manifest = null } = {}) {
+export function resolveDeliveryMetadataAuthority({ prBody = '', manifest = null, eventName = '' } = {}) {
+  // A synthetic merge group is not the historic single-PR one-loop manifest.
+  // Keep required checks fail-closed until provider-bound aggregate scope,
+  // obligation and writer-lease evidence exists.
+  if (eventName === 'merge_group') {
+    throw new Error('MERGE_GROUP_ADMISSION_PROOF_REQUIRED');
+  }
   const fallback = parsePrScope(prBody);
   if (!manifest) return Object.freeze({ source: 'pr-body', ...fallback });
   const versioned = normalizeManifest(manifest);

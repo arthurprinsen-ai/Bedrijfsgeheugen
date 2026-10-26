@@ -13,11 +13,13 @@ on:
         options:
           - dry-run
           - apply-safe
+          - provider-ghost-only
 
 permissions:
   actions: write
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: powerhouse-repository-janitor
@@ -25,6 +27,8 @@ concurrency:
 
 jobs:
   janitor:
+    # GitHub 2026 cache-token least privilege: this privileged Janitor never uses Actions caches.
+    cache-mode: none
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -57,9 +61,9 @@ jobs:
             let uniqueCommits=true;
             let compareEvidence={status:'UNPROVEN'};
             try {
-              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/main...${pr.head.sha}`);
+              const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/${process.env.GITHUB_SHA}...${pr.head.sha}`);
               uniqueCommits=Number(compare.ahead_by || 0) > 0;
-              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
+              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0),changedFiles:Array.isArray(compare.files)?compare.files.map(file=>file.filename):[]};
             } catch (error) {
               compareEvidence={status:'UNPROVEN',error:String(error?.message||error)};
             }
@@ -78,6 +82,7 @@ jobs:
           const evidence={
             observed_at:new Date().toISOString(),
             repository:process.env.GITHUB_REPOSITORY,
+            main_epoch_sha:process.env.GITHUB_SHA,
             open_pr_count:candidates.length,
             candidates:candidates.map(({number,headSha,uniqueCommits,compareEvidence})=>({number,headSha,uniqueCommits,compareEvidence})),
             ...plan,
@@ -85,13 +90,44 @@ jobs:
           await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
           console.log(JSON.stringify(evidence,null,2));
           NODE
+      - name: Advise owner-safe current-main reconstruction from Janitor snapshot
+        if: always()
+        continue-on-error: true
+        run: |
+          node --input-type=module - <<'NODE'
+          import {readFile,writeFile} from 'node:fs/promises';
+          import {planCurrentMainReconstruction} from './tools/delivery/current-main-reconstruction.mjs';
+          const snapshot=JSON.parse(await readFile('.artifacts/powerhouse-repository-janitor.json','utf8'));
+          const raw=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+          const indexed=new Map(snapshot.candidates.map(p=>[p.number,p]));
+          const pulls=raw.map(pr=>{
+            const evidence=indexed.get(pr.number)?.compareEvidence||{};
+            const body=pr.body||'';
+            const lease=/^Writer-Lease-Owner:\s*\S+/m.test(body) && !/^Writer-Lease-State:\s*(?:RETIRED|CLOSED)/m.test(body);
+            return {number:pr.number,behind_by:evidence.status==='UNPROVEN'?null:evidence.behind_by,
+              sameRepository:pr.head?.repo?.full_name===process.env.GITHUB_REPOSITORY,
+              optedIn:(pr.labels||[]).some(label=>label.name==='autonomous-sync'),
+              writerLeaseOwned:lease,
+              draft:pr.draft===true,
+              changedFiles:evidence.changedFiles||[]};
+          });
+          const plan=planCurrentMainReconstruction({pulls,mainSha:snapshot.main_epoch_sha});
+          await writeFile('.artifacts/powerhouse-current-main-reconstruction.json',JSON.stringify({source:'repository-janitor',mainSha:snapshot.main_epoch_sha,advisoryOnly:true,plan},null,2)+'\n');
+          console.log(JSON.stringify({advisoryOnly:true,plans:plan.length,ownerHandoffs:plan.filter(p=>p.action==='OWNER_HANDOFF').length}));
+          NODE
+      - name: Diagnose read-only merge freshness from existing Janitor snapshot
+        if: always()
+        continue-on-error: true
+        run: node tools/delivery/ci-merge-freshness.mjs
       - name: Apply deterministic safe PR cleanup
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
+          # A successor PR is necessarily newer than its predecessor. Apply cleanup oldest-first so
+          # a transitive chain A -> B -> C never closes B before A has validated B as its successor.
+          jq -c '[.actions[] | select(.perform == true)] | sort_by(.prNumber)[]' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
             pr="$(jq -r '.prNumber' <<<"$action")"
             reason="$(jq -r '.reason' <<<"$action")"
             successor="$(jq -r '.successorNumber // empty' <<<"$action")"
@@ -128,15 +164,38 @@ jobs:
             obligation="$(printf '%s\n' "$body" | sed -n 's/^Obligation-ID:[[:space:]]*//p' | head -n1)"
             [ -n "$obligation" ] || { echo "::error::TERMINAL_LEASE_CLOSED_WITHOUT_OBLIGATION:#${pr}"; exit 78; }
 
-            successor_count="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))] | length' .artifacts/open-prs-after.json)"
+            # Only non-retired open PRs can be active successors. Retired PRs may stay visible
+            # for provenance but must never create a false multi-writer ambiguity.
+            successor_count="$(jq -r --arg obligation "$obligation" '[.[] |
+              select(.state=="open") |
+              select((.body // "") | contains("Obligation-ID: " + $obligation)) |
+              select((((.title // "") | startswith("RETIRED")) | not)) |
+              select((((.body // "") | contains("Retirement-State: RETIRED_DO_NOT_MERGE")) | not)) |
+              select((((.body // "") | contains("\nRETIRED:")) | not))
+            ] | length' .artifacts/open-prs-after.json)"
+            merged_successor_count="$(jq -r --arg obligation "$obligation" --argjson pr "$pr" '[.[] |
+              select(.number != $pr) |
+              select(.merged_at != null) |
+              select((.body // "") | contains("Obligation-ID: " + $obligation))
+            ] | length' .artifacts/closed-prs-recent.json)"
             if [ "$successor_count" -eq 0 ]; then
-              current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
-              [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
-              [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
-              gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
-              jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+              if [ "$merged_successor_count" -gt 0 ]; then
+                jq -cn --arg type TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR --argjson pr "$pr" --arg obligation "$obligation" --argjson merged_successors "$merged_successor_count" '{type:$type,pr_number:$pr,obligation_id:$obligation,merged_successor_count:$merged_successors}' >> .artifacts/janitor-runtime-actions.ndjson
+              else
+                current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+                [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
+                [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
+                gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
+                jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+              fi
             elif [ "$successor_count" -eq 1 ]; then
-              successor="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))][0].number' .artifacts/open-prs-after.json)"
+              successor="$(jq -r --arg obligation "$obligation" '[.[] |
+                select(.state=="open") |
+                select((.body // "") | contains("Obligation-ID: " + $obligation)) |
+                select((((.title // "") | startswith("RETIRED")) | not)) |
+                select((((.body // "") | contains("Retirement-State: RETIRED_DO_NOT_MERGE")) | not)) |
+                select((((.body // "") | contains("\nRETIRED:")) | not))
+              ][0].number' .artifacts/open-prs-after.json)"
               jq -cn --arg type TERMINAL_LEASE_SUCCESSOR_EXISTS --argjson pr "$pr" --argjson successor "$successor" --arg obligation "$obligation" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation}' >> .artifacts/janitor-runtime-actions.ndjson
             else
               echo "::error::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"
@@ -187,6 +246,24 @@ jobs:
               [ "$safe_cancel" = true ] || continue
               latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
               case "$latest_status" in queued|in_progress) ;; *) continue ;; esac
+              # Long-stuck zero-job runs can be GitHub provider ghosts. The bounded provider
+              # reconciler below owns cancel/force/delete and deduplicated escalation;
+              # never send the same 409/403 trio on every hourly janitor sweep.
+              if [ "$latest_status" = queued ] && [ -n "$created_at" ]; then
+                run_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
+                now_epoch="$(date -u +%s)"
+                if [ "$run_epoch" -gt 0 ] && [ $((now_epoch-run_epoch)) -ge 86400 ]; then
+                  run_details="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" 2>/dev/null || echo '{}')"
+                  updated_at="$(jq -r '.updated_at // ""' <<<"$run_details")"
+                  if [ "$updated_at" = "$created_at" ]; then
+                    jobs_count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=1" --jq '.total_count' 2>/dev/null || echo UNPROVEN)"
+                    if [ "$jobs_count" = 0 ]; then
+                      jq -cn --arg type GITHUB_PROVIDER_GHOST_OBSERVED --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,owner:"github-actions-ghost-reconcile"}' >> .artifacts/janitor-runtime-actions.ndjson
+                      continue
+                    fi
+                  fi
+                fi
+              fi
               cancel_mode=""
               if gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
                 cancel_mode=normal-cancel
@@ -264,6 +341,80 @@ jobs:
               fi
             done
           fi
+      - name: Reconcile provider-owned GitHub Actions zero-job ghosts
+        if: (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'apply-safe' || github.event.inputs.mode == 'provider-ghost-only')) || github.event_name == 'schedule'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/github-actions-ghost-reconcile.mjs
+      - name: Observe bounded CI throughput on existing hourly Janitor
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/ci-throughput-telemetry.mjs
+      - name: Observe actual Recovery Supervisor runs and repeated drift in existing Janitor
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node tools/delivery/recovery-supervisor-telemetry.mjs
+      - name: Derive read-only repeated CI job priorities for existing agents
+        if: always()
+        continue-on-error: true
+        run: node tools/delivery/ci-agent-priorities.mjs
+      - name: Recover missed daily self-evolution using existing hourly Janitor
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUESTED_MODE: ${{ github.event.inputs.mode }}
+        run: node tools/delivery/daily-learning-liveness-recovery.mjs
+      - name: Reconcile explicitly enrolled PR branches with main
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            let updated = 0, current = 0, blocked = 0, skipped = 0;
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', base: 'main', per_page: 100
+            });
+            for (const pr of prs) {
+              // Never mutate forks or draft work without the branch owner's approval.
+              if (pr.draft || pr.head.repo?.full_name !== context.repo.owner + '/' + repo) {
+                skipped++;
+                continue;
+              }
+              // Observe every PR, but mutate only branches explicitly enrolled by their owners.
+              // No automatic update of another agent's branch without an opt-in label.
+              const optedIn = (pr.labels || []).some(label => label.name === 'autonomous-sync');
+              if (!optedIn) {
+                core.info(`PR #${pr.number}: not enrolled in autonomous-sync; read-only`);
+                skipped++;
+                continue;
+              }
+              try {
+                const comparison = await github.rest.repos.compareCommits({
+                  owner, repo, base: 'main', head: pr.head.ref
+                });
+                const behind = comparison.data.behind_by;
+                if (behind === 0) { current++; continue; }
+                core.info(`PR #${pr.number} behind main by ${behind} commits; requesting safe GitHub-native update`);
+                // expected_head_sha is a compare-and-swap lease: never overwrite newer work.
+                await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch', {
+                  owner, repo, pull_number: pr.number,
+                  expected_head_sha: pr.head.sha
+                });
+                updated++;
+              } catch (error) {
+                blocked++;
+                core.warning(`PR #${pr.number} not safely updated: ${error.status || 'unknown'} ${error.message}`);
+              }
+            }
+            const report = `Autonomous Branch Sync: ${prs.length} open PRs; ${updated} native update requests accepted, ${current} current, ${blocked} blocked, ${skipped} skipped. Accepted is not verified: check PR-head SHA and Required checks before claiming success.`;
+            core.summary.addHeading('Branch synchronization evidence').addRaw(report).write();
+            if (blocked > 0) core.setFailed(report);
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -272,4 +423,10 @@ jobs:
           path: |
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
+            .artifacts/github-actions-ghost-reconcile.json
+            .artifacts/powerhouse-ci-throughput.json
+            .artifacts/powerhouse-ci-agent-priorities.json
+            .artifacts/powerhouse-supervisor-execution-evidence.json
+            .artifacts/powerhouse-merge-freshness.json
+            .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error

@@ -1,0 +1,36 @@
+{
+  "id": "skillops-daily-inventory-4912",
+  "date": "2026-10-25",
+  "status": "candidate_not_live",
+  "obligation": "skillops|daily-inventory|immutable-skill-provenance|20261025-v1",
+  "observation": "Skill source inventory must be deterministic and verifiable before autonomous updates.",
+  "implementation": "Read-only inventory of .agents/skills and brain/skills using SHA-256 with regression assertions.",
+  "evidence": {
+    "tests": [
+      "tests/brain-skillops-inventory.test.mjs"
+    ],
+    "release": "Only current-head Required/CodeQL protected merge and production readback establish a live release."
+  },
+  "limitations": [
+    "No daily schedule connected",
+    "No runtime loading evidence",
+    "No portal dashboard deployed",
+    "No production readback"
+  ],
+  "next_action": "Protected CI merge only after Required and CodeQL pass",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skillops-inventory.test.mjs"
+    ]
+  },
+  "fingerprint": "powerhouse|skillops|unversioned-skill-change-detection|20261025-v1",
+  "root_cause": "Prior inventory had no deterministic source manifest for comparing agent skill changes and versions.",
+  "prevention": "Compute and verify SHA-256 file hashes deterministically before proposing any skill updates; never count file inventory as runtime skill loading proof."
+}

@@ -19,6 +19,7 @@ function portalIntake(v:unknown){
   if(!consent||!company||!contact||!/^\S+@\S+\.\S+$/.test(email))return null;
   return {
     company_name:company,contact_name:contact,email,
+    phone:clean(x.phone,80)||null,
     website:clean(x.website,1000)||null,
     employees:clean(x.employees,120)||null,
     sector:clean(x.sector,160)||null,
@@ -47,6 +48,62 @@ function preprovisionProjection(scan:any,intake:any,tenantId:string){
     }
   };
 }
+const BEDRIJFSLEK_DOMAINS:Record<string,{label:string,action:string}>={
+  verkoop:{label:'Verkoop en opvolging',action:'Maak één eigenaar en opvolgstatus voor alle open offertes.'},
+  planning:{label:'Planning en capaciteit',action:'Maak één gedeelde planning voor werk en capaciteit.'},
+  klantkennis:{label:'Klantkennis',action:'Leg klantafspraken vast buiten individuele inboxen.'},
+  systemen:{label:'Systemen en data',action:'Selecteer één dubbele invoerstap om te standaardiseren.'},
+  administratie:{label:'Administratie',action:'Verminder de meest herhaalde maandelijkse handmatige stap.'},
+  inwerken:{label:'Inwerken en kennis',action:'Borg de vijf belangrijkste inwerkvragen met een eigenaar.'},
+  ai:{label:'AI en governance',action:'Leg AI-gebruiksregels voor data en menselijke controle vast.'},
+  continuiteit:{label:'Continuïteit',action:'Test of een tweede medewerker een kritieke rol kan overnemen.'}
+};
+function mergeProjectionItems(previous:unknown,items:any[]){
+  const result=Array.isArray(previous)?[...previous]:[];
+  for(const item of items){const pos=result.findIndex((row:any)=>row?.id===item.id);if(pos>=0)result[pos]=item;else result.push(item);}
+  return result;
+}
+function claimedBedrijfslekProjection(scan:any,tenantId:string,current:any){
+  const now=new Date().toISOString();
+  const previous=safeObj(current?.data);
+  const previousPortal=safeObj(previous.portal);
+  const previousAssessments=safeObj(previousPortal.assessments);
+  const sourceRef=scan.powerhouse_event_id?`powerhouse_runtime_events:${scan.powerhouse_event_id}`:`scan_inzendingen:${scan.id}`;
+  const dims=Object.entries(safeObj(scan.niveaus)).filter(([key,val])=>Object.hasOwn(BEDRIJFSLEK_DOMAINS,key)&&num(val,0,5)!==null)
+    .map(([key,val])=>({key,label:BEDRIJFSLEK_DOMAINS[key].label,score:Math.round(Number(val)*20)}))
+    .sort((a,b)=>a.score-b.score||a.key.localeCompare(b.key));
+  const score=num(scan.score,0,100);
+  const snapshot={submissionKey:scan.submission_key,scanId:scan.id,score,dimensions:Object.fromEntries(dims.map(x=>[x.key,x.score])),scanDate:scan.scan_datum,source:sourceRef,truthClass:'SELF_REPORTED',verifiedIdentity:true};
+  const input={id:`bedrijfslek-scan:${scan.id}`,inputType:'DigitalMaturityAssessment',modelId:'bedrijfslek-selfscan',
+    instanceId:scan.submission_key,schemaVersion:1,answers:{score,dimensions:snapshot.dimensions,scanDate:scan.scan_datum},
+    metadata:{truthClass:'SELF_REPORTED',identityVerification:'VERIFIED',sourceRef,notFinancialFact:true},
+    sourcePortal:'website-zelfscan',submittedAt:now,truthClass:'SELF_REPORTED',updatedAt:now};
+  const recommendations=dims.slice(0,3).map(x=>({
+    id:`bedrijfslek:${x.key}`,title:BEDRIJFSLEK_DOMAINS[x.key].action,
+    priority:x.score<40?'Hoog':x.score<70?'Middel':'Laag',
+    source:sourceRef,reason:`${x.label}: indicatieve zelfscan ${x.score}/100`,
+    confidence:null,status:'voorgesteld',executed:false,verified:false,updatedAt:now
+  }));
+  const signal={id:`bedrijfslek-scan:${scan.id}`,category:'self_assessment',title:'Bedrijfslek-nulmeting geclaimd',
+    source:sourceRef,status:'Observed',confidence:null,impact:'indicatief',summary:'Zelfgerapporteerde score; de uitkomst is geen geverifieerde bedrijfsprestatie.',updatedAt:now};
+  const cards=dims.map(x=>({id:`bedrijfslek:${x.key}`,label:x.label,score:x.score,value:x.score,source:'bedrijfslek_scan',truthClass:'SELF_REPORTED',updatedAt:now}));
+  const nextData:any={...previous,
+    portal:{...previousPortal,assessments:{...previousAssessments,bedrijfslekScan:snapshot}},
+    signals:mergeProjectionItems(previous.signals,[signal]),
+    recommendedActions:mergeProjectionItems(previous.recommendedActions,recommendations),
+    healthCards:mergeProjectionItems(previous.healthCards,cards),
+    sourceMeta:{...safeObj(previous.sourceMeta),kind:'canonical-brain',live:true,label:'Geverifieerde Bedrijfslek-claim · indicatieve score',updatedAt:now}
+  };
+  // Existing business inputs can be a legacy object; never overwrite that shape.
+  if(Array.isArray(previous.businessInputs)||previous.businessInputs===undefined){
+    nextData.businessInputs=mergeProjectionItems(previous.businessInputs,[input]);
+  }
+  if(!previous.managementSummary){
+    nextData.managementSummary={title:'Jouw Bedrijfslek-nulmeting',score,summary:'Indicatieve uitslag op basis van eigen antwoorden. Verdiep en meet voordat je conclusies over euro’s of prestaties trekt.',priorities:recommendations.map(x=>x.title)};
+  }
+  return {...safeObj(current),schemaVersion:2,tenantId,origin:'canonical-brain',updatedBy:'verified-bedrijfslek-claim',updatedAt:now,sourceUpdatedAt:now,data:nextData};
+}
+
 function normalize(body:any){
   const input=safeObj(body?.scan);
   const submissionKey=clean(body?.submission_key||input.submission_key,180);
@@ -59,8 +116,9 @@ function normalize(body:any){
   const canonical=clean(body?.canonical||`${ORIGIN}/frisse-blik`,1000);
   const isFrisse=canonical===`${ORIGIN}/frisse-blik`||canonical.startsWith(`${ORIGIN}/frisse-blik?`);
   const isWorkshop=canonical===`${ORIGIN}/scan`||canonical.startsWith(`${ORIGIN}/scan?`);
-  if(!(isFrisse||isWorkshop))throw new Error('INVALID_CANONICAL');
-  const kind=isWorkshop?'workshop_scan':'frisse_blik';
+  const isBedrijfslek=canonical===`${ORIGIN}/zelfscan`||canonical.startsWith(`${ORIGIN}/zelfscan?`);
+  if(!(isFrisse||isWorkshop||isBedrijfslek))throw new Error('INVALID_CANONICAL');
+  const kind=isBedrijfslek?'bedrijfslek_scan':isWorkshop?'workshop_scan':'frisse_blik';
   return {submissionKey,score,niveau,dimensions,answers:safeAnswers(input.antwoorden),branche:clean(input.branche,120)||null,omvang:clean(input.omvang,120)||null,doel:clean(input.doel,500)||null,datum:clean(input.datum,40)||new Date().toISOString().slice(0,10),canonical,kind,raw:input};
 }
 
@@ -96,30 +154,62 @@ Deno.serve(async(req:Request)=>{
       if(result.error||!result.data)return json({error:'ORGANISATION_NOT_FOUND'},404);
       org=result.data;
     }
-    const {data:scan,error:scanError}=await client.from('scan_inzendingen').select('id,submission_key,tenant_identity_status,organisatie_id,powerhouse_event_id').eq('submission_key',submissionKey).maybeSingle();
+    const {data:scan,error:scanError}=await client.from('scan_inzendingen').select('id,submission_key,soort,score,niveaus,scan_datum,tenant_identity_status,organisatie_id,company_key,klant_slug,powerhouse_event_id').eq('submission_key',submissionKey).maybeSingle();
     if(scanError||!scan)return json({error:'SCAN_NOT_FOUND'},404);
-    if(scan.organisatie_id&&org&&scan.organisatie_id!==org.id)return json({error:'SCAN_ALREADY_CLAIMED'},409);
+    if(scan.organisatie_id&&(!org||scan.organisatie_id!==org.id))return json({error:'SCAN_ALREADY_CLAIMED'},409);
     const companyKey=org?`org:${org.slug||org.id}`:`tenant:${tenantId}`;
+    // A receipt is never sufficient to transfer an already-verified scan across tenants.
+    if(scan.tenant_identity_status==='verified'&&
+       (!scan.company_key||scan.company_key!==companyKey))return json({error:'SCAN_ALREADY_CLAIMED'},409);
+    if(scan.klant_slug&&!org&&scan.klant_slug!==tenantId)return json({error:'SCAN_ALREADY_CLAIMED'},409);
     const patch:any={company_key:companyKey,tenant_identity_status:'verified',bijgewerkt_op:new Date().toISOString()};
     if(org){patch.organisatie_id=org.id;patch.klant_slug=org.slug||null;}
-    const {data:claimed,error:claimError}=await client.from('scan_inzendingen').update(patch).eq('id',scan.id).select('id,submission_key,organisatie_id,company_key,tenant_identity_status').single();
+    else patch.klant_slug=tenantId;
+    const {data:claimed,error:claimError}=await client.from('scan_inzendingen').update(patch)
+      .eq('id',scan.id).eq('tenant_identity_status',scan.tenant_identity_status)
+      .select('id,submission_key,organisatie_id,company_key,tenant_identity_status').single();
+    // Two customers racing a previously unverified receipt must never transfer ownership.
+    if(claimError?.code==='PGRST116')return json({error:'SCAN_ALREADY_CLAIMED'},409);
     if(claimError)return json({error:'SCAN_CLAIM_FAILED',detail:claimError.message.slice(0,200)},500);
 
     const preTenant=`scan:${submissionKey}`;
-    const {data:pre}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:preTenant,p_layer:'canonical-brain'});
+    const {data:pre,error:preReadError}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:preTenant,p_layer:'canonical-brain'});
+    if(preReadError)return json({error:'PORTAL_PROJECTION_READ_FAILED'},500);
     const prePayload=Array.isArray(pre)&&pre[0]?.payload?pre[0].payload:null;
-    if(prePayload){
-      const next={...prePayload,tenantId,updatedBy:'portal-claim',updatedAt:new Date().toISOString(),sourceUpdatedAt:new Date().toISOString(),
-        data:{...(prePayload.data||{}),sourceMeta:{...(prePayload.data?.sourceMeta||{}),live:true,label:'Workshopscan · gekoppeld aan klantportaal',updatedAt:new Date().toISOString()}}};
-      const {error:portalError}=await client.rpc('bg_portal_state_put_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain',p_payload:next});
-      if(portalError)return json({error:'PORTAL_CLAIM_FAILED',detail:portalError.message.slice(0,200)},500);
+    const {data:currentClaimState,error:currentClaimError}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain'});
+    if(currentClaimError)return json({error:'PORTAL_PROJECTION_READ_FAILED'},500);
+    const currentClaimPayload=Array.isArray(currentClaimState)&&currentClaimState[0]?.payload?currentClaimState[0].payload:null;
+    if(scan.soort!=='bedrijfslek_scan'){
+      // Every claimed assessment is available to the same Brain without
+      // replacing customer edits with anonymous preprovisioning defaults.
+      const previous=safeObj(currentClaimPayload?.data),portal=safeObj(previous.portal),assessments=safeObj(portal.assessments);
+      const snapshot={scanId:scan.id,submissionKey:scan.submission_key,kind:scan.soort,score:scan.score,dimensions:scan.niveaus,scanDate:scan.scan_datum,truthClass:'SELF_REPORTED',verifiedIdentity:true,source:`scan_inzendingen:${scan.id}`};
+      const projection={...(prePayload||{}),...(currentClaimPayload||{}),schemaVersion:2,tenantId,origin:'canonical-brain',updatedBy:'verified-scan-claim',updatedAt:new Date().toISOString(),sourceUpdatedAt:new Date().toISOString(),
+        data:{...safeObj(prePayload?.data),...previous,portal:{...portal,assessments:{...assessments,scanHistory:mergeProjectionItems(assessments.scanHistory,[{id:scan.id,...snapshot}])}}}};
+      const {data:stored,error:storeError}=await client.rpc('bg_portal_state_put_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain',p_payload:projection});
+      if(storeError)return json({error:'PORTAL_CLAIM_FAILED'},500);
+      if(!Array.isArray(stored)||stored[0]?.stored!==true)return json({error:'PORTAL_PROJECTION_NOT_STORED'},409);
     }
+    let bedrijfslekProjected=false;
+    if(scan.soort==='bedrijfslek_scan'){
+      // Only after the server has verified tenant ownership, read the established
+      // canonical-brain layer, preserve its richer content and add self-reported scan context.
+      const {data:current,error:projectionReadError}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain'});
+      if(projectionReadError)return json({error:'PORTAL_PROJECTION_READ_FAILED'},500);
+      const currentPayload=Array.isArray(current)&&current[0]?.payload?current[0].payload:null;
+      const projection=claimedBedrijfslekProjection(scan,tenantId,currentPayload);
+      const {data:put,error:projectionError}=await client.rpc('bg_portal_state_put_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain',p_payload:projection});
+      if(projectionError)return json({error:'PORTAL_BEDRIJFSLEK_PROJECTION_FAILED',detail:projectionError.message.slice(0,200)},500);
+      if(!Array.isArray(put)||put[0]?.stored!==true)return json({error:'PORTAL_PROJECTION_NOT_STORED'},409);
+      bedrijfslekProjected=true;
+    }
+
     await client.from('workshop_portal_intakes').update({status:'claimed',claimed_tenant_id:tenantId,claimed_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('submission_key',submissionKey);
 
     const verifyKey=`scan-identity:${submissionKey}:${tenantId}`;
     const {error:eventError}=await client.from('powerhouse_runtime_events').upsert({dedupe_key:verifyKey,event_type:'scan_identity_verified',source:'portal.identity',company_key:companyKey,channel:'portal',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:scan.id,submission_key:submissionKey,original_event_id:scan.powerhouse_event_id},context:{organisation_id:org?.id||null,organisation_slug:org?.slug||null,portal_tenant_id:tenantId,tenant_identity_status:'verified',learning_scope:'account_and_aggregate'},state:'observed',data_quality:'VERIFIED',confidence:1},{onConflict:'dedupe_key',ignoreDuplicates:true});
     if(eventError)return json({error:'IDENTITY_EVENT_FAILED',scan:claimed,detail:eventError.message.slice(0,200)},500);
-    return json({ok:true,claimed:true,scan:claimed,portal_preprovisioned:Boolean(prePayload)});
+    return json({ok:true,claimed:true,scan:claimed,portal_preprovisioned:Boolean(prePayload)||bedrijfslekProjected,bedrijfslek_portal_projected:bedrijfslekProjected});
   }
 
   let scan:any;try{scan=normalize(body)}catch(e){return json({error:String((e as Error).message||'INVALID_SCAN')},422)}
@@ -130,7 +220,7 @@ Deno.serve(async(req:Request)=>{
   let stored=created;
   if(!stored){const {data,error}=await client.from('scan_inzendingen').select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').eq('submission_key',scan.submissionKey).maybeSingle();if(error||!data)return json({error:'SCAN_READBACK_FAILED'},500);stored=data;}
   const dedupe=`scan:${scan.submissionKey}`;
-  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
+  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='bedrijfslek_scan'?'website.bedrijfslek':scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
   const {data:eventCreated,error:eventError}=await client.from('powerhouse_runtime_events').upsert(eventRow,{onConflict:'dedupe_key',ignoreDuplicates:true}).select('event_id,dedupe_key').maybeSingle();
   if(eventError)return json({error:'POWERHOUSE_EVENT_FAILED',scan_id:stored.id,detail:eventError.message.slice(0,300)},500);
   let event=eventCreated;
@@ -157,6 +247,6 @@ Deno.serve(async(req:Request)=>{
     }
   }
 
-  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'conversion',funnel_stage:'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,scan_kind:scan.kind,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
+  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:scan.kind==='bedrijfslek_scan'?'bedrijfslek':scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'diagnosis',funnel_stage:scan.kind==='bedrijfslek_scan'?'assessment':'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,scan_kind:scan.kind,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
   return json({ok:true,stored:true,deduped:!created,contract:'powerhouse-canonical-scan-loop-v1',scan_id:stored.id,event_id:event.event_id,tenant_identity_status:'unverified',portal_preprovisioned:portalPreprovisioned},created?201:200);
 });

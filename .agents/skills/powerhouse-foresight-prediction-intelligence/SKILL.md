@@ -134,3 +134,14 @@ Prediction intelligence may be packaged as a public value asset when:
 - engagement and downstream commercial outcomes are written back to the canonical learning loop.
 
 Preferred framing: what changes next + what should you stop doing manually + what to prepare now.
+
+## Future Lens DOM source truth — 19 oktober 2026
+
+Fingerprint: `portal|foresight|no-dom-derived-confidence-or-forecast|v1`.
+
+- KPI DOM text is presentation, never forecast evidence. Do not extrapolate scraped visible values, arbitrary monthly deltas or 0–100 clamps into forecasts.
+- Do not compute 'confidence' from DOM data attributes, chart presence or the number of rendered cards. Show `Niet vastgesteld` until canonical quality/verification exists.
+- Portal Future Lens may render numeric forecasts only from authenticated tenant-bound, source-referenced, backtested canonical forecasts, independently verified within 30 days. Never reinterpret a what-if multiplier as an empirical prediction.
+- On insufficient evidence, preserve the navigation to the existing source-bound Foresight scenario studio and do not silently generate a canonical action from an illustrative trend.
+- A cron green result says an invocation finished, not that an external source was updated. Validate original source observation timestamps and upstream provider response: Tavily returned HTTP 432 usage limit on 2026-10-19. Do not upgrade the account, create a parallel scheduler or fabricate source rows.
+- Current implementation: `portal-v2/nextgen-intelligence.js`; regression: `portal-v2/tests/nextgen-intelligence.test.mjs`; writeback: `brain/learning/2026-10-19-portal-future-lens-source-truth-v1.json`.

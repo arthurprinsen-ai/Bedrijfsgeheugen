@@ -1,0 +1,35 @@
+{
+  "fingerprint": "delivery|playwright-1.55|ubuntu26.04|browser-proof-blocked|20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "production-browser-readback-ubuntu26-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "BROWSER_RUNTIME_OS_INCOMPATIBLE",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "root_cause": "Three required main-release workflows use Playwright 1.55.0. Hosted Ubuntu 26.04-x64 runner rejects the Chromium installer with ERROR: Playwright does not support chromium on ubuntu26.04-x64; CI retries do not change deterministic package/OS incompatibility. Provider Netlify production deployment can already be READY while DOM/browser proof fails.",
+  "prevention_rule": "Production-release browser proof must use a pinned Playwright release that supports the runner OS; align all three workflow overrides with the shared installer and lock with a no-dependency regression. Never skip browser verification, bypass protected merges, simulate screenshots or mark provider-readback green when Chromium is unavailable.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-playwright-ubuntu26-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-playwright-ubuntu26-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-playwright-ubuntu26-production-readback-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-playwright-ubuntu26-production-readback-v1.test.mjs",
+    "official_support": "https://github.com/microsoft/playwright/blob/main/docs/src/release-notes-js.md",
+    "failed_dom_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39216880329",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

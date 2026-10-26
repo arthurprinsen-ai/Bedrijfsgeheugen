@@ -21,7 +21,7 @@ test('pull request keeps immutable change identity while testing the current mer
   });
 });
 
-test('merge group event uses the merge-group head as both change and candidate identity', () => {
+test('merge group preserves the group SHA without treating run ID as a PR', () => {
   assert.deepEqual(normalizeGitHubDeliveryEvent({
     eventName: 'merge_group',
     event: { merge_group: { base_sha: sha('d'), head_sha: sha('e'), head_ref: 'refs/heads/gh-readonly-queue/main/pr-1195-bbbbbbbb' } },
@@ -34,7 +34,7 @@ test('merge group event uses the merge-group head as both change and candidate i
     changeHeadSha: sha('e'),
     candidateSha: sha('e'),
     headSha: sha('e'),
-    prNumber: '456',
+    prNumber: null,
   });
 });
 
@@ -81,4 +81,17 @@ test('invalid delivery event SHAs fail closed', () => {
     githubSha: sha('a'),
     runId: '1',
   }), /valid baseSha/i);
+});
+
+test('merge-group event head must equal the immutable workflow head', () => {
+  assert.throws(() => normalizeGitHubDeliveryEvent({
+    eventName: 'merge_group',
+    event: { merge_group: { base_sha: sha('a'), head_sha: sha('b') } },
+    githubSha: sha('c'), runId: '999',
+  }), /MERGE_GROUP_HEAD_SHA_MISMATCH/);
+  assert.throws(() => normalizeGitHubDeliveryEvent({
+    eventName: 'merge_group',
+    event: { merge_group: { base_sha: sha('a') } },
+    githubSha: sha('b'), runId: '999',
+  }), /valid mergeGroupHeadSha/i);
 });

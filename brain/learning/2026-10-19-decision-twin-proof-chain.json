@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|tenant-decision-twin|whatif-not-realized|v1",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "decision-twin-tenant-receipt-ui-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "CAUSAL_OUTCOME_FALSE_GREEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing foresight shows exploratory trend and what-if scenarios, but does not tell tenants whether there is a source-backed proposed action, verified provider execution or independently observed outcome. Users could confuse arithmetic scenarios with actionable or realized business impact.",
+  "prevention_rule": "Attach the Decision Twin receipt to the existing foresight screen, never infer causality from the sensitivity slider, and require exact tenant+goal, source references, provider-confirmed receipt, and independently verified outcome before advancing the evidence state.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-decision-twin-receipt-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-decision-twin-receipt-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-decision-twin-receipt-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-decision-twin-receipt-v1.test.mjs",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

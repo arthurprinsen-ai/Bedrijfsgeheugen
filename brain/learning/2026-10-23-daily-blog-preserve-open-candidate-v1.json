@@ -1,0 +1,30 @@
+{
+  "fingerprint": "powerhouse|daily-blog|existing-candidate-destructive-reset|20261023-v1",
+  "observed_at": "2026-10-23",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Native hourly publisher recognized an existing same-day PR but regenerated from main using git checkout -B and force-with-lease, overwriting reviewed closure files and degrading approved English cache.",
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39904068949",
+    "observed_branch_head": "f84f7f86515bbbe3e3894c894e9963f12b69511a",
+    "recovered_original_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4726",
+    "reproduction": "Existing date PR 4726 lost three semantic closure artifacts; English cache previously translated value replaced by unchanged Dutch.",
+    "regression_tests": [
+      "tests/brain-daily-blog-preserve-open-candidate-v1.test.mjs"
+    ]
+  },
+  "prevention": "Check out original candidate branch before render, preserve completed English cache by offline validation and block destructive fallback re-render if approved source has changed. Continue exact-day native scheduler, provider and branch-protected release.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-preserve-open-candidate-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

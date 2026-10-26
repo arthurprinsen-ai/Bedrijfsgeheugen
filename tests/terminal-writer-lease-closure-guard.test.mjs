@@ -5,10 +5,10 @@ import fs from 'node:fs';
 const yaml=fs.readFileSync('.github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml','utf8');
 const contract=JSON.parse(fs.readFileSync('config/branch-delivery-ownership-guard.json','utf8'));
 
-test('active terminal writer lease auto-reopens an unmerged closed PR',()=>{
+test('active terminal or main-sync writer lease auto-reopens an unmerged closed PR',()=>{
   assert.match(yaml,/pull_request:\s*\n\s*types:\s*\[closed\]/);
   assert.match(yaml,/github\.event\.pull_request\.merged == false/);
-  assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(yaml,/Writer-Lease-State: \(TERMINAL_DELIVERY\|MAIN_SYNC\)/);
   assert.match(yaml,/lease_owner/);
   assert.match(yaml,/lease_head/);
   assert.match(yaml,/lease_epoch/);

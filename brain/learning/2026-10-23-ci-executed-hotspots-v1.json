@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|predictive-lane-capacity|executed-only-ci-hotspot-evidence|20261023-v1",
+  "obligation_id": "delivery|predictive-lane-capacity|executed-only-ci-hotspot-evidence|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_provider_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+  "status": "CANDIDATE",
+  "failure_class": "CI_NON_EXECUTED_PROVIDER_JOB_LATENCY_SAMPLE_CONTAMINATION",
+  "root_cause": "Existing GitHub job timing collector accepted any non-null completed job conclusion, including skipped provider placeholders with identical started/completed timestamps. Skipped zero-duration records can distort p50/p95 and hide execution bottlenecks.",
+  "observed_evidence": {
+    "source": "tools/delivery/predictive-controller.mjs#summarizeObservedCiJobs",
+    "first_provider_proof": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39922828795",
+    "first_provider_observation": "SAMPLED_METRICS_NOT_SLO / 25 jobs from 12 runs / provider wait p50 3000ms and p95 4000ms, not a long-term SLO",
+    "provider_skipped_example": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39923409635",
+    "tool_data_kind": "GitHub Actions REST job created_at/started_at/completed_at timestamps; must use raw endpoint to obtain timing fields; shortened job wrapper may omit these fields",
+    "measurement_speedup_proven": false
+  },
+  "failed_approaches": [
+    "Count any completed job as actual runner execution, including skipped zero-duration placeholders",
+    "Treat a single job maximum as the workflow critical path or optimization result",
+    "Publish diagnostics when provider job enumeration was partial"
+  ],
+  "fix": "Only completed success/failure/timed_out job records with valid timestamps and run+attempt+job identity enter the sample. Skipped, neutral and cancelled conclusions are excluded. Once original >=20 valid jobs and >=5 independent runs rule passes, include a bounded, attribution-tagged top-five execution-time diagnostic ordered deterministically. If an API read is incomplete, return no valid hotspots.",
+  "prevention_rule": "Never include provider placeholders, missing timestamps, missing identities, duplicates, incomplete provider reads, or non-executed jobs in execution-time percentiles/hotspot claims. Hotspot max is investigation evidence only, not a causal critical path, validated speed gain, released change or release-approval. Preserve Required, CodeQL, tenant/RLS, financial, visual and provider checks; reuse the same hourly Janitor, not a new scheduler or action dispatcher.",
+  "tests": [
+    "tests/brain-observed-ci-throughput-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_NON_EXECUTED_PROVIDER_JOB_LATENCY_SAMPLE_CONTAMINATION",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ],
+    "invariants": [
+      "skipped completed zero-ms records cannot enter sample",
+      "cancelled/neutral records cannot enter sample",
+      "≥20 executed jobs and ≥5 distinct workflow runs remain required",
+      "incomplete GitHub run/job data yields no diagnostic hotspots",
+      "observed top five job execution times are diagnostic, never optimization claim",
+      "same single hourly Janitor scheduler and protected merge/security gates"
+    ]
+  },
+  "terminal_rule": "Only mark deployed after exact-head Required/CodeQL, protected GitHub merge, exact-main readback and real subsequent Janitor artifact with executed-only telemetry and skill projection; #4661 remains open for longitudinal throughput."
+}

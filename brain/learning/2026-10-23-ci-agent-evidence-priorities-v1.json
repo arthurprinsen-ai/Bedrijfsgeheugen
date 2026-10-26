@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|multi-agent|executed-ci-evidence-priority-routing|20261023-v1",
+  "obligation_id": "delivery|multi-agent|executed-ci-evidence-priority-routing|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "UNCOORDINATED_AGENT_CI_HOTSPOT_PRIORITIZATION",
+  "root_cause": "Existing canonical Janitor emits execution-only slowest job evidence but no bounded evidence-based owner routing. Separate agents may chase the same slow job, speculate on critical path, re-run CI without sufficient proof, or miss the highest actual execution-cost lane.",
+  "observed_evidence": {
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "exact_protected_main": "8a08a22107b29adc4a4fdcd92eb228e5a04790e6",
+    "observed_sample": "28 actual jobs, 13 workflow attempts, queue p95 3000 ms, slowest executed job 353000 ms, zero read errors, single-window observation not speedup",
+    "separate_phase_proof": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39925844365",
+    "phase_observation": "Preflight 75s, mandatory static English/i18n complete-site cache operation around 47.47s, 132 files and 9101 strings; not a causal multi-run benchmark"
+  },
+  "fix": "Project already verified diagnostic hotspots to a bounded one-owner-per-lane advisory list in the SAME hourly Janitor JSON artifact; cap to three lanes, retain source run/attempt/job/SHA and exact observed execution/wait, explicitly route unknown job names to unresolved owner, never fabricate a critical-path, speedup, provider check, authorization or merge. Block all recommendations if sample incomplete, provider errors, invalid identities, skipped/non-executed placeholders or duplicate job IDs. No automatic dispatch, issue creation, provider mutations or autonomous release from timing evidence.",
+  "prevention_rule": "Use canonical incident/skills and one writer lease before coding, convert run evidence into owner-aware hypotheses only, compare exact SHA cold/warm outputs and protected CI before a reversible optimization. On insufficient evidence withhold rather than assign an invented owner. Never lower Required, CodeQL, Supabase, visual/CLS, RLS, tenant, finance or release gates. No second Janitor scheduler or external cost.",
+  "tests": [
+    "tests/brain-ci-agent-prioritization-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "UNCOORDINATED_AGENT_CI_HOTSPOT_PRIORITIZATION",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "invariants": [
+      "at least 20 executed jobs from five independent workflow attempts before an agent advice is emitted",
+      "partial provider reads or non-executed/duplicate job identities suppress all owner routing",
+      "only one bounded priority slot per domain owner; unknown owner remains unresolved",
+      "advice is read-only and may not dispatch CI, spend money, bypass gates or merge",
+      "existing Janitor schedule, canonical #4661 and Brain projection remain sole owner"
+    ]
+  },
+  "terminal_rule": "Only prove deployed after fresh exact-head Required+CodeQL, protected merge, main/Skill Projection readback and subsequent real Janitor artifact with agent_priority_advice. Full delivery-speed SLO remains open until longitudinal comparison."
+}

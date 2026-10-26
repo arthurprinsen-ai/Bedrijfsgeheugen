@@ -53,13 +53,12 @@ test('broad platform changes do not fan out into unrelated Business OS and porta
     read('.github/workflows/business-os-foundation.yml'),
     read('.github/workflows/portal-native-regression-tests.yml'),
   ]);
+  assert.doesNotMatch(foundation, /pull_request:/);
+  assert.match(foundation, /workflow_dispatch:/);
   assert.doesNotMatch(foundation, /- 'platform\/\*\*'/);
-  assert.match(foundation, /platform\/contracts\/\*\*/);
-  assert.match(foundation, /platform\/events\/\*\*/);
-  assert.match(foundation, /platform\/integrations\/\*\*/);
-  assert.match(foundation, /platform\/read-models\/\*\*/);
+  assert.doesNotMatch(portal, /pull_request:/);
+  assert.match(portal, /workflow_dispatch:/);
   assert.doesNotMatch(portal, /- 'platform\/\*\*'/);
-  assert.match(portal, /platform\/read-models\/portal-server-state\.mjs/);
 });
 
 test('backend release lane cannot hang indefinitely during dependency installation', async () => {
@@ -81,7 +80,7 @@ test('repository-writer verification cancels superseded candidate work instead o
   assert.match(dispatch, /group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}/);
   assert.doesNotMatch(dispatch, /group: repo-writer-gates-.*inputs\.head_sha/);
   assert.match(dispatch, /cancel-in-progress:\s*true/);
-  assert.match(operational, /group: repo-writer-operational-\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(operational, /group: repo-writer-operational-\$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.number \|\| github\.event\.workflow_run\.id \}\}/);
   assert.match(operational, /cancel-in-progress:\s*true/);
 });
 

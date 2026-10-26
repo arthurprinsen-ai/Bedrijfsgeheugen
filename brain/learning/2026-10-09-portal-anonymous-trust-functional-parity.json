@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|portal|anonymous-functional-algorithm-trust-boundary-regressions-v1",
+  "obligationId": "portal-anonymous-parity-trust-recovery-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Portal V2 protected-trust authorization, exact-head Netlify preview functional and algorithm browser parity",
+  "root_causes": [
+    "Exact-head live preview 37890400632 failed 3 of 12 deterministic parity tests because legacy functional and algorithm browser suites expected anonymous access to protected compliance-governance",
+    "Failure stopped the approved PR visual-baseline capture and left live production DOM readback 37890408281 waiting for a successful source artifact"
+  ],
+  "prevention": [
+    "Do not route protected compliance workspaces through anonymous editable or algorithm execution expectations",
+    "Assert absence of unauthorized workspace and active route as a separate negative test in both suites",
+    "Keep real customer login and two-tenant compliance algorithm proof mandatory on parent P0; never inject credentials or relax authorization"
+  ],
+  "tests": [
+    "tests/integration/portal-v2-functional-parity.spec.js",
+    "tests/integration/portal-v2-legacy-algorithm-parity.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "ANONYMOUS_PREVIEW_EXPECTS_PROTECTED_TRUST_WORKSPACE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "exact PR head successful Required/CodeQL + immutable Netlify preview readback",
+    "protected merge + exact-main Netlify release and green production browser tests",
+    "authenticated customer tenant A/B and official CSRD legal applicability are independently open on parent P0 #4215"
+  ]
+}

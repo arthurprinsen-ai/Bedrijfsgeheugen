@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Reopen unmerged terminal-delivery lease
+      - name: Reopen unmerged active writer lease
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -23,8 +23,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if ! grep -qx 'Writer-Lease-State: TERMINAL_DELIVERY' <<<"$PR_BODY"; then
-            echo "No active terminal writer lease; closure is allowed."
+          if ! grep -Eq '^Writer-Lease-State: (TERMINAL_DELIVERY|MAIN_SYNC)$' <<<"$PR_BODY"; then
+            echo "No active terminal/main-sync writer lease; closure is allowed."
             exit 0
           fi
           lease_owner="$(sed -n 's/^Writer-Lease-Owner: //p' <<<"$PR_BODY" | tail -n1)"
@@ -62,4 +62,4 @@ jobs:
           gh api --method PATCH "repos/$repo/pulls/$PR_NUMBER" -f state=open >/tmp/reopen.json
           state="$(gh api "repos/$repo/pulls/$PR_NUMBER" --jq '.state')"
           test "$state" = open
-          echo "::notice::Reopened PR#$PR_NUMBER because an active TERMINAL_DELIVERY lease cannot be closed before merge or explicit release."
+          echo "::notice::Reopened PR#$PR_NUMBER because an active terminal/main-sync lease cannot be closed before merge or explicit release."

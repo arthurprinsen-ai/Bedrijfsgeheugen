@@ -14,12 +14,15 @@ test('Netlify deterministic build defects are blocked once before merge', async(
     'tests/ai-model-advisor-v1.test.mjs',
     'tests/ai-model-production-hotfix-v1.test.mjs',
     'tests/ai-model-seo-cluster-v1.test.mjs',
-    'tests/brain-netlify-premerge-build-parity-v1.test.mjs'
+    'tests/brain-netlify-premerge-build-parity-v1.test.mjs',
+    'tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs'
   ]) assert.ok(workflow.includes(path), 'missing CI ownership: '+path);
   assert.ok(workflow.includes('Validate fail-closed static English cache before merge'));
   assert.doesNotMatch(workflow,/Run exact Netlify deploy-preview build parity before merge/);
   assert.match(workflow,/^  netlify_build_parity:/m);
   assert.ok(workflow.includes('Run exact Netlify production build command once'));
+  assert.ok(workflow.includes('node tools/ci/netlify-build-entry.mjs'));
+  assert.ok(workflow.includes('Upload immutable Netlify prebuilt artifact'));
   assert.ok(workflow.includes("netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}"));
   assert.ok(workflow.includes("if: needs.preflight.outputs.netlify_build_required == 'true'"));
   assert.ok(workflow.includes('deriveNetlifyDeploymentApplicability'));
@@ -33,4 +36,11 @@ test('Netlify deterministic build defects are blocked once before merge', async(
   const j=JSON.parse(learning);
   assert.equal(j.compiler.failure_class,'DETERMINISTIC_BUILD_DEFECT_REACHED_PRODUCTION_PROMOTION');
   assert.equal(j.status,'ACTIVE_PREVENTION');
+});
+
+
+test('material closure diff is exact-tree and shallow-safe', async()=>{
+  const guard=await read('scripts/brain/material-writeback-closure-guard.mjs');
+  assert.match(guard,/execFileSync\('git',\['diff','--name-only',base,head\]/);
+  assert.doesNotMatch(guard,/base\+'\.\.\.'\+head/);
 });

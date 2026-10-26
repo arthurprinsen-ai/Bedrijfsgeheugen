@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-19",
+  "obligation": "openai-approved-blog-meta-length-recovery-20261019",
+  "fingerprint": "native-approved-blog-supply|OPENAI_BLOG_META_INVALID|2026-10-19",
+  "root_cause": "A real GitHub workflow run reached OpenAI using the connected OPENAI_API_KEY, received structured content, then failed on a generated SEO meta description outside the required 120–170-character limit. Without bounded repair, the original long-form article never reaches the approved Notion stock.",
+  "intervention": "When OpenAI returns SEO metadata outside the expected length, derive the corrected summary only from its original meta or the generated article introduction. Limit it on a word boundary, preserve all substantive article fields and run the full unchanged quality validator afterward. Reject unrepairable inputs.",
+  "prevention": "Do not bypass the 900–1500-word article contract, human-approval governance, Notion stock deduplication, provider proof, translation gates or protected publishing chain.",
+  "compiler": {
+    "failure_class": "GENERATED_SEO_META_LENGTH_OUT_OF_RANGE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "OPENAI_BLOG_SEO_META_REPAIR_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-openai-approved-blog-meta-repair-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-openai-approved-blog-meta-repair-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-openai-approved-blog-meta-repair-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "failed_live_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39295376055",
+    "publication_verified": false
+  },
+  "status": "CODE_CANDIDATE_UNDER_PROTECTED_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39295376055"
+  ]
+}

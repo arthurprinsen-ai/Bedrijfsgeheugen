@@ -7,6 +7,9 @@ on:
         description: Optional YYYY-MM-DD; must equal today in Europe/Amsterdam
         required: false
         type: string
+  schedule:
+    # Independent of Supabase cron; multiple Amsterdam daytime recovery opportunities.
+    - cron: '17 6,9,12,15,18 * * *'
   push:
     branches: [main]
     paths:
@@ -28,17 +31,23 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify scheduled recovery and Bearer authentication contract
+        run: node --test tests/supabase-social-publication-recovery.test.mjs
 
       - name: Resolve same-day recovery date
         id: date
         shell: bash
         env:
           REQUESTED_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_date || '' }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           today="$(node -e "process.stdout.write(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()))")"
           run_date="${REQUESTED_DATE:-}"
-          if [ -z "$run_date" ] && [ -f docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md ]; then
+          if [ -z "$run_date" ] && [ "${EVENT_NAME}" = "push" ] && [ -f docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md ]; then
             run_date="$(sed -nE 's/^Date:[[:space:]]*([0-9]{4}-[0-9]{2}-[0-9]{2}).*$/\1/p' docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md | head -n1)"
           fi
           run_date="${run_date:-$today}"
@@ -91,8 +100,8 @@ jobs:
           writeFileSync('/tmp/social-recovery-sanitized.json',JSON.stringify(safe,null,2)+'\n');
           console.log('CANONICAL_SOCIAL_RECOVERY_RESULT='+JSON.stringify(safe));
           const required=safe.decisions.filter(d=>['linkedin_personal','linkedin_company','instagram_company'].includes(d.channel)&&d.decision==='publish');
-          const unresolved=required.filter(d=>!['published','scheduled'].includes(d.state));
-          if(!safe.ok || safe.http < 200 || safe.http >= 300 || unresolved.length){
+          const unresolved=required.filter(d=>d.state!=='published');
+          if(!safe.ok || safe.http < 200 || safe.http >= 300 || safe.providerTruthHealthy!==true || unresolved.length){
             console.error('SOCIAL_PUBLICATION_UNRESOLVED='+JSON.stringify(unresolved));
             process.exitCode=2;
           }

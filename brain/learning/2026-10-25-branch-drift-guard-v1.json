@@ -1,0 +1,22 @@
+{
+  "fingerprint": "powerhouse|branch-drift|evidence-gated-prevention|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 3
+  },
+  "root_cause": "Blind main synchronization triggered expensive CI and stale-head failures; branch age alone is not evidence of conflicting code.",
+  "prevention_rule": "Only canonical writer may request expected-head protected update when exact paths or declared contracts overlap, or Git reports conflict; fail closed on missing provider evidence or terminal writer lease.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-drift-guard.test.mjs"
+    ]
+  },
+  "evidence": {
+    "prior_case": "PR #4907 was behind main but eventually safely merged; no requirement to keep merged branch alive",
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4907",
+    "new_head_ci": "NOT_YET_VERIFIED",
+    "production_readback": "NOT_YET_VERIFIED"
+  }
+}

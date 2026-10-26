@@ -1,0 +1,36 @@
+{
+  "fingerprint": "portal|economics-function-first|index-ddl-timeout|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|bounded-internal-research-economics|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "INDEX_DDL_TIMEOUT_BLOCKS_BOUNDED_ECONOMICS_FUNCTION",
+    "scope": "CANONICAL_BRAIN_RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The already protected and merged #4540 economics migration was not deployed because the combined transaction's index DDL timed out with PostgreSQL 57014; the old unbounded economics function continued to run.",
+  "prevention_rule": "Stage only the exact protected #4540 function and server-only privileges in a short fail-closed migration before separately applying its index under a safe lock and pool budget; preserve 50-record batching, historical backlog, economics evidence, canonical cron, and tenant authority.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-economics-function-first.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-economics-function-first.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-economics-function-first.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "full_migration_attempt": "57014_2026-10-20",
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4540",
+    "production_migration": "PENDING",
+    "portal_signed_200": "PENDING",
+    "two_tenants": "PENDING"
+  }
+}

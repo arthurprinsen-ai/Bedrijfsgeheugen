@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-preflight.mjs';
+import { buildSkillSourceManifest, selectSkillSourceManifest, MANDATORY_SKILL_SOURCE_NAMES } from '../scripts/brain/powerhouse-skill-projection.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(here, '..');
@@ -478,4 +479,49 @@ test('repository-native borging is mandatory for every material chat and agent',
   assert.ok(continuityPolicy.invariants.includes('ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE'));
   assert.match(agentsSource, /Repository-native borging is verplicht voor alle agents en chats/);
   assert.match(continuitySkillSource, /Repository-native borging — mandatory for every material run/);
+});
+
+
+test('canonical repository skill hashes are deterministic and next-agent loading is not falsely claimed', () => {
+  const first = buildSkillSourceManifest({ rootDir });
+  const second = buildSkillSourceManifest({ rootDir });
+  assert.equal(first.inventory_digest, second.inventory_digest);
+  assert.ok(first.entry_count >= MANDATORY_SKILL_SOURCE_NAMES.length);
+  assert.equal(first.entry_count, first.entries.length);
+  assert.equal(new Set(first.entries.map(entry => entry.name)).size, first.entry_count);
+  for (const entry of first.entries) {
+    assert.match(entry.source_sha256, /^[a-f0-9]{64}$/);
+    assert.equal(entry.source, '.agents/skills/' + entry.name + '/SKILL.md');
+  }
+  const selected = selectSkillSourceManifest(first, { targets: ['social'] });
+  for (const name of MANDATORY_SKILL_SOURCE_NAMES) {
+    assert.ok(selected.selected_sources.some(entry => entry.name === name), 'mandatory source not selected: ' + name);
+  }
+  assert.ok(selected.selected_sources.some(entry => entry.name === 'instagram-composio-publisher'));
+  assert.equal(selected.inventory_digest, first.inventory_digest);
+  assert.equal(selected.consumption_status, 'SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED');
+  assert.equal(selected.no_claim_of_use_without_readback, true);
+  assert.throws(() => selectSkillSourceManifest({
+    ...first,
+    entries: first.entries.filter(entry => entry.name !== MANDATORY_SKILL_SOURCE_NAMES[0])
+  }), /MANDATORY_SKILL_SOURCE_MISSING/);
+});
+
+test('material agent preflight includes live skill source digests without fabricating consumption', () => {
+  const packet = compileChatLearningPreflight({
+    rootDir,
+    executionContext: { intent: 'Review social publication learning', deliveryLanes: ['social'] }
+  });
+  const receipt = packet.skill_projection.source_attestation;
+  const inventory = buildSkillSourceManifest({ rootDir });
+  assert.equal(receipt.inventory_digest, inventory.inventory_digest);
+  assert.equal(receipt.entry_count, inventory.entry_count);
+  assert.ok(receipt.selection.selected_sources.length >= MANDATORY_SKILL_SOURCE_NAMES.length);
+  assert.equal(receipt.selection.consumption_status, 'SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED');
+  assert.equal(receipt.selection.no_claim_of_use_without_readback, true);
+  assert.equal(packet.skill_projection.selection.projection_completeness, 'PARTIAL_REQUIRES_LAZY_LOAD');
+  assert.ok(packet.skill_projection.selection.deferred_entry_count > 0);
+  assert.equal(packet.skill_projection.selection.deferred_readback_required, true);
+  assert.equal(packet.skill_projection.selection.deferred_source_authority, 'brain/learning/**/*.json');
+  assert.ok(packet.totalBytes <= 256_000, 'task-relevant projection must stay within normal preflight budget');
 });

@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|portal|partial-business-input-answer-loss",
+  "obligationId": "p0-4215-preserve-missing-business-input-20261009-v1",
+  "date": "2026-10-09",
+  "status": "PENDING_PROTECTED_RELEASE",
+  "compiler": {
+    "failure_class": "CANONICAL_BUSINESS_INPUT_PARTIAL_FIELD_LOSS",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_causes": [
+    "Portal BusinessInput sets preserveMissing=true, but canonical projector shallow-replaces answers on update.",
+    "Brain read-repair replaced nested answer fields when replaying newer partial records."
+  ],
+  "prevention": [
+    "Canonical shared recursive preserveMissing merge with explicit empty writes taking precedence.",
+    "Projector and Supabase Brain read-repair use same source helper and tests."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-preserve-missing-canonical-read-repair-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-preserve-missing-canonical-read-repair-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-preserve-missing-canonical-read-repair-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-preserve-missing-canonical-read-repair-v1.test.mjs"
+    ]
+  },
+  "closureRequired": [
+    "Protected tests, Netlify exact-main production and Supabase Edge source/release readback",
+    "Two actual authenticated customers and Brain consumer ACK",
+    "Durable >750KB outbox / official CSRD source applicability"
+  ]
+}

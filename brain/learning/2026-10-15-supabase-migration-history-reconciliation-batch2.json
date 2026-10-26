@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "supabase-migration-history-reconcile-batch2-20261015",
+  "fingerprint": "supabase|migrations-drift|remaining-applied-ledger-git-mirrors|20261015",
+  "compiler": {
+    "failure_class": "PRODUCTION_MIGRATION_HISTORY_DRIFT",
+    "scope": "SUPABASE_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Ten remotely applied migration versions were absent on the original base; three have since reached main via independently verified portal work with executable SQL unchanged; seven provider-applied source versions remain to add.",
+  "prevention": "Preserve already merged semantically identical SQL for 3 portal migrations, restore exact production ledger SQL for 7 other applied versions, pin the exact service-role-only historical SECURITY DEFINER blob, never bypass native preview or mark 11 unrelated Git-only migrations applied.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-batch2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-batch2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-batch2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_project": "adhjwmvyoixzjtmiroln",
+    "restored_applied_versions": [
+      "20261014130614",
+      "20261014133344",
+      "20261014140905",
+      "20261014144228",
+      "20261014162635",
+      "20261014163411",
+      "20261014163916",
+      "20261014191753",
+      "20261014193133",
+      "20261014195237"
+    ],
+    "depends_on_pr": 4383,
+    "prod_acl_runtime_mux": {
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_role_execute": true,
+      "search_path": "public,pg_catalog"
+    },
+    "incremental_added_versions": [
+      "20261014130614",
+      "20261014133344",
+      "20261014140905",
+      "20261014144228",
+      "20261014162635",
+      "20261014163411",
+      "20261014163916"
+    ],
+    "preexisting_main_sql_equivalent_versions": [
+      "20261014191753",
+      "20261014193133",
+      "20261014195237"
+    ],
+    "pr4383_merge": "6cec28b051ae0ba5eeedaa2e1645b9f631934b93"
+  },
+  "outcome": {
+    "source_batch_two_prepared": true,
+    "production_verified": false
+  }
+}

@@ -9,7 +9,23 @@
     "human_projection": "Notion existing Powerhouse pages",
     "scheduler": "existing Supabase pg_cron production authority; Business OS Intelligence remains contract/probe authority"
   },
-  "lifecycle": ["OBSERVE","FITNESS","CAPABILITY_MAP","BACKLOG_INTAKE","CANDIDATE","PORTFOLIO","REPLAY","EXPERIMENT","CHAOS","DECIDE","PROMOTE_OR_ROLLBACK","SIMPLIFY","VALUE_ATTRIBUTE","WRITEBACK","REVALIDATE"],
+  "lifecycle": [
+    "OBSERVE",
+    "FITNESS",
+    "CAPABILITY_MAP",
+    "BACKLOG_INTAKE",
+    "CANDIDATE",
+    "PORTFOLIO",
+    "REPLAY",
+    "EXPERIMENT",
+    "CHAOS",
+    "DECIDE",
+    "PROMOTE_OR_ROLLBACK",
+    "SIMPLIFY",
+    "VALUE_ATTRIBUTE",
+    "WRITEBACK",
+    "REVALIDATE"
+  ],
   "capabilities": {
     "periodic_orchestration": true,
     "architecture_fitness": true,
@@ -27,7 +43,13 @@
   },
   "backlog_intake": {
     "classification_authority": "powerhouse-continuous-improvement-engine-v1",
-    "allowed_classifications": ["SUPERSEDED","COALESCE","COMPARE","ISOLATE","CANDIDATE_REQUIRED"],
+    "allowed_classifications": [
+      "SUPERSEDED",
+      "COALESCE",
+      "COMPARE",
+      "ISOLATE",
+      "CANDIDATE_REQUIRED"
+    ],
     "sources": {
       "github_open_pull_requests": true,
       "open_loop_obligations": "existing Brain/Supabase authority",
@@ -55,12 +77,14 @@
   "scheduler": {
     "production_authority": "Supabase pg_cron",
     "production_job": "powerhouse-autonomous-improvement-cycle-v1",
-    "production_function": "public.powerhouse_autonomous_improvement_cycle_v1(now())",
-    "cadence": "hourly at minute 42",
+    "production_function": "public.powerhouse_autonomous_improvement_cron_v1()",
+    "cadence": "hourly at minute 34",
     "probe_workflow": ".github/workflows/business-os-intelligence.yml",
     "probe_read_only": true,
     "max_probe_runtime_minutes": 5,
-    "idempotent_run_identity": true
+    "idempotent_run_identity": true,
+    "schedule_source": "supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql",
+    "provider_verification": "cron.job schedule and command + cron.job_run_details (runtime readback; schedule presence is not outcome proof)"
   },
   "writeback": {
     "new_store": false,

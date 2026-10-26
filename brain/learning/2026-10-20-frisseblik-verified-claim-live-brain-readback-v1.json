@@ -1,0 +1,39 @@
+{
+  "fingerprint": "portal|verified-frisseblik-claim|canonical-brain-readback|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|verified-scan-claim-to-brain-pages|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "VERIFIED_SCAN_CLAIM_DID_NOT_INVALIDATE_OPEN_PORTAL_PAGES",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Verified Frisse Blik/Bedrijfslek claims write the Supabase canonical Brain tenant layer and runtime signal; existing scan UI refreshed only the scan history list, leaving every other already open Portal V2 dashboard on the earlier projection until an independent timer or manual reload.",
+  "prevention_rule": "After the existing provider confirms the exact tenant's claim and canonical Brain projection, revalidate that tenant's already-authenticated Portal V2 domain model through the existing guarded refresh (no duplicate POST). Verify identity token and tenant continuity throughout await, never import anonymous data into an unverified tenant, preserve pending unsaved edits and never call a provider reject successful. Rejected provider claim cannot trigger downstream readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "source": "supabase/functions/powerhouse-scan-ingest/index.ts",
+    "auth": "netlify/functions/portal-scans.mjs",
+    "portal": "portal-v2/scan-claim-bridge.js",
+    "regression": "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs",
+    "actual_two_tenant_browser_readback": "PENDING",
+    "actual_production_claim": "PENDING",
+    "provider_connection_proof": "PENDING"
+  },
+  "production_verified": false,
+  "production_scope": "CANDIDATE_UNTIL_PROTECTED_CI_MERGE_CHROMIUM_READBACK"
+}

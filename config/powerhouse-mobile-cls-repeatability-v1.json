@@ -1,0 +1,21 @@
+{
+  "version": "POWERHOUSE-MOBILE-CLS-REPEATABILITY-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4451",
+  "execution": "existing_daily_cross_browser_assurance",
+  "modes": [
+    "isolated",
+    "parallel"
+  ],
+  "samples_per_route": 2,
+  "max_total_checks": 24,
+  "max_cls": 0.1,
+  "focus_routes": [
+    "/en/blog/afas-api",
+    "/en/blog/offertes-opvolgen-zonder-crm/",
+    "/blog/bedrijfsoverdracht-aan-familie-wat-je-moet-regelen-en-waarom-het-meest/",
+    "/blog/kennis-borgen-in-het-mkb-wat-er-verdwijnt-als-een-medewerker-vertrekt/",
+    "/blog/offertes-opvolgen-zonder-crm/"
+  ],
+  "privacy": "bounded no-text node geometry only",
+  "status": "fail_closed_on_any_invalid_navigation_or_cls_above_0.100"
+}

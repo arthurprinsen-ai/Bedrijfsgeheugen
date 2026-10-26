@@ -1,0 +1,31 @@
+{
+  "id": "production-migration-ledger-603-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "supabase|production-ledger|remote-migrations-missing-local|603|v1",
+  "compiler": {
+    "failure_class": "MIGRATION_LEDGER_DRIFT",
+    "scope": "SUPABASE_GITHUB_PREVIEW",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Production advanced from 593 to 603 migrations through live recovery work while the repository remained at the earlier ledger. Supabase Preview therefore failed before Edge Function validation with MIGRATIONS_FAILED because remote production versions were absent locally.",
+  "prevention": "Production supabase_migrations.schema_migrations is the migration identity authority. Reconcile already-applied live migrations into Git under their exact production version/name and exact recorded statements, update migration-history.lock.json to the full production ledger, and never replay the DDL during repository identity reconciliation.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-migration-ledger-603-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "production_ledger_count": 603,
+    "repository_previous_count": 593,
+    "reconciled_count": 10,
+    "first_reconciled_version": "20261007061626",
+    "last_reconciled_version": "20261007064948",
+    "source": "supabase_migrations.schema_migrations.statements",
+    "production_sql_replayed": false
+  }
+}

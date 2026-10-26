@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LEGACY_PARITY_ITEMS, GLOBAL_PARITY_CAPABILITIES } from '../../portal-v2/parity-manifest.js';
 import { getCapabilityContract } from '../../portal-v2/capability-contracts.js';
+import { isProtectedTrustPage } from '../../portal-v2/page-shell.js';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 const uniquePages=[...new Set(LEGACY_PARITY_ITEMS.flatMap(item=>item.v2Pages))];
@@ -41,10 +42,20 @@ async function hideNetlifyChrome(page){
 
 async function bootDemo(page,width=1440,height=1000){
  await page.setViewportSize({width,height});
- const response=await page.goto(`${BASE_URL}/klantportaal?klant=demoAI&bg_full_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
- expect(response,'demoAI response').not.toBeNull();
- expect(response.status(),'demoAI status').toBeLessThan(400);
- await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});
+ const retryableStatuses=new Set([403,408,425,429,500,502,503,504]);
+ let lastError;
+ for(let attempt=1;attempt<=3;attempt++){
+  const response=await page.goto(`${BASE_URL}/klantportaal?klant=demoAI&bg_full_parity=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45_000});
+  const status=response?.status()??null;
+  if(status!==null&&status<400){
+   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});
+   return;
+  }
+  lastError=new Error(`demoAI preview readback HTTP ${status??'no response'} (attempt ${attempt}/3): ${BASE_URL}`);
+  if(!retryableStatuses.has(status))throw lastError;
+  if(attempt<3)await page.waitForTimeout(attempt*1500);
+ }
+ throw lastError;
 }
 
 async function gotoPortalPage(page,pageId){
@@ -68,6 +79,10 @@ async function openNative(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
  if(pageId==='overzicht')return;
  const view=page.locator('#portalView');
+ if(isProtectedTrustPage(pageId)){
+  await expect(view,`${pageId} must fail closed without authenticated tenant access`).not.toHaveAttribute('data-page-id',pageId);
+  return;
+ }
  await expect(view,`${pageId} must open in native V2 view`).toHaveAttribute('data-page-id',pageId,{timeout:10_000});
  await expect(view).toHaveAttribute('aria-hidden','false');
  await expect(view.locator('h1,h2,h3').first(),`${pageId} needs visible native content`).toBeVisible();
@@ -86,8 +101,11 @@ test('all protected legacy workspaces render natively without legacy portal traf
   await gotoPortalPage(page,pageId);
   const view=page.locator('#portalView');
   if(pageId==='overzicht'){
-   await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard',{exact:true}),'overzicht must remain the canonical dashboard').toBeAttached();
+   await expect(page.getByText('Alle onderdelen van je ondernemingssturing',{exact:true}),'overzicht must remain the canonical dashboard').toBeAttached();
+   await expect(page.locator('[data-bg-portal-daily-steering="v1"]')).toBeAttached();
    await expect(view).toHaveAttribute('aria-hidden','true');
+  }else if(isProtectedTrustPage(pageId)){
+   await expect(view,`${pageId} must fail closed in anonymous readback`).not.toHaveAttribute('data-page-id',pageId);
   }else{
    await expect(view,`${pageId} must open in native V2 view`).toHaveAttribute('data-page-id',pageId,{timeout:10_000});
    await expect(view).toHaveAttribute('aria-hidden','false');

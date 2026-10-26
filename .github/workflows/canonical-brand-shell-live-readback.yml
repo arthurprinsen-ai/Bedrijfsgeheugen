@@ -131,12 +131,12 @@ jobs:
           test "$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' https://www.bedrijfsgeheugen.nl/api/growth-event || true)" = "405"
       - name: Install production visual readback browser
         run: |
-          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+          PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
       - name: Verify every public production page is visibly rendered
         env:
           UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
-          UI_VR_ROUTE_CONCURRENCY: '4'
-          UI_VR_VIEWPORT_CONCURRENCY: '2'
+          UI_VR_ROUTE_CONCURRENCY: '2'
+          UI_VR_VIEWPORT_CONCURRENCY: '1'
         run: timeout --signal=TERM --kill-after=30s 10m node tools/site-shell/standalone-visibility-check.mjs
       - name: Production UI visual regression readback
         env:

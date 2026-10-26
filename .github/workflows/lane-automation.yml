@@ -17,7 +17,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify automation delivery contracts
+      - id: automation_contracts
+        name: Verify automation delivery contracts
         shell: bash
         run: |
           set -o pipefail
@@ -25,13 +26,17 @@ jobs:
           node --test \
             tests/delivery-*.test.mjs \
             tests/brain-delivery-system.test.mjs \
+            tests/agent-skill-execution-evidence.test.mjs \
+            tests/required-check-reconciliation.test.mjs \
+            tests/brain-skill-byte-audit.test.mjs \
+            tests/brain-agent-skill-execution-evidence.test.mjs \
             tests/powerhouse-one-loop-*.test.mjs \
             tests/powerhouse-organism-propagation.test.mjs \
             tests/regulatory-organism-feed.test.mjs \
             tests/powerhouse-github-learning.test.mjs \
             2>&1 | tee .artifacts/automation-delivery-contracts.log
       - name: Upload automation failure evidence
-        if: failure()
+        if: steps.automation_contracts.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: automation-delivery-contracts-${{ github.run_id }}
@@ -40,7 +45,8 @@ jobs:
           retention-days: 30
       - name: Verify consolidated Brain foundation contracts
         run: node scripts/brain/test-all.mjs
-      - name: Verify consolidated Shared Agent Memory contracts
+      - id: shared_memory
+        name: Verify consolidated Shared Agent Memory contracts
         shell: bash
         run: |
           set -o pipefail
@@ -98,7 +104,7 @@ jobs:
             tests/cost-component-catalog.test.mjs \
             2>&1 | tee .artifacts/automation-shared-memory-contracts.log
       - name: Upload Shared Agent Memory failure evidence
-        if: failure()
+        if: steps.shared_memory.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: automation-shared-memory-contracts-${{ github.run_id }}

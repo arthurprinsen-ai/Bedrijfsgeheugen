@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|instagram-mira|frozen-external-winner-vs-modulo-case|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "obligation_id": "mira|source-frozen-winner-mapping-guard|20261023-v1",
+  "title": "Never substitute a deterministic PH-P rotation for a frozen source-backed Mira winner",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "The media router selected MIRA_CASES[epochDay%40] even when the canonical daily winner, media job and OpenArt creative were source-backed by a different immutable external problem.",
+  "impact": "An existing OpenArt privacy-complaint Reel cannot be admitted under the unrelated PH-P030 takeover scene, while fabricated manifest relabeling would hide the business/visual mismatch.",
+  "evidence": {
+    "run_date": "2026-10-23",
+    "frozen_recommendation_id": "7880c326-72b8-4ac8-a712-971a9a24de12",
+    "source_title": "Verwijdering van persoonlijke gegevens uit klachten",
+    "source_lineage_state": "WINNER_FROZEN",
+    "existing_openart_history_id": "S2WRHcZAKIV5Cxn2tZLE",
+    "legacy_rotated_problem_id": "PH-P030",
+    "production_obligation_status": "BLOCKED",
+    "media_job_status": "WAITING_ASSET",
+    "existing_asset_frame_verified": false,
+    "external_instagram_id": null
+  },
+  "fix": "Resolve the immutable winning recommendation, lineage, provenance and optional explicitly approved canonical scene before media checks. Reject forced business bridges and unfounded mappings; keep the original media job and publishing authority.",
+  "prevention_rule": "Whenever source-backed frozen content exists, never fall back to date modulo. A unique winner recommendation and approved scene must bind media, caption and provider proof. External daily-life themes require their own reviewed source-led creative/caption contract, never forced PH-P attribution.",
+  "regression_contract": "tests/brain-mira-frozen-winner-source-lineage-20261023.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-frozen-winner-source-lineage-20261023.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-frozen-winner-source-lineage-20261023.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-frozen-winner-source-lineage-20261023.test.mjs"
+    ]
+  },
+  "release_gates": [
+    "Exact-head Required and CodeQL",
+    "Protected merge + Supabase source readback",
+    "Separate authorized source-led caption/scene contract before media proof",
+    "Genuine t=0/mid/end identity confidence >=0.940 and temporal verification",
+    "One original Instagram provider-create and independent post readback"
+  ],
+  "outcome": "No publication or provider proof in this code-only candidate. Media remains blocked if source scene has not been approved.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}

@@ -119,7 +119,11 @@ Deno.serve(async(req:Request)=>{
         const scopes=configScopes(x);
         return COMPANY_REQUIRED_SCOPES.every(scope=>scopes.has(scope));
       });
-      let authConfigId=proofAuthConfigId||clean(priorState?.auth_config_id)||clean(scopedConfigs[0]?.id);
+      // An old ACTIVE profile connection or stored config id is not proof of company OAuth scope.
+// Only reuse an auth config whose declared scopes satisfy the organization requirements.
+      const scopedConfigIds=new Set(scopedConfigs.map((x:any)=>clean(x?.id)).filter(Boolean));
+      const authConfigCandidates=[proofAuthConfigId,clean(priorState?.auth_config_id),clean(scopedConfigs[0]?.id)].filter(Boolean);
+      let authConfigId=authConfigCandidates.find(id=>scopedConfigIds.has(id))||'';
       if(!authConfigId){
         const created=await api(key,'/auth_configs',{method:'POST',body:JSON.stringify({
           toolkit:{slug:'linkedin'},
@@ -292,6 +296,10 @@ Deno.serve(async(req:Request)=>{
       company_read_scope_present:hasOrgReadScope,
       company_readback_scope_required:companyReadbackReady?null:'r_organization_social',
       company_capability_error:companyError?companyError.slice(0,220):null,
+      company_acl_probe:companyError
+        ? (/403|forbidden|scope/i.test(companyError)?'OAUTH_SCOPE_DENIED':'PROVIDER_ERROR')
+        : (adminAclVerified?'AUTHORIZED':'ORGANIZATION_NOT_VERIFIED'),
+      connection_authority:'production_composio_api_key',
       oauth_candidate_connection_id:boundOauthAccountId||null,
       requested_company_scopes:expectedCompanyScopes,
       oauth_requested_at:clean(priorState?.oauth_requested_at||proofCreatedAt)||null,
@@ -322,7 +330,10 @@ Deno.serve(async(req:Request)=>{
       await writeState(db,result.publisher_ok?'ACTIVE_RESUMED':'ACTIVE_RESUME_FAILED',result);
       return json({ok:result.publisher_ok,...result},result.publisher_ok?200:502);
     }
-    await writeState(db,personalReady?'ACTIVE':'CAPABILITY_UNVERIFIED',result);
+    // The personal profile may be healthy while organization access is 403.
+    // Never persist an ambiguous top-level ACTIVE status in that case.
+    const durableState=companyReady?'ACTIVE':personalReady?'COMPANY_AUTH_REQUIRED':'CAPABILITY_UNVERIFIED';
+    await writeState(db,durableState,result);
     return json({ok:true,...result});
   }catch(error){
     const detail=error instanceof Error?error.message:'unknown';

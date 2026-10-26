@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "social-learning|partial-provider-day-snapshot-causal-window-confusion|20261024-v1",
+  "obligation_id": "social-learning:exclude-provider-day-partial-from-window-promotion:v1",
+  "failure_class": "PARTIAL_PROVIDER_REPORTING_DATE_CONFUSED_WITH_24_48_72_HOUR_MEASUREMENT",
+  "root_cause": "The existing social-learning-evaluate used selectSnapshotForWindow on ALL post snapshots without checking dataQuality. Newly reconciled Windsor LinkedIn company source is explicitly OBSERVED_PARTIAL_SCOPE by provider-date rather than cumulative age, and a retrieval timestamp near a due window might spuriously generate an evaluation or even PROVEN learning.",
+  "observed_evidence": {
+    "source": "netlify/functions/social-learning-evaluate.mjs",
+    "affected_metrics": "LinkedIn provider-day observations with actual impressions, but not verified cumulative 24/48/72-hour outcomes",
+    "protected_provider_bridge_pr": 4835,
+    "old_selection": "selectSnapshotForWindow({snapshots,...}) included PARTIAL_SCOPE"
+  },
+  "fix": "Retain exact hourly selection, but only pass OBSERVED/PROVIDER_OBSERVED original time-window snapshots to evaluation. Partial-scope evidence generates a typed obligation rather than an invented causal score. Existing tests mark truly observed fixtures OBSERVED and new regression enforces both bounds.",
+  "prevention_rule": "No provider-date, unlinked, partial-scope or inferred marketing source may be promoted to causal 24/48/72h learning merely because it has an extraction timestamp. Next-post hypotheses may use partial daily analytics independently under their own scope, never a false experiment winner.",
+  "tests": [
+    "tests/brain-social-partial-provider-window-guard-v1.test.mjs",
+    "tests/social-learning-evaluate.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PARTIAL_PROVIDER_REPORTING_DATE_CONFUSED_WITH_24_48_72_HOUR_MEASUREMENT",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-partial-provider-window-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-partial-provider-window-guard-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-partial-provider-window-guard-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected exact SHA checks and Netlify production source parity, only then eligible real 24/48/72-hour brand evaluations read back; no numeric customer-conversion claim without independently attributed order."
+}

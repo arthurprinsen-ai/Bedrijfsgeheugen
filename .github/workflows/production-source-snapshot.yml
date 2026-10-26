@@ -36,29 +36,15 @@ name: Production Source Snapshot
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '.agents/**'
-      - 'tests/**'
-      - '.github/**'
-      - 'brain/learning/**'
-      - 'supabase/**'
-      - 'config/delivery-prevention-rules.json'
-      - 'config/powerhouse-agent-delivery-scheduler-v1.json'
-      - 'tools/site-shell/verify-targeted-website-routes.mjs'
-      - 'tools/site-shell/contracts.mjs'
-      - 'tools/site-shell/test-shell-components.mjs'
-      - 'tools/site-shell/live-contract.mjs'
-      - 'tools/site-shell/test-live-contract.mjs'
-      - 'tools/site-shell/production-supersession.mjs'
-      - 'tools/site-shell/standalone-visibility-check.mjs'
-      - 'brain/contracts/production-readback-v1.json'
-      - 'tools/delivery/**'
-      - 'tools/ci/**'
-      - 'brain/policies/**'
-      - 'AGENTS.md'
-      - 'platform/system-map/canonical-system-map.mjs'
-      - 'tools/brain-delivery-system.mjs'
+    # Scope inputs retained as documented policy references for regression auditing:
+    # config/powerhouse-agent-delivery-scheduler-v1.json
+    # supabase/**
+    # tools/ci/**
+    # Every main push is reconciled; the applicability gate below decides whether
+    # Netlify deployment is required. Ignoring operational paths here previously
+    # suppressed reconciliation entirely for workflow/Supabase/BRAIN changes.
+  schedule:
+    - cron: '35 6 * * *'
   workflow_dispatch:
     inputs:
       deploy:
@@ -66,19 +52,26 @@ on:
         required: false
         type: boolean
         default: false
+      authority_probe:
+        description: Check OIDC-authorized Netlify backup transport without deploying
+        required: false
+        type: boolean
+        default: false
 
 permissions:
+  actions: read
   contents: read
   id-token: write
 
 concurrency:
   group: production-source-snapshot-main-v3
-  # Only the newest main release matters. Older queued snapshots must never block a newer main.
-  cancel-in-progress: true
+  # A running authorized upload MUST finish; each newer main push replaces the
+  # one pending reconciliation, not an in-flight protected deployment.
+  cancel-in-progress: false
 
 jobs:
   snapshot:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Pinned: Playwright 1.55 browser installer does not support Ubuntu 26.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
@@ -97,21 +90,65 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
           import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
+          import { reconcileNetlifyLiveGap } from './tools/delivery/netlify-live-gap-reconcile.mjs';
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const parentChangedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const manual=process.env.EVENT_NAME === 'workflow_dispatch';
           const forceDeployment=manual && process.env.DEPLOY_INPUT === 'true';
+          let publishedSha=null,publishedIsAncestor=false,publishedChangedPaths=null;
+          try{
+            const url='https://www.bedrijfsgeheugen.nl/release.json?reconcile='+encodeURIComponent(process.env.GITHUB_SHA);
+            const res=await fetch(url,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(6000)});
+            if(res.ok)publishedSha=String((await res.json()).commit_ref||'').trim();
+            if(/^[a-f0-9]{40}$/.test(publishedSha||'')&&publishedSha!==process.env.GITHUB_SHA){
+              execFileSync('git',['merge-base','--is-ancestor',publishedSha,process.env.GITHUB_SHA],{stdio:'ignore'});
+              publishedIsAncestor=true;
+              publishedChangedPaths=execFileSync('git',['diff','--name-only',`${publishedSha}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+            }
+          }catch(error){console.warn('NETLIFY_PROVIDER_SHA_UNVERIFIED',String(error.message||error).slice(0,200));}
+          const gap=reconcileNetlifyLiveGap({headSha:process.env.GITHUB_SHA,
+            parentChangedPaths,publishedSha,publishedIsAncestor,publishedChangedPaths});
           const applicability=deriveNetlifyDeploymentApplicability({
-            changedPaths,
+            changedPaths:gap.changedPaths,
             headSha:process.env.GITHUB_SHA,
             policy,
-            forceDeployment,
-            skipDeployment:manual && !forceDeployment,
+            forceDeployment:forceDeployment||gap.forceDeployment,
+            skipDeployment:manual&&!forceDeployment,
           });
+          console.log('NETLIFY_LIVE_GAP_DECISION',JSON.stringify({
+            headSha:process.env.GITHUB_SHA,publishedSha,reason:gap.reason,
+            unpublishedChangedPaths:gap.changedPaths.length,force:gap.forceDeployment,
+            deploymentRequired:applicability.deploymentRequired,
+          }));
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${applicability.deploymentRequired}\n`);
           console.log(JSON.stringify(applicability,null,2));
           NODE
+      - name: Probe OIDC-authorized Netlify backup transport (no deploy)
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.authority_probe == true)
+        env:
+          BRIDGE_URL: https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge
+        run: |
+          set -euo pipefail
+          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=bedrijfsgeheugen-netlify-deploy-bridge"
+          token_json="$(curl --fail-with-body --silent --show-error --max-time 20 \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
+          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
+          test -n "$oidc_token"
+          response_file="$(mktemp)"
+          bridge_http="$(curl --silent --show-error --max-time 40 -o "$response_file" -w '%{http_code}' \
+            -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' \
+            --data '{"action":"health"}' "$BRIDGE_URL" || true)"
+          probe_ok="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.ok===true))}catch{process.stdout.write("false")}' "$response_file")"
+          failure_code="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.error||"none").replace(/[^a-z0-9_]/gi,"").slice(0,90))}catch{process.stdout.write("response_invalid")}' "$response_file")"
+          echo "NETLIFY_BACKUP_AUTHORITY_HEALTH http=$bridge_http healthy=$probe_ok error=$failure_code"
+          if [ "$bridge_http" != "200" ] || [ "$probe_ok" != "true" ]; then
+            echo "::error::NETLIFY_BACKUP_AUTHORITY_UNAVAILABLE http=$bridge_http error=$failure_code"
+            printf '### Netlify backup authority unavailable\nHTTP: %s\nError: %s\nIncident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447\n' "$bridge_http" "$failure_code" >> "$GITHUB_STEP_SUMMARY"
+            exit 78
+          fi
+          echo "Netlify backup authority reachable via OIDC; no Netlify build or production mutation requested."
+          echo "### Netlify OIDC backup authority health: OK (not a deploy proof)" >> "$GITHUB_STEP_SUMMARY"
       - name: Record Netlify deployment not applicable
         if: steps.scope.outputs.deployment_required != 'true'
         run: echo "Netlify deployment is not applicable for this source change; provider mutation and browser proof are skipped."
@@ -138,31 +175,82 @@ jobs:
           if-no-files-found: error
           retention-days: 1
  
-      - name: Acquire Netlify deploy transport through GitHub OIDC
+      - id: prebuilt
+        name: Resolve verified Required prebuilt artifact for exact main tree
         if: steps.scope.outputs.deployment_required == 'true'
         env:
-          OIDC_AUDIENCE: bedrijfsgeheugen-netlify-deploy-bridge
-          BRIDGE_URL: https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${OIDC_AUDIENCE}"
-          token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
-          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
-          test -n "$oidc_token"
-          bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' "$BRIDGE_URL")"
-          proxy="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.proxy||""))' "$bridge_json")"
-          test -n "$proxy"
-          echo "::add-mask::$proxy"
-          printf 'NETLIFY_MCP_PROXY_PATH=%s\n' "$proxy" >> "$GITHUB_ENV"
+          fallback() {
+            echo "reuse=false" >> "$GITHUB_OUTPUT"
+            echo "deploy_dir=$GITHUB_WORKSPACE" >> "$GITHUB_OUTPUT"
+            echo "::notice::NETLIFY_PREBUILT_FALLBACK:$1"
+            exit 0
+          }
+          source_tree_sha="$(git rev-parse "${EXPECTED_SHA}^{tree}")"
+          artifact_name="netlify-prebuilt-tree-${source_tree_sha}"
+          artifact_json="$(gh api "repos/${REPOSITORY}/actions/artifacts?name=${artifact_name}&per_page=100" || true)"
+          artifact_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);const a=(x.artifacts||[]).filter(v=>!v.expired).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));process.stdout.write(String(a[0]?.id||""))}catch{}' "$artifact_json")"
+          [ -n "$artifact_id" ] || fallback "artifact-missing:${source_tree_sha}"
+          source_run_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);const a=(x.artifacts||[]).filter(v=>!v.expired).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));process.stdout.write(String(a.find(v=>String(v.id)===process.argv[2])?.workflow_run?.id||""))}catch{}' "$artifact_json" "$artifact_id")"
+          [ -n "$source_run_id" ] || fallback "source-run-missing:${artifact_id}"
+          run_json="$(gh api "repos/${REPOSITORY}/actions/runs/${source_run_id}" || true)"
+          run_name="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.name||""))}catch{}' "$run_json")"
+          run_conclusion="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.conclusion||""))}catch{}' "$run_json")"
+          run_repo="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.head_repository?.full_name||""))}catch{}' "$run_json")"
+          [ "$run_name" = "Required test" ] || fallback "source-run-not-required:${source_run_id}:${run_name}"
+          [ "$run_conclusion" = "success" ] || fallback "source-run-not-success:${source_run_id}:${run_conclusion}"
+          [ "$run_repo" = "$GITHUB_REPOSITORY" ] || fallback "source-run-repository-mismatch:${source_run_id}:${run_repo}"
+
+          artifact_dir="$RUNNER_TEMP/netlify-prebuilt-artifact"
+          deploy_dir="$RUNNER_TEMP/netlify-prebuilt-site"
+          rm -rf "$artifact_dir" "$deploy_dir"
+          mkdir -p "$artifact_dir" "$deploy_dir"
+          gh api "repos/${REPOSITORY}/actions/artifacts/${artifact_id}/zip" > "$RUNNER_TEMP/netlify-prebuilt-artifact.zip" || fallback "artifact-download-failed:${artifact_id}"
+          unzip -q "$RUNNER_TEMP/netlify-prebuilt-artifact.zip" -d "$artifact_dir" || fallback "artifact-wrapper-unzip-failed:${artifact_id}"
+          archive_path="$(find "$artifact_dir" -type f -name netlify-prebuilt.zip -print -quit)"
+          manifest_path="$(find "$artifact_dir" -type f -name netlify-prebuilt-manifest.json -print -quit)"
+          [ -n "$archive_path" ] && [ -n "$manifest_path" ] || fallback "artifact-payload-incomplete:${artifact_id}"
+          manifest_tree="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.source_tree_sha||""))}catch{}' "$manifest_path")"
+          manifest_contract="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.contract||""))}catch{}' "$manifest_path")"
+          expected_archive_sha="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.archive_sha256||""))}catch{}' "$manifest_path")"
+          [ "$manifest_contract" = "NETLIFY_PREBUILT_ARTIFACT_V1" ] || fallback "manifest-contract-invalid:${artifact_id}"
+          [ "$manifest_tree" = "$source_tree_sha" ] || fallback "manifest-tree-mismatch:${artifact_id}:${manifest_tree}:${source_tree_sha}"
+          actual_archive_sha="$(sha256sum "$archive_path" | awk '{print $1}')"
+          [ -n "$expected_archive_sha" ] && [ "$actual_archive_sha" = "$expected_archive_sha" ] || fallback "archive-sha256-mismatch:${artifact_id}"
+          unzip -q "$archive_path" -d "$deploy_dir" || fallback "prebuilt-unzip-failed:${artifact_id}"
+          cp "$manifest_path" "$deploy_dir/.bg-prebuilt-manifest.json"
+          cat > "$deploy_dir/.bg-prebuilt-deploy.json" <<JSON
+          {
+            "contract": "NETLIFY_PREBUILT_DEPLOY_V1",
+            "commit_ref": "${EXPECTED_SHA}",
+            "tree_sha": "${source_tree_sha}",
+            "artifact_id": "${artifact_id}",
+            "source_run_id": "${source_run_id}"
+          }
+          JSON
+          echo "reuse=true" >> "$GITHUB_OUTPUT"
+          echo "deploy_dir=$deploy_dir" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_PREBUILT_ARTIFACT_REUSE tree=$source_tree_sha artifact=$artifact_id required_run=$source_run_id"
+
+
 
       - name: Deploy exact source through authorized Netlify transport
         if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_SHA: ${{ github.sha }}
+          PREBUILT_REUSE: ${{ steps.prebuilt.outputs.reuse || 'false' }}
+          PREBUILT_DIR: ${{ steps.prebuilt.outputs.deploy_dir || github.workspace }}
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 3); do
-            current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=${EXPECTED_SHA}-${attempt}" || true)"
+          echo "NETLIFY_NATIVE_GIT_PRIMARY_WAIT expected_sha=$EXPECTED_SHA"
+          for attempt in $(seq 1 36); do
+            current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?native_git=${EXPECTED_SHA}-${attempt}" || true)"
             observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
             if [ -n "$observed" ]; then
               git fetch origin main --quiet || true
@@ -173,75 +261,11 @@ jobs:
                 exit 0
               fi
             fi
-            sleep 10
+            sleep 5
           done
-          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=bedrijfsgeheugen-netlify-deploy-bridge"
-          token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
-          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
-          if [ -n "$oidc_token" ]; then
-            trigger_json="$(curl -sS --max-time 25 -X POST \
-              -H "Authorization: Bearer $oidc_token" \
-              -H 'Content-Type: application/json' \
-              --data "$(node -e 'process.stdout.write(JSON.stringify({action:"trigger_build",expected_sha:process.env.EXPECTED_SHA}))')" \
-              "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge" || true)"
-            build_ok="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.ok===true))}catch{process.stdout.write("false")}' "$trigger_json")"
-            linked_build_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.build_id||""))}catch{}' "$trigger_json")"
-            linked_deploy_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.deploy_id||""))}catch{}' "$trigger_json")"
-            echo "NETLIFY_LINKED_BUILD_TRIGGER ok=$build_ok build=${linked_build_id:-none} deploy=${linked_deploy_id:-none}"
-            linked_fallback="false"
-            if [ "$build_ok" = "true" ] && [ -n "$linked_deploy_id" ]; then
-              for attempt in $(seq 1 120); do
-                deploy_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/deploys/$linked_deploy_id" || true)"
-                state="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.state||""))}catch{}' "$deploy_json")"
-                if [ "$state" = "error" ]; then
-                  error_message="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.error_message||""))}catch{}' "$deploy_json")"
-                  if [ "$error_message" = "Skipped" ]; then
-                    echo "NETLIFY_LINKED_DEPLOY_SKIPPED deploy=$linked_deploy_id; falling back to canonical exact-source transport."
-                    linked_fallback="true"
-                    break
-                  fi
-                  build_json=""
-                  if [ -n "$linked_build_id" ]; then
-                    build_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/builds/$linked_build_id" || true)"
-                  fi
-                  node -e '
-                    const safe=(raw,kind)=>{try{const x=JSON.parse(raw||"{}");return {
-                      kind,id:x.id||null,state:x.state||null,done:x.done??null,error:x.error||null,
-                      error_message:x.error_message||null,deploy_id:x.deploy_id||null,
-                      created_at:x.created_at||null,updated_at:x.updated_at||null
-                    }}catch{return {kind,parse_error:true}}};
-                    console.error("NETLIFY_LINKED_DEPLOY_ERROR",JSON.stringify(safe(process.argv[1],"deploy")));
-                    console.error("NETLIFY_LINKED_BUILD_ERROR",JSON.stringify(safe(process.argv[2],"build")));
-                  ' "$deploy_json" "$build_json"
-                  echo "NETLIFY_LINKED_DEPLOY_FAILED deploy=$linked_deploy_id; continuing with canonical exact-source upload fallback."
-                  linked_fallback="true"
-                  break
-                fi
-                current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?linked_build=${EXPECTED_SHA}-${attempt}" || true)"
-                observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
-                if [ -n "$observed" ]; then
-                  git fetch origin main --quiet || true
-                  supersession_json="$(node tools/site-shell/production-supersession.mjs --expected "$EXPECTED_SHA" --observed "$observed" 2>/dev/null || true)"
-                  supersession_ok="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.ok===true))}catch{process.stdout.write("false")}' "$supersession_json")"
-                  if [ "$supersession_ok" = "true" ]; then
-                    echo "Expected SHA or safe non-production descendant reached production: $supersession_json"
-                    exit 0
-                  fi
-                fi
-                if [ "$state" = "ready" ]; then
-                  sleep 5
-                else
-                  sleep 5
-                fi
-              done
-              if [ "$linked_fallback" != "true" ]; then
-                echo "::error::Linked Netlify build did not expose exact SHA ${EXPECTED_SHA} within bounded readback"
-                exit 78
-              fi
-              echo "Linked Netlify deploy was skipped; continuing with canonical exact-source upload fallback."
-            fi
-          fi
-
+          echo "NETLIFY_NATIVE_GIT_PRIMARY_TIMEOUT expected_sha=$EXPECTED_SHA; entering exact-source JIT fallback"
+          # Native Git is the canonical production authority. Only when its bounded
+          # exact-SHA readback does not converge do we use the JIT exact-source fallback.
           # The Netlify proxy is intentionally short-lived. Acquisition success is
           # not proof that the following upload is authorized, so a provider 401
           # must refresh OIDC + bridge proxy inside the same exact-source attempt.
@@ -252,7 +276,26 @@ jobs:
             token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
             oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
             test -n "$oidc_token"
-            bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge")"
+            bridge_body="$(mktemp)"
+            bridge_http="$(curl -sS --max-time 20 -o "$bridge_body" -w '%{http_code}' -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge" || true)"
+            bridge_json="$(cat "$bridge_body")"
+            if [ "$bridge_http" != "200" ]; then
+              bridge_error="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.error||"bridge_unavailable"))}catch{process.stdout.write("bridge_unavailable")}' "$bridge_json")"
+              current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?jit_race=${EXPECTED_SHA}-${transport_attempt}" || true)"
+              observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
+              if [ -n "$observed" ]; then
+                git fetch origin main --quiet || true
+                supersession_json="$(node tools/site-shell/production-supersession.mjs --expected "$EXPECTED_SHA" --observed "$observed" 2>/dev/null || true)"
+                supersession_ok="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.ok===true))}catch{process.stdout.write("false")}' "$supersession_json")"
+                if [ "$supersession_ok" = "true" ]; then
+                  echo "Native Git production converged during JIT fallback acquisition: $supersession_json"
+                  exit 0
+                fi
+              fi
+              echo "::error::NETLIFY_JIT_FALLBACK_UNAVAILABLE http=$bridge_http error=$bridge_error"
+              node tools/delivery/netlify-authority-incident.mjs "$bridge_http" "$bridge_error" "$EXPECTED_SHA" "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+              exit 78
+            fi
             fresh_proxy="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.proxy||""))' "$bridge_json")"
             test -n "$fresh_proxy"
             echo "::add-mask::$fresh_proxy"
@@ -262,8 +305,14 @@ jobs:
 
             : > "$deploy_log"
             set +e
-            npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1 | tee "$deploy_log"
-            deploy_status=${PIPESTATUS[0]}
+            if [ "$PREBUILT_REUSE" = "true" ]; then
+              echo "NETLIFY_PREBUILT_UPLOAD directory=$PREBUILT_DIR"
+              (cd "$PREBUILT_DIR" && npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH") 2>&1 | tee "$deploy_log"
+              deploy_status=${PIPESTATUS[0]}
+            else
+              npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1 | tee "$deploy_log"
+              deploy_status=${PIPESTATUS[0]}
+            fi
             set -e
             if [ "$deploy_status" -eq 0 ]; then
               deploy_ok=true
@@ -375,7 +424,7 @@ jobs:
 
       - name: Install production interaction browser
         if: steps.scope.outputs.deployment_required == 'true'
-        run: PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+        run: PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
 
       - name: Prove pricing toggles and English switch in production browser
         if: steps.scope.outputs.deployment_required == 'true'

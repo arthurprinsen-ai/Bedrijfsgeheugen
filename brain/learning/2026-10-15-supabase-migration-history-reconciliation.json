@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "supabase-migration-history-reconcile-20261015",
+  "fingerprint": "supabase|migrations-failed|remote-history-missing-git-sql|20261015",
+  "compiler": {
+    "failure_class": "PRODUCTION_MIGRATION_HISTORY_DRIFT",
+    "scope": "SUPABASE_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Production main reports MIGRATIONS_FAILED; 43 applied migrations missing from Git, 21 Git-only historical timestamps; Supabase deploy stages abort before Edge Functions. Release authority attempted broad shared-helper scope and failed before social functions could be verified.",
+  "prevention": "Reviewable first batch restores 33 of 43 actual provider-applied SQL migration records and removes ten exact-content duplicate Git aliases. Follow-up second batch restores remaining ten applied versions. Eleven unverified local-only migrations require schema-safe verification. No manual migration status falsification.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-history-reconciliation.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-history-reconciliation.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-history-reconciliation.test.mjs"
+    ]
+  },
+  "evidence": {
+    "base_commit": "f603b1d4e596f37416f68817ac8ece103a320f79",
+    "applied_migrations": 702,
+    "repository_migration_files": 680,
+    "remote_only_versions": 43,
+    "local_only_versions": 21,
+    "exact_sql_aliases_removed": 10,
+    "local_only_pending": 11,
+    "sql_source": "supabase_migrations.schema_migrations.statements",
+    "batch_one_applied_versions_restored": 33,
+    "batch_two_applied_versions_pending": 10
+  },
+  "outcome": {
+    "source_reconciliation_prepared": false,
+    "provider_migration_run_verified": false,
+    "edge_deployed_verified": false,
+    "social_published_verified": false,
+    "batch_one_source_committed": true
+  }
+}

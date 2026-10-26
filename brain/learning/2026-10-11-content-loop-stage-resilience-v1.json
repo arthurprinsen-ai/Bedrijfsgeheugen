@@ -1,0 +1,30 @@
+{
+  "fingerprint": "powerhouse|p0-4198|content-loop-stage-resilience|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "SCHEDULER_STAGE_FAILURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-stage-resilience.test.mjs"
+    ]
+  },
+  "root_cause": "The canonical content-loop treated pre/post outcome reconciliation and Instagram daily winner selection as terminal errors before invoking the independent blog/LinkedIn delivery lanes. A single external OAuth readback or IG signal could starve all channels.",
+  "prevention_rule": "Record failed observational reconciliations and Instagram daily winner selection as degraded stage results without aborting other channels. Do not report GREEN when readback failed. Preserve token authentication, single content-loop lease, social permission, uniqueness gates, exact media proof, and provider verification.",
+  "evidence": {
+    "source": "supabase/functions/powerhouse-content-loop/index.ts",
+    "tests": [
+      "tests/brain-content-loop-stage-resilience.test.mjs"
+    ],
+    "provider_source_parity_required": true,
+    "previous_version": 38
+  },
+  "outcome": {
+    "protected_main_pending": true,
+    "production_deployment_pending": true,
+    "provider_publication_proven": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-19",
+  "obligation": "native-approved-blog-bounded-wordcount-retry-20261019",
+  "fingerprint": "native-approved-blog|OPENAI_BLOG_WORD_COUNT_INVALID|2026-10-19",
+  "root_cause": "An actual native approved supply run for 2026-10-20 returned an OpenAI candidate outside the strict 900–1500 word range. The unchanged validator correctly rejected it, but the one-shot generation stopped the entire supply workflow even after the previously repaired Notion title contract.",
+  "intervention": "Permit at most three whole-candidate OpenAI generations on the specific word-count validation failure. Prompt for 1100–1250 words on retry. Never pad, truncate or auto-approve a failing article; preserve the existing strict validator, provider safety controls, and downstream Notion idempotency.",
+  "prevention": "Deterministic regression tests assert one invalid then valid response, fail-closed after three invalid responses, no retry for unrelated quality failures, and sanitized public aggregate context only.",
+  "compiler": {
+    "failure_class": "OPENAI_GENERATED_WORD_COUNT_CONTRACT_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-openai-blog-bounded-wordcount-retry-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-openai-blog-bounded-wordcount-retry-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-openai-blog-bounded-wordcount-retry-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "failed_live_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39303086998",
+    "regression_test": "tests/brain-openai-blog-bounded-wordcount-retry-20261019.test.mjs",
+    "notion_stock_verified": false
+  },
+  "status": "PROTECTED_CANDIDATE_UNDER_REVIEW"
+}

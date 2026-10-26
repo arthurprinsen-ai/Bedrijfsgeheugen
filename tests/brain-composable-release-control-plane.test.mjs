@@ -54,6 +54,7 @@ test('static syntax preflight blocks website preview and browser while central p
 
 test('one central exact artifact build owns parity and browser reuses exact preview with local fallback', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  const runner = readFileSync('tools/ci/netlify-build-entry.mjs', 'utf8');
   const buildStart = required.indexOf('\n  netlify_build_parity:');
   const backendStart = required.indexOf('\n  backend:', buildStart);
   const previewReadyStart = website.indexOf('\n  preview-ready:');
@@ -70,9 +71,11 @@ test('one central exact artifact build owns parity and browser reuses exact prev
   assert.match(artifactBuild, /name: Install exact Netlify build dependencies/);
   assert.match(artifactBuild, /run: npm install --prefer-offline/);
   assert.match(artifactBuild, /name: Run exact Netlify production build command once/);
+  assert.match(artifactBuild, /node tools\/ci\/netlify-build-entry\.mjs/);
   assert.match(artifactBuild, /name: Verify built artifact contracts/);
-  for (const command of ['node tools/bouw-powerhouse-auth.mjs','node tools/bouw-kennisindex.mjs','node tools/bouw-v18-production.mjs','node tools/apply-tabbladen.mjs','node tools/bouw-v18-views.mjs','node tools/bouw-v18-chrome-alles.mjs','node tools/prijzen-uit-de-homepage.mjs']) {
-    assert.ok(artifactBuild.includes(command), `missing build command: ${command}`);
+  for (const script of ['tools/bouw-powerhouse-auth.mjs','tools/bouw-kennisindex.mjs','tools/bouw-v18-production.mjs','tools/apply-tabbladen.mjs','tools/bouw-v18-views.mjs','tools/bouw-v18-chrome-alles.mjs','tools/prijzen-uit-de-homepage.mjs']) {
+    assert.ok(runner.includes(script), `missing canonical build phase: ${script}`);
+    assert.ok(!artifactBuild.includes(`node ${script}`), `Required must delegate build phase to canonical runner: ${script}`);
   }
 
   assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
@@ -81,6 +84,7 @@ test('one central exact artifact build owns parity and browser reuses exact prev
   assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
   assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(browser, /name: Build and serve exact local candidate only when Netlify preview is unavailable/);
+  assert.match(browser, /node tools\/ci\/netlify-build-entry\.mjs/);
   assert.match(browser, /if:\s*needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
   assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.doesNotMatch(website, /\n  page-seo:/);

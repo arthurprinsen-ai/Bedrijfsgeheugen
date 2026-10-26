@@ -12,7 +12,8 @@
     "noMakeDependency": true,
     "exactReleaseIdentity": true,
     "contentReadbackRequired": true,
-    "transient5xxPolicy": "bounded-retry-then-fail-closed"
+    "transient5xxPolicy": "bounded-retry-then-fail-closed",
+    "externalObserverIsNonAuthoritative": true
   },
   "productionTruth": {
     "requiredStatusContext": "test",
@@ -52,7 +53,24 @@
       "brain/contracts/production-readback-v1.json",
       "tools/site-shell/production-supersession.mjs",
       "tools/site-shell/standalone-visibility-check.mjs",
-      "config/historical-terminal-reconciliation.json"
+      "config/historical-terminal-reconciliation.json",
+      "config/netlify-project-registry.json",
+      "tools/netlify/ephemeral-janitor.mjs",
+      "AGENTS.md",
+      "platform/system-map/canonical-system-map.mjs",
+      "tools/brain-delivery-system.mjs",
+      "config/powerhouse-agent-delivery-scheduler-v1.json",
+      "config/brain-delivery-system.json",
+      "config/powerhouse-quality-surface-contracts.json",
+      "config/build-contract.json",
+      "config/control-plane-budget.json",
+      "config/notion-root-lifecycle.json",
+      "config/pr-trigger-baseline.json",
+      "config/supabase-edge-functions.json",
+      "supabase/migration-history.lock.json",
+      "config/powerhouse-runtime-backpressure-v1.json",
+      "config/powerhouse-adaptive-delivery-v1.json",
+      "tools/controleer-technische-seo.mjs"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
@@ -90,12 +108,49 @@
       "tools/bouw-v18-chrome-alles.mjs",
       "tools/prijzen-uit-de-homepage.mjs",
       "tools/normaliseer-site-ui.mjs",
-      "tools/genereer-sitemap.mjs"
+      "tools/genereer-sitemap.mjs",
+      "afsluiten.html",
+      "zelfscan.html",
+      "tools/bouw-v18-production-core.mjs"
     ],
     "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json",
     "netlifyApplicabilityAuthority": "tools/delivery/netlify-deployment-applicability.mjs",
     "nonNetlifyBackendDeploymentRequired": false,
-    "supabaseOnlyNetlifyDeploymentRequired": false
+    "supabaseOnlyNetlifyDeploymentRequired": false,
+    "verifierOnlyPrefixes": [
+      "docs/",
+      ".agents/",
+      "tests/",
+      "supabase/tests/",
+      ".github/",
+      "brain/learning/",
+      "brain/policies/",
+      "schemas/",
+      "scripts/brain/",
+      "scripts/ci/",
+      "tools/delivery/",
+      "tools/ci/",
+      "tools/build/",
+      "tools/netlify/",
+      "tools/notion/",
+      "tools/supabase/"
+    ],
+    "supabaseMigrationReadback": {
+      "requiredForMigrationRuntime": true,
+      "marker": "Terminal-Supabase-Migration-Readback",
+      "projectRef": "adhjwmvyoixzjtmiroln",
+      "state": "APPLIED",
+      "requiredFields": [
+        "version",
+        "name",
+        "state",
+        "project",
+        "observed_at"
+      ],
+      "versionPattern": "^[0-9]{14}$",
+      "observedAtFormat": "UTC_ISO8601_SECONDS",
+      "failClosedWhenMissing": true
+    }
   },
   "connectorReadiness": {
     "maxAttempts": 8,
@@ -150,5 +205,27 @@
       "required_intervention",
       "next_escalation_at"
     ]
+  },
+  "externalObserverReadback": {
+    "fingerprint": "delivery|external-observer|provider-truth-fallback|v1",
+    "role": "supplemental_observer",
+    "blockedByObserverIsOriginFailure": false,
+    "blockedByObserverCanInvalidateProvenProduction": false,
+    "providerAuthority": "netlify",
+    "immutableLineageAuthority": "github",
+    "evaluator": "tools/delivery/external-observer-production-proof.mjs",
+    "regressionTest": "tests/brain-external-observer-provider-truth.test.mjs",
+    "liveProvenState": "LIVE_PROVEN_PROVIDER_TRUTH",
+    "requiredProviderEvidence": [
+      "deploy_id",
+      "state_ready",
+      "context_production",
+      "production_alias",
+      "exact_commit_ref"
+    ],
+    "functionInventoryRequiredWhenExpected": true,
+    "exactShaRequired": true,
+    "publicFetchStillRequiredInsideCanonicalRunner": true,
+    "noFabricatedOriginSuccess": true
   }
 }

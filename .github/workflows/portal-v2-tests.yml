@@ -8,11 +8,6 @@ on:
       - 'portal-v2/**'
       - 'portal-next/portal-content-map.js'
       - '.github/workflows/portal-v2-tests.yml'
-  pull_request:
-    paths:
-      - 'portal-v2/**'
-      - 'portal-next/portal-content-map.js'
-      - '.github/workflows/portal-v2-tests.yml'
 
 concurrency:
   group: portal-v2-tests-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}

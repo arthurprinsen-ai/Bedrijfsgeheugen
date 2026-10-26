@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "recovery-priority:bounded-provider-run-advisory:20261023-v1",
+  "obligation_id": "github|recovery-supervisor|evidence-ranked-pr-sync|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Existing Recovery Supervisor used PR provider list ordering despite bounded exact-head Required run evidence and authenticated writer lease state.",
+  "fix": "Read one bounded sample and sort only existing Recovery Supervisor work; reconcile MAIN_SYNC then idle exact terminal stale leases, retaining original provider order if evidence cannot be validated. Preserve all live CAS, preflight and Required/CodeQL authority.",
+  "prevention_rule": "Never prioritize cross-repo, expired, missing-obligation or drift-budget-exhausted writer leases as safe refreshes. Running exact-head Required is not an avoidable test. Fail closed to original PR ordering; do not create second scheduler or incident registry.",
+  "evidence": {
+    "source": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "regression": "tests/brain-recovery-pr-prioritizer.test.mjs",
+    "initial_failed_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39964307735",
+    "initial_failure": "LEARNING_FAILURE_CLASS_REQUIRED",
+    "repaired_with": "canonical compiler failure class and existing tests/brain- entrypoint",
+    "production_gain_proven": false,
+    "duplicate_runner_savings_proven": false,
+    "independent_provider_readback_required": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-pr-prioritizer.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-recovery-pr-prioritizer.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-pr-prioritizer.test.mjs"
+    ],
+    "metrics": [
+      "per_pr_main_drift_refresh_attempts",
+      "main_sync_reconciled",
+      "cas_rejections",
+      "required_duplicate_head_attempts",
+      "time_to_successful_release"
+    ],
+    "expected_behaviors": [
+      "invalid provider sample preserves original ordering",
+      "one writer/PR and native expected_head_sha remain required",
+      "Required and CodeQL never waived",
+      "safety errors not converted to green"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "NOT_YET_DEPLOYED"
+}

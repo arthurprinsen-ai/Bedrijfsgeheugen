@@ -1,0 +1,37 @@
+{
+  "contract": "powerhouse-social-obligation-hold-duplicate-recovery-v1",
+  "date": "2026-10-20",
+  "fingerprint": "social|linkedin-personal|obligation-hold-dedupe-reconciliation|20261020",
+  "compiler": {
+    "failure_class": "SOCIAL_DUPLICATE_OBLIGATION_DIVERGES_FROM_HOLD_DECISION",
+    "scope": "CODE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ]
+  },
+  "parent_issue": 4198,
+  "root_cause": "Today's personal LinkedIn obligation stored GLOBAL_POST_DUPLICATE_BLOCKED against Oct 15 story family while its daily channel decision had been normalized to state blocked decision hold with no delivery_evidence.error. Existing recoverableUniquenessDenial examined only the decision, so the orchestrator missed an admissible duplicate failure on the obligation and could not rotate to a genuinely new independently verified personal story.",
+  "evidence": {
+    "date": "2026-10-20",
+    "personal_obligation": "BLOCKED; GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE",
+    "personal_decision": "blocked/hold, no delivery_ref",
+    "company_obligation": "LIVE_PROVEN urn:li:share:7518190374146789378",
+    "independent_company_public_url": "https://nl.linkedin.com/posts/bedrijfsgeheugen_ontbrekende-kennis-een-offerte-raakt-zoek-activity-7518190374964834304-y6JI",
+    "instagram": "MEDIA_ASSET_REQUIRED",
+    "email": "eligible=0, sent=0"
+  },
+  "prevention": [
+    "Recover only the original non-mutated LinkedIn personal claim when both canonical decision and obligation prove pre-provider duplicate denial and no consumed authority or side-effect.",
+    "Keep global story uniqueness enforced and exclude rejected source IDs across both canonical records.",
+    "Without a genuinely new verified personal source, leave publication blocked; never fake publication.",
+    "Company LinkedIn post independently observed in the provider is not to be republished."
+  ],
+  "tests": [
+    "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+  ],
+  "state": "SOURCE_CANDIDATE_UNVERIFIED"
+}

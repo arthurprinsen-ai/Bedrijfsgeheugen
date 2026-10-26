@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|ai-model-activation|tenant-provider-readiness|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Customers could select a default AI model and use a guarded model smoke test, but could not inspect missing provider, contract, consent, evidence, account and residency prerequisites or lodge an attributable activation request. This caused model selection to look like immediate provider availability.",
+  "prevention_rule": "Keep tenant-bound model preferences separate from activation. Allow logged-in tenant users to request review by storing only model, route, workload and timestamp, never API keys or raw contracts. An authenticated read-only endpoint evaluates model, supplier, requested intent, sovereign policy, signed runtime proof, independent approval, pinned endpoint and use case. A positive status only allows a manually initiated test through the existing gateway.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "paths": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs",
+      "tests/portal-ai-model-choice.test.mjs"
+    ],
+    "status": "Pending protected CI; no provider account or customer contract attested by these code tests"
+  },
+  "outcome": {
+    "implementation": "Client request and server-backed activation readiness checklist",
+    "provider_activation": "NOT_CLAIMED",
+    "production": "NOT_YET_PROVEN"
+  }
+}

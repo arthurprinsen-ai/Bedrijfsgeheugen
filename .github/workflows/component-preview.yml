@@ -7,13 +7,6 @@ on:
     paths:
       - 'components/**'
       - 'assets/hero/**'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'components/**'
-      - 'assets/hero/**'
-
 permissions:
   contents: read
 

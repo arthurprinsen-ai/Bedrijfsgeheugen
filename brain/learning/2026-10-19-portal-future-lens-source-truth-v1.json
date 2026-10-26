@@ -1,0 +1,40 @@
+{
+  "id": "portal-future-lens-source-truth-v1",
+  "observed_at": "2026-10-19",
+  "obligation_id": "portal-source-truth-no-fake-confidence-20261019",
+  "incident": "DOM-only KPI digits and changes were treated as predictive trend and a made-up 35-95% confidence in Portal V2 nextgen-intelligence. External Tavily ingest independently failed HTTP 432 (usage limit) on 2026-10-19; canonical external snapshot was 10 days old. Runtime sources and company forecasts are different scopes.",
+  "root_cause": "The future-lens adapter parsed presentational text without tenant-bound measured source refs, time-series/backtest or independently validated model, and manufactured uncertainty. Success of cron request and a fresh snapshot recomputation were not proof that provider observations were fresh.",
+  "fix": "Read-only Future Lens now refuses DOM-derived numerical forecasts and confidence; only source-referenced, backtested, authenticated tenant forecast payload with recent verification is eligible. Unverified UI shows unknown and links to existing Foresight rather than materializing an action.",
+  "prevention": "No visible number, score, scenario, evidence claim or monetary value may be synthesized from DOM text or from provider scheduler success. Verify provider response/body and recent authoritative observation timestamp, otherwise report STALE/UNKNOWN; source catalog != connected provider.",
+  "evidence": {
+    "observed_provider_response": "bg-externe-signalen HTTP 502; Tavily individual searches HTTP_432: usage limit",
+    "tavily_last_accepted_at": "2026-10-14T06:11:07Z",
+    "action_candidates_total": 96,
+    "action_materialized": 2,
+    "financial_forecasts_validated": 0,
+    "calibration_last_measurement_at": "2026-10-15T11:22:46Z"
+  },
+  "acceptance": [
+    "node --test portal-v2/tests/nextgen-intelligence.test.mjs",
+    "protected Required and CodeQL",
+    "production exact-commit visual and authenticated readback"
+  ],
+  "claims_not_made": [
+    "no new external content was ingested",
+    "no validated customer finance forecast materialized",
+    "no production deployment assumed"
+  ],
+  "fingerprint": "portal|foresight|no-dom-derived-confidence-or-forecast|v1",
+  "compiler": {
+    "failure_class": "FABRICATED_FORECAST",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-source-truth-20261019.test.mjs"
+    ]
+  }
+}

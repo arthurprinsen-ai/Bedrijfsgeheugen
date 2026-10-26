@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "parent_issue": 4439,
+  "obligation_id": "mira:source-date-provenance-before-daily-winner:20261025-v1",
+  "fingerprint": "mira|source-freshness|source-observed-at-substituted-for-publication-date|20261025-v1",
+  "failure_class": "SOURCE_PUBLICATION_FRESHNESS_FALSE_POSITIVE",
+  "observed_evidence": {
+    "source_signal_id": "088de9af-1e04-4da1-a393-a2bfac55ab92",
+    "frozen_winner_recommendation_id": "0a56f150-2954-4355-a3d0-fc65396f8152",
+    "source_title": "Steeds meer betaalapps voor het parkeren: dit zijn de verschillen",
+    "original_published_on": "2022-10-03",
+    "source_excerpt": "3 okt 2022 — ...",
+    "observed_at": "2026-10-24T20:02:49.202Z",
+    "source_published_at_in_database": null,
+    "source_freshness_score": 0.8,
+    "source_eligible": true,
+    "production_function": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+    "found_exact_code": "const recency=0.8",
+    "consequence": "An old article was promoted as fresh daily sourced inspiration; the content generator spent OpenArt credits before a later unrelated router/scene mismatch blocked publication."
+  },
+  "root_cause": "The producer assigns freshness_score=0.8 to every search result, irrespective of original publication date. The materializer then checks only observed_at newer than 10 days, which measures crawling, not source publication.",
+  "fix": "Pure source date evaluation parses credible Dutch/English and ISO publication dates at the beginning of provider metadata or search snippets, rejects missing, 60+d stale, conflicting, invalid or future publications. Source writer stores publication timestamp and freshness evidence, eligibility requires truth. Database materializer independently enforces original publication recency for both new and reserved old rows, leaving already-frozen daily winners immutable.",
+  "prevention_rule": "A source crawled today is not news published today. Never assign positive recency or select a Mira source without verified original publication date inside the bounded 60-day window; preserve immutable historic winners, fallback safely instead of inventing current news, and report date-freshness coverage every daily cycle.",
+  "prevention_rules": [
+    "Reject undated/aged >60d/conflicting/future search hits from executable daily winners",
+    "Validate both producer and database materializer with executable historical, shadow and canary tests",
+    "Preserve canonical single publisher, source winner freeze, Mira master identity and provider delivery guards",
+    "Treat generated video as independent from published/verified sales outcomes"
+  ],
+  "compiler": {
+    "failure_class": "SOURCE_PUBLICATION_FRESHNESS_FALSE_POSITIVE",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-source-freshness-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-source-freshness-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-source-freshness-20261025.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-mira-source-freshness-20261025.test.mjs"
+  ],
+  "productionVerified": false
+}

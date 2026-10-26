@@ -1,0 +1,35 @@
+{
+  "fingerprint": "netlify|composio|account-visible|session-execute-400|20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "netlify-pinned-session-provider-health-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437",
+  "compiler": {
+    "failure_class": "COMPOSIO_SESSION_TOOL_NOT_PROVEN",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 9,
+    "security_sensitive": true
+  },
+  "root_cause": "Netlify auth was renewed and the Supabase bridge now finds exactly one active, non-disabled account with complete identity. An independent required health read still fails on Composio v3.1 session tool execution HTTP 400 (missing result_type); existing log omits validation details and effective session tool exposure.",
+  "prevention_rule": "Pin only the two audited Netlify app-tool slugs in both v3.1 session.tools positive allowlist and preload. On 400, inspect read-only session tool inventory and log only enumerated safe validation type/field and tool exposure. Never auto-select another user, widen the toolkit, log credentials, bypass OIDC or mark deployment green on a health failure.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-session-tool-exposure-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-session-tool-exposure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-session-tool-exposure-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-netlify-session-tool-exposure-v1.test.mjs",
+    "failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39230936665",
+    "provider_health": "HTTP_400_UNRESOLVED",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

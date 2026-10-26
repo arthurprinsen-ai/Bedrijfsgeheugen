@@ -1,0 +1,24 @@
+{
+  "version": "OPTIMIZER-WORKFLOW-YAML-STARTUP-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github-actions|optimizer|yaml-startup|unindented-heredoc",
+  "obligation_id": "optimizer-workflow-yaml-startup-20261006-v1",
+  "root_cause": "A shell heredoc embedded in a YAML run block emitted PR-body lines at YAML column zero. GitHub rejected the workflow before any job could start, producing an immediate failed workflow run with zero jobs.",
+  "prevention": "Build the PR body with quoted printf arguments inside the YAML block scalar. Regression tests forbid the raw heredoc and any column-zero Obligation-ID line.",
+  "evidence": {
+    "failing_run": 37494058495,
+    "failing_main_sha": "bdfb5d81a9033ba7a8b33a2a152f82c8cf38cb51",
+    "test": "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "GITHUB_ACTIONS_WORKFLOW_YAML_STARTUP_FAILURE",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "A workflow with PR-body metadata escaping the YAML run block must be rejected by regression coverage before merge.",
+      "The fixed optimizer workflow must use the quoted printf body builder and contain no column-zero Obligation-ID line."
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "fingerprint": "website|mobile-cls|cold-load-repeatability-existing-daily-assurance|20261023-v1",
+  "observed_at": "2026-10-23",
+  "obligation_id": "website|mobile-cls|source-repaired-repeatability-proof|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4451",
+  "failure_class": "WEBSITE_VISUAL_STABILITY",
+  "root_cause": "The source-specific mobile TOC cascade was repaired in protected PR #4651, but one green full-sitemap browser run does not bound intermittent 390x844 cold-load shifts. Actual remaining stochastic source is UNPROVEN and requires measured attribution, not speculation.",
+  "prevention": "Reuse the already-scheduled daily cross-browser screenshot assurance to run strict fail-closed repeat cold-load checks on all historically failing NL/EN mobile blog routes in sequential isolated and bounded parallel worker modes. No new cron, skip, or relaxed 0.100 CLS threshold. Capture source geometry, per-route distributions and provider run evidence.",
+  "regression_contract": "tests/brain-mobile-cls-repeatability-20261023.test.mjs",
+  "evidence": {
+    "prior_cls_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4451",
+    "merged_source_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4651",
+    "independent_green_browser_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39906754602",
+    "regression_tests": [
+      "tests/brain-mobile-cls-repeatability-20261023.test.mjs"
+    ],
+    "live_repeatability": "PENDING_SCHEDULED_PRODUCTION_RUN",
+    "threshold": 0.1
+  },
+  "compiler": {
+    "failure_class": "WEBSITE_VISUAL_STABILITY",
+    "scope": "WEBSITE_BROWSER_REQUIRED",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mobile-cls-repeatability-20261023.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_DIAGNOSTIC_NOT_PROOF_OF_ZERO_FUTURE_CLS",
+  "manual_dispatch_proof_gap": {
+    "root_cause": "The existing GitHub workflow_dispatch triggered production base URL while setting ASSURANCE_MODE=pr; the live 20-sample mobile CLS replay only ran when ASSURANCE_MODE=daily. Thus a manual green run could not establish independent production repeatability. The physical cause of remaining intermittent mobile CLS is still UNPROVEN until measured.",
+    "prevention": "Route both native schedule and workflow_dispatch through unchanged daily assurance within the same existing workflow, preserve fail-closed 0.100 threshold and 20 samples, and add repeatability regression contract to the workflow. No additional scheduler or alternate provider.",
+    "evidence": {
+      "fix_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4730",
+      "source_fix_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4651",
+      "existing_guard_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4729",
+      "first_admission_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39913153581",
+      "live_20_sample_readback": "PENDING_INDEPENDENT_NATIVE_PRODUCTION_DISPATCH"
+    },
+    "regression_contract": "tests/brain-mobile-cls-repeatability-20261023.test.mjs"
+  }
+}

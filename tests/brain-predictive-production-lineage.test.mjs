@@ -8,6 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MIGRATIONS = path.join(ROOT, 'supabase', 'migrations');
 const ENGINE = path.join(ROOT, 'supabase', 'functions', 'powerhouse-predictive-engine', 'index.ts');
 const CALIBRATOR = path.join(ROOT, 'supabase', 'functions', 'powerhouse-forecast-calibrator', 'index.ts');
+const SCHEDULER_AUTH = path.join(ROOT, 'supabase', 'functions', '_shared', 'powerhouse-scheduler-auth.ts');
 const CONFIG = path.join(ROOT, 'supabase', 'config.toml');
 const LINEAGE = path.join(ROOT, 'config', 'supabase-production-migration-lineage.json');
 
@@ -97,10 +98,15 @@ test('search-path hardening tolerates only absent non-ledger baseline helpers', 
 test('live predictive sources are fail closed and are not publishers', () => {
   const engine = fs.readFileSync(ENGINE, 'utf8');
   const calibrator = fs.readFileSync(CALIBRATOR, 'utf8');
+  const auth = fs.readFileSync(SCHEDULER_AUTH, 'utf8');
+  assert.match(auth, /request\.headers\.get\('x-powerhouse-token'\)/);
+  assert.match(auth, /POWERHOUSE_DAILY_SCHEDULER_TOKEN/);
+  assert.match(auth, /TOKEN_MISMATCH/);
+  assert.match(auth, /TOKEN_REQUIRED/);
   for (const source of [engine, calibrator]) {
-    assert.match(source, /x-powerhouse-token/);
-    assert.match(source, /powerhouse_daily_scheduler_token/);
-    assert.match(source, /UNAUTHORIZED/);
+    assert.match(source, /import \{ authorizePowerhouseScheduler \} from '\.\.\/\_shared\/powerhouse-scheduler-auth\.ts'/);
+    assert.match(source, /await authorizePowerhouseScheduler\(req\)/);
+    assert.match(source, /if\(!auth\.ok\) return json\(\{ok:false,error:auth\.error\},auth\.status\)/);
     assert.doesNotMatch(source.toLowerCase(), /buffer/);
   }
   assert.match(engine, /brain_ai_governance_registry/);
@@ -115,4 +121,15 @@ test('hosted previews deploy both predictive functions with custom-token authent
     assert.match(config, new RegExp(`\\[functions\\.${name}\\][\\s\\S]*?enabled\\s*=\\s*true`, 'i'));
     assert.match(config, new RegExp(`\\[functions\\.${name}\\][\\s\\S]*?verify_jwt\\s*=\\s*false`, 'i'));
   }
+});
+
+
+test('predictive engine failure receipt awaits the Supabase write without Promise-only chaining', () => {
+  const engine = fs.readFileSync(ENGINE, 'utf8');
+  assert.doesNotMatch(
+    engine,
+    /db\.from\('bg_gezondheid'\)\.insert\([^;]+\)\.catch\(/s,
+    'Supabase query builders are thenable but do not expose Promise.catch()',
+  );
+  assert.match(engine, /try\s*\{\s*await db\.from\('bg_gezondheid'\)\.insert\(/s);
 });

@@ -1,0 +1,7 @@
+# 25 October 2026 — Recover indexed queue progress without hiding integrity failures
+
+Parent P0 #4446; commercial P0 #4198. After successful #4908 protected production deploy, minute growth-drain independently persisted new non-robot page_view events, but intermittently returned HTTP 204 while internal logs reported `failed=1,replayed=0,indexedSeen=1,indexedCompleted=0`. This is a pre-provider pointer/source integrity failure, not proof of a DataHub timeout. The original implementation stopped scanning on the first invalid or missing indexed source.
+
+Minimal correction in the same minute executor: preserve defective pointers, classify counts as `indexPointerInvalid` or `indexSourceMissing`, keep scanning other indexed events within the same budget, and stop immediately only on a provider failure. Scheduled responses now return 503 for any real failure instead of a false-green 204; structured logs include `healthy` and integrity counts. Both canonical source receipts and indexes remain evidence; no historical queue deletion, manual fabrication, new scheduler, customer contact or data leakage.
+
+Historical replay tests verify malformed pointer, temporarily absent original and healthy event coexist, original records preserved, and 503 on failure. Release only via exact Required/CodeQL/Netlify checks, protected main merge and matching production readback. Actual CTA events and independently verified revenue remain separate gates.

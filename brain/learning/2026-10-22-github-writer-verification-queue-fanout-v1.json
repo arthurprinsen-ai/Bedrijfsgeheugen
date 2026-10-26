@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "github-actions|required-test-completion|unrelated-writer-verification-fanout|20261022-v1",
+  "obligation_id": "github-actions|writer-workflow-run-fanout|20261022-v1",
+  "title": "Prevent unrelated Required test completions from enqueueing writer-only workflow verification",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Repository Writer Operational Verification listens to all Required test completed events, although all of its jobs only admit verify/, verify-cheap/, verify-parity/ branches. Unrelated PR completions therefore trigger no-op workflow runs. Separately, four GitHub-provider orphaned queued runs from 7 Oct contain zero jobs and reject cancel with HTTP 409; their provider-side root cause is not proven.",
+  "impact": "Avoidable webhook fan-out increases queued run counts, operational noise and user-visible delays. The four provider orphan runs require separate GitHub-side reconciliation.",
+  "failed_approaches": [
+    "Repeatedly cancelling the four 7-Oct ghost runs: all HTTP 409",
+    "Force-cancelling those runs: all HTTP 409",
+    "Deleting ghost run 37642383514: HTTP 403",
+    "Treating an unmerged code change as already effective in main"
+  ],
+  "fix": "Add branch filters verify/**, verify-cheap/**, verify-parity/** at on.workflow_run while preserving job-level restrictions, original Required test and CodeQL, and PR-scoped concurrency.",
+  "prevention_rule": "Never schedule writer-only follow-up workflows after non-writer Required test events; retain the canonical Required test and CodeQL gates. Distinguish actual queued jobs from ghost zero-job queued run records and deduplicate incidents by fingerprint; do not invent green outcomes.",
+  "regression_contract": "tests/brain-writer-verification-trigger-scope-20261022.test.mjs",
+  "tests": [
+    "tests/brain-writer-verification-trigger-scope-20261022.test.mjs"
+  ],
+  "evidence": {
+    "observed_queue_at_start": 38,
+    "observed_in_progress_at_start": 12,
+    "observed_ghosts": [
+      37642383514,
+      37642383517,
+      37642336315,
+      37642334843
+    ],
+    "ghost_cancel": "HTTP_409",
+    "ghost_force_cancel": "HTTP_409",
+    "ghost_delete_first": "HTTP_403",
+    "incident_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4653",
+    "production_status": "UNVERIFIED"
+  },
+  "outcome": "CANDIDATE; merge requires protected Required test, CodeQL, exact-main source readback and new trigger evidence. Provider ghosts remain unresolved.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-verification-trigger-scope-20261022.test.mjs"
+    ]
+  },
+  "prevention": [
+    "NARROW_WORKFLOW_RUN_BRANCH_FILTER",
+    "NO_SECURITY_GATE_BYPASS",
+    "PRESERVE_PROTECTED_REQUIRED_AND_CODEQL",
+    "DO_NOT_FORCE_PROVIDER_GHOST_GREEN"
+  ]
+}

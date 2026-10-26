@@ -1,0 +1,36 @@
+{
+  "version": "CI-WORKFLOW-LANE-FALLBACK-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|workflow-lane-fallback|no-browser-fanout|v1",
+  "obligation_id": "ci-workflow-lane-fallback-20261006-v1",
+  "root_cause": "The generic .github/workflows/ shared-path fallback classified an unmapped workflow definition as shared executable work. That activated every delivery lane, including website/browser, even when the changed workflow had no website runtime impact.",
+  "prevention": "Explicit workflow ownership remains authoritative. An unmapped .github/workflows/* definition now defaults to the backend control-plane lane only; explicit website workflow paths still select the website lane. Regression tests cover the powerhouse-ci-intelligence workflow and a future unmapped workflow.",
+  "regressions": [
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "tests": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "observed_failure": "PR #4005 workflow-only changes activated website/browser through the generic .github/workflows shared-path fallback.",
+    "expected_prevention": "Generic workflow-only changes select backend control-plane unless an explicit workflow owner selects another lane; website/browser remains off for non-website changes."
+  },
+  "compiler": {
+    "failure_class": "CI_GENERIC_WORKFLOW_SHARED_FANOUT_TO_WEBSITE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "PR #4005 changes an unmapped control-plane workflow definition together with explicitly owned CI workflows.",
+        "expected": "The unmapped .github/workflows/* path defaults to backend control-plane, explicit owners keep their lane, and website/browser stays disabled unless a website-owned path is present.",
+        "result": "PASS_BY_CONTRACT_REGRESSION"
+      },
+      {
+        "scenario": "A future workflow file has no explicit ownership entry.",
+        "expected": "Fail closed to backend control-plane only; do not activate portal, website, or automation implicitly.",
+        "result": "PASS_BY_CONTRACT_REGRESSION"
+      }
+    ]
+  }
+}

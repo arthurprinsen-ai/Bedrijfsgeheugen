@@ -4,6 +4,9 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
+import {verifierProbeAuthorizesToken} from './_instagram-frame-auth-contract.mjs';
+import {instagramFrameSamplePoints} from './_instagram-frame-sampling.mjs';
+import {parseNativeVideoDimensions,checkNativeMiraReelDimensions} from './_instagram-native-reel-probe.mjs';
 
 const execFileAsync=promisify(execFile);
 const SUPABASE='https://adhjwmvyoixzjtmiroln.supabase.co';
@@ -18,12 +21,17 @@ const clean=v=>String(v??'').trim();
 
 async function tokenIsValid(token){
   if(!token)return false;
-  const r=await fetch(`${SUPABASE}/functions/v1/powerhouse-instagram-media-verifier`,{
-    method:'POST',
-    headers:{'content-type':'application/json','x-powerhouse-token':token},
-    body:'{}'
-  });
-  return r.status!==401;
+  try{
+    // Only the canonical verifier's authenticated empty-payload response is proof.
+    const r=await fetch(`${SUPABASE}/functions/v1/powerhouse-instagram-media-verifier`,{
+      method:'POST',
+      headers:{'content-type':'application/json','x-powerhouse-token':token},
+      body:'{}'
+    });
+    if(r.status!==400||!clean(r.headers.get('content-type')).toLowerCase().startsWith('application/json'))return false;
+    const probe=await r.json().catch(()=>null);
+    return verifierProbeAuthorizesToken(r.status,probe);
+  }catch{return false;}
 }
 function safeOpenArtUrl(raw){
   const u=new URL(raw);
@@ -65,18 +73,29 @@ export default async (request)=>{
     const input=join(dir,'source.mp4');
     await writeFile(input,bytes);
 
-    const points=[
-      ['start',Math.min(0.25,Math.max(0.05,duration*0.05))],
-      ['middle',Math.max(0.05,duration*0.5)],
-      ['end',Math.max(0.05,duration-0.25)]
-    ];
+    // Probe the ORIGINAL MP4 before any resize/pad or expensive vision call.
+    // Never trust caller-provided dimensions or infer native size from 1080x1920 JPG output.
+    const result=await execFileAsync(ffmpegPath,[
+      '-hide_banner','-i',input,'-map','0:v:0','-frames:v','0','-f','null','-'
+    ],{timeout:20000,maxBuffer:1024*1024});
+    const actual=checkNativeMiraReelDimensions(parseNativeVideoDimensions(result.stderr||''));
+    if(!actual.ok)return json({ok:false,error:actual.error,
+       native_dimensions_verified:actual.error==='MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',
+       actual_width:actual.width??null,actual_height:actual.height??null,
+       required_width:1080,required_height:1920,contract:actual.contract},422);
+    if(body.probeOnly===true){
+      return json({ok:true,contract:actual.contract,mediaUrl,
+        native_dimensions_verified:true,native_width:actual.width,native_height:actual.height,
+        frames:[]});
+    }
+    const points=instagramFrameSamplePoints(duration);
     const frames=[];
     for(const [position,seconds] of points){
       const out=join(dir,`${position}.jpg`);
       const frame=await extractFrame(input,out,seconds);
       frames.push({position,seconds,mediaType:'image/jpeg',imageBase64:frame.toString('base64')});
     }
-    return json({ok:true,contract:'instagram-exact-video-frame-extraction-v1',mediaUrl,duration,frames});
+    return json({ok:true,contract:'instagram-exact-video-frame-extraction-v2',native_contract:actual.contract,native_dimensions_verified:true,native_width:actual.width,native_height:actual.height,mediaUrl,duration,frames});
   }catch(error){
     return json({ok:false,error:clean(error?.message||error).slice(0,200)},422);
   }finally{

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-19",
+  "obligation": "native-approved-blog-notion-title-shape-recovery-20261019",
+  "incident_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39301488760",
+  "observed": "OpenAI approved candidate generated and validated (955 words); Notion create-page failed HTTP 400.",
+  "root_cause": "Native approved blog workflow maps Notion database title property 'Titel' to rich_text instead of title. Live Notion collection schema confirms Titel is type title.",
+  "change": "Correct Titel payload to {'title':rich(title)} while keeping existing quality, approval, date and deduplication constraints.",
+  "prevention": "Static regression test of the Notion property contract; do not relax CI checks or auto-publication governance.",
+  "acceptance": "Required CI and CodeQL, protected merge, successful native approved blog supply workflow, Notion readback of created stock.",
+  "publication_verified": false,
+  "fingerprint": "native-approved-blog-supply|NOTION_CREATE_PAGE_TITLE_TYPE_MISMATCH|2026-10-19",
+  "compiler": {
+    "failure_class": "NOTION_CREATE_PAGE_TITLE_TYPE_MISMATCH",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-blog-notion-title-contract-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-blog-notion-title-contract-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-blog-notion-title-contract-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "failed_live_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39301488760",
+    "contract_test": "tests/brain-native-blog-notion-title-contract-20261019.test.mjs",
+    "notion_stock_verified": false
+  }
+}

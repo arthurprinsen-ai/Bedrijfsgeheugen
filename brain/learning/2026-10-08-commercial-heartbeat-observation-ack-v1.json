@@ -1,0 +1,69 @@
+{
+  "version": "commercial-heartbeat-observation-ack-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "failure_class": "FALSE_TRANSPORT_NEGATIVE",
+  "root_cause": "Commercial output assurance healthy=false (safe unproven daily sales) was incorrectly conjuncted with transport control health; heartbeat wrote error/PARTIAL, runner rejected durable readback and rolled back.",
+  "recovery": "Validate output contract and operational regression gate independently of commercial daily execution; emit observed/VERIFIED for reliable zero-output observation while keeping commercial_day_proven=false and Brain daily obligation OPEN.",
+  "evidence": {
+    "production_observed_latest_heartbeat_utc": "2026-10-08T08:07:07Z",
+    "output_contract": "powerhouse-commercial-output-assurance-v3",
+    "provider_proven_email": 0,
+    "provider_proven_social": 0,
+    "commercial_day_proven": false,
+    "external_owner_gate_healthy": true,
+    "provider_preview_replay_error": "Remote migration versions not found in local migrations directory",
+    "production_versions_recovered_exact": [
+      "20261008073832",
+      "20261008073907",
+      "20261008080905",
+      "20261008080913"
+    ],
+    "production_schema_history_mutated": false,
+    "source_replay_proof": "PENDING_EXACT_HEAD_SUPABASE_PROVIDER_SUCCESS",
+    "superseded_duplicate_prs": [
+      4115,
+      4119
+    ]
+  },
+  "tests": [
+    "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
+  ],
+  "guardrails": [
+    "One scheduler, no alternate sender or cron",
+    "No false commercial green",
+    "No public SQL function grants",
+    "Fail closed on missing assurance or unhealthy control plane"
+  ],
+  "terminal_proof_required": [
+    "required test + CodeQL + Supabase official preview",
+    "protected merge",
+    "production SQL migration readback",
+    "one natural scheduled five-minute run with observed/VERIFIED and provider-proof day OPEN"
+  ],
+  "intervention": "Validate output contract and operational regression gate independently of commercial daily execution; emit observed/VERIFIED for reliable zero-output observation while keeping commercial_day_proven=false and Brain daily obligation OPEN.",
+  "closure_required": [
+    "required test + CodeQL + Supabase official preview",
+    "protected merge",
+    "production SQL migration readback",
+    "one natural scheduled five-minute run with observed/VERIFIED and provider-proof day OPEN"
+  ],
+  "next_action": "Verify protective merge, production SQL readback and next natural Netlify five-minute heartbeat durable observation.",
+  "fingerprint": "commercial-heartbeat-output-healthy-false-transport-rollback-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
+    ]
+  },
+  "prevention": "The transport runner must accept verified observed/VERIFIED commercial-day measurement on safe no-provider-proof days; commercial-day obligation remains OPEN, output healthy false, malformed output or broken scheduler regression must fail closed. Regression: tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs. The source-control history must retain the exact four production-applied migration SQL statements and their original version numbers; checkout/replay must never depend on an out-of-band production schema."
+}
