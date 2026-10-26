@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-26",
+  "fingerprint": "delivery|browser-only-readback|routes-pricing-fail-closed|20261026-v1",
+  "obligation_id": "manual-readback-deployment-decoupling-20261025-browser-only-regression",
+  "status": "CANDIDATE",
+  "failure_class": "BROWSER_READBACK_FALSE_GREEN",
+  "root_cause": "Pricing and English route verification was gated on a successful deployment, while non-deployment readback hardcoded routesOk=true and discarded route evidence.",
+  "fix": "Run pricing when browserRequired, and use both real route and pricing step outcomes for non-deployment release truth.",
+  "prevention_rule": "Never mark browser-only readback LIVE_VERIFIED when route or pricing verification fails or is skipped; do not require Netlify deployment for governance-only scope.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "scope": "CI",
+  "machine_enforceable": true,
+  "compiler": {
+    "failure_class": "BROWSER_READBACK_FALSE_GREEN",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4959",
+    "required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40290681460",
+    "historical_replay": "tests/brain-production-release-readback-scope.test.mjs",
+    "production_readback": "PENDING_AFTER_PROTECTED_MERGE"
+  }
+}
