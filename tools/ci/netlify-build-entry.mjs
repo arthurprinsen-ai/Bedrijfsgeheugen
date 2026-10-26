@@ -93,6 +93,15 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
       return;
     }
   }
+  // Publish independently observable deployment identity on normal builds too.
+  const commitRef=String(process.env.COMMIT_REF||'').trim();
+  const context=String(process.env.CONTEXT||'').trim();
+  const deployId=String(process.env.DEPLOY_ID||'').trim();
+  if(context==='production'&&HEX40.test(commitRef)&&deployId){
+    await restampReleaseIdentity({root:process.cwd(),commitRef,context,deployId});
+  }else if(context==='production'){
+    throw new Error('PRODUCTION_RELEASE_IDENTITY_UNAVAILABLE');
+  }
   const profile={
     contract:'NETLIFY_BUILD_PROFILE_V1',
     commit_ref:String(process.env.COMMIT_REF||process.env.GITHUB_SHA||''),
