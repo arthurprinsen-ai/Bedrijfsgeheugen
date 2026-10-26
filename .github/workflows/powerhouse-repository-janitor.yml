@@ -125,6 +125,42 @@ jobs:
             }
             await core.summary.addHeading('Opted-in branch synchronization').addCodeBlock(JSON.stringify(report,null,2),'json').write();
             core.info(JSON.stringify(report));
+      - name: Rebuild System Map only for synchronized opted-in recovery PR
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pr=4940
+          data="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+          [ "$(jq -r .state <<<"$data")" = open ] || exit 0
+          [ "$(jq -r .draft <<<"$data")" = false ] || exit 0
+          [ "$(jq -r .base.ref <<<"$data")" = main ] || exit 0
+          [ "$(jq -r .head.repo.full_name <<<"$data")" = "$GITHUB_REPOSITORY" ] || exit 0
+          jq -e '.labels | any(.name == "autonomous-sync")' <<<"$data" >/dev/null || exit 0
+          jq -e '(.body // "") | contains("Writer-Lease-Owner: github-merge-capability-guard-20261025")' <<<"$data" >/dev/null || exit 0
+          head="$(jq -r .head.sha <<<"$data")"
+          branch="$(jq -r .head.ref <<<"$data")"
+          behind="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${head}" --jq .behind_by)"
+          if [ "$behind" -ne 0 ]; then
+            echo "::notice::SYSTEM_MAP_RECOVERY_WAITING_FOR_BRANCH_SYNC:behind=${behind}"
+            exit 0
+          fi
+          git fetch --no-tags origin "$head"
+          git checkout --detach "$head"
+          node scripts/brain/portal-explanation-inventory.mjs --write
+          node scripts/brain/portal-explanation-inventory.mjs --check
+          node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
+          if git diff --quiet -- platform/system-map/canonical-system-map.mjs; then
+            echo "SYSTEM_MAP_ALREADY_CURRENT"
+            exit 0
+          fi
+          git add platform/system-map/canonical-system-map.mjs
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(system-map): regenerate on synchronized release candidate'
+          current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq .head.sha)"
+          [ "$current" = "$head" ] || { echo "::error::SYSTEM_MAP_HEAD_MOVED"; exit 78; }
+          git push origin "HEAD:refs/heads/${branch}"
+          echo "::notice::SYSTEM_MAP_UPDATED_REQUIRED_AND_CODEQL_MUST_RERUN"
       - name: Diagnose read-only merge freshness from existing Janitor snapshot
         if: always()
         continue-on-error: true
