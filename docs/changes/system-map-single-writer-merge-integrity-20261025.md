@@ -25,3 +25,7 @@ Read-only production provider observation found PostgreSQL 17.6, 755 applied mig
 ## Backend continuation after PR #4942
 
 The integrated release still has271 full-BRAIN Backend failures. This candidate corrects three demonstrated causes: duplicate Janitor branch writers and map-write races; swallowed public language navigation; and a stale migration snapshot with missing already-applied source mirrors. Existing workflows and provider evidence remain authoritative. Backend failures remain visible; this is not a release waiver. All mandatory checks must run on the resulting published SHA before protected release and independent readback.
+
+## GitHub Actions phase2 — source-backed contract recovery
+
+Parent40144e48: CodeQL, PostgreSQL17, preflight, Netlify build, Supabase source contract and provider preview pass. Full BRAIN40337302217 remains failed in Backend. No passing Required subset is treated as full BRAIN proof. Correct test oracles for actual build phases, stronger contact-review/typed-JSONB guards, provider identity and atomic claim boundaries. Keep the retired duplicate sender read-only. Add complete redacted failure metadata and bounded machine-readable annotations to the existing failed-lane producer, because the log connector rejects the oversized raw log. Full artifacts remain intact; annotation truncation is explicit, never a success or release waiver. All mandatory checks must rerun on the new SHA; no production claim.

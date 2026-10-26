@@ -18,12 +18,14 @@ test('existing authorized provider senders retained with hour-bucket idempotency
     assert.ok(runner.includes('executor:"'+fn+'"'),fn);
   }
   assert.match(runner,/commercial-channel-dispatch:/);
-  assert.match(runner,/on conflict \(dedupe_key\) do nothing returning event_id/);
+  assert.match(runner,/on conflict \(dedupe_key\) do update set evidence=excluded\.evidence/);
+  assert.match(runner,/where excluded\.evidence->>'decision'='READY'/);
+  assert.match(runner,/in \('','NO_ELIGIBLE_APPROVED_ACTION','PROVIDER_WRITE_NOT_AVAILABLE'\)/);
   assert.match(runner,/evidence->>'human_approved'='true'/);
   assert.match(runner,/quality_passed.*='true'/);
   assert.match(runner,/QUEUED_NOT_DELIVERED/);
   assert.match(runner,/PROVIDER_RESULT_PENDING_READBACK/);
-  assert.match(runner,/provider_side_effect_verified:false/);
+  assert.match(runner,/provider_side_effect_verified',false/);
   assert.doesNotMatch(runner,/GMAIL_SEND_EMAIL|SALESROBOT_SEND_MESSAGE|LINKEDIN_CREATE_COMMENT_ON_POST/);
 });
 test('likes cannot fabricate a send when authenticated provider has read-only reactions API',()=>{

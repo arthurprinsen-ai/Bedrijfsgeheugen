@@ -39,7 +39,7 @@ test('noncanonical duplicate persuasion side path is explicitly removed',()=>{
 
 test('SEO switch play reuses canonical content/SEO owner and truth gates',()=>{
   assert.match(migration,/seo_first_mover_intent_gap/);
-  assert.match(migration,/existing-owner\/cannibalization/i);
+  assert.match(migration,/Existing canonical owner\/cannibalization check remains mandatory before publication\./i);
   assert.match(migration,/no_fake_comparison/);
   assert.match(migration,/competitor_claims_public_evidence_only/);
 });

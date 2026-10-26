@@ -6,11 +6,11 @@ test('social publisher claims canonical decision before any external provider si
   const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
   const claimState=publisher.indexOf("state: 'dispatching'");
   const claimPredicate=publisher.indexOf(".eq('state', 'content_ready')");
-  const instagram=publisher.indexOf("publishInstagramViaComposio(db, art, runDate)");
+  const instagram=publisher.indexOf("publishInstagramViaComposio(db,art,runDate,instagramContext)");
   const buffer=publisher.indexOf("createPost(bufferToken, input)");
   assert.ok(claimState>=0 && claimPredicate>=0);
-  assert.ok(claimState<instagram,'Instagram must be behind the canonical single-writer claim');
-  assert.ok(claimState<buffer,'Buffer must be behind the canonical single-writer claim');
+  assert.ok(instagram>=0&&claimPredicate<instagram&&claimState<instagram,'Instagram must be behind the canonical single-writer claim');
+  assert.ok(buffer>=0&&claimPredicate<buffer&&claimState<buffer,'Buffer must be behind the canonical single-writer claim');
   assert.match(publisher,/ALREADY_CLAIMED_OR_DELIVERED/);
 });
 

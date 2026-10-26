@@ -211,6 +211,55 @@
     },
     "status": "CANDIDATE_UNVERIFIED_NOT_MERGED_NOT_LIVE",
     "production_mutation": false,
-    "checks_waived": false
+    "checks_waived": false,
+    "phase2": {
+      "parent_sha": "40144e48e0038575935137d226e2eae4ef1662f6",
+      "baseline": {
+        "required_preflight": "success",
+        "postgres17": "success",
+        "supabase_source_contract": "success",
+        "supabase_preview": "success",
+        "codeql": "success",
+        "full_brain_run": "40337302217",
+        "full_brain_backend": "failure",
+        "full_failure_count": "not yet readable through log connector"
+      },
+      "source_backed_repairs": [
+        "Pricing contract tests follow actual ordered Netlify build phases; checkout fixture models disabled input readiness",
+        "Commercial tests retain stronger recipient/contact review, consent/provider-side-effect and typed JSONB guards",
+        "Social tests follow canonical provider identity selection, claim-before-side-effects, CAS and retired duplicate sender behavior",
+        "Existing full failure clustering retains all redacted failure records and emits bounded compact annotations; full artifact and explicit truncation flags remain authoritative"
+      ],
+      "tests": [
+        "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs",
+        "tests/brain-pricing-final-build-order-v1.test.mjs",
+        "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
+        "tests/brain-saas-checkout-build-preservation-v1.test.mjs",
+        "tests/brain-commercial-daily-steering-positioning-v1.test.mjs",
+        "tests/brain-commercial-independent-outbound-lanes-p0-4198.test.mjs",
+        "tests/brain-commercial-outbound-lane-jsonb-p0-4198.test.mjs",
+        "tests/brain-commercial-outbound-source-and-claim-recovery-p0-4198.test.mjs",
+        "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs",
+        "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
+        "tests/brain-composio-oauth-immediate-resume.test.mjs",
+        "tests/brain-instagram-composio-connect-link-setup.test.mjs",
+        "tests/brain-buffer-rate-limit-circuit-v1.test.mjs",
+        "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs",
+        "tests/brain-social-publisher-dispatching-state-contract.test.mjs",
+        "tests/brain-instagram-credential-provider-identity-dedupe-v1.test.mjs",
+        "tests/brain-instagram-composio-proxy-base-v1.test.mjs",
+        "tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs",
+        "tests/brain-mira-media-preflight-cas-20261019.test.mjs",
+        "tests/brain-social-provider-health-preflight.test.mjs",
+        "tests/brain-social-provider-health-preflight-v1.test.mjs",
+        "tests/brain-instagram-composio-account-selection-v1.test.mjs",
+        "tests/brain-instagram-buffer-independent-resume.test.mjs",
+        "tests/brain-failure-annotation-transport-v1.test.mjs"
+      ],
+      "exact_candidate_verification": "PENDING",
+      "release_status": "NOT_MERGED_NOT_LIVE",
+      "tests_skipped": false,
+      "security_exemptions": false
+    }
   }
 }
