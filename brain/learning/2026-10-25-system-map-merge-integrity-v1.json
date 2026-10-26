@@ -160,5 +160,57 @@
       "pass": 4243,
       "fail": 271
     }
+  },
+  "github_actions_continuation_20261026": {
+    "obligation": "system-map-merge-integrity-20261025",
+    "parent_merged_pr": 4942,
+    "parent_main_sha": "a34505e17833852c1e8d4c005fb5ee7ca37f918a",
+    "failure_evidence": {
+      "run_id": "40327544510",
+      "head_sha": "ac1a9951d475ec9096345b0fda631926b83b44f9",
+      "backend_failures": 271,
+      "coverage_complete": true
+    },
+    "root_causes": [
+      "Janitor has duplicate native branch mutation paths and parallel map writeback",
+      "Public locale anchor default navigation may be swallowed by mobile-menu teardown, contrary to inherited explicit-navigation contract",
+      "Local migration lock is stale at634 while independent live provider records755; three already-applied SQL sources are absent"
+    ],
+    "repair": [
+      "Serialize existing branch_reconciler before Janitor cleanup; retain bounded jobs, cache isolation and explicit enrollment/CAS/readback",
+      "Explicit same-route public locale navigation with asset rotation and behavioral regression; preserve portal in-place switching",
+      "Use real755 provider migration snapshot, preserve all634 prior identities, and mirror three exact stored SQL statements without executing SQL",
+      "Pin historical568/591/603/607 test contracts to original snapshots rather than requiring current ledger never to grow"
+    ],
+    "provider_snapshot": {
+      "captured_at": "2026-10-26T14:06:28.966285+00:00",
+      "count": 755,
+      "source": "supabase_migrations.schema_migrations",
+      "sql_executed": false
+    },
+    "evaluation": {
+      "tests": [
+        "tests/brain-public-i18n-native-navigation-v1.test.mjs",
+        "tests/brain-i18n-terminal-live-proof-v1.test.mjs",
+        "tests/brain-i18n-persistent-navigation-v1.test.mjs",
+        "tests/brain-janitor-cache-token-isolation-20261023.test.mjs",
+        "tests/brain-autonomous-branch-sync-4914.test.mjs",
+        "tests/brain-production-migration-ledger-603-v1.test.mjs",
+        "tests/brain-external-heartbeat-ledger-607-v1.test.mjs",
+        "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+        "tests/brain-supabase-migration-history-terminal-closure-v1.test.mjs",
+        "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+      ],
+      "remote_exact_candidate": "PENDING",
+      "full_backend": "REQUIRED",
+      "required": "REQUIRED",
+      "postgres17": "REQUIRED",
+      "codeql": "REQUIRED",
+      "supabase_preview": "REQUIRED",
+      "system_map_regeneration": "Existing Required preflight regenerates twice on exact candidate and rejects dirty output"
+    },
+    "status": "CANDIDATE_UNVERIFIED_NOT_MERGED_NOT_LIVE",
+    "production_mutation": false,
+    "checks_waived": false
   }
 }

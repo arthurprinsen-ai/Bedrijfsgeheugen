@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -49,8 +50,11 @@ const expected=[
 test('migration lock matches the observed 603-row production authority',()=>{
   assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
   assert.equal(lock.source,'supabase_migration_history');
-  assert.equal(lock.applied.length,603);
-  assert.deepEqual(lock.applied.slice(-10).map(row=>[row.version,row.name]),expected);
+  // Preserve the exact historical snapshot; the provider later backfilled 20261007063438.
+  const historical=lock.applied.filter(row=>row.version<='20261007064948'&&row.version!=='20261007063438');
+  assert.equal(historical.length,603);
+  assert.equal(createHash('sha256').update(JSON.stringify(historical.map(row=>[row.version,row.name]))).digest('hex'),'302c905f210ea92a469c79bc8262300c2e47466f8843e096ac271cd4cc0cb52f');
+  assert.deepEqual(historical.slice(-10).map(row=>[row.version,row.name]),expected);
 });
 
 test('every newly reconciled production identity has one canonical local migration file',()=>{

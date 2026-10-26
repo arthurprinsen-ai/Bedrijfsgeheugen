@@ -68,10 +68,10 @@ test('preview applicability is fail-closed but skips exact immutable production 
 });
 
 
-test('current production ledger lock is complete through LinkedIn OAuth terminal migrations', async () => {
+test('historical production ledger prefix remains complete through LinkedIn OAuth terminal migrations', async () => {
   const lock = JSON.parse(await readFile('supabase/migration-history.lock.json', 'utf8'));
-  assert.equal(lock.production_ledger_count, 591);
-  assert.equal(lock.applied.length, 591);
-  assert.equal(lock.applied.at(-1)?.version, '20261006103856');
-  assert.equal(lock.applied.at(-1)?.name, 'linkedin_company_live_proof_state_canonical_v3');
+  const historical=lock.applied.filter(row=>row.version<='20261006103856');
+  assert.equal(historical.length,591);
+  assert.equal(historical.at(-1)?.version,'20261006103856');
+  assert.equal(historical.at(-1)?.name,'linkedin_company_live_proof_state_canonical_v3');
 });
