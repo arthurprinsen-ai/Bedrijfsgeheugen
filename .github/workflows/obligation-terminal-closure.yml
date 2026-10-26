@@ -100,16 +100,38 @@ jobs:
           require_workflow() {
             workflow="$1"
             label="$2"
+            expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
+            query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50"
+            selector='[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last'
+            if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+              # Trusted main dispatch verifies inputs.head_sha; run.head_sha is its workflow source.
+              query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=workflow_dispatch&per_page=100"
+              selector='[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last'
+            fi
             for attempt in $(seq 1 180); do
-              payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50")"
-              run_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
-              status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
-              conclusion="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$payload")"
+              payload="$(gh api "$query")"
+              selected="$(jq -c --arg sha "$HEAD_SHA" --arg title "$expected_title" "$selector" <<<"$payload")"
+              run_id="$(jq -r '.id // empty' <<<"$selected")"
+              status="$(jq -r '.status // empty' <<<"$selected")"
+              conclusion="$(jq -r '.conclusion // empty' <<<"$selected")"
               if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
                 [ "$conclusion" = "success" ] || {
                   echo "::error::TERMINAL_CRITICAL_GATE_FAILED:${label}:run=${run_id}:conclusion=${conclusion}:head=${HEAD_SHA}"
                   exit 78
                 }
+                if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+                  run_source_sha="$(jq -r '.head_sha // empty' <<<"$selected")"
+                  [[ "$run_source_sha" =~ ^[0-9a-f]{40}$ ]] || exit 78
+                  # A tag named main is insufficient: the workflow source must belong to protected main.
+                  if ! trusted_base="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${run_source_sha}...main" --jq '.merge_base_commit.sha')"; then
+                    echo "::error::TERMINAL_BRAIN_WORKFLOW_SOURCE_UNVERIFIED:$run_source_sha"
+                    exit 78
+                  fi
+                  [ "$trusted_base" = "$run_source_sha" ] || {
+                    echo "::error::TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN:$run_source_sha"
+                    exit 78
+                  }
+                fi
                 echo "TERMINAL_CRITICAL_GATE_PROVEN:${label}:run=${run_id}:head=${HEAD_SHA}"
                 return 0
               fi
@@ -160,68 +182,7 @@ jobs:
           }
 
           require_required_or_descendant
-          require_brain_evidence() {
-            brain_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?head_sha=${HEAD_SHA}&per_page=50")"
-            brain_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$brain_payload")"
-            brain_status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$brain_payload")"
-            brain_conclusion="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$brain_payload")"
-            if [ -n "$brain_id" ]; then
-              if [ "$brain_status" = "completed" ] && [ "$brain_conclusion" = "success" ]; then
-                echo "TERMINAL_CRITICAL_GATE_PROVEN:BRAIN:run=$brain_id:head=$HEAD_SHA"
-                return 0
-              fi
-              if [ "$brain_status" = "completed" ]; then
-                echo "::error::TERMINAL_CRITICAL_GATE_FAILED:BRAIN:run=$brain_id:conclusion=$brain_conclusion:head=$HEAD_SHA"
-                exit 78
-              fi
-            fi
-
-            for attempt in $(seq 1 180); do
-              foundation_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/brain-foundation-verify.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=50")"
-              foundation_id="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$foundation_payload")"
-              foundation_status="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$foundation_payload")"
-              foundation_conclusion="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$foundation_payload")"
-              if [ -n "$foundation_id" ] && [ "$foundation_status" = "completed" ]; then
-                if [ "$foundation_conclusion" = "success" ]; then
-                  echo "TERMINAL_BRAIN_FOUNDATION_PROVEN:run=$foundation_id:merge=$MERGE_SHA"
-                  return 0
-                fi
-                if [ "$foundation_conclusion" != "cancelled" ] && [ "$foundation_conclusion" != "skipped" ]; then
-                  echo "::error::TERMINAL_BRAIN_FOUNDATION_FAILED:run=$foundation_id:conclusion=$foundation_conclusion:merge=$MERGE_SHA"
-                  exit 78
-                fi
-                echo "::notice::TERMINAL_BRAIN_FOUNDATION_SUPERSEDED:run=$foundation_id conclusion=$foundation_conclusion merge=$MERGE_SHA"
-                break
-              fi
-              sleep 5
-            done
-
-            for attempt in $(seq 1 36); do
-              git fetch origin main --no-tags
-              current_main="$(git rev-parse origin/main)"
-              git merge-base --is-ancestor "$MERGE_SHA" "$current_main" || {
-                echo "::error::TERMINAL_BRAIN_DESCENDANT_CONTAINMENT_FAILED:$MERGE_SHA:$current_main"
-                exit 78
-              }
-              descendant_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/brain-foundation-verify.yml/runs?head_sha=${current_main}&event=push&per_page=20")"
-              descendant_id="$(jq -r --arg sha "$current_main" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$descendant_payload")"
-              descendant_status="$(jq -r --arg sha "$current_main" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$descendant_payload")"
-              descendant_conclusion="$(jq -r --arg sha "$current_main" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$descendant_payload")"
-              if [ -n "$descendant_id" ] && [ "$descendant_status" = "completed" ]; then
-                [ "$descendant_conclusion" = "success" ] || {
-                  echo "::error::TERMINAL_BRAIN_DESCENDANT_FAILED:run=$descendant_id:conclusion=$descendant_conclusion:main=$current_main"
-                  exit 78
-                }
-                echo "TERMINAL_BRAIN_DESCENDANT_PROVEN:merge=$MERGE_SHA current_main=$current_main run=$descendant_id"
-                return 0
-              fi
-              sleep 5
-            done
-            echo "::error::TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL:head=$HEAD_SHA:merge=$MERGE_SHA"
-            exit 78
-          }
-
-          require_brain_evidence
+          require_workflow "unified-brain-delivery.yml" "BRAIN"
 
           changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
           if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then

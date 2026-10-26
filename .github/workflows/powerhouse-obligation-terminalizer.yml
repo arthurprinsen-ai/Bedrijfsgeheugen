@@ -6,6 +6,7 @@ on:
     types: [closed]
 
 permissions:
+  actions: read
   contents: read
   pull-requests: write
 
@@ -129,6 +130,58 @@ jobs:
           },null,2));
           NODE
 
+      - name: Verify exact-candidate BRAIN before terminal claim
+        env:
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.target.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          require_workflow() {
+            workflow="$1"
+            label="$2"
+            expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
+            query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50"
+            selector='[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last'
+            if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+              # Trusted main dispatch verifies inputs.head_sha; run.head_sha is its workflow source.
+              query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=workflow_dispatch&per_page=100"
+              selector='[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last'
+            fi
+            for attempt in $(seq 1 180); do
+              payload="$(gh api "$query")"
+              selected="$(jq -c --arg sha "$HEAD_SHA" --arg title "$expected_title" "$selector" <<<"$payload")"
+              run_id="$(jq -r '.id // empty' <<<"$selected")"
+              status="$(jq -r '.status // empty' <<<"$selected")"
+              conclusion="$(jq -r '.conclusion // empty' <<<"$selected")"
+              if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+                [ "$conclusion" = "success" ] || {
+                  echo "::error::TERMINAL_CRITICAL_GATE_FAILED:${label}:run=${run_id}:conclusion=${conclusion}:head=${HEAD_SHA}"
+                  exit 78
+                }
+                if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+                  run_source_sha="$(jq -r '.head_sha // empty' <<<"$selected")"
+                  [[ "$run_source_sha" =~ ^[0-9a-f]{40}$ ]] || exit 78
+                  # A tag named main is insufficient: the workflow source must belong to protected main.
+                  if ! trusted_base="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${run_source_sha}...main" --jq '.merge_base_commit.sha')"; then
+                    echo "::error::TERMINAL_BRAIN_WORKFLOW_SOURCE_UNVERIFIED:$run_source_sha"
+                    exit 78
+                  fi
+                  [ "$trusted_base" = "$run_source_sha" ] || {
+                    echo "::error::TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN:$run_source_sha"
+                    exit 78
+                  }
+                fi
+                echo "TERMINAL_CRITICAL_GATE_PROVEN:${label}:run=${run_id}:head=${HEAD_SHA}"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "::error::TERMINAL_CRITICAL_GATE_NOT_TERMINAL:${label}:head=${HEAD_SHA}"
+            exit 78
+          }
+          require_workflow "unified-brain-delivery.yml" "BRAIN"
+
       - name: Verify production promotion and runtime readback
         id: production
         env:
@@ -206,7 +259,7 @@ jobs:
             while IFS= read -r path; do
               [ -z "$path" ] && continue
               case "$path" in
-                supabase/migrations/*|supabase/migration-history/*|supabase/migration-history.lock.json|supabase/production-baseline/*|scripts/brain/check_powerhouse_supabase_security.py|scripts/brain/quality/*|config/powerhouse-quality-surface-contracts.json)
+                supabase/migration-history/*|supabase/migration-history.lock.json|supabase/production-baseline/*|scripts/brain/check_powerhouse_supabase_security.py|scripts/brain/quality/*|config/powerhouse-quality-surface-contracts.json)
                   ;;
                 *)
                   invalid_recovery_path=true
@@ -271,8 +324,24 @@ jobs:
               version="$(sed -nE 's/.*;version=([1-9][0-9]*);.*/\1/p' <<<"$line")"
               runtime_sha256="$(sed -nE 's/.*;runtime_sha256=([0-9a-fA-F]{64})$/\1/p' <<<"$line" | tr '[:upper:]' '[:lower:]')"
               readbacks="$(jq -c --arg fn "$fn" --argjson version "$version" --arg runtime_sha256 "$runtime_sha256" '. + [{function:$fn,version:$version,runtime_sha256:$runtime_sha256,state:"ACTIVE"}]' <<<"$readbacks")"
-              echo "SUPABASE_PROVIDER_READBACK_PROVEN:${line}"
+              echo "SUPABASE_PROVIDER_READBACK_DECLARED:${line}"
             done
+            # PR markers declare expectations; independent live provider metadata proves them.
+            test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
+              echo "::error::SUPABASE_PROVIDER_ACCESS_TOKEN_MISSING"
+              exit 78
+            }
+            curl -fsSL --retry 2 --connect-timeout 10 --max-time 30 \
+              -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+              "https://api.supabase.com/v1/projects/adhjwmvyoixzjtmiroln/functions" \
+              -o /tmp/terminal-supabase-provider-live.json
+            PROVIDER_EXPECTED="$readbacks" node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {verifyLiveProviderReadbacks} from './tools/supabase/publish-edge-provider-readback.mjs';
+          const expected=JSON.parse(process.env.PROVIDER_EXPECTED||'[]');
+          verifyLiveProviderReadbacks(expected,JSON.parse(readFileSync('/tmp/terminal-supabase-provider-live.json','utf8')));
+          console.log('SUPABASE_PROVIDER_LIVE_METADATA_MATCH:'+expected.map(row=>row.function).join(','));
+          NODE
             printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
           fi
 
@@ -315,6 +384,7 @@ jobs:
             printf '%s\n' "$migration_readbacks" > .artifacts/supabase-migration-readbacks.json
           fi
 
+          echo "migration_required=$migration_required" >> "$GITHUB_OUTPUT"
           netlify_required="$(jq -r '(.netlify|length)>0' <<<"$runtime_classes")"
           if [ "$netlify_required" != true ]; then
             if [ "$supabase_required" != true ] && [ "$migration_required" != true ]; then
@@ -353,7 +423,11 @@ jobs:
                 git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
                 if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
                   echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
-                  if [ "$supabase_required" = true ]; then
+                  if [ "$supabase_required" = true ] && [ "$migration_required" = true ]; then
+                    echo "readback_mode=netlify_runtime_supabase_edge_and_migration_provider" >> "$GITHUB_OUTPUT"
+                  elif [ "$migration_required" = true ]; then
+                    echo "readback_mode=netlify_runtime_supabase_migration_provider" >> "$GITHUB_OUTPUT"
+                  elif [ "$supabase_required" = true ]; then
                     echo "readback_mode=netlify_runtime_supabase_provider" >> "$GITHUB_OUTPUT"
                   else
                     echo "readback_mode=netlify_runtime" >> "$GITHUB_OUTPUT"
@@ -377,6 +451,7 @@ jobs:
         env:
           PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
           READBACK_MODE: ${{ steps.production.outputs.readback_mode }}
+          MIGRATION_READBACK_REQUIRED: ${{ steps.production.outputs.migration_required }}
           MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
           CANDIDATE_SHA: ${{ steps.target.outputs.candidate_sha }}
           PR_NUMBER: ${{ steps.target.outputs.pr_number }}
@@ -393,7 +468,7 @@ jobs:
           const migrationReadbacks=existsSync('.artifacts/supabase-migration-readbacks.json')
             ? JSON.parse(readFileSync('.artifacts/supabase-migration-readbacks.json','utf8'))
             : [];
-          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider'];
+          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider','netlify_runtime_supabase_migration_provider','netlify_runtime_supabase_edge_and_migration_provider'];
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -411,8 +486,8 @@ jobs:
               deploy_promotion_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               runtime_function_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
-              supabase_provider_readback:['supabase_edge_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
-              supabase_migration_readback:['supabase_migration_provider','supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
+              supabase_provider_readback:['supabase_edge_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider','netlify_runtime_supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
+              supabase_migration_readback:['supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_migration_provider','netlify_runtime_supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
@@ -427,6 +502,9 @@ jobs:
           }
           if(evidence.checks.supabase_provider_readback && providerReadbacks.length===0) {
             throw new Error('TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING');
+          }
+          if(process.env.MIGRATION_READBACK_REQUIRED==='true' && !evidence.checks.supabase_migration_readback) {
+            throw new Error('TERMINAL_SUPABASE_MIGRATION_READBACK_MODE_MISSING');
           }
           if(evidence.checks.supabase_migration_readback && migrationReadbacks.length===0) {
             throw new Error('TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING');

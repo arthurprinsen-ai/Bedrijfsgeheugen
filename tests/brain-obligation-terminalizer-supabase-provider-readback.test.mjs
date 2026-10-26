@@ -21,11 +21,15 @@ test('unknown non-Netlify and non-Supabase runtimes remain fail closed',()=>{
 });
 
 test('delivery classification policy is governance rather than runtime deployment',()=>{
-  assert.match(workflow,/config\/brain-delivery-system\.json/);
+  assert.match(workflow,/productionTruth\?\.verifierOnlyPaths/);
+  const truth=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8')).productionTruth;
+  assert.ok(truth.verifierOnlyPaths.includes('config/brain-delivery-system.json'));
 });
 
 test('terminal evidence accepts provider-proven Supabase runtime modes',()=>{
-  assert.match(workflow,/runtimeReadbackModes=\['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider'\]/);
+  const modes=workflow.match(/const runtimeReadbackModes=(\[[^;]+\]);/);
+  assert.ok(modes);
+  for(const mode of ['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider']) assert.ok(JSON.parse(modes[1].replaceAll("'",'"')).includes(mode),mode);
   assert.match(workflow,/supabase_provider_readback/);
   assert.match(workflow,/TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING/);
 });

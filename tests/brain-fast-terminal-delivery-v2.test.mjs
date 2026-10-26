@@ -39,9 +39,9 @@ test('terminal closure requires exact-head critical gates before LIVE_BEWEZEN', 
   const production=workflow.indexOf('Wait for canonical production release readback');
   const persist=workflow.indexOf('Persist canonical Brain terminal evidence before terminal claim');
   assert.ok(gate > -1 && production > gate && persist > production);
-  assert.match(workflow,/require_workflow "required-test\.yml" "Required"/);
-  assert.match(workflow,/require_brain_evidence\(\)/);
-  assert.match(workflow,/actions\/workflows\/unified-brain-delivery\.yml\/runs/);
+  assert.match(workflow,/require_required_or_descendant/);
+  assert.match(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
+  assert.doesNotMatch(workflow,/require_brain_evidence|TERMINAL_BRAIN_(FOUNDATION|DESCENDANT)_PROVEN/);
   assert.match(workflow,/require_workflow "codeql\.yml" "Powerhouse-CodeQL"/);
   assert.doesNotMatch(workflow,/require_workflow "powerhouse-codeql\.yml" "Powerhouse-CodeQL"/);
   const codeql=await readFile(".github/workflows/codeql.yml","utf8");
