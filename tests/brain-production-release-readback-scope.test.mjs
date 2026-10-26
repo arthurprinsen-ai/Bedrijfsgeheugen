@@ -286,3 +286,15 @@ test('terminalizer keeps rollback-only Supabase SQL under verifier-only scope wi
   assert.match(terminalizer, /SUPABASE_PROVIDER_READBACK_MISSING/);
   assert.match(terminalizer, /prove_main_containment/);
 });
+
+test('manual browser-only readback runs pricing independently of deployment and fails closed', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /Verify pricing interactions and English route in production\n\s+id: pricing\n\s+if: steps\.scope\.outputs\.browser_required == 'true'/);
+  assert.match(workflow, /Evaluate immutable non-deployment production truth[\s\S]*?--routes-json '\$\{\{ steps\.scope\.outputs\.routes \}\}'/);
+  assert.ok(workflow.includes("steps.routes.outcome == 'success' && steps.pricing.outcome == 'success'"));
+  assert.doesNotMatch(workflow, /--routes-json '\[\]'\s+--routes-ok 'true'/);
+  assert.deepEqual(evaluateProductionReadback({ mergeSha: SHA, deploymentRequired: false, routesOk: false }), {
+    status: 'PRODUCTION_RED',
+    reason: 'production_route_regression',
+  });
+});
