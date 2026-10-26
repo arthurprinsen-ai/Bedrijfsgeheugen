@@ -1,3 +1,7 @@
+## Merge capability guard (25 October 2026)
+
+All agents modifying GitHub rulesets or releases must load `.agents/skills/merge-capability-guard/SKILL.md`. User-owned repositories cannot enable native `merge_queue`; protected PR checks and independent production evidence remain mandatory. The new helper must still be integrated into any actual ruleset writer; policy alone is not enforcement.
+
 ## Deployment-tool ontbreekt: verplichte agent-fallback — 25 oktober 2026
 
 Elke agent die release, merge, deploy, Netlify, GitHub Actions of productiereadback uitvoert, MOET vooraf `.agents/skills/deployment-capability-recovery/SKILL.md` laden, de geselecteerde fallback en skill-content-SHA in de bestaande bewijsketen vastleggen, en de bestaande Git-CD/Heartbeat/Janitor-route hergebruiken. Ontbrekende connector-write-acties worden `DELIVERY_CONTROL_PLANE_CAPABILITY_GAP`, niet stilzwijgend succes en niet een nieuwe scheduler. Behoud Required, CodeQL, Supabase-preview en beschermde merge. Alleen exact-productieproviderreadback bewijst livegang. Heropen bij herhaling dezelfde canonieke obligation, niet een duplicaat.
