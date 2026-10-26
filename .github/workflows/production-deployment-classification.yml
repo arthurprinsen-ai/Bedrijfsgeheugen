@@ -1,0 +1,65 @@
+name: Production Deployment Classification
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: production-deployment-classification
+  cancel-in-progress: true
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Classify GitHub versus published production
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAIN_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, appendFile } from 'node:fs/promises';
+          import { classifyProductionDeployment } from './tools/delivery/production-deployment-status.mjs';
+          const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          let result;
+          try {
+            const liveResponse=await fetch('https://www.bedrijfsgeheugen.nl/release.json?status_check='+Date.now(),{headers:{'Cache-Control':'no-cache'}});
+            if(!liveResponse.ok) throw new Error('production release readback HTTP '+liveResponse.status);
+            const live=await liveResponse.json();
+            const mainSha=process.env.MAIN_SHA;
+            const deployedSha=live.commit_ref;
+            let changedPaths=[],comparisonStatus='ahead',comparisonComplete=true;
+            if(deployedSha!==mainSha){
+              const url='https://api.github.com/repos/'+process.env.REPOSITORY+'/compare/'+deployedSha+'...'+mainSha;
+              const response=await fetch(url,{headers:{Authorization:'Bearer '+process.env.GH_TOKEN,Accept:'application/vnd.github+json'}});
+              if(!response.ok) throw new Error('GitHub compare HTTP '+response.status);
+              const comparison=await response.json();
+              comparisonStatus=comparison.status;
+              comparisonComplete=comparisonStatus==='ahead' && comparison.total_commits===comparison.ahead_by && Array.isArray(comparison.files) && comparison.files.length<300;
+              changedPaths=(comparison.files||[]).map(file=>file.filename);
+            }
+            result=classifyProductionDeployment({mainSha,deployedSha,deployId:live.deploy_id,context:live.context,changedPaths,policy,comparisonStatus,comparisonComplete});
+          }catch(error){result={state:'UNKNOWN',reason:String(error.message||error)};}
+          const summary=[
+            '## Production deployment classification',
+            '| Indicator | Value |','| --- | --- |',
+            '| State | '+result.state+' |',
+            '| GitHub main | '+(result.mainSha||process.env.MAIN_SHA)+' |',
+            '| Published commit | '+(result.deployedSha||'UNKNOWN')+' |',
+            '| Netlify deploy ID | '+(result.deployId||'UNKNOWN')+' |',
+            '| Reason | '+(result.reason||'exact production identity')+' |',
+            '',
+            'DEPLOY_NOT_REQUIRED means a verified older production SHA differs only by non-runtime paths; it does not claim the main SHA is published.'
+          ].join('\n');
+          await appendFile(process.env.GITHUB_STEP_SUMMARY,summary+'\n');
+          console.log(JSON.stringify(result));
+          if(result.state==='UNKNOWN' || result.state==='DEPLOY_REQUIRED') process.exitCode=1;
+          NODE
