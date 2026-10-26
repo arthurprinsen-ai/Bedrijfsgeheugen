@@ -82,13 +82,21 @@ export function createSupabasePortalProjectionStore({
       throw new Error('EU financial forecast tenant scope mismatch');
     return {forecasts:data.forecasts};
   }
+  async function getCommercialFeedback(tenantId,{days=30}={}){
+    const expectedTenant=String(tenantId);
+    const value=Number(days);
+    if(!Number.isInteger(value)||value<1||value>365)throw new RangeError('COMMERCIAL_FEEDBACK_INVALID_PERIOD');
+    const data=await gateway({action:'commercial_feedback',tenantId:expectedTenant,days:value});
+    if(data?.tenantId!==expectedTenant||!Array.isArray(data?.series))throw new Error('COMMERCIAL_FEEDBACK_TENANT_MISMATCH');
+    return data;
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,getValidatedFinancialForecasts,
+    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,getValidatedFinancialForecasts,getCommercialFeedback,
     async get(tenantId){
       const [legacy,canonical,aiGovernance,resourceBusinessValue]=await Promise.all([
         getLayer(tenantId,PORTAL_LAYERS.LEGACY),

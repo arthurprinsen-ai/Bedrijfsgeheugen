@@ -1,0 +1,3 @@
+# Required check reconciliation v2 — PR #4958
+
+Issue #4929, obligation `github-required-check-reconciliation-v2-20261026`. Adds effective inherited GitHub rules inspection, required context and GitHub App identity comparison on exact SHA, strict unknown on provider/API errors and incomplete responses, ten node regressions, and canonical skill instruction. The original Required run #40282507194 rejected missing learning, human documentation and ledger. This commit supplies those canonical closure artifacts and must be retested on the resulting HEAD. No status forgery, branch protection bypass, automatic merge, or production claim.

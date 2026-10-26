@@ -9,6 +9,12 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'scripts/ai-model-freshness-watch.mjs': 'automation',
+  'scripts/ai-model-source-probe.mjs': 'automation',
+  'tests/brain-model-evidence-delivery-admission.test.mjs': 'automation',
+  'docs/skills/supplier-evidence-recovery-v2.md': 'automation',
+  'data/ai-model-stale-review-worklist-20261025.json': 'automation',
+  'tests/brain-ai-model-stale-worklist.test.mjs': 'automation',
   'tools/growth-intelligence/decision-core.mjs': 'automation',
   'tools/growth-intelligence/decision-core.test.mjs': 'automation',
   'tools/growth-intelligence/heartbeat-adapter.mjs': 'automation',
@@ -22,6 +28,8 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/merge-capability-guard.test.mjs': 'automation',
   'tests/brain-merge-capability-guard.test.mjs': 'automation',
   'tools/delivery/merge-capability-guard.mjs': 'automation',
+  'tools/delivery/required-check-reconciliation.mjs': 'automation',
+  'tests/required-check-reconciliation.test.mjs': 'automation',
   'scripts/brain/skill-byte-audit.mjs': 'automation',
   'tests/brain-skill-byte-audit.test.mjs': 'automation',
   'tools/brain/agent-skill-execution-evidence.mjs': 'automation',
