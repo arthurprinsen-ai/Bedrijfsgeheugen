@@ -104,7 +104,7 @@ function deliveryView(events,observability){
   const providerEvidence=observability.releaseEvidence;
   const status=deriveReleaseStatus(providerEvidence||{});
   const label={passed:'Geslaagd',failed:'Mislukt',pending:'In afwachting',unknown:'Onbekend',not_required:'Niet vereist'};
-  const releasePanel=`<section class="poc-panel"><h4>Release & productiebewijs</h4><div class="poc-kpis compact">${kpi('GitHub-release',label[status.githubRelease])}${kpi('Netlify-deployment',label[status.netlifyDeployment])}${kpi('Productie-readback',label[status.productionReadback])}</div><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
+  const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
   return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
 function liveView(events,observability,refreshError=''){
@@ -326,6 +326,28 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
     body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    if(state.tab==='delivery'){
+      const panel=body.querySelector('[data-release-status-panel]');
+      const evidence=obs.releaseEvidence;
+      const computed=deriveReleaseStatus(evidence||{});
+      const expected={github:computed.githubRelease,netlify:computed.netlifyDeployment,production:computed.productionReadback};
+      const stages=['github','netlify','production'];
+      const stageMatches=stages.every(name=>{
+        const el=panel?.querySelector('[data-release-stage="'+name+'"]');
+        return Boolean(el&&el.dataset.stageValue===expected[name]&&el.querySelector('strong')?.textContent?.trim());
+      });
+      const providerReadback=Boolean(evidence?.providerIdentity?.githubHeadSha&&evidence?.providerIdentity?.netlifyPublishedSha&&evidence?.evidenceStatus==='PROVIDER_IDENTITIES_AND_CHECKS_READ');
+      const message=panel?.querySelector('[data-release-canary]');
+      if(message){
+        const complete=providerReadback&&stageMatches;
+        message.textContent=complete
+          ? 'Canary gecontroleerd: beheerders-API, GitHub/Netlify-bronidentiteiten, drie berekende statussen en dashboardwaarden komen overeen.'
+          : 'Canary onvolledig: '+(!providerReadback?'onafhankelijke providergegevens ontbreken of zijn niet bevestigd':'dashboardwaarden komen niet overeen met de statusberekening')+'.';
+        message.dataset.canaryResult=complete?'verified':'incomplete';
+        message.dataset.canaryStages=stageMatches?'matched':'mismatch';
+        message.dataset.canaryProviders=providerReadback?'verified':'missing';
+      }
+    }
     if(state.tab==='integrations'){
       body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
       body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));
