@@ -26,5 +26,11 @@
     ]
   },
   "machine_enforceable": true,
-  "releaseStatus": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+  "releaseStatus": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "fingerprint": "portal|tenant|commercial-feedback-evidence|20261025-v1",
+  "compiler": {
+    "failure_class": "MISSING_INDEPENDENT_EVIDENCE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true
+  }
 }
