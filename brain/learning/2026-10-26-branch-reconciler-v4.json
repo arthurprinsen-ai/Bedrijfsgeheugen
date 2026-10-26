@@ -1,0 +1,14 @@
+{
+  "obligation_id": "ci-branch-reconciler-v4-20261026",
+  "date": "2026-10-26",
+  "status": "CANDIDATE",
+  "claim": "Independent opt-in GitHub branch reconciler with SHA compare-and-swap and readback",
+  "evidence": {
+    "pr": 4961,
+    "source_head": "aba5891af4a523ac23ed6bb51edd77d65ce6eb78",
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "production": "NOT_PROVEN"
+  },
+  "learning": "Accepted update-branch responses do not prove integration; compare new PR head against current base before reporting verified."
+}
