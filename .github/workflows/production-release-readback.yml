@@ -316,7 +316,7 @@ jobs:
           --supersession-safe '${{ steps.deploy.outputs.supersession_safe }}'
           --deployment-required 'true'
           --routes-json '${{ steps.scope.outputs.routes }}'
-          --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || (steps.routes.outcome == 'success' && steps.pricing.outcome == 'success') }}'
+          --routes-ok '${{ steps.routes.outcome == 'success' }}'
           --output .artifacts/production-release-readback.json
       - name: Evaluate immutable non-deployment production truth
         if: steps.scope.outputs.deployment_required != 'true'
@@ -324,8 +324,8 @@ jobs:
           node tools/site-shell/verify-production-release.mjs
           --merge-sha '${{ github.sha }}'
           --deployment-required 'false'
-          --routes-json '[]'
-          --routes-ok 'true'
+          --routes-json '${{ steps.scope.outputs.routes }}'
+          --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || (steps.routes.outcome == 'success' && steps.pricing.outcome == 'success') }}'
           --output .artifacts/production-release-readback.json
       - name: Capture production readback failure as Brain learning evidence
         if: failure()
