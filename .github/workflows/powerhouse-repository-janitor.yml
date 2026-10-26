@@ -332,10 +332,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          # Verify the final state after both cleanup phases. A recorded terminal-lease
+          # reopen legitimately supersedes a planned CLOSE_PR for the same PR.
+          # An unrecorded reopen must remain a hard readback failure.
           jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
             pr="$(jq -r '.prNumber' <<<"$action")"
-            state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
-            [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
+            expected=closed
+            if [ -f .artifacts/janitor-runtime-actions.json ] && jq -e --argjson pr "$pr" '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE" and .pr_number == $pr)' .artifacts/janitor-runtime-actions.json >/dev/null; then
+              expected=open
+            fi
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+            state="$(jq -r '.state' <<<"$current")"
+            merged="$(jq -r '.merged' <<<"$current")"
+            [ "$state" = "$expected" ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:expected=${expected}:actual=${state}"; exit 1; }
+            if [ "$expected" = open ]; then
+              [ "$merged" = false ] || { echo "::error::JANITOR_READBACK_REOPEN_MERGED:#${pr}"; exit 1; }
+            fi
           done
           if [ -f .artifacts/janitor-runtime-actions.json ]; then
             jq -c '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE")' .artifacts/janitor-runtime-actions.json | while read -r action; do
