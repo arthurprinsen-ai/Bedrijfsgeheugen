@@ -1,4 +1,5 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { deriveReleaseStatus } from '../../tools/netlify/release-status.mjs';
 import { ensureIdentityWidget } from '../portal-state.js';
 import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -99,7 +100,12 @@ function skillsView(events){
 function deliveryView(events,observability){
   const delivery=events.filter(isDelivery);
   const economics=observability.economics||{};
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
+  // Only provider-verified, server-supplied release evidence may produce green.
+  const providerEvidence=observability.releaseEvidence;
+  const status=deriveReleaseStatus(providerEvidence||{});
+  const label={passed:'Geslaagd',failed:'Mislukt',pending:'In afwachting',unknown:'Onbekend',not_required:'Niet vereist'};
+  const releasePanel=`<section class="poc-panel"><h4>Release & productiebewijs</h4><div class="poc-kpis compact">${kpi('GitHub-release',label[status.githubRelease])}${kpi('Netlify-deployment',label[status.netlifyDeployment])}${kpi('Productie-readback',label[status.productionReadback])}</div><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
+  return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
 function liveView(events,observability,refreshError=''){
   const now=Date.now();

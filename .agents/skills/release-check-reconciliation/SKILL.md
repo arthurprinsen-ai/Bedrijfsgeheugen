@@ -1,5 +1,15 @@
-# Release Check Reconciliation — existing Powerhouse recovery lane
+# Release Check Reconciliation v2 — canonical recovery lane
+
 Owner: #4929. Fingerprint: `github|required-status-expected|context-source-sha`.
-On every release/merge refusal, inspect exact main-epoch, PR HEAD and test-merge SHA; compare all effective branch-protection and ruleset required check names and allowed GitHub App sources with actual Checks API and commit-status evidence. Never infer a ruleset from green UI badges. Missing permissions or unreadable rulesets => UNKNOWN/BLOCKED_CONFIG, not PASS.
-Invoke `tools/delivery/required-check-reconciliation.mjs` with `GITHUB_REPOSITORY` and `RELEASE_CHECK_SHA` as read-only advisory evidence on the merge candidate SHA. A ruleset may add required contexts not visible through branch-protection API: never declare the final gate green from this tool alone.
-Do not create replacement PRs, copy branches, forge statuses, disable Required/CodeQL/security, or start another queue/scheduler to address check-name drift. Route repository rule corrections to the authorized administrator and preserve existing Recovery Supervisor single-writer CAS, checks, protected auto-merge and independent production readback. Classify repeated mismatches under the same incident. Regression `tests/required-check-reconciliation.test.mjs`. Daily learning must record detection, authorized remediation, repeat count, merge proof and provider release proof separately.
+
+The reconciler is an advisory, fail-closed diagnostic, not a required check of its own and never a status publisher. Run it AFTER Required/CodeQL terminate and BEFORE any protected merge. It must inspect the exact candidate or merge-group SHA; PR source HEAD alone is not merge proof.
+
+Invoke `GITHUB_REPOSITORY=owner/repo RELEASE_BASE_BRANCH=main RELEASE_CHECK_SHA=<40-char-SHA> node tools/delivery/required-check-reconciliation.mjs`.
+
+Read the effective branch rules (`/rules/branches/main`, including applicable inherited rulesets) and branch-protection contexts plus Check Runs and Commit Statuses on that exact SHA. Compare every required context and permitted App integration ID. API failure, denied access, truncated pages, ambiguous producer, or SHA mismatch is UNKNOWN/BLOCKED; never infer PASS from green workflow badges or PR-level summaries. A PASS from the reconciler remains advisory until GitHub's native protected merge succeeds.
+
+Only the existing authorized Recovery Supervisor owns write, lease/CAS, bounded rerun and branch synchronization. Do not revive retired #4933, reuse released #4941 lease, create replacement PR churn, bypass protection, force push, synthesize status, or start another scheduler. Rerun only an actually failed or cancelled authoritative run on the same SHA, within the canonical retry budget. App/context configuration changes require an administrator with sufficient rights.
+
+A candidate merge and production completion demand independent exact-head Required, BRAIN, CodeQL, native protected merge receipt, merged-main SHA, and applicable production readback. Do not require a Netlify deployment for a proven governance-only change; preserve the release applicability contract.
+
+Regression: `node --test tests/required-check-reconciliation.test.mjs`. Update one canonical incident/Brain learning record, not duplicate closure claims.

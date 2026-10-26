@@ -6,6 +6,8 @@ import { resolveIdentityTenant } from '../../platform/read-models/portal-server-
 import { principalFromUser } from '../../brain/operating-loop/object-access-policy.mjs';
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import { POWERHOUSE_SYSTEM_MAP } from '../../platform/system-map/canonical-system-map.mjs';
+import { deriveNetlifyDeploymentApplicability } from '../../tools/delivery/netlify-deployment-applicability.mjs';
+import deliveryPolicy from '../../config/brain-delivery-system.json' with { type: 'json' };
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
@@ -36,6 +38,63 @@ async function loadSupabaseSystemMapInventory(){
   }
 }
 
+// Provider calls are bounded and run only after the admin/tenant authorization gate.
+// Each provider supplies independent identity. Unknown is never treated as passed.
+let releaseEvidenceCache=null;
+let releaseEvidenceCacheAt=0;
+async function releaseProviderEvidence(){
+  if(releaseEvidenceCache&&Date.now()-releaseEvidenceCacheAt<300000)return releaseEvidenceCache;
+  // Public repository checks and the Netlify-published release manifest need no long-lived credentials.
+  const read=async(url)=>{
+    try{
+      const result=await fetch(url,{headers:{accept:'application/vnd.github+json'},signal:AbortSignal.timeout(5000)});
+      if(!result.ok)return null;
+      return await result.json();
+    }catch{return null;}
+  };
+  const [main,manifest]=await Promise.all([
+    read('https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/main'),
+    read('https://www.bedrijfsgeheugen.nl/release.json')
+  ]);
+  const head=/^[a-f0-9]{40}$/.test(main?.object?.sha||'')?main.object.sha:null;
+  const validManifest=manifest?.contract==='BRAIN-DELIVERY-v2'&&manifest?.context==='production'&&
+    /^[a-f0-9]{40}$/.test(manifest?.commit_ref||'')&&typeof manifest?.deploy_id==='string'&&manifest.deploy_id.length>5;
+  const published=validManifest?manifest.commit_ref:null;
+  const deployId=validManifest?manifest.deploy_id:null;
+  const repoUrl='https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen';
+  const [checks,compare]=await Promise.all([
+    head?read(`${repoUrl}/commits/${head}/check-runs?per_page=100`):null,
+    head&&published&&head!==published?read(`${repoUrl}/compare/${published}...${head}`):null
+  ]);
+  const requiredContexts=['CodeQL javascript-typescript','hygiene / admission','test'];
+  const matching=requiredContexts.map(name=>(checks?.check_runs||[]).filter(run=>run.name===name&&run.app?.id===15368).sort((a,b)=>String(b.completed_at||'').localeCompare(String(a.completed_at||'')))[0]);
+  const requiredChecks=matching.every(run=>run?.conclusion==='success')?'passed':matching.some(run=>run&&run.conclusion&&run.conclusion!=='success')?'failed':'unknown';
+  // If provider commits are equal, no deployment is necessary. Otherwise
+  // rely on the canonical path classifier, never on the SHA mismatch alone.
+  let required=null,reason='APPLICABILITY_UNVERIFIED';
+  if(head&&published&&head===published){required=false;reason='production-sha-matches-main';}
+  else if(head&&published&&compare?.status==='ahead'&&Array.isArray(compare.files)&&compare.truncated!==true){
+    const paths=compare.files.map(file=>file.filename);
+    try{
+      const outcome=deriveNetlifyDeploymentApplicability({changedPaths:paths,headSha:head,policy:deliveryPolicy});
+      required=outcome.deploymentRequired;
+      reason=outcome.reason;
+    }catch{reason='APPLICABILITY_CLASSIFIER_FAILED';}
+  }
+  const deploymentReady=Boolean(validManifest);
+  // A successful published deploy does not prove it contains the newest commit.
+  const matches=Boolean(head&&published&&head===published&&deploymentReady);
+  const evidence={
+    github:{merged:Boolean(head),requiredChecks},
+    deployment:{required,reason,state:required===true&&matches?'success':required===true?'pending':'unknown'},
+    production:{checked:Boolean(validManifest),fresh:Boolean(validManifest&&Date.now()-Date.parse(manifest.generated_at)>=0&&Date.now()-Date.parse(manifest.generated_at)<31536000000),matchesExpectedRelease:matches},
+    providerIdentity:{githubHeadSha:head,netlifyPublishedSha:published,netlifyDeployId:deployId},
+    evidenceStatus:head&&published&&checks?'PROVIDER_IDENTITIES_AND_CHECKS_READ':'PROVIDER_READBACK_INCOMPLETE'
+  };
+  if(head&&published&&checks){releaseEvidenceCache=evidence;releaseEvidenceCacheAt=Date.now();}
+  return evidence;
+}
+
 export default async request=>{
   if(request.method!=='GET')return new Response('Method Not Allowed',{status:405,headers:{allow:'GET'}});
   const authorization=request.headers.get('authorization')||'';
@@ -54,8 +113,8 @@ export default async request=>{
   const principal=principalFromUser(user,tenantId);
   try{
     const projection=await store.getProjection(tenantId,{principal});
-    const supabaseInventory=await loadSupabaseSystemMapInventory();
-    return reply({ ...projection, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory} },200);
+    const [supabaseInventory,releaseEvidence]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence()]);
+    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory} },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
