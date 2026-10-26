@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const learning=JSON.parse(fs.readFileSync('brain/learning/2026-09-28-powerhouse-relationship-external-intelligence-v1.json','utf8'));
 const skill=fs.readFileSync('.agents/skills/powerhouse-relationship-external-intelligence/SKILL.md','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260928173100_powerhouse_relationship_external_intelligence_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928173100_powerhouse_relationship_external_intelligence_v1.sql','utf8');
 
 test('historical replay preserves relationship external intelligence contract',()=>{
   assert.equal(learning.fingerprint,'powerhouse-relationship-external-intelligence-v1');

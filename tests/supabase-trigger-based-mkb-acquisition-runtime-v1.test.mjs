@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migration=await readFile(new URL('../supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
+const migration=await readFile(new URL('../supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
 
 test('trigger runtime reuses canonical stores and creates no parallel CRM or scheduler',()=>{
   assert.match(migration,/powerhouse_runtime_events/);

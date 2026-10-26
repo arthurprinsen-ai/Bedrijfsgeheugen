@@ -1,0 +1,164 @@
+{
+  "fingerprint": "delivery|system-map|integrated-tree-drift|20261025-v1",
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+  },
+  "root_cause": "System Map guard and delivery workflow changes did not carry canonical machine-readable learning, ledger event and human documentation in one PR. Previous admissions also identified invalid PR machine metadata and unclassified test path.",
+  "prevention": "Retain one integration owner; validate changed-path classifier and material writeback bundle before CI; deterministic map generation must use exact merged tree and verify dirty diff; no green until exact SHA gates and production readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
+    ],
+    "observed_incidents": [
+      "Missing PR machine metadata on 40221452874",
+      "Unclassified test path on 40223051109",
+      "Missing same-lineage closure on 40223051109"
+    ],
+    "additional_regressions": [
+      "tests/delivery-system-map-merge-integrity.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40223051109",
+    "github_codeql_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40223051122",
+    "tests": [
+      "tests/delivery-system-map-merge-integrity.test.mjs"
+    ],
+    "state": "source changes only; required rerun, exact merge SHA and production evidence pending"
+  },
+  "production_readback": {
+    "verified": false,
+    "reason": "Not merged; no independent production readback"
+  },
+  "local_recovery_20261026": {
+    "status": "LOCAL_CANDIDATE_NOT_RELEASED",
+    "obligation": "system-map-merge-integrity-20261025",
+    "source_head": "0fdda5a23e2b7b0fe0925dc2c6061bb440410ec4",
+    "integrated_main": "76afbb94f6526ed0ccccebd35ab27ccbba604f2c",
+    "root_causes": [
+      "Automation oracles assert retired marker/helper names while canonical classifiers retain fail-closed behavior",
+      "84 Backend test modules read retired executable paths although exact historical SQL is tracked in repository-only archive",
+      "Live migration ledger snapshot is stale; provider readback reports 755 applied migrations on PostgreSQL 17.6"
+    ],
+    "changes": [
+      "Union both AGENTS instruction sections and all current-main changes; deterministically regenerate System Map",
+      "Update four terminal-closure oracle cases and the tightened WIP expectation without production policy changes",
+      "Change 98 SQL test-source literals in 84 test files; no SQL or existing security assertions changed"
+    ],
+    "verification": {
+      "automation": {
+        "tests": 325,
+        "pass": 325,
+        "fail": 0
+      },
+      "backend": {
+        "tests": 4492,
+        "pass": 4212,
+        "fail": 280
+      },
+      "integration_and_tenant_tests": {
+        "tests": 11,
+        "pass": 11,
+        "fail": 0
+      }
+    },
+    "production_mutation": false,
+    "protected_merge": false,
+    "production_verified": false,
+    "prevention": "Validate current canonical helpers and historical source provenance rather than retired implementation spelling; retain all gates and classify each remaining failure."
+  },
+  "supplemental_recovery_20261026": {
+    "parent_head": "064246a86b2476b91ca7cc9ae8c07c91661343c3",
+    "source_renames": [
+      {
+        "test": "tests/brain-salesrobot-provider-proof-daily-assurance-v1.test.mjs",
+        "old": "supabase/migrations/20261009160500_salesrobot_provider_proof_daily_assurance_v1.sql",
+        "new": "supabase/migrations/20261009141054_salesrobot_provider_proof_daily_assurance_v1.sql",
+        "git_blob": "8a0f1020c5b07ea6a34165fc2a035c8161b6fc86"
+      },
+      {
+        "test": "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs",
+        "old": "supabase/migrations/20261009185500_bedrijfslek_runtime_signal_cycle_v1.sql",
+        "new": "supabase/migrations/20261009190700_bedrijfslek_runtime_signal_cycle_v1_20261009.sql",
+        "git_blob": "c45901a1e162cb8936508018abc02416ad268364"
+      },
+      {
+        "test": "tests/brain-real-commercial-conversion-truth-v1.test.mjs",
+        "old": "supabase/migrations/20261009190000_fix_noncommercial_conversion_projection_v1.sql",
+        "new": "supabase/migrations/20261009155535_fix_noncommercial_conversion_projection_v1.sql",
+        "git_blob": "96da76180829bd011b9c331b481ed07594c1c678"
+      },
+      {
+        "test": "tests/brain-commercial-outcome-kpi-truth-v1.test.mjs",
+        "old": "supabase/migrations/20261009193000_filter_real_commercial_outcome_kpis_v1.sql",
+        "new": "supabase/migrations/20261009161226_filter_real_commercial_outcome_kpis_v1.sql",
+        "git_blob": "f8ae5182cc727f8624b9d0527b1b72dc89fefb81"
+      },
+      {
+        "test": "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs",
+        "old": "supabase/migrations/20261010130000_publication_media_lineage_preservation.sql",
+        "new": "supabase/migrations/20261010112728_publication_media_lineage_preservation_20261010.sql",
+        "git_blob": "a0137c0f07d7f17d9d1cd8533dea7602d32e3894"
+      },
+      {
+        "test": "tests/brain-decision-evidence-normalization.test.mjs",
+        "old": "supabase/migrations/20261011120000_powerhouse_decision_evidence_json_normalize_v1.sql",
+        "new": "supabase/migrations/20261011091426_powerhouse_decision_evidence_json_normalize_v1.sql",
+        "git_blob": "206cdbbd92798810bf640bdff000cd3c1831f814"
+      },
+      {
+        "test": "tests/brain-commercial-hourly-stage-isolation-v1.test.mjs",
+        "old": "supabase/migrations/20261011171500_powerhouse_commercial_isolated_hourly_stages_v1.sql",
+        "new": "supabase/migrations/20261011122630_powerhouse_commercial_isolated_hourly_stages_v1.sql",
+        "git_blob": "7ed8a4c25c26f90ad9ab846ba1571fb1427041a7"
+      },
+      {
+        "test": "tests/brain-outreach-4340-canonical-quality.test.mjs",
+        "old": "supabase/migrations/20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
+        "new": "supabase/migrations/20261012074151_20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql",
+        "git_blob": "135a2a08eddfed78aa1e888e8f697ec9edbee34d"
+      },
+      {
+        "test": "tests/brain-openai-content-provider-migration-20261013.test.mjs",
+        "old": "supabase/migrations/20261013132500_powerhouse_openai_content_governance_p0_4198.sql",
+        "new": "supabase/migrations/20261013154426_powerhouse_openai_content_governance_p0_4198.sql",
+        "git_blob": "00b96bf25232f67a9deed12479ef73656d7a781b"
+      },
+      {
+        "test": "tests/brain-contact-authority-review-v1.test.mjs",
+        "old": "supabase/migrations/20261013160000_powerhouse_canonical_contact_authority_review_v1.sql",
+        "new": "supabase/migrations/20261013145222_powerhouse_canonical_contact_authority_review_v1.sql",
+        "git_blob": "3e92d939ba74f269feefec75ab627ed381a9085f"
+      }
+    ],
+    "workflow_test_contracts": [
+      "Current diagnostic job names and ref-scoped single-flight",
+      "Required aggregator includes and enforces PostgreSQL replay"
+    ],
+    "local_automation": {
+      "tests": 325,
+      "pass": 325,
+      "fail": 0
+    },
+    "local_map_tests": {
+      "tests": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    "local_backend_before_rename_repair": {
+      "tests": 4492,
+      "pass": 4213,
+      "fail": 279
+    },
+    "status": "BACKEND_FAILED_NOT_MERGED_NOT_LIVE",
+    "remote_final_sha_checks": "REQUIRED_AFTER_PUBLICATION",
+    "sql_changed": false,
+    "security_assertions_removed": false,
+    "local_backend_after_exact_rename_repair": {
+      "head_sha": "20ee395199da4320f05eedd1067aff5e48e6515a",
+      "tests": 4514,
+      "pass": 4243,
+      "fail": 271
+    }
+  }
+}

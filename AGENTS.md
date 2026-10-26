@@ -1,3 +1,7 @@
+## System Map release-integriteit — 25 oktober 2026
+
+Volg `.agents/skills/system-map-merge-integrity/SKILL.md`: één integratie-eigenaar voor workflow, System Map, testbewijs en exact candidate SHA. Regeneratie vanuit geïntegreerde boom; Required/BRAIN/CodeQL op dezelfde commit; geen groen zonder beschermde merge en onafhankelijke readback.
+
 ## Merge capability guard (25 October 2026)
 
 All agents modifying GitHub rulesets or releases must load `.agents/skills/merge-capability-guard/SKILL.md`. User-owned repositories cannot enable native `merge_queue`; protected PR checks and independent production evidence remain mandatory. The new helper must still be integrated into any actual ruleset writer; policy alone is not enforcement.

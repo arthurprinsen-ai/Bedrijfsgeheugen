@@ -4,7 +4,7 @@ import fs from 'node:fs';
 const review=fs.readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
 const orchestrator=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20261003105500_linkedin_personal_no_gap_observational_v2.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20261003105500_linkedin_personal_no_gap_observational_v2.sql','utf8');
 
 assert.match(migration,/verified_public_theme_observation/);
 assert.match(migration,/story_family_reuse_forbidden/);

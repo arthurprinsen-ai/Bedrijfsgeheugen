@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const file = 'supabase/migrations/20260922080500_social_publication_daily_channel_fence_v1.sql';
+const file = 'supabase/migration-history/repository-only/20260922080500_social_publication_daily_channel_fence_v1.sql';
 const migration = fs.readFileSync(file, 'utf8');
 
 test('daily social publication fence is serialized per date and channel', () => {

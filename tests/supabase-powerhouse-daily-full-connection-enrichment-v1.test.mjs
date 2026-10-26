@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260928175500_powerhouse_daily_full_connection_enrichment_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928175500_powerhouse_daily_full_connection_enrichment_v1.sql','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-daily-full-connection-enrichment/SKILL.md','utf8');
 
 test('all connections receive a daily enrichment pass',()=>{

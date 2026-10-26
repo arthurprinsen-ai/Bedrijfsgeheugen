@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260925081000_linkedin_personal_source_dedupe_current_main_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260925081000_linkedin_personal_source_dedupe_current_main_v1.sql','utf8');
 
 test('canonical fallback function excludes prior personal LinkedIn content ids',()=>{
   assert.match(migration,/create or replace function public\.powerhouse_prepare_daily_content_fallbacks_v1\(p_date date\)/i);

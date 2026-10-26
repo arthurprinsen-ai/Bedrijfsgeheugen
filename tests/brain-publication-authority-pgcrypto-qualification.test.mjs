@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260920102500_publication_authority_pgcrypto_qualification.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260920102500_publication_authority_pgcrypto_qualification.sql','utf8');
 
 test('publication authority qualifies all pgcrypto calls under locked search_path',()=>{
   assert.match(migration,/set search_path to 'public','pg_catalog'/i);

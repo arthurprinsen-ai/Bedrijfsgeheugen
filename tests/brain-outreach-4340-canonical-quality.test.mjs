@@ -19,7 +19,7 @@ test('composer compares past send history and requires fresh follow-up facts',()
 });
 
 test('suppression affects new LinkedIn and email sales actions',()=>{
-  const source=read('supabase/migrations/20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql');
+  const source=read('supabase/migrations/20261012074151_20261012093000_outreach_rejection_cross_channel_anti_repeat_4340.sql');
   for(const rule of ['powerhouse_email_contact_suppressions','linkedin_dm','new.status:=\'skipped\'','source_specific_evidence_ok','semantic_novelty_ok','new_followup_evidence_ok'])assert.ok(source.includes(rule));
 });
 

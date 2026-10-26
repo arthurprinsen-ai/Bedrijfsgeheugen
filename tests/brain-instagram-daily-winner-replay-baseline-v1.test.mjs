@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const early=fs.readFileSync('supabase/migrations/20260920102450_instagram_daily_winner_table_replay_baseline_v1.sql','utf8');
-const canonical=fs.readFileSync('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
-const authority=fs.readFileSync('supabase/migrations/20260920102500_publication_authority_pgcrypto_qualification.sql','utf8');
+const canonical=fs.readFileSync('supabase/migration-history/repository-only/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
+const authority=fs.readFileSync('supabase/migration-history/repository-only/20260920102500_publication_authority_pgcrypto_qualification.sql','utf8');
 
 test('daily winner rowtype exists before publication authority compiles',()=>{
   assert.match(early,/create table if not exists public\.powerhouse_instagram_daily_winners_v1/);

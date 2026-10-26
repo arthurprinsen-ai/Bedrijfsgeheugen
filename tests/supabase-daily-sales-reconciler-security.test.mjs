@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = new URL('../supabase/migrations/20260916195000_daily_sales_reconciler_security.sql', import.meta.url);
+const migrationPath = new URL('../supabase/migration-history/repository-only/20260916195000_daily_sales_reconciler_security.sql', import.meta.url);
 
 test('daily sales reconciler SECURITY DEFINER RPC is service-role only', () => {
   assert.equal(fs.existsSync(migrationPath), true, 'security migration must exist');

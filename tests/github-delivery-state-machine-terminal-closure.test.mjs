@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { classifyTerminalReleaseScope } from '../tools/delivery/terminal-release-scope.mjs';
+import { verifyRetiredMigrationSupersession } from '../tools/delivery/terminal-migration-identity.mjs';
 
 test('all merged obligations close only after canonical production readback', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
@@ -38,7 +40,14 @@ test('closed unmerged superseded PR without Supabase migrations may be traversed
 
 test('closed unmerged superseded PR with Supabase migrations remains fail closed', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);
+  assert.match(workflow,/const proof=verifyRetiredMigrationSupersession\(/);
+  const filename='supabase/migrations/20261001000000_example.sql';
+  assert.throws(()=>verifyRetiredMigrationSupersession({
+    retiredPrNumber:1,retiredState:'closed',retiredMerged:false,
+    retiredBody:'Writer-Lease-State: SUPERSEDED',successorPrNumber:2,
+    successorBody:'Supersedes: 1',migrationFiles:[{filename,sha:'a'.repeat(40)}],
+    mergedMigrationBlobs:{},currentMainBlobs:{}
+  }),/UNMERGED_SUPERSEDES_MIGRATION_NOT_ADOPTED/);
   assert.match(workflow,/\^supabase\\\/migrations\\\/\[\^\/\]\+\\\.sql\$/);
 });
 
@@ -46,9 +55,13 @@ test('closed unmerged superseded PR with Supabase migrations remains fail closed
 test('automation-only closure uses GitHub main readback instead of waiting for website production', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/delivery_lane=/);
-  assert.match(workflow,/AUTOMATION_MAIN_READBACK_PROVEN/);
+  assert.match(workflow,/NON_RUNTIME_MAIN_READBACK_PROVEN/);
   assert.match(workflow,/mode=github_main/);
-  assert.match(workflow,/portal-v2\/\|public\/\|src\/\|netlify\/functions\/\|supabase\/functions\/\|supabase\/migrations\//);
+  assert.match(workflow,/classifyTerminalReleaseScope/);
+  assert.equal(classifyTerminalReleaseScope(['.github/workflows/required-test.yml']).non_runtime,true);
+  for(const runtime of ['netlify/functions/example.mjs','supabase/functions/example/index.ts','supabase/migrations/20261001000000_example.sql','unknown/runtime.mjs']) {
+    assert.equal(classifyTerminalReleaseScope([runtime]).non_runtime,false,runtime);
+  }
   assert.match(workflow,/main:\$\{process\.env\.PRODUCTION_OBSERVED_SHA\}/);
 });
 
@@ -56,9 +69,11 @@ test('automation-only closure uses GitHub main readback instead of waiting for w
 test('github_main readback records the obligation merge SHA while using current main only as containment proof', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.ok(workflow.includes('echo "observed_sha=${MERGE_SHA}" >> "$GITHUB_OUTPUT"'));
-  assert.ok(workflow.includes('AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} contained_by=${observed_sha}'));
-  const start=workflow.indexOf('if [ "${DELIVERY_LANE}" = "automation" ]');
-  const end=workflow.indexOf('source_run_id=""',start);
+  assert.ok(workflow.includes('NON_RUNTIME_MAIN_READBACK_PROVEN:lane=${DELIVERY_LANE} merge=${MERGE_SHA} contained_by=${observed_sha}'));
+  const start=workflow.indexOf('if [ "$non_runtime" = true ]; then');
+  assert.ok(start>=0,'non-runtime containment branch exists');
+  const end=workflow.indexOf('\n          fi',start);
+  assert.ok(end>start,'containment branch is bounded');
   const githubMainBlock=workflow.slice(start,end);
   assert.doesNotMatch(githubMainBlock,/echo "observed_sha=\$\{observed_sha\}"/);
 });
@@ -84,9 +99,10 @@ test('terminal closure uses trigger-compatible Brain evidence', async()=>{
 
 test('terminal closure does not wait for impossible PR workflow events', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/require_pr_triggered_workflow/);
-  assert.match(workflow,/no_pull_request_trigger/);
-  assert.match(workflow,/require_pr_triggered_workflow "unified-brain-delivery\.yml" "BRAIN"/);
+  assert.match(workflow,/require_brain_evidence/);
+  assert.match(workflow,/unified-brain-delivery\.yml\/runs\?head_sha=\$\{HEAD_SHA\}&per_page=50/);
+  assert.match(workflow,/brain-foundation-verify\.yml\/runs\?head_sha=\$\{MERGE_SHA\}&event=push/);
+  assert.match(workflow,/TERMINAL_CRITICAL_GATE_FAILED:BRAIN/);
   assert.doesNotMatch(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
 });
 

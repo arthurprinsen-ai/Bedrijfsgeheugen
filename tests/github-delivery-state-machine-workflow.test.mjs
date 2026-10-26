@@ -36,7 +36,8 @@ test('post-merge terminalization is lineage-driven and independent of branch nam
 });
 
 test('product WIP and canonical policy match the desired steady state',()=>{
-  assert.equal(policy.wip.maxExecutable,3);
+  assert.equal(policy.wip.maxExecutable,1);
+  assert.equal(policy.wip.finishBeforeStart,true);
   assert.equal(stateMachine.wip.maxActiveProductPrs,3);
   assert.equal(stateMachine.wip.maxTerminalWritersPerObligation,1);
   assert.equal(stateMachine.wip.maintenanceQueueSeparate,true);

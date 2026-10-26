@@ -39,7 +39,7 @@ test('brain replay: incomplete commercial context fails closed without fabricati
 
 test('brain replay: scheduler-owned Supabase projection reuses canonical stores and blocks automatic outbound',async()=>{
   const {readFile}=await import('node:fs/promises');
-  const sql=await readFile(new URL('../supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
+  const sql=await readFile(new URL('../supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
   assert.match(sql,/powerhouse_mkb_trigger_intelligence_v1/);
   assert.match(sql,/powerhouse_opportunities/);
   assert.match(sql,/powerhouse_sales_actions/);
