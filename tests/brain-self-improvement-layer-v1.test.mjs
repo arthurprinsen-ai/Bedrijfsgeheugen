@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   DEFAULT_AGENT_OBJECTIVES,
   SELF_IMPROVEMENT_CONTRACT,
@@ -144,4 +145,20 @@ test('autonomous promotion cannot promote on forged, duplicate, stale or self-as
   const wrongSha=evaluatePromotionCandidate({...input,
     candidate:{...input.candidate,sourceSha:undefined},verifyEvidenceRef:proof});
   assert.equal(wrongSha.promotable,false);
+});
+
+// Live root cause (25 October): 9 READY quality events masked 9 unmeasured
+// optimization candidates. A compiler READY is NOT the same candidate's proof.
+test('quality-event READY cannot promote unmeasured optimization candidates',()=>{
+  const migration=readFileSync(new URL('../supabase/migrations/20261025101500_self_improvement_promotion_readiness_candidate_proof.sql',import.meta.url),'utf8');
+  assert.match(migration,/eligible\.source_type='optimization_candidate'/);
+  assert.match(migration,/eligible\.source_key=c_1\.candidate_id::text/);
+  assert.match(migration,/eligible\.compiler_state='READY'/);
+  assert.match(migration,/p\.independent_observations > 0/);
+  assert.match(migration,/p\.review_proven AND p\.delivery_proven/);
+  assert.match(migration,/p\.learning_proven AND p\.observed_cycle_verified/);
+  assert.match(migration,/WHEN c\.candidate_ready > 0 THEN 'READY_FOR_CONTROLLED_PROMOTION'/);
+  assert.doesNotMatch(migration,/WHEN l\.compiler_ready > 0 THEN 'READY_FOR_CONTROLLED_PROMOTION'/);
+  assert.match(migration,/security_invoker = true/);
+  assert.match(migration,/REVOKE ALL ON public\.powerhouse_self_improvement_control_v1 FROM public, anon, authenticated/);
 });
