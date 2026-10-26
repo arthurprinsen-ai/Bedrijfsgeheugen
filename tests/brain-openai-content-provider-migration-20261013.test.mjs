@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
-const migration=readFileSync(new URL('../supabase/migrations/20261013132500_powerhouse_openai_content_governance_p0_4198.sql',import.meta.url),'utf8');
+const migration=readFileSync(new URL('../supabase/migrations/20261013154426_powerhouse_openai_content_governance_p0_4198.sql',import.meta.url),'utf8');
 function hasExactOpenAIEndpoint(content){
  return [...content.matchAll(/fetch\('([^']+)'/g)].some((match)=>{
   try{ const url=new URL(match[1]); return url.protocol==='https:'&&url.hostname==='api.openai.com'&&url.pathname==='/v1/responses'&&url.search===''&&url.hash===''; }

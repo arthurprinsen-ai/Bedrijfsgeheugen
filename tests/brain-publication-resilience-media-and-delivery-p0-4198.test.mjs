@@ -5,7 +5,7 @@ const source=(p)=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const loop=source('supabase/functions/powerhouse-content-loop/index.ts');
 const router=source('supabase/functions/powerhouse-instagram-media-router/index.ts');
 const social=source('supabase/functions/powerhouse-social-publisher/index.ts');
-const migration=source('supabase/migrations/20261010130000_publication_media_lineage_preservation.sql');
+const migration=source('supabase/migrations/20261010112728_publication_media_lineage_preservation_20261010.sql');
 
 test('single existing supervisor drains more than one channel within wall-time budget',()=>{
   assert.match(loop,/const MAX_CHANNEL_GENERATIONS = 3;/);
