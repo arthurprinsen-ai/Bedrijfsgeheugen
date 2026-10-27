@@ -37,7 +37,7 @@ export function createPortalProjectStore({
       const invites=await select(`uitnodigingen?email=eq.${encodeURIComponent(mail)}&select=organisatie_id&limit=100`);
       const tenants=[...new Set(invites.map(row=>safeUuid(row.organisatie_id)).filter(Boolean))];
       if(tenants.length!==1)return null;
-      const subscriptions=await select(`saas_subscriptions?organisation_id=eq.${tenants[0]}&provider=eq.stripe&status=in.(active,trialing,past_due)&select=id&limit=1`);
+      const subscriptions=await select(`saas_subscriptions?organisation_id=eq.${tenants[0]}&provider=in.(mollie,stripe)&status=in.(active,trialing,past_due)&select=id&limit=1`);
       return subscriptions.length?tenants[0]:null;
     },
     async hasPersonalPortalState(userId){

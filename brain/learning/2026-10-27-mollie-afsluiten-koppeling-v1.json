@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|billing|mollie-afsluiten-koppeling|20261027-v1",
+  "compiler": {
+    "failure_class": "CHECKOUT_PAGE_NOT_WIRED_TO_ACTIVE_PROVIDER",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/saas-pricing-entitlements.test.mjs",
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs",
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The Mollie Edge Functions existed but /afsluiten still posted to a Stripe-only Netlify function that needed two Netlify secrets, and /prijzen did not state what is collected. Control and Scale rows still had direct_checkout=true although they are not published.",
+  "prevention": "Netlify checkout-create and checkout-readiness only validate the published offer and call bg-mollie-checkout with the Supabase service role; the Mollie key stays in Vault. Only starter, pro and groei can be bought directly (migration). /prijzen states excl. btw, Mollie payment methods and cancellation, and carries its own correct og/twitter tags. No trial: the free entry is Frisse Blik.",
+  "evidence": {
+    "tests": [
+      "tests/saas-pricing-entitlements.test.mjs",
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs",
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs",
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs",
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until a Mollie test payment completes end to end on production after merge and Edge Function deploy"
+  },
+  "limitations": [
+    "stripe-webhook.mjs stays as an inert, unconfigured file until a follow-up removes it together with its System Map entries",
+    "Test key only until go-live; SEPA direct debit and cards must be enabled on the Mollie profile",
+    "Cancellation and plan change self-service are not built"
+  ]
+}
