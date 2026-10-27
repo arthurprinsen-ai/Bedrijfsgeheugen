@@ -54,14 +54,15 @@ function parseArgs(argv) {
   return out;
 }
 
-async function navigateWithRetry(page, url, { attempts = 2, timeout = 20_000 } = {}) {
+export async function navigateWithRetry(page, url, { attempts = 2, timeout = 20_000 } = {}) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       return await page.goto(url, { waitUntil:'domcontentloaded', timeout });
     } catch (error) {
       lastError = error;
-      if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
+      if (attempt >= attempts || (error?.name !== 'TimeoutError'
+        && !/\bnet::ERR_CONNECTION_RESET\b/.test(String(error?.message || '')))) throw error;
       await page.waitForTimeout(1_500 * attempt);
     }
   }

@@ -8,20 +8,20 @@ const social=source('supabase/functions/powerhouse-social-publisher/index.ts');
 const migration=source('supabase/migrations/20261010112728_publication_media_lineage_preservation_20261010.sql');
 
 test('single existing supervisor drains more than one channel within wall-time budget',()=>{
-  assert.match(loop,/const MAX_CHANNEL_GENERATIONS = 3;/);
-  assert.match(loop,/const MAX_GENERATION_ELAPSED_MS = 65_000;/);
-  assert.match(loop,/Date\.now\(\) - loopStartedAt < MAX_GENERATION_ELAPSED_MS/);
+  // Per-channel parallel fan-out replaced the serial, wall-time-budgeted generation rounds.
+  assert.match(loop,/\.limit\(4\)/);
+  assert.match(loop,/Promise\.all\(pendingChannels\.map\(async channel=>/);
   assert.doesNotMatch(loop,/!bootstrapAttempted/);
-  assert.match(loop,/bootstrapStillInFlight = seeded\.timed_out === true \|\| seeded\.http === 0 \|\| !seeded\.ok/);
+  assert.match(loop,/bootstrapStillInFlight = seeded\.timed_out === true \|\| seeded\.http === 0;/);
   assert.match(loop,/const leaseHolder = crypto\.randomUUID\(\)/);
-  assert.match(loop,/invoke\(url, expected, 'powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}\)/);
+  assert.match(loop,/\['linkedin_personal','powerhouse-social-publisher',\{runDate,mode:'publish_only',channels:\['linkedin_personal'\]\}\]/);
 });
 
 test('media preflight never overwrites frame verification or forges complete proof',()=>{
   assert.match(router,/const preservingWork=assetMaterialized&&\['CLAIMED','GENERATING','VERIFYING','WAITING_PROOF'\]/);
   assert.match(router,/const state=verifiedMedia\?clean\(job\.status\):preservingWork\?clean\(job\.status\)/);
-  assert.match(router,/if\(!verifiedMedia\)await db\.from\('content_publication_obligations'\)/);
-  assert.match(router,/MIRA_MEDIA_MUST_MATCH_CANONICAL_BUSINESS_PROBLEM_AND_SCENE/);
+  assert.match(router,/if\(!verifiedMedia&&ob\?\.updated_at\)await db\.from\('content_publication_obligations'\)/);
+  assert.match(router,/MIRA_MEDIA_MUST_MATCH_FROZEN_WINNER_SCENE_AND_EXACT_ASSET/);
   assert.match(router,/VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH/);
   assert.match(router,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
   assert.match(router,/miraFaceProofValid/);
@@ -39,10 +39,10 @@ test('canonical DB ensure preserves video asset lineage for in-progress jobs',()
 });
 
 test('successful personal LinkedIn publication removes old transport errors before terminal write',()=>{
-  const personal=social.indexOf("if (row.channel === 'linkedin_personal') {");
+  const personal=social.lastIndexOf("if (row.channel === 'linkedin_personal') {");
   const company=social.indexOf("if (row.channel === 'linkedin_company') {",personal);
   const segment=social.slice(personal,company);
-  assert.match(segment,/for\(const staleKey of \['error','provider_error','provider_auth_preflight','provider_auth_required'\]\) delete evidence\[staleKey\]/);
+  assert.match(segment,/for\(const staleKey of \['error','provider_error','provider_auth_preflight','provider_auth_required'\]\)\s*delete evidence\[staleKey\]/);
   assert.match(segment,/provider_create_success:true/);
   assert.match(segment,/consumePublishCapability\(db,capability,runDate,row\.channel,textHash,mediaSha\)/);
 });

@@ -17,7 +17,12 @@ test('derived Brain projection never enters the portal source-write path',async(
   let saves=0;
   const domain=createDomainState({load:async()=>({portal:{profile:{headcount:12}}}),save:async state=>{saves+=1;return state;}});
   await domain.init();
-  domain.project('portal.runtime',{health:'ok'});
+  // A persisted/projected runtime snapshot is never surfaced as current; only the explicit
+  // view-only derived overlay is, and only for the single allowed runtime path.
+  domain.project('portal.runtime',{health:'stale'});
+  assert.equal(domain.get('portal.runtime'),undefined);
+  assert.throws(()=>domain.setDerived('portal.profile',{x:1}),/DOMAIN_DERIVED_PATH_NOT_ALLOWED/);
+  domain.setDerived('portal.runtime',{health:'ok'});
   assert.equal(domain.get('portal.runtime').health,'ok');
   assert.equal(domain.get('portal.profile.headcount'),12);
   assert.equal(domain.status(),'idle');

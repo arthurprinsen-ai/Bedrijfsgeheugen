@@ -12,7 +12,8 @@ test('3742 terminal closure binds trusted repair to the 568-entry production led
   assert.equal(closure.supported_repair.workflow_run, 37426469433);
   assert.equal(closure.supported_repair.conclusion, 'SUCCESS');
   assert.equal(closure.supported_repair.post_repair_drift, 0);
-  assert.equal(lock.applied.length, 568);
+  assert.equal(closure.supported_repair.production_lock_blob_sha,'9ad64780db3763477d4b64d7b5023e2d6c0e08f1');
+  assert.equal(lock.applied.filter(row=>row.version<='20261005160410').length,568);
   assert.equal(closure.supported_repair.production_ledger_count, 568);
 
   const byVersion = new Map(lock.applied.map(row => [String(row.version), String(row.name)]));
@@ -33,8 +34,8 @@ test('3742 closure is a fresh exact-head candidate and never self-declares termi
 
 test('current terminalizer recognizes canonical Supabase migration-history closure', async () => {
   const workflow = await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml', 'utf8');
-  assert.match(workflow, /Obligation-ID: supabase-migration-history-\\(parity\\|canonical\\)-/);
-  assert.match(workflow, /supabase\\/production-baseline\\/\\*/);
+  assert.ok(workflow.includes('^Obligation-ID: supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-'));
+  assert.ok(workflow.includes('supabase/production-baseline/*'));
   assert.match(workflow, /readback_mode=supabase_history_parity_recovery/);
   assert.equal((workflow.match(/- name: Verify production promotion and runtime readback/g) || []).length, 1);
 });

@@ -72,10 +72,36 @@ export function clusterBrainFailures(log, { headSha = '', runId = '', lane = 'ba
     extracted_failures: matches.length,
     coverage_complete: complete,
     truncated: matches.length > LIMIT,
+    failures: matches.slice(0, LIMIT),
     categories: [...groups.values()].sort((a, b) => b.count - a.count || a.category.localeCompare(b.category)),
     requires_exact_head_zero_failure_rerun: true,
     requires_source_root_cause_verification: true,
     // This is triage evidence, not an alternative incident store or promotion gate.
     canonical_failure_authority: 'public.brain_failure_registry',
   };
+}
+
+
+// Bounded read-only transport for the existing failed-lane annotations.
+// The full artifact remains authoritative; annotation truncation is explicit.
+export function brainFailureAnnotationChunks(report){
+  const rows=Array.isArray(report?.failures)?report.failures:[];
+  const chunks=[];let current=[];
+  for(const row of rows){
+    const item={index:row.index,title:redact(row.title),file:row.file||null,category:row.category};
+    if(current.length&&JSON.stringify([...current,item]).length>10000){
+      chunks.push(current);current=[];
+      if(chunks.length===8)break;
+    }
+    current.push(item);
+  }
+  if(current.length&&chunks.length<8)chunks.push(current);
+  if(chunks.length===0)chunks.push([]);
+  const emitted=chunks.reduce((n,part)=>n+part.length,0);
+  return chunks.map((failures,index)=>({
+    contract:'brain-failure-annotation-v1',head_sha:report.head_sha,run_id:report.run_id,lane:report.lane,
+    reported_failures:report.reported_failures,extracted_failures:report.extracted_failures,
+    coverage_complete:report.coverage_complete,annotation_coverage_complete:report.coverage_complete===true&&emitted===rows.length,
+    part:index+1,parts:chunks.length,failures
+  }));
 }

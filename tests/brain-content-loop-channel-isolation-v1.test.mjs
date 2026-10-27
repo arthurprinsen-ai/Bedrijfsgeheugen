@@ -22,12 +22,13 @@ test('legacy Buffer sync is non-blocking and cannot own LinkedIn authority',()=>
 });
 
 test('single canonical tick drains several decided channels without parallel senders or unsafe bypass',()=>{
-  assert.match(loop, /MAX_CHANNEL_GENERATIONS\s*=\s*4/);
-  assert.match(loop, /for \(; generatedRounds < MAX_CHANNEL_GENERATIONS; generatedRounds\+\+\)/);
-  assert.match(loop, /GENERATION_NO_PROGRESS/);
-  assert.match(loop, /PENDING_GENERATION_READBACK_FAILED/);
-  assert.match(loop, /generation_round/);
-  assert.match(loop, /mode: 'publish_only'/);
+  // Bounded per-channel fan-out: at most four decided channels, each worker generates only its own artifact.
+  assert.match(loop, /\.limit\(4\)/);
+  assert.match(loop, /Promise\.all\(pendingChannels\.map\(async channel=>/);
+  assert.match(loop, /invoke\(url,expected,'powerhouse-content-orchestrator',\{runDate,channel\}\)/);
+  assert.match(loop, /PENDING_GENERATION_READ_FAILED/);
+  assert.match(loop, /NO_PENDING_ARTIFACT/);
+  assert.match(loop, /mode:'publish_only'/);
   assert.doesNotMatch(loop, /cron\.schedule\(/);
 });
 
@@ -43,7 +44,7 @@ test('verified founder builder lane reaches independent pre-publication review, 
   assert.match(publisher,/evidence\.source_lineage/);
   assert.match(publisher,/!personalTruthMode && !observationalMode && !builderMode/);
   assert.match(publisher,/ai_native_builder_story_verified: builderMode/);
-  assert.match(publisher,/const gate = await review\(url, reviewPayload\)/);
+  assert.match(publisher,/gate = await review\(url, reviewPayload\)/);
   assert.match(publisher,/gate\.identity_gate_decision !== 'PASS'/);
   assert.match(publisher,/gate\.final_text_hash !== textHash/);
 });

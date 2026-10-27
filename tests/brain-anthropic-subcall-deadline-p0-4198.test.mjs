@@ -7,8 +7,9 @@ const supervisor=read('supabase/functions/powerhouse-content-loop/index.ts');
 test('Anthropic request deadline fits inside supervisor and does not truncate legitimate generation at 45s',()=>{
  assert.match(creator,/AbortSignal\.timeout\(90_000\)/);
  assert.match(supervisor,/'powerhouse-content-orchestrator': 110_000/);
- assert.match(supervisor,/const MAX_CHANNEL_GENERATIONS = 1/);
- assert.match(supervisor,/bootstrapAttempted/);
+ // Per-channel workers each own one artifact, so one slow generation cannot consume another channel's budget.
+ assert.match(supervisor,/Promise\.all\(pendingChannels\.map\(async channel=>/);
+ assert.match(supervisor,/bootstrapStillInFlight/);
 });
 test('social output remains concise, source bound and identity checked',()=>{
  assert.equal(creator.includes("pending.channel==='blog'?4800:2600"),false);

@@ -160,5 +160,263 @@
       "pass": 4243,
       "fail": 271
     }
+  },
+  "github_actions_continuation_20261026": {
+    "obligation": "system-map-merge-integrity-20261025",
+    "parent_merged_pr": 4942,
+    "parent_main_sha": "a34505e17833852c1e8d4c005fb5ee7ca37f918a",
+    "failure_evidence": {
+      "run_id": "40327544510",
+      "head_sha": "ac1a9951d475ec9096345b0fda631926b83b44f9",
+      "backend_failures": 271,
+      "coverage_complete": true
+    },
+    "root_causes": [
+      "Janitor has duplicate native branch mutation paths and parallel map writeback",
+      "Public locale anchor default navigation may be swallowed by mobile-menu teardown, contrary to inherited explicit-navigation contract",
+      "Local migration lock is stale at634 while independent live provider records755; three already-applied SQL sources are absent"
+    ],
+    "repair": [
+      "Serialize existing branch_reconciler before Janitor cleanup; retain bounded jobs, cache isolation and explicit enrollment/CAS/readback",
+      "Explicit same-route public locale navigation with asset rotation and behavioral regression; preserve portal in-place switching",
+      "Use real755 provider migration snapshot, preserve all634 prior identities, and mirror three exact stored SQL statements without executing SQL",
+      "Pin historical568/591/603/607 test contracts to original snapshots rather than requiring current ledger never to grow"
+    ],
+    "provider_snapshot": {
+      "captured_at": "2026-10-26T14:06:28.966285+00:00",
+      "count": 755,
+      "source": "supabase_migrations.schema_migrations",
+      "sql_executed": false
+    },
+    "evaluation": {
+      "tests": [
+        "tests/brain-public-i18n-native-navigation-v1.test.mjs",
+        "tests/brain-i18n-terminal-live-proof-v1.test.mjs",
+        "tests/brain-i18n-persistent-navigation-v1.test.mjs",
+        "tests/brain-janitor-cache-token-isolation-20261023.test.mjs",
+        "tests/brain-autonomous-branch-sync-4914.test.mjs",
+        "tests/brain-production-migration-ledger-603-v1.test.mjs",
+        "tests/brain-external-heartbeat-ledger-607-v1.test.mjs",
+        "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+        "tests/brain-supabase-migration-history-terminal-closure-v1.test.mjs",
+        "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+      ],
+      "remote_exact_candidate": "PENDING",
+      "full_backend": "REQUIRED",
+      "required": "REQUIRED",
+      "postgres17": "REQUIRED",
+      "codeql": "REQUIRED",
+      "supabase_preview": "REQUIRED",
+      "system_map_regeneration": "Existing Required preflight regenerates twice on exact candidate and rejects dirty output"
+    },
+    "status": "CANDIDATE_UNVERIFIED_NOT_MERGED_NOT_LIVE",
+    "production_mutation": false,
+    "checks_waived": false,
+    "phase2": {
+      "parent_sha": "40144e48e0038575935137d226e2eae4ef1662f6",
+      "baseline": {
+        "required_preflight": "success",
+        "postgres17": "success",
+        "supabase_source_contract": "success",
+        "supabase_preview": "success",
+        "codeql": "success",
+        "full_brain_run": "40337302217",
+        "full_brain_backend": "failure",
+        "full_failure_count": "not yet readable through log connector"
+      },
+      "source_backed_repairs": [
+        "Pricing contract tests follow actual ordered Netlify build phases; checkout fixture models disabled input readiness",
+        "Commercial tests retain stronger recipient/contact review, consent/provider-side-effect and typed JSONB guards",
+        "Social tests follow canonical provider identity selection, claim-before-side-effects, CAS and retired duplicate sender behavior",
+        "Existing full failure clustering retains all redacted failure records and emits bounded compact annotations; full artifact and explicit truncation flags remain authoritative"
+      ],
+      "tests": [
+        "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs",
+        "tests/brain-pricing-final-build-order-v1.test.mjs",
+        "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
+        "tests/brain-saas-checkout-build-preservation-v1.test.mjs",
+        "tests/brain-commercial-daily-steering-positioning-v1.test.mjs",
+        "tests/brain-commercial-independent-outbound-lanes-p0-4198.test.mjs",
+        "tests/brain-commercial-outbound-lane-jsonb-p0-4198.test.mjs",
+        "tests/brain-commercial-outbound-source-and-claim-recovery-p0-4198.test.mjs",
+        "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs",
+        "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
+        "tests/brain-composio-oauth-immediate-resume.test.mjs",
+        "tests/brain-instagram-composio-connect-link-setup.test.mjs",
+        "tests/brain-buffer-rate-limit-circuit-v1.test.mjs",
+        "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs",
+        "tests/brain-social-publisher-dispatching-state-contract.test.mjs",
+        "tests/brain-instagram-credential-provider-identity-dedupe-v1.test.mjs",
+        "tests/brain-instagram-composio-proxy-base-v1.test.mjs",
+        "tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs",
+        "tests/brain-mira-media-preflight-cas-20261019.test.mjs",
+        "tests/brain-social-provider-health-preflight.test.mjs",
+        "tests/brain-social-provider-health-preflight-v1.test.mjs",
+        "tests/brain-instagram-composio-account-selection-v1.test.mjs",
+        "tests/brain-instagram-buffer-independent-resume.test.mjs",
+        "tests/brain-failure-annotation-transport-v1.test.mjs"
+      ],
+      "exact_candidate_verification": "PENDING",
+      "release_status": "NOT_MERGED_NOT_LIVE",
+      "tests_skipped": false,
+      "security_exemptions": false
+    }
+  },
+  "work_environment_recovery_20261026": {
+    "status": "LOCAL_REGRESSIONS_PROVEN_RELEASE_PENDING",
+    "obligation": "system-map-merge-integrity-20261025",
+    "source_head": "d2b4036101df83d9d318202a53bc9aeac6f2f574",
+    "root_causes": [
+      "Terminal closure permitted narrower Foundation or descendant evidence instead of complete candidate BRAIN",
+      "Terminalizer accepted PR-declared Supabase metadata without an independent fresh provider comparison",
+      "Mixed Netlify and migration runtime modes omitted migration evidence from terminal outcome"
+    ],
+    "fix": "Require successful full Unified BRAIN on exact candidate SHA in both existing closure workflows; independently compare Supabase version, active state and runtime digest; preserve migration requirements in mixed-runtime evidence",
+    "verification": {
+      "terminal_runtime_authority": {
+        "tests": 5,
+        "pass": 5,
+        "fail": 0
+      },
+      "workflow_yaml_and_bash_blocks": "2 YAML workflows; 16 shell blocks parse",
+      "system_map": "PORTAL_EXPLANATION_SOURCE_CURRENT 4ee691b9570b7de160ef1245dc6c1f80985e733cb2eca02bcbf070491dda6100",
+      "complete_backend": "UNPROVEN; exploratory local run interrupted; hosted parent run 40337302217 reports 257 failures",
+      "terminal_related_regressions": {
+        "tests": 31,
+        "pass": 31,
+        "fail": 0
+      },
+      "automation": {
+        "tests": 325,
+        "pass": 325,
+        "fail": 0
+      }
+    },
+    "prevention": "A subset/foundation pass, provider declaration or partial runtime proof must never close a full BRAIN/release obligation",
+    "release_route": "A: existing protected PR #4967 and Git CD after all mandatory gates",
+    "skill_hashes": {
+      ".agents/skills/deployment-capability-recovery/SKILL.md": "d38d69e3fa6c15a9e5a06eab1f7bff0bc3dc4412982886a65b46661b4c9ea92a",
+      ".agents/skills/system-map-merge-integrity/SKILL.md": "ba99a5265af1266ec63e37d9e9938149e0e1ef01d2bca22f6e77ead901bc8206"
+    },
+    "production_readback": false
+  },
+  "execution_recovery_20261026": {
+    "state": "CANDIDATE_NOT_PROVEN",
+    "obligation": "system-map-merge-integrity-20261025",
+    "source_head": "d2b4036101df83d9d318202a53bc9aeac6f2f574",
+    "full_backend": {
+      "run_id": 40339416392,
+      "failed": 228,
+      "coverage_complete": true,
+      "artifact_id": 12658824886
+    },
+    "root_cause": "Targeted route navigation retried TimeoutError but treated a real Netlify ERR_CONNECTION_RESET as immediately terminal; the existing bounded navigation budget was never used for that transport error.",
+    "fix": "Retry only exact net::ERR_CONNECTION_RESET alongside existing TimeoutError within the existing navigation attempt count. Never classify certificate, runtime, content, identity or exhausted transport failures as success.",
+    "prevention_rule": "Use bounded transport recovery and require a real successful final response; preserve route identity, visible content, hard asset and page-error checks. Do not infer a healthy suite from selected tests.",
+    "regressions": [
+      "tests/targeted-website-route-regression.test.mjs",
+      "tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs",
+      "tests/brain-browser-settled-document-request-failure-v1.test.mjs"
+    ],
+    "observed_red": {
+      "tests": 12,
+      "pass": 10,
+      "fail": 2
+    },
+    "additional_contract_recovery": "AI ecosystem projection oracle now checks the protected-main intelligence- en uitvoeringsmotor wording and the Company Brain distinction; projection idempotence and route assertions remain.",
+    "evidence": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40339416328",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40339416392"
+    ],
+    "remaining": "228 full Backend failures on parent SHA remain unresolved except individually retested contract changes. Catalog freshness is real and is not waived.",
+    "skill_targets": [
+      ".agents/skills/powerhouse-continuity/SKILL.md"
+    ],
+    "protected_merge": false,
+    "production_verified": false,
+    "verification": {
+      "route_and_copy_regressions": {
+        "tests": 17,
+        "pass": 17,
+        "fail": 0
+      },
+      "relationship_regressions": {
+        "tests": 6,
+        "pass": 6,
+        "fail": 0
+      },
+      "full_parent_backend_failures": 228,
+      "system_map_source_check": "PORTAL_EXPLANATION_SOURCE_CURRENT"
+    },
+    "source_provenance": {
+      "test": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "canonical_path": "supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql",
+      "git_blob": "c290810df7eca707114409cec5fa31baf7254288",
+      "sql_modified_or_executed": false
+    },
+    "review": "Independent read-only review found no critical or important defects. The pre-existing English-only vendor-optional text oracle was subsequently corrected to assert the actual Dutch optional-vendor boundary and prohibition on vendor canonical authority."
+  },
+  "fenced_terminal_integration_20261026": {
+    "state": "CANDIDATE_NOT_PROVEN",
+    "published_parent": "9f3c98a6eeeb8c06916033b65862031d5d0d0a12",
+    "local_terminal_patch": "933556cbc35e748b9492acafefbee8f4580dcf78",
+    "writer_holder": "chatgpt-work/5f24025a7c01",
+    "writer_generation": 9,
+    "integrated_focused_tests": {
+      "pass": 54,
+      "fail": 0,
+      "skipped": 0
+    },
+    "additional_contract_tests": {
+      "pass": 8,
+      "fail": 0,
+      "skipped": 0
+    },
+    "system_map_regenerations": 2,
+    "system_map_sha256": "aaf0799915749ef66c1c64aba12848424c80926507dcb1277932753ce2f15109",
+    "preserved_remote_browser_recovery": true,
+    "full_backend": "PENDING",
+    "remote_exact_sha_gates": "PENDING",
+    "protected_merge": false,
+    "production_readback": false,
+    "review_correction": "BRAIN runs verify inputs.head_sha from protected-main workflow_dispatch. Match its exact candidate-bound run title, separately verify dispatch-source ancestry on protected main, never substitute run.head_sha for tested candidate identity.",
+    "review": "No remaining critical or important issues after correcting dispatch source versus tested-candidate identity.",
+    "final_integrated_regression_suite": {
+      "tests": 62,
+      "pass": 62,
+      "fail": 0,
+      "skipped": 0
+    },
+    "prior_validation_generations": [
+      7,
+      8
+    ]
+  },
+  "canonical_gate_prerequisite_recovery_20261026": {
+    "state": "CANDIDATE_NOT_PROVEN",
+    "source_parent": "7fe21a0b64485d9b928a865629474d9dbe3b52e3",
+    "failed_run": 40346876089,
+    "writer_generation": 10,
+    "root_cause": [
+      "Regulatory writer oracle ignored the four mandatory closure-evidence patterns already required by canonical policy.",
+      "V18 promotion oracle expected a direct Netlify command rather than the canonical entry that retains the pinned V18 phase."
+    ],
+    "production_policy_changed": false,
+    "regressions": {
+      "shared_memory_writer_contracts": {
+        "pass": 35,
+        "fail": 0,
+        "skipped": 0
+      },
+      "v18_portal": {
+        "pass": 70,
+        "fail": 0,
+        "skipped": 0
+      }
+    },
+    "review": "No critical or important concern found.",
+    "full_backend": "PENDING",
+    "protected_merge": false,
+    "production_readback": false
   }
 }

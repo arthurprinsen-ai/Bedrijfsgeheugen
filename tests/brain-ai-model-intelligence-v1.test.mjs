@@ -42,6 +42,12 @@ test('AI Modelwijzer keeps goal, cost and sovereignty contracts',()=>{
 });
 
 test('catalog evidence is freshness bounded',()=>{
-  const ageDays=(Date.now()-new Date(catalog.verified_at+'T00:00:00Z'))/86400000;
-  assert.ok(ageDays<=14,'catalog must be refreshed within 14 days');
+  // Claim-level evidence is authoritative (see scripts/ai-model-freshness-watch.mjs); the
+  // catalog-level verified_at is a label and explicitly not proof of a supplier check.
+  for(const m of catalog.models){
+    const checked=new Date(String(m.verification_evidence?.checked_on||'')+'T00:00:00Z');
+    assert.ok(Number.isFinite(checked.getTime()),`${m.id}: verification_evidence.checked_on required`);
+    const ageDays=(Date.now()-checked)/86400000;
+    assert.ok(ageDays<=14,`${m.id}: supplier evidence must be re-checked within 14 days`);
+  }
 });

@@ -12,6 +12,6 @@ test('normal production is provider-independent and requires a complete static E
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/STATIC_I18N_PROVIDER_ERROR/);
   assert.match(source,/if \(!transient && status >= 400 && status < 500\) break/);
-  assert.match(source,/setLocaleMetadata\(enDoc,'en',route,Boolean\(translations\)\)/);
+  assert.match(source,/setLocaleMetadata\(enDoc,'en',route,missingForRoute\.length===0\)/);
   assert.match(runtime,/\/api\/i18n-translate/);
 });

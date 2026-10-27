@@ -36,7 +36,8 @@ test('Powerhouse Control Center is wired into the native Portal V2 registry and 
     readFile('portal-v2/powerhouse-observability.css','utf8')
   ]);
   assert.match(registry,/powerhouse-control-center/);
-  assert.match(hubs,/powerhouse-control-center/);
+  // Admin-only: never advertised in the customer-facing hubs (4a4f1f3d); reachable only through the registry.
+  assert.doesNotMatch(hubs,/powerhouse-control-center/);
   assert.match(shell,/mountPowerhouseObservability/);
   assert.match(shell,/powerhouse-observability\.css/);
   assert.match(module,/Alles wat AI, agents, chats en delivery doen/);
@@ -49,6 +50,7 @@ test('Powerhouse Control Center is wired into the native Portal V2 registry and 
 test('cockpit keeps the canonical runtime truth boundary explicit',async()=>{
   const module=await readFile('portal-v2/modules/powerhouse-observability.js','utf8');
   assert.match(module,/Geen runtime-evidence = geen verzonnen status/);
-  assert.match(module,/Admin runtime gekoppeld/);
+  assert.match(module,/providerreadback ontbreekt/);
+  assert.match(module,/alleen beschikbaar voor geautoriseerde Powerhouse-beheerders/);
   assert.match(module,/Inloggen vereist/);
 });

@@ -7,7 +7,7 @@ const migration=readFileSync('supabase/migrations/20261011163200_brain_outbound_
 
 test('one canonical Heartbeat materializes the original Brain candidates before evaluating outbound lanes',()=>{
   assert.match(runner,/public\.powerhouse_materialize_command_center_actions_v1\(\$1::date\)/);
-  assert.match(runner,/const brainActionFeed=await materializeCommercialIntent\(\);\s+const outboundLanesResult=await runOutboundLanes\(\);/);
+  assert.match(runner,/const brainActionFeed=await materializeCommercialIntent\(\);\s+const contactAuthorityReview=await reviewContactAuthority\(\);\s+const outboundLanesResult=await runOutboundLanes\(\);/);
   assert.match(runner,/pg_try_advisory_xact_lock/);
   assert.match(runner,/commercial-intent-materialization:/);
   assert.match(runner,/statement_timeout = '16000ms'/);

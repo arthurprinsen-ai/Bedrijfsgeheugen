@@ -25,7 +25,7 @@ test('existing five minute watchdog isolates PR failures but does not report gre
   assert.match(s, /method === 'GET' \? MAX_READ_ATTEMPTS : 1/);
   assert.match(s, /MAX_FAILED_PRS_PER_TICK = 3/);
   assert.match(s, /REQUIRED_GATE_WATCHDOG_PR_FAILURE/);
-  assert.match(s, /if \(failedPrs > 0\) process\.exitCode = 1/);
+  assert.match(s, /if \(failedPrs > 0 \|\| ownerSignalFailures\.length > 0\) process\.exitCode = 1/);
   assert.match(s, /hasOwnerSignal\(pr\.number, marker\)/);
   assert.match(s, /MAX_OWNER_SIGNALS_PER_TICK = 2/);
   assert.match(s, /required-test\.yml\/dispatches/);

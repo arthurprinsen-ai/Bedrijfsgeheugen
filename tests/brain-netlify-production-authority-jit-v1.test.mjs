@@ -8,7 +8,8 @@ const config = fs.readFileSync('supabase/config.toml','utf8');
 
 test('Netlify production authority is acquired just in time and never persisted', () => {
   assert.match(source, /COMPOSIO_API_KEY/);
-  assert.match(source, /connected_accounts\?limit=100&account_type=ALL/);
+  assert.match(source, /searchParams\.set\("limit", "100"\)/);
+  assert.match(source, /searchParams\.set\("account_type", "ALL"\)/);
   assert.match(source, /tool_router\/session/);
   assert.match(source, /NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER/);
   assert.match(source, /fresh netlify proxy not issued/);

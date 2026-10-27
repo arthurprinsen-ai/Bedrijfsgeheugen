@@ -18,7 +18,7 @@ test('LinkedIn company provider create remains fail-closed against duplicate rec
   assert.match(publisher,/provider_create_success:true/);
   assert.match(publisher,/republish_forbidden:true/);
   assert.match(publisher,/verification_pending:true/);
-  assert.match(publisher,/verified\?'PUBLISHED':'DISPATCHED'/);
+  assert.match(publisher,/liveProven\?'LIVE_PROVEN':'PUBLISHED'/);
 });
 
 test('LinkedIn setup distinguishes publish readiness from exact readback readiness', () => {

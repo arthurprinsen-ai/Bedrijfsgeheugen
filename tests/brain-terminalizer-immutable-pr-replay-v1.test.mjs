@@ -36,7 +36,9 @@ test('terminalizer recognizes current production-ledger parity recovery without 
   assert.notEqual(runtimeStart,-1);
   const parityBlock=workflow.slice(parityStart,runtimeStart);
   assert.ok(parityBlock.includes("^Obligation-ID: supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-"));
-  assert.match(parityBlock,/supabase\/migrations\/\*/);
+  // Executable migrations are runtime and need provider readback; only history/baseline evidence is exempt.
+  assert.doesNotMatch(parityBlock,/supabase\/migrations\/\*/);
+  assert.match(parityBlock,/supabase\/migration-history\/\*/);
   assert.match(parityBlock,/supabase\/migration-history\.lock\.json/);
   assert.match(parityBlock,/SUPABASE_PARITY_RECOVERY_CONTAINS_RUNTIME_PATH/);
   assert.doesNotMatch(parityBlock,/supabase\/functions\/\*/);

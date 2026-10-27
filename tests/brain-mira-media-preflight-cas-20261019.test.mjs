@@ -24,7 +24,7 @@ function fakeDb(current,error=null){
 }
 test('a worker claim acquired after the preflight read cannot be overwritten',async()=>{
   const db=fakeDb({id:'job',updated_at:'v2'});
-  assert.deepEqual(await writeMediaPreflight(db,{id:'job',status:'WAITING_ASSET',updated_at:'v1'},{status:'WAITING_ASSET'}),{kind:'stale'});
+  assert.deepEqual(await writeMediaPreflight(db,{id:'job',status:'WAITING_ASSET',updated_at:'v1'},{status:'WAITING_PROOF'}),{kind:'stale'});
   assert.equal(db.writes,0);assert.deepEqual(db.filters,{id:'job',updated_at:'v1'});
 });
 test('unchanged existing row applies once and insert contention asks for reread',async()=>{
@@ -35,7 +35,7 @@ test('unchanged existing row applies once and insert contention asks for reread'
 });
 test('router uses the tested CAS boundary and returns before obligation mutation on a stale read',async()=>{
   const source=await readFile(new URL('../supabase/functions/powerhouse-instagram-media-router/index.ts',import.meta.url),'utf8');
-  assert.match(source,/import \{writeMediaPreflight\} from '\.\/preflight-write\.mjs'/);
+  assert.match(source,/import \{writeMediaPreflight(?:,[A-Za-z]+)*\} from '\.\/preflight-write\.mjs'/);
   assert.match(source,/await writeMediaPreflight\(db,job,row\)/);
   assert.ok(source.indexOf("write.kind==='stale'")<source.lastIndexOf("if(!verifiedMedia&&ob?.updated_at)"));
   assert.match(source,/eq\('updated_at',ob\.updated_at\)\.is\('external_id',null\)/);

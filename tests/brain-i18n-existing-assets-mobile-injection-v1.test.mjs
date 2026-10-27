@@ -8,5 +8,5 @@ test('existing i18n assets do not suppress mobile language injection', () => {
   assert.match(source,/const hasI18nCss =/);
   assert.match(source,/const hasI18nScript =/);
   assert.match(source,/if \(!hasI18nCss \|\| !hasI18nScript\) \{/);
-  assert.match(source,/html = injectMobileLanguage\(html\);/);
+  assert.match(source,/html = injectMobileLanguage\(html,\s*file\);/);
 });

@@ -447,7 +447,9 @@
       if (!isPortal() && option.tagName === 'A') {
         const href = option.getAttribute('href') || localizedHref(target);
         if (!option.getAttribute('href')) option.setAttribute('href', href);
+        event.preventDefault();
         closeMenus();
+        window.location.assign(href);
         return;
       }
 

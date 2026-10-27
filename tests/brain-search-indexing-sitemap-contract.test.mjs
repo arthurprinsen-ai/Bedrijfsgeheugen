@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 test('production build regenerates sitemap from final HTML output', async () => {
-  const netlify = await readFile('netlify.toml', 'utf8');
-  const localized = netlify.indexOf('node tools/site-shell/build-localized-routes.mjs');
-  const revenueLinks = netlify.indexOf('node tools/seo-order-engine/apply-revenue-links.mjs');
-  const sitemap = netlify.indexOf('node tools/genereer-sitemap.mjs');
-  const localeValidation = netlify.indexOf('node tools/seo-order-engine/validate-locales.mjs');
-  const evidence = netlify.indexOf('node tools/bouw-release-evidence.mjs');
+  // Production and previews run the shared build entry, which owns the ordered SEO pipeline.
+  const netlify = await readFile('tools/ci/netlify-build-entry.mjs', 'utf8');
+  assert.ok((await readFile('netlify.toml', 'utf8')).includes('node tools/ci/netlify-build-entry.mjs'));
+  const localized = netlify.indexOf("'tools/site-shell/build-localized-routes.mjs'");
+  const revenueLinks = netlify.indexOf("'tools/seo-order-engine/apply-revenue-links.mjs'");
+  const sitemap = netlify.indexOf("'tools/genereer-sitemap.mjs'");
+  const localeValidation = netlify.indexOf("'tools/seo-order-engine/validate-locales.mjs'");
+  const evidence = netlify.indexOf("'tools/bouw-release-evidence.mjs'");
   assert.ok(localized >= 0 && revenueLinks > localized && sitemap > revenueLinks && localeValidation > sitemap && evidence > localeValidation,
     'Netlify must localize, project revenue links, generate sitemap, validate locales and only then build release evidence');
 });
@@ -30,16 +32,18 @@ test('sitemap generator excludes noindex and only emits final canonical URLs', a
 
 
 test('website lane mirrors the full bilingual Netlify SEO pipeline', async () => {
-  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  // The website lane runs the very same build entry as Netlify, so the ordered chain is checked there.
+  assert.match(await readFile('.github/workflows/lane-website.yml', 'utf8'), /node tools\/ci\/netlify-build-entry\.mjs/);
+  const workflow = await readFile('tools/ci/netlify-build-entry.mjs', 'utf8');
   const ordered=[
-    'node tools/seo-order-engine/apply.mjs',
-    'node tools/seo-order-engine/validate.mjs',
-    'node tools/site-shell/apply-i18n.mjs',
-    'node tools/site-shell/build-localized-routes.mjs',
-    'node tools/seo-order-engine/apply-revenue-links.mjs',
-    'node tools/genereer-sitemap.mjs',
-    'node tools/seo-order-engine/validate-locales.mjs',
-    'node tools/bouw-release-evidence.mjs'
+    "'tools/seo-order-engine/apply.mjs'",
+    "'tools/seo-order-engine/validate.mjs'",
+    "'tools/site-shell/apply-i18n.mjs'",
+    "'tools/site-shell/build-localized-routes.mjs'",
+    "'tools/seo-order-engine/apply-revenue-links.mjs'",
+    "'tools/genereer-sitemap.mjs'",
+    "'tools/seo-order-engine/validate-locales.mjs'",
+    "'tools/bouw-release-evidence.mjs'"
   ];
   let cursor=-1;
   for(const step of ordered){

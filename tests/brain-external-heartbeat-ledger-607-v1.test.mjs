@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -10,7 +11,10 @@ test('production migration 607 is represented exactly once in the local ledger',
   const rows=lock.applied.filter(x=>x.version==='20261007091140');
   assert.equal(rows.length,1);
   assert.equal(rows[0].name,'restore_single_staggered_commercial_heartbeat_owner');
-  assert.equal(lock.applied.length,607);
+  // Preserve the exact historical snapshot; the provider later backfilled 20261007063438.
+  const historical=lock.applied.filter(row=>row.version<='20261007091140'&&row.version!=='20261007063438');
+  assert.equal(historical.length,607);
+  assert.equal(createHash('sha256').update(JSON.stringify(historical.map(row=>[row.version,row.name]))).digest('hex'),'24251f12af47ef20bc73927fb95d7c749b9e0023bf99d1af66cb8822a260c5c5');
 });
 
 test('607 replay converges away from the emergency legacy pg_cron owner',()=>{

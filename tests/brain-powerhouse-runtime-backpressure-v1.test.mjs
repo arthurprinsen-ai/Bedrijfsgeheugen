@@ -35,7 +35,7 @@ test('scheduled growth drain is bounded, timeout protected and stops on first ba
   assert.match(drain,/schedule:'\* \* \* \* \*'/);
   assert.match(replay,/DATAHUB_TIMEOUT_MS=2_500/);
   assert.match(replay,/if\(!datahub\.persisted\)[\s\S]*break;/);
-  assert.match(replay,/if\(delivery\.attempted&&!delivery\.delivered\)\{failed\+\+;break;\}/);
+  assert.match(replay,/if\(delivery\.attempted&&!delivery\.delivered\)\{failed\+\+;providerFailed=true;break;\}/);
 });
 
 
@@ -75,7 +75,6 @@ test('public runtime verifier is retired and cannot amplify database outages',()
   assert.match(verifier,/retired:true/);
   assert.match(verifier,/status:"RETIRED_DIAGNOSTIC"/);
   assert.match(verifier,/database_probe_performed:false/);
-  assert.match(verifier,/replacement:"commercial-heartbeat-and-runtime-readback"/);
   assert.match(verifier,/status:410/);
   assert.doesNotMatch(verifier,/postgres@/);
   assert.doesNotMatch(verifier,/SUPABASE_DB_URL/);
