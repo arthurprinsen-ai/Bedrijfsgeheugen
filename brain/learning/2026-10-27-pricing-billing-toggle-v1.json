@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|pricing|monthly-yearly-toggle|20261027-v1",
+  "compiler": {
+    "failure_class": "PRICING_NO_YEARLY_TOGGLE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "The checkout supported billing=yearly (ten monthly fees, two months free) but /prijzen had no monthly/yearly switch, so visitors could not choose or see the yearly price and CTAs never passed billing=yearly.",
+  "prevention": "/prijzen has a monthly/yearly toggle; a test ties the yearly prices to the canonical catalogue (monthly x 10) and requires the CTAs to carry billing=yearly.",
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until public readback of /prijzen on the merged SHA"
+  },
+  "limitations": [
+    "Default render stays monthly; yearly is applied by JavaScript or ?billing=yearly",
+    "Live billing is separate (Mollie checkout)"
+  ]
+}
