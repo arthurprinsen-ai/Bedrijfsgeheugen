@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|revenue-learning|store-gateway-transient-retry|20261027-v1",
+  "compiler": {
+    "failure_class": "REVENUE_LEARNING_STORE_COLD_START_503",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-store-transient-retry-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-store-transient-retry-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "The revenue-learning-store edge function bounds every database call to 2.5 seconds. On a cold start the first query of the hourly revenue-learning-evaluate run exceeded that bound, the gateway received 503 'TimeoutError: Signal timed out' and the whole run failed (14:00:51 UTC on 2026-10-27, 4.7 s); only the platform retry at 14:00:56 completed (204, 8.8 s).",
+  "prevention": "The Netlify gateway retries one time after a 400 ms pause on a 5xx or network failure. Every action is a read or carries an idempotency key, so the retry cannot duplicate writes. 4xx responses and degraded 202 payloads are never retried.",
+  "evidence": {
+    "tests": [
+      "tests/brain-revenue-learning-store-transient-retry-20261027.test.mjs",
+      "tests/revenue-learning-store.test.mjs",
+      "tests/revenue-learning-evaluate.test.mjs",
+      "tests/revenue-learning-project.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until Netlify logs show the hourly revenue-learning-evaluate first attempt without 503 after a cold start"
+  },
+  "limitations": [
+    "One retry only; a store that stays slow still fails the run, visibly",
+    "The 2.5 s store bound in the edge function is unchanged"
+  ]
+}
