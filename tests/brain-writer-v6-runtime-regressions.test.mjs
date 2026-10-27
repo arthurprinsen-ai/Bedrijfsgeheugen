@@ -43,7 +43,7 @@ test('23 outbound GitHub API origin is pinned and redirects forbidden',async()=>
  assert.equal(calls.length,1);
  assert.equal(calls[0].url,'https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/fix/verified-branch');
  assert.equal(calls[0].opts.redirect,'error');
- await assert.rejects(adapter.readHead('https://evil.example/escape'),/INVALID_BRANCH|GITHUB_ROUTE_NOT_ALLOWED/);
+ await assert.rejects(adapter.readHead('https://evil.example/escape'),/INVALID_BRANCH|GITHUB_ROUTE_NOT_ALLOWED|GITHUB_ROUTE_TRAVERSAL_DENIED/);
  await assert.rejects(adapter.readHead('../escape'),/INVALID_BRANCH/);
  await assert.rejects(adapter.readFile('../secret',a),/GITHUB_ROUTE_TRAVERSAL_DENIED/);
  assert.equal(calls.length,1);
