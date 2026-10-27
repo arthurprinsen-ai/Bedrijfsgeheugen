@@ -11,3 +11,7 @@ test('30-day recheck window and limit cap are kept', () => {
   assert.match(sql, /interval '30 days'/);
   assert.match(sql, /least\(p_limiet, 20\)/);
 });
+test('security definer function is fail-closed for browser roles', () => {
+  assert.match(sql, /revoke all on function public\.bg_bedrijven_voor_nieuws\(integer\) from public, anon, authenticated/);
+  assert.match(sql, /grant execute on function public\.bg_bedrijven_voor_nieuws\(integer\) to service_role/);
+});

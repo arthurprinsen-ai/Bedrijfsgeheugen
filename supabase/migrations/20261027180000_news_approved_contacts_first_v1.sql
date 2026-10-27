@@ -27,3 +27,6 @@ as $function$
   order by x.score desc, md5(x.bedrijf)
   limit greatest(1, least(p_limiet, 20));
 $function$;
+
+revoke all on function public.bg_bedrijven_voor_nieuws(integer) from public, anon, authenticated;
+grant execute on function public.bg_bedrijven_voor_nieuws(integer) to service_role;
