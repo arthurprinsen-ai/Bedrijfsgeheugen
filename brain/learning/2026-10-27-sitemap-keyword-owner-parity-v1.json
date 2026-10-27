@@ -9,16 +9,17 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/v18-seo-layer.test.mjs"
+      "tests/brain-seo-sitemap-keyword-owner-parity-20261027.test.mjs"
     ],
     "canary": [
-      "tests/v18-seo-layer.test.mjs"
+      "tests/brain-seo-sitemap-keyword-owner-parity-20261027.test.mjs"
     ]
   },
   "root_cause": "PR 4979 added keyword owners /ai-modelwijzer and /company-brain to the SEO baseline but the committed sitemap.xml lacked both routes, so v18-seo-layer.test.mjs failed on main (Repository Writer Gate Dispatch).",
   "prevention": "Sitemap now lists both routes; v18-seo-layer.test.mjs already requires every keyword owner in the sitemap and the new seo-status/baseline parity test keeps the two SEO files aligned. Rule: a keyword owner change always ships with its sitemap entry in the same PR.",
   "evidence": {
     "tests": [
+      "tests/brain-seo-sitemap-keyword-owner-parity-20261027.test.mjs",
       "tests/v18-seo-layer.test.mjs"
     ],
     "workflow": ".github/workflows/required-test.yml",
