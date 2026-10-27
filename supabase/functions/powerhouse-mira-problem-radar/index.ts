@@ -29,15 +29,16 @@ const portalIds:Record<string,string>={
  'late-facturering':'PH-P011','klantafhankelijkheid':'PH-P012','klantverlies':'PH-P013'
 };
 const queries=[
- 'ondernemers offertes blijven liggen opvolgen crm',
- 'mkb kennisoverdracht sleutelmedewerker werkinstructies',
- 'mkb excel chaos spreadsheets cijfers',
- 'mkb dubbele invoer crm erp handmatig overzetten',
- 'mkb capaciteitsplanning personeelstekort planning',
- 'mkb late facturering debiteuren cashflow',
- 'ondernemers afhankelijk van directeur klantconcentratie'
+ 'mkb offertes opvolgen',
+ 'mkb kennisoverdracht',
+ 'mkb excel spreadsheets',
+ 'mkb dubbele invoer',
+ 'mkb personeelstekort planning',
+ 'mkb facturering debiteuren',
+ 'mkb klantafhankelijkheid',
+ 'mkb ondernemers'
 ];
-const MAX_AGE_DAYS=14;
+const MAX_AGE_DAYS=45; // inside the shared 60-day gate; Google News ranks by relevance, not recency
 // Provider timestamps like "2026-10-26 16:19:48 +00:00" are normalised to ISO so the
 // shared freshness gate (which stays the single authority) can parse them.
 const isoFromProvider=(v:unknown)=>{
@@ -76,15 +77,15 @@ Deno.serve(async(req:Request)=>{
    }
    if(dfsUser&&dfsPass){
      // Google News live accepts one task per request and ignores time_range, so the age window is enforced here.
-     // The request can be 20000 while the task itself failed (e.g. 40101): check both, retry once.
+     // The request can be 20000 while the task itself failed (e.g. 40101): check both. Task 40101 (Google-side, no results for a niche query) is counted, not an error.
      let r:Response, b:any, taskCode=0;
-     for(let attempt=0;attempt<2;attempt++){
+     for(let attempt=0;attempt<1;attempt++){
        r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20}])});
        b=await r.json().catch(()=>({}));
        taskCode=Number(b?.tasks?.[0]?.status_code||0);
        if(r.ok&&Number(b?.status_code||0)===20000&&taskCode===20000) break;
-       if(attempt===0) await new Promise(res=>setTimeout(res,1500));
      }
+     if(r!.ok&&Number(b?.status_code||0)===20000&&taskCode===40101){ providers.dataforseo_no_results=(providers.dataforseo_no_results||0)+1; return {provider:'dataforseo_news',results:[]}; }
      if(!r!.ok||Number(b?.status_code||0)!==20000||taskCode!==20000) throw new Error('DATAFORSEO_'+r!.status+'_TASK_'+taskCode);
      const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
      const rows:any[]=[];
