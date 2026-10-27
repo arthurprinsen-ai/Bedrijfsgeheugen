@@ -1,7 +1,7 @@
 // Mollie server helpers for Supabase Edge Functions. The API key is read from Vault via public.bg_geheim('MOLLIE_API_KEY');
 // it never reaches a browser, log line, Netlify env or Notion.
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { buildSubscription, isPaidFirstPayment, statusAfterRecurringPayment, subscriptionStatusFromMollie, intentStateForPayment, safeUuid } from './mollie-billing.mjs';
+import { trialEndsAt, buildSubscription, isPaidFirstPayment, statusAfterRecurringPayment, subscriptionStatusFromMollie, intentStateForPayment, safeUuid } from './mollie-billing.mjs';
 
 export const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 export const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
@@ -22,7 +22,7 @@ export async function mollie(key: string, path: string, init: { method?: string;
   if (init.idempotency) headers['idempotency-key'] = init.idempotency;
   const res = await fetch(`https://api.mollie.com/v2/${path}`, { method: init.method || 'GET', headers, body: init.body !== undefined ? JSON.stringify(init.body) : undefined });
   const data = await res.json().catch(() => null);
-  if (!res.ok) { const e: any = new Error(`MOLLIE_${res.status}`); e.status = res.status; throw e; }
+  if (!res.ok) { const e: any = new Error(`MOLLIE_${res.status} ${path.split('/')[0]} ${String(data?.title || '')} ${String(data?.detail || '')}`.slice(0, 280)); e.status = res.status; throw e; }
   return data;
 }
 
@@ -52,9 +52,16 @@ export async function provisionFirstPayment(db: any, key: string, payment: any) 
   const email = String(intent.email || '').trim().toLowerCase();
   if (!email) throw new Error('MISSING_CUSTOMER');
 
-  const slug = 'checkout-' + (await sha256Hex(payment.id)).slice(0, 40);
-  await db.from('organisaties').upsert({ naam: company, slug }, { onConflict: 'slug', ignoreDuplicates: true });
-  const { data: org } = await db.from('organisaties').select('id').eq('slug', slug).single();
+  // A customer who started with the free trial keeps the same organisation: paying converts the trial.
+  const trialRows = await db.from('saas_subscriptions').select('id,organisation_id').eq('provider', 'trial').eq('metadata->>trial_email', email).order('created_at', { ascending: false }).limit(1);
+  const trial = trialRows.data?.[0] || null;
+  let org: any = trial ? { id: trial.organisation_id } : null;
+  if (!org) {
+    const slug = 'checkout-' + (await sha256Hex(payment.id)).slice(0, 40);
+    await db.from('organisaties').upsert({ naam: company, slug }, { onConflict: 'slug', ignoreDuplicates: true });
+    const found = await db.from('organisaties').select('id').eq('slug', slug).single();
+    org = found.data;
+  }
   if (!org?.id) throw new Error('ORGANISATION_CREATE_FAILED');
   const klant = await db.from('klanten').select('id').eq('organisatie_id', org.id).ilike('email', email).maybeSingle();
   if (!klant.data) await db.from('klanten').insert({ organisatie_id: org.id, naam: company, email });
@@ -70,6 +77,7 @@ export async function provisionFirstPayment(db: any, key: string, payment: any) 
     metadata: { first_payment_id: payment.id, checkout_session_id: intentId, billing_cycle: cycle }, updated_at: new Date().toISOString(),
   }, { onConflict: 'provider_subscription_id' });
   if (up.error) throw new Error('SUBSCRIPTION_STORE_FAILED');
+  if (trial) await db.from('saas_subscriptions').update({ status: 'canceled', metadata: { trial: true, converted_payment_id: payment.id }, updated_at: new Date().toISOString() }).eq('id', trial.id);
   await db.from('saas_checkout_intents').update({ state: 'completed', organisation_id: org.id, updated_at: new Date().toISOString() }).eq('id', intentId);
   await db.from('powerhouse_runtime_events').upsert({
     dedupe_key: `mollie:checkout:${payment.id}:provisioned`, event_type: 'subscription_provisioned', source: 'mollie.webhook', channel: 'website', company_key: `org:${org.id}`, topic_key: 'saas_subscription',
@@ -98,4 +106,32 @@ export async function handlePayment(db: any, key: string, payment: any) {
     return provisionFirstPayment(db, key, payment);
   }
   return syncRecurringPayment(db, key, payment);
+}
+
+// Free trial: full access for TRIAL_DAYS without a payment method. One trial per e-mail address.
+export async function startTrial(db: any, a: { planCode: string; cycle: string; email: string; company: string; intentId: string }) {
+  const subId = `trial-${a.intentId}`;
+  const again = await db.from('saas_subscriptions').select('organisation_id,current_period_end').eq('provider', 'trial').eq('provider_subscription_id', subId).maybeSingle();
+  if (again.data) return { ok: true, already: true, organisation_id: again.data.organisation_id };
+  const used = await db.from('saas_subscriptions').select('id').eq('provider', 'trial').eq('metadata->>trial_email', a.email).limit(1);
+  if (used.data?.length) return { ok: false, error: 'trial_already_used' };
+  const slug = 'trial-' + (await sha256Hex(a.intentId)).slice(0, 40);
+  await db.from('organisaties').upsert({ naam: a.company, slug }, { onConflict: 'slug', ignoreDuplicates: true });
+  const { data: org } = await db.from('organisaties').select('id').eq('slug', slug).single();
+  if (!org?.id) throw new Error('ORGANISATION_CREATE_FAILED');
+  const klant = await db.from('klanten').select('id').eq('organisatie_id', org.id).ilike('email', a.email).maybeSingle();
+  if (!klant.data) await db.from('klanten').insert({ organisatie_id: org.id, naam: a.company, email: a.email });
+  await db.from('uitnodigingen').upsert({ organisatie_id: org.id, email: a.email, rol: 'eigenaar' }, { onConflict: 'email,organisatie_id' });
+  const end = trialEndsAt();
+  const up = await db.from('saas_subscriptions').upsert({
+    organisation_id: org.id, plan_code: a.planCode, provider: 'trial', provider_subscription_id: subId, status: 'trialing', current_period_end: end, cancel_at_period_end: true,
+    metadata: { trial: true, trial_email: a.email, checkout_session_id: a.intentId, billing_cycle: a.cycle, trial_ends_at: end }, updated_at: new Date().toISOString(),
+  }, { onConflict: 'provider_subscription_id' });
+  if (up.error) throw new Error('SUBSCRIPTION_STORE_FAILED');
+  await db.from('saas_checkout_intents').update({ state: 'completed', organisation_id: org.id, updated_at: new Date().toISOString() }).eq('id', a.intentId);
+  await db.from('powerhouse_runtime_events').upsert({
+    dedupe_key: `trial:started:${a.intentId}`, event_type: 'trial_started', source: 'bg-mollie-checkout', channel: 'website', company_key: `org:${org.id}`, topic_key: 'saas_subscription',
+    evidence: { organisation_id: org.id, plan_code: a.planCode }, context: { billing_cycle: a.cycle, privacy_scope: 'no_pii', revenue_verified: false }, state: 'observed', data_quality: 'OBSERVED', confidence: 1,
+  }, { onConflict: 'dedupe_key', ignoreDuplicates: true }).then(() => {}, () => {});
+  return { ok: true, already: false, organisation_id: org.id };
 }

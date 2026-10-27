@@ -101,3 +101,16 @@ export function safeUuid(value) {
 export function isMolliePaymentId(value) {
   return /^tr_[A-Za-z0-9]{4,40}$/.test(String(value || ''));
 }
+
+export const TRIAL_DAYS = 30;
+
+export function trialEndsAt(now = new Date()) {
+  const d = new Date(now instanceof Date ? now.getTime() : Date.parse(now));
+  if (Number.isNaN(d.getTime())) throw new Error('INVALID_DATE');
+  return new Date(d.getTime() + TRIAL_DAYS * 86400000).toISOString();
+}
+
+export function trialDaysLeft(endIso, now = new Date()) {
+  const ms = Date.parse(endIso) - (now instanceof Date ? now.getTime() : Date.parse(now));
+  return Number.isFinite(ms) ? Math.max(0, Math.ceil(ms / 86400000)) : 0;
+}
