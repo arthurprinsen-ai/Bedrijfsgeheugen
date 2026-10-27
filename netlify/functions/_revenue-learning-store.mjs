@@ -15,6 +15,7 @@ export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=pro
   return Object.freeze({
     listProjectionCandidates:async(now)=>(await gateway({action:'list_projection_candidates',now})).candidates||[],
     upsertEvidence:evidence=>gateway({action:'upsert_evidence',evidence,idempotencyKey:`evidence:${evidence.evidenceId}`}),
+    upsertEvidenceBatch:evidences=>gateway({action:'upsert_evidence_batch',evidence:evidences,idempotencyKey:`evidence-batch:${evidences.length}:${evidences[0]?.evidenceId||''}:${evidences[evidences.length-1]?.evidenceId||''}`}),
     listDueEvidence:async(now)=>(await gateway({action:'list_due_evidence',now})).evidence||[],
     listCohort:async(query)=>(await gateway({action:'list_cohort',query})).evidence||[],
     markEvidenceEvaluated:(evidenceId,evaluatedAt)=>gateway({action:'mark_evidence_evaluated',evidenceId,evaluatedAt,idempotencyKey:`evaluated:${evidenceId}:${evaluatedAt}`}),
