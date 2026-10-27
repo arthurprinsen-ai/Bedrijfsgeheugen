@@ -54,3 +54,10 @@ test('a materialised recommendation resolves to the library-mapped winner (no ha
  const bad={...recommendation,evidence:{...recommendation.evidence,approved_mira_scene:'andere scène'}};
  assert.equal(resolveMiraFrozenWinner(runDate,{winner:{recommendation_id:id},lineage,recommendation:bad}).code,'WINNER_SCENE_UNVERIFIED');
 });
+
+test('radar declares title and excerpt before they are used (no temporal-dead-zone ReferenceError at runtime)',()=>{
+ const decl=radar.indexOf("const title=String(x.title||'').trim()");
+ const use=radar.indexOf("topic(title+' '+excerpt)");
+ assert.ok(decl>0&&use>0,'both statements present');
+ assert.ok(decl<use,'title/excerpt must be declared before topic(title+excerpt)');
+});
