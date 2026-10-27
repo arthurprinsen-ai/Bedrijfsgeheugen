@@ -33,3 +33,10 @@ test('existing workflow is manual only for publication and bound to protected en
  assert.match(y,/environment: writer-patch-approval/);
  assert.match(y,/github\.ref == 'refs\/heads\/main'/);
 });
+
+test('approved manifest and policy are statically imported from the protected checkout',()=>{
+ const entry=readFileSync(new URL('../scripts/ci/authorized-writer-handoff.mjs',import.meta.url),'utf8');
+ assert.match(entry,/import manifest from '\.\.\/\.\.\/config\/brain-writer-approved-handoff\.json' with \{ type: 'json' \}/);
+ assert.match(entry,/import policy from '\.\.\/\.\.\/config\/brain-writer-approved-paths\.json' with \{ type: 'json' \}/);
+ assert.doesNotMatch(entry,/readFileSync|fs\.readFile/);
+});
