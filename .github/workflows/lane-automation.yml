@@ -26,6 +26,7 @@ jobs:
           node --test \
             tests/delivery-*.test.mjs \
             tests/brain-delivery-system.test.mjs \
+            tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs \
             tests/agent-skill-execution-evidence.test.mjs \
             tests/required-check-reconciliation.test.mjs \
             tests/brain-skill-byte-audit.test.mjs \
