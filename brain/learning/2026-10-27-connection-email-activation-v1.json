@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "email|connection-activation-always-linkedin-dm-no-executor|20261027-v1",
+  "obligation_id": "connection-email-activation-20261027",
+  "failure_class": "ACTIVATION_ROUTED_TO_CHANNEL_WITHOUT_EXECUTOR",
+  "root_cause": "powerhouse_prepare_connection_activation_v1 chooses linkedin_dm whenever a LinkedIn URL exists, which is every connection. linkedin_dm has no automated executor and needs human approval, so the 10 daily actions expired (70 in 7 days) and email was never chosen: autonomous outreach reported NO_ELIGIBLE_PREPARED_EMAIL.",
+  "observed_evidence": {
+    "actual_sources": ["public.powerhouse_sales_actions", "public.powerhouse_predictive_commercial_brief_cache_v1", "public.bg_connecties", "net._http_response powerhouse-autonomous-outreach"],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Prepare up to 5 autonomous_email actions per day for approved-email connections from the existing daily activation job; keep every send gate unchanged.",
+  "prevention_rule": "A prepared action must target a channel that has an executor. A channel without an executor is a gap to report, not a default.",
+  "tests": ["tests/brain-connection-email-activation-20261027.test.mjs"],
+  "compiler": {"failure_class": "ACTIVATION_ROUTED_TO_CHANNEL_WITHOUT_EXECUTOR", "scope": "EMAIL_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": true},
+  "evaluation": {
+    "historical_replay": ["tests/brain-connection-email-activation-20261027.test.mjs"],
+    "shadow": ["tests/brain-connection-email-activation-20261027.test.mjs"],
+    "canary": ["tests/brain-connection-email-activation-20261027.test.mjs"]
+  },
+  "terminal_rule": "Merged main, migration applied, next daily activation run prepares autonomous_email actions, composer passes quality, powerhouse-autonomous-outreach sends with provider readback or reports the exact held reason."
+}

@@ -1,0 +1,3 @@
+# Connection activation: approved-email connections go through the email transport
+
+The daily activation put every connection on `linkedin_dm` (all have a LinkedIn URL), which has no executor, so the 10 daily actions expired. `powerhouse_prepare_connection_email_activation_v1` prepares at most 5 `autonomous_email` actions per day for connections with a valid email and `extra.human_approved=true`, not suppressed, not contacted in 30 days. It is called from the existing daily activation function. The composer quality gate, recipient authority, suppression check and provider readback are unchanged; nothing is sent by this migration.
