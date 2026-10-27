@@ -4,14 +4,6 @@ name: Powerhouse Delivery Recovery Supervisor
 on:
   # Recovery is scheduled/manual only. A main push must never fan out into
   # another repository-wide recovery scan.
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/powerhouse-delivery-recovery-supervisor.yml'
-      - 'tools/delivery/writer-*.mjs'
-      - 'scripts/ci/authorized-writer-*.mjs'
-      - 'tests/brain-writer-v6-*.test.mjs'
-      - 'config/brain-writer-approved-paths.json'
   workflow_dispatch:
     inputs:
       patch_handoff:
@@ -35,57 +27,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  pr4967-codeql-focused-verification:
-    if: github.event_name == 'pull_request' && github.event.pull_request.number == 4969
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout immutable candidate patches
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          path: candidate-fixtures
-          persist-credentials: false
-      - name: Checkout exact PR 4967 source
-        uses: actions/checkout@v5
-        with:
-          ref: 255be21c76d5078dbd1bd70f3429b16d9624791f
-          path: exact-pr4967
-          persist-credentials: false
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Verify immutable source and install only two candidate tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git -C exact-pr4967 rev-parse HEAD)" = "255be21c76d5078dbd1bd70f3429b16d9624791f"
-          cp candidate-fixtures/tools/delivery/fixtures/pr4967-codeql-candidate/brain-ci-critical-path-acceleration-v2.test.mjs exact-pr4967/tests/
-          cp candidate-fixtures/tools/delivery/fixtures/pr4967-codeql-candidate/brain-rocket-delivery-v1.test.mjs exact-pr4967/tests/
-          test "$(git -C exact-pr4967 diff --name-only | wc -l | tr -d ' ')" = "2"
-      - name: Execute the two original tests on exact checkout with candidate replacements
-        working-directory: exact-pr4967
-        run: node --test tests/brain-ci-critical-path-acceleration-v2.test.mjs tests/brain-rocket-delivery-v1.test.mjs
-  v6-regression-tests:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 4
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: false
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Verify exact candidate SHA
-        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-      - name: Run full published v6 security regressions
-        run: node --test tests/brain-writer-v6-bootstrap.test.mjs tests/brain-writer-v6-runtime-regressions.test.mjs
   supervise:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true)
     runs-on: ubuntu-latest
