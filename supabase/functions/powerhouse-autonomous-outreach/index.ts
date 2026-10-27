@@ -50,6 +50,9 @@ async function verifyRecipientAuthority(db:any,a:any,to:string):Promise<boolean>
  if(error)throw{code:'RECIPIENT_AUTHORITY_READ',message:error.message};
  return (data||[]).some((c:any)=>(s(c?.sleutel)===person||s(c?.linkedin_url)===person)&&c?.extra?.human_approved===true);
 }
+// Every autonomous mail carries a plain opt-out; the reply loop turns it into an active suppression.
+const OPT_OUT_LINE='Wil je geen mail meer van mij? Antwoord met "afmelden" en ik mail je niet meer.';
+function withOptOutLine(body:string){return /afmelden/i.test(body)?body:body.replace(/\s+$/,'')+'\n\n'+OPT_OUT_LINE;}
 Deno.serve(async(req)=>{
  if(req.method!=='POST')return J({ok:false,error:'POST_ONLY'},405);
  const url=Deno.env.get('SUPABASE_URL')||'',role=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';if(!url||!role)return J({ok:false,error:'CONFIG'},500);
@@ -120,7 +123,7 @@ Deno.serve(async(req)=>{
    const{data:claim,error:ce}=await db.from('powerhouse_sales_actions').update({status:'waiting',updated_at:now}).eq('action_id',a.action_id).eq('status','prepared').select('action_id').maybeSingle();if(ce)throw{code:'CLAIM',message:ce.message};if(!claim){out.push({action_id:a.action_id,status:'skipped',reason:'ALREADY_CLAIMED'});continue}
    let ack:{message_id:string;thread_id:string}|null=null;
    try{
-    ack=await send(key,acct,to,sub,body);
+    ack=await send(key,acct,to,sub,withOptOutLine(body));
     const attempted={...(a.evidence||{}),autonomous_outbound:{contract:C,provider:'composio-gmail',provider_message_id:ack.message_id,provider_thread_id:ack.thread_id,provider_ack_verified:false,provider_readback_verified:false,needs_readback:true,republish_forbidden:true,attempted_at:now}};
     const{error:ae}=await db.from('powerhouse_sales_actions').update({evidence:attempted,updated_at:now}).eq('action_id',a.action_id).eq('status','waiting');
     if(ae)throw{code:'ACK_CHECKPOINT_WRITEBACK',message:ae.message};
