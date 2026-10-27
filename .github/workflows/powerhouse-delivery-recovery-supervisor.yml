@@ -5,6 +5,12 @@ on:
   # Recovery is scheduled/manual only. A main push must never fan out into
   # another repository-wide recovery scan.
   workflow_dispatch:
+    inputs:
+      patch_handoff:
+        description: 'Run protected v6 patch handoff (requires separately approved manifest)'
+        type: boolean
+        required: false
+        default: false
   # Shift identical five-minute cadence off the hour's overloaded minute zero.
   # One existing owner: do not introduce a second scheduler or workflow.
   schedule:
@@ -22,6 +28,7 @@ concurrency:
 
 jobs:
   supervise:
+    if: github.event_name != 'workflow_dispatch' || inputs.patch_handoff != true
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -586,3 +593,34 @@ jobs:
             echo "::notice::Serialized recovery: one terminal closure dispatched; remaining obligations wait for the next supervisor cycle."
             break
           done < <(jq -c '.[] | select(.merged_at != null)' <<<"$closed")
+
+  authorized-patch-handoff:
+    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: writer-patch-approval
+    timeout-minutes: 8
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Fail closed until trusted v6 sources and manifest are reviewed
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f config/brain-writer-approved-paths.json
+          test -f config/brain-writer-approved-handoff.json
+          test -f scripts/ci/authorized-writer-handoff.mjs
+          test -f tools/delivery/writer-authorized-runner.mjs
+      - name: Publish approved recovery patch via existing lease
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          WRITER_HOLDER: github-actions:${{ github.run_id }}:${{ github.run_attempt }}
+        run: node scripts/ci/authorized-writer-handoff.mjs
