@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|billing|mollie-recurring-checkout|20261027-v1",
+  "compiler": {
+    "failure_class": "BILLING_PROVIDER_NOT_CONFIGURED_STRIPE_ONLY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Checkout only supported Stripe and needed two Stripe secrets in Netlify, which were never supplied, so /afsluiten returned 503 for weeks. Arthur decided on 27 oct 2026 that Mollie is the payment route with the key in Supabase Vault.",
+  "prevention": "Mollie recurring billing (first payment + 1 month / 12 months subscription) runs as Supabase Edge Functions reading MOLLIE_API_KEY from Vault via bg_geheim; webhook re-reads the payment from Mollie, provisioning is idempotent, yearly equals ten monthly fees; tests guard key handling, idempotency and amounts.",
+  "evidence": {
+    "tests": [
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until a Mollie test payment completes end to end and the Netlify wiring (next PR) is merged"
+  },
+  "limitations": [
+    "Edge Functions are not yet called from Netlify; wiring is the next PR",
+    "Test key only until go-live",
+    "Cancellation and plan change self-service are not built"
+  ]
+}
