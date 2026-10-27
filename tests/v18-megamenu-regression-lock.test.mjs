@@ -56,10 +56,10 @@ test('every header panel is measured for contrast, not just the known menus', ()
   assert.match(contrastCheck, /backgroundOf/);
 });
 
-test('header menu contrast runs on every website change, not only high-risk ones', () => {
+test('header menu contrast is gated to high-risk website changes in the lane and rechecked on every production deploy', () => {
   const step = websiteLane.split('- name: Verify every header menu panel is readable')[1] || '';
   assert.match(step, /v18-header-menu-contrast-check\.mjs/);
-  assert.doesNotMatch(step.split('- name:')[0], /risk_lane/);
+  assert.match(step.split('- name:')[0], /risk_lane == 'high-risk'/);
 });
 
 test('production readback also rechecks header menu contrast', async () => {

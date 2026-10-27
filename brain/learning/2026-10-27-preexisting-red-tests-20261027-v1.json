@@ -17,7 +17,7 @@
     ]
   },
   "root_cause": "25 tests in 9 files were red on main because tests asserted retired architecture (Buffer collector, pre-Composio dispatch, raw homepage source instead of the built V18 HTML), regexes were double-escaped, a duplicate blog post cannibalised another, and product pages claimed an unverified ISO 27001 readiness.",
-  "prevention": "Tests now assert the current contracts, the unverified claim is replaced by the verifiable EU hosting statement with EN translation, the duplicate post is removed from blog, sitemap and RSS, and the website lane runs the header-menu contrast check on every website change.",
+  "prevention": "Tests now assert the current contracts, the unverified claim is replaced by the verifiable EU hosting statement with EN translation, the duplicate post is removed from blog, sitemap and RSS.",
   "evidence": {
     "tests": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs",
@@ -26,7 +26,7 @@
       "tests/seo-money-page-order-conversion-v2.test.mjs",
       "tests/v18-megamenu-regression-lock.test.mjs"
     ],
-    "workflow": ".github/workflows/lane-website.yml",
+    "workflow": ".github/workflows/required-test.yml",
     "runtime_status": "unverified until protected merge and green main"
   },
   "limitations": [
