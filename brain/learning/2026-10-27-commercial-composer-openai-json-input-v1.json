@@ -11,7 +11,7 @@
   ],
   "evidence": {
     "production_run": "OpenAI 400: Response input messages must contain the word 'json' in some form to use 'text.format' of type 'json_object'",
-    "test": "tests/commercial-composer-openai-json-input-20261027.test.mjs",
+    "test": "tests/brain-commercial-composer-openai-json-input-20261027.test.mjs",
     "code_paths": [
       "supabase/functions/powerhouse-commercial-message-composer/index.ts"
     ]
@@ -25,7 +25,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/commercial-composer-openai-json-input-20261027.test.mjs"
+      "tests/brain-commercial-composer-openai-json-input-20261027.test.mjs"
     ]
   },
   "outcome": {
