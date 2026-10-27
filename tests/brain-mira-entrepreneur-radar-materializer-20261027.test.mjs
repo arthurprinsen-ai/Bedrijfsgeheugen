@@ -61,3 +61,9 @@ test('radar declares title and excerpt before they are used (no temporal-dead-zo
  assert.ok(decl>0&&use>0,'both statements present');
  assert.ok(decl<use,'title/excerpt must be declared before topic(title+excerpt)');
 });
+
+test('radar treats a failed DataForSEO task as an error instead of zero results',()=>{
+ assert.match(radar,/taskCode=Number\(b\?\.tasks\?\.\[0\]\?\.status_code/);
+ assert.match(radar,/taskCode!==20000\) throw new Error\('DATAFORSEO_'/);
+ assert.match(radar,/attempt<2/);
+});
