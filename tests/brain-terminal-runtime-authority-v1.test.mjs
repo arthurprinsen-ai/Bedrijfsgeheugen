@@ -44,7 +44,7 @@ test('independent provider proof rejects stale, forged, missing and inactive met
   assert.throws(()=>verifyLiveProviderReadbacks([...expected,...expected],live),/EXPECTATION_INVALID/);
   const providerBlock=canonical.slice(canonical.indexOf('# PR markers declare expectations'),canonical.indexOf("printf '%s\\n' \"$readbacks\" > .artifacts/supabase-provider-readbacks.json"));
   assert.match(providerBlock,/curl -fsSL/);
-  assert.match(providerBlock,/api\.supabase\.com\/v1\/projects\/adhjwmvyoixzjtmiroln\/functions/);
+  assert.ok(providerBlock.includes('api.supabase.com/v1/projects/adhjwmvyoixzjtmiroln/functions'));
   assert.match(providerBlock,/SUPABASE_PROVIDER_ACCESS_TOKEN_MISSING/);
   assert.match(providerBlock,/verifyLiveProviderReadbacks\(expected,JSON\.parse\(readFileSync/);
   assert.ok(canonical.indexOf('verifyLiveProviderReadbacks(expected')<canonical.indexOf('SUPABASE_EDGE_PROVIDER_READBACK_PROVEN'));
