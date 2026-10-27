@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots } from '../_shared/linked-company-analytics.mjs';
+import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -116,6 +117,27 @@ async function registerCompanyProofs(db:any){
     authority:'canonical_content_publication_obligations'};
 }
 
+// Same bridge for the founder's personal profile: provider-acknowledged publications from the
+// canonical obligations become measurable social_posts rows (tenant canonical, which is where
+// linkedin() below and the learning stores read). Idempotent; never overwrites existing rows.
+async function registerPersonalProofs(db:any){
+  const since=new Date(Date.now()-35*86400000).toISOString().slice(0,10);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_personal').in('status',['PUBLISHED','LIVE_PROVEN'])
+    .gte('publication_date',since).order('publication_date',{ascending:false}).limit(40);
+  if(proofError)throw new Error('PERSONAL_PUBLICATION_PROOF_READ:'+proofError.message);
+  const batch=verifiedPersonalPostBatch(proofs||[],new Date(),30);
+  if(!batch.length)return {status:'NO_ELIGIBLE_PERSONAL_POST',eligible:0,registered:0};
+  const {data:inserted,error:writeError}=await db.from('social_posts')
+    .upsert(batch,{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
+    .select('post_id');
+  if(writeError)throw new Error('PERSONAL_SOCIAL_REGISTRY_WRITE:'+writeError.message);
+  return {status:'PROVIDER_ACKNOWLEDGED_POSTS_INDEXED_ONLY',eligible:batch.length,registered:(inserted||[]).length,
+    authority:'canonical_content_publication_obligations',decision:'linkedin-personal-provider-ack-truth-v1',
+    metrics_scope:'REACTIONS_ONLY_VIA_PROVIDER_READBACK'};
+}
+
 // Reuse the same six-hour provider sync. Link read-only third-party post metrics
 // only when canonical LIVE_PROVEN + independent organization author exactly match.
 async function reconcileCompanyMetricEvidence(db:any){
@@ -216,7 +238,10 @@ Deno.serve(async(req:Request)=>{
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const day=localDay();
-    let ig:any,li:any,companyRegistry:any,companyMetricLink:any;
+    let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any;
+    try{personalRegistry=await registerPersonalProofs(db);}catch(e){
+      personalRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
     try{companyRegistry=await registerCompanyProofs(db);}catch(e){
       companyRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
     }
@@ -229,7 +254,7 @@ Deno.serve(async(req:Request)=>{
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
+      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',company_post_registry:companyRegistry,company_metric_link:companyMetricLink,personal_post_registry:personalRegistry,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
