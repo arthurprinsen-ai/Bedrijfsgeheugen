@@ -112,6 +112,13 @@ Deno.serve(async(req)=>{
     if(action==='upsert_evidence'){
       const row=evidenceRow(tenant,body.evidence);const {data,error}=await db.from('revenue_learning_evidence').upsert(row,{onConflict:'tenant_id,evidence_id'}).select().single();if(error)throw error;return json({stored:true,evidence:evidenceOut(data)});
     }
+    if(action==='upsert_evidence_batch'){
+      const items=Array.isArray(body.evidence)?body.evidence.slice(0,200):[];
+      if(!items.length)return json({stored:0});
+      const rows=items.map((e:any)=>evidenceRow(tenant,e));
+      const {error}=await db.from('revenue_learning_evidence').upsert(rows,{onConflict:'tenant_id,evidence_id'});if(error)throw error;
+      return json({stored:rows.length});
+    }
     if(action==='list_due_evidence'){
       const {data,error}=await db.from('revenue_learning_evidence').select('*').eq('tenant_id',tenant).order('updated_at',{ascending:false}).limit(150);if(error)throw error;
       return json({evidence:(data||[]).filter(r=>!r.evaluated_at||new Date(r.updated_at)>new Date(r.evaluated_at)).map(evidenceOut)});
