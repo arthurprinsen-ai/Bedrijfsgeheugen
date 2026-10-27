@@ -24,7 +24,8 @@ test('new session failure logging never leaks raw provider details or identities
 });
 
 test('execution pins account and never exposes arbitrary tool choice via caller',()=>{
-  assert.match(src,/account: context\.accountId/);
+  assert.match(src,/connected_accounts: \{ netlify_mcp: \[context\.accountId\] \}/);
+  assert.doesNotMatch(src,/\n\s*account: context\.accountId/);
   assert.match(src,/tool_slug: slug/);
   assert.match(src,/if \(!allowed\.includes\(slug\)\) throw/);
   assert.match(src,/params: \{ siteId \}/);

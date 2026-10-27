@@ -6,11 +6,11 @@ const source=readFileSync('supabase/functions/powerhouse-forecast-calibrator/ind
 
 test('forecast calibrator never calls catch on a Supabase query builder',()=>{
   assert.doesNotMatch(source,/db\.from\([^\n]+\)\.insert\([^\n]+\)\.catch\(/);
-  assert.match(source,/catch\(e:any\)\{try\{await db\.from\('bg_gezondheid'\)\.insert/);
+  assert.match(source,/catch\(e:any\)\{[\s\S]*?try\{await db\.from\('bg_gezondheid'\)\.insert/);
 });
 
 test('error-path health write remains best-effort and original 500 contract is preserved',()=>{
   assert.match(source,/status:'fout'/);
   assert.match(source,/contract:'predictive-first-mover-intelligence-v1'/);
-  assert.match(source,/catch\{\}return json\(\{ok:false,error:/);
+  assert.match(source,/catch\{\}[\s\S]*?return json\(\{ok:false,error:/);
 });

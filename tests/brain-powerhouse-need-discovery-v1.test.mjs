@@ -31,7 +31,10 @@ test('runtime, website, portal and governance are wired',()=>{
     'supabase/migration-history/repository-only/20260930202000_powerhouse_need_discovery_v1.sql',
     '.agents/skills/powerhouse-need-discovery/SKILL.md'
   ])assert.ok(fs.existsSync(path),path);
-  assert.match(fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8'),/powerhouse_apply_need_discovery_v1/);
+  // Since #3724 the outreach function no longer calls the enrichment RPC itself; the enrichment is
+  // declared as a database-owned action in the System Map and defined service_role-only in SQL.
+  assert.match(fs.readFileSync('platform/system-map/canonical-system-map.mjs','utf8'),/actionEnrichment:'public\.powerhouse_apply_need_discovery_v1\(\)'/);
+  assert.match(fs.readFileSync('supabase/migration-history/repository-only/20260930202000_powerhouse_need_discovery_v1.sql','utf8'),/grant execute on function public\.powerhouse_apply_need_discovery_v1\(\) to service_role/);
   assert.match(fs.readFileSync('portal-v2/page-registry.js','utf8'),/sales-intelligence/);
   assert.match(fs.readFileSync('brain/creative/revenue-content-intelligence.mjs','utf8'),/discoveryQuestion/);
 });

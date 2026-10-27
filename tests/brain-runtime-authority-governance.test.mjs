@@ -118,15 +118,15 @@ test('Supabase Edge production workflow is current-main-only, single-writer and 
   assert.match(workflow,/app\?\.slug==='supabase'/);
   assert.match(workflow,/Supabase Preview/);
   assert.match(workflow,/deployment_anchor_sha/);
-  assert.match(workflow,/SUPABASE_PRODUCTION_DEPLOYMENT_ANCHOR_NOT_FOUND/);
-  assert.match(workflow,/git fetch --no-tags --deepen=300 origin main/);
-  assert.match(workflow,/execFileSync\('git',\['log','--format=%H','-n','80'/);
-  assert.match(workflow,/spawnSync\('git',\['diff','--quiet',anchor,sha/);
-  assert.match(workflow,/source_equivalent_to_anchor:true/);
-  assert.match(workflow,/stable_success_observations:2/);
+  // Contract v4: the provider check-run on the protected main commit itself is the anchor.
+  assert.match(workflow,/supabase-edge-production-authority-v4/);
+  assert.match(workflow,/commits\/\$\{sha\}\/check-runs/);
+  assert.match(workflow,/anchor_sha=\$\{sha\}/);
+  assert.match(workflow,/authority:'provider-source-parity'/);
+  assert.match(workflow,/git fetch --no-tags origin main/);
   assert.match(workflow,/source-tree-sha256\.json/);
   assert.match(workflow,/SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG/);
-  assert.match(workflow,/sed -nE 's\/\^\\\[functions\\\.\(\[\^\]\]\+\)\\\]\$\/\\1\/p' supabase\/config\.toml/);
+  assert.match(workflow,/grep -Fqx "\[functions\.\$fn\]" supabase\/config\.toml/);
   assert.match(workflow,/SUPABASE_EDGE_ATTESTATION_SUPERSEDED_BY_RUNTIME_CHANGE/);
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
@@ -136,8 +136,11 @@ test('Supabase Edge production workflow is current-main-only, single-writer and 
   assert.match(workflow,/supabase functions download/);
   assert.match(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF" --use-api/);
   assert.doesNotMatch(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF"\s*$/m);
-  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_FILESET_DRIFT/);
-  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT/);
+  // Fileset and byte drift are compared inside one bounded convergence loop that fails closed on timeout.
+  assert.match(workflow,/cmp -s "\/tmp\/\$fn-source-files\.txt" "\/tmp\/\$fn-provider-files\.txt"/);
+  assert.match(workflow,/cmp -s "\$source_root\/\$rel" "\$provider_root\/\$rel"/);
+  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_TIMEOUT/);
+  assert.match(workflow,/provider_source_parity=BYTE_FOR_BYTE/);
   assert.doesNotMatch(workflow,/supabase functions deploy/);
   assert.doesNotMatch(workflow,/PROJECT_REF:[^\n]*\n\s+SUPABASE_ACCESS_TOKEN:/);
 });

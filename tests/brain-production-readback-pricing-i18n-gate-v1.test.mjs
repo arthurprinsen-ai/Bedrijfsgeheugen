@@ -10,12 +10,15 @@ test('production readback permanently executes pricing and i18n browser proof fo
   assert.match(workflow,/readbackWorkflowChanged/);
   assert.match(workflow,/manualReadback/);
   assert.match(workflow,/if\(\(readbackWorkflowChanged \|\| manualReadback\) && !routes\.includes\('\/prijzen'\)\) routes\.push\('\/prijzen'\)/);
-  assert.match(workflow,/browserRequired=websiteRequired \|\| portalRequired \|\| manualReadback/);
+  assert.match(workflow,/forceBrowser:manualReadback/);
+  assert.match(workflow,/browserRequired[\s\S]*\}=applicability;/);
 });
 
 test('readback control-plane-only maintenance does not falsely require a production deploy', () => {
   assert.match(workflow,/readbackControlPlaneOnly/);
-  assert.match(workflow,/websiteRequired=readbackControlPlaneOnly \? false : suites\.website === true/);
-  assert.match(workflow,/portalRequired=readbackControlPlaneOnly \? false : suites\.portal === true/);
-  assert.match(workflow,/deploymentRequired=browserRequired \|\| netlifyRuntimeRequired/);
+  // Control-plane-only changes have no runtime paths, hence no delivery lanes and no required suites.
+  const applicability=fs.readFileSync('tools/delivery/netlify-deployment-applicability.mjs','utf8');
+  assert.match(applicability,/const websiteRequired=requiredSuites\.website === true;/);
+  assert.match(applicability,/const portalRequired=requiredSuites\.portal === true;/);
+  assert.match(applicability,/const deploymentRequired=forceDeployment \|\| websiteRequired \|\| portalRequired \|\| netlifyRuntimeRequired;/);
 });

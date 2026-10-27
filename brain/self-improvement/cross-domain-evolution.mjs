@@ -52,7 +52,9 @@ function hasVerifiedFinancialValue(item, now, maxAgeMs) {
 export function planCrossDomainEvolution({
   change, baseline = {}, candidate = {}, observations = [],
   reviews = [], comparison = {}, now = new Date().toISOString(),
-  maxEvidenceAgeDays = 90
+  maxEvidenceAgeDays = 90,
+  // Independent evidence verifier (#4771). Without it self-declared refs can never promote.
+  verifyEvidenceRef = null
 } = {}) {
   if (!change?.id || !change?.tenantId || !change?.sourceRevision ||
       !change?.baselinePolicyVersion || !change?.candidatePolicyVersion)
@@ -141,7 +143,7 @@ export function planCrossDomainEvolution({
     comparison.linkedEngineeringOutcomeIds.some(id => engineeringOutcomeIds.has(id)) &&
     isFresh(comparison,timestamp,maxAgeMs);
 
-  const evaluation = evaluatePromotionCandidate({ baseline, candidate });
+  const evaluation = evaluatePromotionCandidate({ baseline, candidate, verifyEvidenceRef, now });
   let decision = 'GATHER_VERIFIED_OUTCOMES';
   if (missingReviews.length) decision = 'REVIEW_REQUIRED';
   else if (missingDomains.length) decision = 'GATHER_VERIFIED_OUTCOMES';

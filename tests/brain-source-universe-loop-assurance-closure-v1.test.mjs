@@ -20,7 +20,7 @@ test('Source Universe assurance closes action outcome learning with truthful no-
 test('guard receipt is emitted only when server-only and truth boundaries pass',async()=>{
   const sql=await read();
   assert.match(sql,/v_guard_ok:=v_table_guard_ok and v_function_guard_ok and v_truth_guard_ok/);
-  assert.match(sql,/stage,'guard'/);
+  assert.match(sql,/loop_key,stage,observed_at,evidence,updated_at[\s\S]*?'guard',/);
   assert.match(sql,/status','PASS'/);
   assert.match(sql,/delete from public\.powerhouse_loop_assurance_receipts_v1[\s\S]*stage='guard'/);
   assert.match(sql,/has_table_privilege\('anon'/);

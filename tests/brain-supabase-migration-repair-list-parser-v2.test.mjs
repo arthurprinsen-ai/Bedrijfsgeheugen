@@ -6,7 +6,7 @@ const workflow = await readFile('.github/workflows/supabase-supported-migration-
 
 test('trusted repair normalizes Supabase CLI presentation backticks before migration identity comparison', () => {
   const normalizers = workflow.match(/replace\(\/\^\\`\|\\`\$\/g,''\)/g) || [];
-  assert.equal(normalizers.length, 2, 'both pre-repair and post-repair parsers must normalize backticks');
+  assert.equal(normalizers.length, 3, 'pre-repair, post-repair and Supavisor readback parsers must normalize backticks');
   assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
   assert.match(workflow, /20260920101150/);

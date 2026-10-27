@@ -48,12 +48,16 @@ test('bounded daily company/blog exploration is deterministic, one component onl
   assert.ok(x.single_change.length>30);
  }
 });
-test('measured challenger, unverified sources and personal/Mira content are never overridden',()=>{
+test('measured challenger, unverified sources and personal content are never overridden',()=>{
  const args={channel:'linkedin_company',runDate:'2026-10-24',recommendation:{reason:'Verified',evidence:{source_backed:true}}};
  assert.equal(proposeBoundedCreativeExploration({...args,measured:{state:'ELIGIBLE_BOUNDED_NEXT_POST_TEST'}}).state,'NO_EXPLORATION');
  assert.equal(proposeBoundedCreativeExploration({...args,measured:{state:'SOURCE_UNAVAILABLE'}}).state,'NO_EXPLORATION');
  assert.equal(proposeBoundedCreativeExploration({...args,freshness:{ok:false}}).state,'NO_EXPLORATION');
- assert.equal(proposeBoundedCreativeExploration({...args,channel:'instagram_company'}).state,'NO_EXPLORATION');
+ // Instagram has its own bounded single-component variants for the fictional Mira scene; it never adds a publication.
+ const instagram=proposeBoundedCreativeExploration({...args,channel:'instagram_company'});
+ assert.equal(instagram.state,'ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS');
+ assert.equal(instagram.additional_publications,0);
+ assert.equal(instagram.other_components,'UNCHANGED');
  assert.equal(proposeBoundedCreativeExploration({...args,channel:'linkedin_personal'}).state,'NO_EXPLORATION');
 });
 test('daily measured-or-exploratory metadata is stored on the existing artifact',()=>{

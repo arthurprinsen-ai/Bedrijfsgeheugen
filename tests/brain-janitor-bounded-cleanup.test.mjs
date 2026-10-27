@@ -6,7 +6,7 @@ const start=src.indexOf('      - name: Reconcile stale Actions and merged branch
 const end=src.indexOf('      - name: Read back applied cleanup',start);
 const step=src.slice(start,end);
 test('full janitor job has a hard 15-minute deadline',()=>{
-  assert.match(src,/  janitor:\n    timeout-minutes: 15/);
+  assert.match(src,/\n  janitor:\n(?:    [^\n]*\n)*?    timeout-minutes: 15\n/);
 });
 test('cleanup scans only a bounded provider page per status and branch',()=>{
   assert.match(step,/actions_page="\$\(page_for_cycle 32\)"/);

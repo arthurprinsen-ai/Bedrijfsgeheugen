@@ -8,7 +8,10 @@ test('existing Netlify build suppression remains single-source and fail-open',as
     readFile('tools/ci/netlify-ignore-build.mjs','utf8'),
   ]);
   assert.match(config,/ignore = "node \.\/tools\/ci\/netlify-ignore-build\.mjs"/);
-  assert.equal((config.match(/^\s*ignore\s*=/gm)||[]).length,1);
+  // Production has exactly one selective ignore; the only other ignore is the deliberate
+  // always-build deploy-preview context (required independent preview evidence).
+  assert.equal((config.match(/^\s*ignore\s*=\s*"node \.\/tools\/ci\/netlify-ignore-build\.mjs"/gm)||[]).length,1);
+  assert.deepEqual((config.match(/^\s*ignore\s*=.*$/gm)||[]).map(x=>x.trim()).sort(),['ignore = "exit 1"','ignore = "node ./tools/ci/netlify-ignore-build.mjs"']);
   assert.match(ignore,/NETLIFY_BUILD_REQUIRED/);
   assert.match(ignore,/process\.exit\(1\)/);
   assert.match(ignore,/git', \['diff', '--name-only'/);
@@ -20,14 +23,14 @@ test('critical-path workflows keep visible checks while eliminating stale work',
     readFile('.github/workflows/repo-writer-operational-verification.yml','utf8'),
     readFile('.github/workflows/repo-writer-candidate-shadow.yml','utf8'),
     readFile('.github/workflows/repo-writer-cheap-canary.yml','utf8'),
-    readFile('.github/workflows/powerhouse-codeql.yml','utf8'),
+    readFile('.github/workflows/codeql.yml','utf8'),
     readFile('.github/workflows/required-test.yml','utf8'),
   ]);
   assert.match(gate,/group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}[\s\S]*cancel-in-progress: true/);
   assert.match(operational,/group: repo-writer-operational-[\s\S]*cancel-in-progress: true/);
   assert.match(shadow,/group: repo-writer-candidate-shadow-[\s\S]*cancel-in-progress: true/);
   assert.match(canary,/group: repo-writer-cheap-canary-[\s\S]*cancel-in-progress: true/);
-  assert.match(codeql,/CodeQL scope[\s\S]*pulls\/\$PR_NUMBER\/files[\s\S]*needs: scope[\s\S]*needs\.scope\.outputs\.run_codeql == 'true'/);
+  assert.match(codeql,/concurrency:[\s\S]*group: powerhouse-codeql-[\s\S]*cancel-in-progress: true/);
   assert.match(required,/supabase_preview_required[\s\S]*Verify provider-owned Supabase Preview on exact candidate head/);
 });
 

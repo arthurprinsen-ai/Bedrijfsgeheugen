@@ -28,6 +28,27 @@ export function readbacksForFunctions(payload,functions){
   });
 }
 
+// Compare declared expectations against a fresh, independently fetched provider response.
+export function verifyLiveProviderReadbacks(expected,payload){
+  if(!Array.isArray(expected)||expected.length===0)
+    throw new Error('SUPABASE_PROVIDER_EXPECTATIONS_MISSING');
+  const names=new Set();
+  for(const row of expected){
+    if(!/^[a-z0-9][a-z0-9-]*$/.test(String(row?.function||''))||names.has(row.function)||
+       !Number.isInteger(row.version)||row.version<1||
+       !/^[0-9a-f]{64}$/.test(String(row.runtime_sha256||''))||row.state!=='ACTIVE')
+      throw new Error('SUPABASE_PROVIDER_EXPECTATION_INVALID');
+    names.add(row.function);
+  }
+  const live=readbacksForFunctions(payload,[...names]);
+  for(const row of expected){
+    const active=live.find(item=>item.function===row.function);
+    if(!active||active.version!==row.version||active.runtime_sha256!==row.runtime_sha256||active.state!==row.state)
+      throw new Error('SUPABASE_PROVIDER_LIVE_MISMATCH:'+row.function);
+  }
+  return live;
+}
+
 export function mergeProviderLines(body,readbacks){
   const names=new Set(readbacks.map(row=>row.function));
   const lines=String(body||'').split(/\r?\n/).filter(line=>{

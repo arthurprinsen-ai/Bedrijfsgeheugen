@@ -19,10 +19,12 @@ test('governance-only merge does not wait for a Netlify website release', () => 
   const yaml=readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
   assert.match(yaml,/changed_paths=.*git diff --name-only/);
   assert.match(yaml,/governance_only=true/);
-  assert.match(yaml,/docs\/\*\|\.agents\/\*\|tests\/\*\|\.github\/\*/);
-  assert.match(yaml,/brain\/learning\/\*\|brain\/policies\/\*/);
-  assert.match(yaml,/tools\/delivery\/\*/);
-  assert.match(yaml,/platform\/system-map\/canonical-system-map\.mjs/);
+  // The governance-only path set is owned by the production-readback contract, not hard-coded in the workflow.
+  assert.match(yaml,/productionTruth\?\.verifierOnlyPrefixes/);
+  assert.match(yaml,/productionTruth\?\.verifierOnlyPaths/);
+  const contract=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
+  for(const prefix of ['docs/','.agents/','tests/','.github/','brain/learning/','brain/policies/','tools/delivery/']) assert.ok(contract.productionTruth.verifierOnlyPrefixes.includes(prefix),prefix);
+  assert.ok(contract.productionTruth.verifierOnlyPaths.includes('platform/system-map/canonical-system-map.mjs'));
   assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
   assert.match(yaml,/PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME/);
 });

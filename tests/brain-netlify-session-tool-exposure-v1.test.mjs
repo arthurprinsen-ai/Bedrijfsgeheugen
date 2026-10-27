@@ -37,7 +37,9 @@ test('provider token/account IDs, response bodies and arbitrary validation text 
 test('OIDC and read-only health never become deployment authority',()=>{
  assert.ok(code.includes('payload.repository !== expectedRepo || payload.ref !== expectedRef || payload.workflow_ref !== expectedWorkflowRef'));
  const health=code.slice(code.indexOf('if (action === "health")'),code.indexOf('phase = "proxy_read"'));
- assert.ok(health.includes('"NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER"'));
- assert.ok(health.includes('get-project'));
+ const selection=code.slice(code.indexOf('phase = "provider_authority_selection"'),code.indexOf('if (action === "health")'));
+ assert.ok(selection.includes('"NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER"'));
+ assert.ok(selection.includes('get-project'));
+ assert.ok(!selection.includes('operation: "deploy-site"'));
  assert.ok(!health.includes('operation: "deploy-site"'));
 });

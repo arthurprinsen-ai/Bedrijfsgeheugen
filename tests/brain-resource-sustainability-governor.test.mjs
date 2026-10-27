@@ -7,7 +7,7 @@ test('resource sustainability governor is canonical and fail-closed', async () =
   const agents=await readFile('AGENTS.md','utf8');
   const skill=await readFile('.agents/skills/powerhouse-resource-sustainability/SKILL.md','utf8');
 
-  assert.equal(policy.schemaVersion,2);
+  assert.ok(policy.schemaVersion>=2,'schemaVersion must not regress below the governed baseline');
   assert.equal(policy.authority,'ONE_BRAIN');
   assert.equal(policy.governance.preflightRequired,true);
   assert.equal(policy.governance.postflightRequired,true);

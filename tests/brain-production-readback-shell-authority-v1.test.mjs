@@ -21,7 +21,7 @@ test('global shell authority does not encode retired pricing component semantics
 
 test('pricing business semantics remain owned by the production live contract', () => {
   const liveContract = fs.readFileSync('tools/site-shell/live-contract.mjs','utf8');
-  for (const token of ['Starter','Pro','Groei','Enterprise','fitSize','fitGoal','fitMode','fitGo','fitResult']) {
+  for (const token of ['Starter','Pro','Groei','Enterprise','pkgSize','pkgGoal','pkgMode','pkgGo']) {
     assert.match(liveContract,new RegExp(token));
   }
 });

@@ -39,7 +39,8 @@ test('authenticated EU gateway exposes security read and observer paths',async()
 
 test('existing trust and company surfaces link to security center',async()=>{
  const [compliance,company]=await Promise.all([read('portal-next/compliance.html'),read('portal/render-company.mjs')]);
- assert.match(compliance,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\/security\.html/);
+ // One Portal product: the trust surface links to the portal page, not to the technical source path.
+ assert.match(compliance,/<a href="https:\/\/www\.bedrijfsgeheugen\.nl\/portaal\?page=trust-center">Security Trust Center<\/a>/);
  assert.match(company,/Security Trust Center/);
 });
 
@@ -127,8 +128,9 @@ test('Portal is one product across technical source paths',async()=>{
  assert.match(map,/onePortalProduct:true/);
  assert.match(map,/technicalPortalPathsAreImplementationOnly:true/);
  for(const source of [security,compliance,company]) assert.match(source,/https:\/\/www\.bedrijfsgeheugen\.nl\/portaal/);
- assert.doesNotMatch(security,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
- assert.doesNotMatch(compliance,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
+ // Only navigation links must avoid the technical path; asset hrefs (css/js) legitimately live there.
+ assert.doesNotMatch(security,/<a\b[^>]*href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
+ assert.doesNotMatch(compliance,/<a\b[^>]*href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
  assert.match(map,/portal:'https:\/\/www\.bedrijfsgeheugen\.nl\/portaal\?page=omgevingsradar'/);
  assert.doesNotMatch(map,/portal:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
  assert.doesNotMatch(map,/productionUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);

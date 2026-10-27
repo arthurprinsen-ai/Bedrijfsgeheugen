@@ -36,9 +36,11 @@ test('no false-green publication, manufactured revenue, or mass consent',()=>{
 
 test('healthy SalesRobot account does not imply recipient or delivery evidence',()=>{
  assert.match(sales,/dmCapability='CONFIG_REQUIRED'/);
- assert.match(sales,/recipient_authority_unverified:true/);
- assert.match(sales,/provider_inbox_readback_required:true/);
- assert.match(sales,/requires_exact_provider_readback:true/);
+ // Account health is explicitly not recipient eligibility nor a delivery receipt; delivery needs exact provider inbox readback.
+ assert.match(sales,/Account health is not recipient eligibility nor a verified DM delivery receipt/);
+ assert.match(sales,/account_health_unverified:true/);
+ assert.match(sales,/proof\.provider_inbox_readback!==true\|\|proof\.inbox_message_sent_by_me!==true/);
+ assert.match(sales,/clean\(proof\.provider_step_status\)\.toUpperCase\(\)!=='SENT'/);
 });
 
 test('release Brain learning is machine-readable and customer outcome unproven',()=>{

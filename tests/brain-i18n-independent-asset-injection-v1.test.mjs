@@ -8,6 +8,6 @@ test('apply-i18n independently ensures CSS, runtime JS and mobile control', () =
   assert.match(source,/const hasI18nScript =/);
   assert.match(source,/!hasI18nCss \? LINK/);
   assert.match(source,/!hasI18nScript \? SCRIPT/);
-  assert.match(source,/html = injectMobileLanguage\(html\);/);
+  assert.match(source,/html = injectMobileLanguage\(html,\s*file\);/);
   assert.doesNotMatch(source,/if \(!\/<html\\b\/i\.test\(html\) \|\| \/data-bg-i18n-asset\/\.test\(html\)\) return;/);
 });

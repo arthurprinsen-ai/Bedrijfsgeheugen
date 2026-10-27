@@ -27,6 +27,9 @@ concurrency:
 
 jobs:
   janitor:
+    # Settle branch updates before cleanup or System Map writeback.
+    needs: branch_reconciler
+    if: ${{ always() && !cancelled() }}
     timeout-minutes: 15
     # GitHub 2026 cache-token least privilege: this privileged Janitor never uses Actions caches.
     cache-mode: none
@@ -116,43 +119,8 @@ jobs:
           await writeFile('.artifacts/powerhouse-current-main-reconstruction.json',JSON.stringify({source:'repository-janitor',mainSha:snapshot.main_epoch_sha,advisoryOnly:true,plan},null,2)+'\n');
           console.log(JSON.stringify({advisoryOnly:true,plans:plan.length,ownerHandoffs:plan.filter(p=>p.action==='OWNER_HANDOFF').length}));
           NODE
-      - name: Reconcile opted-in branches via native GitHub update-branch
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const prs = await github.paginate(github.rest.pulls.list, {owner, repo, base:'main', state:'open', per_page:100});
-            const report = [];
-            for (const listed of prs) {
-              if (listed.draft || listed.head.repo?.full_name !== context.repo.owner + '/' + repo ||
-                  !(listed.labels || []).some(l => l.name === 'autonomous-sync')) continue;
-              const pr = (await github.rest.pulls.get({owner, repo, pull_number:listed.number})).data;
-              if (pr.state !== 'open' || pr.draft || pr.base.ref !== 'main') continue;
-              const headSha = pr.head.sha;
-              const cmp = (await github.rest.repos.compareCommits({owner, repo, base:'main', head:headSha})).data;
-              if (cmp.behind_by === 0) {
-                report.push({number:pr.number, status:'CURRENT', headSha}); continue;
-              }
-              if (pr.mergeable === false || pr.mergeable_state === 'dirty') {
-                report.push({number:pr.number, status:'CONFLICT_OWNER_ACTION_REQUIRED', headSha, behind:cmp.behind_by}); continue;
-              }
-              try {
-                await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch', {
-                  owner, repo, pull_number:pr.number, expected_head_sha:headSha
-                });
-                report.push({number:pr.number, status:'UPDATE_ACCEPTED_READBACK_PENDING', headSha, behind:cmp.behind_by});
-              } catch (e) {
-                report.push({number:pr.number, status:e.status===422?'CONFLICT_OR_PRECONDITION':e.status===403?'WRITE_PERMISSION_DENIED':'UPDATE_FAILED',
-                  httpStatus:e.status||null, headSha, behind:cmp.behind_by, message:String(e.message).slice(0,180)});
-              }
-            }
-            await core.summary.addHeading('Opted-in branch synchronization').addCodeBlock(JSON.stringify(report,null,2),'json').write();
-            core.info(JSON.stringify(report));
       - name: Rebuild System Map only for synchronized opted-in recovery PR
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')
+        if: needs.branch_reconciler.result == 'success' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe'))
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -481,6 +449,7 @@ jobs:
 
   # The reconciliation runs independently of preceding cleanup failures.
   branch_reconciler:
+    cache-mode: none
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'apply-safe')
     runs-on: ubuntu-latest
     timeout-minutes: 15

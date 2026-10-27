@@ -83,7 +83,7 @@ test('runtime event writers use only canonical lifecycle states', () => {
 test('orchestrator avoids blocking nested Edge Function preflight on the critical path', () => {
   assert.doesNotMatch(orchestrator, /runDailyCoreStages/);
   assert.doesNotMatch(orchestrator, /powerhouse-blog-readback/);
-  assert.match(orchestrator, /powerhouse_materialize_source_backed_channel_candidates_v1/);
+  assert.match(orchestrator, /powerhouse_materialize_source_backed_channel_candidates_v2/);
   assert.match(orchestrator, /powerhouse_daily_runs/);
 });
 
@@ -113,9 +113,9 @@ test('orchestrator avoids wide payload reads on the hot path',()=>{
 test('publisher separates audit, cockpit and dispatch critical paths', () => {
   const loop = fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
   const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
-  assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}/);
+  assert.match(loop, /powerhouse-social-publisher',\{runDate,mode:'publish_only',channels:\['linkedin_personal'\]\}/);
   assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'audit_only' \}/);
-  assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'cockpit_autopilot' \}/);
+  assert.match(loop, /powerhouse-social-publisher',\{runDate,mode:'cockpit_autopilot'\}/);
   assert.match(publisher, /if \(mode === 'cockpit_autopilot'\)/);
   assert.match(publisher, /const cockpit_autopilot: any\[\] = \[\]/);
   assert.doesNotMatch(publisher, /const cockpit_autopilot = publishOnly \? \[\] : await runLinkedInCockpitAutopilot/);

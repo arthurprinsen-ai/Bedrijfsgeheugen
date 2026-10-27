@@ -26,14 +26,16 @@ test('create step fails closed rather than overwriting existing published candid
  assert.ok(section.indexOf('EXISTING_DAILY_BLOG_REQUIRES_IN_PLACE_REFRESH')<section.indexOf('git checkout -B "$branch"'));
  assert.match(section,/git push --force-with-lease/);
 });
-test('existing candidate cache is read-only validated and never silently retranslated',()=>{
+test('existing candidate cache is reconciled in place and then strictly validated',()=>{
  const i=src.indexOf('- name: Persist English cache before protected CI');
  const j=src.indexOf('- name: Self-heal required checks for the canonical daily candidate');
  const section=src.slice(i,j);
- assert.match(section,/CANONICAL_EXISTING_CANDIDATE_CACHE_PRESERVED/);
+ assert.match(section,/CANONICAL_EXISTING_CANDIDATE_I18N_RECONCILE/);
  assert.match(section,/STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1/);
  assert.match(section,/build-localized-routes\.mjs --validate-cache/);
- assert.ok(section.indexOf('CANONICAL_EXISTING_CANDIDATE_CACHE_PRESERVED')<section.indexOf('STATIC_I18N_NETWORK=1 node tools\/ci\/netlify-build-entry.mjs'));
+ assert.ok(section.indexOf('STATIC_I18N_NETWORK=1 node tools/ci/netlify-build-entry.mjs')<section.indexOf('STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1'));
+ assert.match(section,/git push origin "HEAD:\$branch"/);
+ assert.doesNotMatch(section,/git push --force/);
 });
 test('protected gates and single-date identity remain authoritative',()=>{
  assert.match(src,/gh pr merge "\$pr" --auto --squash/);
