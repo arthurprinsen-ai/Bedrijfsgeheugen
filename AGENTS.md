@@ -1139,3 +1139,14 @@ Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies r
 - De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
 
 Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.
+
+
+## Experiment-kalender sluit zichzelf (27 oktober 2026)
+
+Oorzaak: 210 PLANNED en 8 ACTIVE `rci-*` regels in `social_experiments` bleven open omdat niets ze afsloot; de leerlus stond daardoor open bij uitkomst.
+
+Iedere agent die experimenten, content-kalender of de dagelijkse Powerhouse-run raakt:
+- Lees eerst `skills/powerhouse-experiment-calendar-closure.md`.
+- Controleer bij elke Heartbeat-run `powerhouse_calendar_experiment_staleness_v1`; ongelijk aan 0 is een herstelverplichting, geen waarschuwing.
+- Activeer nooit experimenten in bulk. Menselijk gepoorte experimenten gaan via `bg_experiment_actie`.
+- Een nieuw experimenttype zonder sluitregel en staleness-test wordt niet gemerged.
