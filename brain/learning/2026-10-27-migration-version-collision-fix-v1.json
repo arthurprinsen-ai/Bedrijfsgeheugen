@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "db|migration-version-timestamp-collision-between-sessions|20261027-v1",
+  "obligation_id": "",
+  "failure_class": "MIGRATION_VERSION_COLLISION_BETWEEN_SESSIONS",
+  "root_cause": "A round timestamp (20261027170000) was chosen for a migration while another session had already registered saas_trial_v1 under the same version in production, so the repository held a version that production attributed to a different migration.",
+  "observed_evidence": {
+    "actual_sources": ["supabase_migrations.schema_migrations", "supabase/migrations"],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Rename to an unused version (20261027171500) and register production under it; content unchanged.",
+  "prevention_rule": "Before choosing a migration version, read the latest versions from schema_migrations and use a version no other session has registered.",
+  "tests": ["tests/brain-connection-email-activation-20261027.test.mjs"],
+  "compiler": {"failure_class": "MIGRATION_VERSION_COLLISION_BETWEEN_SESSIONS", "scope": "DELIVERY_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-connection-email-activation-20261027.test.mjs"],
+    "shadow": ["tests/brain-connection-email-activation-20261027.test.mjs"],
+    "canary": ["tests/brain-connection-email-activation-20261027.test.mjs"]
+  },
+  "terminal_rule": "Merged main with a unique migration version that equals the production schema_migrations entry."
+}
