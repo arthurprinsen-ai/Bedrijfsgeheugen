@@ -1,6 +1,18 @@
 // Only independently recorded provenance already selected by BRAIN is eligible.
 const c=x=>String(x??'').trim();
-export function buildVerifiedFounderReserve(source,date){
+// Event types already used for a personal story in the recent window describe the same
+// story family (same system, same figures) even when the event id differs.
+export function personalSourceEventTypes(row){
+ const e=row?.evidence||{};
+ return [e.result_event,e.friction_event,e.source_focus_context]
+  .map(v=>c(v?.event_type)).filter(Boolean);
+}
+export function isStalePersonalSource(row,recentTypes){
+ const r=recentTypes instanceof Set?recentTypes:new Set(recentTypes||[]);
+ return personalSourceEventTypes(row).some(t=>r.has(t));
+}
+export function buildVerifiedFounderReserve(source,date,recentTypes=[]){
+ const recent=recentTypes instanceof Set?recentTypes:new Set(recentTypes||[]);
  const e=source?.evidence;
  if(!e||source?.target_channel!=='linkedin_personal'||!['suggested','accepted'].includes(source?.status)||
  !/^\d{4}-\d{2}-\d{2}$/.test(c(date))||
@@ -15,17 +27,17 @@ export function buildVerifiedFounderReserve(source,date){
  !c(e.content_id)||!Array.isArray(e.source_lineage)||!e.source_lineage.length)return [];
  const s=[];
  const event=(v,k,focus)=>{
-  if(v&&c(v.event_id)&&c(v.event_type)&&c(v.source)&&c(v.occurred_at))
+  if(v&&c(v.event_id)&&c(v.event_type)&&c(v.source)&&c(v.occurred_at)&&!recent.has(c(v.event_type)))
    s.push({kind:k,ref:'powerhouse_runtime_events:'+c(v.event_id),focus,
     source_context:{event_id:c(v.event_id),event_type:c(v.event_type),source:c(v.source),occurred_at:c(v.occurred_at)}});
  };
+ const signal0=(Array.isArray(e.entrepreneur_problem_sources)?e.entrepreneur_problem_sources:[])
+  .find(v=>v&&/^https:\/\//i.test(c(v.url))&&c(v.titel||v.title||v.onderwerp));
+ if(signal0)s.push({kind:'external_business_problem',ref:'bg_externe_signalen:'+c(signal0.url),
+   focus:'een extern waargenomen ondernemersprobleem, niet een eigen ervaring',
+   source_context:{url:c(signal0.url),title:c(signal0.titel||signal0.title||signal0.onderwerp)}});
  event(e.result_event,'observed_progress','een daadwerkelijk waargenomen voortgangsgebeurtenis');
  event(e.friction_event,'observed_friction','een daadwerkelijk waargenomen tegenvaller of leerpunt');
- const signal=(Array.isArray(e.entrepreneur_problem_sources)?e.entrepreneur_problem_sources:[])
-  .find(v=>v&&/^https:\/\//i.test(c(v.url))&&c(v.titel||v.title||v.onderwerp));
- if(signal)s.push({kind:'external_business_problem',ref:'bg_externe_signalen:'+c(signal.url),
-   focus:'een extern waargenomen ondernemersprobleem, niet een eigen ervaring',
-   source_context:{url:c(signal.url),title:c(signal.titel||signal.title||signal.onderwerp)}});
  const seen=new Set();
  return s.filter(x=>{if(seen.has(x.ref))return false;seen.add(x.ref);return true;})
   .slice(0,3).map((x,i)=>({
