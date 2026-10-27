@@ -129,11 +129,18 @@ async function registerPersonalProofs(db:any){
   if(proofError)throw new Error('PERSONAL_PUBLICATION_PROOF_READ:'+proofError.message);
   const batch=verifiedPersonalPostBatch(proofs||[],new Date(),30);
   if(!batch.length)return {status:'NO_ELIGIBLE_PERSONAL_POST',eligible:0,registered:0};
-  const {data:inserted,error:writeError}=await db.from('social_posts')
-    .upsert(batch,{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
-    .select('post_id');
-  if(writeError)throw new Error('PERSONAL_SOCIAL_REGISTRY_WRITE:'+writeError.message);
-  return {status:'PROVIDER_ACKNOWLEDGED_POSTS_INDEXED_ONLY',eligible:batch.length,registered:(inserted||[]).length,
+  // One row per statement: the database identity gate (LINKEDIN_PERSONAL_DISPATCH_BLOCKED) may refuse a
+  // day without verified personal truth. That refusal must stay in force and must not block other days.
+  let registered=0;const guardRejected:{post_id:string,reason:string}[]=[];
+  for(const post of batch){
+    const {data:inserted,error:writeError}=await db.from('social_posts')
+      .upsert([post],{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
+      .select('post_id');
+    if(writeError){guardRejected.push({post_id:post.post_id,reason:clean(writeError.message).slice(0,70)});continue;}
+    registered+=(inserted||[]).length;
+  }
+  return {status:guardRejected.length?'PARTIAL_GUARD_REJECTED':'PROVIDER_ACKNOWLEDGED_POSTS_INDEXED_ONLY',
+    eligible:batch.length,registered,guard_rejected:guardRejected.slice(0,10),
     authority:'canonical_content_publication_obligations',decision:'linkedin-personal-provider-ack-truth-v1',
     metrics_scope:'REACTIONS_ONLY_VIA_PROVIDER_READBACK'};
 }
