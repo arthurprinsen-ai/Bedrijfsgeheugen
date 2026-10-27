@@ -32,8 +32,8 @@ test('dedicated browser gate proves headings and ordinary links are readable', (
   assert.match(browserCheck, /MENSEN EERST\. DAN TECHNIEK\./);
 });
 
-test('required PR gate always includes the dedicated megamenu contrast check', () => {
-  assert.match(required, /v18-megamenu-browser-check\.mjs/);
+test('website lane gate includes the dedicated megamenu contrast check', () => {
+  assert.match(websiteLane, /v18-megamenu-browser-check\.mjs/);
 });
 
 test('production readback rechecks the real site after main deploy', async () => {

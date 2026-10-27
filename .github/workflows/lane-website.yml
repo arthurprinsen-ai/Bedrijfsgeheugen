@@ -269,7 +269,6 @@ jobs:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
-        if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: node tools/site-shell/v18-header-menu-contrast-check.mjs
