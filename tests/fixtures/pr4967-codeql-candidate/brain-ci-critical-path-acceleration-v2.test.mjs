@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 test('existing Netlify build suppression remains single-source and fail-open',async()=>{
  const [config,ignore]=await Promise.all([readFile('netlify.toml','utf8'),readFile('tools/ci/netlify-ignore-build.mjs','utf8')]);
  assert.match(config,/ignore = "node \.\/tools\/ci\/netlify-ignore-build\.mjs"/);
- const buildBlock=config.match(/^\[build\]([\s\S]*?)(?=^\[|$(?!.))/m)?.[1] || '';
+ const buildBlock=config.split(/^\[build\]\s*$/m)[1]?.split(/^\[/m)[0] || '';
  assert.equal((buildBlock.match(/^\s*ignore\s*=/gm)||[]).length,1);
  assert.match(ignore,/NETLIFY_BUILD_REQUIRED/);
  assert.match(ignore,/process\.exit\(1\)/);
