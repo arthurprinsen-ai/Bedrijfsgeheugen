@@ -154,10 +154,10 @@ Deno.serve(async(req)=>{
       const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions').select('action_id').not('executed_at','is',null).order('executed_at',{ascending:true}).limit(50);
       if(aErr)throw aErr;
       let reconciled=0;
-      for(const actionRow of actions||[]){
-        const {error:rErr}=await db.rpc('powerhouse_reconcile_action_learning_obligations_v1',{p_action_id:actionRow.action_id});
-        if(rErr)throw rErr;
-        reconciled++;
+      const pending=actions||[];
+      for(let i=0;i<pending.length;i+=5){
+        const results=await Promise.all(pending.slice(i,i+5).map(actionRow=>db.rpc('powerhouse_reconcile_action_learning_obligations_v1',{p_action_id:actionRow.action_id})));
+        for(const {error:rErr} of results){if(rErr)throw rErr;reconciled++;}
       }
       return json({reconciled,total:(actions||[]).length});
     }
