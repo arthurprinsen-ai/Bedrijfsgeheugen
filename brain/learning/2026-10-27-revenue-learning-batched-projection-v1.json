@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|revenue-learning|batched-projection-hourly-timeout|20261027-v1",
+  "compiler": {
+    "failure_class": "REVENUE_LEARNING_PROJECTION_TIMEOUT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/revenue-learning-project.test.mjs"
+    ]
+  },
+  "root_cause": "The hourly revenue-learning-project function made one serial gateway call per projection candidate (hundreds per run) and was aborted by the caller after about 15 seconds (HTTP 499 on 13 of 13 runs in 24 hours), so revenue evidence was not refreshed.",
+  "prevention": "The projector now writes evidence in bounded batches (100 per gateway call, 12 second budget) through the new upsert_evidence_batch action and falls back per item with a PROJECTION_FAILED obligation when a batch fails; the result reports unprojected candidates.",
+  "evidence": {
+    "tests": [
+      "tests/revenue-learning-project.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until protected merge, edge function deployment and Netlify logs without HTTP 499 on revenue-learning-project"
+  },
+  "limitations": [
+    "revenue-learning-evaluate still shows 11 of 13 failures and is not addressed here",
+    "evidence rows get updated_at refreshed on every upsert, so all evidence counts as due each hour",
+    "No production readback yet"
+  ]
+}
