@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
-import {parseFragment} from 'parse5';
 
 const html = await readFile(new URL('../afsluiten.html', import.meta.url), 'utf8');
 const prijzen = await readFile(new URL('../prijzen.html', import.meta.url), 'utf8');
@@ -11,14 +10,11 @@ const EN = vm.runInNewContext('(()=>{' + script.match(/\/\*EN-START\*\/(const EN
 
 function staticTexts() {
   const body = html.match(/<body>([\s\S]*?)<script/)[1];
-  const out = [];
-  (function walk(node) {
-    for (const child of node.childNodes || []) {
-      if (child.nodeName === '#text') { const text = child.value.trim(); if (text) out.push(text); }
-      else walk(child);
-    }
-  })(parseFragment(body));
-  return out;
+  return body
+    .replace(/<[^>]*>/g, '\n')
+    .split('\n')
+    .map(text => text.replace(/&amp;/g, '&').trim())
+    .filter(Boolean);
 }
 
 function stringsInsideT(source) {
