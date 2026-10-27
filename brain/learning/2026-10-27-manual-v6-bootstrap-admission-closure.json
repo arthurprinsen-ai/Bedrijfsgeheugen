@@ -7,12 +7,8 @@
   "prevention": "Before proposing any material bootstrap change, require a same-lineage Brain learning JSON, development ledger event and human-readable change document; never weaken protected admission and never classify skipped required checks as success.",
   "evaluation": {
     "historical_replay": [
-      {
-        "source": "GitHub Actions job 122088683772 on candidate daf413bf50e803a4087730ffbfab1d0b60b49067",
-        "observed": "ADMITTED followed by INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation",
-        "reproduced": "Provider job log readback",
-        "result": "SOURCE_CONFIRMED"
-      }
+      "tests/brain-writer-v6-bootstrap.test.mjs",
+      "tests/brain-writer-v6-runtime-regressions.test.mjs"
     ]
   },
   "evidence": {
@@ -21,7 +17,8 @@
     ],
     "admission": "GitHub Actions job 122088683772",
     "production_readback": "NOT_PERFORMED",
-    "merge": "NOT_MERGED"
+    "merge": "NOT_MERGED",
+    "historical_provider_run": "GitHub Actions 40474059242; separate tests may validate canonicalization but do not constitute full Required proof"
   },
   "outcome": "Candidate closure evidence added for review; no production or Backend repair authorized."
 }
