@@ -4,9 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { evaluateSafeProductionSupersession, NON_PRODUCTION_EXACT } from '../tools/site-shell/production-supersession.mjs';
 
 test('verifier-only main advances do not require a new Netlify deploy', async () => {
-  const [release,snapshot,contract] = await Promise.all([
+  const [release,applicabilitySource,contract] = await Promise.all([
     readFile('.github/workflows/production-release-readback.yml','utf8'),
-    readFile('.github/workflows/production-source-snapshot.yml','utf8'),
+    readFile('tools/delivery/netlify-deployment-applicability.mjs','utf8'),
     readFile('brain/contracts/production-readback-v1.json','utf8').then(JSON.parse),
   ]);
 
@@ -19,14 +19,14 @@ test('verifier-only main advances do not require a new Netlify deploy', async ()
     'tools/site-shell/standalone-visibility-check.mjs',
     'brain/contracts/production-readback-v1.json',
   ]) {
-    assert.ok(release.includes(path), `release classifier misses ${path}`);
-    assert.ok(snapshot.includes(path), `snapshot ignore misses ${path}`);
+    // Both the release readback and the snapshot reconcile through the shared applicability module.
+    assert.ok(applicabilitySource.includes(`'${path}'`), `applicability classifier misses ${path}`);
     assert.ok(contract.productionTruth.verifierOnlyPaths.includes(path), `contract misses ${path}`);
     assert.ok(NON_PRODUCTION_EXACT.has(path), `production supersession misses verifier-only path ${path}`);
   }
 
   assert.match(release,/readbackControlPlaneOnly=changedPaths\.length>0 && runtimeChangedPaths\.length===0/);
-  assert.match(release,/deploymentRequired=browserRequired \|\| netlifyRuntimeRequired/);
+  assert.match(applicabilitySource,/const deploymentRequired=forceDeployment \|\| websiteRequired \|\| portalRequired \|\| netlifyRuntimeRequired;/);
   assert.equal(contract.productionTruth.runtimeApplicabilityRequired,true);
   assert.equal(contract.productionTruth.verifierOnlyNoDeployment,true);
   assert.equal(contract.productionTruth.exactMatchAppliesWhenDeploymentRequired,true);
@@ -84,14 +84,15 @@ test('production supersession allows verifier-only descendants but blocks runtim
 });
 
 test('real website and Netlify runtime changes remain deployment-applicable', async () => {
-  const [release,snapshot] = await Promise.all([
-    readFile('.github/workflows/production-release-readback.yml','utf8'),
+  const [applicabilitySource,snapshot] = await Promise.all([
+    readFile('tools/delivery/netlify-deployment-applicability.mjs','utf8'),
     readFile('.github/workflows/production-source-snapshot.yml','utf8'),
   ]);
 
   for (const prefix of ['netlify/functions/','platform/api/','platform/saas/','platform/connectors/','platform/read-models/']) {
-    assert.match(release,new RegExp(prefix.replaceAll('/','\\/')));
+    assert.ok(applicabilitySource.includes(`'${prefix}'`), `${prefix} must stay a Netlify runtime prefix`);
   }
   assert.doesNotMatch(snapshot,/\n\s*- '\*\.html'/);
-  assert.match(release,/netlifyRuntimeRequired=!readbackControlPlaneOnly && runtimeChangedPaths\.some/);
+  // runtimeChangedPaths is empty for control-plane-only changes, so no separate guard is needed.
+  assert.match(applicabilitySource,/const netlifyRuntimeRequired=runtimeChangedPaths\.some\(path =>/);
 });

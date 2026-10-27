@@ -59,12 +59,15 @@ test('historical autonomous trigger repair is replay-idempotent but still fail-c
 
 
 test('preview applicability is fail-closed but skips exact immutable production mirrors', async () => {
-  const workflow = await readFile('.github/workflows/supabase-preview-applicability.yml', 'utf8');
-  assert.match(workflow, /grep -v -x -F 'supabase\/migration-history\.lock\.json'/);
-  assert.match(workflow, /HISTORICAL_PRODUCTION_MIRROR_BLOBS/);
-  assert.match(workflow, /git', 'hash-object', path/);
-  assert.match(workflow, /actual != expected/);
-  assert.match(workflow, /immutable reviewed production migration mirrors/);
+  // The source-side Supabase contract (supabase-pr-preview.yml) runs the security gate,
+  // which owns the exact immutable production mirror allowlist.
+  const workflow = await readFile('.github/workflows/supabase-pr-preview.yml', 'utf8');
+  const gate = await readFile('scripts/brain/check_powerhouse_supabase_security.py', 'utf8');
+  assert.match(workflow, /check_powerhouse_supabase_security\.py "\$\{\{ inputs\.base_sha \}\}" "\$\{\{ inputs\.head_sha \}\}"/);
+  assert.match(gate, /HISTORICAL_PRODUCTION_MIRROR_BLOBS/);
+  assert.match(gate, /"git", "hash-object", str\(path\)/);
+  assert.match(gate, /return actual == expected/);
+  assert.match(gate, /Verified immutable historical production mirrors/);
 });
 
 

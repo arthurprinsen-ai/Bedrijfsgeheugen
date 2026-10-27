@@ -7,7 +7,8 @@ const change={id:'ai-route-22',tenantId:'tenant-a',sourceRevision:'rev-4',
   kind:'ai_model',statePath:'ai.model.provider',baselinePolicyVersion:'policy-4',
   candidatePolicyVersion:'policy-5',topologyChanged:true};
 const baseline={qualityScore:.8,businessOutcome:100,cost:10,latencyMs:400};
-const candidate={qualityScore:.91,businessOutcome:120,cost:10,latencyMs:400,
+const sourceSha='0123456789abcdef0123456789abcdef01234567';
+const candidate={sourceSha,qualityScore:.91,businessOutcome:120,cost:10,latencyMs:400,
   evidenceRefs:['github-head','runner-readback'],gates:{quality:true,security:true,regression:true}};
 const core={tenantId:'tenant-a',changeId:'ai-route-22',sourceRevision:'rev-4'};
 const evidence={observedAt:now,evidenceRefs:['independent-provider-proof'],verified:true,...core};
@@ -26,8 +27,11 @@ const comparison={...evidence,baselinePolicyVersion:'policy-4',
   candidatePolicyVersion:'policy-5',experimentId:'holdout-1',hasControlGroup:true,
   assignmentReadbackId:'experiment-assignment-readback-1',
   linkedBusinessOutcomeIds:['sale-1'],linkedEngineeringOutcomeIds:['release-1']};
+// #4771: only an independent verifier can turn evidence references into promotion evidence.
+const verifyEvidenceRef=(ref,{candidateSha})=>({evidence_ref:ref,candidate_sha:candidateSha,verified:true,
+  independent:true,authority:'PROVIDER_READBACK',verified_at:'2026-10-08T13:00:00.000Z'});
 function assess(overrides={}){
-  const input={change,baseline,candidate,observations,comparison,now};
+  const input={change,baseline,candidate,observations,comparison,now,verifyEvidenceRef};
   const first=planCrossDomainEvolution(input);
   const reviews=first.impact.requiredReviews.map(control=>({...evidence,control,
     status:control==='CSRD_ESRS_APPLICABILITY'?'NOT_APPLICABLE':'APPROVED',
@@ -89,7 +93,9 @@ test('correlation is not causal uplift; missing controls and regression proof fa
   assert.equal(assess({comparison:{...comparison,hasControlGroup:false}}).decision,'COUNTERFACTUAL_REQUIRED');
   assert.equal(assess({comparison:{...comparison,tenantId:'other'}}).decision,'COUNTERFACTUAL_REQUIRED');
   assert.equal(assess({candidate:{...candidate,gates:{quality:true,security:false,regression:true}}}).decision,'REJECT');
-  assert.equal(assess({candidate:{...candidate,evidenceRefs:[]}}).decision,'REJECT');
+  assert.equal(assess({candidate:{...candidate,evidenceRefs:[]}}).decision,'EVALUATION_REQUIRED');
+  // Self-declared references without an independent verifier never promote.
+  assert.equal(assess({verifyEvidenceRef:null}).decision,'EVALUATION_REQUIRED');
 });
 
 test('invalid identity, future receipts and duplicate outcomes never fabricate value',()=>{

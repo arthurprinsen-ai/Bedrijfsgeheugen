@@ -19,7 +19,8 @@ test('pricing integrity and production proof enforce the new commercial surface'
   ]);
   for(const token of ['€ 99','€ 299','€ 749','Directie & AI Workshop','Combineer zonder dubbel te betalen']) assert.ok(integrity.includes(token));
   assert.ok(workflow.includes('COMMERCIAL_PRICING_PRODUCTION_CONTENT_PROVEN'));
-  assert.ok(workflow.includes('data-tab="consulting"'));
+  assert.ok(workflow.includes('verify-pricing-production-content.mjs'));
+  assert.ok((await readFile('tools/delivery/verify-pricing-production-content.mjs','utf8')).includes('Consulting & workshops'));
   assert.ok(browser.includes('COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN'));
 });
 

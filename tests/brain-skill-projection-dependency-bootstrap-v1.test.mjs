@@ -9,5 +9,5 @@ test('skill projection bootstraps package dependencies before learning replay',(
   const canonicalize=workflow.indexOf('Evaluate changed learning before canonicalization');
   assert.ok(install>=0,'dependency bootstrap step missing');
   assert.ok(canonicalize>install,'dependency bootstrap must run before canonicalization replay');
-  assert.match(workflow,/npm install --ignore-scripts --no-audit --no-fund/);
+  assert.match(workflow,/npm install (?:--prefer-offline )?--ignore-scripts --no-audit --no-fund/);
 });

@@ -14,6 +14,6 @@ test('preserves bounded batches, scheduler authority and truthful partial result
  assert.match(source,/const BATCH=3/);
  assert.match(source,/req.headers.get\('x-powerhouse-token'\)!==expected/);
  assert.match(source,/failed\.length\?207:200/);
- assert.match(source,/await bewijs\(ok\.length>0,out/);
+ assert.match(source,/await bewijs\(verdict\.green,out,verdict\.errorClass\)/);
  assert.match(source,/error:safeFailure\(e\)/);
 });

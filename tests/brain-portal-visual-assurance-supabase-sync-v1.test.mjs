@@ -10,8 +10,11 @@ test('visual assurance sync validates canonical GitHub main evidence',()=>{
   assert.match(edge,/branch=main&status=completed/);
   assert.match(edge,/conclusion==='success'/);
   assert.match(edge,/j\?\.name==='visual-density'/);
-  assert.match(edge,/powerhouse_daily_scheduler_token/);
-  assert.match(edge,/x-powerhouse-token/);
+  // Scheduler authority is owned by the shared scheduler-auth module (token + header contract).
+  assert.match(edge,/authorizePowerhouseScheduler\(req\)/);
+  const schedulerAuth=fs.readFileSync('supabase/functions/_shared/powerhouse-scheduler-auth.ts','utf8');
+  assert.match(schedulerAuth,/powerhouse_daily_scheduler_token/);
+  assert.match(schedulerAuth,/x-powerhouse-token/);
   assert.match(edge,/powerhouse_loop_assurance_receipts_v1/);
   assert.match(edge,/powerhouse_refresh_loop_assurance_v1/);
 });

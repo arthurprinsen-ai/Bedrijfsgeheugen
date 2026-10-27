@@ -32,7 +32,8 @@ test('v3.1 tool-router completed data envelope is not falsely failed',()=>{
 test('OIDC identity, exact site and production fail-closed controls remain mandatory',()=>{
   assert.match(bridge,/jwtVerify\(token, jwks, \{ issuer, audience \}\)/);
   assert.match(bridge,/payload\.repository !== expectedRepo \|\| payload\.ref !== expectedRef \|\| payload\.workflow_ref !== expectedWorkflowRef/);
-  assert.match(bridge,/if \(!readResult\.includes\(siteId\)\) throw new Error/);
+  assert.match(bridge,/if \(readResult\.includes\(siteId\)\) \{/);
+  assert.match(bridge,/if \(!verifiedContext\) throw new Error\("composio netlify site authority unverified"\)/);
   assert.match(bridge,/if \(!match\) throw new Error\("fresh netlify proxy not issued"\)/);
   assert.match(bridge,/if \(!accepted\) \{/);
 });

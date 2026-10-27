@@ -47,7 +47,7 @@ test('generic company marketing and direct calls to buy stay out of personal',()
 test('generation applies editorial v3 to BOTH Anthropic and Composio, before final SHA',()=>{
   assert.match(orchestrator,/artifact=await callAI\(apiKey,gov\.model_id,editorialSystem/);
   assert.match(orchestrator,/artifact=await callComposioArtifact\(db,generationModel,editorialSystem/);
-  const editorial=orchestrator.indexOf('const editorialViolations=personalEditorialViolations(bodyText');
+  const editorial=orchestrator.indexOf('let editorialViolations=personalEditorialViolations(bodyText');
   const hash=orchestrator.indexOf('const finalTextHash = await digest(bodyText)');
   assert.ok(editorial>0 && editorial<hash);
   assert.match(orchestrator,/final_copy_approved:pending\.channel==='linkedin_company'\|\|pending\.channel==='linkedin_personal'/);

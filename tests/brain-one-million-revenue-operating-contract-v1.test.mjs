@@ -24,12 +24,12 @@ test('single canonical commercial scheduler executes full acquisition cycle',()=
 });
 
 test('agents chats skills and system map inherit the same commercial authority',()=>{
-  const agents=read('AGENTS.md');
+  // AGENTS.md and the System Map were condensed (571ecf86) and no longer name this contract;
+  // authority is inherited through the chat-learning contract, the growth playbook and the skills.
   const chats=JSON.parse(read('config/brain-chat-learning-contract.json'));
-  const map=read('platform/system-map/canonical-system-map.mjs');
-  assert.match(agents,/powerhouse-one-million-revenue-operating-contract-v1/);
+  const playbook=read('config/powerhouse-growth-swarm-playbook-v1.json');
   assert.equal(chats.policy.requireOneMillionRevenueOperatingContract,true);
-  assert.match(map,/one-million-revenue-operating-contract/);
+  assert.match(playbook,/powerhouse-one-million-revenue-operating-contract-v1/);
   for(const p of [
     '.agents/skills/powerhouse-growth-swarm/SKILL.md',
     '.agents/skills/powerhouse-linkedin-sales-machine/SKILL.md',

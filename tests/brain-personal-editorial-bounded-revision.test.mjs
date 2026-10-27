@@ -4,9 +4,11 @@ import {readFileSync} from 'node:fs';
 
 const code=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
 test('bounded revision is only attempted after personal editorial rejection',()=>{
-  assert.match(code,/if \(editorialViolations\.length && generationProvider==='Anthropic' && apiKey\)/);
+  assert.match(code,/if \(editorialViolations\.length && generationProvider==='OpenAI' && apiKey\)/);
   assert.match(code,/editorial_rejection_codes:editorialViolations\.map/);
-  assert.match(code,/\},artifactTool,2400\)/);
+  assert.match(code,/callAI\(apiKey,gov\.model_id,correctionPrompt,revisionInput,artifactTool,budget\)/);
+  assert.match(code,/retryIncompleteEditorialDraft\(/);
+  assert.match(code,/\n\s*2400,\(error:unknown\)=>error instanceof AIProviderIncompleteOutputError/);
 });
 test('rewrite must satisfy the original editorial and factual gates',()=>{
   assert.match(code,/personalEditorialViolations\(revisedText,personalSource\?\.evidence\|\|\{\}\)\.length===0/);

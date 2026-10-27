@@ -51,7 +51,11 @@ test('actual Edge ingest writes to existing scan, runtime and growth stores with
 test('selfscan shows full free value before async persistence and never submits contact PII',async()=>{
   const s=await readFile(new URL('../zelfscan.html',import.meta.url),'utf8');
   assert.match(s,/toon\('s-score'\);\s*bgScanNaarBrein\(score,per\)/);
-  assert.match(s,/fetch\('\/api\/powerhouse-scan-ingest'/);
+  // Persistence is the shared durable client; the page itself never hand-rolls the request.
+  const persistence=await readFile(new URL('../assets/scan-persistence.js',import.meta.url),'utf8');
+  assert.match(s,/window\.BGScanPersistence\.save\(payload\)/);
+  assert.match(s,/data-bg-scan-persistence/);
+  assert.match(persistence,/fetch\('\/api\/powerhouse-scan-ingest'/);
   assert.match(s,/BG_SCAN_KEY=bgMaakScanKey\(\)/);
   assert.match(s,/id="bgBrainStatus"/);
   const fn=s.split('function bgScanNaarBrein(score,per){')[1]?.split('var TEAMUITDAGING')[0]||'';
@@ -63,8 +67,8 @@ test('Portal V2 only exposes scans after authenticated tenancy and explicit clai
   const bridge=await readFile(new URL('../portal-v2/scan-claim-bridge.js',import.meta.url),'utf8');
   const app=await readFile(new URL('../portal-v2/app.js',import.meta.url),'utf8');
   const api=await readFile(new URL('../netlify/functions/portal-scans.mjs',import.meta.url),'utf8');
-  assert.match(app,/createScanClaimBridge\(\)/);
-  assert.match(app,/scanClaimBridge\.setAuthenticated\(authenticated\)/);
+  assert.match(app,/createScanClaimBridge\(\{/);
+  assert.match(app,/scanClaimBridge\.setAuthenticated\(authenticated,snap\.user\?\.id\)/);
   assert.match(bridge,/if\(!authenticated\)return/);
   assert.match(bridge,/tenant_identity_status==='verified'/);
   assert.match(bridge,/GET|fetcher\('\/api\/portal-scans'/);
@@ -100,7 +104,8 @@ test('privileged runtime-cycle function denies browser roles and keeps service-r
 test('verified scan receipt offers a direct same-origin portal claim path',async()=>{
   const scan=await readFile(new URL('../zelfscan.html',import.meta.url),'utf8');
   const claim=await readFile(new URL('../portal-v2/scan-claim-bridge.js',import.meta.url),'utf8');
-  assert.match(scan,/if\(!r\.ok\|\|data\.ok!==true\|\|!data\.scan_id\|\|!data\.event_id\)/);
+  const persistence=await readFile(new URL('../assets/scan-persistence.js',import.meta.url),'utf8');
+  assert.match(persistence,/if\(!r\.ok\|\|data\?\.ok!==true\|\|!data\.scan_id\|\|!data\.event_id\)throw Error\('SCAN_NOT_STORED'\)/);
   assert.match(scan,/sessionStorage\.setItem\('bg_last_scan_ref',key\)/);
   assert.match(scan,/link\.href='https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/'/);
   assert.match(scan,/status\.appendChild\(link\)/);

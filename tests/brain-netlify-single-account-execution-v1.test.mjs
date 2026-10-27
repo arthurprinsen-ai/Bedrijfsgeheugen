@@ -28,11 +28,14 @@ test('session execution inherits its pinned account instead of requesting multi-
 });
 
 test('Netlify provider health is read-only and unsafe results fail closed',()=>{
-  const context=section('if (action === "health")','phase = "proxy_read"');
+  const context=section('phase = "provider_authority_selection"','if (action === "health")');
   assert.match(context,/NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER/);
   assert.match(context,/operation: "get-project"/);
   assert.match(context,/readResult\.includes\(siteId\)/);
-  assert.doesNotMatch(context,/operation:\\s*["']deploy-site["']/);
+  assert.doesNotMatch(context,/operation:\s*["']deploy-site["']/);
+  const health=section('if (action === "health")','phase = "proxy_read"');
+  assert.match(health,/provider_readback:true/);
+  assert.doesNotMatch(health,/deploy-site/);
   assert.match(source,/resultType === "completed"/);
   assert.match(source,/parsed\?\.data\?\.successful !== false/);
   assert.match(source,/throw new Error\("composio pinned session execute " \+ executeRes\.status\)/);

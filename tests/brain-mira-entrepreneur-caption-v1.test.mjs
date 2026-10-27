@@ -25,9 +25,9 @@ test('no caption, lost cause, wrong portal identity, wrong impact or wrong sourc
  for(const mutation of [{canonical_problem_id:'PH-P999'},{portal_page:'fantasy-page'},{portal_capability:'Made Up Capability'},{portal_impact_label:'OBSERVED'},{source_catalog:'random-social-signal'}])assert.equal(validateMiraCaptionForDelivery(date,c,{...e,...mutation}).ok,false);
 });
 test('single existing writer and orchestrator enforce scene-caption-problem cohesion',()=>{
- assert.match(orch,/miraCaption\(miraBusinessProblem\)/);assert.match(orch,/MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA/);
- assert.match(router,/MIRA_MEDIA_MUST_MATCH_CANONICAL_BUSINESS_PROBLEM_AND_SCENE/);assert.match(router,/mira_business_problem_id=miraBusinessProblem.id/);
- assert.match(publisher,/validateMiraCaptionForDelivery\(runDate,art.body/);assert.match(publisher,/MIRA_MEDIA_CAPTION_SCENE_MISMATCH/);
- assert.ok(publisher.indexOf('validateMiraCaptionForDelivery(runDate,art.body')<publisher.indexOf("await consumePublishCapability(db,capability,runDate,row.channel"));
+ assert.match(orch,/miraResolvedCaption\(resolvedMira\)/);assert.match(orch,/MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA/);
+ assert.match(router,/MIRA_MEDIA_MUST_MATCH_FROZEN_WINNER_SCENE_AND_EXACT_ASSET/);assert.match(router,/mira_business_problem_id=expectedProblemId/);
+ assert.match(publisher,/validateResolvedMiraCaptionForDelivery\(runDate,art.body/);assert.match(publisher,/MIRA_MEDIA_CAPTION_SCENE_MISMATCH/);
+ assert.ok(publisher.indexOf('validateResolvedMiraCaptionForDelivery(runDate,art.body')<publisher.indexOf("await consumePublishCapability(db,capability,runDate,row.channel"));
  assert.doesNotMatch(orch,/publishInstagramViaComposio/);
 });
