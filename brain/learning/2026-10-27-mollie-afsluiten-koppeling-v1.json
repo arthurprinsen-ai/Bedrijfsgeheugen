@@ -9,23 +9,26 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/saas-pricing-entitlements.test.mjs",
-      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs",
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
     ],
     "canary": [
       "tests/brain-pricing-billing-toggle-20261027.test.mjs",
       "tests/brain-mollie-billing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
     ]
   },
   "root_cause": "The Mollie Edge Functions existed but /afsluiten still posted to a Stripe-only Netlify function that needed two Netlify secrets, and /prijzen did not state what is collected. Control and Scale rows still had direct_checkout=true although they are not published.",
   "prevention": "Netlify checkout-create and checkout-readiness only validate the published offer and call bg-mollie-checkout with the Supabase service role; the Mollie key stays in Vault. Only starter, pro and groei can be bought directly (migration). /prijzen states excl. btw, Mollie payment methods and cancellation, and carries its own correct og/twitter tags. No trial: the free entry is Frisse Blik.",
   "evidence": {
     "tests": [
-      "tests/saas-pricing-entitlements.test.mjs",
       "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs",
       "tests/brain-pricing-entitlement-source-parity-v1.test.mjs",
       "tests/brain-pricing-billing-toggle-20261027.test.mjs",
-      "tests/brain-mollie-billing-v1.test.mjs"
+      "tests/brain-mollie-billing-v1.test.mjs",
+      "tests/saas-pricing-entitlements.test.mjs"
     ],
     "workflow": ".github/workflows/required-test.yml",
     "runtime_status": "unverified until a Mollie test payment completes end to end on production after merge and Edge Function deploy"
