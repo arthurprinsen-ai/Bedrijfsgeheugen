@@ -36,7 +36,7 @@ concurrency:
 
 jobs:
   pr4967-codeql-focused-verification:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 4969
     runs-on: ubuntu-latest
     timeout-minutes: 6
     permissions:
@@ -62,8 +62,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git -C exact-pr4967 rev-parse HEAD)" = "255be21c76d5078dbd1bd70f3429b16d9624791f"
-          cp candidate-fixtures/tests/fixtures/pr4967-codeql-candidate/brain-ci-critical-path-acceleration-v2.test.mjs exact-pr4967/tests/
-          cp candidate-fixtures/tests/fixtures/pr4967-codeql-candidate/brain-rocket-delivery-v1.test.mjs exact-pr4967/tests/
+          cp candidate-fixtures/tools/delivery/fixtures/pr4967-codeql-candidate/brain-ci-critical-path-acceleration-v2.test.mjs exact-pr4967/tests/
+          cp candidate-fixtures/tools/delivery/fixtures/pr4967-codeql-candidate/brain-rocket-delivery-v1.test.mjs exact-pr4967/tests/
           test "$(git -C exact-pr4967 diff --name-only | wc -l | tr -d ' ')" = "2"
       - name: Execute the two original tests on exact checkout with candidate replacements
         working-directory: exact-pr4967
