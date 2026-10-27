@@ -5,12 +5,12 @@ const CANONICAL_GITHUB_API='https://api.github.com/repos/arthurprinsen-ai/Bedrij
 const GITHUB_ROUTES=Object.freeze({
  GET:[
   /^\/pulls\/[1-9]\d*$/,
-  /^\/git\/ref\/heads\/[A-Za-z0-9._~%/-]+$/,
+  /^\/git\/ref\/heads\/[A-Za-z0-9._~%\/-]+$/,
   /^\/git\/commits\/[a-f0-9]{40}$/,
-  /^\/contents\/[A-Za-z0-9._~%/-]+\?ref=[a-f0-9]{40}$/,
+  /^\/contents\/[A-Za-z0-9._~%\/-]+\?ref=[a-f0-9]{40}$/,
  ],
  POST:[/^\/git\/blobs$/, /^\/git\/trees$/, /^\/git\/commits$/],
- PATCH:[/^\/git\/refs\/heads\/[A-Za-z0-9._~%/-]+$/],
+ PATCH:[/^\/git\/refs\/heads\/[A-Za-z0-9._~%\/-]+$/],
 });
 function canonicalGithubTarget(method,route) {
  if (typeof route!=='string' || !(GITHUB_ROUTES[method]||[]).some(p=>p.test(route))) throw Error('GITHUB_ROUTE_NOT_ALLOWED');
