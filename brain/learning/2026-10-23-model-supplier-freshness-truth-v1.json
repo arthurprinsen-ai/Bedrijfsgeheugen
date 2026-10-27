@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-23",
+  "obligation_id": "model-supplier-freshness-reliability-20261023",
+  "lesson": "A historical VERIFIED label is not a current official provider claim; supplier receipts beyond seven days must fail closed without restamping.",
+  "fingerprint": "powerhouse|ai-model-catalog|stale-receipt-green-misclassification|20261023",
+  "root_cause": "The 14-day frontend and audit freshness windows allowed 110 historical supplier checks older than seven days to remain eligible for a FRESH assessment despite independent supplier receipts not being renewed.",
+  "prevention": "Apply one seven-day source-evidence gate in advisor, daily audit, and configuration; show explicit historical-stale label; never infer official verification from DB updated_at or an HTTP response.",
+  "evaluation": {
+    "regression_test": "tests/brain-ai-model-supplier-freshness-guard-v1.test.mjs",
+    "audit": "scripts/brain/ai-model-intelligence-audit.mjs",
+    "customer_surface": "ai-modelwijzer.html",
+    "historical_replay": [
+      "tests/brain-ai-model-supplier-freshness-guard-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "supplier_records": 110,
+    "records_older_than_seven_days": 110,
+    "db_verified_status_count": 83,
+    "partial": 26,
+    "conflict": 1,
+    "catalog_mutated": false,
+    "independent_official_reverification": false,
+    "production_proof": "PENDING_PROTECTED_MERGE_AND_READBACK"
+  },
+  "compiler": {
+    "failure_class": "EVIDENCE_FRESHNESS",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
