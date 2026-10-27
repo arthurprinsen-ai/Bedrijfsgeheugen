@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|tests|buffer-social-learning-stale-contracts|20261027-v1",
+  "compiler": {
+    "failure_class": "STALE_TEST_CONTRACT",
+    "scope": "TEST",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The Buffer Social Learning workflow was red since 25 October because two tests asserted retired shapes: the single publish_only call in the content loop (now a per-channel list), extraction contract v1 with a removed error code, and a renamed vision-proof error code.",
+  "prevention": "Tests now assert the current per-channel publish ordering after the media router, extraction contract v2 with frame sampling in its own module, and VIDEO_FRAME_PROOF_FAILED.",
+  "evidence": {
+    "tests": [
+      "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+      "tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/buffer-social-learning.yml",
+    "runtime_status": "unverified until protected merge and green workflow on main"
+  },
+  "limitations": [
+    "Test-only; no runtime behaviour changed"
+  ]
+}
