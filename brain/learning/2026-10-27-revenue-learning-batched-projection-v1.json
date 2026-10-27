@@ -10,6 +10,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-revenue-learning-batched-projection-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-batched-projection-20261027.test.mjs"
     ]
   },
   "root_cause": "The hourly revenue-learning-project function made one serial gateway call per projection candidate (hundreds per run) and was aborted by the caller after about 15 seconds (HTTP 499 on 13 of 13 runs in 24 hours), so revenue evidence was not refreshed.",
