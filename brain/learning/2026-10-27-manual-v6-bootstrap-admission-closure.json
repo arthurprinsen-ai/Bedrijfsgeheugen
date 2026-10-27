@@ -1,0 +1,24 @@
+{
+  "fingerprint": "manual-v6-bootstrap|pr-4969|integration-bundle-closure-incomplete|2026-10-27",
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+  },
+  "root_cause": "PR #4969 added material GitHub Actions and JavaScript changes without the three same-lineage closure artifacts required by the protected material-writeback policy. Initial PR metadata was also absent and was subsequently corrected.",
+  "prevention": "Before proposing any material bootstrap change, require a same-lineage Brain learning JSON, development ledger event and human-readable change document; never weaken protected admission and never classify skipped required checks as success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-v6-bootstrap.test.mjs",
+      "tests/brain-writer-v6-runtime-regressions.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "GitHub v6-regression-tests success on earlier commit db66601569308d1bc5a7a385f75d20e353724ecd; later commit requires fresh verification"
+    ],
+    "admission": "GitHub Actions job 122088683772",
+    "production_readback": "NOT_PERFORMED",
+    "merge": "NOT_MERGED",
+    "historical_provider_run": "GitHub Actions 40474059242; separate tests may validate canonicalization but do not constitute full Required proof"
+  },
+  "outcome": "Candidate closure evidence added for review; no production or Backend repair authorized."
+}
