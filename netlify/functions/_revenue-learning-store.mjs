@@ -1,16 +1,27 @@
 const required=(v,label)=>{if(!v)throw new Error(`Revenue learning store configuration missing: ${label}`);return v;};
 
-export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL_LEARNING_SUPABASE_URL||process.env.BG_PORTAL_EU_SUPABASE_URL,serviceToken=process.env.BG_SOCIAL_LEARNING_SERVICE_TOKEN||process.env.BG_PORTAL_EU_SERVICE_TOKEN,tenantId=process.env.BG_SOCIAL_LEARNING_TENANT_ID||'canonical'}={}){
+export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL_LEARNING_SUPABASE_URL||process.env.BG_PORTAL_EU_SUPABASE_URL,serviceToken=process.env.BG_SOCIAL_LEARNING_SERVICE_TOKEN||process.env.BG_PORTAL_EU_SERVICE_TOKEN,tenantId=process.env.BG_SOCIAL_LEARNING_TENANT_ID||'canonical',retryDelayMs=400}={}){
   required(fetchFn,'fetch');required(baseUrl,'baseUrl');required(serviceToken,'serviceToken');required(tenantId,'tenantId');
   const endpoint=`${String(baseUrl).replace(/\/$/,'')}/functions/v1/revenue-learning-store`;
   const headers={'content-type':'application/json','x-bg-service-token':serviceToken};
-  async function gateway(body){
+  // Every action is a read or carries an idempotency key, so one bounded retry after a
+  // transient 5xx or network failure (edge cold start, 2.5 s store timeout) is safe.
+  async function gatewayOnce(body){
     const response=await fetchFn(endpoint,{method:'POST',headers,body:JSON.stringify({tenantId,...body})});
     const data=await response.json().catch(()=>({}));
     // 202 with degraded=true is NOT an empty successful projection.
-    if(data?.degraded===true){const e=new Error(`Revenue learning store degraded: ${data?.reason||'DATA_API_UNAVAILABLE'} (${response.status})`);e.status=503;throw e;}
+    if(data?.degraded===true){const e=new Error(`Revenue learning store degraded: ${data?.reason||'DATA_API_UNAVAILABLE'} (${response.status})`);e.status=503;e.degraded=true;throw e;}
     if(!response.ok){const e=new Error(`Revenue learning store ${data?.error||'gateway failed'} (${response.status})`);e.status=response.status;throw e;}
     return data||{};
+  }
+  const transient=e=>e?.degraded!==true&&(e?.status===undefined||e.status>=500);
+  async function gateway(body){
+    try{return await gatewayOnce(body);}
+    catch(error){
+      if(!transient(error)||retryDelayMs<0)throw error;
+      await new Promise(r=>setTimeout(r,retryDelayMs));
+      return gatewayOnce(body);
+    }
   }
   return Object.freeze({
     listProjectionCandidates:async(now)=>(await gateway({action:'list_projection_candidates',now})).candidates||[],
