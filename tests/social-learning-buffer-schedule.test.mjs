@@ -12,8 +12,10 @@ const migrationUrl=(name)=>{
   return existsSync(executable)?executable:history;
 };
 
-test('Buffer collector is scheduled natively and not through Make', () => {
-  assert.equal(config.schedule, '15 */6 * * *');
+test('legacy Buffer collector is no longer scheduled (retired in #4554) and never routed through Make', () => {
+  // Buffer is not the canonical social provider; the handler stays callable for explicit diagnostics only.
+  assert.equal(config.schedule, undefined);
+  assert.deepEqual(config, {});
 });
 
 test('missing Buffer credential records one fail-closed obligation', async () => {

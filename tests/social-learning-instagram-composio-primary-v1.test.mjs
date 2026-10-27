@@ -6,14 +6,16 @@ const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/
 const sources=JSON.parse(fs.readFileSync('config/powerhouse-data-sources.json','utf8'));
 
 test('Instagram publishing is Composio-primary and never Make fallback',()=>{
-  assert.match(publisher,/backend\.composio\.dev\/api\/v3/);
-  assert.doesNotMatch(publisher,/api\/v3\.1\/tools\/execute/);
+  // Canonical base since 2026-09-24 is api/v3.1 (see brain-instagram-composio-proxy-base-v1); no substring mutation.
+  assert.ok(publisher.includes("const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1'"));
+  assert.ok(publisher.includes('COMPOSIO_BASE}/tools/execute/${toolSlug}'));
   assert.match(publisher,/INSTAGRAM_POST_IG_USER_MEDIA/);
   assert.match(publisher,/INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
   assert.match(publisher,/INSTAGRAM_GET_IG_MEDIA/);
-  assert.match(publisher,/instagram-composio-primary-v1/);
+  assert.match(publisher,/transport_contract:'instagram-composio-only-canonical-graph-id-v2'/);
   assert.match(publisher,/COMPOSIO_INSTAGRAM_AUTH_REQUIRED/);
-  assert.match(publisher,/never fall back to Make/);
+  assert.match(publisher,/make_dependency:false/);
+  assert.match(publisher,/buffer_dependency:false,meta_direct_dependency:false/);
   const source=sources.sources.find(x=>x.id==='instagram-publishing');
   assert.equal(source.provider_layer,'composio');
   assert.deepEqual(source.forbidden_fallbacks,['make']);
@@ -27,9 +29,10 @@ test('Composio Instagram path keeps exact proof and provider readback',()=>{
   assert.match(publisher,/hook_type: clean\(art\.generation_evidence\?\.hook_type\)/);
   assert.match(publisher,/state:'published'/);
   assert.match(publisher,/recordObligation\(db,runDate,row.channel,'PUBLISHED'/);
-  assert.match(publisher,/status:authMissing\?'waiting_auth':'failed'/);
-  assert.match(publisher,/state:authMissing\?'content_ready':'failed'/);
-  assert.match(publisher,/authMissing\?'APPROVED':'FAILED'/);
+  // Missing provider auth is resumable: claim stays content_ready/APPROVED and reports waiting_auth without a provider side effect.
+  assert.match(publisher,/status:'waiting_auth',provider:'composio',resumable:true,provider_side_effect:false/);
+  assert.match(publisher,/state:'content_ready'/);
+  assert.match(publisher,/recordObligation\(db,runDate,row\.channel,'APPROVED'/);
 });
 
 
@@ -49,8 +52,7 @@ test('skills canonically forbid Make and route Instagram through Composio',()=>{
   assert.match(authority,/Composio primary for Instagram/);
   assert.match(authority,/Make is retired/);
   assert.match(instagramSkill,/Make is retired and forbidden/);
-  assert.match(instagramSkill,/api\/v3\/tools\/execute/);
-  assert.doesNotMatch(instagramSkill,/api\/v3\.1\/tools\/execute/);
+  assert.match(instagramSkill,/backend\.composio\.dev\/api\/v3\.1\/tools\/execute/);
   assert.match(miraSkill,/COMPOSIO_API_KEY/);
   assert.match(learning,/COMPOSIO_INSTAGRAM_AUTH_REQUIRED/);
   assert.match(learning,/no external_id is written until provider readback succeeds/i);

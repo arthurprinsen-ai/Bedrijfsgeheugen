@@ -33,10 +33,12 @@ test('commercial contradiction prevents engagement-led PROVEN learning',async()=
   const store={
     listDuePosts:async()=>[{postId:'p1',tenantId:'t1',platform:'linkedin_company',publishedAt:'2026-09-01T10:00:00Z',dueWindow:24,hookType:'tension'}],
     getSnapshots:async()=>[{snapshotId:'target',postId:'p1',observedAt:'2026-09-02T10:00:00Z',dataQuality:'OBSERVED',metrics:{impressions:100,revenue:50,comments:20,shares:5,saves:5}}],
-    getCohort:async()=>Array.from({length:5},(_,i)=>({postId:`c${i}`,observedAt:`2026-08-${20+i}T10:00:00Z`,metrics:{impressions:100,revenue:100,comments:5,shares:1,saves:1}})),
+    // Cohort members must share the target's platform (buildCohort), otherwise there is no baseline at all.
+    getCohort:async()=>Array.from({length:5},(_,i)=>({postId:`c${i}`,platform:'linkedin_company',observedAt:`2026-08-${20+i}T10:00:00Z`,metrics:{impressions:100,revenue:100,comments:5,shares:1,saves:1}})),
     putEvaluation:async()=>{},upsertLearning:async l=>learnings.push(l),reconcileApplications:async()=>{}
   };
   await runEvaluation({store,now:new Date('2026-09-02T11:00:00Z'),config});
+  assert.equal(learnings.length,1);
   assert.equal(learnings[0].effectMetric,'revenue');
   assert.notEqual(learnings[0].status,'PROVEN');
 });
