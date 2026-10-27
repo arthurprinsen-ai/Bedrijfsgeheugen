@@ -63,20 +63,29 @@ Deno.serve(async(req:Request)=>{
  const [dfsLogin,dfsPassword]=await Promise.all([db.rpc('bg_geheim',{p_naam:'DATAFORSEO_LOGIN'}),db.rpc('bg_geheim',{p_naam:'DATAFORSEO_PASSWORD'})]);
  const dfsUser=String(dfsLogin.data||'').trim(), dfsPass=String(dfsPassword.data||'').trim();
  if(!tavily&&!dfsUser) return json({error:'SEARCH_PROVIDER_UNAVAILABLE'},503);
+ const providers:Record<string,number>={};
  const search=async(q:string)=>{
    if(tavily){
      const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:'basic',max_results:8,include_answer:false})});
      const b:any=await r.json().catch(()=>({}));
      if(r.ok){
+       providers.tavily_raw=(providers.tavily_raw||0)+(b.results||[]).length;
        const rows=(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score,publishedAt:isoFromProvider(x.published_date||x.published_at)})).filter((x:any)=>withinWindow(x.publishedAt));
        if(rows.length) return {provider:'tavily_news',results:rows};
      } else if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
    }
    if(dfsUser&&dfsPass){
      // Google News live accepts one task per request and ignores time_range, so the age window is enforced here.
-     const r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20}])});
-     const b:any=await r.json().catch(()=>({}));
-     if(!r.ok||Number(b?.status_code||0)!==20000) throw new Error('DATAFORSEO_'+r.status);
+     // The request can be 20000 while the task itself failed (e.g. 40101): check both, retry once.
+     let r:Response, b:any, taskCode=0;
+     for(let attempt=0;attempt<2;attempt++){
+       r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20}])});
+       b=await r.json().catch(()=>({}));
+       taskCode=Number(b?.tasks?.[0]?.status_code||0);
+       if(r.ok&&Number(b?.status_code||0)===20000&&taskCode===20000) break;
+       if(attempt===0) await new Promise(res=>setTimeout(res,1500));
+     }
+     if(!r!.ok||Number(b?.status_code||0)!==20000||taskCode!==20000) throw new Error('DATAFORSEO_'+r!.status+'_TASK_'+taskCode);
      const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
      const rows:any[]=[];
      for(const x of items){
@@ -89,7 +98,7 @@ Deno.serve(async(req:Request)=>{
  };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
- let stored=0, eligible=0; const providers:Record<string,number>={}; const seen=new Set<string>(); const errors:string[]=[];
+ let stored=0, eligible=0; const seen=new Set<string>(); const errors:string[]=[];
  for(const q of queries){
   let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
   providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
