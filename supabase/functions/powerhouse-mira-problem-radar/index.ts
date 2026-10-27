@@ -95,9 +95,9 @@ Deno.serve(async(req:Request)=>{
   providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
   for(const x of (sr.results||[])){
    const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
-   const problemTopic=topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||''; if(!portalProblemId) continue;
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
    if(!d||title.length<12) continue;
+   const problemTopic=topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||''; if(!portalProblemId) continue;
    const all=(title+' '+excerpt).toLowerCase();
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    const personal=/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|excel|proces|klant)/.test(all)?1:0.6;
