@@ -35,6 +35,39 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  pr4967-codeql-focused-verification:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout immutable candidate patches
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate-fixtures
+          persist-credentials: false
+      - name: Checkout exact PR 4967 source
+        uses: actions/checkout@v5
+        with:
+          ref: 255be21c76d5078dbd1bd70f3429b16d9624791f
+          path: exact-pr4967
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify immutable source and install only two candidate tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C exact-pr4967 rev-parse HEAD)" = "255be21c76d5078dbd1bd70f3429b16d9624791f"
+          cp candidate-fixtures/tests/fixtures/pr4967-codeql-candidate/brain-ci-critical-path-acceleration-v2.test.mjs exact-pr4967/tests/
+          cp candidate-fixtures/tests/fixtures/pr4967-codeql-candidate/brain-rocket-delivery-v1.test.mjs exact-pr4967/tests/
+          test "$(git -C exact-pr4967 diff --name-only | wc -l | tr -d ' ')" = "2"
+      - name: Execute the two original tests on exact checkout with candidate replacements
+        working-directory: exact-pr4967
+        run: node --test tests/brain-ci-critical-path-acceleration-v2.test.mjs tests/brain-rocket-delivery-v1.test.mjs
   v6-regression-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
