@@ -1,5 +1,6 @@
 import { mkdir, writeFile, appendFile, readFile, readdir } from 'node:fs/promises';
 import { calibrateCi, isRequiredCiRun, selectCiRunsForMeasurement, describeCiObservationCoverage } from '../../tools/delivery/ci-calibration-engine.mjs';
+import { inspectRepeatExecutions, locateMeasuredDelay } from '../../tools/delivery/ci-adaptive-pr-planner.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -232,6 +233,11 @@ const baseReport = {
     safety_gates_may_not_be_auto_weakened: true,
   },
   jobs: jobRows,
+  adaptive_diagnostics: {
+    measured_bottleneck: locateMeasuredDelay(jobRows),
+    repeated_exact_head_workflow_runs: inspectRepeatExecutions(runs),
+    guidance: 'bounded_advisory_only_no_CI_gate_suppression_or_production_promotion',
+  },
 };
 
 // Existing tuning config is the experiment authority; never invent a separate store.
