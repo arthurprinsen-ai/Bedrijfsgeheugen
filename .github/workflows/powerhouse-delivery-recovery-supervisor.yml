@@ -610,6 +610,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Install pinned PostgreSQL driver for lease control
+        run: python3 -m pip install --disable-pip-version-check 'psycopg[binary]==3.2.10'
       - name: Fail closed until trusted v6 sources and manifest are reviewed
         shell: bash
         run: |
