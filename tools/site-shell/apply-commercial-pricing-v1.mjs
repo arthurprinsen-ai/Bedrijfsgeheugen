@@ -22,7 +22,7 @@ function renderSaas(){
    ${p.sso?'<li>✓ SSO / werkaccount</li>':''}
    ${p.audit_trail?'<li>✓ Audit trail & export</li>':''}
   </ul>
-  <a class="cta" href="${p.direct_checkout?'https://www.bedrijfsgeheugen.nl/afsluiten?plan='+p.code:'https://www.bedrijfsgeheugen.nl/contact?onderwerp=enterprise'}">${p.direct_checkout?'Start '+esc(p.name):'Plan enterprise gesprek'} →</a>
+  <a class="cta" href="${p.direct_checkout?'https://www.bedrijfsgeheugen.nl/afsluiten?plan='+p.code+'&trial=1':'https://www.bedrijfsgeheugen.nl/contact?onderwerp=enterprise'}">${p.direct_checkout?'Start 30 dagen gratis':'Plan enterprise gesprek'} →</a>
  </article>`).join('');
 }
 function renderMatrix(){
@@ -69,13 +69,13 @@ function page(){
  </style>
  <div class="hero held" data-bg-component="hero"><div class="wrap"><p class="bgkruim"><b>POWERHOUSE PRIJZEN</b></p><h1>Kies software of expertise.<br><em>Combineer wanneer het nodig is.</em></h1><p>Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.</p><div class="choice pil"><a class="on" href="#saas">Powerhouse SaaS</a><a class="off" href="#expertise">Consulting & workshops</a></div></div></div>
  <div class="wrap">
- <section class="sec" id="saas"><h2>Powerhouse SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar.</p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Powerhouse Intelligence</span><span>✓ Powerhouse Agents</span><span>✓ Powerhouse Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div></section>
+ <section class="sec" id="saas"><h2>Powerhouse SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar.</p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Powerhouse Intelligence</span><span>✓ Powerhouse Agents</span><span>✓ Powerhouse Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div><p class="sub" style="margin-top:14px"><b>30 dagen gratis proberen:</b> geen betaalmethode nodig. Je start met alleen je bedrijfsnaam en e-mailadres. Daarna kies je zelf een abonnement; kies je niets, dan stopt de toegang en wordt er niets afgeschreven.</p></section>
  <section class="sec"><h2>Wat groeit mee met je abonnement?</h2><p class="sub">De kern blijft gelijk; capaciteit, actualiteit, automatisering en governance groeien mee.</p><div class="tablebox"><table><thead><tr><th></th>${catalog.saas.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead><tbody>${renderMatrix()}</tbody></table></div></section>
  <section class="sec" id="expertise"><h2>Liever eerst samen scherpstellen of versnellen?</h2><p class="sub">Onze workshops en trajecten helpen je om snel de juiste keuzes te maken en direct impact te realiseren.</p><div class="services">${renderServices()}</div></section>
  <section class="sec"><div class="bundle"><h2>Combineer zonder dubbel te betalen</h2><p>${esc(catalog.commercial_rules.credit_rule)} ${esc(catalog.commercial_rules.temporary_access_rule)}</p><div class="flow"><div><b>1. Workshop of scan</b>Breng kansen en prioriteiten in kaart.</div><div><b>2. Waarde wordt verrekend</b>De kosten tellen mee bij een aansluitende Build Sprint.</div><div><b>3. Tijdelijke portaltoegang</b>Tijdens de uitvoering krijg je Pro- of Groei-toegang.</div><div><b>4. Daarna door met SaaS</b>Na oplevering loopt je abonnement door als je dat kiest.</div></div></div></section>
  <section class="sec"><h2>Wat past bij mij?</h2><p class="sub">Gebruik drie keuzes en bekijk daarna een echt pakketadvies met uitleg.</p><div class="finder"><label>1. Aantal medewerkers<select id="pkgSize"><option value="starter">3–15</option><option value="pro" selected>15–100</option><option value="groei">60–150</option><option value="enterprise">150+</option></select></label><label>2. Belangrijkste doel<select id="pkgGoal"><option value="inzicht">Inzicht</option><option value="automatiseren" selected>Automatiseren</option><option value="governance">Governance</option><option value="versnellen">Versnellen met experts</option></select></label><label>3. Hoe aanpakken?<select id="pkgMode"><option value="zelf">Zelf met software</option><option value="samen" selected>Samen met experts</option><option value="begeleid">Volledig begeleid</option></select></label><a class="cta" id="pkgGo" href="/pakketadvies">Bekijk mijn pakket →</a></div><script>document.getElementById('pkgGo')?.addEventListener('click',()=>{const q=new URLSearchParams({size:document.getElementById('pkgSize').value,goal:document.getElementById('pkgGoal').value,mode:document.getElementById('pkgMode').value});location.href='/pakketadvies?'+q.toString();});</script></section>
  </div>
- <div class="closing"><div class="wrap"><h2>Begin klein. Bewijs waarde. Schaal alleen op als het werkt.</h2><div><a class="cta" href="https://www.bedrijfsgeheugen.nl/afsluiten?plan=starter">Start gratis gesprek →</a></div></div></div>
+ <div class="closing"><div class="wrap"><h2>Begin klein. Bewijs waarde. Schaal alleen op als het werkt.</h2><div><a class="cta" href="https://www.bedrijfsgeheugen.nl/afsluiten?plan=starter&trial=1">Start 30 dagen gratis →</a></div></div></div>
  </section>`;
 }
 function englishPage(){
@@ -107,6 +107,9 @@ function englishPage(){
     ['SSO / werkaccount','SSO / work account'],
     ['Plan enterprise gesprek','Schedule enterprise call'],
     ['Start Groei','Start Growth'],
+    ['Start 30 dagen gratis','Start 30 days free'],
+    ['30 dagen gratis proberen:','Try free for 30 days:'],
+    ['geen betaalmethode nodig. Je start met alleen je bedrijfsnaam en e-mailadres. Daarna kies je zelf een abonnement; kies je niets, dan stopt de toegang en wordt er niets afgeschreven.','no payment method needed. You start with just your company name and email address. Afterwards you choose a plan yourself; if you choose nothing, access stops and nothing is charged.'],
     ['Groei','Growth'],
     ['Start met inzicht en de eerste acties.','Start with insight and your first actions.'],
     ['De complete basis voor groei, sturing en uitvoering.','The complete foundation for growth, steering and execution.'],
@@ -249,6 +252,7 @@ function englishPage(){
   for(const [from,to] of finalResiduals) html=html.split(from).join(to);
   html=html
     .replaceAll('https://www.bedrijfsgeheugen.nl/afsluiten','https://www.bedrijfsgeheugen.nl/en/afsluiten')
+    .replaceAll('&trial=1"','&trial=1&lang=en"')
     .replaceAll('https://www.bedrijfsgeheugen.nl/contact','https://www.bedrijfsgeheugen.nl/en/contact')
     .replaceAll('https://www.bedrijfsgeheugen.nl/frisse-blik','https://www.bedrijfsgeheugen.nl/en/frisse-blik');
   return html;
