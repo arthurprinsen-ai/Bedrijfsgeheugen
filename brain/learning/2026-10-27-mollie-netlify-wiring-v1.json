@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|billing|mollie-netlify-wiring|20261027-v1",
+  "compiler": {
+    "failure_class": "CHECKOUT_PATH_DEPENDS_ON_UNCONFIGURED_STRIPE_SECRETS",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"],
+    "shadow": ["tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"],
+    "canary": ["tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"]
+  },
+  "root_cause": "The public checkout path required Stripe secrets in Netlify that were never supplied, so /afsluiten stayed disabled. Payments now run through Mollie via a Supabase Edge Function that reads its key from Vault.",
+  "prevention": "Netlify holds no payment-provider secret: it only calls bg-mollie-checkout with the Supabase service token it already uses. Readiness reports the edge function state; tests assert the fail-closed behaviour and that no provider key is sent from Netlify.",
+  "evidence": {
+    "tests": [
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs",
+      "tests/saas-pricing-entitlements.test.mjs",
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until a Mollie test payment completes end to end through the website"
+  },
+  "limitations": [
+    "Depends on the bg-mollie-checkout edge function from the Mollie edge PR",
+    "Test key only until go-live",
+    "stripe-webhook.mjs is dead code until removed in a follow-up"
+  ]
+}

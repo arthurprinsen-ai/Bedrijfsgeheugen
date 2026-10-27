@@ -20,7 +20,7 @@ test('published SaaS packages use the current canonical commercial catalogue',()
 test('runtime price drift cannot silently charge a different price from the published catalogue',async()=>{
   for(const plan of catalog.saas.filter(plan=>plan.direct_checkout)){
     let providerCalls=0;
-    const handler=createCheckoutHandler({env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},storeFactory:()=>({getPlan:async()=>({...plan,monthly_price_cents:plan.monthly_price_cents+100})}),fetchFn:async()=>{providerCalls++}});
+    const handler=createCheckoutHandler({env:{SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'test'},storeFactory:()=>({getPlan:async()=>({...plan,monthly_price_cents:plan.monthly_price_cents+100})}),fetchFn:async()=>{providerCalls++}});
     const response=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:plan.code,email:'owner@example.test',company_name:'Acme'})}));
     assert.equal(response.status,503);assert.equal((await response.json()).error,'catalogue_sync_required');assert.equal(providerCalls,0);
   }

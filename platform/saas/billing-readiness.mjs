@@ -1,12 +1,20 @@
+// Billing runs on Mollie through the bg-mollie-checkout Supabase Edge Function.
+// The Mollie API key lives only in Supabase Vault; Netlify only needs the Supabase
+// URL and service token it already uses for the portal stores.
+function edgeConfig(env=process.env){
+  const base=String(env?.SUPABASE_URL||env?.BG_PORTAL_EU_SUPABASE_URL||'').trim().replace(/\/$/,'');
+  const token=String(env?.SUPABASE_SERVICE_ROLE_KEY||env?.BG_PORTAL_EU_SERVICE_TOKEN||'').trim();
+  return {base,token};
+}
+
 export function billingReadiness(env=process.env){
-  const stripeSecretConfigured=Boolean(String(env?.STRIPE_SECRET_KEY||'').trim());
-  const webhookSecretConfigured=Boolean(String(env?.STRIPE_WEBHOOK_SECRET||'').trim());
+  const {base,token}=edgeConfig(env);
+  const edgeConfigured=Boolean(base&&token);
   return Object.freeze({
-    provider:'stripe',
-    stripeSecretConfigured,
-    webhookSecretConfigured,
-    selfServeAvailable:stripeSecretConfigured&&webhookSecretConfigured,
-    state:stripeSecretConfigured&&webhookSecretConfigured?'ready':'blocked'
+    provider:'mollie',
+    edgeConfigured,
+    selfServeAvailable:edgeConfigured,
+    state:edgeConfigured?'ready':'blocked'
   });
 }
 
@@ -21,12 +29,20 @@ export function requireBillingReady(env=process.env){
   return readiness;
 }
 
-export async function checkoutStatus(sessionId,{store,fetchFn=globalThis.fetch,env=process.env}={}){
-  const response=await fetchFn('https://api.stripe.com/v1/checkout/sessions/'+encodeURIComponent(sessionId),{headers:{authorization:'Bearer '+env.STRIPE_SECRET_KEY}});
-  if(!response.ok)throw Error('SESSION_UNAVAILABLE');
-  const session=await response.json();
-  const subId=typeof session.subscription==='string'?session.subscription:session.subscription?.id;
-  const sub=subId?await store.findSubscription(subId):null;
-  const ready=session.status==='complete'&&['active','trialing'].includes(sub?.status)&&sub?.metadata?.checkout_session_id===sessionId;
-  return {ready,state:ready?'ready':session.status==='expired'?'expired':'provisioning'};
+export async function callCheckoutEdge(query,{method='GET',body,fetchFn=globalThis.fetch,env=process.env}={}){
+  const {base,token}=edgeConfig(env);
+  if(!base||!token)throw Error('BILLING_NOT_CONFIGURED');
+  const response=await fetchFn(`${base}/functions/v1/bg-mollie-checkout${query}`,{
+    method,
+    headers:{authorization:'Bearer '+token,apikey:token,'content-type':'application/json'},
+    body:body===undefined?undefined:JSON.stringify(body)
+  });
+  const data=await response.json().catch(()=>null);
+  return {ok:response.ok,status:response.status,data};
+}
+
+export async function checkoutStatus(sessionId,{fetchFn=globalThis.fetch,env=process.env}={}){
+  const result=await callCheckoutEdge('?status='+encodeURIComponent(sessionId),{fetchFn,env});
+  if(!result.ok||typeof result.data?.ready!=='boolean')throw Error('SESSION_UNAVAILABLE');
+  return {ready:result.data.ready,state:String(result.data.state||'provisioning')};
 }
