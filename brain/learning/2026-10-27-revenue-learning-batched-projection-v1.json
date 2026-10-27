@@ -9,14 +9,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/revenue-learning-project.test.mjs"
+      "tests/brain-revenue-learning-batched-projection-20261027.test.mjs"
     ]
   },
   "root_cause": "The hourly revenue-learning-project function made one serial gateway call per projection candidate (hundreds per run) and was aborted by the caller after about 15 seconds (HTTP 499 on 13 of 13 runs in 24 hours), so revenue evidence was not refreshed.",
   "prevention": "The projector now writes evidence in bounded batches (100 per gateway call, 12 second budget) through the new upsert_evidence_batch action and falls back per item with a PROJECTION_FAILED obligation when a batch fails; the result reports unprojected candidates.",
   "evidence": {
     "tests": [
-      "tests/revenue-learning-project.test.mjs"
+      "tests/brain-revenue-learning-batched-projection-20261027.test.mjs"
     ],
     "workflow": ".github/workflows/required-test.yml",
     "runtime_status": "unverified until protected merge, edge function deployment and Netlify logs without HTTP 499 on revenue-learning-project"
