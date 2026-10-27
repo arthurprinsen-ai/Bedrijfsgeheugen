@@ -54,7 +54,7 @@ jobs:
       - name: Run full published v6 security regressions
         run: node --test tests/brain-writer-v6-bootstrap.test.mjs tests/brain-writer-v6-runtime-regressions.test.mjs
   supervise:
-    if: github.event_name != 'workflow_dispatch' || inputs.patch_handoff != true
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true)
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
