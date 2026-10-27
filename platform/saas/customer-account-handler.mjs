@@ -35,6 +35,7 @@ export function createCustomerAccountHandler({getUser,storeFactory,includeOrgani
         return json(503,{error:'plan_unavailable'});
       return json(200,{ready:true,...(includeOrganisationId?{organisation_id:tenantId}:{}),plan:sub.plan_code,
         plan_name:String(sub.plan_name||sub.plan_code),status:sub.status,
+        ...(sub.status==='trialing'&&sub.current_period_end?{trial_ends_at:new Date(sub.current_period_end).toISOString()}:{}),
         entitlements:sub.entitlements&&typeof sub.entitlements==='object'?sub.entitlements:{}});
     }catch{return json(503,{error:'account_temporarily_unavailable'})}
   };
