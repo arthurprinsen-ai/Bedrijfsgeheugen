@@ -188,3 +188,8 @@ entrypoint = "./functions/bg-mollie-webhook/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-trial-lifecycle-mail/index.ts"
+
+[functions.bg-benchmark-intake]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-benchmark-intake/index.ts"
