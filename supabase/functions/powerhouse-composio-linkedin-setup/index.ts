@@ -161,7 +161,7 @@ Deno.serve(async(req:Request)=>{
         authConfigId=clean(created?.auth_config?.id||created?.id);
       }
       if(!authConfigId)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTH_CONFIG_ID_MISSING');
-      const linkUserId=proofUserId||clean(priorState?.user_id)||USER_ID;
+      const linkUserId=proofUserId||USER_ID;
       const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS})});
       const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
       if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_SCOPED_REDIRECT_OR_ACCOUNT_MISSING');
