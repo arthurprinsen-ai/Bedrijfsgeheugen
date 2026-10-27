@@ -32,3 +32,23 @@ test('19 Supabase verifier rejects invalid fencing token',async()=>await falsy(c
 test('20 Supabase verifier rejects absent authorization',()=>assert.throws(()=>createSupabaseLeaseVerifier({}),/AUTHORIZED_SQL_EXECUTOR_REQUIRED/));
 test('21 GitHub adapter rejects missing token',()=>assert.throws(()=>createGitHubWriterAdapter({owner:'owner',repo:'repo'}),/GITHUB_WRITER_CONTEXT_REQUIRED/));
 test('22 runner rejects missing writer context',async()=>await falsy(runAuthorizedWriterHandoff({}),/AUTHORIZED_WRITER_CONTEXT_REQUIRED/));
+
+test('23 outbound GitHub API origin is pinned and redirects forbidden',async()=>{
+ let calls=[];
+ const adapter=createGitHubWriterAdapter({owner:'arthurprinsen-ai',repo:'Bedrijfsgeheugen',token:'test-token',fetchImpl:async(url,opts)=>{
+  calls.push({url:String(url),opts});
+  return {ok:true,status:200,json:async()=>({object:{sha:a}})};
+ }});
+ assert.equal(await adapter.readHead('fix/verified-branch'),a);
+ assert.equal(calls.length,1);
+ assert.equal(calls[0].url,'https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/fix/verified-branch');
+ assert.equal(calls[0].opts.redirect,'error');
+ await assert.rejects(adapter.readHead('https://evil.example/escape'),/INVALID_BRANCH|GITHUB_ROUTE_NOT_ALLOWED/);
+ await assert.rejects(adapter.readHead('../escape'),/INVALID_BRANCH/);
+ await assert.rejects(adapter.readFile('../secret',a),/GITHUB_ROUTE_TRAVERSAL_DENIED/);
+ assert.equal(calls.length,1);
+});
+test('24 alternate GitHub owner and repo are not trusted destinations',()=>{
+ assert.throws(()=>createGitHubWriterAdapter({owner:'untrusted',repo:'Bedrijfsgeheugen',token:'x'}),/GITHUB_WRITER_CONTEXT_REQUIRED/);
+ assert.throws(()=>createGitHubWriterAdapter({owner:'arthurprinsen-ai',repo:'evil',token:'x'}),/GITHUB_WRITER_CONTEXT_REQUIRED/);
+});
