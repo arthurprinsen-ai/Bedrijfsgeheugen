@@ -89,9 +89,10 @@ Deno.serve(async(req:Request)=>{
  };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
- let stored=0, eligible=0; const seen=new Set<string>(); const errors:string[]=[];
+ let stored=0, eligible=0; const providers:Record<string,number>={}; const seen=new Set<string>(); const errors:string[]=[];
  for(const q of queries){
   let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
+  providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
   for(const x of (sr.results||[])){
    const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
    const problemTopic=topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||''; if(!portalProblemId) continue;
@@ -114,5 +115,5 @@ Deno.serve(async(req:Request)=>{
   }
  }
  const mat=await db.rpc('powerhouse_materialize_mira_problem_recommendation_v1',{p_date:runDate});
- return json({ok:errors.length===0,runDate,stored,eligible,materialized:mat.data,errors});
+ return json({ok:errors.length===0,runDate,stored,eligible,providers,max_age_days:MAX_AGE_DAYS,materialized:mat.data,errors});
 });
