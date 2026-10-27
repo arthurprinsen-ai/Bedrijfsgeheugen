@@ -321,7 +321,8 @@
         "tools/universal-event-",
         "tools/universal-failure-",
         "docs/delivery/sql/repository-writer-fenced-lease.sql",
-        "tests/postgres-lease-replay.sh"
+        "tests/postgres-lease-replay.sh",
+        "tests/cost-dashboard-security.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
