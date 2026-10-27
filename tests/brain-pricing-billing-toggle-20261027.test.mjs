@@ -29,3 +29,14 @@ test("plan CTAs carry the chosen billing cycle to the checkout", () => {
 test("static default stays monthly so the page works without JavaScript", () => {
   assert.match(html, /<div class="price">€ 99 <small>\/ maand<\/small><\/div>/);
 });
+
+test('prijzen carries its own correct social meta tags and states what Mollie collects',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const page=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  assert.match(page,/<meta property="og:title" content="Kosten digitalisering mkb \| Powerhouse prijzen">/);
+  assert.match(page,/<meta property="og:url" content="https:\/\/www\.bedrijfsgeheugen\.nl\/prijzen">/);
+  assert.match(page,/<meta name="twitter:title" content="Kosten digitalisering mkb \| Powerhouse prijzen">/);
+  assert.doesNotMatch(page,/Over ons/);
+  assert.match(page,/excl\. btw/);assert.match(page,/Mollie/);assert.match(page,/opzegbaar/);
+  assert.doesNotMatch(page,/Start gratis/);
+});
