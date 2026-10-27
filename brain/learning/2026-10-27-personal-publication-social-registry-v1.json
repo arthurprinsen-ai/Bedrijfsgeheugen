@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "social|linkedin-personal-published-not-in-social-posts|20261027-v1",
+  "obligation_id": "social-personal-post-registry-20261027",
+  "failure_class": "PROVIDER_ACKNOWLEDGED_PERSONAL_POST_NOT_LINKED_TO_SOCIAL_LEARNING",
+  "root_cause": "From 11 to 27 October ten personal LinkedIn posts have a provider-acknowledged URN in content_publication_obligations, but none exists in social_posts (last row 2026-10-09, 17 rows in tenant canonical). bg-social-metrics-sync only registered company proofs and Instagram media; linkedin() reads personal rows from social_posts, so it found nothing to measure and the personal channel never reached the learning loop.",
+  "observed_evidence": {
+    "actual_sources": [
+      "public.content_publication_obligations",
+      "public.social_posts",
+      "public.social_metric_snapshots"
+    ],
+    "link_proof": "2026-10-27 personal publication PUBLISHED urn:li:share:7520742164285280257 with provider_publication_ack_verified is missing in social_posts",
+    "decision_followed": "brain/learning/2026-10-06-linkedin-personal-provider-ack-truth-v1.json: provider create acknowledgement is authoritative for side-effect existence",
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Reusing the six-hour bg-social-metrics-sync, index PUBLISHED or LIVE_PROVEN personal publications that carry the recorded provider acknowledgement into social_posts (tenant canonical, post_id linkedin-personal:<id>) with ON CONFLICT DO NOTHING. Existing reaction readback in linkedin() then measures them.",
+  "prevention_rule": "Only tenant canonical + channel linkedin_personal + status PUBLISHED with provider_publication_ack_verified=true (or LIVE_PROVEN with live_proven_at) + exact URN + bounded recency is registered. Registration is never a measured result, never a commercial win, never publishes or re-publishes, and never writes views, reach or revenue.",
+  "tests": [
+    "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_ACKNOWLEDGED_PERSONAL_POST_NOT_LINKED_TO_SOCIAL_LEARNING",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required + CodeQL, merged main, deployed Edge function, next real six-hour cron invocation, then social_posts readback of the exact personal URNs and a social_metric_snapshots row per URN. Company analytics and the STORY_FAMILY_DUPLICATE blocks remain separate open items."
+}
