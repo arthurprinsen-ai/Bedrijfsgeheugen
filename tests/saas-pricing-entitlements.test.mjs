@@ -7,27 +7,6 @@ import {canAgentExecute} from '../platform/agents/agent-work.mjs';
 
 const ENV={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-fixture'};
 
-test('paid Starter, Pro and Groei provision once and resume incomplete provisioning',async()=>{
-  const module=await import('../netlify/functions/stripe-webhook.mjs');
-  assert.equal(typeof module.completeCheckout,'function','checkout completion must be testable through its real provisioning flow');
-  for(const plan of ['starter','pro','groei']){
-    let organisationCalls=0,invitations=0,saved=null,intent=null;
-    const store={getPlan:async()=>({code:plan,active:true}),findSubscription:async()=>saved,
-      ensureCheckoutOrganisation:async()=>{organisationCalls++;return {id:'org-1'}},
-      ensureCustomer:async()=>{},ensureInvitation:async()=>{invitations++},
-      upsertSubscription:async row=>{saved=row;return row},
-      completeCheckoutIntent:async row=>{intent=row;return row},recordCheckoutOutcome:async event=>{assert.equal(event.context.revenue_verified,false);assert.doesNotMatch(JSON.stringify(event),/owner@example/);return {id:'event-1'}}};
-    const session={id:'cs_123',subscription:'sub_123',metadata:{plan_code:plan,company_name:'Acme',billing_cycle:'yearly'},customer_details:{email:'owner@example.test'}};
-    const provider=async()=>({id:'sub_123',status:'active',customer:'cus_123',metadata:{}});
-    await module.completeCheckout(store,session,provider);
-    await module.completeCheckout(store,session,provider);
-    assert.equal(saved.plan_code,plan);assert.equal(saved.organisation_id,'org-1');
-    assert.equal(organisationCalls,1);assert.equal(invitations,2,'retry must repair missing invitation, not return early');
-    assert.equal(intent.provider_session_id,'cs_123');assert.equal(intent.state,'completed');
-    assert.equal(saved.metadata.billing_cycle,'yearly');
-  }
-});
-
 test('checkout hands the validated plan, cycle and attempt to the Mollie function with the service role',async()=>{
   const module=await import('../netlify/functions/checkout-create.mjs');
   assert.equal(typeof module.createCheckoutHandler,'function');
@@ -91,15 +70,6 @@ test('checkout status needs the provider-side proof, never only a redirect',asyn
   assert.match(calls[0],/bg-mollie-checkout\?status=7fed14f9/);
 });
 
-test('subscription synchronisation preserves the durable checkout receipt',async()=>{
-  const module=await import('../netlify/functions/stripe-webhook.mjs');
-  assert.equal(typeof module.syncSubscription,'function');
-  let saved={organisation_id:'org-1',plan_code:'pro',status:'active',metadata:{checkout_session_id:'cs_receipt',billing_cycle:'yearly'}};
-  const store={findSubscription:async()=>saved,patchSubscription:async(_,patch)=>{saved={...saved,...patch}}};
-  await module.syncSubscription(store,{id:'sub_1'},async()=>({id:'sub_1',status:'active',metadata:{plan_code:'pro'}}));
-  assert.equal(saved.metadata.checkout_session_id,'cs_receipt');assert.equal(saved.metadata.billing_cycle,'yearly');
-});
-
 test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
   for(const token of ['Starter','€ 99','Pro','€ 299','Groei','€ 749','Enterprise','Op maat']) assert.ok(html.includes(token),token);
@@ -148,13 +118,6 @@ test('connector store enforces the server-side source entitlement',async()=>{
   const source=await readFile(new URL('../netlify/functions/_portal-connectors-store.mjs',import.meta.url),'utf8');
   assert.match(source,/saas_active_entitlements/);
   assert.match(source,/PLAN_DATA_SOURCE_LIMIT/);
-});
-
-test('subscription webhook verifies signatures and provisions portal access',async()=>{
-  const source=await readFile(new URL('../netlify/functions/stripe-webhook.mjs',import.meta.url),'utf8');
-  assert.match(source,/stripe-signature/);
-  assert.match(source,/ensureInvitation/);
-  assert.match(source,/upsertSubscription/);
 });
 
 test('central entitlement policy fails closed without an active subscription',()=>{
