@@ -1,10 +1,32 @@
 const SHA=/^[a-f0-9]{40}$/;
 function assertSha(value){if(!SHA.test(value||''))throw Error('INVALID_SHA');return value;}
+// The writer only operates on the canonical repository, never on manifest-defined origins.
+const CANONICAL_GITHUB_API='https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen';
+const SAFE_SEGMENTS='[A-Za-z0-9._~%/-]+';
+const GITHUB_ROUTES=Object.freeze({
+ GET:[
+  /^\\/pulls\\/[1-9]\\d*$/,
+  /^\\/git\\/ref\\/heads\\/[A-Za-z0-9._~%/-]+$/,
+  /^\\/git\\/commits\\/[a-f0-9]{40}$/,
+  /^\\/contents\\/[A-Za-z0-9._~%/-]+\\?ref=[a-f0-9]{40}$/,
+ ],
+ POST:[/^\\/git\\/blobs$/, /^\\/git\\/trees$/, /^\\/git\\/commits$/],
+ PATCH:[/^\\/git\\/refs\\/heads\\/[A-Za-z0-9._~%/-]+$/],
+});
+function canonicalGithubTarget(method,route) {
+ if (typeof route!=='string' || !(GITHUB_ROUTES[method]||[]).some(p=>p.test(route))) throw Error('GITHUB_ROUTE_NOT_ALLOWED');
+ if (route.includes('..') || route.includes('//') || route.includes('%2e') || route.includes('%2E')) throw Error('GITHUB_ROUTE_TRAVERSAL_DENIED');
+ const target=new URL(CANONICAL_GITHUB_API+route);
+ if (target.protocol!=='https:' || target.origin!=='https://api.github.com' ||
+     !target.pathname.startsWith('/repos/arthurprinsen-ai/Bedrijfsgeheugen/') ||
+     target.username || target.password || target.port) throw Error('GITHUB_API_ORIGIN_DENIED');
+ return target;
+}
 export function createGitHubWriterAdapter({owner,repo,token,fetchImpl=globalThis.fetch}){
- if(!/^[a-z\d_.-]+$/i.test(owner||'')||!/^[a-z\d_.-]+$/i.test(repo||'')||!token)throw Error('GITHUB_WRITER_CONTEXT_REQUIRED');
- const base=`https://api.github.com/repos/${owner}/${repo}`;
- async function api(method,url,body){
-   const response=await fetchImpl(base+url,{method,headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
+ if(owner!=='arthurprinsen-ai'||repo!=='Bedrijfsgeheugen'||!token)throw Error('GITHUB_WRITER_CONTEXT_REQUIRED');
+ async function api(method,route,body){
+   const target=canonicalGithubTarget(method,route);
+   const response=await fetchImpl(target,{method,redirect:'error',headers:{Authorization:`Bearer ${token}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})});
    if(!response.ok)throw Error(`GITHUB_API_${response.status}`);
    return response.status===204?{}:response.json();
  }
