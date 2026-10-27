@@ -65,5 +65,11 @@ test('radar declares title and excerpt before they are used (no temporal-dead-zo
 test('radar treats a failed DataForSEO task as an error instead of zero results',()=>{
  assert.match(radar,/taskCode=Number\(b\?\.tasks\?\.\[0\]\?\.status_code/);
  assert.match(radar,/taskCode!==20000\) throw new Error\('DATAFORSEO_'/);
- assert.match(radar,/attempt<2/);
+});
+
+test('radar uses short news queries, a 45-day window inside the 60-day gate, and counts task 40101 as no results',()=>{
+ assert.match(radar,/MAX_AGE_DAYS=45/);
+ assert.doesNotMatch(radar,/mkb excel chaos spreadsheets cijfers/);
+ assert.match(radar,/taskCode===40101/);
+ assert.match(radar,/dataforseo_no_results/);
 });
