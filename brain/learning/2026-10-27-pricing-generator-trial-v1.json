@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|billing|pricing-generator-trial|20261027-v1",
+  "compiler": {
+    "failure_class": "BUILD_GENERATOR_OVERWRITES_SOURCE_PAGE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-generator-trial-v1.test.mjs",
+      "tests/brain-saas-free-trial-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs",
+      "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-generator-trial-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The build rewrites the whole main section of prijzen.html with tools/site-shell/apply-commercial-pricing-v1.mjs. The trial buttons were only added to the source page, so the live /prijzen kept the old Start buttons.",
+  "prevention": "The trial buttons, the closing button, the trial explanation and the English translation (with lang=en) now live in the generator. A test fails when the generator stops emitting them. Before editing a page, check which build step writes it last.",
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-generator-trial-v1.test.mjs",
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs",
+      "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
+      "tests/brain-website-coherence-v1.test.mjs",
+      "tests/brain-commercial-pricing-portal-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "generator run locally for the NL and EN page; production not yet verified after deploy"
+  },
+  "limitations": [
+    "The yearly/monthly switch script in prijzen.html targets the source markup, not the generated cards"
+  ]
+}
