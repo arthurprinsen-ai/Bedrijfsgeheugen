@@ -4,6 +4,14 @@ name: Powerhouse Delivery Recovery Supervisor
 on:
   # Recovery is scheduled/manual only. A main push must never fan out into
   # another repository-wide recovery scan.
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/powerhouse-delivery-recovery-supervisor.yml'
+      - 'tools/delivery/writer-*.mjs'
+      - 'scripts/ci/authorized-writer-*.mjs'
+      - 'tests/brain-writer-v6-*.test.mjs'
+      - 'config/brain-writer-approved-paths.json'
   workflow_dispatch:
     inputs:
       patch_handoff:
@@ -27,6 +35,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  v6-regression-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify exact candidate SHA
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Run full published v6 security regressions
+        run: node --test tests/brain-writer-v6-bootstrap.test.mjs tests/brain-writer-v6-runtime-regressions.test.mjs
   supervise:
     if: github.event_name != 'workflow_dispatch' || inputs.patch_handoff != true
     runs-on: ubuntu-latest
