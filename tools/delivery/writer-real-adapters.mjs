@@ -29,7 +29,7 @@ export function createGitHubWriterAdapter({owner,repo,token,fetchImpl=globalThis
    if(!response.ok)throw Error(`GITHUB_API_${response.status}`);
    return response.status===204?{}:response.json();
  }
- const branchPath=b=>{if(!b||b.startsWith('/')||b.includes('..')||b.includes('\n'))throw Error('INVALID_BRANCH');return b.split('/').map(encodeURIComponent).join('/');};
+ const branchPath=b=>{if(typeof b!=='string'||!b||b.startsWith('/')||b.includes('..')||b.includes('//')||b.includes(':')||b.includes('\\')||b.includes('\n'))throw Error('INVALID_BRANCH');return b.split('/').map(encodeURIComponent).join('/');};
  return {
    async readPR(number){const p=await api('GET',`/pulls/${number}`);return {number:p.number,branch:p.head.ref,headSha:assertSha(p.head.sha),baseSha:assertSha(p.base.sha),open:p.state==='open'};},
    async readHead(branch){const r=await api('GET',`/git/ref/heads/${branchPath(branch)}`);return assertSha(r.object.sha);},
