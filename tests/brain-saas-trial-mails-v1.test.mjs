@@ -66,3 +66,15 @@ test('afmelden via antwoord: herkend, maar niet via geciteerde tekst of de eigen
   assert.match(fn, /checkOptOuts\(db, key, acct\)/);
   assert.match(fn, /trial_mail_opt_out/);
 });
+
+test('mailtekst: einddatum met weekdag, bedragen met punt, data-bewaring en vervolgstap staan erin', () => {
+  const ctx = sampleContexts()[0];
+  const d29 = composeTrialMail('d29', 'A', ctx);
+  assert.match(d29.body, /vrijdag 6 november/);
+  assert.match(d29.body, /€ 2\.990/);
+  assert.match(d29.body, /Mollie/);
+  assert.match(d29.body, /30 dagen/);
+  assert.match(composeTrialMail('expired', 'B', ctx).body, /raakt niets kwijt|niets is weg/i);
+  assert.doesNotMatch(composeTrialMail('d23', 'A', { ...ctx, period_end: undefined }).body, /undefined|NaN/);
+  for (const mk of MAIL_KEYS) assert.match(composeTrialMail(mk, 'A', ctx).body, /Arthur Prinsen\nBedrijfsgeheugen/);
+});

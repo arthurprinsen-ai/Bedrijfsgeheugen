@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|billing|trial-mail-teksten|20261027-v1",
+  "compiler": {
+    "failure_class": "TRIAL_MAIL_COPY_TOO_THIN",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-saas-trial-mails-v1.test.mjs"],
+    "canary": ["tests/brain-saas-free-trial-v1.test.mjs", "tests/brain-pricing-generator-trial-v1.test.mjs"],
+    "shadow": ["tests/brain-saas-trial-mails-v1.test.mjs"]
+  },
+  "root_cause": "The trial mails were short and generic: no end date, no price context, no statement of what happens to the data, and no concrete next step, unlike common SaaS trial mails.",
+  "prevention": "A test now requires the end date with weekday, the yearly price, the payment methods, the 30-day data retention, a signed footer and no empty fields in every mail and variant.",
+  "evidence": {
+    "tests": ["tests/brain-saas-trial-mails-v1.test.mjs"],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unit-tested text only; no customer mail has been sent with the new text yet"
+  },
+  "limitations": [
+    "Plain text only; no HTML layout",
+    "Which variant converts better is not known until 30 mails per variant have been sent"
+  ]
+}
