@@ -99,3 +99,13 @@ export function sampleContexts() {
     { label: 'alleen AI-vragen', ...base, scans: 0, koppelingen: 0, ai_vragen: 5 },
   ];
 }
+
+// Antwoord van een klant dat om afmelding vraagt. Geciteerde regels (">") en de eigen afmeldregel tellen niet mee.
+const OPT_OUT_WORDS = /\b(afmelden|uitschrijven|geen mail meer|niet meer mailen|verwijder mij|stop mailen)\b/i;
+export function optOutRequested(text) {
+  const own = String(text ?? '').split(/\r?\n/)
+    .filter((l) => !l.trim().startsWith('>'))
+    .join('\n')
+    .split(OPT_OUT_LINE).join('');
+  return OPT_OUT_WORDS.test(own);
+}

@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { composeTrialMail, pickVariant, sampleContexts, MAIL_KEYS } from '../_shared/trial-lifecycle-mail.mjs';
+import { composeTrialMail, pickVariant, sampleContexts, MAIL_KEYS, optOutRequested } from '../_shared/trial-lifecycle-mail.mjs';
 
 const C = 'bg-trial-lifecycle-mail-v1', B = 'https://backend.composio.dev/api/v3.1';
 const OWNER_EMAIL = 'arthur.prinsen@gmail.com';
@@ -37,6 +37,36 @@ async function send(key: string, acct: { id: string; userId: string }, to: strin
   const message_id = s(d?.id || d?.message_id || d?.messageId || d?.message?.id);
   if (!message_id) throw { code: 'SEND_ACK_MESSAGE_ID_MISSING', payload: safe(d) };
   return { message_id };
+}
+
+// Afmeldingen via antwoord: zoekt per proefklant die de afgelopen 14 dagen een mail kreeg naar een "afmelden"-antwoord.
+async function checkOptOuts(db: any, key: string, acct: { id: string; userId: string }) {
+  const since = new Date(Date.now() - 14 * 864e5).toISOString();
+  const { data: sentRows, error } = await db.from('saas_trial_mails').select('email').eq('status', 'sent').gte('sent_at', since);
+  if (error) throw { code: 'OPTOUT_QUERY', message: error.message };
+  const emails = [...new Set((sentRows || []).map((r: any) => s(r.email).toLowerCase()))];
+  const found: any[] = [];
+  for (const email of emails) {
+    const { data: already } = await db.from('powerhouse_email_contact_suppressions').select('suppression_id').eq('email', email).eq('active', true).maybeSingle();
+    if (already) continue;
+    const r = await fetch(B + '/tools/execute/GMAIL_FETCH_EMAILS', {
+      method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key },
+      body: JSON.stringify({ connected_account_id: acct.id, user_id: acct.userId, arguments: { user_id: 'me', query: 'from:' + email + ' newer_than:14d', max_results: 20, include_payload: true, include_spam_trash: false, verbose: true } }),
+      signal: AbortSignal.timeout(20000),
+    });
+    const x: any = await r.json().catch(() => ({}));
+    if (!r.ok || x?.successful !== true) { found.push({ email, status: 'fetch_failed' }); continue; }
+    const d = x?.data || x;
+    const msgs = Array.isArray(d?.messages) ? d.messages : [];
+    for (const msg of msgs) {
+      const text = s(msg?.messageText || msg?.preview?.body || msg?.snippet);
+      if (!optOutRequested(text)) continue;
+      const { error: ie } = await db.from('powerhouse_email_contact_suppressions').insert({ email, reason: 'trial_mail_opt_out', active: true });
+      found.push({ email, status: ie ? 'suppress_failed' : 'suppressed' });
+      break;
+    }
+  }
+  return found;
 }
 
 Deno.serve(async (req) => {
@@ -82,7 +112,8 @@ Deno.serve(async (req) => {
 
     const key = await sec(db, 'COMPOSIO_API_KEY'); if (!key) throw { code: 'COMPOSIO_API_KEY_MISSING' };
     const out: any[] = [];
-    let acct: { id: string; userId: string } | null = null;
+    let acct: { id: string; userId: string } | null = await gmailAccount(db, key);
+    const optOuts = await checkOptOuts(db, key, acct);
     for (const r of rows) {
       const to = s(r.email).toLowerCase();
       const { data: blocked } = await db.from('powerhouse_email_contact_suppressions').select('suppression_id').eq('email', to).eq('active', true).maybeSingle();
@@ -109,7 +140,7 @@ Deno.serve(async (req) => {
     }
     const sent = out.filter((x) => x.status === 'sent').length, bad = out.filter((x) => x.status === 'error' || x.status === 'unverified').length;
     await db.from('bg_gezondheid').insert({ gemeten_op: now, onderdeel: C, soort: 'lifecycle-mail', status: bad > 0 ? 'waarschuwing' : 'ok', detail: 'due=' + rows.length + '; sent=' + sent + '; problemen=' + bad, gegevens: { contract: C, results: out } });
-    return J({ ok: true, contract: C, mode, due: rows.length, sent, results: out });
+    return J({ ok: true, contract: C, mode, due: rows.length, sent, results: out, opt_outs: optOuts });
   } catch (e: any) {
     const code = typeof e?.code === 'string' ? e.code : 'UNEXPECTED_ERROR';
     await db.from('bg_gezondheid').insert({ gemeten_op: now, onderdeel: C, soort: 'lifecycle-mail', status: 'fout', detail: code, gegevens: { contract: C, code } }).then(() => null, () => null);

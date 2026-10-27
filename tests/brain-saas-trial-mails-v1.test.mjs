@@ -54,3 +54,15 @@ test('migratie: unieke mail per proef, browserrollen ingetrokken, test-adressen 
   assert.match(mig, /not ilike '%@bedrijfsgeheugen\.nl'/);
   assert.match(mig, /with \(security_invoker = true\)/);
 });
+
+import { optOutRequested } from '../supabase/functions/_shared/trial-lifecycle-mail.mjs';
+
+test('afmelden via antwoord: herkend, maar niet via geciteerde tekst of de eigen afmeldregel', () => {
+  assert.equal(optOutRequested('Graag afmelden, bedankt.'), true);
+  assert.equal(optOutRequested('Wil je me niet meer mailen? Graag uitschrijven.'), true);
+  assert.equal(optOutRequested('> Geen mail meer van mij? Antwoord met "afmelden"'), false);
+  assert.equal(optOutRequested('Ja, interesse, bel me volgende week'), false);
+  assert.equal(optOutRequested('> afmelden\nNee bedankt, wel interesse'), false);
+  assert.match(fn, /checkOptOuts\(db, key, acct\)/);
+  assert.match(fn, /trial_mail_opt_out/);
+});
