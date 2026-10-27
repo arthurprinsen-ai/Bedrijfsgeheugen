@@ -1,30 +1,57 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
+import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 const topic=(text:string)=>{
  const t=text.toLowerCase();
- if(/wachtwoord|inlog|2fa|code/.test(t)) return 'wachtwoord-en-inloggen';
- if(/school|ouderportaal|magister|parro|social schools/.test(t)) return 'schoolapps-en-oudercommunicatie';
- if(/parkeren|parkeerapp|zone/.test(t)) return 'parkeren-en-apps';
- if(/pakket|bezorg|postnl|dhl/.test(t)) return 'bezorging-en-pakketten';
- if(/abonnement|opzeg|subscription/.test(t)) return 'abonnementen-en-opzeggen';
- if(/chatbot|klantenservice|helpdesk/.test(t)) return 'chatbots-en-klantenservice';
- if(/melding|notificatie|whatsapp|groep/.test(t)) return 'meldingen-en-groepsapps';
- if(/update|app|account|scherm/.test(t)) return 'appstapeling-en-digitale-frictie';
- return 'dagelijkse-digitale-frictie';
+ if(/offerte|salesopvolging|follow.up|acquisitie.*opvolging/.test(t))return'offertes-zonder-opvolging';
+ if(/eigenaar.*besluit|directeur.*goedkeur|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
+ if(/kennisoverdracht|kennisborg|sleutelmedewerker|sop|werkinstruct|afspraak.*hoofd/.test(t))return'kennisoverdracht';
+ if(/excel|spreadsheet|verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
+ if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
+ if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
+ if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
+ if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
+ if(/debiteur|dso|openstaande factur/.test(t))return'debiteuren';
+ if(/late factur|facturatie.*vertraging|werk.*niet gefactureerd/.test(t))return'late-facturering';
+ if(/klantconcentratie|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
+ if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
+ return '';
+};
+const portalIds:Record<string,string>={
+ 'offertes-zonder-opvolging':'PH-P002','directie-bottleneck':'PH-P001','kennisoverdracht':'PH-P005',
+ 'excel-chaos':'PH-P006','dubbele-invoer':'PH-P007','projectmarge':'PH-P004',
+ 'groei-zonder-winst':'PH-P003','capaciteitsplanning':'PH-P008','debiteuren':'PH-P010',
+ 'late-facturering':'PH-P011','klantafhankelijkheid':'PH-P012','klantverlies':'PH-P013'
 };
 const queries=[
- 'Nederland klacht irritant app account wachtwoord inloggen 2FA gewone gebruiker',
- 'Nederland forum ergernis schoolapp ouderportaal berichten meldingen',
- 'Nederland klacht parkeerapp zone account betalen parkeren',
- 'Nederland forum klacht pakket bezorger niet thuis bezorging app',
- 'Nederland klacht abonnement opzeggen app klantenservice chatbot',
- 'Nederland blog digitale frustratie te veel apps schermen bevestigingen'
+ 'ondernemers offertes blijven liggen opvolgen crm',
+ 'mkb kennisoverdracht sleutelmedewerker werkinstructies',
+ 'mkb excel chaos spreadsheets cijfers',
+ 'mkb dubbele invoer crm erp handmatig overzetten',
+ 'mkb capaciteitsplanning personeelstekort planning',
+ 'mkb late facturering debiteuren cashflow',
+ 'ondernemers afhankelijk van directeur klantconcentratie'
 ];
+const MAX_AGE_DAYS=14;
+// Provider timestamps like "2026-10-26 16:19:48 +00:00" are normalised to ISO so the
+// shared freshness gate (which stays the single authority) can parse them.
+const isoFromProvider=(v:unknown)=>{
+ const raw=String(v??'').trim(); if(!raw) return null;
+ const m=raw.match(/^(20\d{2}-\d{2}-\d{2})(?:[T\s]|$)/);
+ if(m) return m[1];
+ const t=Date.parse(raw); // e.g. RFC 2822 "Mon, 26 Oct 2026 10:00:00 GMT" from Tavily news
+ return Number.isFinite(t)?new Date(t).toISOString().slice(0,10):null;
+};
+const withinWindow=(iso:string|null)=>{
+ if(!iso) return false;
+ const age=(Date.now()-Date.parse(iso+'T00:00:00Z'))/86400000;
+ return age>=-1&&age<=MAX_AGE_DAYS;
+};
 Deno.serve(async(req:Request)=>{
  if(req.method!=='POST') return json({error:'POST_ONLY'},405);
  const auth=await authorizePowerhouseScheduler(req);
@@ -38,17 +65,25 @@ Deno.serve(async(req:Request)=>{
  if(!tavily&&!dfsUser) return json({error:'SEARCH_PROVIDER_UNAVAILABLE'},503);
  const search=async(q:string)=>{
    if(tavily){
-     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'general',search_depth:'basic',max_results:6,include_answer:false})});
+     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:'basic',max_results:8,include_answer:false})});
      const b:any=await r.json().catch(()=>({}));
-     if(r.ok) return {provider:'tavily',results:(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score,publishedAt:x.published_date||x.published_at||null}))};
-     if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
+     if(r.ok){
+       const rows=(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score,publishedAt:isoFromProvider(x.published_date||x.published_at)})).filter((x:any)=>withinWindow(x.publishedAt));
+       if(rows.length) return {provider:'tavily_news',results:rows};
+     } else if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
    }
    if(dfsUser&&dfsPass){
-     const r=await fetch('https://api.dataforseo.com/v3/serp/google/organic/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',device:'desktop',os:'windows',depth:10}])});
+     // Google News live accepts one task per request and ignores time_range, so the age window is enforced here.
+     const r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20}])});
      const b:any=await r.json().catch(()=>({}));
      if(!r.ok||Number(b?.status_code||0)!==20000) throw new Error('DATAFORSEO_'+r.status);
      const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
-     return {provider:'dataforseo',results:items.filter((x:any)=>x.type==='organic'&&x.url).slice(0,6).map((x:any)=>({url:x.url,title:x.title,content:x.description||'',score:1/Math.max(1,Number(x.rank_absolute||10)),publishedAt:x.date||x.published_date||null}))};
+     const rows:any[]=[];
+     for(const x of items){
+       const flat=x.type==='news_search'?[x]:Array.isArray(x.items)?x.items:[x];
+       for(const y of flat){ if(y?.url) rows.push({url:y.url,title:y.title,content:y.snippet||y.description||'',score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)}); }
+     }
+     return {provider:'dataforseo_news',results:rows.filter(x=>withinWindow(x.publishedAt)).slice(0,8)};
    }
    return {provider:'none',results:[]};
  };
@@ -59,11 +94,12 @@ Deno.serve(async(req:Request)=>{
   let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
   for(const x of (sr.results||[])){
    const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
+   const problemTopic=topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||''; if(!portalProblemId) continue;
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
    if(!d||title.length<12) continue;
    const all=(title+' '+excerpt).toLowerCase();
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
-   const personal=/(ik|mijn|thuis|kind|school|parkeren|pakket|wachtwoord|app|abonnement|klantenservice|chatbot)/.test(all)?1:0.6;
+   const personal=/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|excel|proces|klant)/.test(all)?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
    const evidence=clamp(Number(x.score)||0.5);
    const publication=evaluateMiraPublicationFreshness({providerPublishedAt:x.publishedAt,title,excerpt,observedAt:Date.now()});
@@ -72,7 +108,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:'mira-public-complaint-source-loop-v1'}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&Boolean(portalProblemId),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:'mira-entrepreneur-portal-story-v1',audience:'ondernemers',portal_problem_id:portalProblemId,approved_mira_scene:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',fictional_mira_scenario:true}};
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
    stored++; if(row.eligible) eligible++;
   }
