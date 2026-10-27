@@ -162,21 +162,87 @@ function freshnessWeight(observedAt, now) {
   return Math.exp(-days / 30);
 }
 
+const proofText=value=>typeof value==='string'?value.trim():'';
+const hasRefs=value=>Array.isArray(value)&&value.some(ref=>typeof ref==='string'&&ref.trim());
+const externalDeliveryChannels=new Set([
+  'blog','social','instagram','linkedin_company','linkedin_personal',
+  'facebook','tiktok','x','email','newsletter','outreach'
+]);
+
+// Read-only evidence classification over the existing tenant-bound Brain outcome
+// authority. Self-reported numbers and scheduling/publishing attempts never
+// establish customer value; this function neither verifies remote providers
+// nor authorizes a delivery, AI promotion or database write.
+export function assessVerifiedGrowthLoop(candidate={},now=new Date().toISOString()) {
+  const proof=candidate.growth_proof??{};
+  const channel=proofText(candidate.channel).toLowerCase();
+  const reasons=[];
+  const tenant=proofText(candidate.tenant_id);
+  if(!tenant||proofText(proof.tenant_id)!==tenant)reasons.push('TENANT_PROOF_MISMATCH');
+  for(const key of ['goal_id','decision_id','action_id','outcome_id']){
+    if(!proofText(proof[key]))reasons.push('MISSING_'+key.toUpperCase());
+  }
+  if(!proofText(candidate.outcome_id)||proofText(candidate.outcome_id)!==proofText(proof.outcome_id)){
+    reasons.push('OUTCOME_ID_MISMATCH');
+  }
+  if(candidate.action_executed!==true)reasons.push('ACTION_NOT_VERIFIED_EXECUTED');
+  if(!['OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(proofText(candidate.verification_status).toUpperCase())
+      ||candidate.evidence_health?.status!=='healthy'
+      ||!hasRefs(candidate.source_refs))reasons.push('OUTCOME_PROVIDER_EVIDENCE_MISSING');
+  const observed=Date.parse(candidate.observed_at??'');
+  const asOf=Date.parse(now);
+  if(!Number.isFinite(observed)||!Number.isFinite(asOf)||observed>asOf){
+    reasons.push('OBSERVATION_TIME_UNVERIFIED');
+  }
+  if(externalDeliveryChannels.has(channel)){
+    if(!proofText(proof.published_artifact_id)||!proofText(proof.provider_receipt_id)
+       ||!['PUBLISHED','DELIVERED','LIVE_PROVEN','PROVIDER_VERIFIED'].includes(proofText(proof.provider_status).toUpperCase())){
+      reasons.push('EXTERNAL_DELIVERY_NOT_PROVEN');
+    }
+  }
+  const outcomeVerified=reasons.length===0;
+  const learningVerified=outcomeVerified
+    &&candidate.learning_verified===true
+    &&hasRefs(candidate.learning_evidence_refs)
+    &&Boolean(proofText(candidate.next_decision_id));
+  return Object.freeze({
+    status:learningVerified?'CLOSED_LOOP_VERIFIED':
+      outcomeVerified?'OUTCOME_VERIFIED_LEARNING_PENDING':'UNVERIFIED',
+    outcome_verified:outcomeVerified,
+    closed_loop_verified:learningVerified,
+    missing_evidence:Object.freeze(reasons),
+    causal_attribution:'NOT_ESTABLISHED',
+    source:'existing-tenant-scoped-brain-provider-receipts',
+    projection_only:true
+  });
+}
+
 export function prioritizeByBusinessValue({ candidates = [], now = new Date().toISOString() } = {}) {
+  const seen=new Set();
   return candidates.map(candidate => {
-    const value = candidate.realized_value;
-    const confidence = candidate.confidence;
-    const freshness = freshnessWeight(candidate.observed_at, now);
-    const known = finite(value) && finite(confidence) && finite(freshness);
+    const evidence=assessVerifiedGrowthLoop(candidate,now);
+    const key=evidence.outcome_verified?candidate.tenant_id+':'+candidate.outcome_id:null;
+    const duplicate=Boolean(key&&seen.has(key));
+    if(key)seen.add(key);
+    const value=candidate.realized_value;
+    const confidence=candidate.confidence;
+    const freshness=freshnessWeight(candidate.observed_at,now);
+    const known=!duplicate&&evidence.outcome_verified
+      &&finite(value)&&finite(confidence)&&confidence>=0&&confidence<=1
+      &&finite(freshness);
     return {
       ...candidate,
-      value_priority: known ? value * Math.max(0, Math.min(1, confidence)) * freshness : null,
-      value_known: known
+      loop_assurance:duplicate?Object.freeze({
+        ...evidence,status:'DUPLICATE_OUTCOME_RECEIPT',outcome_verified:false,
+        closed_loop_verified:false,missing_evidence:Object.freeze(['DUPLICATE_OUTCOME_RECEIPT'])
+      }):evidence,
+      value_priority:known?value*confidence*freshness:null,
+      value_known:known
     };
-  }).sort((a, b) => {
-    if (a.value_known !== b.value_known) return a.value_known ? -1 : 1;
-    if (!a.value_known) return String(a.id).localeCompare(String(b.id));
-    return (b.value_priority - a.value_priority) || String(a.id).localeCompare(String(b.id));
+  }).sort((a,b)=>{
+    if(a.value_known!==b.value_known)return a.value_known?-1:1;
+    if(!a.value_known)return String(a.id).localeCompare(String(b.id));
+    return (b.value_priority-a.value_priority)||String(a.id).localeCompare(String(b.id));
   });
 }
 

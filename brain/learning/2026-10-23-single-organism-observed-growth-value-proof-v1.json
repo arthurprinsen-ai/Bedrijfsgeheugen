@@ -1,0 +1,110 @@
+{
+  "fingerprint": "powerhouse|one-organism|realized-value-without-provider-proof|20261023-v1",
+  "parent_issue": "#4198",
+  "portal_acceptance_issue": "#4585",
+  "source_authority": "scripts/brain/continuous-improvement/autonomous-runtime.mjs",
+  "observation": {
+    "prior_behavior": "Numeric realized_value + confidence + observed_at were sufficient to mark a candidate value_known and prioritize it, without tenant/source/recipient/goal/outcome proof.",
+    "production_context": "2026-10-23 live Brain state AMBER, 32/32 wired, 18/18 core jobs active, 720 overdue private commercial forecast calibrations, five RED loop-assurance states; content loop blocked. Numeric AI priority must never be reported as measured customer return.",
+    "provider_verified_customer_revenue_eur": "unknown_for_this_change"
+  },
+  "change": {
+    "operation": "reuse existing read-only autonomous improvement projection; attach fail-closed verified growth evidence gate",
+    "statuses": [
+      "UNVERIFIED",
+      "OUTCOME_VERIFIED_LEARNING_PENDING",
+      "CLOSED_LOOP_VERIFIED",
+      "DUPLICATE_OUTCOME_RECEIPT"
+    ],
+    "positive_requirements": [
+      "tenant-matched IDs",
+      "goal and decision IDs",
+      "executed action",
+      "unique verified outcome",
+      "healthy source receipts",
+      "actual observed timestamp",
+      "provider publication/delivery receipt for external channels",
+      "independent learning evidence + next decision for closed-loop claim"
+    ],
+    "never_infer": [
+      "provider publication from draft",
+      "revenue from expected pipeline",
+      "learning from outcome alone",
+      "causation from association",
+      "consent from scheduling",
+      "verification from self-reported numeric value"
+    ],
+    "no_new_authority": true,
+    "no_new_cron": true,
+    "no_new_db": true,
+    "no_external_send": true,
+    "no_model_auto_promotion": true
+  },
+  "test_evidence": {
+    "regression": "tests/brain-autonomous-improvement-runtime.test.mjs",
+    "required_checks": [
+      "hygiene/admission",
+      "preflight",
+      "Required",
+      "CodeQL"
+    ],
+    "proposed_status": "CANDIDATE_NOT_LIVE",
+    "positive_replay": "real provider-backed blog revenue + learning + next decision",
+    "negative_replays": [
+      "synthetic 1m estimate",
+      "tenant mismatch",
+      "stale source",
+      "missing provider create receipt",
+      "future observed_at",
+      "missing action execution",
+      "missing learning evidence",
+      "missing next decision",
+      "duplicate outcome"
+    ],
+    "production_benefit_verified": false
+  },
+  "acceptance": "Protected PR merge on current main followed by independent code-readback; real tenant and revenue outcomes remain unverified until read from canonical provider evidence.",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "obligation_id": "powerhouse|one-organism|observed-value-proof-before-prioritization|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "AUTONOMOUS_UNVERIFIED_VALUE_ADMISSION",
+  "scope": "ONE_BRAIN",
+  "root_cause": "Numeric realized_value, confidence and observed_at were enough to rank an improvement candidate despite missing tenant-linked goal, executed action, provider publication receipt or verified business outcome.",
+  "prevention_rule": "Treat proposed financial value as unknown until existing tenant-bound provider evidence verifies exact goal, decision, action and outcome. Distinguish outcome proof from complete outcome→learning→next-decision proof. Deduplicate per tenant/outcome, preserve permissions, never infer causation.",
+  "compiler": {
+    "failure_class": "AUTONOMOUS_UNVERIFIED_VALUE_ADMISSION",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "invariants": [
+      "No value_known without tenant and source receipt",
+      "Published content requires provider evidence",
+      "Learning requires next decision",
+      "No cross-tenant evidence",
+      "No auto-promotion or posting",
+      "No duplicate outcome value"
+    ]
+  },
+  "tests": [
+    "tests/brain-autonomous-improvement-runtime.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ]
+}
