@@ -63,4 +63,9 @@ test('sync function wires the personal registry idempotently and reports it, wit
   const fn=src.slice(src.indexOf('async function registerPersonalProofs'),src.indexOf('async function reconcileCompanyMetricEvidence'));
   assert.doesNotMatch(fn,/createPost|fetch\(|social-publisher|functions\/v1/);
   assert.match(fn,/eq\('channel','linkedin_personal'\)/);
+  // The DB identity gate may refuse one day; that refusal is kept, reported, and never blocks other days.
+  assert.match(fn,/for\(const post of batch\)/);
+  assert.match(fn,/upsert\(\[post\]/);
+  assert.match(fn,/guard_rejected/);
+  assert.doesNotMatch(fn,/upsert\(batch/);
 });
