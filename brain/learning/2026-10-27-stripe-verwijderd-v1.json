@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|billing|stripe-webhook-removed|20261027-v1",
+  "compiler": {
+    "failure_class": "DEAD_PAYMENT_PROVIDER_CODE_LEFT_IN_RUNTIME",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ]
+  },
+  "root_cause": "After the switch to Mollie (27 oct 2026) the unconfigured Stripe webhook and its contract entry remained as dead payment code.",
+  "prevention": "stripe-webhook.mjs, its quality-surface contract and its Stripe-only tests are removed; Mollie provisioning is covered by tests/brain-mollie-billing-v1.test.mjs and the Edge Functions.",
+  "evidence": {
+    "tests": [
+      "tests/saas-pricing-entitlements.test.mjs",
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "no Stripe subscription or checkout intent ever existed in production (saas_checkout_intents had 0 rows)"
+  },
+  "limitations": [
+    "Historical Stripe columns defaults in saas tables remain (provider default 'stripe'); harmless, not migrated"
+  ]
+}

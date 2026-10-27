@@ -471,13 +471,6 @@
       "required": true
     },
     {
-      "id": "netlify_function:stripe-webhook",
-      "type": "netlify_function",
-      "authority": "netlify/functions/stripe-webhook.mjs",
-      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
-      "required": true
-    },
-    {
       "id": "permission:eigen_stand_lezen",
       "type": "permission",
       "authority": "supabase/migrations/20260915165017_powerhouse_tenant_identity_hardening_v1.sql",
