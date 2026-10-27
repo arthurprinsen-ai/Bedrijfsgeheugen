@@ -182,3 +182,9 @@ entrypoint = "./functions/bg-mollie-checkout/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-mollie-webhook/index.ts"
+
+# Proefperiode-mails (27 okt 2026): dagelijkse cron met scheduler-token (geen JWT); modes preview | samples | live | report.
+[functions.bg-trial-lifecycle-mail]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-trial-lifecycle-mail/index.ts"
