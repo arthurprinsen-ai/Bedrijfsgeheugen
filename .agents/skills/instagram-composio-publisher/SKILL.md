@@ -42,7 +42,7 @@ Use this skill for every Instagram publish, retry, recovery, transport incident,
 
 ## API contract
 
-Use current Composio v3 tool execution: `https://backend.composio.dev/api/v3/tools/execute/{tool_slug}`. Do not route to the obsolete `/api/v3.1/tools/execute` endpoint and do not force an invented `version=latest`.
+Use the canonical Composio tool execution base exactly as the publisher does: `https://backend.composio.dev/api/v3.1/tools/execute/{tool_slug}` (`COMPOSIO_BASE`, since 2026-09-24; guarded by `tests/brain-instagram-composio-proxy-base-v1.test.mjs`). Never mutate the base by substring and do not force an invented `version=latest`.
 
 ## Definition of done
 
