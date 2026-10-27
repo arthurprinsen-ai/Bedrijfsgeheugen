@@ -45,10 +45,14 @@ test('de keuzelijsten op de pagina komen overeen met de validatie', () => {
   for (const o of OMVANGEN) assert.ok(html.includes('<option>' + o + '</option>'), 'omvang ontbreekt op pagina: ' + o);
 });
 
-test('de pagina stuurt niet meer naar Make maar naar de edge function', () => {
-  const html = readFileSync(new URL('../ai-scan.html', import.meta.url), 'utf8');
-  assert.ok(!html.includes('hook.eu1.make.com'), 'Make-webhook nog aanwezig');
-  assert.ok(html.includes('/functions/v1/bg-benchmark-intake'), 'edge function niet aangesloten');
+test("de pagina stuurt naar de edge function op het eigen Supabase-project", () => {
+  const html = readFileSync(new URL("../ai-scan.html", import.meta.url), "utf8");
+  const m = html.match(/var HAAK='([^']+)'/);
+  assert.ok(m, "HAAK-endpoint niet gevonden");
+  const u = new URL(m[1]);
+  assert.equal(u.protocol, "https:");
+  assert.equal(u.hostname, "adhjwmvyoixzjtmiroln.supabase.co");
+  assert.equal(u.pathname, "/functions/v1/bg-benchmark-intake");
 });
 
 test('migratie: tabel is afgeschermd en aggregaat heeft drempel van vijf', () => {
