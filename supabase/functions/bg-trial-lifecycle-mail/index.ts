@@ -111,6 +111,8 @@ Deno.serve(async (req) => {
     await db.from('bg_gezondheid').insert({ gemeten_op: now, onderdeel: C, soort: 'lifecycle-mail', status: bad > 0 ? 'waarschuwing' : 'ok', detail: 'due=' + rows.length + '; sent=' + sent + '; problemen=' + bad, gegevens: { contract: C, results: out } });
     return J({ ok: true, contract: C, mode, due: rows.length, sent, results: out });
   } catch (e: any) {
-    return J({ ok: false, contract: C, error: safe(e) }, 500);
+    const code = typeof e?.code === 'string' ? e.code : 'UNEXPECTED_ERROR';
+    await db.from('bg_gezondheid').insert({ gemeten_op: now, onderdeel: C, soort: 'lifecycle-mail', status: 'fout', detail: code, gegevens: { contract: C, code } }).then(() => null, () => null);
+    return J({ ok: false, contract: C, error: code }, 500);
   }
 });
