@@ -7,6 +7,10 @@ const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
 const WORKFLOW='portal-visual-density.yml';
 const LOOP_KEY='portal-visual-density';
 const FINGERPRINT='portal-visual-density-oversized-responsive-cascade-v1';
+// Mirrors config/powerhouse-portal-visual-assurance-v1.json (6 routes x 4 viewports); guarded by tests/brain-portal-visual-assurance-sync-counts-v2.test.mjs
+const ROUTES=6;
+const VIEWPORTS=4;
+const SCREENSHOTS=ROUTES*VIEWPORTS;
 const STAGES=['input','decision','action','readback','outcome','measurement','learning','guard'] as const;
 const ghHeaders={'accept':'application/vnd.github+json','user-agent':'bedrijfsgeheugen-powerhouse-visual-assurance-sync'};
 
@@ -47,14 +51,14 @@ Deno.serve(async(req)=>{
       event:run.event,
       conclusion:'success',
       workflow:WORKFLOW,
-      synced_by:'powerhouse-visual-assurance-sync-v1'
+      synced_by:'powerhouse-visual-assurance-sync-v2'
     };
     const stageEvidence:Record<string,unknown>={
-      input:{...common,routes:3,viewports:3,screenshots_expected:9},
+      input:{...common,routes:ROUTES,viewports:VIEWPORTS,screenshots_expected:SCREENSHOTS},
       decision:{...common,contract:'config/powerhouse-portal-visual-assurance-v1.json',fail_closed:true},
       action:{...common,runner:'GitHub Actions + Playwright Chromium'},
       readback:{...common,provider:'github-actions',job_conclusion:'success'},
-      outcome:{...common,status:'PASS',screenshots_total:9},
+      outcome:{...common,status:'PASS',screenshots_total:SCREENSHOTS},
       measurement:{...common,threshold_contract:'config/powerhouse-portal-visual-assurance-v1.json'},
       learning:{...common,fingerprint:FINGERPRINT},
       guard:{...common,pass:true,regression_guard_ref:'.github/workflows/portal-visual-density.yml'}
@@ -75,7 +79,7 @@ Deno.serve(async(req)=>{
       github_last_success:{
         run_id:run.id,job_id:job.id,head_sha:run.head_sha,observed_at:observedAt,run_url:run.html_url
       },
-      sync_adapter:'powerhouse-visual-assurance-sync-v1'
+      sync_adapter:'powerhouse-visual-assurance-sync-v2'
     };
     const {error:registryError}=await db.from('powerhouse_loop_assurance_registry_v1')
       .update({evidence_contract:evidenceContract,updated_at:new Date().toISOString()}).eq('loop_key',LOOP_KEY);
@@ -84,7 +88,7 @@ Deno.serve(async(req)=>{
     const {data:q,error:qReadError}=await db.from('powerhouse_quality_events')
       .select('performance_evidence').eq('fingerprint',FINGERPRINT).maybeSingle();
     if(qReadError) throw new Error('QUALITY_READ_FAILED');
-    const performance={...(q?.performance_evidence||{}),production_pass:true,screenshots:9,github_run_id:run.id,github_job_id:job.id,head_sha:run.head_sha,observed_at:observedAt};
+    const performance={...(q?.performance_evidence||{}),production_pass:true,screenshots:SCREENSHOTS,github_run_id:run.id,github_job_id:job.id,head_sha:run.head_sha,observed_at:observedAt};
     const {error:qError}=await db.from('powerhouse_quality_events')
       .update({performance_evidence:performance,status:'verified',updated_at:new Date().toISOString()}).eq('fingerprint',FINGERPRINT);
     if(qError) throw new Error('QUALITY_UPDATE_FAILED');
