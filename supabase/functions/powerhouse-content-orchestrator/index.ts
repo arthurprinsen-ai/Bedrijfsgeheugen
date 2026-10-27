@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {buildVerifiedFounderReserve} from '../_shared/personal-founder-source-reserve.mjs';
+import {buildVerifiedFounderReserve,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
@@ -489,7 +489,16 @@ Deno.serve(async (req) => {
           .order('priority',{ascending:false}).limit(10);
         if(sourceError)throw new Error('PERSONAL_RESERVE_BASE_READ_FAILED');
         const verified=(sources||[]).find(validPersonalSource);
-        for(const alternative of buildVerifiedFounderReserve(verified,runDate)){
+        const recentTypesForReserve=new Set<string>();
+        {
+          const since=new Date(Date.parse(runDate+'T12:00:00Z')-7*86400000).toISOString().slice(0,10);
+          const {data:rr}=await db.from('content_publication_obligations').select('evidence')
+            .eq('tenant_id','canonical').eq('channel','linkedin_personal').gte('publication_date',since).lt('publication_date',runDate)
+            .in('status',['PUBLISHED','LIVE_PROVEN']);
+          for(const r of rr||[]){const ev=(r as any).evidence||{};
+            for(const v of [ev.result_event,ev.friction_event,ev.source_focus_context]){const t=clean(v?.event_type);if(t)recentTypesForReserve.add(t);}}
+        }
+        for(const alternative of buildVerifiedFounderReserve(verified,runDate,recentTypesForReserve)){
           const {error}=await db.from('powerhouse_content_recommendations')
             .upsert(alternative,{onConflict:'dedupe_key',ignoreDuplicates:true});
           if(error)throw new Error('PERSONAL_RESERVE_WRITE_FAILED:'+error.message);
@@ -536,6 +545,17 @@ Deno.serve(async (req) => {
     // A pre-provider semantic-duplicate rejection must rotate to a DIFFERENT,
     // independently verified personal source. Retrying the same source in a new
     // paraphrase loops forever and can never satisfy global story uniqueness.
+    const recentPersonalTypes=new Set<string>();
+    if(!channelScope||channelScope==='linkedin_personal'){
+      const since=new Date(Date.parse(runDate+'T12:00:00Z')-7*86400000).toISOString().slice(0,10);
+      const {data:recentRows}=await db.from('content_publication_obligations').select('publication_date,evidence,status')
+        .eq('tenant_id','canonical').eq('channel','linkedin_personal').gte('publication_date',since).lt('publication_date',runDate)
+        .in('status',['PUBLISHED','LIVE_PROVEN']);
+      for(const r of recentRows||[]){
+        const ev=(r as any).evidence||{};
+        for(const v of [ev.result_event,ev.friction_event,ev.source_focus_context]){const t=clean(v?.event_type);if(t)recentPersonalTypes.add(t);}
+      }
+    }
     const priorPersonal = existing.find((row:any)=>clean(row.channel)==='linkedin_personal') || null;
     const priorPersonalObligation=obligations.find((row:any)=>clean(row.channel)==='linkedin_personal')||null;
     const personalDuplicateRecovery = recoverableUniquenessDenial(priorPersonal)
@@ -552,9 +572,13 @@ Deno.serve(async (req) => {
             ? priorPersonalObligation.evidence.rejected_recommendation_ids : []),
         ].map(clean).filter(Boolean))]
       : [];
-    const personalSource = recs.filter(validPersonalSource).find((source:any)=>
-      !personalRejectedSourceIds.includes(clean(source.recommendation_id))
-    ) || null;
+    // Rotation by story family: a source whose event types were already used for a
+    // personal story in the last 7 days is the same story, so prefer a fresh one.
+    // Never worse than before: if nothing is fresh the previous choice stays.
+    const eligiblePersonal = recs.filter(validPersonalSource).filter((source:any)=>
+      !personalRejectedSourceIds.includes(clean(source.recommendation_id)));
+    const personalSource = eligiblePersonal.find((s:any)=>!isStalePersonalSource(s,recentPersonalTypes))
+      || eligiblePersonal[0] || null;
     const instagramObligation = obligations.find((o:any) => o.channel === 'instagram') || null;
     const instagramProof = {
       ...(instagramObligation?.evidence || {}),

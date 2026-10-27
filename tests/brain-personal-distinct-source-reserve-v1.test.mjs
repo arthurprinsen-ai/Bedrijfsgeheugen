@@ -24,7 +24,7 @@ test('no qualified source means no story, never a fabricated send',()=>{
 });
 test('existing One Brain owners and publication truth gates preserved',()=>{
  const s=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
- assert.match(s,/buildVerifiedFounderReserve\(verified,runDate\)/);
+ assert.match(s,/buildVerifiedFounderReserve\(verified,runDate,recentTypesForReserve\)/);
  assert.match(s,/ignoreDuplicates:true/);
  assert.match(s,/validPersonalSource\(personalSource\)/);
  assert.match(s,/recoverableObligationUniquenessDenial/);
