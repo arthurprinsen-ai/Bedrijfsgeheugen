@@ -11,7 +11,7 @@ import { mountGlobalActions } from './global-actions-ui.js?bg_explain=80ad881b42
 import { applyCustomerBranding } from './customer-branding.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { applyOverviewDashboard } from './modules/overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { renderProjectOverview } from './project-overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage, trialBannerText } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountEntrepreneurHome } from './entrepreneur-home.js';
 import { mountWinstnavigator } from './winstnavigator.js';
 import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
@@ -237,6 +237,13 @@ async function refreshAuthenticatedPlan(subject){
    return;
  }
  if(subscription?.plan){
+   const trialText=trialBannerText(subscription);
+   if(trialText&&!document.getElementById('portalTrialBanner')){
+     const bar=document.createElement('a');bar.id='portalTrialBanner';bar.className='portal-trial-banner';bar.setAttribute('role','status');
+     bar.href=`https://www.bedrijfsgeheugen.nl/afsluiten?plan=${encodeURIComponent(subscription.plan)}`;bar.textContent=`${trialText} Nu afrekenen →`;
+     bar.style.cssText='display:block;padding:10px 16px;background:#fff7d6;color:#14171a;border-bottom:1px solid #e6d58a;font:600 14px/1.4 system-ui,sans-serif;text-align:center;text-decoration:none';
+     document.body.insertBefore(bar,document.body.firstChild);
+   }
    const host=document.querySelector('.portal-topbar,.topbar,.sidebar')||document.body;
    if(!document.getElementById('portalPlanBadge')){
      const badge=document.createElement('a');badge.id='portalPlanBadge';badge.className='portal-plan-badge';badge.href='https://www.bedrijfsgeheugen.nl/prijzen#saas';badge.textContent=`Pakket: ${subscription.planName}`;host.appendChild(badge);
