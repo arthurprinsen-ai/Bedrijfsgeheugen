@@ -7,12 +7,12 @@ const baseline = JSON.parse(readFileSync(new URL("../site/seo-baseline.json", im
 
 const norm = (p) => (p === "/" ? "/" : String(p).replace(/\/+$/, ""));
 
-test("every baseline keyword is tracked in seo-status.json on the same route", () => {
-  const byKeyword = new Map(status.zoekwoorden.map((k) => [k.zoekwoord, norm(k.pagina)]));
-  const missing = baseline.keywords
-    .filter((k) => byKeyword.get(k.keyword) !== norm(k.route))
-    .map((k) => `${k.keyword} -> ${k.route}`);
-  assert.deepEqual(missing, []);
+test("every seo-status.json keyword is owned by the same route in the baseline", () => {
+  const owners = new Map(baseline.keywordOwners.map((k) => [k.keyword, norm(k.route)]));
+  const drift = status.zoekwoorden
+    .filter((k) => owners.get(k.zoekwoord) !== norm(k.pagina))
+    .map((k) => `${k.zoekwoord} -> ${k.pagina} (baseline: ${owners.get(k.zoekwoord)})`);
+  assert.deepEqual(drift, []);
 });
 
 test("seo-status.json tracks the renamed and new cluster keywords", () => {
