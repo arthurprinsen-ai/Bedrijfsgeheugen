@@ -93,7 +93,7 @@ async function anthropicGenerate(apiKey:string,model:string,system:string,allowe
 async function openaiGenerate(apiKey:string,model:string,system:string,allowed:any){
   const response=await fetch('https://api.openai.com/v1/responses',{
     method:'POST',headers:{'authorization':'Bearer '+apiKey,'content-type':'application/json'},
-    body:JSON.stringify({model,instructions:system,input:JSON.stringify(allowed),text:{format:{type:'json_object'}}}),
+    body:JSON.stringify({model,instructions:system,input:'Antwoord uitsluitend als JSON-object. Invoer (JSON):\n'+JSON.stringify(allowed),text:{format:{type:'json_object'}}}),
     signal:AbortSignal.timeout(45000)
   });
   const body:any=await response.json().catch(()=>({}));
