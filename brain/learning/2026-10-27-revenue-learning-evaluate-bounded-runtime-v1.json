@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|revenue-learning|evaluate-hourly-runtime-bound|20261027-v1",
+  "compiler": {
+    "failure_class": "REVENUE_LEARNING_EVALUATE_TIMEOUT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-evaluate-bounded-runtime-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-evaluate-bounded-runtime-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "The hourly revenue-learning-evaluate function ran its action-evidence reconcile (up to 50 sequential RPC calls in the edge gateway) strictly before evaluation and then handled each due target with four sequential gateway round-trips, so it was aborted by the caller after about 15 seconds (HTTP 499 on every attempt at 13:00 and 13:01 UTC).",
+  "prevention": "Evaluation now runs the due-evidence read concurrently with a reconcile bounded to 6 seconds (a timeout is reported as deferred, an error still fails the run), processes due targets with a worker pool of 4, and the edge gateway reconciles in parallel groups of 5 using the same RPC.",
+  "evidence": {
+    "tests": [
+      "tests/brain-revenue-learning-evaluate-bounded-runtime-20261027.test.mjs",
+      "tests/revenue-learning-evaluate.test.mjs",
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs",
+      "tests/brain-revenue-learning-no-starvation-20261025.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until protected merge, edge function deployment and Netlify logs without HTTP 499 on revenue-learning-evaluate"
+  },
+  "limitations": [
+    "Parallel RPC calls on distinct action ids assume the reconcile RPC is safe to run concurrently per action",
+    "A reconcile that exceeds its budget every hour would stay deferred; this is visible in the run summary as actionEvidence.deferred",
+    "No production readback yet"
+  ]
+}
