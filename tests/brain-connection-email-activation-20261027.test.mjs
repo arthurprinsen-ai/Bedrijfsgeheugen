@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const sql=readFileSync(new URL('../supabase/migrations/20261027170000_connection_email_activation_v1.sql',import.meta.url),'utf8');
+const sql=readFileSync(new URL('../supabase/migrations/20261027171500_connection_email_activation_v1.sql',import.meta.url),'utf8');
 test('only approved-email connections are routed to the canonical autonomous email transport',()=>{
  assert.match(sql,/extra->>'human_approved',''\)='true'/);
  assert.match(sql,/powerhouse_email_contact_suppressions/);
