@@ -38,6 +38,9 @@ create or replace view public.saas_active_entitlements with (security_invoker = 
   where s.status = any (array['trialing'::text, 'active'::text, 'past_due'::text])
   group by s.organisation_id, s.plan_code, s.status, p.name, p.monthly_price_cents;
 
+revoke all on table public.saas_active_entitlements from public, anon, authenticated;
+grant select on table public.saas_active_entitlements to service_role;
+
 do $$
 begin
   if exists (select 1 from pg_extension where extname = 'pg_cron') then
