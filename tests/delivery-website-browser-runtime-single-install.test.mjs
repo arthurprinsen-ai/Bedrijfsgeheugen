@@ -24,10 +24,17 @@ test('website lane installs exactly one Playwright/Chromium browser runtime per 
   assert.equal(pythonBrowserInstalls.length, 0, `expected no duplicate Python Chromium install, found ${pythonBrowserInstalls.length}`);
 });
 
-test('de gedeelde installatie schakelt de flakey Google Chrome apt-bron uit', () => {
+test('de gedeelde installatie schakelt flakey apt-bronnen uit en begrenst alle externe installatiestappen', () => {
   const script = readFileSync('tools/ci/install-chromium.sh', 'utf8');
   assert.match(script, /google-chrome/, 'de apt-bron van Google Chrome wordt niet verwijderd');
   assert.match(script, /POGINGEN/, 'er wordt niet opnieuw geprobeerd bij een mislukte installatie');
+  assert.match(script, /NPM_INSTALL_TIMEOUT_SECONDS/, 'npm install heeft geen eigen fail-fast timeout');
+  assert.match(script, /PLAYWRIGHT_INSTALL_TIMEOUT_SECONDS/, 'Playwright install heeft geen eigen fail-fast timeout');
+  assert.match(script, /APT_UPDATE_TIMEOUT_SECONDS/, 'apt recovery heeft geen eigen fail-fast timeout');
+  assert.match(script, /timeout --signal=TERM --kill-after=15s/, 'installatiestappen gebruiken geen harde process timeout');
+  assert.match(script, /run_bounded "\$NPM_INSTALL_TIMEOUT_SECONDS" npm install/, 'npm install is niet bounded');
+  assert.match(script, /run_bounded "\$PLAYWRIGHT_INSTALL_TIMEOUT_SECONDS"/, 'Chromium install is niet bounded');
+  assert.match(script, /run_bounded "\$APT_UPDATE_TIMEOUT_SECONDS" sudo apt-get update/, 'apt recovery is niet bounded');
 });
 
 test('local exact-candidate fallback preserves Netlify-style clean URLs', () => {
