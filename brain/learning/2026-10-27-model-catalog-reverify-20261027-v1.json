@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse|data|model-catalog-reverify-20261027|20261027-v1",
+  "compiler": {
+    "failure_class": "SUPPLIER_EVIDENCE_EXPIRY_AND_DRIFT",
+    "scope": "DATA",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+      "tests/brain-v18-delivery-classification.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
+    ]
+  },
+  "root_cause": "All 110 AI model records carried supplier evidence dated 2026-10-14; the freshness gate (14 days) turns red on 2026-10-28. Re-checking also showed drift: Anthropic fable-5/opus-5/4.x/haiku-4-5/sonnet-4-6 no longer in the current-models table, missing cache prices, Mistral and Google lifecycle changes.",
+  "prevention": "Per model only model_id, status, pricing and context confirmed on 2026-10-27 against official supplier pages get fresh receipts. Everything not re-observed (capabilities, deployment, governance) moves to not_verified with claim_scope partial; old receipts keep their original dates. gemini-3-flash-preview was re-verified across all six public claims. The derived supplier ledger was rebuilt with the fail-closed reconciler; no approval or eligibility was granted.",
+  "evidence": {
+    "tests": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs",
+      "tests/ai-model-supplier-evidence-accounting.test.mjs",
+      "tests/brain-ai-model-catalog-evidence-recovery.test.mjs",
+      "tests/ai-model-intelligence-freshness-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until protected merge and green main"
+  },
+  "limitations": [
+    "Catalog is data only; no runtime code changed",
+    "New supplier models (claude-fable-5-1, claude-haiku-5-5, gpt-6.1-terra, mistral-large-4, zai-glm-5.3-flash) are not added yet",
+    "DeepSeek prices, most context windows and all tenant, DPA and region facts remain unverified"
+  ]
+}
