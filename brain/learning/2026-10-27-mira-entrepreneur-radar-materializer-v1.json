@@ -1,0 +1,45 @@
+{
+  "fingerprint": "mira-entrepreneur-radar-materializer-v1",
+  "date": "2026-10-27",
+  "failure_class": "MIRA_RADAR_AND_MATERIALIZER_CONTRADICT_ORCHESTRATOR_CONTRACT",
+  "scope": "CONTENT",
+  "root_cause": "The Mira radar searched six evergreen consumer topics without a news window, and the materializer only accepted consumer complaints (fixed phrase list, friction >= 0.9) while writing forced_business_bridge_forbidden=true. The orchestrator (#4267) needs an entrepreneur problem mapped to a canonical PH-P. No signal could ever win, so Instagram had no frozen winner and no media job for 26 and 27 October.",
+  "source_of_truth": "config/powerhouse-problem-library.json",
+  "prevention": [
+    "Radar queries cover the 12 SME problem topics that map to existing PH-P records",
+    "Radar reads Tavily news (14 days) and DataForSEO Google News and filters on the provider timestamp; the shared publication-freshness gate stays the single authority",
+    "Materializer writes approved_canonical_problem_id and the library scene so the existing frozen-winner resolver takes the library-mapping route",
+    "Immutable daily winner, 60-day freshness, 90-day source dedupe and the service_role-only permission boundary are unchanged"
+  ],
+  "evidence": {
+    "production_pre_change": {
+      "radar_version": 437,
+      "signals_within_14_days": 0,
+      "news_probe": "DataForSEO Google News returned dated items for SME topics on 2026-10-27"
+    },
+    "test": "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs",
+    "code_paths": [
+      "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+      "supabase/migrations/20261027190000_mira_entrepreneur_signal_materializer_v1.sql"
+    ],
+    "supersedes_pr": 4265,
+    "actual_instagram_provider_send_this_candidate": 0
+  },
+  "compiler": {
+    "failure_class": "MIRA_RADAR_AND_MATERIALIZER_CONTRADICT_ORCHESTRATOR_CONTRACT",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "outcome": {
+    "commercial_proof_not_manufactured": true,
+    "daily_winner_protected": true,
+    "provider_readback_required": true
+  }
+}
