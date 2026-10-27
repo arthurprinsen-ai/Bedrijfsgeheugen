@@ -11,6 +11,9 @@
     "historical_replay": [
       "tests/brain-mollie-billing-v1.test.mjs"
     ],
+    "shadow": [
+      "tests/brain-mollie-billing-v1.test.mjs"
+    ],
     "canary": [
       "tests/brain-mollie-billing-v1.test.mjs"
     ]
