@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "powerhouse|self-improvement|provider-verified-promotion-evidence|20261023-v1",
+  "obligation_id": "powerhouse|self-improvement|provider-verified-promotion-evidence|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/2750",
+  "related_operational_gate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4358",
+  "status": "CANDIDATE",
+  "failure_class": "SELF_DECLARED_EVIDENCE_FALSE_AUTONOMOUS_PROMOTION",
+  "root_cause": "The existing pure evaluatePromotionCandidate function accepted two arbitrary string evidenceRefs and true boolean quality/security/regression flags as sufficient to emit promotable=true/PROMOTE, without requiring any independently verified provider/run evidence at the exact candidate revision. A caller could also pass requiredGates=[] and minEvidence=0 to weaken validation.",
+  "observed_evidence": {
+    "supabase_checked_at_utc": "2026-10-23T11:13:14Z",
+    "project": "adhjwmvyoixzjtmiroln",
+    "brain_layers_wired": 32,
+    "optimization_candidates": 9,
+    "optimization_candidates_measured": 0,
+    "optimization_candidates_review_required": 9,
+    "optimization_candidates_review_proven": 0,
+    "optimization_independent_observations": 0,
+    "verified_customer_value_evaluations": 0,
+    "realized_value_records": 0,
+    "positive_runtime_value_proven": false
+  },
+  "fix": "Pure self-improvement candidate evaluator now requires at least two distinct independent evidence attestations returned by a supplied trusted verification function, matching exact 40-char candidate source SHA, evidence ID, validated observation timestamp and allowed verification authority; exceptions, self-assertion, mismatch, future timestamps and duplicates fail closed. Minimum quality/security/regression gates cannot be removed by optional arguments. The PROMOTE decision remains an advisory evaluated candidate, with releaseAuthorized=false and protectedReleaseRequired=true; real provider/review/production gates remain separate.",
+  "prevention_rule": "All optimization and new-model agents must separate claimed evidence references from externally verified evidence receipts. A non-empty string ID, self-awarded 'verified' flag, a successful pg_cron or compiler-ready source is not a verified improvement or authorization to publish. No repeat scheduler, new registry, direct production DDL, customer-value fabricated entries, security waiver, provider consent bypass or CI bypass. Existing canonical #2750 and #4358 remain owner.",
+  "tests": [
+    "tests/brain-self-improvement-layer-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "compiler": {
+    "failure_class": "SELF_DECLARED_EVIDENCE_FALSE_AUTONOMOUS_PROMOTION",
+    "scope": "POWERHOUSE_SELF_IMPROVEMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "invariants": [
+      "two independent verifiable receipts from trusted callback, not two strings",
+      "exact candidate source SHA and evidence identity and observation freshness",
+      "no duplicate refs or self-attested proof",
+      "no false green on provider errors",
+      "quality security regression mandatory regardless of caller overrides",
+      "advisory promotion result never release authority",
+      "protected Required/CodeQL and existing production approval unchanged"
+    ]
+  },
+  "terminal_rule": "Source live only after protected exact-head Required and CodeQL, protected merge, main readback, actual Brain skill projection and runtime evaluation on trusted provider receipts; no assertion that any of the nine existing candidates is already measurable or customer verified."
+}

@@ -18,23 +18,24 @@ test('V2 overview exposes legacy company-state and adoption surfaces',async({pag
   await expect(insights).toContainText('CMMI');
   await expect(insights).toContainText('Waar organisatie staat');
   await expect(insights.locator('.adoption-step')).toHaveCount(5);
-  await expect(insights.locator('.adoption-step')).toHaveCount(5);
-  const profileKnown=await insights.locator('.adoption-step.current').count();
-  expect([0,1]).toContain(profileKnown);
 });
 
-test('general menu remains available on opened V2 pages',async({page})=>{
+test('canonical sidebar contains all pages and preserves exact active page context',async({page})=>{
   await bootDemo(page);
+  const nav=page.locator('.sidebar .nav.portal-single-navigation');
+  await expect(nav).toBeVisible();
+  await expect(nav.locator('[data-nav-target="profiel"]')).toHaveCount(1);
+  await expect(nav.locator('[data-nav-target="roadmap"]')).toHaveCount(1);
+  await expect(nav.locator('[data-nav-target="powerhouse-control-center"]')).toHaveCount(1);
+
   await page.evaluate(async()=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage('profiel');});
   const portal=page.locator('#portalView');
   await expect(portal).toHaveAttribute('data-page-id','profiel');
-  const nav=portal.locator('.pvglobalnav');
-  await expect(nav).toBeVisible();
-  for(const label of ['Overzicht','Organisatie','Cijfers','Data & AI','Strategie','Advies','Roadmap','Actueel houden']){
-    await expect(nav.getByRole('button',{name:label,exact:true})).toHaveCount(1);
-  }
-  await expect(nav.getByRole('button',{name:'Organisatie',exact:true})).toHaveClass(/active/);
-  await nav.getByRole('button',{name:'Roadmap',exact:true}).click();
+  await expect(nav.locator('[data-nav-target="profiel"]')).toHaveClass(/active/);
+  await expect(portal.locator('#pvKicker')).toHaveText('Besturen');
+
+  await page.evaluate(async()=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage('roadmap');});
   await expect(portal).toHaveAttribute('data-page-id','roadmap');
-  await expect(nav.getByRole('button',{name:'Roadmap',exact:true})).toHaveClass(/active/);
+  await expect(nav.locator('[data-nav-target="roadmap"]')).toHaveClass(/active/);
+  await expect(portal.locator('#pvKicker')).toHaveText('Besturen');
 });

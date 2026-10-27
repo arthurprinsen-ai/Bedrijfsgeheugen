@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-19",
+  "obligation": "powerhouse-email-and-personal-social-delivery-p0-20261019",
+  "fingerprint": "email-provider-preflight-missing-user-proof|personal-linkedin-repeated-story-family",
+  "root_cause": [
+    "Canonical Supabase Gmail dry run returned account_resolved=true, but omitted account_user_resolved; the existing independent reconciler correctly required both flags and marked preflight RED.",
+    "Personal LinkedIn uniqueness reservation rejected the same story family from 2026-10-15. The orchestrator selected the same verified personal-source recommendation after each pre-provider duplicate; previous source exclusions were only used for company LinkedIn. No independently distinct verified personal recommendation is present for 2026-10-19.",
+    "CRM has no explicit human_approved recipients, so the canonical outreach executor truthfully has no prepared email messages. Newsletter lane is intentionally disabled until lawful recipient and delivery authority is established."
+  ],
+  "intervention": "Send explicit authenticated user/account identity from the already resolved Composio Gmail dry-run and rotate personal LinkedIn sources only within independently verified, source-backed alternatives following pre-provider duplicate rejection. If none exists, hold with NO_UNIQUE_VERIFIED_PERSONAL_SOURCE.",
+  "prevention": "Never fabricate account identity, prospect consent, a sent provider receipt or a new personal story. No Mail webhook activation and no bypass of human recipient approval, suppressions, identity gate, uniqueness reservation, CodeQL, required CI, protected merge or actual production readback.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "backend",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "prevention_rule": "CANONICAL_GMAIL_DRY_RUN_IDENTITY_AND_VERIFIED_PERSONAL_SOURCE_ROTATION_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "supabase_preflight_request_id": 7910,
+    "preflight_http": 200,
+    "preflight_account_resolved": true,
+    "preflight_user_resolved_in_old_response": false,
+    "crm_human_approved_recipients": 0,
+    "autonomous_email_prepared": 0,
+    "personal_provider_external_id": null,
+    "branch_static_contract_checks": "8 assertions passed in connector readback",
+    "required_ci": "required, not yet passed",
+    "codeql_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39252240802",
+    "production_readback": "not yet proven",
+    "stale_legacy_canary": "tests/brain-powerhouse-autonomous-outreach-v1.test.mjs references a removed migration and cannot prove this change; keep it as independent historical suite maintenance, not an admission canary.",
+    "canary_selection": "The legacy autonomous-outreach-v1 test refers to a deleted 2026-09-28 migration, failing ENOENT before assertions. Use the changed-branch canonical outbound/uniqueness regression in CANARY evaluation mode; it is a source contract test, NOT production provider readback."
+  },
+  "state": "CANDIDATE_AWAITING_PROTECTED_REQUIRED_CI_MERGE_EDGE_RUNTIME_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4473",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39252240629"
+  ]
+}

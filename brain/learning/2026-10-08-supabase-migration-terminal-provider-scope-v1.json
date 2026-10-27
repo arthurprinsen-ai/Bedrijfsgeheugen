@@ -1,0 +1,74 @@
+{
+  "fingerprint": "supabase-migration-terminal-provider-scope-20261008-v1",
+  "date": "2026-10-08",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "title": "Verify migration plus control-plane evidence with Supabase provider readback",
+  "problem": "Merged PR #4169 has official applied migration 20261008162000 and three verified production candidates, but its terminal closure returned PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN despite Supabase-only runtime change.",
+  "root_cause": "The terminal workflow's migration fast path excluded only docs, tests and brain/learning. It incorrectly classified .agents and canonical platform/system-map verifier-only files as requiring a Netlify release. Production Release Readback excludes Supabase migrations and verifier-only paths, so no canonical website release exists to satisfy that false demand.",
+  "decision": "Reuse existing canonical isNonProductionPath/verifierOnly authority and migration provider proof, classifying migrations plus recognized nonruntime paths as Supabase-only. Keep mixed, unknown, website and Edge runtime fail closed.",
+  "fix": "Update terminal scope classifier and workflow with precise migration + nonruntime selector, add regression and negative-scope tests; no new scheduler, proof store or bypass.",
+  "prevention_rule": "Never infer Netlify release necessity from governance/verifier-only files accompanying a Supabase migration. Supabase-only terminal requires exact official production migration identity. Unknown runtime remains closed.",
+  "unknown_is_not_green": true,
+  "existing_truth": {
+    "source_pr": 4169,
+    "production_migration_version": "20261008162000",
+    "production_migration_applied": true,
+    "production_learning_candidates": 3,
+    "terminal_run_id": 37798360963,
+    "terminal_error": "PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN"
+  },
+  "expected_truth_after_release": "Future migration plus nonruntime evidence closures use Supabase provider migration readback; original #4169 completion is not claimed until independently reconciled.",
+  "regression_contract": "tests/brain-terminal-release-authority-scoped-v1.test.mjs",
+  "canonical_refs": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    "tools/delivery/terminal-release-scope.mjs",
+    "tests/brain-supabase-migration-production-readback-v1.test.mjs",
+    "tests/brain-terminal-release-authority-scoped-v1.test.mjs",
+    "tools/delivery/supabase-migration-production-readback.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs",
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs",
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs",
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "invariants": [
+      "Supabase provider proof mandatory",
+      "unknown runtime cannot bypass",
+      "no invented Netlify SHA",
+      "main containment"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MIGRATION_TERMINAL_RELEASE_SCOPE_MISCLASSIFIED",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "source_pr": 4169,
+    "merge_sha": "22dec8d4af0dd63b7ea6b871fe407d712ccd2cfd",
+    "terminal_workflow_run": 37798360963,
+    "terminal_job": 113383658453,
+    "observed_error": "PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN",
+    "production_migration_version": "20261008162000",
+    "production_learning_candidates": 3,
+    "regression_tests": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs",
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "production_outcome_proven": false
+  }
+}

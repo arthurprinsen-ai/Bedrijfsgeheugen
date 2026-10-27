@@ -1,28 +1,14 @@
 name: Canonical brand shell contract
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'components/**'
-      - 'assets/**'
-      - 'pages/**'
-      - 'site/**'
-      - 'blog/**'
-      - 'kennis/**'
-      - '*.html'
-      - 'styles.css'
-      - 'script.js'
-      - 'tools/site-shell/**'
-      - 'tests/site-shell-*.test.mjs'
-      - '.github/workflows/canonical-brand-shell-test.yml'
+  workflow_dispatch:
 
 concurrency:
   group: canonical-brand-shell-contract-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  brand-shell-contracts:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:

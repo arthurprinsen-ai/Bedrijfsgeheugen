@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse|2026-10-12|clickdemo-different-story-than-canonical-portal|v1",
+  "compiler": {
+    "failure_class": "LEGACY_SALES_DEMO_REVERTS_TO_DASHBOARD_AND_CHANGE_MODULE_PITCH",
+    "scope": "WEBSITE_COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "After Portal V2's production daily steering transformation, noindex /klantportaal-demo still opened with isolated dashboards/change tracking language and did not explain why the continuous business decision loop differs from another AI tool.",
+  "prevention_rule": "Explain the five-step operator journey using existing demo sections and their existing data-tab→ganaar router, preserve permissions/version functionality, mark fictional customers/metrics, and link to canonical production portal without claiming a live external signal or paid result.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-portal-clickdemo-steering-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-portal-clickdemo-steering-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-website-portal-clickdemo-steering-truth-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "candidate_only": true,
+    "production_publish_unverified": true,
+    "sales_impact_unproven": true
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "fingerprint": "powerhouse|agent-incident-relevance-daily-evolution|20261022-v1",
+  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "event_kind": "IMPROVEMENT",
+  "observed_at": "2026-10-22",
+  "component_type": "portal-agent-brain",
+  "root_cause": "Existing learning contract and daily workflow had no explicit fail-closed tenant relevance projection plus required daily incident-prevention metrics enforced together.",
+  "failedApproach": "Treating incident learning as chat-only notes or a portal success badge without canonical runtime verification. In this PR, the first admission was attempted without mandatory machine-readable metadata; this is now an explicitly recorded regression/preflight lesson.",
+  "fix": "Reinforce canonical universal learning validator, agent skill and tenant-safe existing Portal V2 learning route with regression cases.",
+  "preventionRule": "Every agent reads known canonical failures before material action, writes evidence-backed learning after bounded recovery, and projects only proven tenant learning to the portal.",
+  "regressionTest": [
+    "tests/brain-universal-closed-loop-learning.test.mjs",
+    "portal-v2/tests/relevance-learning-closed-loop.test.mjs"
+  ],
+  "evidence": [
+    "config/universal-closed-loop-learning.json",
+    "portal-v2/native-pages.js"
+  ],
+  "canonicalAuthority": "Existing Brain/Powerhouse and protected delivery; no second runtime",
+  "productionVerified": false,
+  "admission_incident": {
+    "fingerprint": "github|required-ci|pr-machine-metadata-missing|20261022-v1",
+    "state": "RECOVERING",
+    "observed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39813937625",
+    "root_cause": "PR #4673 initially omitted mandatory machine metadata fields Obligation-ID, Delivery-Lane, Candidate-Type and Base-SHA; Required admission failed before tests.",
+    "fix": "Added canonical machine metadata and same obligation/branch lease to PR #4673; re-triggered exact-head gates using a learning record update.",
+    "preventionRule": "Every future GitHub PR must include machine metadata before opening; check canonical delivery-hygiene policy and branch writer lease preflight. Never suppress admission tests.",
+    "verification": "Pending the next exact-head Required CI, CodeQL and protected merge.",
+    "reconciled_head_admission_cause": "Exact-head Required 39818082206 failed fail-closed LEARNING_FAILURE_CLASS_REQUIRED because this learning JSON lacked compiler.failure_class and an executable historical_replay evaluation; repaired in-place on canonical PR #4673.",
+    "regression_prevention": "New semantic learning must include compiler.failure_class and evaluation.historical_replay with executable tests/brain-*.test.mjs. Never suppress learning canonicalization.",
+    "semantic_failure": "Required 39818778024 LEARNING_CANONICALIZATION_GREEN, then INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning; existing camelCase preventionRule was insufficient for protected material closure that requires semantic prevention_rule (or prevention) field; same-owner source learning updated with snake_case prevention and test_evidence.",
+    "semantic_prevention": "Before candidate branch write, run compileLearningEvaluationPlan plus evaluateLearningSemantics for changed Brain learning and make real negative tests fail closed."
+  },
+  "compiler": {
+    "failure_class": "AGENT_LEARNING_CONTRACT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-universal-closed-loop-learning.test.mjs"
+    ]
+  },
+  "prevention_rule": "Every agent must preflight canonical fingerprints, write a source-evidenced and tenant-safe repair, and retain incident/portal tests plus an append-only event. Never promote status without exact production and authenticated tenant verification.",
+  "test_evidence": [
+    "tests/brain-universal-closed-loop-learning.test.mjs",
+    "portal-v2/tests/relevance-learning-closed-loop.test.mjs"
+  ]
+}

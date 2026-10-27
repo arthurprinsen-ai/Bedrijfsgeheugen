@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-settled-navigation-v1",
+  "observed_at": "2026-10-04T14:50:00Z",
+  "type": "PREVENTION",
+  "problem": "Cross-browser assurance remained red after the real website CLS defects were fixed because a prior document retry net::ERR_CONNECTION_RESET was retained even though the same final document loaded successfully.",
+  "root_cause": "The runner accumulated requestfailed events across navigation retries but did not reconcile document failures against the final successful URL/status.",
+  "decision": "Reuse the existing settled-navigation semantics: when the final document is HTTP-successful, suppress only transient failed document attempts for that same final pathname; preserve script/stylesheet failures and unrelated document failures.",
+  "prevention": [
+    "Track finalUrl after successful settled navigation.",
+    "Filter only transient document retry failures matching the final successful pathname.",
+    "Never suppress script or stylesheet failures.",
+    "Never suppress failed document requests when the final response is not successful."
+  ],
+  "compiler": {
+    "failure_class": "BROWSER_SETTLED_DOCUMENT_RETRY_FALSE_FAILURE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "GitHub run 37208375964 attempt 2: homepage final render succeeded but document:/:net::ERR_CONNECTION_RESET remained",
+    "tools/site-shell/website-cross-browser-assurance.mjs",
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "2026-09-30-company-brain-current-main-live-promotion-v2",
+  "fingerprint": "production|company-brain-current-main-live-promotion|v2",
+  "type": "RECOVERY",
+  "observed_at": "2026-09-30",
+  "failure_class": "DELIVERY",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "signal": "Company Brain code and i18n recovery were present in protected main, while public production still did not provide reliable route/readback evidence.",
+  "root_cause": "Prior recovery candidates were superseded by newer protected-main changes; merge/build success alone did not prove the category route on current production.",
+  "decision": "Close stale parallel recovery candidates and trigger one bounded no-copy production promotion from the newest protected main.",
+  "prevention": [
+    "Keep exactly one current-main promotion lineage per public route obligation",
+    "Supersede stale recovery candidates instead of retrying older base SHAs",
+    "Require Netlify ready production plus public Company Brain route and homepage readback before LIVE claim"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_RECOVERY"
+}

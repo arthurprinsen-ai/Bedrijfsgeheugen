@@ -6,11 +6,11 @@ test('social publisher claims canonical decision before any external provider si
   const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
   const claimState=publisher.indexOf("state: 'dispatching'");
   const claimPredicate=publisher.indexOf(".eq('state', 'content_ready')");
-  const instagram=publisher.indexOf("publishInstagramViaComposio(db, art, runDate)");
+  const instagram=publisher.indexOf("publishInstagramViaComposio(db,art,runDate,instagramContext)");
   const buffer=publisher.indexOf("createPost(bufferToken, input)");
   assert.ok(claimState>=0 && claimPredicate>=0);
-  assert.ok(claimState<instagram,'Instagram must be behind the canonical single-writer claim');
-  assert.ok(claimState<buffer,'Buffer must be behind the canonical single-writer claim');
+  assert.ok(instagram>=0&&claimPredicate<instagram&&claimState<instagram,'Instagram must be behind the canonical single-writer claim');
+  assert.ok(buffer>=0&&claimPredicate<buffer&&claimState<buffer,'Buffer must be behind the canonical single-writer claim');
   assert.match(publisher,/ALREADY_CLAIMED_OR_DELIVERED/);
 });
 
@@ -21,6 +21,6 @@ test('retryable Buffer 429 restores readiness only from the claimed dispatching 
 });
 
 test('content reconciler migration is syntactically terminated before privilege statements',()=>{
-  const migration=readFileSync('supabase/migrations/20260917235907_social_content_integrity_invalidation_guard.sql','utf8');
+  const migration=readFileSync('supabase/migration-history/repository-only/20260917235907_social_content_integrity_invalidation_guard.sql','utf8');
   assert.match(migration,/\$function\$;\s*revoke execute on function public\.powerhouse_reconcile_content_outcomes_v1/);
 });

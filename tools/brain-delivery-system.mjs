@@ -9,20 +9,70 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'scripts/ai-model-freshness-watch.mjs': 'automation',
+  'scripts/ai-model-source-probe.mjs': 'automation',
+  'tests/brain-model-evidence-delivery-admission.test.mjs': 'automation',
+  'docs/skills/supplier-evidence-recovery-v2.md': 'automation',
+  'data/ai-model-stale-review-worklist-20261025.json': 'automation',
+  'tests/brain-ai-model-stale-worklist.test.mjs': 'automation',
+  'tools/growth-intelligence/decision-core.mjs': 'automation',
+  'tools/growth-intelligence/decision-core.test.mjs': 'automation',
+  'tools/growth-intelligence/heartbeat-adapter.mjs': 'automation',
+  'tools/growth-intelligence/heartbeat-adapter.test.mjs': 'automation',
+  'tools/growth-intelligence/learning-store.mjs': 'automation',
+  'tools/growth-intelligence/learning-store.test.mjs': 'automation',
+
+  'config/powerhouse-adaptive-delivery-v1.json': 'backend',
+  'AGENTS.md': 'automation',
+  'docs/agent-skills/repository-merge-capability-guard.md': 'automation',
+  'tests/merge-capability-guard.test.mjs': 'automation',
+  'tests/brain-merge-capability-guard.test.mjs': 'automation',
+  'tools/delivery/merge-capability-guard.mjs': 'automation',
+  'tools/delivery/required-check-reconciliation.mjs': 'automation',
+  'tests/required-check-reconciliation.test.mjs': 'automation',
+  'scripts/brain/skill-byte-audit.mjs': 'automation',
+  'tests/brain-skill-byte-audit.test.mjs': 'automation',
+  'tools/brain/agent-skill-execution-evidence.mjs': 'automation',
+  'tests/agent-skill-execution-evidence.test.mjs': 'automation',
+  'tests/brain-agent-skill-execution-evidence.test.mjs': 'automation',
+  'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
+  'tools/delivery/predictive-controller.mjs': 'automation',
+  'tools/ci/netlify-ignore-build.mjs': 'backend',
+  'tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs': 'automation',
+  'tests/brain-delivery-supervisor-yaml-scalar-v1.test.mjs': 'automation',
+  'config/powerhouse-agent-delivery-scheduler-v1.json': 'automation',
   'config/brain-delivery-system.json': 'backend',
+  'config/historical-terminal-reconciliation.json': 'backend',
+  'scripts/brain/material-writeback-closure-guard.mjs': 'backend',
   'scripts/brain/autonomous-engineering-fabric-v3.mjs': 'automation',
   'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
   'config/powerhouse-engineering-tuning.json': 'automation',
+  // The hourly improvement runtime is a Supabase/Brain backend probe, not a website artifact.
+  'config/powerhouse-autonomous-improvement-runtime.json': 'backend',
+  'scripts/brain/continuous-improvement/run-autonomous-improvement.mjs': 'backend',
   'scripts/brain/powerhouse-ci-intelligence.mjs': 'backend',
   'config/powerhouse-ci-calibration-v1.json': 'backend',
   'tools/delivery/ci-calibration-engine.mjs': 'backend',
   'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
   'tests/brain-ci-calibration-engine-v1.test.mjs': 'backend',
-  'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend'
+  'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend',
+  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation',
+  'schemas/delivery-evidence.schema.json': 'backend',
+  'tests/release-artifact-identity.test.mjs': 'backend'
 });
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
+  '.github/workflows/production-source-snapshot.yml': 'automation',
+  '.github/workflows/powerhouse-obligation-terminalizer.yml': 'automation',
+  '.github/workflows/powerhouse-delivery-recovery-supervisor.yml': 'automation',
+  '.github/workflows/portal-native-regression-tests.yml': 'automation',
+  '.github/workflows/business-os-foundation.yml': 'automation',
   '.github/workflows/approved-central-blog.yml': 'automation',
+  '.github/workflows/powerhouse-delivery-hygiene.yml': 'backend',
+  '.github/workflows/repo-writer-candidate-shadow.yml': 'automation',
+  '.github/workflows/repo-writer-cheap-canary.yml': 'automation',
+  '.github/workflows/repo-writer-operational-verification.yml': 'automation',
+  '.github/workflows/repo-writer-parity-rollback.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
   '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend',
@@ -32,6 +82,8 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/regelgeving-bijwerken.yml': 'automation',
   '.github/workflows/regulatory-source-watch.yml': 'automation',
   '.github/workflows/required-test.yml': 'backend',
+  '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
+  '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/powerhouse-daily-self-evolution.yml': 'automation',
   '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml': 'automation'
 });
@@ -40,6 +92,7 @@ const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'docs/superpowers/changes/',
   'docs/engineering-intelligence-trust-',
   'docs/plans/',
+  'docs/agent-skill-evidence-contract.md',
   'platform/system-map/canonical-system-map.mjs'
 ]);
 function effectiveNonExecutableSharedPaths(policy = {}) { return unique([...(policy.nonExecutableSharedPaths || []), ...BUILT_IN_NON_EXECUTABLE_SHARED_PATHS]); }
@@ -71,6 +124,17 @@ const REGULATORY_AUTOMATION_PATHS = Object.freeze([
   'tools/regulatory-',
   'tests/regulatory-'
 ]);
+const CONTROL_PLANE_HELPER_BACKEND_PATHS = Object.freeze([
+  'scripts/ci/',
+  'tools/build/',
+  'tools/netlify/',
+  'tools/notion/',
+  'tools/supabase/',
+  'tests/build/',
+  'tests/netlify/',
+  'tests/notion/',
+  'tests/supabase/'
+]);
 const DELIVERY_CONTROL_PLANE_BACKEND_PATHS = Object.freeze([
   '.github/workflows/obligation-terminal-closure.yml',
   '.github/workflows/production-release-readback.yml',
@@ -83,14 +147,19 @@ const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
   'docs/portal-v2-parity-architecture.md'
 ]);
 
-function scopedLaneForPath(path) {
+function scopedLaneForPath(path, policy = {}) {
   if (SCOPED_CONTROL_PLANE_LANES[path]) return SCOPED_CONTROL_PLANE_LANES[path];
   if (SCOPED_WORKFLOW_LANES[path]) return SCOPED_WORKFLOW_LANES[path];
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
   if (matches(path, REGULATORY_AUTOMATION_PATHS)) return 'automation';
+  if (matches(path, CONTROL_PLANE_HELPER_BACKEND_PATHS)) return 'backend';
   if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
+  if (path.startsWith('.github/workflows/')) {
+    const explicitPolicyLane=(policy.lanes || []).find(lane => matches(path, lane.paths || []));
+    return explicitPolicyLane?.id || 'backend';
+  }
   return null;
 }
 function isScopedNonExecutable(path) {
@@ -124,14 +193,14 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const nonExecutablePatterns = effectiveNonExecutableSharedPaths(policy);
   const nonExecutableShared = paths.filter(path => matches(path, nonExecutablePatterns) || isScopedNonExecutable(path));
-  const scopedLanePaths = paths.filter(path => scopedLaneForPath(path));
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !scopedLaneForPath(path) && !isScopedNonExecutable(path));
+  const scopedLanePaths = paths.filter(path => scopedLaneForPath(path, policy));
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !scopedLaneForPath(path, policy) && !isScopedNonExecutable(path));
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths) || isScopedNonExecutable(path));
   const lanes = policy.lanes
-    .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path) === lane.id) || paths.some(path => !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
+    .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path, policy) === lane.id) || paths.some(path => !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path, policy) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
     .map(lane => Object.freeze({ id: lane.id, laneId: `${lane.id}|${sha.slice(0, 12)}`, candidateIdentity: sha, testedIdentity: sha, owner: lane.owner, requiredContracts: Object.freeze([...lane.requiredContracts]), independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true }))
     .sort((left, right) => left.id.localeCompare(right.id));
-  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, nonExecutablePatterns) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || scopedLaneForPath(path) || isScopedNonExecutable(path));
+  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, nonExecutablePatterns) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || scopedLaneForPath(path, policy) || isScopedNonExecutable(path));
   const unclassified = paths.filter(path => !classified.includes(path));
   if (unclassified.length) throw new Error(`unclassified delivery path: ${unclassified.join(', ')}`);
   const noLanePaths = unique([...ignored, ...nonExecutableShared]);

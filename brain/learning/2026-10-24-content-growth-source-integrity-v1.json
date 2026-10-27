@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "content-growth|daily-learning|unattributed-research-mixed-with-performance|20261024-v1",
+  "obligation_id": "content-growth:source-integrity:daily-v1",
+  "status": "CANDIDATE",
+  "failure_class": "UNATTRIBUTED_EXTERNAL_RESEARCH_CRASHES_CONTENT_LEARNING",
+  "root_cause": "The existing daily content-growth materializer passes all data/content-growth-events.json records into aggregateContentPerformance. The current evidence file holds a dated public-policy problem radar item with no content_id. The aggregator strictly requires content_id, so the daily run cannot materialize learning on that input. Also an RVO application deadline 2026-10-16 is earlier than today's date despite static CURRENT field.",
+  "observed_evidence": {
+    "source_file": "data/content-growth-events.json",
+    "materializer": "tools/content-growth/materialize-learning.mjs",
+    "workflow": ".github/workflows/content-growth-learning.yml",
+    "source_observed_date": "2026-09-28",
+    "deadline": "2026-10-16",
+    "independent_provider_metrics": "NOT_IN_THIS_DATASET"
+  },
+  "fix": "Add a provenance partition inside existing scheduled learning workflow; only attributable metric events enter ranking and revenue, traceable external research is preserved separately with expiry marker. Unknown or falsely unattributed metrics fail closed rather than silently ignored.",
+  "prevention_rule": "Market radar evidence is not a GA4 event. Reject untraceable external signals, duplicate IDs and unattributed performance metrics; never present the absence of observed revenue events as verified zero revenue. Reuse existing cadence, policy and canonical Brain.",
+  "tests": [
+    "tests/brain-content-growth-source-integrity-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "UNATTRIBUTED_EXTERNAL_RESEARCH_CRASHES_CONTENT_LEARNING",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-growth-source-integrity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-growth-source-integrity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-growth-source-integrity-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Daily workflow Required/CodeQL protected delivery and its real scheduled run producing artifact with transparent attribution integrity; later production provider metrics must be independently read back."
+}

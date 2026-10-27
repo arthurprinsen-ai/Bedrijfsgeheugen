@@ -91,3 +91,60 @@ Status: **LIVE_PROVEN_RUNTIME**.
 - Selfscan report-request and checkout-start now emit PII-free commercial intent into the canonical growth/datahub loop.
 - Personal contact data remains in purpose-bound lead/order handlers and is never copied into growth telemetry.
 - This bridge is part of the existing LinkedIn Sales Machine / Growth Swarm / Persuasion Revenue Optimizer lineage; no parallel CRM, intent store or scheduler was introduced.
+
+
+## €1M Revenue Operating Contract — 29 september 2026
+Fingerprint: `powerhouse-one-million-revenue-operating-contract-v1`.
+
+Deze skill erft verplicht `config/powerhouse-one-million-revenue-operating-contract-v1.json`.
+
+Niet-onderhandelbaar:
+- North star: €1.000.000 gerealiseerde omzet binnen 365 dagen; paid order en realized revenue wegen altijd zwaarder dan bereik, traffic, posts, scans, leads of meetings.
+- Elke dagelijkse commerciële run kiest uit één gedeelde next-best-action ruimte: bedrijfspost, Mira-Instagram, SEO/blog/CRO, contextuele LinkedIn-reactie, warm/consented e-mail, ondersteunde private follow-up, due follow-up, offerte/offer follow-up, warme referral, partner/workshop follow-up of value asset.
+- Een gekwalificeerde veilig uitvoerbare actie wordt uitgevoerd; alleen aanbevelen/draften is niet terminal wanneer de canonieke executor beschikbaar is.
+- Achterstand op omzetpace verhoogt kwaliteit en aantal gekwalificeerde research/value/follow-up-acties, maar omzeilt nooit evidence, identity, privacy, consent, suppression, dedupe, fatigue of provider-ack gates.
+- Generieke cold-bulk autosend blijft verboden. Koude prospects mogen automatisch worden gevonden, verrijkt, gescoord en voorbereid; extern verzenden gebeurt alleen binnen een afzonderlijk goedgekeurde lawful/consent-based eligibility route.
+- Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
+- LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
+- Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Bounded prep runtime — 2026-09-29
+
+Fingerprint: `linkedin-sales-bounded-prep-v1`.
+
+De LinkedIn Sales Machine mag nooit de volledige `powerhouse_person_intelligence_v1` opbouwen om maximaal drie dagelijkse contextreacties te selecteren. De prep moet eerst actuele LinkedIn/public-research events begrenzen, daarna alleen de bijbehorende relaties en recente action-state ophalen, en pas daarna scoren.
+
+Hard runtime contract:
+- candidate-first, not population-first;
+- maximaal 250 recente public-research events in de candidate stage;
+- maximaal 3 contextreacties per dag;
+- 14 dagen cooldown per persoon;
+- geen sales pitch of gefabriceerde feiten in publieke comments;
+- LinkedIn DM blijft `UNAVAILABLE` zolang geen provider-write capability aantoonbaar bestaat; fallback is de bestaande e-mailroute;
+- geen retry-loop op statement timeout; root cause fix + provider/readback verplicht.
+
+
+## Source-backed direct outreach — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+LinkedIn DM and email outreach are part of the same Powerhouse source -> evidence -> action -> provider -> reply/outcome -> learning loop.
+
+Hard rules:
+- Never send a DM or email from only a generic persona/calendar. Every action must retain a traceable source/trigger plus person or company context.
+- Allowed upstream evidence includes account-specific public triggers, relationship context, predictive signals, opportunity evidence and canonical problem-radar matches.
+- Never fabricate a relationship, personal observation, trigger or company fact.
+- Deduplicate against prior actions/threads before dispatch.
+- Email replies and LinkedIn outcomes must write back to the exact action/source lineage and update trigger quality, angle, CTA, objection handling, channel fit and revenue-per-send.
+- A source/context failure is fail-closed; do not silently fall back to generic outreach.
+
+
+## Onafhankelijke e-mail-lane bij commerciële ketenfouten — 2026-10-09
+Fingerprint: `powerhouse|commercial|independent-email-lane-within-single-scheduler|v1`.
+
+- Bestaande pg_cron-job 116 `powerhouse-commercial-learning-v1` blijft de enige scheduler voor relatieverrijking en commerciële outbound; geen nieuwe uitvoerder, campagne of CRM.
+- De volledige connectiegraph wordt dagelijks opnieuw geprojecteerd zodra `enriched_today < total_connections`; de normale commerciële cyclus blijft eerst verantwoordelijk voor alle kanalen.
+- Alleen na een exception in die normale cyclus mag de bestaande `prepare_autonomous_outreach` → `optimize_prepared_outreach` → `dispatch_autonomous_outreach` als e-mailfallback worden uitgevoerd. Geen tweede dispatch bij succes van de normale cyclus.
+- De fallback gaat nooit voorbij recipient approval, consent/opt-out, suppressie, contactdruk, cooldown, message quality, persoonsbewijs of idempotency.
+- `prepared`, `dispatched` en SMTP/Gmail-providerclaim blijven afzonderlijk; alleen echte Gmail-ID plus onafhankelijke SENT-readback bewijst een verzending. Geen onterecht groene dag bij nul geschikte kandidaten.
+- Canonieke migration: `supabase/migrations/20261009135700_commercial_email_lane_fault_isolation_4198.sql`; regressie: `tests/brain-email-lane-fault-isolation-v1.test.mjs`; ouder-P0: #4198.

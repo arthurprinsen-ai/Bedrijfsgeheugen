@@ -1,0 +1,109 @@
+{
+  "version": "POWERHOUSE-PORTAL-VISUAL-ASSURANCE-v2",
+  "fingerprint": "portal-product-experience-responsive-reliability-v2",
+  "loop_key": "portal-visual-density",
+  "owner": "powerhouse-terminal-delivery",
+  "authority": {
+    "github_workflow": ".github/workflows/portal-visual-density.yml",
+    "github_harness": "tools/portal-visual-density.mjs",
+    "supabase_registry": "public.powerhouse_loop_assurance_registry_v1",
+    "supabase_receipts": "public.powerhouse_loop_assurance_receipts_v1",
+    "supabase_quality": "public.powerhouse_quality_events",
+    "notion_state": "Portal V2 visual regression — canonical route authority",
+    "supabase_runtime_source": null,
+    "supabase_receipt_mode": "explicit_external_test_evidence",
+    "supabase_guard_requires_pass": true,
+    "supabase_sync_function": "powerhouse-visual-assurance-sync",
+    "supabase_sync_migration": "supabase/migrations/20261003075748_powerhouse_portal_visual_assurance_github_sync_v1.sql",
+    "supabase_sync_cron": "powerhouse-portal-visual-assurance-sync-v1",
+    "quality_surface_registry": "config/powerhouse-quality-surface-contracts.json",
+    "notion_verified_state_page_id": "3deda36a-ac8a-8106-909c-c74f4185942e",
+    "notion_system_map_page_id": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+    "notion_projection_mode": "verified-state human projection of GitHub/Supabase machine truth"
+  },
+  "cadence": {
+    "production": "daily",
+    "freshness_minutes": 1440
+  },
+  "routes": [
+    {
+      "id": "overview",
+      "path": "/portal-v2/?page=overview"
+    },
+    {
+      "id": "roadmap",
+      "path": "/portal-v2/?page=roadmap"
+    },
+    {
+      "id": "koppelingen",
+      "path": "/portal-v2/?page=koppelingen"
+    },
+    {
+      "id": "powerhouse-control-center",
+      "path": "/portal-v2/?page=powerhouse-control-center"
+    },
+    {
+      "id": "csrd-impact",
+      "path": "/portal-v2/?page=csrd-impact"
+    },
+    {
+      "id": "data-ai",
+      "path": "/portal-v2/?page=data-ai"
+    }
+  ],
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "tablet",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "id": "narrow-mobile",
+      "width": 320,
+      "height": 700
+    }
+  ],
+  "thresholds": {
+    "horizontal_overflow_px": 2,
+    "csrd_world_max_height_px": 340,
+    "desktop_tablet_score_meter_max_px": 112,
+    "mobile_score_meter_max_px": 92,
+    "brain_core_max_height_px": 260,
+    "brain_image_desktop_tablet_max_height_px": 96,
+    "brain_image_mobile_max_height_px": 100,
+    "mobile_csrd_world_must_be_hidden": true,
+    "critical_touch_target_px": 44,
+    "visual_overflow_px": 2
+  },
+  "stages": [
+    "input",
+    "decision",
+    "action",
+    "readback",
+    "outcome",
+    "measurement",
+    "learning",
+    "guard"
+  ],
+  "rules": [
+    "fail_closed_on_threshold_breach",
+    "no_tolerance_widening_to_hide_structural_mismatch",
+    "production_evidence_expires",
+    "screenshots_and_metrics_are_required_evidence",
+    "cross_system_authority_refs_are_machine_readable",
+    "removing_github_supabase_or_notion_projection_must_fail_ci",
+    "critical_controls_must_keep_44px_touch_targets",
+    "dynamic_visuals_must_fit_or_use_explicit_internal_scroll",
+    "runtime_product_experience_layer_must_load_last"
+  ]
+}

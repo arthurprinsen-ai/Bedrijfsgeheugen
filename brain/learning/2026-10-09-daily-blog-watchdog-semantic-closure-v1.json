@@ -1,0 +1,50 @@
+{
+  "fingerprint": "powerhouse|daily-blog|native-watchdog-one-write-closure-v1",
+  "obligationId": "daily-blog:2026-10-09:watchdog-semantic-closure",
+  "date": "2026-10-09",
+  "status": "PROTECTED_DELIVERY_CANDIDATE",
+  "root_causes": [
+    "The existing Native daily blog live watchdog wrote only data/content-publication-ledger.json, which violated the enforceable integration closure contract and caused required CI admission INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE for activity_ledger,brain_learning,human_documentation",
+    "The same watchdog's generated PR body omitted machine-readable Obligation-ID, Base-SHA, Change-Scope and Scope-Budget; repeated runs could open separate proof PRs before merge"
+  ],
+  "prevention": [
+    "Keep the same daily watchdog and writer; dynamically persist canonical Brain learning, append-only development event and human documentation in the exact same commit as each externally verified live proof",
+    "Discover an existing open proof PR for the business date before creating a candidate and use protected automatic merge, never a direct main push",
+    "Generate full current PR machine metadata and align candidate changedFiles/allowedFiles with the four created artifacts"
+  ],
+  "tests": [
+    "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs",
+    "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs",
+    "GitHub Actions native blog exact public readback workflow"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs",
+      "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs"
+    ],
+    "incident_pull_request": 4260,
+    "incident_required_workflow_run": 37920738844,
+    "successful_public_watchdog_run": 37920475011
+  },
+  "compiler": {
+    "failure_class": "CANONICAL_BLOG_WATCHDOG_PROOF_SINGLE_FILE_WITHOUT_SEMANTIC_CLOSURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "protected_admission_error": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
+    "source_workflow": ".github/workflows/daily-blog-live-watchdog.yml",
+    "source_runner": "Native daily blog live watchdog",
+    "existing_canonical_provider": "Netlify",
+    "proof_requires": [
+      "HTTP 200",
+      "exact canonical",
+      "exact content-id",
+      "heading"
+    ],
+    "previous_production_proof_run": 37920475011
+  },
+  "noNewExecutor": true
+}

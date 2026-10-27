@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-20",
+  "fingerprint": "commercial|legacy-buffer-scheduled-401|single-canonical-provider-owner",
+  "type": "POWERHOUSE_LEARNING",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "status": "CANDIDATE",
+  "root_cause": "Existing Netlify buffer-social-collect scheduled function has unauthorized/stale Buffer API credentials and repeatedly returns HTTP 503 with BUFFER_HTTP_401. Buffer is explicitly not a canonical outbound/metrics provider. This is a separate legacy failure and not proof that portal 500 or provider-native LinkedIn/Instagram authorization is fixed.",
+  "prevention_rule": "Retire only Netlify's legacy Buffer schedule. Preserve the callable evidence path and existing provider-native social, identity, CRM, outbound, Brain/Heartbeat and receipt pipelines without fallback or duplicate publishing. Provider status must be read back after production deploy.",
+  "implementation": "Remove only export const config.schedule from netlify/functions/buffer-social-collect.mjs and add regression plus canonical documentation.",
+  "evidence": {
+    "source": "Netlify production observability 2026-10-20T12:15:31–12:15:55Z",
+    "http_status": 503,
+    "provider_error": "BUFFER_HTTP_401",
+    "github_ci": "PENDING",
+    "netlify_deploy": "PENDING",
+    "provider_native_delivery": "NOT_PROVEN"
+  },
+  "production_verified": false,
+  "obligation_id": "commercial|legacy-buffer-cron-retirement|20261020",
+  "compiler": {
+    "failure_class": "LEGACY_SCHEDULED_BUFFER_HTTP_401",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4198-retire-buffer-collect-schedule.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4198-retire-buffer-collect-schedule.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4198-retire-buffer-collect-schedule.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed_netlify_http_503": "VERIFIED_2026-10-20",
+    "required_ci": "PENDING",
+    "netlify_deploy": "PENDING",
+    "provider_native_delivery": "PENDING"
+  }
+}

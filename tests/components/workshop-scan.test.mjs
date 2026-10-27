@@ -9,13 +9,13 @@ const js = fs.readFileSync(new URL("../../assets/scan-workshop.js", import.meta.
 const redirects = fs.readFileSync(new URL("../../_redirects", import.meta.url), "utf8");
 
 test("workshop scan exposes complete funnel", () => {
-  assert.match(html, /Jouw bedrijf\.\s*Jouw nulmeting\./s);
+  assert.match(html, /Jouw bedrijf\.<br>Jouw bedrijfsbeeld\./s);
   assert.match(html, /Download jouw PDF/);
   assert.match(html, /Scores per domein/);
-  assert.match(html, /Kies je volgende stap/);
-  assert.match(html, /Verdiepende Scan/);
-  assert.match(html, /€ 2\.950/);
-  assert.match(html, /Control \/ Scale \/ Enterprise/);
+  assert.match(html, /Open jouw portaal/);
+  assert.match(html, /Bekijk trajecten & prijzen/);
+  assert.match(html, /https:\/\/www\.bedrijfsgeheugen\.nl\/prijzen\?/);
+  assert.match(html, /https:\/\/www\.bedrijfsgeheugen\.nl\/klantportaal\?/);
   assert.match(html, /reportQr/);
 });
 
@@ -37,7 +37,7 @@ test("scan supports workshop attribution and PDF generation", () => {
 });
 
 test("scan route and responsive/report styles exist", () => {
-  assert.match(redirects, /^\/scan\s+\/scan\.html\s+200/m);
+  assert.match(redirects, /^\/scan\s+\/pages\/scan\.html\s+200/m);
   assert.match(css, /#reportRoot/);
   assert.match(css, /@media\(max-width:940px\)/);
 });

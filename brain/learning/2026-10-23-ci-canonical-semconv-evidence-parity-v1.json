@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|ci|semantic-task-evidence-drift-from-canonical-jobs|20261023-v1",
+  "obligation_id": "engineering|cicd|canonical-source-reconciled-semconv|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_merged_prs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4756",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4762"
+  ],
+  "status": "CANDIDATE_NOT_RUNTIME_VERIFIED",
+  "failure_class": "CI_PROVENANCE_DRIFT",
+  "root_cause": "The existing hourly CI collector computed its canonical accepted-job sample and a second semantic task projection independently. On future parser changes, 20 plausible tasks could be projected even if the canonical source estimator excluded or classified them differently.",
+  "fix": "Cross-check bounded semantic task IDs, SHA, result, name and elapsed duration against canonical accepted executed-job rows from the identical GitHub response. Any mismatch suppresses all semantic proof; no new API reads or scheduler.",
+  "prevention_rule": "Agents use only canonical_reconciled source-task evidence for CI/CD conclusions; keep bounded sample labels and do not infer critical path, autonomous permission, revenue or provider deployment from a sampled CI task.",
+  "source_evidence": [
+    "tools/delivery/predictive-controller.mjs",
+    "tools/delivery/ci-throughput-telemetry.mjs",
+    "tools/delivery/ci-cicd-semconv-projection.mjs"
+  ],
+  "tests": [
+    "tests/brain-ci-canonical-semconv-parity-v1.test.mjs",
+    "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs",
+    "tests/brain-observed-ci-throughput-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-canonical-semconv-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-canonical-semconv-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-canonical-semconv-parity-v1.test.mjs"
+    ],
+    "invariants": [
+      "Source-only proof never grants CI dispatch or production release",
+      "Every emitted task proof matches the original canonical estimator on run/attempt/job/SHA/result/timing",
+      "A partial or mismatching provider snapshot fails closed",
+      "No second telemetry collector or scheduler"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "release_requirement": "Protected exact HEAD Required + CodeQL, main source readback and existing Janitor artifact verification; no claimed acceleration before measured outcomes",
+  "observed_benefit": "NOT_YET_MEASURED"
+}

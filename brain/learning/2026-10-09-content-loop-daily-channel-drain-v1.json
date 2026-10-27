@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|content|single-tick-generation-starvation-v1",
+  "obligationId": "content-publication:2026-10-09:canonical-closed-loop",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing leased Powerhouse content-loop, existing pg_cron job #140 and canonical provider evidence",
+  "root_causes": [
+    "Daily cron #140 only called the single-item content orchestrator; existing canonical full-content supervisor had no scheduled caller",
+    "One orchestrator call produces at most one decided channel artifact, leaving other channels without content for provider dispatch",
+    "Native Supabase preview database has no inherited production pg_cron job rows; initial migration raised EXISTING_CANONICAL_CONTENT_JOB_NOT_FOUND on otherwise properly associated PR #4254"
+  ],
+  "prevention": [
+    "Reuse existing job #140 to call canonical closed-loop tick rather than creating a second scheduler",
+    "Bound the content-generation drain to four rounds under one supervisor lease; detect no progress and continue dispatch of already approved artifacts",
+    "Preserve per-channel provenance, duplicate, Instagram final media, LinkedIn identity, commercial recipient eligibility and immutable provider proof",
+    "If canonical scheduler is not present in isolated preview, replay migration is explicitly a no-op; only alter the one existing job when present, and never create a preview writer"
+  ],
+  "tests": [
+    "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SINGLE_TICK_CHANNEL_STARVATION",
+    "scope": "CONTENT_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected PR merge and exact Supabase Edge deployment",
+    "provider public post ID and live readback for every required channel",
+    "Instagram final exact-asset proof",
+    "resolution of current Composio/Groq overdue-billing AI generation blocker without bypass",
+    "eligible real commercial email execution and provider delivery evidence"
+  ],
+  "evidence": {
+    "supabase_preview_pr": 4254,
+    "initial_provider_failure": "EXISTING_CANONICAL_CONTENT_JOB_NOT_FOUND",
+    "initial_provider_check_id": 113800836089,
+    "preview_branch_ref": "bwuygnjnwlrwywzsmzvh",
+    "preview_fix_state": "SOURCE_CANDIDATE_AWAITING_PROVIDER_REPLAY",
+    "no_duplicate_cron": true
+  }
+}

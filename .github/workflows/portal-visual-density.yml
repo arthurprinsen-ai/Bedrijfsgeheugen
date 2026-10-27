@@ -1,0 +1,42 @@
+name: Portal Visual Density
+
+on:
+  merge_group:
+    types: [checks_requested]
+  schedule:
+    - cron: '45 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  visual-density:
+    runs-on: ubuntu-24.04 # Pin for Playwright 1.55 OS support
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contract tests
+        run: node --test tests/portal-visual-density-contract.test.mjs tests/portal-visual-density-delivery-classification.test.mjs
+      - name: Install screenshot browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve repository for PR evidence
+        if: github.event_name == 'merge_group'
+        run: |
+          python3 -m http.server 4173 >/tmp/portal-http.log 2>&1 &
+          echo $! > /tmp/portal-http.pid
+      - name: Capture and measure portal
+        env:
+          BASE_URL: ${{ github.event_name == 'merge_group' && 'http://127.0.0.1:4173' || 'https://www.bedrijfsgeheugen.nl' }}
+          VISUAL_ASSURANCE_CONTRACT: config/powerhouse-portal-visual-assurance-v1.json
+        run: node tools/portal-visual-density.mjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-visual-density-${{ github.run_id }}
+          path: .artifacts/portal-visual-density
+          if-no-files-found: error
+          retention-days: 30

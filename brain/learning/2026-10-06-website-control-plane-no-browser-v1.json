@@ -1,0 +1,26 @@
+{
+  "id": "website-control-plane-no-browser-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github-workflow-only|website-browser-fanout|control-plane-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-control-plane-browser-scope-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The website risk classifier treated the entire .github/workflows/ directory as a high-risk website artifact even though workflow definitions are delivery control-plane source. This caused workflow-only changes to install Playwright and crawl every public route across three viewports.",
+  "prevention": "Classify .github/workflows/ as non-artifact website control plane. Runtime website artifacts such as menu JavaScript and netlify.toml remain high-risk and retain exact-preview browser verification.",
+  "evidence": {
+    "regression_test": "tests/brain-website-control-plane-browser-scope-v1.test.mjs",
+    "supporting_test": "tests/site-shell-website-release-risk.test.mjs",
+    "observed_tail": "Workflow-only PR #3886 reached full standalone public-route visibility verification despite no website runtime artifact change.",
+    "preserved_gate": "Website baseline and syntax-preflight remain required for control-plane lane execution."
+  }
+}

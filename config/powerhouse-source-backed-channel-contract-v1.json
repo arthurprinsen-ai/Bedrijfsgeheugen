@@ -1,0 +1,47 @@
+{
+  "version":"1.0.0",
+  "fingerprint":"powerhouse-source-backed-all-channels-v1",
+  "principle":"Every outbound channel starts from evidence, not a static topic calendar, and writes outcome learning back to the exact source lineage.",
+  "channels":{
+    "linkedin_personal":{
+      "source_classes":["public_daily_life_friction","verified_personal_source"],
+      "selection":"public evidence may select the theme; first-person claims require verified Arthur truth",
+      "forbidden":["invented_personal_experience","business_bridge","company_voice"],
+      "outcomes":["reach","reactions","comments","shares","profile_visits","follows","inbound_dm"]
+    },
+    "linkedin_company":{
+      "source_classes":["mkb_problem_radar","entrepreneur_voice","search_intent","current_external_signal","accountless_market_trigger"],
+      "selection":"rank concrete CEO/MT problems by freshness, evidence, business impact, recurrence and Powerhouse fit",
+      "forbidden":["generic_calendar_seed_when_fresher_evidence_exists","unsupported_claims","personal_identity_mix"],
+      "outcomes":["reach","engagement","clicks","scan_starts","leads","meetings","orders","revenue"]
+    },
+    "blog":{
+      "source_classes":["mkb_problem_radar","search_intent","seo_gap","current_external_signal","commercial_question"],
+      "selection":"prefer evidence-backed problem plus search/commercial intent; improve an owned page before creating cannibalizing content",
+      "forbidden":["content_for_contents_sake","uncited_current_claims","duplicate_search_intent"],
+      "outcomes":["impressions","clicks","organic_visits","cta","scan_starts","leads","orders","revenue"]
+    },
+    "email":{
+      "source_classes":["account_specific_public_trigger","relationship_context","reply_learning","problem_radar_match"],
+      "selection":"only contact when the evidence is relevant to the recipient/company and suppression/consent/quality gates pass",
+      "forbidden":["generic_mass_personalization","fabricated_trigger","ignored_unsubscribe","duplicate_thread"],
+      "outcomes":["delivered","reply","positive_reply","question","objection","meeting","proposal","order","revenue"]
+    },
+    "linkedin_dm":{
+      "source_classes":["account_specific_public_trigger","relationship_context","linkedin_public_intent","problem_radar_match"],
+      "selection":"same account-level evidence discipline as email; use a human-relevant micro-CTA and preserve provider/auth boundaries",
+      "forbidden":["generic_bulk_dm","fabricated_relationship","duplicate_dm","unsupported_personal_claim"],
+      "outcomes":["sent","reply","positive_reply","meeting","proposal","order","revenue"]
+    },
+    "instagram_company":{
+      "source_classes":["public_daily_life_friction","consumer_complaint","forum","blog_web"],
+      "selection":"fresh public human-problem evidence outranks static seeds",
+      "forbidden":["forced_business_bridge","office_problem_attribution","non_mira_identity"],
+      "outcomes":["watch_time","completion","shares","saves","comments","profile_visits","follows","dms"]
+    }
+  },
+  "canonical_loop":["source","evidence","dedupe","problem_or_trigger","channel_fit","candidate","identity_and_truth_gate","publish_or_send","provider_readback","outcome","learning","next_selection"],
+  "fallback_rule":"Static calendars are fallback only when no fresh eligible source-backed candidate exists.",
+  "cross_channel_rule":"One source can create channel-specific candidates, but copy and CTA must be native to each channel; never copy-paste the same post across channels.",
+  "learning_rule":"Outcome learning updates source quality, problem priority, message angle, CTA, channel fit and next-best action."
+}

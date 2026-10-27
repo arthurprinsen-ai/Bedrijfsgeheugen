@@ -1,0 +1,67 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|loop-assurance|receipt-bridge|v3",
+  "date": "2026-09-29",
+  "status": "ACTIVE",
+  "context": "Existing Powerhouse Assurance v2 ran every five minutes but all twelve registered loops initially had 0/8 stage receipts, so the meta-loop could not distinguish partial evidence from a genuinely closed loop.",
+  "root_cause": [
+    "Static assurance and scheduler/runtime health existed, but canonical cron/runtime evidence was not projected into the stage-receipt contract.",
+    "Critical loops with zero fresh stage evidence stayed AMBER indefinitely instead of becoming RED.",
+    "The assurance obligation upsert initially attempted to mutate immutable payload_sha256 identity."
+  ],
+  "fix": [
+    "Project only existing cron and runtime evidence into conservative stage receipts; do not fabricate outcome or learning evidence.",
+    "Critical loops with zero fresh stage evidence are RED.",
+    "Aggregate health is exposed through public.powerhouse_loop_integrity_health_v1.",
+    "Obligation updates mutate only mutable state/evidence/version fields."
+  ],
+  "prevention_rules": [
+    "A running scheduler is not a closed loop.",
+    "Missing stage evidence cannot age indefinitely as ambiguous AMBER for critical loops.",
+    "Outcome and learning stay missing until their canonical authority emits proof.",
+    "Never weaken brain_obligations identity immutability to make assurance writes succeed."
+  ],
+  "runtime_authorities": [
+    "public.powerhouse_refresh_loop_assurance_v1",
+    "public.powerhouse_sync_loop_assurance_receipts_v1",
+    "public.powerhouse_loop_integrity_health_v1",
+    "cron:powerhouse-loop-assurance-v2"
+  ],
+  "compiler": {
+    "failure_class": "CLOSED_LOOP_EVIDENCE_DRIFT",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-loop-assurance-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-loop-assurance-v3.test.mjs"
+    ]
+  },
+  "production_readback": {
+    "verified_at": "2026-09-29T19:13:11Z",
+    "controller": "public.powerhouse_refresh_loop_assurance_v1",
+    "scheduler": "powerhouse-loop-assurance-v2",
+    "cadence_minutes": 5,
+    "observed_fleet": {
+      "total": 12,
+      "green": 0,
+      "amber": 11,
+      "red": 1
+    },
+    "assertion": "controller executed successfully and preserved incomplete loop evidence as non-green",
+    "runtime_view": "public.powerhouse_loop_integrity_health_v1"
+  },
+  "evidence": [
+    "Production Supabase migration powerhouse_loop_assurance_receipt_bridge_v3 applied successfully.",
+    "Production fix powerhouse_loop_assurance_receipt_bridge_v3_fix applied after live record-variable failure detection.",
+    "Production fix powerhouse_loop_assurance_obligation_identity_fix_v3 applied after immutable-obligation guard detection.",
+    "Security hardening powerhouse_loop_assurance_v3_security_hardening applied successfully.",
+    "Live refresh completed and fleet readback reported 12 loops: 0 GREEN, 11 AMBER, 1 RED; incomplete evidence was not promoted to GREEN."
+  ]
+}

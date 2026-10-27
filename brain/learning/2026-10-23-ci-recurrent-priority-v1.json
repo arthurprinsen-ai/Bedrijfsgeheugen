@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|multi-agent|recurrent-ci-bottleneck-priority|20261023-v1",
+  "obligation_id": "delivery|multi-agent|recurrent-ci-bottleneck-priority|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_AGENT_ONE_OFF_PEAK_PRIORITY_WITHOUT_RECURRENT_EVIDENCE",
+  "root_cause": "Existing observed CI agent router prioritizes the five slowest individual completed jobs, although the same telemetry already reports independently repeated slow workflow/job families with at least three distinct attempts. One anomalous top job can displace a stable cross-run bottleneck.",
+  "observed_evidence": {
+    "live_janitor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "metrics": "28 executed jobs across 13 independent workflow attempts, p95 wait 3000ms, slowest executed job 353000ms; not a speedup benchmark",
+    "source_recurrence": "tools/delivery/predictive-controller.mjs#summarizeObservedCiJobs",
+    "source_advisory": "tools/delivery/ci-agent-priority.mjs#routeObservedCiHotspots",
+    "performance_gain_proven": false
+  },
+  "failed_approaches": [
+    "Rank one-off maximum ahead of a recurring and more stable slow job",
+    "Treat repetition labels as trustworthy without checking original provider job identity and executions",
+    "Allow a downstream recommendation to dispatch/merge based only on timestamp telemetry"
+  ],
+  "fix": "Reuse the existing Janitor recurrent_hotspots and full executed job_evidence to validate same numeric workflow ID plus exact job name, deduplicate matrices by run/attempt, recompute repeat count/median/max and representative exact job SHA. Give >=3 independently corroborated job attempts first investigation priority by sample median, then use one-off peaks only for unused canonical owner lanes. Fail closed on mismatched counts, IDs, SHA, median, max or incomplete provider evidence. No extra provider reads, scheduler, write authority or speculative releases.",
+  "prevention_rule": "Agents must distinguish recurring multi-run bottlenecks from isolated spikes, preserve exact run/attempt/job/SHA and original timestamps, do not fabricate workflow owner, always reuse canonical owner/lease #4661. Repeated provider sampling is still not an SLO, a critical-path proof, economic ROI, or an authorized production change. All Required, CodeQL, Supabase, tenant/RLS, financial, privacy, CLS and production readback gates remain mandatory.",
+  "tests": [
+    "tests/brain-ci-agent-prioritization-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_AGENT_ONE_OFF_PEAK_PRIORITY_WITHOUT_RECURRENT_EVIDENCE",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "invariants": [
+      "raw executed job evidence count equals sampled jobs and independent attempts",
+      ">=3 distinct attempts for every recurring group with exact workflow ID/job name",
+      "numeric repeated p50/max verified from original job rows",
+      "one advisory recommendation per lane and bounded maximum three owners by default",
+      "unknown owner stays unresolved",
+      "no new schedule, writes, provider mutation, dispatch or release approval"
+    ]
+  },
+  "terminal_rule": "Only claim live after exact-head Required+CodeQL, protected merge, current-main source, canonical skill projection, and an observed existing Janitor artifact; do not claim measured speedup on first sample."
+}

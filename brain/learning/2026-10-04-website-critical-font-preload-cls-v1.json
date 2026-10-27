@@ -1,0 +1,40 @@
+{
+  "fingerprint": "website-critical-font-preload-cls-20261004-v1",
+  "observed_at": "2026-10-04T14:15:00Z",
+  "type": "REPAIR",
+  "problem": "Fresh exact-preview cross-browser evidence left two CLS regressions: /ai-modelwijzer tablet (0.126) and Wet-DBA blog desktop (0.200).",
+  "root_cause": "The metric-compatible local @font-face fallbacks are unavailable in the CI/browser runtime, so font-display:swap temporarily used a much wider system font. Instrument Sans text measured 505px in fallback versus 441px as webfont, causing extra lines and 31–63px vertical reflow.",
+  "decision": "Keep font-display:swap, but preload the current Latin variable WOFF2 resources for Instrument Sans and Bricolage Grotesque in the final site build before first meaningful layout.",
+  "prevention": [
+    "Every public page receives both critical font preloads through the existing lettertype-terugval build step.",
+    "The cross-browser CLS threshold remains 0.1; it is not widened.",
+    "Daily and PR screenshot assurance will detect a future Google font-version drift or lost preload."
+  ],
+  "measured_replay": {
+    "ai_modelwijzer": {
+      "before_cls": 0.1501305898,
+      "with_preload_cls": 0
+    },
+    "wet_dba_blog": {
+      "before_cls": 0.2254464653,
+      "with_preload_cls": 0.0008422573
+    }
+  },
+  "compiler": {
+    "failure_class": "WEBFONT_SWAP_LAYOUT_SHIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/site-shell/lettertype-terugval.mjs",
+    "tests/brain-website-font-preload-cls-v1.test.mjs",
+    "config/powerhouse-website-cross-browser-assurance-v1.json"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-font-preload-cls-v1.test.mjs"
+    ]
+  }
+}

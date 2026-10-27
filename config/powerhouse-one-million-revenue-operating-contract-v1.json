@@ -1,0 +1,105 @@
+{
+  "version": "powerhouse-one-million-revenue-operating-contract-v1",
+  "objective": {
+    "realized_revenue_eur": 1000000,
+    "horizon_days": 365,
+    "target_date": "2027-09-29",
+    "priority_order": [
+      "realized_revenue",
+      "paid_orders",
+      "qualified_proposals",
+      "qualified_meetings",
+      "qualified_leads",
+      "scan_or_portal_activation",
+      "qualified_reach"
+    ]
+  },
+  "pacing": {
+    "annual_eur": 1000000,
+    "monthly_eur": 83333.33,
+    "weekly_eur": 19230.77,
+    "business_day_eur": 3846.15,
+    "scan_only_reference": {
+      "unit_price_eur": 2900,
+      "orders_per_year": 345,
+      "orders_per_month": 28.75,
+      "description": "planning reference only; not a required revenue mix"
+    }
+  },
+  "canonical_loop": [
+    "evidence_and_relationship_signals",
+    "account_and_intent_scoring",
+    "next_best_commercial_action",
+    "materialize_content_or_asset",
+    "execute_authorized_channel",
+    "provider_ack_and_readback",
+    "reply_meeting_scan_proposal_order",
+    "realized_revenue",
+    "learning_and_recalibration"
+  ],
+  "daily_execution": {
+    "owner": "powerhouse-commercial-learning-v1",
+    "rule": "execute every day; if a qualified executable action exists, do not end at recommendation",
+    "eligible_actions": [
+      "linkedin_company_unique_post",
+      "instagram_mira_unique_business_asset",
+      "seo_or_blog_order_path_improvement",
+      "contextual_linkedin_comment",
+      "warm_or_consented_email",
+      "authorized_private_followup",
+      "due_followup",
+      "proposal_or_offer_followup",
+      "warm_referral_request",
+      "partner_or_workshop_followup",
+      "prospect_dossier_or_value_asset"
+    ],
+    "limits": {
+      "autonomous_email_per_run": 5,
+      "contextual_linkedin_comments_per_day": 3,
+      "comments_per_person_cooldown_days": 14,
+      "max_reversible_seo_changes_per_day": 3
+    },
+    "conditional_minimums": {
+      "linkedin_company": "1 unique commercial post when qualified unique evidence exists",
+      "instagram": "1 Mira-only business publication when a valid unique asset and provider capability exist",
+      "email": "execute all due eligible warm/consented messages up to the canonical runtime limit",
+      "followup": "100% of due eligible non-suppressed follow-ups receive an action or an evidence-backed wait state",
+      "seo_content": "at least one order-path action when current evidence identifies a safe high-confidence opportunity"
+    }
+  },
+  "outbound_policy": {
+    "cold_bulk_autosend": false,
+    "unsolicited_prospecting": "identify, research, score and prepare; autonomous send is allowed only when a separately approved lawful/consent-based workflow makes the recipient eligible",
+    "warm_relationship_email_autosend": true,
+    "consented_lead_email_autosend": true,
+    "existing_customer_or_open_opportunity_followup": true,
+    "linkedin_dm": "only when verified provider capability and recipient/context gates permit it; otherwise use the canonical supported fallback",
+    "opt_out_and_suppression": "absolute"
+  },
+  "content_identity": {
+    "linkedin_personal": "personal-life-only; never use as company campaign inventory",
+    "linkedin_company": "Bedrijfsgeheugen commercial/problem/portal content",
+    "instagram": "Mira-only for Bedrijfsgeheugen business account",
+    "duplicate_policy": "global exact + semantic + example/theme dedupe before publication"
+  },
+  "escalation": {
+    "behind_pace": [
+      "increase qualified-account research",
+      "increase value-before-ask assets",
+      "increase partner/referral activation",
+      "increase conversion experiments within reversible limits",
+      "prioritize due warm follow-ups"
+    ],
+    "prohibited": [
+      "spam volume expansion",
+      "fabricated urgency",
+      "fake scarcity",
+      "fake social proof",
+      "bypass consent",
+      "bypass suppression",
+      "duplicate posting",
+      "invented ROI or intent"
+    ]
+  },
+  "terminal_definition": "A commercial run is terminal only after execution/readback or an evidence-backed wait/suppression decision, then outcome measurement and learning writeback."
+}

@@ -21,10 +21,22 @@ function todayAmsterdam() {
   const v = Object.fromEntries(parts.map((x) => [x.type, x.value]));
   return `${v.year}-${v.month}-${v.day}`;
 }
-function authorized(req: Request) {
-  if (!SHARED_SECRET) return false;
+async function schedulerToken() {
+  try {
+    const token = await rest('rpc/bg_geheim', { method: 'POST', body: { p_naam: 'powerhouse_daily_scheduler_token' } });
+    const canonical = String(token ?? '').trim();
+    if (canonical) return canonical;
+  } catch (error) {
+    console.error('CONTENT_OPERATIONS_CANONICAL_TOKEN_READ_FAILED', error instanceof Error ? error.message : String(error));
+  }
+  return SHARED_SECRET.trim();
+}
+
+async function authorized(req: Request) {
   const supplied = req.headers.get('x-powerhouse-token') || '';
-  return supplied.length > 0 && supplied === SHARED_SECRET;
+  if (!supplied) return false;
+  const expected = await schedulerToken();
+  return expected.length > 0 && supplied === expected;
 }
 async function rest(path: string, options: { method?: string; body?: unknown } = {}) {
   if (!SUPABASE_URL || !SERVICE_KEY) throw new Error('SUPABASE_ENV_MISSING');
@@ -112,7 +124,7 @@ async function recordDeliveryState(body: any) {
 Deno.serve(async (req: Request) => {
   try {
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers });
-    if (!authorized(req)) return json({ ok: false, error: 'UNAUTHORIZED' }, 401);
+    if (!(await authorized(req))) return json({ ok: false, error: 'UNAUTHORIZED' }, 401);
     if (req.method === 'GET') return json(await getCockpit(req));
     if (req.method !== 'POST') return json({ ok: false, error: 'METHOD_NOT_ALLOWED' }, 405);
     let body: any = {};

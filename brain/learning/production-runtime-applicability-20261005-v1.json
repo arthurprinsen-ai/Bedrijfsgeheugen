@@ -1,0 +1,42 @@
+{
+  "learningId": "production-runtime-applicability-20261005-v1",
+  "fingerprint": "production-verifier-only-false-deploy-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T20:10:00+02:00",
+  "problem": "A verifier-only main advance triggered Production Source Snapshot and exact Netlify SHA readback, forcing a deployment even though no production runtime file had changed. The fallback deploy transport then failed with repeated 401 Unauthorized.",
+  "rootCause": "Production delivery equated every site-shell verifier change with deployable website runtime. Runtime applicability was not derived separately from verification/control-plane applicability.",
+  "root_cause": "Production delivery equated every site-shell verifier change with deployable website runtime. Runtime applicability was not derived separately from verification/control-plane applicability.",
+  "preventionRule": "Require an exact Netlify production SHA only when deployable runtime changed; verifier-only main advances must validate the currently live ancestor with the new verifier and must prove that every intervening path is control-plane-only.",
+  "prevention": [
+    "Production Source Snapshot ignores explicitly enumerated verifier-only files.",
+    "Production Release Readback derives deployment applicability from runtimeChangedPaths.",
+    "Canonical shell live readback may use a live ancestor only after git ancestry and all-delta control-plane proof.",
+    "Any runtime HTML, asset, Netlify function or shared Netlify runtime delta preserves exact deploy identity requirements.",
+    "Do not retry an unauthorized deploy transport for a non-deployment change."
+  ],
+  "evidence": {
+    "originatingPr": 3741,
+    "pricingRecoveryPr": 3776,
+    "shellAuthorityPr": 3783,
+    "shellAuthorityMerge": "47ad59de1694409902bedc4d2395a80296b7a375",
+    "failedSnapshotRun": 37353088707,
+    "failedTransport": "Netlify exact-source upload returned 401 Unauthorized on all bounded retries",
+    "regression": "tests/brain-production-runtime-applicability-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
+    ],
+    "expected": "Verifier-only advances stay non-deployment and read existing live runtime safely; real runtime changes still require exact production deployment identity."
+  }
+}

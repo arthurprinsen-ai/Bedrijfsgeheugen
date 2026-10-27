@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "measured_at": "2026-10-06",
+  "max_root_items": 50,
+  "root_count": 12,
+  "untitled_root_count": 0,
+  "policy": "Notion is a human projection, not runtime authority. Untitled top-level items are quarantined under Archief; no automatic deletion.",
+  "canonical_hubs": [
+    {
+      "title": "Strategie & onderzoek",
+      "id": "3b9da36aac8a8192bbb0edcccdafdabd",
+      "url": "https://app.notion.com/p/3b9da36aac8a8192bbb0edcccdafdabd?pvs=204"
+    },
+    {
+      "title": "Product & technologie",
+      "id": "3f1da36aac8a810288f7ff70a1260882",
+      "url": "https://app.notion.com/p/3f1da36aac8a810288f7ff70a1260882?pvs=204"
+    },
+    {
+      "title": "Content & marketing",
+      "id": "3b9da36aac8a8139ad92e279b2c1a220",
+      "url": "https://app.notion.com/p/3b9da36aac8a8139ad92e279b2c1a220?pvs=204"
+    },
+    {
+      "title": "Sales & relaties",
+      "id": "3b9da36aac8a81d19435cd5c35301535",
+      "url": "https://app.notion.com/p/3b9da36aac8a81d19435cd5c35301535?pvs=204"
+    },
+    {
+      "title": "Operations",
+      "id": "3f1da36aac8a8141a666f9faed2eea1d",
+      "url": "https://app.notion.com/p/3f1da36aac8a8141a666f9faed2eea1d?pvs=204"
+    },
+    {
+      "title": "Archief",
+      "id": "3b9da36aac8a817bafd3c23e1df833c5",
+      "url": "https://app.notion.com/p/3b9da36aac8a817bafd3c23e1df833c5?pvs=204"
+    }
+  ],
+  "quarantine": {
+    "moved_untitled_items": 329,
+    "deletion_performed": false
+  }
+}

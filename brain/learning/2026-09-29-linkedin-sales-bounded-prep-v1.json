@@ -1,0 +1,24 @@
+{
+  "fingerprint": "linkedin-sales-bounded-prep-v1",
+  "date": "2026-09-29",
+  "problem": "LinkedIn sales preparation timed out before dispatch.",
+  "root_cause": "The prep path expanded powerhouse_person_intelligence_v1 across 23,295 connections even though only a small bounded set of recent LinkedIn/research events could become one of the maximum three daily comment actions.",
+  "prevention": "Bound candidate events first, join only those candidate people from bg_connecties, keep action/cooldown lookups candidate-scoped, and retain the existing three-per-day, no-sales-pitch and no-DM-fabrication gates.",
+  "compiler": {
+    "failure_class": "COMMERCIAL_QUERY_UNBOUNDED_FANOUT",
+    "scope": "LINKEDIN_SALES_MACHINE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-sales-bounded-prep-v1.test.mjs",
+      "tests/brain-powerhouse-linkedin-sales-machine-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "before": "powerhouse_person_intelligence_v1 count exceeded a 5 second statement_timeout",
+    "population": "23,295 bg_connecties versus 14 LinkedIn engagement events",
+    "implementation": "supabase/migrations/20260929163500_linkedin_sales_bounded_prep_v1.sql"
+  }
+}

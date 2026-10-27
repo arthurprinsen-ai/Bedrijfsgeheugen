@@ -1,0 +1,42 @@
+{
+  "id": "csrd-sovereignty-review-dashboard-sync-20261008-v1",
+  "fingerprint": "one-tenant-ai-change-impact-visible-in-csrd-dashboard-v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_REVIEW_PROJECTION_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "AI model and data-residency edits and connector create/update operations generated canonical cross-domain assessments but the separate CSRD & Impact page did not consume either the tenant's sovereignty review portfolio or pending connector reviews.",
+  "prevention": [
+    "Consume the same authenticated tenant sovereignty readback; never use admin or global scope for customer CSRD dashboards.",
+    "Join pending connector CROSS_DOMAIN_CHANGE reviews from the existing tenant-scoped connector review queue; ignore extraction-only and completed reviews.",
+    "Project pending CSRD/ESRS scope and materiality reviews into the existing CSRD page without implying a legal obligation, measured emissions, or finished audit.",
+    "Keep asynchronous readbacks bound to the active page and latest request revision to avoid stale cross-navigation results.",
+    "Keep user-controlled data out of HTML and test ESRS labels against an allowlist."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs",
+      "tests/portal-csrd-sovereignty-review-link.test.mjs"
+    ],
+    "source": [
+      "portal-v2/csrd-impact.js",
+      "portal-v2/page-shell.js",
+      "platform/regulatory/connector-change-impact-gate.mjs"
+    ],
+    "outcome": "The canonical CSRD view projects pending evidence reviews from both customer AI/data-residency changes and connector configuration changes; a real authenticated customer session remains an independent production test."
+  }
+}

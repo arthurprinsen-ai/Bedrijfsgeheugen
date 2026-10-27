@@ -8,10 +8,11 @@ const legacySpecPath='tests/integration/portal-v2-legacy-algorithm-parity.spec.j
 
 async function text(path){return readFile(path,'utf8');}
 
-test('Portal V2 live preview binds checkout and immutable Netlify deploy to the exact PR head SHA',async()=>{
+test('Portal V2 live preview binds Required workflow_run checkout and immutable Netlify deploy to the exact PR head SHA',async()=>{
   const workflow=await text(workflowPath);
-  assert.match(workflow,/ref:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
-  assert.match(workflow,/HEAD_SHA:\s*\$\{\{ github\.event\.pull_request\.head\.sha \}\}/);
+  assert.match(workflow,/workflow_run:[\s\S]*?workflows:\s*\['Required test'\]/);
+  assert.match(workflow,/ref:\s*\$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.head\.sha \}\}/);
+  assert.match(workflow,/HEAD_SHA:\s*\$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.head\.sha \}\}/);
   assert.match(workflow,/actual=\$\(git rev-parse HEAD\)/);
   assert.match(workflow,/test "\$actual" = "\$HEAD_SHA"/);
   assert.match(workflow,/commits\/\$\{HEAD_SHA\}\/status/);
@@ -25,7 +26,7 @@ test('Portal V2 browser boot uses canonical runtime readiness instead of visible
   for(const path of [functionalSpecPath,legacySpecPath]){
     const spec=await text(path);
     assert.match(spec,/globalThis\.__BG_PORTAL_DOMAIN_STATE__/);
-    assert.match(spec,/\[data-mobile-nav="overview"\]/);
+    assert.match(spec,/\.portal-single-navigation \[data-nav-target="overzicht"\]/);
     assert.doesNotMatch(spec,/getByRole\(['"]heading['"].*Welkom terug, Arthur/);
   }
 });

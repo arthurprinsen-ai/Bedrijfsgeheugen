@@ -6,7 +6,7 @@ const migrationPath = 'supabase/migrations/20260914100133_unified_content_public
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
 const singleTenantMigrationPath = 'supabase/migrations/20260914105642_single_content_operations_tenant.sql';
 const singleTenantMigration = fs.existsSync(singleTenantMigrationPath) ? fs.readFileSync(singleTenantMigrationPath, 'utf8') : '';
-const linkedinReconcileMigrationPath = 'supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql';
+const linkedinReconcileMigrationPath = 'supabase/migration-history/repository-only/20260914133500_linkedin_campaign_identity_reconciliation.sql';
 const linkedinReconcileMigration = fs.existsSync(linkedinReconcileMigrationPath) ? fs.readFileSync(linkedinReconcileMigrationPath, 'utf8') : '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
@@ -104,7 +104,7 @@ test('LinkedIn publication reconciliation uses deterministic campaign identity w
   assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
 });
 
-const publicationWatchdogMigrationPath = 'supabase/migrations/20260915101500_content_publication_daily_watchdog.sql';
+const publicationWatchdogMigrationPath = 'supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql';
 const publicationWatchdogMigration = fs.existsSync(publicationWatchdogMigrationPath) ? fs.readFileSync(publicationWatchdogMigrationPath, 'utf8') : '';
 
 test('daily publication invariant has an explicit no-publish terminal state', () => {
@@ -125,4 +125,14 @@ test('daily publication watchdog is scheduled natively and idempotently', () => 
   assert.match(publicationWatchdogMigration, /cron\.schedule/i);
   assert.match(publicationWatchdogMigration, /bg-content-publication-daily-watchdog/);
   assert.match(publicationWatchdogMigration, /Europe\/Amsterdam/);
+});
+
+
+test('content operations uses the same canonical scheduler-token authority as the social publisher', () => {
+  assert.match(operationsApi, /rpc\/bg_geheim/);
+  assert.match(operationsApi, /powerhouse_daily_scheduler_token/);
+  assert.match(operationsApi, /async function schedulerToken/);
+  assert.match(operationsApi, /await schedulerToken\(\)/);
+  assert.match(operationsApi, /if \(!\(await authorized\(req\)\)\)/);
+  assert.match(operationsApi, /return SHARED_SECRET\.trim\(\)/);
 });

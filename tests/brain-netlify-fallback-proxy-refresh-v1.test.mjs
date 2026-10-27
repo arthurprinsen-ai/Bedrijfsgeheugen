@@ -10,6 +10,10 @@ test('fallback upload refreshes short-lived Netlify proxy immediately before MCP
   assert.ok(deployIndex > 0, 'Netlify MCP deploy command missing');
   assert.ok(refreshIndex > 0 && refreshIndex < deployIndex, 'fresh proxy refresh must precede fallback deploy');
   assert.match(workflow.slice(refreshIndex, deployIndex), /NETLIFY_MCP_PROXY_PATH="\$fresh_proxy"/);
-  assert.match(workflow.slice(refreshIndex, deployIndex), /ACTIONS_ID_TOKEN_REQUEST_URL/);
-  assert.match(workflow.slice(refreshIndex, deployIndex), /netlify-deploy-bridge/);
+  // OIDC token + bridge call are re-acquired at the top of every transport attempt,
+  // so the proxy used for the upload is always fresh for that attempt.
+  const attemptIndex = workflow.lastIndexOf('for transport_attempt in', refreshIndex);
+  assert.ok(attemptIndex > 0 && attemptIndex < refreshIndex, 'transport attempt loop must acquire OIDC before the proxy');
+  assert.match(workflow.slice(attemptIndex, deployIndex), /ACTIONS_ID_TOKEN_REQUEST_URL/);
+  assert.match(workflow.slice(attemptIndex, deployIndex), /netlify-deploy-bridge/);
 });

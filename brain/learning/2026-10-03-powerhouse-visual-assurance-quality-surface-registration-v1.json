@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse-visual-assurance-quality-surface-registration-v1",
+  "problem": "Quality discovery found the live visual-assurance sync function and loop-assurance RPC without registered evidence contracts, while bg_geheim referenced an unrelated evidence test.",
+  "root_cause": "The runtime sync was made repository-native before its newly discovered quality surfaces were projected into the canonical surface registry.",
+  "prevention": [
+    "Every new Edge Function and referenced material RPC must be registered in config/powerhouse-quality-surface-contracts.json in the same lineage.",
+    "The evidence contract for the scheduler-secret RPC must run in the same security-sensitive visual-assurance sync test.",
+    "Surface discovery failures are quality debt even when not required for a specific merge and must be terminally closed."
+  ],
+  "compiler": {
+    "failure_class": "QUALITY_SURFACE_REGISTRATION_GAP",
+    "scope": "SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "config/powerhouse-quality-surface-contracts.json",
+    "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+  ]
+}

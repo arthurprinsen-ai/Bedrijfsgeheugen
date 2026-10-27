@@ -1,0 +1,71 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|predictive-lane-capacity|recurring-executed-ci-hotspots|20261023-v1",
+  "obligation_id": "delivery|predictive-lane-capacity|recurring-executed-ci-hotspots|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+  "status": "CANDIDATE",
+  "failure_class": "CI_SINGLE_OUTLIER_CAUSAL_ATTRIBUTION_NOT_PROVEN",
+  "root_cause": "Single slowest-GitHub-job diagnostics can overprioritize an isolated provider preview, cancelled or stale branch, while multiple CodeQL and Required-preflight executions show repeated runner time. A job's maximum duration is not evidence of repeatability, intrinsic critical-path causality or a verified speedup.",
+  "observed_evidence": {
+    "observed_provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "existing_job_sample": "28 actually executed jobs from 13 runs, 0 read errors, sampled queue wait p95=3s; max observed executed job 353s, not a global SLO",
+    "independent_codeql_javascript_samples_seconds": [
+      105,
+      125,
+      140,
+      149,
+      199
+    ],
+    "independent_required_preflight_samples_seconds": [
+      75,
+      83,
+      87
+    ],
+    "observed_decomposition": "required preflight log #39925844365: ~47.47s of an ~75s job spent in sequential static English cache/site preparation; exact before/after benchmark not yet established",
+    "speedup_proven": false
+  },
+  "failed_approaches": [
+    "Treat the largest single job of one sample as the team's strategic bottleneck",
+    "Pool differently named jobs or unrelated numeric workflow IDs into one performance family",
+    "Count parallel matrix jobs on one run attempt as independent trend evidence",
+    "Use a cache for unverified output or relax RLS/CodeQL/Required/site completeness to improve numbers"
+  ],
+  "fix": "Within existing summarizeObservedCiJobs and hourly Repository Janitor, compute advisory recurring executed-job hotspots grouped by exact numeric GitHub workflow ID and exact job name. Each family requires >=3 distinct completed run/attempt identities; within an attempt retain only the longest matching executed job, calculate deterministic sample median and max execution times, and rank at most five families. Return no recurrent hotspots on overall insufficient (under 20 jobs/5 runs) or partial provider data. Include an advisory investigation lane but authorize no automatic change.",
+  "prevention_rule": "One-off max values never trigger performance optimizations, SLO or green claims. Require per-family independent attempt count and exact identity, fail closed on malformed/partial GitHub provider evidence, keep existing Janitor schedule and original 20-job/5-run sample threshold. Security checks, Supabase preview, provider consent and production readback remain independent protected gates. Compare multiple cold/warm runs with exact SHA and cache trust boundaries before editing expensive build execution.",
+  "tests": [
+    "tests/brain-observed-ci-throughput-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_SINGLE_OUTLIER_CAUSAL_ATTRIBUTION_NOT_PROVEN",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-observed-ci-throughput-v1.test.mjs"
+    ],
+    "invariants": [
+      "at least three independent attempts with numeric workflow ID and exact job name",
+      "matrix copies within one attempt count once",
+      "missing job IDs/provider timestamps cannot enter sample",
+      "unrelated workflows do not pool",
+      "partial/incomplete snapshots suppress all trend diagnostics",
+      "no CI fanout, schedulers, bypass, paid runner or autonomous deployment from advisory hotspots"
+    ]
+  },
+  "terminal_rule": "Protected Required + CodeQL exact-head success, protected merge, main readback and post-merge existing Janitor artifact must prove source execution; skill projection required. Do not close #4661 without a comparable actual optimization."
+}

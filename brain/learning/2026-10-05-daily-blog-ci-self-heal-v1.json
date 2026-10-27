@@ -1,0 +1,43 @@
+{
+  "fingerprint": "daily-blog-github-token-required-check-recursion-gap-20261005-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Daily blog candidate PRs created by the GitHub Actions token could remain open because protected required checks were not reliably started; auto-merge then waited forever.",
+  "root_cause": "The publisher assumed creating a PR with the workflow GITHUB_TOKEN would reliably trigger the pull_request CI chain. GitHub recursion protection can suppress follow-on workflow execution for events created by GITHUB_TOKEN, leaving required check test expected.",
+  "failed_approach": "Create candidate PR, enable auto-merge, and rely only on native pull_request workflow triggering.",
+  "fix": [
+    "Grant the canonical publisher actions:write only for dispatching its existing required-test workflow.",
+    "Hourly reconcile the one canonical business-date PR.",
+    "Read the exact PR head/base/body/labels before any recovery dispatch.",
+    "If required test is missing or terminally non-success, dispatch the existing required-test workflow on the exact candidate branch with immutable PR identity.",
+    "If required test is queued/in_progress/success, do not duplicate it.",
+    "Keep branch protection and auto-merge intact; never bypass required checks.",
+    "Production Source Snapshot and Production Release Readback failures now get a bounded workflow_run recovery: reconcile live SHA first, then re-run only failed jobs, maximum three attempts.",
+    "Production pricing browser proof now follows the current #saas/#expertise anchor UX instead of obsolete data-tab/data-panel selectors, preventing stale-test false failures after a legitimate pricing redesign."
+  ],
+  "terminal_verification": [
+    "required check test must attach to the exact candidate head SHA",
+    "protected auto-merge remains authoritative",
+    "Netlify/public readback remains required after merge"
+  ],
+  "prevention_scope": [
+    "powerhouse-daily-blog.yml",
+    "required-test.yml",
+    "production-delivery-self-heal.yml",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "observed_pr": 3711,
+  "observed_head_sha": "bd6aff16df0a569736d9d4fc811e99d644dd2135",
+  "revision": 1,
+  "compiler": {
+    "failure_class": "DAILY_BLOG_REQUIRED_CHECK_RECURSION_GAP",
+    "scope": "CONTENT_AND_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "delivery",
+    "website",
+    "continuity"
+  ]
+}

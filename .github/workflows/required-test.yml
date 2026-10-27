@@ -1,4 +1,6 @@
 name: Required test
+# Stable logical-flight identity for native PR and recovery-dispatched runs.
+run-name: "Required test PR #${{ inputs.pr_number || github.event.pull_request.number || 'merge-group' }} ${{ inputs.head_sha || github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}"
 
 on:
   pull_request:
@@ -23,6 +25,14 @@ on:
         description: 'Immutable candidate branch'
         required: false
         type: string
+      pr_body:
+        description: 'Immutable PR delivery metadata for recovery dispatch'
+        required: false
+        type: string
+      pr_labels_json:
+        description: 'PR labels JSON for recovery dispatch'
+        required: false
+        type: string
 
 permissions:
   actions: read
@@ -37,13 +47,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lease-postgres-pr-replay:
+    needs: hygiene
+    if: needs.hygiene.outputs.admitted == 'true' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: lease_integration
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify exact candidate SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Verify PostgreSQL 17 and replay lease contract
+        shell: bash
+        env:
+          DATABASE_URL: postgresql://postgres:test-only@localhost:5432/lease_integration
+        run: |
+          set -euo pipefail
+          version="$(psql "$DATABASE_URL" -Atqc 'SHOW server_version_num')"
+          test "$version" -ge 170000
+          test "$version" -lt 180000
+          test -s docs/delivery/sql/repository-writer-fenced-lease.sql
+          test -s tests/postgres-lease-replay.sh
+          bash tests/postgres-lease-replay.sh
   hygiene:
     uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+    with:
+      pr_number: ${{ inputs.pr_number || '' }}
+      head_sha: ${{ inputs.head_sha || '' }}
 
   preflight:
     needs: hygiene
     if: needs.hygiene.outputs.admitted == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
       backend: ${{ steps.scope.outputs.backend }}
       portal: ${{ steps.scope.outputs.portal }}
@@ -56,14 +110,106 @@ jobs:
       risk_level: ${{ steps.integration.outputs.risk }}
       full_shared_suite: ${{ steps.integration.outputs.full_shared_suite }}
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
+      netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
+      supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
+      dependency_review_required: ${{ steps.scope.outputs.dependency_review_required }}
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 2
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify System Map integrity on exact candidate tree
+        run: |
+          node --test tests/delivery-system-map-merge-integrity.test.mjs
+          SYSTEM_MAP_GENERATE_COMMAND='node scripts/brain/portal-explanation-inventory.mjs --write' SYSTEM_MAP_PATH='platform/system-map/canonical-system-map.mjs' EXPECTED_INTEGRATION_SHA="$(git rev-parse HEAD)" node tools/delivery/assert-system-map-integrity.mjs
+      - name: Verify portal explanation source freshness
+        run: |
+          node scripts/brain/portal-explanation-inventory.mjs --check
+          node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
+      - name: Enforce control-plane growth ratchets
+        run: |
+          node tools/ci/check-control-plane-budget.mjs
+          node tools/ci/check-pr-trigger-ratchet.mjs
+      - name: Verify bounded source-backed revenue learning in existing Required gate
+        run: |
+          node --test tests/revenue-learning-evaluate.test.mjs tests/brain-revenue-learning-fair-verified-20261025.test.mjs tests/brain-revenue-learning-no-starvation-20261025.test.mjs
+          node --test tests/brain-commercial-opportunity-evidence-20261025.test.mjs tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs
+      - name: Verify daily external search coverage without topic starvation
+        run: node --test tests/brain-external-topic-rotation-v1.test.mjs tests/brain-external-signal-quota-failover-20261019.test.mjs
+      - name: Verify customer-visible external signal relevance and safe next actions
+        run: node --test tests/brain-portal-external-source-action-20261025.test.mjs
+      - name: Verify existing daily company-news candidate coverage and cooldown
+        run: node --test tests/brain-company-news-eligible-coverage-20261025.test.mjs
+      - name: Verify preventative source-locked Mira producer feedback on genuine video rejects
+        run: node --test tests/brain-mira-preventive-producer-qa-20261025.test.mjs
+      - name: Verify real native Mira MP4 dimensions before expensive vision calls
+        run: node --test tests/brain-mira-native-format-before-vision-20261025.test.mjs
+      - name: Reject every historically failed Mira OpenArt asset before costly vision
+        run: node --test tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs
+      - name: Refuse contradiction between frozen face and real human motion before OpenArt cost
+        run: node --test tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs
+      - name: Prevent OpenArt Wan 2.7 wrong-native-ratio credits before generation
+        run: node --test tests/brain-mira-provider-native-prespend-20261025.test.mjs
+      - name: Verify 9:16 derived Mira reference cannot bypass canonical identity and publication controls
+        run: node --test tests/brain-mira-portrait-reference-proof-20261025.test.mjs
+      - name: Verify pinned Mira derivative is eligible only with independent real identity proof
+        run: node --test tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs
+      - name: Verify exact canonical commercial publication evidence reconciliation
+        run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
+      - name: Enforce authenticated Portal evidence freshness
+        run: |
+          node tools/ci/portal-auth-evidence-freshness.mjs
+          node --test tests/portal-auth-evidence-freshness.test.mjs
+      - name: Verify independent financial forecast evidence contracts
+        run: |
+          node --test tests/portal-financial-forecast-evidence.test.mjs tests/portal-financial-forecast-store.test.mjs tests/portal-forecast-auth.test.mjs tests/portal-contextual-forecast.test.mjs tests/brain-portal-contextual-forecast.test.mjs
+      - name: Verify immutable release artifact identity regression
+        run: node --test tests/release-artifact-identity.test.mjs
+      - name: Verify fail-closed Supabase provider preview classification
+        run: node --test tests/brain-supabase-preview-diagnosis-v1.test.mjs
+      - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
+        run: |
+          node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
+      - name: Generate auditable P0 4215 Portal input coverage matrix
+        run: |
+          node tools/ci/p0-4215-portal-input-coverage-matrix.mjs
+          node --test tests/brain-p0-4215-input-surface-coverage-v1.test.mjs
+      - name: Guard P0 4215 tenant isolation and 200-field 1000-observation stress
+        run: |
+          node --test tests/brain-p0-4215-input-stress-isolation-v1.test.mjs
+      - name: Guard fail-closed approved visual baseline recovery for production DOM
+        run: |
+          node --test tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs
+      - name: Verify fail-closed immutable Netlify preview provider target
+        run: |
+          node --test tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs
+      - name: Verify trusted production visual PR backfill and immutable alias pinning
+        run: |
+          node --test tests/brain-p0-4215-production-visual-backfill-v1.test.mjs
+      - name: Verify scope-aware published SHA and approved PR visual replay
+        run: |
+          node --test tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs
+      - name: Verify canonical native form DOM field lineage
+        run: |
+          node --test tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs
+      - name: Preserve P0 4215 input coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-4215-input-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/p0-4215-portal-input-coverage-matrix.json
+          if-no-files-found: warn
+          retention-days: 30
+      - id: artifact
+        name: Compute immutable artifact identity
+        run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
+      - name: Run canonical security operations contracts
+        run: |
+          node --test tests/brain-security-operations-closure-v1.test.mjs tests/security-operations-proof.test.mjs
+          node scripts/security-operations-proof.mjs --check
       - uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -76,11 +222,12 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           GITHUB_SHA_VALUE: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          PR_BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
+          PR_BODY_INPUT: ${{ inputs.pr_body || '' }}
+          GH_TOKEN: ${{ github.token }}
+          PR_LABELS_JSON: ${{ inputs.pr_labels_json || toJson(github.event.pull_request.labels.*.name) }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
@@ -89,8 +236,9 @@ jobs:
           import { readFile, appendFile } from 'node:fs/promises';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
+          import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
-          import { evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
+          import { evaluateBranchHygiene, resolvePRScopeMergeBase } from './tools/delivery-branch-hygiene-guard.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const context=normalizeGitHubDeliveryEvent({
@@ -99,7 +247,7 @@ jobs:
             runId: process.env.RUN_ID,
             fallbackBaseSha,
             event: {
-              pull_request: process.env.EVENT_NAME === 'pull_request' ? {
+              pull_request: process.env.PR_NUMBER ? {
                 number: process.env.PR_NUMBER,
                 base: { sha: process.env.PR_BASE_SHA },
                 head: { sha: process.env.PR_HEAD_SHA },
@@ -110,10 +258,14 @@ jobs:
               } : undefined,
             },
           });
+          const livePrBody = process.env.PR_BODY_INPUT || (context.prNumber
+            ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'})).body || ''
+            : '');
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
-            prBody: process.env.PR_BODY || '',
+            prBody: livePrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
+            eventName: process.env.EVENT_NAME,
           });
           const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
             ? metadataAuthority.delivery.baseSha
@@ -121,26 +273,76 @@ jobs:
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
-          const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          // For a diverged PR, GitHub's merge base is the scope authority.
+          // A two-dot diff from today's main includes unrelated main edits.
+          // Non-PR and merge-group delivery retain their event-base scope.
+          const providerBaseSha=context.prNumber && context.baseSha ? context.baseSha : comparisonBaseSha;
+          const prComparison=context.prNumber && ['pull_request','workflow_dispatch'].includes(process.env.EVENT_NAME)
+            ? JSON.parse(execFileSync('gh',[
+                'api',
+                `repos/${process.env.GITHUB_REPOSITORY}/compare/${providerBaseSha}...${context.changeHeadSha}`,
+              ],{encoding:'utf8'}))
+            : null;
+          const scopeBase=resolvePRScopeMergeBase({
+            eventName:process.env.EVENT_NAME,
+            prNumber:context.prNumber,
+            baseSha:providerBaseSha,
+            headSha:context.changeHeadSha,
+            comparison:prComparison,
+          });
+          const diffBaseSha=scopeBase.sha;
+          try {
+            execFileSync('git',['cat-file','-e',`${diffBaseSha}^{commit}`],{stdio:'ignore'});
+          } catch {
+            console.log(`TARGETED_SCOPE_BASE_FETCH:${diffBaseSha}`);
+            execFileSync('git',['fetch','--no-tags','--depth=1','origin',diffBaseSha],{stdio:'inherit'});
+          }
+          const changedPaths=execFileSync('git',['diff','--name-only',diffBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
-          const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles};
+          const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
+          const databaseRelevantSupabase=changedPaths.some(path =>
+            path.startsWith('supabase/') &&
+            !path.startsWith('supabase/functions/') &&
+            path !== 'supabase/config.toml'
+          );
+          let supabaseConfigDatabaseRelevant=false;
+          if(changedPaths.includes('supabase/config.toml')){
+            const probe="import subprocess,sys,tomllib; base,head=sys.argv[1:3]; load=lambda ref: tomllib.loads(subprocess.check_output(['git','show',f'{ref}:supabase/config.toml']).decode('utf-8')); norm=lambda config:{k:v for k,v in config.items() if k!='functions'}; raise_code=0 if norm(load(base))==norm(load(head)) else 1; sys.exit(raise_code)";
+            try {
+              execFileSync('python3',['-c',probe,diffBaseSha,context.changeHeadSha],{stdio:'pipe'});
+              supabaseConfigDatabaseRelevant=false;
+            } catch {
+              supabaseConfigDatabaseRelevant=true;
+            }
+          }
+          const supabasePreviewRequired=databaseRelevantSupabase || supabaseConfigDatabaseRelevant;
+          const dependencyReviewRequired=changedPaths.some(path => ['package.json','package-lock.json','npm-shrinkwrap.json','.github/workflows/engineering-supply-chain-trust.yml'].includes(path));
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          const netlifyApplicability=deriveNetlifyDeploymentApplicability({changedPaths,headSha:context.candidateSha,policy});
+          const netlifyBuildRequired=netlifyApplicability.deploymentRequired;
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
-          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${diffBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\ndependency_review_required=${dependencyReviewRequired}\n`);
+          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,scopeBase,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,netlifyApplicability},null,2));
           NODE
+      - name: Evaluate changed Brain learning before protected merge
+        env:
+          POWERHOUSE_BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          POWERHOUSE_HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
+        run: node scripts/brain/learning-canonicalization-gate.mjs
       - id: integration
         name: Compile one-write integration bundle
         env:
-          PR_BODY: ${{ github.event.pull_request.body || '' }}
+          PR_BODY: ${{ inputs.pr_body || github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ steps.scope.outputs.pr_number }}
         run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify adaptive and integration compiler regressions
         run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
+      - name: Enforce Powerhouse one-loop runtime invariants
+        run: node --test tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs
       - name: Fail fast on incomplete integration closure
         if: steps.integration.outputs.closure_ready != 'true'
         run: |
@@ -158,12 +360,34 @@ jobs:
           execFileSync('node', ['--test', ...tests], { stdio: 'inherit' });
           NODE
       - name: Enforce material writeback closure
+        if: steps.integration.outputs.closure_authority != 'canonical-runtime-obligation'
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
       - name: Install runtime dependencies for the unwired contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: npm install --prefer-offline --no-audit --no-fund --silent
+      - name: Validate fail-closed static English cache before merge
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+        run: |
+          POWERHOUSE_I18N_REQUIRE_RUNTIME=1 node --test tests/brain-powerhouse-blog-i18n-prepublish.test.mjs tests/delivery-powerhouse-blog-i18n-prepublish.integration.test.mjs tests/brain-openai-blog-reader-ready-20261019.test.mjs
+          # Verify the translated, canonical transformed pages in an isolated
+          # checkout: production transforms mutate working files, and running
+          # unrelated source-contract tests on that mutated tree causes false
+          # failures. Keep fail-closed offline translation proof unchanged.
+          scratch="$(mktemp -d "${RUNNER_TEMP:-/tmp}/powerhouse-i18n-XXXXXX")"
+          worktree="$scratch/site"
+          git worktree add --detach "$worktree" HEAD
+          trap 'git worktree remove --force "$worktree" >/dev/null 2>&1 || true; rm -rf "$scratch"' EXIT
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$worktree/node_modules"
+          (
+            cd "$worktree"
+            node tools/ci/netlify-build-entry.mjs --prepare-i18n-cache=ci-static-i18n-verification.json
+            node tools/site-shell/build-localized-routes.mjs --validate-cache
+          )
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
@@ -176,11 +400,35 @@ jobs:
           tests/brain-production-promotion-observability.test.mjs
           tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
+          tests/compliance-status-page.test.mjs
+          tests/control-plane-first-fanout-reduction.test.mjs
+          tests/control-plane-fourth-fanout-reduction.test.mjs
+          tests/control-plane-node24-fanout-reduction.test.mjs
+          tests/control-plane-pr-trigger-ratchet.test.mjs
+          tests/control-plane-required-wiring.test.mjs
+          tests/control-plane-schema-lane.test.mjs
+          tests/control-plane-second-fanout-reduction.test.mjs
+          tests/control-plane-sixth-fanout-reduction.test.mjs
+          tests/control-plane-third-fanout-reduction.test.mjs
+          tests/control-plane-workflow-inventory.test.mjs
+          tests/control-plane-workflow-retirement.test.mjs
           tests/brain-ci-admission-single-flight.test.mjs
           tests/brain-ci-critical-path-acceleration-v1.test.mjs
           tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          tests/powerhouse-daily-self-evolution.test.mjs
+          tests/brain-self-improvement-layer-v1.test.mjs
+          tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/ai-model-supplier-evidence-accounting.test.mjs
+          tests/ai-model-customer-governance-evidence.test.mjs
+          tests/ai-model-supplier-customer-separation.test.mjs
+          tests/ai-model-choice-sovereignty.test.mjs
+          tests/portal-ai-model-choice.test.mjs
+          tests/brain-ai-model-choice-sovereignty.test.mjs
+          tests/ai-model-tenant-acceptance.test.mjs
+          tests/ai-model-tenant-connection-readiness.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
+          tests/cms-website-portal-v1.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs
           tests/eu-ai-act-audit-report.test.mjs
@@ -199,6 +447,7 @@ jobs:
           tests/netlify-identity-recovery-build.test.mjs
           tests/netlify-identity-recovery-flow.test.mjs
           tests/seo-homepage-context-slider-contract.test.mjs
+          tests/product-led-home-v1.test.mjs
           tests/delivery-een-portaal.test.mjs
           tests/klantportaal-demostand.test.mjs
           tests/klantportaal-tekenen-via-supabase.test.mjs
@@ -208,6 +457,16 @@ jobs:
           tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-process-progress.test.mjs
           tests/seo-search-console-revenue-sprint.test.mjs
+          tests/brain-seo-cro-execute-or-explain-v1.test.mjs
+          tests/brain-i18n-production-navigation-readback-v2.test.mjs
+          tests/brain-i18n-runtime-cache-bust-v1.test.mjs
+          tests/brain-netlify-static-i18n-cache-terminal-v1.test.mjs
+          tests/ai-model-seo-cluster-v1.test.mjs
+          tests/ai-model-production-hotfix-v1.test.mjs
+          tests/ai-model-advisor-v1.test.mjs
+          tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs
+          tests/brain-netlify-premerge-build-parity-v1.test.mjs
+          tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
@@ -253,6 +512,327 @@ jobs:
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
+
+  merge_specialist:
+    name: Merge specialist assurance
+    needs: preflight
+    if: github.event_name == 'merge_group'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.preflight.outputs.candidate_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify dependency supply-chain risk
+        if: needs.preflight.outputs.dependency_review_required == 'true'
+        run: npm audit --package-lock-only --audit-level=high
+      - name: Run consolidated merge-group specialist assurance
+        run: >-
+          node --test
+          tests/compliance-status-page.test.mjs
+          tests/brain-error-learning-contract.test.mjs
+          tests/brain-runtime-authority-governance.test.mjs
+          tests/brain-adapter-conformance.test.mjs
+          tests/brain-bg184-stateful-blocker-dedupe.test.mjs
+          tests/homepage-pricing-boundary-readback.test.mjs
+          tests/main-write-integrity-squash-pr.test.mjs
+          tests/universal-event-envelope.test.mjs
+          tests/universal-failure-learning.test.mjs
+          tests/event-retention-policy.test.mjs
+          tests/event-retention-expiry.test.mjs
+          tests/universal-event-contract-check.test.mjs
+          tests/universal-event-adapters.test.mjs
+          tests/parallel-ownership.test.mjs
+          tests/change-classes.test.mjs
+          tests/page-composition.test.mjs
+          tests/component-preview-composition.test.mjs
+          tests/component-boundaries.test.mjs
+          tests/change-scope.test.mjs
+          tests/component-hash-protection.test.mjs
+          tests/detect-changed-components.test.mjs
+          tests/component-preview-workflow-contract.test.mjs
+          tests/supabase-public-rls-regression-guard.test.mjs
+          tests/linkedin-revenue-cockpit.test.mjs
+          tests/linkedin-revenue-runtime.test.mjs
+          tests/linkedin-revenue-engagement-cockpit.test.mjs
+          tests/portal-next-shell.test.mjs
+          tests/intelligence-agent-runtime.test.mjs
+          tests/policy-engine.test.mjs
+          tests/source-adapters.test.mjs
+          tests/read-models.test.mjs
+          tests/foundation-registry-eventstore.test.mjs
+          tests/monitor-brain-ingest.test.mjs
+          tests/portal-native-legacy-batch-*.test.mjs
+          tests/portal-modular-legacy-capability-parity.test.mjs
+          tests/homepage-hero-video.test.mjs
+          tests/ai-model-advisor-v1.test.mjs
+          tests/brain-autonomous-improvement-runtime-completion.test.mjs
+          tests/brain-autonomous-improvement-recovery-proof.test.mjs
+          tests/social-learning-buffer-collector.test.mjs
+          tests/brain-repository-hygiene.test.mjs
+          tests/brain-acceptance.test.mjs
+          tests/agent-fabric.test.mjs
+          tests/brain-autonomous-improvement-production-cycle.test.mjs
+          tests/delivery-regelgeving-actueel.test.mjs
+          tests/brain-chat-learning-fast-development-v2.test.mjs
+          tests/brain-powerhouse-engineering-closed-loop.test.mjs
+          tests/revenue-content-intelligence.test.mjs
+          tests/revenue-learning-*.test.mjs
+          tests/seo-locale-revenue-*.test.mjs
+          tests/content-growth-unified-content-operations.test.mjs
+          tests/brain-universal-closed-loop-learning.test.mjs
+          tests/approved-blog-verifier-contract.test.mjs
+          tests/powerhouse-assurance.test.mjs
+          tests/powerhouse-foresight-autonomy.test.mjs
+          tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs
+          tests/components/*.test.mjs
+          tests/brain-powerhouse-closure-a-f.test.mjs
+          tests/powerhouse-daily-self-evolution.test.mjs
+          tests/brain-self-improvement-layer-v1.test.mjs
+          tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/ai-model-supplier-evidence-accounting.test.mjs
+          tests/ai-model-customer-governance-evidence.test.mjs
+          tests/ai-model-supplier-customer-separation.test.mjs
+          tests/ai-model-tenant-acceptance.test.mjs
+          tests/ai-model-tenant-connection-readiness.test.mjs
+          tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          tests/brain-security-operations-closure-v1.test.mjs
+          tests/security-operations-proof.test.mjs
+          tests/candidate-environment.test.mjs
+      - name: Verify portal parity source contract
+        run: python3 tests/portal-parity-source-contract.py
+      - name: Verify protected portal baseline
+        run: python3 .github/scripts/portal_parity.py
+      - name: Verify config watch
+        run: python3 tools/config-wacht.py
+      - name: Run intelligence, chat and regulation merge assurance
+        run: node --test tests/brain-acceptance.test.mjs tests/agent-fabric.test.mjs tests/delivery-regelgeving-actueel.test.mjs tests/brain-chat-learning-fast-development-v2.test.mjs
+      - name: Verify hero production media contract
+        run: node --test tests/homepage-hero-video.test.mjs
+      - name: Verify engineering learning self-test
+        run: node --test tests/brain-powerhouse-engineering-closed-loop.test.mjs
+      - name: Verify universal closed-loop learning
+        run: node scripts/brain/validate-universal-closed-loop-learning.mjs
+      - name: Verify Powerhouse assurance
+        run: |
+          node scripts/powerhouse-assurance-check.mjs
+          node scripts/brain/powerhouse-loop-assurance-contract.mjs
+          node scripts/brain/powerhouse-quality-intelligence.mjs
+      - name: Verify foresight autonomy
+        run: node scripts/brain/foresight-autonomy.mjs
+      - name: Verify security operations
+        run: |
+          node scripts/security-operations-proof.mjs --check
+          python3 scripts/brain/check_powerhouse_supabase_security.py
+      - name: Verify portal-v2 package assurance
+        working-directory: portal-v2
+        run: npm test
+      - name: Verify portal shell enhancement contract
+        run: grep -R "enhancePortalShell" -n portal-v2 platform tools tests >/dev/null
+
+  merge_specialist_node24:
+    name: MERGE_SPECIALIST_NODE24
+    needs: preflight
+    if: github.event_name == 'merge_group'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.preflight.outputs.candidate_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Verify canonical brand shell
+        run: |
+          node tools/site-shell/test-shell-components.mjs
+          node --test tests/site-shell-compare-slider-physical-edges.test.mjs
+      - name: Verify content growth policy and contracts
+        run: |
+          node tools/content-growth/validate-policy.mjs
+          node --test tests/content-growth-*.test.mjs
+
+
+  netlify_build_parity:
+    needs: preflight
+    if: needs.preflight.outputs.netlify_build_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.preflight.outputs.candidate_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22.12.0'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+      - name: Restore and extend content-addressed static i18n render cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/bg-static-i18n-v1
+          key: static-i18n-render-v1-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            static-i18n-render-v1-${{ runner.os }}-
+      - name: Install exact Netlify build dependencies
+        run: npm install --prefer-offline --no-audit --no-fund --silent
+      - name: Run exact Netlify production build command once
+        env:
+          COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}
+          CONTEXT: production
+          DEPLOY_ID: required-netlify-build-parity
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+          STATIC_I18N_BUILD_CACHE_DIR: .cache/bg-static-i18n-v1
+          STATIC_I18N_ROUTE_WORKERS: '2'
+          NETLIFY_BUILD_PROFILE_PATH: .artifacts/netlify-build-profile.json
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          node tools/ci/netlify-build-entry.mjs
+      - name: Verify built artifact contracts
+        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
+      - id: prebuilt
+        name: Package immutable tree-addressed Netlify prebuilt artifact
+        env:
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          source_tree_sha="$(git rev-parse "${CANDIDATE_SHA}^{tree}")"
+          stage="$(mktemp -d)"
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --exclude='.cache/' \
+            --exclude='.artifacts/' \
+            --exclude='netlify-prebuilt.zip' \
+            ./ "$stage/"
+          rm -f "$stage/.bg-prebuilt-deploy.json" "$stage/.bg-prebuilt-manifest.json"
+          (cd "$stage" && zip -qr "$GITHUB_WORKSPACE/netlify-prebuilt.zip" .)
+          archive_sha256="$(sha256sum netlify-prebuilt.zip | awk '{print $1}')"
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          cat > .artifacts/netlify-prebuilt-manifest.json <<JSON
+          {
+            "contract": "NETLIFY_PREBUILT_ARTIFACT_V1",
+            "source_head_sha": "${CANDIDATE_SHA}",
+            "source_tree_sha": "${source_tree_sha}",
+            "archive_sha256": "${archive_sha256}",
+            "generated_at": "${generated_at}"
+          }
+          JSON
+          echo "source_tree_sha=${source_tree_sha}" >> "$GITHUB_OUTPUT"
+          echo "archive_sha256=${archive_sha256}" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_PREBUILT_PACKAGED tree=${source_tree_sha} sha256=${archive_sha256}"
+      - name: Upload immutable Netlify prebuilt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-prebuilt-tree-${{ steps.prebuilt.outputs.source_tree_sha }}
+          path: |
+            netlify-prebuilt.zip
+            .artifacts/netlify-prebuilt-manifest.json
+            .artifacts/netlify-build-profile.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+
+  supabase_source_contract:
+    needs: preflight
+    if: needs.preflight.outputs.supabase_preview_required == 'true'
+    uses: ./.github/workflows/supabase-pr-preview.yml
+    with:
+      base_sha: ${{ needs.preflight.outputs.base_sha }}
+      head_sha: ${{ needs.preflight.outputs.change_head_sha }}
+
+  supabase_preview:
+    needs: [preflight, supabase_source_contract]
+    if: needs.preflight.outputs.supabase_preview_required == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: read
+    steps:
+      # The provider-check parser is a repository file; a fresh Actions runner
+      # has no checkout by default. Pin checkout to the exact validated PR head.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.preflight.outputs.change_head_sha }}
+          persist-credentials: false
+      - name: Verify provider-owned Supabase Preview on exact candidate head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          stable_provider_success_id=""
+          skipped_provider_id=""
+          skipped_grace_count=0
+          for attempt in $(seq 1 48); do
+            curl --fail --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
+              > /tmp/supabase-preview-check-runs.json
+
+            state="$(node tools/ci/supabase-preview-diagnosis.mjs /tmp/supabase-preview-check-runs.json)"
+
+            case "$state" in
+              success:*)
+                provider_id="${state#success:}"
+                if [ "$stable_provider_success_id" = "$provider_id" ]; then
+                  echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA:$provider_id"
+                  exit 0
+                fi
+                stable_provider_success_id="$provider_id"
+                sleep 5
+                ;;
+              skipped:*)
+                # A Supabase-owned skipped placeholder can be superseded by a later
+                # provider check on the SAME candidate SHA. Never treat it as green.
+                provider_id="${state#skipped:}"
+                if [ "$skipped_provider_id" = "$provider_id" ]; then
+                  skipped_grace_count=$((skipped_grace_count + 1))
+                else
+                  skipped_provider_id="$provider_id"
+                  skipped_grace_count=1
+                fi
+                if [ "$skipped_grace_count" -le 2 ]; then
+                  echo "SUPABASE_PREVIEW_SKIPPED_GRACE:$HEAD_SHA:$provider_id:$skipped_grace_count"
+                  sleep 5
+                  continue
+                fi
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              failure:*|cancelled:*|timed_out:*|action_required:*|stale:*|startup_failure:*|neutral:*)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              missing|pending:*)
+                stable_provider_success_id=""
+                sleep 5
+                ;;
+              *)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_UNKNOWN_STATE:$state:$HEAD_SHA"
+                exit 1
+                ;;
+            esac
+          done
+          echo "::error::SUPABASE_PREVIEW_PROVIDER_TIMEOUT:$HEAD_SHA"
+          exit 1
+
   backend:
     needs: preflight
     if: needs.preflight.outputs.backend == 'true'
@@ -287,16 +867,26 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, backend, portal, automation, website]
+    needs: [hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website, lease-postgres-pr-replay]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
+      EVENT_NAME: ${{ github.event_name }}
       HYGIENE: ${{ needs.hygiene.result }}
+      POSTGRES_LEASE: ${{ needs.lease-postgres-pr-replay.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      MERGE_SPECIALIST: ${{ needs.merge_specialist.result }}
+      MERGE_SPECIALIST_NODE24: ${{ needs.merge_specialist_node24.result }}
+      SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
+      SUPABASE_SOURCE_CONTRACT: ${{ needs.supabase_source_contract.result }}
+      SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
       SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
+      NETLIFY_BUILD_REQUIRED: ${{ needs.preflight.outputs.netlify_build_required }}
+      NETLIFY_BUILD: ${{ needs.netlify_build_parity.result }}
       BACKEND: ${{ needs.backend.result }}
       PORTAL: ${{ needs.portal.result }}
       AUTOMATION: ${{ needs.automation.result }}
@@ -310,8 +900,14 @@ jobs:
         run: |
           set -euo pipefail
           test "$HYGIENE" = success
+          [ "$EVENT_NAME" != pull_request ] || [ "$POSTGRES_LEASE" = success ]
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST" = success ]
+          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]
+          [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
+          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_SOURCE_CONTRACT" = success ]
+          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
           [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]

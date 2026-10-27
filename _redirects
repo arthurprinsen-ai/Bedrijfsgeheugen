@@ -1,6 +1,8 @@
 # Persoonlijke meetlinks: bedrijfsgeheugen.nl/g/<sleutel> -> Supabase bg-l (registreert de klik per connectie, stuurt door). 10 sept 2026.
 /g/:sleutel  https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-l?s=:sleutel  302!
 /contact  /contact.html  200
+/pakketadvies  /pakketadvies.html  200
+/portaal-demo  /portaal-demo.html  200
 # Localized public pages are generated during the Netlify build. Keep the
 # language switch independent from runtime translation-provider availability.
 /en  /en/index.html  200
@@ -18,6 +20,9 @@
 /data-ai-cockpit.html   /frisse-blik   301!
 # Legacy IJsselmonde exception: preserve the historical yellow portal exactly.
 /klantportaal  klant=ijsselmonde  /portal-v2/legacy/ijsselmonde/klantportaal.html  200!
+# Free worksheet lead magnet uses the existing public site and existing Bedrijfslek scan.
+/7-bedrijfslekken  /pages/7-bedrijfslekken.html  200
+
 # Customer portal variants. Portal V2 is the single canonical entry surface.
 # Every portal entry lands on the V2 overview / Executive Cockpit; legacy
 # klantportaal.html remains only as a retained source artifact, never as an entry route.
@@ -40,6 +45,9 @@
 /portaal/*  /portal-v2/:splat  200!
 /portaal  /portal-v2/  301!
 /portaal.html  /portal-v2/  301!
+/portal/data-ai-passport.html  /portal-v2/?page=data-ai-passport  301!
+/portal-next/security.html  /portal-v2/?page=trust-center  301!
+/portal-next/compliance.html  /portal-v2/?page=compliance-command-center  301!
 /portal/*  /portal-v2/  301!
 /portal-next/*  /portal-v2/  301!
 /ai-act /ai-act.html 200
@@ -60,3 +68,6 @@
 /scan  /pages/scan.html  200
 /scan/  /pages/scan.html  200
 /zelfscan.html  /zelfscan  301!
+# Public conversion/demo tools use clean URLs.
+/pakketadvies  /pakketadvies.html  200
+/portaal-demo  /portaal-demo.html  200

@@ -1,0 +1,47 @@
+{
+  "id": "ai-modelwijzer-falcon-coverage-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "ai-modelwijzer|falcon-open-weight-selfhost-governance|v1",
+  "compiler": {
+    "failure_class": "AI_MODEL_PROVIDER_COVERAGE_GAP",
+    "scope": "AI_MODEL_DECISION_INTELLIGENCE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The live AI Modelwijzer catalog covered 103 models across 10 provider families but omitted TII/Falcon entirely, despite Falcon being decision-relevant for open-weight, local, edge and customer-controlled deployments. Provider completeness had been measured mostly by total model count rather than explicit family coverage.",
+  "prevention": [
+    "Maintain provider-family coverage as an explicit invariant in addition to total model count.",
+    "Keep TII/Falcon represented in the canonical catalog with official-source evidence and at least one general/reasoning model plus one specialist model.",
+    "For open-weight models, separate model identity from deployment-path governance: self-hosting can make storage and inference customer-controlled, but does not itself guarantee EU location.",
+    "Unknown managed-hosting price, retention, subprocessors or residency must remain provider-dependent rather than being inferred."
+  ],
+  "fix": "Add TII/Falcon as provider family 11 with Falcon H1, Falcon H1R and Falcon OCR decision records; add a self-host/customer-cloud/on-prem governance path; add official TII source authority; bind Falcon coverage into the AI Model Intelligence skill and canonical System Map.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ],
+    "shadow": [
+      "data/ai-model-catalog-v1.json",
+      "data/ai-provider-governance-v1.json"
+    ],
+    "canary": [
+      "AI Model Intelligence workflow",
+      "Required test"
+    ]
+  },
+  "evidence": {
+    "official_tii": "https://www.tii.ae/news/middle-easts-leading-ai-powerhouse-tii-launches-two-new-ai-models-falcon-arabic-first-arabic",
+    "official_collection": "https://huggingface.co/collections/tiiuae/falcon-h1",
+    "catalog": "data/ai-model-catalog-v1.json",
+    "governance": "data/ai-provider-governance-v1.json",
+    "skill": ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "regression": "tests/brain-ai-model-intelligence-v1.test.mjs"
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-system-map-governance"
+  ]
+}

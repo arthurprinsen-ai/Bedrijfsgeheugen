@@ -5,6 +5,7 @@ import { PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const KENNIS_HREF = `${ORIGIN}/kennis/`;
 const BLOG_HREF = `${ORIGIN}/blog/`;
+const PRODUCT_HREF = `${ORIGIN}/product`;
 
 function platteTekst(html) {
   return String(html).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -15,8 +16,16 @@ function anchors(html) {
     .map(([, , href, inhoud]) => ({ href, tekst: platteTekst(inhoud).toLowerCase() }));
 }
 
+function ensurePlatformNavigation(input) {
+  return String(input).replace(/<a\b([^>]*\bhref=(['"])([^'"]+)\2[^>]*)>([\s\S]*?)<\/a>/gi, (heel, attrs, quote, href, inhoud) => {
+    if (platteTekst(inhoud).toLowerCase() !== 'platform') return heel;
+    if (href === PRODUCT_HREF) return heel;
+    return heel.replace(/\bhref=(['"])[^'"]+\1/i, `href="${PRODUCT_HREF}"`);
+  });
+}
+
 export function finalizeNavigationHtml(input) {
-  return ensureKnowledgeNavigation(String(input));
+  return ensurePlatformNavigation(ensureKnowledgeNavigation(String(input)));
 }
 
 export function verifyFinalNavigationHtml(input, bestand = 'pagina') {
@@ -24,6 +33,7 @@ export function verifyFinalNavigationHtml(input, bestand = 'pagina') {
   const links = anchors(html);
   const kennis = links.filter(link => link.tekst === 'kennis' || link.tekst === 'kennisbank');
   const blog = links.filter(link => link.tekst === 'blog' || link.tekst.startsWith('blog '));
+  const platform = links.filter(link => link.tekst === 'platform');
 
   if (!kennis.length) throw new Error(`${bestand}: final navigation mist Kennis/Kennisbank`);
   if (kennis.some(link => link.href !== KENNIS_HREF)) {
@@ -35,6 +45,11 @@ export function verifyFinalNavigationHtml(input, bestand = 'pagina') {
   }
   if (links.some(link => link.tekst.startsWith('blog & kennisbank'))) {
     throw new Error(`${bestand}: gecombineerde Blog & Kennisbank-link is niet toegestaan`);
+  }
+  if (!platform.length) throw new Error(`${bestand}: final navigation mist Platform`);
+  if (platform.some(link => link.href !== PRODUCT_HREF)) {
+    const fout = platform.find(link => link.href !== PRODUCT_HREF);
+    throw new Error(`${bestand}: Platform wijst naar ${fout.href}; final contract vereist ${PRODUCT_HREF}`);
   }
   return true;
 }

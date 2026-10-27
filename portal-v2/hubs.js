@@ -1,4 +1,5 @@
 import { allPageIds, listPortalGroups, findPage } from './page-registry.js';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 
 const PORTAL_CORE = Object.freeze([
   'overzicht','profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase',
@@ -7,9 +8,9 @@ const PORTAL_CORE = Object.freeze([
   'wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen',
   'os:impact-engine','os:scenario-simulator','os:next-best-actions','os:monitoring-learning','os:evidence-health','os:capability-graph'
 ]);
-const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','os:evidence-health','os:capability-graph']);
-const TASKS = Object.freeze(['taken-werkstromen','actieve-acties','roadmap','recovery-obligations','outcomes-evidence','wijzigingen','advies','os:next-best-actions','os:monitoring-learning','os:scenario-simulator']);
-const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','audittrail','compliance-governance','compliance-command-center','learning-writeback','self-heal']);
+const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','ai-modelkeuze','data-ai-passport','trust-center']);
+const TASKS = Object.freeze(['actieve-acties','taken-werkstromen','roadmap','advies','outcomes-evidence','wijzigingen']);
+const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','compliance-governance']);
 
 const entry=(id,label,target=id)=>Object.freeze({id,label,target});
 export const PROJECT_GROUPS = Object.freeze([
@@ -38,9 +39,9 @@ const projectTargets=Object.freeze(PROJECT_GROUPS.flatMap(group=>group.pages.map
 export const HUB_DEFINITIONS = Object.freeze({
   portal:Object.freeze({ label:'Alle pagina’s', description:'Volledig portaalmenu met alle geregistreerde Portal V2-pagina’s, gegroepeerd per onderdeel.', pages:Object.freeze(allPageIds()) }),
   project:Object.freeze({ label:'Jouw project', description:'Van offerte en bouwen tot koppelen, uitvoeren, documenteren, samenwerken en factureren.', pages:projectTargets }),
-  'data-ai':Object.freeze({ label:'Data & AI', description:'Data, koppelingen, AI-kansen, capabilities en de aantoonbare Brain/Datahub-status.', pages:DATA_AI }),
-  tasks:Object.freeze({ label:'Taken', description:'Uitvoering, roadmap, actieve acties, recovery obligations, scenarios, monitoring en outcomes/evidence.', pages:TASKS }),
-  more:Object.freeze({ label:'Meer', description:'Beheer, documenten, gebruikers, abonnement, Frisse Blik, compliance, audit en systeemfuncties.', pages:MORE })
+  'data-ai':Object.freeze({ label:'Data & AI', description:'Data, koppelingen, AI-kansen, capabilities, dataprofiel en vertrouwen in AI.', pages:DATA_AI }),
+  tasks:Object.freeze({ label:'Acties', description:'Wat nu moet gebeuren: actieve acties, taken, roadmap, advies, resultaten en wijzigingen.', pages:TASKS }),
+  more:Object.freeze({ label:'Meer', description:'Documenten, gebruikers, instellingen, abonnement, Frisse Blik, compliance en audit.', pages:MORE })
 });
 
 export function hubPages(hubId){ return [...(HUB_DEFINITIONS[hubId]?.pages || [])]; }
@@ -57,7 +58,14 @@ export function groupedHubPages(hubId){
       })
     }));
   }
-  if(hubId==='portal') return listPortalGroups().map(group=>({...group,pages:[...group.pages]})).filter(group=>group.pages.length);
+  if(hubId==='portal') return DESKTOP_NAV_GROUPS.map(group=>({
+    id:group.id,
+    label:group.label,
+    pages:group.pages.map(page=>{
+      const target=findPage(page.target);
+      return {...page,sectionId:target?.sectionId||null,target:page.target};
+    })
+  })).filter(group=>group.pages.length);
   const allowed=new Set(hubPages(hubId));
   return listPortalGroups().map(group=>({
     ...group,
@@ -66,6 +74,10 @@ export function groupedHubPages(hubId){
 }
 
 export function unassignedPortalPages(){
-  const assigned=new Set(Object.values(HUB_DEFINITIONS).flatMap(hub=>hub.pages));
+  // The full portal catalogue is a catch-all discovery surface, not a curated customer hub.
+  // Only the focused hubs count as an assignment for navigation simplicity.
+  const assigned=new Set(Object.entries(HUB_DEFINITIONS)
+    .filter(([id])=>id!=='portal')
+    .flatMap(([,hub])=>hub.pages));
   return allPageIds().filter(id=>!assigned.has(id));
 }

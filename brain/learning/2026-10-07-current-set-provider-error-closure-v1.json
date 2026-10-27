@@ -1,0 +1,35 @@
+{
+  "id": "current-set-provider-error-closure-v1-20261007",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|commercial-heartbeat|provider-error|current-set|explicit-non-send|v1",
+  "compiler": {
+    "failure_class": "CURRENT_SET_PROVIDER_ERROR_DECISION_GAP",
+    "scope": "NETLIFY_SUPABASE_COMMERCIAL_HEARTBEAT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A quality-ready LinkedIn current-set action failed at the canonical provider executor and moved to status=error, but no fresh commercial_closure decision was written. Output assurance therefore saw one current action without a fresh send/non-send decision and remained degraded even though retrying the provider call was unsafe.",
+  "prevention": "The canonical heartbeat now converts current-set provider execution errors into an explicit OBSERVE non-send decision with send_forbidden=true, expires the failed action, and runs that closure after canonical social dispatch but before output assurance. A fresh deduped canonical action is required to re-enter execution.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-current-set-provider-error-closure-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "production": [
+      "social-learning-store provider was restored byte-equal to current GitHub main as ACTIVE version 10.",
+      "Fresh runtime window after provider repair contained 0 HTTP 401/500/503/522 responses.",
+      "Canonical heartbeat at 2026-10-07T10:12:06Z was VERIFIED under NETLIFY_SUPABASE_EDGE with terminal coverage 100%.",
+      "The failed LinkedIn current-set action was closed as OBSERVE with send_forbidden=true.",
+      "Output assurance became healthy with state ZERO_OUTPUT_EXPLICITLY_JUSTIFIED."
+    ],
+    "repository": [
+      "supabase/migrations/20261007101156_close_current_set_provider_errors_v1.sql",
+      "tests/brain-current-set-provider-error-closure-v1.test.mjs"
+    ]
+  }
+}

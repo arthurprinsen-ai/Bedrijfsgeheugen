@@ -1,0 +1,40 @@
+{
+  "id": "supabase-history-terminalizer-readback-routing-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "post-merge-terminalizer-pr-3766",
+  "fingerprint": "powerhouse|terminalizer|supabase-migration-history-canonical|readback-routing|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The canonical terminalizer recognized only supabase-migration-history-parity-* recovery obligations and its bounded non-runtime path allowlist omitted immutable migration-history, migration-history.lock.json and production-baseline evidence. PR #3766 therefore fell through to UNWIRED_NON_NETLIFY_RUNTIME_READBACK after a valid protected merge.",
+  "prevention": [
+    "Recognize both supabase-migration-history-parity-* and supabase-migration-history-canonical-* recovery obligation families.",
+    "Treat only bounded Supabase migrations, immutable migration history, migration-history lock, production baseline and approved verifier paths as non-runtime migration-history recovery surfaces.",
+    "Keep every unrelated non-Netlify runtime path fail-closed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+    "Pin the canonical routing contract in tests/brain-production-readback-authority-routing-v1.test.mjs."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-authority-routing-v1.test.mjs",
+      "tests/brain-obligation-terminalizer-squash.test.mjs"
+    ],
+    "expected": "Merged Supabase migration-history canonical recoveries terminalize through main-containment/non-runtime evidence without requiring a fake Netlify runtime marker; unrelated runtime paths remain blocked."
+  },
+  "evidence": {
+    "source_pr": 3766,
+    "candidate_head": "04b82996ad16c68e45173b48d4b9ba2de270a03d",
+    "merge_sha": "ccdf134ca4de73e547e54c9de00298d771f87be5",
+    "failed_workflow_run": 37428160490,
+    "failed_job": 112152491688,
+    "observed_failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "regression_test": "tests/brain-production-readback-authority-routing-v1.test.mjs",
+    "implementation": ".github/workflows/powerhouse-obligation-terminalizer.yml"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

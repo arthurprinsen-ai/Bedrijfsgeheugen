@@ -42,14 +42,46 @@ export function buildNotionDecisionRows(projection={}){
   });
 }
 
-export async function syncCompanyDecisionsToNotion(projection,{writer}={}){
+export async function syncCompanyDecisionsToNotion(projection,{writer,concurrency=3}={}){
   if(typeof writer?.upsert!=='function') throw new TypeError('Notion company decision sync requires writer.upsert');
   const rows=buildNotionDecisionRows(projection);
   const errors=[];
-  const results=[];
-  for(const row of rows){
-    try{results.push(await writer.upsert(row));}
-    catch(error){errors.push({decisionId:row.decisionId,fingerprint:row.fingerprint,message:error?.message||String(error)});}
+  const results=new Array(rows.length);
+  const width=Math.max(1,Math.min(6,Number.isFinite(Number(concurrency))?Math.floor(Number(concurrency)):3));
+  const prefetch={attempted:false,used:false,found:0,error:null};
+  let existingPages=null;
+
+  if(rows.length&&typeof writer?.prefetch==='function'){
+    prefetch.attempted=true;
+    try{
+      existingPages=await writer.prefetch(rows.map(row=>row.fingerprint));
+      if(existingPages instanceof Map){
+        prefetch.used=true;
+        prefetch.found=existingPages.size;
+      }
+    }catch(error){
+      prefetch.error=error?.message||String(error);
+      existingPages=null;
+    }
   }
-  return Object.freeze({attempted:rows.length,succeeded:results.length,failed:errors.length,errors,results});
+
+  let cursor=0;
+  let succeeded=0;
+  async function worker(){
+    while(true){
+      const index=cursor++;
+      if(index>=rows.length)return;
+      const row=rows[index];
+      try{
+        const pageId=existingPages instanceof Map?existingPages.get(row.fingerprint)||null:null;
+        results[index]=await writer.upsert(row,pageId?{pageId}:{});
+        succeeded++;
+      }catch(error){
+        errors.push({decisionId:row.decisionId,fingerprint:row.fingerprint,message:error?.message||String(error)});
+      }
+    }
+  }
+
+  await Promise.all(Array.from({length:Math.min(width,rows.length)},()=>worker()));
+  return Object.freeze({attempted:rows.length,succeeded,failed:errors.length,errors,results:results.filter(value=>value!==undefined),prefetch:Object.freeze(prefetch)});
 }

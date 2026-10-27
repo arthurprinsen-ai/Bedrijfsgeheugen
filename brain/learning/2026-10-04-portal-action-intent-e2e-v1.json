@@ -1,0 +1,61 @@
+{
+  "learningId": "2026-10-04-portal-action-intent-e2e-v1",
+  "fingerprint": "portal-action-intent-ui-to-canonical-brain-action-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-04T18:35:00+02:00",
+  "problem": "Portal intelligence surfaces could navigate to actions without persisting the user's action intent into the canonical Brain loop.",
+  "rootCause": "The next-gen UI emitted insight evidence but the action controls only changed portal navigation, leaving the canonical Action stage absent from that user interaction lineage.",
+  "root_cause": "The next-gen UI emitted insight evidence but the action controls only changed portal navigation, leaving the canonical Action stage absent from that user interaction lineage.",
+  "preventionRule": "Every Portal V2 intelligence control that says or implies Act/Create action must emit one authenticated idempotent Brain Action on the same correlation lineage before or alongside navigation, followed by canonical runtime readback.",
+  "prevention": [
+    "Use the existing authenticated /api/brain-operating-loop authority; do not create a parallel action store.",
+    "Persist action intent as Brain type Action with REQUESTED status and executed=false.",
+    "Reuse PORTAL_INPUT-<sourceRevision> correlation when available.",
+    "Link the Action to the latest same-lineage interaction record when available.",
+    "Refresh canonical Brain projection after the Action write.",
+    "Keep action context bounded and do not infer hidden source values."
+  ],
+  "evidence": {
+    "implementation": [
+      "portal-v2/nextgen-intelligence.js",
+      "portal-v2/powerhouse-runtime-bridge.js"
+    ],
+    "regression": [
+      "tests/brain-portal-action-intent-e2e.test.mjs",
+      "portal-v2/tests/powerhouse-runtime-bridge.test.mjs"
+    ],
+    "documentation": "docs/changes/2026-10-04-portal-action-intent-e2e-v1.md",
+    "activityLedger": "docs/development-ledger-events/2026-10-04-portal-action-intent-e2e-v1.md",
+    "systemMap": "platform/system-map/canonical-system-map.mjs"
+  },
+  "invariants": {
+    "authenticatedWrite": true,
+    "idempotentAction": true,
+    "sameCorrelationLineage": true,
+    "canonicalBrainAuthority": true,
+    "noParallelActionStore": true,
+    "postWriteReadback": true,
+    "requestedNotExecuted": true,
+    "boundedContext": true,
+    "productionReadbackRequired": true
+  },
+  "compiler": {
+    "failure_class": "PORTAL_ACTION_INTENT_NOT_CANONICAL",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-action-intent-e2e.test.mjs"
+    ],
+    "expected": "A portal action control persists exactly one canonical REQUESTED Action with tenant auth and same-lineage correlation, then refreshes Brain readback.",
+    "shadow": [
+      "tests/brain-portal-action-intent-e2e.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-action-intent-e2e.test.mjs"
+    ]
+  }
+}

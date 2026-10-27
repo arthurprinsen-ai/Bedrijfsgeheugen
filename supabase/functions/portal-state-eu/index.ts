@@ -1,23 +1,303 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { repairBusinessInputsFromAuthority } from './business-input-read-repair.js';
+import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
+import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
+import { boundedReads } from './bounded-reads.js';
+import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
+// Accept the approved production Netlify gateway token by hash, never by plaintext.
+// Preserve the original hash until all dependent internal callers are proven migrated.
+const NETLIFY_PORTAL_TOKEN_HASH='95827ae5b67419121961a7e1e144bb0702b8568997c531df00b8505e8338b63e';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const AI_PROFILE_OPTIONS:Record<string,string[]>={
+ deploymentMode:['MANAGED_CLOUD','PRIVATE_CLOUD','ON_PREMISE','AIR_GAPPED'],
+ provider:['ANTHROPIC','AZURE_OPENAI','AWS_BEDROCK','GOOGLE_VERTEX','MISTRAL_API','OLLAMA','VLLM'],
+ modelFamily:['CURRENT','MISTRAL','GEMMA','LLAMA','CUSTOM'],
+ computeRegion:['AUTO','EU','NL','DE','US','LOCAL'],
+ storageRegion:['AUTO','EU','NL','DE','US','LOCAL'],
+ ragRegion:['SAME_AS_STORAGE','EU','NL','DE','US','LOCAL'],
+ networkMode:['STANDARD','PRIVATE_ENDPOINT','OFFLINE']
+};
+const AI_PROFILE_KEYS=['deploymentMode','provider','modelFamily','computeRegion','storageRegion','ragRegion','networkMode','trainingUse','allowExternalFallback','modelId'];
+function validAiDeploymentProfile(p:any):boolean{
+ if(!p||typeof p!=='object'||Array.isArray(p)||Object.keys(p).length!==AI_PROFILE_KEYS.length)return false;
+ if(Object.keys(p).some(k=>!AI_PROFILE_KEYS.includes(k)))return false;
+ for(const [key,options] of Object.entries(AI_PROFILE_OPTIONS))if(!options.includes(p[key]))return false;
+ if(p.trainingUse!=='PROHIBITED'||p.allowExternalFallback!==false)return false;
+ if(typeof p.modelId!=='string'||p.modelId.length>120||!/^[a-zA-Z0-9._:/-]*$/.test(p.modelId))return false;
+ if(['ON_PREMISE','AIR_GAPPED'].includes(p.deploymentMode)){
+  if(!['OLLAMA','VLLM'].includes(p.provider)||p.computeRegion!=='LOCAL'||p.storageRegion!=='LOCAL'||!['LOCAL','SAME_AS_STORAGE'].includes(p.ragRegion))return false;
+ }
+ if(p.deploymentMode==='AIR_GAPPED'&&p.networkMode!=='OFFLINE')return false;
+ if(p.networkMode==='OFFLINE'&&p.deploymentMode!=='AIR_GAPPED')return false;
+ if(['OLLAMA','VLLM'].includes(p.provider)&&!['ON_PREMISE','AIR_GAPPED','PRIVATE_CLOUD'].includes(p.deploymentMode))return false;
+ return true;
+}
+
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
+
+const list=(value:any)=>Array.isArray(value)?value:[];
+const finite=finiteEvidence;
+const sumKnown=sumKnownEvidence;
+const maxKnown=maxKnownEvidence;
+function groupBy(rows:any[],key:string){
+  const map=new Map<any,any[]>();
+  for(const row of list(rows)){
+    const value=row?.[key];
+    if(value==null)continue;
+    if(!map.has(value))map.set(value,[]);
+    map.get(value)!.push(row);
+  }
+  return map;
+}
+function mergeEntrepreneurSignals(signals:any[],tenantImpacts:any[]){
+  const bySignal=groupBy(tenantImpacts,'signal_key');
+  return list(signals).map((signal:any)=>{
+    const impacts=bySignal.get(signal.signal_key)||[];
+    const scored=impacts.filter((item:any)=>item.status==='SCORED'&&finite(item.impact_score)!==null);
+    const best=scored.slice().sort((a:any,b:any)=>(finite(b.impact_score)||0)-(finite(a.impact_score)||0))[0]||null;
+    return {
+      ...signal,
+      probability:best?.probability??null,
+      magnitude:best?.magnitude??null,
+      exposure:best?.exposure??null,
+      urgency:best?.urgency??signal.urgency??null,
+      reversibility:best?.reversibility??null,
+      impact_score:maxKnown(impacts.map((item:any)=>item.impact_score)),
+      impact_status:scored.length?'SCORED':impacts.length?'PARTIAL':'NEEDS_COMPANY_CONTEXT',
+      estimated_value_eur:sumKnown(impacts.map((item:any)=>item.estimated_value_eur)),
+      estimated_loss_eur:sumKnown(impacts.map((item:any)=>item.estimated_loss_eur)),
+      company_impact_count:impacts.length,
+      tenant_specific_impact:impacts.length>0,
+      company_impacts:impacts.map((item:any)=>({
+        impact_key:item.impact_key,
+        target_node_key:item.target_node_key,
+        target_node_type:item.target_node_type,
+        target_label:item.target_label,
+        impact_score:item.impact_score,
+        status:item.status,
+        rationale:item.rationale,
+        impact_dimensions:item.impact_dimensions,
+        estimated_value_eur:item.estimated_value_eur,
+        estimated_loss_eur:item.estimated_loss_eur,
+        observed_at:item.observed_at
+      }))
+    };
+  });
+}
+function mergeEntrepreneurActions(canonicalActions:any[],tenantActions:any[]){
+  const tenantBySignal=new Map(list(tenantActions).map((item:any)=>[item.signal_key,item]));
+  const tenant=list(tenantActions).map((item:any)=>({...item,projection_scope:'TENANT',tenant_specific:true}));
+  const generic=list(canonicalActions)
+    .filter((item:any)=>!tenantBySignal.has(item.signal_key))
+    .map((item:any)=>({...item,projection_scope:'CANONICAL_REVIEW',tenant_specific:false}));
+  return [...tenant,...generic].sort((a:any,b:any)=>(finite(b.priority_score)||0)-(finite(a.priority_score)||0));
+}
+function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:any[],tenantImpacts:any[],actions:any[]){
+  const now=Date.now();
+  const sourceTruth=entrepreneurSnapshotFreshness({base,signals,now});
+  const ageDays=(value:any)=>{
+    if(!value)return Infinity;
+    const time=new Date(value).getTime();
+    return Number.isFinite(time)?Math.max(0,(now-time)/86400000):Infinity;
+  };
+  const availability=Object.fromEntries(['CATALOGUED','AVAILABLE','CONNECTED','OBSERVED','LIVE','STALE','ERROR']
+    .map(state=>[state.toLowerCase(),catalog.filter((item:any)=>item.availability_state===state).length]));
+  return {
+    ...(base||{}),
+    tenant_id:'authenticated',
+    refreshed_at:sourceTruth.refreshed_at,
+    catalog_source_count:catalog.length,
+    public_source_count:catalog.filter((item:any)=>item.activation_mode==='PUBLIC_ALWAYS').length,
+    connector_source_count:catalog.filter((item:any)=>item.activation_mode==='CONNECTOR_REQUIRED').length,
+    domain_count:domains.length,
+    observed_signal_count:signals.length,
+    signals_24h:signals.filter((item:any)=>ageDays(item.observed_at)<=1).length,
+    signals_7d:signals.filter((item:any)=>ageDays(item.observed_at)<=7).length,
+    high_attention_count:signals.filter((item:any)=>Math.max(finite(item.signal_score)||0,finite(item.impact_score)||0)>=70).length,
+    scored_impact_count:tenantImpacts.filter((item:any)=>item.status==='SCORED'&&finite(item.impact_score)!==null).length,
+    action_candidate_count:actions.filter((item:any)=>['CANDIDATE','READY','MATERIALIZED'].includes(item.status)).length,
+    known_opportunity_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_value_eur)),
+    known_risk_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_loss_eur)),
+    source_health:{...(base?.source_health||{}),availability,snapshot_freshness:sourceTruth},
+    status:sourceTruth.status
+  };
+}
+function readRows(label:string,query:any){
+  // Lazy: database requests are issued only when boundedReads schedules a job.
+  return async(signal:AbortSignal)=>{
+    // PostgREST supports AbortSignal; abort the underlying HTTP/database read
+    // on its deadline rather than keeping an abandoned 150s+ request alive.
+    const {data,error}=await query.abortSignal(signal);
+    if(error)throw new Error(label);
+    return Array.isArray(data)?data:[];
+  };
+}
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
   const token=req.headers.get('x-bg-service-token')||'';
-  if(await sha256(token)!==TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
+  const serviceTokenHash=await sha256(token);
+  if(serviceTokenHash!==TOKEN_HASH&&serviceTokenHash!==NETLIFY_PORTAL_TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();
-  if(action!=='control_plane_cockpit'&&!tenantId)return json({error:'INVALID_REQUEST'},400);
+  const CMS_ACTIONS=new Set(['cms_public','cms_admin_list','cms_admin_save','cms_admin_publish','cms_admin_archive']);
+  if(action!=='control_plane_cockpit'&&!CMS_ACTIONS.has(action)&&!tenantId)return json({error:'INVALID_REQUEST'},400);
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+  // Private tenant-scoped commercial evidence series; no cross-tenant aggregates.
+  if(action==='commercial_feedback'){
+    const days=Number(body?.days);
+    if(!Number.isInteger(days)||days<1||days>365)return json({error:'INVALID_PERIOD'},400);
+    const since=new Date(Date.now()-days*86400000).toISOString();
+    const {data,error}=await client.from('revenue_learning_evidence')
+      .select('evidence_id,tenant_id,evaluated_at,data_quality,exposures,clicks,leads,qualified_leads,meetings,proposals,orders,revenue_eur,source_refs')
+      .eq('tenant_id',tenantId).gte('evaluated_at',since)
+      .order('evaluated_at',{ascending:false}).limit(2000);
+    if(error)return json({error:'COMMERCIAL_EVIDENCE_READ_FAILED'},503);
+    const rows=(data||[]).filter((row:any)=>row.tenant_id===tenantId);
+    const daysByDate=new Map<string,any>();
+    for(const row of rows){
+      const date=String(row.evaluated_at||'').slice(0,10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;
+      const record=daysByDate.get(date)||{date,exposures:0,clicks:0,leads:0,qualifiedLeads:0,meetings:0,proposals:0,reportedOrders:0,verifiedOrders:0,verifiedRevenueEur:0};
+      const safe=(v:any)=>Number.isFinite(Number(v))&&Number(v)>0?Number(v):0;
+      record.exposures+=safe(row.exposures);
+      record.clicks+=safe(row.clicks);
+      record.leads+=safe(row.leads);
+      record.qualifiedLeads+=safe(row.qualified_leads);
+      record.meetings+=safe(row.meetings);
+      record.proposals+=safe(row.proposals);
+      record.reportedOrders+=safe(row.orders);
+      // 'OBSERVED' is not independently verified payment/order evidence.
+      // No revenue is promoted until an independently attested provider receipt contract exists.
+      daysByDate.set(date,record);
+    }
+    const series=[...daysByDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+    return json({tenantId,days,series,recordsRead:rows.length,truncated:rows.length===2000,
+      verifiedRevenueEur:0,verificationStatus:'UNVERIFIED',
+      source:'revenue_learning_evidence',sourceQuality:'MIXED',
+      explanation:'Activity is reported; orders and revenue require independent provider evidence.'});
+  }
+
+  // Authoritative tenant financial series only. No market-signal-to-finance conversion.
+  // This gateway is service-token protected; a browser never receives a database key.
+  if(action==='financial_forecasts'){
+    const {data:rows,error}=await client.from('portal_financial_forecasts_v1')
+      .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest,independent_review')
+      .eq('tenant_id',tenantId)
+      .eq('verification_status','passed')
+      // Candidate fetch remains tenant-scoped and bounded. Filter and independently
+      // validate rows BEFORE limiting to 30 chart entries, so an expired/corrupt
+      // top-ranked review cannot crowd out a valid later source.
+      .order('verified_at',{ascending:false}).limit(150);
+    if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
+    const forecasts=(rows||[]).filter(row=>eligibleFinancialForecast(row,tenantId)).slice(0,30).map(row=>({
+      id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
+      source:row.source_name,model:row.model_version,updatedAt:row.source_updated_at,
+      history:row.historical_points,forecast:row.forecast_points,
+      ...(row.lower_points?{low:row.lower_points}:{}),
+      ...(row.upper_points?{high:row.upper_points}:{}),
+      verified:true,
+      validation:{status:'passed',tenantBound:true,tenantId,verifiedAt:row.verified_at}
+    }));
+    return json({tenantId,forecasts});
+  }
+
+  if(action==='cms_public'){
+    const cmsSurface=String(body?.surface||'website').trim();
+    const cmsLocale=String(body?.locale||'nl-NL').trim();
+    const cmsRoute=String(body?.route||'/').trim()||'/';
+    if(!['website','portal'].includes(cmsSurface))return json({error:'INVALID_CMS_SURFACE'},400);
+    if(!['nl-NL','en-US'].includes(cmsLocale))return json({error:'INVALID_CMS_LOCALE'},400);
+    const {data,error}=await client.from('cms_content_items')
+      .select('id,surface,locale,route,area,element_key,element_type,selector,content,sort_order,version,updated_at,published_at')
+      .eq('status','published')
+      .eq('locale',cmsLocale)
+      .in('surface',['shared',cmsSurface])
+      .in('route',['*',cmsRoute])
+      .order('sort_order',{ascending:true})
+      .order('element_key',{ascending:true});
+    if(error)return json({error:'CMS_PUBLIC_READ_FAILED'},500);
+    return json({items:Array.isArray(data)?data:[],surface:cmsSurface,locale:cmsLocale,route:cmsRoute,generatedAt:new Date().toISOString()});
+  }
+
+  if(action==='cms_admin_list'){
+    const cmsSurface=String(body?.surface||'').trim();
+    const cmsLocale=String(body?.locale||'').trim();
+    const cmsRoute=String(body?.route||'').trim();
+    let query=client.from('cms_content_items').select('*').order('surface').order('route').order('area').order('sort_order').order('element_key');
+    if(cmsSurface)query=query.eq('surface',cmsSurface);
+    if(cmsLocale)query=query.eq('locale',cmsLocale);
+    if(cmsRoute)query=query.eq('route',cmsRoute);
+    const {data,error}=await query.limit(5000);
+    if(error)return json({error:'CMS_ADMIN_LIST_FAILED'},500);
+    return json({items:Array.isArray(data)?data:[],generatedAt:new Date().toISOString()});
+  }
+
+  if(action==='cms_admin_save'){
+    const item=body?.item&&typeof body.item==='object'&&!Array.isArray(body.item)?body.item:null;
+    if(!item)return json({error:'INVALID_CMS_ITEM'},400);
+    const cmsSurface=String(item.surface||'').trim();
+    const cmsLocale=String(item.locale||'nl-NL').trim();
+    const cmsRoute=String(item.route||'*').trim()||'*';
+    const elementKey=String(item.element_key||'').trim();
+    const elementType=String(item.element_type||'text').trim();
+    const area=String(item.area||'content').trim()||'content';
+    const selector=item.selector==null?null:String(item.selector).trim();
+    const content=item.content&&typeof item.content==='object'&&!Array.isArray(item.content)?item.content:{};
+    const actor=String(body?.actor||'cms-admin').trim().slice(0,320);
+    if(!['website','portal','shared'].includes(cmsSurface)||!['nl-NL','en-US'].includes(cmsLocale)||!elementKey)return json({error:'INVALID_CMS_ITEM'},400);
+    if(!['text','html','link','image','meta','attribute','toggle','structured'].includes(elementType))return json({error:'INVALID_CMS_ELEMENT_TYPE'},400);
+    const {data:existing,error:existingError}=await client.from('cms_content_items')
+      .select('*').eq('surface',cmsSurface).eq('locale',cmsLocale).eq('route',cmsRoute).eq('element_key',elementKey).maybeSingle();
+    if(existingError)return json({error:'CMS_EXISTING_READ_FAILED'},500);
+    const version=Number(existing?.version||0)+1;
+    const now=new Date().toISOString();
+    const next={
+      surface:cmsSurface,locale:cmsLocale,route:cmsRoute,area,element_key:elementKey,element_type:elementType,
+      selector,content,status:String(item.status||existing?.status||'draft')==='published'?'draft':String(item.status||existing?.status||'draft'),
+      sort_order:Number.isFinite(Number(item.sort_order))?Number(item.sort_order):Number(existing?.sort_order||0),
+      version,updated_at:now,updated_by:actor,
+      published_at:existing?.published_at||null
+    };
+    if(!['draft','archived'].includes(next.status))next.status='draft';
+    const {data:saved,error:saveError}=await client.from('cms_content_items')
+      .upsert(next,{onConflict:'surface,locale,route,element_key'}).select('*').single();
+    if(saveError)return json({error:'CMS_SAVE_FAILED'},500);
+    const changeKind=existing?'save':'create';
+    const {error:revisionError}=await client.from('cms_content_revisions').insert({
+      item_id:saved.id,version:saved.version,snapshot:saved,change_kind:changeKind,changed_by:actor
+    });
+    if(revisionError)return json({error:'CMS_REVISION_WRITE_FAILED'},500);
+    return json({item:saved});
+  }
+
+  if(action==='cms_admin_publish'||action==='cms_admin_archive'){
+    const id=String(body?.id||'').trim();
+    const actor=String(body?.actor||'cms-admin').trim().slice(0,320);
+    if(!id)return json({error:'INVALID_CMS_ID'},400);
+    const {data:existing,error:readError}=await client.from('cms_content_items').select('*').eq('id',id).maybeSingle();
+    if(readError)return json({error:'CMS_ITEM_READ_FAILED'},500);
+    if(!existing)return json({error:'CMS_ITEM_NOT_FOUND'},404);
+    const now=new Date().toISOString();
+    const nextStatus=action==='cms_admin_publish'?'published':'archived';
+    const version=Number(existing.version||0)+1;
+    const patch={status:nextStatus,version,updated_at:now,updated_by:actor,published_at:nextStatus==='published'?now:existing.published_at};
+    const {data:saved,error:updateError}=await client.from('cms_content_items').update(patch).eq('id',id).select('*').single();
+    if(updateError)return json({error:'CMS_STATUS_UPDATE_FAILED'},500);
+    const {error:revisionError}=await client.from('cms_content_revisions').insert({
+      item_id:saved.id,version:saved.version,snapshot:saved,change_kind:nextStatus==='published'?'publish':'archive',changed_by:actor
+    });
+    if(revisionError)return json({error:'CMS_REVISION_WRITE_FAILED'},500);
+    return json({item:saved});
+  }
 
   if(action==='control_plane_cockpit'){
     const {data:obligations,error:obligationError}=await client
@@ -37,6 +317,251 @@ Deno.serve(async(req:Request)=>{
       metrics:metrics||{},
       generatedAt:new Date().toISOString()
     });
+  }
+
+  if(action==='data_sovereignty_get'){
+    const {data,error}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
+    if(error)return json({error:'DATA_SOVEREIGNTY_READ_FAILED'},500);
+    // The already-authenticated tenant policy is the only authority for choosing
+    // the Brain obligation. Never enumerate another tenant's obligations.
+    const impact=data?.policy?.last_change_impact;
+    if(impact?.contract!=='powerhouse-cross-domain-change-v1'||impact?.status!=='REVIEW_REQUIRED')
+      return json({snapshot:data});
+    const currentVersion=Number(data?.policy?.policy_version);
+    const prefix='sovereignty:'+tenantId+':';
+    const suffix=typeof impact?.changeId==='string'&&impact.changeId.startsWith(prefix)?impact.changeId.slice(prefix.length):'';
+    const version=/^[1-9][0-9]*$/.test(suffix)?Number(suffix):NaN;
+    const expectedChangeId=prefix+version;
+    // Unchanged policy writes may increment the policy version without changing
+    // the last material review. Follow that prior review, not a fabricated new one.
+    if(!Number.isSafeInteger(version)||version<1||!Number.isSafeInteger(currentVersion)||
+       version>currentVersion||impact?.tenantId!==tenantId||impact?.changeId!==expectedChangeId)
+      return json({snapshot:{...data,brainReview:{status:'UNVERIFIED',evidenceRequired:true,verifiedOutcome:false}}});
+    const {data:obligation,error:reviewError}=await client.from('brain_obligations')
+      .select('state,updated_at')
+      .eq('obligation_type','CROSS_DOMAIN_REVIEW')
+      .eq('capability_id','powerhouse-cross-domain-impact-v1')
+      .eq('business_entity','tenant:'+tenantId+':policy-v'+version)
+      .eq('change_id',expectedChangeId)
+      .maybeSingle();
+    if(reviewError)return json({error:'BRAIN_REVIEW_READ_FAILED'},502);
+    // A technical obligation state is not a regulatory verdict, an emissions
+    // measurement, or authorization to provision a customer-selected model.
+    const state=obligation?.state||'NOT_REGISTERED';
+    return json({snapshot:{...data,brainReview:{
+      status:state,updatedAt:obligation?.updated_at||null,
+      evidenceRequired:true,verifiedOutcome:false,
+      aiRuntimeApproved:false,csrdApplicability:'UNDETERMINED'
+    }}});
+  }
+
+  if(action==='data_sovereignty_policy_set'){
+    const policy=body?.policy&&typeof body.policy==='object'&&!Array.isArray(body.policy)?body.policy:null;
+    if(!policy)return json({error:'INVALID_SOVEREIGNTY_POLICY'},400);
+    const mode=String(policy.mode||'').trim();
+    const preferredAiProvider=policy.preferredAiProvider==null?null:String(policy.preferredAiProvider).trim()||null;
+    const preferredAiRegion=policy.preferredAiRegion==null?null:String(policy.preferredAiRegion).trim()||null;
+    if(!['TRANSPARENT_GLOBAL','EU_STORAGE','EU_ONLY','CUSTOM'].includes(mode))return json({error:'INVALID_SOVEREIGNTY_MODE'},400);
+    if(preferredAiProvider){
+      const {data:provider,error:providerError}=await client.from('data_sovereignty_provider_registry_v1').select('provider_key,runtime_status').eq('provider_key',preferredAiProvider).maybeSingle();
+      if(providerError)return json({error:'SOVEREIGNTY_PROVIDER_READ_FAILED'},500);
+      if(!provider)return json({error:'UNKNOWN_AI_PROVIDER'},400);
+    }
+    const {data:existing,error:existingError}=await client.from('tenant_data_sovereignty_policy_v1').select('policy_version,mode,preferred_ai_provider,preferred_ai_region,ai_deployment_profile,last_change_impact').eq('tenant_id',tenantId).maybeSingle();
+    if(existingError)return json({error:'SOVEREIGNTY_POLICY_READ_FAILED'},500);
+    const profileSupplied=Object.prototype.hasOwnProperty.call(policy,'aiDeploymentProfile');
+    const aiDeploymentProfile=profileSupplied?policy.aiDeploymentProfile:(existing?.ai_deployment_profile??null);
+    if(aiDeploymentProfile!==null&&!validAiDeploymentProfile(aiDeploymentProfile))
+      return json({error:'INVALID_AI_DEPLOYMENT_PROFILE'},400);
+
+    // A policy edit is a single versioned change across AI, location, privacy and ESG.
+    // The Netlify Identity authority provides the canonical assessment; this Edge
+    // authority checks the complete before/after tuple before committing any update.
+    const currentVersion=Number(existing?.policy_version||0);
+    if(!Number.isSafeInteger(Number(policy.expectedPolicyVersion))||Number(policy.expectedPolicyVersion)!==currentVersion)
+      return json({error:'SOVEREIGNTY_POLICY_VERSION_CONFLICT'},409);
+    const stableJson=(value:any):string=>JSON.stringify(value,(_key,v)=>
+      v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b))):v);
+    const previousState={
+      mode:existing?.mode||'TRANSPARENT_GLOBAL',
+      preferredAiProvider:existing?.preferred_ai_provider||null,
+      preferredAiRegion:existing?.preferred_ai_region||null,
+      aiDeploymentProfile:existing?.ai_deployment_profile??null
+    };
+    const nextState={mode,preferredAiProvider,preferredAiRegion,aiDeploymentProfile};
+    const changed=stableJson(previousState)!==stableJson(nextState);
+    const incomingImpact=policy.changeImpact??null;
+    if(changed){
+      if(!incomingImpact||typeof incomingImpact!=='object'||Array.isArray(incomingImpact)||
+         incomingImpact.contract!=='powerhouse-cross-domain-change-v1'||
+         incomingImpact.tenantId!==tenantId||
+         incomingImpact.changeId!==`sovereignty:${tenantId}:${currentVersion+1}`||
+         !['AI_MODEL','AI_DEPLOYMENT','DATA_LOCATION'].includes(incomingImpact.kind)||
+         incomingImpact.status!=='REVIEW_REQUIRED'||incomingImpact.changed!==true||
+         incomingImpact.deploymentApproved!==false||
+         stableJson(incomingImpact.before)!==stableJson(previousState)||
+         stableJson(incomingImpact.after)!==stableJson(nextState)||
+         !Array.isArray(incomingImpact.affectedDomains)||
+         !['csrd_esrs_scope','privacy','security','finance','audit'].every(x=>incomingImpact.affectedDomains.includes(x))||
+         !Array.isArray(incomingImpact.esrsReview)||
+         incomingImpact.esrsReview.length===0||
+         incomingImpact.esrsReview.some((x:any)=>x?.materiality!=='UNDETERMINED'||x?.applicability!=='UNDETERMINED'||x?.measuredImpact!==null)||
+         !Array.isArray(incomingImpact.evidenceIds)||incomingImpact.evidenceIds.length>0)
+        return json({error:'INVALID_CROSS_DOMAIN_IMPACT'},400);
+    }else if(incomingImpact!==null){
+      return json({error:'INVALID_CROSS_DOMAIN_IMPACT'},400);
+    }
+    const strict=mode==='EU_ONLY';
+    const storageStrict=mode==='EU_STORAGE';
+    const next={
+      tenant_id:tenantId,
+      mode,
+      preferred_ai_provider:preferredAiProvider,
+      preferred_ai_region:preferredAiRegion,
+      ai_deployment_profile:aiDeploymentProfile,
+      last_change_impact:changed?incomingImpact:(existing?.last_change_impact??null),
+      allow_cross_border:strict?false:true,
+      block_unknown_region:strict||storageStrict,
+      enforcement_mode:strict||storageStrict?'BLOCK':'OBSERVE',
+      policy_version:Number(existing?.policy_version||0)+1,
+      updated_by:String(body?.actor||'portal-user').slice(0,320),
+      updated_at:new Date().toISOString()
+    };
+    // Compare-and-swap avoids overwriting another tenant configuration change.
+    // The SQL trigger appends the immutable change event in the same DB transaction.
+    const {data:saved,error:saveError}=await client.from('tenant_data_sovereignty_policy_v1')
+      .update(next).eq('tenant_id',tenantId).eq('policy_version',currentVersion).select('tenant_id').maybeSingle();
+    if(saveError)return json({error:'SOVEREIGNTY_POLICY_WRITE_FAILED'},500);
+    if(!saved)return json({error:'SOVEREIGNTY_POLICY_VERSION_CONFLICT'},409);
+    const {data:snapshot,error:refreshError}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
+    if(refreshError)return json({error:'DATA_SOVEREIGNTY_REFRESH_FAILED'},500);
+    return json({snapshot});
+  }
+
+  if(action==='data_sovereignty_provider_observe'){
+    const providerKey=String(body?.providerKey||'').trim();
+    if(!providerKey)return json({error:'INVALID_PROVIDER_OBSERVATION'},400);
+    const {data,error}=await client.rpc('record_data_sovereignty_provider_observation_v1',{
+      p_provider_key:providerKey,
+      p_observed_region:body?.observedRegion==null?null:String(body.observedRegion),
+      p_configured_storage_region:body?.configuredStorageRegion==null?null:String(body.configuredStorageRegion),
+      p_source:String(body?.source||'runtime'),
+      p_deploy_id:body?.deployId==null?null:String(body.deployId),
+      p_commit_ref:body?.commitRef==null?null:String(body.commitRef),
+      p_evidence:body?.evidence&&typeof body.evidence==='object'&&!Array.isArray(body.evidence)?body.evidence:{}
+    });
+    if(error)return json({error:'DATA_SOVEREIGNTY_PROVIDER_OBSERVE_FAILED'},500);
+    return json({observation:data});
+  }
+
+  if(action==='security_trust_get'){
+    const {data,error}=await client.rpc('refresh_security_trust_snapshot_v1',{p_tenant_id:tenantId});
+    if(error)return json({error:'SECURITY_TRUST_READ_FAILED'},500);
+    return json({snapshot:data});
+  }
+
+  if(action==='security_trust_observe'){
+    const observation=body?.observation&&typeof body.observation==='object'&&!Array.isArray(body.observation)?body.observation:null;
+    if(!observation)return json({error:'INVALID_SECURITY_OBSERVATION'},400);
+    const providerKey=String(observation.providerKey||'').trim();
+    const controlKey=String(observation.controlKey||'').trim();
+    const status=String(observation.status||'').trim().toUpperCase();
+    const source=String(observation.source||'runtime').trim();
+    const expiresAt=observation.expiresAt==null?null:String(observation.expiresAt);
+    if(!providerKey||!controlKey||!['VERIFIED','PASS','PARTIAL','WARN','FAIL','UNKNOWN'].includes(status))return json({error:'INVALID_SECURITY_OBSERVATION'},400);
+    const {data,error}=await client.rpc('record_security_management_observation_v1',{
+      p_tenant_id:tenantId,
+      p_provider_key:providerKey,
+      p_control_key:controlKey,
+      p_status:status,
+      p_evidence:observation.evidence&&typeof observation.evidence==='object'&&!Array.isArray(observation.evidence)?observation.evidence:{},
+      p_source:source,
+      p_expires_at:expiresAt,
+      p_observed_by:String(body?.actor||'powerhouse-observer').slice(0,320)
+    });
+    if(error)return json({error:'SECURITY_TRUST_OBSERVE_FAILED'},500);
+    return json({observation:data});
+  }
+
+
+  if(action==='entrepreneur_intelligence'){
+    try{
+      const [
+        sources,publications,signalsRaw,domains,sourceCatalog,signalsCanonical,
+        tenantImpacts,canonicalActions,tenantActions,baseSnapshots
+      ]=await boundedReads([
+        readRows('SOURCES',client.from('bronnen')
+          .select('id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden')
+          .eq('actief',true).order('uitgever').order('naam')),
+        readRows('PUBLICATIONS',client.from('bronpublicaties')
+          .select('id,bron_id,titel,samenvatting,publicatiedatum,url,opgehaald_op,goedgekeurd,uitgever_url')
+          .order('publicatiedatum',{ascending:false,nullsFirst:false}).limit(350)),
+        readRows('EXTERNAL_SIGNALS',client.from('bg_externe_signalen')
+          .select('url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,brontrouw,bevestiging,versheid,relevantie,vertrouwen,toegestaan,opgehaald_op,deadline')
+          .eq('toegestaan',true).order('gepubliceerd_op',{ascending:false,nullsFirst:false}).limit(250)),
+        readRows('DOMAIN_REGISTRY',client.from('powerhouse_intelligence_domain_registry_v1')
+          .select('domain_key,label,pillar,scope,description,default_signal_type,default_action_type,default_horizon_days,active,metadata')
+          .eq('active',true).order('scope').order('pillar').order('label')),
+        readRows('SOURCE_CATALOG',client.from('powerhouse_intelligence_source_catalog_v1')
+          .select('source_key,label,publisher,scope,domain_keys,source_kind,authority_tier,activation_mode,canonical_url,adapter_key,update_cadence,jurisdiction,availability_state,last_observed_at,evidence_source_key,active,metadata')
+          .eq('active',true).order('scope').order('authority_tier',{ascending:false}).order('label').limit(500)),
+        readRows('SIGNAL_PROJECTION',client.from('powerhouse_intelligence_signal_projection_v1')
+          .select('tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,source_trust,confirmation,freshness,relevance,source_confidence,urgency,signal_score,time_horizon_days,status,evidence')
+          .eq('tenant_id','canonical').neq('status','DISMISSED').order('signal_score',{ascending:false}).order('observed_at',{ascending:false}).limit(300)),
+        readRows('COMPANY_IMPACT',client.from('powerhouse_intelligence_company_impact_v1')
+          .select('tenant_id,impact_key,signal_key,target_node_key,target_node_type,target_label,relevance,probability,magnitude,urgency,exposure,source_confidence,reversibility,impact_score,estimated_value_eur,estimated_loss_eur,impact_dimensions,rationale,evidence,status,observed_at,updated_at')
+          .eq('tenant_id',tenantId).neq('status','DISMISSED').order('impact_score',{ascending:false,nullsFirst:false}).order('observed_at',{ascending:false}).limit(500)),
+        readRows('CANONICAL_ACTIONS',client.from('powerhouse_intelligence_action_candidate_v1')
+          .select('tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence')
+          .eq('tenant_id','canonical').in('status',['CANDIDATE','READY','MATERIALIZED']).order('priority_score',{ascending:false}).limit(100)),
+        readRows('TENANT_ACTIONS',client.from('powerhouse_intelligence_action_candidate_v1')
+          .select('tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence')
+          .eq('tenant_id',tenantId).in('status',['CANDIDATE','READY','MATERIALIZED','DONE']).order('priority_score',{ascending:false}).limit(100)),
+        readRows('INTELLIGENCE_SNAPSHOT',client.from('powerhouse_intelligence_snapshot_v1')
+          .select('tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at')
+          .eq('tenant_id','canonical').limit(1))
+      ],{maxConcurrent:3});
+      const intelligenceSignals=mergeEntrepreneurSignals(signalsCanonical,tenantImpacts);
+      const actionCandidates=mergeEntrepreneurActions(canonicalActions,tenantActions);
+      const snapshot=buildEntrepreneurSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actionCandidates);
+      return json({
+        sources,
+        publications,
+        signals:signalsRaw,
+        intelligence:{
+          tenantId,
+          projectionScope:'canonical external baseline + authenticated tenant impact overlay',
+          domains,
+          sourceCatalog,
+          signals:intelligenceSignals,
+          companyImpacts:tenantImpacts,
+          actionCandidates,
+          snapshot,
+          truthPolicy:'measured_or_evidence_backed_else_unknown'
+        },
+        scope:{
+          authenticatedTenant:tenantId,
+          externalSignalTenant:'canonical',
+          tenantExposureApplied:tenantImpacts.length>0,
+          tenantImpactCount:tenantImpacts.length,
+          monetaryImpactSynthesized:false,
+          catalogCapabilityIsConnectionTruth:false
+        },
+        stats:{
+          generatedAt:new Date().toISOString(),
+          sourceCount:sources.length,
+          publicationCount:publications.length,
+          signalCount:signalsRaw.length,
+          intelligenceDomainCount:domains.length,
+          intelligenceCatalogCount:sourceCatalog.length,
+          intelligenceSignalCount:intelligenceSignals.length,
+          intelligenceActionCount:actionCandidates.length,
+          connectedOrObservedSourceCount:sourceCatalog.filter((item:any)=>['CONNECTED','OBSERVED','LIVE'].includes(item.availability_state)).length
+        }
+      });
+    }catch(error){
+      return json({error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',source:String(error instanceof Error?error.message:'UNKNOWN').slice(0,80)},500);
+    }
   }
 
   if(action==='governance'){
@@ -151,14 +676,14 @@ Deno.serve(async(req:Request)=>{
     if(error)return json({error:'STORE_READ_FAILED'},500);
     let payload=Array.isArray(data)&&data[0]?data[0].payload:null;
     if(layer==='canonical-brain'){
-      const {data:authorityRecords,error:authorityError}=await client.from('brain_records')
-        .select('record_id,record_type,record_kind,subject_id,owner_id,observed_at,updated_at,source_revision,provenance,payload')
-        .eq('tenant_id',tenantId)
-        .eq('record_type','BusinessInput')
-        .order('updated_at',{ascending:true})
-        .limit(1000);
-      if(authorityError)return json({error:'BUSINESS_INPUT_AUTHORITY_READ_FAILED'},500);
-      if(Array.isArray(authorityRecords)&&authorityRecords.length>0)payload=repairBusinessInputsFromAuthority(payload||{},authorityRecords);
+      let authorityRecords;
+      try{authorityRecords=await readPortalBusinessInputAuthorityPages(client,tenantId);}
+      catch(error){
+        const code=error?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
+          ?'BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED':'BUSINESS_INPUT_AUTHORITY_READ_FAILED';
+        return json({error:code},503);
+      }
+      if(authorityRecords.length>0)payload=repairBusinessInputsFromAuthority(payload||{},authorityRecords);
     }
     return json({payload});
   }

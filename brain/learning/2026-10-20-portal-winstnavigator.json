@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-20",
+  "obligation": "portal-next-winstnavigator-20261020",
+  "fingerprint": "portal-next-winstnavigator-grounded-decision-orbit-v1",
+  "root_cause": "Fragmented cross-domain chart and scenario exploration limited owner's intuitive decision making despite an existing grounded seven-domain Foresight engine.",
+  "intervention": "Build a globally available authenticated Decision Orbit with mouse-hover, wheel, touch-swipe, keyboard, historical timeline scrubber, Foresight scenario sensitivity and evidence labels. Reuse existing router, state and forecast engine.",
+  "prevention": "No synthetic KPIs, unvalidated causal impact, new forecast authority, persistent client cache or cross-tenant state. Require source-based historical records and exact production acceptance.",
+  "compiler": {
+    "failure_class": "PORTAL_CROSS_DOMAIN_VISUAL_FRICTION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "ONE_CANONICAL_DECISION_ORBIT_SOURCE_GROUNDED_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-winstnavigator-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "structural_tests": true,
+    "source_based_forecast": true,
+    "required_ci_passed": false,
+    "production_readback_verified": false
+  },
+  "status": "CODE_CANDIDATE_UNDER_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "fingerprint": "social-publication|daily-no-gap|canonical-recovery-cadence|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-daily-publication-no-gap-20261006",
+  "root_cause": "The 08:00 Europe/Amsterdam publication was missed. The first recovery fix increased the Netlify cadence to ten minutes, but it invoked only powerhouse-social-publisher. That publisher can dispatch only existing content_ready decisions with artifacts; it cannot regenerate a missing daily decision/artifact. Therefore a generation/orchestration miss could remain visibly absent even while the recovery schedule itself was healthy.",
+  "prevention_rule": "Keep exactly one canonical content owner. Every bounded social recovery invocation must enter through powerhouse-content-loop so it can perform generation/orchestration, channel gates, canonical provider dispatch and reconciliation before fresh delivery readback. Never create a parallel provider writer or bypass daily uniqueness, capability consumption, exact-content identity or provider readback gates.",
+  "evidence": {
+    "provider_truth": [
+      "2026-10-06 personal LinkedIn had no new post; latest observed provider post was 2026-10-05 09:33 Europe/Amsterdam.",
+      "2026-10-06 canonical Instagram @bedrijfsgeheugen.nl had no new media while provider authentication and publishing quota were healthy."
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "runtime_surfaces": [
+      "netlify/functions/social-publication-delivery.mjs",
+      "netlify/functions/social-publication-delivery-deploy.mjs",
+      "supabase/functions/powerhouse-content-loop/index.ts"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SOCIAL_PUBLICATION_RECOVERY_GAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "required_order": [
+      "powerhouse-content-loop",
+      "delivery_context fresh readback",
+      "provider readback"
+    ]
+  }
+}

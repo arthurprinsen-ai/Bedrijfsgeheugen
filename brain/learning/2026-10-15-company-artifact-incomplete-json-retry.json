@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-company-content-incomplete-json-retry-20261015",
+  "fingerprint": "powerhouse|linkedin_company|truncated-json-repeat-same-budget|20261015",
+  "compiler": {
+    "failure_class": "AI_GENERATION_STRUCTURED_OUTPUT_INCOMPLETE_NO_RETRY_BUDGET",
+    "scope": "CONTENT_GENERATION",
+    "machine_enforceable": true,
+    "repeat_count": 13,
+    "security_sensitive": true
+  },
+  "root_cause": "2026-10-15 linkedin_company channel remained decision=publish, state=decided with no content artifact. The durable delivery_evidence recorded 13 attempts and last error 'Unterminated string in JSON at position 744'. The canonical OpenAI responses generator applied max_output_tokens=1800 to each company attempt; truncated structured output previously produced plain SyntaxError and only time-delayed another identical budget.",
+  "prevention": "Classify only explicit OpenAI max_output_tokens incompleteness or recognizable end-of-JSON SyntaxError as partial output; exactly one higher-budget retry on the same source-backed input. Never accept partial JSON, repair broken quotes, relax six-field strict schema, alter editorial approval, skip identity checks or send a provider publication. On second failure preserve existing bounded cooldown.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-artifact-incomplete-retry.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-artifact-incomplete-retry.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-artifact-incomplete-retry.test.mjs"
+    ]
+  },
+  "evidence": {
+    "database_readback": "2026-10-15 linkedin_company publish / decided, missing company artifact; delivery_evidence.artifact_generation_failure attempts=13, reason='Unterminated string in JSON at position 744', last_failed_at 2026-10-15 10:27:30Z.",
+    "source_readback": "supabase/functions/powerhouse-content-orchestrator/index.ts OpenAI responses strict json_schema parser previously JSON.parse(raw) and company max_output_tokens=1800.",
+    "external_boundary": "Supabase Edge production authority 401 invalid SUPABASE_ACCESS_TOKEN; blog Anthropic translation 400 low API credits; LinkedIn company OAuth missing r_organization_admin. PR fixes source only; does not fix credentials, provider rights, customer contracts or prove a post.",
+    "release_gate": "Required CI, CodeQL, protected merge, authorized source parity and production Edge readback for powerhouse-content-orchestrator; run same-day canonical channel recovery without bypassing content/identity provider gate."
+  },
+  "outcome": {
+    "source_fixed_in_pr": true,
+    "production_verified": false,
+    "linkedin_company_published_verified": false
+  }
+}

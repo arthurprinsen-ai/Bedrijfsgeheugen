@@ -1,0 +1,40 @@
+{
+  "id": "tenant-ai-approved-review-execution-deadlock-20261008-v1",
+  "fingerprint": "tenant-ai-immutable-review-candidate-not-execution-denial-after-attested-clearance-v1",
+  "compiler": {
+    "failure_class": "VERIFIED_RUNTIME_APPROVAL_DEADLOCK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The permanent immutable tenant sovereignty impact remains REVIEW_REQUIRED after a separate authenticated reviewer clears actual runtime operation. The old API refused any AI egress whenever immutable last_change_impact.deploymentApproved was false, even though the server-only, signed receipt and cross-domain clearance verifier independently enforced all ten approval scopes.",
+  "prevention": [
+    "Bind the signed runtime receipt and authoritative policy assessment to the exact tenant, change ID and policy version before handling any model request.",
+    "Reject policy/audit mismatch, unverified signed receipt, missing or expired CSRD/privacy approval and unpinned endpoint before provider traffic.",
+    "Treat immutable historical REVIEW_REQUIRED as an outstanding assessment until separately cleared; do not mutate the original audit event merely to unblock execution.",
+    "Prevent older or different tenant approvals from releasing the current desired AI model and ensure no provider fallback."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      "platform/api/tenant-ai-inference-handler.mjs",
+      "platform/brain/verified-ai-runtime.mjs",
+      "platform/runtime/attested-cloud-ai.mjs"
+    ],
+    "tests": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "outcome": "A separately verified, server-held runtime clearance is now evaluated; live tenant/provider provisioning and authenticated E2E evidence must be proven before a production activation claim."
+  }
+}

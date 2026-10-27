@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing|english|compose-skip|v1",
+  "observed_at": "2026-10-01T10:00:00+02:00",
+  "type": "PREVENTION",
+  "problem": "English pricing composer skipped work when the localized route already contained the commercial pricing marker.",
+  "root_cause": "The idempotency guard applied to both locales, even though the English route must be deterministically recomposed after localized route generation.",
+  "decision": "Keep the marker skip only for Dutch source; always recompose the English pricing route.",
+  "prevention": [
+    "English pricing must be rendered after localized route generation even when a pricing marker exists.",
+    "The idempotency guard is locale-aware."
+  ],
+  "compiler": {
+    "failure_class": "EN_PRICING_COMPOSER_SKIPPED",
+    "scope": "PUBLIC_EN_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "pricing",
+    "website",
+    "i18n"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+  ]
+}

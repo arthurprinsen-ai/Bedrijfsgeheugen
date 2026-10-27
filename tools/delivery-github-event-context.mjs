@@ -42,17 +42,26 @@ export function normalizeGitHubDeliveryEvent({
     const group = event.merge_group || {};
     mode = 'merge_group';
     baseSha = group.base_sha;
-    changeHeadSha = group.head_sha || githubSha;
-    candidateSha = group.head_sha || githubSha;
-    prNumber = safeRunId;
+    const declaredHeadSha = requireSha('mergeGroupHeadSha', group.head_sha);
+    const workflowHeadSha = requireSha('githubSha', githubSha);
+    if (declaredHeadSha !== workflowHeadSha) {
+      throw new Error('MERGE_GROUP_HEAD_SHA_MISMATCH');
+    }
+    changeHeadSha = declaredHeadSha;
+    candidateSha = declaredHeadSha;
+    // A workflow run ID is not a PR number. Multi-PR group membership
+    // needs separate provider-verified lineage before admission.
+    prNumber = null;
     changeId = `merge-group-${String(candidateSha || '').slice(0, 12)}`;
   } else if (eventName === 'workflow_dispatch') {
+    const dispatchPr = event.pull_request || {};
+    const explicitPrNumber = String(dispatchPr.number || '').trim();
     mode = 'workflow_dispatch';
-    baseSha = fallbackBaseSha;
-    changeHeadSha = githubSha;
+    baseSha = dispatchPr.base?.sha || fallbackBaseSha;
+    changeHeadSha = dispatchPr.head?.sha || githubSha;
     candidateSha = githubSha;
-    prNumber = safeRunId;
-    changeId = `dispatch-${safeRunId}`;
+    prNumber = explicitPrNumber || null;
+    changeId = explicitPrNumber ? `dispatch-pr-${explicitPrNumber}` : `dispatch-${safeRunId}`;
   } else {
     throw new Error(`unsupported GitHub delivery event: ${eventName || 'unknown'}`);
   }

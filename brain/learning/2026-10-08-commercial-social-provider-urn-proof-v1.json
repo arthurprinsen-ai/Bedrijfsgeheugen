@@ -1,0 +1,57 @@
+{
+  "version": "commercial-social-provider-urn-proof-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "failure_class": "PROVIDER_OUTPUT_UNDERCOUNT",
+  "root_cause": "The canonical daily Brain commercial output assurance required an optional LinkedIn canonical_url even for a LIVE_PROVEN company publication whose exact provider URN, create receipt, LinkedIn readback, canonical org admin OAuth and write scopes were verified.",
+  "recovery": "Recognize LIVE_PROVEN LinkedIn post URNs without relying on optional permalink only when provider and author write-scope proof is complete; preserve strict blog public URL and Instagram exact Mira media proof. Do not create a new scheduler or overwrite provider events.",
+  "evidence": {
+    "live_post_id": "urn:li:share:7513894237386719236",
+    "author_urn": "urn:li:organization:18234216",
+    "supabase_obligation_status": "LIVE_PROVEN",
+    "sql_rollback_test": "2026-10-08T09:37:31Z: 2 provider-proven publications (blog + linkedin_company)",
+    "production_provider_proven_publications_before_fix": 1,
+    "production_data_history_mutated": false,
+    "protected_pr": 4128
+  },
+  "tests": [
+    "tests/brain-commercial-social-provider-urn-proof-v1.test.mjs"
+  ],
+  "guardrails": [
+    "Count only exact provider objects and live readback, never drafts",
+    "Do not fabricate email, leads, orders or revenue",
+    "Keep anon/authenticated SQL EXECUTE revoked",
+    "Preserve a single Brain and publisher owner"
+  ],
+  "terminal_proof_required": [
+    "protected Required test and CodeQL pass",
+    "official Supabase Preview succeeds on current exact head",
+    "protected main merge",
+    "production migration readback",
+    "first naturally scheduled canonical heartbeat readback reports both independently proven publications"
+  ],
+  "intervention": "Adjust only canonical output assurance proof predicate under identity and provider scope hard gates.",
+  "closure_required": [
+    "protected tests and Supabase Preview",
+    "production migration readback",
+    "natural heartbeat readback"
+  ],
+  "next_action": "Complete protected merge then provider-proven production readback.",
+  "fingerprint": "commercial-day-under-counts-exact-linkedin-urn-when-permalink-optional-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-social-provider-urn-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-social-provider-urn-proof-v1.test.mjs"
+    ]
+  },
+  "prevention": "Canonical Brain provider-proof regression includes exact LinkedIn URN and strict write-scope checks independent of optional public permalink."
+}

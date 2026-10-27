@@ -1,0 +1,40 @@
+{
+  "id": "p0-4198-media-migration-ddl-terminator-20261010-v1",
+  "date": "2026-10-10",
+  "fingerprint": "powerhouse|instagram-media|migration-ddl-terminator-after-function-definition|v1",
+  "root_cause": "Postgres pg_get_functiondef returned a PL/pgSQL DDL source with final $function$ but no SQL statement terminator. Pasting followed by explicit fail-closed REVOKE led to SQLSTATE 42601 at REVOKE and prevented all media-preservation schema deployment.",
+  "prevention": [
+    "When composing SQL migrations from pg_get_functiondef, explicitly terminate the complete CREATE OR REPLACE FUNCTION statement with a semicolon before independent GRANT or REVOKE.",
+    "Keep SECURITY DEFINER execution revoked from PUBLIC, anon, authenticated and limited to service_role.",
+    "Never bypass protected GitHub status checks or declare media/published state until exact source parity and provider-backed proof.",
+    "Require the canonical SQL migration apply and proof of retained pre-existing VERIFYING video manifest after idempotent daily ensure."
+  ],
+  "compiler": {
+    "failure_class": "SQL_MIGRATION_FUNCTION_TERMINATOR_MISSING",
+    "scope": "OMNICHANNEL_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "evidence": {
+    "parent_p0": 4198,
+    "migration": "supabase/migrations/20261010130000_publication_media_lineage_preservation.sql",
+    "error_code": "42601",
+    "sql_error": "syntax error at or near REVOKE",
+    "original_commit": "61f28c5dc1e1a20c3e0656f04baff8def56a6a8b",
+    "provider_side_effect": false
+  },
+  "production_claim": "Requires protected CI, migration applied successfully, exact production function definition and privileges verified and media-job proof."
+}

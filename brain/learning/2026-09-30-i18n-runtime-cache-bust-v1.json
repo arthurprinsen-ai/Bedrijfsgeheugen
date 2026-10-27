@@ -1,0 +1,32 @@
+{
+  "fingerprint":"i18n-runtime-cache-bust-v1",
+  "date":"2026-09-30",
+  "type":"PRODUCTION_RUNTIME_CACHE_RECOVERY",
+  "failure_class":"UPDATED_I18N_RUNTIME_SERVED_UNDER_STALE_ASSET_IDENTITY",
+  "root_cause":[
+    "The explicit public locale navigation fix changed assets/js/i18n.js but the generated public HTML kept the previous versioned asset URL.",
+    "Browser or CDN cache could therefore continue serving the pre-fix runtime while source and production commit identity were already current."
+  ],
+  "evidence":{
+    "current_main":"ac1a6c091f76d9477689867e3beb03eac3d8f235",
+    "runtime_fix_present":true,
+    "stale_asset_version":"cms-i18n-20260929-5",
+    "production_behavior":"NL→EN browser click still timed out after exact-current-main deploy"
+  },
+  "prevention":[
+    "Every production-critical behavior change to assets/js/i18n.js rotates I18N_ASSET_VERSION in tools/site-shell/apply-i18n.mjs.",
+    "Production readback proves both rotated asset identity and NL→EN→NL browser behavior.",
+    "Do not treat source-level runtime change as live until the generated HTML references the new asset identity."
+  ],
+  "evaluation":{
+    "historical_replay":["tests/brain-i18n-runtime-cache-bust-v1.test.mjs"],
+    "canary":["tests/brain-i18n-runtime-cache-bust-v1.test.mjs"]
+  },
+  "compiler":{
+    "failure_class":"UPDATED_I18N_RUNTIME_SERVED_UNDER_STALE_ASSET_IDENTITY",
+    "scope":"WEBSITE_RUNTIME",
+    "machine_enforceable":true,
+    "security_sensitive":false
+  },
+  "status":"ACTIVE_PREVENTION"
+}

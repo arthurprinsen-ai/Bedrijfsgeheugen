@@ -69,14 +69,27 @@ def intern_pad(href):
 
 
 def bestaat(href):
-    """Is deze interne link te bereiken in de gebouwde lokale site?"""
+    """Is deze interne link te bereiken in de gebouwde lokale site?
+
+    De productie-site gebruikt ook Netlify rewrites naar bronbestanden onder /pages.
+    De lokale SimpleHTTPServer kent die rewrites niet, dus spiegel de drie publieke
+    juridische/statusroutes expliciet in deze buildcontrole.
+    """
     pad = intern_pad(href)
     if pad is None:
         return True
     schoon = pad.rstrip('/')
     if not schoon:
         return True
-    for kandidaat in (schoon, schoon + '.html', schoon + '/index.html'):
+    kandidaten = [schoon, schoon + '.html', schoon + '/index.html']
+    rewrites = {
+        '/gebruiksvoorwaarden': '/pages/gebruiksvoorwaarden.html',
+        '/cookiebeleid': '/pages/cookiebeleid.html',
+        '/systeemstatus': '/pages/systeemstatus.html',
+    }
+    if schoon in rewrites:
+        kandidaten.append(rewrites[schoon])
+    for kandidaat in kandidaten:
         try:
             urllib.request.urlopen(
                 'http://127.0.0.1:%d%s' % (POORT, kandidaat), timeout=4

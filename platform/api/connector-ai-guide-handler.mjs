@@ -1,3 +1,5 @@
+const cleanTenant=v=>typeof v==='string'?v.trim():'';
+const resolveTenantId=user=>cleanTenant(user?.appMetadata?.tenantId||user?.app_metadata?.tenantId)||((user?.id||user?.sub)?`user:${user.id||user.sub}`:'');
 const FORBIDDEN_KEY=/(?:secret|token|password|api[_-]?key|ready|healthy|execution(?:id|[_-]?id)?)/i;
 const TOP_LEVEL=new Set(['summary','suggestions','missingQuestions','proposedDefinition']);
 
@@ -36,10 +38,11 @@ export function createConnectorAiGuideHandler({getUser,propose}={}){
     if(!intent||intent.length>2000)return json(400,{error:'INVALID_INTENT'});
     const currentState=body?.currentState&&typeof body.currentState==='object'&&!Array.isArray(body.currentState)?cleanValue(body.currentState):{};
     try{
-      const proposed=await propose({intent,currentState,userId:user.id||user.sub||null});
+      const proposed=await propose({intent,currentState,userId:user.id||user.sub||null,tenantId:resolveTenantId(user)});
       return json(200,sanitizeAiGuideResult(proposed));
     }catch(error){
       console.error('connector-ai-guide failed',{name:error?.name||'Error',code:error?.code||null});
+      if(error?.code==='DATA_SOVEREIGNTY_AI_BLOCKED')return json(409,{error:error.code});
       return json(502,{error:'AI_GUIDE_UNAVAILABLE'});
     }
   };

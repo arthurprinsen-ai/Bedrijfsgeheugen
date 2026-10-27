@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 9,
+  "revision": 10,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, skills, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -545,5 +545,24 @@
     "known_fingerprint_reuse": "REQUIRED_BEFORE_FRESH_DIAGNOSIS",
     "repeat_error_without_prevention_strengthening": "LEARNING_FAILURE",
     "machine_enforceable_prevention": "PREFER_CODE_TEST_CONSTRAINT_CI_RUNTIME_POLICY_OVER_PROSE"
+  },
+  "public_cms_i18n_authority": {
+    "fingerprint": "powerhouse|public-cms-i18n|shared-shell-same-route|v1",
+    "scope": "all current and future chats, agents, skills and website delivery workflows",
+    "rules": [
+      "one canonical public site shell owns header footer mega-menu navigation and language controls",
+      "Dutch routes remain unprefixed and English routes use /en/*",
+      "language switching preserves the same functional route",
+      "build-time localized routes are primary public locale authority",
+      "runtime i18n only normalizes and guards existing public locale links",
+      "i18n assets are versioned to prevent stale browser or CDN behavior",
+      "terminal success requires exact-main production deploy plus live NL→EN→NL browser readback",
+      "do not report intermediate CI deploy or readback state to the user unless a hard boundary requires action"
+    ],
+    "terminal_states": [
+      "LIVE_BEWEZEN",
+      "ROLLED_BACK_GREEN",
+      "BLOCKED_HARD_BOUNDARY"
+    ]
   }
 }

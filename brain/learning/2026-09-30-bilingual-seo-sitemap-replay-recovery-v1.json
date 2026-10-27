@@ -1,0 +1,33 @@
+{
+  "id": "2026-09-30-bilingual-seo-sitemap-replay-recovery-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|sitemap-replay-contract|v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The canonical sitemap replay test still asserted the previous three-step localized-routes -> sitemap -> release-evidence sequence after the bilingual revenue pipeline inserted internal-link projection and locale validation as required production stages.",
+  "prevention": [
+    "When a production pipeline gains a required stage, update the canonical replay test in the same change.",
+    "Replay tests assert ordering invariants instead of an obsolete exact command substring.",
+    "SEO release evidence remains after locale validation."
+  ],
+  "fix": "Update the canonical sitemap replay to assert localized routes -> revenue links -> sitemap -> locale validation -> release evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "test": "tests/brain-search-indexing-sitemap-contract.test.mjs",
+    "base_sha": "88befad39c99524eebe8f6cf3bc9369c5597b87b"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-continuity"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "supabase-migration-repair-empty-remote-parser-v3",
+  "date": "2026-10-06",
+  "issue": 3742,
+  "failure_class": "DELIVERY_CONTROL_PLANE",
+  "finding": "Supabase CLI renders an absent remote migration version as a presentation cell containing backticks around whitespace. Trimming before backtick removal leaves whitespace after delimiter removal and can falsely classify an expected local-only row as remote identity drift.",
+  "rule": "Provider CLI table cells must be normalized to semantic values after presentation delimiters are removed; empty rendered cells must become the empty string before migration identity comparison.",
+  "prevention": [
+    "normalize each migration-list cell as trim -> strip presentation backticks -> trim",
+    "apply identical normalization to pre-repair and post-repair parity parsers",
+    "regression-test the literal backtick-space-backtick empty remote representation",
+    "retain exact four-version allowlist and fail closed on real remote-only or identity drift"
+  ],
+  "production_mutation": "none in parser fix; trusted run 37425004020 stopped before supported migration repair",
+  "terminal_green_requires": [
+    "trusted repair success",
+    "production ledger readback",
+    "canonical recovery exact-head green",
+    "protected merge",
+    "post-merge production readback"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-empty-remote-parser-v3.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase-migration-repair-empty-remote-normalization-v3",
+  "root_cause": "The parser called trim before stripping presentation backticks. For a rendered empty remote cell (` `), removing the backticks left a whitespace string, which is truthy and triggered REMOTE_ONLY_OR_IDENTITY_DRIFT even though the remote migration version was absent as expected.",
+  "evidence": [
+    "tests/brain-supabase-migration-repair-empty-remote-parser-v3.test.mjs",
+    "trusted-main run 37425004020 produced `20260920101150` | ` ` and the same representation for all four expected replay baselines",
+    "provider mutation was not reached before the fail-closed parser error"
+  ]
+}

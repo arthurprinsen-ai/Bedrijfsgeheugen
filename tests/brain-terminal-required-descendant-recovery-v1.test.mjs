@@ -18,7 +18,7 @@ test('terminal Required recovery executes current-main website regression and ke
   assert.match(workflow,/tests\/site-shell-website-release-risk\.test\.mjs/);
   assert.match(workflow,/tests\/brain-standalone-visibility-bounded-concurrency-v1\.test\.mjs/);
   assert.match(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
-  assert.match(workflow,/require_workflow "powerhouse-codeql\.yml" "Powerhouse-CodeQL"/);
+  assert.match(workflow,/require_workflow "codeql\.yml" "Powerhouse-CodeQL"/);
 });
 
 test('policy and skill define descendant recovery without retroactive exact-head success',()=>{

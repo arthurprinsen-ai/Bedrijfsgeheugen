@@ -1,0 +1,30 @@
+{
+  "fingerprint": "website-cross-browser-assurance-mode-wiring-v1",
+  "observed_at": "2026-10-04T11:00:00Z",
+  "type": "PREVENTION",
+  "problem": "The website assurance runner supported separate PR and daily viewport policies, but the workflow did not pass ASSURANCE_MODE, so the intended bounded/full distinction was implicit instead of executable.",
+  "root_cause": "Execution-mode policy existed in runner code without an explicit workflow-to-runner binding.",
+  "decision": "Make PR and scheduled production modes explicit in the canonical workflow and contract.",
+  "prevention": [
+    "PR mode is explicit and bounded.",
+    "Daily mode explicitly sweeps mobile and desktop.",
+    "Brain regression fails if ASSURANCE_MODE or either viewport policy disappears."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_ASSURANCE_MODE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-website-cross-browser-assurance-v1.json",
+    ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}

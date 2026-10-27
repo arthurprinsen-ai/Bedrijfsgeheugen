@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "social|linkedin-company-live-proven-not-in-social-posts|20261024-v1",
+  "obligation_id": "social:canonical-company-post-index-bridge:20261024",
+  "failure_class": "PROVIDER_PROVEN_POST_NOT_LINKED_TO_CANONICAL_SOCIAL_LEARNING",
+  "root_cause": "For the last 10+ days independently LIVE_PROVEN LinkedIn company publication URNs exist in canonical content_publication_obligations but are absent from all social_posts tenant indexes. The active bg-social-metrics-sync only registers Instagram media and reads historic personal LinkedIn social_posts; LinkedIn company metric permissions remain unavailable.",
+  "observed_evidence": {
+    "actual_sources": [
+      "public.content_publication_obligations",
+      "public.social_posts",
+      "public.social_metric_snapshots"
+    ],
+    "link_proof": "2026-10-24 company publication LIVE_PROVEN urn:li:share:7519639899860402176 is missing in social_posts",
+    "source_provider_state": "LINKEDIN_COMPANY_ANALYTICS_BLOCKED_ORGANIZATION_PERMISSION_403",
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Reusing the existing 6-hour bg-social-metrics-sync function, index only live-proven company publication IDs from the canonical obligations into the owned-brand social_posts table using the existing external-post unique key. Separate proof indexing from actual engagement collection. Do not re-publish, fabricate views or create scheduler.",
+  "prevention_rule": "Only tenant canonical + channel linkedin_company + status LIVE_PROVEN + exact URN + live_proven_at + bounded recency maps to the distinct brand learning tenant. Idempotent upsert DO NOTHING on provider external ID; no cross-tenant mixing, no stale/future posts, no inferred provider metrics, never upgrade post registration to measured/commercial win. Preserve normal source health failures.",
+  "tests": [
+    "tests/brain-company-publication-social-registry-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_PROVEN_POST_NOT_LINKED_TO_CANONICAL_SOCIAL_LEARNING",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-publication-social-registry-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-publication-social-registry-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-publication-social-registry-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required+CodeQL and Supabase Preview, merged main, deployed Edge function, existing six-hour real cron provider invocation and social_posts readback of exact company URN; missing organization metrics remain separately blocked."
+}

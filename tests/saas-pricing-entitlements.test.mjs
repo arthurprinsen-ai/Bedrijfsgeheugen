@@ -5,40 +5,124 @@ import {entitlementAllows,enforceAgentMode,enforceConnectorRefreshPolicy,enforce
 import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
 import {canAgentExecute} from '../platform/agents/agent-work.mjs';
 
-test('pricing communicates equal intelligence and self-serve tiers',async()=>{
-  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
-  assert.match(html,/dezelfde kernintelligentie/i);
-  assert.match(html,/\/afsluiten\?plan=control/);
-  assert.match(html,/\/afsluiten\?plan=scale/);
-  assert.match(html,/Enterprise[^]*Bespreek Enterprise/);
+test('paid Starter, Pro and Groei provision once and resume incomplete provisioning',async()=>{
+  const module=await import('../netlify/functions/stripe-webhook.mjs');
+  assert.equal(typeof module.completeCheckout,'function','checkout completion must be testable through its real provisioning flow');
+  for(const plan of ['starter','pro','groei']){
+    let organisationCalls=0,invitations=0,saved=null,intent=null;
+    const store={getPlan:async()=>({code:plan,active:true}),findSubscription:async()=>saved,
+      ensureCheckoutOrganisation:async()=>{organisationCalls++;return {id:'org-1'}},
+      ensureCustomer:async()=>{},ensureInvitation:async()=>{invitations++},
+      upsertSubscription:async row=>{saved=row;return row},
+      completeCheckoutIntent:async row=>{intent=row;return row},recordCheckoutOutcome:async event=>{assert.equal(event.context.revenue_verified,false);assert.doesNotMatch(JSON.stringify(event),/owner@example/);return {id:'event-1'}}};
+    const session={id:'cs_123',subscription:'sub_123',metadata:{plan_code:plan,company_name:'Acme',billing_cycle:'yearly'},customer_details:{email:'owner@example.test'}};
+    const provider=async()=>({id:'sub_123',status:'active',customer:'cus_123',metadata:{}});
+    await module.completeCheckout(store,session,provider);
+    await module.completeCheckout(store,session,provider);
+    assert.equal(saved.plan_code,plan);assert.equal(saved.organisation_id,'org-1');
+    assert.equal(organisationCalls,1);assert.equal(invitations,2,'retry must repair missing invitation, not return early');
+    assert.equal(intent.provider_session_id,'cs_123');assert.equal(intent.state,'completed');
+    assert.equal(saved.metadata.billing_cycle,'yearly');
+  }
 });
 
-
-test('pricing mirrors the Portal business-context model instead of treating Scale as a company phase',async()=>{
-  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
-  for(const label of [
-    'Start &amp; validatie','Validatie &amp; eerste tractie','Snelle groei / opschalen','Professionaliseren',
-    'Volwassen &amp; stabiel','Stagnatie','Verlies &amp; herstel','Acute continuïteit',
-    'Financiering ophalen','Bedrijf kopen','Bedrijf verkopen','Post-merger integratie','Bedrijfsopvolging',
-    'MBO / MBI','Internationaliseren','Herstructureren','Investeerder / portfolio',
-    'Omzetgroei','Meer winst','Cash beschermen','Groei zonder extra FTE','Ondernemingswaarde verhogen',
-    'Verkoop voorbereiden','Risico verlagen'
-  ]) assert.ok(html.includes(label),label);
-  assert.match(html,/Je bedrijfsfase is niet je abonnement/i);
-  assert.match(html,/Primaire bedrijfsfase/i);
-  assert.match(html,/Wat speelt daarnaast/i);
-  assert.match(html,/Wat wil je bereiken\\?/i);
-  assert.match(html,/aria-label=\"Ondernemersdoelen\"/i);
+test('checkout persists intent before contacting Stripe and retry uses the same provider key',async()=>{
+  const module=await import('../netlify/functions/checkout-create.mjs');
+  assert.equal(typeof module.createCheckoutHandler,'function');
+  const order=[],keys=[];let saved;
+  const store={getPlan:async()=>({code:'starter',name:'Starter',monthly_price_cents:9900,direct_checkout:true}),
+    ensureCheckoutIntent:async row=>{order.push('persist');saved||=row;return saved},
+    openCheckoutIntent:async()=>{order.push('readback');return {provider_session_id:'cs_123'}}};
+  const handler=module.createCheckoutHandler({storeFactory:()=>store,env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},fetchFn:async(_,options)=>{
+    order.push('provider');keys.push(options.headers['idempotency-key']);
+    const p=new URLSearchParams(options.body);assert.equal(p.get('line_items[0][price_data][unit_amount]'),'99000');
+    assert.equal(p.get('subscription_data[metadata][plan_code]'),'starter');
+    return Response.json({id:'cs_123',url:'https://checkout.stripe.com/c/pay/test'});
+  }});
+  const body={attempt_id:'7fed14f9-6e6a-4f7c-8ed9-dc0b6cf2a318',plan:'starter',billing_cycle:'yearly',email:'owner@example.test',company_name:'Acme'};
+  for(let i=0;i<2;i++){
+    const r=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify(body)}));
+    assert.equal(r.status,200);assert.equal((await r.json()).url,'https://checkout.stripe.com/c/pay/test');
+  }
+  assert.deepEqual(order,['persist','provider','readback','persist','provider','readback']);
+  assert.equal(keys[0],keys[1]);assert.ok(keys[0]);
 });
 
-test('pricing tier copy matches canonical entitlement semantics',async()=>{
+test('a failed intent write never opens a payment session',async()=>{
+  const module=await import('../netlify/functions/checkout-create.mjs');
+  assert.equal(typeof module.createCheckoutHandler,'function');
+  let calls=0;
+  const handler=module.createCheckoutHandler({env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},storeFactory:()=>({
+    getPlan:async()=>({code:'starter',direct_checkout:true,monthly_price_cents:9900}),
+    ensureCheckoutIntent:async()=>{throw Error('database unavailable')}
+  }),fetchFn:async()=>{calls++}});
+  const response=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:'starter',email:'a@example.test',company_name:'Acme'})}));
+  assert.equal(response.status,503);assert.equal(calls,0);
+});
+
+test('account activation accepts only a confirmed identity and one paid organisation',async()=>{
+  const {createAccountActivationHandler}=await import('../platform/saas/account-activation.mjs');
+  let writes=0;
+  const user={id:'user-1',email:'owner@example.test',confirmedAt:'2026-10-21T00:00:00Z',appMetadata:{roles:['customer']}};
+  const handler=createAccountActivationHandler({getUserFn:async()=>user,verifyOrigin:()=>{},
+    storeFactory:()=>({resolvePaidInvitation:async()=> '91c9cdf0-f1d6-46ad-aabe-5080eb70d02a',hasPersonalPortalState:async()=>false}),
+    updateUser:async(id,attributes)=>{writes++;assert.equal(id,'user-1');assert.equal(attributes.app_metadata.tenantId,'91c9cdf0-f1d6-46ad-aabe-5080eb70d02a');return {id,appMetadata:attributes.app_metadata}}
+  });
+  const request=()=>new Request('https://www.bedrijfsgeheugen.nl/api/checkout/activate',{method:'POST'});
+  assert.equal((await handler(request())).status,200);assert.equal(writes,1);
+  delete user.confirmedAt;assert.equal((await handler(request())).status,403);assert.equal(writes,1);
+  user.confirmedAt='2026-10-21T00:00:00Z';user.appMetadata.tenantId='another-tenant';
+  assert.equal((await handler(request())).status,409);assert.equal(writes,1);
+});
+
+test('a previously completed provider session cannot create another checkout',async()=>{
+  const {createCheckoutHandler}=await import('../netlify/functions/checkout-create.mjs');
+  let posts=0;
+  const handler=createCheckoutHandler({env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},storeFactory:()=>({
+    getPlan:async()=>({code:'starter',direct_checkout:true,monthly_price_cents:9900}),
+    ensureCheckoutIntent:async row=>({...row,provider_session_id:'cs_original'})
+  }),fetchFn:async(_,options)=>{if(options.method==='POST')posts++;return Response.json({id:'cs_original',status:'complete'})}});
+  const response=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:'starter',email:'owner@example.test',company_name:'Acme'})}));
+  assert.equal(response.status,200);assert.match((await response.json()).url,/success=1&session_id=cs_original/);assert.equal(posts,0);
+});
+
+test('checkout status needs persisted matching subscription proof, never only a completed redirect',async()=>{
+  const {checkoutStatus}=await import('../platform/saas/billing-readiness.mjs');
+  const fetchFn=async()=>Response.json({status:'complete',subscription:'sub_123'});
+  assert.deepEqual(await checkoutStatus('cs_123',{fetchFn,env:{},store:{findSubscription:async()=>null}}),{ready:false,state:'provisioning'});
+  assert.deepEqual(await checkoutStatus('cs_123',{fetchFn,env:{},store:{findSubscription:async()=>({status:'active',metadata:{checkout_session_id:'cs_123'}})}}),{ready:true,state:'ready'});
+});
+
+test('subscription synchronisation preserves the durable checkout receipt',async()=>{
+  const module=await import('../netlify/functions/stripe-webhook.mjs');
+  assert.equal(typeof module.syncSubscription,'function');
+  let saved={organisation_id:'org-1',plan_code:'pro',status:'active',metadata:{checkout_session_id:'cs_receipt',billing_cycle:'yearly'}};
+  const store={findSubscription:async()=>saved,patchSubscription:async(_,patch)=>{saved={...saved,...patch}}};
+  await module.syncSubscription(store,{id:'sub_1'},async()=>({id:'sub_1',status:'active',metadata:{plan_code:'pro'}}));
+  assert.equal(saved.metadata.checkout_session_id,'cs_receipt');assert.equal(saved.metadata.billing_cycle,'yearly');
+});
+
+test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
-  assert.match(html,/Forecasting en scenarioanalyse op dagelijkse data/i);
-  assert.match(html,/Forecasting en scenarioanalyse op uuractuele data/i);
-  assert.match(html,/Audittrail op acties en goedkeuringen/i);
-  assert.match(html,/SSO, meerdere organisaties en strengere governance/i);
-  assert.match(html,/Volledig · dagelijkse data/i);
-  assert.match(html,/Volledig · uuractuele data/i);
+  for(const token of ['Starter','€ 99','Pro','€ 299','Groei','€ 749','Enterprise','Op maat']) assert.ok(html.includes(token),token);
+  for(const plan of ['starter','pro','groei']) assert.match(html,new RegExp('https://www\\.bedrijfsgeheugen\\.nl/afsluiten\\?plan='+plan));
+  assert.match(html,/Powerhouse SaaS/);
+  assert.match(html,/Consulting & workshops/);
+});
+
+test('pricing package contents match the commercial capacity contract',async()=>{
+  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  for(const token of [
+    'Tot 5 gebruikers','2 integraties','Nachtelijke data refresh','50 AI-vragen / maand',
+    'Tot 25 gebruikers','10 integraties','Uurlijkse data refresh','AI copilot: 200 vragen / maand',
+    'Tot 75 gebruikers','25 integraties','Data refresh elke 15 minuten','12 automatiseringen','6 AI-automatiseringen','750 AI-vragen / maand',
+    'SSO / werkaccount','Audit trail & export','On-demand data refresh','Enterprise support (SLA)'
+  ]) assert.ok(html.includes(token),token);
+});
+
+test('consulting offers and SaaS combination rule are explicit',async()=>{
+  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  for(const token of ['Directie & AI Workshop','€ 1.950','Bedrijfsgeheugen Scan','€ 2.950','Vanaf € 14.500','Transformation / Fractional Lead','Combineer zonder dubbel te betalen','tijdelijk Pro toegang','tijdelijk Groei toegang']) assert.ok(html.includes(token),token);
 });
 
 test('checkout backend trusts canonical plans and direct-checkout entitlement',async()=>{
@@ -50,16 +134,12 @@ test('checkout backend trusts canonical plans and direct-checkout entitlement',a
 });
 
 
-test('yearly pricing is carried from pricing page through checkout and billed as ten monthly fees per year',async()=>{
-  const [pricing,checkoutPage,backend]=await Promise.all([
-    readFile(new URL('../prijzen.html',import.meta.url),'utf8'),
+test('yearly checkout remains ten monthly fees with the new plans',async()=>{
+  const [checkoutPage,backend]=await Promise.all([
     readFile(new URL('../afsluiten.html',import.meta.url),'utf8'),
     readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
   ]);
-  assert.match(pricing,/searchParams\.set\('billing',billing\)/);
-  assert.match(checkoutPage,/name="billing_cycle"/);
-  assert.match(checkoutPage,/q\.get\('billing'\)==='yearly'/);
-  assert.match(backend,/billing_cycle/);
+  for(const token of ["starter:{","pro:{","groei:{","yearly:'€ 990'","yearly:'€ 2.990'","yearly:'€ 7.490'"]) assert.ok(checkoutPage.includes(token),token);
   assert.match(backend,/monthly_price_cents\)\*10/);
   assert.match(backend,/billingCycle==='yearly'\?'year':'month'/);
   assert.match(backend,/metadata\[billing_cycle\]/);

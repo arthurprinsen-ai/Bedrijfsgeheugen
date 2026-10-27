@@ -1,6 +1,6 @@
 {
   "registry_version": "brain-components-v1",
-  "generated_at": "2026-09-29T06:45:00Z",
+  "generated_at": "2026-09-29T14:20:00Z",
   "source_authority": "config/powerhouse-runtime-authority.json",
   "source_authority_version": "POWERHOUSE-RUNTIME-AUTHORITY-v1",
   "source_authority_fingerprint": "powerhouse-agent-scheduler-authority-drift-2026-09-17-v1",
@@ -1594,13 +1594,85 @@
         "choice-architecture"
       ],
       "autonomy": "contextual evidence-gated page composition with rollback",
-      "chat_agent_inheritance": "commercial-website|orders-first|existing-pages|v1",
+      "chat_agent_inheritance": "commercial-website|orders-first|existing-pages|v1 + growth|bedrijfslek|value-first-team-loop|v2",
       "current_primary_qualification": "ungated Bedrijfslek /zelfscan on homepage; Frisse Blik remains contextual on other money pages",
       "public_copy_requires_same_lineage_static_i18n": true,
       "final_build_artifact_authority": "tools/site-shell/apply-money-page-order-conversion.mjs",
       "bedrijfslek_page_authority": "zelfscan.html",
       "bedrijfslek_v18_exclusion": "tools/v18-views-lijst.mjs",
-      "bedrijfslek_single_route_owner": true
+      "bedrijfslek_single_route_owner": true,
+      "product_led_acquisition": {
+        "fingerprint": "powerhouse-bedrijfslek-product-led-acquisition-v2",
+        "route": "/zelfscan",
+        "value_before_pii": true,
+        "mini_local_only": true,
+        "team_challenge": true,
+        "challenge_payload": [
+          "score",
+          "risk_category",
+          "campaign_attribution"
+        ],
+        "terminal_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ],
+        "skill": ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+        "regression": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+      },
+      "company_brain_category_capture": {
+        "fingerprint": "seo|company-brain|category-capture-to-revenue|v1",
+        "canonical_owner": "https://www.bedrijfsgeheugen.nl/company-brain",
+        "category_not_product_rename": true,
+        "conversion_route": "https://www.bedrijfsgeheugen.nl/zelfscan",
+        "terminal_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ],
+        "system_map_projection": "seo-conversion-orders.runtime.companyBrainCategory",
+        "static_i18n_post_shell_final_artifact_coverage_required": true
+      },
+      "locale_revenue_seo": {
+        "fingerprint": "seo|nl-en|keyword-ownership-to-revenue|v1",
+        "authority": "site/seo-locale-revenue-map.json",
+        "locales": [
+          "nl",
+          "en"
+        ],
+        "english_keyword_strategy": "market-specific evidence, not literal translation",
+        "hreflang": [
+          "nl",
+          "en",
+          "x-default"
+        ],
+        "english_sitemap": true,
+        "locale_preserving_internal_links": true,
+        "revenue_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ]
+      }
+    },
+    {
+      "key": "BG181",
+      "id": 1810001,
+      "name": "€1M Revenue Operating Contract",
+      "role": "GOVERNOR",
+      "cortex": "COMMERCIAL",
+      "authority": "commercial_revenue_objective",
+      "inputs": [
+        "Evidence",
+        "CurrentState",
+        "Opportunity",
+        "Outcome"
+      ],
+      "outputs": [
+        "DecisionGate",
+        "Mission",
+        "Outcome",
+        "Pattern"
+      ],
+      "status": "active",
+      "brain_contract_version": "brain.v1"
     }
   ]
 }

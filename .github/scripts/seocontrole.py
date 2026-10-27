@@ -14,6 +14,7 @@ De strategie zelf staat in Notion en wordt hier niet herhaald: alleen de regels
 die je automatisch kunt controleren staan hieronder.
 """
 import glob, html, io, json, os, re, sys, unicodedata
+from html.parser import HTMLParser
 from urllib.parse import urlparse
 
 # ── de clusters, zoals vastgelegd in de zoekwoordenstrategie ───────────────
@@ -27,7 +28,7 @@ CLUSTERS = {
         '/afmaakindex', '/frisse-blik', '/systemen-koppelen', '/due-diligence',
         '/ai-adoptie', '/begrippen'],
     '/blog/systemen-koppelen-mkb/': [
-        '/blog/afas-exact-koppelen/', '/blog/afas-koppeling/',
+        '/blog/afas-exact-koppelen/',
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
         '/blog/planning-in-excel-vervangen/', '/blog/offertes-opvolgen-zonder-crm/',
         '/connect', '/systemen-koppelen'],
@@ -150,8 +151,38 @@ GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud', 'index', 'prototy
 
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
-GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
+GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact', 'cms'}
+GEEN_SITEMAP = {'404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt', 'cms'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
+
+
+class _VisibleTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self._skip_depth = 0
+        self._parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() in {'script', 'style'}:
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag):
+        if tag.lower() in {'script', 'style'} and self._skip_depth:
+            self._skip_depth -= 1
+
+    def handle_data(self, data):
+        if not self._skip_depth:
+            self._parts.append(data)
+
+    def text(self):
+        return ' '.join(self._parts)
+
+
+def visible_text(markup):
+    parser = _VisibleTextParser()
+    parser.feed(markup or '')
+    parser.close()
+    return parser.text()
 
 
 def norm(t):
@@ -325,7 +356,10 @@ def main():
 
     for url, p in sorted(P.items()):
         naam = os.path.basename(p['bestand'])[:-5]
-        if naam in GEEN_LINKEIS:
+        # noindex utility/conversion routes are intentionally not SEO entry points.
+        # They may be reached from conversion flows without needing crawl-authority targets,
+        # so they must not fail the orphan-page gate.
+        if naam in GEEN_LINKEIS or 'noindex' in p['ruw']:
             continue
         n_in = len(inkomend[url])
         if n_in == 0:
@@ -368,8 +402,7 @@ def main():
             if woord in plat:
                 bevindingen.append(('midden', url,
                     'merktaal: het woord "%s" hoort niet in onze teksten' % woord))
-        zichtbaar = re.sub(r'<script[\s\S]*?</script>|<style[\s\S]*?</style>|<!--[\s\S]*?-->', ' ', p['hoofd'])
-        if '!' in re.sub(r'<[^>]+>', ' ', zichtbaar):
+        if '!' in visible_text(p['hoofd']):
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
 
 
@@ -391,12 +424,15 @@ def main():
             in_sitemap.add(pad)
         for url, p in sorted(P.items()):
             naam = os.path.basename(p['bestand'])[:-5]
-            if naam in ('404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt'):
-                continue
-            if 'noindex' in p['ruw']:
+            # Utility/admin routes and every explicit noindex page are intentionally
+            # outside the crawl inventory. Keep sitemap authority aligned with robots.
+            current_path = url.rstrip('/') or '/'
+            # Exclude by both physical filename and canonical route. Generated/index-style
+            # utility pages (for example /cms from cms/index.html) must never be forced
+            # into the public sitemap merely because their basename is "index".
+            if naam in GEEN_SITEMAP or current_path.lstrip('/') in GEEN_SITEMAP or 'noindex' in p['ruw'].lower():
                 continue
             canonical_path = urlparse(p.get('canon', '')).path.rstrip('/') or '/'
-            current_path = url.rstrip('/') or '/'
             if p.get('canon') and canonical_path != current_path:
                 continue
             if url.rstrip('/') and url.rstrip('/') not in in_sitemap:

@@ -1,30 +1,6 @@
 name: Business OS Intelligence
 
 on:
-  pull_request:
-    paths:
-      - 'platform/intelligence/**'
-      - 'platform/agents/**'
-      - 'platform/brain/**'
-      - 'platform/api/brain-gateway.mjs'
-      - 'platform/api/agent-fabric-gateway.mjs'
-      - 'netlify/functions/**'
-      - 'scripts/brain/continuous-improvement/**'
-      - 'config/powerhouse-autonomous-improvement-runtime.json'
-      - 'config/powerhouse-autonomous-backlog.json'
-      - 'supabase/migrations/*autonomous_improvement_production_cycle_v1.sql'
-      - 'tests/brain-autonomous-improvement-runtime.test.mjs'
-      - 'tests/brain-autonomous-improvement-production-cycle.test.mjs'
-      - 'tests/brain-autonomous-backlog-intake.test.mjs'
-      - 'tests/brain-github-backlog-source.test.mjs'
-      - 'tests/intelligence-agent-runtime.test.mjs'
-      - 'tests/brain-acceptance.test.mjs'
-      - 'tests/brain-api-gateway.test.mjs'
-      - 'tests/brain-production-ai.test.mjs'
-      - 'tests/brain-storage-port.test.mjs'
-      - 'tests/agent-fabric.test.mjs'
-      - 'tests/agent-fabric-gateway.test.mjs'
-      - '.github/workflows/business-os-intelligence.yml'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:

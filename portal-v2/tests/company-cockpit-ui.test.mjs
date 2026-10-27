@@ -43,3 +43,15 @@ test('portal event sanitizer keeps only bounded correlation metadata and drops P
  const event=sanitizePortalEvent({event:'approve',decisionId:'d1',actionId:'a1',page:'overzicht',email:'secret@example.com',name:'Arthur',formValue:'top secret',freeText:'should drop'});
  assert.deepEqual(event,{event:'approve',decisionId:'d1',actionId:'a1',page:'overzicht'});
 });
+
+test('cockpit displays unknown monetary measurements as unavailable, never EUR 0',()=>{
+  const html=renderCompanyCockpitHtml({
+    decisions:{items:[]},economics:{expectedValue:null,actualCost:null,realizedValue:null,realizedProfit:null},
+    portfolio:{NOW:[],NEXT:[],LATER:[],DO_NOT_DO:[]}
+  });
+  assert.match(html,/Verwachte waarde<\/small><b>—<\/b>/);
+  assert.match(html,/Werkelijke kosten<\/small><b>—<\/b>/);
+  assert.match(html,/Gerealiseerde waarde<\/small><b>—<\/b>/);
+  assert.match(html,/Gerealiseerde winst<\/small><b>—<\/b>/);
+  assert.doesNotMatch(html,/€\s*0/);
+});

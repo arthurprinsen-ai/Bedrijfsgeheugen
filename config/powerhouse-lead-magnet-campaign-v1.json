@@ -1,0 +1,66 @@
+{
+  "fingerprint": "powerhouse-lead-magnet-campaign-v1",
+  "effective_date": "2026-09-30",
+  "linkedin_policy": {
+    "one_language_per_post": true,
+    "translated_duplicate_forbidden": true,
+    "publication_transport": "composio",
+    "buffer_fallback": false,
+    "make_fallback": false
+  },
+  "assets": [
+    {
+      "id": "manual-100",
+      "keyword": "100",
+      "nl": "100 dingen die je bedrijf in 2026 niet meer handmatig zou moeten doen",
+      "en": "100 Things Your Business Shouldn't Be Doing Manually in 2026"
+    },
+    {
+      "id": "automation-50",
+      "keyword": "50",
+      "nl": "50 AI-automatiseringen voor het MKB",
+      "en": "50 AI Automations for SMEs"
+    },
+    {
+      "id": "predictions-25",
+      "keyword": "2027",
+      "nl": "25 voorspellingen voor AI, werk en MKB",
+      "en": "25 Predictions for AI, Work and SMEs"
+    },
+    {
+      "id": "roi-calculator",
+      "keyword": "ROI",
+      "nl": "AI ROI Calculator",
+      "en": "AI ROI Calculator"
+    },
+    {
+      "id": "department-stack",
+      "keyword": "STACK",
+      "nl": "AI-stack per afdeling",
+      "en": "AI Stack by Department"
+    },
+    {
+      "id": "governance-kit",
+      "keyword": "SAFE",
+      "nl": "AI Governance Starter Kit",
+      "en": "AI Governance Starter Kit"
+    },
+    {
+      "id": "knowledge-risk",
+      "keyword": "RISK",
+      "nl": "Kennisverlies Risicokaart",
+      "en": "Knowledge Loss Risk Map"
+    }
+  ],
+  "metrics": [
+    "qualified_comments",
+    "asset_deliveries",
+    "dm_replies",
+    "qualified_conversations",
+    "meetings",
+    "proposals",
+    "orders",
+    "realized_revenue"
+  ],
+  "learning_rule": "Re-score hooks, assets, language and follow-up from downstream commercial outcomes; comments alone are not success."
+}

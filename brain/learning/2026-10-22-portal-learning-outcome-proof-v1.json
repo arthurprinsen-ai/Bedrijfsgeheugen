@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|learning-memory|proven-without-verified-outcome-evidence|20261022-v1",
+  "obligation_id": "portal|learning-memory|proven-without-verified-outcome-evidence|20261022-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "event_kind": "ERROR",
+  "failure_class": "PORTAL_PROOF_TRUTH",
+  "root_cause": "The authenticated Portal Relevantie & verbeteringen page labels healthy status ok as Bewezen. The upstream living-memory projection previously copied raw memory status PROVEN without checking an actual tenant-matched verified outcome/evidence chain.",
+  "impact": "A source PROVEN claim without immutable provider/outcome readback could reach a customer-facing proved badge.",
+  "fix": "Downgrade unbacked PROVEN memory to REVIEW_REQUIRED in derived tenant projection only; require verified memory, same-tenant outcome with executed/verified/result/owner and matching real evidence IDs.",
+  "prevention_rule": "No customer-visible PROVEN from status alone; require verified outcome and evidence lookup in same authenticated tenant. Never fabricate evidence or mutate original records.",
+  "compiler": {
+    "failure_class": "PORTAL_PROOF_TRUTH",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-learning-memory-evidence-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-learning-memory-evidence-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-learning-memory-evidence-proof-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-portal-learning-memory-evidence-proof-v1.test.mjs"
+  ],
+  "evidence": {
+    "observed_ui": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/main/portal-v2/native-pages.js",
+    "source": "brain/operating-loop/living-memory.mjs",
+    "production_readback": "PENDING",
+    "tenant_negative_test": "PENDING"
+  },
+  "outcome": "CANDIDATE_UNVERIFIED"
+}

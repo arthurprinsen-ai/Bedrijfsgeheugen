@@ -1,0 +1,7 @@
+# 25 October 2026 — Authoritative strong read after missing Netlify Blob
+
+Production observation after #4911: Netlify `growth-drain` now separates concurrent completed pointers but the first post-release logs still have `indexSourceMissing=3` while `indexPointerInvalid=0` and 4 events genuinely persisted in the same run. These missing reads require investigation, not fabricated green. Netlify documentation: https://docs.netlify.com/build/data-and-storage/netlify-blobs/ — default reads are eventually consistent, opt-in `consistency:'strong'` for immediate cross-edge visibility.
+
+Minimal repair: in the existing single minute drain, if an indexed pointer or indexed canonical source returns null from its cheap eventual read, immediately re-read only that key with documented strong consistency. A verified source is processed normally and counted in `sourceStrongRecovery`; a verified pointer in `pointerStrongRecovery`. When strong confirms missing source, preserve durable pointer and 503 integrity report; exceptions increment `indexReadFailures`, remain red. No network extra requests on healthy reads, no new cron, no message delivery, no deleted historical record or synthetic revenue.
+
+Regression tests simulate edge stale null on pointer/source, full consistency recovery and failed strong provider read while preserving evidence. Release requires exact-head Required, CodeQL, Netlify parity, protected merge, exact production SHA and independent DataHub/Netlify log readback.

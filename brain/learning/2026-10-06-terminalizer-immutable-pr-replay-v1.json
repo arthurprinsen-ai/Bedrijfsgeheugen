@@ -1,0 +1,37 @@
+{
+  "fingerprint": "terminalizer|immutable-merged-pr-replay|current-control-plane|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-company-fresh-org-oauth-terminal-20261006",
+  "compiler": {
+    "failure_class": "POST_MERGE_TERMINALIZER_FIX_CANNOT_REPLAY_OLD_WORKFLOW_SHA",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A failed post-merge terminalizer run cannot be repaired by GitHub's ordinary rerun after the workflow itself has been fixed, because reruns remain bound to the original event SHA and therefore execute the old workflow definition. The quality-registry classifier repair merged successfully, but without a current-control-plane replay entrypoint the already-merged #3890 obligation could not consume that repair.",
+  "prevention_rule": "The one canonical terminalizer supports an explicit Terminal-Replay-PR marker on a later protected control-plane PR. The controller merge runs current trusted workflow code, fetches exactly one already-merged target PR through GitHub read APIs, reuses its immutable body/candidate/merge lineage, and emits terminal evidence for that target. Replay is opt-in, target-must-be-merged, self-reference is forbidden, and normal merged-PR behavior remains unchanged.",
+  "evidence": {
+    "source_failure": {
+      "target_pr": 3890,
+      "merge_sha": "22d57fdcb0e7344914288091a75319c1198a73ef",
+      "failed_terminalizer_run": 37458182329,
+      "repaired_classifier_pr": 3892,
+      "repaired_classifier_merge_sha": "d95040ed2f6cbc55a0ff4ba1fc93d2d4790f0536"
+    },
+    "implementation": [
+      ".github/workflows/powerhouse-obligation-terminalizer.yml",
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ],
+    "tests": [
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ]
+  }
+}

@@ -60,8 +60,10 @@ test('connector readiness route isolation and bounded fail-closed retry remain e
 
 test('production truth remains exact-SHA and delivery-lane scoped', async () => {
   const workflow = await read('.github/workflows/production-release-readback.yml');
-  assert.match(workflow, /createDeliveryPlan/);
-  assert.match(workflow, /deriveRequiredTestSuites/);
+  assert.match(workflow, /deriveNetlifyDeploymentApplicability/);
+  const applicability = await read('tools/delivery/netlify-deployment-applicability.mjs');
+  assert.match(applicability, /createDeliveryPlan/);
+  assert.match(applicability, /deriveRequiredTestSuites/);
   assert.match(workflow, /EXPECTED_COMMIT:\s*\$\{\{ github\.sha \}\}/);
   assert.match(workflow, /deployment_required/);
   assert.match(workflow, /website_required/);

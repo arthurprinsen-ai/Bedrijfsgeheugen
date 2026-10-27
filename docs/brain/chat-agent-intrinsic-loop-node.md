@@ -126,3 +126,13 @@ De continuity-regel is daarnaast vindbaar gemaakt als cross-runtime agentskill:
 De skill is bewust geen nieuwe authority. Hij verwijst terug naar de canonieke continuity-policy, learning, documentatie en required regression. `AGENTS.md` laadt hem direct na het agentcontract in de verplichte leesvolgorde. De required regression blokkeert verwijdering of ontkoppeling van deze skill.
 
 Preventieregel: skills zijn discovery/execution guidance bovenop canonieke Powerhouse-state; zij mogen nooit een parallelle waarheid, eigen status of afwijkend completion-contract introduceren.
+
+## Social duplicate guard inheritance — 30 september 2026
+
+Fingerprint: `chat-agent-social-story-family-guard-v1`.
+
+A chat or agent that generates, repairs, retries, schedules or reconciles social content is not allowed to treat its local wording as novelty. Before any provider side effect it must use the canonical database uniqueness gate and inherit the same historical story-family state as every other node.
+
+This prevents a second chat, recovery agent or scheduler from publishing a rewritten version of a consumed anecdote. A `STORY_FAMILY_DUPLICATE` result is terminal for that candidate only: the node must return to source selection and choose a materially different verified event/topic while preserving the daily obligation.
+
+The 2026-09-30 car/sliding-door/airco incident is the canonical escaped-defect regression. It proves that local copy variation and different story hashes are insufficient when the same human story is reused.

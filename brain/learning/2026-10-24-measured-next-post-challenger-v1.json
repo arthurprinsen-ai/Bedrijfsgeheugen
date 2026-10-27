@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|closed-loop|measured-social-to-next-published-brand-creative|20261024-v1",
+  "obligation_id": "powerhouse:daily-measured-creative-to-canonical-publisher:20261024-v1",
+  "failure_class": "DAILY_LEARNING_DIAGNOSTICS_NOT_CONSUMED_BY_CONTENT_PUBLISHER",
+  "root_cause": "Although canonical Powerhouse scheduled content and provider metric collectors were already active, the company LinkedIn/Blog content generator consumed only PROVEN formal social_learnings (none mature), while incoming real social_metric_snapshots were not translated into a bounded next-post creative test. A successful scheduler did not provide an executable learning-to-content handoff.",
+  "observed_evidence": {
+    "daily_schedule": "powerhouse-content-orchestrator-daily-v1",
+    "formal_social_learning": "23 historical evaluations with no new mature brand tests; 0 commercial verified orders",
+    "post_metrics": "Provider LinkedIn company reports limited impression/analytics scope; do not infer zeros or share personal account snapshots",
+    "owner": "powerhouse-content-orchestrator and existing protected social publisher",
+    "result": "NO_NEW_EVALUATED_POST_WINNER_PROVEN"
+  },
+  "fix": "Read only exact owned company post IDs and latest provider snapshots (bounded 24 posts/100 observations) inside existing hourly canonical generator, require two comparable independent mature posts and at least 200 verified cumulative exposure; suggest one counterfactual-backed reversible creative test in the actual AI prompt and persist source decision in the same content artifact. Do not assign an experimental winner or bypass release and provider guardrails.",
+  "prevention_rule": "Unverified/reactions-only and cross-tenant snapshots are NOT suitable denominators; no inference of causality, zero audience or sales. New creative component follows existing one writer, protected release, exact post provider readback, 24/48/72h measurement and attribution. Missing data becomes explicit SOURCE_UNAVAILABLE or WAIT_FOR_COMPARABLE_PROVIDER_METRICS.",
+  "tests": [
+    "tests/brain-measured-next-post-challenger-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_LEARNING_DIAGNOSTICS_NOT_CONSUMED_BY_CONTENT_PUBLISHER",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-measured-next-post-challenger-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-measured-next-post-challenger-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-measured-next-post-challenger-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-HEAD Required/CodeQL + protected merge + active Edge function source; then a real next approved company post generated with observed same-platform source and later provider 24/48/72h metrics and paid-order readback for a verified commercial improvement."
+}

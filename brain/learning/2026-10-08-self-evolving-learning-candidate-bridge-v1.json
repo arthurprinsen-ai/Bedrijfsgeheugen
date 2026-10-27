@@ -1,0 +1,83 @@
+{
+  "fingerprint": "self-evolving-learning-candidate-bridge-20261008-v1",
+  "date": "2026-10-08",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "title": "Connect verified learning to bounded engineering optimization candidates",
+  "problem": "The production daily Self-Improvement observer reported nine READY compiler sources but zero optimization candidates, so verified learning could not reliably influence next engineering decisions.",
+  "root_cause": "The daily observer read canonical projections but did not materialize bounded, non-executable follow-up candidates into the existing optimization registry. Additional root cause found during provider verification: renaming an already applied migration from 20261008162000 to 20261008142800 left the Supabase preview migration ledger divergent.",
+  "decision": "Extend the existing daily cron owner function, reuse compiler queue + existing optimization candidate registry, admit up to three idempotent review-required candidates per run.",
+  "fix": "One protected SQL migration, fail-closed candidates, regression contract, System Map and skill update. No new scheduler, tenant data store or executor.",
+  "prevention_rule": "A verified compiler source may produce only one bounded candidate per fingerprint, with explicit independent evaluation, no inferred business benefit, and no auto-dispatch or promotion. Migration identity is immutable once recorded in any canonical preview/provider history; never rename applied version filenames.",
+  "unknown_is_not_green": true,
+  "existing_truth": {
+    "compiler_ready": 9,
+    "optimization_candidates": 0,
+    "observed_on": "2026-10-08"
+  },
+  "expected_truth_after_release": "Candidate count increases only after protected migration and daily owner run. CI/production readback and real outcome remain independently required.",
+  "regression_contract": "tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs",
+  "canonical_refs": [
+    "supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql",
+    "brain/self-improvement/self-improvement-layer.mjs",
+    "platform/system-map/canonical-system-map.mjs",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
+  ],
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-improvement-layer-v1.test.mjs",
+      "tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs"
+    ],
+    "invariants": [
+      "no duplicate daily owner",
+      "unique candidate source fingerprint",
+      "bounded batch size",
+      "no automatic approval",
+      "no invented outcome or monetary value",
+      "protected production required"
+    ]
+  },
+  "compiler": {
+    "failure_class": "LEARNING_CANDIDATE_GAP",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "live_baseline": {
+      "observed_on": "2026-10-08",
+      "compiler_ready": 9,
+      "optimization_candidates": 0,
+      "scheduled_self_improvement_cron_active": true
+    },
+    "tests": [
+      "tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs",
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "candidate_head": "9ed0e85af80ed3f9a520330bef8342f8bd22089f",
+    "production_migration_readback": null,
+    "verified_value_outcome": null,
+    "main_reconciliation": {
+      "candidate_previous_head": "defc2160fc4d636249d96ea77dc0ba03274bb05d",
+      "current_main_epoch": "f8b3cab9fc823cd0bf7acf16b46f395111148fbb",
+      "two_parent_merge_commit": "e5c98e5e7918e9fce99532b0ee3327b6601cc328",
+      "unrelated_main_changes": "preserved_by_main_tree_overlay",
+      "production_readback": null
+    },
+    "delivery_lineage": {
+      "obligation_id": "self-evolving-learning-candidate-bridge-20261008-v1",
+      "predecessor_pr": 4169,
+      "successor_pr": 4173,
+      "successor_base_sha": "080a32bdc354abc528a2fe449dffcb123698459e",
+      "independent_cross_domain_change": "self-evolving-business-engineering-os-v1",
+      "supersession_policy": "one authoritative successor, no duplicated delivery"
+    },
+    "supabase_preview_migration_identity": "20261008162000",
+    "supabase_preview_ledger_observed": "2026-10-08",
+    "supabase_preview_provider_state_before_repair": "MIGRATION_HISTORY_DRIFT"
+  }
+}

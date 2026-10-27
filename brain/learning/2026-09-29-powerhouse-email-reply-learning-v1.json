@@ -1,0 +1,74 @@
+{
+  "fingerprint": "powerhouse-email-reply-learning-v1",
+  "date": "2026-09-29",
+  "scope": "commercial-email-closed-loop",
+  "problem": "Autonomous outreach was terminal on sent/provider acknowledgement and did not yet canonically ingest Gmail replies into suppression, follow-up, sales outcome and revenue learning.",
+  "root_cause": [
+    "The working Gmail connector lived in the canonical connected-app execution path while a new server-side Composio attempt had no matching Gmail connection.",
+    "The first standalone reply cron therefore created a parallel execution path and failed provider auth.",
+    "The existing cycle engine treats a sales action cycle as strictly monotonic and rejected a second FK-bound outcome after the sent outcome had already closed the cycle."
+  ],
+  "fix": [
+    "Integrated reply processing into the existing Powerhouse Growth & Revenue OS owner instead of adding another active automation.",
+    "Added canonical reply evidence in public.powerhouse_email_reply_events keyed by Gmail provider message ID.",
+    "Added public.powerhouse_email_contact_suppressions plus a write-time suppression guard for autonomous email.",
+    "Added revenue-first public.powerhouse_email_learning_stats refreshed by public.powerhouse_refresh_email_learning_stats().",
+    "Preserved origin action lineage in reply_events.action_id and outcome evidence without weakening the strict cycle-stage guard.",
+    "Removed the parallel powerhouse-email-reply-loop-hourly-v1 cron."
+  ],
+  "production_evidence": {
+    "gmail_readback_verified": true,
+    "reply_events_verified": 2,
+    "did_telecom": {
+      "classification": "objection_need",
+      "suppression": true,
+      "provider_message_id": "1a0ed7c9e12c75a7"
+    },
+    "tech_festival": {
+      "classification": "objection_timing",
+      "nurture_due": "2027-04-09",
+      "stated_event_date": "2027-06-09",
+      "provider_message_id": "1a0e92a02e93f7e0"
+    },
+    "parallel_reply_cron_count": 0,
+    "health_status": "ok",
+    "health_readback_at": "2026-09-29T14:59:12.875008Z"
+  },
+  "prevention": [
+    "Never stop commercial email lineage at sent.",
+    "Never introduce a second Gmail reply scheduler/CRM/reply store when the canonical Growth & Revenue OS owner can ingest replies.",
+    "Enforce provider-message-id idempotency before any reply side effect.",
+    "Apply suppression before outbound provider mutation.",
+    "Do not weaken cycle-stage validation to attach later replies; preserve origin lineage in evidence when the original cycle is already terminal.",
+    "Optimize variants primarily on realized revenue and paid orders, not reply volume."
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_REPLY_LOOP_OPEN",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime_health": "public.bg_gezondheid:powerhouse-email-reply-loop",
+    "reply_events": [
+      "1a0ed7c9e12c75a7",
+      "1a0e92a02e93f7e0"
+    ],
+    "suppression": "public.powerhouse_email_contact_suppressions:marco@didtelecom.com",
+    "nurture_action": "email-reply-nurture:1a0e92a02e93f7e0",
+    "learning_projection": "public.powerhouse_email_learning_stats",
+    "canonical_owner": "Powerhouse Growth & Revenue OS",
+    "repository_test": "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "social-learning|netlify-scheduled|499-timeout-no-brand-evaluations|20261024-v1",
+  "obligation_id": "social-learning:one-hourly-evaluator:tenant-and-backlog-repair",
+  "status": "CANDIDATE",
+  "failure_class": "HOURLY_SOCIAL_EVALUATOR_TIMEOUT_AND_BRAND_SCOPE_OMITTED",
+  "root_cause": "Netlify observability records real scheduled social-learning-evaluate POST attempts returning HTTP 499 after ~15 seconds repeatedly on 2026-10-24; no new social_learning_evaluations since 2026-09-19. The evaluator walked every due 24/48/72h window without a per-run bound and its store defaults to canonical, leaving 116 owned-brand posts and 508 provider snapshots in tenant bedrijfsgeheugen without any formal evaluations.",
+  "observed_evidence": {
+    "netlify_deploy": "6adc6a27f61227b31d327dc2",
+    "function_name": "social-learning-evaluate",
+    "provider_http_status": 499,
+    "observed_window": "2026-10-24T01:00:46Z to 2026-10-24T08:01:15Z",
+    "request_duration_ms_approx": 14980,
+    "last_evaluation": "2026-09-19 06:13:53+00",
+    "evaluation_count": 21,
+    "evaluation_tenant": "canonical",
+    "brand_post_count": 116,
+    "brand_snapshot_count": 508,
+    "brand_evaluations": 0
+  },
+  "fix": "Use the one preexisting hourly Netlify scheduled evaluator, now bounded to at most two due windows per tenant, one fresh-first and one rotating old-due window when available. Explicitly read the two verified existing social tenants via distinct scoped stores without aliasing or merging, and keep missing historical snapshots as typed evidence obligations.",
+  "prevention_rule": "No new scheduler, no unlimited per-hour backfill, no fake retrospectively observed snapshots, no silent completion of due social-learning obligations, no cross-tenant source leakage, no unproven post win or auto publication. Provider 204 plus new tenant-scoped evaluations + learning application readback is required to mark successful.",
+  "tests": [
+    "tests/brain-social-learning-daily-tenant-coverage-v1.test.mjs",
+    "tests/social-learning-evaluate.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "HOURLY_SOCIAL_EVALUATOR_TIMEOUT_AND_BRAND_SCOPE_OMITTED",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-learning-daily-tenant-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-daily-tenant-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-daily-tenant-coverage-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required+CodeQL, merged exact main, Netlify production function deployed, next scheduled provider POST returns success and independently observed social_learning_evaluations appear in proper tenant(s). A 204 with zero outcomes never proves lift."
+}

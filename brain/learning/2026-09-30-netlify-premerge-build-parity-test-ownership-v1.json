@@ -1,0 +1,37 @@
+{
+  "fingerprint": "netlify-premerge-build-parity-test-ownership-v1",
+  "date": "2026-09-30",
+  "type": "PRODUCTION_DELIVERY_RECOVERY",
+  "failure_class": "DETERMINISTIC_BUILD_DEFECT_REACHED_PRODUCTION_PROMOTION",
+  "root_cause": [
+    "Committed AI Modelwijzer regression tests were not wired into a canonical CI workflow.",
+    "Fail-closed static English cache completeness was not validated in Required test before merge, allowing a deterministic Netlify build failure to surface only during production promotion."
+  ],
+  "prevention": [
+    "Wire every committed regression test into a canonical workflow.",
+    "Validate static English cache pre-merge with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Run the exact Netlify production build command before merge after source-sensitive regressions have completed, so build transforms cannot corrupt their test fixtures.",
+    "Repair missing cache entries in the same candidate lineage before merge.",
+    "Keep transport/auth failures separate from build-content failures."
+  ],
+  "compiler": {
+    "failure_class": "DETERMINISTIC_BUILD_DEFECT_REACHED_PRODUCTION_PROMOTION",
+    "scope": "NETLIFY_PRODUCTION_TRUTH",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "observed_failure": "Current main repeatedly failed Netlify production build after protected merge while three newly committed AI Modelwijzer regression tests were reported as unwired by delivery-test-coverage-guard.",
+    "affected_runtime": "Production Source Snapshot / exact-source Netlify production build",
+    "deterministic_premerge_reproduction": "Required test now validates static English cache under production fail-closed flags before merge."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-promotion-observability.test.mjs"
+    ]
+  }
+}

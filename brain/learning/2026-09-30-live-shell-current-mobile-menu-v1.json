@@ -1,0 +1,36 @@
+{
+  "id": "2026-09-30-live-shell-current-mobile-menu-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "production-readback|mobile-menu|canonical-header|v1",
+  "compiler": {
+    "failure_class": "FALSE_RED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The production shell readback still required legacy mobile section labels ('ONTDEKKEN', 'KENNIS & BEDRIJF', 'START') after the canonical header had moved to Oplossingen, Koppelingen, Kennis and Het bedrijfsgeheugen. Production was on the exact expected commit, but the stale assertion marked it red.",
+  "prevention": [
+    "Runtime shell assertions must be sourced from the current canonical component contract.",
+    "When navigation taxonomy changes, live readback fixtures and assertions change in the same lineage.",
+    "A stale verifier may not override exact production identity evidence."
+  ],
+  "fix": "Update the live shell mobile navigation contract and its fixture to the canonical header taxonomy.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "contract": "tools/site-shell/live-contract.mjs",
+    "fixture": "tools/site-shell/test-live-contract.mjs"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "seo-revenue-growth"
+  ]
+}

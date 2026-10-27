@@ -1,0 +1,42 @@
+{
+  "fingerprint": "supabase|migration-history|exact-provider-mirrors|20261020",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "database|exact-remote-migration-mirrors|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Protected economics PR 4540 passed Required and CodeQL and merged, but Supabase production rejected migration deployment because applied versions 20261020104501 and 20261020104518 were absent from source. Both provider records contain the same guarded dephase SQL as the existing protected 20261020124500 migration.",
+  "prevention_rule": "After any provider migration application, reconcile exact version, name and stored SQL with repository authority before terminal closure. Preserve provider-applied statements byte-for-byte and preserve existing protected identities; never clear migration history, add empty shims, mark missing effects applied, or use a manual DDL bypass. Keep canonical Git integration as deployer.",
+  "provider_versions": ["20261020104501", "20261020104518", "20261020112219"],
+  "latest_parity_observation": {
+    "applied_version_count": 731,
+    "additional_remote_only_version": "20261020112219",
+    "source_authority": "protected #4543 / 20261020140000_contact_authority_preselect_function_only_p0_4198.sql",
+    "sql_sha256": "467ef79cfbea084fcdc5954d3a6d9b2c8682d9f9cdbc6e79abc3e2ff06ab1346",
+    "lesson": "Re-read current provider history immediately before promotion; the earlier 730-version snapshot omitted a concurrently applied contact-function version. Preserve every original protected identity and mirror exact observed versions only."
+  },
+  "sql_sha256": "895c2c9e46d72c811bd6bed9639e73562fe8f4fabeba6eecc69e76bdc43f34df",
+  "test_evidence": {
+    "production_provider_failure": "VERIFIED: Remote migration versions not found in local migrations directory on protected merge 9535f80c80f73c5857e8b684f2854f42e0cb0867",
+    "exact_provider_statement_comparison": "VERIFIED: both stored SQL statements equal the protected source SHA-256",
+    "regression_red": "VERIFIED: both provider-version source files were absent; 2 failed, 1 passed",
+    "regression_green": "VERIFIED: 3 exact-byte assertions pass; combined economics/mirror suite 8/8",
+    "security_contract": "VERIFIED: both new SQL mirrors pass the existing Supabase security contract",
+    "required_ci": "PENDING refreshed compiler metadata",
+    "production_migration_transport": "PENDING"
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-p0-4215-migration-history-mirrors.test.mjs"],
+    "shadow": ["tests/brain-p0-4215-migration-history-mirrors.test.mjs"],
+    "canary": ["tests/brain-p0-4215-migration-history-mirrors.test.mjs"]
+  },
+  "production_verified": false,
+  "truth_boundary": "This repairs migration transport identity only. Economics LIMIT 50, contact review bounds, index application, scheduler outcomes and signed two-tenant portal acceptance require separate live readbacks. Existing SQL is idempotent and schedules are never disabled."
+}

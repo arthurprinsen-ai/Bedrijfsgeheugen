@@ -13,5 +13,23 @@
     "privacy": "Challenge URL contains only score, risk category and campaign attribution; no name, email or company data.",
     "conversion": "The portal/order CTA remains visible after the comparison."
   },
-  "guard": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+  "guard": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs",
+  "compiler": {
+    "failure_class": "PRODUCT_LED_GROWTH_LOOP",
+    "scope": "WEBSITE_GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "implementation": "zelfscan.html",
+    "test": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs",
+    "delivery": "docs/development-ledger-events/2026-09-29-bedrijfslek-team-growth-loop.md"
+  },
+  "root_cause": "The free diagnostic previously ended as an individual result and did not create a privacy-safe mechanism for a second qualified user or an immediate action loop.",
+  "prevention": "Keep the team-challenge and Bedrijfsgeheugen Mini contracts regression-tested so every completed diagnostic can create action and a second qualified user before paid conversion, without requiring PII."
 }

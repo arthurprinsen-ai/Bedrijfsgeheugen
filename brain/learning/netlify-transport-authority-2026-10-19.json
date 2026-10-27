@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-production-transport-authority-recovery-run-39209401787",
+  "fingerprint": "NETLIFY_TRANSPORT_AUTHORITY_20261019_RUN39209401787",
+  "observation": "GitHub Actions snapshot run 39209401787 succeeded in exact source packaging but timed out waiting for native Git production convergence; the OIDC/Supabase Composio bridge then returned HTTP 420 / composio_netlify_account_not_public (exit 78), leaving Netlify published at 59b4aaa1 while target main was 6fe132b8.",
+  "scope": "bedrijfsgeheugen-production",
+  "source_sha": "6fe132b8cdbbd9c25a6f37819738066d59d0a16d",
+  "published_sha": "59b4aaa1cfb01c1cd8d3c0085372cb5837db03db",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39209401787",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://app.netlify.com/projects/bedrijfsgeheugen"
+  ],
+  "root_cause": "The Supabase bridge's Composio project-key scope could not resolve an ACTIVE Netlify connected account. Error code 'not_public' is a generic mapping for unavailable account; private account visibility is a hypothesis, not independently proven root cause. Native Git did not publish a new SHA in its configured bounded wait, consistent with two governance-only commits and Netlify build ignore policy.",
+  "intervention": "Classify authority failures as non-retryable; record exact commit/incident and remediation in GitHub step summary. Require an approved active account visible to the exact bridge project scope, independent Git-native production configuration, and exact production readback.",
+  "compiler": {
+    "failure_class": "NETLIFY_TRANSPORT_AUTHORITY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "expected": "No false green, no blind repeat, explicit owner and action on authority failure; native Git and authorized fallback checked before deployment acceptance.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-transport-authority-regression.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-transport-authority-regression.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-transport-authority-regression.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "historical_replay": "tests/brain-netlify-transport-authority-regression.test.mjs",
+    "ci_status": "pending on PR",
+    "production_readback": "not yet proven",
+    "evaluation_scopes": "Historical replay, shadow and CI-mode canary simulate bridge authorization and fail-closed behavior; live production side effect still requires separate authenticated readback."
+  },
+  "acceptance": "Protected merge of tested change, approved Netlify/Composio account binding, successful transport/build only when applicable, published Netlify deploy SHA and public release.json readback, functional production check.",
+  "native_git_reconciliation": {
+    "provider_deploy_id": "6ad5ba106bfc20fb52b8a159",
+    "provider_commit_ref": "d015232819caabe212c703de8ff832a05baf6c57",
+    "published_at": "2026-10-19T06:37:04.149Z",
+    "provider_status": "ready",
+    "github_main_parity": "identical",
+    "production_readback_scope": "Netlify published deploy metadata and GitHub main comparison only",
+    "functional_browser_readback": "not yet proven",
+    "fallback_authorization": "blocked: HTTP420 project-scoped Composio account unavailable"
+  },
+  "observation_update": "After the failed snapshot attempt, Git-native Netlify published main commit d0152328 via provider deploy 6ad5ba106bfc20fb52b8a159; backup transport authority remains unresolved.",
+  "delivery_admission": {
+    "obligation_id": "netlify-transport-authority-recovery-20261019",
+    "delivery_lane": "incident",
+    "candidate_type": "recovery",
+    "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4448"
+  }
+}

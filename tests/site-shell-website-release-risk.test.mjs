@@ -2,10 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { classifyWebsiteRelease } from '../tools/site-shell/website-release-risk.mjs';
+import { visibilityRetryPolicy } from '../tools/site-shell/visibility-retry-policy.mjs';
 
 const riskConfig = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
 const acceptedBaseline = JSON.parse(await readFile('site/accepted-baseline.json', 'utf8'));
 const websiteLane = await readFile('.github/workflows/lane-website.yml', 'utf8');
+const requiredWorkflow = await readFile('.github/workflows/required-test.yml', 'utf8');
+const netlifyBuildAuthority = await readFile('tools/ci/netlify-build-entry.mjs', 'utf8');
 const visibilityCheck = await readFile('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
 
 test('one explicitly owned page-local asset is fast-fix', () => {
@@ -23,12 +26,28 @@ test('root public HTML change is normal', () => {
   assert.ok(result.affected_routes.includes('/ai-automatisering-mkb'));
 });
 
-test('shared navigation and website delivery workflow changes are high-risk', () => {
-  for (const path of ['assets/js/menu.js','.github/workflows/required-test.yml','netlify.toml']) {
+test('shared navigation and runtime delivery config changes are high-risk', () => {
+  for (const path of ['assets/js/menu.js','netlify.toml']) {
     const result = classifyWebsiteRelease({ changedPaths:[path], riskConfig, acceptedBaseline });
     assert.equal(result.lane, 'high-risk');
     assert.equal(result.requires_preview, true);
   }
+});
+
+test('workflow-only changes are website control-plane and never require browser preview', () => {
+  const result = classifyWebsiteRelease({
+    changedPaths:[
+      '.github/workflows/required-test.yml',
+      '.github/workflows/canonical-brand-shell-test.yml',
+      '.github/workflows/seo-order-engine.yml'
+    ],
+    riskConfig,
+    acceptedBaseline
+  });
+  assert.equal(result.lane, 'control-plane');
+  assert.equal(result.requires_preview, false);
+  assert.deepEqual(result.affected_routes, []);
+  assert.ok(result.risk_reasons.every(reason => reason.startsWith('non-artifact:')));
 });
 
 test('approved blog and delivery-control-plane-only changes do not require a website deploy preview', () => {
@@ -79,11 +98,13 @@ test('website browser verification stays exact-candidate and preserves scoped cl
   assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
 });
 
-test('local website verification builds the same final artifact layer as Netlify', () => {
+test('local website fallback and central Netlify parity build the same final artifact layer', () => {
   assert.match(websiteLane, /COMMIT_REF: \$\{\{ inputs\.candidate_sha \}\}/);
-  const finalBuildCalls = websiteLane.match(/node tools\/bouw-release-evidence\.mjs/g) || [];
-  assert.ok(finalBuildCalls.length >= 2, 'canonical Netlify parity build and local browser fallback must both execute the final build layer');
-  assert.match(websiteLane, /DEPLOY_ID: required-netlify-build-parity/);
+  assert.match(requiredWorkflow, /COMMIT_REF: \$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
+  assert.match(requiredWorkflow, /node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(websiteLane, /node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(netlifyBuildAuthority, /tools\/bouw-release-evidence\.mjs/);
+  assert.match(requiredWorkflow, /DEPLOY_ID: required-netlify-build-parity/);
   assert.match(websiteLane, /DEPLOY_ID: required-browser-local/);
 });
 
@@ -146,7 +167,13 @@ test('governance and delivery policy changes stay control-plane without website 
 
 test('Netlify deploy-preview visibility crawl applies bounded provider backpressure recovery', () => {
   assert.match(visibilityCheck, /new Set\(\[403, 408, 425, 429, 500, 502, 503, 504\]\)/);
-  assert.match(visibilityCheck, /for \(let attempt = 1; attempt <= 3; attempt\+\+\)/);
+  assert.match(visibilityCheck, /visibilityRetryPolicy\(baseUrl\)/);
   assert.match(visibilityCheck, /if \(status && !transientStatuses\.has\(status\)\) break/);
-  assert.match(visibilityCheck, /await sleep\(750 \* attempt\)/);
+  assert.match(visibilityCheck, /retryPolicy\.retryDelayMs\(attempt\)/);
+
+  const preview = visibilityRetryPolicy('https://deploy-preview-3629--bedrijfsgeheugen.netlify.app');
+  const production = visibilityRetryPolicy('https://www.bedrijfsgeheugen.nl');
+  assert.equal(preview.maxAttempts, 5);
+  assert.equal(production.maxAttempts, 3);
+  assert.deepEqual([1, 2, 3, 4].map(n => preview.retryDelayMs(n)), [1000, 2000, 3000, 4000]);
 });

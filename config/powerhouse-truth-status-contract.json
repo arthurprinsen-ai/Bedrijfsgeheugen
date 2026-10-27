@@ -97,5 +97,62 @@
     "user_retry_or_continue_required": false,
     "resume_from_canonical_checkpoint": true,
     "dedupe_side_effects_after_interruption": true
+  },
+  "greenAssurancePolicy": {
+    "fingerprint": "powerhouse|green-assurance|truthful-closed-loop|v1",
+    "required": true,
+    "skill": ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    "greenRequires": [
+      "required_evidence_fresh",
+      "required_lineage_complete",
+      "required_obligations_terminal_or_valid_hard_boundary",
+      "external_or_provider_readback_when_applicable",
+      "outcome_truth_not_synthesized",
+      "canonical_learning_and_writeback_current"
+    ],
+    "forbiddenGreenInputs": [
+      "wiring_only",
+      "scheduler_active_only",
+      "provider_ack_only",
+      "generated_asset_only",
+      "legacy_telemetry_only",
+      "stale_evidence",
+      "synthetic_success_evidence"
+    ],
+    "providerNeutralFailover": true,
+    "retiredToolingCanBlock": false,
+    "recomputeAfterRepair": true,
+    "unknownIsGreen": false
+  },
+  "livePromotionGovernanceClosure": {
+    "fingerprint": "powerhouse|live-promotion|governance-closure|2026-09-29-v1",
+    "required": true,
+    "deploymentEvidenceIsCapabilityOutcome": false,
+    "capabilitySubchainsIndependentlyGated": true,
+    "requiredWriteback": [
+      "brain_learning",
+      "skills",
+      "agent_chat_contract",
+      "development_ledger",
+      "human_documentation",
+      "system_map",
+      "read_after_write"
+    ],
+    "inheritedByAllAgentsChats": true,
+    "userMustRepeatBorgRequest": false
+  },
+  "productionTruthSeparation": {
+    "fingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+    "deploymentReadyIsNotFunctionalGreen": true,
+    "deploymentReadyEvidence": [
+      "exact_main_identity",
+      "provider_production_state",
+      "provider_readback"
+    ],
+    "functionalGreenEvidence": [
+      "capability_specific_readback",
+      "outcome_or_runtime_evidence"
+    ],
+    "wholeSystemGreenRequiresAllRequiredCapabilities": true
   }
 }

@@ -1,0 +1,37 @@
+{
+  "id": "ai-cross-domain-review-portfolio-ui-20261008-v1",
+  "fingerprint": "customer-ai-csrd-evidence-portfolio-ui-separate-lane-v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_REVIEW_NOT_VISIBLE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Customers see a high-level AI/CSRD review warning but not concrete evidence work generated from One Brain's pending impact.",
+  "prevention": [
+    "Render the existing tenant-authorized snapshot.reviewPortfolio read model from backend #4184; no independent task authority",
+    "Label every task open and unverified; potential ESRS applicability is never a compliance claim",
+    "Escape all rendered labels/descriptions; never show raw auditor identities, evidence references, sensitive policy configuration"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+    ],
+    "source": [
+      "portal-next/data-sovereignty-panel.js"
+    ],
+    "outcome": "Pending cross-domain AI and CSRD evidence obligations are readable by the customer without invented compliance or outcome"
+  }
+}

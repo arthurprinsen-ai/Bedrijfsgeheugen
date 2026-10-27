@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "brain-learning.v1",
+  "id": "foresight-tenant-signal-evidence-20261015",
+  "fingerprint": "powerhouse|portal-v2|tenant-source-intelligence-overlay|v1",
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-contextual-foresight-4420",
+  "compiler": {
+    "failure_class": "CANONICAL_SIGNALS_MUST_NOT_BECOME_TENANT_FORECASTS",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The initial trend-only Foresight studio lacked a contextual overlay for the existing authenticated tenant-specific Powerhouse entrepreneurial intelligence. Blind reuse of canonical external signals would risk falsely attributing platform-wide impacts to a customer.",
+  "prevention": "Read only through existing authenticated /api/portal-ondernemersdata; require returned authenticatedTenant to equal intelligence.tenantId; accept only SCORED, recent, tenant-owned impact rows linked to current source signals. Keep external unscored signals and proposed actions separate. Never convert these signals into numerical causal forecast adjustments, Heartbeat SLAs or realised outcomes.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-tenant-evidence.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-foresight-tenant-evidence.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-foresight-tenant-evidence.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "portal-state-eu tenant-scoped entrepreneur_intelligence via Netlify Identity, zero new scheduler or tables",
+    "scope": "No global provider signal may become scored tenant impact without matching tenant_id and portal identity",
+    "test": "portal-v2/tests/foresight-tenant-evidence.test.mjs",
+    "production": "Pending independent protected CI, exact deploy and authenticated readback"
+  },
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED"
+}

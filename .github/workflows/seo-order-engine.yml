@@ -8,34 +8,31 @@ on:
       - feat/seo-to-order-intelligence-loop-final-20260905
     paths:
       - 'site/seo-order-map.json'
+      - 'site/seo-order-expansion.json'
+      - 'site/seo-locale-revenue-map.json'
+      - 'site/seo-order-expansion.json'
+      - 'site/seo-locale-revenue-map.json'
+      - 'tools/genereer-sitemap.mjs'
+      - 'tools/site-shell/build-localized-routes.mjs'
+      - 'netlify.toml'
       - 'tools/seo-order-engine/**'
       - 'tools/seo-growth/**'
       - 'netlify/functions/growth-event.mjs'
       - 'config/seo-growth-*'
       - 'tests/seo-order-*.test.mjs'
+      - 'tests/seo-locale-revenue-*.test.mjs'
+      - 'tools/site-shell/build-localized-routes.mjs'
+      - 'tools/genereer-sitemap.mjs'
       - 'tests/seo-growth-*.test.mjs'
       - '.github/workflows/seo-order-engine.yml'
       - 'tools/prijzen-uit-de-homepage.mjs'
       - 'tools/controleer-technische-seo.mjs'
-  pull_request:
-    paths:
-      - 'site/seo-order-map.json'
-      - 'tools/seo-order-engine/**'
-      - 'tools/seo-growth/**'
-      - 'netlify/functions/growth-event.mjs'
-      - 'config/seo-growth-*'
-      - 'tests/seo-order-*.test.mjs'
-      - 'tests/seo-growth-*.test.mjs'
-      - '.github/workflows/seo-order-engine.yml'
-      - 'tools/prijzen-uit-de-homepage.mjs'
-      - 'tools/controleer-technische-seo.mjs'
-
 concurrency:
   group: seo-order-engine-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  test:
+  seo-order:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +40,6 @@ jobs:
         with:
           node-version: '24'
       - name: SEO order contracts
-        run: node --test tests/seo-order-*.test.mjs
+        run: node --test tests/seo-order-*.test.mjs tests/seo-locale-revenue-*.test.mjs
       - name: SEO growth contracts
         run: node --test tests/seo-growth-*.test.mjs

@@ -1,23 +1,58 @@
-export const PORTAL_NAV_ITEMS = Object.freeze([
-  Object.freeze({ id:'overview', label:'Overzicht', target:'overzicht' }),
-  Object.freeze({ id:'project', label:'Project', target:'hub:project' }),
-  Object.freeze({ id:'data-ai', label:'Data & AI', target:'hub:data-ai' }),
-  Object.freeze({ id:'tasks', label:'Taken', target:'hub:tasks' }),
-  Object.freeze({ id:'more', label:'Meer', target:'hub:portal' })
-]);
+import { listPortalGroups } from './page-registry.js';
 
-export const DESKTOP_NAV_ITEMS = Object.freeze([
-  Object.freeze({ id:'overview', target:'overzicht' }),
-  Object.freeze({ id:'csrd-impact', target:'csrd-impact' }),
-  Object.freeze({ id:'health', target:'profiel' }),
-  Object.freeze({ id:'strategy', target:'strategie-naar-maandagochtend' }),
-  Object.freeze({ id:'processes', target:'profiel' }),
-  Object.freeze({ id:'knowledge', target:'documenten' }),
-  Object.freeze({ id:'data', target:'koppelingen' }),
-  Object.freeze({ id:'ai', target:'brain-verwerking' }),
-  Object.freeze({ id:'actions', target:'actieve-acties' }),
-  Object.freeze({ id:'reports', target:'audit' })
-]);
+const freezePages=pages=>Object.freeze(pages.map(page=>Object.freeze(page)));
+const GROUP_ICONS=Object.freeze({
+  overzicht:'⌂',
+  besturen:'↗',
+  realiseren:'✓',
+  'data-intelligence':'◫',
+  'actueel-externe-data':'☁',
+  'continuiteit-risico':'◇',
+  beheren:'⚙',
+  overig:'▦'
+});
+
+function canonicalPages(group){
+  // The owner-only route exists for direct bookmarked access; never advertise it in the customer navigation.
+  const pages=group.pages.map(page=>({id:page.id,label:page.label,target:page.id}));
+  if(group.id==='overzicht'){
+    pages.splice(1,0,{id:'project',label:'Jouw project',target:'hub:project'});
+  }
+  return freezePages(pages);
+}
+
+/**
+ * One navigation authority for Portal V2.
+ * Desktop renders this tree in the sidebar; compact/mobile renders the same
+ * tree in the responsive drawer. No reduced second menu is maintained.
+ */
+export const DESKTOP_NAV_GROUPS = Object.freeze(
+  listPortalGroups().map(group=>Object.freeze({
+    id:group.id,
+    label:group.label,
+    icon:GROUP_ICONS[group.id]||'•',
+    target:group.pages[0]?.id||'overzicht',
+    pages:canonicalPages(group)
+  }))
+);
+
+export const DESKTOP_NAV_ITEMS = Object.freeze(
+  DESKTOP_NAV_GROUPS.map(({id,label,icon,target})=>Object.freeze({id,label,icon,target}))
+);
+
+/**
+ * Compatibility export for callers that still import PORTAL_NAV_ITEMS.
+ * It now resolves to the same complete canonical tree rather than a reduced
+ * five-item mobile model.
+ */
+export const PORTAL_NAV_ITEMS = Object.freeze(
+  DESKTOP_NAV_GROUPS.flatMap(group=>group.pages.map(page=>Object.freeze({
+    id:page.id,
+    label:page.label,
+    target:page.target,
+    groupId:group.id
+  })))
+);
 
 export function mobileTarget(id){
   return PORTAL_NAV_ITEMS.find(item=>item.id===id)?.target || null;

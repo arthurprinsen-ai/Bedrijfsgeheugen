@@ -4,17 +4,6 @@ on:
   schedule:
     - cron: '12 5 * * *'
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'config/powerhouse-foresight-autonomy.json'
-      - 'scripts/brain/foresight-autonomy.mjs'
-      - 'portal-v2/foresight-intelligence.js'
-      - 'tests/powerhouse-foresight-autonomy.test.mjs'
-      - 'tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs'
-      - 'supabase/migrations/20260928203500_powerhouse_foresight_prediction_intelligence_v2.sql'
-      - '.github/workflows/powerhouse-foresight-autonomy.yml'
-
 permissions:
   contents: read
   actions: read

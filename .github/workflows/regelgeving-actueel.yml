@@ -11,12 +11,6 @@ name: Regelgeving en externe data actueel
 on:
   schedule:
     - cron: '0 6 * * 1'
-  pull_request:
-    paths:
-      - 'portal-v2/regelgeving.js'
-      - 'portal-v2/external-data.js'
-      - 'tests/delivery-regelgeving-actueel.test.mjs'
-      - '.github/workflows/regelgeving-actueel.yml'
   workflow_dispatch:
 
 permissions:

@@ -1,0 +1,39 @@
+{
+  "id": "customer-sovereignty-api-redaction-v1",
+  "fingerprint": "sovereignty-cross-domain-tenant-readback-internal-metadata-exposure-v1",
+  "compiler": {
+    "failure_class": "CUSTOMER_AUDIT_METADATA_EXPOSURE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The tenant Data Sovereignty API returned raw last_change_impact audit payload in customer GET and POST JSON, which contained change actor, before/after policy and internal evidence IDs even though the portal interface did not render these fields.",
+  "prevention": [
+    "Project the tenant-safe response server-side for every customer GET and POST.",
+    "Preserve the full Supabase EU audit ledger and authenticated internal-only canonical administration view.",
+    "Expose only review status, normalized change type and non-materiality ESRS candidate identifiers; never infer validated compliance.",
+    "Verify no actor, change ID, before/after or evidence references are present in the customer JSON."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sovereignty-customer-api-redaction-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sovereignty-customer-api-redaction-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sovereignty-customer-api-redaction-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-sovereignty-customer-api-redaction-v1.test.mjs"
+    ],
+    "source": [
+      "platform/read-models/sovereignty-public-readback.mjs",
+      "netlify/functions/data-sovereignty.mjs"
+    ],
+    "outcome": "Customer API redaction implemented on both GET and POST; production readback pending"
+  }
+}

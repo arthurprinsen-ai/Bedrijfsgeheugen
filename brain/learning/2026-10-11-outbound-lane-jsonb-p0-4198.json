@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|p0-4198|outbound-lane-jsonb-quoted-evidence|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "RUNTIME_TELEMETRY_JSONB_DOUBLE_ENCODING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-outbound-lane-jsonb-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-outbound-lane-jsonb-p0-4198.test.mjs"
+    ]
+  },
+  "root_cause": "The hourly commercial lane audit successfully ran in production 2026-10-11 11:02Z but inserted JSONB values as quoted JSON strings because the PostgreSQL driver inferred JSONB parameter encoding on already-stringified JSON. This made evidence->>'decision' null despite the string containing a decision.",
+  "prevention_rule": "For existing json-string bound parameters use ::text::jsonb for explicit server-side parsing; preserve no-provider-ack evidence and hourly CAS. Verify jsonb_typeof(evidence)='object' on the next original Heartbeat run.",
+  "evidence": {
+    "runtime": "four independent hourly lane events at 2026-10-11T11:02:06Z, evidence jsonb_typeof=string",
+    "planned_test": "readback must be object"
+  },
+  "outcome": {
+    "source_repair_pending": true,
+    "production_readback_pending": true,
+    "sent_today_false": true
+  }
+}

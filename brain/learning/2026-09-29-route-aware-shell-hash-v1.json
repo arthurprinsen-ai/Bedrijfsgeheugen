@@ -1,0 +1,35 @@
+{
+  "fingerprint": "route-aware-shell-hash-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The live canonical-shell verifier treated correct per-route NL/EN hrefs inside the shared mobile menu as structural shell drift.",
+  "root_cause": "Raw component hashing included route-bound language href and aria-current state even though those values are intentionally page-specific while the shell structure remains canonical.",
+  "prevention": [
+    "Canonical component hashes normalize only href and aria-current on data-bg-language-option anchors.",
+    "All non-locale navigation links and structural markup remain hash-significant.",
+    "Production shell readback must accept route-aware locale state while still detecting genuine header/mobile-menu drift."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-route-aware-shell-hash-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-route-aware-shell-hash-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-route-aware-shell-hash-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_FALSE_DRIFT",
+    "scope": "WEBSITE_SHARED_SHELL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}

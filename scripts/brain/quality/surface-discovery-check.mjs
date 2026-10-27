@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { discoverQualitySurfaces, buildDiscoveryObligations } from './surface-discovery.mjs';
 
 const PRODUCT_PREFIXES = ['site/', 'portal-v2/', 'public/', 'netlify/functions/', 'supabase/', 'contracts/openapi/'];
@@ -9,10 +10,28 @@ function arg(name) {
   return index >= 0 ? process.argv[index + 1] : null;
 }
 
+function reviewedHistoricalMirrors() {
+  const securityGate = fs.readFileSync('scripts/brain/check_powerhouse_supabase_security.py', 'utf8');
+  const entries = new Map();
+  for (const match of securityGate.matchAll(/"(supabase\/migrations\/[^"]+\.sql)"\s*:\s*"([0-9a-f]{40})"/g)) {
+    entries.set(match[1], match[2]);
+  }
+  return entries;
+}
+
+function exactHistoricalMirror(file, reviewed) {
+  const expected = reviewed.get(file);
+  if (!expected || !fs.existsSync(file)) return false;
+  const actual = execFileSync('git', ['hash-object', file], { encoding: 'utf8' }).trim();
+  return actual === expected;
+}
+
 function loadFiles(paths) {
+  const reviewed = reviewedHistoricalMirrors();
   return paths
     .filter(file => PRODUCT_PREFIXES.some(prefix => file.startsWith(prefix)))
     .filter(file => fs.existsSync(file) && fs.statSync(file).isFile())
+    .filter(file => !exactHistoricalMirror(file, reviewed))
     .map(file => ({ path: file, content: fs.readFileSync(file, 'utf8') }));
 }
 

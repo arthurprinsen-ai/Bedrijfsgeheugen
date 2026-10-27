@@ -1,0 +1,35 @@
+{
+  "version": "POWERHOUSE-PORTAL-EXPERIENCE-v2",
+  "fingerprint": "portal-v2-responsive-end-to-end-v2",
+  "owner": "powerhouse-product-experience",
+  "goal": "customer-facing portal is robust, calm, modern, responsive and reliable end to end",
+  "authority": {
+    "stylesheet": "portal-v2/experience.css",
+    "runtime": "portal-v2/experience.js",
+    "route_registry": "portal-v2/page-registry.js",
+    "router": "portal-v2/router.js",
+    "visual_assurance": "config/powerhouse-portal-visual-assurance-v1.json",
+    "machine_signal": "bg:portal-experience-signal"
+  },
+  "invariants": [
+    "single_navigation_authority",
+    "single_experience_authority",
+    "all_dynamic_views_inherit_experience_runtime",
+    "no_horizontal_page_overflow",
+    "visuals_fit_container_or_use_explicit_internal_scroll",
+    "critical_touch_targets_at_least_44px",
+    "keyboard_focus_visible",
+    "reduced_motion_respected",
+    "route_interactions_emit_signals",
+    "runtime_errors_and_visual_overflow_emit_powerhouse_signals",
+    "mobile_390_and_narrow_320_first_class"
+  ],
+  "acceptance": {
+    "horizontal_overflow_px_max": 2,
+    "visual_overflow_px_max": 2,
+    "critical_navigation_touch_target_px_min": 44,
+    "runtime_error_budget": 0,
+    "screenshot_matrix": 24
+  },
+  "powerhouse_loop": ["input","decision","action","readback","outcome","measurement","learning","guard"]
+}

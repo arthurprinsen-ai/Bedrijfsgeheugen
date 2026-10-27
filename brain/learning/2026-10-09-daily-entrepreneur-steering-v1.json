@@ -1,0 +1,61 @@
+{
+  "fingerprint": "powerhouse|one-brain|daily-entrepreneur-steering|v1",
+  "date": "2026-10-09",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "The existing ONE BRAIN Portal V2 daily cockpit presents knowledge, decisions and actions, but a verified outcome and the feedback to the next decision are not equally visible as part of the everyday entrepreneur experience.",
+  "root_cause": "The interface emphasized forecasts, priority cards and technical module navigation instead of a single visible daily know-decide-do-measure-learn habit with strict outcome and learning proof.",
+  "fix": "Extend the existing executive cockpit with evidence-aware measurement and learning stages, preserve the existing authorization/monitoring actions, and keep outcome-with-evidence distinct from execution and learning-with-next-decision distinct from outcome.",
+  "prevention": [
+    "Use tenant-scoped source refs and fresh evidence before showing an outcome as verified.",
+    "Require learning_verified, learning_evidence_refs and an explicit next decision before claiming learning.",
+    "Keep the daily cockpit a projection of ONE BRAIN; create no parallel scheduler, module, database, outbound engine or memory.",
+    "Unauthenticated experience has no action controls or invented outputs.",
+    "Protected delivery and authenticated client/readback are required to claim production value."
+  ],
+  "evidence": {
+    "code": "portal-v2/operating-system/executive-cockpit.js",
+    "style": "portal-v2/operating-system/styles.js",
+    "test": "portal-v2/tests/daily-entrepreneur-steering.test.mjs",
+    "productContract": "docs/changes/2026-10-09-daily-entrepreneur-steering-v1.md",
+    "systemMap": "platform/system-map/canonical-system-map.mjs",
+    "skill": "skills/powerhouse-product-led-growth.md",
+    "canonicalEval": "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+  },
+  "productionTruth": "As observed 2026-10-09, powerhouse_daily_runs state degraded for the current day; P0 #4198 remains open. Feature is only a candidate until protected promotion, production readback and authenticated tenant end-to-end evidence.",
+  "outcome": "A product experience candidate and regression added; no claim of deployed commercial closed loop or verified customer ROI.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+    ],
+    "invariants": [
+      "no fabricated realized value",
+      "provider delivery is not economic outcome",
+      "learning requires separate verified evidence and next decision",
+      "same tenant projection, one Brain, no parallel scheduler"
+    ],
+    "regressions": [
+      "portal-v2/tests/daily-entrepreneur-steering.test.mjs",
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+    ],
+    "productionCriteria": [
+      "exact deployed SHA",
+      "authenticated tenant screenshots/readback",
+      "real outcome receipt",
+      "next decision and verified learning"
+    ]
+  },
+  "compiler": {
+    "failure_class": "ENTREPRENEUR_DAILY_LEARNING_VISIBILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

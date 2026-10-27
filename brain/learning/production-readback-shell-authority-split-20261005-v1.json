@@ -1,0 +1,42 @@
+{
+  "learningId": "production-readback-shell-authority-split-20261005-v1",
+  "fingerprint": "production-readback-duplicate-pricing-oracle-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T19:58:00+02:00",
+  "problem": "Post-merge canonical shell live readback failed after the pricing verifier was corrected because the global shell contract still independently required retired pricing page-tools.",
+  "rootCause": "Pricing semantics had two authorities: live-contract.mjs and contracts.mjs. The latter still encoded bgx-vraagbalk, bgx-rekenaar and bgx-rol after the canonical commercial pricing surface had changed.",
+  "root_cause": "Pricing semantics had two authorities: live-contract.mjs and contracts.mjs. The latter still encoded bgx-vraagbalk, bgx-rekenaar and bgx-rol after the canonical commercial pricing surface had changed.",
+  "preventionRule": "Global shell contracts may validate shared shell structure only; route-specific commercial semantics must have exactly one route-level authority.",
+  "prevention": [
+    "Keep pricing business semantics exclusively in tools/site-shell/live-contract.mjs.",
+    "Keep tools/site-shell/contracts.mjs limited to global shell identity and legacy-shell rejection.",
+    "Regression-test that retired bgx pricing tool names cannot re-enter the global shell contract.",
+    "Preserve exact production release identity and fail-closed live readback."
+  ],
+  "evidence": {
+    "originatingPr": 3741,
+    "pricingRecoveryPr": 3776,
+    "failingPostMergeRun": 37352198333,
+    "implementation": [
+      "tools/site-shell/contracts.mjs",
+      "tools/site-shell/test-shell-components.mjs",
+      "tests/brain-production-readback-shell-authority-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-shell-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-shell-authority-v1.test.mjs"
+    ],
+    "expected": "Global shell verification passes current canonical pricing pages without retired page-tools while route-specific pricing semantics remain enforced by live-contract.mjs."
+  }
+}

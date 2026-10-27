@@ -47,7 +47,12 @@ async function accounts(limit=30){
   return [...byCompany.values()].sort((a,b)=>b.expected_account_value_eur-a.expected_account_value_eur||a.best_revenue_rank-b.best_revenue_rank).slice(0,limit);
 }
 async function modelHealth(){return rest('powerhouse_model_health_v1?select=*&order=sample_size.desc')}
-async function attribution(limit=50){return rest(`powerhouse_revenue_attribution_v1?select=*&order=occurred_at.desc&limit=${limit}`)}
+async function attribution(limit=50){return rest(`powerhouse_revenue_attribution_snapshot_v1?select=*&order=conversion_at.desc,touch_at.asc&limit=${limit}`)}
+async function eventSpine(limit=50){return rest(`powerhouse_revenue_event_spine_v1?select=*&order=occurred_at.desc&limit=${limit}`)}
+async function intentScores(limit=50){return rest(`powerhouse_prospect_intent_score_v1?select=*&order=intent_score.desc,intent_confidence.desc&limit=${limit}`)}
+async function nextBestActions(limit=50){return rest(`powerhouse_next_best_action_contract_v1?select=*&order=canonical_intent_score.desc,action_confidence.desc.nullslast&limit=${limit}`)}
+async function rocketSpineHealth(){return arr(await rest('powerhouse_revenue_event_spine_health_v1?select=*&limit=1'))[0]||null}
+async function runRocketSpine(date:string){return rest('rpc/powerhouse_revenue_event_spine_cycle_v1',{method:'POST',body:JSON.stringify({p_run_date:date})})}
 async function experiments(limit=50){return rest(`powerhouse_experiment_learning_v2?select=*&order=calendar_date.desc.nullslast&limit=${limit}`)}
 async function marketTruthHealth(){return arr(await rest('powerhouse_market_truth_health_v1?select=*&limit=1'))[0]||null}
 async function ensureForecastLineage(date:string){return rest('rpc/powerhouse_ensure_commercial_progression_forecasts_v1',{method:'POST',body:JSON.stringify({p_run_date:date})})}
@@ -91,15 +96,17 @@ async function snapshotStatus(){
   return{snapshot_refreshed_at:refreshedAt||null,snapshot_age_minutes,snapshot_stale};
 }
 async function healthReadback(){
-  const [rows,snapshot]=await Promise.all([
+  const [rows,snapshot,rocketSpine]=await Promise.all([
     rest('powerhouse_revenue_intelligence_health_v1?select=*&limit=1'),
-    snapshotStatus()
+    snapshotStatus(),
+    rocketSpineHealth()
   ]);
   const baseHealth=arr(rows)[0]||{structural_lineage_gaps:0,research_queue_count:0,model_health_segments:0,model_watch_segments:0,intelligence_state:'completed'};
-  return{...baseHealth,...snapshot};
+  return{...baseHealth,...snapshot,rocket_spine:rocketSpine};
 }
 async function dailyIntelligence(runDate?:string){
   const date=clean(runDate)||new Date().toISOString().slice(0,10);
+  const rocketSpine=await runRocketSpine(date);
   const forecastBridge=await ensureForecastLineage(date);
   const snapshotRefresh=await refreshCommandCenterSnapshot();
   const marketTruthMaturity=await matureMarketTruth();
@@ -107,23 +114,27 @@ async function dailyIntelligence(runDate?:string){
   const health=await healthReadback();
   const structural_lineage_gaps=num(health.structural_lineage_gaps,0);const research_queue_count=num(health.research_queue_count,0);const model_health_segments=num(health.model_health_segments,0);const model_watch_segments=num(health.model_watch_segments,0);const snapshot_stale=health.snapshot_stale===true;const state=structural_lineage_gaps>0||snapshot_stale?'degraded':'completed';
   const existing=await rest(`powerhouse_daily_runs?run_date=eq.${date}&select=*&limit=1`).catch(()=>[]);const prior=arr(existing)[0]||{};
-  const evidence={...(prior.evidence||{}),revenue_intelligence_loop:{version:'1.3.0',structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,identity_gaps:num(health.identity_gaps,0),forecast_lineage_gaps:num(health.forecast_lineage_gaps,0),runtime_errors:num(health.runtime_errors,0),forecast_bridge:forecastBridge,snapshot_refresh:snapshotRefresh,snapshot_refreshed_at:health.snapshot_refreshed_at||null,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale,market_truth_maturity:marketTruthMaturity,market_truth_learning:marketTruthLearning,verified_at:new Date().toISOString()}};
+  const evidence={...(prior.evidence||{}),revenue_intelligence_loop:{version:'1.4.0',rocket_spine:rocketSpine,structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,identity_gaps:num(health.identity_gaps,0),forecast_lineage_gaps:num(health.forecast_lineage_gaps,0),runtime_errors:num(health.runtime_errors,0),forecast_bridge:forecastBridge,snapshot_refresh:snapshotRefresh,snapshot_refreshed_at:health.snapshot_refreshed_at||null,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale,market_truth_maturity:marketTruthMaturity,market_truth_learning:marketTruthLearning,verified_at:new Date().toISOString()}};
   const row={run_date:date,dedupe_key:prior.dedupe_key||`daily:${date}`,state,action_count:num(prior.action_count,0),recommendation_count:num(prior.recommendation_count,0),evidence,completed_at:state==='completed'?(prior.completed_at||new Date().toISOString()):prior.completed_at||null,updated_at:new Date().toISOString()};
   await rest('powerhouse_daily_runs?on_conflict=run_date',{method:'POST',headers:{prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(row)});
-  return{runDate:date,state,structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,forecastBridge,snapshotRefresh,marketTruthMaturity,marketTruthLearning,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale};
+  return{runDate:date,state,rocketSpine,structural_lineage_gaps,research_queue_count,model_health_segments,model_watch_segments,forecastBridge,snapshotRefresh,marketTruthMaturity,marketTruthLearning,snapshot_age_minutes:health.snapshot_age_minutes,snapshot_stale};
 }
 
 Deno.serve(async(req:Request)=>{try{
   if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
   const u=new URL(req.url);const route=u.pathname.split('/').filter(Boolean).pop()||'health';
-  const scopes:Record<string,string>={health:'health','command-center':'actions',accounts:'opportunities',research:'learning','model-health':'learning',attribution:'learning',experiments:'learning','experiment-assign':'learning','experiment-link':'learning',economics:'learning',feedback:'learning','market-truth-health':'learning',daily:'daily'};const scope=scopes[route]||'learning';
+  const scopes:Record<string,string>={health:'health','command-center':'actions',accounts:'opportunities',research:'learning','model-health':'learning',attribution:'learning','event-spine':'learning',intent:'opportunities','next-best-actions':'actions','spine-health':'health',experiments:'learning','experiment-assign':'learning','experiment-link':'learning',economics:'learning',feedback:'learning','market-truth-health':'learning',daily:'daily'};const scope=scopes[route]||'learning';
   if(!await authorized(req,scope))return json({ok:false,error:'UNAUTHORIZED'},401);
-  if(route==='health'&&req.method==='GET'){const readback=await healthReadback();return json({ok:true,runtime:'powerhouse-revenue-intelligence',version:'1.3.0',canonicalCore:'powerhouse-runtime',parallelBrain:false,snapshotBacked:true,commandCenterV2:true,accountIntelligence:true,researchFailClosed:true,modelMonitoring:true,forecastBridge:true,marketTruthIngress:true,db:true,readback,at:new Date().toISOString()})}
+  if(route==='health'&&req.method==='GET'){const readback=await healthReadback();return json({ok:true,runtime:'powerhouse-revenue-intelligence',version:'1.4.0',canonicalCore:'powerhouse-runtime',parallelBrain:false,rocketRevenueSpine:true,identityGraph:true,multiTouchAttribution:true,continuousIntentScoring:true,canonicalNextBestAction:true,snapshotBacked:true,commandCenterV2:true,accountIntelligence:true,researchFailClosed:true,modelMonitoring:true,forecastBridge:true,marketTruthIngress:true,db:true,readback,at:new Date().toISOString()})}
   if(route==='command-center'&&req.method==='GET')return json({ok:true,items:await commandCenter(limitOf(u,20))});
   if(route==='accounts'&&req.method==='GET')return json({ok:true,items:await accounts(limitOf(u,30))});
   if(route==='research'&&req.method==='GET')return json({ok:true,items:await research(limitOf(u,30))});
   if(route==='model-health'&&req.method==='GET')return json({ok:true,items:await modelHealth()});
-  if(route==='attribution'&&req.method==='GET')return json({ok:true,items:await attribution(limitOf(u,50))});
+  if(route==='attribution'&&req.method==='GET')return json({ok:true,model:'position_based_20_40_40',items:await attribution(limitOf(u,50))});
+  if(route==='event-spine'&&req.method==='GET')return json({ok:true,items:await eventSpine(limitOf(u,50))});
+  if(route==='intent'&&req.method==='GET')return json({ok:true,items:await intentScores(limitOf(u,50))});
+  if(route==='next-best-actions'&&req.method==='GET')return json({ok:true,items:await nextBestActions(limitOf(u,50))});
+  if(route==='spine-health'&&req.method==='GET')return json({ok:true,health:await rocketSpineHealth()});
   if(route==='experiments'&&req.method==='GET')return json({ok:true,items:await experiments(limitOf(u,50))});
   if(route==='market-truth-health'&&req.method==='GET')return json({ok:true,health:await marketTruthHealth()});
   if(route==='experiment-assign'&&req.method==='POST'){const body=await req.json().catch(()=>fail('valid JSON body required'));return json({ok:true,assignment:await assignExperiment(body)});}

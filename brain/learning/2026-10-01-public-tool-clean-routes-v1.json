@@ -1,0 +1,33 @@
+{
+  "fingerprint": "website|netlify-routing|public-tools|clean-routes|20261001",
+  "observed_at": "2026-10-01T14:02:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The public CTAs pointed to /pakketadvies and /portaal-demo while Netlify had no explicit clean-URL rewrite for either route, so the backing HTML existed but the public routes could fail.",
+  "root_cause": "The new public tool pages were added as top-level HTML files without extending the existing explicit clean-route rewrite contract in _redirects.",
+  "decision": "Add explicit 200 rewrites from /pakketadvies to /pakketadvies.html and /portaal-demo to /portaal-demo.html, and treat every new top-level public CTA target as requiring route-level production readback.",
+  "prevention": [
+    "Every new top-level public HTML tool must have an explicit clean-route contract when the site relies on _redirects for extensionless URLs.",
+    "CTA acceptance requires opening the production destination URL, not only checking that the backing file exists.",
+    "Public demo and advisor routes must be included in route regression coverage before promotion."
+  ],
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "_redirects",
+    "pakketadvies.html",
+    "portaal-demo.html"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-route-body-readiness-retry-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-production-route-body-readiness-retry-v1.test.mjs"
+  ]
+}

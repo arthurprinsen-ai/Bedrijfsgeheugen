@@ -1,0 +1,68 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|green-assurance|truthful-closed-loop|2026-09-29",
+  "date": "2026-09-29",
+  "status": "ACTIVE",
+  "context": "End-to-end assurance/recovery of Powerhouse health after user requested every red state become green.",
+  "observations": [
+    "32/32 intelligence layers and 18/18 required jobs can be active while overall architecture/content health is still non-green.",
+    "Required source freshness, structural lineage, terminal obligations and external outcome/readback must be evaluated independently.",
+    "A single provider quota/outage must not block provider-neutral external-intelligence capability when another governed approved source is fresh.",
+    "Legacy Buffer telemetry must not remain a required green gate after publication authority moved to canonical Composio/Meta routes.",
+    "Already-published LinkedIn side effects with provider acknowledgement and republish_forbidden must never be duplicated merely because readback permission is degraded.",
+    "Instagram Mira publication requires exact asset proof plus temporal start/middle/end evidence; generated media alone is not publication proof."
+  ],
+  "prevention_rules": [
+    "Never promote GREEN from wiring/activity alone.",
+    "Never synthesize source observations or business outcomes.",
+    "Keep provider-specific telemetry visible but gate whole-Brain health on provider-neutral capability contracts.",
+    "Retired tooling is telemetry-only unless explicitly re-authorized as canonical.",
+    "Repair lineage prospectively in the existing canonical tables/functions; do not create parallel stores.",
+    "Recompute central health only after read-after-write evidence."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json"
+  ],
+  "truth_contract_target": "config/powerhouse-truth-status-contract.json",
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "truth_boundary": "This learning records verified operating rules and observed architecture behavior; it does not assert all current health is green.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  },
+  "root_cause": "Powerhouse health was partly inferred from wiring/activity and provider-specific/legacy signals instead of requiring fresh end-to-end evidence, complete lineage, terminal obligations and readback for the required capability.",
+  "evidence": {
+    "observed_runtime": {
+      "intelligence_layers_wired": "32/32",
+      "required_jobs_active": "18/18",
+      "prior_architecture_state": "RED",
+      "repaired_architecture_state": "AMBER",
+      "structural_lineage_gaps_repaired": "1->0"
+    },
+    "repairs": [
+      "required provider-neutral external-intelligence observation refreshed from governed current source",
+      "Tavily removed as whole-Brain single point of failure while remaining visible as provider telemetry",
+      "legacy Buffer removed from critical full-cycle green gate",
+      "missing commercial_progression forecast lineage repaired without synthesizing outcome",
+      "new Mira Instagram asset generated but correctly not treated as published/readback proof"
+    ],
+    "truth_boundary": "These facts support the assurance contract; they do not assert every runtime obligation is currently green."
+  }
+}

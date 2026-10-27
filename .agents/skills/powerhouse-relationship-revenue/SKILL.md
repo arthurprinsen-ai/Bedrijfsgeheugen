@@ -105,3 +105,55 @@ Gebruik standaard `powerhouse-relationship-external-intelligence-v1`. Relevante 
 
 ## Daily full connection enrichment
 Gebruik permanent `powerhouse-daily-full-connection-enrichment-v1`. Iedere canonieke connectie wordt iedere kalenderdag opnieuw verrijkt met alle reeds ingeladen relevante LinkedIn-, bedrijfs-, publieke web-, runtime-, opportunity- en outcome-evidence. De full-graph refresh draait set-based binnen de bestaande `powerhouse-commercial-learning-v1` scheduler. Gedetailleerde evidence blijft in de canonieke bronstores; de dagelijkse enrichment-state is een rollup/provenance-laag en geen parallel CRM. Nieuwe evidence die later op de dag binnenkomt wordt bij de volgende bestaande commerciële cyclus opnieuw op de volledige graph geprojecteerd.
+
+
+## €1M Revenue Operating Contract — 29 september 2026
+Fingerprint: `powerhouse-one-million-revenue-operating-contract-v1`.
+
+Deze skill erft verplicht `config/powerhouse-one-million-revenue-operating-contract-v1.json`.
+
+Niet-onderhandelbaar:
+- North star: €1.000.000 gerealiseerde omzet binnen 365 dagen; paid order en realized revenue wegen altijd zwaarder dan bereik, traffic, posts, scans, leads of meetings.
+- Elke dagelijkse commerciële run kiest uit één gedeelde next-best-action ruimte: bedrijfspost, Mira-Instagram, SEO/blog/CRO, contextuele LinkedIn-reactie, warm/consented e-mail, ondersteunde private follow-up, due follow-up, offerte/offer follow-up, warme referral, partner/workshop follow-up of value asset.
+- Een gekwalificeerde veilig uitvoerbare actie wordt uitgevoerd; alleen aanbevelen/draften is niet terminal wanneer de canonieke executor beschikbaar is.
+- Achterstand op omzetpace verhoogt kwaliteit en aantal gekwalificeerde research/value/follow-up-acties, maar omzeilt nooit evidence, identity, privacy, consent, suppression, dedupe, fatigue of provider-ack gates.
+- Generieke cold-bulk autosend blijft verboden. Koude prospects mogen automatisch worden gevonden, verrijkt, gescoord en voorbereid; extern verzenden gebeurt alleen binnen een afzonderlijk goedgekeurde lawful/consent-based eligibility route.
+- Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
+- LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
+- Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Bounded relationship revenue refresh — 29 september 2026
+Fingerprint: `relationship-revenue-bounded-refresh-v1`.
+
+De relationship-engine selecteert eerst actuele kandidaten uit recente runtime-events, open opportunities, recente outcomes en recent bijgewerkte warme relaties. Pas daarna worden relationship score, evidence score, research need en activation readiness berekend.
+
+Population-wide materialisatie van `powerhouse_relationship_revenue_intelligence_v1`, `powerhouse_person_intelligence_v1` of `powerhouse_company_intelligence_v1` vóór candidate pruning is een performance-regressie.
+
+De bestaande harde regels blijven gelden: max 3 acties/30 dagen per persoon, geen generieke pitch, externe outreach alleen via de afzonderlijk geautoriseerde consent/relationship executor, identity/destination verification en realized-revenue truth.
+
+
+## Closed email reply → revenue learning — 29 september 2026
+Fingerprint: `powerhouse-email-reply-learning-v1`.
+
+Een autonome e-mail is nooit terminal op `sent`. De canonieke commerciële lineage is:
+`sales_action/send → Gmail provider readback → reply_event → classification → suppression/follow-up → sales_outcome → meeting/scan/proposal/order → realized revenue → learning → next-best-action`.
+
+Harde regels:
+- iedere Gmail-reply wordt exact-once verwerkt op provider message ID;
+- de reply blijft gekoppeld aan de oorspronkelijke `powerhouse_sales_actions.action_id` via `powerhouse_email_reply_events.action_id`;
+- classificaties omvatten minimaal `positive`, `question`, `objection_price`, `objection_timing`, `objection_need`, `objection_authority`, `negative`, `unsubscribe`, `other`;
+- expliciete unsubscribe/do-not-contact en duidelijke “geen interesse; wij nemen zelf contact op” activeren `powerhouse_email_contact_suppressions`;
+- suppressie is een harde write-time guard voor toekomstige `autonomous_email` acties en mag niet door een alternatieve executor worden omzeild;
+- timing-replies mogen precies één gededupliceerde nurture/follow-up action krijgen met thread- en datumcontext;
+- positieve replies/vragen/actionable objections mogen precies één contextuele follow-up krijgen; geen duplicate follow-ups;
+- learning optimaliseert primair op realized revenue en orders, daarna proposal/meeting/positive reply; reply-volume is secundair;
+- geen tweede reply-cron, inbox-store, CRM of learning-loop: owner blijft `Powerhouse Growth & Revenue OS` / `powerhouse-commercial-learning-v1`;
+- als de bestaande cycle-engine een tweede outcome op een reeds gesloten send-cycle niet accepteert, blijft `origin_action_id` evidence-bound via het reply-event/outcome-evidence; de cycle guard wordt niet omzeild of verzwakt.
+
+Productieproof 2026-09-29:
+- Gmail readback leverde twee echte replies op;
+- DID Telecom → `objection_need` + actieve suppressie;
+- Tech Festival → `objection_timing` + één nurture-action voor 2027;
+- `powerhouse_refresh_email_learning_stats()` telt deze replies terug in de revenue-first learning projection;
+- parallelle `powerhouse-email-reply-loop-hourly-v1` cron is verwijderd; één canonieke owner blijft over.

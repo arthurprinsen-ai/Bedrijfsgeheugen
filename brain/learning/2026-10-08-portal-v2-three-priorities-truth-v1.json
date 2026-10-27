@@ -1,0 +1,45 @@
+{
+  "id": "portal-v2-three-priorities-truth-20261008-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "portal-v2|top-three|unknown-scenario-numeric-coercion|v1",
+  "root_cause": "The canonical Portal V2 cockpit showed an unbounded priority list; its metric formatter and scenario engine converted missing numeric evidence to zero, concealing unknown customer financial data.",
+  "prevention": [
+    "Reuse canonical Portal V2, decision runtime and simulation engine instead of introducing parallel stores.",
+    "Bound the executive first screen to the top three ranked decisions without discarding additional candidates.",
+    "Preserve unknown/null/blank metrics and confidence instead of synthesizing a zero.",
+    "Enforce regression tests and protected release evidence before claiming live production."
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_SCENARIO_UNKNOWN_VALUE_COERCION",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "entrypoint": "portal-v2/company-cockpit-ui.js",
+    "regression": [
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
+    ],
+    "contract": "portal-v2/operating-system/scenario-engine.js"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
+    ],
+    "success_criteria": [
+      "Three top decisions are visible and the other decisions stay accessible.",
+      "Null/blank scenario baselines do not produce false zero-value outcomes.",
+      "Protected Required and CodeQL pass at exact HEAD, followed by merge and production readback."
+    ]
+  },
+  "production_claim": "NOT_PROVEN",
+  "outcome": "CANDIDATE_PENDING_PROTECTED_DELIVERY"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "customer-local-ai-attested-executor-20261008-v1",
+  "fingerprint": "powerhouse-local-ai-ollama-vllm-loopback-proof-consent-csrd-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Local/on-prem and air-gapped choices were configurable in the Data Sovereignty Control Plane, but there was no separately deployable local-model routing contract with tenant, signed local readback, CSRD approval and strict loopback egress.",
+  "prevention": [
+    "Never route local or air-gapped tenant prompts through hosted Bedrijfsgeheugen inference functions.",
+    "Require local operator isolation and independently signed, time-bounded tenant/use-case/model proof, including pinned model digest, network, storage/RAG and health readback.",
+    "Use existing Brain cross-domain approval for privacy, security, supplier, finance, sustainability and CSRD/ESRS scope, including explicit customer consent.",
+    "Accept only server-owned model endpoint inventory pinned to numeric localhost, error on redirects or failures, and never retry/fallback to cloud.",
+    "Do not claim real air-gap security, functioning hardware, measured emissions, RAG residency, or tenant deployment without independent live verification."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-attested-local-ai-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-attested-local-ai-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-attested-local-ai-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      "platform/runtime/attested-local-ai.mjs"
+    ],
+    "tests": [
+      "tests/brain-attested-local-ai-v1.test.mjs"
+    ],
+    "outcome": "Local, strict signed runtime adapter foundation offered as protected PR; deployed customer hardware not proven"
+  }
+}

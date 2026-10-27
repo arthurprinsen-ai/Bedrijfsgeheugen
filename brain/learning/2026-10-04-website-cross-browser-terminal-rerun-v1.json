@@ -1,0 +1,29 @@
+{
+  "fingerprint": "website-cross-browser-terminal-rerun-20261004-v1",
+  "observed_at": "2026-10-04T13:55:00Z",
+  "type": "PREVENTION",
+  "problem": "The canonical header component test still expected a superseded mobile aria-controls target while the actual shared header correctly controlled bgkopMob.",
+  "root_cause": "Cross-browser recovery updated the canonical header markup but its component regression contract was not updated in the same terminal lineage.",
+  "decision": "Align the component test with the canonical header and force a fresh cross-browser evidence generation on current main.",
+  "prevention": [
+    "Header markup and component tests must change in the same obligation when ARIA control IDs change.",
+    "A terminal rerun must produce fresh exact-preview screenshot evidence; historical green evidence is insufficient.",
+    "Visual thresholds remain unchanged."
+  ],
+  "compiler": {
+    "failure_class": "HEADER_COMPONENT_CONTRACT_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tests/components/header.test.mjs",
+    "config/powerhouse-website-cross-browser-assurance-v1.json"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}

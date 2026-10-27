@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "content-growth|post-page-performance|canonical-source-feedback|20261024-v1",
+  "obligation_id": "content-growth:daily-provider-post-and-website-feedback-v1",
+  "status": "CANDIDATE",
+  "failure_class": "DAILY_CONTENT_LEARNING_IGNORED_LIVE_SOCIAL_AND_WEB_METRICS",
+  "root_cause": "The scheduled content growth learner consumed only a static repository event/research snapshot while owned actual social metrics and consented website interactions remained in Supabase. This prevented per-post likes/comments/views and real blog/page CTA progression from influencing next-day learning.",
+  "observed_evidence": {
+    "sources": [
+      "public.social_posts",
+      "public.social_metric_snapshots",
+      "public.bg_interacties",
+      "public.powerhouse_growth_source_daily_v1"
+    ],
+    "instagram": "Recent 5 view-measured posts: 253 views, 1 like, 0 comments in observed available 30-day snapshot; not causal proof.",
+    "linkedin": "LinkedIn provider often supplies reactions only, not views.",
+    "website": "Page/click aggregate excludes robots and requires consent; no per-page order attribution implied."
+  },
+  "fix": "Add bounded tenant-isolated read-only Supabase provider extractor to the one existing scheduled Content growth learning job, and a deterministic per-post/per-page diagnostic and small next-day hypothesis list into its existing output. Source/access errors must be explicit, not green.",
+  "prevention_rule": "No new scheduler, database, provider collector, anonymous visitor identification, unsupported claims of a reason, zero views from absent denominators, or inferred orders. Optimizations require verified mature source windows and existing experiment/publication guardrails, followed by provider and outcome readback.",
+  "tests": [
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_CONTENT_LEARNING_IGNORED_LIVE_SOCIAL_AND_WEB_METRICS",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required/CodeQL, merged daily source, real scheduled read-only source_state=READ_ONLY_PROVIDER_OBSERVED and measured next-day outcome evidence are separate requirements."
+}

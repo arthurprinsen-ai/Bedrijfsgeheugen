@@ -1,7 +1,7 @@
 {
   "version": "POWERHOUSE-DELIVERY-HYGIENE-v1",
   "wip": {
-    "maxExecutable": 3,
+    "maxExecutable": 1,
     "finishBeforeStart": true,
     "maintenanceQueueSeparate": true,
     "maxTerminalWritersPerObligation": 1

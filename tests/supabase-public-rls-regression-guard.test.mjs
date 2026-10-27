@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 
-const migrationName = '20260916053000_powerhouse_public_rls_regression_guard.sql';
+const migrationName = '20260916053253_powerhouse_public_rls_regression_guard.sql';
 const migration = await readFile(
   new URL(`../supabase/migrations/${migrationName}`, import.meta.url),
   'utf8'

@@ -35,6 +35,37 @@
     return pathname.replace(/\/+/g,'/') + location.search + location.hash;
   };
 
+  // Keep the chosen public-site language across navigation. Static /en/* routes
+  // are the public locale authority, so every same-origin public link follows
+  // the active locale instead of falling back to an unprefixed Dutch route.
+  const NON_PAGE_PREFIXES = ['/api/','/.netlify/','/assets/','/functions/'];
+  function localizedInternalHref(href, target) {
+    const raw = String(href || '').trim();
+    if (!raw || raw[0] === '#' || /^(?:mailto:|tel:|sms:|javascript:|data:|blob:)/i.test(raw)) return raw;
+    let url;
+    try { url = new URL(raw, location.href); } catch { return raw; }
+    if (url.origin !== location.origin) return raw;
+    const lowerPath = url.pathname.toLowerCase();
+    if (NON_PAGE_PREFIXES.some(prefix => lowerPath.startsWith(prefix))) return raw;
+    const stripped = url.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    if (stripped.startsWith('/portal') || stripped.startsWith('/klantportaal')) return raw;
+    url.pathname = (normalizeLocale(target) === 'en'
+      ? '/en' + (stripped === '/' ? '/' : stripped)
+      : (stripped === '/' ? '/' : stripped)).replace(/\/+/g,'/');
+    return url.pathname + url.search + url.hash;
+  }
+
+  function syncInternalLinks(root=document) {
+    if (isPortal()) return;
+    const host = root && root.querySelectorAll ? root : document;
+    host.querySelectorAll('a[href]').forEach(link => {
+      if (link.matches('[data-bg-language-option],[data-bg-locale-fixed]')) return;
+      const current = link.getAttribute('href');
+      const localized = localizedInternalHref(current, locale);
+      if (localized && localized !== current) link.setAttribute('href', localized);
+    });
+  }
+
   const CORE_EN = new Map([
     ['Ontdekken','Discover'],['Oplossingen','Solutions'],['Platform','Platform'],['Prijzen','Pricing'],['Cases','Cases'],
     ['Kennis & bedrijf','Knowledge & business'],['Kennis','Knowledge'],['Over ons','About us'],['Meer','More'],
@@ -283,9 +314,16 @@
 
   function syncControls() {
     document.querySelectorAll('[data-bg-language-option]').forEach(btn => {
-      const selected = btn.dataset.bgLanguageOption === locale;
+      const target = normalizeLocale(btn.dataset.bgLanguageOption);
+      const selected = target === locale;
       btn.setAttribute('aria-selected', String(selected));
       btn.classList.toggle('is-active', selected);
+      if (!isPortal() && btn.tagName === 'A' && SUPPORTED.has(target)) {
+        btn.setAttribute('href', localizedHref(target));
+        btn.setAttribute('hreflang', target);
+        if (selected) btn.setAttribute('aria-current', 'page');
+        else btn.removeAttribute('aria-current');
+      }
     });
     document.querySelectorAll('[data-bg-language-current]').forEach(el => {
       el.textContent = locale === 'nl' ? 'Taal · NL' : 'Language · EN';
@@ -298,6 +336,7 @@
       if (select.value !== locale) select.value = locale;
       select.setAttribute('aria-label', 'Language');
     });
+    syncInternalLinks(document);
   }
 
   async function setLocale(next) {
@@ -340,17 +379,14 @@
       wrap.className = 'bg-mobile-language';
       wrap.innerHTML = '<span class="bg-mobile-language-label" data-bg-language-label>Language</span>' +
         '<div class="bg-mobile-language-select-wrap">' +
-        '<select class="bg-mobile-language-select" data-bg-language-select aria-label="Language">' +
-        '<option value="nl">Dutch</option><option value="en">English</option></select>' +
-        '<span class="bg-mobile-language-chevron" aria-hidden="true">⌄</span></div>' +
-        '<span class="bg-language-error" data-bg-language-error hidden>Switching language failed. Try again.</span>';
+        '<a class="bg-mobile-language-link" href="' + localizedHref('nl') + '" data-bg-language-option="nl" hreflang="nl">Nederlands</a>' +
+        '<a class="bg-mobile-language-link" href="' + localizedHref('en') + '" data-bg-language-option="en" hreflang="en">English</a></div>';
     } else {
       wrap.className = 'bgkop-language';
-      wrap.innerHTML = '<button type="button" class="bgkop-language-current" data-bg-language-current aria-haspopup="listbox" aria-expanded="false">Taal · NL</button>' +
-        '<div class="bgkop-language-menu" data-bg-language-menu role="listbox" hidden>' +
-        '<button type="button" role="option" data-bg-language-option="nl">Nederlands</button>' +
-        '<button type="button" role="option" data-bg-language-option="en">English</button></div>' +
-        '<span class="bg-language-error" data-bg-language-error hidden>Wisselen mislukt. Probeer opnieuw.</span>';
+      wrap.innerHTML = '<button type="button" class="bgkop-language-current" data-bg-language-current aria-haspopup="menu" aria-expanded="false">Taal · NL</button>' +
+        '<div class="bgkop-language-menu" data-bg-language-menu role="menu" hidden>' +
+        '<a role="menuitem" href="' + localizedHref('nl') + '" data-bg-language-option="nl" hreflang="nl">Nederlands</a>' +
+        '<a role="menuitem" href="' + localizedHref('en') + '" data-bg-language-option="en" hreflang="en">English</a></div>';
     }
     return wrap;
   }
@@ -372,9 +408,10 @@
     for (const mobileHost of mobileHosts) {
       if (mobileHost.querySelector('[data-bg-language-switcher="mobile"]')) continue;
       const control = languageControl('mobile');
-      const auth = mobileHost.querySelector('a[href="/inloggen"], a[href="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
+      const auth = mobileHost.querySelector('a[href$="/inloggen"], a[href$="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
       const cta = mobileHost.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta, .bgkop-mcta');
-      mobileHost.insertBefore(control, auth || cta || null);
+      const anchor = [auth, cta].find(node => node && node.parentNode === mobileHost) || null;
+      mobileHost.insertBefore(control, anchor);
     }
 
     syncControls();
@@ -391,18 +428,47 @@
   function bindControlEvents() {
     if (controlsBound) return;
     controlsBound = true;
+
+    // Language selection owns the click before any mobile-menu capture handlers.
+    // This prevents menu teardown/drilldown listeners from swallowing the route switch.
+    window.addEventListener('click', event => {
+      const option = event.target.closest?.('[data-bg-language-option]');
+      if (!option) return;
+      const target = normalizeLocale(option.dataset.bgLanguageOption);
+      if (!SUPPORTED.has(target)) return;
+
+      // Public locale options are real anchors. Keep their native navigation
+      // as the source of truth; JavaScript only persists preference and blocks
+      // competing mobile-menu handlers from swallowing the click.
+      event.stopImmediatePropagation();
+      try { localStorage.setItem(STORAGE_KEY, target); } catch {}
+      document.cookie = 'bg_locale=' + encodeURIComponent(target) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+
+      if (!isPortal() && option.tagName === 'A') {
+        const href = option.getAttribute('href') || localizedHref(target);
+        if (!option.getAttribute('href')) option.setAttribute('href', href);
+        event.preventDefault();
+        closeMenus();
+        window.location.assign(href);
+        return;
+      }
+
+      event.preventDefault();
+      if (isPortal()) {
+        setLocale(target).catch(showLocaleError);
+        return;
+      }
+
+      closeMenus();
+      window.location.assign(localizedHref(target));
+    }, true);
+
     document.addEventListener('change', event => {
       const select = event.target.closest?.('[data-bg-language-select]');
       if (!select) return;
       setLocale(select.value).catch(showLocaleError);
     });
     document.addEventListener('click', event => {
-      const option = event.target.closest?.('[data-bg-language-option]');
-      if (option) {
-        event.preventDefault();
-        setLocale(option.dataset.bgLanguageOption).catch(showLocaleError);
-        return;
-      }
       const current = event.target.closest?.('button[data-bg-language-current]');
       if (current) {
         event.preventDefault();
@@ -428,6 +494,7 @@
       }
       if (!roots.size) return;
       mountControl();
+      roots.forEach(root => syncInternalLinks(root));
       if (locale !== 'en') return;
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>{

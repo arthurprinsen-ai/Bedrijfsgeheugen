@@ -1,0 +1,38 @@
+{
+  "fingerprint": "website|navigation|platform|canonical-v18-route|20261003-v2",
+  "observed_at": "2026-10-03T08:54:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The live HTML still emitted a mobile Platform anchor to /bedrijfsgeheugen because the canonical homepage is rebuilt from a pinned V18 payload.",
+  "root_cause": "The pinned V18 production payload predates the product-route decision and overwrites repository homepage markup during each production build.",
+  "decision": "Repair the historical Platform anchor in the canonical V18 payload projection before generated homepage output is written. Keep the runtime normalization from the previous recovery as defense in depth.",
+  "prevention": [
+    "Canonical generated HTML emits Platform -> /product on desktop and mobile.",
+    "Build fails closed when the historical canonical repair point disappears unexpectedly.",
+    "Runtime navigation normalization remains defense in depth rather than the primary fix."
+  ],
+  "compiler": {
+    "failure_class": "CANONICAL_BUILD_ROUTE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/bouw-v18-production-core.mjs",
+    "https://www.bedrijfsgeheugen.nl/",
+    "PR #3608"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "Live static homepage HTML showed desktop Platform -> /product while the mobile Platform anchor still emitted /bedrijfsgeheugen.",
+      "The pinned V18 production payload is the build authority for homepage HTML and therefore must normalize the mobile Platform route before output."
+    ],
+    "production_readback": [
+      "https://www.bedrijfsgeheugen.nl/",
+      "https://www.bedrijfsgeheugen.nl/product"
+    ],
+    "regression_contract": [
+      "Generated Platform anchors resolve to /product before JavaScript executes."
+    ]
+  }
+}

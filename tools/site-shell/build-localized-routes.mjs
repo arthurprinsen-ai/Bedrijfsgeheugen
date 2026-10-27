@@ -1,9 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { spawn } from 'node:child_process';
 import { parse, serialize } from 'parse5';
+import { translateBatchWithOpenAI } from './static-i18n-openai-fallback.mjs';
 
 const ROOT = process.cwd();
-const MODEL = 'claude-haiku-4-5-20251001';
+// OpenAI Responses is the sole network translation provider; production deploy remains cache-only.
 const SITE = 'https://www.bedrijfsgeheugen.nl';
 const LOCALES = ['nl','en'];
 const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','components','email','intern','preview','site','tools','tests','docs','brain','platform','config','.netlify','dist','nl','en']);
@@ -12,7 +15,41 @@ const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','texta
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json');
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
+const PREPARE_CACHE_ARG = process.argv.find(arg=>arg.startsWith('--prepare-cache='));
+const PREPARE_CACHE_PATCH_NAME = PREPARE_CACHE_ARG ? PREPARE_CACHE_ARG.slice('--prepare-cache='.length) : '';
+if (PREPARE_CACHE_ARG && !/^[a-z0-9][a-z0-9-]{0,79}\.json$/i.test(PREPARE_CACHE_PATCH_NAME)) {
+  throw new Error('STATIC_I18N_CACHE_PATCH_NAME_INVALID');
+}
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
+const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
+const STATIC_I18N_BUILD_CACHE_DIR = String(process.env.STATIC_I18N_BUILD_CACHE_DIR || '').trim()
+  ? path.resolve(ROOT,String(process.env.STATIC_I18N_BUILD_CACHE_DIR).trim())
+  : String(process.env.NETLIFY_CACHE_DIR || '').trim()
+    ? path.join(String(process.env.NETLIFY_CACHE_DIR).trim(),'bg-static-i18n-render-v1')
+    : '';
+const STATIC_I18N_BUILD_CACHE_VERSION = 'bg-static-i18n-render-v1';
+
+function sha256(...parts) {
+  const hash=createHash('sha256');
+  for(const part of parts) hash.update(String(part));
+  return hash.digest('hex');
+}
+
+function normalizeReleaseIdentityForCache(html) {
+  return String(html)
+    .replace(
+      /<meta\b[^>]*name=["']bg-release-commit["'][^>]*>/gi,
+      '<meta name="bg-release-commit" content="__BUILD_COMMIT__">'
+    )
+    .replace(
+      /(<p\b[^>]*class=["'][^"']*\bbgx-stempel\b[^"']*["'][^>]*>).*?(<\/p>)/gis,
+      '$1__BUILD_VERSION_STAMP__$2'
+    )
+    .replace(
+      /(\bvar\s+mijn\s*=\s*["'])[^"']+(["'];)/g,
+      '$1__BUILD_VERSION__$2'
+    );
+}
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
   '/zelfscan', '/frisse-blik', '/inloggen', '/aanmelden', '/contact', '/privacy'
@@ -30,10 +67,57 @@ function publicRoutesFromSitemap() {
   try {
     const xml = fs.readFileSync(SITEMAP_FILE,'utf8');
     for (const match of xml.matchAll(/<loc>https:\/\/www\.bedrijfsgeheugen\.nl([^<]*)<\/loc>/g)) {
-      routes.add(normalizedRoute(match[1] || '/'));
+      const route=normalizedRoute(match[1] || '/');
+      if(route==='/en'||route.startsWith('/en/')) continue;
+      routes.add(route);
+    }
+  } catch {}
+  // SEO intent owners are authoritative public routes even when the checked-in
+  // sitemap is older than the current source tree. This prevents a new money
+  // page from missing its /en peer for one deployment cycle.
+  try {
+    const map=JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    for(const entry of map?.pages||[]){
+      const source=String(entry?.source_route||'');
+      const absolute=resolveSameOriginAbsolute(source);
+      if(absolute) routes.add(normalizedRoute(absolute.path));
     }
   } catch {}
   return routes;
+}
+
+function loadSeoLocaleRevenueMap() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    const bySourceRoute = new Map();
+    for (const entry of parsed?.pages || []) {
+      const source = normalizedRoute(new URL(entry.source_route).pathname);
+      bySourceRoute.set(source,entry);
+    }
+    return { raw: parsed, bySourceRoute };
+  } catch (error) {
+    throw new Error('SEO_LOCALE_REVENUE_MAP_INVALID: ' + (error?.message || String(error)));
+  }
+}
+
+const SEO_LOCALE_REVENUE = loadSeoLocaleRevenueMap();
+
+let seoLocaleRevenueMapCache = null;
+function seoLocaleRevenueMap() {
+  if (seoLocaleRevenueMapCache) return seoLocaleRevenueMapCache;
+  try {
+    const raw = JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    const bySource = new Map();
+    for (const entry of raw?.pages || []) {
+      const source = String(entry?.source_route || '');
+      const absolute=resolveSameOriginAbsolute(source);
+      if (absolute) bySource.set(normalizedRoute(absolute.path), entry);
+    }
+    seoLocaleRevenueMapCache = { raw, bySource };
+  } catch (error) {
+    throw new Error('SEO_LOCALE_REVENUE_MAP_INVALID: ' + (error?.message || String(error)));
+  }
+  return seoLocaleRevenueMapCache;
 }
 
 function walk(dir, rel='') {
@@ -200,23 +284,223 @@ function resolveInternal(value,sourceFile) {
   return {path:resolved,suffix};
 }
 
+function resolveSameOriginAbsolute(value) {
+  try {
+    const url = new URL(String(value));
+    if (url.origin !== SITE) return null;
+    return { path: normalizedRoute(url.pathname), suffix: (url.search || '') + (url.hash || '') };
+  } catch {
+    return null;
+  }
+}
+
 function rewriteLinks(doc,sourceFile,locale,aliases) {
   const visit = node => {
     if (node.tagName) {
       for (const a of node.attrs || []) {
         if (!['href','src','action'].includes(a.name)) continue;
-        const resolved = resolveInternal(a.value,sourceFile);
+        const sameOrigin = resolveSameOriginAbsolute(a.value);
+        const resolved = sameOrigin || resolveInternal(a.value,sourceFile);
         if (!resolved) continue;
-        const targetFile = aliases.get(resolved.path);
+        const targetFile = aliases.get(resolved.path) || aliases.get(resolved.path + '.html') || aliases.get(resolved.path + '/');
         if (targetFile) {
           const targetRoute = routeFor(targetFile);
           a.value = canonicalRoute(locale,targetRoute) + resolved.suffix;
-        } else if (!a.value.startsWith('/')) {
+        } else if (sameOrigin && publicRoutes.has(normalizedRoute(resolved.path))) {
+          a.value = canonicalRoute(locale,normalizedRoute(resolved.path)) + resolved.suffix;
+        } else if (!sameOrigin && !a.value.startsWith('/')) {
           a.value = resolved.path + resolved.suffix;
         }
       }
     }
     for (const child of node.childNodes || []) visit(child);
+  };
+  visit(doc);
+}
+
+function rewriteLanguageSwitchers(doc,route,activeLocale) {
+  const visit = node => {
+    if (node.tagName === 'a') {
+      const target = attr(node,'data-bg-language-option');
+      if (LOCALES.includes(target)) {
+        setAttr(node,'href',canonicalRoute(target,route));
+        setAttr(node,'hreflang',target);
+        setAttr(node,'lang',target);
+        setAttr(node,'aria-current',target === activeLocale ? 'page' : 'false');
+      }
+    }
+    for (const child of node.childNodes || []) visit(child);
+  };
+  visit(doc);
+}
+
+function textNode(value,parent) {
+  return {nodeName:'#text',value:String(value),parentNode:parent};
+}
+
+function ensureMetaNode(head, predicate, attrs) {
+  let node = findFirst(head,n=>n.tagName==='meta' && predicate(n));
+  if (!node) {
+    node={nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+    head.childNodes.push(node);
+  }
+  for (const [name,value] of Object.entries(attrs)) setAttr(node,name,value);
+  return node;
+}
+
+function removeElementById(doc,id) {
+  const node=findFirst(doc,n=>String(attr(n,'id')||'')===String(id));
+  const parent=node?.parentNode;
+  if(!node||!parent||!Array.isArray(parent.childNodes)) return false;
+  parent.childNodes=parent.childNodes.filter(child=>child!==node);
+  return true;
+}
+
+function enforceStaticLocaleTitleOwnership(doc) {
+  // Localized pages are real static canonicals. A legacy SPA tab-title script
+  // must never overwrite their SEO title after the browser executes JavaScript.
+  return removeElementById(doc,'bg-tabtitel');
+}
+
+function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
+  const head=findFirst(doc,n=>n.tagName==='head');
+  const body=findFirst(doc,n=>n.tagName==='body');
+  if(!head) return;
+  const map=seoLocaleRevenueMap();
+  const entry=map.bySource.get(normalizedRoute(route));
+  const localeSeo=entry?.[locale] || null;
+
+  // Supporting pages inherit the localized commercial intent owner. This keeps
+  // EN measurement and internal-link attribution on an English keyword cluster
+  // instead of leaking the Dutch cluster into /en/* routes.
+  const existingOwner=body ? String(attr(body,'data-bg-intent-owner')||'').trim() : '';
+  const existingOwnerAbsolute=resolveSameOriginAbsolute(existingOwner);
+  const ownerPath=existingOwnerAbsolute ? normalizedRoute(existingOwnerAbsolute.path) : '';
+  const ownerEntry=ownerPath ? map.bySource.get(ownerPath) : null;
+  const ownerLocaleSeo=ownerEntry?.[locale] || null;
+
+  const keyword=String(localeSeo?.primary_keyword || ownerLocaleSeo?.primary_keyword || '').trim();
+  const title=String(localeSeo?.title||'').trim();
+  const description=String(localeSeo?.description||'').trim();
+
+  if(title){
+    let titleNode=findFirst(head,n=>n.tagName==='title');
+    if(!titleNode){
+      titleNode={nodeName:'title',tagName:'title',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+      head.childNodes.push(titleNode);
+    }
+    titleNode.childNodes=[textNode(title,titleNode)];
+  }
+  if(description) {
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='description',{name:'description',content:description});
+    ensureMetaNode(head,n=>String(attr(n,'property')||'').toLowerCase()==='og:description',{property:'og:description',content:description});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='twitter:description',{name:'twitter:description',content:description});
+  }
+  if(title) {
+    ensureMetaNode(head,n=>String(attr(n,'property')||'').toLowerCase()==='og:title',{property:'og:title',content:title});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='twitter:title',{name:'twitter:title',content:title});
+  }
+  if(keyword) {
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-keyword-cluster',{name:'bg-keyword-cluster',content:keyword});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-zoekwoord',{name:'bg-zoekwoord',content:keyword});
+    if(body) setAttr(body,'data-bg-keyword-cluster',keyword);
+  }
+  const localizedOwner = entry
+    ? localizedUrl
+    : ownerEntry
+      ? (locale==='en' ? ownerEntry.en.route : ownerEntry.nl.route)
+      : (locale==='en' && existingOwnerAbsolute ? SITE + canonicalRoute('en',ownerPath) : existingOwner || localizedUrl);
+  ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-intent-owner',{name:'bg-intent-owner',content:localizedOwner});
+  if(body) {
+    setAttr(body,'data-bg-intent-owner',localizedOwner);
+    if(keyword) setAttr(body,'data-bg-keyword-cluster',keyword);
+    setAttr(body,'data-bg-locale-seo','v1');
+  }
+}
+
+function setHeadText(head,tagName,value) {
+  const node=findFirst(head,n=>n.tagName===tagName);
+  if(!node) return;
+  node.childNodes=[{nodeName:'#text',value:String(value),parentNode:node}];
+}
+function upsertMeta(head,name,value) {
+  let node=findFirst(head,n=>n.tagName==='meta' && String(attr(n,'name')||'').toLowerCase()===String(name).toLowerCase());
+  if(!node){
+    node={nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+    head.childNodes.push(node);
+  }
+  setAttr(node,'name',name); setAttr(node,'content',String(value||''));
+}
+function applyLocaleRevenueMetadata(doc,locale,route) {
+  const entry=SEO_LOCALE_REVENUE.bySourceRoute.get(normalizedRoute(route));
+  if(!entry) return;
+  const data=locale==='en'?entry.en:entry.nl;
+  const head=findFirst(doc,n=>n.tagName==='head');
+  const body=findFirst(doc,n=>n.tagName==='body');
+  if(!head||!body) return;
+  if(locale==='en'){
+    if(data?.title) setHeadText(head,'title',data.title);
+    if(data?.description) upsertMeta(head,'description',data.description);
+    if(data?.h1){
+      const h1=findFirst(body,n=>n.tagName==='h1');
+      if(h1) h1.childNodes=[{nodeName:'#text',value:String(data.h1),parentNode:h1}];
+    }
+  }
+  upsertMeta(head,'bg-keyword-cluster',data?.primary_keyword||'');
+  upsertMeta(head,'bg-zoekwoord',data?.primary_keyword||'');
+  upsertMeta(head,'bg-locale-market',locale);
+  setAttr(body,'data-bg-keyword-cluster',data?.primary_keyword||'');
+  setAttr(body,'data-bg-locale-market',locale);
+  if(entry?.source_route){
+    const owner=locale==='en'?entry.en?.route:entry.nl?.route;
+    if(owner) {
+      upsertMeta(head,'bg-intent-owner',owner);
+      setAttr(body,'data-bg-intent-owner',owner);
+    }
+  }
+}
+
+function localizeStructuredData(doc,locale,route,translations) {
+  const localizedUrl=SITE+canonicalRoute(locale,route);
+  const revenue=SEO_LOCALE_REVENUE.bySourceRoute.get(normalizedRoute(route));
+  const localizeString=(value,key='')=>{
+    const text=String(value||'');
+    if(key==='inLanguage') return locale==='en'?'en':'nl-NL';
+    const same=resolveSameOriginAbsolute(text);
+    if(same && publicRoutes.has(normalizedRoute(same.path))) return SITE+canonicalRoute(locale,normalizedRoute(same.path))+same.suffix;
+    if(locale==='en' && translations){
+      const hit=translations.get(normalized(text));
+      if(typeof hit==='string'&&hit.trim()) return hit;
+    }
+    return value;
+  };
+  const walk=(value,key='')=>{
+    if(Array.isArray(value)) return value.map(v=>walk(v,key));
+    if(value&&typeof value==='object'){
+      const next={};
+      for(const [k,v] of Object.entries(value)) next[k]=walk(v,k);
+      if(locale==='en' && next.url===localizedUrl && revenue?.en){
+        if(revenue.en.title && typeof next.name==='string') next.name=revenue.en.title.replace(/\s*\|\s*Bedrijfsgeheugen\s*$/,'');
+        if(revenue.en.description && typeof next.description==='string') next.description=revenue.en.description;
+        if('inLanguage' in next) next.inLanguage='en';
+      }
+      return next;
+    }
+    if(typeof value==='string') return localizeString(value,key);
+    return value;
+  };
+  const visit=node=>{
+    if(node.tagName==='script' && String(attr(node,'type')||'').toLowerCase()==='application/ld+json'){
+      const text=(node.childNodes||[]).filter(x=>x.nodeName==='#text').map(x=>x.value||'').join('').trim();
+      if(text){
+        try{
+          const parsed=JSON.parse(text);
+          const localized=walk(parsed);
+          node.childNodes=[{nodeName:'#text',value:JSON.stringify(localized).replace(/</g,'\\u003c'),parentNode:node}];
+        }catch{}
+      }
+    }
+    for(const child of node.childNodes||[]) visit(child);
   };
   visit(doc);
 }
@@ -250,6 +534,8 @@ function setLocaleMetadata(doc,locale,route,translated=true) {
   const ogUrl = findFirst(head,n=>n.tagName==='meta' && String(attr(n,'property')||'').toLowerCase()==='og:url');
   if (ogUrl) setAttr(ogUrl,'content',localizedUrl);
 
+  applyLocaleSeoMetadata(doc,locale,route,localizedUrl);
+
   const staticMarker = {
     nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',
     attrs:[{name:'name',value:'bg-static-locale'},{name:'content',value:locale}],
@@ -279,6 +565,31 @@ function loadCache() {
 }
 
 function saveCache(cache) {
+  if (PREPARE_CACHE_PATCH_NAME) {
+    // Keep generated translations with the originating publication, not in a
+    // rewritten global cache. Reuse the loader's canonical patch precedence.
+    const existing = loadCache();
+    const additions = Object.fromEntries(Object.entries(cache).filter(([source,value]) =>
+      typeof value === 'string' && value.trim() &&
+      (typeof existing[source] !== 'string' || !existing[source].trim())
+    ));
+    if (!Object.keys(additions).length) return;
+    const file = path.join(TRANSLATION_CACHE_PATCH_DIR,PREPARE_CACHE_PATCH_NAME);
+    // Read once rather than checking existence first: avoids a TOCTOU race.
+    // Only ENOENT means a new patch; parse or permission errors stay fatal.
+    let previousPatch = {};
+    try {
+      previousPatch = JSON.parse(fs.readFileSync(file,'utf8'));
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    if (!previousPatch || typeof previousPatch !== 'object' || Array.isArray(previousPatch)) {
+      throw new Error('STATIC_I18N_CACHE_PATCH_INVALID: ' + PREPARE_CACHE_PATCH_NAME);
+    }
+    ensureDir(file);
+    fs.writeFileSync(file,JSON.stringify({...previousPatch,...additions},null,2)+'\n');
+    return;
+  }
   ensureDir(TRANSLATION_CACHE_FILE);
   fs.writeFileSync(TRANSLATION_CACHE_FILE,JSON.stringify(cache,null,2)+'\n');
 }
@@ -299,45 +610,6 @@ function parseTranslations(raw) {
   throw new Error('Translation provider returned invalid JSON');
 }
 
-async function translateBatch(strings,key) {
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(),60000);
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'content-type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01'
-      },
-      body:JSON.stringify({
-        model:MODEL,
-        max_tokens:6000,
-        system:'Translate Dutch website UI and marketing copy faithfully into natural English. Preserve Bedrijfsgeheugen, product names, URLs, numbers, currencies, placeholders and factual meaning. Do not add or remove claims. Return ONLY one valid JSON array of strings, same order and same length as input.',
-        messages:[{role:'user',content:JSON.stringify(strings)}]
-      }),
-      signal:controller.signal
-    });
-    if (!response.ok) {
-      const body = (await response.text()).slice(0,300);
-      const retryAfterRaw = response.headers.get('retry-after');
-      const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
-      const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
-      error.status = response.status;
-      error.providerBody = body;
-      error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
-      throw error;
-    }
-    const payload = await response.json();
-    const raw = payload?.content?.map(x=>x?.type==='text'?x.text:'').join('') || '';
-    const out = parseTranslations(raw);
-    if (out.length !== strings.length || out.some(x=>typeof x!=='string')) throw new Error('Translation response shape mismatch');
-    return out;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function translateAll(strings) {
   const cache = loadCache();
   const result = new Map();
@@ -348,6 +620,16 @@ async function translateAll(strings) {
     else missing.push(source);
   }
   if (!missing.length) return result;
+
+  // Public marketing-copy cache keys only. Preserve an exact, bounded review
+  // list when the approved translation provider cannot serve today's article.
+  if (PREPARE_CACHE_PATCH_NAME) {
+    console.log('STATIC_I18N_CACHE_GAPS_V1', JSON.stringify({
+      patch: PREPARE_CACHE_PATCH_NAME,
+      total: missing.length,
+      sources: missing.slice(0,80)
+    }));
+  }
 
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
@@ -365,9 +647,9 @@ async function translateAll(strings) {
     return result;
   }
 
-  const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
+  const key = String(process.env.OPENAI_API_KEY || '').trim();
   if (!key) {
-    throw new Error('ANTHROPIC_API_KEY is required when STATIC_I18N_NETWORK=1');
+    throw new Error('STATIC_I18N_OPENAI_KEY_MISSING');
   }
 
   const batches = [];
@@ -384,7 +666,9 @@ async function translateAll(strings) {
     let lastError;
     for (let attempt=0;attempt<6;attempt++) {
       try {
-        const translated = await translateBatch(part,key);
+        // Approved NL->EN content is translated with OpenAI only.
+        // A complete validated batch is required before any cache write.
+        const translated = await translateBatchWithOpenAI(part,key);
         part.forEach((source,index)=>{
           cache[source]=translated[index];
           result.set(source,translated[index]);
@@ -408,6 +692,12 @@ async function translateAll(strings) {
           provider_body: providerBody,
           delay_ms: transient ? delay : 0
         }));
+        // Payment/credit exhaustion is terminal, not a batch-size error.
+        // Do not bisect the same 402-like billing problem into dozens of calls.
+        if ((status === 400 || status === 402 || status === 429) &&
+            /credit balance is too low|insufficient.quota|billing/i.test(providerBody || '')) {
+          throw new Error('STATIC_I18N_PROVIDER_BILLING_BLOCKED: ' + (error?.message || String(error)));
+        }
         if (!transient && status >= 400 && status < 500) break;
         await new Promise(r=>setTimeout(r,delay));
       }
@@ -451,15 +741,146 @@ const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(ro
 const aliases = routeAliases(files);
 if (!files.length) throw new Error('No public HTML files selected for localized build');
 console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
-const parsed = new Map();
-const allStrings = new Set();
+function routeCacheContext(translations,productionTranslationRequired){
+  const enabled=Boolean(STATIC_I18N_BUILD_CACHE_DIR) && productionTranslationRequired && translations instanceof Map;
+  if(!enabled) return {enabled:false,fingerprint:'',dir:''};
+  const fullCache=loadCache();
+  const fingerprint=sha256(
+    STATIC_I18N_BUILD_CACHE_VERSION,
+    fs.readFileSync(new URL(import.meta.url),'utf8'),
+    fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'),
+    JSON.stringify(Object.entries(fullCache).sort(([a],[b])=>a.localeCompare(b))),
+    JSON.stringify({
+      files,
+      publicRoutes:[...publicRoutes].sort(),
+      aliases:[...aliases.entries()].sort(([a],[b])=>a.localeCompare(b)),
+    }),
+  );
+  return {enabled:true,fingerprint,dir:STATIC_I18N_BUILD_CACHE_DIR};
+}
 
+function buildLocalizedFiles(selectedFiles,translations,productionTranslationRequired,cacheContext){
+  let translatedRoutes=0;
+  let partialRoutes=0;
+  let untranslatedRefs=0;
+  let cacheHits=0;
+  let cacheMisses=0;
+  for(const file of selectedFiles){
+    const sourceHtml=fs.readFileSync(path.join(ROOT,file),'utf8');
+    const route=routeFor(file);
+    const routeCacheKey=cacheContext.enabled
+      ? sha256(cacheContext.fingerprint,file,normalizeReleaseIdentityForCache(sourceHtml))
+      : '';
+    const routeCachePath=cacheContext.enabled ? path.join(cacheContext.dir,routeCacheKey) : '';
+    const cachedNl=cacheContext.enabled ? path.join(routeCachePath,'nl.html') : '';
+    const cachedEn=cacheContext.enabled ? path.join(routeCachePath,'en.html') : '';
+    if(cacheContext.enabled && fs.existsSync(cachedNl) && fs.existsSync(cachedEn)){
+      const nlSerialized=fs.readFileSync(cachedNl,'utf8');
+      const enSerialized=fs.readFileSync(cachedEn,'utf8');
+      const nlOut=outputPath('nl',file);
+      const enOut=outputPath('en',file);
+      ensureDir(nlOut);
+      ensureDir(enOut);
+      fs.writeFileSync(nlOut,nlSerialized);
+      fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+      fs.writeFileSync(enOut,enSerialized);
+      translatedRoutes++;
+      cacheHits++;
+      continue;
+    }
+
+    const nlDoc=parse(sourceHtml);
+    enforceStaticLocaleTitleOwnership(nlDoc);
+    rewriteLinks(nlDoc,file,'nl',aliases);
+    rewriteLanguageSwitchers(nlDoc,route,'nl');
+    setLocaleMetadata(nlDoc,'nl',route,true);
+    applyLocaleRevenueMetadata(nlDoc,'nl',route);
+    localizeStructuredData(nlDoc,'nl',route,translations);
+    const nlOut=outputPath('nl',file);
+    ensureDir(nlOut);
+    const nlSerialized=serialize(nlDoc);
+    fs.writeFileSync(nlOut,nlSerialized);
+    fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+
+    const enDoc=parse(sourceHtml);
+    enforceStaticLocaleTitleOwnership(enDoc);
+    const enRefs=collectTranslatables(enDoc);
+    const missingForRoute=translations
+      ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
+      : enRefs.map(ref=>ref.source);
+    untranslatedRefs+=missingForRoute.length;
+    if(missingForRoute.length) partialRoutes++;
+    else translatedRoutes++;
+    rewriteLinks(enDoc,file,'en',aliases);
+    rewriteLanguageSwitchers(enDoc,route,'en');
+    setLocaleMetadata(enDoc,'en',route,missingForRoute.length===0);
+    applyLocaleRevenueMetadata(enDoc,'en',route);
+    localizeStructuredData(enDoc,'en',route,translations);
+    const enOut=outputPath('en',file);
+    ensureDir(enOut);
+    const enSerialized=serialize(enDoc);
+    fs.writeFileSync(enOut,enSerialized);
+
+    if(cacheContext.enabled && missingForRoute.length===0){
+      fs.mkdirSync(routeCachePath,{recursive:true});
+      fs.writeFileSync(cachedNl,nlSerialized);
+      fs.writeFileSync(cachedEn,enSerialized);
+      cacheMisses++;
+    }
+  }
+  return {files:selectedFiles.length,translatedRoutes,partialRoutes,untranslatedRefs,cacheHits,cacheMisses};
+}
+
+const shardArg=process.argv.find(arg=>arg.startsWith('--route-shard='));
+if(shardArg){
+  const match=shardArg.match(/^--route-shard=(\d+)\/(\d+)$/);
+  if(!match) throw new Error('STATIC_I18N_SHARD_INVALID: '+shardArg);
+  const shardIndex=Number(match[1]);
+  const shardTotal=Number(match[2]);
+  if(!Number.isInteger(shardIndex)||!Number.isInteger(shardTotal)||shardTotal<1||shardIndex<0||shardIndex>=shardTotal){
+    throw new Error('STATIC_I18N_SHARD_INVALID: '+shardArg);
+  }
+  if(String(process.env.STATIC_I18N_NETWORK||'').trim()==='1'){
+    throw new Error('STATIC_I18N_SHARD_NETWORK_FORBIDDEN');
+  }
+  const productionTranslationRequired=String(process.env.STATIC_I18N_REQUIRE_CACHE||'').trim()==='1';
+  if(!productionTranslationRequired) throw new Error('STATIC_I18N_SHARD_REQUIRES_FAIL_CLOSED_CACHE');
+  const cache=loadCache();
+  const translations=new Map(Object.entries(cache).filter(([,value])=>typeof value==='string'&&value.trim()));
+  const selected=files.filter((_,index)=>index%shardTotal===shardIndex);
+  const cacheContext=routeCacheContext(translations,productionTranslationRequired);
+  const result=buildLocalizedFiles(selected,translations,productionTranslationRequired,cacheContext);
+  const shardDir=path.resolve(ROOT,String(process.env.STATIC_I18N_SHARD_DIR||'.bg-build/static-i18n-shards'));
+  fs.mkdirSync(shardDir,{recursive:true});
+  fs.writeFileSync(path.join(shardDir,`shard-${shardIndex}.json`),JSON.stringify(result,null,2)+'\n');
+  console.log('STATIC_I18N_SHARD_DONE',JSON.stringify({shard:shardIndex,total:shardTotal,...result}));
+  process.exit(0);
+}
+
+const allStrings = new Set();
 for (const file of files) {
   const html = fs.readFileSync(path.join(ROOT,file),'utf8');
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
-  parsed.set(file,{doc,refs});
   refs.forEach(ref=>allStrings.add(ref.source));
+}
+
+if (PREPARE_CACHE_PATCH_NAME) {
+  const before = loadCache();
+  const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
+  if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
+    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s); first=' + String(missingBefore[0] || '').slice(0,160));
+  }
+  if (missingBefore.length) await translateAll([...allStrings]);
+  const persisted = loadCache();
+  const missingAfter = [...allStrings].filter(source => typeof persisted[source] !== 'string' || !persisted[source].trim());
+  if (missingAfter.length) {
+    throw new Error('STATIC_I18N_PREPARE_INCOMPLETE: ' + missingAfter.length + ' untranslated source(s)');
+  }
+  console.log('STATIC_I18N_PREPARE_COMPLETE',JSON.stringify({
+    patch:PREPARE_CACHE_PATCH_NAME, newlyTranslated:missingBefore.length, missing:0
+  }));
+  process.exit(0);
 }
 
 const cacheValidationOnly = process.argv.includes('--validate-cache');
@@ -479,43 +900,50 @@ const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CAC
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
-let translatedRoutes = 0;
-let partialRoutes = 0;
-let untranslatedRefs = 0;
-for (const file of files) {
-  const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
-  const route = routeFor(file);
 
-  const nlDoc = parse(sourceHtml);
-  rewriteLinks(nlDoc,file,'nl',aliases);
-  setLocaleMetadata(nlDoc,'nl',route,true);
-  const nlOut = outputPath('nl',file);
-  ensureDir(nlOut);
-  fs.writeFileSync(nlOut,serialize(nlDoc));
+const networkAllowed=String(process.env.STATIC_I18N_NETWORK||'').trim()==='1';
+const requestedWorkers=Math.max(1,Math.min(4,Number(process.env.STATIC_I18N_ROUTE_WORKERS||2)||2));
+const routeWorkers=productionTranslationRequired && !networkAllowed ? Math.min(requestedWorkers,files.length) : 1;
+const cacheContext=routeCacheContext(translations,productionTranslationRequired);
+let aggregate={files:0,translatedRoutes:0,partialRoutes:0,untranslatedRefs:0,cacheHits:0,cacheMisses:0};
 
-  const enDoc = parse(sourceHtml);
-  const enRefs = collectTranslatables(enDoc);
-  const missingForRoute = translations
-    ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
-    : enRefs.map(ref=>ref.source);
-  untranslatedRefs += missingForRoute.length;
-  if (missingForRoute.length) partialRoutes++;
-  else translatedRoutes++;
-  rewriteLinks(enDoc,file,'en',aliases);
-  setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
-  const enOut = outputPath('en',file);
-  ensureDir(enOut);
-  fs.writeFileSync(enOut,serialize(enDoc));
+if(routeWorkers===1){
+  aggregate=buildLocalizedFiles(files,translations,productionTranslationRequired,cacheContext);
+}else{
+  const shardDir=path.join(ROOT,'.bg-build',`static-i18n-shards-${process.pid}`);
+  fs.mkdirSync(shardDir,{recursive:true});
+  const runShard=shardIndex=>new Promise((resolve,reject)=>{
+    const child=spawn(process.execPath,[process.argv[1],`--route-shard=${shardIndex}/${routeWorkers}`],{
+      cwd:ROOT,
+      stdio:'inherit',
+      env:{...process.env,STATIC_I18N_ROUTE_WORKERS:'1',STATIC_I18N_SHARD_DIR:shardDir},
+    });
+    child.on('error',reject);
+    child.on('exit',(code,signal)=>code===0?resolve():reject(new Error(`STATIC_I18N_SHARD_FAILED:${shardIndex}:${code}:${signal||''}`)));
+  });
+  console.log('STATIC_I18N_PARALLEL_START',JSON.stringify({workers:routeWorkers,files:files.length}));
+  await Promise.all(Array.from({length:routeWorkers},(_,index)=>runShard(index)));
+  for(let index=0;index<routeWorkers;index++){
+    const shard=JSON.parse(fs.readFileSync(path.join(shardDir,`shard-${index}.json`),'utf8'));
+    for(const key of Object.keys(aggregate)) aggregate[key]+=Number(shard[key]||0);
+  }
+  fs.rmSync(shardDir,{recursive:true,force:true});
+  console.log('STATIC_I18N_PARALLEL_DONE',JSON.stringify({workers:routeWorkers,files:aggregate.files}));
 }
 
 console.log('STATIC_I18N_ROUTES',JSON.stringify({
-  files:files.length,
+  files:aggregate.files,
   strings:allStrings.size,
   nl:true,
   en:true,
   staticEnglish:Boolean(translations?.size),
-  translatedRoutes,
-  partialRoutes,
-  untranslatedRefs,
-  runtimeFallback:untranslatedRefs > 0
+  translatedRoutes:aggregate.translatedRoutes,
+  partialRoutes:aggregate.partialRoutes,
+  untranslatedRefs:aggregate.untranslatedRefs,
+  routeWorkers,
+  runtimeFallback:!translations || aggregate.untranslatedRefs > 0,
+  cacheEnabled:cacheContext.enabled,
+  cacheHits:aggregate.cacheHits,
+  cacheMisses:aggregate.cacheMisses,
+  cacheDir:cacheContext.enabled?cacheContext.dir:null
 }));

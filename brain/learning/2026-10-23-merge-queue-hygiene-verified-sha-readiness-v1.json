@@ -1,0 +1,44 @@
+{
+  "type": "QUALITY_IMPROVEMENT_CANDIDATE",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|merge-queue|checkout-provider-sha-guard|20261023-v1",
+  "failure_class": "MERGE_GROUP_CHECKOUT_PROVIDER_SHA_UNVERIFIED",
+  "root_cause": "Reusable hygiene prevalidated synthetic merge-group events without checking that the actual checkout HEAD and GITHUB_SHA matched the provider event merge_group.head_sha.",
+  "prevention_rule": "Refuse absent/invalid/mismatched merge-group SHA in reusable hygiene and preserve the stricter upstream MERGE_GROUP_ADMISSION_PROOF_REQUIRED aggregate membership boundary. No run-ID-as-PR number.",
+  "status": "CANDIDATE_NOT_LIVE",
+  "owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4783",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4782"
+  ],
+  "tests": [
+    "tests/brain-merge-group-hygiene-checkout-sha-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "MERGE_GROUP_CHECKOUT_PROVIDER_SHA_UNVERIFIED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-merge-group-hygiene-checkout-sha-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-merge-group-hygiene-checkout-sha-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-merge-group-hygiene-checkout-sha-v1.test.mjs"
+    ],
+    "invariants": [
+      "checkout exact group HEAD equals GitHub provider HEAD",
+      "no synthetic PR identity",
+      "provider-verified aggregate membership still mandatory",
+      "unchanged CodeQL and Required",
+      "no new queues/agents/scheduler"
+    ]
+  },
+  "customerValueVerified": false,
+  "providerDeploymentVerified": false
+}

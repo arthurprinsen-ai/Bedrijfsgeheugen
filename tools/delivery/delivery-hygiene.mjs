@@ -182,6 +182,73 @@ export function evaluatePromotionSerialization({ candidate, openCandidates = [] 
   });
 }
 
+// Terminal integration is a single-writer operation even if two PRs use different
+// obligation IDs. This is a pre-merge advisory admission fence, not a GitHub
+// compare-and-swap substitute or permission to update another owner's branch.
+export function parseDeclaredChangeScope(body = '') {
+  const lines=String(body||'').split(/\r?\n/u).filter(line=>/^Change-Scope:/u.test(line));
+  if(lines.length!==1)return Object.freeze({ok:false,paths:[],reason:'CHANGE_SCOPE_NOT_UNIQUE'});
+  const raw=lines[0].slice('Change-Scope:'.length).trim();
+  const paths=raw.split(',').map(p=>p.trim().replace(/^\.\//u,''));
+  if(!paths.length||paths.length>128||paths.some(p=>!p||p.length>512||
+    p.startsWith('/')||p.includes('..')||p.includes('\\')||/[\u0000-\u001f]/u.test(p)))
+    return Object.freeze({ok:false,paths:[],reason:'CHANGE_SCOPE_PATH_INVALID'});
+  if(new Set(paths).size!==paths.length)
+    return Object.freeze({ok:false,paths:[],reason:'CHANGE_SCOPE_DUPLICATE_PATH'});
+  return Object.freeze({ok:true,paths:Object.freeze(paths.sort()),reason:null});
+}
+
+function isRetiredNonWriter(pr) {
+  return /(?:^|\n)Retirement-State:\s*RETIRED_DO_NOT_MERGE\b/iu.test(pr?.body||'')||
+    /(?:^|\n)##\s*RETIRED\b/iu.test(pr?.body||'')||
+    /^RETIRED\b/iu.test(pr?.title||'');
+}
+
+export function evaluateSharedTerminalOwnership({candidate,openCandidates=[]}={}) {
+  const current=parseWriterLease(candidate?.body||'');
+  if(current.state!=='TERMINAL_DELIVERY')
+    return Object.freeze({ok:true,state:'NONTERMINAL_NO_MUTATION_AUTHORITY',blockers:[]});
+  const declared=parseDeclaredChangeScope(candidate?.body||'');
+  if(!declared.ok)
+    return Object.freeze({ok:false,state:'BLOCKED_SHARED_WRITE_SCOPE_INVALID',reasons:[declared.reason],blockers:[]});
+  const actual=candidate?.changedPaths;
+  if(Array.isArray(actual)){
+    const declaredSet=new Set(declared.paths);
+    const absent=[...new Set(actual)].filter(p=>!declaredSet.has(p));
+    if(absent.length)
+      return Object.freeze({ok:false,state:'BLOCKED_SHARED_WRITE_SCOPE_UNDERDECLARED',reasons:absent.sort(),blockers:[]});
+  }
+  const currentNumber=Number(candidate?.number);
+  if(!Number.isSafeInteger(currentNumber)||currentNumber<1)
+    return Object.freeze({ok:false,state:'BLOCKED_SHARED_WRITER_IDENTITY_INVALID',blockers:[]});
+  const scope=new Set(declared.paths);
+  const blockers=[];
+  for(const other of openCandidates){
+    const number=Number(other?.number);
+    if(other?.state==='closed'||number===currentNumber||!Number.isSafeInteger(number)||
+       number<1||isRetiredNonWriter(other))continue;
+    const lease=parseWriterLease(other.body||'');
+    if(lease.state!=='TERMINAL_DELIVERY')continue;
+    const theirs=parseDeclaredChangeScope(other.body||'');
+    // An unparseable competing scope may not be used to claim exclusive authority.
+    // Its own terminal admission will fail closed; never silently adopt its lease.
+    if(!theirs.ok)continue;
+    const shared=theirs.paths.filter(p=>scope.has(p));
+    if(!shared.length)continue;
+    // Earliest still-active terminal candidate is the deterministic file owner.
+    // A newer candidate may only proceed after that owner merges or retires.
+    if(number<currentNumber)blockers.push(Object.freeze({
+      pr_number:number,shared_paths:Object.freeze(shared),owner:lease.owner||null,
+      exact_head_lease:lease.headSha===String(other.headSha||'').toLowerCase()
+    }));
+  }
+  if(blockers.length)
+    return Object.freeze({ok:false,state:'BLOCKED_SHARED_TERMINAL_WRITER',
+      blockers:Object.freeze(blockers.sort((a,b)=>a.pr_number-b.pr_number))});
+  return Object.freeze({ok:true,state:'SINGLE_TERMINAL_WRITER_ADMITTED',
+    blockers:[],resources:Object.freeze(declared.paths)});
+}
+
 export function evaluateAdmission({ candidate: rawCandidate, openCandidates = [], policy = {}, currentMainSha = '' } = {}) {
   const candidate = classifyCandidate(rawCandidate, policy);
   const candidates = openCandidates.map(item => classifyCandidate(item, policy));
@@ -238,6 +305,9 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
       blockers: sameObligation.map(item => Number(item.number)),
     });
   }
+
+  const ownership=evaluateSharedTerminalOwnership({candidate,openCandidates:candidates});
+  if(!ownership.ok)return ownership;
 
   const promotion = evaluatePromotionSerialization({ candidate, openCandidates: candidates });
   if (!promotion.ok) return promotion;

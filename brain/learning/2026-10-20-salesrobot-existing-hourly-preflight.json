@@ -1,0 +1,43 @@
+{
+  "contract": "powerhouse-salesrobot-existing-hourly-preflight-v1",
+  "date": "2026-10-20",
+  "fingerprint": "commercial|salesrobot|existing-hourly-provider-preflight|20261020",
+  "parent_issue": 4198,
+  "compiler": {
+    "failure_class": "SALESROBOT_CAPABILITY_STALE_WITHOUT_CRON_PREFLIGHT",
+    "scope": "CODE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The existing LinkedIn sales function v24 is deployed but its SQL dispatch wrapper had no active pg_cron job invoking it; capability registry statuses expired and a read-only canary conflated raw suggested actions with sendable approved recipients. Its disconnected-health exception discarded real provider payment/cookie/day/campaign diagnostics.",
+  "evidence": {
+    "readback": "SalesRobot provider DISCONNECTED, cookieExpired true, paymentStatus TRIAL_EXPIRED, executionDays 0, campaign PAUSED",
+    "db": "powerhouse_channel_capabilities_v1 had expired checked_at, cron.job contained no direct LinkedIn sales dispatch, 10 suggested actions 0 approved 0 addressable, 23,295 contacts 0 human-approved",
+    "external_send": 0
+  },
+  "tests": [
+    "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+  ],
+  "prevention": [
+    "Use existing hourly assurance Cron, never add a parallel scheduler or sender.",
+    "Provider readiness mode updates current exact provider observations without AI, composer or sends.",
+    "Read-only dry-run must report separate proposed, approved, addressable and actually eligible counts.",
+    "Preserve all CRM human approval, no-resend and verified inbox outcome constraints."
+  ],
+  "change": "Add provider-readiness-only mode to existing canonical Edge function and attach read-only dispatch to existing hourly assurance job via idempotent migration.",
+  "verification_required": [
+    "Required CI",
+    "CodeQL",
+    "Supabase Preview",
+    "protected merge",
+    "exact deployed Edge readback",
+    "safe live provider preflight plus scheduler job readback"
+  ],
+  "state": "SOURCE_CANDIDATE_NOT_YET_VERIFIED"
+}

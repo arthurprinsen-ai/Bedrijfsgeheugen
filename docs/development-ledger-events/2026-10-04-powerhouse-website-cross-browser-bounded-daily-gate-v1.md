@@ -1,0 +1,1 @@
+Obligation: website-cross-browser-bounded-daily-gate-20261004-v1\n\nBounded the daily website visual assurance by separating full-sitemap breadth from critical-route responsive/browser depth. No visual threshold was relaxed.\n

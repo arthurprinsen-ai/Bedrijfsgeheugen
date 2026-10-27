@@ -1,12 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import bufferCollect, { config, runBufferCollection } from '../netlify/functions/buffer-social-collect.mjs';
 import { localDayWindow, providerReconciliationState } from '../netlify/functions/social-publication-delivery.mjs';
 import { hasProviderCoverage, selectDeliverySource, deliveryDecision } from '../platform/social-delivery-guarantee.mjs';
 
-test('Buffer collector is scheduled natively and not through Make', () => {
-  assert.equal(config.schedule, '15 */6 * * *');
+const migrationUrl=(name)=>{
+  const executable=new URL(`../supabase/migrations/${name}`,import.meta.url);
+  const history=new URL(`../supabase/migration-history/repository-only/${name}`,import.meta.url);
+  return existsSync(executable)?executable:history;
+};
+
+test('legacy Buffer collector is no longer scheduled (retired in #4554) and never routed through Make', () => {
+  // Buffer is not the canonical social provider; the handler stays callable for explicit diagnostics only.
+  assert.equal(config.schedule, undefined);
+  assert.deepEqual(config, {});
 });
 
 test('missing Buffer credential records one fail-closed obligation', async () => {
@@ -122,7 +131,7 @@ test('Instagram provider coverage fails closed unless canonical readback is boun
 });
 
 test('identity-sensitive social_posts reconciliation is transport-only and cannot mint LIVE_PROVEN', async () => {
-  const sql = await readFile(new URL('../supabase/migrations/20260916124000_social_delivery_identity_readback_guard_v1.sql', import.meta.url), 'utf8');
+  const sql = await readFile(migrationUrl('20260916124000_social_delivery_identity_readback_guard_v1.sql'), 'utf8');
   assert.match(sql, /reconcile_social_post_publication_obligation/i);
   assert.match(sql, /transport_only/i);
   assert.match(sql, /identity_guard_required/i);

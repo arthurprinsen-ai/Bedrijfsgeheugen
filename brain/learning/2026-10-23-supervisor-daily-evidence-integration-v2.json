@@ -1,0 +1,66 @@
+{
+  "fingerprint": "ci|supervisor|canonical-drift-lease-ownership-daily-learning|20261023-v2",
+  "parent_issue": 4661,
+  "related_prs": [
+    4792,
+    4793,
+    4791,
+    4795,
+    4797
+  ],
+  "owner": "Single native Recovery Supervisor and hourly Repository Janitor",
+  "status": "CANDIDATE_PENDING_PROTECTED_CI",
+  "failure_class": "CI",
+  "root_cause": "Competing PR source claims and incomplete provider observation permit false resolution/repeated-drift and speed assertions.",
+  "prevention": [
+    "One merged canonical Janitor collector: do not merge retired duplicate #4792",
+    "Read real timestamped PR drift and lease failures; missing logs are not zero",
+    "Hold overlapping #4795/#4797 in draft while main-owned sources converge",
+    "Native expected_head_sha CAS, exact TERMINAL_DELIVERY lease, one PR per cycle, maximum two drift attempts",
+    "Require new exact-head Required and CodeQL after main synchronization",
+    "Keep production lead time unknown until independent production provider readback matches protected merge SHA",
+    "Shadow-review optimizations only after 20 paired verified releases per cohort, non-regressing p95/p50 and CI attempts, independent regression and rollback evidence"
+  ],
+  "verification": {
+    "local_regressions": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs",
+      "tests/brain-recovery-supervisor-daily-learning-v2.test.mjs",
+      "tests/brain-recovery-supervisor-owner-claims-v2.test.mjs"
+    ],
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "provider_readback": "PENDING",
+    "production_deployment": "NOT_CLAIMED"
+  },
+  "compiler": {
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false,
+    "failure_class": "CI"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs",
+      "tests/brain-recovery-supervisor-daily-learning-v2.test.mjs",
+      "tests/brain-recovery-supervisor-owner-claims-v2.test.mjs"
+    ],
+    "independent_production_observation": false,
+    "benchmark_proven": false
+  },
+  "new_scheduler": false,
+  "new_writer": false,
+  "new_error_registry": false,
+  "evidence": {
+    "tests": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs",
+      "tests/brain-recovery-supervisor-daily-learning-v2.test.mjs",
+      "tests/brain-recovery-supervisor-owner-claims-v2.test.mjs"
+    ],
+    "source": "Observed GitHub supervisor runs and existing Janitor provider artifacts; shadow-only optimization",
+    "protected_required": "PENDING_EXACT_HEAD",
+    "codeql": "PENDING_EXACT_HEAD",
+    "production_readback": "NOT_YET_INDEPENDENTLY_VERIFIED",
+    "speed_improvement": "NOT_PROVEN"
+  }
+}

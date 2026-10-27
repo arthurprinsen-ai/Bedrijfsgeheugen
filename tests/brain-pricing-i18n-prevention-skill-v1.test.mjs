@@ -16,14 +16,11 @@ test('public language switches use static localized routes', () => {
   assert.doesNotMatch(redirects,/\/nl\/\*\s+\/nl\/:splat\.html\s+200/);
 });
 
-test('production behavior proof covers toggles and English switch', () => {
+test('production behavior proof covers the English switch', () => {
   for (const marker of [
-    'data-bg-stage="loss"',
-    'data-bg-price-tab="run"',
-    'data-bg-billing="yearly"',
-    'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',
+    'COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN',
     'Switching language failed',
-    'Prijzen voor digitalisering in het mkb'
+    'roundtrip:\'nl-en-nl\''
   ]) assert.ok(proof.includes(marker), 'missing production behavior proof marker: ' + marker);
 });
 

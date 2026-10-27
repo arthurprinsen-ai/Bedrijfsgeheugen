@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration='supabase/migrations/20260917113000_resource_intelligence_tenant_portal_v1.sql';
+const migration='supabase/migrations/20261005160410_resource_intelligence_tenant_isolation_recovery_v1.sql';
 const portalGateway='supabase/functions/portal-state-eu/index.ts';
 const resourceIngest='supabase/functions/resource-usage-eu/index.ts';
 const csrd='portal-v2/csrd-impact.js';

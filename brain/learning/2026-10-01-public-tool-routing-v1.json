@@ -1,0 +1,33 @@
+{
+  "fingerprint": "website|public-tool-routing|pakketadvies|portaal-demo|20261001",
+  "observed_at": "2026-10-01T14:06:00Z",
+  "type": "PREVENTION",
+  "problem": "Public tool pages existed as HTML files but their clean URLs were not explicitly routed, creating ambiguous runtime accessibility for /pakketadvies and /portaal-demo.",
+  "root_cause": "The pages relied on implicit pretty-URL behavior while other important public routes use explicit Netlify rewrites.",
+  "decision": "Add explicit 200 rewrites for both customer-facing tool routes and regression-test the mapping.",
+  "prevention": [
+    "Every new customer-facing clean URL must have either an explicit rewrite or an existing tested canonical route owner.",
+    "Conversion tools may not depend solely on implicit pretty-URL behavior."
+  ],
+  "evidence": [
+    "_redirects",
+    "pakketadvies.html",
+    "portaal-demo.html",
+    "tests/brain-public-tool-routing.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "ROUTING_CONTRACT_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-tool-routing.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-public-tool-routing.test.mjs"
+  ]
+}

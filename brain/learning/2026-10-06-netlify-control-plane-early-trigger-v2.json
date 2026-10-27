@@ -1,0 +1,33 @@
+{
+  "id": "netlify-control-plane-early-trigger-v2",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|netlify|control-plane-early-trigger|tools-ci|v2",
+  "root_cause": "Production Source Snapshot and Production Release Readback already classified tools/ci/** as non-deployable inside the shared Netlify applicability authority, but their push-level paths-ignore lists did not exclude tools/ci/**. Control-plane commits therefore still allocated production runners before being classified as no-op.",
+  "evidence": {
+    "merge_sha": "e902e07fef8b3411451280072b40f0d0aac24bb8",
+    "unnecessary_snapshot_run": 37478237193,
+    "unnecessary_release_readback_run": 37478237085,
+    "snapshot_result": "deployment_not_applicable_after_runner_started",
+    "release_result": "non_deployment_truth_after_runner_started",
+    "skill_projection_resolution": "absorbed_and_live_proven_by_pr_3956_on_441fe997aedeb3016a72e6b2689d2a124dfd3a9a"
+  },
+  "prevention": {
+    "early_admission": "Production Source Snapshot and Production Release Readback both ignore tools/ci/** when it is the only changed domain.",
+    "in_job_authority": "tools/delivery/netlify-deployment-applicability.mjs remains canonical and fail-closed.",
+    "mixed_change_policy": "Any non-ignored runtime/site/portal/Netlify-hosted change still admits the production workflow and is classified normally.",
+    "no_duplicate_skill_projection_fix": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_UNNECESSARY_NETLIFY_RUNNER",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

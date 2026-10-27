@@ -1,0 +1,82 @@
+{
+  "fingerprint": "mira|openart-reference-id-cdn-url-mismatch|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "related": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_pattern": "OpenArt video submission on 2026-10-22 failed upstream_error: No such object, because existing canonical Mira resource id was paired with an August 2026 CDN URL that no longer resolved.",
+  "root_cause": "Canonical reference map drift: original code/config both asserted an old image URL unrelated to OpenArt's currently returned resource for exact reference ID Yjqu4D7v76HABNPmQPj1. Existing verification rules were correct to fail closed.",
+  "correction": "Preserve canonical OpenArt reference ID, replace the URL in shared runtime and reference configuration with URL returned for that exact resource by OpenArt creation_get, update verified dimensions, and enforce exact mapping with a regression test.",
+  "provider_receipt": {
+    "canonical_reference_id": "Yjqu4D7v76HABNPmQPj1",
+    "creation_history_id": "oM62pDwi2me8dkm4qrGj",
+    "resource_url": "https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg",
+    "media_type": "image/jpeg",
+    "width": 928,
+    "height": 1152,
+    "bytes": 741785,
+    "verified_with": "OpenArt creation_get + upload_metadata_get"
+  },
+  "previous_video_attempt": {
+    "history_id": "11JIYC1cS878LoxreAIT",
+    "status": "FAILED",
+    "failed_code": "upstream_error"
+  },
+  "release_gates": [
+    "Node regression and required CI",
+    "CodeQL",
+    "deploy existing Supabase functions with shared dependency",
+    "provider file retrievability runtime",
+    "new Mira Reel with source match, start/middle/end identity proof >=0.94",
+    "canonical Instagram post ID + live readback"
+  ],
+  "safeguards": [
+    "Never invent a face identity pass",
+    "Never reuse earlier posted Reel",
+    "Never create an alternate scheduler or provider route",
+    "Keep no-publication-on-failure behavior",
+    "No production rollout until protected merge & relevant runtime proofs"
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "current_state": "CANDIDATE_REQUIRES_PROTECTED_CI_AND_DEPLOY",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Before generating any media, compare the immutable Mira reference ID with OpenArt's actual provider resource URL and check that the file is retrievable; fail closed on stale mismatches.",
+    "Keep facial verification >=0.94 across three frames; do not claim completed Reel without authenticated post ID and public readback.",
+    "Only canonical scheduler/producer media lineage; avoid duplicate workers, retries and supplier fallback."
+  ],
+  "evidence": {
+    "provider_creation_history_id": "oM62pDwi2me8dkm4qrGj",
+    "reference_url_verified": "https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg",
+    "reference_metadata_checked": {
+      "width": 928,
+      "height": 1152,
+      "file_size_bytes": 741785
+    },
+    "failed_video_history_id": "11JIYC1cS878LoxreAIT",
+    "tests": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ],
+    "production_deployed": false,
+    "provider_post_readback": false
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "date": "2026-10-26",
+  "fingerprint": "github|required-status-expected|context-source-sha",
+  "parent_issue": 4929,
+  "pr": 4958,
+  "obligation": "github-required-check-reconciliation-v2-20261026",
+  "symptom": "required checks can be inconsistent across effective ruleset, GitHub App and exact SHA",
+  "change": "Read-only fail-closed effective rule reconciliation with 10 regression tests and canonical agent handoff",
+  "evidence": {
+    "initial_required_run": "40282507194 failed admission: missing closure evidence",
+    "current_required": "PENDING_NEW_HEAD",
+    "codeql": "PENDING_NEW_HEAD",
+    "protected_merge": "NOT_PROVEN",
+    "production": "NOT_PROVEN"
+  },
+  "prevention": "Check exact source/app/context/sha, refuse incomplete permissions and provider data; never create green status",
+  "regression_contract": [
+    "tests/required-check-reconciliation.test.mjs",
+    "tests/brain-required-check-reconciler-v2.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "next_action": "run exact-head Required/BRAIN/CodeQL and verify protected merge/readback",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-check-reconciler-v2.test.mjs"
+    ]
+  },
+  "root_cause": "Required-check drift was assessed from partial PR job signals without reliably resolving effective inherited rulesets, exact commit SHA and GitHub App identity. Earlier v2 admission failures arose from missing canonical closure evidence and an invalid replay-test filename."
+}

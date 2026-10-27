@@ -70,6 +70,21 @@ export function planRuntimePolicy(record){
 }
 
 
+export function planCapacityPolicy(record){
+  const normalized=normalizeEntitlementRecord(record);
+  if(!normalized)return null;
+  const e=normalized.entitlements;
+  return Object.freeze({
+    planCode:normalized.planCode,
+    status:normalized.status,
+    maxUsers:Number(e.users||0),
+    maxDocuments:Number(e.documents||0),
+    maxAiRequestsMonth:Number(e.ai_requests_month||0),
+    maxAutomations:Number(e.automations||0),
+    approvalWorkflows:Boolean(e.approval_workflows)
+  });
+}
+
 export function enforceRefreshPolicy(policy,requestedRefreshMinutes){
   if(!policy){
     const error=new Error('SUBSCRIPTION_REQUIRED');

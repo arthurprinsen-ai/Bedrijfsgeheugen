@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 export const NON_PRODUCTION_PREFIXES = Object.freeze([
@@ -9,13 +10,46 @@ export const NON_PRODUCTION_PREFIXES = Object.freeze([
   'brain/learning/',
 ]);
 
+function productionTruthContract() {
+  const url=new URL('../../brain/contracts/production-readback-v1.json',import.meta.url);
+  const contract=JSON.parse(readFileSync(url,'utf8'));
+  return contract?.productionTruth || {};
+}
+
+const PRODUCTION_TRUTH = productionTruthContract();
+
+function verifierOnlyPaths() {
+  return Array.isArray(PRODUCTION_TRUTH?.verifierOnlyPaths)
+    ? PRODUCTION_TRUTH.verifierOnlyPaths.map(String)
+    : [];
+}
+
+export const NETLIFY_RUNTIME_PREFIXES = Object.freeze(
+  Array.isArray(PRODUCTION_TRUTH?.netlifyRuntimePrefixes)
+    ? PRODUCTION_TRUTH.netlifyRuntimePrefixes.map(String)
+    : []
+);
+
+export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set(
+  Array.isArray(PRODUCTION_TRUTH?.netlifyRuntimePaths)
+    ? PRODUCTION_TRUTH.netlifyRuntimePaths.map(String)
+    : []
+));
+
 export const NON_PRODUCTION_EXACT = Object.freeze(new Set([
   'config/delivery-prevention-rules.json',
+  ...verifierOnlyPaths(),
 ]));
 
 export function isNonProductionPath(path = '') {
   const value=String(path);
   return NON_PRODUCTION_EXACT.has(value) || NON_PRODUCTION_PREFIXES.some(prefix => value.startsWith(prefix));
+}
+
+export function isNetlifyRuntimePath(path = '') {
+  const value=String(path);
+  if (!value || isNonProductionPath(value)) return false;
+  return NETLIFY_RUNTIME_EXACT.has(value) || NETLIFY_RUNTIME_PREFIXES.some(prefix => value.startsWith(prefix));
 }
 
 export function evaluateSafeProductionSupersession({

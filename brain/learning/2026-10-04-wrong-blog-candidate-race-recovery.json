@@ -1,0 +1,15 @@
+{
+  "fingerprint": "powerhouse|wrong-blog-candidate-race-recovery|v1",
+  "observed_at": "2026-10-04",
+  "type": "RECOVERY",
+  "problem": "A stale daily-blog candidate with content different from the canonical same-date Supabase artifact won an auto-merge race.",
+  "root_cause": "Candidate identity was date-based but did not verify exported content_id/slug against the durable publication obligation before merge.",
+  "decision": "Revert the mismatched candidate completely, then regenerate the same obligation from the current repository-native exporter.",
+  "enforcement": [
+    ".github/workflows/powerhouse-daily-blog.yml",
+    "tools/site-shell/publish_powerhouse_blog_artifact.py"
+  ],
+  "test_evidence": [
+    "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "fingerprint": "ci-single-netlify-build-parity-v1",
+  "compiler": {
+    "failure_class": "DELIVERY"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs",
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The protected Required test executed the exact Netlify production build inside serial preflight while the website reusable lane executed the same production build again. Website changes therefore paid duplicate deterministic build cost before browser verification, while all lanes were held behind the first build.",
+  "prevention_rule": "Keep exactly one exact production build parity job per candidate HEAD. Classify first, then run parity in parallel with backend, portal, automation and website lanes; aggregate its result into the protected test context. Reusable website browser verification must not own a second unconditional production parity build.",
+  "evidence": [
+    "Live audit observed 202 workflows registered in GitHub Actions for the repository.",
+    "The Actions API reported at least 2500 runs for 2026-10-06 at audit time.",
+    "Branch protection required only three contexts: test, CodeQL javascript-typescript and Supabase Preview Applicability.",
+    "required-test.yml and lane-website.yml both contained full Netlify production build parity execution before this change.",
+    "Regression authority: tests/brain-ci-critical-path-acceleration-v1.test.mjs and tests/brain-netlify-premerge-build-parity-v1.test.mjs."
+  ]
+}

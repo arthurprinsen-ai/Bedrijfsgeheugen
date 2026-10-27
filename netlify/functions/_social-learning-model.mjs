@@ -1,11 +1,19 @@
-const METRICS=['impressions','reach','likes','comments','shares','saves','clicks','profile_visits','followers_gained','dms','leads','qualified_leads','meetings','offers','orders','revenue'];
-
+const METRICS=['impressions','reach','likes','reactions','comments','shares','saves','clicks','profile_visits','followers_gained','views','dms','leads','qualified_leads','meetings','offers','orders','revenue'];
+// Legacy Buffer measured data use display column names. These map 1:1 only
+// when the underlying provider count has the SAME semantic meaning.
+// "Reactions" is NOT "likes"; ambiguous "Eng. Rate" is never imported.
+const BUFFER_ALIASES=Object.freeze({
+  impressions:'Impressions',reach:'Reach',reactions:'Reactions',
+  comments:'Comments',shares:'Shares',saves:'Saves',
+  followers_gained:'Follows',views:'Views'
+});
 export function normalizeMetricSnapshot(payload={}){
   const out={};
   for(const key of METRICS){
-    const value=payload[key];
-    out[key]=value===undefined||value===null?null:Number(value);
-    if(out[key]!==null&&!Number.isFinite(out[key])) out[key]=null;
+    const value=Object.hasOwn(payload||{},key)?payload[key]:
+      Object.hasOwn(payload||{},BUFFER_ALIASES[key])?payload[BUFFER_ALIASES[key]]:undefined;
+    const n=value===undefined||value===null?null:Number(value);
+    out[key]=n!==null&&Number.isFinite(n)&&n>=0?n:null;
   }
   return out;
 }
@@ -28,6 +36,7 @@ export function metricVector(snapshot={}){
     dm_rate:rate(s.dms,exposure),
     lead_rate:rate(s.leads,exposure),
     substantive_interaction_rate:rate(substantive,exposure),
+    reaction_rate:rate(s.reactions,exposure),
     click_rate:rate(s.clicks,exposure),
     like_rate:rate(s.likes,exposure),
     comment_rate:rate(s.comments,exposure),
@@ -60,7 +69,7 @@ export function buildCohort(posts=[],target={}){
   return posts.filter(post=>post?.postId!==target?.postId&&keys.every(k=>target?.[k]==null||post?.[k]===target[k]));
 }
 
-const metricKey={revenue:'revenue_per_impression',orders:'order_rate',offers:'offer_rate',qualified_leads:'qualified_lead_rate',meetings:'meeting_rate',dms:'dm_rate',substantive_interactions:'substantive_interaction_rate',clicks:'click_rate',likes:'like_rate'};
+const metricKey={reactions:'reaction_rate',revenue:'revenue_per_impression',orders:'order_rate',offers:'offer_rate',qualified_leads:'qualified_lead_rate',meetings:'meeting_rate',dms:'dm_rate',substantive_interactions:'substantive_interaction_rate',clicks:'click_rate',likes:'like_rate'};
 const effect=(current,baseline)=>baseline===0?(current>0?1:current<0?-1:0):(current-baseline)/Math.abs(baseline);
 
 export function selectOptimizationMetric(targetVector={},cohortVectors=[],priority=[]){

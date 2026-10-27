@@ -1,0 +1,21 @@
+{
+  "id": "netlify-governance-ignore-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|governance-only-risk-policy|unnecessary-production-build|v1",
+  "compiler": {
+    "failure_class": "CI_UNNECESSARY_NETLIFY_BUILD"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-governance-ignore-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The Netlify ignore gate treated site/website-release-risk.json as a runtime artifact even though it only controls CI website release classification, so governance-only changes caused a full production build.",
+  "prevention": "Treat site/website-release-risk.json as governanceExact in the pre-build ignore gate. Real runtime artifacts such as netlify.toml and assets remain outside the ignore allowlist and still require a production build.",
+  "evidence": {
+    "observed_deploy": "Production deploy for #3911 took 126 seconds although the change only adjusted website release-risk classification and CI evidence.",
+    "regression_test": "tests/brain-netlify-governance-ignore-v1.test.mjs",
+    "authority": "tools/ci/netlify-ignore-build.mjs"
+  }
+}

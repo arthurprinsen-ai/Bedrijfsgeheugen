@@ -17,6 +17,15 @@ export async function askPortal(question,{fetchImpl=globalThis.fetch,page='overz
     credentials:'same-origin',
     body:JSON.stringify({vraag:clean})
   });
+  if(response.status===409||response.status===503){
+    const refusal=await response.json().catch(()=>null);
+    if(refusal?.code==='TENANT_MODEL_ROUTING_REQUIRED')
+      throw new Error('Je standaard-AI-model is nog niet aangesloten op deze vraagfunctie. Gebruik AI-modellen kiezen voor een beveiligde modeltest. Er is geen andere provider gebruikt.');
+    if(refusal?.code==='TENANT_MODEL_NOT_AVAILABLE')
+      throw new Error('Jouw gekozen AI-model is nog niet geautoriseerd of de EU-verwerking is niet bevestigd. Er is niet naar een andere provider uitgeweken.');
+    if(refusal?.code==='TENANT_MODEL_RUNTIME_UNAVAILABLE')
+      throw new Error('De beveiligde AI-koppeling is nog niet beschikbaar; er is niets naar een andere AI-provider verzonden.');
+  }
   if(!response.ok)throw new Error(`PORTAALVRAAG_${response.status}`);
   const payload=await response.json();
   return {text:String(payload?.antwoord||payload?.answer||payload?.text||'').trim(),assurance:payload?.assurance||null};

@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-social-review-edge-token-20261015",
+  "fingerprint": "powerhouse|supabase-edge-authority|expired-pat-401-and-undeclared-reviewer|20261015",
+  "compiler": {
+    "failure_class": "PRODUCTION_EDGE_AUTHORIZATION_AND_RUNTIME_MANIFEST_DRIFT",
+    "scope": "SOCIAL_PUBLICATION_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The production GitHub attestation attempted to download provider Edge source using a Supabase access token rejected as HTTP 401 Invalid access token. It retried 24 times although no retry could repair credentials. The already deployed independent bg-pre-publish-review function was absent from the canonical Supabase function config, so provider source resolution omitted it. The merged source release was not deployed.",
+  "prevention": "Declare the existing reviewer in protected-main runtime config with its current JWT mode, fail fast on invalid readback credentials with a specific error, preserve the exclusive Supabase GitHub integration as deployer, and require provider readback. The credential owner must rotate the invalid GitHub Actions secret; the code never manufactures or logs secrets, disables gates, or claims publication.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-edge-release-authorization.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-edge-release-authorization.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-edge-release-authorization.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_run": "Supabase Edge Production Authority 38714468209: 'Error status 401' and 'Invalid access token' at first download; after 24 attempts SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_TIMEOUT.",
+    "provider": "Supabase Preview check for 9f67fa040af399707a227af17426e21e0f4caf14 failed.",
+    "supabase_live": "Reviewer version 29, publisher version 288; original review-freshness/retry changes not live.",
+    "runtime_config": "The reviewer was absent from supabase/config.toml, though provider reports it active."
+  },
+  "outcome": {
+    "source_fix_proposed": true,
+    "credential_rotated": false,
+    "production_verified": false,
+    "published_today_verified": 0,
+    "email_sends_verified": 0,
+    "dm_sends_verified": 0
+  }
+}

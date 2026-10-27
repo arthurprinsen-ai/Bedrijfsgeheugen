@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
 const hygieneWorkflow = readFileSync('.github/workflows/powerhouse-delivery-hygiene.yml', 'utf8');
+const githubAdmissionRateClassifier = readFileSync('tools/delivery/github-admission-rate-limit.mjs', 'utf8');
 const mergedBranchCleanup = readFileSync('.github/workflows/powerhouse-merged-branch-cleanup.yml', 'utf8');
 const engineeringIntelligence = readFileSync('.github/workflows/engineering-intelligence-trust.yml', 'utf8');
 const supplyChain = readFileSync('.github/workflows/engineering-supply-chain-trust.yml', 'utf8');
@@ -16,7 +17,10 @@ test('Required preflight enforces exact-head versioned branch hygiene before lan
   assert.match(workflow, /powerhouse-one-loop-v1\.json/);
   assert.match(workflow, /github\.event\.pull_request\.head\.sha \|\| github\.sha/);
   assert.match(workflow, /evaluateBranchHygiene/);
-  assert.match(workflow, /PR_BODY:/);
+  assert.match(workflow, /PR_BODY_INPUT:/);
+  assert.match(workflow, /GH_TOKEN:/);
+  assert.match(workflow, /repos\/\$\{process\.env\.GITHUB_REPOSITORY\}\/pulls\/\$\{context\.prNumber\}/);
+  assert.match(workflow, /prBody:\s*livePrBody/);
   assert.match(workflow, /PR_LABELS_JSON:/);
   assert.match(workflow, /VERSIONED_BASE_SHA_MISMATCH/);
   assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
@@ -29,10 +33,10 @@ test('Required evidence is latest-head-wins so obsolete candidate proof cannot b
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
 });
 
-test('governance PR fanout is consolidated behind Required while narrow supply-chain security remains PR-scoped', () => {
+test('governance PR fanout is consolidated behind Required and dependency security moves to merge_group', () => {
   assert.doesNotMatch(engineeringIntelligence, /^\s*pull_request\s*:/m);
   assert.doesNotMatch(learningClassifier, /^\s*pull_request\s*:/m);
-  assert.match(supplyChain, /pull_request:[\s\S]*?paths:/);
+  assert.doesNotMatch(supplyChain, /^\s*pull_request\s*:/m);
   for (const [name, yml] of [
     ['engineering intelligence', engineeringIntelligence],
     ['supply chain', supplyChain],
@@ -40,15 +44,20 @@ test('governance PR fanout is consolidated behind Required while narrow supply-c
   ]) {
     assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
   }
-  assert.match(supplyChain, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);
   assert.match(supplyChain, /provenance:[\s\S]*?if:\s*github\.event_name == 'push'/);
+  assert.match(workflow, /dependencyReviewRequired=changedPaths\.some/);
+  assert.match(workflow, /dependency_review_required=/);
+  assert.match(workflow, /merge_specialist:[\s\S]*?if:\s*github\.event_name == 'merge_group'/);
+  assert.match(workflow, /Verify dependency supply-chain risk[\s\S]*?npm audit --package-lock-only --audit-level=high/);
 });
 
-test('delivery hygiene retries transient GitHub API failures and preserves fail-closed evidence', () => {
-  assert.match(hygieneWorkflow, /HTTP\\s\+\(\?:502\|503\|504\)/);
+test('delivery hygiene delegates provider failures to the same fail-closed rate-safe classifier', () => {
+  assert.match(githubAdmissionRateClassifier, /HTTP\\s\+\(\?:502\|503\|504\)/);
   assert.match(hygieneWorkflow, /const delays = \[250, 500, 1000\]/);
-  assert.match(hygieneWorkflow, /CONTROL_PLANE_API_UNAVAILABLE/);
-  assert.match(hygieneWorkflow, /github-api-transient-unavailable-v1/);
+  assert.match(githubAdmissionRateClassifier, /CONTROL_PLANE_API_UNAVAILABLE/);
+  assert.match(githubAdmissionRateClassifier, /github-api-transient-unavailable-v1/);
+  assert.match(githubAdmissionRateClassifier, /CONTROL_PLANE_RATE_LIMITED/);
+  assert.match(hygieneWorkflow, /classifyGitHubAdmissionReadError\(error\)\.retry_immediately/);
   assert.match(hygieneWorkflow, /writeFailureEvidence/);
   assert.match(hygieneWorkflow, /admitted=false/);
   assert.match(hygieneWorkflow, /if-no-files-found: error/);
@@ -57,6 +66,23 @@ test('delivery hygiene retries transient GitHub API failures and preserves fail-
 test('delivery hygiene does not silently ignore conflict-contract API read failures', () => {
   assert.match(hygieneWorkflow, /const files = await gh\(/);
   assert.doesNotMatch(hygieneWorkflow, /try \{\s*const files = (?:await )?gh[\s\S]*?\}\s*catch \{\}/);
+});
+
+
+test('delivery hygiene admits only direct-parent same-tree terminal identity refreshes', () => {
+  assert.match(hygieneWorkflow, /TERMINAL_IDENTITY_REFRESH_ALLOWED/);
+  assert.match(hygieneWorkflow, /parents\.length === 1/);
+  assert.match(hygieneWorkflow, /parents\[0\] === expectedTerminalHead/);
+  assert.match(hygieneWorkflow, /currentTree === previousTree/);
+  assert.match(hygieneWorkflow, /TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION/);
+});
+
+test('delivery hygiene uses event lease only on first attempt and live lease on reruns', () => {
+  assert.match(hygieneWorkflow, /RUN_ATTEMPT:\s*\$\{\{ github\.run_attempt \}\}/);
+  assert.match(hygieneWorkflow, /const rerun = Number\(process\.env\.RUN_ATTEMPT \|\| '1'\) > 1/);
+  assert.match(hygieneWorkflow, /synchronize && !rerun && eventLease\.state === 'TERMINAL_DELIVERY'/);
+  assert.match(hygieneWorkflow, /synchronize && !rerun && eventLease\.state === 'MAIN_SYNC'/);
+  assert.match(hygieneWorkflow, /evaluateWriterLease\(\{[\s\S]*?body: pr\.body \|\| ''/);
 });
 
 test('merged same-repository branches are deleted only after exact-head verification and readback', () => {
@@ -73,4 +99,14 @@ test('merged same-repository branches are deleted only after exact-head verifica
   assert.match(mergedBranchCleanup, /HTTP 404/);
   assert.match(mergedBranchCleanup, /EXACT_MERGED_HEAD_REMOVED/);
   assert.match(mergedBranchCleanup, /Upload merged branch cleanup evidence/);
+});
+
+test('Required computes a verified merge-base for stale PRs without loosening scope guard', () => {
+  assert.match(workflow, /resolvePRScopeMergeBase/);
+  assert.match(workflow, /compare\/\$\{providerBaseSha\}\.\.\.\$\{context\.changeHeadSha\}/);
+  assert.match(workflow, /const diffBaseSha=scopeBase\.sha/);
+  assert.match(workflow, /'diff','--name-only',diffBaseSha,context\.changeHeadSha/);
+  assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
+  assert.match(workflow, /base_sha=\$\{diffBaseSha\}/);
+  assert.match(workflow, /SUPABASE_PREVIEW/);
 });

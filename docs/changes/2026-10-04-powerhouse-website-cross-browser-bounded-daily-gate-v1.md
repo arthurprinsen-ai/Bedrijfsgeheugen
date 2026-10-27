@@ -1,0 +1,1 @@
+Daily website assurance is layered: every sitemap route is checked at 320px and 1440px; critical route families keep the full 320/390/768/1440/1920 screenshot matrix in Chromium, Firefox and WebKit. This reduces runtime without widening any visual threshold or removing route coverage.\n

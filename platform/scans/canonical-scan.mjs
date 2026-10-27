@@ -13,9 +13,12 @@ export function normalizeScanEnvelope(body={}){
   for(const [key,value] of Object.entries(sourceDims||{})){const n=numberIn(value,0,5);if(n!==null)dimensions[clean(key,80)]=n;}
   if(!Object.keys(dimensions).length) throw new Error('INVALID_DIMENSIONS');
   const canonical=clean(body.canonical||'https://www.bedrijfsgeheugen.nl/frisse-blik',1000);
-  if(!(canonical==='https://www.bedrijfsgeheugen.nl/frisse-blik'||canonical.startsWith('https://www.bedrijfsgeheugen.nl/frisse-blik?'))) throw new Error('INVALID_CANONICAL');
-  return {submissionKey,score,niveau,dimensions,canonical,tenantIdentityStatus:'unverified',companyKey:null};
+  const allowed=['frisse-blik','scan','zelfscan'];
+  const path=allowed.find(p=>canonical===`https://www.bedrijfsgeheugen.nl/${p}`||canonical.startsWith(`https://www.bedrijfsgeheugen.nl/${p}?`));
+  if(!path)throw new Error('INVALID_CANONICAL');
+  const kind=path==='zelfscan'?'bedrijfslek_scan':path==='scan'?'workshop_scan':'frisse_blik';
+  return {submissionKey,score,niveau,dimensions,canonical,kind,tenantIdentityStatus:'unverified',companyKey:null};
 }
 export function buildRuntimeEvent(scan,scanId,at=new Date().toISOString()){
-  return {dedupe_key:`scan:${scan.submissionKey}`,event_type:'scan_submitted',source:'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:at,evidence:{scan_id:scanId,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
+  return {dedupe_key:`scan:${scan.submissionKey}`,event_type:'scan_submitted',source:scan.kind==='bedrijfslek_scan'?'website.bedrijfslek':scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:at,evidence:{scan_id:scanId,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
 }

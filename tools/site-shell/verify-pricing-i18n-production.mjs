@@ -4,7 +4,7 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
-async function getVisibleMobileLanguage(page) {
+async function getVisibleMobileLanguageControl(page, locale) {
   const v18Drawer = page.locator('#v18MobileDrawer').first();
   if (await v18Drawer.count()) {
     const expanded = await v18Drawer.getAttribute('aria-hidden');
@@ -14,8 +14,6 @@ async function getVisibleMobileLanguage(page) {
       await v18Toggle.click();
       await v18Drawer.waitFor({ state:'visible', timeout:5_000 });
     }
-    const select = v18Drawer.locator('[data-bg-language-select]').first();
-    if (await select.isVisible().catch(()=>false)) return select;
   }
 
   const legacyMenu = page.locator('#bgkopMob').first();
@@ -27,35 +25,60 @@ async function getVisibleMobileLanguage(page) {
   const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
   if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 }).catch(()=>{});
 
-  const candidates = [
+  const linkCandidates = [
+    page.locator('#v18MobileDrawer [data-bg-language-option="' + locale + '"]').first(),
+    page.locator('#bgSharedMobileNav [data-bg-language-option="' + locale + '"]').first(),
+    page.locator('#bgkopMob [data-bg-language-option="' + locale + '"]').first(),
+    page.locator('[data-bg-language-option="' + locale + '"]:visible').first(),
+  ];
+  for (const candidate of linkCandidates) {
+    if (await candidate.isVisible().catch(()=>false)) return { kind:'link', locator:candidate };
+  }
+
+  const selectCandidates = [
+    page.locator('#v18MobileDrawer [data-bg-language-select]').first(),
     page.locator('#bgSharedMobileNav [data-bg-language-select]').first(),
     page.locator('#bgkopMob [data-bg-language-select]').first(),
     page.locator('[data-bg-language-select]:visible').first(),
   ];
-  for (const candidate of candidates) {
-    if (await candidate.isVisible().catch(()=>false)) return candidate;
+  for (const candidate of selectCandidates) {
+    if (await candidate.isVisible().catch(()=>false)) return { kind:'select', locator:candidate };
   }
 
   const diagnostics = await page.evaluate(() => ({
     v18Drawer: document.getElementById('v18MobileDrawer')?.getAttribute('aria-hidden') ?? null,
-    v18Selects: document.querySelectorAll('#v18MobileDrawer [data-bg-language-select]').length,
-    legacySelects: document.querySelectorAll('#bgkopMob [data-bg-language-select]').length,
-    sharedSelects: document.querySelectorAll('#bgSharedMobileNav [data-bg-language-select]').length,
-    allSelects: document.querySelectorAll('[data-bg-language-select]').length,
+    languageLinks: document.querySelectorAll('[data-bg-language-option]').length,
+    languageSelects: document.querySelectorAll('[data-bg-language-select]').length,
   }));
-  throw new Error('visible mobile language select is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
+  throw new Error('visible mobile language control is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
+}
+
+async function dismissCookieOverlay(page) {
+  const dialog = page.locator('#bgCookie').first();
+  if (!await dialog.count()) return;
+  if (!await dialog.isVisible().catch(()=>false)) return;
+  const deny = page.locator('#bgCookieDeny').first();
+  if (!await deny.count()) throw new Error('visible cookie dialog is missing #bgCookieDeny');
+  await deny.click();
+  await dialog.waitFor({ state:'hidden', timeout:10_000 });
 }
 
 async function switchPublicLocale(page, locale, expectedPath) {
-  const selector = await getVisibleMobileLanguage(page);
-  await Promise.all([
-    page.waitForURL(url => {
-      const path = new URL(url).pathname.replace(/\/$/, '') || '/';
-      const expected = expectedPath.replace(/\/$/, '') || '/';
-      return path === expected;
-    }, { timeout:20_000 }),
-    selector.selectOption(locale),
-  ]);
+  await dismissCookieOverlay(page);
+  const control = await getVisibleMobileLanguageControl(page, locale);
+
+  const expected = expectedPath.replace(/\/$/, '') || '/';
+  const navigation = page.waitForURL(url => {
+    const path = new URL(url).pathname.replace(/\/$/, '') || '/';
+    return path === expected;
+  }, { timeout:30_000, waitUntil:'commit' });
+
+  if (control.kind === 'link') {
+    await Promise.all([navigation, control.locator.click()]);
+  } else {
+    await Promise.all([navigation, control.locator.selectOption(locale)]);
+  }
+
   await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
   await page.waitForTimeout(300);
   if ((await page.locator('html').getAttribute('lang')) !== locale) {
@@ -65,6 +88,7 @@ async function switchPublicLocale(page, locale, expectedPath) {
   if (/Switching language failed\. Try again\./i.test(body)) throw new Error('language switch exposed runtime translation failure on ' + expectedPath);
 }
 
+// Compatibility contract: English route still shows the Dutch pricing H1
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
@@ -75,79 +99,33 @@ async function run() {
   try {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    await page.waitForFunction(() => {
-      const root = document.documentElement;
-      return root?.dataset?.bgPricingInteractions === 'ready-v3'
-        && Boolean(document.querySelector('[data-bg-stage="loss"]'));
-    }, null, { timeout:20_000 });
-
-    // Lifecycle toggle must change the actual visible panel.
-    // Read geometry directly from the DOM so a missing control fails with explicit state,
-    // rather than Playwright Locator auto-waiting for 30 seconds.
-    const lossButton = page.locator('[data-bg-stage="loss"]');
-    const lossVisibility = await page.evaluate(() => {
-      const element = document.querySelector('[data-bg-stage="loss"]');
-      if (!element) return null;
-      const rect = element.getBoundingClientRect();
-      const style = getComputedStyle(element);
-      return {
-        display: style.display,
-        visibility: style.visibility,
-        opacity: Number(style.opacity || '1'),
-        width: rect.width,
-        height: rect.height,
-      };
-    });
-    if (!lossVisibility) throw new Error('loss stage control is missing after pricing readiness');
-    if (lossVisibility.display === 'none' || lossVisibility.visibility === 'hidden' || lossVisibility.opacity === 0 || lossVisibility.width < 1 || lossVisibility.height < 1) {
-      throw new Error('loss stage control is not visibly actionable: ' + JSON.stringify(lossVisibility));
+    const saasPanel=page.locator('#saas').first();
+    const consultingPanel=page.locator('#expertise').first();
+    await saasPanel.waitFor({state:'visible',timeout:20_000});
+    await expectVisible(consultingPanel,'consulting pricing section');
+    const body = await page.locator('body').innerText();
+    for (const token of ['Powerhouse SaaS','Starter','Pro','Groei','Enterprise']) {
+      if (!body.includes(token)) throw new Error('pricing SaaS token missing: '+token);
     }
-    await page.evaluate(() => {
-      const element = document.querySelector('[data-bg-stage="loss"]');
-      if (!element) throw new Error('loss stage control disappeared before scroll');
-      element.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' });
-    });
-    await page.waitForTimeout(100);
-    const lossBox = await page.evaluate(() => {
-      const element = document.querySelector('[data-bg-stage="loss"]');
-      if (!element) return null;
-      const rect = element.getBoundingClientRect();
-      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-    });
-    if (!lossBox) throw new Error('loss stage control disappeared before pointer click');
-    if (lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
-    await page.mouse.click(lossBox.x + lossBox.width / 2, lossBox.y + lossBox.height / 2);
-    await page.waitForTimeout(150);
-    const loss = page.locator('[data-bg-stage-panel="loss"]');
-    const grow = page.locator('[data-bg-stage-panel="grow"]');
-    await expectVisible(loss, 'loss stage panel after click');
-    if (await grow.isVisible().catch(()=>false)) throw new Error('grow stage panel stayed visible after selecting loss');
-    if ((await page.locator('[data-bg-stage="loss"]').getAttribute('aria-selected')) !== 'true') throw new Error('loss stage aria-selected did not become true');
+    const consultingText=await consultingPanel.innerText();
+    for (const token of ['Directie & AI Workshop','Bedrijfsgeheugen Scan','Build Sprint','Transformation / Fractional Lead']) {
+      if (!consultingText.includes(token)) throw new Error('consulting pricing token missing: '+token);
+    }
+    if (!body.includes('Combineer zonder dubbel te betalen')) throw new Error('pricing bundle rule missing');
 
-    // Start/run tab must alter visible plan-card group.
-    await page.locator('[data-bg-price-tab="run"]').click();
-    await page.waitForTimeout(150);
-    if ((await page.locator('[data-bg-price-tab="run"]').getAttribute('aria-selected')) !== 'true') throw new Error('run tab aria-selected did not become true');
-    const runCards = page.locator('.bg-plan-card[data-bg-group="run"]');
-    if (await runCards.count() === 0) throw new Error('run plan cards are missing');
-    await expectVisible(runCards.first(), 'run plan card after click');
-    const startCards = page.locator('.bg-plan-card[data-bg-group="start"]');
-    if (await startCards.first().isVisible().catch(()=>false)) throw new Error('start plan card stayed visible after selecting run');
+    const expertiseLink=page.locator('a[href="#expertise"]').first();
+    const saasLink=page.locator('a[href="#saas"]').first();
+    await expectVisible(expertiseLink,'consulting pricing anchor');
+    await expectVisible(saasLink,'SaaS pricing anchor');
+    await expertiseLink.click();
+    await page.waitForFunction(() => location.hash === '#expertise');
+    await saasLink.click();
+    await page.waitForFunction(() => location.hash === '#saas');
 
-    // Billing switch must update both selected state and at least one price.
-    const priced = page.locator('[data-monthly][data-yearly]').first();
-    const before = (await priced.textContent().catch(()=>'')) || '';
-    await page.locator('[data-bg-billing="yearly"]').click();
-    await page.waitForTimeout(150);
-    const after = (await priced.textContent().catch(()=>'')) || '';
-    if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
-    if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
-
-    // Public language switching must prove NL→EN→NL on every mandatory public route.
     await switchPublicLocale(page, 'en', '/en/prijzen');
     const pricingEnglish = await page.locator('body').innerText();
-    if (/Prijzen voor digitalisering in het mkb/i.test(pricingEnglish)) throw new Error('English route still shows the Dutch pricing H1');
-    if (!/Pricing/i.test(pricingEnglish)) throw new Error('English route has no visible Pricing text');
+    if (!/Powerhouse SaaS/i.test(pricingEnglish)) throw new Error('English route has no visible Powerhouse SaaS text');
+    if (/Kies software of expertise/i.test(pricingEnglish)) throw new Error('English route still shows Dutch pricing hero copy');
     await switchPublicLocale(page, 'nl', '/prijzen');
 
     const mandatoryRoutes = [
@@ -163,7 +141,7 @@ async function run() {
     }
 
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
-    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl'}));
+    console.log(JSON.stringify({status:'COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN',url:page.url(),pricingNavigation:'saas-expertise-anchors',locale:'nl',roundtrip:'nl-en-nl'}));
   } finally {
     await browser.close();
   }

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|human-commercial-orchestrator|v1",
+  "observed_at": "2026-10-05T11:35:00Z",
+  "type": "COMMERCIAL_INTELLIGENCE",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Powerhouse already contained rich sales, psychology, brand, relationship, trigger, NBA, channel and outcome knowledge, but message strategy was usually empty on executed sales actions and generic templates could reach provider executors without a canonical human-copy quality proof.",
+  "decision": "Reuse the existing sales action/outcome and revenue lineage; convert documented sales methods into a canonical runtime playbook; select one play per action; compose from verified context; gate provider execution on measured copy quality; learn performance by message_strategy.",
+  "prevention": [
+    "no second CRM or parallel sales action store",
+    "one canonical commercial message composer",
+    "SPIN, Challenger, trigger outreach, value-first, follow-up, graceful close, commitment close and objection handling are runtime-selectable plays",
+    "reciprocity, low reactance, curiosity, specificity, mere exposure, commitment consistency and risk reduction are explicit play metadata",
+    "provider executors fail closed when composer quality proof or message_strategy is missing",
+    "public source evidence is dereferenced before copy generation so internal taxonomy labels never need to surface to prospects",
+    "Anthropic remains primary and the already-approved Composio/Groq model is the governed fallback",
+    "outcomes remain linked to actions so strategy performance can be learned from replies, meetings, proposals, wins and revenue"
+  ],
+  "canonical_authorities": [
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_sales_outcomes",
+    "public.powerhouse_relationship_revenue_intelligence_v1",
+    "public.powerhouse_sales_playbook_v1",
+    "public.powerhouse_commercial_message_plan_v1",
+    "public.powerhouse_message_quality_v1",
+    "public.powerhouse_sales_strategy_performance_v1",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts"
+  ],
+  "id": "human-commercial-orchestrator-20261005-v1",
+  "date": "2026-10-05",
+  "source": "user-request+notion-sales-playbook+notion-ai-sales-prompts+brand-memory-techniques+existing-state-audit+production-readback",
+  "failure_class": "COMMERCIAL_KNOWLEDGE_NOT_RUNTIME_DECISIVE",
+  "symptom": [
+    "Generic outreach templates were technically executable even when richer sales psychology and copy rules existed elsewhere.",
+    "message_strategy was empty on most historical sales actions, preventing strategy-level learning."
+  ],
+  "failed_approaches": [
+    "Treat sales psychology as prompt documentation only.",
+    "Create another independent copy engine beside the existing commercial composer.",
+    "Generate from internal taxonomy labels when a public evidence source exists."
+  ],
+  "evidence": {
+    "migration": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+    "composer": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "regression": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+    "runtime_readback": {
+      "pending_commercial_actions": 11,
+      "planned_actions": 11,
+      "actions_without_strategy": 0,
+      "governed_fallback": "Composio/Groq openai/gpt-oss-120b"
+    }
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_KNOWLEDGE_NOT_RUNTIME_DECISIVE",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs"
+    ]
+  },
+  "delivery_closure": {
+    "declared_scope_budget": 8,
+    "required_evidence": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
+    "rule": "Material commercial-runtime changes must keep copy strategy, quality evidence and provider execution in one auditable lineage."
+  }
+}

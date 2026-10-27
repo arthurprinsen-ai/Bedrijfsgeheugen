@@ -7,10 +7,12 @@ test('terminal closure Brain gate matches executable workflow triggers', async()
   const unified=await readFile('.github/workflows/unified-brain-delivery.yml','utf8');
   assert.match(unified,/workflow_dispatch:/);
   assert.doesNotMatch(unified,/pull_request:/);
-  assert.match(workflow,/require_brain_evidence/);
-  assert.match(workflow,/unified-brain-delivery\.yml\/runs\?head_sha=\$\{HEAD_SHA\}&per_page=50/);
-  assert.doesNotMatch(workflow,/unified-brain-delivery\.yml\/runs\?head_sha=\$\{HEAD_SHA\}&event=pull_request/);
-  assert.match(workflow,/brain-foundation-verify\.yml\/runs\?head_sha=\$\{MERGE_SHA\}&event=push/);
-  assert.match(workflow,/TERMINAL_BRAIN_FOUNDATION_PROVEN/);
-  assert.match(workflow,/TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL/);
+  assert.match(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
+  assert.ok(workflow.includes('runs?branch=main&event=workflow_dispatch&per_page=100'));
+  assert.ok(workflow.includes('BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}'));
+  assert.ok(workflow.includes('.display_title==$title'));
+  assert.ok(workflow.includes('/compare/${run_source_sha}...main'));
+  assert.match(workflow,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
+  assert.doesNotMatch(workflow,/require_brain_evidence|TERMINAL_BRAIN_(FOUNDATION|DESCENDANT)_PROVEN/);
+  assert.match(workflow,/TERMINAL_CRITICAL_GATE_NOT_TERMINAL/);
 });

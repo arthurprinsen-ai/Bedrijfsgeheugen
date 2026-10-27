@@ -6,10 +6,27 @@ import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 import { deriveRequiredTestSuites } from '../tools/delivery-required-test-suites.mjs';
 
 const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+test('adaptive regression routing alone remains backend control-plane work',()=>{
+ const plan=createDeliveryPlan({changedPaths:['config/powerhouse-adaptive-delivery-v1.json'],headSha:'abcdef1234567890',policy});
+ assert.deepEqual(plan.lanes.map(lane=>lane.id),['backend']);
+});
 
 function suitesFor(paths, sha = 'abcdef1234567890') {
   const plan = createDeliveryPlan({ changedPaths: paths, headSha: sha, policy });
   return deriveRequiredTestSuites({ lanes: plan.lanes.map(lane => lane.id) });
+}
+
+function absoluteHostsFromQuotedHtml(value) {
+  const hosts = [];
+  for (const token of String(value).split('"')) {
+    if (!token.startsWith('https://') && !token.startsWith('http://')) continue;
+    try {
+      hosts.push(new URL(token).hostname);
+    } catch {
+      // Ignore malformed non-URL test fragments.
+    }
+  }
+  return hosts;
 }
 
 test('website-only work blocks only shared and website required suites', () => {
@@ -22,6 +39,33 @@ test('Netlify routing config is classified as website delivery', () => {
 
 test('backend-only work blocks only shared and backend required suites', () => {
   assert.deepEqual(suitesFor(['platform/api/brain-gateway.mjs']), { shared:true, backend:true, portal:false, website:false, automation:false });
+});
+
+test('autonomous improvement scheduler contract and probe are backend-only delivery', () => {
+  const paths=[
+    'config/powerhouse-autonomous-improvement-runtime.json',
+    'scripts/brain/continuous-improvement/run-autonomous-improvement.mjs',
+    'tests/brain-autonomous-improvement-runtime.test.mjs',
+    'brain/learning/2026-10-08-heartbeat-schedule-contract-v1.json',
+    'docs/changes/2026-10-08-heartbeat-schedule-contract-v1.md'
+  ];
+  const suites=suitesFor(paths);
+  assert.deepEqual(suites,{shared:true,backend:true,portal:false,website:false,automation:false});
+  assert.deepEqual(suitesFor(['config/outcome-obligations.json']),{shared:true,backend:true,portal:true,website:true,automation:true});
+  assert.deepEqual(suitesFor(['portal-v2/domain-state.js']),{shared:true,backend:false,portal:true,website:false,automation:false});
+});
+
+test('CI helper scripts stay backend-only and never activate product lanes', () => {
+  for (const path of [
+    'scripts/ci/blog_technical_seo_gate.py',
+    'scripts/ci/future-assurance-helper.py',
+  ]) {
+    assert.deepEqual(
+      suitesFor([path]),
+      { shared:true, backend:true, portal:false, website:false, automation:false },
+      path,
+    );
+  }
 });
 
 test('portal-only work blocks only shared and portal required suites', () => {
@@ -76,8 +120,9 @@ test('approved blog writer strips remote font links while preserving unrelated l
     "print(writer.normalize_performance(sample))",
   ].join('\n');
   const output = execFileSync('python3', ['-c', probe], { encoding:'utf8' });
-  assert.doesNotMatch(output, /fonts\.googleapis\.com/);
-  assert.doesNotMatch(output, /fonts\.gstatic\.com/);
+  const hosts = absoluteHostsFromQuotedHtml(output);
+  assert.equal(hosts.some(host => host === 'fonts.googleapis.com'), false);
+  assert.equal(hosts.some(host => host === 'fonts.gstatic.com'), false);
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
@@ -95,7 +140,8 @@ test('approved blog writer keeps analytics out of the first render until consent
   assert.match(output, /analytics_storage==='granted'/);
   assert.doesNotMatch(output, /<script data-goatcounter=.*src=\"https:\/\/gc\.zgo\.at\/count\.js/);
   assert.match(output, /setTimeout\(loadGoat,5000\)/);
-  assert.doesNotMatch(output, /fonts\.googleapis\.com/);
+  const hosts = absoluteHostsFromQuotedHtml(output);
+  assert.equal(hosts.some(host => host === 'fonts.googleapis.com'), false);
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
@@ -272,5 +318,78 @@ test('auxiliary workflow definitions stay on owned control-plane lanes', () => {
   });
   assert.deepEqual(suitesFor(['.github/workflows/fresh-device-autonomy-canary.yml']), {
     shared:true, backend:false, portal:false, website:false, automation:true
+  });
+});
+
+test('historical terminal reconciliation stays backend-only and never fans out into website browser gates', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/historical-terminal-reconciliation.yml']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
+
+test('historical terminal reconciliation bundle stays backend-only', () => {
+  const suites = suitesFor([
+    '.github/workflows/historical-terminal-reconciliation.yml',
+    'config/historical-terminal-reconciliation.json',
+    'tools/delivery/historical-terminal-reconcile.mjs',
+    'tests/brain-historical-terminal-reconciliation-v1.test.mjs',
+    'docs/changes/historical-terminal-reconciliation-20261005-v1.md',
+    'docs/development-ledger-events/historical-terminal-reconciliation-20261005-v1.md',
+    'brain/learning/historical-terminal-reconciliation-20261005-v1.json'
+  ]);
+  assert.deepEqual(suites, {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
+
+
+test('material writeback closure guard stays backend-only and never activates website browser proof', () => {
+  const suites = suitesFor([
+    'scripts/brain/material-writeback-closure-guard.mjs',
+    'tests/brain-material-writeback-closure-guard.test.mjs',
+    'brain/learning/example.json',
+    'docs/changes/example.md',
+    'docs/development-ledger-events/example.md'
+  ]);
+  assert.deepEqual(suites, {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
+
+
+test('latency control-plane workflows stay off website browser proof with canonical ownership', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/powerhouse-delivery-hygiene.yml']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+  assert.deepEqual(suitesFor(['.github/workflows/repo-writer-operational-verification.yml']), {
+    shared:true, backend:false, portal:false, website:false, automation:true
+  });
+});
+
+
+test('generic workflow definitions default to backend control-plane instead of all product lanes', () => {
+  for (const path of [
+    '.github/workflows/powerhouse-ci-intelligence.yml',
+    '.github/workflows/future-unregistered-control-plane.yml'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:true, portal:false, website:false, automation:false
+    }, path);
+  }
+});
+
+test('explicit website workflow ownership overrides the generic workflow control-plane fallback', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/website-cross-browser-screenshot-assurance.yml']), {
+    shared:true, backend:false, portal:false, website:true, automation:false
+  });
+});
+
+
+test('scripts/ci helpers stay backend-only and never activate product lanes', () => {
+  assert.deepEqual(suitesFor(['scripts/ci/blog_technical_seo_gate.py']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+  assert.deepEqual(suitesFor(['scripts/ci/future-control-plane-check.py']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
   });
 });

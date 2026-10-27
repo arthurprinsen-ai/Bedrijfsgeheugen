@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const workflow = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+const required = readFileSync('.github/workflows/required-test.yml', 'utf8');
 
 /**
  * De bedoeling: de website-lane installeert de browser precies één keer per
@@ -39,13 +40,10 @@ test('local exact-candidate fallback preserves Netlify-style clean URLs', () => 
 
 test('single browser job retains targeted, visibility, and high-risk contracts while reusing exact preview when available', () => {
   const previewReadyStart = workflow.indexOf('\n  preview-ready:');
-  const buildStart = workflow.indexOf('\n  netlify-build-parity:', previewReadyStart);
-  const browserStart = workflow.indexOf('\n  browser:', buildStart);
+  const browserStart = workflow.indexOf('\n  browser:', previewReadyStart);
   assert.notEqual(previewReadyStart, -1);
-  assert.notEqual(buildStart, -1);
   assert.notEqual(browserStart, -1);
-  const previewReady = workflow.slice(previewReadyStart, buildStart);
-  const build = workflow.slice(buildStart, browserStart);
+  const previewReady = workflow.slice(previewReadyStart, browserStart);
   const browser = workflow.slice(browserStart);
 
   assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
@@ -53,11 +51,12 @@ test('single browser job retains targeted, visibility, and high-risk contracts w
   assert.match(previewReady, /preview_mode=local-exact-candidate/);
   assert.match(previewReady, /base_url=http:\/\/127\.0\.0\.1:4173/);
 
-  assert.match(build, /name: Run exact Netlify production build command/);
-  assert.match(build, /name: Verify built artifact contracts/);
+  assert.match(required, /name: Run exact Netlify production build command once/);
+  assert.match(required, /name: Verify built artifact contracts/);
   assert.doesNotMatch(workflow, /\n  page-seo:/);
+  assert.doesNotMatch(workflow, /^  netlify[-_]build[-_]parity:/m);
 
-  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
+  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
   assert.match(browser, /name: Verify affected routes on desktop and mobile/);
   assert.match(browser, /name: Verify all public pages are visibly rendered/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
@@ -68,14 +67,15 @@ test('single browser job retains targeted, visibility, and high-risk contracts w
   assert.match(browser, /needs\.classify\.outputs\.risk_lane/);
 });
 
-test('build-once website lane does not start legacy duplicate checkers', () => {
-  const buildStart = workflow.indexOf('\n  netlify-build-parity:');
-  const browserStart = workflow.indexOf('\n  browser:', buildStart);
+test('build-once topology keeps parity outside browser lane and avoids legacy duplicate checkers', () => {
+  const buildStart = required.indexOf('\n  netlify_build_parity:');
+  const backendStart = required.indexOf('\n  backend:', buildStart);
   assert.notEqual(buildStart, -1);
-  assert.notEqual(browserStart, -1);
-  const build = workflow.slice(buildStart, browserStart);
-  assert.match(build, /needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(build, /name: Run exact Netlify production build command/);
+  assert.notEqual(backendStart, -1);
+  const build = required.slice(buildStart, backendStart);
+  assert.match(build, /needs:\s*preflight/);
+  assert.match(build, /name: Run exact Netlify production build command once/);
   assert.match(build, /name: Verify built artifact contracts/);
   assert.doesNotMatch(build, /playwright|PAGINA_BASE_URL|paginacontrole\.py|seocontrole\.py/);
+  assert.doesNotMatch(workflow, /^  netlify[-_]build[-_]parity:/m);
 });

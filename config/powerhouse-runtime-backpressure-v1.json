@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "authority": "POWERHOUSE_RUNTIME_BACKPRESSURE",
+  "cms_public": {
+    "gateway_timeout_ms": 2500,
+    "fresh_cache_ms": 30000,
+    "stale_cache_ms": 900000,
+    "circuit_breaker_ms": 30000,
+    "degraded_response_status": 200,
+    "degraded_mode": "static_html_authority_plus_stale_cms_overlay",
+    "blob_consistency": "strong"
+  },
+  "growth_events": {
+    "visitor_path": "durable_queue_only",
+    "queue_store": "bg-growth-events",
+    "drain_schedule_utc": "* * * * *",
+    "drain_batch_max": 10,
+    "datahub_timeout_ms": 2500,
+    "stop_on_first_backend_failure": true
+  },
+  "invariants": [
+    "visitor traffic must not fan out synchronously into PostgREST writes",
+    "CMS Data API degradation must not return a 5xx to the public static website",
+    "growth events remain durable in Netlify Blobs until DataHub persistence succeeds",
+    "a failing backend stops the current drain batch instead of creating retry amplification",
+    "scheduler authentication must not depend on PostgREST before authorization",
+    "scheduler secret lookup must use the IPv4 Supavisor pooler or an injected Edge secret",
+    "CMS circuit-breaker state must use strong-consistency Blobs",
+    "public runtime health endpoints must not open database connections",
+    "runtime verifier credentials must never appear in query strings",
+    "production health must not create database probe traffic"
+  ],
+  "service_auth": {
+    "authority": "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
+    "transport": "supavisor_ipv4_transaction_pool",
+    "pooler_host": "aws-0-eu-central-1.pooler.supabase.com",
+    "pooler_port": 6543,
+    "max_connections_per_isolate": 1,
+    "cache_ms": 300000,
+    "fallback_env": "POWERHOUSE_DAILY_SCHEDULER_TOKEN",
+    "protected_functions": [
+      "powerhouse-predictive-engine",
+      "powerhouse-forecast-calibrator",
+      "powerhouse-mira-problem-radar",
+      "powerhouse-visual-assurance-sync",
+      "powerhouse-email-reply-loop"
+    ],
+    "true_401": [
+      "TOKEN_REQUIRED",
+      "TOKEN_MISMATCH"
+    ],
+    "infrastructure_503": [
+      "AUTH_SECRET_EMPTY",
+      "AUTH_SECRET_LOOKUP_FAILED"
+    ]
+  },
+  "runtime_verifier": {
+    "state": "RETIRED_DIAGNOSTIC",
+    "function": "powerhouse-runtime-verifier-v1",
+    "public_db_probe": false,
+    "response_status": 410,
+    "replacement": "commercial-heartbeat-and-runtime-readback",
+    "authority": [
+      "supabase-provider-logs",
+      "supabase-management-api",
+      "powerhouse-commercial-heartbeat-v1"
+    ],
+    "reason": "Public database probes can leak credentials, amplify outages, and duplicate provider health authority."
+  }
+}

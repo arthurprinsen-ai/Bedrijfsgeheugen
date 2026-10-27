@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|human-commercial-message-os|v1",
+  "observed_at": "2026-10-05T12:05:00Z",
+  "type": "REVENUE_SALES_COPY",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Commercial sales techniques, psychology, public research evidence, copy generation, executor quality proof and revenue outcomes existed but were not consistently joined into one runtime decision lineage.",
+  "decision": "Make sales play, psychology, semantic source relevance, human copy quality, channel execution and outcome/revenue learning one canonical Powerhouse path without creating a second CRM or action engine.",
+  "prevention": [
+    "every outbound action receives an explicit sales play and psychology/CTA contract",
+    "machine taxonomy cannot be used as prospect-facing personalization",
+    "trigger outreach requires human-readable public evidence plus semantic source-to-trigger relevance",
+    "predicted objections cannot self-promote to observed objections",
+    "recruitment is not M&A evidence and supplier directories are not AI buying-trigger evidence",
+    "Gmail and SalesRobot fail closed unless the canonical composer quality proof passes",
+    "outcomes and revenue are measured by channel, sales play, psychology and CTA"
+  ],
+  "canonical_authorities": [
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_sales_outcomes",
+    "public.powerhouse_sales_playbook_v1",
+    "public.powerhouse_message_quality_v1",
+    "public.powerhouse_commercial_message_plan_v1",
+    "public.powerhouse_sales_technique_performance_v1",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+    "supabase/functions/powerhouse-linkedin-sales-machine/index.ts"
+  ],
+  "id": "human-commercial-message-os-20261005-v1",
+  "date": "2026-10-05",
+  "source": "notion-sales-knowledge+existing-state-audit+supabase-runtime-readback",
+  "failure_class": "COMMERCIAL_KNOWLEDGE_RUNTIME_LINEAGE_FRAGMENTATION",
+  "symptom": [
+    "Most executed sales actions were legacy_unclassified for message strategy.",
+    "Public research evidence existed on research actions but was not consistently linked to outbound actions.",
+    "Generic or semantically mismatched messages could be technically executable."
+  ],
+  "failed_approaches": [
+    "Treat sales/copy psychology as documentation-only guidance.",
+    "Allow machine trigger taxonomy to stand in for a human-readable reason to contact someone.",
+    "Score copy quality without requiring semantic relevance between source evidence and commercial problem."
+  ],
+  "evidence": {
+    "migration": "supabase/migrations/20261005122000_powerhouse_human_commercial_message_os_v1.sql",
+    "composer": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "email_executor": "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+    "linkedin_executor": "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
+    "regression": "tests/brain-human-commercial-message-os-v1.test.mjs",
+    "runtime_health": {
+      "pending": 11,
+      "planned": 11,
+      "drafted": 8,
+      "quality_passed": 8,
+      "drafts_without_quality": 0,
+      "actions_without_strategy": 0
+    }
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_KNOWLEDGE_RUNTIME_LINEAGE_FRAGMENTATION",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-human-commercial-message-os-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-human-commercial-message-os-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-human-commercial-message-os-v1.test.mjs"
+    ]
+  }
+}

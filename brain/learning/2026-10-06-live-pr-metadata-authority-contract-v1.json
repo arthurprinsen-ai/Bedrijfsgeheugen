@@ -1,0 +1,28 @@
+{
+  "id": "live-pr-metadata-authority-contract-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|metadata-authority|live-pr|stale-manifest|regression-contract|v1",
+  "root_cause": "The runtime authority was changed so complete live PR metadata wins over a stale versioned manifest, but the existing regression still encoded the old manifest-first rule and caused unrelated automation lanes to fail.",
+  "prevention": {
+    "complete_live_pr_metadata": "authoritative",
+    "incomplete_live_pr_metadata": "fallback to validated versioned manifest",
+    "different_obligation": "PR body remains authoritative"
+  },
+  "evidence": {
+    "failed_proof_pr": 3993,
+    "failed_required_run": 37487264407,
+    "failed_test": "versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-one-loop-versioned-metadata-authority.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "STALE_REGRESSION_CONTRACT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

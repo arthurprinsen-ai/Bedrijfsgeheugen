@@ -1,0 +1,67 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|main|remote-only-manual-company-news-migration-version|20261025-v1",
+  "obligation_id": "growth:company-news-provider-history-parity:20261025-v1",
+  "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
+  "observed_evidence": {
+    "provider": "supabase",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "failed_provider_workflow_at": "2026-10-25T11:42:42Z",
+    "provider_error": "Remote migration versions not found in local migrations directory",
+    "remote_only_version": "20261025112658",
+    "already_versioned_canonical": "20261025101500",
+    "blocked_next_version": "20261025110200",
+    "remote_sql_exact_byte_equal_to_canonical": true,
+    "production_company_news_candidate_limit": 1500,
+    "production_acl_anon": false,
+    "production_acl_authenticated": false,
+    "production_acl_service_role": true,
+    "original_unapplied_version": "20261025110200",
+    "second_remote_only_version": "20261025120522",
+    "second_remote_only_name": "commercial_daily_provider_evidence_reconciliation",
+    "second_remote_sql_byte_equal_to_merged_pr_4879": true,
+    "second_sql_bytes": 4687,
+    "second_function_live": true,
+    "second_production_readback": {
+      "date": "2026-10-25",
+      "delivered_publish_count": 2,
+      "terminal_permission_limited_count": 1,
+      "unresolved_publish_count": 0,
+      "instagram_independent_provider_proof": false
+    }
+  },
+  "root_cause": "An already-applied manual/provider migration recorded a second timestamp for precisely the same SQL after its canonical Git version was applied. Supabase native GitHub main deploy compared the remote ledger to local migrations and stopped before deploying the commercial provider-proof SQL.",
+  "fix": "Restore two independently observed, already-applied, remote-only provider-history migrations byte-for-byte under their actual versions 20261025112658 (company news) and 20261025120522 (commercial status). Remove proposed never-applied 20261025130000 and original never-applied 20261025110200 paths; never send SQL again or alter remote migration tracking. This closes GitOps source-versus-remote version drift rather than replaying a live schema function.",
+  "prevention_rule": "A single authorized migration release owner; after every provider SQL deployment, reconcile native migration ledger to Git. Forbid direct/manual + native concurrent writes and remote-only versions; preserve immutable content/hash readback and chronological version identities. Never replay SQL already applied merely to green CI.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+    ],
+    "resequence_only_when_unapplied": true
+  },
+  "test_evidence": [
+    "tests/brain-company-news-eligible-coverage-20261025.test.mjs"
+  ],
+  "productionVerificationsRequired": [
+    "Exact-head Required + CodeQL + provider-owned native Supabase preview when preview capacity is available",
+    "Protected merge of exact historical Git files",
+    "Native Supabase main migration readback (no remote-only or local-only versions)",
+    "Runtime same-date independent publication counts and no invented provider/social/revenue evidence"
+  ],
+  "compiler": {
+    "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  }
+}

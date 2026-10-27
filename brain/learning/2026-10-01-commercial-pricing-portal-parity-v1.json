@@ -1,0 +1,43 @@
+{
+  "fingerprint": "pricing|commercial-offers|portal-parity|v1",
+  "observed_at": "2026-10-01T07:46:00+02:00",
+  "type": "PREVENTION",
+  "problem": "Pricing, checkout and portal capabilities can drift when plan names, limits and service bundles are defined in separate places.",
+  "decision": "Use config/commercial-offers-v1.json as the public commercial catalog, persist matching SaaS entitlements server-side, and gate Portal V2 with the same plan codes.",
+  "prevention": [
+    "Do not publish a SaaS price or feature unless the corresponding entitlement exists server-side.",
+    "Do not expose portal capabilities as included when the plan access model marks them as an upgrade.",
+    "Consulting and workshops may grant temporary SaaS access, but this must name the exact plan level and duration.",
+    "Checkout plan codes must match canonical commercial plan codes."
+  ],
+  "evidence": [
+    "config/commercial-offers-v1.json",
+    "portal-v2/plan-access.js",
+    "tools/site-shell/apply-commercial-pricing-v1.mjs",
+    "tests/brain-commercial-pricing-portal-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Commercial packaging had evolved faster than the original Control/Scale entitlement model, so the website, checkout and portal could express different product truths.",
+  "compiler": {
+    "failure_class": "COMMERCIAL_ENTITLEMENT_DRIFT",
+    "scope": "PRICING_CHECKOUT_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "pricing",
+    "website",
+    "portal",
+    "sales"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-portal-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-portal-v1.test.mjs"
+  ]
+}

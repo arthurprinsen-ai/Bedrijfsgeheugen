@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "pricing|final-normalizer|post-restore-runtime-strip|2026-09-29-v1",
+  "date": "2026-09-29",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Exact production deployed successfully, but pricing/i18n production readback timed out before ready-v3 and the canonical NL/EN roundtrip could be proven.",
+  "root_cause": "The Netlify build restored the canonical pricing interaction runtime before the final normaliseer-site-ui transform. That later destructive shell projection could remove the inline pricing controller and rescue runtime again. In parallel, older verifier regressions still asserted the deprecated mobile language select contract while the current canonical public i18n authority uses static route links.",
+  "evidence": {
+    "failed_production_readback_run": 36583975442,
+    "exact_production_commit": "571ecf8624b56388d760bcfc3e578f03f30c9adb",
+    "exact_production_deploy": "6abbcd01978b9400086f9766",
+    "observed_failure": "page.waitForFunction timeout waiting for ready-v3 and loss-stage pricing control",
+    "local_exact_source_replay": "after final normaliseer-site-ui, canonical pricing inline/rescue readiness runtime was absent before the repaired build order",
+    "canonical_i18n_contract": "public NL is unprefixed, English is /en/*, mobile switching uses data-bg-language-option route links; selects are compatibility fallback only"
+  },
+  "prevention": [
+    "Run destructive/global UI normalization before feature integrity restorers.",
+    "Restore pricing and Bedrijfslek feature integrity after the final global UI transform and before i18n/localized route projection.",
+    "Keep a machine test that asserts the Netlify build order.",
+    "Production browser verifier must follow the actual canonical language-control contract, not a stale historical selector.",
+    "A successful exact deploy is not terminal green until pricing interactions and NL→EN→NL behavior are read back in production."
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-final-build-order-v1.test.mjs",
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs",
+      "tests/brain-production-verifier-v18-mobile-language-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-final-build-order-v1.test.mjs",
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs",
+      "tests/brain-production-verifier-v18-mobile-language-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "truth_boundary": "This learning proves the root cause and prevention contract; production is only green after a fresh exact-deploy browser readback passes."
+}

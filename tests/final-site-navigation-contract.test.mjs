@@ -9,15 +9,18 @@ import { PUBLIC_PAGE_EXCLUDES } from '../tools/site-shell/contracts.mjs';
 
 const staleHomepage = `<!doctype html><html><head><title>Home</title></head><body>
 <header class="v17-header"><nav>
+  <a href="https://www.bedrijfsgeheugen.nl/product" data-view="product">Platform</a>
   <a href="https://www.bedrijfsgeheugen.nl/blog/" data-view="resources">Kennis</a>
   <a href="https://www.bedrijfsgeheugen.nl/blog/">Blog</a>
 </nav></header>
-<aside class="v18-mobile-drawer"><a href="https://www.bedrijfsgeheugen.nl/blog/" data-view="resources">Kennis</a><a href="https://www.bedrijfsgeheugen.nl/blog/">Blog</a></aside>
+<aside class="v18-mobile-drawer"><a href="https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen" data-view="product">Platform</a><a href="https://www.bedrijfsgeheugen.nl/blog/" data-view="resources">Kennis</a><a href="https://www.bedrijfsgeheugen.nl/blog/">Blog</a></aside>
 <main><h1>Home</h1></main></body></html>`;
 
 const finalized = finalizeNavigationHtml(staleHomepage);
 assert.ok(finalized.includes('href="https://www.bedrijfsgeheugen.nl/kennis/" data-view="resources">Kennis</a>'));
 assert.ok(finalized.includes('href="https://www.bedrijfsgeheugen.nl/blog/">Blog</a>'));
+assert.equal((finalized.match(/href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"[^>]*>Platform<\/a>/g) || []).length, 2, 'desktop en mobiel Platform moeten allebei naar /product wijzen');
+assert.ok(!finalized.includes('href="https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen" data-view="product">Platform</a>'));
 assert.doesNotThrow(() => verifyFinalNavigationHtml(finalized, 'index.html'));
 assert.throws(() => verifyFinalNavigationHtml(staleHomepage, 'index.html'), /Kennis.*blog|kennis\/|final/i);
 assert.equal(finalizeNavigationHtml(finalized), finalized, 'finalizer moet idempotent zijn');

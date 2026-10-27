@@ -1,0 +1,4 @@
+select cron.unschedule(jobid) from cron.job where jobname='powerhouse-social-publisher-daytime';
+select cron.schedule('powerhouse-social-publisher-daytime','*/10 6-16 * * *', $$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-social-publisher', headers := jsonb_build_object('content-type','application/json','x-powerhouse-token',(select decrypted_secret from vault.decrypted_secrets where name='powerhouse_daily_scheduler_token' order by created_at desc limit 1)), body := jsonb_build_object('runDate',(now() at time zone 'Europe/Amsterdam')::date::text), timeout_milliseconds := 30000);$$);
+select cron.unschedule(jobid) from cron.job where jobname='bg-buffer-sync-hourly-daytime';
+select cron.schedule('bg-buffer-sync-hourly-daytime','5 6-20 * * *','select public.bg_roep_functie(''bg-buffer-sync'');');

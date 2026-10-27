@@ -1,23 +1,18 @@
 name: Native content growth contracts
 
 on:
-  pull_request:
-    paths:
-      - 'tools/content-growth/**'
-      - 'config/content-growth-policy.json'
-      - 'data/content-publication-ledger.json'
-      - 'data/content-growth-learning.json'
-      - 'data/content-growth-events.json'
-      - 'tests/content-growth-*.test.mjs'
-      - '.github/workflows/daily-blog-publisher.yml'
-      - '.github/workflows/content-growth-learning.yml'
-      - '.github/workflows/daily-blog-live-watchdog.yml'
-      - '.github/workflows/content-growth-ci.yml'
   push:
     branches: [main]
     paths:
       - 'tools/content-growth/**'
       - 'config/content-growth-policy.json'
+      - 'config/linkedin-company-growth-v1.json'
+      - 'config/powerhouse-quality-surface-contracts.json'
+      - 'tests/brain-linkedin-company-growth-engine-v1.test.mjs'
+      - 'supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql'
+      - '.agents/skills/powerhouse-linkedin-company-growth/SKILL.md'
+      - 'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json'
+      - 'docs/development-ledger-events/2026-10-04-linkedin-company-growth-v1.md'
       - 'data/content-publication-ledger.json'
       - 'data/content-growth-learning.json'
       - 'data/content-growth-events.json'
@@ -35,7 +30,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  content-growth:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -44,7 +39,13 @@ jobs:
           node-version: '24'
       - name: Native content growth tests
         run: node --test tests/content-growth-*.test.mjs
+      - name: Trusted Lean Startup + advisor regression
+        run: node --test tests/brain-trusted-lean-loop-v1.test.mjs
+      - name: Verified brand learning handoff regression
+        run: node --test tests/brain-verified-brand-content-learnings-v1.test.mjs
       - name: Policy validation
         run: node tools/content-growth/validate-policy.mjs
+      - name: LinkedIn company growth regression
+        run: node --test tests/brain-linkedin-company-growth-engine-v1.test.mjs
       - name: Existing SEO growth/order regression
         run: node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs

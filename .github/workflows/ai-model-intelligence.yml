@@ -1,0 +1,49 @@
+name: AI Model Intelligence
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ai-modelwijzer.html'
+      - 'data/ai-model-catalog-v1.json'
+      - 'data/ai-provider-governance-v1.json'
+      - 'config/powerhouse-ai-model-intelligence-v1.json'
+      - 'openai-ai-modellen/**'
+      - 'claude-ai-modellen/**'
+      - 'gemini-ai-modellen/**'
+      - 'mistral-ai-modellen/**'
+      - 'amazon-ai-modellen/**'
+      - 'chatgpt-vs-claude/**'
+      - 'chatgpt-vs-gemini/**'
+      - 'claude-vs-gemini/**'
+      - '.github/workflows/ai-model-intelligence.yml'
+      - 'scripts/ai-model-freshness-watch.mjs'
+      - 'scripts/ai-model-source-probe.mjs'
+permissions:
+  contents: read
+jobs:
+  ai-model-intelligence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Supplier freshness early-warning (read-only)
+        run: node scripts/ai-model-freshness-watch.mjs
+      - name: Probe supplier links without approving claims
+        if: always()
+        run: node scripts/ai-model-source-probe.mjs
+      - name: Preserve model evidence worklists
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-evidence-observation
+          path: artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: AI Model Intelligence contracts
+        run: node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs

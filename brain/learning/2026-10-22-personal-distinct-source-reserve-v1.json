@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|personal-verified-distinct-source-reserve|20261022-v1",
+  "root_causes": [
+    "Personal source had one candidate; global story-family duplicate against 15 October left no evidence-backed alternative."
+  ],
+  "prevention": [
+    "Reuse only the existing canonical founder source evidence and independently identifiable actual event IDs/allowed external URLs.",
+    "Bound suggestions to 3 per day; no claims of real customer outcomes, founder experiences or provider side effects.",
+    "Keep existing identity, dedupe, OAuth, auth-consumption and provider-readback guards."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-personal-distinct-source-reserve-v1.test.mjs"
+    ],
+    "release": "PRE_MERGE",
+    "provider_readback": "NOT_YET_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-distinct-source-reserve-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-distinct-source-reserve-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

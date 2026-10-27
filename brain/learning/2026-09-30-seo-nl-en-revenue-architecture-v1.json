@@ -1,0 +1,97 @@
+{
+  "id": "2026-09-30-seo-nl-en-revenue-architecture-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|nl-en|keyword-ownership-to-revenue|v1",
+  "compiler": {
+    "failure_class": "BILINGUAL_SEO_REVENUE_GAP",
+    "scope": "PUBLIC_SEARCH_GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The site had strong technical SEO primitives and localized routes, but English pages inherited translated Dutch search positioning, the sitemap did not explicitly enumerate final English canonicals, absolute same-origin links could leak users back to Dutch, and the AI Modelwijzer/data-sovereignty opportunities were not fully integrated into canonical keyword ownership and revenue internal linking.",
+  "prevention": [
+    "Keep one canonical keyword/search-intent owner per locale.",
+    "Select English keywords from English market evidence and SERP intent, not literal Dutch translation.",
+    "Generate final NL/EN self-canonical routes with nl/en/x-default hreflang and include English canonicals in the final sitemap.",
+    "Rewrite same-origin absolute links to the active locale.",
+    "Require every commercial/revenue-priority owner to have a measurable conversion destination and contextual inbound links.",
+    "Run SEO apply and validate in the production build before static locale generation.",
+    "Measure organic outcomes through CTA, lead, proposal, paid order and realized revenue."
+  ],
+  "fix": "Add site/seo-locale-revenue-map.json, market-specific EN titles/H1/descriptions, locale-preserving link rewrite, EN sitemap/hreflang output, production SEO apply/validate, Modelwijzer and data-sovereignty intent ownership, bidirectional AI internal linking, CI regression coverage, skills/agents/system-map writeback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-locale-revenue-nl-en-v1.test.mjs",
+      "tests/seo-order-link-graph.test.mjs",
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "keyword_map": "site/seo-locale-revenue-map.json",
+    "source_registry": [
+      "site/seo-order-map.json",
+      "site/seo-order-expansion.json"
+    ],
+    "locale_builder": "tools/site-shell/build-localized-routes.mjs",
+    "sitemap": "tools/genereer-sitemap.mjs",
+    "build": "netlify.toml",
+    "validator": "tools/seo-order-engine/locale-revenue.mjs"
+  },
+  "measured_examples": [
+    {
+      "keyword": "ai governance",
+      "market": "Netherlands",
+      "volume": 390,
+      "cpc": 15.86
+    },
+    {
+      "keyword": "data soevereiniteit",
+      "market": "Netherlands",
+      "volume": 260,
+      "cpc": 6.33
+    },
+    {
+      "keyword": "bedrijfsprocessen automatiseren",
+      "market": "Netherlands",
+      "volume": 480,
+      "cpc": 14.53
+    },
+    {
+      "keyword": "ai model comparison",
+      "market": "United Kingdom",
+      "volume": 390,
+      "cpc": 3.3
+    },
+    {
+      "keyword": "ai governance",
+      "market": "United Kingdom",
+      "volume": 1300,
+      "cpc": 24.01
+    },
+    {
+      "keyword": "sovereign ai",
+      "market": "United Kingdom",
+      "volume": 2400,
+      "cpc": 13.28
+    },
+    {
+      "keyword": "ai model comparison",
+      "market": "United States",
+      "volume": 1300,
+      "cpc": 5.8
+    },
+    {
+      "keyword": "ai governance",
+      "market": "United States",
+      "volume": 5400,
+      "cpc": 36.6
+    }
+  ],
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders",
+    "seo-revenue-growth",
+    "powerhouse-system-map-governance"
+  ]
+}

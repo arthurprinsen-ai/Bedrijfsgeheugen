@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing|commercial-surface|last-writer|v1",
+  "observed_at": "2026-10-01T08:40:00+02:00",
+  "type": "PREVENTION",
+  "problem": "A merged commercial pricing composer could be present in source control while the public pricing route still served the legacy Control/Scale surface.",
+  "root_cause": "The canonical pricing source and production proof still treated the legacy pricing structure as authority, allowing later build stages and old production assertions to preserve the wrong surface.",
+  "decision": "Make the SaaS plus consulting design canonical in prijzen.html, protect it through pricing-build-integrity, and require the same commercial tokens in production source snapshot and browser readback.",
+  "prevention": [
+    "Commercial pricing must be canonical before build transforms.",
+    "Production proof must assert Starter, Pro, Groei, Enterprise and consulting/workshop content.",
+    "Legacy Control/Scale pricing markers cannot be the production success oracle."
+  ],
+  "compiler": {
+    "failure_class": "PRICING_LAST_WRITER_DRIFT",
+    "scope": "PUBLIC_PRICING_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "pricing",
+    "website",
+    "delivery"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+  ]
+}

@@ -16,7 +16,11 @@
 
 [build]
   publish = "."
-  command = "node tools/site-shell/pricing-build-integrity.mjs capture && node tools/site-shell/bedrijfslek-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/bedrijfslek-build-integrity.mjs restore && node tools/normaliseer-site-ui.mjs && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/genereer-sitemap.mjs && node tools/bouw-release-evidence.mjs"
+  # Netlify: stop before dependency install/build for commits that only touch
+  # delivery governance, tests or documentation. The script fails open: any
+  # unknown/runtime path returns exit 1 so the deploy still runs.
+  ignore = "node ./tools/ci/netlify-ignore-build.mjs"
+  command = "node tools/ci/netlify-build-entry.mjs"
 
 # Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
@@ -26,14 +30,19 @@
   NODE_OPTIONS = "--max-old-space-size=2048"
   STATIC_I18N_NETWORK = "0"
   STATIC_I18N_REQUIRE_CACHE = "1"
+  STATIC_I18N_ROUTE_WORKERS = "2"
   SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# Scope the binary to the *only* frame-extraction function, rather than shipping
+# a ~32 MB FFmpeg executable with every social-learning and revenue function.
+# Keep the original provider/frame identity verifier unchanged.
+[functions."instagram-video-frames"]
   external_node_modules = ["ffmpeg-static"]
   included_files = ["node_modules/ffmpeg-static/ffmpeg"]
-
 # Legacy /nl/* locale URLs zijn niet canoniek. Nederlands leeft op de
 # on-geprefixte publieke route; Engels op /en/*. Houd oude links bruikbaar,
 # maar stuur ze permanent terug naar de Nederlandse canonical.
@@ -46,6 +55,42 @@
 [[redirects]]
   from = "/nl/*"
   to = "/:splat"
+  status = 301
+  force = true
+
+
+# Publieke juridische/statusroutes. Bronbestanden staan onder /pages zodat de
+# website-delivery lane ze eenduidig classificeert; bezoekers houden schone URLs.
+[[redirects]]
+  from = "/gebruiksvoorwaarden"
+  to = "/pages/gebruiksvoorwaarden.html"
+  status = 200
+
+[[redirects]]
+  from = "/cookiebeleid"
+  to = "/pages/cookiebeleid.html"
+  status = 200
+
+[[redirects]]
+  from = "/systeemstatus"
+  to = "/pages/systeemstatus.html"
+  status = 200
+
+[[redirects]]
+  from = "/gebruiksvoorwaarden.html"
+  to = "/gebruiksvoorwaarden"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cookiebeleid.html"
+  to = "/cookiebeleid"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/systeemstatus.html"
+  to = "/systeemstatus"
   status = 301
   force = true
 
@@ -334,8 +379,11 @@
 # Deploy previews zijn bewust een exacte kopie van de productie-build.
 # Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
 # alternatieve preview-composer meer die een andere website kan tonen.
+# Required independent deploy-preview evidence must not be suppressed by a
+# cached-commit heuristic. Production continues using its selective ignore.
 [context.deploy-preview]
-  command = "node tools/site-shell/pricing-build-integrity.mjs capture && node tools/site-shell/bedrijfslek-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/bedrijfslek-build-integrity.mjs restore && node tools/normaliseer-site-ui.mjs && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/genereer-sitemap.mjs && node tools/bouw-release-evidence.mjs"
+  command = "node tools/ci/netlify-build-entry.mjs"
+  ignore = "exit 1"
 
 [[redirects]]
   from = "/aanmelden.html"
@@ -396,3 +444,45 @@
   STATIC_I18N_NETWORK = "0"
 
 # production redeploy heartbeat: pricing-i18n-live-20260924-v1
+
+# production redeploy heartbeat: ai-modelwijzer-live-20260930-v1
+
+# production redeploy heartbeat: bilingual-seo-revenue-live-20260930-v1
+# production redeploy heartbeat: bilingual-seo-revenue-live-20260930-v2
+
+# production recovery diagnostic: bilingual-seo-netlify-parity-20260930-v1
+
+# production redeploy heartbeat: product-led-home-live-20260930-v1
+
+# production redeploy heartbeat: canonical-cms-live-20261003-v1
+
+# Canonical product/platform aliases. Navigation label "Platform" resolves to /product.
+[[redirects]]
+  from = "/platform"
+  to = "/product"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/platform"
+  to = "/en/product"
+  status = 301
+  force = true
+
+# production redeploy heartbeat: website-cross-browser-clean-current-main-20261004-v1
+
+# production redeploy heartbeat: portal-dom-auth-readback-native-parity-20261009-v1
+# Recovery: publish the current protected main after test-only PR #4223 was correctly ignored by Netlify.
+# Native Git remains the deployment authority; no authorization bypass or runtime behavior change.
+
+# production redeploy heartbeat: csrd-binding-regression-recovery-20261009-v1
+# Publish exact main after the mandatory CSRD test contract is restored; no runtime/auth changes.
+
+# production redeploy heartbeat: portal-anonymous-preview-auth-parity-20261009-v1
+# Force exact-head Netlify preview/browser parity for PR #4228; no runtime behavior or authorization changes.
+
+# production redeploy heartbeat: portal-public-visibility-403-bounded-20261009-v1
+# Exact-main release and preview source parity for strict, bounded anonymous browser readbacks; no auth/runtime change.
+
+# production redeploy heartbeat: canonical-browser-visibility-navigation-readback-20261009-v1
+# Native exact-SHA Netlify preview/live release verification; no runtime or security changes.

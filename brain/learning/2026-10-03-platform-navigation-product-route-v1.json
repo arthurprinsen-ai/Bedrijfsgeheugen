@@ -1,0 +1,38 @@
+{
+  "fingerprint": "website|navigation|platform|product-route|20261003",
+  "observed_at": "2026-10-03T08:36:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The public navigation exposed two different destinations for the label Platform: the desktop route opened /product while a mobile/overlay route opened /bedrijfsgeheugen.",
+  "root_cause": "Multiple navigation shells can coexist and a late CMS/navigation overlay can reintroduce an outdated Platform href after the static shell has loaded.",
+  "decision": "Treat /product as the canonical destination for every navigation anchor whose visible label is Platform and enforce that contract in the shared navigation runtime.",
+  "prevention": [
+    "Platform navigation always resolves to /product.",
+    "Late CMS or shell mutations are rechecked for the canonical Platform route.",
+    "Production acceptance requires click readback of both desktop and mobile/overlay Platform links."
+  ],
+  "compiler": {
+    "failure_class": "NAVIGATION_ROUTE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "assets/js/menu.js",
+    "https://www.bedrijfsgeheugen.nl/product"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "Platform navigation on the live site previously resolved inconsistently: desktop to /product and mobile/overlay to /bedrijfsgeheugen.",
+      "The shared navigation repair now normalizes a Platform-labelled same-origin /bedrijfsgeheugen anchor to /product, including after later DOM/CMS mutations."
+    ],
+    "production_readback": [
+      "https://www.bedrijfsgeheugen.nl/",
+      "https://www.bedrijfsgeheugen.nl/product"
+    ],
+    "regression_contract": [
+      "Platform-labelled navigation anchors resolve to /product",
+      "Late CMS/navigation mutations cannot restore /bedrijfsgeheugen for Platform"
+    ]
+  }
+}

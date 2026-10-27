@@ -1,0 +1,35 @@
+{
+  "fingerprint": "supabase-edge|provider-readback|local-eszip-false-drift|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-api-readback-20261006-v1",
+  "root_cause": "The scoped SUPABASE_ACCESS_TOKEN was valid and the official Supabase Management/API source readback was byte-identical to protected main, but `supabase functions download` without `--use-api` extracted the provider ESZIP locally and produced a transformed index.ts. The authority therefore reported SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT even though provider version 122 and GitHub main had identical source.",
+  "prevention_rule": "Terminal provider source parity must use `supabase functions download --use-api` with the read-only PAT so unbundling occurs server-side. The default local Docker/ESZIP extraction path is forbidden for terminal byte parity because extraction can transform source or filesets.",
+  "compiler": {
+    "failure_class": "SUPABASE_CLI_LOCAL_ESZIP_FALSE_SOURCE_DRIFT",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "workflow_run": 37477375857,
+    "failed_job": 112316248788,
+    "provider_function": "powerhouse-social-publisher",
+    "cli_failure": "SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT:powerhouse-social-publisher:index.ts at byte 61 line 2",
+    "management_api_truth": "powerhouse-social-publisher provider v122 equals protected-main source exactly at 111543 bytes",
+    "upstream_cli_capability": "supabase functions download supports --use-api for server-side unbundling"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}

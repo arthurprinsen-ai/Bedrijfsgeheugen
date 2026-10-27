@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "mira|frame-extractor|sampled-250ms-as-first-frame|20261022-v1",
+  "obligation_id": "mira|literal-first-frame-extractor-evidence|20261022-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "title": "Sample the actual first decoded video frame, not t=0.25 seconds",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "The existing authenticated Netlify video extractor labelled the first sampled frame at min(0.25,max(0.05,duration*0.05)) as 'start'. For 8 second reels this samples at 0.25s, not t=0. As a result, a producer's literal master first-frame claim was never checked at frame zero. This does not explain separately failed midpoint face scores.",
+  "impact": "False interpretation of t=0.25 face-score rejections as direct evidence about literal frame zero and non-reproducible identity drift analysis.",
+  "evidence": {
+    "source_path": "netlify/functions/instagram-video-frames.mjs",
+    "observed_eight_second_start_sample_s": 0.25,
+    "corrected_start_sample_s": 0,
+    "unchanged_middle_sample_s": 4,
+    "unchanged_end_sample_s": 7.75,
+    "canonical_master_id": "Yjqu4D7v76HABNPmQPj1",
+    "production_instagram_status": "FAILED",
+    "observed_face_score_middle": 0.93,
+    "required_min_face_confidence": 0.94,
+    "canonical_existing_incident_fingerprint": "powerhouse|instagram-mira|video-frame-identity-below-094|20261022-v1"
+  },
+  "fix": "Extract the first decoded video frame from timestamp 0 through existing ffmpeg and keep midpoint/end sampling unchanged. No video modification, replay, provider publishing, vision threshold or identity whitelist changes.",
+  "prevention_rule": "Where evidence is named a first or initial video frame, require sample offset zero with an executable regression. Preserve canonical 0.94 start/middle/end verification and temporal/provider proofs.",
+  "regression_contract": "tests/brain-mira-literal-first-frame-sampling-v1.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-literal-first-frame-sampling-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-literal-first-frame-sampling-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-literal-first-frame-sampling-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-mira-literal-first-frame-sampling-v1.test.mjs"
+  ],
+  "release_gates": [
+    "Exact-head Required CI and CodeQL",
+    "Protected merge and Netlify production source artifact/readback",
+    "Only rerun existing canonical verified media proof on a fresh eligible candidate",
+    "Real Instagram external post ID and independent provider readback for LIVE_PROVEN"
+  ],
+  "outcome": "CANDIDATE only; no Instagram provider post and no revenue snapshot repair",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}

@@ -183,3 +183,137 @@ De publieke route `/zelfscan` is voortaan de value-first Bedrijfslek-instap voor
 - `/zelfscan` is een standalone productroute en mag daarom nooit als `selfscan`-view in `tools/v18-views-lijst.mjs` staan; `tools/bouw-v18-views.mjs` mag `zelfscan.html` niet genereren of overschrijven.
 
 Dit is geen parallelle funnel. De route blijft onderdeel van de bestaande Growth Swarm, Persuasion Revenue Optimizer, SEO Conversion-to-Orders en canonical growth-event lineage.
+
+
+## Bedrijfslek teamchallenge + Mini — permanent product-led contract
+
+Fingerprint: `powerhouse-bedrijfslek-product-led-acquisition-v2`.
+
+De op 29 september 2026 gemergede Bedrijfslek-loop is een permanente Growth Swarm-capability, geen tijdelijke campagne.
+
+Canonieke lus:
+`organic reach → /zelfscan → volledige waarde vóór PII → score + benchmark + quick wins → Bedrijfsgeheugen Mini → privacy-safe teamchallenge → tweede gekwalificeerde gebruiker → interne vergelijking → portal/order → outcome learning`.
+
+Verplicht:
+- de eerste gebruiker krijgt de volledige bruikbare uitkomst zonder leadgate;
+- Bedrijfsgeheugen Mini vertaalt de drie zwakste domeinen naar drie uitvoerbare acties en bewaart voortgang uitsluitend lokaal;
+- de challenge bevat alleen score, risk category en campaign attribution;
+- na challenge-completion wordt het scoreverschil zichtbaar; een verschil van 15 punten of meer mag als inhoudelijk onderzoeksignaal worden getoond, nooit als verkoopfeit;
+- challenge share/copy/completion en Mini action/complete events blijven commerciële tussenuitkomsten;
+- paid order en realized revenue blijven terminale commerciële waarheid;
+- iedere nieuwe growth-hack rond Bedrijfslek moet deze bestaande lus versterken of meetbaar vervangen, nooit ernaast een tweede funnel creëren;
+- historische duplicatie, dark patterns, verplichte PII vóór waarde, fake benchmarks en onbewezen ROI zijn verboden;
+- skill, agent/chat contract, System Map, Brain learning, docs, ledger en regression guard blijven in dezelfde lineage synchroon.
+
+Canonical public authority: `zelfscan.html`.
+Regression authority: `tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs`.
+
+
+## €1M Revenue Operating Contract — 29 september 2026
+Fingerprint: `powerhouse-one-million-revenue-operating-contract-v1`.
+
+Deze skill erft verplicht `config/powerhouse-one-million-revenue-operating-contract-v1.json`.
+
+Niet-onderhandelbaar:
+- North star: €1.000.000 gerealiseerde omzet binnen 365 dagen; paid order en realized revenue wegen altijd zwaarder dan bereik, traffic, posts, scans, leads of meetings.
+- Elke dagelijkse commerciële run kiest uit één gedeelde next-best-action ruimte: bedrijfspost, Mira-Instagram, SEO/blog/CRO, contextuele LinkedIn-reactie, warm/consented e-mail, ondersteunde private follow-up, due follow-up, offerte/offer follow-up, warme referral, partner/workshop follow-up of value asset.
+- Een gekwalificeerde veilig uitvoerbare actie wordt uitgevoerd; alleen aanbevelen/draften is niet terminal wanneer de canonieke executor beschikbaar is.
+- Achterstand op omzetpace verhoogt kwaliteit en aantal gekwalificeerde research/value/follow-up-acties, maar omzeilt nooit evidence, identity, privacy, consent, suppression, dedupe, fatigue of provider-ack gates.
+- Generieke cold-bulk autosend blijft verboden. Koude prospects mogen automatisch worden gevonden, verrijkt, gescoord en voorbereid; extern verzenden gebeurt alleen binnen een afzonderlijk goedgekeurde lawful/consent-based eligibility route.
+- Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
+- LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
+- Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Bounded commercial candidate refresh — 29 september 2026
+Fingerprint: `growth-swarm-bounded-refresh-v1`.
+
+De Growth Swarm mag nooit eerst de volledige relatie-/personenpopulatie materialiseren en daarna pas commerciële kandidaten selecteren.
+
+Verplicht:
+- candidate-first op verse trigger-, opportunity-, predictive-, scan- en outcome-signalen;
+- alleen kandidaatbedrijven/personen verrijken en scoren;
+- bestaande dedupe, consent, suppression, cooldown, identity en revenue-truth gates blijven intact;
+- population-wide materialisatie via `powerhouse_person_intelligence_v1` of `powerhouse_company_intelligence_v1` vóór candidate pruning is een regressie;
+- commerciële schedulers moeten binnen hun bounded runtime-window eindigen en evidence terugschrijven.
+
+
+## Source-backed outbound convergence — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+Growth Swarm routes the same evidence spine into channel-native actions: company LinkedIn and blog from market/problem evidence; email and LinkedIn DM only from account/person-relevant triggers plus relationship context; personal LinkedIn from public topic evidence only when identity/truth gates permit; Instagram from public daily-life friction. Every send/post preserves source lineage and returns reply, engagement, lead, order and revenue outcomes to prioritization.
+
+## Value-asset comment funnel (2026-09-30)
+
+Fingerprint: `powerhouse-value-asset-comment-funnel-v1`.
+
+Powerhouse treats useful free assets as revenue plays, not vanity engagement:
+public signal/research -> high-utility asset -> single-language LinkedIn post -> comment-intent token -> canonical DM delivery -> relationship enrichment -> qualified follow-up -> meeting/proposal/order -> realized revenue -> learning.
+
+Preferred asset classes:
+- numbered practical playbooks/checklists;
+- automation/use-case libraries;
+- ROI/cost calculators;
+- benchmarks/scorecards;
+- prediction/foresight briefs;
+- governance/privacy/risk guides;
+- role/department AI stacks and decision maps.
+
+Hard rules:
+- solve a concrete user problem before selling the portal;
+- every asset may carry a subtle portal/scan path, but the post remains value-first;
+- comments are not the success metric; qualified conversations, meetings, proposals, orders and revenue are;
+- all new asset/post families pass global historical semantic dedupe;
+- campaign learning re-scores audience, hook, language, keyword, completion, reply and revenue outcome.
+
+
+## LinkedIn company-page growth lane — 4 oktober 2026
+Fingerprint: `powerhouse-linkedin-company-growth-v1`.
+
+De LinkedIn-bedrijfspagina is een expliciete acquisition/distribution lane binnen dezelfde Growth Swarm, geen los social-growth systeem. Reuse `.agents/skills/powerhouse-linkedin-company-growth/SKILL.md`, `config/linkedin-company-growth-v1.json` en `public.powerhouse_refresh_linkedin_company_growth_v1(date)`.
+
+Verplicht:
+- organisatie-identiteit `urn:li:organization:18234216`;
+- baseline 4 oktober 2026: 12 paginaweergaven, waarvan 10 desktop en 2 mobiel;
+- eerste operationele target: 300 paginaweergaven/30d en 100 relevante nieuwe volgers/30d;
+- maximaal drie bounded growth-aanbevelingen per dag;
+- dezelfde canonical content-recommendation, dedupe, source, provider-readback en revenue-learning authority;
+- geen commerciële traffic-bridge via het persoonlijke LinkedIn-profiel;
+- views/followers zijn tussenmetingen; paid order en realized revenue blijven terminale north star;
+- dezelfde bestaande commerciële scheduler blijft owner; een parallelle LinkedIn-growth scheduler is verboden.
+
+## SalesRobot unknown-send result — 20 oktober 2026
+
+Fingerprint: `commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020`.
+Een SalesRobot-fout na het versturen kan betekenen dat de provider de DM al heeft geplaatst. De canonieke `powerhouse-linkedin-sales-machine` moet de oorspronkelijke action-ID op `waiting` houden en `needs_readback=true`, `republish_forbidden=true` registreren. Geen fallback-kanaal, automatisch opnieuw verzenden of status `done` zonder onafhankelijke ontvangst-/inbox-ID. Pas bij echte providerreadback mag de bestaande outcome-reconciler afronden. Als de providerlicentie/cookie/campagne ontbreekt: `UNAVAILABLE/CONFIG_REQUIRED`, nooit groen. Bestaande consent, human approval, suppressions, cooldown, berichtkwaliteit en één scheduler blijven bindend. P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
+## Provider readiness onafhankelijk van content en AI — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|early-truth-readonly-canary|20261020`.
+De bestaande `powerhouse-linkedin-sales-machine` moet de werkelijke SalesRobot-licentie, cookie, actieve campagne en uitvoeringsdagen vóór voorbereidende AI-/composer-acties controleren en de bestaande `powerhouse_channel_capabilities_v1` registraties voor DM én campagnes bijwerken. Een upstream AI-storing mag de providerstatus niet bevriezen. Een `dry_run` is alleen lezen: geen SQL-materialisatie, composer, send of evidence-mutatie. Geen tweede scheduler, sender of CRM. Echte verzending blijft afhankelijk van individuele toestemming, human approval, kwaliteit, suppressions, cooldown, providerbevestiging en onafhankelijke readback. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
+## Composio v3.1 SalesRobot user-identity gate — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|composio-user-id-required|20261020`.
+Het Composio-v3.1-executecontract van de bestaande Powerhouse LinkedIn-salesmachine vereist zowel de echte `connected_account_id` als de bijbehorende `user_id` uit dezelfde actieve Composio-accountregistratie. Zonder `user_id` gaf de echte productieruntime bij `SALESROBOT_LIST_LINKEDIN_ACCOUNTS` HTTP 400, terwijl beide gecontroleerde accountregistraties met die `user_id` HTTP 200 gaven. Behoud de bestaande licentie/cookie/campagne- en ontvangersautorisatievoorwaarden; de API-fix is geen toestemming om DM's te versturen. Geen secret- of account-ID hardcoding; één bestaand transport en één scheduler.
+
+
+## Provider-verifieerbare LinkedIn-DM closed loop — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|receipt-before-done|20261020`.
+`SALESROBOT_SEND_MESSAGE` kan bij een geslaagde HTTP-response nog geen onafhankelijk verzendbewijs opleveren. De bestaande Powerhouse LinkedIn-salesmachine houdt na de ack de originele action op `waiting`, slaat de provideridentificatie op, markeert `needs_readback=true` en `republish_forbidden=true`; er mag geen `done`/sent-outcome ontstaan uit alleen de ack. Reconcile uitsluitend met een uniek `salesrobot_linkedin_dm_sent`-event met exacte provider-inbox-message-ID, prospect-UUID, sent-by-me, SENT, readback en passend tijdstip; schrijf dan de canonieke `powerhouse_sales_outcomes` en markeer dezelfde action done. Een ontvanger vereist bovendien `bg_connecties.extra.human_approved=true` en mag niet geblokkeerd of uitgesloten zijn. In afwezigheid van onafhankelijke provider readback: wachten/blocked, niet herversturen of groen verklaren. Eén bestaand CRM, scheduler en agent blijven owner. Parent #4198.
+
+
+## Bestaande hourly assurance — SalesRobot herstel zonder extra scheduler (20-10-2026)
+Fingerprint: `commercial|salesrobot|existing-hourly-provider-preflight|20261020`. De bestaande `powerhouse-autonomous-outreach-assurance-hourly-v1` Cron-taak verricht ook een veilig `provider_preflight`-readback bij de bestaande `powerhouse-linkedin-sales-machine`. Er komt geen aparte scheduler, direct-message-executor of dubbele campagne. Uitsluitend providerstatus + blokkades worden in `powerhouse_channel_capabilities_v1` bijgewerkt. Lokaal Composio ACTIVE zegt niets over SalesRobot-license, cookies of campagne. Bewaar deze oorzaken los en expliciet, maak 10 suggested acties nooit gelijk aan 10 verzendbare DM's. Alle bestaande autorisatie-, anti-dubbel-, compositie- en providerreadbackguards blijven. Parent P0 #4198.
+
+
+## 20-10-2026 — Sociale omissies, herstel van dubbele persoonlijke bron
+Fingerprint `social|linkedin-personal|obligation-hold-dedupe-reconciliation|20261020`.
+Een `content_publication_obligations` met `GLOBAL_POST_DUPLICATE_BLOCKED` is alleen herstelbaar wanneer exact de oude dagbeslissing `blocked`/zonder `delivery_ref` is, de oorspronkelijke publicatieautoriteit wel uitgegeven maar **niet** verbruikt is, en geen provider create/ack/readback of mogelijk neveneffect aanwezig is. Na een afwijkende `hold`-normalisatie moet de centrale orchestrator die twee canonieke staten reconciliëren, eerder geweigerde bronidentiteiten uitsluiten en pas opnieuw genereren vanuit een andere onafhankelijk geverifieerde bron. Herhaal nooit hetzelfde verhaal. De bedrijfspagina met bevestigd provider-ID mag niet opnieuw worden gepost; Instagram vereist aantoonbaar eindmediabewijs; e-mailcontacten vereisen toestemming. Geen nieuwe scheduler, Buffer-route of duplicaat.
+
+
+## Productieherstel — bounded contact authority & identity Cron (20-10-2026)
+Fingerprint: `commercial|contacts|bounded-review-cron|20261020`. Behoud exact bestaande Cron-job `powerhouse-identity-graph-v1` (jobid uit huidige database, geen nieuwe job), dagelijks alle 23k+ relaties beoordelen zonder piek van 2×500 enrichment + 4×500 autoriteitsupdates per slot. Eén pulse van 200 plus één contactautoriteitsbatch van 200 per slot, zes slots per uur `2,17,32,42,47,57 * * * *`; minuut 52 blijft vrij voor bestaande outreach assurance; identiteitsgrafiek-reconciliatie om minuut 32 blijft intact. Dagcapaciteit per stroom = 200×6×24=28.800 theoretisch; geen voltooiingsbewijs zonder readback van werkelijke dagtellers. Sla `BUSY` bij advisory lock niet als voltooid op, probeer dezelfde canonical taak bij volgend normaal tijdslot. Geen tweede scheduler, geen uitgeschakelde executor, geen automatische e-mail- of DM-toestemming. Herstelmigratie `20261020114500_identity_review_bounded_cron_v1.sql` accepteert originele én handmatig begrensde toestand, faalt gesloten bij code- of schedule-drift. Logiek plus regression in `tests/brain-identity-review-bounded-cron-v1.test.mjs`. P0 #4198.
+
+## P0 #4198: bounded authority queue, no duplicate sends (2026-10-20)
+Fingerprint: `commercial|authority|queue-preselect-skip-locked|20261020`. Live SQL contact authority review was joining/suppression-evaluating 23k contacts before applying the candidate batch bound. After repeated 30-second statement timeouts and existing single-owner Cron reduction to a 200-row pulse and one 200-row authority batch, the canonical DB migration now materializes a small queue FIRST with `FOR UPDATE SKIP LOCKED` before the original contact join, preserving every existing authorization/suppression/cooldown gate. Cron job `powerhouse-identity-graph-v1` remains active and existing; do not invent consent or disable a scheduled executor. Test exactly on the existing SQL function and real patient rolling coverage, not on a synthetic green response. Parent #4198.

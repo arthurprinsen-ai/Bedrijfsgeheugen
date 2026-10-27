@@ -1,0 +1,22 @@
+{
+  "fingerprint": "approved-central-blog|2026-10-02|bedrijfsoverdracht-familie|publication-v1",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "An approved, due central article must become a deterministic website artifact while preserving exact source identity and protected delivery; publication is incomplete until the article, index, RSS and sitemap move together through the canonical writer lane.",
+  "prevention_rule": "Every approved-central-blog material candidate must carry exact source/slug/hash lineage plus same-candidate learning, activity-ledger and human change documentation; production remains unverified until merge, exact Netlify SHA and public URL readback succeed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-closed-loop-contract.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Approved central blog workflow run 37028746616 rendered the exact sealed source hash 55ac50396d57675be1e6d7ffa76e1731ccac3738bd321520cbb8fb77ecbef868.",
+    "Candidate commit 4de3908e74354a9f35f5276872dd7bf4948b923f changed exactly the article, blog index, RSS and sitemap before closure artifacts.",
+    "Canonical source content id: powerhouse:2026-10-02:blog:31261a79-0f79-46d2-b9f0-0aa308e77bfc."
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_DELIVERY"
+  }
+}

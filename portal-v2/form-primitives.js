@@ -18,7 +18,13 @@ export function normalizeFieldValue(field={},raw){
 }
 
 export function fieldMarkup(field={},value=''){
- const id=esc(field.id||field.path||'field');const label=esc(field.label||field.id||'Veld');const type=field.type||'text';const common=`id="${id}" data-field-id="${id}" data-field-type="${esc(type)}" style="min-height:44px"`;
+ const id=esc(field.id||field.path||'field');const label=esc(field.label||field.id||'Veld');const type=field.type||'text';
+ // Stable canonical lineage on each generated native DOM control. Never expose values.
+ // Missing schema paths remain visibly empty, not silently invented as mapped.
+ const canonicalPath=esc(field.path||'');
+ // A declared schema path is not proof of a tenant commit or Brain consumer ACK.
+ const mappingProof=canonicalPath?'DECLARATION_ONLY':'UNMAPPED';
+ const common=`id="${id}" data-field-id="${id}" data-field-path="${canonicalPath}" data-field-lineage="${mappingProof}" data-field-type="${esc(type)}" style="min-height:44px"`;
  let control='';
  if(type==='textarea')control=`<textarea ${common} rows="4">${esc(value)}</textarea>`;
  else if(type==='select')control=`<select ${common}>${optionMarkup(field.options,value)}</select>`;

@@ -1,3 +1,114 @@
+## System Map release-integriteit — 25 oktober 2026
+
+Volg `.agents/skills/system-map-merge-integrity/SKILL.md`: één integratie-eigenaar voor workflow, System Map, testbewijs en exact candidate SHA. Regeneratie vanuit geïntegreerde boom; Required/BRAIN/CodeQL op dezelfde commit; geen groen zonder beschermde merge en onafhankelijke readback.
+
+## Merge capability guard (25 October 2026)
+
+All agents modifying GitHub rulesets or releases must load `.agents/skills/merge-capability-guard/SKILL.md`. User-owned repositories cannot enable native `merge_queue`; protected PR checks and independent production evidence remain mandatory. The new helper must still be integrated into any actual ruleset writer; policy alone is not enforcement.
+
+## Deployment-tool ontbreekt: verplichte agent-fallback — 25 oktober 2026
+
+Elke agent die release, merge, deploy, Netlify, GitHub Actions of productiereadback uitvoert, MOET vooraf `.agents/skills/deployment-capability-recovery/SKILL.md` laden, de geselecteerde fallback en skill-content-SHA in de bestaande bewijsketen vastleggen, en de bestaande Git-CD/Heartbeat/Janitor-route hergebruiken. Ontbrekende connector-write-acties worden `DELIVERY_CONTROL_PLANE_CAPABILITY_GAP`, niet stilzwijgend succes en niet een nieuwe scheduler. Behoud Required, CodeQL, Supabase-preview en beschermde merge. Alleen exact-productieproviderreadback bewijst livegang. Heropen bij herhaling dezelfde canonieke obligation, niet een duplicaat.
+
+## GitHub required-check drift — detecteer eerst, herstel via bestaande owner (#4929)
+
+Bij `3 of 3 required status checks are expected` of andere required-context-mismatch: lees eerst `.agents/skills/release-check-reconciliation/SKILL.md`, voer read-only diagnose uit via `tools/delivery/required-check-reconciliation.mjs`, en registreer fingerprint `github|required-status-expected|context-source-sha` in het bestaande incident/Brain. De diagnose mag nooit zichzelf als doorslaggevend ruleset- of merge-bewijs behandelen: effectieve regels kunnen afzonderlijke rulesets bevatten en beheerrechten kunnen ontbreken. Herstel alleen bewezen verouderde checknamen/app-bronnen met bevoegde repositoryrechten; geen branchkopieën, tweede queue, extra scheduler, groene mockchecks of verzwakte protection. De bestaande Recovery Supervisor blijft writer. Bewijs: exacte SHA, echte Required/CodeQL, beschermde merge en productie-readback. Regressie: `tests/required-check-reconciliation.test.mjs`.
+
+## Eén bewijsvaste Brain–Powerhouse–Heartbeat leerlus — 25 oktober 2026
+
+Voor alle agents en toekomstige wijzigingen geldt het integratiecontract `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md`. Gebruik de bestaande canonieke Brain-registraties, Heartbeat/Janitor-cadans, incidentfingerprints, obligations en geëvalueerde skillprojectie. Koppel bron → besluit → uitvoering → providerbewijs → klant-/omzetuitkomst → learning en skill-evaluatie met tenantisolatie en toestemming. Meet echte leads, klanten, klantwaarde en onafhankelijk betaalde omzet in plaats van bereik of acknowledgements als resultaat te behandelen. De nieuwe contracttekst is uitsluitend ontwerp tot integratie, geslaagde tests, beschermde merge, productiereadback en echte opvolgcycli bewezen zijn. Geen tweede scheduler, ongecontroleerde outreach, extra write-owner, groene status zonder bewijs of omzeiling van Required/CodeQL/RLS/preview en privacycontroles.
+
+## Adaptieve, bewijsvaste CI-meting — 23 oktober 2026
+
+De echte Repository Janitor-run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) bewees 12 runs, 17 geldige jobs, 0 providerfouten, maar nog geen p95 (minimaal 20 jobs). De bestaande `ci-throughput-telemetry.mjs` leest voortaan maximaal 24 recente runs en stopt zodra 20 jobs uit minstens 5 runs zonder eerdere providerleesfout zijn bewezen. Verlaag deze grenzen niet om kunstmatig cijfers of groene status te tonen. Een eerdere fout blijft `PARTIAL_PROVIDER_OBSERVATION`, geen p95. Geen extra scheduler, CI/CodeQL-omzeiling, parallel geheugen of betaalde capaciteit. Volgende agent controleert eerst het bestaande Janitor-artefact en de canonieke regressie `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+## CI-doorlooptijd: leren van echte GitHub-jobtijdmetingen — 23 oktober 2026
+
+Canoniek issue [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661), geen tweede observatiescheduler. De bestaande uurlijkse Repository Janitor verzamelt read-only `powerhouse-ci-throughput.json` via `tools/delivery/ci-throughput-telemetry.mjs`. Agents gebruiken uitsluitend geldige identiteiten, volledige jobtijdstempels, minimaal 20 jobs en 5 afzonderlijke workflowpogingen voor steekproef-p50/p95, en tonen onvolledige waarnemingen als onbekend. Jobwachttijd is geen DORA change lead time en één sample bewijst geen snelheidswinst. Geen extra runner, wachtrij, CI-fanout, automatische betaalde capaciteit, security/CodeQL-bypass of status groen op basis van meetdata. Echte verbetering is pas bewezen na herhaalde vergelijkbare metingen, regressies en exact-head protected productiecontrole. Regressie: `tests/brain-observed-ci-throughput-v1.test.mjs`.
+
+## Agent-samenwerking: automatische cross-lane impact — 23 oktober 2026
+
+Canonieke eigenaar: [#4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661). De bestaande `planConcurrentAgentWork` levert vóór iedere write een conservatieve `classifyDeliveryImpact`-projectie: CMS → website, Brain-contract → Portal/Powerhouse/Heartbeat, Supabase-schema → runtime-consumenten. Onbekende paden krijgen volledige preflight. Dit is uitsluitend vroege testselectie: niets mag Required, hygiene, CodeQL, Supabase-preview, RLS, CLS, financiële pariteit, tenantisolatie of daadwerkelijke provider-/productie-readback overslaan. Eén writer, één Brain-geheugen en één bestaande Heartbeat/Janitor-cadans; geen nieuwe scheduler, agentregistratie, extra queue of kunstmatig groen. Regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+## Dagelijkse leercontinuïteit bij externe freshnessfouten — 22 oktober 2026
+
+Fingerprint: `learning|daily-self-evolution|catalog-freshness-failfast|20261022-v1`. Alle agents en chats raadplegen het bestaande modelcatalogusincident [#4367](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367), de gedeelde learning en `.agents/skills/powerhouse-continuity/SKILL.md`. Bij stale/onbewezen AI-leveranciersclaims mag de strenge aparte `model-freshness`-gate niet worden versoepeld of als groen worden gepresenteerd; **onafhankelijke** dagelijkse learning/skills/engineering-evals moeten in de bestaande dagelijkse workflow wel uitgevoerd blijven. Geen tweede scheduler, geen fictieve verificatie of modelactivatie. Meet de twee jobuitkomsten afzonderlijk en behoud de overall RED-status zolang vereiste catalogusbewijzen ontbreken. Regressie: `tests/powerhouse-daily-self-evolution.test.mjs`.
+
+## Voorspellende GitHub-capaciteit: provider-ghosts blijven incident-rood (22 oktober 2026)
+
+Fingerprint `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`, eigenaar #4661, gekoppeld aan platformincident #4655. Iedere huidige en toekomstige agent gebruikt de bestaande `tools/delivery/predictive-controller.mjs` en de bestaande uurlijkse Repository Janitor; maak geen tweede scheduler, wachtrij of herstelowner. De ruwe GitHub-queued-lijst telt volledig mee, tenzij **per exacte run** de actuele queued/null-status, zero-job readback, 24u onveranderde timestamps, niet-huidige main/PR-head, canonieke provider 409/403-blokkademarkering en maximaal tien minuten oude readback allemaal bewezen zijn. Alleen dan mag die run in de `verifiedProviderGhostQueued`-categorie in plaats van `actionableQueued` meetellen. `rawQueued` blijft altijd zichtbaar. Een lege lijst zonder exact-ID-readback is geen bewijs van GitHub-verwijdering. Zonder voldoende bewijs blijft elk record uitvoerbare queue-capaciteit belasten. Vereiste Required/CodeQL-controles, daadwerkelijke jobs en lopende PR-heads zijn nooit ghost-candidates. Geen status groen maken op capaciteitsnormalisatie; #4655 blijft open tot GitHub exact-ID-terminal/deletion bewijst. Machinebron: `brain/learning/2026-10-22-ghost-aware-predictive-queue-pressure-v1.json`; regressie: `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+## Canonieke autonome GitHub Actions provider-ghost recovery — 22 oktober 2026
+
+Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
+Alle huidige/toekomstige agents en chats behandelen GitHub queued+zero-job+409/403 niet als gewone runner-capaciteit. Gebruik uitsluitend het bestaande Repository Janitor-pad en incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655). De uitvoerbare procedure staat in `.agents/skills/powerhouse-continuity/SKILL.md#github-actions-provider-ghost-autonomie--22-oktober-2026`. Slechts na exacte niet-actieve SHA-, nul-job- en 24u-stabiliteitscontrole geldt bounded cancel→force-cancel→DELETE; stop na providerweigering en dedupliceer per run-ID. De agents lezen dezelfde provider-ID's periodiek terug. Nooit huidige Required/CodeQL gates beïnvloeden, geen provider 403 omzeilen, geen nieuwe scheduler, geen nep-groen of tweede eigenaar. GitHub Support blijft de enige autoriteit voor een server-side platformfout.
+
+
+## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
+
+Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
+
+**Verplicht vóór iedere materiële wijziging of herstelactie:** lees actuele runtime-/providerwaarheid, open obligations, `public.brain_failure_registry`, relevante `brain/learning/**/*.json`, `docs/learning/known-error-preflight-contract.md` en de automatisch afgeleide skillprojectie. Vergelijk component, operatie, foutklasse, genormaliseerd symptoom en root cause met bestaande fingerprints. Een zoekmiss is geen bewijs dat de fout nieuw is. Eerst hergebruik, dan pas nieuw bouwen.
+
+**Bij iedere fout, inclusief CI-fout, streaming/toolonderbreking, ontbrekend bewijs, providerfout en een herhaalde historische testfout:** behoud evidence en exacte lineage; classificeer OBSERVED/HISTORICAL/ACTIVE/RECOVERING/PROVEN; upsert één canonieke fingerprint en verhoog het occurrence-aantal in plaats van een dubbel incident of een tweede herstelowner te starten. Leg impact, aannemelijke/bewezen oorzaak, mislukte pogingen, fix, preventieregel, regressietest, eigenaar, volgende veilige actie en exacte verificatie-/readbackreferenties vast. Onbekende oorzaak blijft een open onderzoeksverplichting, nooit een verzonnen conclusie.
+
+**Geen closure op alleen documenten:** `PROVEN` vereist echte regressie plus toepasselijke exact-SHA CI/security en productie-/providerreadback, duurzaam Brain-writeback, ledger, documentatie, skillprojectie en aantoonbare ontdekbaarheid in de volgende preflight. Overkoepelende groenstatus volgt niet uit één lokale fix. Houd veilige bounded recovery actief binnen dezelfde obligation, zonder dubbele dispatch of publicatie, zonder uitgezette scheduler, zonder Make/Buffer-fallback en zonder beveiligingspoorten te verzwakken. Menselijke OAuth/consent, destructieve beslissingen en kostenverhoging worden niet omzeild.
+
+Lees voor de uitvoerbare procedure `.agents/skills/powerhouse-continuity/SKILL.md#universele-incidentherkenning--preventie`; het Brain-register blijft de enige operationele foutwaarheid.
+
+## External observer isolation — provider truth blijft autoritatief
+
+Fingerprint: `delivery|external-observer|provider-truth-fallback|v1`.
+
+Een chat-, browser- of publieke web-fetcher is een **observer**, geen productieautoriteit. Wanneer zo'n observer een directe HTTP-fetch naar `bedrijfsgeheugen.nl` weigert, blokkeert of niet ondersteunt, mag dat een reeds bewezen productie-release nooit terugzetten naar onbewezen status.
+
+Verplicht gedrag:
+- onderscheid `ORIGIN_UNHEALTHY` van `OBSERVER_UNAVAILABLE`; een tool-policy/refusal zonder origin-response is uitsluitend `OBSERVER_UNAVAILABLE`;
+- gebruik bij `OBSERVER_UNAVAILABLE` de canonieke provider-truth via Netlify: production/current deploy, `state=ready`, production alias, exact `commit_ref`, production context en — wanneer runtime-functions onderdeel van de wijziging zijn — de daadwerkelijk gedeployde function inventory;
+- koppel provider-truth aan de immutable GitHub delivery-lineage/readback-evidence; provider-state zonder exact SHA/lineage is nooit voldoende;
+- de fallback verzwakt de normale `Production Release Readback` workflow niet: wanneer de origin vanuit de canonieke runner wél bereikbaar hoort te zijn, blijven live content/routes en connector-readiness fail-closed;
+- een externe observer mag nooit een onbewezen origin-success fabriceren. Status wordt `LIVE_PROVEN_PROVIDER_TRUTH` alleen wanneer provider + lineage exact kloppen; anders blijft de release niet terminal groen;
+- leg `observer_status`, `provider_deploy_id`, `provider_commit_ref`, alias en function evidence vast zodat iedere volgende agent dezelfde conclusie kan reproduceren.
+
+Canonieke evaluator: `tools/delivery/external-observer-production-proof.mjs`.
+Contract: `brain/contracts/production-readback-v1.json#externalObserverReadback`.
+
+## Terminal closure heeft één eigenaar
+
+Voor `Writer-Lease-State: TERMINAL_DELIVERY` is `Powerhouse Obligation Terminalizer` de enige automatische post-merge owner. Start geen tweede terminal-closure lineage voor dezelfde obligation. Governance-only scheduler/System Map/delivery-classifier wijzigingen starten geen Netlify productiesnapshot of productie-readback; runtimewijzigingen behouden alle normale productie-evidence.
+
+## Predictive multi-agent delivery scheduler — verplicht vóór iedere write
+
+Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1`.
+
+Iedere chat/agent voorspelt vóór een repository- of providerwrite wat de write raakt en hoeveel werk hij veroorzaakt via `tools/delivery/predictive-controller.mjs#planConcurrentAgentWork`.
+
+- één obligation = één actieve writer/candidate-head; andere agents muteren die head niet;
+- zodra `Writer-Lease-State: TERMINAL_DELIVERY` is gezet, is de candidate-branch inhoudelijk immutable: geen commit/tree/ref-rewrite meer op die PR; alleen metadata/readback mag nog wijzigen;
+- iedere pre-terminale branchwrite is compare-and-swap: de writer moet zowel de verwachte huidige head-SHA als de vastgelegde main-epoch opnieuw lezen en exact matchen vóór de write;
+- bij head-drift of main-epoch-drift wordt nooit een oude snapshot opnieuw toegepast; maak één successor vanaf actuele `main`, projecteer uitsluitend de nog geldige delta en retire de predecessor;
+- verschillende obligations bouwen parallel zolang changed paths, conflict contracts en mutable resources niet overlappen;
+- alleen de korte overlappende terminal landing wordt geserialiseerd;
+- queue pressure en voorspelde fan-out worden vóór de write beoordeeld; bij overbelasting bundelen/hergebruiken in plaats van meer workflows starten;
+- vóór externe wait wordt een `POWERHOUSE-ASYNC-CHECKPOINT-v1` vastgelegd met obligation, exact head, main epoch, open gates, bewezen side effects en volgende veilige actie;
+- `queued`, `pending`, `waiting`, `requested`, `in_progress` betekenen nooit stop: ga door met onafhankelijk werk en hervat automatisch;
+- nieuwere authoritative main supersedeert stale omkeerbare production snapshot/readback work; nooit onomkeerbare side effects of verplichte security/quality evidence;
+- geen agent vraagt de gebruiker om “ga door” om niet-terminale delivery te vervolgen.
+
+## Pre-side-effect durable obligation — external mutation boundary
+
+Fingerprint: `powerhouse|prewrite-obligation|external-mutation-recovery|v1`.
+
+Voor iedere materiële externe mutatie die een verwacht resultaat moet opleveren, geldt voortaan aanvullend:
+
+- materialiseer of bevestig de canonieke obligation **vóór** de eerste GitHub-, provider-, deploy- of andere externe write; de obligation bevat minimaal lineage/fingerprint, idempotency-key, exact beoogd outcome, huidige evidence, next safe action en resume-conditie;
+- een tool-/policy-/execution-guard die de write blokkeert vóór de side-effect is een `RECOVERY_REQUIRED` / `RECOVERING` toestand, geen verlies van de obligation en geen reden om de taak als afgerond terug te geven;
+- de volgende capabele chat/agent hervat dezelfde obligation en dezelfde idempotency-key; er wordt geen parallelle vervangende lineage gestart;
+- alleen aantoonbaar ontbrekende account-/provider-authority, expliciete menselijke OAuth/consent, security-verzwakking, onherroepelijke/destructieve data, betaalde resource-escalatie of juridisch/financieel bindende handeling mag `BLOCKED_HARD_BOUNDARY` veroorzaken;
+- voor dagelijkse blogs bestaat de publicatie-obligation vóór de repositorywrite; de bestaande protected GitHub daily publisher consumeert exact hetzelfde artifact/id/hash en closure vereist merge → Netlify current-main → publieke canonical readback;
+- voor `linkedin_company` is ontbrekende organization-read/ACL-capability op zichzelf geen publicatieblokker. De bekende canonical organization identity wordt gebruikt en de daadwerkelijke write-call is de capability probe; alleen een echte pre-create providerdenial wegens ontbrekende write authority/OAuth mag fail-closed blijven. Een duurzame provider-URN sluit de side-effect en activeert `republish_forbidden=true`;
+- een chat/tool-run mag nooit eindigen met alleen “geen PR/deploy ontstaan doordat de mutatie werd tegengehouden” wanneer een andere reeds geautoriseerde canonieke execution path beschikbaar is. De open obligation blijft eigenaar tot terminale readback of echte harde grens.
+
 # Bedrijfsgeheugen — Agent Development Contract
 
 Dit bestand is de eerste bron die iedere agent moet lezen voordat code, content, automatisering, connectors, Netlify, GitHub of portalgedrag wordt gewijzigd.
@@ -135,15 +246,32 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
 
+## Async continuation — workflows mogen een agent nooit laten wachten
+
+Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
+
+Voor alle huidige en toekomstige chats, agents en delivery-nodes geldt aanvullend:
+- een GitHub Actions-run, Netlify-build, Supabase-job, CodeQL-analyse of andere externe workflow met status `queued`, `pending`, `waiting`, `requested` of `in_progress` is **nooit** een reden om de agent in chat te laten wachten of de uitvoering te laten eindigen;
+- vóór iedere remote write wordt fan-out voorspeld; writes voor één obligation worden gebundeld zodat één head zo weinig mogelijk workflows triggert;
+- exact dezelfde head krijgt maximaal één actieve run per verplichte workflow; duplicaten worden niet opnieuw gedispatched;
+- nieuwere `main` supersedeert oudere nog niet terminale productie-snapshot/readback runs wanneer die oudere run geen unieke onomkeerbare side-effect meer hoeft af te ronden;
+- lange provider-polls hebben een harde timeout en leveren daarna een herstelbare state op; geen onbegrensd pollen of wachten;
+- de agent bewaart een checkpoint met obligation, exacte candidate/head, huidige main, open gates en eerstvolgende herstelactie zodat een volgende execution-node direct kan hervatten;
+- tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt;
+- een status als `pending` of `in_progress` is interne uitvoeringsstaat en wordt niet als gebruikersuitkomst gerapporteerd;
+- wanneer meerdere agents tegelijk bouwen, blijft één obligation één executable candidate houden.
+
+Operationeel doel: **geen chat of agent mag nog “blijven hangen” op een workflowjob**.
+
 ## GitHub Actions queue-pressure governor — verplicht vóór repositorymutaties
 
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
 Iedere chat, agent, workflow en recovery-node leest vóór een materiële GitHub-write, commitreeks, workflow-dispatch, retry, reconcile of recoveryactie de actuele Actions-druk én voorspelt hoeveel nieuwe runs de actie kan veroorzaken.
 
-- soft pressure: 12 actieve of 10 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
-- hard circuit: 20 actieve of 20 queued runs; geen nieuw recovery- of optioneel CI-werk;
-- maximaal 6 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
+- soft pressure: 8 actieve of 5 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
+- hard circuit: 12 actieve of 8 queued runs; geen nieuw recovery- of optioneel CI-werk;
+- maximaal 3 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
 - één obligation = één canonieke executable PR; queue/cancel/main-drift is nooit reden voor een duplicate PR;
 - één PR/head krijgt nooit bewust een tweede actieve Required- of BRAIN-run;
 - borging/documentatie/learning/skill-writes van één obligation worden waar veilig vóór remote CI gebundeld;
@@ -683,3 +811,342 @@ All chats/agents inherit the Bedrijfsgeheugen company-channel contract:
 - an explicitly user-deleted company post may receive one same-day replacement only with a new story fingerprint and a materially different business topic;
 - Buffer/Make are never LinkedIn recovery fallbacks;
 - provider create URN is persisted immediately and prevents duplicate retries.
+
+
+## Bedrijfslek product-led growth inheritance
+
+Fingerprint: `growth|bedrijfslek|value-first-team-loop|v2`.
+
+Iedere huidige en toekomstige chat/agent die websitegroei, acquisitie, Bedrijfslek, scans, leadmagnets, Growth Swarm, SEO/CRO of commerciële portal-handoffs wijzigt, erft voortaan dit contract:
+
+- begin bij aantoonbare waarde vóór persoonsgegevens: score, inzicht en concrete actie mogen niet achter een naam/e-mail/telefoon-gate worden geplaatst;
+- behandel `/zelfscan` als één product-led acquisitielus: organisch bereik → Bedrijfslek → volledige uitslag → Bedrijfsgeheugen Mini → teamchallenge → tweede gekwalificeerde gebruiker → interne vergelijking → portal/order;
+- optimaliseer niet op formulierstarts of losse scans als terminale uitkomst; de north star blijft paid order en realized revenue;
+- één afgeronde scan moet, waar passend, een privacy-safe vervolgmechanisme hebben dat nieuwe gekwalificeerde gebruikers kan opleveren zonder PII in de challenge-URL;
+- teamchallenge-URL's bevatten uitsluitend score, risicocategorie en campagne-attributie; nooit naam, e-mail, telefoon, bedrijfsnaam of private antwoorden;
+- Mini-voortgang blijft lokaal in de browser tenzij de gebruiker later expliciet kiest voor een portaal/account;
+- gebruik één bestaande Growth Swarm / SEO Conversion-to-Orders authority; bouw geen parallelle funnel, CRM, scan-engine of tweede growth scheduler;
+- iedere materiële wijziging aan deze loop moet dezelfde-lineage skills, Brain learning, human docs, development ledger, System Map en regressie-evidence bijwerken;
+- de volgende agent/chat moet deze regel via repository-preflight ontdekken zonder afhankelijk te zijn van de oorspronkelijke chat.
+
+Een verandering die alleen bereik of leads verhoogt maar de gesloten lus, privacy of terminale revenue-outcome verbreekt, is geen geldige Powerhouse-groeiwijziging.
+
+
+## Powerhouse truthful green assurance — verplicht
+Fingerprint: `powerhouse|green-assurance|truthful-closed-loop|v1`.
+
+Iedere chat/agent die Powerhouse health, “alles groen”, evidence freshness, provider health, content-loop status of terminal obligations beoordeelt of herstelt, gebruikt `.agents/skills/powerhouse-green-assurance/SKILL.md`.
+
+Verplicht:
+- wiring/activity is nooit voldoende voor groen;
+- required evidence moet fresh zijn;
+- provider-neutral capability mag niet door één optionele leverancier worden gegijzeld;
+- retired/legacy tooling is telemetry-only tenzij opnieuw canoniek geautoriseerd;
+- geen duplicaat-publicatie om readback/OAuth-problemen te maskeren;
+- Instagram blijft Mira-only en vereist exact asset + identity + temporal proof;
+- herstel bestaande canonical lineage, maak geen parallelle truth/evidence stores;
+- herbereken centrale health na iedere repair;
+- borg iedere materiële assurance-learning in Brain learning, skills, agent-contracts, ledger/docs en System Map.
+
+
+## Commercial email reply closure — verplicht voor alle agents/chats
+Fingerprint: `powerhouse-email-reply-learning-v1`.
+
+Voor iedere agent/chat die commerciële e-mail, Growth & Revenue OS, relationship outreach, Gmail-ingest of revenue learning raakt:
+- `sent` is nooit terminal; provider readback en inbound replies moeten worden meegenomen;
+- replies worden exact-once gekoppeld aan de oorspronkelijke sales action en als outcome/learning teruggeschreven;
+- expliciete opt-out/no-interest-self-recontact activeert suppression en blokkeert toekomstige autonome e-mail vóór provider side-effect;
+- timing/positive/question/actionable objection resulteert alleen in een gededupliceerde contextuele follow-up/nurture wanneer gates dat toestaan;
+- optimalisatie is revenue-first: realized revenue/order > proposal > meeting > positive reply > raw reply-rate;
+- een bestaande cycle/lineage guard wordt nooit verzwakt om een tweede outcome te forceren; gebruik evidence-bound origin lineage;
+- er is exact één commerciële scheduler/owner; geen parallelle Gmail reply cron, inbox-store, CRM, queue of learning store;
+- closure vereist read-after-write op reply-event, suppression/follow-up, outcome, learning en health evidence.
+
+
+## Instagram canonical Mira identity — inherited
+Fingerprint: `instagram-canonical-mira-identity-v1`.
+
+Alle chats/agents erven:
+- Mira is fictief en mag nooit de identiteit/foto/video van de gebruiker overnemen;
+- uitsluitend canonical fictional Mira reference `Yjqu4D7v76HABNPmQPj1` is geldig voor Mira-media;
+- user-upload references `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn verboden in de Mira lineage;
+- een Mira media-job moet de canonical identity-reference expliciet bewijzen vóór verification/publication;
+- persoonlijke user-media wordt nooit als fallback, training seed of identity source voor Mira gebruikt.
+
+
+## Canonical public CMS + i18n authority
+
+Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: header, footer, mega-menu, primaire navigatie en publieke NL/EN-switching zijn één gedeelde CMS/site-shell-capability. Pagina-lokale forks zijn verboden. NL/EN behoudt altijd dezelfde functionele route (`/x ↔ /en/x`; homepage `/ ↔ /en/`). De build-time shell is primary authority; runtime normalisatie is alleen een defensieve borging. I18n-assets zijn versiegebonden om stale browser/CDN-runtime te voorkomen. Een websitewijziging is pas terminal wanneer build/static/browser-gates groen zijn, protected merge is gedaan, Netlify exact-current-main toont en live browser-readback de NL→EN→NL roundtrip op representatieve routes bewijst. De gebruiker krijgt geen tussentijdse CI/deploy-status; alleen terminale uitkomst of echte harde grens.
+
+
+### Live Assurance writeback — verplicht
+Fingerprint: `powerhouse|live-assurance-writeback|2026-09-29-v1`.
+
+Alle chats en agents moeten na een materiële live recovery de terminale productie-identiteit en truth-boundary terugschrijven naar Brain learning, relevante skills, AGENTS/chat-contract, continuity-policy, ledger/docs en System Map, gevolgd door read-after-write. Een ready deploy bewijst deployment; functionele subketens behouden hun eigen bewijs-gates. Historische LIVE/GREEN-status mag nooit als actuele health worden hergebruikt zonder verse readback.
+
+
+## Live promotion = delivery + governance closure
+
+Fingerprint: `powerhouse|live-promotion|governance-closure|2026-09-29-v1`.
+
+Iedere huidige en toekomstige chat/agent behandelt een materiële opdracht als “zet live” als één volledige Powerhouse-lineage. De taak eindigt niet bij merge, deploy, provider-ACK of een publieke URL.
+
+Verplicht vóór terminale afronding:
+1. exacte productie/provider identity;
+2. functionele readback per betrokken capability;
+3. outcome-truth zonder synthetische promotie;
+4. Brain learning/prevention;
+5. relevante skills bijwerken;
+6. agent/chat-contracten projecteren;
+7. append-only ledger + menselijke documentatie;
+8. canonieke System Map bijwerken;
+9. read-after-write op deze governance-artifacts.
+
+Een ready deploy mag nooit als bewijs worden hergebruikt voor een niet-gecontroleerde subketen. Pricing, locale-switching, social, e-mail, connectoren en andere capabilities behouden elk hun eigen evidence-gate.
+
+
+## Instagram canonical provider identity — inherited
+Fingerprint: `instagram-canonical-provider-identity-v3`.
+
+Alle huidige en toekomstige chats/agents die Instagram publiceren, herstellen of controleren erven:
+- resolve canonical identity via `INSTAGRAM_GET_USER_INFO(me)` op de geselecteerde canonical Composio-verbinding;
+- behandel provider node `id` en Instagram Graph `user_id` als verschillende identifiers; waargenomen numerieke waarden zijn evidence, geen compile-time authority;
+- publication identity vereist een live niet-lege Graph `user_id`, username `bedrijfsgeheugen.nl` en BUSINESS/CREATOR; dezelfde live `user_id` bindt create → publish → readback;
+- identity-check, create, publish en readback gebruiken dezelfde canonical connection;
+- provider-ID/schema drift is pre-provider herstelbaar en mag nooit Buffer/Make fallback, replacement content of duplicaatpublicatie veroorzaken;
+- na provider-create met duurzaam media-ID geldt `republish_forbidden=true` en alleen exact-ID reconcile.
+
+
+## Live deployment truth en functionele truth zijn gescheiden
+
+Fingerprint: `production|live-ready-vs-functional-green|2026-09-29-v1`.
+
+Voor alle huidige en toekomstige agents en chats geldt:
+- `LIVE/DEPLOYMENT_READY` betekent uitsluitend dat de exacte actuele productieversie provider-side bestaat en is teruggelezen;
+- `FUNCTIONAL_GREEN` vereist daarnaast actuele capability-specifieke readback/outcome-evidence;
+- een providerstatus zoals `ready`, `current`, HTTP 2xx, provider-ACK, merge of deploy mag nooit zelfstandig whole-system GREEN opleveren;
+- pricing, NL↔EN, connector-readiness, content/social en business outcomes blijven elk onafhankelijk gated;
+- iedere materiële livegang projecteert automatisch dezelfde learning naar Brain, relevante skills, agent/chat-contract, ledger/docs en System Map;
+- deze borging is standaard uitvoeringsgedrag en vereist geen herhaalde gebruikersprompt.
+
+## Terminal live closure — 29 september 2026
+Fingerprint: `instagram-live-proven-20260929-v1`.
+- Provider publication is authoritative once provider ack + readback are proven.
+- Internal media-job state must converge to `LIVE_PROVEN`; it may not remain `REPLACEMENT_REQUIRED` after a verified provider side effect.
+- Current canonical evidence: @bedrijfsgeheugen.nl, BUSINESS, provider user id `28537384955950341`, post id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`.
+- Exact final media SHA-256: `1624616152e89468579fd110db7e68d1900b39bb0309db40acffc7b95000dfa7`; identity confidence 0.93; continuity confidence 0.93.
+- After LIVE_PROVEN only outcome collection/learning is allowed; republish/replacement is forbidden for the same daily claim.
+
+## Continuous loop integrity — verplicht
+
+Fingerprint: `powerhouse-loop-assurance-v2`.
+
+Iedere huidige en toekomstige materiële Powerhouse-capability, workflow, scheduler, publicatielijn, sales/outreach-flow, intelligence-loop en recovery-loop valt onder de canonieke Loop Assurance-laag.
+
+- registreer de loop in `powerhouse/assurance/loop-registry.json`;
+- bewijs `input → decision → action → readback → outcome → measurement → learning → guard`;
+- als een scheduler hoort bij de loop moet die actief en opgenomen zijn;
+- GREEN mag alleen ontstaan bij actuele end-to-end evidence; ontbrekende stage-evidence is minimaal AMBER;
+- ontbrekende/inactieve scheduler of >2× cadence stale runtime is RED;
+- AMBER/RED materialiseren als bestaande `OPERATIONS_ASSURANCE` Brain-obligation en worden niet alleen in chat gemeld;
+- herstel schrijft nieuwe stage/runtime-evidence terug zodat de obligation automatisch kan sluiten;
+- een nieuwe capability zonder Loop Assurance-registratie en evidencecontract is niet production-ready.
+
+Canonieke runtime: `public.powerhouse_loop_assurance_state_v1`, `public.powerhouse_loop_assurance_receipts_v1`, `public.powerhouse_refresh_loop_assurance_v1()`.
+
+
+## Powerhouse loop integrity v3 — inherited
+
+Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
+
+Every current and future chat/agent inherits the five-minute Powerhouse loop-assurance contract. A scheduler being active is not proof that a business loop is closed. Required loop stages are `input → decision → action → readback → outcome → measurement → learning → guard`; only canonical runtime/provider/cron evidence may satisfy them. Critical loops with zero fresh stage evidence are RED. Partial evidence is AMBER. GREEN requires all required stage evidence fresh. Never synthesize outcome/learning/guard receipts and never weaken immutable obligation identity to force a write.
+
+## Loop Assurance terminale closure — inherited
+
+Fingerprint: `powerhouse|loop-assurance|terminal-live-closure|2026-09-30-v1`.
+
+Alle huidige en toekomstige chats en agents erven aanvullend:
+- actieve loops worden dynamisch uit de centrale registry geassured; geen handmatige allowlist per nieuwe loop;
+- `GREEN` vereist 8/8 verse stage-evidence; historische GREEN/LIVE-status is nooit herbruikbaar zonder actuele readback;
+- een merge, scheduler-run, provider-ACK of deployment-ready status is nooit zelfstandig closed-loop bewijs;
+- terminale Powerhouse-closure schrijft in dezelfde lineage terug naar Brain learning, relevante skill(s), AGENTS/chat-contract, append-only ledger, menselijke documentatie en System Map;
+- productie-identiteit en runtime-health worden na writeback opnieuw gelezen voordat terminale afronding is toegestaan.
+
+De op 30 september 2026 vastgelegde referentie-evidence is exact-main/Netlify commit `9ae500bb184c5e36053c7ca64fb2d51bea070d9c` met een live fleet van 13 actieve loops: 2 GREEN, 11 AMBER, 0 RED.
+
+## Social story-family duplicate prevention — all chats and agents
+
+Fingerprint: `social|story-family-overlap|all-chat-agent-inheritance|v1`.
+
+All current and future chats, agents, schedulers, recovery workers and social connectors inherit the same fail-closed historical uniqueness authority before any social provider write.
+
+Mandatory invariants:
+- daily idempotency/single-writer protection is not historical uniqueness;
+- exact hash, normalized hash, story fingerprint, shingle similarity, keyword Jaccard and keyword overlap coefficient are cumulative;
+- `powerhouse_reserve_unique_publication_v1` is the canonical reservation gate;
+- `powerhouse_publication_story_family_guard_v2` is the database backstop and cannot be bypassed by application, chat or connector code;
+- a blocked story family must be replaced by a genuinely different source/event/topic, never by rewritten copy;
+- user-reported semantic duplicates are authoritative escaped-defect evidence and become permanent regression cases;
+- canonical 2026-09-30 regression: auto + elektrische schuifdeur + airco + warme lucht + handmatig openen/ramen open + nieuwe routine.
+
+Every material social-publishing change must update the relevant skill, Brain learning, chat/agent contract, development ledger and System Map in the same lineage.
+
+
+## Company Brain category positioning — permanent commercial contract
+Fingerprint: `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+
+Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales- en productnodes:
+- `Company Brain` is categorie-/zoektaal en acquisitie-ingang, niet de merknaam of productnaam;
+- de canonieke eigenaar is `https://www.bedrijfsgeheugen.nl/company-brain`; geen duplicate intent-route;
+- canonieke categoriezin: **Een Company Brain is waar Bedrijfsgeheugen begint.**
+- canoniek onderscheid: Company Brain ontsluit kennis/context; Bedrijfsgeheugen verbindt context met signalen, impact, beslissing, actie, resultaat en leren;
+- merkbelofte: **Uit hoofden, in je bedrijf. En dan werkend.**
+- productprincipe: **Weten → Zien → Begrijpen → Doen → Leren.**
+- Powerhouse blijft de onderliggende intelligence- en uitvoeringsmotor;
+- commerciële optimalisatie eindigt niet op ranking/traffic/scan maar op gekwalificeerde lead → voorstel → betaalde order → gerealiseerde omzet → learning;
+- iedere nieuwe Company-Brain-kans hergebruikt de bestaande Bedrijfslek, Frisse Blik, Growth Swarm, SEO Order Engine, Outcome Memory en Compound Learning; geen parallel CRM, funnel, publisher of learning-store.
+
+## Public copy static-i18n final-artifact gate
+Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
+
+Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen controleren de Engelse static-i18n authority niet alleen op broncopy maar op de finale post-shell/build-output. Shellprojectie, CRO-finalizers, breadcrumbs, aria-labels en tekstsplitsing kunnen nieuwe exacte strings creëren. `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed; runtime translation vervangt geen ontbrekende statische production key. Een i18n-buildfout wordt in dezelfde obligation gerepareerd en opnieuw gepromoveerd tot NL én EN publiek terugleesbaar zijn.
+
+## Persistent public language navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
+
+
+## Commercial outbound transport self-heal — inherited
+
+Fingerprint: `commercial|outbound-transport-self-heal|gmail-linkedin-dm|v1`.
+
+Alle huidige en toekomstige chats/agents die commerciële e-mail, LinkedIn-DM of provider-outreach raken lezen en volgen `skills/powerhouse-commercial-outbound-self-heal.md`.
+
+Niet-onderhandelbaar:
+- herstelbare connector-/transportfouten zijn nooit terminale `error`;
+- provider-project/connection consistency wordt vóór iedere write geverifieerd;
+- Composio MCP word-id/alias en raw API connected-account id mogen nooit door elkaar worden gebruikt;
+- direct Composio execute gebruikt actuele/pinned toolversion, vereiste top-level user/entity identity en volledige structured error serialization;
+- `[object Object]` als provider-error is een regressie;
+- bij ontbrekende server-side Gmail maar beschikbare canonieke Gmail-connector mag dezelfde sales-action lineage veilig fallback gebruiken;
+- provider message/thread IDs worden read-after-write teruggeschreven vóór `done`;
+- daglimiet, suppression, cooldown, consent/existing-relationship, dedupe en republish-forbidden blijven harde gates;
+- LinkedIn-DM is alleen toegestaan via een echte geverifieerde send-DM capability; post/comment is nooit DM-fallback;
+- ontbrekende DM-capability mag alleen naar bestaande geautoriseerde e-mailrelatie fallbacken wanneer een geldig e-mailadres bekend is;
+- iedere fout schrijft root cause → fix → prevention naar Brain failure registry, learning en Loop Assurance.
+
+## Explicit public locale navigation — inherited
+Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.
+
+Voor alle huidige en toekomstige chats/agents geldt aanvullend:
+- publieke taalkeuze vertrouwt niet op browser-default-navigatie nadat een mobiel/menu-control zichzelf sluit;
+- een klik op `[data-bg-language-option]` buiten portalroutes voert expliciet `location.assign(href)` uit naar de canonieke locale-route;
+- de actieve locale blijft sitebreed persistent; English gebruikt `/en/*`, Nederlands onprefixte canonieke routes;
+- terminale i18n-proof vereist een echte browserroundtrip NL → EN → NL op productie, inclusief navigatie naar een andere publieke pagina;
+- een timeout op de locale-switch is een runtime-interactiedefect, niet een Netlify-transportdefect.
+
+
+## Public locale click ownership — inherited
+
+Fingerprint: `i18n-window-capture-navigation-v1`.
+
+Alle huidige en toekomstige chats/agents erven:
+- publieke taalkeuze is eigenaar van de klik vóór mobiele menu-/drilldown-handlers;
+- taalopties worden op `window` capture afgehandeld en navigeren expliciet naar dezelfde functionele route in de gekozen locale;
+- concurrerende menuhandlers mogen de locale-switch niet onderscheppen;
+- SEO/no-JS hrefs blijven geldig;
+- iedere gedragswijziging aan publieke i18n-runtime roteert de assetversie en vereist verse productie NL→EN→NL-readback.
+
+
+## Bilingual SEO revenue inheritance — 30 september 2026
+Fingerprint: `seo|nl-en|keyword-ownership-to-revenue|v1`.
+
+All current and future chats, agents, SEO/content/website nodes inherit:
+- inspect `site/seo-order-map.json`, `site/seo-order-expansion.json` and `site/seo-locale-revenue-map.json` before creating or retargeting an indexable page;
+- one keyword/search-intent owner per locale; no cannibalising duplicate page;
+- English SEO uses English-market demand/SERP intent, never automatic literal keyword translation;
+- every NL canonical owner has a self-canonical English `/en/*` pair with nl/en/x-default hreflang;
+- internal same-origin links preserve the selected locale, including absolute links;
+- every commercial/support SEO change declares a conversion destination and measures through paid order and realized revenue;
+- production builds run SEO apply + validate before static locale generation and regenerate sitemap from final localized HTML;
+- missing English metadata, locale-link leakage, hreflang failure, orphan revenue pages, keyword collisions or missing conversion destination are release-blocking.
+
+## Lead-magnet operating contract — value first, revenue closed loop
+
+Fingerprint: `powerhouse-lead-magnet-operating-contract-v1`.
+
+Every current and future chat/agent that creates a free guide, PDF, calculator, checklist, benchmark, prediction brief or other value asset for Bedrijfsgeheugen must:
+- design around a concrete user job-to-be-done, not around explaining the portal;
+- create NL and EN asset variants when both markets are targeted, while keeping one language per LinkedIn post;
+- never reuse a post story/angle solely by translating it;
+- use a short intent token in comments and record it as a canonical commercial signal;
+- deliver through the canonical LinkedIn/DM authority after live capability proof;
+- write post -> comment -> asset delivery -> reply -> meeting -> proposal -> order -> realized revenue into the shared Powerhouse loop;
+- treat predictions as sourced directional foresight with uncertainty;
+- optimize from qualified-commercial outcomes, not likes/comments alone;
+- prefer a portfolio of genuinely different utility assets over repeated PDF giveaways with superficial rewrites.
+
+
+## Behoefteanalyse vóór iedere commerciële vervolgstap
+
+Fingerprint: `powerhouse-need-discovery-v1`.
+
+Website, posts, blogs, e-mail, echte LinkedIn-DM, verkoopgesprekken en Portal V2 gebruiken één gedeelde fasering: gewenst resultaat → huidige aanpak → concreet probleem → zakelijke impact → urgentie → gewenste waarde → besluitvorming → vervolgstap. Directe interacties stellen één logische vraag per beurt en leggen het antwoord vast in de woorden van de klant. Likes, kliks, opens en algemene engagement bevestigen geen probleem, impact, urgentie, budget of koopintentie. Een aanbod mag pas worden gekozen wanneer probleem, impact en urgentie expliciet zijn bevestigd. Alle uitkomsten lopen terug via reply → gesprek → scan → voorstel → betaalde order → gerealiseerde omzet → learning. Canonieke skill: `.agents/skills/powerhouse-need-discovery/SKILL.md`.
+
+## Supabase Edge production authority — protected main only
+
+Fingerprint: `supabase-edge|production-promotion|protected-main-git-integration-attestation|v2`.
+
+Voor alle huidige en toekomstige chats, agents, recovery-workers en tools geldt:
+- productieproject `adhjwmvyoixzjtmiroln` mag voor `supabase/functions/**` **niet rechtstreeks** via een chat/agent/provider deploy worden gemuteerd;
+- `mcp__Supabase__deploy_edge_function`, dashboard editor-deploys en lokale/CI-CLI-deploys naar productie zijn geen geldige normale delivery-route;
+- source gaat eerst naar Git, door exact-HEAD gates en protected merge naar `main`;
+- de Supabase GitHub Integration met `Deploy to production` is de enige normale provider-deployer voor Edge Functions vanaf protected `main`;
+- `.github/workflows/supabase-edge-production-authority.yml` is single-flight en **attestation-only**: hij wacht op de nieuwste Supabase GitHub App-check op exact dezelfde main-SHA, vereist twee stabiele success-observaties en bewaart immutable source-tree hashes;
+- GitHub Actions gebruikt hiervoor geen `SUPABASE_ACCESS_TOKEN`, geen `supabase functions deploy` en geen tweede production-writer;
+- ontbrekende provider-check, provider failure, onbekende function scope of nieuwere Supabase-runtimewijziging op `main` is fail-closed;
+- break-glass providerdeploy is alleen toegestaan na expliciete menselijke noodautorisatie en verplicht onmiddellijke source-projectie + protected-main reconciliation;
+- een production Edge-versie zonder protected-main lineage is `RUNTIME_AUTHORITY_DRIFT`, nooit nieuwe source authority en nooit reden om een stale PR te laten inhalen.
+
+
+## Bounded workflow observation — inherited
+
+Fingerprint: `github|workflow-observation|bounded-single-snapshot|v1`.
+
+Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remote workflowstatus observeren geldt:
+- neem per observatiecyclus exact één top-level snapshot van de exacte candidate HEAD;
+- drill daarna maximaal één mislukte workflow door tot de eerste mislukte job/stap wanneer er een terminale failure is;
+- bij dezelfde HEAD en ongewijzigde `queued`, `pending`, `waiting`, `requested` of `in_progress` status wordt minimaal 120 seconden niet opnieuw dezelfde workflowstatus gelezen zonder nieuwe evidence;
+- gebruik per observatiecyclus maximaal 3 status-toolreads en 30 seconden wall-clock observatietijd;
+- succesvolle of skipped sibling jobs worden niet steeds opnieuw uitgelezen;
+- een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
+- remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
+
+
+## Growth Intelligence — bewezen signalen, skills en releases (25 oktober 2026)
+
+Releasebewijs: PR #4917 (main fb6918446e265b87778dd68d260b286beebf6605) en PR #4926 (main c66670ea339f25cdd847f57a23175ba09b1bc4b0) zijn afzonderlijk beschermd gemerged; hun onafhankelijke productie-readback en skillprojectie zijn geslaagd. Dit bewijst de library/advisory contracts, **niet** dagelijkse externe research, actieve klantportaalweergave, provider-opvolging of omzet.
+
+Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies raakt:
+- Lees eerst `tools/growth-intelligence/decision-core.mjs`, `heartbeat-adapter.mjs` en `learning-store.mjs` plus het actuele unified Brain/Heartbeat-contract. Hergebruik de bestaande scheduler, writers, tenantidentiteit, skills en canonical learning.
+- Gebruik `createCustomerSignalCards` alleen voor geverifieerde provider-events met recent meetbewijs, exact tenantId, rechtmatige persoonsgegevensbasis en onafhankelijke betalingsverificatie voor omzetclaims. Een advieskaart is uitsluitend adviserend; geen automatische outreach of publicatie.
+- Verifieer per actie: bron/evidence-id → score en besluit → eigenaar/goedkeuring → provider readback → uitkomst en onafhankelijk betaalbewijs → leerregistratie → beoordeelde skillprojectie. Als een schakel ontbreekt, label de uitkomst eerlijk `UNKNOWN` of `BLOCKED` en open een herstelverplichting.
+- Een geslaagde PR-preview is nooit productiebewijs. Eis beschermde Required, hygiene, CodeQL, eventuele native preview, productie-readback op de gemergede SHA en skillcontract-evaluatie.
+- De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
+
+Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.
+
+
+## Experiment-kalender sluit zichzelf (27 oktober 2026)
+
+Oorzaak: 210 PLANNED en 8 ACTIVE `rci-*` regels in `social_experiments` bleven open omdat niets ze afsloot; de leerlus stond daardoor open bij uitkomst.
+
+Iedere agent die experimenten, content-kalender of de dagelijkse Powerhouse-run raakt:
+- Lees eerst `skills/powerhouse-experiment-calendar-closure.md`.
+- Controleer bij elke Heartbeat-run `powerhouse_calendar_experiment_staleness_v1`; ongelijk aan 0 is een herstelverplichting, geen waarschuwing.
+- Activeer nooit experimenten in bulk. Menselijk gepoorte experimenten gaan via `bg_experiment_actie`.
+- Een nieuw experimenttype zonder sluitregel en staleness-test wordt niet gemerged.

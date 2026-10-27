@@ -1,0 +1,56 @@
+{
+  "id": "netlify-production-authority-jit-source-close-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|production-authority|oidc|jit|v1",
+  "root_cause": "The canonical GitHub OIDC deploy bridge authenticated GitHub correctly but depended on a persisted short-lived Netlify MCP proxy. Once that proxy expired, exact-main production deployment failed with repeated 401 responses; after fail-fast preflight was added, the same stale authority correctly surfaced earlier as bridge unavailable.",
+  "prevention": {
+    "authority": "Acquire Netlify deployment authority just in time through the existing Composio connected account on every bridge invocation.",
+    "persistence": "Never persist or reuse an issued Netlify MCP proxy in Vault, GitHub secrets or repository source.",
+    "scope": "Keep GitHub OIDC restricted to the Bedrijfsgeheugen repository, refs/heads/main and the canonical production-source-snapshot workflow.",
+    "fail_closed": "If Vault cannot supply the Composio project key, Composio cannot issue fresh provider authority, or proxy issuance is malformed, fail before deployment with explicit bridge error semantics."
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_DEPLOY_AUTHORITY_STALE",
+    "scope": "PRODUCTION_DELIVERY_AUTHORITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime": [
+      "netlify-deploy-bridge ACTIVE version 20",
+      "Supabase Edge bundle sha256 25b3d6be9c40996ca711cd390d390e24b93ba5d74559291a7988b09a669182fc",
+      "COMPOSIO_API_KEY present in Supabase Vault",
+      "No persisted netlify_mcp_proxy_current or dated proxy lookup in the JIT bridge source"
+    ],
+    "post_merge_recovery": [
+      "Powerhouse Skill Projection run 37663158817 failed because evaluation fields contained prose instead of tests/brain-*.test.mjs paths.",
+      "Supabase Edge Production Authority run 37663158764 failed because netlify-deploy-bridge was not declared in supabase/config.toml.",
+      "The existing non-Brain bridge test contained a literal backslash-n token between assertions and was repaired."
+    ],
+    "repository": [
+      "supabase/functions/netlify-deploy-bridge/index.ts",
+      "supabase/functions/netlify-deploy-bridge/deno.json",
+      "supabase/config.toml",
+      "tools/supabase/edge-runtime-scope.mjs",
+      "tests/supabase-netlify-deploy-bridge-authority-v1.test.mjs",
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "delivery",
+    "security",
+    "data"
+  ]
+}

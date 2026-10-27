@@ -6,8 +6,9 @@ on:
     types: [closed]
 
 permissions:
+  actions: read
   contents: read
-  pull-requests: read
+  pull-requests: write
 
 concurrency:
   group: obligation-terminalizer-${{ github.event.pull_request.number }}
@@ -17,6 +18,7 @@ jobs:
   terminalize:
     if: "${{ github.event.pull_request.merged == true && contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY') }}"
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
@@ -27,12 +29,68 @@ jobs:
         with:
           node-version: '22'
 
+      - id: target
+        name: Resolve immutable terminalization target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_PR_BODY: ${{ github.event.pull_request.body }}
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          controller_body="${EVENT_PR_BODY:-}"
+          replay_pr="$(printf '%s\n' "$controller_body" | sed -nE 's/^Terminal-Replay-PR:[[:space:]]*([0-9]+)[[:space:]]*$/\1/p' | tail -n1)"
+          pr_number="$EVENT_PR_NUMBER"
+          candidate_sha="$EVENT_CANDIDATE_SHA"
+          merge_sha="$EVENT_MERGE_SHA"
+          pr_body="$controller_body"
+          mode="current"
+
+          if [ -n "$replay_pr" ]; then
+            [ "$replay_pr" != "$EVENT_PR_NUMBER" ] || {
+              echo "::error::TERMINAL_REPLAY_SELF_REFERENCE:$replay_pr"
+              exit 78
+            }
+            target_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$replay_pr")"
+            state="$(jq -r '.state' <<<"$target_json")"
+            merged_at="$(jq -r '.merged_at // ""' <<<"$target_json")"
+            merged="$(jq -r '.merged' <<<"$target_json")"
+            [ "$state" = "closed" ] && [ "$merged" = "true" ] && [ -n "$merged_at" ] || {
+              echo "::error::TERMINAL_REPLAY_TARGET_NOT_MERGED:$replay_pr:$state:$merged"
+              exit 78
+            }
+            pr_number="$replay_pr"
+            candidate_sha="$(jq -r '.head.sha // ""' <<<"$target_json")"
+            merge_sha="$(jq -r '.merge_commit_sha // ""' <<<"$target_json")"
+            pr_body="$(jq -r '.body // ""' <<<"$target_json")"
+            mode="replay"
+          fi
+
+          [[ "$pr_number" =~ ^[1-9][0-9]*$ ]]
+          [[ "$candidate_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
+          grep -q '^Writer-Lease-State: TERMINAL_DELIVERY$' <<<"$pr_body" || {
+            echo "::error::TERMINAL_REPLAY_TARGET_NOT_TERMINAL:$pr_number"
+            exit 78
+          }
+
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "merge_sha=$merge_sha" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          {
+            echo 'pr_body<<__TERMINAL_PR_BODY__'
+            printf '%s\n' "$pr_body"
+            echo '__TERMINAL_PR_BODY__'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Validate canonical merged lineage
         env:
-          PR_BODY: ${{ github.event.pull_request.body }}
-          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ steps.target.outputs.pr_body }}
+          CANDIDATE_SHA: ${{ steps.target.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
@@ -52,7 +110,7 @@ jobs:
           fi
           echo "LINEAGE_MODE=$lineage_mode" >> "$GITHUB_ENV"
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
-          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
+          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" LINEAGE_MODE="$lineage_mode" node --input-type=module - <<'NODE'
           import { writeFileSync, readFileSync } from 'node:fs';
           import { validateMachineReadablePrBody } from './tools/delivery/github-delivery-state-machine.mjs';
           const policy=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
@@ -72,14 +130,285 @@ jobs:
           },null,2));
           NODE
 
+      - name: Verify exact-candidate BRAIN before terminal claim
+        env:
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ steps.target.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          require_workflow() {
+            workflow="$1"
+            label="$2"
+            expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
+            query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50"
+            selector='[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last'
+            if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+              # Trusted main dispatch verifies inputs.head_sha; run.head_sha is its workflow source.
+              query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=workflow_dispatch&per_page=100"
+              selector='[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last'
+            fi
+            for attempt in $(seq 1 180); do
+              payload="$(gh api "$query")"
+              selected="$(jq -c --arg sha "$HEAD_SHA" --arg title "$expected_title" "$selector" <<<"$payload")"
+              run_id="$(jq -r '.id // empty' <<<"$selected")"
+              status="$(jq -r '.status // empty' <<<"$selected")"
+              conclusion="$(jq -r '.conclusion // empty' <<<"$selected")"
+              if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+                [ "$conclusion" = "success" ] || {
+                  echo "::error::TERMINAL_CRITICAL_GATE_FAILED:${label}:run=${run_id}:conclusion=${conclusion}:head=${HEAD_SHA}"
+                  exit 78
+                }
+                if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+                  run_source_sha="$(jq -r '.head_sha // empty' <<<"$selected")"
+                  [[ "$run_source_sha" =~ ^[0-9a-f]{40}$ ]] || exit 78
+                  # A tag named main is insufficient: the workflow source must belong to protected main.
+                  if ! trusted_base="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${run_source_sha}...main" --jq '.merge_base_commit.sha')"; then
+                    echo "::error::TERMINAL_BRAIN_WORKFLOW_SOURCE_UNVERIFIED:$run_source_sha"
+                    exit 78
+                  fi
+                  [ "$trusted_base" = "$run_source_sha" ] || {
+                    echo "::error::TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN:$run_source_sha"
+                    exit 78
+                  }
+                fi
+                echo "TERMINAL_CRITICAL_GATE_PROVEN:${label}:run=${run_id}:head=${HEAD_SHA}"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "::error::TERMINAL_CRITICAL_GATE_NOT_TERMINAL:${label}:head=${HEAD_SHA}"
+            exit 78
+          }
+          require_workflow "unified-brain-delivery.yml" "BRAIN"
+
       - name: Verify production promotion and runtime readback
         id: production
         env:
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
+          PR_BODY: ${{ steps.target.outputs.pr_body }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           set -euo pipefail
+          git fetch origin main --no-tags
+          changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
+
+          verifier_only_paths="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const contract=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
+          for (const path of contract?.productionTruth?.verifierOnlyPaths || []) console.log(String(path));
+          NODE
+          )"
+          verifier_only_prefixes="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const contract=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
+          for (const prefix of contract?.productionTruth?.verifierOnlyPrefixes || []) console.log(String(prefix));
+          NODE
+          )"
+
+          is_governance_path() {
+            if grep -Fxq -- "$1" <<< "$verifier_only_paths"; then
+              return 0
+            fi
+            while IFS= read -r prefix; do
+              [ -z "$prefix" ] && continue
+              if [[ "$1" == "$prefix"* ]]; then
+                return 0
+              fi
+            done <<< "$verifier_only_prefixes"
+            return 1
+          }
+
+          observed="$(git rev-parse origin/main)"
+          prove_main_containment() {
+            git merge-base --is-ancestor "$MERGE_SHA" "$observed" || {
+              echo "::error::POST_MERGE_MAIN_CONTAINMENT_FAILED:$MERGE_SHA:$observed"
+              exit 78
+            }
+            echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+          }
+
+          governance_only=true
+          non_governance_paths=""
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            if is_governance_path "$path"; then
+              continue
+            fi
+            governance_only=false
+            non_governance_paths="${non_governance_paths}${path}"$'\n'
+          done <<< "$changed_paths"
+
+          if [ "$governance_only" = true ]; then
+            prove_main_containment
+            echo "readback_mode=non_runtime" >> "$GITHUB_OUTPUT"
+            echo "PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME:$MERGE_SHA:$observed"
+            exit 0
+          fi
+
+          parity_recovery=false
+          if grep -q '^Candidate-Type: recovery$' <<< "$PR_BODY" \
+             && grep -Eq '^Obligation-ID: supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-' <<< "$PR_BODY"; then
+            parity_recovery=true
+          fi
+
+          if [ "$parity_recovery" = true ]; then
+            invalid_recovery_path=false
+            while IFS= read -r path; do
+              [ -z "$path" ] && continue
+              case "$path" in
+                supabase/migration-history/*|supabase/migration-history.lock.json|supabase/production-baseline/*|scripts/brain/check_powerhouse_supabase_security.py|scripts/brain/quality/*|config/powerhouse-quality-surface-contracts.json)
+                  ;;
+                *)
+                  invalid_recovery_path=true
+                  echo "::error::SUPABASE_PARITY_RECOVERY_CONTAINS_RUNTIME_PATH:$path"
+                  ;;
+              esac
+            done <<< "$non_governance_paths"
+            [ "$invalid_recovery_path" = false ] || exit 78
+            prove_main_containment
+            echo "readback_mode=supabase_history_parity_recovery" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_HISTORY_PARITY_RECOVERY_RUNTIME_NOT_APPLICABLE:$MERGE_SHA:$observed"
+            exit 0
+          fi
+
+          runtime_classes="$(NON_GOVERNANCE_PATHS="$non_governance_paths" node --input-type=module - <<'NODE'
+          import { isNetlifyRuntimePath } from './tools/site-shell/production-supersession.mjs';
+          const paths=String(process.env.NON_GOVERNANCE_PATHS||'').split(/\r?\n/).filter(Boolean);
+          const supabase=paths.filter(path=>path==='supabase/config.toml'||/^supabase\/functions\/[^/]+\//.test(path));
+          const migrations=paths.filter(path=>/^supabase\/migrations\/\d{14}_[^/]+\.sql$/.test(path));
+          const netlify=paths.filter(path=>isNetlifyRuntimePath(path));
+          const unknown=paths.filter(path=>!supabase.includes(path)&&!migrations.includes(path)&&!netlify.includes(path));
+          process.stdout.write(JSON.stringify({supabase,migrations,netlify,unknown}));
+          NODE
+          )"
+          unknown_runtime_paths="$(jq -r '.unknown[]?' <<<"$runtime_classes")"
+          if [ -n "$unknown_runtime_paths" ]; then
+            echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
+            printf '%s\n' "$unknown_runtime_paths"
+            exit 78
+          fi
+
+          jq -r '.supabase[]?' <<<"$runtime_classes" > /tmp/supabase-runtime-paths.txt
+          mapfile -t changed_functions < <(node tools/supabase/edge-runtime-scope.mjs /tmp/supabase-runtime-paths.txt)
+          supabase_required=false
+          printf '[]\n' > .artifacts/supabase-provider-readbacks.json
+          if [ "${#changed_functions[@]}" -gt 0 ]; then
+            supabase_required=true
+            provider_lines=""
+            complete=false
+            for attempt in $(seq 1 24); do
+              live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+              provider_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
+              complete=true
+              for fn in "${changed_functions[@]}"; do
+                line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+                if [ -z "$line" ]; then complete=false; break; fi
+              done
+              [ "$complete" = true ] && break
+              sleep 5
+            done
+            if [ "$complete" != true ]; then
+              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING:functions=${changed_functions[*]}"
+              exit 78
+            fi
+            readbacks='[]'
+            for fn in "${changed_functions[@]}"; do
+              line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+              if [ -z "$line" ]; then
+                echo "::error::SUPABASE_PROVIDER_READBACK_INCOMPLETE:${fn}"
+                exit 78
+              fi
+              version="$(sed -nE 's/.*;version=([1-9][0-9]*);.*/\1/p' <<<"$line")"
+              runtime_sha256="$(sed -nE 's/.*;runtime_sha256=([0-9a-fA-F]{64})$/\1/p' <<<"$line" | tr '[:upper:]' '[:lower:]')"
+              readbacks="$(jq -c --arg fn "$fn" --argjson version "$version" --arg runtime_sha256 "$runtime_sha256" '. + [{function:$fn,version:$version,runtime_sha256:$runtime_sha256,state:"ACTIVE"}]' <<<"$readbacks")"
+              echo "SUPABASE_PROVIDER_READBACK_DECLARED:${line}"
+            done
+            # PR markers declare expectations; independent live provider metadata proves them.
+            test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
+              echo "::error::SUPABASE_PROVIDER_ACCESS_TOKEN_MISSING"
+              exit 78
+            }
+            curl -fsSL --retry 2 --connect-timeout 10 --max-time 30 \
+              -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+              "https://api.supabase.com/v1/projects/adhjwmvyoixzjtmiroln/functions" \
+              -o /tmp/terminal-supabase-provider-live.json
+            PROVIDER_EXPECTED="$readbacks" node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {verifyLiveProviderReadbacks} from './tools/supabase/publish-edge-provider-readback.mjs';
+          const expected=JSON.parse(process.env.PROVIDER_EXPECTED||'[]');
+          verifyLiveProviderReadbacks(expected,JSON.parse(readFileSync('/tmp/terminal-supabase-provider-live.json','utf8')));
+          console.log('SUPABASE_PROVIDER_LIVE_METADATA_MATCH:'+expected.map(row=>row.function).join(','));
+          NODE
+            printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
+          fi
+
+          mapfile -t changed_migrations < <(jq -r '.migrations[]?' <<<"$runtime_classes")
+          migration_required=false
+          printf '[]\n' > .artifacts/supabase-migration-readbacks.json
+          if [ "${#changed_migrations[@]}" -gt 0 ]; then
+            migration_required=true
+            printf '%s\n' "${changed_migrations[@]}" > /tmp/migrations.txt
+            test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
+              echo "::error::SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_MIGRATION_PROVIDER_READBACK"
+              exit 78
+            }
+
+            PROJECT_REF=adhjwmvyoixzjtmiroln \
+            SUPABASE_ACCESS_TOKEN="$SUPABASE_ACCESS_TOKEN" \
+            GITHUB_TOKEN="$GH_TOKEN" \
+            GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
+            GITHUB_SHA="$MERGE_SHA" \
+            TARGET_PR_NUMBER="$PR_NUMBER" \
+              node tools/supabase/publish-migration-provider-readback.mjs
+
+            live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+            migration_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Migration-Readback:[[:space:]]*//p')"
+            migration_readbacks='[]'
+            for migration_path in "${changed_migrations[@]}"; do
+              file="$(basename "$migration_path")"
+              version="${file%%_*}"
+              name="${file#${version}_}"
+              name="${name%.sql}"
+              line="$(printf '%s\n' "$migration_lines" | grep -E "^version=${version};name=${name};state=APPLIED;project=adhjwmvyoixzjtmiroln;observed_at=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" | tail -n1 || true)"
+              [ -n "$line" ] || {
+                echo "::error::SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE:$migration_path"
+                exit 78
+              }
+              observed_at="$(sed -nE 's/.*;observed_at=([^;]+)$/\1/p' <<<"$line")"
+              migration_readbacks="$(jq -c --arg path "$migration_path" --arg version "$version" --arg name "$name" --arg observed_at "$observed_at" '. + [{path:$path,version:$version,name:$name,state:"APPLIED",project:"adhjwmvyoixzjtmiroln",observed_at:$observed_at}]' <<<"$migration_readbacks")"
+              echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:$line"
+            done
+            printf '%s\n' "$migration_readbacks" > .artifacts/supabase-migration-readbacks.json
+          fi
+
+          echo "migration_required=$migration_required" >> "$GITHUB_OUTPUT"
+          netlify_required="$(jq -r '(.netlify|length)>0' <<<"$runtime_classes")"
+          if [ "$netlify_required" != true ]; then
+            if [ "$supabase_required" != true ] && [ "$migration_required" != true ]; then
+              echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
+              printf '%s' "$non_governance_paths"
+              exit 78
+            fi
+            prove_main_containment
+            if [ "$supabase_required" = true ] && [ "$migration_required" = true ]; then
+              echo "readback_mode=supabase_edge_and_migration_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_AND_MIGRATION_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} migrations=${changed_migrations[*]} merge=$MERGE_SHA"
+            elif [ "$supabase_required" = true ]; then
+              echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            else
+              echo "readback_mode=supabase_migration_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:migrations=${changed_migrations[*]} merge=$MERGE_SHA"
+            fi
+            exit 0
+          fi
+
           for attempt in $(seq 1 36); do
-            if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json               && curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/ -o /tmp/runtime.html; then
+            if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json \
+              && curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/ -o /tmp/runtime.html; then
               observed="$(node --input-type=module - <<'NODE'
           import { readFileSync } from 'node:fs';
           const release=JSON.parse(readFileSync('/tmp/release.json','utf8'));
@@ -94,6 +423,15 @@ jobs:
                 git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
                 if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
                   echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+                  if [ "$supabase_required" = true ] && [ "$migration_required" = true ]; then
+                    echo "readback_mode=netlify_runtime_supabase_edge_and_migration_provider" >> "$GITHUB_OUTPUT"
+                  elif [ "$migration_required" = true ]; then
+                    echo "readback_mode=netlify_runtime_supabase_migration_provider" >> "$GITHUB_OUTPUT"
+                  elif [ "$supabase_required" = true ]; then
+                    echo "readback_mode=netlify_runtime_supabase_provider" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "readback_mode=netlify_runtime" >> "$GITHUB_OUTPUT"
+                  fi
                   exit 0
                 fi
               fi
@@ -112,33 +450,65 @@ jobs:
       - name: Materialize terminal outcome evidence
         env:
           PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          READBACK_MODE: ${{ steps.production.outputs.readback_mode }}
+          MIGRATION_READBACK_REQUIRED: ${{ steps.production.outputs.migration_required }}
+          MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
+          CANDIDATE_SHA: ${{ steps.target.outputs.candidate_sha }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          CONTROLLER_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TERMINALIZATION_MODE: ${{ steps.target.outputs.mode }}
         run: |
           node --input-type=module - <<'NODE'
-          import { readFileSync, writeFileSync } from 'node:fs';
+          import { existsSync, readFileSync, writeFileSync } from 'node:fs';
           const lineage=JSON.parse(readFileSync('.artifacts/terminal-lineage.json','utf8'));
           const preflight=JSON.parse(readFileSync('/tmp/chat-learning-preflight.json','utf8'));
+          const providerReadbacks=existsSync('.artifacts/supabase-provider-readbacks.json')
+            ? JSON.parse(readFileSync('.artifacts/supabase-provider-readbacks.json','utf8'))
+            : [];
+          const migrationReadbacks=existsSync('.artifacts/supabase-migration-readbacks.json')
+            ? JSON.parse(readFileSync('.artifacts/supabase-migration-readbacks.json','utf8'))
+            : [];
+          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider','netlify_runtime_supabase_migration_provider','netlify_runtime_supabase_edge_and_migration_provider'];
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
             terminal_status:'LIVE_BEWEZEN',
             obligation_id:lineage.obligation_id,
             pr_number:Number(process.env.PR_NUMBER),
+            controller_pr_number:Number(process.env.CONTROLLER_PR_NUMBER),
+            terminalization_mode:process.env.TERMINALIZATION_MODE||'current',
             candidate_head_sha:process.env.CANDIDATE_SHA,
             merge_sha:process.env.MERGE_SHA,
             production_sha:process.env.PRODUCTION_SHA,
+            readback_mode:process.env.READBACK_MODE,
             checks:{
               merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
-              deploy_promotion_readback:true,
-              runtime_function_readback:true,
+              deploy_promotion_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
+              runtime_function_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
+              production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
+              supabase_provider_readback:['supabase_edge_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider','netlify_runtime_supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
+              supabase_migration_readback:['supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_migration_provider','netlify_runtime_supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
-            }
+            },
+            supabase_provider_readbacks:providerReadbacks,
+            supabase_migration_readbacks:migrationReadbacks
           };
+          if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
+          if(!evidence.checks.deploy_promotion_readback && !evidence.checks.production_readback_not_applicable) {
+            throw new Error('TERMINAL_PRODUCTION_READBACK_MODE_UNPROVEN');
+          }
+          if(evidence.checks.supabase_provider_readback && providerReadbacks.length===0) {
+            throw new Error('TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING');
+          }
+          if(process.env.MIGRATION_READBACK_REQUIRED==='true' && !evidence.checks.supabase_migration_readback) {
+            throw new Error('TERMINAL_SUPABASE_MIGRATION_READBACK_MODE_MISSING');
+          }
+          if(evidence.checks.supabase_migration_readback && migrationReadbacks.length===0) {
+            throw new Error('TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING');
+          }
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));
           NODE
@@ -146,7 +516,7 @@ jobs:
       - name: Upload terminal evidence
         uses: actions/upload-artifact@v4
         with:
-          name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
+          name: obligation-terminal-evidence-${{ steps.target.outputs.pr_number }}
           path: |
             .artifacts/terminal-lineage.json
             .artifacts/obligation-terminal-evidence.json

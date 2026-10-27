@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse-portal-visual-assurance-terminal-structure-v1",
+  "observed_at": "2026-10-03T08:35:00Z",
+  "type": "PREVENTION",
+  "problem": "Cross-system visual assurance could still drift if the GitHub executor, Supabase sync/quality authority or Notion projection reference were removed independently.",
+  "root_cause": "The earlier contract described the three surfaces but did not make every authority identifier and terminal integration edge machine-readable in one file.",
+  "decision": "Promote all GitHub, Supabase and Notion authority identifiers into the canonical visual-assurance contract and enforce them with a terminal Brain regression.",
+  "prevention": [
+    "Exact Notion verified-state and System Map page IDs are part of the machine contract.",
+    "Supabase sync function, migration, cron and quality registry are part of the machine contract.",
+    "CI fails if any authority edge or freshness/fail-closed rule is removed."
+  ],
+  "compiler": {
+    "failure_class": "CROSS_SYSTEM_ASSURANCE_AUTHORITY_DRIFT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-portal-visual-assurance-v1.json",
+    "tests/brain-portal-visual-assurance-terminal-structure-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-visual-assurance-terminal-structure-v1.test.mjs"
+    ]
+  }
+}

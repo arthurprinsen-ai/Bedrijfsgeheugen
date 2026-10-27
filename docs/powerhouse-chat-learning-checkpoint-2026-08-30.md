@@ -217,7 +217,7 @@ Personal LinkedIn metrics remain a capability gap where the official native app 
 
 Canonical account:
 - Bedrijfsgeheugen `@bedrijfsgeheugen.nl`
-- Instagram Business account ID `17841446582493753`
+- Instagram Business account ID `28537384955950341`
 
 Canonical publisher:
 - BG179 = sole native Instagram publisher.
@@ -382,3 +382,11 @@ For claims, distinguish:
 - exact production identity proof.
 
 Never upgrade one evidence class into another. If a real candidate did not traverse the changed module, record the remaining runtime obligation instead of claiming full end-to-end proof.
+
+### 2026-09-30 — persistent public locale navigation
+- Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+- Alle huidige en toekomstige chats erven: gekozen publieke taal blijft behouden bij iedere eligible interne paginanavigatie; English gebruikt `/en/*`, Nederlands onprefixte routes.
+- Dynamische menu-/navigatielinks vallen onder dezelfde runtime-normalisatie.
+- Portal/klantportaal en technische paden worden niet herschreven.
+- Terminal bewijs vereist cross-page taalpersistentie, niet alleen correcte vertaling van de huidige pagina.
+- Canonieke learning: `brain/learning/2026-09-30-public-i18n-persistent-navigation-v1.json`.

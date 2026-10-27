@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|p0-4198|outbound-source-exactness-and-cas-evidence|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_SOCIAL_SOURCE_MISROUTED_TO_COMMENT_AND_EMPTY_LANE_CLAIMS",
+    "scope": "ORCHESTRATION",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-outbound-source-and-claim-recovery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-outbound-source-and-claim-recovery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-outbound-source-and-claim-recovery-p0-4198.test.mjs"
+    ]
+  },
+  "root_cause": "At 2026-10-11 11:02Z the four independently executed Brain outbound lanes recorded their 'evidence' as JSON strings, not JSON objects, and claimed an entire hourly bucket even though no approved actions were ready. Command-center had 468 LinkedIn-comment recommendations but zero verified LinkedIn post targets; canonical materializer originally considered any https URL with headline a viable LinkedIn post, and SalesRobot prospect ID alone as sufficient recipient DM readiness.",
+  "prevention_rule": "One existing Heartbeat owner materializes the canonical Brain decision once hourly, in bounded isolated transaction, then evaluates channel readiness. Atomically promote an old NO_ELIGIBLE_ACTION hour receipt to READY if an authorized action appears later; retain no-replay for READY. Store structured JSONB built in SQL and never count queued HTTP requests as provider sending. Require verified UGC/share LinkedIn post URN with LinkedIn URL and first-degree connection proof for DM, preserving consent/pressure/identity/dedupe.",
+  "evidence": {
+    "production_materializer_run": "2026-10-11T11:09:18Z",
+    "candidate_source_count": 468,
+    "actual_linkedin_post_proven": 0,
+    "email_prepared": 0,
+    "dm_approved": 0,
+    "comment_quality_ready": 0,
+    "existing_lanes": "2026-10-11T11:02:06Z"
+  },
+  "outcome": {
+    "protected_merge_pending": true,
+    "live_deploy_pending": true,
+    "provider_daily_sends_proven": false
+  }
+}

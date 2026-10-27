@@ -4,12 +4,10 @@ import { readFileSync } from 'node:fs';
 
 const workflow = readFileSync(new URL('../.github/workflows/paginacontrole.yml', import.meta.url), 'utf8');
 
-test('page-control keeps PR verification isolated while candidate writers share the repository writer lock', () => {
-  assert.match(
-    workflow,
-    /group:\s*\$\{\{\s*github\.event_name\s*==\s*'pull_request'[\s\S]*format\('paginacontrole-\{0\}'[\s\S]*\|\|\s*'repo-schrijven'\s*\}\}/,
-  );
-  assert.match(workflow, /cancel-in-progress:\s*\$\{\{\s*github\.event_name\s*==\s*'pull_request'\s*\}\}/);
+test('page-control has no standalone PR trigger and candidate writers share the repository writer lock', () => {
+  const triggerBlock=workflow.slice(workflow.indexOf('on:'), workflow.indexOf('permissions:'));
+  assert.doesNotMatch(triggerBlock, /^\s*pull_request:\s*$/m);
+  assert.match(workflow, /concurrency:\s*\n\s*group:\s*repo-schrijven\s*\n\s*cancel-in-progress:\s*false/);
 });
 
 test('self-healing publication stays inside one candidate without rebasing or pushing main', () => {

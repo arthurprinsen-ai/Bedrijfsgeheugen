@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const read=(p)=>fs.existsSync(p)?fs.readFileSync(p,'utf8'):'';
-const migration=read('supabase/migrations/20260915165000_powerhouse_full_cycle_consolidation_v1.sql');
-const proof=read('supabase/migrations/20260915140200_powerhouse_full_cycle_status_normalization_v1.sql');
+const migration=read('supabase/migrations/20260915145008_powerhouse_full_cycle_consolidation_v1.sql');
+const proof=read('supabase/migrations/20260915140053_powerhouse_full_cycle_status_normalization_v1.sql');
 
 const requiredLineage=[
   'powerhouse_forecasts',

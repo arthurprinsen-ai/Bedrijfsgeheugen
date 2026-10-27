@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-30",
+  "fingerprint": "chat-agent-social-story-family-guard-v1",
+  "source": "user-reported escaped duplicate",
+  "applies_to": [
+    "chat",
+    "agent",
+    "scheduler",
+    "recovery_worker",
+    "connector"
+  ],
+  "lesson": "Local wording variation is never evidence of novelty. Social publication nodes must consume canonical historical story-family state before side effect.",
+  "hard_rule": "On STORY_FAMILY_DUPLICATE, return to source selection and choose a materially different verified event/topic.",
+  "regression": "car + electric sliding door + warm airco + manual door/windows-open routine",
+  "authority": [
+    "public.powerhouse_reserve_unique_publication_v1",
+    "public.powerhouse_publication_story_family_guard_v2",
+    "AGENTS.md",
+    ".agents/skills/linkedin-composio-publisher/SKILL.md"
+  ]
+}

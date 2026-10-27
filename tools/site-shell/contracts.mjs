@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
 
 export const GLOBAL_COMPONENTS = ['trustbar', 'header', 'mobile-menu', 'footer'];
-export const PUBLIC_UTILITY_ROUTES = new Set(['/inloggen']);
+export const PUBLIC_UTILITY_ROUTES = new Set(['/inloggen', '/behoeftecheck', '/gebruiksvoorwaarden', '/privacy', '/cookiebeleid', '/systeemstatus']);
 export const PUBLIC_PAGE_EXCLUDES = new Set([
   'index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html',
   'klantportaal-demo.html', 'klant-login.html', 'klantenportaal-selftest.html',
-  'klantenportaal-test.html', 'inloggen.html',
+  'klantenportaal-test.html', 'inloggen.html', 'cms.html',
   // Tijdelijke canonical-shell diagnoseartefacten worden tijdens CI in de
   // workspace geschreven. Ze zijn geen deploybare publieke routes en mogen
   // daarom nooit in sitemap-, UI- of globale shell-hashinventarissen vallen.
@@ -58,8 +58,26 @@ function hasRenderedClass(html, className) {
   return new RegExp(`<[a-z0-9-]+\\b[^>]*class="[^"]*\\b${escaped}\\b[^"]*"[^>]*>`, 'i').test(String(html));
 }
 
+function normalizeRouteBoundLanguageState(fragment) {
+  return String(fragment).replace(
+    /<a\b[^>]*data-bg-language-option=(["'])(nl|en)\1[^>]*>/gi,
+    tag => {
+      const locale = tag.match(/data-bg-language-option=(["'])(nl|en)\1/i)?.[2]?.toLowerCase() || 'x';
+      let normalized = tag;
+      if (/\bhref=(["'])[^"']*\1/i.test(normalized)) {
+        normalized = normalized.replace(/\bhref=(["'])[^"']*\1/i, `href="__BG_LOCALE_${locale}__"`);
+      }
+      if (/\baria-current=(["'])[^"']*\1/i.test(normalized)) {
+        normalized = normalized.replace(/\baria-current=(["'])[^"']*\1/i, 'aria-current="__BG_ROUTE_CURRENT__"');
+      }
+      return normalized;
+    }
+  );
+}
+
 export function componentHash(html, name) {
-  return createHash('sha256').update(extractMarkedElement(String(html), name)).digest('hex');
+  const fragment = normalizeRouteBoundLanguageState(extractMarkedElement(String(html), name));
+  return createHash('sha256').update(fragment).digest('hex');
 }
 
 export function verifyPageShell(input, path = '') {
@@ -75,14 +93,6 @@ export function verifyPageShell(input, path = '') {
   if (path === 'prijzen.html') {
     if (/\bclass="[^"]*\bbgkop\b/.test(html) || /id="bgkopMob"/.test(html)) {
       throw new Error(`${path}: legacy pricing header/menu shell detected`);
-    }
-    for (const cls of ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol']) {
-      if (!hasRenderedClass(html, cls)) throw new Error(`${path}: pricing page-tools missing ${cls}`);
-    }
-  } else {
-    const pricingRendered = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'].some(cls => hasRenderedClass(html, cls));
-    if (/data-bg-component="page-tools"/.test(html) || pricingRendered) {
-      throw new Error(`${path}: pricing page-tools are only allowed on prijzen.html`);
     }
   }
   return true;

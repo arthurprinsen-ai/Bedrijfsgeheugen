@@ -1,0 +1,40 @@
+{
+  "id": "portal-demo-canonical-ack-impact-v4-20261008",
+  "fingerprint": "portal-demo-non-durable-skip-authenticated-ack-v4",
+  "compiler": {
+    "failure_class": "PORTAL_CROSS_DOMAIN_REGRESSION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "A durable BusinessInput provider acknowledgement was required for demo-mode skips; a stale v3 test also rejected the current One Brain v4 impact version. Consequently unrelated portal UI PRs failed the shared suite despite correct candidate code.",
+  "prevention": [
+    "In demo or preview state, explicit DEMO_NON_DURABLE skips clear pending local projection but never masquerade as stored durable records.",
+    "Authenticated writes continue to require authorization and stored:true provider receipt; no auth bypass.",
+    "Assert the current One Brain v4 cross-domain propagation contract in legacy causal regressions."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-demo-canonical-ack-v4.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-demo-canonical-ack-v4.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-demo-canonical-ack-v4.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-demo-canonical-ack-v4.test.mjs",
+      "tests/portal-business-input.test.mjs",
+      "tests/portal-v2-causal-propagation.test.mjs"
+    ],
+    "source": [
+      "portal-v2/domain-state.js",
+      "tests/portal-v2-causal-propagation.test.mjs"
+    ],
+    "outcome": "Repair shared portal regressions without lowering live customer write durability controls"
+  }
+}

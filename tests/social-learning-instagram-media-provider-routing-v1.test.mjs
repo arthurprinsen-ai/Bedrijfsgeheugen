@@ -6,6 +6,11 @@ const cfg=JSON.parse(fs.readFileSync('config/social-channel-identity-contract.js
 const sql=fs.readFileSync('supabase/migrations/20260920073022_instagram_mira_visual_reel_only_v2.sql','utf8');
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
 const contentLoop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+const migrationPath=(name)=>{
+  const executable=`supabase/migrations/${name}`;
+  const history=`supabase/migration-history/repository-only/${name}`;
+  return fs.existsSync(executable)?executable:history;
+};
 
 test('legacy v2 migration is superseded by the v3 Reel-only contract',()=>{
   assert.match(sql,/not in \('image','reel'\)/);
@@ -60,10 +65,12 @@ test('Instagram media job table is registered as a quality surface',()=>{
  assert.ok(surfaces.some(s=>s.id==='table:public.powerhouse_instagram_media_jobs_v1'));
 });
 
-test('content loop invokes Instagram router as real TypeScript before publish',()=>{
- assert.match(contentLoop,/stepResults\.push\(await invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)\);/);
+test('content loop isolates Instagram routing and invokes it before publish when media is ready',()=>{
+ assert.match(contentLoop,/winner\.data\?\.selected === true && mediaJob\.data\?\.ok === true/);
+ assert.match(contentLoop,/invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)/);
+ assert.match(contentLoop,/reason:'INSTAGRAM_NOT_READY'/);
  const routerPos=contentLoop.indexOf("'powerhouse-instagram-media-router'");
- const publishPos=contentLoop.indexOf("'powerhouse-social-publisher', { runDate }");
+ const publishPos=contentLoop.indexOf("['instagram_company','powerhouse-social-publisher',{runDate,mode:'publish_only'");
  assert.ok(routerPos>=0);
  assert.ok(publishPos>routerPos);
 });
@@ -77,7 +84,7 @@ test('materialized provider asset cannot regress to waiting-provider-connection'
 
 
 test('media router uses the frozen winner job format before recommendation metadata', () => {
-  const winnerMigration = fs.readFileSync('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql', 'utf8');
+  const winnerMigration = fs.readFileSync(migrationPath('20260920110000_instagram_daily_winner_lineage_v1.sql'), 'utf8');
   assert.match(router, /inferType\(input\.postType,job\?\.post_type/);
   assert.match(router, /generation_evidence\?\.daily_winner_format/);
   assert.match(winnerMigration, /powerhouse_ensure_instagram_media_job_v1/);

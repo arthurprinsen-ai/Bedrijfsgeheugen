@@ -10,19 +10,24 @@ const repo = path.resolve(portal, '..');
 const html = fs.readFileSync(path.join(portal, 'index.html'), 'utf8');
 
 const requiredVisualMarkers = [
-  'Welkom terug, Arthur',
+  'Welkom terug',
+  'DAGELIJKSE ONDERNEMINGSSTURING',
+  'Wat verandert er in je bedrijf — en wat doe je ermee?',
+  'Signalen',
+  'Wat heeft prioriteit?',
+  'Uitkomsten & bewijs',
   'Bedrijfsgezondheid',
   'Kennisborging',
   'Processen',
   'Data & systemen',
   'AI-volwassenheid',
-  'Het brein van je bedrijf',
+  'Van bron tot resultaat: zo werkt jouw bedrijfssturing',
   'Bronnen',
-  'Datahub',
-  'AI Brain',
-  'Powerhouse',
-  'Acties & outcomes',
-  'AI Management Summary',
+  'Powerhouse Connect',
+  'Powerhouse Intelligence',
+  'Powerhouse Agents',
+  'Resultaat & leren',
+  'Voorbeeld: samenvatting bedrijfssturing',
   'Aanbevelingen',
   'Snelle links',
   'Roadmap & voortgang',
@@ -32,15 +37,23 @@ const requiredVisualMarkers = [
   'Alle portalpagina’s',
 ];
 
-test('portal-v2 keeps the approved dashboard composition intact', () => {
+test('portal-v2 retains existing functionality while leading with daily business steering', () => {
   for (const marker of requiredVisualMarkers) {
     assert.ok(html.includes(marker), `approved visual marker missing: ${marker}`);
   }
 });
 
-test('preview state is explicit and never presented as production evidence', () => {
-  assert.ok(html.includes('Preview'));
-  assert.ok(html.includes('geen productieclaim'));
+
+test('static illustrative dashboard content is hidden for customers before identity hydration',()=>{
+ const samples=[...html.matchAll(/data-portal-sample-only="true" hidden/g)];
+ assert.equal(samples.length,4);
+ assert.match(html,/<section class="kpis" data-portal-customer-metrics="true" hidden>/);
+ assert.match(html,/data-bg-portal-daily-steering="v1"/);
+});
+
+test('interactive example state is explicit and never masquerades as live evidence', () => {
+  assert.ok(html.includes('Interactief voorbeeld'));
+  assert.ok(html.includes('Klik door bron, inzicht, actie en resultaat.'));
   assert.equal(/class="livepill">\s*●\s*Live\b/.test(html), false);
 });
 

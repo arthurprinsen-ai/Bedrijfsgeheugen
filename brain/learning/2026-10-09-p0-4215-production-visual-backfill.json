@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-production-visual-manual-replay-20261009-v1",
+  "fingerprint": "powerhouse|portal-v2|production-visual-baseline-merged-pr-immutable-preview-alias-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing GitHub protected PR + Netlify release + Portal V2 Playwright production readback",
+  "root_causes": [
+    "Auxiliary PR preview may be canceled despite a successful immutable deploy; production DOM baseline acquisition waited for unavailable snapshot, while production comparison remained mandatory.",
+    "Netlify status can reference a numbered PR alias rather than the approved immutable deploy URL; verification must derive an immutable origin with both exact commit SHA and deploy ID."
+  ],
+  "prevention": [
+    "Require an explicitly approved, already-merged source PR whose merge commit is in current production history for manual replay.",
+    "Resolve numbered preview aliases by strict PR-number allowlist and verify source release's SHA and deploy id before independent immutable origin verification and Playwright capture.",
+    "Never skip real production comparison or relax pixel tolerance when an auxiliary artifact is absent."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-production-visual-backfill-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-production-visual-backfill-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-production-visual-backfill-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-production-visual-backfill-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_PRODUCTION_VISUAL_BASELINE_NO_APPROVED_HEAD",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_YET_LIVE_VERIFIED",
+  "closureRequired": [
+    "Protected exact-head Required + CodeQL success",
+    "Merged GitHub main source commit deployed immutable production",
+    "Successful manual Portal V2 DOM visual readback replaying approved PR #4240 exact-head baseline",
+    "Separate genuine customer/Brain/outbox/legal proof for parent P0 #4215"
+  ]
+}

@@ -93,14 +93,21 @@ test('delivery admission avoids N+1 file reads for ordinary open PRs', () => {
   assert.doesNotMatch(hygiene, /if \(validateDeliveryMetadata\(metadata, policy\)\.ok\) \{\s*const files = await gh/);
 });
 
-test('CodeQL keeps Python and Powerhouse JavaScript coverage without analyzing JavaScript twice on each PR', () => {
-  const generic = workflow('codeql.yml');
-  const powerhouse = workflow('powerhouse-codeql.yml');
-  assert.match(generic, /language:\s*\[python\]/);
-  assert.match(generic, /'\*\*\/\*\.py'/);
-  assert.doesNotMatch(generic, /javascript-typescript/);
-  assert.match(powerhouse, /languages:\s*javascript-typescript/);
+test('Powerhouse CodeQL is the single PR authority for Python and JavaScript', () => {
+  const powerhouse = workflow('codeql.yml');
+  assert.match(powerhouse, /^  pull_request:/m);
+  assert.match(powerhouse, /^  merge_group:/m);
+  assert.match(powerhouse, /'\*\*\/\*\.py'/);
+  assert.match(powerhouse, /language:\s*\[javascript-typescript, python\]/);
+  assert.match(powerhouse, /languages:\s*\$\{\{ matrix\.language \}\}/);
   assert.match(powerhouse, /queries:\s*security-extended/);
+});
+
+test('automation failure evidence uploads are producer-scoped', () => {
+  const automation = workflow('lane-automation.yml');
+  assert.match(automation, /id:\s*shared_memory/);
+  assert.match(automation, /if:\s*steps\.shared_memory\.outcome == 'failure'/);
+  assert.doesNotMatch(automation, /Upload Shared Agent Memory failure evidence\n\s+if:\s+failure\(\)/);
 });
 
 test('delivery lane keeps recovery priority and recovery diagnostics', () => {

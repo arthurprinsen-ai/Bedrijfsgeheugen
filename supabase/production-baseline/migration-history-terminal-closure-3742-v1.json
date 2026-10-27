@@ -1,0 +1,54 @@
+{
+  "contract": "SUPABASE-MIGRATION-HISTORY-TERMINAL-CLOSURE-v1",
+  "date": "2026-10-06",
+  "issue": 3742,
+  "base_main_sha": "2729dfd6dbf07426b1451e4469ea29cf295e692d",
+  "canonical_recovery": {
+    "pr": 3766,
+    "candidate_head": "04b82996ad16c68e45173b48d4b9ba2de270a03d",
+    "merge_sha": "ccdf134ca4de73e547e54c9de00298d771f87be5",
+    "hosted_supabase_preview": "SUCCESS"
+  },
+  "supported_repair": {
+    "workflow_run": 37426469433,
+    "conclusion": "SUCCESS",
+    "post_repair_drift": 0,
+    "production_lock_blob_sha": "9ad64780db3763477d4b64d7b5023e2d6c0e08f1",
+    "production_lock_captured_at": "2026-10-06T06:57:06.151Z",
+    "production_ledger_count": 568,
+    "repaired_versions": [
+      {
+        "version": "20260920101150",
+        "name": "p0_proof_replay_baseline_v1"
+      },
+      {
+        "version": "20260920102450",
+        "name": "instagram_daily_winner_table_replay_baseline_v1"
+      },
+      {
+        "version": "20260925080500",
+        "name": "instagram_media_reserve_replay_baseline_v1"
+      },
+      {
+        "version": "20261005133951",
+        "name": "outbound_message_quality_ready_replay_baseline_v1"
+      }
+    ]
+  },
+  "terminalizer_control_plane": {
+    "routing_fix_pr": 3821,
+    "routing_fix_merge_sha": "3804307006a0e716413b319cac6a340beceac92f",
+    "workflow_restore_pr": 3822,
+    "workflow_restore_merge_sha": "2729dfd6dbf07426b1451e4469ea29cf295e692d",
+    "workflow_restore_terminalizer_run": 37430502441,
+    "workflow_restore_terminalizer_conclusion": "SUCCESS"
+  },
+  "acceptance": {
+    "provider_tracking_repair_proven": true,
+    "production_ledger_readback_proven": true,
+    "fresh_hosted_preview_proven": true,
+    "production_schema_mutation_in_this_candidate": false,
+    "exact_head_delivery": "REQUIRED_ON_THIS_CANDIDATE",
+    "post_merge_terminalizer": "REQUIRED_ON_THIS_CANDIDATE"
+  }
+}

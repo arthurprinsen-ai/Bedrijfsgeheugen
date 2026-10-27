@@ -23,7 +23,9 @@ test('historical replay preserves evidence-first automation and human outbound g
   assert.match(auto,/powerhouse_predictive_signals/);
   assert.match(auto,/vendor_used',false/);
   assert.match(auto,/external_outreach_executed',false/);
-  assert.match(skill,/Ongevraagde externe outreach blijft human-authorized/i);
+  // The successor autonomous-outreach skill replaced the historical human-only limit with gated, separately authorized execution.
+  assert.match(skill,/autonome externe outreach was in deze historische production proof nog niet actief/i);
+  assert.match(skill,/externe outreach alleen via de afzonderlijk geautoriseerde consent\/relationship executor/i);
 });
 
 

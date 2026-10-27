@@ -12,8 +12,8 @@ async function postEdge(slug,payload){
   }catch(error){return {ok:false,reason:error?.name==='TimeoutError'?'timeout':'network-error'};}
 }
 
-export async function captureCommercialLead({email,idempotencyKey,attributionRootKey,source='digitaliseringsmonitor',canonical='https://www.bedrijfsgeheugen.nl/monitor',occurredAt=new Date().toISOString()}){
-  const leadResult=await postEdge('commercial-lead-ingest',{action:'lead',lead:{email,idempotency_key:idempotencyKey,source,canonical,attribution_root_key:attributionRootKey,occurred_at:occurredAt}});
+export async function captureCommercialLead({email,idempotencyKey,attributionRootKey,source='digitaliseringsmonitor',canonical='https://www.bedrijfsgeheugen.nl/monitor',occurredAt=new Date().toISOString(),metadata={}}){
+  const leadResult=await postEdge('commercial-lead-ingest',{action:'lead',lead:{email,idempotency_key:idempotencyKey,source,canonical,attribution_root_key:attributionRootKey,occurred_at:occurredAt,metadata}});
   if(!leadResult.ok||!leadResult.body?.lead?.lead_id)return {captured:false,reason:leadResult.reason,status:leadResult.status};
   const leadId=String(leadResult.body.lead.lead_id);
   const outcome=normalizeGrowthOutcome({outcome_id:`qualified-lead:${leadId}`,stage:'qualified_lead',attribution_root_key:attributionRootKey||leadId,canonical,intent_owner:canonical,occurred_at:occurredAt,revenue_eur:0,source});

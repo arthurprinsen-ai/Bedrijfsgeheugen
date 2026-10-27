@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "mira|frozen-face-generation-prompt-contradicts-real-human-temporal-gate|20261025-v1",
+  "obligation_id": "mira|identity-and-natural-motion-compatible-producer|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_cause": "Earlier OpenArt prompts locked Mira facial landmarks, all face pixels, blinking and human movement; the production media gate simultaneously required visible real uninterrupted human motion >=0.900. The generator was instructed to produce an almost static photo with background motion, so no prompt could reliably satisfy both constraints.",
+  "evidence": {
+    "OpenArt_histories_observed": [
+      "0yruwRj9OH8A0azuOjfo",
+      "6Ld1Ld3zE18R1dU8xFAU",
+      "S2WRHcZAKIV5Cxn2tZLE"
+    ],
+    "prior_actual_temporal_failure": {
+      "history_id": "a6sdR46HDe58uRlardNl",
+      "confidence": 0.89,
+      "required": 0.9
+    },
+    "prior_actual_face_failure": {
+      "history_id": "7lGMacfGJcGL3WGCF4XN",
+      "middle_frame_face": 0.86,
+      "required": 0.94
+    },
+    "stable_original_master_reference_id": "Yjqu4D7v76HABNPmQPj1",
+    "frozen_source_recommendation_id": "0a56f150-2954-4355-a3d0-fc65396f8152",
+    "publication_truth": "BLOCKED_WITHOUT_META_POST_ID",
+    "independent_real_agent_preflight_request_id": 12671
+  },
+  "prevention_rule": "Original source-locked Mira producer must NEVER request literal frozen facial pixels, no blink, no breathing or background-only motion. A deterministic final-prompt validator rejects contradictory prompts before provider spend and creates a source-locked compatible alternative specifying unchanged recognizable original Mira face with restrained physically plausible human blink/breathing/hand action and one continuous take. Original master, daily winner, native MP4, historical rejection dedupe, exact face>=0.940 and temporal>=0.900, one-shot Meta readback remain unchanged.",
+  "fix": "Implement pure checkMiraProducerPromptCompatibility and buildMiraSourceLockedMotionBrief in existing preventive agent function and expose compatible brief in existing authenticated preflight; wire original Instagram skill and exact CI.",
+  "outcome": "Candidate design/code only before protected GitHub merge and Supabase production verification; a prompt strategy improvement alone is not a proven new Reel.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 3,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

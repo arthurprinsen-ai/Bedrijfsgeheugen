@@ -1,0 +1,1 @@
+Obligation: portal-visual-assurance-terminal-structure-20261003-v1\n\nGitHub, Supabase and Notion authority identifiers are now one machine-readable visual-assurance contract with fail-closed CI regression.\n

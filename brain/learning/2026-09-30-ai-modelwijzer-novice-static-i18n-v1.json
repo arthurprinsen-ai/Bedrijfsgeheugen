@@ -1,0 +1,34 @@
+{
+  "fingerprint":"ai-modelwijzer-novice-static-i18n-v1",
+  "date":"2026-09-30",
+  "type":"AI_MODELWIJZER_I18N_RECOVERY",
+  "failure_class":"NOVICE_ADVISOR_COPY_MISSING_FROM_FAIL_CLOSED_STATIC_EN_CACHE",
+  "root_cause":[
+    "The novice outcome-first Modelwijzer added 99 public Dutch strings after the previous Modelwijzer static-English cache recovery.",
+    "The feature content and governance checks could pass while deterministic production localization still failed because exact source-string coverage was incomplete."
+  ],
+  "evidence":{
+    "current_main_at_detection":"f5c601607e75eb32e916ba02d6cd4f8631585ad7",
+    "missing_string_count":99,
+    "failure":"STATIC_I18N_CACHE_INCOMPLETE",
+    "public_surface":"/ai-modelwijzer",
+    "cache":"config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-v2.json"
+  },
+  "prevention":[
+    "Every visible novice Modelwijzer label, help text, option, CTA and accessibility string receives an exact deterministic English cache entry in the same lineage.",
+    "Final post-shell production build parity is required with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Do not weaken the fail-closed i18n gate to ship Modelwijzer features.",
+    "A later Modelwijzer copy change reopens the same i18n obligation before production promotion."
+  ],
+  "evaluation":{
+    "historical_replay":["tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs"],
+    "canary":["tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs"]
+  },
+  "compiler":{
+    "failure_class":"NOVICE_ADVISOR_COPY_MISSING_FROM_FAIL_CLOSED_STATIC_EN_CACHE",
+    "scope":"WEBSITE",
+    "machine_enforceable":true,
+    "security_sensitive":false
+  },
+  "status":"ACTIVE_PREVENTION"
+}

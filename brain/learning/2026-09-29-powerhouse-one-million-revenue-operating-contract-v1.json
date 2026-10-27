@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|revenue|1000000|365d|commercial-execution|v1",
+  "date": "2026-09-29",
+  "root_cause": "Powerhouse already had strong channel executors and revenue learning, but the canonical commercial scheduler could remain learning-centric and the €1M objective was not a single machine-readable pacing contract inherited by chats, agents, skills and the system map.",
+  "prevention": "Keep one canonical commercial scheduler, make it execute the complete trigger-based acquisition cycle, bind all commercial skills/chats/agents to the same €1M/365d operating contract, and block any second scheduler or channel-specific north star.",
+  "compiler": {
+    "failure_class": "COMMERCIAL_EXECUTION_FRAGMENTATION",
+    "scope": "POWERHOUSE_COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "contract": {
+    "target_realized_revenue_eur": 1000000,
+    "horizon_days": 365,
+    "target_date": "2027-09-29",
+    "scheduler_owner": "powerhouse-commercial-learning-v1",
+    "full_cycle": "public.powerhouse_trigger_based_mkb_acquisition_cycle_v1",
+    "autonomous_allowed": [
+      "warm_or_consented_email",
+      "existing_relationship_followup",
+      "open_opportunity_followup",
+      "contextual_linkedin_comment",
+      "linkedin_company_publication",
+      "instagram_mira_publication",
+      "seo_blog_cro",
+      "warm_referral",
+      "partner_workshop_followup"
+    ],
+    "prohibited": [
+      "generic_cold_bulk_autosend",
+      "duplicate_contact",
+      "fake_intent",
+      "fake_roi",
+      "fake_urgency",
+      "consent_or_suppression_bypass"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-million-revenue-operating-contract-v1.test.mjs",
+      "tests/brain-powerhouse-growth-swarm-v1.test.mjs",
+      "tests/brain-powerhouse-autonomous-outreach-v1.test.mjs",
+      "tests/brain-powerhouse-linkedin-sales-machine-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "config": "config/powerhouse-one-million-revenue-operating-contract-v1.json",
+    "scheduler_migration": "supabase/migrations/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "agents": "AGENTS.md",
+    "chats": "config/brain-chat-learning-contract.json",
+    "skills": [
+      ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+      ".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md",
+      ".agents/skills/powerhouse-persuasion-revenue/SKILL.md",
+      ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+      ".agents/skills/seo-revenue-growth/SKILL.md"
+    ]
+  }
+}

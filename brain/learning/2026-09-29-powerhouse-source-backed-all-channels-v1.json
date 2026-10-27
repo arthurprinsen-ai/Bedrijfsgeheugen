@@ -1,0 +1,135 @@
+{
+  "fingerprint": "powerhouse-source-backed-all-channels-v1",
+  "date": "2026-09-29",
+  "learning": "The source-backed selection principle is a Powerhouse-wide outbound rule, not an Instagram-only rule.",
+  "scope": [
+    "instagram_company",
+    "linkedin_personal",
+    "linkedin_company",
+    "blog",
+    "email",
+    "linkedin_dm"
+  ],
+  "guardrail": "Shared evidence spine, channel-native transformation. Public evidence may select a personal topic but can never fabricate Arthur first-person experience.",
+  "canonical_loop": [
+    "source",
+    "evidence",
+    "dedupe",
+    "problem_or_trigger",
+    "channel_fit",
+    "candidate",
+    "identity_and_truth_gate",
+    "publish_or_send",
+    "provider_readback",
+    "outcome",
+    "learning",
+    "next_selection"
+  ],
+  "status": "RUNTIME_IMPLEMENTED_SOURCE_SELECTION_PROVEN_AND_CONTINUOUSLY_ASSURED",
+  "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "linkedin-composio-publisher",
+    "personal-linkedin-life-only",
+    "powerhouse-growth-swarm"
+  ],
+  "root_cause": "The evidence-first selection and learning principle existed in separate channel-specific implementations. Instagram/Mira, company content, personal content, email and LinkedIn DM did not share one enforced source-to-outcome lineage, so static fallbacks or untraceable outreach could still be selected.",
+  "prevention": [
+    "Materialize source-backed candidates before channel selection and rank them ahead of static calendar or evergreen fallbacks.",
+    "Keep LinkedIn personal first-person claims bound to verified Arthur truth; external complaints may only supply theme evidence.",
+    "Require traceable account/person evidence before email or LinkedIn DM can remain send-eligible.",
+    "Preserve source/action/recommendation identifiers through provider readback and outcome learning.",
+    "Refresh the universal outbound lineage hourly so engagement, replies, leads, orders and revenue feed the next selection.",
+    "Require semantic compatibility before fusing problem evidence with SEO/search evidence."
+  ],
+  "evidence": {
+    "runtime_proof": {
+      "outbound_lineages_refreshed": 61,
+      "instagram_signals_stored": 24,
+      "instagram_signals_eligible": 12,
+      "linkedin_dm_source_gate_pass_suggested": 100,
+      "linkedin_dm_source_gate_fail_skipped": 4,
+      "email_source_gate_pass_suggested": 1
+    },
+    "production_candidates": {
+      "linkedin_personal": "verified Arthur source + public theme inspiration only",
+      "linkedin_company": "source_backed_market_problem",
+      "blog": "source_backed_problem_search_intent"
+    },
+    "regression_test": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
+    "runtime_surfaces": [
+      "powerhouse-content-orchestrator",
+      "powerhouse_outbound_source_lineage_v1",
+      "powerhouse_sales_actions_source_gate_v1"
+    ],
+    "continuous_assurance": {
+      "loop_key": "source-backed-outbound",
+      "status": "GREEN",
+      "scheduler_active": true,
+      "fresh_stage_count": 8,
+      "required_stage_count": 8,
+      "missing_stages": [],
+      "checked_at": "2026-09-29T19:25:33.362040Z"
+    }
+  },
+  "production_evidence": {
+    "instagram": {
+      "signals_found": 24,
+      "eligible": 12,
+      "next_day_source_backed_winner": true
+    },
+    "linkedin_company": {
+      "next_day_source_backed_recommendation_id": "f206dfeb-1c39-4abb-9911-a3a6b56cfe77",
+      "source_backed_preference_in_orchestrator": true
+    },
+    "blog": {
+      "next_day_source_backed_recommendation_id": "181a725b-2ff5-415a-8970-9535a27adf5b",
+      "source_backed_preference_in_orchestrator": true
+    },
+    "linkedin_personal": {
+      "public_theme_enrichment_requires_verified_personal_truth": true,
+      "invented_first_person_claims_forbidden": true
+    },
+    "email": {
+      "active_rows": 91,
+      "source_context_gate_pass": 91,
+      "source_context_gate_fail": 0
+    },
+    "linkedin_dm": {
+      "active_rows": 243,
+      "source_context_gate_pass": 243,
+      "source_context_gate_fail": 0
+    },
+    "lineage": {
+      "refreshed_rows": 61,
+      "hourly_reconciliation": true
+    },
+    "orchestrator": {
+      "deployed_version": 29,
+      "source_candidate_materialization_before_selection": true
+    }
+  },
+  "semantic_coherence": {
+    "problem": "The first cross-channel blog materializer could combine the strongest external problem signal with the strongest global SEO keyword even when they described different topics.",
+    "observed_bad_pair": "bedrijfsoverdracht source + afas pocket app koppelen keyword",
+    "fix": "SEO enrichment now requires a shared meaningful problem token (length >= 5) with the selected external problem before it may be attached to the blog candidate.",
+    "production_readback": {
+      "source_title": "Onderzoek: deel ondernemers nog niet bezig met opvolging, kabinet houdt BOR intact",
+      "corrected_keyword": "bedrijfsoverdracht familie",
+      "semantic_search_match": true
+    },
+    "prevention": "Never optimize channel candidates by independently maximizing evidence dimensions and then combining them; require semantic compatibility before cross-source fusion."
+  }
+}

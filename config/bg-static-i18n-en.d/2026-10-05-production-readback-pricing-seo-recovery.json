@@ -1,0 +1,14 @@
+{
+  "1. Standaardconnector": "1. Standard connector",
+  "Begin hier: snelste route en het minste beheer.": "Start here: the fastest route with the least maintenance.",
+  "2. Integratieplatform": "2. Integration platform",
+  "Gebruik dit als standaard niet past en je eigen regels nodig hebt.": "Use this when a standard connector does not fit and you need your own rules.",
+  "3. Maatwerk API": "3. Custom API",
+  "Kies dit pas als de lichtere routes aantoonbaar tekortschieten.": "Choose this only when the lighter options demonstrably fall short.",
+  "Kies de lichtste route die het proces betrouwbaar oplost; complexiteit en beheer nemen van links naar rechts toe.": "Choose the lightest option that solves the process reliably; complexity and maintenance increase from left to right.",
+  ". Voor de bredere AFAS-route staat ook": ". For the broader AFAS route, also see",
+  "wat een AFAS-koppeling praktisch inhoudt": "what an AFAS integration involves in practice",
+  "in dit cluster. Kies je voor maatwerk via de API, check dan eerst": "in this cluster. If you choose a custom API integration, first check",
+  "Beantwoord 3 vragen en krijg direct een logische combinatie. Wil je het advies op een aparte pagina bewaren of delen, gebruik dan het": "Answer 3 questions and get a sensible combination immediately. If you want to save or share the recommendation on a separate page, use the",
+  "persoonlijke pakketadvies": "personal package recommendation"
+}

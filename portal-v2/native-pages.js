@@ -119,6 +119,40 @@ function specialistContent(pageId,model,navigation){
     if(!primaryKnown)blocks.splice(1,0,{type:'empty',title:'Bedrijfsfase nog niet bewezen',copy:'Powerhouse gebruikt geen fase als feit zonder expliciete invoer of voldoende klantdata. Gebeurtenissen, doelen, gezondheid en modellen kunnen wel afzonderlijk zichtbaar zijn zodra daar bewijs voor is.'});
     return {primaryAction,blocks,derived:primaryKnown||overlays.length>0,lifecycle:projection,businessContext:business};
   }
+  if(pageId==='learning-writeback'){
+    // Only the authenticated per-tenant Brain operating-loop projection is a source.
+    // Do not synthesize wins from forecasts, local storage or missing runtime evidence.
+    const learning=model?.portal?.runtime?.learning||{};
+    const items=Array.isArray(learning.items)?learning.items:[];
+    // Transport health/status alone is NOT evidence of an accepted runtime fix.
+    const isProven=item=>item?.healthy===true&&item?.status==='ok'
+      &&item?.maturity==='PROVEN'&&item?.productionVerified===true
+      &&typeof item?.proofRef==='string'
+      &&/^https:\/\/(?:github\.com|app\.netlify\.com|supabase\.com)\//.test(item.proofRef);
+    const proven=items.filter(isProven);
+    const detailRows=items.slice(0,12).map(item=>[
+      String(item?.naam||'Leerrecord zonder titel'),
+      isProven(item)?'Bewezen in Brain':'Nog te verifiëren in Brain'
+    ]);
+    const blocks=[
+      {type:'metrics',title:'Relevantie & verbeteringen',items:[
+        ['Leerrecords',items.length?String(items.length):'—'],
+        ['Bewezen leerrecords',items.length?String(proven.length):'—'],
+        ['Nog te verifiëren',items.length?String(items.length-proven.length):'—'],
+        ['Laatste bronupdate',String(learning.updatedAt||'—')]
+      ],derived:items.length>0},
+      {type:'worklist',title:'Zo verbetert Powerhouse aantoonbaar',items:[
+        ['Incident vastleggen','Eén fingerprint, oorzaak, eigenaar en bewijs in het bestaande Brain-register.'],
+        ['Herstel en preventie','Gerichte oplossing, regressietest en veilige herhaling binnen dezelfde verplichting.'],
+        ['Dagelijks slimmer','Vergelijk herstelduur, herhaling en kwaliteit vóór een verbetering wordt vrijgegeven.'],
+        ['Geen schijngroen','Pas bewezen na exacte productie- of providercontrole en terugschrijving naar Brain.']
+      ],derived:false}
+    ];
+    if(detailRows.length)blocks.push({type:'worklist',title:'Lessen uit de eigen omgeving',items:detailRows,derived:true});
+    else blocks.push({type:'empty',title:'Nog geen bewezen relevante leerrecords',copy:'Voor dit bedrijf is nog geen verifieerbaar Brain-leerrecord geladen. Er worden geen incidenten, verbeteringen of successen verzonnen.'});
+    blocks.push({type:'actions',title:'Bekijk bewijs en vervolgstappen',items:actions});
+    return {primaryAction,blocks,derived:items.length>0};
+  }
   if(pageId==='trust-center'){
     const runtime=model?.portal?.runtime||{};
     const sources=Array.isArray(runtime?.sources?.items)?runtime.sources.items:[];

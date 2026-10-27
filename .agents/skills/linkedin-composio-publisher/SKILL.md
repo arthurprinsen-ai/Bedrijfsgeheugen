@@ -354,3 +354,89 @@ When the user confirms deletion:
 ### Terminal standard
 
 A company run is terminal only when one correct Bedrijfsgeheugen business post exists with a durable provider URN, or LinkedIn requires explicit human OAuth that cannot be performed autonomously. Internal alias drift, stale connection pointers, content-selection mistakes and readback 403s are self-healed inside the same lineage.
+
+
+## Source-backed all-channel rule — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+LinkedIn company publication must prefer current evidence-backed MKB/CEO/MT problems over static calendar seeds. Preserve source URL/hash/problem/trigger lineage through recommendation, final copy, provider post ID and learning. LinkedIn personal remains separately identity-gated: external public evidence may select a theme, but cannot create first-person Arthur claims.
+
+## Story-family overlap duplicate prevention v6 (2026-09-30)
+
+Fingerprint: `powerhouse-story-family-overlap-dedupe-v6`.
+
+Incident regression: the personal LinkedIn posts about the broken electric sliding door + warm airco + manual door/windows-open routine were published twice with materially different wording. The existing source/story fingerprint and Jaccard checks did not recognize the second rewrite as the same human story.
+
+Permanent rules:
+- exact raw hash, normalized hash, shingle similarity, canonical story fingerprint, keyword Jaccard and **keyword overlap coefficient** are cumulative gates;
+- when at least 10 meaningful keywords overlap and the overlap coefficient against the smaller story is >= 0.30, the candidate is `STORY_FAMILY_DUPLICATE`;
+- duplicate protection is database-enforced by `powerhouse_reserve_unique_publication_v1` plus the fail-closed trigger `powerhouse_publication_story_family_guard_v2`;
+- every current/future chat, agent, scheduler, recovery path and connector must pass this same database authority before any provider write;
+- a duplicate candidate is discarded and replaced by a genuinely different verified source/event/topic; rewriting the same anecdote is forbidden;
+- the consumed regression family `auto + elektrische schuifdeur + airco + warme lucht + handmatig openen/ramen open + nieuwe routine` may never be reused as a new post.
+
+Regression authority: `tests/brain-social-duplicate-prevention-governance-v1.test.mjs`.
+Source-controlled database authority: `supabase/migrations/20260930071500_powerhouse_story_family_overlap_guard_v6.sql`.
+Brain learning: `brain/learning/2026-09-30-social-story-family-dedupe-v6.json`.
+
+## Lead-magnet language routing and comment-intent capture (2026-09-30)
+
+Fingerprint: `powerhouse-linkedin-lead-magnet-language-routing-v1`.
+
+For LinkedIn lead-magnet campaigns:
+- use one language per post; do not stack Dutch + English copies in the same post;
+- keep the downloadable value asset available in both NL and EN when internationally relevant;
+- a translated post is not a new story and may not bypass semantic duplicate prevention;
+- route the delivered asset by known commenter/profile/conversation language, otherwise ask one minimal language choice in DM;
+- use short intent tokens tied to the asset, such as `100`, `50`, `ROI`, `2027`, `STACK`, `SAFE`;
+- every comment-intent event enters the canonical relationship/revenue loop and records post, keyword, language, delivery, reply, meeting/proposal/order and realized revenue;
+- LinkedIn publication remains Composio-only. Buffer and Make remain forbidden publication fallbacks.
+
+
+## 2026-10-22 — verified distinct-source founder reserve
+
+Fingerprint `powerhouse|personal-verified-distinct-source-reserve|20261022-v1`.
+
+When the canonical personal founder post is blocked as a global story-family
+duplicate with NO consumed or ambiguous provider capability, the existing
+source-backed orchestrator must seek an independently recorded and distinct
+daily source family. The pure helper `buildVerifiedFounderReserve` runs inside the existing unscoped content orchestrator and writes at most three genuinely source-backed alternatives in the SAME canonical recommendation table. No new Postgres RPC, preview branch, cron or sender is created. Each alternative requires a recorded source event ID or allowed external URL from the verified founder evidence. Context never becomes a claimed personal experience. No provider send, email consent or media claim is granted by materialization.
+
+
+## 2026-10-22 — Hold-state pre-provider duplicate bootstrap
+
+Fingerprint: `powerhouse|held-personal-duplicate-rebootstrap|20261022-v1`.
+
+After global story-family duplicate rejection, an otherwise retryable personal
+claim can be normalized to hold/blocked while obligation remains the authoritative
+record of the rejection. The EXISTING content-loop must inspect BOTH surfaces.
+Only an externally unconsumed claim with no provider mutation may reopen. Use
+the same existing content orchestrator under its original lease, verified
+source reserve, rejected recommendation IDs, bounded daily attempts, and all
+independent identity/copy/global uniqueness/provider readback gates.
+This is not a new scheduler or consent to publish an unverified story.
+
+
+## 2026-10-22 — personal editorial strict JSON truncated response
+
+Fingerprint `powerhouse|personal-editorial-truncation-bounded-retry|20261022-v1`. A verified personal founder recommendation is not
+a publishable artifact until BOTH independent editorial and final-copy
+truth gates pass. If the editorial rewrite itself returns a demonstrably
+incomplete strict JSON because the model reached `max_output_tokens`,
+perform only ONE bounded larger-budget draft retry (2400 → 4800).
+Do NOT retry a rejected editorial result, OAuth denial, source failure or
+an ambiguous social provider write. Preserve the original publisher,
+one channel/day publication authority, global semantic dedupe, and external
+provider receipt. The daily executor remains active with original leases.
+
+
+## 2026-10-22 — personal unconsumed publish lease recovery
+
+Fingerprint `powerhouse|linkedin-personal-expired-authority-recover|20261022-v1`. The EXISTING protected personal LinkedIn
+publisher now shares the company's exact expired authority recovery: only
+same day; original publish/blocked claim; explicit no provider side effect;
+all leases unconsumed and expired/revoked; zero uniqueness reservations.
+Revoke by exact lease CAS then resume the ORIGINAL content_ready record by
+exact updated_at CAS. Repeat source, editorial, identity, OAuth, semantic
+uniqueness and external provider receipt gates; never manufacture a post.
+Never add second sender, job, or OAuth fallback.

@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.8",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|same-repo-reviewable-writeback|v1.8",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.10",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|async-nonblocking-workflow-continuation|terminal-borging-closure|same-repo-reviewable-writeback|prewrite-obligation-external-mutation-recovery|bounded-workflow-observation|v1.10",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -42,7 +42,31 @@
     "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE",
     "DOCS_CLOSURE_ALIAS_CANONICALIZES_BEFORE_ADMISSION",
     "SETTLED_SUCCESSFUL_DOCUMENT_REQUEST_ABORT_IS_NOT_AN_ASSET_FAILURE",
-    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION"
+    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION",
+    "GREEN_REQUIRES_FRESH_REQUIRED_EVIDENCE_NOT_WIRING_ONLY",
+    "PROVIDER_NEUTRAL_CAPABILITY_MUST_NOT_DEPEND_ON_ONE_OPTIONAL_VENDOR",
+    "RETIRED_TOOLING_IS_TELEMETRY_ONLY_UNLESS_REAUTHORIZED",
+    "NO_DUPLICATE_SIDE_EFFECT_TO_REPAIR_READBACK",
+    "HEALTH_MUST_RECOMPUTE_AFTER_REPAIR",
+    "LIVE_PROMOTION_REQUIRES_GOVERNANCE_WRITEBACK",
+    "READY_DEPLOY_IS_NOT_ALL_CAPABILITIES_GREEN",
+    "CAPABILITY_READBACK_REMAINS_INDEPENDENT",
+    "REMOTE_WORKFLOW_WAIT_IS_NEVER_AGENT_IDLE",
+    "PENDING_EXTERNAL_JOB_REQUIRES_CHECKPOINT_AND_CONTINUATION",
+    "NEWER_MAIN_SUPERSEDES_STALE_REVERSIBLE_PRODUCTION_WAIT",
+    "BOUNDED_PROVIDER_POLLING_ONLY",
+    "PREDICT_BEFORE_AGENT_WRITE",
+    "ONE_OBLIGATION_ONE_ACTIVE_WRITER",
+    "NONCONFLICTING_AGENTS_MAY_BUILD_IN_PARALLEL",
+    "CHECKPOINT_BEFORE_REMOTE_WAIT",
+    "LATEST_MAIN_SUPERSEDES_STALE_REVERSIBLE_PRODUCTION_WAIT",
+    "PREWRITE_OBLIGATION_BEFORE_EXTERNAL_MUTATION",
+    "EXTERNAL_WRITE_GUARD_IS_RECOVERY_NOT_LOST_WORK",
+    "SAME_IDEMPOTENCY_LINEAGE_RESUMES_AFTER_BLOCKED_WRITE",
+    "WORKFLOW_OBSERVATION_SINGLE_SNAPSHOT",
+    "WORKFLOW_OBSERVATION_ONE_FAILURE_DRILLDOWN",
+    "NO_UNCHANGED_WORKFLOW_REPOLL",
+    "ACTIVE_WORKFLOW_RELEASES_AGENT"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -55,7 +79,8 @@
     "skip rediscovery and redesign of already verified state unless fresh evidence invalidates it",
     "read current GitHub Actions queued and in-progress counts before material repository mutation or dispatch",
     "forecast projected workflow fan-out for the planned write, retry, reconcile or dispatch",
-    "when pressure is high, batch repository writes and reuse existing exact-head runs instead of creating new work"
+    "when pressure is high, batch repository writes and reuse existing exact-head runs instead of creating new work",
+    "When observing CI/workflows, take one exact-head top-level snapshot and apply workflow_observation_rule before any deeper read; unchanged queued/in-progress state becomes a checkpoint, not a polling loop."
   ],
   "loop_node_contract": {
     "required": true,
@@ -220,7 +245,12 @@
     "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json",
     "brain/learning/2026-09-25-candidate-type-closure-canonicalization-v1.json",
     "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json",
-    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json"
+    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json",
+    "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json",
+    "brain/learning/2026-09-29-live-assurance-writeback-v1.json",
+    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json",
+    "brain/learning/2026-09-30-async-workflow-continuation-v1.json",
+    "brain/learning/2026-10-06-bounded-workflow-observation-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -493,5 +523,175 @@
     ],
     "runtime_affecting_descendant_behavior": "FAIL_CLOSED",
     "non_descendant_behavior": "FAIL_CLOSED"
+  },
+  "green_assurance_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|green-assurance|truthful-closed-loop|v1",
+    "skill": ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    "learning": "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json",
+    "sequence": [
+      "read_runtime_health",
+      "read_terminal_control_plane",
+      "read_required_source_coverage",
+      "read_open_obligations",
+      "repair_root_causes_without_fabricating_evidence",
+      "reconcile_already_proven_side_effects_without_duplicates",
+      "recompute_health",
+      "write_learning_skill_agent_docs_ledger_system_map",
+      "read_after_write"
+    ],
+    "terminal_rule": "GREEN_OR_LIVE_BEWEZEN_ONLY_FROM_CURRENT_REQUIRED_EVIDENCE"
+  },
+  "live_assurance_writeback_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|live-assurance-writeback|2026-09-29-v1",
+    "exact_deploy_is_not_blanket_functional_proof": true,
+    "fresh_readback_required_for_current_green": true,
+    "governance_targets": [
+      "Brain learning",
+      "skills",
+      "AGENTS/chat-contract",
+      "continuity policy",
+      "development ledger",
+      "human docs",
+      "System Map"
+    ],
+    "read_after_write_required": true
+  },
+  "live_promotion_governance_closure": {
+    "fingerprint": "powerhouse|live-promotion|governance-closure|2026-09-29-v1",
+    "required": true,
+    "sequence": [
+      "protected_merge_main",
+      "exact_production_or_provider_side_effect",
+      "capability_specific_readback",
+      "outcome_truth",
+      "brain_learning",
+      "skill_projection",
+      "agent_chat_projection",
+      "ledger_and_human_docs",
+      "system_map_writeback",
+      "read_after_write"
+    ],
+    "deploy_ready_is_only_deployment_evidence": true,
+    "functional_subchains_independently_gated": true,
+    "inherited_by_all_current_and_future_agents_chats": true,
+    "user_repeat_request_required": false,
+    "learning": "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json"
+  },
+  "live_vs_functional_truth": {
+    "fingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+    "deployment_ready_means": "exact current production provider-side effect exists and is read back",
+    "functional_green_requires": "capability-specific current readback or outcome evidence",
+    "forbidden_inference": "deployment_ready_implies_functional_green",
+    "independently_gated": [
+      "pricing",
+      "public_i18n",
+      "connectors",
+      "content_publication",
+      "social_publication",
+      "business_outcome"
+    ],
+    "automatic_writeback": [
+      "brain_learning",
+      "skills",
+      "agent_chat_contract",
+      "ledger_docs",
+      "system_map"
+    ],
+    "user_reprompt_required": false
+  },
+  "async_workflow_continuation_rule": {
+    "required": true,
+    "fingerprint": "delivery|async-continuation|nonblocking-workflow-wait|v1",
+    "waiting_states": [
+      "queued",
+      "pending",
+      "waiting",
+      "requested",
+      "in_progress"
+    ],
+    "principle": "A remote workflow wait is execution state, never a reason for a chat or agent to idle, stop, or hand ownership back to the user.",
+    "required_behavior": [
+      "persist exact obligation, candidate head, main epoch, open gates and next safe action before remote waiting",
+      "continue independent root-cause, regression, documentation, writeback or recovery preparation while a remote gate runs",
+      "reuse one active required workflow per exact head instead of redispatching duplicates",
+      "supersede stale reversible production snapshot/readback work when a newer main is authoritative",
+      "bound all provider and workflow polling with hard timeouts",
+      "resume automatically from the canonical checkpoint after interruption"
+    ],
+    "forbidden_behavior": [
+      "busy-wait in chat for workflow completion",
+      "end a user response because CI is pending",
+      "blindly redispatch the same required workflow",
+      "hold newer production work behind stale reversible snapshots",
+      "unbounded polling"
+    ],
+    "terminal_rule": "Only verified terminal outcome or BLOCKED_HARD_BOUNDARY may end ownership."
+  },
+  "predictive_multi_agent_scheduler": {
+    "required": true,
+    "fingerprint": "powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1",
+    "authority": "tools/delivery/predictive-controller.mjs#planConcurrentAgentWork",
+    "decisions": [
+      "BUILD_PARALLEL",
+      "PARK_BEHIND_CANONICAL_WRITER",
+      "SERIALIZE_TERMINAL_LANDING",
+      "BATCH_BEFORE_MUTATION",
+      "PARALLEL_BUDGET_FULL"
+    ],
+    "checkpoint_contract": "POWERHOUSE-ASYNC-CHECKPOINT-v1",
+    "terminal_writer_rule": "Exactly one active writer per obligation may mutate the canonical candidate. Other agents checkpoint and continue non-conflicting work.",
+    "parallel_rule": "Different obligations may build concurrently when changed paths, conflict contracts and mutable resources do not overlap and queue pressure stays within forecast limits.",
+    "landing_rule": "Only the short overlapping terminal landing boundary is serialized.",
+    "remote_wait_rule": "queued, pending, waiting, requested and in_progress are asynchronous states; persist checkpoint, continue independent work, and resume automatically.",
+    "production_supersession_rule": "A newer authoritative main supersedes stale reversible production snapshot/readback work; never supersede irreversible side effects or required security/quality evidence."
+  },
+  "prewrite_obligation_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|prewrite-obligation|external-mutation-recovery|v1",
+    "applies_to": [
+      "github_write",
+      "provider_write",
+      "deploy_or_promotion",
+      "external_runtime_mutation"
+    ],
+    "required_before_first_external_write": [
+      "canonical_obligation_exists",
+      "stable_lineage_or_fingerprint",
+      "idempotency_key",
+      "expected_terminal_outcome",
+      "current_evidence",
+      "next_safe_action",
+      "resume_condition"
+    ],
+    "blocked_write_semantics": "RECOVERY_REQUIRED",
+    "hard_boundary_semantics": "Only objectively missing human/provider authority, explicit OAuth/consent, security weakening, destructive/irreversible data, paid-resource escalation, or legally/financially binding action may return BLOCKED_HARD_BOUNDARY.",
+    "resume_rule": "The next capable node resumes the same canonical obligation and idempotency key. Never create a replacement lineage merely because one execution surface rejected the write.",
+    "blog_rule": "Daily blog publication obligation exists before repository mutation; the protected GitHub publisher consumes the exact approved artifact identity/hash and closes only after protected merge, Netlify current-main identity and public canonical readback.",
+    "linkedin_company_rule": "Organization read/ACL permission is corroborative only. A known canonical organization identity may proceed to the actual organization write capability probe; only a genuine pre-create write-authority/OAuth denial is a hard boundary. A durable LinkedIn post URN is terminal side-effect evidence and sets republish_forbidden=true."
+  },
+  "workflow_observation_rule": {
+    "required": true,
+    "fingerprint": "github|workflow-observation|bounded-single-snapshot|v1",
+    "applies_to": [
+      "chat",
+      "agent",
+      "workflow-recovery",
+      "repository-writer"
+    ],
+    "max_top_level_snapshots_per_cycle": 1,
+    "max_failure_drilldowns_per_cycle": 1,
+    "same_snapshot_cooldown_seconds": 120,
+    "terminal_failure_behavior": "DRILL_DOWN_FIRST_FAILED_WORKFLOW_JOB_STEP_THEN_REPAIR",
+    "active_workflow_behavior": "CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK",
+    "completed_success_behavior": "USE_TOP_LEVEL_RESULT_WITHOUT_ENUMERATING_SIBLING_JOBS",
+    "successful_sibling_rechecks": false,
+    "same_head_unchanged_requery_forbidden": true,
+    "user_wait_loop_forbidden": true,
+    "user_visible_rule": "Never keep a chat/tool chain open merely to poll required workflow jobs. One unchanged snapshot is enough to checkpoint and continue independent work.",
+    "max_observation_tool_calls_per_cycle": 3,
+    "max_observation_wall_seconds": 30,
+    "tool_budget_exhausted_behavior": "CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK"
   }
 }

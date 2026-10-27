@@ -27,7 +27,7 @@ test("page two contains levers, roadmap and honest measured KPIs", () => {
   assert.match(html, /Jouw 90-dagen roadmap/);
   assert.match(html, /KPI’s om vanaf dag 1 te volgen/);
   assert.match(js, /Grootste benchmarkgap/);
-  assert.match(js, /huidige nulmeting/);
+  assert.match(js, /jouw huidige bedrijfsbeeld/);
   assert.match(js, /Verbetercyclus/);
 });
 

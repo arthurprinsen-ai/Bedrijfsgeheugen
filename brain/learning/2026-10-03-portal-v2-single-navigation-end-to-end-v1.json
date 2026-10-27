@@ -1,0 +1,28 @@
+{
+  "fingerprint": "portal-v2|navigation|single-authority|end-to-end|v1",
+  "date": "2026-10-03",
+  "type": "PORTAL_UX_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "PORTAL_NAVIGATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Portal V2 maintained separate navigation authorities: a compact desktop category menu, a full all-pages drawer, a desktop project navigation block, and a reduced five-item mobile bar. Pages and active state could therefore differ by entry point and viewport.",
+  "prevention_rule": "PORTAL_PAGE_INDEX is the page authority and navigation-model projects one complete canonical tree from it. Desktop renders that tree persistently in the sidebar. When the sidebar is unavailable, the hamburger renders the same tree responsively. No reduced mobile page menu or second desktop page menu may be mounted.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-navigation-contract-recovery.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-v2-navigation-contract-recovery.test.mjs",
+      "tests/portal-v2-navigation-contract.test.mjs",
+      "tests/integration/portal-v2-production-overview-navigation.spec.js"
+    ],
+    "expected": "all registered Portal V2 pages are reachable from one canonical tree and exact active-page state is shared across responsive presentations"
+  }
+}

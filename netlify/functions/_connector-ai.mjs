@@ -4,6 +4,7 @@ import {ACTIONS,DECISIONS} from '../../platform/policy/policy-engine.mjs';
 import {createAIUseCase,AI_RISK_CLASSES,AI_USE_CASE_STATES} from '../../platform/policy/ai-register.mjs';
 import {normalizeProviderTokenUsage} from '../../platform/cost/ai-token-usage.mjs';
 import {createAiUsageStore} from './_ai-usage-store.mjs';
+import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
 
 const MODEL_ID='ANTHROPIC-SONNET';
 const MODEL='claude-sonnet-5';
@@ -42,8 +43,10 @@ const parseJson=text=>{
   return parsed;
 };
 
-export async function proposeConnectorConfiguration({intent,currentState,userId,apiKey=process.env.ANTHROPIC_API_KEY,fetchImpl=fetch,usageStore,requestId=crypto.randomUUID()}={}){
+export async function proposeConnectorConfiguration({intent,currentState,userId,tenantId,apiKey=process.env.ANTHROPIC_API_KEY,fetchImpl=fetch,usageStore,requestId=crypto.randomUUID()}={}){
   if(!apiKey)throw new Error('Anthropic API key missing');
+  if(!tenantId)throw Object.assign(new Error('DATA_SOVEREIGNTY_TENANT_REQUIRED'),{code:'DATA_SOVEREIGNTY_TENANT_REQUIRED'});
+  await createDataSovereigntyClient().assertAiAllowed(tenantId);
   const result=await runGovernedProductionAI({
     request:{requestId,tenantId:'REQUEST_SCOPED',requesterId:'portal-requester',aiUseCaseId:'AI-CONNECTOR-GUIDE',purpose:PURPOSE,resourceType:'ConnectorIntent',resourceId:requestId,providerModelId:MODEL_ID,dataClass:'Confidential',context:{intent,currentState,userId}},
     policies,providerRegistry,aiUseCases,

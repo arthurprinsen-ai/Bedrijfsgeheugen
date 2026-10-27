@@ -1,0 +1,36 @@
+{
+  "fingerprint": "delivery|portal-dom|release-exact-sha|bridge-only-successor|20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-dom-bridge-only-immutable-readback-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "PORTAL_PRODUCTION_PROOF_BLOCKED_BY_UNRELATED_EDGE_BRIDGE_COMMIT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Netlify's immutable site published sha 1ede6008... and provider deploy 6ad5eece... while latest GitHub main bcb936... added only release bridge source/tests/docs. The Portal DOM manual proof override incorrectly refuses any superseding supabase/functions/*.ts, even when the only changed Edge function is the independent Netlify deploy bridge and its live runtime is separately verified byte-identical to GitHub.",
+  "prevention_rule": "For an approved, merged PR ancestor of an immutable published site, accept manual portal readback with earlier published SHA only if all successor files are CI/evidence or the exact standalone netlify-deploy-bridge/index.ts, which must independently pass Supabase provider parity. Never permit arbitrary Supabase/functions, portal-v2, Netlify functions, website, or other runtime source changes. Keep exact live/immutable release identity and authenticated browser tests mandatory.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs",
+    "observed_current_site_release": "1ede6008da2f265941097487b21cbb1f8c334326",
+    "netlify_deploy_id": "6ad5eece12a6f9cf157bdcf7",
+    "observed_supabase_runtime_parity": true,
+    "production_readback": "NOT_VERIFIED"
+  }
+}

@@ -1,0 +1,21 @@
+# Powerhouse one-loop terminal lineage
+
+Recorded the one-loop scheduler canonicalisation, terminal action lineage, bounded historical repair, Required-test regression, and production readback for obligation powerhouse-one-loop-terminal-lineage-20261005-v1.
+
+## Hosted Supabase Preview replay recovery
+
+Exact head `fac9ed5d042732372003509252f5dd2c77620225` failed the provider Supabase Preview check with SQLSTATE `42601`: the historical persuasion optimizer used truncated `$` function delimiters. A migration-wide regression exposed a second truncated closing delimiter in the story-family uniqueness migration. Restore only these three delimiter tokens; retain all function logic, permissions and scheduler behavior. The new Required-test regression failed before repair (three invalid boundaries) and the targeted lineage/schema suite passed after repair (8/8). These source tests do not replace hosted database replay or production readback. Keep the same obligation and PR; terminal green requires the complete new exact-head checkset, protected merge and canonical terminalizer evidence.
+
+PostgreSQL grammar parsing then exposed missing function-statement terminators in the commercial persuasion runtime migration. Add the three closing statement semicolons and the two PL/pgSQL END semicolons. All 420 migration files now parse without SQL syntax errors; both regression cases were observed red before their respective repair. Final focused integration/writeback/lineage/schema validation: 27/27 passed. Hosted replay and exact-head provider checks remain required.
+
+Hosted replay on `a26043128f950208e2d6f31d0d0807ce3334603e` passed the syntax boundary and failed SQLSTATE `42P01` because production-only `powerhouse_email_reply_events` had no migration definition. Read back all 15 columns, constraints, indexes, RLS and grants from production; project that schema before the first lineage consumer. No production table/data was changed. Regression observed red, then final suite 28/28 and security self-test passed. Production current commercial gate independently reports one owner, zero secondary owners and 100% current terminal coverage; the existing bounded lineage RPC repaired 464 historical actions and the old daily-owner assurance now has zero unaccounted actions but remains stale for the newer heartbeat owner. Preserve this truth boundary until its canonical reconciliation.
+
+Register the reply-evidence table in the existing mandatory quality surface registry, bound to the source/security/ordering regression. An already-applied historical migration is not pushed again by Supabase Git on synchronize; use the provider-documented disposable PR preview close/reopen lifecycle to replay repaired historical schema. Keep the obligation, branch and lineage unchanged.
+
+Fresh replay follow-up: SQLSTATE 42P01 exposed the production-only channel capabilities table. Exact schema, status constraint, RLS and service-role-only grants are projected before the NBA view with a required quality contract and red/green regression. No capability evidence rows are seeded. Current main scheduler fixes are retained in the same candidate.
+
+Replay view compatibility: Preview reached the orchestrator and failed 42P16 because intelligence columns replaced the existing message-plan projection positions. Preserve the existing 40-column prefix and numeric intent/warmth contract, append new intelligence columns, and retain all dependent views. Red/green regression covers the replacement boundary.
+
+Canonical forward dependency: fresh replay reached the one-loop migration and failed 42883 because SQL aliases resolve a canonical implementation introduced later in the history. Use five direct PL/pgSQL delegation aliases, preserving exact results and runtime errors; no placeholder function, fallback outcome or disabled validation. Regression covers the forward-reference boundary.
+
+Health-view forward dependency: fresh replay reached 160500 and failed 42883 on the quality gate defined later in 161500. Project its byte-identical final implementation and privileges before the first health-view consumer, retaining exact message SHA256 and persisted passed-quality evidence. A full CREATE VIEW function-dependency audit finds this as the sole missing gate. Regression enforces byte-identical function bodies.

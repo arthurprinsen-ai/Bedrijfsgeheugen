@@ -1,0 +1,74 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|multi-agent|codeql-hotspot-specific-action|20261023-v1",
+  "obligation_id": "delivery|multi-agent|codeql-hotspot-specific-action|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_AGENT_ROUTING_WRONG_REMEDIATION_FOR_SECURITY_JOB",
+  "root_cause": "Job CodeQL javascript-typescript is correctly classified into Powerhouse, but generic Powerhouse action recommended profiling Required preflight rather than profiling the measured CodeQL security job. This misdirects cooperating agents and wastes diagnostic effort despite exact provider evidence.",
+  "observed_evidence": {
+    "janitor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39928058144",
+    "artifact_id": 12489814292,
+    "artifact": "powerhouse-repository-janitor-39928058144",
+    "provider_sample_jobs": 21,
+    "provider_distinct_runs": 11,
+    "read_errors": 0,
+    "non_executed_excluded": 17,
+    "slow_codeql_job": {
+      "run_id": 39927850261,
+      "job_id": 120328545101,
+      "job_name": "CodeQL javascript-typescript",
+      "execution_ms": 199000,
+      "wait_ms": 3000
+    },
+    "website_parity_job": {
+      "run_id": 39927728654,
+      "job_id": 120328733393,
+      "job_name": "netlify_build_parity",
+      "execution_ms": 106000,
+      "wait_ms": 3000
+    },
+    "speedup_proven": false,
+    "root_cause_of_codeql_slowness_known": false
+  },
+  "failed_approaches": [
+    "Use one generic Powerhouse preflight diagnosis for every job including CodeQL",
+    "Treat the slowest job in one sample as proven critical path or a change authorization"
+  ],
+  "fix": "Within the existing read-only canonical #4661 agent priority router, distinguish CodeQL provider job/workflow names and issue an explicit security-preserving CodeQL profiling investigation; keep actual preflight advice and all other lanes unchanged.",
+  "prevention_rule": "Never route a measured CodeQL security-analysis hotspot to unrelated preflight, never remove, skip or weaken CodeQL checks; only exact-provider-backed advisory, no mutation or dispatch; investigate repeated runs, shared cache trust and exact measured phases under protected Required/CodeQL, always behind canonical writer lease.",
+  "tests": [
+    "tests/brain-ci-agent-prioritization-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_AGENT_ROUTING_WRONG_REMEDIATION_FOR_SECURITY_JOB",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-prioritization-v1.test.mjs"
+    ],
+    "invariants": [
+      "actual CodeQL sample gets CodeQL-specific advisory instead of Required preflight",
+      "ordinary Required preflight retains original investigation action",
+      "CodeQL mandatory release gate preserved",
+      "all may_mutate/may_dispatch/may_promote false",
+      "read errors or insufficient data remain suppressed via existing owner"
+    ]
+  },
+  "terminal_rule": "Exact immutable head Required+CodeQL, protected merge/main readback, existing skill projection and real subsequent Janitor evidence before claiming production runtime action corrected. Overall #4661 remains open for longitudinal effect and #4655/#4215 remain separate red."
+}

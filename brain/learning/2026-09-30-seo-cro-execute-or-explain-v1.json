@@ -1,0 +1,33 @@
+{
+  "fingerprint": "seo-cro-execute-or-explain-v1",
+  "date": "2026-09-30",
+  "type": "SEO_CRO_EXECUTION",
+  "failure_class": "MATERIAL_OPPORTUNITY_REPORTED_WITHOUT_EXECUTION_OR_REJECTION_EVIDENCE",
+  "root_cause": [
+    "The SEO skill already preferred execution, but operator-facing daily runs could still end with a recommendation plus a vague statement that evidence was insufficient.",
+    "The runtime contract did not require a machine-readable terminal state with a reason code and exact missing evidence."
+  ],
+  "evidence": {
+    "observed_failure": "A material SEO/CRO opportunity was reported to the operator without a same-cycle implementation and without a standardized rejection reason contract.",
+    "canonical_skill": ".agents/skills/seo-revenue-growth/SKILL.md",
+    "runtime_contract": "config/seo-growth-loop.json"
+  },
+  "prevention": [
+    "Every material SEO/CRO opportunity terminates as EXECUTED or REJECTED_WITH_EVIDENCE.",
+    "Recommendation-only output is a contract failure.",
+    "Rejections require a bounded reason code plus exact missing/conflicting evidence and a future execution condition.",
+    "Safe reversible evidence-gated changes are executed up to the configured daily maximum.",
+    "Transient delivery failures remain recovery work and cannot be used as non-execution reasons."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-seo-cro-execute-or-explain-v1.test.mjs"],
+    "canary": ["tests/brain-seo-cro-execute-or-explain-v1.test.mjs"]
+  },
+  "compiler": {
+    "failure_class": "MATERIAL_OPPORTUNITY_REPORTED_WITHOUT_EXECUTION_OR_REJECTION_EVIDENCE",
+    "scope": "SEO_REVENUE_GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}

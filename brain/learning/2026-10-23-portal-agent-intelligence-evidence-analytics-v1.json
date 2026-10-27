@@ -1,0 +1,62 @@
+{
+  "fingerprint": "portal-agent-intelligence-evidence-analytics-20261023-v1",
+  "date": "2026-10-23",
+  "obligation": "portal-agent-intelligence-analytics-20261023",
+  "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747",
+  "failure_class": "EVIDENCE_PROJECTION_GAP",
+  "root_cause": "The existing administrator Powerhouse Control Center exposed event lists and operational tabs, but did not provide an evidence-differentiated daily trend or four-provider observation matrix for shared agent learning. Raw recorded events are not independently verified customer improvements. The delivery PR also initially omitted mandatory machine-readable metadata and canonical learning, activity and human-documentation closure.",
+  "proposed_action": "Add a read-only, admin-protected learning analytics tab over the existing operating-loop projection with deduplicated UTC-day trend counts, source observations, explicit evidence qualification and safe source links. Preserve every existing automation, writer lease, incident registry and customer isolation boundary.",
+  "prevention_rule": "PR_PORTAL_AGENT_INTELLIGENCE_SOURCE_AND_PROOF_FAIL_CLOSED_V1",
+  "prevention": "Fail closed for missing source coverage and independently unverified memory. Keep no second Brain authority, no additional scheduler and no customer result assertion from mere event volume. Require protected PR metadata and full same-lineage documentation bundle.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "test_command": "node --test tests/brain-agent-intelligence-analytics.test.mjs",
+    "test_status": "PENDING_EXACT_HEAD_CI",
+    "coverage": [
+      "UTC day window and de-duplication",
+      "explicit source observation versus absent evidence",
+      "production proof and HTTPS allowlist",
+      "XSS escaping of untrusted labels",
+      "empty historical data never becomes full success"
+    ],
+    "reference_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4747"
+  },
+  "production_readback": {
+    "status": "NOT_YET_VERIFIED",
+    "required": [
+      "protected_merge_current_main",
+      "Netlify_exact_SHA",
+      "authenticated_owner_browser_readback",
+      "customer_outcome_independent_proof"
+    ],
+    "rollback": "Revert portal frontend feature via protected commit if verified UX or security regresses."
+  },
+  "customer_outcome": {
+    "measured": false,
+    "attributable_lift": null,
+    "realized_value": null
+  },
+  "status": "IMPLEMENTED_ON_FEATURE_BRANCH_NOT_LIVE",
+  "security_review": {
+    "finding_fingerprint": "codeql|missing-url-regex-anchor|portal-agent-intelligence-test|20261023",
+    "finding": "GitHub Advanced Security opened one high CodeQL alert about a URL-like regular expression without boundaries in a test assertion, not in a production URL dispatcher.",
+    "review_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/224",
+    "affected_path": "tests/brain-agent-intelligence-analytics.test.mjs",
+    "root_cause": "An unanchored regex searched the rendered HTML for a URL substring, so the test did not enforce a full exact href attribute.",
+    "remediation": "Replace URL regex with an exact allowlisted href attribute assertion via markup.includes; retain safeProofLink host allowlist and HTML escaping.",
+    "prevention": "Use exact URL/host validation and exact href attribute assertions in security-sensitive browser/markup tests; do not accept substring regex matches as origin or host verification.",
+    "test_evidence": "tests/brain-agent-intelligence-analytics.test.mjs",
+    "current_status": "SOURCE_PATCH_SUBMITTED_EXACT_HEAD_CODEQL_READBACK_REQUIRED"
+  }
+}

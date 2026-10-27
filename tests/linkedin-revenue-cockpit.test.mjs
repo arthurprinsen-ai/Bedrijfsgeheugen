@@ -120,12 +120,16 @@ test('LinkedIn cockpit autopilot requires concrete post context and exact commen
   const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
   assert.match(source, /linkedin\\\.com/);
   assert.match(source, /CONCRETE_POST_CONTEXT_REQUIRED/);
-  assert.match(source, /Comment text: \$\{message\}/);
+  // Comment is posted as a real LinkedIn comment via Composio (message:{text}), after exact post readback.
+  assert.match(source, /LINKEDIN_CREATE_COMMENT_ON_POST/);
+  assert.match(source, /message:\{text:message\}/);
+  assert.match(source, /LINKEDIN_TARGET_POST_READBACK_MISMATCH/);
 });
 
-test('canonical publisher exposes dedicated autopilot mode and runs it during normal delivery', () => {
+test('canonical publisher exposes dedicated autopilot mode and content loop runs it as its own delivery lane', () => {
   const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
+  const contentLoop = fs.readFileSync(new URL('../supabase/functions/powerhouse-content-loop/index.ts', import.meta.url), 'utf8');
   assert.match(source, /mode === 'cockpit_autopilot'/);
-  const calls = (source.match(/await runLinkedInCockpitAutopilot\(db\)/g) || []).length;
-  assert.ok(calls >= 2);
+  assert.equal((source.match(/await runLinkedInCockpitAutopilot\(db\)/g) || []).length, 1);
+  assert.match(contentLoop, /\['linkedin_engagement','powerhouse-social-publisher',\{runDate,mode:'cockpit_autopilot'\}\]/);
 });

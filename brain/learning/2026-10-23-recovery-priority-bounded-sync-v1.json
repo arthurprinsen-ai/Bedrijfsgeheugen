@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "ci|supervisor|two-attempt-main-sync-reconciliation-and-bounded-actionable-priority|20261023-v1",
+  "obligation_id": "github|recovery-supervisor|bounded-sync-reconciliation-priority|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "The existing advisory comparator rejected MAIN_SYNC reconciliation when the permitted second drift refresh was already consumed. Its age-first ordering promoted historical PRs with no recent positive Required evidence ahead of current release candidates.",
+  "fix": "Treat MAIN_SYNC with exactly two prior refreshes as eligible for reconciliation only, never another CAS write. Rank idle terminal leases with distinct provider-observed exact-head Required success ahead of bounded-sample unknowns; for other eligible idle leases prefer recently updated candidates. Preserve original order for unrankable PRs and all incumbent live gates.",
+  "prevention_rule": "MAIN_SYNC reconciliation is not a third write; a TERMINAL_DELIVERY lease with count=2 remains exhausted. Provider samples are bounded: absence of a run is UNKNOWN. Never bypass current-head Required, CodeQL, native expected_head_sha, lease/overlap checks, source or production readback.",
+  "evidence": {
+    "observed_supervisor_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39966378899",
+    "observed_stale_failed_gate_prs": "3120,3129,3153,3291,3462,3528,3590,3640,3656,3722,3736,3755",
+    "observed_single_action": "Required redispatch PR #3760",
+    "base_regression": "tests/delivery-recovery-pr-prioritizer.test.mjs",
+    "canonical_brain_regression": "tests/brain-recovery-pr-prioritizer.test.mjs",
+    "local_node_test_count": 12,
+    "production_speedup_proven": false,
+    "independent_post_merge_runtime_readback_required": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-pr-prioritizer.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-recovery-pr-prioritizer.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-pr-prioritizer.test.mjs"
+    ],
+    "metrics": [
+      "main_sync_reconciliation_after_two_refreshes",
+      "cas_rejections",
+      "repeated_drift",
+      "eligible_release_candidates_visited",
+      "time_to_protected_merge",
+      "exact_head_required_and_codeql_failures"
+    ],
+    "expected_behaviors": [
+      "existing MAIN_SYNC attempt-two is ranked for only reconciliation",
+      "terminal leases at drift-two cannot begin third update",
+      "completed exact-head Required success informs priority but not merge authorization",
+      "unknown provider observations are not converted to failed or green"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "PROTECTED_CANDIDATE_PENDING"
+}

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const fnUrl = new URL('../supabase/functions/bg-analytics-sync-composio/index.ts', import.meta.url);
-const migrationUrl = new URL('../supabase/migrations/20260915145500_ga4_auth_failover_v1.sql', import.meta.url);
+const migrationUrl = new URL('../supabase/migration-history/repository-only/20260915145500_ga4_auth_failover_v1.sql', import.meta.url);
 const policyUrl = new URL('../brain/policies/powerhouse-revenue-flywheel-v1.json', import.meta.url);
 const fn = fs.existsSync(fnUrl) ? fs.readFileSync(fnUrl, 'utf8') : '';
 const migration = fs.existsSync(migrationUrl) ? fs.readFileSync(migrationUrl, 'utf8') : '';

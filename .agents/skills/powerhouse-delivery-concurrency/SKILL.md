@@ -145,6 +145,19 @@ Fingerprint: `delivery|agent-factory|supabase-notion-fast-path|v1`.
 
 Canonical learning: `brain/learning/agent-factory-supabase-notion-fast-path-20260925-v1.json`.
 
+## Supabase archived migration two-authority gate
+
+Fingerprint: `supabase|archived-migration-replay|source-drift|fail-closed|v1`.
+Verified incident: PR #4479 / issue #3742 on 2026-10-19; hosted branch replay stopped with `CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1` at migration `20261006085416` (SQLSTATE `P0001`), even though the version-controlled file with the same version had been changed to skip absent jobs. Provider archived statement MD5 `6e4aa572b4c8f5bb4091958db833eba3`, confirmed independently in the live database. The provider record and Git source are **two different authorities**, not interchangeable. On the same date, two GitHub-linked preview databases independently contained the corrected migration SQL while production and a manually created branch contained the older hard-abort body. The same migration version can have different archived SQL between environments; version parity is not semantic parity. Do not mistake a manual branch failure for GitHub PR preview failure.
+
+Prevention and learning closure:
+- Before authoring a schema replay fix, inspect **both** the repository SQL and the actual `supabase_migrations.schema_migrations.statements` payload for the exact migration version and compare relevant semantics. Version/name alone are not proof of parity; a later edit to an already-applied migration does not change the remote archived SQL.
+- For a historical prerequisite error, capture the first real SQLSTATE, failing archived version **and branch creation route**; compare the actual SQL body from the production parent, a manually created branch and a GitHub-connected PR branch before inferring they have the same replay authority. A workaround observed only on a manual branch is **not** authorization to create extra cron jobs in a GitHub PR.
+- A temporary SQL test under `BEGIN ... ROLLBACK`, static test or successful CodeQL does not prove provider-owned full-history preview. Supabase Preview must be `success` from the Supabase app on the exact candidate SHA, not `skipped` or a GitHub-authored lookalike.
+- Distinguish `MIGRATION_ARCHIVED_CRON_PRECONDITION` from `PREVIEW_CAPACITY_EXHAUSTED`, and treat both as fail-closed. Never delete another writer's preview branch to free capacity, silently raise paid quota, alter applied Supabase migration-history rows, add fake no-op cron entries, weaken production RLS or skip a required check.
+- Migration replay parity must pass before protected merge; preserve a single canonical scheduler, only deploy from merged main, and demand production cron readback plus source-evidence verification. If provider APIs cannot reconcile a divergent archive through supported means, report `BLOCKED_HARD_BOUNDARY`, not live/green.
+- Keep reproducible tests in `tests/brain-supabase-preview-diagnosis-v1.test.mjs` and the scheduler reachability regression; write root cause, competing branch-source evidence and corrected diagnosis into Brain learning and append-only ledger in the same obligation.
+
 ## Mandatory material-run closure gate
 
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
@@ -474,3 +487,41 @@ CI Calibration remains read-only and has no repository mutation authority. The A
 - Downward/defensive tuning remains metric-derived and bounded to the existing tuning allowlist.
 - Calibration observations remain non-persistent signals.
 - Every persistent tuning change still requires the existing protected optimizer PR and all Required/security/exact-SHA/production gates.
+
+## Non-blocking remote gate rule
+
+Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
+
+The current queue-pressure authority is deliberately strict: soft pressure at 8 active or 5 queued runs, hard circuit at 12 active or 8 queued runs, and at most 3 projected new runs for one mutation. These values must match `brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor`; documentation drift is a control-plane defect.
+
+A queued/running remote gate never makes the owning chat or agent idle. Persist a checkpoint, continue independent work, reuse the active exact-head run, and resume terminal delivery automatically. Newer authoritative main may supersede stale reversible production waits; never use this rule to bypass required quality/security gates.
+
+## Predictive multi-agent scheduler
+
+Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1`.
+
+Before every material write, predict obligation ownership, path/contract/resource overlap, current queue pressure and projected workflow fan-out. Same obligation has exactly one active writer. Different non-conflicting obligations build in parallel. Serialize only the shortest overlapping terminal landing boundary.
+
+Remote workflow states are asynchronous continuation states, never chat wait points. Persist `POWERHOUSE-ASYNC-CHECKPOINT-v1`, continue independent work, reuse the exact-head single-flight CI, and resume automatically without asking the user to continue.
+
+
+## Single automatic terminal closure + no-op production trigger rule
+
+Fingerprint: `delivery|terminal-closure-single-owner|governance-noop-production|v1`.
+
+- A merged PR with `Writer-Lease-State: TERMINAL_DELIVERY` has exactly one automatic post-merge owner: `Powerhouse Obligation Terminalizer`.
+- `Obligation Terminal Closure` is fallback/manual for lineages not owned by that terminal writer lease; it must not race the canonical terminalizer.
+- Governance-only scheduler config, System Map and delivery-classifier changes must not start Netlify production snapshot/readback.
+- Runtime, website, portal, Netlify-function or Supabase-function changes keep their normal production/provider proof.
+
+
+## Canonical Netlify deployment applicability
+
+Fingerprint: `main-push-fanout-budget-20260925-v1|netlify-applicability-v2`.
+
+All Netlify build/deploy decisions use `tools/delivery/netlify-deployment-applicability.mjs`:
+- Required pre-merge parity, native Netlify build-ignore, Production Source Snapshot and Production Release Readback share this authority;
+- pure Supabase/provider/backend changes that do not alter Netlify-hosted runtime never trigger a Netlify production deploy or browser proof;
+- website, Portal V2 and Netlify-hosted runtime changes remain fail-closed and require their normal exact-SHA production evidence;
+- manual production dispatch may explicitly force deployment; a manual snapshot with deploy=false remains non-mutating;
+- static `paths-ignore` is only an early fan-out optimization, never the canonical applicability decision.

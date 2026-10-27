@@ -78,3 +78,67 @@ This skill inherits the canonical daily compound-learning contract. Every materi
 - remain discoverable through System Map and canonical skill projection.
 
 Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
+
+## Cross-domain change evolution (2026-10-08)
+Canonical pure planner: `brain/self-improvement/cross-domain-evolution.mjs#planCrossDomainEvolution`.
+- For every material AI model, connector, portal, engineering or strategy policy revision, bind tenant, change ID, exact source revision and both policy versions.
+- Reuse the Organism Graph to calculate affected domains. Explicitly review GDPR, EU AI Act, NIS2/Cbw, security, and CSRD/ESRS applicability when dependency paths require it; an unknown compliance scope never implies applicability or non-applicability.
+- Match only fresh, independently verified outcomes to the same tenant/revision, with provider receipt or production readback; delivery ACK, synthetic/test event, forecast, absent response and vanity metric are not realized value.
+- Demand verified independent evidence from business and engineering plus a genuine controlled comparison before recommending a challenger for protected delivery.
+- Fail closed on missing review, counterfactual, evidence, security/regression or cost/latency guard. Produce a deterministic canonical obligation proposal, never a second executor, scheduler, database, model-policy setter or direct production mutation.
+- The responsible Brain runtime must durably materialize and execute the proposal through existing obligations/outbox, reconcile provider outcomes and project learning; a planner's PROPOSED_NOT_EXECUTED output is not live delivery evidence.
+Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
+
+## Self-Evolving OS learning-to-candidate bridge (2026-10-08)
+
+Fingerprint: `self-evolving-learning-candidate-bridge-20261008-v1`.
+
+- Consume READY *verified* quality-event learning from `public.powerhouse_learning_compiler_queue_v1` only through the existing `powerhouse-self-improvement-layer-v1` daily owner.
+- Materialize a bounded maximum of three uniquely keyed, review-required, non-executable candidates into `public.powerhouse_optimization_candidate_v1` per run. Never create another learning store or cron.
+- Do not treat evidence that a previous defect was fixed as evidence that the proposed next improvement will work. Candidate confidence is uncalibrated, impact is unknown, outcome remains unmeasured.
+- BG169 remains the only production action authority. Approval, representative testing, protected merge, production readback and verified benefit must precede any promotion claim.
+- The migration and regression are `supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql` and `tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs`. The new behavior is NOT live until protected merge and database/runtime readback confirm it.
+
+## Verified financial value closure (2026-10-08)
+- Use canonical `powerhouse_realized_values`, `powerhouse_action_economics`, finance/provider source records and outcome lineage; never create a parallel economic-truth ledger.
+- A legacy `truth_class=realized` with unit `not_executed`, `sent`, `execution_completed` or `reply_received` is **not** realized revenue or financial savings.
+- Financial value requires a same-tenant, same-revision, independently read-back finance record, explicit EUR amount, financial proof type and linkage to a verified engineering outcome.
+- The same source record counts once. The verified comparison must explicitly link the same business and engineering outcomes and have an independently read-back cohort assignment.
+- `BUSINESS_VALUE_EVIDENCE_REQUIRED` is a valid fail-closed state, not green. Raw append-only evidence must remain unchanged. A proposal stays `PROPOSED_NOT_EXECUTED`.
+- Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
+
+## Verplichte relevantie, incidentborging en dagelijkse feedback (2026-10-22)
+
+Fingerprint: `powerhouse|agent-incident-relevance-daily-evolution|20261022-v1`.
+
+- Elke huidige en toekomstige agent en chat leest vóór materieel werk de canonieke failure fingerprints, actieve obligations, vorige aanpakken, skillprojecties en bronbewijs. Reproduceer alleen als dit veilig nodig is; dedupliceer binnen dezelfde Brain-lineage.
+- Ieder materieel incident, probleem, fout, herstel of verbetering behoudt oorzaak (of expliciet UNKNOWN), eigenaar, impact, mislukte poging, bewijs, bronstatus, herstel, preventieregel, regressietest en productieverificatie. Geen eenzijdige documentatie als bewijs van runtime-writeback.
+- Veilige herstelacties zijn bounded, idempotent, herstartbaar, hebben retry-budget en worden getest vóór protected promotion. Menselijke OAuth, geheimen, destructieve mutaties, betaalde capaciteit, security-verzwakking en juridische/financiële toezeggingen blijven harde grenzen.
+- De bestaande `Powerhouse Daily Self Evolution` en `Universal Closed-loop Learning` zijn de enige dagelijkse governance-eigenaren; voeg geen tweede cron, agentgeheugen, foutregister of agent-publisher toe.
+- Dagelijkse verbetering vergelijkt minimaal herhaalde incidenten, hersteltijd, regressiedekking, bron-/bewijsdekking, doorlooptijd en klantwaarde met een geldige baseline; alleen aantoonbare vooruitgang mag via beveiligde CI/CodeQL/merge en exacte productie/providerreadback promoveren.
+- Portaalroute `learning-writeback` heet `Relevantie & verbeteringen` en leest uitsluitend `portal.runtime.learning.items` uit de bestaande tenant-gebonden `brain-operating-loop` projectie. Alleen `PROVEN` uit Brain mag als bewezen verschijnen; ontbrekend bewijs blijft expliciet niet bewezen.
+- Contract: `config/universal-closed-loop-learning.json`; gate: `scripts/brain/validate-universal-closed-loop-learning.mjs`; regressies: `tests/brain-universal-closed-loop-learning.test.mjs` en `portal-v2/tests/relevance-learning-closed-loop.test.mjs`. Werk na bewezen productie-uitkomst de bestaande System Map, leerlijn en skills bij.
+
+## Relevantie: outcome-bewijs is verplicht (22 oktober 2026)
+
+Fingerprint: `portal|learning-memory|proven-without-verified-outcome-evidence|20261022-v1`. Voordat de bestaande Portal V2 een leerrecord als "Bewezen in Brain" toont, moet de canonieke tenant-eigen living-memory projectie de originele source PROVEN, geverifieerde recordstatus, een daadwerkelijk uitgevoerde en geverifieerde outcome in dezelfde tenant en onveranderlijke evidence IDs bewijzen. De vereiste IDs moeten daadwerkelijk bestaan en bij de outcome aansluiten. Onvoldoende bewijs projecteert uitsluitend REVIEW_REQUIRED, zonder de opgeslagen records te wijzigen. Gebruik nooit losse healthy/status-ok flags als eindbewijs. Test met `tests/brain-portal-learning-memory-evidence-proof-v1.test.mjs`, hergebruik exact dezelfde Brain/ledger/System Map en houd alle bestaande CI, tenancy en productiepoorten verplicht.
+
+## Fail-closed bewijslabel voor Portal Relevantie (2026-10-22)
+
+Success/healthy van een transport- of runtimeprojectie is **geen bewezen bronherstel**. De canonieke tenant-geautoriseerde Brain-projectie moet expliciet een `PROVEN`-maturity, een echte productie/provider-readback en een onveranderlijke toegestane bewijsreferentie dragen voordat `Relevantie & verbeteringen` een item als `Bewezen in Brain` telt. Ontbreekt een van die drie, toon `Nog te verifiëren in Brain`; registreer hetzelfde fingerprint en herstel in dezelfde lineage. Een UI-label, testfixture, eigenaarcomment of merge is nooit op zichzelf productiebewijs. Regressie: `portal-v2/tests/relevance-learning-closed-loop.test.mjs`. Geen tweede registry of cron.
+
+## Task-specific canonical learning reuse (25 October 2026)
+
+Fingerprint: powerhouse|learning-preflight|intent-only-target-inference|20261025-v1.
+
+The existing Brain preflight forwards natural-language intent to the canonical skill projection. Even without explicit delivery-lane labels, it reads the latest relevant historical prevention rules. Every mandatory and exact-fingerprint rule remains; other lessons are bounded. The receipt contains source-backed fingerprints, digest, inferred targets, match and truncation counts. A search miss never proves that no relevant prior fix exists.
+
+New AI models, tools, skills and innovations are versioned candidates until freshness, provenance, tenant/privacy, cost, benchmark, Required+CodeQL and independent production proof pass. Do not create a second memory, scheduler, authority or unverified green status.
+
+## Canonical skill source attestation (2026-10-25)
+
+Fingerprint: `powerhouse|agent-skill-source-attestation|preflight-digest-load-boundary|20261025-v1`.
+
+Before material execution, use the existing `scripts/brain/chat-learning-preflight.mjs` to obtain the latest deterministic inventory of `.agents/skills/*/SKILL.md`. Its `skill_projection.source_attestation` carries the source SHA-256, inventory digest, source path and task-matched selection. The four mandatory baseline skills are continuity, self-improvement, System Map governance and toolchain authority. Load the actual selected skill text and record actor, execution ID, source path, exact source digest and load timestamp in the existing canonical activity/learning evidence before claiming that a skill was consumed. `SOURCE_DISCOVERED_LOAD_READBACK_REQUIRED` is not a successful consumption claim; old skills without frontmatter remain visible as metadata warnings, not automatically upgraded.
+
+External Agent Skills, MCP and OpenTelemetry conventions may be assessed as evidence-backed versioned candidates, **never auto-installed or promoted** on search results alone. Check official specification provenance, version, security/privacy, tool authority, cost and isolated regression before a protected release. Reuse current Brain, skills, Heartbeat, delivery and learning authorities; no parallel knowledge store or extra scheduler.

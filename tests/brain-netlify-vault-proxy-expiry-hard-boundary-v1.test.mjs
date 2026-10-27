@@ -11,6 +11,7 @@ test('expired Netlify proxy is treated as deploy-auth hard boundary',()=>{
   assert.match(skill,/linked[_ -]?build.*ok=false/i);
   assert.match(skill,/do not mutate website or application code/i);
   assert.match(skill,/LIVE_BEWEZEN/);
-  assert.match(workflow,/Acquire Netlify deploy transport through GitHub OIDC/);
+  assert.match(workflow,/Deploy exact source through authorized Netlify transport/);
+  assert.match(workflow,/NETLIFY_EXACT_SOURCE_AUTH_REFRESH[^\n]*reacquiring OIDC and proxy/);
   assert.match(workflow,/Fail fast on Netlify provider build error/);
 });

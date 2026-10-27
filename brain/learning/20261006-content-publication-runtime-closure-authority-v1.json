@@ -1,0 +1,25 @@
+{
+  "fingerprint": "powerhouse|content-publication|runtime-closure-authority|v1",
+  "compiler": {
+    "failure_class": "DELIVERY_CONTRACT_AUTHORITY_CONFLICT"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs",
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ]
+  },
+  "root_cause": "The integration bundle correctly allowed canonical content-publication obligations to close through runtime authority, but required-test then unconditionally executed the generic repository-artifact writeback guard, causing every generated daily blog candidate to fail despite the bundle being closure-ready.",
+  "prevention_rule": [
+    "Runtime closure authority is valid only when the obligation matches an approved runtime prefix and every material path is within the explicit runtime publication allowlist.",
+    "Required test must treat the integration bundle as the single closure authority and must not reapply a contradictory repository-artifact guard to canonical runtime publication candidates."
+  ],
+  "evidence": {
+    "tests": [
+      "canonical content publication remains runtime-authority without duplicate repository learning",
+      "mixed blog + control-plane paths fall back to repository-artifacts and fail closed",
+      "required-test condition is bound to closure_authority"
+    ],
+    "outcome": "Pure daily blog candidates can reach the website lane; unrelated material changes cannot borrow the runtime-authority exemption."
+  }
+}

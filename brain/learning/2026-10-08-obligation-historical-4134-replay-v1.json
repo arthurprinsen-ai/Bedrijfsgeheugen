@@ -1,0 +1,54 @@
+{
+  "version": "obligation-historical-terminal-dispatch-replay-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "workflow-dispatch-registration-rejected-historical-closure-4134",
+  "root_cause": "Merged PR #4134 had no durable Brain terminal record because historical run #37760879023 awaited a Netlify release for a Supabase-only source change. Although the canonical workflow advertises workflow_dispatch, GitHub's registered dispatch endpoint returned HTTP 422 and rejected both numeric and filename dispatch.",
+  "evidence": {
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4134",
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023",
+    "supabase_provider": "powerhouse-composio-linkedin-setup",
+    "active_provider_version": 29,
+    "active_runtime_sha256": "a2adfc1aa924d7289598bb57fce55e9001af51f5cbcc178aba549af898391e31",
+    "live_function_source_parity": "exact bytes equal original merge SHA and current main",
+    "provider_attestation_recorded_in_pr": true,
+    "dispatch_failure": "GitHub API returned Workflow does not have workflow_dispatch trigger, HTTP 422"
+  },
+  "intervention": "Historical direct closure already succeeded before the duplicate workflow_call replay. Retire the redundant one-shot caller and restore trusted direct OIDC workflow identity; keep the canonical Supabase-only release-scope fix intact.",
+  "prevention": "Use readback of actual GitHub workflow runs, Brain FULFILLED state and immutable artifact before proposing a historical replay. Keep any reusable OIDC callers consistent with issuer workflow_ref allowlist; prevent reintroduction of one-shot markers after proven terminal closure.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-historical-4134-replay.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-obligation-historical-4134-replay.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "original direct GitHub close success at run 37768018373",
+    "original Brain state FULFILLED",
+    "immutable original evidence artifact",
+    "protected merge of redundant caller removal",
+    "canonical direct OIDC identity retained"
+  ],
+  "resolution": {
+    "original_obligation_state": "FULFILLED",
+    "original_obligation_id": "linkedin-cross-workspace-auth-proof-20261008-v1",
+    "original_merge_sha": "f8c7f313be234da58326a399d45b5866ff13ca59",
+    "successful_canonical_close_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37768018373",
+    "immutable_artifact": "obligation-terminal-evidence-4134",
+    "artifact_digest": "sha256:521c6993abad495094bb553e7a23f2a4b1455f132cbf72ff280a1c448fe1ca1a",
+    "duplicate_replay_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37768605469",
+    "duplicate_failure_cause": "OIDC_WORKFLOW_REJECTED: called reusable workflow inherits historical reconciliation caller workflow_ref, not the trusted canonical close workflow identity",
+    "correction": "Restore canonical direct terminal writer trigger, retire one-shot historical replay job and marker; preserve immutable successful original evidence",
+    "audit_preservation": "Historical failed runs remain unchanged; no trust-policy relaxation, database overwrite, or fabricated green status",
+    "cleanup_validation_test": "tests/brain-obligation-historical-4134-replay.test.mjs"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "contract_version": "1",
+  "toolchain": {
+    "node": "22.12.0",
+    "builder": "netlify-production-v1"
+  },
+  "source_manifest": "git ls-files -s",
+  "lockfile_preference": [
+    "package-lock.json",
+    "package.json"
+  ]
+}

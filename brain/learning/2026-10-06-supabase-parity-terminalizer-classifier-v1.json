@@ -1,0 +1,36 @@
+{
+  "id": "supabase-parity-terminalizer-classifier-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "pr-3899-post-merge-terminalizer",
+  "fingerprint": "powerhouse|terminalizer|supabase-parity-obligation-family|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The post-merge terminalizer recognized only supabase-migration-history-(parity|canonical)- obligation IDs. The isolated current-production parity successor used supabase-current-production-ledger-parity-..., so already-applied historical migration mirrors were misclassified as unwired runtime paths after a successful protected merge.",
+  "prevention": [
+    "Recognize the explicit Supabase parity obligation families migration-history-(parity|canonical), production-ledger-parity, and current-production-ledger-parity.",
+    "Keep the parity bypass gated by Candidate-Type: recovery.",
+    "Keep the historical parity path allowlist unchanged and exclude supabase/functions/** so runtime changes still require provider readback."
+  ],
+  "evidence": {
+    "source_pr": 3899,
+    "source_merge_sha": "dddc30c5f0d6efa4c1cd88b86d3fa454b11bf342",
+    "failed_terminalizer_run": 37462294980,
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "production_migration_count": 591,
+    "repository_lock_count": 591
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ],
+    "expected": "The terminalizer recognizes current production-ledger parity recoveries as non-runtime historical migration reconciliation while preserving the existing path allowlist and continuing to reject Supabase Edge function paths from the parity bypass."
+  }
+}

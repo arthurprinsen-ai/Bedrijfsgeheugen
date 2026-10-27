@@ -22,56 +22,42 @@ test('heavy website verification is owned by the canonical website lane, not dup
     const source = await workflow(name);
     assert.doesNotMatch(source, /^\s*pull_request\s*:/m, `${name} must not auto-fan-out on pull requests`);
   }
-  const lane = await workflow('lane-website.yml');
-  assert.match(lane, /Run exact Netlify production build command/);
+  const [required, lane] = await Promise.all([
+    workflow('required-test.yml'),
+    workflow('lane-website.yml'),
+  ]);
+  assert.match(required, /Run exact Netlify production build command once/);
+  assert.doesNotMatch(lane, /^  netlify[-_]build[-_]parity:/m);
   assert.match(lane, /Verify all public pages are visibly rendered/);
   assert.match(lane, /Verify broad high-risk browser contracts/);
 });
 
-test('remaining specialist PR workflows keep bounded path admission', async () => {
-  for (const name of ['canonical-brand-shell-test.yml','chat-learning-preflight-pr.yml']) {
-    const block = pullRequestBlock(await workflow(name));
-    assert.ok(block, `${name} must retain a PR trigger`);
-    assert.match(block, /\n\s+paths:\s*\n/, `${name} must filter pull_request paths`);
+test('retired specialist workflows stay off direct PR admission and are preserved by Required', async () => {
+  for (const name of ['canonical-brand-shell-test.yml','chat-learning-preflight-pr.yml','component-foundation-tdd.yml']) {
+    assert.equal(pullRequestBlock(await workflow(name)), '', `${name} must not fan out directly on pull requests`);
   }
-});
-
-test('component foundation no longer treats every config file as component work', async () => {
-  const source = await workflow('component-foundation-tdd.yml');
-  const block = pullRequestBlock(source);
-  assert.doesNotMatch(block, /- ['"]config\/\*\*['"]/, 'config/** causes unrelated policy changes to fan out into component CI');
-  assert.match(block, /config\/component-ownership\.json/);
-  assert.match(block, /config\/change-classes\.json/);
+  const required = await workflow('required-test.yml');
+  assert.match(required, /node tools\/site-shell\/test-shell-components\.mjs/);
+  assert.match(required, /tests\/brain-chat-learning-fast-development-v2\.test\.mjs/);
+  assert.match(required, /tests\/component-foundation-tdd|tests\/component-boundaries\.test\.mjs/);
 });
 
 
-test('governance-only prevention registry does not trigger production deploy/readback workflows', async () => {
-  for (const workflow of [
-    '.github/workflows/production-source-snapshot.yml',
-    '.github/workflows/production-release-readback.yml',
-  ]) {
-    const text = await readFile(workflow, 'utf8');
-    const triggerBlock = text.split(/\npermissions:/, 1)[0];
-    assert.match(triggerBlock, /paths-ignore:/);
-    assert.match(triggerBlock, /config\/delivery-prevention-rules\.json/);
-  }
+test('production snapshot reconciles governance changes without forcing deployment', async () => {
+  const snapshot = await workflow('production-source-snapshot.yml');
+  const readback = await workflow('production-release-readback.yml');
+  assert.match(snapshot, /push:\s*\n\s*branches: \[main\]/);
+  assert.doesNotMatch(snapshot.split('permissions:')[0], /^\s*paths-ignore:/m);
+  assert.match(snapshot, /deriveNetlifyDeploymentApplicability/);
+  assert.match(snapshot, /steps\.scope\.outputs\.deployment_required == 'true'/);
+  assert.match(readback, /deriveNetlifyDeploymentApplicability/);
 });
 
-
-test('production workflows ignore control-plane-only paths', async () => {
-  for (const workflow of [
-    '.github/workflows/production-source-snapshot.yml',
-    '.github/workflows/production-release-readback.yml',
-  ]) {
-    const source = await readFile(workflow, 'utf8');
-    const triggerBlock = source.split(/\npermissions:/, 1)[0];
-    for (const expected of [
-      "AGENTS.md",
-      "brain/policies/**",
-      "tools/delivery/**",
-      "tools/site-shell/verify-targeted-website-routes.mjs",
-    ]) {
-      assert.ok(triggerBlock.includes(expected), `${workflow} must ignore ${expected}`);
-    }
-  }
+test('portal production readback only auto-runs for deployable portal runtime changes', async () => {
+  const source = await workflow('portal-v2-production-dom-readback.yml');
+  const triggerBlock = source.split(/\nconcurrency:/, 1)[0];
+  assert.match(triggerBlock, /- 'portal-v2\/\*\*'/);
+  assert.doesNotMatch(triggerBlock, /tests\/integration\/portal-v2-/);
+  assert.doesNotMatch(triggerBlock, /\.github\/workflows\/portal-v2-production-dom-readback\.yml/);
+  assert.match(triggerBlock, /workflow_dispatch:/);
 });

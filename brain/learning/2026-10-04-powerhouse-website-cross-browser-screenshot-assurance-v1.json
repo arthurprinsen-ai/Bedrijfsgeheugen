@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-screenshot-assurance-v1",
+  "observed_at": "2026-10-04T12:47:00Z",
+  "type": "PREVENTION",
+  "problem": "Website quality lacked one canonical cross-browser screenshot assurance spanning responsive layouts, real interactions, exact PR previews and daily production.",
+  "root_cause": "Existing checks were fragmented and primarily Chromium-oriented; screenshot evidence and Firefox/WebKit behavior were not one fail-closed contract.",
+  "decision": "Use the existing website delivery lane with an exact Netlify PR-preview gate plus a daily production sitemap sweep and critical Chromium/Firefox/WebKit screenshot matrix.",
+  "prevention": [
+    "PRs test the exact deploy-preview candidate.",
+    "Daily production sweeps all sitemap routes on mobile and desktop.",
+    "Critical route families render in Chromium, Firefox and WebKit across mobile/tablet/desktop.",
+    "Menu and language interactions are exercised.",
+    "Failures retain screenshots and report artifacts for 30 days."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_CROSS_BROWSER_VISUAL_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-website-cross-browser-assurance-v1.json",
+    ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+    "tools/site-shell/website-cross-browser-assurance.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}

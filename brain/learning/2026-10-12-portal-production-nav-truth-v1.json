@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|portal-v2|2026-10-12|hidden-demo-trigger-vs-canonical-navigation",
+  "compiler": {
+    "failure_class": "PRODUCTION_BROWSER_TEST_SELECTS_HIDDEN_DEMO_LINK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The updated production Playwright standalone test used `[data-open-page=roadmap].first()` which selected an old illustrative dashboard card. The intentional source-truth gate hides demo cards for real visitors. The real single sidebar nav uses stable `[data-nav-target]` buttons to open pages, independent from those hidden illustrative links.",
+  "prevention_rule": "Test actual canonically bound customer navigation buttons and their native route transitions. Never restore fictitious public KPIs merely to satisfy a test selector, never create a second menu, preserve auth, mobile, URL and no-legacy-runtime checks.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_release_sha": "51bdf9deec401c0f59e548a938f4b11542c1703d",
+    "verified_deploy": "6accb2b9f4de3f939ce63151",
+    "manual_readback_workflow": 38236074462,
+    "passed": 14,
+    "failed": 1,
+    "skipped": 1
+  },
+  "outcome": {
+    "production_test_only_fix_pending": true,
+    "customer_data_mask_remains_active": true
+  }
+}

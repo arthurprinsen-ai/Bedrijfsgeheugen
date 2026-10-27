@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|ci-security|privileged-janitor-no-cache-tokens|20261023-v1",
+  "obligation_id": "delivery|ci-security|privileged-janitor-no-cache-tokens|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "PRIVILEGED_GITHUB_JANITOR_UNNECESSARY_CACHE_TOKEN_SURFACE",
+  "root_cause": "Existing hourly Janitor holds authorized GitHub repository write operations but does not use any GitHub Actions cache, while workflow trigger defaults can grant cache read/write access unnecessarily.",
+  "observed_evidence": {
+    "workflow": ".github/workflows/powerhouse-repository-janitor.yml",
+    "cache_action_use": "NONE",
+    "privileged_actions": "actions: write; contents: write; pull-requests: write; issues: write",
+    "readback_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39928058144",
+    "official_syntax": "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+    "official_security": "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching",
+    "performance_gain_measured": false
+  },
+  "failed_approaches": [
+    "Treat a privileged non-caching job as needing inherited cache write tokens",
+    "Relax provider, Required or CodeQL controls to speed up CI",
+    "Broaden security changes across unrelated active PRs"
+  ],
+  "fix": "Set official GitHub Actions jobs.janitor.cache-mode: none, preventing both cache restore and save in the existing privileged non-caching Janitor. Retain exact one hourly schedule and existing cleanups/observations.",
+  "prevention_rule": "Cache token permissions are least-privilege per job. An existing non-caching privileged repository janitor must not receive cache restore/save tokens. If future code needs cache, it requires independent trust review, security tests and exact-head protected merge, not an unattended privilege upgrade.",
+  "tests": [
+    "tests/brain-janitor-cache-token-isolation-20261023.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRIVILEGED_GITHUB_JANITOR_UNNECESSARY_CACHE_TOKEN_SURFACE",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-cache-token-isolation-20261023.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-cache-token-isolation-20261023.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-cache-token-isolation-20261023.test.mjs"
+    ],
+    "invariants": [
+      "cache-mode none only for noncaching Janitor job",
+      "existing 17th-minute hourly schedule remains",
+      "one Janitor job and workflow concurrency only",
+      "Required and CodeQL remain mandatory for release",
+      "real native Janitor postmerge run needed to prove provider accepts workflow",
+      "no performance speedup claim from cache-token change"
+    ]
+  },
+  "terminal_rule": "Exact immutable head Required, hygiene, CodeQL; native protected merge; GitHub main readback, Skill Projection, one existing Janitor executed from protected merged SHA; issue #4661 remains open for performance SLO."
+}

@@ -1,0 +1,41 @@
+{
+  "learningId": "2026-10-04-cms-selector-helper-contract-v1",
+  "fingerprint": "cms-admin-queryselector-helper-shadowed-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-04T18:56:00+02:00",
+  "problem": "The CMS page crashed during page assurance because the single-element selector helper was overwritten by a querySelectorAll helper.",
+  "rootCause": "Two variables named $ were declared consecutively; on() therefore received an array and called addEventListener on it.",
+  "root_cause": "Two variables named $ were declared consecutively; on() therefore received an array and called addEventListener on it.",
+  "preventionRule": "CMS DOM helpers must keep distinct single-element and collection selectors; event binding may only call addEventListener on a single Element.",
+  "prevention": [
+    "Keep querySelector and querySelectorAll helpers separately named.",
+    "Regression-test the helper declarations and event binder.",
+    "Keep /cms in full public-page browser assurance."
+  ],
+  "evidence": {
+    "implementation": [
+      "assets/cms-admin.js"
+    ],
+    "regression": [
+      "tests/brain-cms-admin-selector-contract.test.mjs"
+    ]
+  },
+  "invariants": {
+    "singleSelectorDistinct": true,
+    "multiSelectorDistinct": true,
+    "cmsBootNoArrayEventBinding": true
+  },
+  "compiler": {
+    "failure_class": "CMS_DOM_SELECTOR_HELPER_SHADOWED",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cms-admin-selector-contract.test.mjs"
+    ],
+    "expected": "CMS binds events to a single DOM element while collection iteration uses a distinct helper."
+  }
+}

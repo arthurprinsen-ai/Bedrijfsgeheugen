@@ -1,0 +1,49 @@
+{
+  "fingerprint": "delivery|required-preflight|diverged-branch-two-dot-scope-contamination|20261022-v1",
+  "obligation_id": "delivery|required-preflight|diverged-branch-two-dot-scope-contamination|20261022-v1",
+  "date": "2026-10-22",
+  "status": "CANDIDATE_PENDING_PROTECTED_CI",
+  "failure_class": "FALSE_SCOPE_CONTAMINATION_FROM_DIVERGED_MAIN_DIFF",
+  "scope": "GITHUB_CI",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Required test preflight used git diff --name-only eventBase PRHead, not GitHub's merge_base_commit, to classify a PR whose branch lagged behind protected main. That counted unrelated newer main changes as candidate scope changes and failed SCOPE_CONTAMINATED.",
+  "evidence": {
+    "canonical_revenue_pr": 4630,
+    "required_run_id": 39861215523,
+    "preflight_job_id": 120112317455,
+    "preflight_reported_changed_delivery_files": 126,
+    "github_pr_changed_files": 6,
+    "github_compare_status": "diverged",
+    "event_base_sha": "903bf0ceecc339cd59df6c68e20245861f7f25fa",
+    "candidate_head_sha": "fae5812fee571e26da284c4f1e5c27305b8699e9",
+    "provider_verified_merge_base_sha": "f627153ed569820917a2dc5787dd210613f0395e",
+    "actual_sql_timeout_separate": "cron #46 run 121523 failed after 120s and remains not live-fixed"
+  },
+  "fix": "For PR / owner-preserving workflow dispatch use GitHub Compare verified merge_base_commit SHA as changed-path and downstream integration base; validate provider base identity and SHA; keep merge_group/non-PR event diff and all strict scope-budget/security gates.",
+  "prevention_rule": "Never classify two-dot PR versus advanced main as branch-owned changes. Provider-base mismatch, untrusted or behind comparison must fail closed. Real branch changes outside Change-Scope remain SCOPE_CONTAMINATED. No owner branch edits or bypasses.",
+  "compiler": {
+    "failure_class": "FALSE_SCOPE_CONTAMINATION_FROM_DIVERGED_MAIN_DIFF",
+    "scope": "GITHUB_CI",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-diverged-pr-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-diverged-pr-scope-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-required-diverged-pr-scope-v1.test.mjs"
+    ]
+  },
+  "validation": {
+    "synthetic_diverged_scope_case": "UNIT_TESTED_PENDING",
+    "real_unscoped_change_rejected": "UNIT_TESTED_PENDING",
+    "exact_head_required": "PENDING",
+    "codeql": "PENDING",
+    "protected_merge": "PENDING",
+    "live_revenue_cron": "FAILED_INDEPENDENT"
+  }
+}

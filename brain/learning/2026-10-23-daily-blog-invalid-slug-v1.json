@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-10-23",
+  "fingerprint": "powerhouse|daily-blog|queue-slug-boundary-parity|20261023-v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39883989350",
+  "root_cause": "Both original queue/export title slug fallback truncated to 70 chars after removing separators. Canonical #4723 fixed exporter; queue retained trailing-hyphen bug and would preserve inconsistent source-to-obligation identity.",
+  "original_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om-",
+  "expected_slug": "cyberdreigingen-voor-ondernemers-een-praktisch-beslis-en-oefenplan-om",
+  "prevention": "Align queue's 70-character boundary with already-merged #4723 exporter, testing actual source functions and preserving existing GENERATED-only compare-and-swap.",
+  "evidence": {
+    "source_export_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4723",
+    "regression_tests": [
+      "tests/brain-canonical-blog-slug-truncation-v1.test.mjs",
+      "tests/brain-powerhouse-blog-export-slug-boundary-20261023.test.mjs"
+    ],
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_SUPABASE_EDGE_DEPLOY",
+    "queued_obligation": "GENERATED_UNPUBLISHED"
+  },
+  "compiler": {
+    "failure_class": "VALIDATION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-blog-slug-truncation-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

@@ -38,19 +38,15 @@ assert.throws(() => verifyPageShell(afwijkend, 'prijzen.html'), /legacy|header|c
 const dubbeleFooter = canonical.replace('</body>', '<footer data-bg-component="footer">dubbel</footer></body>');
 assert.throws(() => verifyPageShell(dubbeleFooter, 'dubbel.html'), /footer/i);
 
-const pricingOk = canonical.replace('<main data-bg-component="main">body</main>', '<main data-bg-component="main">body<section data-bg-component="page-tools"><div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div></section></main>');
+const pricingOk = canonical;
 assert.doesNotThrow(() => verifyPageShell(pricingOk, 'prijzen.html'));
-assert.throws(() => verifyPageShell(pricingOk, 'over-ons.html'), /pricing|page-tools/i);
 
 const legacyPricing = '<!doctype html><html><body><nav class="bgkop">oud menu</nav><div class="held"><h1>Prijzen</h1></div><section id="pakketten">inhoud</section><footer class="bgvoet">oude voet</footer></body></html>';
 assert.equal(extractPageMain(legacyPricing, 'prijzen.html'), '<div class="held"><h1>Prijzen</h1></div><section id="pakketten">inhoud</section>');
 assert.equal(extractPageMain('<body><main><p>normaal</p></main></body>', 'normaal.html'), '<p>normaal</p>');
 
-const alleenPricingCss = canonical.replace('</head>', '<style>.bgx-vraagbalk{display:grid}.bgx-rekenaar{display:block}.bgx-rol{display:flex}</style></head>');
-assert.doesNotThrow(() => verifyPageShell(alleenPricingCss, '404.html'));
-const pricingNaNormalisatie = normaliseerHtml(alleenPricingCss, 'prijzen.html');
-assert.ok(/<[^>]+class="[^"]*\bbgx-vraagbalk\b/i.test(pricingNaNormalisatie));
-assert.ok(pricingNaNormalisatie.includes('data-bg-component="page-tools"'));
+const pricingNaNormalisatie = normaliseerHtml(canonical, 'prijzen.html');
+assert.doesNotThrow(() => verifyPageShell(pricingNaNormalisatie, 'prijzen.html'));
 
 const oudeMain = extractComponent(canonical, 'main');
 const oudeFooter = extractComponent(canonical, 'footer');

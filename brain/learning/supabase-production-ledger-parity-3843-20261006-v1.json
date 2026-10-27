@@ -1,0 +1,45 @@
+{
+  "id": "supabase-production-ledger-parity-3843-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "pr-3843-production-readback",
+  "fingerprint": "powerhouse|supabase|production-ledger-parity|immutable-mirror|3843|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The #3843 snapshot recovery correctly identified 15 production-applied identities beyond the prior 568-entry lock, but production then advanced by eight LinkedIn organization-OAuth migrations through 20261006103856 outside canonical Git lineage. Leaving the recovery target frozen at 583 would therefore preserve current repository-to-production drift even though the original snapshot was repaired.",
+  "prevention": [
+    "Keep the canonical repository migration lock equal to the current observed production migration ledger, not only an historical merge snapshot; current target is 591 identities through 20261006103856.",
+    "Restore every already-applied production statement as an immutable repository mirror and allow historical security exemption only at its exact reviewed Git blob SHA; any byte edit restores fail-closed security checking.",
+    "Classify Supabase Preview as not applicable only when every database-relevant changed source is an exact registered historical production mirror; ordinary migrations still require provider preview.",
+    "Treat supabase/migration-history.lock.json as non-executable metadata while requiring applied.length = production_ledger_count = current production ledger count.",
+    "Prevent recurrence by making protected main the only authority for future Supabase production promotion; direct chat, agent or provider deployment must not create new production-only lineage."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ],
+    "expected": "Repository history and migration-history.lock.json represent all 591 currently applied production migrations; historical mirrors are exact-blob bound and preview/security stay fail-closed for any non-mirror database change."
+  },
+  "evidence": {
+    "source_pr": 3843,
+    "source_merge_sha": "47e36a513757c230ca6305a06a3724338fea047d",
+    "recovery_pr": 3870,
+    "snapshot_captured_at": "2026-10-06T10:16:08.000Z",
+    "base_lock_count": 568,
+    "restored_repository_mirrors": 20,
+    "security_contract": "scripts/brain/check_powerhouse_supabase_security.py",
+    "preview_contract": ".github/workflows/supabase-preview-applicability.yml",
+    "history_lock": "supabase/migration-history.lock.json",
+    "initial_snapshot_ledger_count": 583,
+    "current_production_ledger_count": 591,
+    "current_latest_version": "20261006103856"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 2
+}

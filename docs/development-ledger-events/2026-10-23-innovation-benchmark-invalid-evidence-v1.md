@@ -1,0 +1,5 @@
+# Adversariële benchmark-evaluatie voor agentische innovatie — 23 oktober 2026
+
+Owner #4661. Fingerprint `delivery|agents|innovation-benchmark-invalid-metrics-failclosed|20261023-v1`. Source observation: `scripts/brain/quality/innovation-benchmark.mjs` previously evaluated comparable metrics without type/range validation. Synthetic invalid values (negative cost/runtime, out-of-range reproducibility and false-positive ratios) could be incorrectly ranked as better. This is a source-level risk; no unsupported claim of historical customer harm.
+
+One narrow safety repair: fail closed on invalid comparator inputs, refuse unsafe/incalculable baseline security, retain valid benchmark behavior, always mark recommendation as advisory. Regression replay/historical/shadow/canary `tests/brain-innovation-benchmark-evidence-integrity-v1.test.mjs` covers valid/invalid inputs, security, explicit no promotion and zero-cost valid edge case. Another agent owns PR #4763 quality stages, unmodified. No new scheduler, AI model, provider API call, cost or queue. Outcome not PROVEN until Required+CodeQL, protected main, existing Brain projection and any applicable production readback.

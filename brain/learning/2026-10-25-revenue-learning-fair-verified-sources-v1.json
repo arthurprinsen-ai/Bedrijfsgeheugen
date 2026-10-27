@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "revenue-learning|unbounded-inferred-source-replay|20261025-v1",
+  "obligation_id": "growth:revenue-learning-existing-hourly-bounded-verified:20261025-v1",
+  "parent_issue": 4198,
+  "failure_class": "REVENUE_LEARNING_UNBOUNDED_INFERRED_EVIDENCE",
+  "root_cause": "The existing hourly revenue learning evaluator iterated every due evidence item from a 150-row store page without a bounded, per-channel fair batch. It also allowed INFERRED source evidence and mixed unverified cohorts into candidate evaluation, even though actual paid outcomes, qualified buyer replies and provider evidence were absent.",
+  "observed_evidence": {
+    "source": "Production: revenue_learning_evidence 143 rows, 107 INFERRED website records; only 3 historical applications across social/revenue; 2026-10-25 cross-channel obligations live-proven but measured/learned timestamps absent; revenue-intelligence degraded.",
+    "duplicate_schedulers_created": false,
+    "new_revenue_claimed": false
+  },
+  "fix": "Reuse existing Netlify @hourly evaluator. Bound to eight due windows, rotate channel priority fairly, accept only OBSERVED/PROVIDER_OBSERVED source-backed targets and cohorts, record typed obligation rather than promote inferred evidence, summarize valid progress, return 503 for runtime failures.",
+  "prevention_rules": [
+    "Separate evidence collection/obligation recording from PROVEN optimization and paid-order evidence.",
+    "Limit each hourly evaluation, rotate channels and preserve stale queue visibility; no unbounded retries.",
+    "Verify target and cohort sourceRefs and observed data quality before calculating advantage.",
+    "Never count prediction, generated copy, lead suggestion, or inferred site visit as a paid order.",
+    "Re-use canonical scheduler, stores, shared Brain error memory and existing CI; do not add sender, cron or revenue counter."
+  ],
+  "tests": [
+    "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-learning-fair-verified-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "REVENUE_LEARNING_UNBOUNDED_INFERRED_EVIDENCE",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required and CodeQL, protected merge and Netlify deployment/readback; actual next hourly run must show bounded summary and real source-linked promotion if qualified, followed by independent attributed customer/order evidence."
+}

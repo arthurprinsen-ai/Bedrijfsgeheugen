@@ -2,6 +2,20 @@ import { dependencyTargets } from './legacy-dependency-contract.js';
 import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
 import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
 import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
+import { PORTAL_PAGE_INDEX } from './page-registry.js';
+
+// A page remains a first-class causal node even if no legacy calculator consumes it.
+const REGISTERED_PAGES=Object.freeze(new Set(Object.keys(PORTAL_PAGE_INDEX)));
+const OBSERVATION_SURFACES=Object.freeze(['overzicht','advies','wijzigingen','audittrail','learning-writeback','powerhouse-control-center']);
+const REVIEW_RULES=Object.freeze([
+  // Size is an applicability input, not evidence that a legal threshold is met.
+  {pattern:/^portal\.profile\.(?:employees|sector)(?:\.|$)/,domains:['organization-size','regulatory-applicability','csrd-esrs'],pages:['profiel','compliance-governance','csrd-impact','wet-regelgeving','due-diligence','advies']},
+  {pattern:/^portal\.(?:data-ai-passport|dataAi|aiScan|aiCapabilities|aiCapabilitySources|aiAct|ai-capabilities|ai-technologie-actueel|koppelingen|trust-center|eu-ai-act-audit|csrd-impact|instellingen)(?:\.|$)/,domains:['ai-runtime','data-residency','privacy-security','supplier','finance','csrd-esrs'],pages:['data-ai-passport','koppelingen','trust-center','compliance-governance','csrd-impact','businesscase','roadmap','data-ai','ai-capabilities','powerhouse-control-center','wet-regelgeving']},
+  {pattern:/^portal\.(?:wet-regelgeving|bronnenbibliotheek|bronnenstatus|compliance-command-center)(?:\.|$)/,domains:['regulatory','privacy-security','csrd-esrs'],pages:['compliance-governance','csrd-impact','due-diligence','roadmap','advies']},
+  {pattern:/^portal\.(?:metrics|valueFinance|waarde-financiering|cijfers-maatstaven|businesscase|billing)(?:\.|$)/,domains:['finance','impact-economics'],pages:['businesscase','waarde-financiering','cijfers-maatstaven','due-diligence','csrd-impact','roadmap']},
+  // Review only: input changes are not evidence of a financial or legal outcome.
+  {pattern:/^portal\.(?:external|sources|regulatory|ondernemersdata|omgevingsradar|arbeidsmarkt-personeel|subsidies-regelingen|economie-branche-actueel|ai-technologie-actueel|deadlines)(?:\.|$)/,domains:['external-intelligence','finance','people','regulatory','csrd-esrs'],pages:['omgevingsradar','branche-markt','mensen','cijfers-maatstaven','businesscase','waarde-financiering','compliance-governance','csrd-impact','due-diligence','roadmap','advies','audittrail']}
+]);
 
 const CALCS=Object.freeze([
   ['manual-work-annual','money'],['dimension-cost-total','money'],['dimension-potential-total','money'],
@@ -16,9 +30,9 @@ const CALCS=Object.freeze([
 ]);
 
 const SECTION_PAGE=Object.freeze({
-  profile:'profiel',dataAi:'data-ai',aiScan:'ai-scan',businessCase:'businesscase',metrics:'cijfers-maatstaven',
+  profile:'profiel',dataAi:'data-ai',aiScan:'ai-scan',aiCapabilitySources:'ai-capabilities',aiAct:'eu-ai-act-audit',businessCase:'businesscase',metrics:'cijfers-maatstaven',
   valueFinance:'waarde-financiering',people:'mensen',market:'branche-markt',research:'onderzoek',
-  compliance:'compliance-governance',aiCapabilities:'ai-capabilities',strategy:'strategie-naar-maandagochtend',
+  compliance:'compliance-governance',aiCapabilities:'ai-capabilities',strategy:'strategie-naar-maandagochtend',strategicModels:'strategiemodellen',business_context:'bedrijfssituatie',
   strategyDna:'strategy-dna',canvases:'canvassen',finalConclusion:'eindconclusie',dueDiligence:'due-diligence',
   freshness:'actueel-houden',changes:'wijzigingen',advice:'advies',offer:'offerte',roadmap:'roadmap',tasks:'taken-werkstromen',
   project:'overzicht',integrations:'koppelingen',connections:'koppelingen',documents:'documenten',notes:'documenten',access:'gebruikers',
@@ -40,14 +54,18 @@ const PAGE_EFFECT_LABELS=Object.freeze({
   'taken-werkstromen':'Taken & werkstromen',koppelingen:'Koppelingen'
 });
 const PATH_EFFECT_RULES=Object.freeze([
+  // Field-level cross-domain propagation: mark reviews/invalidation, never fabricate a financial or legal conclusion.
+  Object.freeze({pattern:/^portal\.profile\.(?:employees|hourlyCost)(?:\.|$)/,kind:'workforce-capacity-financial-basis',reason:'Omvang en uurkosten beïnvloeden capaciteitswaarde, personeelsplanning, businesscases, financiering en eventuele omvangsafhankelijke regelgeving; wettelijke toepasselijkheid vergt afzonderlijk bewijs.',targets:['mensen','waarde-financiering','businesscase','strategie-naar-maandagochtend','compliance-governance','csrd-impact','roadmap','advies']}),
+  Object.freeze({pattern:/^portal\.metrics\.(?:largestCustomer|nps|satisfaction|repeat|complaints|performance\.churn)(?:\.|$)/,kind:'customer-retention-and-concentration',reason:'Klantconcentratie, tevredenheid of verloop kan omzetzekerheid, groeiscenario, risicoprofiel en waardering beïnvloeden; zonder onderliggende data is impact niet gekwantificeerd.',targets:['branche-markt','businesscase','due-diligence','waarde-financiering','exit','advies','roadmap']}),
+  Object.freeze({pattern:/^portal\.dataAi\.(?:aiRiskClass|aiVendor|aiDataLocation|aiPurpose|aiHumanOversight)(?:\.|$)/,kind:'ai-governance-supplier-residency',reason:'AI-gebruik, leverancier en datalocatie vragen toetsing van veiligheid, doorgifte, AI Act, contracten, ESG-materiële effecten, kosten en implementatieprioriteit; geen automatische juridische conclusie.',targets:['data-ai-passport','trust-center','eu-ai-act-audit','compliance-governance','csrd-impact','koppelingen','waarde-financiering','due-diligence','businesscase','roadmap','advies']}),
   Object.freeze({pattern:/^portal\.profile(\.|$)/,kind:'foundation',reason:'Profielwaarden voeden volwassenheid, capaciteit, kosten, benchmarkpositie, businesscase en advies.',targets:['overzicht','businesscase','data-ai','onderzoek','advies','roadmap','strategie-naar-maandagochtend']}),
   Object.freeze({pattern:/^portal\.profile\.maturity(\.|$)/,kind:'maturity',reason:'Een volwassenheidsniveau verandert handwerk, FTE, capaciteitswaarde, adoptiepositie, CMMI en verbeterpotentieel.',targets:['overzicht','profiel','businesscase','data-ai','onderzoek','advies','roadmap']}),
-  Object.freeze({pattern:/^portal\.(metrics|valueFinance)(\.|$)/,kind:'finance',reason:'Financiële invoer werkt door in KPI’s, waardering, financieringsratio’s, businesscase, due diligence en executive prioritering.',targets:['cijfers-maatstaven','waarde-financiering','businesscase','due-diligence','overzicht','advies']}),
+  Object.freeze({pattern:/^portal\.(metrics|valueFinance|businessCase)(\.|$)/,kind:'finance',reason:'Financiële invoer werkt door in KPI’s, waardering, financieringsratio’s, businesscase, due diligence en executive prioritering.',targets:['cijfers-maatstaven','waarde-financiering','businesscase','due-diligence','overzicht','advies']}),
   Object.freeze({pattern:/^portal\.people(\.|$)/,kind:'capacity',reason:'Mensen, verzuim, verloop en vacatures beïnvloeden capaciteit, benchmarks, risico’s, due diligence en prioriteit.',targets:['mensen','branche-markt','onderzoek','due-diligence','overzicht','advies','roadmap']}),
-  Object.freeze({pattern:/^portal\.market(\.|$)/,kind:'benchmark',reason:'Branche en marktcontext wijzigen benchmark, relatieve positie, toepasselijke context en advies.',targets:['branche-markt','overzicht','profiel','mensen','onderzoek','cijfers-maatstaven','advies']}),
-  Object.freeze({pattern:/^portal\.(dataAi|aiScan|aiCapabilities)(\.|$)/,kind:'ai',reason:'AI- en datawijzigingen beïnvloeden haalbaarheid, risico, governance, businesscase, compliance en roadmap.',targets:['data-ai','ai-scan','ai-capabilities','compliance-governance','businesscase','advies','roadmap','overzicht']}),
-  Object.freeze({pattern:/^portal\.compliance(\.|$)/,kind:'risk',reason:'Compliancewijzigingen beïnvloeden risico, evidence, due diligence, acties, advies en executive sturing.',targets:['compliance-governance','due-diligence','advies','roadmap','overzicht','actueel-houden']}),
-  Object.freeze({pattern:/^portal\.(strategy|strategyDna|canvases|finalConclusion)(\.|$)/,kind:'strategy',reason:'Strategische keuzes werken door naar conclusies, acties, prioriteiten, roadmap en uitvoering.',targets:['strategie-naar-maandagochtend','strategy-dna','canvassen','eindconclusie','advies','roadmap','uitvoeringsladder','overzicht']}),
+  Object.freeze({pattern:/^portal\.(market|research)(\.|$)/,kind:'benchmark',reason:'Branche en marktcontext wijzigen benchmark, relatieve positie, toepasselijke context en advies.',targets:['branche-markt','overzicht','profiel','mensen','onderzoek','cijfers-maatstaven','advies']}),
+  Object.freeze({pattern:/^portal\.(dataAi|aiScan|aiCapabilities|aiCapabilitySources)(\.|$)/,kind:'ai',reason:'AI- en datawijzigingen beïnvloeden haalbaarheid, risico, governance, businesscase, compliance en roadmap.',targets:['data-ai','ai-scan','ai-capabilities','compliance-governance','businesscase','advies','roadmap','overzicht']}),
+  Object.freeze({pattern:/^portal\.(compliance|aiAct)(\.|$)/,kind:'risk',reason:'Compliancewijzigingen beïnvloeden risico, evidence, due diligence, acties, advies en executive sturing.',targets:['compliance-governance','due-diligence','advies','roadmap','overzicht','actueel-houden']}),
+  Object.freeze({pattern:/^portal\.(strategy|strategyDna|strategicModels|business_context|canvases|finalConclusion)(\.|$)/,kind:'strategy',reason:'Strategische keuzes werken door naar conclusies, acties, prioriteiten, roadmap en uitvoering.',targets:['strategie-naar-maandagochtend','strategy-dna','canvassen','eindconclusie','advies','roadmap','uitvoeringsladder','overzicht']}),
   Object.freeze({pattern:/^portal\.(advice|roadmap|tasks|changes|freshness)(\.|$)/,kind:'execution',reason:'Uitvoering wijzigt planning, capaciteit, voortgang, gerealiseerde waarde, actualiteit en managementinformatie.',targets:['advies','roadmap','taken-werkstromen','wijzigingen','actueel-houden','uitvoeringsladder','overzicht','businesscase']}),
   Object.freeze({pattern:/^portal\.(project|integrations|connections)(\.|$)/,kind:'delivery',reason:'Project- en koppelingswijzigingen beïnvloeden planning, afhankelijkheden, uitvoerbaarheid, capaciteit, kosten en projectstatus.',targets:['koppelingen','taken-werkstromen','roadmap','businesscase','overzicht','actueel-houden']}),
   Object.freeze({pattern:/^portal\.(documents|notes|access)(\.|$)/,kind:'evidence',reason:'Documenten, notities en toegangscontext veranderen bewijs, overdraagbaarheid, governance, actualiteit en due-diligence-readiness.',targets:['documenten','gebruikers','due-diligence','compliance-governance','actueel-houden','onderzoek','overzicht']}),
@@ -71,11 +89,28 @@ function downstreamDependencyClosure(seedPages=[]){
 }
 
 const n=v=>Number.isFinite(Number(v))?Number(v):null;
-const stable=v=>v&&typeof v==='object'?JSON.stringify(v):String(v??'');
+const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'
+  ?Object.fromEntries(Object.keys(v).sort().map(key=>[key,canonical(v[key])])):v;
+const stable=v=>v===undefined?'undefined':JSON.stringify(canonical(v));
 function safe(id,state){try{return calc(id,state)}catch{return null}}
 function valueChanged(a,b){
   if(typeof a==='number'||typeof b==='number'){const aa=n(a),bb=n(b);return aa!==bb}
   return stable(a)!==stable(b);
+}
+function pathValue(root,path){
+  return String(path||'').split('.').filter(Boolean).reduce((value,key)=>value&&typeof value==='object'?value[key]:undefined,root);
+}
+function mutationChanged(path,before,after){
+  const leafBefore=pathValue(before,path),leafAfter=pathValue(after,path);
+  if(leafBefore!==undefined||leafAfter!==undefined)return valueChanged(leafBefore,leafAfter);
+  // Parent-level patch/remove operations can invalidate a leaf without materializing it.
+  const segments=String(path||'').split('.').filter(Boolean);
+  const parent=segments.slice(0,2).join('.');
+  return valueChanged(pathValue(before,parent),pathValue(after,parent));
+}
+function reviewForPath(path){
+  const matches=REVIEW_RULES.filter(rule=>rule.pattern.test(String(path)));
+  return {domains:[...new Set(matches.flatMap(rule=>rule.domains))],pages:[...new Set(matches.flatMap(rule=>rule.pages))]};
 }
 function closure(source){
   const seen=new Set([source]);const queue=[source];
@@ -88,7 +123,9 @@ function closure(source){
 }
 export function sourcePageForPath(path=''){
   const parts=String(path).split('.').filter(Boolean);
-  return parts[0]==='portal' ? (SECTION_PAGE[parts[1]]||null) : null;
+  if(parts[0]!=='portal')return null;
+  const candidate=parts[1]==='pages'?parts[2]:parts[1];
+  return SECTION_PAGE[candidate]|| (REGISTERED_PAGES.has(candidate)?candidate:null);
 }
 export function calculateImpactSnapshot(state={}){
   const calculations=Object.fromEntries(CALCS.map(([id])=>[id,safe(id,state)]));
@@ -114,10 +151,13 @@ export function impactForMutation({path,before={},after={}}={}){
     valueBefore:beforeSnap.summary.waardePerJaar,valueAfter:afterSnap.summary.waardePerJaar
   });
   const rules=ruleEffects(path);
+  const review=reviewForPath(path);
+  const rawChanged=mutationChanged(path,before,after);
+  const mappingStatus=sourcePage?'MAPPED':'REVIEW_REQUIRED';
   const calculationPages=calculationConsumerPages(changes);
-  const seeds=[...(sourcePage?closure(sourcePage):[]),...calculationPages,...rules.flatMap(rule=>rule.targets)];
+  const seeds=[...(sourcePage?closure(sourcePage):[]),...calculationPages,...rules.flatMap(rule=>rule.targets),...review.pages,...OBSERVATION_SURFACES];
   const dependencyPages=downstreamDependencyClosure(seeds);
-  const affectedPages=[...new Set([...dependencyPages,'overzicht','advies','eindconclusie'])];
+  const affectedPages=[...new Set([...dependencyPages,'overzicht','advies','eindconclusie'].filter(page=>REGISTERED_PAGES.has(page)))];
   const effectDetails=affectedPages.map(page=>Object.freeze({
     page,label:PAGE_EFFECT_LABELS[page]||page,
     viaCalculation:changes.filter(change=>(CALCULATION_CONSUMERS[change.id]||[]).includes(page)).map(change=>change.id),
@@ -130,7 +170,11 @@ export function impactForMutation({path,before={},after={}}={}){
     changes:Object.freeze(changes),advice,
     effectRules:Object.freeze(rules.map(rule=>Object.freeze({...rule,targets:Object.freeze([...rule.targets])}))),
     effectDetails:Object.freeze(effectDetails),
-    changed:Boolean(changes.length||advice.added.length||advice.removed.length||advice.totalBefore!==advice.totalAfter||advice.valueBefore!==advice.valueAfter)
+    mappingStatus,
+    reviewDomains:Object.freeze(review.domains),
+    externalExecutionAuthorized:false,
+    evidenceStatus:'OBSERVED_NOT_VERIFIED',
+    changed:Boolean(rawChanged||changes.length||advice.added.length||advice.removed.length||advice.totalBefore!==advice.totalAfter||advice.valueBefore!==advice.valueAfter)
   });
 }
-export const PORTAL_IMPACT_ENGINE_VERSION='2026-09-18-v3-whole-portal-causal';
+export const PORTAL_IMPACT_ENGINE_VERSION='2026-10-08-v4-one-brain-all-pages';

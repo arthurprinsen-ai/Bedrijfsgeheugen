@@ -1,6 +1,7 @@
 {
   "version": "WEBSITE-RELEASE-RISK-v1",
   "nonArtifactPaths": [
+    ".github/workflows/",
     ".github/workflows/approved-central-blog.yml",
     ".github/workflows/lane-website.yml",
     "docs/",
@@ -17,10 +18,10 @@
     "AGENTS.md",
     "brain/policies/",
     ".agents/skills/",
-    "tools/delivery/"
+    "tools/delivery/",
+    "tools/ci/"
   ],
   "highRiskPaths": [
-    ".github/workflows/",
     "netlify.toml",
     "_redirects",
     "tools/site-shell/",

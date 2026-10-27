@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|frisse-blik|calendly-embed-unverified-booking-truth|20261025-v1",
+  "obligation_id": "growth-cro:frisse-blik-calendly-receipt-boundary:20261025",
+  "root_cause": "Original Frisse Blik booking UI trusted any browser postMessage with event calendly.event_scheduled without validating origin or widget source, sent GESPREK GEBOEKT and unlocked report even though no independent Calendly event/invitee readback occurred.",
+  "failure_class": "UNTRUSTED_BROWSER_BOOKING_RECEIPT",
+  "compiler": {
+    "failure_class": "UNTRUSTED_BROWSER_BOOKING_RECEIPT",
+    "scope": "WEBSITE_SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "Require exact Calendly origin, embedded iframe source and typed same-event provider URI shapes; treat browser notification only as PENDING_PROVIDER_READBACK, not booked, qualified lead, paid order or downstream revenue evidence. Preserve consent. Independent server/provider reconciliation remains required.",
+  "observed_evidence": {
+    "source": "Production main Frisse Blik original JavaScript and direct connected Calendly provider booking enumeration",
+    "client_only_booking_claim": true,
+    "independently_proven_booking_count": 0
+  },
+  "tests": [
+    "tests/brain-frisse-blik-calendly-receipt-boundary-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-frisse-blik-calendly-receipt-boundary-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-frisse-blik-calendly-receipt-boundary-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-frisse-blik-calendly-receipt-boundary-20261025.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required+CodeQL+website browser+Netlify preview+protected merge and live readback; actual meetings still require provider-owned API/webhook receipt before verified sale."
+}

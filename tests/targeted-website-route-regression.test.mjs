@@ -1,7 +1,46 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures, isHardAssetFailure } from '../tools/site-shell/verify-targeted-website-routes.mjs';
+import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures, isHardAssetFailure, shouldRetryTransientAssetObservation, navigateWithRetry } from '../tools/site-shell/verify-targeted-website-routes.mjs';
+
+test('navigation recovers from one connection reset and requires a real response', async () => {
+  let calls = 0;
+  const response = { status: () => 200 };
+  const page = {
+    async goto() {
+      calls += 1;
+      if (calls === 1) throw new Error('page.goto: net::ERR_CONNECTION_RESET at https://preview.example/ai-act');
+      return response;
+    },
+    async waitForTimeout() {},
+  };
+  assert.equal(await navigateWithRetry(page, 'https://preview.example/ai-act'), response);
+  assert.equal(calls, 2);
+});
+
+test('persistent connection reset exhausts the existing navigation budget', async () => {
+  let calls = 0;
+  const failure = new Error('page.goto: net::ERR_CONNECTION_RESET');
+  const page = {
+    async goto() { calls += 1; throw failure; },
+    async waitForTimeout() {},
+  };
+  await assert.rejects(navigateWithRetry(page, 'https://preview.example/ai-act'), error => error === failure);
+  assert.equal(calls, 2);
+});
+
+test('certificate and application errors are never retried as transient transport', async () => {
+  for (const message of ['net::ERR_CERT_AUTHORITY_INVALID', 'application syntax error']) {
+    let calls = 0;
+    const failure = new Error(message);
+    const page = {
+      async goto() { calls += 1; throw failure; },
+      async waitForTimeout() {},
+    };
+    await assert.rejects(navigateWithRetry(page, 'https://preview.example/'), error => error === failure);
+    assert.equal(calls, 1);
+  }
+});
 
 test('existing baseline page errors do not become a release regression', () => {
   const baseline = ['Unexpected end of input', 'missing ) after argument list'];
@@ -78,4 +117,32 @@ test('benign aborted document request is not treated as a hard asset failure', (
   assert.equal(isHardAssetFailure({ type:'document', errorText:'net::ERR_CONNECTION_RESET' }), true);
   assert.equal(isHardAssetFailure({ type:'script', errorText:'net::ERR_ABORTED' }), true);
   assert.equal(isHardAssetFailure({ type:'stylesheet', errorText:'net::ERR_ABORTED' }), true);
+});
+
+
+test('successful route with only failed assets gets a bounded fresh-page retry', () => {
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:true,
+    identity:{ok:true},
+    observedPageErrors:[],
+    failedAssets:['script:/assets/app.js'],
+  }), true);
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:true,
+    identity:{ok:true},
+    observedPageErrors:[],
+    failedAssets:[],
+  }), false);
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:false,
+    identity:{ok:true},
+    observedPageErrors:[],
+    failedAssets:['script:/assets/app.js'],
+  }), false);
+  assert.equal(shouldRetryTransientAssetObservation({
+    httpOk:true,
+    identity:{ok:true},
+    observedPageErrors:['runtime regression'],
+    failedAssets:['script:/assets/app.js'],
+  }), false);
 });

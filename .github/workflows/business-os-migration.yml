@@ -1,7 +1,8 @@
 name: Business OS Migration
 
 on:
-  pull_request:
+  push:
+    branches: [main]
     paths:
       - 'platform/migrations/**'
       - 'platform/changes/**'

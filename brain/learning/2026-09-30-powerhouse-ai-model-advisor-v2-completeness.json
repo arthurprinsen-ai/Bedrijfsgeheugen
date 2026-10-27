@@ -1,0 +1,69 @@
+{
+  "id": "2026-09-30-powerhouse-ai-model-advisor-v2-completeness",
+  "fingerprint": "powerhouse|ai-model-intelligence|broad-specialist-coverage|v2",
+  "observed_at": "2026-09-30T09:45:00+02:00",
+  "trigger": "User requested a globally broad, task-driven model comparison including costs, weaknesses, data governance, data sovereignty, storage/inference location and filtering.",
+  "prior_state": {
+    "models": 30,
+    "providers": 9,
+    "limitation_fields": "not mandatory",
+    "specialist_coverage": "partial"
+  },
+  "change": {
+    "minimum_seed_models": 100,
+    "current_seed_models": 103,
+    "provider_families": 10,
+    "added_classes": [
+      "image generation/editing",
+      "realtime/voice",
+      "transcription",
+      "TTS",
+      "OCR/document AI",
+      "embeddings/RAG",
+      "moderation/safety",
+      "video",
+      "open-weight/self-host",
+      "cloud-native Amazon Nova/Titan multimodal, voice, image/video and embeddings"
+    ],
+    "filters": [
+      "provider",
+      "tier",
+      "governance",
+      "modality",
+      "task/use case"
+    ],
+    "model_card": [
+      "strengths",
+      "limitations",
+      "cost",
+      "deployment",
+      "storage residency",
+      "inference residency",
+      "training",
+      "retention",
+      "unknown governance count",
+      "official source",
+      "verified_at"
+    ]
+  },
+  "invariants": [
+    "unknown governance is never positive evidence",
+    "specialist models require matching user intent",
+    "official source and verification date per model",
+    "retired/deprecated models do not win normal recommendations",
+    "value is delivered before lead capture",
+    "commercial outcome remains in existing lead/order/revenue lineage"
+  ],
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-advisor-v2-completeness.test.mjs"
+    ]
+  }
+}

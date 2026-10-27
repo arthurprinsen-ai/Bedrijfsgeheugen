@@ -139,3 +139,98 @@ Authority:
 - `docs/sitestandaard.md`
 
 The System Map exposes this as `canonicalWebsiteChrome`. Any future sitewide shell migration must update these authorities in one lineage and prove route parity before terminal production status.
+
+
+## Canonical public CMS + locale authority
+
+Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
+
+De publieke site is één canonieke control surface. Header, footer, mega-menu, primaire navigatie, mobiele navigatie en NL/EN-switching horen bij dezelfde gedeelde site-shell en mogen niet per route afsplitsen.
+
+Locale-authority:
+- Nederlands: on-geprefixte canonical routes;
+- Engels: `/en/*`;
+- same-route invariant: `/x ↔ /en/x` en homepage `/ ↔ /en/`;
+- build authority: `tools/site-shell/apply-i18n.mjs` + `tools/site-shell/build-localized-routes.mjs`;
+- runtime guard: `assets/js/i18n.js`;
+- cache authority: versiegebonden i18n JS/CSS;
+- production authority: Netlify current production moet exact de actuele protected-main identity voeren;
+- terminal bewijs: live browserreadback van NL→EN→NL op representatieve routes plus correcte `html lang`, header/footer en routebehoud.
+
+Alle huidige en toekomstige chats, agents, skills en website-workflows erven dit contract. Tussentijdse CI/deploy-status is interne uitvoeringsstate en geen gebruikersmelding.
+
+
+## Source-backed outbound loop v1 — 29 september 2026
+
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+Powerhouse behandelt Instagram, LinkedIn persoonlijk, LinkedIn bedrijf, blog, e-mail en LinkedIn DM als channel-native projecties van één evidence-first outbound loop:
+
+`SOURCE -> EVIDENCE -> DEDUPE -> PROBLEM/TRIGGER -> CHANNEL FIT -> CANDIDATE -> IDENTITY/TRUTH GATE -> PUBLISH/SEND -> PROVIDER READBACK -> OUTCOME -> LEARNING -> NEXT SELECTION`.
+
+Runtime authorities:
+- `public.powerhouse_outbound_source_lineage_v1`
+- `public.powerhouse_materialize_source_backed_channel_candidates_v1(date)`
+- `public.powerhouse_require_source_for_direct_outreach_v1()`
+- `public.powerhouse_refresh_outbound_source_lineage_v1(date)`
+- `supabase/functions/powerhouse-content-orchestrator/index.ts`
+
+Channel boundaries remain hard: public evidence may select a personal-life theme but cannot fabricate an Arthur experience; company/blog prefer current evidence over static seeds; email/LinkedIn DM require a traceable trigger plus person/company context; Instagram remains Mira-only. Provider outcomes and commercial outcomes return to the same lineage.
+
+Continuous assurance authority: `source-backed-outbound`. The hourly scheduler `powerhouse-outbound-source-lineage-hourly-v1` re-proves all eight stages—input, decision, action, readback, outcome, measurement, learning and guard. GREEN requires current runtime evidence plus 8/8 fresh stage receipts.
+
+## Social historical story-family uniqueness v6 — 30 september 2026
+
+The System Map now contains `social-story-family-uniqueness-v6` as a fail-closed social-publication authority.
+
+Canonical chain:
+
+`candidate → exact/normalized hash → story fingerprint → shingle similarity → keyword Jaccard → keyword overlap coefficient → database reservation/backstop → provider write`.
+
+Authority:
+- `public.powerhouse_reserve_unique_publication_v1`
+- `public.powerhouse_publication_story_family_guard_v2`
+- `public.powerhouse_publication_uniqueness_v1`
+- `supabase/functions/powerhouse-social-publisher/index.ts`
+
+All chats, agents, schedulers and connectors consume the same canonical history. A rewritten version of a consumed anecdote is never a new story. The car/electric-sliding-door/airco incident from 24/30 September 2026 is the permanent regression case.
+
+
+## AI Model Intelligence & Advisor v1 — 30 september 2026
+
+Fingerprint: `powerhouse|ai-model-intelligence|goal-cost-governance-sovereignty|v1`.
+
+De AI Modelwijzer is een canonieke Powerhouse-capability en geen losse vergelijkingsblog. De capability koppelt actuele officiële provider-evidence aan een user-goal-first beslislaag en aan de bestaande commerciële outcome-lineage.
+
+Canonical chain:
+
+`official provider evidence → normalized model catalog → user goal + hard constraints → explainable shortlist → task-cost estimate → model-routing alternative → value-first public result → optional qualified lead → order/revenue outcome → learning`.
+
+Authorities:
+- modeldata: `data/ai-model-catalog-v1.json`;
+- decision/governance policy: `config/powerhouse-ai-model-intelligence-v1.json`;
+- public decision surface: `/ai-modelwijzer`;
+- commercial write: `netlify/functions/ai-modelwijzer-lead.mjs` via the existing `_commercial-lead.mjs` lineage;
+- skill: `.agents/skills/powerhouse-ai-model-intelligence/SKILL.md`;
+- regression: `tests/ai-model-advisor-v1.test.mjs`.
+
+Governance invariants:
+- there is no universal “best model” verdict; fit starts from the user's job-to-be-done;
+- storage residency, inference residency, provider jurisdiction, subprocessors and deployment control are separate fields;
+- “EU data residency” is never treated as synonymous with full data sovereignty;
+- unknown or stale evidence is shown as unknown and cannot silently pass a hard privacy/sovereignty filter;
+- self-host/open-weight paths are explicit and do not imply equal managed-service pricing;
+- the first useful recommendation is ungated; lead capture follows value delivery;
+- no second CRM, lead store, outcome store or learning loop is introduced.
+
+The capability is structurally registered in the canonical System Map. Production status remains evidence-gated by protected merge, exact-main Netlify deployment and public functional readback.
+
+
+## Portal explanation freshness — 20 October 2026
+Fingerprint: `portal-explanation-autosync-20261020-v1`.
+The actual Portal V2 explanation surfaces are Powerhouse Control Center / Systeemkaart, Lagen & systemen, Documentatie & learning, Brain-verwerking, and Hoe dit portaal rekent. Their source dependencies include page-shell, page-metrics, page-visuals, runtime-evidence and doorwerking / legacy-parity-engine.
+Run `node scripts/brain/portal-explanation-inventory.mjs --write` in the current protected candidate whenever inventories or these sources change, then `--check`. The existing Netlify build regenerates the inventory; Required test and the existing daily self-evolution workflow check it. The existing Growth & Revenue OS assurance (08:00/11:00/14:00/17:00 Europe/Amsterdam) is extended in place to review and safely repair semantic drift in this same lineage. No new scheduler, database, publisher or deployment authority.
+Inventory entries are repository source modules, including helper directories/files: they are not deployed-function or successful-run counts. A source fingerprint detects changed dependencies; it does not prove that every explanation is semantically correct. The delivery owner must review changed formulas, ownership, providers and dataflow explanations. Preserve original provider observations; no regenerated timestamp, Notion update, code merge or empty runtime screen proves live execution. Runtime/client acceptance remains under existing #4215.
+Prevention: source additions/deletions/changes must fail the check until refreshed; refresh must be idempotent. Protected release and exact production/readback remain required. Unknown evidence stays unknown.
+
+Browser freshness: the live portal served unversioned module imports with Cache-Control max-age=604800. The existing build now versions the entry and local JS import graph (plus styles) using a normalized source-content fingerprint. Real portal source changes invalidate entry/import URLs; repeated builds keep the same fingerprint. This operates only on the built artifact, not a second runtime/store/scheduler. Source checks normalize the generated query marker. Preview/production readback must confirm the fingerprint in entry and imported modules.

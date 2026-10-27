@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-netlify-preview-immutable-target-20261009-v1",
+  "fingerprint": "powerhouse|portal|netlify-status-target-dashboard-not-immutable-release-origin-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing Netlify GitHub status context, verified immutable Netlify deploy and protected Portal V2 preview workflow",
+  "root_causes": [
+    "Exact-head Portal V2 PR readback #37908040948 timed out because its Netlify status target_url pointed to the app.netlify.com deploy dashboard, not an immutable Netlify web origin serving release.json.",
+    "Production DOM run #37908103412 rightfully failed closed because no approved exact-head visual-baseline artifact was available.",
+    "No-content-change Netlify build may report a green commit status even while a referenced deploy has state error/canceled; status alone is insufficient."
+  ],
+  "prevention": [
+    "Resolve provider target_url with exact HTTPS host/path and 24-hex deploy ID checks before constructing immutable https://ID--bedrijfsgeheugen.netlify.app.",
+    "Require immutable release.json commit_ref==PR head SHA and release deploy_id==URL target ID; fail closed otherwise.",
+    "Never use stale or unapproved visual baseline to make production DOM pass; require independent new exact-head and exact-main evidence."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_DASHBOARD_TARGET_USED_AS_DEPLOY_URL",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "exact-head Required and CodeQL and protected merge",
+    "successful independently approved Portal V2 visual preview exact PR head and exact-main production DOM screenshot comparison",
+    "two actual authorized customer tenant readbacks",
+    "full dynamic/legacy input DOM and >750KB transactional outbox",
+    "company-specific official CSRD/ESRS applicability"
+  ]
+}

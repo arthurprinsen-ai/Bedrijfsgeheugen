@@ -1,0 +1,42 @@
+{
+  "id": "2026-09-30-independent-public-browser-readback-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "production-readback|independent-browser-fallback|zenrows-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The default public browser could not connect to bedrijfsgeheugen.nl, so prior closure fell back to Netlify provider readiness only. An independent JS-rendered public fetch later proved the site reachable and exposed a separate runtime SEO defect: the English Modelwijzer raw title was correct but a legacy SPA script overwrote document.title after JavaScript execution.",
+  "prevention": [
+    "Do not treat one browser provider's connectivity failure as proof that public readback is unavailable.",
+    "Fallback to an independent external browser/fetch provider before relying on provider-state-only evidence.",
+    "For SEO pages compare raw served HTML with JS-rendered state because runtime scripts can mutate title/canonical-visible state.",
+    "Static localized canonicals remove legacy SPA tab-title mutators before publication."
+  ],
+  "fix": "Use ZenRows as the independent public-browser fallback and remove #bg-tabtitel from all static localized outputs so runtime title equals canonical SEO metadata.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-localized-route-inheritance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-localized-route-inheritance-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "public_urls": [
+      "https://www.bedrijfsgeheugen.nl/sitemap.xml",
+      "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+      "https://www.bedrijfsgeheugen.nl/en/ai-modelwijzer"
+    ],
+    "regression": "tests/brain-seo-localized-route-inheritance-v1.test.mjs",
+    "skill": ".agents/skills/powerhouse-netlify-production-truth/SKILL.md"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "seo-revenue-growth"
+  ]
+}

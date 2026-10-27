@@ -1,0 +1,16 @@
+{
+  "skill": "powerhouse-netlify-reconciliation-v1",
+  "fingerprint": "powerhouse|deployment|live-gap-reconcile|v1",
+  "owner": "ONE BRAIN / Production delivery control plane",
+  "authority": "protected main commit + immutable Netlify release.json + authorized OIDC deploy transport",
+  "instruction": "Treat production parity as an end-to-end source-versus-provider predicate, not the result of a green workflow. Do not cancel an in-flight authorized deployment due to harmless pushes. Let at most the latest pending reconcile proceed; compare all changes since last live SHA with current main before deciding no-deploy. If live SHA/ancestry is absent, fail closed into deploy-required. Before any success claim, check exact Netlify commit and authenticated production routes. No second executor, no bypass of branch protection or security.",
+  "routing": [
+    ".github/workflows/production-source-snapshot.yml",
+    "tools/delivery/netlify-live-gap-reconcile.mjs"
+  ],
+  "tests": [
+    "tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}

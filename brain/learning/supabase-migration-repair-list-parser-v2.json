@@ -1,0 +1,40 @@
+{
+  "id": "supabase-migration-repair-list-parser-v2",
+  "date": "2026-10-05",
+  "issue": 3742,
+  "failure_class": "DELIVERY_CONTROL_PLANE",
+  "finding": "Supabase CLI migration-list table cells can contain presentation backticks; matching raw cells against /^\\d{14}$/ can silently discard valid migration rows and produce false empty drift.",
+  "rule": "Provider CLI table output must be normalized before machine identity comparison; presentation delimiters are not part of migration identity.",
+  "prevention": [
+    "normalize backticks and whitespace before migration version validation",
+    "apply identical normalization to pre-repair and post-repair parity parsers",
+    "regression-test parser normalization",
+    "remain fail-closed on unexpected drift"
+  ],
+  "production_mutation": "none in parser fix",
+  "terminal_green_requires": [
+    "trusted repair success",
+    "production ledger readback",
+    "canonical recovery exact-head green",
+    "protected merge",
+    "post-merge production readback"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-list-parser-v2.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase-migration-repair-list-parser-backtick-normalization-v2",
+  "root_cause": "Supabase CLI renders migration-list version cells with presentation backticks; the trusted repair parser validated raw cells against a bare 14-digit regex, discarded the four expected local-only versions, and failed closed with a false empty drift before any production mutation.",
+  "evidence": [
+    "tests/brain-supabase-migration-repair-list-parser-v2.test.mjs",
+    "trusted-main run 37354534547 reached production through GitHub OIDC and stopped before mutation with UNEXPECTED_PRE_REPAIR_DRIFT:[] while the CLI table visibly contained all four expected local-only versions",
+    "both pre-repair and post-repair parsers now normalize surrounding backticks before identity comparison"
+  ]
+}

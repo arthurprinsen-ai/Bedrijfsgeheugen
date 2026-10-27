@@ -1,0 +1,24 @@
+{
+  "fingerprint": "powerhouse-bilingual-lead-magnet-loop-v1",
+  "date": "2026-09-30",
+  "learning": [
+    "One language per LinkedIn post; provide NL and EN asset variants.",
+    "High-utility numbered assets, calculators, benchmarks, prediction briefs and practical frameworks beat portal brochures.",
+    "A translated post is not a new story and may not bypass semantic dedupe.",
+    "Comment intent closes into DM delivery, relationship enrichment and revenue outcome learning.",
+    "Predictions preserve sourcing and uncertainty."
+  ],
+  "linked_config": "config/powerhouse-lead-magnet-campaign-v1.json",
+  "compiler": {
+    "failure_class": "lead_magnet_channel_fragmentation",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-need-discovery-v1.test.mjs"
+    ]
+  }
+}

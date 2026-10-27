@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+  "date": "2026-09-29",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "A production deploy can be ready/current and exact-main while one or more functional capability readbacks are still open or failing. Treating deploy readiness as whole-system green would create a false-green.",
+  "root_cause": "Deployment truth and capability truth are different evidence classes. Netlify ready/current proves hosting promotion; it does not independently prove pricing interactions, NL↔EN route roundtrip, connector readiness, social publication outcome, or other functional contracts.",
+  "evidence": {
+    "deployment": {
+      "provider": "netlify",
+      "site": "bedrijfsgeheugen",
+      "deploy_id": "6abbdf73c4c7d80008d9811f",
+      "commit_ref": "204269314239ea2cc56a00a0da1ed87a5056415f",
+      "state": "ready",
+      "context": "production",
+      "published_at": "2026-09-29T15:57:21.591Z"
+    },
+    "observed_rule": "Exact production identity was proven independently from functional readback state.",
+    "truth_boundary": "This learning records the separation of deployment proof and functional proof; it does not assert every capability is green."
+  },
+  "prevention": [
+    "Represent deployment_state and functional_state separately in all Powerhouse status projections.",
+    "LIVE means exact provider-side production promotion exists; FUNCTIONAL_GREEN means the relevant capability readback also passed.",
+    "Never infer pricing, NL↔EN, connector, content, social, or business outcome success from Netlify ready/current alone.",
+    "Every material live promotion writes Brain learning, skills, agent/chat contract, ledger/docs and System Map in the same obligation lineage.",
+    "Future chats/agents inherit this automatically and must not require the user to repeat 'borg / leg vast / documenteer'."
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "PRODUCTION_TRUTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-chat-learning-complete.test.mjs",
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-complete.test.mjs",
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs"
+}

@@ -1,0 +1,48 @@
+{
+  "fingerprint": "mira-entrepreneur-problem-to-portal-caption-v1",
+  "date": "2026-10-09",
+  "failure_class": "MIRA_PERSONAL_COMPLAINT_OVERRIDES_CANONICAL_BUSINESS_PROBLEM",
+  "scope": "CONTENT",
+  "root_cause": "Source scorer selected generic consumer complaints and the canonical AI orchestrator instructed the Instagram writer to avoid office problems and business context, despite user's desired PH-P entrepreneur problem + portal explanation. Today's frozen winner had a Belgian complaint page irrelevant to SME pain.",
+  "source_of_truth": "config/powerhouse-problem-library.json",
+  "source_problems": "40 authored PH-Pxxx hypotheses mirrored, cross-checked by test against canonical file; no independent problem taxonomy",
+  "prevention": [
+    "Existing content-orchestrator uses deterministic PH-P scene and complete caption, preserving fictional nature and POTENTIAL impact",
+    "Existing Mira media-router returns same PH-P problem/scene and refuses an unrelated asset",
+    "Existing social-publisher rejects text, portal, and media scene mismatch before external provider request",
+    "No new scheduler, generator, CRM, publisher or synthetic commercial results"
+  ],
+  "evidence": {
+    "production_pre_change": {
+      "run_date": "2026-10-09",
+      "winner_source": "https://lunyb.com/blog/nl/gba-belgie-klacht-indienen",
+      "instagram_obligation": "BLOCKED:MEDIA_ASSET_REQUIRED"
+    },
+    "test": "tests/brain-mira-entrepreneur-caption-v1.test.mjs",
+    "code_paths": [
+      "supabase/functions/_shared/mira-entrepreneur-caption.mjs",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/functions/powerhouse-instagram-media-router/index.ts"
+    ],
+    "actual_instagram_provider_send_this_candidate": 0
+  },
+  "compiler": {
+    "failure_class": "MIRA_PERSONAL_COMPLAINT_OVERRIDES_CANONICAL_BUSINESS_PROBLEM",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-caption-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "consumer_comment_sources_still_available_for_context": true,
+    "commercial_proof_not_manufactured": true,
+    "daily_winner_protected": true,
+    "provider_readback_required": true
+  }
+}

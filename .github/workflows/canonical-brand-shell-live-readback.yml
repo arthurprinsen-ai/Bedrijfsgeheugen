@@ -50,12 +50,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - id: runtime
+        name: Resolve runtime-applicable production commit
+        env:
+          HEAD_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          accepted="$HEAD_COMMIT"
+          mode="exact-head"
+          live_release="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?runtime_scope=${HEAD_COMMIT}-$(date +%s)" || true)"
+          observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$live_release")"
+          if [[ "$observed" =~ ^[0-9a-f]{40}$ ]]; then
+            git fetch origin main --quiet || true
+            if git cat-file -e "$observed^{commit}" 2>/dev/null && git merge-base --is-ancestor "$observed" "$HEAD_COMMIT"; then
+              delta="$(git diff --name-only "$observed...$HEAD_COMMIT")"
+              safe="$(printf '%s\n' "$delta" | node --input-type=module -e '
+                import fs from "node:fs";
+                const paths=fs.readFileSync(0,"utf8").split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
+                const prefixes=["docs/","tests/",".github/","brain/learning/"];
+                const exact=new Set([
+                  "brain/contracts/production-readback-v1.json",
+                  "tools/site-shell/contracts.mjs",
+                  "tools/site-shell/test-shell-components.mjs",
+                  "tools/site-shell/live-contract.mjs",
+                  "tools/site-shell/test-live-contract.mjs",
+                  "tools/site-shell/production-supersession.mjs",
+                  "tools/site-shell/standalone-visibility-check.mjs"
+                ]);
+                const ok=paths.every(p=>exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix)));
+                process.stdout.write(String(ok));
+              ')"
+              if [ "$safe" = "true" ]; then
+                accepted="$observed"
+                mode="control-plane-ancestor"
+              fi
+            fi
+          fi
+          echo "accepted_runtime_commit=$accepted" >> "$GITHUB_OUTPUT"
+          echo "runtime_mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "RUNTIME_APPLICABILITY mode=$mode head=$HEAD_COMMIT live=${observed:-none} accepted=$accepted"
       - name: Wait for exact Netlify production commit and verify canonical shell + SEO order engine
         env:
-          EXPECTED_COMMIT: ${{ github.sha }}
+          EXPECTED_COMMIT: ${{ steps.runtime.outputs.accepted_runtime_commit }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 16); do
@@ -90,16 +131,16 @@ jobs:
           test "$(curl -sS -o /tmp/growth-health.txt -w '%{http_code}' https://www.bedrijfsgeheugen.nl/api/growth-event || true)" = "405"
       - name: Install production visual readback browser
         run: |
-          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+          PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
       - name: Verify every public production page is visibly rendered
         env:
           UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
-          UI_VR_ROUTE_CONCURRENCY: '8'
-          UI_VR_VIEWPORT_CONCURRENCY: '3'
+          UI_VR_ROUTE_CONCURRENCY: '2'
+          UI_VR_VIEWPORT_CONCURRENCY: '1'
         run: timeout --signal=TERM --kill-after=30s 10m node tools/site-shell/standalone-visibility-check.mjs
       - name: Production UI visual regression readback
         env:
-          EXPECTED_COMMIT: ${{ github.sha }}
+          EXPECTED_COMMIT: ${{ steps.runtime.outputs.accepted_runtime_commit }}
           UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
       - name: Upload production visual regression diagnostics

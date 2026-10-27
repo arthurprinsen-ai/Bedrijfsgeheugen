@@ -80,3 +80,39 @@ Hard rules:
 
 This rule is stricter than text-hash/shingle dedupe and overrides the older rotation wording wherever that could be read as allowing reuse of a previously published source.
 
+
+
+## Source-backed topic selection — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+Public daily-life/friction evidence may determine which personal-life topic is worth writing about, but it is never proof that Arthur personally experienced it. First-person claims still require verified Arthur source truth. If no verified personal anchor exists, write observationally without inventing experience, or hold the item. Always retain source lineage, dedupe historically, and write engagement/inbound outcomes back to the source/problem/angle.
+
+## Personal LinkedIn story-family overlap guard v2 (2026-09-30)
+
+Fingerprint: `personal-linkedin-story-family-overlap-v2`.
+
+A verified personal source can be factually true and still be ineligible because its underlying story was already consumed. For personal LinkedIn:
+- a published anecdote is permanently consumed as a story family;
+- source rotation may never return to an already-published anecdote;
+- same objects + same event + same lived sequence + same conclusion/routine count as the same story even when phrasing is new;
+- the database story-family overlap gate is mandatory before provider write;
+- on `STORY_FAMILY_DUPLICATE`, choose a different verified personal event rather than paraphrasing.
+
+Canonical regression family now also includes the car incident: broken electric sliding door, warm airco, manual door/windows-open workaround and adaptation to the new routine.
+
+
+## Daily no-gap observational fallback — 2026-10-03
+
+Fingerprint: `personal-linkedin-no-gap-observational-v2`.
+
+Daily cadence may never be satisfied by recycling a historical personal anecdote. Historical generated artifacts are not an eligible fallback source because they can inherit an already-consumed story family.
+
+When no genuinely unused verified Arthur personal event is available:
+- select a fresh, source-backed everyday-life theme that has not previously been used on the personal channel;
+- write observationally, with no `ik/mijn/mij/me` claims and no implication that Arthur personally experienced the event;
+- keep the topic strictly daily-life/personal and non-commercial;
+- preserve source URL, source lineage, calendar date and prediction lineage;
+- run the same global text/story-family uniqueness gate before provider write;
+- never accept `NO_ELIGIBLE_CONTENT` / `SKIPPED` as a successful terminal outcome for the daily personal-channel obligation while a compliant observational source exists.
+
+LinkedIn account resolution must prefer the canonical personal connection independently of company/org connections. A revoked or organization-oriented active token may not become the personal publication authority merely because it resolves the same member identity.

@@ -202,3 +202,97 @@ The generated participant PDF contains surfaces 2 and 3 only. Never insert the h
 
 ## Growth Swarm integration
 SEO is een demand/intent-ingang van `powerhouse-growth-swarm-v1`, niet een los optimalisatiedoel. Zoekvragen, money-page gedrag, problem/switch-page kansen en content outcomes mogen account-/segmentprioriteit verhogen, maar tellen niet zelfstandig als koopintentie. De 20-play catalog bevat `competitor-switch-pages`, `prospect-generated-content-loop`, `we-disagree-content` en `mkb-friction-index`; deze blijven onder canonical intent ownership, cannibalization control en query -> lead -> order -> realized revenue attributie.
+
+
+## €1M Revenue Operating Contract — 29 september 2026
+Fingerprint: `powerhouse-one-million-revenue-operating-contract-v1`.
+
+Deze skill erft verplicht `config/powerhouse-one-million-revenue-operating-contract-v1.json`.
+
+Niet-onderhandelbaar:
+- North star: €1.000.000 gerealiseerde omzet binnen 365 dagen; paid order en realized revenue wegen altijd zwaarder dan bereik, traffic, posts, scans, leads of meetings.
+- Elke dagelijkse commerciële run kiest uit één gedeelde next-best-action ruimte: bedrijfspost, Mira-Instagram, SEO/blog/CRO, contextuele LinkedIn-reactie, warm/consented e-mail, ondersteunde private follow-up, due follow-up, offerte/offer follow-up, warme referral, partner/workshop follow-up of value asset.
+- Een gekwalificeerde veilig uitvoerbare actie wordt uitgevoerd; alleen aanbevelen/draften is niet terminal wanneer de canonieke executor beschikbaar is.
+- Achterstand op omzetpace verhoogt kwaliteit en aantal gekwalificeerde research/value/follow-up-acties, maar omzeilt nooit evidence, identity, privacy, consent, suppression, dedupe, fatigue of provider-ack gates.
+- Generieke cold-bulk autosend blijft verboden. Koude prospects mogen automatisch worden gevonden, verrijkt, gescoord en voorbereid; extern verzenden gebeurt alleen binnen een afzonderlijk goedgekeurde lawful/consent-based eligibility route.
+- Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
+- LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
+- Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Execute-or-explain terminal contract
+
+Fingerprint: `seo-cro-execute-or-explain-v1`.
+
+Every material SEO/CRO opportunity discovered by a daily run must terminate in the same cycle as exactly one of:
+
+- `EXECUTED`: a bounded, reversible, evidence-gated change was implemented through the canonical protected delivery lineage and then carried through production readback; or
+- `REJECTED_WITH_EVIDENCE`: no material write is allowed, with a persisted reason code and the exact missing/contradicting evidence.
+
+An operator-facing recommendation without either terminal state is a contract failure.
+
+Allowed rejection reason codes:
+- `INSUFFICIENT_SEARCH_EVIDENCE`
+- `INSUFFICIENT_CONVERSION_EVIDENCE`
+- `CANONICAL_OWNER_ALREADY_SERVES_INTENT`
+- `CANNIBALIZATION_RISK`
+- `EXPECTED_ORDER_VALUE_TOO_LOW`
+- `GUARDRAIL_OR_TRUST_RISK`
+- `HUMAN_AUTHORITY_REQUIRED`
+- `NO_SAFE_REVERSIBLE_CHANGE`
+
+For `REJECTED_WITH_EVIDENCE`, persist:
+1. opportunity/query and canonical owner;
+2. evidence inspected and freshness;
+3. exact reason code;
+4. exact evidence missing or conflicting;
+5. what observable condition would make the opportunity executable in a later cycle.
+
+Do not use CI/tool/transient delivery failures as rejection reasons. They are recovery work and must remain in the same execution lineage.
+
+When evidence supports one or more safe changes, execute up to the configured daily maximum rather than merely describing them. The operator report must state what was changed and the measured/readback state; if no change was made, it must state the evidence-backed reason why.
+
+
+## Bilingual SEO revenue architecture — 30 september 2026
+
+Fingerprint: `seo|nl-en|revenue-ownership|hreflang|v1`.
+
+The public website is one commercial search system across Dutch and English, not a Dutch SEO estate with translated copies added later.
+
+Canonical rules:
+- Dutch canonicals remain unprefixed. English canonicals use `/en/*`.
+- Every indexable NL route that is part of the public localized estate must have an EN peer with self-canonical, reciprocal `hreflang="nl"`, `hreflang="en"` and `x-default` to Dutch.
+- The production sitemap must contain both NL and EN canonicals and reciprocal xhtml hreflang entries. Legacy `/nl/*` URLs never enter the sitemap.
+- English SEO keywords are researched and owned independently; never mechanically translate Dutch target keywords and assume equivalent demand.
+- `site/seo-order-map.json` + `site/seo-order-expansion.json` remain the canonical intent-owner registry. `site/seo-locale-revenue-map.json` is the bilingual market/metadata/revenue projection of those owners and must have exactly one entry per registry owner.
+- Every NL and EN primary/secondary keyword has one owner. Cross-page collisions fail closed. Supporting pages inherit the localized commercial owner instead of creating parallel keyword ownership.
+- High-value English owners must have market-specific title, description and keyword metadata. Supporting English pages inherit the EN owner/cluster for attribution even when their visible copy is a normal translation.
+- Internal links are revenue architecture, not link-count SEO. Related support routes link to their canonical money owner; money owners link to relevant cluster pages and the next commercial destination. The same graph is projected to `/en/*`.
+- The production chain is: localized pages → bilingual revenue-link projection → sitemap generation → bilingual SEO/revenue validation → release evidence.
+- Search intelligence maps Dutch and English queries back to one canonical business intent owner while preserving the actual localized landing canonical and localized keyword cluster for attribution.
+- Market evidence must be keyed by `locale + market + keyword`; a single keyword primary key is insufficient for multilingual SEO. Canonical runtime authority is `public.powerhouse_seo_keyword_intelligence_v1` with the revenue-priority projection `public.powerhouse_seo_keyword_revenue_priority_v1`.
+- DataForSEO/GSC demand signals are diagnostics and prioritization evidence. They become commercial truth only after the closed loop records landing → CTA → lead → meeting/proposal → paid order → realized revenue.
+- Revenue opportunity scoring may prioritize CPC, search volume and intent, but it may not fabricate demand or treat forecast value as realized revenue.
+- The Modelwijzer is a canonical commercial intent owner for Dutch `ai modellen vergelijken` and English `AI model comparison`; it must route to implementation/governance/data-sovereignty/pricing/commercial next steps rather than terminate as an isolated tool.
+- Every material keyword/metadata/internal-link change must preserve cannibalization ownership, protected delivery, exact-main production identity, public readback and outcome writeback.
+
+Measured seed evidence from 30 September 2026:
+- NL `bedrijfsprocessen automatiseren`: 480 monthly searches, CPC €14.53.
+- NL `ai governance`: 390 monthly searches, CPC €15.86.
+- NL `data soevereiniteit`: 260 monthly searches, CPC €6.33.
+- EN/UK `AI model comparison`: 390 monthly searches, CPC €3.30.
+- EN/UK `ai governance`: 1,300 monthly searches, CPC €24.01.
+- EN/UK `sovereign ai`: 2,400 monthly searches, CPC €13.28.
+
+These are dated market observations, not guaranteed future volumes. Refresh them through the canonical DataForSEO evidence path and learn from realized commercial outcomes.
+
+
+### Static English cache is a release contract
+
+Fingerprint: `seo|nl-en|static-i18n-cache-complete|v1`.
+
+- Every new or changed visible Dutch string on an indexable public route must have a committed English cache entry before merge when production uses `STATIC_I18N_REQUIRE_CACHE=1`.
+- A translated component fragment is not sufficient when the localized builder sees a combined source string; cache the exact source string emitted by final source HTML.
+- Run the canonical localized-route cache validation before protected merge. Missing translations are a production blocker, never a deploy-time surprise.
+- SEO title, description, H1, CTA, governance copy, footer copy and commercial handoff copy are all inside this contract.
+- A Netlify build failure caused by `STATIC_I18N_CACHE_INCOMPLETE` must be repaired at the source cache and then replayed through protected delivery; never disable the cache gate or silently fall back to Dutch on English routes.

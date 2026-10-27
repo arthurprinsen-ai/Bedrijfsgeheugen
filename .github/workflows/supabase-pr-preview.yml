@@ -1,20 +1,21 @@
 name: Supabase PR Preview Contract
 
 on:
-  pull_request:
-    # Hosted Supabase branching is only useful when the Supabase source changes.
-    # Portal/UI/Netlify code is verified by the canonical Required test lanes and
-    # must not allocate a database preview branch or an extra PR runner.
-    paths:
-      - 'supabase/**'
-      - '.github/workflows/supabase-pr-preview.yml'
+  workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
+      head_sha:
+        required: true
+        type: string
 
 permissions:
   contents: read
   pull-requests: read
 
 concurrency:
-  group: supabase-pr-preview-${{ github.event.pull_request.number }}
+  group: supabase-pr-preview-${{ inputs.head_sha }}
   cancel-in-progress: true
 
 jobs:
@@ -24,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: ${{ inputs.head_sha }}
           fetch-depth: 0
 
       # Runtime replay authority is the Supabase Git Preview Branch attached to the PR.
@@ -39,9 +41,9 @@ jobs:
           set -euo pipefail
           test -f supabase/config.toml
           test -d supabase/migrations
-          echo "PR=${{ github.event.pull_request.number }} SHA=${{ github.event.pull_request.head.sha }}"
+          echo "BASE=${{ inputs.base_sha }} SHA=${{ inputs.head_sha }}"
 
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
           import re
           import tomllib
@@ -59,21 +61,34 @@ jobs:
 
           versions = {}
           malformed = []
+          empty_or_whitespace = []
           for path in sorted((root / 'migrations').glob('*.sql')):
               match = re.match(r'^(\d{14})_(.+)\.sql$', path.name)
               if not match:
                   malformed.append(path.name)
                   continue
+              if not path.read_text(encoding='utf-8').strip():
+                  empty_or_whitespace.append(path.name)
               versions.setdefault(match.group(1), []).append(path.name)
 
           duplicates = {version: names for version, names in versions.items() if len(names) > 1}
           assert not malformed, f'malformed migration filenames: {malformed}'
           assert not duplicates, f'duplicate migration versions: {duplicates}'
-          print(f'Validated config plus {len(versions)} uniquely-versioned migration files.')
+          assert not empty_or_whitespace, f'empty or whitespace-only migration SQL is forbidden: {empty_or_whitespace}'
+          print(f'Validated config plus {len(versions)} uniquely-versioned, non-empty migration files.')
           PY
 
-          python scripts/brain/check_powerhouse_supabase_security.py --self-test
-          python scripts/brain/check_powerhouse_supabase_security.py origin/main "${{ github.event.pull_request.head.sha }}"
+          python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
+          python3 scripts/brain/check_powerhouse_supabase_security.py "${{ inputs.base_sha }}" "${{ inputs.head_sha }}"
 
-      - name: Contract evidence
-        run: node --test tests/candidate-environment.test.mjs
+      - name: Contract evidence and bounded clean-room replay regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/candidate-environment.test.mjs
+          # Historical 20261023070053 source may be absent on older, independent
+          # PR branches; whenever it exists the paired regression is mandatory.
+          if [ -f supabase/migrations/20261023070053_p0_4215_forecast_scope_lower_idx.sql ]; then
+            test -f tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs
+            node --test tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs
+          fi

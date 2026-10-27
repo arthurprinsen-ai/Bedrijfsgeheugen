@@ -9,7 +9,7 @@ test('scheduler recovery cannot regress terminal i18n delivery contracts', () =>
 
   assert.match(apply,/const hasI18nCss =/);
   assert.match(apply,/const hasI18nScript =/);
-  assert.match(apply,/html = injectMobileLanguage\(html\);/);
+  assert.match(apply,/html = injectMobileLanguage\(html,\s*file\);/);
 
   assert.match(verify,/async function switchPublicLocale/);
   assert.match(verify,/mandatoryRoutes/);
@@ -17,6 +17,6 @@ test('scheduler recovery cannot regress terminal i18n delivery contracts', () =>
   assert.match(verify,/\/en\/systemen-koppelen/);
 
   assert.match(workflow,/group:\s*production-source-snapshot-main-v3/);
-  assert.match(workflow,/pricing-interactions-rescue-v1\.js\?v=3de3592ac866/);
-  assert.doesNotMatch(workflow,/pricing-interactions-rescue-v1\.js\?v=600965d2d30f/);
+  // The pricing rescue script was retired with the billing-toggle pricing page; no pinned rescue version may return.
+  assert.doesNotMatch(workflow,/pricing-interactions-rescue-v1\.js\?v=/);
 });

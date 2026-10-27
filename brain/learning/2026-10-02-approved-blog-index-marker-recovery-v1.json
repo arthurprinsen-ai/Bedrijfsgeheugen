@@ -1,0 +1,23 @@
+{
+  "fingerprint": "approved-blog|blog-index-marker|literal-backslash-n-v1",
+  "date": "2026-10-02",
+  "type": "CONTENT_DELIVERY_RECOVERY",
+  "root_cause": "blog/index.html contained a literal backslash-n immediately after the artikelen container marker while the deterministic publisher only recognized a real newline, causing Blogindex mist artikelen-marker.",
+  "prevention_rule": "The approved blog publisher must recognize both the canonical real-newline marker and the historical literal backslash-n marker, normalize the latter, and fail closed when neither marker exists.",
+  "enforcement": [
+    "scripts/publish_approved_blog.py",
+    "approved-central-blog workflow",
+    "deterministic contract checks"
+  ],
+  "evidence": [
+    "GitHub Actions run 37026137254 failed at Seal or render exact approved article with Blogindex mist artikelen-marker."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-versiebeheer-recovery-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CONTENT_DELIVERY_MARKER_REPRESENTATION_DRIFT"
+  }
+}

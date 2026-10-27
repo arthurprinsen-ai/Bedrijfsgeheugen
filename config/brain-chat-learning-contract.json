@@ -2,6 +2,12 @@
   "version": "BRAIN-CHAT-LEARNING-v1",
   "preflightRequired": true,
   "newAgentsMustReadBeforeExecution": true,
+  "preflightBudget": {
+    "maxSources": 128,
+    "maxBytes": 256000,
+    "primaryBound": "maxBytes",
+    "sourceCountPurpose": "bounded filesystem fanout safety"
+  },
   "purpose": "Indexeer chat-afgeleide engineeringkennis en blokkeer herhaling van bekende fouten voordat een agent materieel werk uitvoert.",
   "canonicalSources": [
     "docs/learning/chat-learning-checkpoint-2026-08-30.md",
@@ -19,7 +25,17 @@
     "docs/changes/2026-09-29-powerhouse-daily-compound-learning-v1.md",
     "brain/policies/linkedin-company-standard-delivery-v1.json",
     "brain/learning/2026-09-29-linkedin-company-standard-delivery-v1.json",
-    "docs/changes/2026-09-29-linkedin-company-standard-delivery-v1.md"
+    "docs/changes/2026-09-29-linkedin-company-standard-delivery-v1.md",
+    "config/powerhouse-one-million-revenue-operating-contract-v1.json",
+    "brain/learning/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.json",
+    "docs/changes/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.md",
+    "config/instagram-canonical-provider-identity-v3.json",
+    "brain/learning/2026-09-29-instagram-provider-id-drift-v3.json",
+    "docs/changes/2026-09-29-instagram-provider-id-drift-v3.md",
+    "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json",
+    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json",
+    "brain/learning/2026-09-29-instagram-live-proven-v1.json",
+    "docs/changes/2026-09-29-instagram-live-proven-v1.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -45,7 +61,31 @@
     "linkedinCompanyStandardFingerprint": "linkedin-company-standard-delivery-v1",
     "companySocialRejectPersonalTopics": true,
     "productionSocialAuthAuthorityBeforeChatConnector": true,
-    "userDeletedCompanyPostRequiresNewStoryReplacement": true
+    "userDeletedCompanyPostRequiresNewStoryReplacement": true,
+    "requireOneMillionRevenueOperatingContract": true,
+    "oneMillionRevenueFingerprint": "powerhouse-one-million-revenue-operating-contract-v1",
+    "commercialExecutionBeforeRecommendationWhenAuthorized": true,
+    "genericColdBulkAutosendForbidden": true,
+    "warmConsentedFollowupAutonomous": true,
+    "realizedRevenueIsCommercialNorthStar": true,
+    "requireLiveInstagramProviderIdentity": true,
+    "instagramProviderIdentityFingerprint": "instagram-canonical-provider-identity-v3",
+    "hardcodedInstagramGraphIdForbidden": true,
+    "instagramCreatePublishReadbackSameProviderUserId": true,
+    "requireLivePromotionGovernanceClosure": true,
+    "livePromotionGovernanceFingerprint": "powerhouse|live-promotion|governance-closure|2026-09-29-v1",
+    "readyDeployIsOnlyDeploymentEvidence": true,
+    "capabilitySubchainsRemainIndependentlyGated": true,
+    "userMustRepeatBorgRequest": false,
+    "requireLiveVsFunctionalTruthSeparation": true,
+    "liveVsFunctionalTruthFingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+    "deploymentReadyNeverImpliesFunctionalGreen": true,
+    "materialLivePromotionAutoWriteback": true,
+    "instagramLiveGraphUserIdRuntimeAuthority": true,
+    "instagramObservedNumericIdsAreEvidenceOnly": true,
+    "instagramPublishedProviderTruthIsTerminal": true,
+    "instagramInternalStateMustConvergeToLiveProven": true,
+    "instagramRepublishForbiddenAfterProviderAck": true
   },
   "lessons": [
     {

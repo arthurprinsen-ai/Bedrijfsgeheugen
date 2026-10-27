@@ -1,0 +1,12 @@
+# Commercial pricing English residual cleanup
+
+Obligation: `commercial-pricing-en-residuals-20261001`
+
+## Change
+The English Powerhouse pricing renderer now performs a deterministic final cleanup pass for Dutch residual text that could survive the primary translation map.
+
+## Why
+The first English cleanup still left mixed-language phrases such as workshop labels, access labels and delivery copy. The cause was ordered replacement: earlier substitutions changed text so later exact replacements no longer matched.
+
+## Prevention
+The renderer now has a terminal residual pass, and regression coverage checks the critical English phrases so mixed-language pricing copy cannot silently return.

@@ -14,7 +14,7 @@ test('Bedrijfslek delivers full value before PII capture',()=>{
   assert.doesNotMatch(scan,/Beantwoord zes vragen/i);
   assert.doesNotMatch(scan,/id="scanform"/i);
   assert.match(scan,/Start met het portaal/i);
-  assert.match(scan,/https:\/\/www\.bedrijfsgeheugen\.nl\/product/i);
+  assert.match(scan,/https:\/\/www\.bedrijfsgeheugen\.nl\/(?:product|afsluiten\?plan=control)/i);
 });
 
 test('homepage and build authority preserve Bedrijfslek as primary acquisition path',()=>{
@@ -33,13 +33,21 @@ test('V18 generator cannot overwrite the standalone Bedrijfslek route',()=>{
   const views=read('tools/v18-views-lijst.mjs');
   const integrity=read('tools/site-shell/bedrijfslek-build-integrity.mjs');
   const netlify=read('netlify.toml');
+  const buildAuthority=read('tools/ci/netlify-build-entry.mjs');
   assert.doesNotMatch(views,/view:\s*['"]selfscan['"]/i);
   assert.match(views,/Bedrijfslek-productroute/i);
   assert.match(views,/V18-generator mag die standalone acquisitieroute niet overschrijven/i);
   assert.match(integrity,/BEDRIJFSLEK_INTEGRITY_LEGACY_SIX_QUESTIONS/);
-  assert.match(netlify,/bedrijfslek-build-integrity\.mjs capture/);
-  assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore/);
-  assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore[^\n]*normaliseer-site-ui\.mjs/);
+  assert.match(netlify,/node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(buildAuthority,/bedrijfslek-build-integrity\.mjs/);
+  assert.ok(
+    buildAuthority.indexOf("'bedrijfslek-capture'") < buildAuthority.indexOf("'v18-production'"),
+    'Bedrijfslek capture must precede legacy website builders'
+  );
+  assert.ok(
+    buildAuthority.indexOf("'site-ui'") < buildAuthority.indexOf("'bedrijfslek-restore'"),
+    'Final site UI normalization must precede Bedrijfslek restore so the protected route is restored last'
+  );
 });
 
 
@@ -64,4 +72,20 @@ test('Bedrijfsgeheugen Mini converts diagnosis into action before paid conversio
   assert.match(scan,/bedrijfsgeheugen-mini-complete/);
   assert.match(scan,/voortgang blijft alleen in deze browser bewaard/i);
   assert.match(scan,/borg dit structureel in het portaal/i);
+});
+
+
+test('Bedrijfslek borging projects into skills agents chats and System Map',()=>{
+  const agents=read('AGENTS.md');
+  const growth=read('.agents/skills/powerhouse-growth-swarm/SKILL.md');
+  const seo=read('.agents/skills/powerhouse-seo-conversion-orders/SKILL.md');
+  const continuity=read('.agents/skills/powerhouse-continuity/SKILL.md');
+  const map=read('platform/system-map/canonical-system-map.mjs');
+  const registry=read('docs/brain/component-registry.json');
+  assert.match(agents,/growth\\|bedrijfslek\\|value-first-team-loop\\|v2/);
+  assert.match(growth,/powerhouse-bedrijfslek-product-led-acquisition-v2/);
+  assert.match(seo,/seo\\|bedrijfslek\\|ungated-product-led-qualification\\|v2/);
+  assert.match(continuity,/growth\\|product-led-loop\\|continuity-after-chat-interruption\\|v1/);
+  assert.match(map,/bedrijfslekProductLedGrowth/);
+  assert.match(registry,/powerhouse-bedrijfslek-product-led-acquisition-v2/);
 });

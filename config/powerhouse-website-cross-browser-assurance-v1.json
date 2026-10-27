@@ -1,0 +1,134 @@
+{
+  "version": "POWERHOUSE-WEBSITE-CROSS-BROWSER-ASSURANCE-v1",
+  "owner": "powerhouse-terminal-delivery",
+  "base_url": "https://www.bedrijfsgeheugen.nl",
+  "all_route_sweep": {
+    "source": "/sitemap.xml",
+    "browsers": [
+      "chromium"
+    ],
+    "viewports": [
+      "mobile",
+      "desktop"
+    ],
+    "assertions": [
+      "http_ok",
+      "main_visible",
+      "h1_visible",
+      "main_text",
+      "horizontal_overflow",
+      "broken_images",
+      "page_errors",
+      "failed_document_script_stylesheet"
+    ]
+  },
+  "screenshot_matrix": {
+    "browsers": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ],
+    "viewports": [
+      "mobile",
+      "tablet",
+      "desktop"
+    ],
+    "routes": [
+      "/",
+      "/prijzen",
+      "/hoe-het-werkt",
+      "/product",
+      "/frisse-blik",
+      "/pakketadvies",
+      "/contact",
+      "/ai-modelwijzer",
+      "/due-diligence",
+      "/blog",
+      "/blog/wet-dba-en-zelfstandigen-wat-verandert-er-en-wat-betekent-dat-voor-jou",
+      "/en",
+      "/en/prijzen",
+      "/en/contact"
+    ]
+  },
+  "viewports": {
+    "mobile": {
+      "width": 390,
+      "height": 844
+    },
+    "tablet": {
+      "width": 768,
+      "height": 1024
+    },
+    "desktop": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "thresholds": {
+    "horizontal_overflow_px": 4,
+    "min_main_text_chars": 80,
+    "max_cls": 0.1
+  },
+  "interactions": [
+    {
+      "id": "mobile-menu",
+      "routes": [
+        "/",
+        "/prijzen",
+        "/contact"
+      ],
+      "viewport": "mobile",
+      "selectorCandidates": [
+        "#bgkopKnop",
+        "#mobileToggle"
+      ],
+      "assert": "mobile_drawer_visible"
+    },
+    {
+      "id": "desktop-menu",
+      "routes": [
+        "/",
+        "/prijzen"
+      ],
+      "viewport": "desktop",
+      "selectorCandidates": [
+        ".bgkop-groep > .bgkop-trig",
+        "header.v17-header .navitem[data-mega] > .navbtn"
+      ],
+      "assert": "desktop_mega_visible"
+    },
+    {
+      "id": "language-switch",
+      "routes": [
+        "/",
+        "/prijzen",
+        "/contact"
+      ],
+      "viewport": "desktop",
+      "selectorCandidates": [
+        "button[data-bg-language-current]"
+      ],
+      "assert": "english_target_visible"
+    }
+  ],
+  "rules": [
+    "screenshots_required_for_critical_matrix",
+    "failure_screenshot_required",
+    "all_sitemap_routes_must_be_swept",
+    "mobile_and_desktop_required_for_all_routes",
+    "chromium_firefox_webkit_required_for_critical_matrix",
+    "no_tolerance_widening_to_hide_structural_mismatch",
+    "daily_production_run_required",
+    "pull_request_sweep_is_bounded",
+    "daily_production_sweep_covers_mobile_and_desktop"
+  ],
+  "pr_all_route_viewports": [
+    "mobile"
+  ],
+  "daily_all_route_viewports": [
+    "mobile",
+    "desktop"
+  ],
+  "evidence_generation": "2026-10-04-font-preload-cls-terminal-v1",
+  "evidence_reason": "rerun after proven critical-font preload fix for ai-modelwijzer tablet and Wet-DBA desktop CLS"
+}

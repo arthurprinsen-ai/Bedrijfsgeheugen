@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|seo|status-baseline-parity|20261027-v1",
+  "compiler": {
+    "failure_class": "SEO_STATUS_BASELINE_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-status-baseline-parity-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-status-baseline-parity-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "seo-status.json (last updated 2026-09-24) and site/seo-baseline.json drifted apart: the baseline renamed 'ai governance mkb' to 'ai governance' and gained 'ai modellen vergelijken' and 'company brain' while the status file kept the old set, so SEO status tests failed on main.",
+  "prevention": "A parity test now requires every baseline keyword to be tracked in seo-status.json on the same route, so a keyword change in one file fails CI until the other follows.",
+  "evidence": {
+    "tests": [
+      "tests/brain-seo-status-baseline-parity-20261027.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until the next main run of the SEO status tests is green"
+  },
+  "limitations": [
+    "sitemap.xml is intentionally not regenerated here",
+    "Only keyword tracking is aligned; ranking data is unchanged"
+  ]
+}

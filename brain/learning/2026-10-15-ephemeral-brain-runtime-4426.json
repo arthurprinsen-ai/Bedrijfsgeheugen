@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "brain-learning.v1",
+  "date": "2026-10-15",
+  "id": "ephemeral-brain-runtime-4426",
+  "fingerprint": "powerhouse|portal-v2|authenticated-brain-ephemeral-runtime|v1",
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4426",
+  "compiler": {
+    "failure_class": "TRANSIENT_BRAIN_RUNTIME_ACCIDENTAL_WRITEBACK",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The Portal V2 setDerived method delegated to domain.project, which stores a temporary operating-loop read model inside the same mutable state object later passed to write and flush.",
+  "prevention": "Maintain a separate in-memory runtime projection, publish it to UI subscribers only, clear it on reinitialization, disallow all other derived paths, strip stale snapshots from persisted writes, and refuse anonymous API requests before projecting evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-ephemeral-runtime-canonicalization.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-ephemeral-runtime-canonicalization.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-ephemeral-runtime-canonicalization.test.mjs"
+    ]
+  },
+  "evidence": {
+    "test": "portal-v2/tests/ephemeral-brain-runtime.test.mjs",
+    "authority": "Authenticated /api/brain-operating-loop; no global platform forecast records",
+    "status": "CANDIDATE"
+  },
+  "outcome": {
+    "production_verified": false,
+    "gate": "Required CI / CodeQL / protected merge / exact authenticated production readback"
+  }
+}

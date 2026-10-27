@@ -1,7 +1,8 @@
 {
   "version": "DELIVERY-PREVENTION-v1",
   "linked_learning_sources": [
-    "brain/learning/portal-v2-customer-project-completeness-2026-09-15.json"
+    "brain/learning/portal-v2-customer-project-completeness-2026-09-15.json",
+    "brain/learning/netlify-transport-authority-2026-10-19.json"
   ],
   "rules": [
     {
@@ -398,6 +399,12 @@
       "id": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
       "active": true,
       "enforcedBy": "powerhouse-post-merge-codeql-skill",
+      "scope": "shared"
+    },
+    {
+      "id": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+      "active": true,
+      "enforcedBy": "netlify-authority-incident-classifier-plus-transport-regression",
       "scope": "shared"
     }
   ]

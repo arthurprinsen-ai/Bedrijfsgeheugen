@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|blog|canonical-redirect-ledger-drift-20261009-v1",
+  "obligationId": "daily-blog:2026-10-09:canonical-ledger-reconciliation",
+  "date": "2026-10-09",
+  "status": "VERIFIED_PUBLIC_PAGE_PENDING_CANONICAL_LEDGER_PROOF",
+  "authority": "Existing Powerhouse Supabase blog-export + native daily blog live watchdog",
+  "root_causes": [
+    "Fallback selected an older 2026-09-17 queue article for the 2026-10-09 ledger despite a pre-existing forced 301 to a distinct canonical",
+    "Netlify exact-deploy proof was mistaken for article readback before the independent canonical validator failed"
+  ],
+  "prevention": [
+    "Before selecting a daily candidate, resolve force-redirect and existing canonical ownership; never nominate an already-consolidated slug",
+    "Reconcile day ledger against genuinely source-backed published canonical evidence and require exact content ID, canonical and immutable provider deployment",
+    "Preserve previously consolidated SEO redirect; do not duplicate the existing article to satisfy a daily counter"
+  ],
+  "tests": [
+    "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs"
+    ],
+    "failedWatchdogRun": 37918931429,
+    "confirmedHttpProbe": 1570
+  },
+  "compiler": {
+    "failure_class": "DAILY_BLOG_CANONICAL_REDIRECT_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "productionReadback": {
+    "url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+    "http_status": 200,
+    "canonical_verified": true,
+    "content_id_verified": true,
+    "title_verified": true,
+    "netlify_deploy_id": "6ac8c38172d5dd0008a6169a",
+    "netlify_commit_ref": "47441ea9ed428202a7f1ccca5dc8cd5038d544bb"
+  },
+  "dailyLedgerStatus": "SELECTED_UNTIL_NATIVE_WATCHDOG_PASSES",
+  "regression": "Keep old onprijsd → ongeprijsd 301; never count redirected legacy page as today's canonical"
+}

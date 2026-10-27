@@ -205,5 +205,30 @@
       "observed_outcomes_only",
       "learning_must_change_future_decision"
     ]
+  },
+  "one_loop_runtime": {
+    "contract": "powerhouse-one-loop-terminal-lineage-v1",
+    "canonical_closed_loop_function": "public.powerhouse_one_commercial_closed_loop_v1(date)",
+    "canonical_decision_loop_function": "public.powerhouse_one_commercial_decision_loop_v1(date)",
+    "full_loop_scheduler_owner": "powerhouse-one-commercial-loop-daily-v1",
+    "regression_gate": "public.powerhouse_one_loop_regression_gate_v1(boolean)",
+    "terminal_lineage_view": "public.powerhouse_action_terminal_lineage_v1",
+    "wired_surfaces": [
+      "heartbeat",
+      "powerhouse_brain",
+      "intelligence_layers",
+      "agents",
+      "chat",
+      "portal"
+    ],
+    "invariants": [
+      "one_full_loop_scheduler_owner",
+      "legacy_loop_versions_are_aliases_only",
+      "split_stage_scheduler_owners_disabled",
+      "terminal_actions_have_explicit_lineage",
+      "observed_business_outcomes_never_synthesized",
+      "open_outcome_obligations_remain_visible",
+      "all_surfaces_share_the_same_canonical_lineage"
+    ]
   }
 }

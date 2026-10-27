@@ -1,0 +1,45 @@
+{
+  "fingerprint": "content-operations|scheduler-auth|canonical-db-authority|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-daily-publication-no-gap-auth-20261006",
+  "compiler": {
+    "failure_class": "CONTENT_OPERATIONS_AUTHORITY_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Netlify sent BG_PORTAL_EU_SERVICE_TOKEN to content-operations, while content-operations authenticated only against POWERHOUSE_SHARED_SECRET/POWERHOUSE_TOKEN Edge Function environment variables that were absent. The canonical social publisher already authenticated against bg_geheim('powerhouse_daily_scheduler_token'), so the two adjacent functions had diverged authentication authorities.",
+  "prevention_rule": "All internal content-publication functions must resolve the canonical scheduler token from one authority. Critical social recovery compute must run in the EU function region near the canonical EU Supabase project; environment auth remains bounded fallback only.",
+  "evidence": {
+    "runtime": [
+      "content-operations production v5 used only Edge Function env-secret authentication",
+      "Supabase project secret inventory did not contain POWERHOUSE_SHARED_SECRET or POWERHOUSE_TOKEN",
+      "powerhouse-social-publisher resolves powerhouse_daily_scheduler_token through bg_geheim",
+      "content-operations v6 was deployed with canonical bg_geheim primary auth",
+      "Netlify social-publication-delivery and deploy recovery are pinned to region fra.",
+      "Supabase project region is eu-central-1."
+    ],
+    "test_evidence": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "tests/content-growth-unified-content-operations.test.mjs"
+    ],
+    "production_readback": [
+      "Supabase edge logs around 2026-10-06 08:04Z also showed PostgREST HTTP 522 responses, so provider-side publication remains fail-closed until database access recovers."
+    ]
+  },
+  "contributing_cause": "The critical Netlify social recovery functions were running in IAD/N. Virginia while the canonical Supabase project is eu-central-1. During the incident, the eastern-US path showed repeated PostgREST 522 responses."
+}

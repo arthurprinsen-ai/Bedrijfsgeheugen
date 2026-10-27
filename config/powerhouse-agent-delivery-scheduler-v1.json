@@ -1,0 +1,36 @@
+{
+  "version": "POWERHOUSE-AGENT-DELIVERY-SCHEDULER-v1",
+  "fingerprint": "powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1",
+  "parallel": {
+    "max_non_conflicting_agents": 6,
+    "serialize_only_terminal_overlap": true
+  },
+  "writer_lease": {
+    "max_active_writers_per_obligation": 1,
+    "head_bound": true,
+    "main_epoch_bound": true,
+    "terminal_candidate_immutable_after_lease": true,
+    "mutation_compare_and_swap": {
+      "expected_head_required": true,
+      "current_main_epoch_required": true,
+      "stale_action": "CREATE_SUCCESSOR_FROM_CURRENT_MAIN"
+    }
+  },
+  "queue": {
+    "soft_active": 8,
+    "soft_queued": 5,
+    "hard_active": 12,
+    "hard_queued": 8,
+    "max_projected_new_runs_per_write": 3
+  },
+  "async_continuation": {
+    "checkpoint_required": true,
+    "remote_wait_is_terminal": false,
+    "bounded_polling": true,
+    "auto_resume": true
+  },
+  "supersession": {
+    "newer_main_supersedes_stale_reversible_production_wait": true,
+    "irreversible_side_effects_never_superseded": true
+  }
+}

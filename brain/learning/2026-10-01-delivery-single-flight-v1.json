@@ -1,0 +1,43 @@
+{
+  "version": "POWERHOUSE-LEARNING-v1",
+  "date": "2026-10-01",
+  "topic": "delivery-single-flight",
+  "fingerprint": "github-delivery|overlapping-ci-wip|single-flight-v1",
+  "problem": "Overlapping delivery candidates could enter expensive CI concurrently, creating queueing, main drift and repeated recovery work.",
+  "decision": "Set max executable overlapping candidates to one while preserving parallelism for unrelated conflict contracts.",
+  "expected_effect": [
+    "one conflicting candidate in expensive CI at a time",
+    "less main drift",
+    "fewer duplicated recovery PRs",
+    "faster terminal delivery"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ]
+  },
+  "root_cause": "The delivery hygiene policy allowed up to three executable candidates with overlapping conflict contracts, so multiple website/recovery PRs could enter expensive CI concurrently and repeatedly invalidate each other through main drift.",
+  "prevention_rule": "For candidates that overlap on explicit delivery conflict contracts, admit only one executable candidate into expensive CI at a time; unrelated candidates may continue in parallel.",
+  "evidence": {
+    "observed_open_recovery_prs": [
+      3514,
+      3515,
+      3516,
+      3517,
+      3550,
+      3551,
+      3553,
+      3554
+    ],
+    "regression_test": "tests/brain-ci-admission-single-flight.test.mjs",
+    "policy_change": "config/powerhouse-delivery-hygiene-v1.json#wip.maxExecutable=1"
+  },
+  "prevention": "For overlapping conflict contracts, admit only one executable candidate into expensive CI at a time; unrelated contracts remain parallel."
+}

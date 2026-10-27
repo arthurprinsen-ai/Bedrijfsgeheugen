@@ -6,6 +6,7 @@ import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs
 
 const migration=fs.readFileSync('supabase/migrations/20260920073025_social_publication_authority_v1.sql','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+const recoveryRunner=fs.readFileSync('supabase/functions/social-recovery-runner/index.ts','utf8');
 
 test('central authority issues exact-bound one-time capabilities',()=>{
   assert.match(migration,/expires_at/);
@@ -16,14 +17,19 @@ test('central authority issues exact-bound one-time capabilities',()=>{
 });
 
 test('publisher requires capability consumption before provider calls',()=>{
-  const consume=publisher.indexOf('await consumePublishCapability');
-  const meta=publisher.lastIndexOf('publishInstagramViaMeta(db,art)');
-  const composio=publisher.lastIndexOf('publishInstagramViaComposio(db, art, runDate)');
-  const buffer=publisher.indexOf('created = await createPost(bufferToken, input)');
-  assert.ok(consume>0);
-  assert.ok(meta>consume);
-  assert.ok(composio>consume);
-  assert.ok(buffer>consume);
+  const branchOrder=(branchMarker,providerMarker)=>{
+    const branch=publisher.indexOf(branchMarker);
+    const consume=publisher.indexOf('await consumePublishCapability',branch);
+    const provider=publisher.indexOf(providerMarker,branch);
+    assert.ok(branch>=0,branchMarker);
+    assert.ok(consume>branch,'capability consumption must occur inside the channel branch');
+    assert.ok(provider>consume,'provider side effect must occur after capability consumption');
+  };
+  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art)');
+  branchOrder("if (row.channel === 'linkedin_company')",'publishLinkedInCompanyViaComposio(db,art)');
+  branchOrder("if (row.channel === 'instagram_company')",'publishInstagramViaComposio(db,art,runDate,instagramContext)');
+  branchOrder("const input: Record<string,unknown>",'created = await createPost(bufferToken, input)');
+  assert.doesNotMatch(publisher,/await publishInstagramViaMeta\(/);
   assert.match(publisher,/containmentSweepInstagram/);
   assert.match(publisher,/PENDING_PROVIDER_CANCELLATION/);
 });
@@ -57,4 +63,118 @@ test('completion supervisor requires channel policy authorization evidence',()=>
   const result=evaluateCompletion({obligationId:'social-publication:x',workId:'w',candidateIdentity:'c',productionIdentity:'p',channelPolicyRequired:true,materialObligations:[],evidence});
   assert.equal(result.success,false);
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));
+});
+
+test('retired legacy social delivery cannot schedule or write provider posts',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  assert.match(delivery,/LEGACY_BUFFER_SOCIAL_WRITER_RETIRED_V1/);
+  assert.match(delivery,/provider_write_performed:false/);
+  assert.ok(!delivery.includes("schedule: '*/10"));
+});
+
+test('retired deploy hook cannot trigger another sender',()=>{
+  const hook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
+  assert.match(hook,/legacy_sender:'RETIRED'/);
+  assert.match(hook,/provider_write_performed:false/);
+  assert.doesNotMatch(hook,/runSocialPublicationDelivery|createPost\(/);
+});
+
+test('canonical scheduled recovery requires published provider truth',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(workflow,/d\.state!=='published'/);
+  assert.match(workflow,/safe\.providerTruthHealthy!==true/);
+  assert.match(workflow,/social-recovery-runner/);
+});
+
+test('manual recovery is same-day, auditable and delegates to the canonical recovery runner',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(workflow,/workflow_dispatch:/);
+  assert.match(workflow,/push:/);
+  assert.match(workflow,/docs\/development-ledger-events\/2026-10-06-social-publication-manual-recovery-control-plane-v1\.md/);
+  assert.match(workflow,/Europe\/Amsterdam/);
+  assert.match(workflow,/SAME_DAY_RECOVERY_ONLY/);
+  assert.match(workflow,/functions\/v1\/social-recovery-runner/);
+  assert.match(workflow,/Authorization: Bearer \$SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(workflow,/CANONICAL_SOCIAL_RECOVERY_RESULT/);
+  assert.match(workflow,/SOCIAL_PUBLICATION_UNRESOLVED/);
+  assert.match(workflow,/actions\/upload-artifact@v4/);
+  assert.doesNotMatch(workflow,/\/rest\/v1\/|rpc\/bg_geheim|api\.buffer\.com|LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
+});
+
+test('recovery runner owns degraded preparation, bounded publication and direct readback',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(recoveryRunner,/readCanonicalState/);
+  assert.match(recoveryRunner,/readCanonicalState/);
+  assert.match(recoveryRunner,/preparationNeeded/);
+  assert.match(recoveryRunner,/CANONICAL_CONTENT_ALREADY_READY_OR_TERMINAL/);
+  assert.match(recoveryRunner,/powerhouse-content-loop/);
+  assert.match(recoveryRunner,/60_000/);
+  assert.match(recoveryRunner,/SOCIAL_RECOVERY_PREPARATION_DEGRADED/);
+  assert.match(recoveryRunner,/powerhouse-social-publisher/);
+  assert.match(recoveryRunner,/mode: "publish_only"/);
+  assert.match(recoveryRunner,/channels: \[channel\]/);
+  assert.match(recoveryRunner,/40_000/);
+  assert.match(workflow,/mkdir -p recovery-artifacts/);
+  assert.match(workflow,/path: recovery-artifacts/);
+  assert.doesNotMatch(workflow,/path: \.artifacts/);
+});
+
+test('manual recovery bounds provider publication by channel under the edge runtime budget',()=>{
+  assert.match(publisher,/const publishOnly = mode === 'publish_only'/);
+  assert.match(publisher,/requestedChannels/);
+  assert.match(publisher,/let provider_reconciliation:any\[\] = \[\]/);
+  assert.match(publisher,/containment_sweep:any = publishOnly \? \{ skipped:true, reason:'PUBLISH_ONLY' \}/);
+  assert.match(publisher,/if \(!publishOnly\)/);
+  assert.match(recoveryRunner,/mode: "publish_only"/);
+  assert.match(recoveryRunner,/channels: \[channel\]/);
+  assert.match(recoveryRunner,/40_000/);
+});
+
+
+
+test('social recovery functions use the EU function region',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  const deployHook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
+  assert.match(delivery,/region:\s*'fra'/);
+  assert.match(deployHook,/region:\s*'fra'/);
+});
+
+
+test('content operations shares the canonical scheduler authority with social publication',()=>{
+  const operations=fs.readFileSync('supabase/functions/content-operations/index.ts','utf8');
+  assert.match(operations,/rpc\/bg_geheim/);
+  assert.match(operations,/powerhouse_daily_scheduler_token/);
+  assert.match(operations,/async function schedulerToken/);
+  assert.match(operations,/await schedulerToken\(\)/);
+  assert.match(operations,/if \(!\(await authorized\(req\)\)\)/);
+});
+
+
+test('recovery runner delegates provider side effects only to the canonical publisher',()=>{
+  assert.match(recoveryRunner,/powerhouse-social-publisher/);
+  assert.match(recoveryRunner,/mode: "publish_only"/);
+  assert.match(recoveryRunner,/channels: \[channel\]/);
+  assert.doesNotMatch(recoveryRunner,/LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|api\.buffer\.com/);
+});
+
+
+test('social recovery GREEN requires exact truth or permission-bound personal LinkedIn create acknowledgement',()=>{
+  assert.match(recoveryRunner,/const providerTruthVerified = required\.reduce/);
+  assert.match(recoveryRunner,/function providerSideEffectTruthHealthy/);
+  assert.match(recoveryRunner,/if \(obligation\?\.provider_truth_verified === true\) return true/);
+  assert.match(recoveryRunner,/channel === "linkedin_personal"/);
+  assert.match(recoveryRunner,/provider_create_success === true/);
+  assert.match(recoveryRunner,/provider_publication_ack_verified === true/);
+  assert.match(recoveryRunner,/readback_permission_limited === true/);
+  assert.match(recoveryRunner,/republish_forbidden === true/);
+  assert.match(recoveryRunner,/const providerTruthAccepted = required\.reduce/);
+  assert.match(recoveryRunner,/\["PUBLISHED", "DISPATCHED", "LIVE_PROVEN"\]\.includes\(status\)/);
+  assert.match(recoveryRunner,/!!clean\(obligation\?\.external_id\)/);
+  assert.doesNotMatch(recoveryRunner,/provider_truth_verified === true \|\| !!clean\(o\.external_id\)/);
+  assert.match(recoveryRunner,/const recovered = required\.length > 0 && unresolved\.length === 0 && providerTruthHealthy/);
+});
+
+test('successful LinkedIn company proof clears stale auth and reconcile errors',()=>{
+  assert.match(publisher,/for\(const staleKey of \['error','provider_error','provider_auth_preflight','provider_auth_required'\]\) delete evidence\[staleKey\]/);
+  assert.match(publisher,/liveProven=exactReadbackVerified&&direct\.linkedin_company_admin_oauth_proven===true&&direct\.organization_write_scope_verified===true&&direct\.company_oauth_fresh_verified===true/);
 });

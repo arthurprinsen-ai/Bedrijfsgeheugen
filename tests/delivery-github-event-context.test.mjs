@@ -21,7 +21,7 @@ test('pull request keeps immutable change identity while testing the current mer
   });
 });
 
-test('merge group event uses the merge-group head as both change and candidate identity', () => {
+test('merge group preserves the group SHA without treating run ID as a PR', () => {
   assert.deepEqual(normalizeGitHubDeliveryEvent({
     eventName: 'merge_group',
     event: { merge_group: { base_sha: sha('d'), head_sha: sha('e'), head_ref: 'refs/heads/gh-readonly-queue/main/pr-1195-bbbbbbbb' } },
@@ -34,11 +34,29 @@ test('merge group event uses the merge-group head as both change and candidate i
     changeHeadSha: sha('e'),
     candidateSha: sha('e'),
     headSha: sha('e'),
-    prNumber: '456',
+    prNumber: null,
   });
 });
 
-test('workflow dispatch uses checked out SHA as both change and candidate identity', () => {
+test('workflow dispatch binds explicit PR identity and immutable PR refs when provided', () => {
+  assert.deepEqual(normalizeGitHubDeliveryEvent({
+    eventName: 'workflow_dispatch',
+    event: { pull_request: { number: 3741, base: { sha: sha('1') }, head: { sha: sha('f') } } },
+    githubSha: sha('f'),
+    runId: '789',
+    fallbackBaseSha: sha('2'),
+  }), {
+    mode: 'workflow_dispatch',
+    changeId: 'dispatch-pr-3741',
+    baseSha: sha('1'),
+    changeHeadSha: sha('f'),
+    candidateSha: sha('f'),
+    headSha: sha('f'),
+    prNumber: '3741',
+  });
+});
+
+test('workflow dispatch without PR identity never treats the workflow run id as a PR number', () => {
   assert.deepEqual(normalizeGitHubDeliveryEvent({
     eventName: 'workflow_dispatch',
     event: {},
@@ -52,7 +70,7 @@ test('workflow dispatch uses checked out SHA as both change and candidate identi
     changeHeadSha: sha('f'),
     candidateSha: sha('f'),
     headSha: sha('f'),
-    prNumber: '789',
+    prNumber: null,
   });
 });
 
@@ -63,4 +81,17 @@ test('invalid delivery event SHAs fail closed', () => {
     githubSha: sha('a'),
     runId: '1',
   }), /valid baseSha/i);
+});
+
+test('merge-group event head must equal the immutable workflow head', () => {
+  assert.throws(() => normalizeGitHubDeliveryEvent({
+    eventName: 'merge_group',
+    event: { merge_group: { base_sha: sha('a'), head_sha: sha('b') } },
+    githubSha: sha('c'), runId: '999',
+  }), /MERGE_GROUP_HEAD_SHA_MISMATCH/);
+  assert.throws(() => normalizeGitHubDeliveryEvent({
+    eventName: 'merge_group',
+    event: { merge_group: { base_sha: sha('a') } },
+    githubSha: sha('b'), runId: '999',
+  }), /valid mergeGroupHeadSha/i);
 });

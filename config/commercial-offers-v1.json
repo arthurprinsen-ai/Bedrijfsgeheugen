@@ -1,0 +1,204 @@
+{
+  "version": "POWERHOUSE-COMMERCIAL-OFFERS-v1",
+  "currency": "EUR",
+  "vat": "exclusive",
+  "principles": [
+    "One entitlement truth across pricing, checkout and portal",
+    "Core Powerhouse Intelligence in every paid SaaS plan",
+    "Higher tiers add scale, freshness, automation and governance",
+    "Consulting can include temporary SaaS access and can convert into recurring SaaS"
+  ],
+  "saas": [
+    {
+      "code": "starter",
+      "name": "Starter",
+      "monthly_price_cents": 9900,
+      "direct_checkout": true,
+      "employees": "3–15",
+      "positioning": "Start met inzicht en de eerste acties.",
+      "users": 5,
+      "data_sources": 2,
+      "documents": 25,
+      "ai_requests_month": 50,
+      "refresh_minutes": 1440,
+      "automations": 0,
+      "agent_mode": "recommend",
+      "approval_workflows": false,
+      "organisations": 1,
+      "sso": false,
+      "audit_trail": false,
+      "advisory_minutes_month": 0,
+      "features": [
+        "Powerhouse Intelligence basis",
+        "Bedrijfsprofiel & benchmark",
+        "Maandelijks veranderoverzicht",
+        "Basis actielijst",
+        "E-mail support"
+      ]
+    },
+    {
+      "code": "pro",
+      "name": "Pro",
+      "monthly_price_cents": 29900,
+      "direct_checkout": true,
+      "employees": "15–100",
+      "positioning": "De complete basis voor groei, sturing en uitvoering.",
+      "users": 25,
+      "data_sources": 10,
+      "documents": 500,
+      "ai_requests_month": 200,
+      "refresh_minutes": 60,
+      "automations": 3,
+      "agent_mode": "approval_required",
+      "approval_workflows": true,
+      "organisations": 1,
+      "sso": false,
+      "audit_trail": true,
+      "advisory_minutes_month": 0,
+      "features": [
+        "Alles uit Starter",
+        "Uurlijkse datarefresh",
+        "AI Copilot",
+        "Goedkeuringen & eigenaren",
+        "Uitvoerings-thema's",
+        "Due diligence & exit modules"
+      ]
+    },
+    {
+      "code": "groei",
+      "name": "Groei",
+      "monthly_price_cents": 74900,
+      "direct_checkout": true,
+      "employees": "60–150 of meerdere locaties",
+      "positioning": "Voor organisaties die willen automatiseren en opschalen.",
+      "users": 75,
+      "data_sources": 25,
+      "documents": 2500,
+      "ai_requests_month": 750,
+      "refresh_minutes": 15,
+      "automations": 12,
+      "agent_mode": "approval_required",
+      "approval_workflows": true,
+      "organisations": 3,
+      "sso": false,
+      "audit_trail": true,
+      "advisory_minutes_month": 60,
+      "features": [
+        "Alles uit Pro",
+        "Data refresh elke 15 minuten",
+        "12 automatiseringen",
+        "AI in 6 automatiseringen",
+        "Dagelijkse management summary",
+        "Maandelijkse executive review"
+      ]
+    },
+    {
+      "code": "enterprise",
+      "name": "Enterprise",
+      "monthly_price_cents": null,
+      "direct_checkout": false,
+      "employees": "Grotere organisaties",
+      "positioning": "Volledig afgestemd op jouw organisatie en eisen.",
+      "users": 999,
+      "data_sources": 999,
+      "documents": 999999,
+      "ai_requests_month": 999999,
+      "refresh_minutes": 0,
+      "automations": 999,
+      "agent_mode": "guardrailed_autonomous",
+      "approval_workflows": true,
+      "organisations": 25,
+      "sso": true,
+      "audit_trail": true,
+      "advisory_minutes_month": 240,
+      "features": [
+        "Onbeperkt binnen afgesproken fair use",
+        "Onbeperkt integraties",
+        "Eigen domein & branding",
+        "SSO / werkaccount",
+        "Audit trail & export",
+        "Eigen AI key / model optioneel",
+        "On-demand datarefresh",
+        "Security & governance review",
+        "Enterprise support SLA"
+      ]
+    }
+  ],
+  "services": [
+    {
+      "code": "frisse-blik",
+      "name": "Frisse Blik",
+      "price_cents": 0,
+      "unit": "30 minuten",
+      "portal_access": null,
+      "includes": [
+        "Korte kennismaking",
+        "Jouw situatie en doelen",
+        "Kansen en quick wins",
+        "Advies over volgende stap"
+      ]
+    },
+    {
+      "code": "directie-ai-workshop",
+      "name": "Directie & AI Workshop",
+      "price_cents": 195000,
+      "unit": "eenmalig",
+      "portal_access": "pro",
+      "portal_days": 30,
+      "includes": [
+        "Voorbereiding & analyse",
+        "3 uur workshop met MT/directie",
+        "Kansenkaart en top 5 prioriteiten",
+        "30 dagen actieplan"
+      ]
+    },
+    {
+      "code": "bedrijfsgeheugen-scan",
+      "name": "Bedrijfsgeheugen Scan",
+      "price_cents": 295000,
+      "unit": "eenmalig",
+      "portal_access": "groei",
+      "portal_days": 30,
+      "includes": [
+        "Benchmark met jouw sector",
+        "Analyse processen, data en AI",
+        "Businesscase en prioriteiten",
+        "90 dagen roadmap",
+        "Beslismemo voor directie"
+      ]
+    },
+    {
+      "code": "build-sprint",
+      "name": "Build Sprint",
+      "price_cents_from": 1450000,
+      "unit": "project",
+      "portal_access": "pro",
+      "portal_days": 60,
+      "includes": [
+        "Proces, data, AI en dashboards",
+        "Integraties met jouw systemen",
+        "Testen en adoptie",
+        "Oplevering en overdracht"
+      ]
+    },
+    {
+      "code": "fractional-lead",
+      "name": "Transformation / Fractional Lead",
+      "price_cents_from": 295000,
+      "unit": "maand",
+      "portal_access": "pro",
+      "includes": [
+        "Senior begeleiding op directieniveau",
+        "Sturingsritme en roadmap",
+        "Governance en risicobeheersing",
+        "Coördinatie leveranciers en teams",
+        "Monitoring van resultaten"
+      ]
+    }
+  ],
+  "commercial_rules": {
+    "credit_rule": "De betaalde waarde van een Directie & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 dagen start.",
+    "temporary_access_rule": "Workshop- en scantrajecten krijgen tijdelijke portaltoegang op het aangegeven niveau.",
+    "conversion_rule": "Na tijdelijke toegang kan de klant zelfstandig doorgaan met SaaS; bestaande klanten krijgen overeengekomen klanttarieven voor aanvullende consulting."
+  }
+}

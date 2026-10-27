@@ -7,7 +7,7 @@ const publisher = readFileSync('supabase/functions/powerhouse-social-publisher/i
 const prePublishReview = readFileSync('supabase/functions/bg-pre-publish-review/index.ts', 'utf8');
 const instagramRouter = readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts', 'utf8');
 const registry = JSON.parse(readFileSync('config/powerhouse-quality-surface-contracts.json', 'utf8'));
-const cockpitMigration = 'supabase/migrations/20260916163500_content_operations_cockpit_projection_repair_v1.sql';
+const cockpitMigration = 'supabase/migrations/20260916172554_content_operations_cockpit_projection_repair_v1.sql';
 
 const edgeEvidenceContract = 'tests/supabase-powerhouse-content-edge-surface-contract.test.mjs';
 const closedLoopEvidenceContract = 'tests/brain-content-closed-loop-contract.test.mjs';
@@ -57,7 +57,9 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
   assert.match(publisher, /PROVIDER_RECORD_MISSING/);
   assert.match(publisher, /stale_delivery_ref:\s*true/);
   assert.match(publisher, /FAIL_CLOSED_NO_REPLACEMENT_WITHOUT_PERSONAL_TRUTH/);
-  assert.match(publisher, /personal_truth_verified\s*!==\s*true/);
+  assert.match(publisher, /const personalTruthMode = evidence\.personal_truth_verified === true/);
+  assert.match(publisher, /const observationalMode = evidence\.observational_personal_theme_verified === true/);
+  assert.match(publisher, /PERSONAL_SOURCE_UNVERIFIED/);
   assert.match(publisher, /EXACT_FINAL_MEDIA_PROOF_REQUIRED/);
   assert.match(publisher, /const readback = await getPost\(bufferToken, created\.post\.id\)/);
   assert.match(publisher, /PROVIDER_READBACK_MISMATCH/);
@@ -69,10 +71,11 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
 test('Instagram transport is Mira-proof gated, Composio-only and bound to canonical provider identity', () => {
   assert.match(publisher, /instagram-composio-only-canonical-graph-id-v2/);
   assert.match(publisher, /INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\.nl'/);
-  assert.match(publisher, /INSTAGRAM_CANONICAL_USER_ID='17841446582493753'/);
+  assert.doesNotMatch(publisher, /17841446582493753/);
+  assert.match(publisher, /ig_user_id:'me'/);
   assert.match(publisher, /COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED/);
   assert.match(publisher, /INSTAGRAM_GET_USER_INFO/);
-  assert.match(publisher, /ig_user_id:INSTAGRAM_CANONICAL_USER_ID/);
+  assert.match(publisher, /ig_user_id:ctx\.providerUserId/);
   assert.match(publisher, /INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
   assert.match(publisher, /INSTAGRAM_GET_IG_MEDIA/);
   assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);

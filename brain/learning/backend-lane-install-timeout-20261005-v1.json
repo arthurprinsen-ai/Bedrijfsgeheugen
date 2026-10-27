@@ -1,0 +1,32 @@
+{
+  "id": "backend-lane-install-timeout-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "required-test-backend-install-hang",
+  "fingerprint": "powerhouse|ci|backend-install-timeout|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The backend release lane used an unbounded silent npm install, allowing a stalled dependency install to keep Required test non-terminal and starve protected auto-merge.",
+  "prevention": [
+    "Every dependency-install step on a required merge path must have a hard timeout.",
+    "The enclosing required job must also have a finite timeout.",
+    "Network retries must be bounded.",
+    "Required-path dependency installation must retain visible diagnostics instead of using silent mode."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "workflow": ".github/workflows/lane-backend.yml",
+    "blocked_pr": 3785
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

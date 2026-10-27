@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "i18n|duplicate-mobile-controls|stale-route-link|2026-09-29-v1",
+  "date": "2026-09-29",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production /prijzen contained more than one mobile language control. The build-time i18n injector normalized only the first matching mobile switcher, so another visible English control could retain the stale homepage href /en/ and break same-route NL→EN navigation.",
+  "root_cause": "injectMobileLanguage used a non-global regex and returned immediately after replacing the first existing data-bg-language-switcher=mobile block.",
+  "evidence": {
+    "production_readback_run": 36602735157,
+    "observed_failure": "NL→EN pricing browser navigation timed out while target was /en/prijzen.",
+    "public_markup_observation": "Pricing exposed an English mobile language link that resolved to /en/ instead of /en/prijzen.",
+    "exact_main": "7c5d2d3156175ba7149858e04cd9a64959ceadef"
+  },
+  "prevention": [
+    "Normalize every existing mobile language switcher in one pass.",
+    "Use the current logical source route for every NL/EN control.",
+    "Regression must include multiple stale mobile controls on a non-home route.",
+    "Keep production NL→EN→NL browser roundtrip as terminal authority."
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_I18N_ROUTE_DRIFT",
+    "scope": "WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-all-mobile-controls-same-route-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-all-mobile-controls-same-route-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "truth_boundary": "This learning proves the duplicate-control root cause and prevention; production functional green still requires fresh browser readback."
+}

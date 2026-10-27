@@ -1,0 +1,37 @@
+{
+  "fingerprint": "commercial|unbounded-contact-authority-join|function-first-v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "commercial|contact-authority-preselection-function-first|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "CONTACT_AUTHORITY_JOIN_BEFORE_LIMIT_WITH_BLOCKED_INDEX_DDL",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Live source function still joins the full ~23k CRM + enrichment table before ORDER BY/LIMIT. Original protected #4536 migration combines the needed function rewrite with a queue index; production batch failed with strict 2s lock timeout, leaving both unapplied. Live 200-record runner still experiences 57014 after #4541.",
+  "prevention_rule": "Use existing source anchored rewrite to MATERIALIZED bounded picked set and SKIP LOCKED before CRM/suppression joins. Apply short lock/statement timeout in isolated function-only migration. Preserve all safety gates, tenant/auth constraints and original identity cron; queue index remains separately needed after contention settles. No synthetic success from migration DDL alone.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contact-authority-function-only-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-contact-authority-function-only-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-contact-authority-function-only-p0-4198.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "current_prod_function": "WITH_CANDIDATES_UNBOUNDED",
+    "preview": "PENDING",
+    "production_migration": "PENDING",
+    "portal_http_200": "PENDING",
+    "two_tenant": "PENDING"
+  }
+}

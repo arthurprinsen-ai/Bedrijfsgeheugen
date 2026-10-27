@@ -15,6 +15,8 @@ async function walk(dir) {
 
 function referencedMigrations(text) {
   const refs=new Set();
+  // Negative assertions (a retired migration must stay absent) do not read the file.
+  text=text.replace(/assert\.equal\(\s*existsSync\([^)]*\)\s*,\s*false/g,'');
   const patterns=[
     /(?:readFile|readFileSync|existsSync|access)\s*\(\s*(?:new URL\(\s*)?['"](?:\.\.\/)?(supabase\/migrations\/[0-9][A-Za-z0-9_-]*\.sql)/g,
     /(?:const|let)\s+(?:migration(?:Path|Url)?|hardening(?:Path)?|sqlPath)\s*=\s*(?:new URL\(\s*)?['"](?:\.\.\/)?(supabase\/migrations\/[0-9][A-Za-z0-9_-]*\.sql)/gi,

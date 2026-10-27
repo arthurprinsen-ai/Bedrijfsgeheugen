@@ -25,6 +25,31 @@
       "schema_type": "WebPage"
     },
     {
+      "route": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "role": "pillar",
+      "presentation": "native",
+      "primary_intent": "company brain",
+      "primary_keyword": "company brain",
+      "secondary_keywords": [
+        "company brain nederland",
+        "company brain mkb",
+        "ai company brain",
+        "bedrijfsbrein ai"
+      ],
+      "funnel_stage": "consider",
+      "primary_cta": {
+        "action": "zelfscan",
+        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
+        "https://www.bedrijfsgeheugen.nl/product",
+        "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      ],
+      "schema_type": "WebPage",
+      "positioning": "Een Company Brain is waar Bedrijfsgeheugen begint; Bedrijfsgeheugen verbindt context met impact, uitvoering, resultaat en leren."
+    },
+    {
       "route": "https://www.bedrijfsgeheugen.nl/prijzen",
       "role": "money",
       "presentation": "native",
@@ -182,7 +207,9 @@
       "secondary_keywords": [
         "twinfield api koppeling",
         "twinfield koppelen",
-        "twinfield integratie"
+        "twinfield integratie",
+        "twinfield koppelingen",
+        "koppeling twinfield"
       ],
       "funnel_stage": "decide",
       "primary_cta": {
@@ -211,7 +238,8 @@
       },
       "supporting_routes": [
         "https://www.bedrijfsgeheugen.nl/ai-act",
-        "https://www.bedrijfsgeheugen.nl/"
+        "https://www.bedrijfsgeheugen.nl/",
+        "https://www.bedrijfsgeheugen.nl/ai-modelwijzer"
       ],
       "schema_type": "Service"
     },

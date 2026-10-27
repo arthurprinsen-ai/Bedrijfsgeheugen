@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "contract": "whole-brain-outcome-obligations",
   "architecture": {
     "activePath": "Powerhouse/Supabase/GitHub/Buffer/Notion",
@@ -171,6 +171,16 @@
       "idempotencyKey": "dashboard-promotion|candidate-sha",
       "recoveryPolicy": "Rollback to the last-known-good production tree when an exact-SHA or protected-metric check regresses.",
       "legacyProvenance": "BG169 scenario-specific promotion is LEGACY_RETIRED_PATH."
+    },
+    {
+      "id": "external-mutation-prewrite-obligation",
+      "domain": "governance",
+      "expected": "Every material GitHub/provider/deploy mutation with an owed outcome has a durable canonical obligation before the first external write, so a rejected execution-surface mutation cannot orphan the outcome.",
+      "dueAt": "before_each_material_external_mutation",
+      "ownerAgent": "whole-brain-reliability",
+      "evidencePolicy": "A pre-write obligation/checkpoint exists with stable lineage/fingerprint, idempotency key, expected terminal outcome, current evidence, next safe action and resume condition; closure requires terminal outcome readback or a currently proven hard boundary.",
+      "idempotencyKey": "external-mutation-prewrite|lineage-fingerprint|expected-outcome",
+      "recoveryPolicy": "If the external write is rejected before side effect, retain RECOVERY_REQUIRED/RECOVERING and resume the same obligation through the next capable authorized execution path. Never create a replacement lineage merely to escape the blocked write."
     }
   ],
   "productionPromotion": {

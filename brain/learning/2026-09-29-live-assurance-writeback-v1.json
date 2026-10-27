@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|live-assurance-writeback|2026-09-29-v1",
+  "date": "2026-09-29",
+  "status": "ACTIVE_PREVENTION",
+  "context": "Governance closure after live NL/EN route-authority recovery.",
+  "observed": {
+    "production_main": "204269314239ea2cc56a00a0da1ed87a5056415f",
+    "netlify_deploy": "6abbdf73c4c7d80008d9811f",
+    "deploy_state": "ready",
+    "deploy_context": "production",
+    "production_url": "https://www.bedrijfsgeheugen.nl"
+  },
+  "lessons": [
+    "A ready exact production deploy is deployment evidence, not blanket functional evidence for every sub-flow.",
+    "Live recovery is not governance-complete until skills, agent/chat contracts, Brain learning, ledger/docs and System Map contain the same truth-boundary and are read back.",
+    "Historical LIVE/GREEN may never be reused as current health without fresh runtime/provider readback."
+  ],
+  "prevention": [
+    "Persist terminal production identity after each material live recovery.",
+    "Project the same rule into Green Assurance, continuity and AGENTS/chat contract.",
+    "Keep functional sub-gates independent from deploy-state truth.",
+    "Require read-after-write on governance projections."
+  ],
+  "compiler": {
+    "failure_class": "LIVE_GOVERNANCE_DRIFT",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ]
+  },
+  "truth_boundary": "This record proves governance writeback and historical exact deployment identity; it does not assert future runtime health without fresh readback.",
+  "root_cause": "The live recovery itself reached production, but its governance projection was not durably present on current main after the earlier documentation PR closed without merge. This created a gap between verified runtime/deployment truth and the canonical reusable knowledge available to future chats and agents.",
+  "evidence": {
+    "prior_pr": 3349,
+    "prior_pr_state": "closed_without_merge",
+    "current_main_before_repair": "448db8bf38a1cab2c28c710ab5ac1c6aeb471f80",
+    "production_identity": {
+      "main": "204269314239ea2cc56a00a0da1ed87a5056415f",
+      "netlify_deploy": "6abbdf73c4c7d80008d9811f",
+      "state": "ready",
+      "context": "production"
+    },
+    "governance_gap_observed": [
+      "live assurance learning file absent on current main",
+      "new live-assurance markers absent from AGENTS/continuity/Green Assurance/System Map on current main"
+    ],
+    "recovery": "Reconstructed the exact prior governance delta from repository history and rebased it onto the latest current main without redesigning or creating a parallel control plane."
+  }
+}

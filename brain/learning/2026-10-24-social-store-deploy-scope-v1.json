@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|social-learning-store-unregistered-automatic-deploy|20261024-v1",
+  "obligation_id": "social-learning:declare-canonical-store-in-production-scope:v1",
+  "failure_class": "SUPABASE_SOCIAL_LEARNING_STORE_NOT_DECLARED_FOR_PROTECTED_DEPLOY",
+  "root_cause": "GitHub PR 4834 changed the existing social-learning-store code and merged with Required+CodeQL, but independent Supabase production readback at 2026-10-24T15:49Z still showed social-learning-store v12 last updated 2026-10-07. Investigation found supabase/config.toml did not declare [functions.social-learning-store]. Existing Supabase Edge Production Authority fail-closed requires every scoped function in config; so the changed store was not released.",
+  "observed_evidence": {
+    "supabase_store_version": 12,
+    "updated_at": "2026-10-07T10:08:26.646Z",
+    "unregistered_config": "supabase/config.toml",
+    "protected_workflow": ".github/workflows/supabase-edge-production-authority.yml",
+    "safely_merged_candidate_pr": 4834,
+    "publisher": "SUPABASE_GITHUB_INTEGRATION",
+    "auth": "SHA-256 hashed x-bg-service-token in existing Edge entrypoint"
+  },
+  "fix": "Register the already deployed social-learning-store in canonical supabase/config.toml with enabled=true, verify_jwt=false (preserve existing deployed auth mode), exact existing source entrypoint. Existing edge-runtime-scope then includes the function on future source changes and targets it for release from this config-only diff. No second scheduler, no unauthenticated data path.",
+  "prevention_rule": "Every deployed, owned social learning store must be declared in the canonical protected Supabase source scope. Never mark merged function code as live without exact Edge readback. Preserve signed service token hash check and never weaken tenant isolation, scheduler or RLS.",
+  "tests": [
+    "tests/brain-social-learning-store-deploy-scope-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "SUPABASE_SOCIAL_LEARNING_STORE_NOT_DECLARED_FOR_PROTECTED_DEPLOY",
+    "scope": "DEPLOY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-learning-store-deploy-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-store-deploy-scope-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-store-deploy-scope-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required/CodeQL green, merged protected main, Supabase production social-learning-store version/source readback includes window evidence selector and authentic new bedrijfsgeheugen evaluations from scheduled Netlify after deploy."
+}

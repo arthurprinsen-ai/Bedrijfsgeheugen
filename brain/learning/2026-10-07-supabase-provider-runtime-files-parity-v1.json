@@ -1,0 +1,45 @@
+{
+  "id": "supabase-provider-runtime-files-parity-20261007-v1",
+  "fingerprint": "supabase|provider-parity|runtime-files-vs-local-deno-metadata|v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "source": "pr-4025-provider-readback",
+  "failure_class": "PROVIDER_READBACK_FILESET_SEMANTICS",
+  "symptom": [
+    "Supabase production deployment was ACTIVE and the provider check was green, but byte-for-byte parity never converged for supabase-migration-repair-bridge.",
+    "Git contained index.ts plus deno.json while the provider download API returned deployable runtime source only."
+  ],
+  "root_cause": [
+    "Provider parity compared the raw repository fileset with the provider-returned runtime fileset.",
+    "Local function metadata deno.json is part of immutable Git source identity but is not returned as a provider runtime file by the Supabase function download API."
+  ],
+  "prevention": [
+    "Keep immutable Git source identity over every function file, including deno.json.",
+    "Compare provider byte parity only over provider-returnable runtime files, excluding deno.json metadata on both sides.",
+    "Keep bounded convergence, runtime-supersession guards, provider version/runtime hash readback and PR writeback fail-closed."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/supabase-edge-production-authority.yml",
+    "regression": "tests/brain-supabase-production-authority-integrity-v1.test.mjs",
+    "blocked_function": "supabase-migration-repair-bridge",
+    "provider_runtime_files": ["index.ts"],
+    "repository_local_metadata": ["deno.json"]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE",
+    "scope": "SUPABASE_PROVIDER_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-production-authority-integrity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-production-authority-integrity-v1.test.mjs"
+    ]
+  }
+}

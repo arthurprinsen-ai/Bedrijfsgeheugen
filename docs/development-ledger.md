@@ -344,3 +344,60 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Regression gates:** `brain/economics/management-accounting-intelligence.test.mjs` en `portal-v2/modules/management-accounting-intelligence.test.mjs`.
 - **Owner:** Impact/Value Intelligence + Portal/Executive Cockpit.
 - **Reusable lesson:** stuur niet op losse KPI's; verbind workforce, productiviteit, operatie, commercie, marge, cash, kapitaal en waarde in één evidence-backed graph en laat alleen expliciet bewezen benchmarkgaps automatisch doorwerken naar roadmapprioriteit.
+
+
+## 2026-09-30 — IMPROVEMENT — Company Brain category capture to revenue
+- **Fingerprint:** `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+- **Signal:** “Company Brain” is becoming category language while Bedrijfsgeheugen already implements a broader context → impact → action → outcome → learning loop.
+- **Decision:** do not rename the product; own the category query with `/company-brain` and position it as the starting layer of Bedrijfsgeheugen.
+- **Public claim:** “Een Company Brain is waar Bedrijfsgeheugen begint.”
+- **Product principle:** “Weten → Zien → Begrijpen → Doen → Leren.”
+- **Acquisition:** category page routes to the existing ungated Bedrijfslek self-scan and existing Frisse Blik; no parallel funnel.
+- **Revenue contract:** rank/traffic/click/scan are intermediate; terminal learning requires qualified lead/proposal/paid order/realized revenue evidence.
+- **Powerhouse projection:** SEO Conversion-to-Orders, Company Intelligence OS, AGENTS, System Map and Brain component registry inherit the same rule.
+- **Regression:** `tests/company-brain-category-positioning-v1.test.mjs`.
+- **Prevention:** no duplicate Company-Brain intent page, no product rename, no unsupported competitor claims, no traffic-as-revenue.
+
+
+## 2026-09-30 — RECOVERY — Company Brain delivery classifier recovery
+- **Fingerprint:** `delivery|company-brain-public-route-classification|v1`.
+- **Signal:** Required admission rejected the new canonical public route as `unclassified delivery path: company-brain.html`.
+- **Root cause:** the website delivery lane enumerates top-level public HTML routes explicitly; the newly created category owner was not yet registered there.
+- **Fix:** register `company-brain.html` in the existing website lane and bind it into the Company Brain historical replay regression.
+- **Prevention:** every new top-level public HTML route must update the existing delivery classifier in the same candidate before CI admission.
+
+
+## 2026-09-30 — RECOVERY — Company Brain production promotion trigger
+- **Fingerprint:** `delivery|company-brain-production-promotion|v1`.
+- **Reason:** repository/main contained the category positioning while Netlify production still exposed an older commit.
+- **Action:** bounded website promotion candidate with explicit closure evidence.
+- **Terminal gate:** Netlify production identity + public `/company-brain` readback; merge is not sufficient.
+- **Prevention:** every material public promotion includes Brain learning, activity ledger and human documentation in the same candidate.
+
+## 2026-09-30 — RECOVERY — Company Brain static i18n final-artifact coverage
+- **Fingerprint:** `website|static-i18n|post-shell-final-string-coverage|v1`.
+- **Signal:** exact-main Netlify deploys `6abcc8e43755c1132dfb791f` and `6abcc939f771a22b21c16fb6` failed during build after the Company Brain merge.
+- **Root cause:** source-level translation coverage did not equal final-artifact coverage; canonical shell/CRO transforms split or added exact translatable strings while `STATIC_I18N_REQUIRE_CACHE=1` correctly remained fail-closed.
+- **Fix:** add every missing final Company Brain string to the canonical static English patch and bind regression to the existing Company Brain Brain-test.
+- **Skill/chat prevention:** Powerhouse Continuity and AGENTS now require post-shell final-artifact i18n coverage before promotion.
+- **System Map:** SEO Conversion-to-Orders records `staticI18nPostShellFinalArtifactCoverageRequired`.
+- **Terminal gate:** successful protected-main build/deploy plus public NL and EN readback; merge/build-start is not completion.
+
+## 2026-09-30 — RECOVERY — Persistent public locale navigation v1
+- **Fingerprint:** `website|i18n|persistent-public-navigation|v1`.
+- **Signal:** de actuele pagina schakelde naar English, maar een volgende gewone interne menu-/paginalink kon terugkeren naar Nederlands.
+- **Impact:** taalkeuze was niet sitebreed persistent en de publieke CMS-shell leverde een inconsistente tweetalige journey.
+- **Root cause:** same-route locale switching bestond, maar ordinary same-origin public hrefs bleven onprefixte Dutch routes.
+- **Final fix:** `assets/js/i18n.js` normaliseert eligible public links naar de actieve locale, bewaart query/hash, sluit technische/portal-paden uit en verwerkt dynamisch toegevoegde navigatie.
+- **Regression gate:** `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+- **Owner:** Website/UX + Powerhouse continuity + System Map governance.
+- **Reusable lesson:** locale is sitewide navigatiestatus; een correcte taal op alleen de huidige pagina is geen voldoende i18n-bewijs.
+
+
+## 2026-09-30 — PRODUCTION_PROMOTION — Company Brain LIVE_PROVEN
+- **Fingerprint:** `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+- **Protected main:** `936ca60ad5c2415ff2372880a61aea5b1d690875`.
+- **Netlify deploy:** `6abcd38195a83a25791474e5`, ready/current, exact commit_ref, published 2026-09-30T09:19:11.017Z.
+- **Public proof:** `https://www.bedrijfsgeheugen.nl/company-brain` HTTP 200; canonical/title correct; mobile 390×844; 0 page errors; 0 failed assets.
+- **Boundary:** later pricing NL/EN switch timeout is a separate obligation.
+- **Status:** `LIVE_PROVEN`.

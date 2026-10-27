@@ -161,3 +161,64 @@ De final-build authority `tools/site-shell/apply-money-page-order-conversion.mjs
 Fingerprint: `powerhouse-bedrijfslek-product-led-acquisition-v1` revision 2.
 
 De route `/zelfscan` is een standalone product-led acquisitieroute met `zelfscan.html` als enige pagina-authority. De V18-generator mag `/zelfscan` niet overschrijven: `selfscan` hoort niet in `tools/v18-views-lijst.mjs`. Iedere build- of CRO-wijziging die deze route opnieuw door `tools/bouw-v18-views.mjs` laat genereren is een route-owner collision en moet fail-closed blokkeren.
+
+
+## Bedrijfslek as canonical ungated qualification route
+
+Fingerprint: `seo|bedrijfslek|ungated-product-led-qualification|v2`.
+
+Voor generieke MKB-probleem- en homepage-acquisitie geldt `/zelfscan` als de canonieke lage-frictie kwalificatieroute. De route levert eerst inhoudelijke waarde en vraagt pas daarna om een commerciële vervolgstap.
+
+SEO/CRO-regels:
+- geen nieuwe leadgate vóór score, benchmark, quick wins, Mini en relevante challenge-mogelijkheid;
+- geen tweede scan/quiz voor dezelfde intentie zolang `/zelfscan` de intentie al bezit;
+- gebruik organische/sociale instroom om de gesloten product-led loop te voeden;
+- meet minimaal resultaat, Mini-engagement, challenge-share, challenge-complete, checkout-start, paid order en realized revenue;
+- optimalisatie mag de privacy-safe challenge payload of local-only Mini-opslag niet verruimen met PII;
+- een copy/layout-experiment is alleen winnaar wanneer downstream gekwalificeerde order/revenue evidence dit ondersteunt; meer formulierstarts alleen is onvoldoende.
+
+
+## Company Brain category capture — 30 september 2026
+Fingerprint: `seo|company-brain|category-capture-to-revenue|v1`.
+
+`Company Brain` is een aparte categorie-/zoekintentie en wordt canoniek bediend door `/company-brain`. Het is **geen hernoeming van Bedrijfsgeheugen** en mag geen parallel product of tweede funnel worden.
+
+Vaste positionering:
+- categorieclaim: **Een Company Brain is waar Bedrijfsgeheugen begint.**
+- onderscheid: Company Brain = gedeelde kennis/context; Bedrijfsgeheugen = context + signalen + impact + beslissing + actie + resultaat + leren;
+- merkbelofte blijft: **Uit hoofden, in je bedrijf. En dan werkend.**
+- productprincipe: **Weten → Zien → Begrijpen → Doen → Leren.**
+- Powerhouse is de onderliggende intelligence- en uitvoeringsmotor, niet het klantmerk dat de Company-Brain-categorie moet vervangen.
+
+De route is een acquisitielaag bovenop de bestaande Bedrijfslek-/Frisse-Blik-keten. Meet tot `paid_order` en `realized_revenue`; verkeer, ranking, clicks en scans zijn alleen tussenmetrics. Search Console/DataForSEO en echte conversie-uitkomsten bepalen toekomstige copy/CRO-wijzigingen. Geen duplicate Company-Brain-pagina's zolang deze canonical owner bestaat.
+
+
+### Company Brain production evidence
+Status: `LIVE_PROVEN` op 30 september 2026. Protected main `936ca60ad5c2415ff2372880a61aea5b1d690875`, Netlify deploy `6abcd38195a83a25791474e5`, public route HTTP 200, correcte canonical/titel, mobile 390×844, 0 page errors en 0 failed assets. Een aparte pricing language-switch timeout verandert deze route-specifieke production truth niet. Optimalisatie blijft sturen op paid order en realized revenue.
+
+
+## NL/EN revenue SEO architecture — 30 september 2026
+Fingerprint: `seo|nl-en|keyword-ownership-to-revenue|v1`.
+
+SEO is bilingual but never literal-translation-first. Dutch and English each have their own search-demand evidence, keyword owner, title/H1/message match and revenue path.
+
+Canonical authorities:
+- `site/seo-order-map.json` + `site/seo-order-expansion.json`: source intent owners, CTA and internal-link relationships;
+- `site/seo-locale-revenue-map.json`: NL/EN keyword ownership, English title/H1/description, market evidence and conversion destination;
+- `tools/site-shell/build-localized-routes.mjs`: self-canonical locale output, hreflang pairs, EN on-page metadata and same-origin link localization;
+- `tools/genereer-sitemap.mjs`: final NL + EN canonicals and hreflang sitemap alternates;
+- `tools/seo-order-engine/apply.mjs` + `validate.mjs`: final-build intent, link, structured-data, conversion and locale revenue gates.
+
+Hard rules:
+- one search intent/keyword cluster -> one canonical owner per locale;
+- English keywords are selected from English-market evidence, not Dutch strings translated word-for-word;
+- every indexable NL owner has an `/en/*` pair with self-canonical, `hreflang=nl`, `hreflang=en` and `x-default`;
+- same-origin internal links, including absolute URLs, remain inside the selected locale;
+- revenue-priority support pages may receive/enforce contextual inbound links without being converted into generic money-page templates;
+- every commercial/support owner has a measurable conversion destination;
+- sitemap is generated from final localized HTML and must include English canonicals; no invented `lastmod`;
+- organic optimization order remains realized revenue -> paid orders -> qualified proposals -> qualified meetings -> qualified leads -> CTA progression -> engagement -> traffic/rankings.
+
+Measured demand captured on 30 September 2026 includes NL `ai governance`, `data soevereiniteit`, `bedrijfsprocessen automatiseren`, and EN `AI model comparison`, `AI governance`, `sovereign AI`. High-volatility volume signals must be combined with SERP-intent evidence before scaling.
+
+The AI Modelwijzer owns the model-comparison/selection intent. `/data-soevereiniteit` owns the distinct data-sovereignty/sovereign-AI intent and hands off commercially to AI governance. These pages must not cannibalize `/ai-governance`.

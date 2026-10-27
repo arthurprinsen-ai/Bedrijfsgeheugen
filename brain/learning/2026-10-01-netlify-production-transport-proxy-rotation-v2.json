@@ -1,0 +1,21 @@
+{
+  "fingerprint": "powerhouse|portal-v2|netlify-production-transport-proxy-rotation|20261001-v2",
+  "obligation_id": "portal-v2-netlify-exact-production-20261001-v2",
+  "status": "ACTIVE",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The production exact-source workflow used a stale Netlify MCP proxy credential stored in Supabase Vault. The OIDC bridge itself authenticated correctly, but the downstream Netlify upload returned 401 Unauthorized.",
+  "prevention_rule": "Before an exact-source Netlify production recovery, refresh the Netlify MCP transport credential, keep the credential server-side, and rerun the canonical production source snapshot with exact-SHA readback.",
+  "regression_contract": "Production promotion must prove exact main SHA on Netlify and must not treat a ready older deploy as terminal success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
+  }
+}

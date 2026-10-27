@@ -26,7 +26,7 @@ const SECTION = `<section class="bg-ai-ecosysteem" data-section="ai-ecosysteem" 
     <div>
       <span class="bg-ai-eyebrow">POWERHOUSE · AI-ECOSYSTEEM</span>
       <h2 id="bg-ai-ecosysteem-title">Niet één AI-tool. <span>Een bedrijf dat samenwerkt.</span></h2>
-      <p class="bg-ai-lead">Bedrijfsgeheugen verbindt bedrijfsdata, kennis, applicaties, processen en AI-agents in één werkend geheel. Signalen worden herkend, context wordt toegevoegd, acties worden voorgesteld of uitgevoerd en de uitkomst vloeit terug in het bedrijfsgeheugen.</p>
+      <p class="bg-ai-lead">Bedrijfsgeheugen verbindt bedrijfsdata, kennis, applicaties, processen en AI-agents in één werkend geheel. Signalen worden herkend, context wordt toegevoegd, acties worden voorgesteld of uitgevoerd en de uitkomst vloeit terug in het bedrijfsgeheugen.</p>\n      <p class="bg-ai-lead"><strong>Meer dan een Company Brain.</strong> Een Company Brain geeft AI context. Bedrijfsgeheugen verbindt context met impact, uitvoering en resultaat. <a href="https://www.bedrijfsgeheugen.nl/company-brain">Bekijk het verschil →</a></p>\n      <div class="bg-ai-agents" aria-label="Productprincipe"><span>Weten</span><span>Zien</span><span>Begrijpen</span><span>Doen</span><span>Leren</span></div>
       <div class="bg-ai-agents" aria-label="Voorbeelden van AI-agents">
         <span>Sales-agent</span><span>Finance-agent</span><span>HR-agent</span>
         <span>Operations-agent</span><span>Management-agent</span><span>Strategie-agent</span>
@@ -40,7 +40,7 @@ const SECTION = `<section class="bg-ai-ecosysteem" data-section="ai-ecosysteem" 
       <div class="bg-ai-node"><strong>1. Data &amp; signalen</strong><span>ERP, CRM, finance, HR, web, BI en externe bronnen.</span></div>
       <div class="bg-ai-node"><strong>2. Kennis &amp; context</strong><span>Processen, afspraken, doelen, besluiten en bedrijfsspecifieke kennis.</span></div>
       <div class="bg-ai-node"><strong>3. Systemen</strong><span>AFAS, Exact, Microsoft 365, webshops en branchespecifieke software.</span></div>
-      <div class="bg-ai-node bg-ai-core"><strong>POWERHOUSE — het bedrijfsbrein</strong><span>Verbindt wat er gebeurt met wat het bedrijf weet, wil bereiken en moet doen.</span></div>
+      <div class="bg-ai-node bg-ai-core"><strong>POWERHOUSE — intelligence- en uitvoeringsmotor</strong><span>Verbindt wat er gebeurt met wat het bedrijf weet, wil bereiken en moet doen.</span></div>
       <div class="bg-ai-node"><strong>4. AI-agents</strong><span>Analyseren, signaleren, voorstellen, uitvoeren en controleren binnen afgesproken grenzen.</span></div>
       <div class="bg-ai-node"><strong>5. Acties</strong><span>Van opvolging en planning tot rapportage, escalatie en besluitvorming.</span></div>
       <div class="bg-ai-node"><strong>6. Leren &amp; verbeteren</strong><span>Resultaten en feedback worden opnieuw context voor de volgende beslissing.</span></div>
@@ -50,6 +50,14 @@ const SECTION = `<section class="bg-ai-ecosysteem" data-section="ai-ecosysteem" 
 
 export function applyAiEcosystemPropositionHtml(input) {
   let html=String(input || '');
+  html=html.replace(
+    'Je bedrijf heeft een <span class="mark">geheugen</span>. De vraag is hoeveel ervan in mensen zit.',
+    'Je bedrijf weet meer dan het gebruikt. <span class="mark">Wij zorgen dat het er ook naar handelt.</span>'
+  );
+  html=html.replace(
+    /Klantafspraken in één mailbox,[\s\S]*?Bovenop AFAS, Exact en Microsoft 365 die je al hebt\.<\/p>/,
+    'Bedrijfsgeheugen verbindt kennis, processen, systemen, data en externe signalen. Het ziet wat verandert, begrijpt wat dat raakt en zet de juiste acties in gang. <a href="https://www.bedrijfsgeheugen.nl/company-brain">Een Company Brain is waar Bedrijfsgeheugen begint →</a> Bovenop AFAS, Exact en Microsoft 365 die je al hebt.</p>'
+  );
   if (!/<html\b/i.test(html) || !/<main\b/i.test(html)) throw new Error('AI ecosystem projection requires a complete HTML page with <main>');
   if (!html.includes('id="bg-ai-ecosysteem-style"')) html=html.replace(/<\/head>/i, STYLE+'\n</head>');
   if (!html.includes('data-section="ai-ecosysteem"')) {

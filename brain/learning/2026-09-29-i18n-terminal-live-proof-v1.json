@@ -1,0 +1,35 @@
+{
+  "fingerprint": "i18n-terminal-live-proof-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "A live i18n release can inherit the correct route-aware runtime from an ancestor commit while a later closure-only main commit does not retrigger the browser readback.",
+  "root_cause": "Runtime and closure commits were split by concurrent reconciliations. The site was live with the runtime fix, but terminal proof needed a fresh runtime-bearing commit so production readback could execute against the exact deployed lineage.",
+  "prevention": [
+    "Terminal website closure must end on a runtime-bearing commit when the final acceptance criterion is browser behavior.",
+    "The i18n asset version is rotated so browsers and CDN fetch the exact final runtime.",
+    "Production readback must verify same-page NL↔EN behavior after the exact runtime-bearing deployment."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-terminal-live-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-terminal-live-proof-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-terminal-live-proof-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
