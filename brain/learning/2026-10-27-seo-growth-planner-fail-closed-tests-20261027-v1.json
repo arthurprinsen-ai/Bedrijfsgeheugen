@@ -9,16 +9,17 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/seo-growth-daily-conversion-planner.test.mjs"
+      "tests/brain-cro-human-denominator-proof-20261025.test.mjs"
     ],
     "canary": [
-      "tests/seo-growth-daily-conversion-planner.test.mjs"
+      "tests/brain-cro-human-denominator-proof-20261025.test.mjs"
     ]
   },
   "root_cause": "Two planner tests still asserted the pre-#4899 contract (CTA rate derived from raw pageviews) after the planner started failing closed on the human/bot denominator, so Native content growth contracts failed on main.",
   "prevention": "The tests assert GSC_FRESH_CRO_DENOMINATOR_UNVERIFIED, null ctaRate, HUMAN_DENOMINATOR_NOT_VERIFIED and an evidence-gap proposal; nothing auto-publishes.",
   "evidence": {
     "tests": [
+      "tests/brain-cro-human-denominator-proof-20261025.test.mjs",
       "tests/seo-growth-daily-conversion-planner.test.mjs"
     ],
     "workflow": ".github/workflows/lane-backend.yml",
