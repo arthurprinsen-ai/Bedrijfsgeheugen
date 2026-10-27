@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|production-readback|backend-only-routes-ok-skipped|20261027-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_BACKEND_ROUTES_SKIPPED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-backend-routes-ok-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-backend-routes-ok-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "The Netlify backend production-truth step passed routes-ok as steps.routes.outcome == 'success'. For delivery that changes only Netlify functions the browser route step is skipped, its outcome is 'skipped', so routes-ok became false and verify-production-release returned PRODUCTION_RED/production_route_regression although the exact deploy was ready and healthy. Observed on main c9e4823 and 8572034.",
+  "prevention": "The backend step now treats routes as satisfied when browser verification is not required (browser_required != 'true') and otherwise still requires the routes step to succeed, matching the non-deployment step.",
+  "evidence": {
+    "tests": [
+      "tests/brain-production-readback-backend-routes-ok-20261027.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until the Production Release Readback of the next backend-only merge to main is green"
+  },
+  "limitations": [
+    "Only the routes-ok expression changes; deploy identity, readiness and portal proof checks are unchanged",
+    "Runtime effect is proven only by the next backend-only merge"
+  ]
+}
