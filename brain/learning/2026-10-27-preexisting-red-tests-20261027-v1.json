@@ -9,8 +9,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs",
-      "tests/brain-i18n-production-fail-closed-v1.test.mjs"
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+      "tests/brain-v18-delivery-classification.test.mjs"
     ],
     "canary": [
       "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
@@ -20,8 +20,8 @@
   "prevention": "Tests now assert the current contracts, the unverified claim is replaced by the verifiable EU hosting statement with EN translation, the duplicate post is removed from blog, sitemap and RSS, and the website lane runs the header-menu contrast check on every website change.",
   "evidence": {
     "tests": [
-      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs",
       "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+      "tests/brain-v18-delivery-classification.test.mjs",
       "tests/brain-social-semantic-example-uniqueness-v1.test.mjs",
       "tests/seo-money-page-order-conversion-v2.test.mjs",
       "tests/v18-megamenu-regression-lock.test.mjs"
