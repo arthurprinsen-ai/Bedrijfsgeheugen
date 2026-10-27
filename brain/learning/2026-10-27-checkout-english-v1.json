@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|billing|checkout-english|20261027-v1",
+  "compiler": {
+    "failure_class": "CHECKOUT_PAGE_ONLY_IN_DUTCH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-afsluiten-english-v1.test.mjs",
+      "tests/brain-saas-free-trial-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs",
+      "tests/brain-prijzen-primary-cta-measurement.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-afsluiten-english-v1.test.mjs"
+    ]
+  },
+  "root_cause": "/afsluiten is not part of the localized routes and fills most of its text from script, so the static English build never translated it. English visitors left /en/prijzen for a Dutch checkout, including the terms line, the pay button, the trial text and the errors.",
+  "prevention": "The checkout page carries its own English dictionary and a lang=en state that is remembered for the visit. A test fails when a visible text or a string passed to t() has no English translation. The English pricing page adds lang=en to every checkout link, also after the monthly/yearly switch.",
+  "evidence": {
+    "tests": [
+      "tests/brain-afsluiten-english-v1.test.mjs",
+      "tests/brain-saas-free-trial-v1.test.mjs",
+      "tests/saas-pricing-entitlements.test.mjs",
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs",
+      "tests/brain-prijzen-primary-cta-measurement.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "verified in a headless browser on the built pages (EN pricing links, EN checkout texts and error message); production not yet verified after deploy"
+  },
+  "limitations": [
+    "Mollie's own payment screen picks its language from the customer's browser; the checkout request does not pass a locale yet",
+    "Lifecycle e-mails are Dutch only until the copy is approved"
+  ]
+}
