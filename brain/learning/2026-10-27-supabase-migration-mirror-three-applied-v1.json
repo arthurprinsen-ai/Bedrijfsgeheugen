@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|supabase|migration-mirror-three-applied|20261027-v1",
+  "compiler": {
+    "failure_class": "SUPABASE_MIGRATION_DRIFT_REMOTE_ONLY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-mirror-three-applied-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-mirror-three-applied-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "Three migrations (20261025195609, 20261026115246, 20261026115659) were applied to the production project but their source files only existed on the unmerged recovery branch of PR #4967. Supabase Preview on main therefore reported remote versions not found locally, which also blocked the automatic edge-function deploy of the Supabase integration.",
+  "prevention": "The three source files are mirrored on main byte-for-byte with the remote statements. A brain test asserts their presence and non-destructive content. No new DDL is executed; the files are already applied remotely.",
+  "evidence": {
+    "tests": [
+      "tests/brain-supabase-migration-mirror-three-applied-20261027.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until Supabase Preview on main is green and the next merged edge-function change deploys through the integration"
+  },
+  "limitations": [
+    "PR #4967 keeps its own copies; a later rebase of that PR must not duplicate these versions",
+    "The migration-history lock snapshot of 2026-10-07 is not refreshed here"
+  ]
+}
