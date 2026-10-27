@@ -316,7 +316,7 @@ jobs:
           --supersession-safe '${{ steps.deploy.outputs.supersession_safe }}'
           --deployment-required 'true'
           --routes-json '${{ steps.scope.outputs.routes }}'
-          --routes-ok '${{ steps.routes.outcome == 'success' }}'
+          --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || steps.routes.outcome == 'success' }}'
           --output .artifacts/production-release-readback.json
       - name: Evaluate immutable non-deployment production truth
         if: steps.scope.outputs.deployment_required != 'true'
