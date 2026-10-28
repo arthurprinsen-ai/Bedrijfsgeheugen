@@ -2,13 +2,14 @@ import { mapRuntimeProjection } from '../runtime-evidence.js';
 import { deriveReleaseStatus } from '../../tools/netlify/release-status.mjs';
 import { ensureIdentityWidget } from '../portal-state.js';
 import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
+import { experimentChangesMarkup } from './experiment-changes.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['live','Live uitvoering'],['agent-learning','Leerintelligentie'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['live','Live uitvoering'],['agent-learning','Leerintelligentie'],['experiment-changes','Wijzigingen: oud vs nieuw'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
@@ -265,7 +266,7 @@ async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   if(response.status===403)return {status:'forbidden',runtime:null};
   if(!response.ok)return {status:'error',runtime:null};
   const projection=await response.json();
-  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null}};
+  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null,experimentChanges:projection.experimentChanges||null}};
 }
 
 async function openAdminLogin(){
@@ -325,7 +326,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='experiment-changes'?experimentChangesMarkup(securedRuntime.experimentChanges):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
     if(state.tab==='delivery'){
       const panel=body.querySelector('[data-release-status-panel]');
       const evidence=obs.releaseEvidence;
