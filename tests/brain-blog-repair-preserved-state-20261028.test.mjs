@@ -59,3 +59,44 @@ test('preserved-state generation failure persists the real cooldown for its owne
  await assert.rejects(mod.persistBlogRepairFailure(db,date,repair.claim,failure),/OWNERSHIP_OR_DELIVERY_CHANGED/);
  assert.equal(writes(),2);
 });
+
+import {createHash} from 'node:crypto';
+const bodyHash=body=>createHash('sha256').update(body).digest('hex');
+const reviewFor=body=>({contract:'blog-reader-quality-review-v1',run_date:date,channel:'blog',expected_body_sha256:bodyHash(body),reason_codes:['UNCLEAR_READER_LANGUAGE','UNSUPPORTED_PRODUCT_ACTION'],notes:'Schrijf gewoon Nederlands en verwijder onbewezen producthandelingen.',sources:[{url:'https://www.wolterskluwer.com/nl-nl/solutions/twinfield-accounting/functies/afletteren',title:'Officiële Twinfield-functie',facts:'Afletteren koppelt een banktransactie aan een openstaande post.',observed_at:'2026-10-28T17:45:00Z'}]});
+test('typed quality feedback is restricted to exact blog date, bounded reasons, real body identity and source data',()=>{
+ assert.equal(typeof mod.normalizeBlogQualityReview,'function');
+ assert.equal(mod.normalizeBlogQualityReview(undefined,date,'linkedin_company'),null);
+ const review=reviewFor('copy');assert.deepEqual(mod.normalizeBlogQualityReview(review,date,'blog').reason_codes,review.reason_codes);
+ for(const change of [r=>r.run_date='2026-10-27',r=>r.channel='linkedin_company',r=>r.expected_body_sha256='bad',r=>r.reason_codes=['FORCE_PUBLISH'],r=>r.reason_codes=[],r=>r.notes='',r=>r.sources[0].url='javascript:alert(1)',r=>r.sources[0].facts='']){const r=structuredClone(review);change(r);assert.throws(()=>mod.normalizeBlogQualityReview(r,date,'blog'),/BLOG_QUALITY_REVIEW_INVALID/);}
+ assert.throws(()=>mod.normalizeBlogQualityReview(review,date,'linkedin_company'),/BLOG_QUALITY_REVIEW_INVALID/);
+});
+test('independent semantic rejection can repair an automatic-reader-ready article through the same locked owner',async()=>{
+ const {state,db}=harness();const review=reviewFor(state.artifact.body);
+ const repair=await mod.reopenRejectedBlog(db,date,()=>[],review);
+ assert.equal(repair.reopened,true);assert.deepEqual(repair.violations,review.reason_codes);
+ assert.equal(repair.claim.quality_review.expected_body_sha256,bodyHash(state.artifact.body));
+ assert.equal(repair.pending.delivery_evidence.blog_quality_repair.quality_review.notes,review.notes);
+});
+test('stale-body quality feedback and any provider side effect cannot claim or reset a publication',async()=>{
+ const h=harness();const review=reviewFor(h.state.artifact.body);h.state.artifact.body='new body from elsewhere';
+ await assert.rejects(mod.reopenRejectedBlog(h.db,date,()=>[],review),/BLOG_QUALITY_REVIEW_ARTIFACT_CHANGED/);assert.equal(h.writes(),0);
+ const j=harness();j.state.obligation.external_id='already-created';
+ assert.equal((await mod.reopenRejectedBlog(j.db,date,()=>[],reviewFor(j.state.artifact.body))).reopened,false);assert.equal(j.writes(),0);
+});
+test('successful fresh-body persistence finishes its claim so immediate new quality review does not wait eight minutes',async()=>{
+ const {state,db}=harness();const first=await mod.reopenRejectedBlog(db,date,()=>[],reviewFor(state.artifact.body));
+ const original=state.artifact.body;
+ await assert.rejects(mod.persistRepairedBlog(db,date,first.claim,{...state.artifact,body:original},{state:'content_ready',delivery_evidence:state.decision.delivery_evidence}),/BLOG_REPAIR_UNCHANGED_BODY/);
+ await mod.persistRepairedBlog(db,date,first.claim,{...state.artifact,body:'new reviewed reader article',updated_at:new Date().toISOString()},{state:'content_ready',delivery_evidence:state.decision.delivery_evidence,updated_at:new Date().toISOString()});
+ assert.ok(state.decision.delivery_evidence.blog_quality_repair.completed_at);
+ const next=await mod.reopenRejectedBlog(db,date,()=>[],reviewFor(state.artifact.body));
+ assert.equal(next.reopened,true);assert.notEqual(next.claim.token,first.claim.token);
+ await assert.rejects(mod.persistBlogRepairFailure(db,date,first.claim,{retry_after:'2100-01-01'}),/OWNERSHIP_OR_DELIVERY_CHANGED/);
+});
+test('authenticated API validates quality feedback before writes and passes it as private model context',()=>{
+ const source=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const validate=source.indexOf('normalizeBlogQualityReview(request.qualityReview,runDate,channelScope)');
+ assert.ok(validate>source.indexOf("return json({ok:false,error:'UNAUTHORIZED'},401)"));assert.ok(validate<source.indexOf("stage='repair-rejected-blog'"));
+ assert.match(source,/reopenRejectedBlog\(db,runDate,blogReaderReadyViolations,blogQualityReview\)/);
+ assert.match(source,/editorial_quality_review:pending\.channel==='blog'\?pending\.delivery_evidence\?\.blog_quality_repair\?\.quality_review\|\|null:null/);
+});
