@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-setup-result-type-20261028",
+  "fingerprint": "powerhouse|linkedin-setup|result-type-record-20261028-v1",
+  "compiler": {
+    "failure_class": "EDGE_FUNCTION_RESULT_SHAPE_TYPE_ERROR",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-setup-result-type-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-setup-result-type-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-setup-result-type-20261028.test.mjs"
+    ]
+  },
+  "root_cause": "The setup result literal lacked the publisher-resume fields that are assigned after creation; deno check reports TS2339 on three lines. Supabase bundling does not type-check, so this is not the cause of the preview bundle failure seen on 2026-10-28, but it is a real type defect on main.",
+  "prevention": "result is typed Record<string,any> so the resume fields are accepted; a static test guards the annotation.",
+  "evidence": {
+    "tests": [
+      "tests/brain-linkedin-setup-result-type-20261028.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "deno check passes locally for this file; unverified in CI until merged"
+  },
+  "limitations": [
+    "Only the type annotation changes; no runtime behaviour changes",
+    "The Supabase preview check on this PR can still fail for the unrelated platform bundling problem"
+  ]
+}
