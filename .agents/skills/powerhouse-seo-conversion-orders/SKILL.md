@@ -222,3 +222,35 @@ Hard rules:
 Measured demand captured on 30 September 2026 includes NL `ai governance`, `data soevereiniteit`, `bedrijfsprocessen automatiseren`, and EN `AI model comparison`, `AI governance`, `sovereign AI`. High-volatility volume signals must be combined with SERP-intent evidence before scaling.
 
 The AI Modelwijzer owns the model-comparison/selection intent. `/data-soevereiniteit` owns the distinct data-sovereignty/sovereign-AI intent and hands off commercially to AI governance. These pages must not cannibalize `/ai-governance`.
+
+
+## CRO experiment-register closure — 28 oktober 2026
+Fingerprint: `seo-cro-experiment-register-closure-v1`.
+
+Aanleiding: op 28 oktober 2026 had 0 van 222 rijen in `public.social_experiments` een `pagina` of `basislijn`. De dagelijkse lus voert wijzigingen uit, maar legt niet vast wat er veranderde, wanneer, en wat het verschil was. Zonder die koppeling kan het portaal geen oud-versus-nieuw tonen en kan de lus niet van zichzelf leren. Dit is geen nieuw register: `public.social_experiments` en `bg_experimentcyclus_poort` blijven de enige authority.
+
+### Registratie na elke EXECUTED-wijziging
+Na protected merge en production readback registreert de agent in dezelfde lineage één experiment via `bg_experimentcyclus_poort('voorstellen')`:
+- `pagina` = canonieke route, `onderdeel` = `site` of `seo`;
+- `controle` = oude tekst/element, `variant` = nieuwe tekst/element;
+- `meetpunt` = het hoogste beschikbare punt uit de ladder order > offerte > gesprek > lead > formulier > klik_doel > klik > scroll; kies nooit een zwakker punt dan nodig;
+- `onderbouwing` = PR-nummer, merge-commit en Netlify-deploy-ID van de readback;
+- de basislijn wordt vastgelegd op het moment van production readback, niet pas bij een latere menselijke goedkeuring.
+
+Maximaal één lopend experiment per pagina en meetpunt: overlappende wijzigingen op dezelfde pagina en hetzelfde meetpunt zijn niet van elkaar te onderscheiden en worden uitgesteld.
+
+### Meten
+- Alleen mensen (`not is_robot`) via `bg_experiment_meet`; dagrollups zonder bewezen parity tellen niet als noemer.
+- Naast "dezelfde pagina vóór versus tijdens" wordt een controlegroep van onveranderde money pages over dezelfde periode meegenomen (verschil-in-verschil). Een stijging die ook op de controlepagina's zit, is seizoen of verkeersmix en wordt niet als effect geclaimd.
+- SEO-wijzigingen worden gemeten op positie en CTR uit `bg_zoekprestaties`, 28 dagen ervoor tegen 28 dagen erna, met een wachttijd van 2 tot 4 weken. Daarvoor geldt "te vroeg om te zeggen", nooit een winnaar.
+
+### Autonome besluitregels
+- `verlengen`: toegestaan, maximaal twee keer, wanneer de minimale steekproef niet is gehaald.
+- `verwerpen` en terugdraaien: automatisch bij verslechtering van gekwalificeerde conversie, vertrouwen, toegankelijkheid of leesbaarheid op mobiel.
+- `behouden` en promotie naar PROVEN: alleen bij minimale steekproef, p < 0,10, consistente richting op de controlegroep en geen guardrail-verslechtering, plus de bestaande learning-promotie-eisen.
+- Anders `INSUFFICIENT_EVIDENCE`. Een mens is alleen nodig bij `HUMAN_AUTHORITY_REQUIRED`.
+
+### Portaalweergave
+Het portaal toont per wijziging: gebied, wijziging, toegepast op, oude waarde (doorgestreept), nieuwe waarde, verschil en zekerheid. De bron is uitsluitend dit register. Zonder voldoende bewijs staat er "te vroeg om te zeggen", nooit een schijnverbetering of een omzetclaim.
+
+Let op: deze sectie is beleid. Het enforcement (de poort die automatisch goedkeurt en besluit onder deze regels, nu nog achter een menselijk token) volgt als aparte migratie en wordt niet als gedaan gemarkeerd voordat die migratie productie-readback heeft.
