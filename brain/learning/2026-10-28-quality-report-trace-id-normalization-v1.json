@@ -10,7 +10,6 @@
   "related": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4761",
   "supersedes_status_of": "brain/learning/2026-10-23-portal-agent-intelligence-evidence-analytics-v1.json (its status IMPLEMENTED_ON_FEATURE_BRANCH_NOT_LIVE is outdated: #4747, #4761 and #4777 are merged on main since 2026-10-23; production readback is still not independently verified)",
   "tests": [
-    "portal-v2/tests/runtime-evidence-wiring.test.mjs",
     "tests/brain-agent-intelligence-analytics.test.mjs"
   ],
   "compiler": {
@@ -22,13 +21,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/runtime-evidence-wiring.test.mjs"
+      "tests/brain-agent-intelligence-analytics.test.mjs"
     ],
     "shadow": [
       "tests/brain-agent-intelligence-analytics.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/runtime-evidence-wiring.test.mjs"
+      "tests/brain-agent-intelligence-analytics.test.mjs"
     ],
     "invariants": [
       "explicit traceId or trace_id is kept and trimmed",

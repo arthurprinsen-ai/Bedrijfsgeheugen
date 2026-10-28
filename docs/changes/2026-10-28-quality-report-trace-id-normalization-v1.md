@@ -10,7 +10,7 @@ The Agent Intelligence quality report (Powerhouse Control Center, tab Leerintell
 The normalizer now keeps an explicit `traceId` or `trace_id` (trimmed). `correlationId` is a loop identifier and is deliberately not promoted. The report wording is unchanged: an observed trace is not a trace grade and not evidence of model quality.
 
 ## Acceptance
-`portal-v2/tests/runtime-evidence-wiring.test.mjs` follows a record from the projection through the normalizer into `deriveQualityReport` and fails without the fix. Existing `tests/brain-agent-intelligence-analytics.test.mjs` stays green. No new endpoint, scheduler, writer, database change or source authority.
+The same end-to-end regression exists twice: in `tests/brain-agent-intelligence-analytics.test.mjs` (the canonical learning evaluation only accepts `tests/brain-*.test.mjs`) and in `portal-v2/tests/runtime-evidence-wiring.test.mjs` (portal suite). Both follow a record from the projection through the normalizer into `deriveQualityReport` and fail without the fix. No new endpoint, scheduler, writer, database change or source authority.
 
 ## Still open
 Whether the server records actually carry trace IDs in production is not verified here. After merge, an authenticated owner readback of the tab must show whether the row moves from NIET GEMETEN to TRACE WAARGENOMEN. Until then no quality claim follows from this change.
