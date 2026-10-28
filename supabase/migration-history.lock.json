@@ -3062,12 +3062,24 @@
       "version": "20261027210000"
     },
     {
+      "name": "revenue_learning_evidence_timestamp_guard",
+      "version": "20261027195341"
+    },
+    {
       "name": "bg_experiment_autonoom_besluit_v1",
       "version": "20261028080000"
     },
     {
       "name": "bg_experiment_wijzigingen_overzicht_v1",
       "version": "20261028081000"
+    },
+    {
+      "name": "bg_experiment_controlegroep_v1",
+      "version": "20261028090000"
+    },
+    {
+      "name": "bg_bedrijfsprofiel_v1",
+      "version": "20261028230000"
     }
   ],
   "captured_at": "2026-10-28T14:07:19.772364+00:00",
