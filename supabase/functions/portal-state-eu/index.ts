@@ -3,7 +3,8 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 import { boundedReads } from './bounded-reads.js';
-import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
+import {finiteEvidence,sumKnownEvidence,maxKnownEvidence,entrepreneurSnapshotFreshness as entrepreneurSnapshotFreshness_raw} from './entrepreneur-snapshot-truth.js';
+const entrepreneurSnapshotFreshness:(...args:any[])=>any=entrepreneurSnapshotFreshness_raw;
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 // Accept the approved production Netlify gateway token by hash, never by plaintext.
@@ -679,7 +680,7 @@ Deno.serve(async(req:Request)=>{
       let authorityRecords;
       try{authorityRecords=await readPortalBusinessInputAuthorityPages(client,tenantId);}
       catch(error){
-        const code=error?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
+        const code=(error as any)?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
           ?'BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED':'BUSINESS_INPUT_AUTHORITY_READ_FAILED';
         return json({error:code},503);
       }

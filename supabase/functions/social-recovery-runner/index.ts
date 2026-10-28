@@ -267,7 +267,7 @@ Deno.serve(async (req: Request) => {
       ok: loop.ok,
       http: loop.http,
       timed_out: loop.timed_out,
-      skipped: loop.skipped === true,
+      skipped: (loop as any).skipped === true,
       preparation_needed: preparationNeeded,
       loop_state: loop.body?.loop_state || null,
       error: loop.ok ? null : (loop.error || clean(loop.body?.error) || "CONTENT_LOOP_FAILED"),
