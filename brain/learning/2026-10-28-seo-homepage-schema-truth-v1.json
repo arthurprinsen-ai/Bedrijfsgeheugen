@@ -1,0 +1,67 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "seo|homepage|structured-data-truth|20261028-v1",
+  "fingerprint": "seo|homepage|structured-data-misrepresentation|v1",
+  "canonical_owner": "https://www.bedrijfsgeheugen.nl/",
+  "compiler": {
+    "failure_class": "SEO_STRUCTURED_DATA_VISIBLE_OFFER_MISMATCH",
+    "scope": "SEO_CRO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "observed_evidence": {
+    "source_commit": "5cb5517d462ed633d6256740bb98469b60ccb368",
+    "observed_at": "2026-10-28T07:51:00Z",
+    "home_jsonld": {
+      "breadcrumb_trail": [
+        "/",
+        "/zelfscan",
+        "/connect",
+        "/frisse-blik"
+      ],
+      "software_aggregate_offer": {
+        "lowPrice": "1495",
+        "highPrice": "4995",
+        "offerCount": "3"
+      }
+    },
+    "visible_pricing_page": "https://www.bedrijfsgeheugen.nl/prijzen",
+    "visible_pricing_plans": [
+      "Starter €99",
+      "Pro €299",
+      "Groei €749",
+      "Enterprise op maat"
+    ],
+    "gsc_recent_window": "2026-10-20/2026-10-25",
+    "gsc_homepage_impressions": "NOT_OBSERVED_IN_QUERY_PAGE_ROWS",
+    "ga4_recent_window": "2026-10-20/2026-10-27",
+    "ga4_key_events": 0,
+    "qualified_orders": "NOT_VERIFIED",
+    "realized_revenue": "NOT_VERIFIED",
+    "source": "connected GitHub main + Windsor Search Console and GA4 + canonical Supabase"
+  },
+  "root_cause": "Homepage JSON-LD modeled four unrelated destinations as one BreadcrumbList and advertised €1495-€4995 AggregateOffer despite currently visible €99/€299/€749 subscription prices. Structured claims should describe the actual page and visible offer.",
+  "fix": "Remove only the incorrect homepage BreadcrumbList node and stale SoftwareApplication AggregateOffer. Preserve all real entities, canonical, visible copy, links, analytics and consent.",
+  "prevention_rule": "Homepage structured data must not model sibling pages as breadcrumb ancestors or emit offer prices inconsistent with the currently visible commercial price page; fail closed until price basis is confirmed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-homepage-schema-truth-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-homepage-schema-truth-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-homepage-schema-truth-20261028.test.mjs"
+    ]
+  },
+  "target_metric": "JSON-LD validity and visible content parity; monitor GSC clicks/impressions and GA4 qualified CTA; do not infer ranking lift",
+  "rollback_condition": "Missing legitimate schema entities, broken JSON-LD, failed i18n/website regressions, or production mismatch",
+  "terminal_rule": "Exact-head Required and CodeQL, protected merge, exact production SHA and public HTML JSON-LD readback, Brain outcome writeback",
+  "tests": [
+    "tests/brain-seo-homepage-schema-truth-20261028.test.mjs"
+  ]
+}
