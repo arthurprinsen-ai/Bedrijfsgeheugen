@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "edge|runtime-undefined-and-builder-catch|20261028-v1",
+  "obligation_id": "edge-runtime-typefix-20261028",
+  "failure_class": "RUNTIME_REFERENCE_AND_BUILDER_MISUSE_IN_EDGE_FUNCTIONS",
+  "root_cause": "Code added in one commit used an undeclared identifier and chained a non-Promise builder with .catch; both only fail on specific paths, so the bundle stayed green.",
+  "observed_evidence": {
+    "actual_sources": ["deno check on supabase/functions/* at main cf5bbb2: TS2304 Cannot find name 'uuid' (powerhouse-runtime); TS2551 'catch' on PostgrestFilterBuilder (two functions)"]
+  },
+  "fix": "Declared uuid at module top; replaced .catch on builders with .then(ok, err).",
+  "prevention_rule": "Edge functions must pass deno check for runtime-relevant errors (undeclared names, non-existent methods) before merge.",
+  "tests": ["tests/brain-edge-runtime-typefix-20261028.test.mjs"],
+  "compiler": {"failure_class": "RUNTIME_REFERENCE_AND_BUILDER_MISUSE_IN_EDGE_FUNCTIONS", "scope": "SUPABASE_FUNCTIONS_RUNTIME", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-edge-runtime-typefix-20261028.test.mjs"],
+    "shadow": ["tests/brain-edge-runtime-typefix-20261028.test.mjs"],
+    "canary": ["tests/brain-edge-runtime-typefix-20261028.test.mjs"]
+  },
+  "terminal_rule": "Not terminal until the remaining type-only errors are triaged in a follow-up."
+}

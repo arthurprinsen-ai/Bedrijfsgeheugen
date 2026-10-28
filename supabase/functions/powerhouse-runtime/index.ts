@@ -1,3 +1,4 @@
+const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*','access-control-allow-headers':'content-type,x-powerhouse-token','access-control-allow-methods':'GET,POST,OPTIONS'}});
 const clean=(v:unknown)=>String(v??'').replace(/\s+/g,' ').trim();
 const num=(v:unknown,d=0)=>Number.isFinite(Number(v))?Number(v):d;
