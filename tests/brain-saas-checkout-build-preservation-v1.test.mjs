@@ -26,9 +26,9 @@ test('preserved runtime selects yearly Pro and never unlocks a pending payment',
  const elements=new Map();
  const contextFor=(search,ready)=>{
   elements.clear();
-  const get=id=>{if(!elements.has(id))elements.set(id,{hidden:true,style:{},textContent:'',addEventListener(){},appendChild(){}});return elements.get(id)};
+  const get=id=>{if(!elements.has(id))elements.set(id,{hidden:true,style:{},textContent:'',addEventListener(){},appendChild(){},replaceChildren(){}});return elements.get(id)};
   get('form').querySelectorAll=selector=>{assert.equal(selector,'input');return ['plan','billingCycle','company','email','paymentConsent'].map(get);};
-  return {location:{search},URLSearchParams,document:{getElementById:get,createElement:()=>({remove(){}})},fetch:async()=>({ok:true,json:async()=>({ready})}),setTimeout(){},console};
+  return {location:{search},URLSearchParams,document:{getElementById:get,createElement:()=>({remove(){},setAttribute(name,value){this[name]=value;}})},fetch:async()=>({ok:true,json:async()=>({ready})}),setTimeout(){},console};
  };
  vm.runInNewContext(runtime,contextFor('?plan=pro&billing=yearly',false));
  assert.equal(elements.get('plan').value,'pro');
