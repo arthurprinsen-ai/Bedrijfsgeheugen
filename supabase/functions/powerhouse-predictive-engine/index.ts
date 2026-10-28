@@ -74,7 +74,7 @@ Deno.serve(async(req:Request)=>{
     const externalEvidence=(signals||[]).filter((s:any)=>s.source_type==='external_news').slice(0,24);
     const demandEvidence=(signals||[]).filter((s:any)=>s.source_type==='search_demand').slice(0,16);
     const modelSignals=[...externalEvidence,...demandEvidence].slice(0,40);
-    const payload=publicMarketPayload({date:today(),signals:modelSignals});
+    const payload=(publicMarketPayload as any)({date:today(),signals:modelSignals});
     if(!payload.signals.length)throw new Error('AI_PUBLIC_MARKET_EVIDENCE_REQUIRED');
     const generationProvider='OpenAI';
     const generationModel=clean(gov.model_id);

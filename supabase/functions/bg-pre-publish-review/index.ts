@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
       const ageDays=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;
       return ageDays>=1&&ageDays<=21;
     }).map((p:any)=>clean(p.body)).filter(Boolean);
-    companyEditorialBlockers=companyEditorialViolations(text,{recentPosts});
+    companyEditorialBlockers=(companyEditorialViolations as any)(text,{recentPosts});
     if(body.editorial_policy_version!==COMPANY_EDITORIAL_POLICY)
       companyEditorialBlockers.unshift({code:'COMPANY_EDITORIAL_POLICY_OUTDATED',message:'Canoniek bedrijfspagina-redactiecontract ontbreekt.'});
     if(body.final_copy_approved!==true)

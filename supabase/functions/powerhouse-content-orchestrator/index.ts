@@ -207,7 +207,7 @@ async function callAI(key: string, model: string, system: string, user: unknown,
     console.error('ORCHESTRATOR_AI_PROVIDER_ERROR',response.status,model,detail);
     throw new AIProviderHttpError(response.status,model,detail);
   }
-  const explicitTruncation=incompleteStructuredArtifactReason(body);
+  const explicitTruncation=(incompleteStructuredArtifactReason as any)(body);
   if(explicitTruncation)throw new AIProviderIncompleteOutputError(model,maxTokens,explicitTruncation);
   const raw=(body.output||[]).flatMap((o:any)=>o.content||[]).filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('');
   if(!raw)throw new Error('AI_TOOL_OUTPUT_MISSING:'+model);
@@ -215,7 +215,7 @@ async function callAI(key: string, model: string, system: string, user: unknown,
   try {
     result=JSON.parse(raw);
   } catch(error) {
-    const truncated=incompleteStructuredArtifactReason(body,error);
+    const truncated=(incompleteStructuredArtifactReason as any)(body,error);
     if(truncated)throw new AIProviderIncompleteOutputError(model,maxTokens,truncated);
     throw error;
   }
@@ -261,7 +261,7 @@ async function callComposioArtifact(db:any,model:string,system:string,user:unkno
     const providerTruncation=finishReason==='length'
       ? {status:'incomplete',incomplete_details:{reason:'max_output_tokens'}}
       : {};
-    const reason=incompleteStructuredArtifactReason(providerTruncation,error);
+    const reason=(incompleteStructuredArtifactReason as any)(providerTruncation,error);
     // Retry only demonstrably truncated structured output, at most once.
     // Invalid schema, rejected copy and ambiguous provider failures remain blocked.
     if(!allowTruncationRetry||!reason)throw error;
@@ -525,7 +525,7 @@ Deno.serve(async (req) => {
           for(const r of rr||[]){const ev=(r as any).evidence||{};
             for(const v of [ev.result_event,ev.friction_event,ev.source_focus_context]){const t=clean(v?.event_type);if(t)recentTypesForReserve.add(t);}}
         }
-        for(const alternative of buildVerifiedFounderReserve(verified,runDate,recentTypesForReserve)){
+        for(const alternative of (buildVerifiedFounderReserve as any)(verified,runDate,recentTypesForReserve)){
           const {error}=await db.from('powerhouse_content_recommendations')
             .upsert(alternative,{onConflict:'dedupe_key',ignoreDuplicates:true});
           if(error)throw new Error('PERSONAL_RESERVE_WRITE_FAILED:'+error.message);
@@ -754,7 +754,7 @@ Deno.serve(async (req) => {
       },{onConflict:'key'});
       if(linkError) throw new Error('COMPANY_TRACKING_LINK_WRITE_FAILED');
     }
-    const commercialFeedback=await loadContentFeedback(db,{channel:pending.channel,tenantId:['linkedin_company','instagram_company'].includes(pending.channel)?'bedrijfsgeheugen':'canonical',now:new Date()});
+    const commercialFeedback=await (loadContentFeedback as any)(db,{channel:pending.channel,tenantId:['linkedin_company','instagram_company'].includes(pending.channel)?'bedrijfsgeheugen':'canonical',now:new Date()});
     let verifiedBrandLearnings:any[]=[];
     if (['linkedin_company','blog'].includes(pending.channel)) {
       // Source-of-truth is the existing social learning store. Unknown/missing metrics
@@ -796,7 +796,7 @@ Deno.serve(async (req) => {
           if(snapshotError)throw new Error('MEASURED_BRAND_SNAPSHOT_READ:'+snapshotError.message);
           sourceSnapshots=data||[];
         }
-        measuredNextPostTest=selectMeasuredNextPostTest({posts:brandPosts||[],snapshots:sourceSnapshots,now:new Date(),channel:pending.channel});
+        measuredNextPostTest=(selectMeasuredNextPostTest as any)({posts:brandPosts||[],snapshots:sourceSnapshots,now:new Date(),channel:pending.channel});
       }catch(error){
         measuredNextPostTest={state:'SOURCE_UNAVAILABLE',mode:'READ_ONLY_DECISION_CONTEXT',
           error_class:'COMPANY_PROVIDER_EVIDENCE_READ_FAILED',
@@ -821,7 +821,7 @@ Deno.serve(async (req) => {
     const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
       ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
       : '';
-    const creativeExploration=proposeBoundedCreativeExploration({
+    const creativeExploration=(proposeBoundedCreativeExploration as any)({
       channel:pending.channel,runDate,recommendation,measured:measuredNextPostTest,
       freshness:classifyCurrentSource(recommendation)
     });
@@ -875,7 +875,7 @@ Deno.serve(async (req) => {
     if (pending.channel==='instagram_company') {
       // One approved frozen source controls this story, caption and exact video.
       bodyText=miraResolvedCaption(resolvedMira);
-      const check=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext);
+      const check:any=(validateResolvedMiraCaptionForDelivery as any)(runDate,bodyText,miraContext);
       if(!check.ok)throw new Error(check.reason);
       const expectedScene=clean(resolvedMira.scene||resolvedMira.problem?.scene);
       const sceneValid=clean(instagramProof?.mira_entrepreneur_scene)===expectedScene;
@@ -903,7 +903,7 @@ Deno.serve(async (req) => {
           ...artifactInput,rejected_draft:bodyText,
           editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
         };
-        const revision=await retryIncompleteEditorialDraft(
+        const revision=await (retryIncompleteEditorialDraft as any)(
           (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget),
           2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
           largerArtifactTokenBudget,
@@ -939,7 +939,7 @@ Deno.serve(async (req) => {
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
-      let editorialViolations=companyEditorialViolations(bodyText,{recentPosts:recentCompanyPosts});
+      let editorialViolations=(companyEditorialViolations as any)(bodyText,{recentPosts:recentCompanyPosts});
       if(editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
         const revision=await callAI(apiKey,gov.model_id,editorialSystem+
           ' HERSCHRIJF VOOR PUBLICATIE: afgekeurd op '+editorialViolations.map((v:any)=>v.code).join(', ')+
@@ -947,7 +947,7 @@ Deno.serve(async (req) => {
           {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:editorialViolations.map((v:any)=>v.code)},artifactTool,2400);
         let revised=compactLinkedInCommentary(clean(revision?.body));
         if(revised && companyTrackingUrl && !revised.includes(companyTrackingUrl)) revised+=`\n\n${companyTrackingUrl}`;
-        const revisedViolations=companyEditorialViolations(revised,{recentPosts:recentCompanyPosts});
+        const revisedViolations=(companyEditorialViolations as any)(revised,{recentPosts:recentCompanyPosts});
         if(revised && revisedViolations.length===0) {
           bodyText=revised;artifact={...artifact,...revision,body:revised};editorialViolations=[];
         }

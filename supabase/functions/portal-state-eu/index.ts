@@ -98,7 +98,7 @@ function mergeEntrepreneurActions(canonicalActions:any[],tenantActions:any[]){
 }
 function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:any[],tenantImpacts:any[],actions:any[]){
   const now=Date.now();
-  const sourceTruth=entrepreneurSnapshotFreshness({base,signals,now});
+  const sourceTruth=(entrepreneurSnapshotFreshness as any)({base,signals,now});
   const ageDays=(value:any)=>{
     if(!value)return Infinity;
     const time=new Date(value).getTime();
@@ -679,7 +679,7 @@ Deno.serve(async(req:Request)=>{
       let authorityRecords;
       try{authorityRecords=await readPortalBusinessInputAuthorityPages(client,tenantId);}
       catch(error){
-        const code=error?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
+        const code=(error as any)?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
           ?'BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED':'BUSINESS_INPUT_AUTHORITY_READ_FAILED';
         return json({error:code},503);
       }

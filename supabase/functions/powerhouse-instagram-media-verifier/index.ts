@@ -53,7 +53,7 @@ function toBase64(bytes:Uint8Array){
   return btoa(out);
 }
 async function sha256(bytes:Uint8Array){
-  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  const digest=await crypto.subtle.digest('SHA-256',bytes as any);
   return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaType:string,masterBytes:Uint8Array){

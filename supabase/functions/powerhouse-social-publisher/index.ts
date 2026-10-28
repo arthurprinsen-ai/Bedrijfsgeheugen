@@ -607,7 +607,7 @@ async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
     : [];
   if(urns.length===0)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_UNVERIFIED');
   if(urns.length!==1)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS');
-  return urns[0];
+  return urns[0] as string;
 }
 function assertLinkedInCompanyContentPolicy(commentary:string){
   const normalized=clean(commentary).toLowerCase();
@@ -1253,7 +1253,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
+  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels as string[]);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
@@ -1410,7 +1410,7 @@ Deno.serve(async (req) => {
            &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
            &&!dailyWinner);
       if(!verdict.ok||!mediaMatches||!masterFaceOk||!sourceConsistent){
-        const error=!verdict.ok?verdict.reason:!sourceConsistent?'MIRA_FROZEN_SOURCE_PUBLISHER_REJECTED':!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
+        const error=!verdict.ok?(verdict as any).reason:!sourceConsistent?'MIRA_FROZEN_SOURCE_PUBLISHER_REJECTED':!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
         const ev={...(row.delivery_evidence||{}),mira_entrepreneur_caption_contract:clean(captionEvidence.caption_contract),canonical_problem_id:selected?.id||null,provider_truth_verified:false,error,republish_forbidden:false};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:ev,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,ev,'Repair source-bound caption and matching exact-final Mira media before any provider call.',error);
