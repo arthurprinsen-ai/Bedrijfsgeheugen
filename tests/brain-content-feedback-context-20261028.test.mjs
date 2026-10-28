@@ -72,3 +72,14 @@ test('both canonical generators consume and persist the same feedback context',(
  assert.ok(orchestrator.includes('generation_evidence:{commercial_feedback:commercialFeedback,'),'feedback must survive artifact write');
  assert.ok(orchestrator.includes('AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT'),'frozen source must never claim model consumption');
 });
+test('native Supabase deployment registers both feedback consumers with their existing custom authentication',()=>{
+ const config=fs.readFileSync(new URL('../supabase/config.toml',import.meta.url),'utf8');
+ for(const slug of ['powerhouse-content-orchestrator','powerhouse-commercial-message-composer']){
+  const header='[functions.'+slug+']';
+  assert.ok(config.includes(header),slug+' must participate in native protected-main deployment');
+  const section=config.slice(config.indexOf(header)+header.length).split('\n[')[0];
+  assert.match(section,/enabled\s*=\s*true/);
+  assert.match(section,/verify_jwt\s*=\s*false/);
+  assert.ok(section.includes('./functions/'+slug+'/index.ts'));
+ }
+});
