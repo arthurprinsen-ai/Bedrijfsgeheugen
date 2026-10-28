@@ -72,6 +72,8 @@ Deno.serve(async(req)=>{
     content_id:contentId,
     canonical_url:canonical,
     artifact_status:a.status,
+    blog_quality_repair:generation.blog_quality_repair||null,
+    reader_ready:generation.automated_blog_reader_ready===true,
     obligation_status:clean(o?.status)||null,
     obligation_idempotency_key:clean(o?.evidence?.idempotency_key)||('content-publication:'+runDate+':blog')
   });

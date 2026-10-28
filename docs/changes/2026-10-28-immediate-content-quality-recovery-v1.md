@@ -1,0 +1,13 @@
+# Immediate correction within the existing content owner
+
+Quality rejection must lead to a bounded executable correction in the same obligation. The canonical orchestrator now rechecks its own unsent blog and CAS-reopens only the exact date/channel/content-ready state and timestamp, retaining the rejected hash and quality codes. Any publication, external ID, ambiguous side effect, wrong tenant/channel/date or lost CAS remains immutable. Other scoped channels do not repair the blog.
+
+The existing daily writer can refresh only its exact draft, same-repository/main/same-date/same-URL candidate from a changed reader-ready canonical artifact with recorded quality-repair provenance. It inherits protected current main, renders through the existing owner, retains translations and the evidence bundle, updates article/index/RSS without duplicates, and waits for true exact-candidate BRAIN before making the draft ready. No second publisher, scheduler or blog PR. Protected Required/CodeQL/native preview/Netlify/public readback remain required.
+
+Explicitly observed zero clicks across at least two comparable mature posts and200 exposures select one useful next-step hypothesis, retaining actual denominators, source IDs and later24/48/72h evaluation. Unknown metrics and sparse samples do not become zero or a proven losing/winning pattern. Existing naturally eligible next content consumes the test; no extra post or guaranteed clicks/revenue.
+
+Current independent lanes: company LinkedIn already has canonical exact provider text/author readback at14:29Z; current generic read route403 does not invalidate that receipt. Personal still lacks authorized exact text readback and must not be resent. Existing Mira job has no new asset; preflight15156 returned WAITING_ASSET. Those provider/media outcomes remain separately open until independently proven.
+
+Validation: deterministic RED→GREEN reproductions, real SQL adapter CAS and lost-race behavior, existing reader/daily-writer guards, full backend/BRAIN and independent branch review before protected delivery. Current source code is not yet production proof.
+
+Independent review correction: short PostgreSQL transactions lock obligation, decision and artifact for the repair claim and final persistence. A unique expiring claim token prevents another invocation consuming reopened work; published/stale state at final write aborts. Pin the original recommendation and URL; retain rejected body only in private decision claim. Render the exact authorized source snapshot, recheck PR draft/terminal identity at write/readiness, and bind downstream cleanup to successful refreshed SHA. Regression covers actual SQL adapter, lost CAS, final owner/state/source changes, failed cleanup and source guards.

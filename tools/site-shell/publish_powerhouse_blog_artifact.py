@@ -40,6 +40,23 @@ def replace_one(text, pattern, replacement, label, flags=re.S):
         fail(f"{label}: expected one replacement, got {count}")
     return updated
 
+def upsert_publication_entry(text, entry, identities, kind):
+    pattern = r'<a\b[^>]*>.*?</a>' if kind == 'card' else r'<item\b[^>]*>.*?</item>'
+    def matches(block):
+        if kind == 'card':
+            return any(f'href="{identity}"' in block.split('>', 1)[0] for identity in identities)
+        return any(f'<link>{identity}</link>' in block for identity in identities)
+    found = [m for m in re.finditer(pattern, text, re.S) if matches(m.group(0))]
+    if len(found) > 1:
+        fail('BLOG_DUPLICATE_PUBLICATION_REGISTRY_ENTRY')
+    if found:
+        m = found[0]
+        return text[:m.start()] + entry + text[m.end():]
+    marker = '<div class="artikelen">\n' if kind == 'card' else '<channel>\n'
+    if text.count(marker) != 1:
+        fail('BLOG_PUBLICATION_REGISTRY_MARKER_INVALID')
+    return text.replace(marker, marker + entry + '\n\n', 1)
+
 def inline_markdown(value):
     escaped = html.escape(value)
     escaped = re.sub(
@@ -304,7 +321,10 @@ def main():
     business_date = sys.argv[1] if len(sys.argv) > 1 else dt.date.today().isoformat()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", business_date):
         fail("INVALID_BUSINESS_DATE")
-    data = fetch(business_date)
+    source_snapshot = __import__("os").environ.get("POWERHOUSE_BLOG_SOURCE_SNAPSHOT", "")
+    data = json.loads(pathlib.Path(source_snapshot).read_text(encoding="utf-8")) if source_snapshot else fetch(business_date)
+    if source_snapshot and data is not None and data.get("run_date") != business_date:
+        fail("BLOG_SOURCE_SNAPSHOT_DATE_MISMATCH")
     if data is None:
         print(f"NO_ACTION:NO_APPROVED_BLOG_ARTIFACT:{business_date}")
         return
@@ -450,26 +470,22 @@ def main():
 
     index_text = BLOG_INDEX.read_text(encoding="utf-8")
     href = f"/blog/{slug}/"
-    if href not in index_text:
-        excerpt_raw = re.sub(r"\s+", " ", data["body"]).strip()
-        excerpt = html.escape(excerpt_raw[:220] + ("…" if len(excerpt_raw) > 220 else ""))
-        card = (
-            f'  <a class="kaart" href="{href}"><span class="tag">Powerhouse</span><h2>{title}</h2>'
-            f'<p>{excerpt}</p><span class="lees">Lees het artikel &rarr;</span>'
-            f'<span class="datum">{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]} &middot; nieuw</span></a>\n\n'
-        )
-        index_text = index_text.replace('<div class="artikelen">\n', '<div class="artikelen">\n\n' + card, 1)
-        BLOG_INDEX.write_text(index_text, encoding="utf-8")
+    excerpt_raw = re.sub(r"\s+", " ", data["body"]).strip()
+    excerpt = html.escape(excerpt_raw[:220] + ("…" if len(excerpt_raw) > 220 else ""))
+    card = (
+        f'  <a class="kaart" href="{canonical}"><span class="tag">Powerhouse</span><h2>{title}</h2>'
+        f'<p>{excerpt}</p><span class="lees">Lees het artikel &rarr;</span>'
+        f'<span class="datum">{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]} &middot; nieuw</span></a>'
+    )
+    BLOG_INDEX.write_text(upsert_publication_entry(index_text, card, [href, canonical], 'card'), encoding="utf-8")
 
     rss = RSS.read_text(encoding="utf-8")
-    if canonical not in rss:
-        pub_date = format_datetime(dt.datetime.now(dt.timezone.utc))
-        item = (
-            f'<item><title>{title}</title><link>{canonical}</link><guid>{canonical}</guid>'
-            f'<pubDate>{pub_date}</pubDate><description>{meta}</description></item>\n\n'
-        )
-        rss = rss.replace("<channel>\n", "<channel>\n" + item, 1)
-        RSS.write_text(rss, encoding="utf-8")
+    pub_date = format_datetime(dt.datetime.now(dt.timezone.utc))
+    item = (
+        f'<item><title>{title}</title><link>{canonical}</link><guid>{canonical}</guid>'
+        f'<pubDate>{pub_date}</pubDate><description>{meta}</description></item>'
+    )
+    RSS.write_text(upsert_publication_entry(rss, item, [canonical], 'rss'), encoding="utf-8")
 
     if SITEMAP.exists():
         sitemap = SITEMAP.read_text(encoding="utf-8")
