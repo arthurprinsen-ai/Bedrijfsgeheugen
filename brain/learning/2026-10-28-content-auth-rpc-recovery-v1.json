@@ -1,0 +1,33 @@
+{
+  "fingerprint": "content|rpc-receiver-regression|20261028-v1",
+  "obligation_id": "content-publication-quality-recovery-20261028",
+  "compiler": {
+    "failure_class": "RPC_EXECUTOR_REGRESSION",
+    "scope": "GENERAL"
+  },
+  "root_cause": "The SQL-client injection refactor accidentally changed standalone directRpc to this.sql. The function has no receiver, catches the error and returns null; the unchanged auth guard correctly rejects the request401. Query-only tests and byte parity missed RPC execution. Terminal readback also lacks exact classification of the CI-only reviewed-blog helper.",
+  "prevention_rule": "Inject clients only into actual query instances; keep standalone RPC execution explicit. Test actual RPC execution and the allowlist as well as query chains before native promotion, then smoke-test canonical authentication without exposing a token. Classify only the exact CI-only helper in the production-readback contract; retain runtime/provider obligations for Edge and renderer paths. Preserve failed release source and verify the corrected current successor.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-auth-rpc-recovery-20261028.test.mjs",
+      "tests/brain-blog-quality-recovery-20261028.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "predecessor_pr": 5046,
+    "predecessor_main": "e9840f4329f5398f81a4cc71b282941233d9205f",
+    "unauthorized_request": 15178,
+    "terminalizer": 40728985753,
+    "terminal_error": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK:tools/content-growth/reviewed-blog-refresh.mjs",
+    "secrets_readback": "one vault token, RPC equals latest; no secret printed",
+    "red_green": "standalone actual RPC returned null before scoped fix; returns synthetic token after; unauthorized RPC stays denied; exact helper classification only"
+  },
+  "outcome": {
+    "current_candidate": "LOCAL_TESTED_NOT_DEPLOYED",
+    "historical_5046_runtime_auth": "FAILED",
+    "revenue_lift": "NOT_PROVEN"
+  }
+}
