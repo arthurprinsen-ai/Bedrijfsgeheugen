@@ -1,0 +1,7 @@
+# Merged feedback BRAIN verification recovery
+
+The feedback production code is independently exact and live, but existing terminalization cannot finish an exact-candidate BRAIN recovery because Unified Brain Delivery rejects all closed PRs. The old missing premerge run is not success and is not fabricated.
+
+Allow only explicitly verification_only=true recovery on refs/heads/main, exact supplied original base/head, closed+merged same-repository PR into main, merge contained in trusted workflow main, and candidate ancestry or squash tree equality. Keep all existing admission/lane tests. Moving-main mutation conflict fencing applies to promotion; a read-only verifier instead has the immutable protected merge proof. Every production transport remains disabled by verification_only. No publisher, scheduler, permission or runtime deploy is added.
+
+Regression executes the real extracted bash identity step with deterministic external GitHub fixtures: valid squash and ancestor recovery, closed unmerged, promotion, malformed state, wrong repo/base/ref/head and missing containment/equivalence. RED reproduced before implementation, GREEN after. Protected delivery then exact original #5040 read-only BRAIN and existing terminal closure recovery remain acceptance steps. Postmerge validation timing must remain explicit. Newsletter has no canonical subscriber/consent registry or authorized executor; no contacts or consent are invented.
