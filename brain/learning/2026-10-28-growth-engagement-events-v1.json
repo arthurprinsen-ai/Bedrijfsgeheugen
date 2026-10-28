@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-cro|engagement-events-scroll-dwell-exit|20261028-v1",
+  "fingerprint": "website|measurement|no-scroll-dwell-exit-signal|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "VISITOR_BEHAVIOUR_NOT_MEASURED_BEYOND_PAGE_VIEW",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The site measured page_view, a single engaged_view (30 s or 50 percent scroll) and CTA events only. Reading depth, visible time and the point where visitors leave were not observable, so no agent could tell where visitors drop off. The server allowlist also rejected any other event type, and the numeric value was not forwarded to the data hub.",
+  "observed_evidence": {
+    "source": "tools/seo-growth/normalize-observation.mjs ALLOWED_BEHAVIOR (10 types), netlify/functions/growth-event.mjs, public.growth_events",
+    "growth_events_value_column_all_zero": true,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Two new behaviour events from the existing inline script: scroll_depth (25, 50, 75, 100 percent, once each) and page_exit (visible seconds, once per page view, with highest scroll depth in engagement_reason). Server allowlist extended, value bounded to 0..86400 and forwarded. No cookie, identifier, PII, collector or schedule added. Section-level views are not included because growth_events has no content column.",
+  "prevention_rule": "Every behaviour signal must use an allowlisted type, a bounded numeric value and no personal field; new signals are proven by replay of the real script and the real normaliser.",
+  "tests": [
+    "tests/brain-growth-engagement-events-v1.test.mjs",
+    "tests/seo-order-measurement.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-engagement-events-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-engagement-events-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-engagement-events-v1.test.mjs"
+    ],
+    "invariants": [
+      "milestones sent once",
+      "one page_exit per page view",
+      "value bounded",
+      "PII keys rejected",
+      "unknown types rejected",
+      "value forwarded to data hub"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
