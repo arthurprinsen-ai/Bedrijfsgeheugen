@@ -219,7 +219,7 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL') || '';
   const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
   if (!url || !service) return json({ ok: false, error: 'CONFIG' }, 500);
-  const db=createDirectDb();
+  const db:any=createDirectDb();
   const authSecret = await db.rpc('bg_geheim', { p_naam: 'powerhouse_daily_scheduler_token' });
   if (authSecret.error) {
     console.error('CONTENT_LOOP_AUTH_LOOKUP_FAILED');
@@ -407,7 +407,7 @@ Deno.serve(async (req) => {
       stepResults.push({name:'pending-generation-read',ok:false,degraded:true,error:'PENDING_GENERATION_READ_FAILED'});
     }else if(!bootstrapStillInFlight){
       const pendingChannels=[...new Set((pendingGeneration||[]).map((item:any)=>clean(item.channel)))]
-        .filter(channel=>requiredDecisionChannels.includes(channel));
+        .filter((channel:any)=>requiredDecisionChannels.includes(channel));
       if(!pendingChannels.length){
         stepResults.push({name:'powerhouse-content-orchestrator',ok:true,skipped:true,reason:'NO_PENDING_ARTIFACT'});
       }else{

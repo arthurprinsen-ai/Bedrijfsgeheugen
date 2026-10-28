@@ -1,4 +1,5 @@
-import {loadContentFeedback,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-human-commercial-message-composer-v2';
