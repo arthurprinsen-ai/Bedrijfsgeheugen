@@ -32,7 +32,7 @@ Deno.serve(async(req)=>{
   const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   // Never export a stale obligation's URL when the artifact was regenerated.
   // A proven provider side effect is immutable: reconcile it, do not replace it.
-  if (clean(o?.slug) && clean(o.slug)!==slug
+  if (clean(o?.slug) && clean(o?.slug)!==slug
       && (clean(o?.status)!=='GENERATED' || clean(o?.evidence?.provider_create_success)==='true'
           || clean(o?.evidence?.republish_forbidden)==='true')) {
     return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_REQUIRES_RECONCILIATION',runDate},409);

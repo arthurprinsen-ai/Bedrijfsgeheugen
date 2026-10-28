@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
-import { publicMarketPayload, requestForecastPlan } from './openai-forecast.mjs';
+import {publicMarketPayload as publicMarketPayload_raw,requestForecastPlan} from './openai-forecast.mjs';
+const publicMarketPayload:(...args:any[])=>any=publicMarketPayload_raw;
 
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});

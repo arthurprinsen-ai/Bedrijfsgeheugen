@@ -125,7 +125,7 @@ Deno.serve(async (req: Request) => {
         .map((x:any)=>latin(x).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''))
         .filter(Boolean).join('-');
       return json({ok:true,filename:(base||'bedrijfsgeheugen-sales-one-pager')+'.pdf',mime_type:'application/pdf',base64:bytesToBase64(bytes)});
-    }catch(e){return json({error:'PDF_MAKEN_MISLUKT',detail:String(e?.message||e).slice(0,200)},500);}
+    }catch(e){return json({error:'PDF_MAKEN_MISLUKT',detail:String((e as any)?.message||e).slice(0,200)},500);}
   }
 
   if (body?.actie === 'uitkomst') {

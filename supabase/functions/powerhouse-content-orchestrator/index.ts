@@ -1,27 +1,37 @@
-import {loadContentFeedback,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {buildVerifiedFounderReserve,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
-import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
+import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
+const buildVerifiedFounderReserve:(...args:any[])=>any=buildVerifiedFounderReserve_raw;
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
+const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
-import {selectMeasuredNextPostTest,proposeBoundedCreativeExploration} from '../_shared/measured-next-post-challenger.mjs';
+import {selectMeasuredNextPostTest as selectMeasuredNextPostTest_raw,proposeBoundedCreativeExploration as proposeBoundedCreativeExploration_raw} from '../_shared/measured-next-post-challenger.mjs';
+const proposeBoundedCreativeExploration:(...args:any[])=>any=proposeBoundedCreativeExploration_raw;
+const selectMeasuredNextPostTest:(...args:any[])=>any=selectMeasuredNextPostTest_raw;
 import {assertMeasurementSourceReadOnly,assertObservedSnapshotFloor} from '../_shared/measured-provider-db-policy.mjs';
 import {classifyCurrentSource} from '../_shared/content-source-freshness.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
-import {incompleteStructuredArtifactReason,largerArtifactTokenBudget,retryIncompleteEditorialDraft} from '../_shared/content-artifact-incomplete-retry.mjs';
+import {incompleteStructuredArtifactReason as incompleteStructuredArtifactReason_raw,largerArtifactTokenBudget,retryIncompleteEditorialDraft as retryIncompleteEditorialDraft_raw} from '../_shared/content-artifact-incomplete-retry.mjs';
+const retryIncompleteEditorialDraft:(...args:any[])=>any=retryIncompleteEditorialDraft_raw;
+const incompleteStructuredArtifactReason:(...args:any[])=>any=incompleteStructuredArtifactReason_raw;
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
-import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,validateResolvedMiraCaptionForDelivery as validateResolvedMiraCaptionForDelivery_raw} from '../_shared/mira-frozen-winner-contract.mjs';
+const validateResolvedMiraCaptionForDelivery:(...args:any[])=>any=validateResolvedMiraCaptionForDelivery_raw;
 
 const STEERING_BRAND_CONTRACT='Merkcategorie: dagelijkse ondernemingssturing, geen afzonderlijke AI-tool, chatbot, dashboard of automatiseringspakket. Leg in menselijke ondernemerstermen uit hoe interne én externe veranderingen worden verbonden met strategie, doelen, geld, processen, mensen en risico’s; benoem vervolgens een passende beslissing, de eigenaar van een actie en een controleerbare uitkomst of meetpunt. Het onderscheid is de gesloten verbeterlus: signaal → context → gevolg → beslissing → actie → resultaat → leren. POWERHOUSE is de motor, niet het hoofdproduct. AI-agenten, modelnamen en modulelijsten zijn hoogstens uitleg ná concrete ondernemerswaarde. Nooit verzonnen klantbewijs, gegarandeerde omzet, automatische beslissingen zonder toestemming of onbewezen productcapaciteit. Gebruik per uiting één aantoonbare bron of waarheidsgetrouw voorbeeld en een andere invalshoek dan vorige posts.';
 const BLOG_READER_READY_POLICY='openai-blog-reader-ready-v1';
-const BLOG_READER_READY_PROMPT="Schrijf uitsluitend definitieve, voor bezoekers geschikte Nederlandstalige blogcontent voor ondernemers. Lever een helder lezersgericht title, body, cta, hook_type, focus_keyword en meta_description. Minimaal 3 concrete ## tussenkoppen en voldoende inhoud om een toepasbaar stappenplan uit te leggen. Geen redactienotities, publicatie-instructies, URL-eigenaarschap-checks, SEO-plannen voor de uitgever, concept/draft-verwijzingen, reviewer-to-do's of stappen die nog vóór publicatie moeten gebeuren. Zet '(canonieke pagina)' of '(concept)' nooit in de titel. Een CTA is een nuttige volgende stap voor de ondernemer, geen taak voor een contentbeheerder. Bewijs externe feiten uit de meegeleverde recommendation.evidence, gebruik geen verzonnen statistieken, cases of onafhankelijk onbewezen leveranciersclaims. Een productaankondiging is een claim van de leverancier, geen gemeten klantresultaat. Schrijf het artikel als openbare tekst, niet als briefing aan een redacteur.";
+const BLOG_READER_READY_PROMPT="Schrijf uitsluitend definitieve, voor bezoekers geschikte Nederlandstalige blogcontent voor ondernemers. Lever een helder lezersgericht title, body, cta, hook_type, focus_keyword en meta_description. Minimaal 3 concrete ## tussenkoppen en voldoende inhoud om een toepasbaar stappenplan uit te leggen. Geen redactienotities, publicatie-instructies, URL-eigenaarschap-checks, SEO-plannen voor de uitgever, concept/draft-verwijzingen, reviewer-to-do's of stappen die nog vóór publicatie moeten gebeuren. Zet '(canonieke pagina)' of '(concept)' nooit in de titel. Een CTA is een nuttige volgende stap voor de ondernemer, geen taak voor een contentbeheerder. Bewijs externe feiten uit de meegeleverde recommendation.evidence, gebruik geen verzonnen statistieken, cases of onafhankelijk onbewezen leveranciersclaims. Een productaankondiging is een claim van de leverancier, geen gemeten klantresultaat. Schrijf het artikel als openbare tekst, niet als briefing aan een redacteur. De meegeleverde recommendation en brief zijn intern advies aan de uitgever, niet het onderwerp: het artikel gaat over het ondernemersprobleem of de kans voor de lezer zelf (bijvoorbeeld de subsidieregeling, het boekhoudprobleem, de koppeling), nooit over de vraag of, wanneer of hoe er over gepubliceerd moet worden. Noem geen kanaalgates, scores, CPC, forecast, zoekvolume, canonical owner of publicatiebesluiten en schrijf geen beslisplan voor publicatie.";
 function blogReaderReadyViolations(artifact:any):string[]{
   const title=String(artifact?.title||'').trim(),body=String(artifact?.body||'').trim(),cta=String(artifact?.cta||'').trim();
   const errors:string[]=[];
   if(body.length<1600)errors.push('BODY_TOO_SHORT');
   if(/Verifieer publicatie.voorwaarde|Publiceer alleen als er geen dominante canonical owner|verified_qualified_cta_progression|Schrijf één hoofdpage|Voorpublicatie: canonical owner check|SEO.verantwoordelijke\s*\/\s*marketinglead/i.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
+  if(/publiceer alleen als|wanneer (?:te )?publiceren|kanaal-?gates?|channel gates?|canonical owner|forecast.?score|\bCPC\b|DataForSEO|first.mover|intent.?gap|verified_qualified|contentmanager|zoekvolume van/i.test(body))errors.push('INTERNAL_PUBLISHING_LANGUAGE');
+  if(/\bpublice+r(?:en|t)?\b[^.\n]{0,60}\b(?:kans|subsidie|kanaal|gate|beslis)|\b(?:wanneer|beslis)[^.\n]{0,20}publice+r/i.test(title))errors.push('META_PUBLISHING_TOPIC');
   if((body.match(/^##\s+/gm)||[]).length<3)errors.push('READER_STRUCTURE_MISSING');
   if(/(?:^|\n)\s*(?:Voordat u publiceert\s*:|Publicatiestap\s*\(vereist|Publicatie-\s*en\s*SEO-aanpak\s*\(|Wat te publiceren als follow-up documenten\s*\()/im.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
   if(/Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie|Gebruik dit als technisch bewijs voor het algemene probleem/i.test(body))errors.push('EDITORIAL_SOURCE_DIRECTIONS');
@@ -875,7 +885,7 @@ Deno.serve(async (req) => {
     if (pending.channel==='instagram_company') {
       // One approved frozen source controls this story, caption and exact video.
       bodyText=miraResolvedCaption(resolvedMira);
-      const check=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext);
+      const check:any=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext);
       if(!check.ok)throw new Error(check.reason);
       const expectedScene=clean(resolvedMira.scene||resolvedMira.problem?.scene);
       const sceneValid=clean(instagramProof?.mira_entrepreneur_scene)===expectedScene;
