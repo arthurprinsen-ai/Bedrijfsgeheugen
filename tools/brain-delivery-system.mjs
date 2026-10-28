@@ -19,6 +19,7 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tools/growth-intelligence/decision-core.test.mjs': 'automation',
   'tools/growth-intelligence/heartbeat-adapter.mjs': 'automation',
   'tools/growth-intelligence/heartbeat-adapter.test.mjs': 'automation',
+  'tools/growth-intelligence/brain-records-store.mjs': 'automation',
   'tools/growth-intelligence/learning-store.mjs': 'automation',
   'tools/growth-intelligence/learning-store.test.mjs': 'automation',
 
