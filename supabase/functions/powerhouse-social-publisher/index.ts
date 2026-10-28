@@ -1221,7 +1221,7 @@ Deno.serve(async (req) => {
   const requestedChannels = Array.isArray(body.channels)
     ? [...new Set(body.channels.map((value:any)=>clean(value)).filter((value:string)=>allChannels.includes(value)))]
     : [];
-  const channels = requestedChannels.length ? requestedChannels : allChannels;
+  const channels: string[] = requestedChannels.length ? requestedChannels as string[] : allChannels;
   const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
   const bufferToken = clean(integration?.token) || null;
 
@@ -1253,7 +1253,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels as string[]);
+  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')

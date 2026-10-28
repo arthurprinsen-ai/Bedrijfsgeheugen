@@ -1,5 +1,6 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
+const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
@@ -242,7 +243,7 @@ Deno.serve(async (req) => {
       const ageDays=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;
       return ageDays>=1&&ageDays<=21;
     }).map((p:any)=>clean(p.body)).filter(Boolean);
-    companyEditorialBlockers=(companyEditorialViolations as any)(text,{recentPosts});
+    companyEditorialBlockers=companyEditorialViolations(text,{recentPosts});
     if(body.editorial_policy_version!==COMPANY_EDITORIAL_POLICY)
       companyEditorialBlockers.unshift({code:'COMPANY_EDITORIAL_POLICY_OUTDATED',message:'Canoniek bedrijfspagina-redactiecontract ontbreekt.'});
     if(body.final_copy_approved!==true)

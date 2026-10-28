@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
-import { publicMarketPayload, requestForecastPlan } from './openai-forecast.mjs';
+import {publicMarketPayload as publicMarketPayload_raw,requestForecastPlan} from './openai-forecast.mjs';
+const publicMarketPayload:(...args:any[])=>any=publicMarketPayload_raw;
 
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -74,7 +75,7 @@ Deno.serve(async(req:Request)=>{
     const externalEvidence=(signals||[]).filter((s:any)=>s.source_type==='external_news').slice(0,24);
     const demandEvidence=(signals||[]).filter((s:any)=>s.source_type==='search_demand').slice(0,16);
     const modelSignals=[...externalEvidence,...demandEvidence].slice(0,40);
-    const payload=(publicMarketPayload as any)({date:today(),signals:modelSignals});
+    const payload=publicMarketPayload({date:today(),signals:modelSignals});
     if(!payload.signals.length)throw new Error('AI_PUBLIC_MARKET_EVIDENCE_REQUIRED');
     const generationProvider='OpenAI';
     const generationModel=clean(gov.model_id);

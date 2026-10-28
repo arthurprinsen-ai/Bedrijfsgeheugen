@@ -1,4 +1,5 @@
-import {loadContentFeedback,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-human-commercial-message-composer-v2';
@@ -193,7 +194,7 @@ Deno.serve(async(req:Request)=>{
           history=past||[];
         }
         const commercialFeedback=['email','e-mail','reply_email'].includes(clean(workingAction.channel_norm))
-          ?await (loadContentFeedback as any)(db,{channel:clean(workingAction.channel_norm),tenantId:'canonical',playKey:clean(workingAction.play_key),now:new Date(now)})
+          ?await loadContentFeedback(db,{channel:clean(workingAction.channel_norm),tenantId:'canonical',playKey:clean(workingAction.play_key),now:new Date(now)})
           :null;
         const gen=await generate(db,apiKey,clean(gov.model_id),workingAction,persuasion,commercialFeedback),generated=gen.output,qv=quality(workingAction,workingAction.message_plan,generated,history),message=clean(generated.message),hash=await sha256(message);
         await db.from('powerhouse_message_quality_v1').upsert({action_id:action.action_id,composer_version:CONTRACT,play_key:action.play_key,channel:action.channel_norm,message_hash:hash,passed:qv.passed,score:qv.score,checks:qv.checks,evidence:{model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,generated_at:now,personalization_anchor:generated.personalization_anchor,fact_used:generated.fact_used,hypothesis_used:generated.hypothesis_used,primary_problem:generated.primary_problem,micro_commitment:generated.micro_commitment,predicted_objection:generated.predicted_objection,objection_response:generated.objection_response,human_reason:generated.human_reason}},{onConflict:'action_id,message_hash'});
