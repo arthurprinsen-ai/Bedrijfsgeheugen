@@ -1,5 +1,4 @@
 
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createRemoteJWKSet, jwtVerify } from "npm:jose@5.9.6";
 import postgres from "npm:postgres@3.4.7";
 
