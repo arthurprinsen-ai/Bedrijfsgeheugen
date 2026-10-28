@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|revenue-learning|identical-upsert-evaluation-churn|20261027-v1",
+  "compiler": {
+    "failure_class": "EVIDENCE_IDENTICAL_UPSERT_REOPENS_EVALUATION",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-evidence-timestamp-guard-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "The canonical revenue-learning-store upsert always supplies a new updated_at, even when business evidence is identical. list_due_evidence interprets that timestamp as a material change and re-evaluates previously evaluated records.",
+  "prevention": "A BEFORE UPDATE trigger retains OLD.updated_at when all business data is unchanged; preserves RETURNING compatibility and advances timestamp for real business changes. Requires protected migration and independent production proof.",
+  "evidence": {
+    "tests": [
+      "tests/brain-revenue-learning-evidence-timestamp-guard-20261027.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until protected merge, migration applied and an independent production readback shows identical evidence upserts keep updated_at. Behavioural PostgreSQL case runs only when REVENUE_EVIDENCE_TEST_DATABASE_URL is set (skipped in CI); verified locally on PostgreSQL 16: identical keeps updated_at, changed advances it, evaluated_at untouched, and two mutations of the trigger are caught."
+  },
+  "limitations": [
+    "Does not eliminate physical update/write-ahead logging",
+    "Does not enforce immutable provenance",
+    "Concurrency, CDC/audit effects and production deploy remain unverified",
+    "The race test of the alternative RPC (Evidence Hotfix V5) does not apply to this trigger path",
+    "A manual UPDATE of updated_at on an unchanged row is ignored; force re-evaluation through evaluated_at or a changed business column"
+  ]
+}

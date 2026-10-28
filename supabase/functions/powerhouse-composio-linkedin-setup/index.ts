@@ -287,7 +287,7 @@ Deno.serve(async(req:Request)=>{
     const companyState=companyReady?'ACTIVE':personalReady?'COMPANY_AUTH_REQUIRED':'CAPABILITY_UNVERIFIED';
     const companyReason=companyReady?null:personalReady?'LINKEDIN_COMPANY_ORG_OAUTH_REQUIRED':'LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED';
     const companyOauthVerifiedAt=companyReady?new Date().toISOString():null;
-    const result:any={
+    const result:Record<string,any>={
       ready:personalReady,
       state:companyState,
       reason:companyReason,
