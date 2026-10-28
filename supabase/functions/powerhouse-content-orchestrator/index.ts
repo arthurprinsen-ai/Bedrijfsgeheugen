@@ -1,4 +1,5 @@
 import {loadContentFeedback,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+import {reopenRejectedBlog,persistRepairedBlog} from '../_shared/blog-quality-recovery.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {buildVerifiedFounderReserve,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
@@ -20,6 +21,7 @@ function blogReaderReadyViolations(artifact:any):string[]{
   const title=String(artifact?.title||'').trim(),body=String(artifact?.body||'').trim(),cta=String(artifact?.cta||'').trim();
   const errors:string[]=[];
   if(body.length<1600)errors.push('BODY_TOO_SHORT');
+  if(/Verifieer publicatie.voorwaarde|Publiceer alleen als er geen dominante canonical owner|verified_qualified_cta_progression|Schrijf één hoofdpage|Voorpublicatie: canonical owner check|SEO.verantwoordelijke\s*\/\s*marketinglead/i.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
   if((body.match(/^##\s+/gm)||[]).length<3)errors.push('READER_STRUCTURE_MISSING');
   if(/(?:^|\n)\s*(?:Voordat u publiceert\s*:|Publicatiestap\s*\(vereist|Publicatie-\s*en\s*SEO-aanpak\s*\(|Wat te publiceren als follow-up documenten\s*\()/im.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
   if(/Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie|Gebruik dit als technisch bewijs voor het algemene probleem/i.test(body))errors.push('EDITORIAL_SOURCE_DIRECTIONS');
@@ -127,8 +129,8 @@ function valueExpr(table:string,column:string,value:any,values:any[]){
 }
 function rpcExpr(value:any,values:any[]){return value!==null&&typeof value==='object'?scalarParam(JSON.stringify(value),values,'jsonb'):scalarParam(value,values);}
 class DirectQuery{
- table:string;op='select';columns='*';payload:any=null;returning='';filters:any[]=[];orders:any[]=[];limitValue:number|null=null;singleMode='';conflict='';ignoreDuplicates=false;
- constructor(table:string){if(!DIRECT_TABLES.has(table))throw new Error('DB_TABLE_REJECTED:'+table);this.table=table;}
+ sql:any;table:string;op='select';columns='*';payload:any=null;returning='';filters:any[]=[];orders:any[]=[];limitValue:number|null=null;singleMode='';conflict='';ignoreDuplicates=false;
+ constructor(table:string,sqlClient:any=directSql){if(!DIRECT_TABLES.has(table))throw new Error('DB_TABLE_REJECTED:'+table);this.table=table;this.sql=sqlClient;}
  select(columns='*'){if(['update','upsert','insert'].includes(this.op))this.returning=columns;else{this.op='select';this.columns=columns;}return this;}
  insert(payload:any){this.op='insert';this.payload=payload;return this;}
  update(payload:any){this.op='update';this.payload=payload||{};return this;}
@@ -148,10 +150,19 @@ class DirectQuery{
  else if(this.op==='insert'){const items=Array.isArray(this.payload)?this.payload:[this.payload];if(!items.length||!items[0])throw new Error('DB_EMPTY_INSERT');const cols=Object.keys(items[0]);q='insert into public.'+dbIdent(this.table)+' ('+cols.map(dbIdent).join(',')+') values '+items.map((item:any)=>'('+cols.map(c=>valueExpr(this.table,c,item[c],values)).join(',')+')').join(',');if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='update'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPDATE');q='update public.'+dbIdent(this.table)+' set '+entries.map(([k,v])=>dbIdent(k)+' = '+valueExpr(this.table,k,v,values)).join(',')+this.where(values);if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='upsert'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPSERT');const cols=entries.map(([k])=>dbIdent(k));const vals=entries.map(([k,v])=>valueExpr(this.table,k,v,values));q='insert into public.'+dbIdent(this.table)+' ('+cols.join(',')+') values ('+vals.join(',')+')';const conflict=this.conflict.split(',').map(x=>x.trim()).filter(Boolean);if(!conflict.length)throw new Error('DB_UPSERT_CONFLICT_REQUIRED');q+=' on conflict ('+conflict.map(dbIdent).join(',')+') ';if(this.ignoreDuplicates)q+='do nothing';else{const set=new Set(conflict);const ups=entries.map(([k])=>k).filter(k=>!set.has(k));q+=ups.length?'do update set '+ups.map(k=>dbIdent(k)+' = excluded.'+dbIdent(k)).join(','):'do nothing';}if(this.returning)q+=' returning '+this.selectList(this.returning);}
- else throw new Error('DB_OPERATION_REJECTED');const rows:any[]=await directSql.unsafe(q,values);const normalized=rows.map((row:any)=>normalizeRowJson(this.table,row));let data:any;if(['insert','update','upsert'].includes(this.op)&&!this.returning)data=null;else if(this.singleMode)data=normalized[0]||null;else data=normalized;return {data,error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
+ else throw new Error('DB_OPERATION_REJECTED');const rows:any[]=await this.sql.unsafe(q,values);const normalized=rows.map((row:any)=>normalizeRowJson(this.table,row));let data:any;if(['insert','update','upsert'].includes(this.op)&&!this.returning)data=null;else if(this.singleMode)data=normalized[0]||null;else data=normalized;return {data,error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
 }
-async function directRpc(name:string,args:Record<string,any>={}){try{if(!DIRECT_RPCS.has(name))throw new Error('DB_RPC_REJECTED:'+name);const values:any[]=[];const call=Object.entries(args||{}).map(([k,v])=>dbIdent(k)+' := '+rpcExpr(v,values)).join(',');const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';const rows:any[]=await directSql.unsafe(q,values);return {data:normalizeJsonValue(rows?.[0]?.result??null),error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
-function createDirectDb(){return {from:(table:string)=>new DirectQuery(table),rpc:(name:string,args:any={})=>directRpc(name,args)};}
+async function directRpc(name:string,args:Record<string,any>={}){try{if(!DIRECT_RPCS.has(name))throw new Error('DB_RPC_REJECTED:'+name);const values:any[]=[];const call=Object.entries(args||{}).map(([k,v])=>dbIdent(k)+' := '+rpcExpr(v,values)).join(',');const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';const rows:any[]=await this.sql.unsafe(q,values);return {data:normalizeJsonValue(rows?.[0]?.result??null),error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
+function createDirectDb(sqlClient:any=directSql,locked=false){
+ const db:any={from:(table:string)=>new DirectQuery(table,sqlClient),rpc:(name:string,args:any={})=>directRpc(name,args)};
+ if(!locked)db.withBlogQualityLock=(date:string,work:any)=>sqlClient.begin(async(tx:any)=>{
+  await tx.unsafe('select 1 from public.content_publication_obligations where tenant_id = $1 and publication_date = $2 and channel = $3 for update',['canonical',date,'blog']);
+  await tx.unsafe('select 1 from public.powerhouse_channel_decisions where run_date = $1 and channel = $2 for update',[date,'blog']);
+  await tx.unsafe('select 1 from public.powerhouse_content_artifacts where run_date = $1 and channel = $2 for update',[date,'blog']);
+  return work(createDirectDb(tx,true));
+ });
+ return db;
+}
 
 const clean = (v: unknown) => String(v ?? '').trim();
 const num = (v: unknown) => Number.isFinite(Number(v)) ? Number(v) : 0;
@@ -437,6 +448,7 @@ function recoverableObligationUniquenessDenial(row:any,obligation:any,consumedCa
 
 function shouldPreserveExisting(row:any, channel:string, personalSource:any, consumedCapabilityChannels:Set<string>,obligation:any=null) {
   if (!row) return false;
+  if(channel==='blog'&&row.state==='decided'&&row.delivery_evidence?.blog_quality_repair?.token)return true;
   // A consumed daily authority is not proof of a post, but it IS evidence of a
   // possibly attempted provider mutation. Never re-decide or resend until
   // provider-side reconciliation resolves that exact earlier attempt.
@@ -484,6 +496,7 @@ Deno.serve(async (req) => {
   const allowedChannelScopes = new Set(['linkedin_personal','linkedin_company','instagram_company','blog']);
   if(channelScope && !allowedChannelScopes.has(channelScope)) return json({ok:false,error:'UNKNOWN_CHANNEL_SCOPE'},400);
   let stage = 'materialize-source-backed-candidates';
+  let blogRepairClaim:any=null;
   let selectedGeneration: {channel:string; evidence:any}|null = null;
   try {
     // The unscoped bootstrap alone owns materialization; scoped workers share
@@ -652,6 +665,13 @@ Deno.serve(async (req) => {
       if (error) throw new Error(`DECISION_WRITE:${channel}`);
     }
 
+    // Correct a rejected unsent blog through this owner, before selecting work.
+    // Other channel invocations never reset or regenerate the blog lane.
+    if(!channelScope||channelScope==='blog'){
+      stage='repair-rejected-blog';
+      const repair=await reopenRejectedBlog(db,runDate,blogReaderReadyViolations);
+      blogRepairClaim=repair.claim||null;
+    }
     stage = 'select-pending';
     const pendingQuery=db.from('powerhouse_channel_decisions')
       .select('channel,priority,rationale,delivery_evidence')
@@ -661,13 +681,14 @@ Deno.serve(async (req) => {
       .order('priority',{ascending:false})
       .order('channel',{ascending:true})
       .limit(12);
-    const {data:pendingRows,error:pendingError}=await (
+    const {data:pendingRowsSnapshot,error:pendingError}=await (
       channelScope ? pendingQuery.eq('channel',channelScope) : pendingQuery
     );
     if (pendingError) {
       console.error('PENDING_READ_FAILED', pendingError.code, pendingError.message, pendingError.details);
       throw new Error(`PENDING_READ_FAILED:${pendingError.code || 'UNKNOWN'}`);
     }
+    const pendingRows=(pendingRowsSnapshot||[]).filter((row:any)=>row.channel!=='blog'||!row.delivery_evidence?.blog_quality_repair?.token||row.delivery_evidence.blog_quality_repair.token===blogRepairClaim?.token);
     const pending = selectNextContentChannel(pendingRows, Date.now());
     if (!pending) return json({ok:true,runDate,generated:false,reason:Array.isArray(pendingRows) && pendingRows.length ? 'ALL_PENDING_CHANNELS_IN_BOUNDED_COOLDOWN' : 'NO_PENDING_ARTIFACT',cooldown_channels:Array.isArray(pendingRows)?pendingRows.map((row:any)=>clean(row.channel)):[],executor_capabilities,personal_source_ready:!!personalSource});
     selectedGeneration = {channel:clean(pending.channel),evidence:pending.delivery_evidence||{}};
@@ -676,7 +697,7 @@ Deno.serve(async (req) => {
 
     const requiredRecommendationId = pending.channel==='instagram_company'
       ? clean(instagramWinner?.recommendation_id)
-      : clean(pending.delivery_evidence?.fallback_recommendation_id);
+      : clean(pending.channel==='blog'&&blogRepairClaim?blogRepairClaim.recommendation_id:pending.delivery_evidence?.fallback_recommendation_id);
     const pinnedRecommendation = requiredRecommendationId
       ? recs.find((r:any)=>{
           if(clean(r.recommendation_id)!==requiredRecommendationId) return false;
@@ -689,6 +710,7 @@ Deno.serve(async (req) => {
           return recommendationEligible(r,pending.channel);
         }) || null
       : pickRecommendation(recs,pending.channel);
+    if(pending.channel==='blog'&&blogRepairClaim&&!pinnedRecommendation)throw new Error('BLOG_REPAIR_PINNED_SOURCE_UNAVAILABLE');
     const recommendation = pinnedRecommendation || (['linkedin_company','blog'].includes(pending.channel)
       ? pickRecommendation(recs,pending.channel,requiredRecommendationId?[requiredRecommendationId]:[]):null);
     const sourceFreshnessFallback = !!requiredRecommendationId && !pinnedRecommendation && !!recommendation;
@@ -807,7 +829,7 @@ Deno.serve(async (req) => {
       : '';
     const editorialSystem = (pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
-      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide + creativeExplorationGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide + creativeExplorationGuide) + ' ' + CONTENT_FEEDBACK_GUIDE;
+      : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide + creativeExplorationGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide + creativeExplorationGuide) + ' ' + CONTENT_FEEDBACK_GUIDE + (pending.channel==='blog' && pending.delivery_evidence?.blog_quality_repair ? ' HERSTEL AFGEKEURDE BLOG: schrijf een volledig nieuw, concreet lezersartikel over het dagelijkse bedrijfsprobleem achter het onderwerp. Bij boekhouden gaat dit over openstaande facturen, bank/administratieverschillen of maandcontrole voor de ondernemer, niet SEO of publiceren. Geef uitvoerbare controlevragen zonder onbewezen productfuncties. Gebruik geen uitgeversrollen, canonical owner, CPC, forecast-score of interne meetnamen. Verwijs voor integratie-intentie naar de bestaande https://www.bedrijfsgeheugen.nl/twinfield-koppeling en claim geen nieuwe hoofdpagina. Houd onderwerp en bronwaarheid; herstel is geen bewijs van conversiewinst.' : '');
     stage = 'artifact-ai';
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
     const artifactInput={channel:pending.channel,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
@@ -945,22 +967,26 @@ Deno.serve(async (req) => {
     const artifactType = pending.channel==='blog'?'blog':pending.channel==='instagram_company'?'instagram_post':'linkedin_post';
 
     stage = 'write-artifact';
-    const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
+    const artifactPayload={run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
       content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
       measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,source_freshness_fallback:sourceFreshnessFallback,
+      blog_quality_repair:blogRepairClaim?{contract:blogRepairClaim.contract,rejected_body_sha256:blogRepairClaim.rejected_body_sha256,rejection_codes:blogRepairClaim.rejection_codes,recommendation_id:blogRepairClaim.recommendation_id,requested_at:blogRepairClaim.requested_at}:null,seo_slug:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.seo_slug||null:null,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraContext||{})},status:'content_ready',updated_at:new Date().toISOString()});
-    if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
-    const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraContext||{})},status:'content_ready',updated_at:new Date().toISOString()};
+    const decisionPayload={state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:pending.delivery_evidence?.daily_winner_score_version||null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:pending.delivery_evidence?.daily_winner_format||null,
-      identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},updated_at:new Date().toISOString()})
-      .eq('run_date',runDate).eq('channel',pending.channel).eq('state','decided');
-    if (decisionError) throw new Error('DECISION_STATE_WRITE_FAILED');
+      identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},updated_at:new Date().toISOString()};
+    if(pending.channel==='blog'&&blogRepairClaim){
+      await persistRepairedBlog(db,runDate,blogRepairClaim,artifactPayload,decisionPayload);
+    }else{
+      const aw=await db.from('powerhouse_content_artifacts').upsert(artifactPayload);if(aw.error)throw new Error('ARTIFACT_WRITE_FAILED');
+      const dw=await db.from('powerhouse_channel_decisions').update(decisionPayload).eq('run_date',runDate).eq('channel',pending.channel).eq('state','decided');if(dw.error)throw new Error('DECISION_STATE_WRITE_FAILED');
+    }
     return json({ok:true,runDate,generated:true,channel:pending.channel,title:artifact.title,executor_capabilities,personal_truth_verified:pending.channel==='linkedin_personal'?true:null});
   } catch (error) {
     const message = String((error as Error)?.message||error).slice(0,500);
