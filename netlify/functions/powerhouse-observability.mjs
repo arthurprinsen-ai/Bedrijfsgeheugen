@@ -38,6 +38,26 @@ async function loadSupabaseSystemMapInventory(){
   }
 }
 
+// Read-only register view for the admin "oud versus nieuw" tab. The SQL function is service_role only.
+async function loadExperimentChanges(){
+  const baseUrl=String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim().replace(/\/$/,'');
+  const key=String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim();
+  if(!baseUrl||!key)return {status:'UNAVAILABLE',reason:'EXPERIMENT_REGISTER_CONFIG_MISSING',rows:[]};
+  try{
+    const response=await fetch(`${baseUrl}/rest/v1/rpc/bg_experiment_wijzigingen_overzicht`,{
+      method:'POST',
+      headers:{'content-type':'application/json',apikey:key,authorization:`Bearer ${key}`},
+      body:JSON.stringify({p_limiet:100}),
+      signal:AbortSignal.timeout(5000)
+    });
+    if(!response.ok)return {status:'UNAVAILABLE',reason:`EXPERIMENT_REGISTER_${response.status}`,rows:[]};
+    const rows=await response.json().catch(()=>null);
+    return Array.isArray(rows)?{status:'LIVE',reason:'',rows}:{status:'UNAVAILABLE',reason:'EXPERIMENT_REGISTER_SHAPE_INVALID',rows:[]};
+  }catch(error){
+    return {status:'UNAVAILABLE',reason:'EXPERIMENT_REGISTER_READ_FAILED',rows:[]};
+  }
+}
+
 // Provider calls are bounded and run only after the admin/tenant authorization gate.
 // Each provider supplies independent identity. Unknown is never treated as passed.
 let releaseEvidenceCache=null;
@@ -113,8 +133,8 @@ export default async request=>{
   const principal=principalFromUser(user,tenantId);
   try{
     const projection=await store.getProjection(tenantId,{principal});
-    const [supabaseInventory,releaseEvidence]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence()]);
-    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory} },200);
+    const [supabaseInventory,releaseEvidence,experimentChanges]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence(),loadExperimentChanges()]);
+    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory}, experimentChanges },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
