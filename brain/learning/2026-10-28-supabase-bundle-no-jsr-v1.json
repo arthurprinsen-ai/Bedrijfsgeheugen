@@ -12,12 +12,12 @@
   },
   "fix": "Removed the jsr: side-effect import from five functions; regression test forbids build-time jsr: imports.",
   "prevention_rule": "Edge functions must not depend on a non-npm registry being reachable during bundling; diagnose bundler failures from workflow logs before changing code.",
-  "tests": ["tests/supabase-functions-no-build-time-jsr-20261028.test.mjs"],
+  "tests": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"],
   "compiler": {"failure_class": "BUILD_DEPENDS_ON_EXTERNAL_REGISTRY_AT_GRAPH_TIME", "scope": "SUPABASE_FUNCTIONS_BUILD", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
   "evaluation": {
-    "historical_replay": ["tests/supabase-functions-no-build-time-jsr-20261028.test.mjs"],
-    "shadow": ["tests/supabase-functions-no-build-time-jsr-20261028.test.mjs"],
-    "canary": ["tests/supabase-functions-no-build-time-jsr-20261028.test.mjs"]
+    "historical_replay": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"],
+    "shadow": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"],
+    "canary": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"]
   },
   "terminal_rule": "Not terminal until the Supabase Preview bundle for this PR succeeds."
 }
