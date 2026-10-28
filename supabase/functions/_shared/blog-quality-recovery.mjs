@@ -9,9 +9,11 @@ export function planBlogQualityRepair({runDate,artifact,decision,obligation,viol
   &&(['content_ready','scheduled'].includes(decision?.state)||(decision?.state==='decided'&&Date.parse(decision?.delivery_evidence?.blog_quality_repair?.claim_expires_at||'')<=nowMs))&&obligation?.status==='GENERATED'
   &&!clean(decision?.delivery_ref)&&!clean(obligation?.external_id)&&!obligation?.published_at&&!obligation?.live_proven_at
   &&Boolean(clean(decision?.updated_at))&&!(Date.parse(decision?.delivery_evidence?.generation_retry_after||'')>nowMs);
+ const priorClaim=decision?.delivery_evidence?.blog_quality_repair;
+ const activeClaim=Boolean(clean(priorClaim?.token))&&!(Date.parse(priorClaim?.claim_expires_at||'')<=nowMs);
  const ambiguous=[obligation?.evidence,decision?.delivery_evidence,artifact?.generation_evidence]
   .some(e=>sideEffectFlags.some(flag=>e?.[flag]===true));
- return {eligible:exact&&unsent&&!ambiguous&&violations.length>0,violations:[...violations]};
+ return {eligible:exact&&unsent&&!activeClaim&&!ambiguous&&violations.length>0,violations:[...violations]};
 }
 
 // Same canonical writer only. A lost CAS never resets another worker's state.
@@ -31,16 +33,16 @@ export async function reopenRejectedBlog(db,runDate,validate){
  const evidence={...d.data.delivery_evidence,blog_quality_repair:{contract:'same-obligation-unsent-blog-quality-repair-v1',token:crypto.randomUUID(),claim_expires_at:new Date(Date.now()+8*60000).toISOString(),recommendation_id:a.data.generation_evidence?.recommendation_id||null,rejected_body:String(a.data.body||''),rejected_updated_at:a.data.updated_at||null,rejected_body_sha256:rejectedHash,rejection_codes:violations,requested_at:new Date().toISOString(),previous_state:d.data.state,seo_slug:o.data.slug||a.data.generation_evidence?.seo_slug||null}};
  const changed=await db.from('powerhouse_channel_decisions').update({state:'decided',delivery_evidence:evidence,updated_at:new Date().toISOString()})
   .eq('run_date',runDate).eq('channel','blog').eq('decision','publish').eq('state',d.data.state)
-  .eq('updated_at',d.data.updated_at).eq('delivery_ref',null).select('channel').maybeSingle();
+  .eq('updated_at',d.data.updated_at).eq('delivery_ref',null).select('channel,priority,rationale,delivery_evidence').maybeSingle();
  if(changed.error)throw new Error('BLOG_REPAIR_CAS_FAILED');
- return {reopened:Boolean(changed.data),claim:changed.data?evidence.blog_quality_repair:null,rejected_body_sha256:rejectedHash,violations};
+ return {reopened:Boolean(changed.data),claim:changed.data?evidence.blog_quality_repair:null,pending:changed.data?{channel:'blog',priority:changed.data.priority??d.data.priority,rationale:changed.data.rationale??d.data.rationale,delivery_evidence:changed.data.delivery_evidence||evidence}:null,rejected_body_sha256:rejectedHash,violations};
 }
 
 export function canCommitBlogQualityRepair({runDate,artifact,decision,obligation,claim}={}){
  const exact=calendarDay(artifact?.run_date)===runDate&&calendarDay(decision?.run_date)===runDate&&calendarDay(obligation?.publication_date)===runDate
   &&artifact?.channel==='blog'&&decision?.channel==='blog'&&obligation?.channel==='blog'&&obligation?.tenant_id==='canonical';
  const safe=obligation?.status==='GENERATED'&&!obligation?.external_id&&!obligation?.published_at&&!obligation?.live_proven_at
-  &&artifact?.status==='content_ready'&&decision?.state==='decided'&&decision?.decision==='publish'&&!decision?.delivery_ref
+  &&artifact?.status==='content_ready'&&['decided','content_ready'].includes(decision?.state)&&decision?.decision==='publish'&&!decision?.delivery_ref
   &&![obligation?.evidence,decision?.delivery_evidence,artifact?.generation_evidence].some(e=>sideEffectFlags.some(f=>e?.[f]===true));
  const owner=Boolean(claim?.token)&&claim.token===decision?.delivery_evidence?.blog_quality_repair?.token
   &&claim.rejected_body===String(artifact?.body||'')&&stamp(claim.rejected_updated_at)===stamp(artifact?.updated_at)
@@ -56,7 +58,34 @@ export async function persistRepairedBlog(db,runDate,claim,artifact,decision){
   ]);
   if(a.error||d.error||o.error||!canCommitBlogQualityRepair({runDate,artifact:a.data,decision:d.data,obligation:o.data,claim}).eligible)throw new Error('BLOG_REPAIR_OWNERSHIP_OR_DELIVERY_CHANGED');
   const aw=await locked.from('powerhouse_content_artifacts').upsert(artifact);if(aw.error)throw new Error('BLOG_REPAIR_ARTIFACT_WRITE_FAILED');
-  const dw=await locked.from('powerhouse_channel_decisions').update(decision).eq('run_date',runDate).eq('channel','blog').eq('state','decided');if(dw.error)throw new Error('BLOG_REPAIR_DECISION_WRITE_FAILED');
+  const dw=await locked.from('powerhouse_channel_decisions').update(decision).eq('run_date',runDate).eq('channel','blog').eq('state',d.data.state).eq('updated_at',d.data.updated_at);if(dw.error)throw new Error('BLOG_REPAIR_DECISION_WRITE_FAILED');
+  return {error:null};
+ });
+}
+
+// Only this invocation's successful locked claim supplies additional local work.
+export function includeOwnedBlogRepair(rows,repair){
+ const claim=repair?.reopened===true?repair.claim:null;
+ const pending=(Array.isArray(rows)?rows:[]).filter(row=>row.channel!=='blog'||!row.delivery_evidence?.blog_quality_repair?.token||row.delivery_evidence.blog_quality_repair.token===claim?.token);
+ const owned=repair?.pending;
+ if(claim?.token&&owned?.channel==='blog'&&owned.delivery_evidence?.blog_quality_repair?.token===claim.token&&!pending.some(row=>row.channel==='blog'))pending.push(owned);
+ return pending;
+}
+
+// Failed generation retains the rejected artifact and the real bounded cooldown.
+export async function persistBlogRepairFailure(db,runDate,claim,failure){
+ return db.withBlogQualityLock(runDate,async locked=>{
+  const [a,d,o]=await Promise.all([
+   locked.from('powerhouse_content_artifacts').select('*').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
+   locked.from('powerhouse_channel_decisions').select('*').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
+   locked.from('content_publication_obligations').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
+  ]);
+  if(a.error||d.error||o.error||!canCommitBlogQualityRepair({runDate,artifact:a.data,decision:d.data,obligation:o.data,claim}).eligible)throw new Error('BLOG_REPAIR_OWNERSHIP_OR_DELIVERY_CHANGED');
+  const write=await locked.from('powerhouse_channel_decisions').update({
+   delivery_evidence:{...d.data.delivery_evidence,generation_retry_after:failure.retry_after,artifact_generation_failure:failure},
+   updated_at:new Date().toISOString()
+  }).eq('run_date',runDate).eq('channel','blog').eq('state',d.data.state).eq('updated_at',d.data.updated_at).select('channel').maybeSingle();
+  if(write.error||!write.data)throw new Error('BLOG_REPAIR_FAILURE_WRITE_FAILED');
   return {error:null};
  });
 }
