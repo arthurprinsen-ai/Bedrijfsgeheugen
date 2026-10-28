@@ -55,6 +55,7 @@ test('evidence debts remain OPEN and cannot fabricate earned revenue or a PROVEN
     listCurrentLearnings:async()=>[],
     putProjection:async()=>{},
     recordObligation:async ob=>debt.push(ob),
+    markEvidenceEvaluated:async()=>{},
     upsertLearning:async learning=>writes.push(learning),
     listCohort:async()=>{throw Error('UNVERIFIED_MUST_NOT_READ_COHORT');}
   };
