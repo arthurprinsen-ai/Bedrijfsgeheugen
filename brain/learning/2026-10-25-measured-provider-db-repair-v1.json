@@ -15,7 +15,7 @@
     "runtime_readback": "PENDING"
   },
   "fix": "Add only existing social_posts/social_metric_snapshots to content orchestrator's DIRECT_TABLES; normalize provider metrics JSON; implement SQL-bound observed_at >= timestamptz filter for snapshot table only; explicitly ban inserts, updates and upserts on both measurement sources. Keep exact tenant filtering, 72-hour freshness, minimum exposure and independent promotion guardrails unchanged. Reuse existing orchestrator cadence and publishing lane.",
-  "prevention_rule": "Cross-check every newly added .from(table) call against the live direct SQL adapter table allowlist and every query method against DirectQuery; regression tests must prove read-only authority and bounded timestamp filter before production. Zero impressions/likes or revenue must never be synthesized from missing sources. No second scheduler, bypass, or new data store.",
+  "prevention_rule": "Cross-check every newly added .from(table) call against the live direct SQL adapter table allowlist and every query method against DirectQuery; regression tests must prove read-only authority and bounded timestamp filter before production. Zero impressions/likes or revenue must never be synthesized from missing sources. No second scheduler, bypass, or new data store. Execute real query chains through the adapter in regression tests; static source-selection assertions cannot prove adapter method compatibility. Personal seven-day history uses the existing parameter-bound IN date set and never widens measurement-only gte authority.",
   "tests": [
     "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs",
     "tests/brain-measured-next-post-challenger-v1.test.mjs"
@@ -38,5 +38,16 @@
       "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs"
     ]
   },
-  "terminal_rule": "Exact HEAD Required+CodeQL, protected merge, Supabase deployed code parity, genuine subsequent orchestrator readback must stop returning DB_TABLE_REJECTED and show real measured or WAIT_FOR_COMPARABLE_PROVIDER_METRICS; actual post/lead/revenue improvement remains unproven."
+  "terminal_rule": "Exact HEAD Required+CodeQL, protected merge, Supabase deployed code parity, genuine subsequent orchestrator readback must stop returning DB_TABLE_REJECTED and show real measured or WAIT_FOR_COMPARABLE_PROVIDER_METRICS; actual post/lead/revenue improvement remains unproven.",
+  "recurrence_20261028": {
+    "status": "CANDIDATE",
+    "observed_at": "2026-10-28T08:09:40.211Z",
+    "error": "ORCHESTRATOR_ERROR load-context DB_MEASUREMENT_GTE_SCOPE_REJECTED",
+    "impact": "No 2026-10-28 LinkedIn decisions; both obligations PLANNED without provider IDs.",
+    "root_cause": "The story-family history query added by #4988 used gte(publication_date) and lt on the direct SQL adapter. gte is deliberately limited to measurement snapshot observed_at, and lt is not implemented. The exception aborts load-context before all channel decisions.",
+    "fix": "Use seven explicit previous date keys through the existing parameter-bound IN filter. Preserve canonical tenant, personal channel and PUBLISHED/LIVE_PROVEN statuses; do not broaden measurement adapter authority.",
+    "regression": "Three executions of the real history block through real DirectQuery, covering Amsterdam DST week, year rollover and leap day: 3 failures with the exact production exception before fix, 3 passes after. Relevant suite 20/20.",
+    "runtime_readback": "PENDING_PROTECTED_PROMOTION",
+    "fix_pr": "PENDING"
+  }
 }

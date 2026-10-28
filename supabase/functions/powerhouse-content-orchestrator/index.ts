@@ -500,9 +500,12 @@ Deno.serve(async (req) => {
         const verified=(sources||[]).find(validPersonalSource);
         const recentTypesForReserve=new Set<string>();
         {
-          const since=new Date(Date.parse(runDate+'T12:00:00Z')-7*86400000).toISOString().slice(0,10);
+          // Use the existing bounded IN adapter. Its gte method intentionally
+      // permits only measurement observed_at timestamps, not publication dates.
+      const recentDates=Array.from({length:7},(_,i)=>
+        new Date(Date.parse(runDate+'T12:00:00Z')-(i+1)*86400000).toISOString().slice(0,10));
           const {data:rr}=await db.from('content_publication_obligations').select('evidence')
-            .eq('tenant_id','canonical').eq('channel','linkedin_personal').gte('publication_date',since).lt('publication_date',runDate)
+            .eq('tenant_id','canonical').eq('channel','linkedin_personal').in('publication_date',recentDates)
             .in('status',['PUBLISHED','LIVE_PROVEN']);
           for(const r of rr||[]){const ev=(r as any).evidence||{};
             for(const v of [ev.result_event,ev.friction_event,ev.source_focus_context]){const t=clean(v?.event_type);if(t)recentTypesForReserve.add(t);}}
