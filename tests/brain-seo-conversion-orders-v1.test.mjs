@@ -48,6 +48,13 @@ test('SEO/CRO guardrails block low-value or deceptive growth tactics',()=>{
   assert.ok((allow.allowed_actions||[]).includes('schema-freshness'));
 });
 
+test('CRO experiment-register closure stays in the single register skill',()=>{
+  assert.match(skill,/seo-cro-experiment-register-closure-v1/);
+  assert.match(skill,/bg_experimentcyclus_poort/);
+  assert.match(skill,/verschil-in-verschil/);
+  assert.match(skill,/Maximaal één lopend experiment per pagina en meetpunt/);
+});
+
 test('SEO conversion system map and skill projection stay discoverable',()=>{
   assert.match(systemMap,/id:'seo-conversion-orders'/);
   assert.match(systemMap,/powerhouse-seo-conversion-orders\/SKILL\.md/);
