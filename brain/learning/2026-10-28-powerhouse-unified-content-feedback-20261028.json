@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|content-feedback|generator-consumption-gap|20261028-v1",
+  "obligation_id": "powerhouse-unified-learning-revenue-20261025",
+  "compiler": {
+    "failure_class": "CONTENT_FEEDBACK_CONSUMPTION_GAP",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Canonical hourly evaluators run, but the content orchestrator did not read channel-specific revenue learnings or persist that consumed context; the email composer omitted the existing sales-play aggregate verdict from its restricted AI input and output evidence. Agent prompt edits alone cannot fix these producer boundaries.",
+  "prevention_rule": "Read scoped existing outcome feedback at the generator boundary, pass the identical bounded context to generation and retain it on the exact artifact/action; preserve missing-evidence states and never equate context with applied learning or verified revenue.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-feedback-context-20261028.test.mjs"
+    ]
+  },
+  "enforcement_paths": [
+    "supabase/functions/_shared/content-feedback-context.mjs",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "source_revision": "264e17a23344528f70a062314f63c5c240992e07",
+    "netlify_production_deploy": "6ae1ac2a8ecc81a7fe1fcd16",
+    "actual_social_hourly_request": "01M612PYCZAVJJXT7V9MJY99PW",
+    "actual_revenue_hourly_request": "01M612PWRZ76P3GYBATTWPW3WN",
+    "red_phase": "New consumer regression failed: powerhouse-content-orchestrator must actually load feedback",
+    "local_targeted_regressions": "56 passed on final integrated working tree",
+    "deployment_route": "A: protected PR -> Supabase GitHub Integration; no direct provider deploy",
+    "deployment_skill_sha256": "d38d69e3fa6c15a9e5a06eab1f7bff0bc3dc4412982886a65b46661b4c9ea92a",
+    "independent_review": "No critical issue; exact tenant mapping kept fail-closed, frozen-artifact context distinguished from model input"
+  },
+  "outcome": {
+    "status": "CANDIDATE_TESTED_NOT_DEPLOYED",
+    "runtime_consumption": "NOT_YET_VERIFIED",
+    "commercial_improvement": "NOT_MEASURED"
+  }
+}
