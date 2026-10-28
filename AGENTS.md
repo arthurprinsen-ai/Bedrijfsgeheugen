@@ -1150,3 +1150,7 @@ Iedere agent die experimenten, content-kalender of de dagelijkse Powerhouse-run 
 - Controleer bij elke Heartbeat-run `powerhouse_calendar_experiment_staleness_v1`; ongelijk aan 0 is een herstelverplichting, geen waarschuwing.
 - Activeer nooit experimenten in bulk. Menselijk gepoorte experimenten gaan via `bg_experiment_actie`.
 - Een nieuw experimenttype zonder sluitregel en staleness-test wordt niet gemerged.
+
+## Posts, blogs en e-mail: feedback naar de volgende inhoud — 28 oktober 2026
+
+Gebruik de bestaande `content-feedback-context.mjs` in beide canonieke generatoren. Lees omzetlearnings alleen met exact tenant/channel; e-mail gebruikt uitsluitend de bestaande canonieke sales-play-resultaten. Sla `commercial_feedback` op in artifact/action-evidence, zodat de volgende agent de werkelijk meegegeven bronnen kan teruglezen. `EVIDENCE_AVAILABLE` bewijst beschikbare context, niet een toegepast of succesvol experiment, providerverzending of betaalde omzet. Te kleine, verouderde of onbereikbare bronnen blijven expliciet onbekend. Behoud bestaande identiteit, redactie, kwaliteit, suppression, toestemming, exclusieve publisher en alle releasepoorten. Regressie: `tests/brain-content-feedback-context-20261028.test.mjs`.
