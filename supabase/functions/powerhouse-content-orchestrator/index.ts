@@ -1,5 +1,5 @@
 import {loadContentFeedback,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
-import {reopenRejectedBlog,persistRepairedBlog} from '../_shared/blog-quality-recovery.mjs';
+import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure} from '../_shared/blog-quality-recovery.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {buildVerifiedFounderReserve,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
@@ -497,6 +497,7 @@ Deno.serve(async (req) => {
   if(channelScope && !allowedChannelScopes.has(channelScope)) return json({ok:false,error:'UNKNOWN_CHANNEL_SCOPE'},400);
   let stage = 'materialize-source-backed-candidates';
   let blogRepairClaim:any=null;
+  let blogRepair:any=null;
   let selectedGeneration: {channel:string; evidence:any}|null = null;
   try {
     // The unscoped bootstrap alone owns materialization; scoped workers share
@@ -670,6 +671,7 @@ Deno.serve(async (req) => {
     if(!channelScope||channelScope==='blog'){
       stage='repair-rejected-blog';
       const repair=await reopenRejectedBlog(db,runDate,blogReaderReadyViolations);
+      blogRepair=repair;
       blogRepairClaim=repair.claim||null;
     }
     stage = 'select-pending';
@@ -688,7 +690,7 @@ Deno.serve(async (req) => {
       console.error('PENDING_READ_FAILED', pendingError.code, pendingError.message, pendingError.details);
       throw new Error(`PENDING_READ_FAILED:${pendingError.code || 'UNKNOWN'}`);
     }
-    const pendingRows=(pendingRowsSnapshot||[]).filter((row:any)=>row.channel!=='blog'||!row.delivery_evidence?.blog_quality_repair?.token||row.delivery_evidence.blog_quality_repair.token===blogRepairClaim?.token);
+    const pendingRows=includeOwnedBlogRepair(pendingRowsSnapshot,blogRepair);
     const pending = selectNextContentChannel(pendingRows, Date.now());
     if (!pending) return json({ok:true,runDate,generated:false,reason:Array.isArray(pendingRows) && pendingRows.length ? 'ALL_PENDING_CHANNELS_IN_BOUNDED_COOLDOWN' : 'NO_PENDING_ARTIFACT',cooldown_channels:Array.isArray(pendingRows)?pendingRows.map((row:any)=>clean(row.channel)):[],executor_capabilities,personal_source_ready:!!personalSource});
     selectedGeneration = {channel:clean(pending.channel),evidence:pending.delivery_evidence||{}};
@@ -998,7 +1000,9 @@ Deno.serve(async (req) => {
       try {
         const prior = selectedGeneration.evidence?.artifact_generation_failure;
         const failure = contentGenerationCooldown(message, Date.now(), Number(prior?.attempts||0));
-        await db.from('powerhouse_channel_decisions').update({
+        if(selectedGeneration.channel==='blog'&&blogRepairClaim){
+          await persistBlogRepairFailure(db,runDate,blogRepairClaim,failure);
+        }else await db.from('powerhouse_channel_decisions').update({
           delivery_evidence: {
             ...selectedGeneration.evidence,
             generation_retry_after: failure.retry_after,

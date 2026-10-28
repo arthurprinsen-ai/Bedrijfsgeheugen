@@ -1,0 +1,35 @@
+{
+  "fingerprint": "content|blog-repair-preserved-state|20261028-v1",
+  "obligation_id": "content-publication-quality-recovery-20261028",
+  "compiler": {
+    "failure_class": "PRESERVED_STATE_CLAIM_SELECTION",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Native384 request15193 successfully created a real quality-repair claim after DATE normalization, but existing BEFORE trigger prevent_content_ready_state_regression_v1 retained content_ready. The pending selector and final guard assumed decided, so the owned repair was stranded. Live SQL observed claim token and regression fingerprint with unchanged rejected body.",
+  "prevention_rule": "Keep the state-regression trigger intact. Supply only this invocation successful locked claim as local pending work; do not adopt prior/unowned claim. Preserve active and invalid-expiry claim exclusivity despite retained content_ready. Final guard accepts only decided/content_ready with full original body/timestamp/source/token and unsent/provider checks; CAS against actual locked state and timestamp. Prove actual new body persistence and same draft publication, not a mere claim. Persist generation-failure cooldown/attempts with the same locked owner/source and actual state/timestamp; retain trigger diagnostic evidence from the returned row.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-repair-preserved-state-20261028.test.mjs",
+      "tests/brain-blog-quality-recovery-20261028.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "predecessor_pr": 5048,
+    "predecessor_main": "c85c43a046261ca78086addb63191d77e9b1356e",
+    "native_version": 384,
+    "canonical_request": 15193,
+    "live_trigger": "prevent_content_ready_state_regression_v1: old.content_ready + new.decided + publish + existing content_ready artifact => retains content_ready",
+    "observed_claim_at": "2026-10-28T17:18:26.068Z",
+    "red_green": "three new lifecycle/exclusivity tests fail on predecessor and14 combined tests pass with fix; fixture models actual observed trigger rather than claiming real SQL execution",
+    "full_checks": "Full backend glob exit0 and60Brain test script files pass in isolated remote clone;15 targeted tests pass; independent review corrected same-owner cooldown gap.",
+    "review_correction": "Independent reviewer found decided-only failure-handler update would silently discard billing/editorial cooldown; added matching-owner locked failure persistence and RED\u2192GREEN regression."
+  },
+  "outcome": {
+    "candidate": "LOCAL_TESTED_NOT_DEPLOYED",
+    "blog_live": "NOT_PROVEN",
+    "revenue_lift": "NOT_PROVEN"
+  }
+}
