@@ -7,6 +7,9 @@
 - Alleen-lezen functie `public.bg_experiment_controlegroep(experiment_id)` (service_role): verschil-in-verschil op de 10 meest bezochte pagina's zonder lopend experiment, exclusief de geteste pagina. Hergebruikt `intern.bg_experiment_meet` (alleen menselijke sessies).
 - `consistent = true` alleen met voldoende steekproef (voor én tijdens), een stabiele controle (±25%) en een positief verschil t.o.v. de controle. Anders staan de redenen in het resultaat.
 
+## Preview
+- De Supabase-preview-branch voor deze PR is handmatig gekoppeld via de GitHub-integratie (automatic branching aan, supabase changes only aan). Deze wijziging alleen aan de changedoc start de koppeling opnieuw.
+
 ## Bewust niet gedaan
 - Niet gekoppeld aan `bg_experiment_autonoom_besluit` (#5025) en `bg_experimenten_beoordelen` is niet gewijzigd: koppelen volgt in een aparte PR nadat #5025 op main staat.
 - Niet toegepast op productie.
