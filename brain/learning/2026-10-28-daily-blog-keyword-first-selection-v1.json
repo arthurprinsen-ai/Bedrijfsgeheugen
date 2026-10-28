@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-growth|daily-blog-keyword-first-selection|20261028-v1",
+  "fingerprint": "seo|content|daily-blog-picks-news-over-keyword-briefs|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "DAILY_BLOG_SELECTION_IGNORES_KEYWORD_DEMAND",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "pickRecommendation restricted the blog channel to source-backed (external news) recommendations whenever any existed, and recommendationScore gave them +750. Keyword-driven briefs (seo_first_mover_intent_gap, with keyword, volume and CPC) were therefore never chosen. Result: the daily blog followed subsidy and cyber news (for example Circular Plastics NL, Wet DBA, cyberdreigingen) instead of search demand from the target audience.",
+  "observed_evidence": {
+    "source": "content_publication_obligations, powerhouse_content_recommendations, live sitemap 2026-10-28",
+    "live_blogs_checked_since_2026_09_20": 27,
+    "off_audience_news_topics_share": "about half",
+    "keyword_gap_recommendations_30d": 64,
+    "seo_problem_switch_page_recommendations_30d": 123,
+    "search_console_clicks_28d": 0,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "For the blog channel: no source-backed-only shortcut, +1000 plus volume/5 for seo_first_mover_intent_gap, and developer-intent keywords (api, sdk, github, developer, rest, oauth, webhook, python, php, javascript) are not eligible. LinkedIn company behaviour unchanged. News stays the fallback for the blog.",
+  "prevention_rule": "The daily blog topic must come from measured search demand for the target audience; news freshness may only decide ties or serve as fallback.",
+  "tests": [
+    "tests/brain-blog-recommendation-seo-priority-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-recommendation-seo-priority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-recommendation-seo-priority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-recommendation-seo-priority-v1.test.mjs"
+    ],
+    "invariants": [
+      "keyword brief beats news brief for blog",
+      "developer-intent keyword ineligible for blog",
+      "news remains fallback",
+      "linkedin_company selection unchanged",
+      "no new scheduler or publisher"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

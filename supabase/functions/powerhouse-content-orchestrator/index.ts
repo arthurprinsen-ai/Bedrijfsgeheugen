@@ -289,6 +289,7 @@ function validPersonalSource(row:any) {
     && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
 }
+const DEVELOPER_INTENT=/\b(api|sdk|github|developer|developers|rest|oauth|webhook|python|php|javascript)\b/i;
 function recommendationScore(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const target = clean(row?.target_channel).toLowerCase();
@@ -300,6 +301,10 @@ function recommendationScore(row:any, channel:string) {
   if (channel === 'blog' && (topic === 'blog' || target === 'blog')) score += 120;
   if (channel === 'linkedin_company' && (topic.includes('linkedin') || target.includes('linkedin') || target.includes('company'))) score += 100;
   if (channel === 'instagram_company' && (target === 'instagram' || topic.includes('instagram'))) score += 120;
+  if (channel === 'blog' && clean(row?.recommendation_type) === 'seo_first_mover_intent_gap') {
+    const volume = Math.min(num(row?.evidence?.search_volume), 600);
+    score += 1000 + volume / 5;
+  }
   return score;
 }
 function recommendationEligible(row:any, channel:string) {
@@ -313,7 +318,11 @@ function recommendationEligible(row:any, channel:string) {
     if (evidence?.identity_contract === PERSONAL_CONTRACT || evidence?.personal_truth_verified === true) return false;
     return !target || target === 'cross-channel' || target === 'linkedin' || target === 'linkedin_company' || target === 'company';
   }
-  if (channel === 'blog') return !target || target === 'cross-channel' || target === 'blog';
+  if (channel === 'blog') {
+    // Zoekwoorden met ontwikkelaarsintentie (api, sdk, github) passen niet bij de directeur van een mkb-bedrijf.
+    if (clean(row?.recommendation_type) === 'seo_first_mover_intent_gap' && DEVELOPER_INTENT.test(clean(evidence?.keyword || row?.topic_key))) return false;
+    return !target || target === 'cross-channel' || target === 'blog';
+  }
   if (channel === 'instagram_company') return target === 'instagram' || target === 'instagram_company' || target === 'cross-channel';
   return true;
 }
@@ -321,7 +330,7 @@ function pickRecommendation(recs:any[], channel:string, excludedRecommendationId
   const excluded=new Set(excludedRecommendationIds.map(clean).filter(Boolean));
   const eligible=[...(recs || [])].filter((r)=>recommendationEligible(r,channel)
     && !excluded.has(clean(r?.recommendation_id)));
-  if (channel==='linkedin_company' || channel==='blog') {
+  if (channel==='linkedin_company') {
     const backed=eligible.filter((r)=>r?.evidence?.source_backed===true);
     if (backed.length) return backed.sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
   }
