@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mapRuntimeProjection, loadRuntimeEvidence, BREIN_STAPPEN } from '../runtime-evidence.js';
 import { pageMetrics, pageWorklist, hasPageData, METRIC_EMPTY } from '../page-metrics.js';
 import { pageVisual } from '../page-visuals.js';
+import { deriveQualityReport } from '../modules/agent-intelligence-analytics.js';
 
 /**
  * De Brein- en Powerhouse-pagina's hingen aan geen enkele bron en toonden
@@ -129,4 +130,26 @@ test('een geslaagde ophaal gebruikt identity auth en projecteert runtime zonder 
   assert.equal(projectedPath,'portal.runtime');
   assert.equal(projectedValue.sources.items.length,2);
   assert.equal(sourceWrites,0,'afgeleide Brain-runtime mag nooit als nieuwe klantbron worden opgeslagen');
+});
+
+test('een expliciete trace-ID blijft behouden tot in het kwaliteitsrapport, een correlationId telt niet als trace', () => {
+  const projectie = {
+    tenantId: 't1',
+    records: [
+      { id: 'a', type: 'agent', occurredAt: '2026-10-27T08:00:00Z', status: 'OK', traceId: ' trace-1 ' },
+      { id: 'b', type: 'agent', occurredAt: '2026-10-27T09:00:00Z', status: 'OK', trace_id: 'trace-2' },
+      { id: 'c', type: 'agent', occurredAt: '2026-10-27T10:00:00Z', status: 'OK', correlationId: 'loop-9' }
+    ]
+  };
+  const events = mapRuntimeProjection(projectie).observability.events;
+  assert.deepEqual(events.map(e => e.traceId), ['trace-1', 'trace-2', ''],
+    'traceId komt alleen uit een expliciet trace-veld, getrimd; correlationId wordt nooit een trace');
+  const rapport = deriveQualityReport({ events, now: Date.parse('2026-10-28T06:00:00Z') });
+  const rij = rapport.rows.find(r => r.id === 'agents');
+  assert.equal(rij.count, 2);
+  assert.equal(rij.status, 'TRACE WAARGENOMEN');
+  assert.match(rij.detail, /geen onafhankelijke trace-grade/,
+    'een waargenomen trace is geen kwaliteitsbewijs');
+  const zonder = deriveQualityReport({ events: events.filter(e => !e.traceId), now: Date.parse('2026-10-28T06:00:00Z') });
+  assert.equal(zonder.rows.find(r => r.id === 'agents').status, 'NIET GEMETEN');
 });

@@ -1,5 +1,6 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
+  contentFeedbackContext:Object.freeze({source:'supabase/functions/_shared/content-feedback-context.mjs',consumers:Object.freeze(['powerhouse-content-orchestrator','powerhouse-commercial-message-composer']),inputs:Object.freeze(['revenue_learnings','powerhouse_sales_play_learning_v1']),output:'existing artifact/action commercial_feedback evidence',nativeFunctionRegistry:'supabase/config.toml',providerSourceReadbackRequired:true,noNewScheduler:true,productionVerified:false}),
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-10-26T10:19:36.145Z',
   intentLearningPreflight:Object.freeze({fingerprint:'powerhouse|learning-preflight|intent-only-target-inference|20261025-v1',authority:'canonical Brain learning and skill projection',entrypoint:'scripts/brain/chat-learning-preflight.mjs',selector:'scripts/brain/powerhouse-skill-projection.mjs',skill:'.agents/skills/powerhouse-self-improvement-layer/SKILL.md',boundedRelevantEntries:24,mandatoryAndExactUncapped:true,receipt:'skill_projection.selection',productionVerified:false}),
@@ -9,7 +10,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'b70b6ab568627c21b813b8d6baada540d19e333ba08378edfb7c1c0e0085f6f1',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'d1b369bb5317031de4a5a893948a9f3c644e03219e35768d38890e6360a760b8',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',

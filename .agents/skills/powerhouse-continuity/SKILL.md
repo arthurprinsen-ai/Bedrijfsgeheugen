@@ -1717,3 +1717,15 @@ Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies r
 - De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
 
 Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.
+
+
+## Content query compatibility — seven-day personal history
+For fingerprint `content-orchestrator|DB_TABLE_REJECTED:social_posts|missing-gte|20261025-v1`, read the 28 October recurrence in `brain/learning/2026-10-25-measured-provider-db-repair-v1.json`. Every new query chain must execute through the actual DirectQuery adapter in tests before promotion. Its `gte` remains scoped only to measurement snapshot `observed_at`; personal publication history uses seven bound previous-date keys via existing `in`, preserving tenant/channel/status filters. A successful cron or empty publisher response is not evidence of generated decisions or published posts. Keep the same owner and obligation open until protected promotion plus runtime/provider readback; never republish known provider IDs.
+
+Inventory every duplicate caller; preserve both founder-reserve and selection history. Upload exact tested bytes and compare remote Git blob hash with the locally tested file before ready/merge. First-match source replacement without parity is prohibited.
+
+## Posts, blogs en e-mail: feedback naar de volgende inhoud — 28 oktober 2026
+
+Gebruik de bestaande `content-feedback-context.mjs` in beide canonieke generatoren. Lees omzetlearnings alleen met exact tenant/channel; e-mail gebruikt uitsluitend de bestaande canonieke sales-play-resultaten. Sla `commercial_feedback` op in artifact/action-evidence, zodat de volgende agent de werkelijk meegegeven bronnen kan teruglezen. `EVIDENCE_AVAILABLE` bewijst beschikbare context, niet een toegepast of succesvol experiment, providerverzending of betaalde omzet. Te kleine, verouderde of onbereikbare bronnen blijven expliciet onbekend. Behoud bestaande identiteit, redactie, kwaliteit, suppression, toestemming, exclusieve publisher en alle releasepoorten. Regressie: `tests/brain-content-feedback-context-20261028.test.mjs`.
+
+Controleer bij dezelfde content-feedback-lus de native registratie van beide generatoren in `supabase/config.toml`. Een succesvolle providercheck is onvoldoende: lees zowel de daadwerkelijke entrypointbron als de meegebundelde gedeelde helper terug. De bestaande e-mailcomposer behoudt `verify_jwt=false` en zijn interne scheduler-tokencontrole; geen tweede deployroute.

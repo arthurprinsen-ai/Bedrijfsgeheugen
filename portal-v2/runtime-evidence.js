@@ -114,6 +114,9 @@ function normalizeObservabilityRecord(record={},index=0) {
     source:txt(record.source||record.platform||record.provider||record.origin||'Powerhouse'),
     layer:inferLayer(record),
     fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint),
+    // Only an explicit trace field counts. correlationId is a loop identifier, not a trace,
+    // so it is never promoted here; the quality report must keep saying NIET GEMETEN without it.
+    traceId:txt(record.traceId||record.trace_id).trim(),
     referenceUrl:sourceEvidenceUrl(record)
   };
 }

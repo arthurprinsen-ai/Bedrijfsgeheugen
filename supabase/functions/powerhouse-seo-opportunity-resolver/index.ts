@@ -186,7 +186,7 @@ Deno.serve(async(req:Request)=>{
     return json({ok:true,contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
-    await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT,run_date:runDate}}).catch(()=>{});
+    await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT,run_date:runDate}}).then(()=>{},()=>{});
     return json({ok:false,contract:CONTRACT,error:detail},503);
   }
 });
