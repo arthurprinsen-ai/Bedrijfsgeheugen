@@ -13,15 +13,29 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "root_cause": "WEBHOOK_URL on /frisse-blik was an empty string. The form then sent nothing while still showing the booking step, so commercial_leads stayed empty and leads were lost without any error.",
-  "fix": "WEBHOOK_URL points to the Supabase Edge Function lead-intake (verify_jwt false, origin allow-list, field validation, idempotency key, stores into commercial_leads). Live tests before the PR: valid POST stored a row, invalid email 422, wrong origin 403.",
-  "prevention_rule": "A form that reports success must have a verified server endpoint; an empty endpoint must fail visibly, never silently.",
+  "root_cause": "WEBHOOK_URL on /frisse-blik was an empty string; the form sent nothing while still showing the booking step, so leads were lost without error.",
+  "fix": "WEBHOOK_URL points to the Supabase Edge Function lead-intake (verify_jwt false, origin allow-list, validation, idempotency key, stores into commercial_leads).",
+  "prevention_rule": "A form that reports success must have a verified server endpoint; an empty endpoint must fail visibly.",
   "tests": [
-    "live POST test recorded in the change document"
+    "tests/brain-frisse-blik-lead-endpoint-v1.test.mjs"
   ],
   "evaluation": {
+    "historical_replay": [
+      "tests/brain-frisse-blik-lead-endpoint-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-frisse-blik-lead-endpoint-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-frisse-blik-lead-endpoint-v1.test.mjs"
+    ],
+    "invariants": [
+      "endpoint is lead-intake",
+      "consent checkbox still enforced client-side",
+      "no service secret in the public page"
+    ],
     "live_readback": [
-      "real submission on the live page creates one commercial_leads row"
+      "one real submission on the live page creates one commercial_leads row"
     ]
   },
   "test_evidence": {
