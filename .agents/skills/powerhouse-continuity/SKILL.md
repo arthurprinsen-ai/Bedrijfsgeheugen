@@ -1721,3 +1721,5 @@ Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van 
 
 ## Content query compatibility — seven-day personal history
 For fingerprint `content-orchestrator|DB_TABLE_REJECTED:social_posts|missing-gte|20261025-v1`, read the 28 October recurrence in `brain/learning/2026-10-25-measured-provider-db-repair-v1.json`. Every new query chain must execute through the actual DirectQuery adapter in tests before promotion. Its `gte` remains scoped only to measurement snapshot `observed_at`; personal publication history uses seven bound previous-date keys via existing `in`, preserving tenant/channel/status filters. A successful cron or empty publisher response is not evidence of generated decisions or published posts. Keep the same owner and obligation open until protected promotion plus runtime/provider readback; never republish known provider IDs.
+
+Inventory every duplicate caller; preserve both founder-reserve and selection history. Upload exact tested bytes and compare remote Git blob hash with the locally tested file before ready/merge. First-match source replacement without parity is prohibited.

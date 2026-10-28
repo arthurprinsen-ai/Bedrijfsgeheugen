@@ -15,7 +15,7 @@
     "runtime_readback": "PENDING"
   },
   "fix": "Add only existing social_posts/social_metric_snapshots to content orchestrator's DIRECT_TABLES; normalize provider metrics JSON; implement SQL-bound observed_at >= timestamptz filter for snapshot table only; explicitly ban inserts, updates and upserts on both measurement sources. Keep exact tenant filtering, 72-hour freshness, minimum exposure and independent promotion guardrails unchanged. Reuse existing orchestrator cadence and publishing lane.",
-  "prevention_rule": "Cross-check every newly added .from(table) call against the live direct SQL adapter table allowlist and every query method against DirectQuery; regression tests must prove read-only authority and bounded timestamp filter before production. Zero impressions/likes or revenue must never be synthesized from missing sources. No second scheduler, bypass, or new data store. Execute real query chains through the adapter in regression tests; static source-selection assertions cannot prove adapter method compatibility. Personal seven-day history uses the existing parameter-bound IN date set and never widens measurement-only gte authority.",
+  "prevention_rule": "Cross-check every newly added .from(table) call against the live direct SQL adapter table allowlist and every query method against DirectQuery; regression tests must prove read-only authority and bounded timestamp filter before production. Zero impressions/likes or revenue must never be synthesized from missing sources. No second scheduler, bypass, or new data store. Execute real query chains through the adapter in regression tests; static source-selection assertions cannot prove adapter method compatibility. Personal seven-day history uses the existing parameter-bound IN date set and never widens measurement-only gte authority. Inventory all callers, upload exact tested file bytes, and verify the remote Git blob hash equals the local tested blob hash before ready/merge. Never serialize a source repair with an unverified first-match replacement.",
   "tests": [
     "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs",
     "tests/brain-measured-next-post-challenger-v1.test.mjs"
@@ -45,9 +45,10 @@
     "error": "ORCHESTRATOR_ERROR load-context DB_MEASUREMENT_GTE_SCOPE_REJECTED",
     "impact": "No 2026-10-28 LinkedIn decisions; both obligations PLANNED without provider IDs.",
     "root_cause": "The story-family history query added by #4988 used gte(publication_date) and lt on the direct SQL adapter. gte is deliberately limited to measurement snapshot observed_at, and lt is not implemented. The exception aborts load-context before all channel decisions.",
-    "fix": "Use seven explicit previous date keys through the existing parameter-bound IN filter. Preserve canonical tenant, personal channel and PUBLISHED/LIVE_PROVEN statuses; do not broaden measurement adapter authority.",
-    "regression": "Three executions of the real history block through real DirectQuery, covering Amsterdam DST week, year rollover and leap day: 3 failures with the exact production exception before fix, 3 passes after. Relevant suite 20/20.",
+    "fix": "Use seven explicit previous date keys through existing bound IN in BOTH founder-reserve and selection history queries. Preserve canonical tenant, personal channel and published statuses without broadening adapter authority.",
+    "regression": "Six executions of both real history blocks through real DirectQuery; each caller reproduced the exact exception before its fix and passes after, covering DST week, year rollover and leap day. Relevant suite23/23.",
     "runtime_readback": "PENDING_PROTECTED_PROMOTION",
-    "fix_pr": "PENDING"
+    "fix_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5037",
+    "rejected_candidate": "First remote candidate207ae8c411f8dbd3e2c5d920ba0b72d26b318f39 changed only the first duplicate callsite because of string replacement; independent remote diff review caught mismatch to tested local source. PR made DRAFT before merge, no production side effect."
   }
 }
