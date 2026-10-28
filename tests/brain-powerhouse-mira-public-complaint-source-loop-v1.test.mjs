@@ -4,12 +4,10 @@ const fn=fs.readFileSync('supabase/functions/powerhouse-mira-problem-radar/index
 test('Mira public complaint source loop is one closed lineage',()=>{
  for(const s of ['powerhouse_mira_problem_signals_v1','powerhouse_materialize_mira_problem_recommendation_v1','powerhouse_mira_problem_lineage_v1','powerhouse_sync_mira_problem_lineage_v1','mira-public-complaint-source-loop-v1']) assert.ok(sql.includes(s));
  assert.ok(sql.includes('source_backed_first_then_priority'));
- assert.ok(fn.includes('klacht irritant app account wachtwoord'));
- assert.ok(fn.includes('schoolapp ouderportaal'));
- assert.ok(fn.includes('parkeerapp'));
- assert.ok(fn.includes('pakket bezorger'));
- assert.ok(fn.includes('abonnement opzeggen'));
- assert.ok(fn.includes('digitale frustratie'));
- assert.ok(fn.includes('api.dataforseo.com/v3/serp/google/organic/live/advanced'));
+ for(const query of ['mkb offertes opvolgen','mkb kennisoverdracht','mkb excel spreadsheets','mkb dubbele invoer','mkb personeelstekort planning','mkb facturering debiteuren','mkb klantafhankelijkheid'])assert.ok(fn.includes(query));
+ assert.ok(fn.includes("topic:'news'"));
+ assert.ok(fn.includes('PH-P002'));
+ assert.ok(fn.includes('api.dataforseo.com/v3/serp/google/news/live/advanced'));
+ assert.ok(fn.includes('evaluateMiraPublicationFreshness'));
  assert.ok(fn.includes('powerhouse_materialize_mira_problem_recommendation_v1'));
 });

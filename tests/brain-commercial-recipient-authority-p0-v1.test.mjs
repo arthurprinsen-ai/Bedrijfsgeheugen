@@ -54,7 +54,7 @@ test('authority gate precedes suppression/claim/provider side effect and persist
  const guard=source.indexOf('const recipientApproved=await verifyRecipientAuthority(db,a,to)');
  const suppression=source.indexOf("db.from('powerhouse_email_contact_suppressions')");
  const claim=source.indexOf("const{data:claim,error:ce}");
- const send=source.indexOf('ack=await send(key,acct,to,sub,body)');
+ const send=source.indexOf('ack=await send(key,acct,to,sub,withOptOutLine(body))');
  assert.ok(guard>0&&guard<suppression&&suppression<claim&&claim<send);
  assert.match(source,/RECIPIENT_AUTHORITY_UNVERIFIED/);
  assert.match(source,/owner:'contact-permission-verification'/);

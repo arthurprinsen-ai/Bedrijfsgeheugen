@@ -44,7 +44,7 @@ test('orchestrator falls back through governed Composio only for provider availa
   assert.match(source,/\[401,403,429\]\.includes\(error\.status\)/);
   assert.match(source,/validArtifactObject/);
   assert.match(source,/Every factual statement and metadata value must be supported by the supplied user data/);
-  assert.match(source,/generation_evidence:\{model:generationModel,provider:generationProvider,primary_model:gov\.model_id,fallback_reason:fallbackReason/);
+  assert.match(source,/generation_evidence:\{[^\n]*model:generationModel,provider:generationProvider,primary_model:gov\.model_id,fallback_reason:fallbackReason/);
 });
 
 test('orchestrator never re-decides ambiguous or republish-forbidden provider claims',()=>{
