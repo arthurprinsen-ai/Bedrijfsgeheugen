@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|sales|frisse-blik-lead-endpoint|20261028-v1",
+  "fingerprint": "website|sales|silent-empty-lead-webhook|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "LEAD_FORM_SUBMITS_TO_EMPTY_ENDPOINT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "WEBHOOK_URL on /frisse-blik was an empty string. The form then sent nothing while still showing the booking step, so commercial_leads stayed empty and leads were lost without any error.",
+  "fix": "WEBHOOK_URL points to the Supabase Edge Function lead-intake (verify_jwt false, origin allow-list, field validation, idempotency key, stores into commercial_leads). Live tests before the PR: valid POST stored a row, invalid email 422, wrong origin 403.",
+  "prevention_rule": "A form that reports success must have a verified server endpoint; an empty endpoint must fail visibly, never silently.",
+  "tests": [
+    "live POST test recorded in the change document"
+  ],
+  "evaluation": {
+    "live_readback": [
+      "real submission on the live page creates one commercial_leads row"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_order_proven": false
+  }
+}
