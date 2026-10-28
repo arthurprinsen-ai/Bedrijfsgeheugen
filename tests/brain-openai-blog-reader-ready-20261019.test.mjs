@@ -36,3 +36,8 @@ test('OpenAI blog reader-ready gating precedes canonical artifact writes',()=>{
   assert.match(source,/automated_blog_reader_ready:/);
   assert.match(source,/final_copy_approved:pending\.channel==='linkedin_company'\|\|pending\.channel==='linkedin_personal'/);
 });
+
+test('observed Twinfield publisher instructions fail even inside a long structured article',()=>{
+ const body=['## Wat verandert er?',...Array(15).fill('Controleer iedere maand welke facturen nog openstaan en bespreek verschillen met de administratie.'),'## Aanpak','1) Verifieer publicatie-voorwaarde (beslissing) - Publiceer alleen als er geen dominante canonical owner is.','## Resultaat','Meet toename in verified_qualified_cta_progression.'].join('\n');
+ assert.ok(validate({title:'Twinfield boekhouden: wat verandert er voor jou?',body,cta:'Bekijk de Frisse Blik'}).includes('EDITORIAL_PUBLICATION_INSTRUCTIONS'));
+});

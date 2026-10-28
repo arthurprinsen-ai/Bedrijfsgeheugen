@@ -48,6 +48,7 @@ jobs:
           BASE_SHA: ${{ inputs.base_sha }}
           HEAD_SHA: ${{ inputs.head_sha }}
           CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          VERIFY_ONLY: ${{ inputs.verification_only }}
         run: |
           set -euo pipefail
           test -n "$BASE_SHA" && test -n "$HEAD_SHA"
@@ -59,7 +60,32 @@ jobs:
           [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
           [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
           # Branch names are secondary metadata; exact head identity remains authoritative.
-          [ "$actual_state" = open ] || { echo "::error::PR_NOT_OPEN:$actual_state"; exit 1; }
+          if [ "$actual_state" != open ]; then
+            # Read-only post-merge recovery: never grants promotion authority.
+            [ "${VERIFY_ONLY:-false}" = true ] && [ "$GITHUB_REF" = refs/heads/main ] || {
+              echo "::error::PR_NOT_OPEN:$actual_state"; exit 1;
+            }
+            [ "$actual_state" = closed ] && [ "$(jq -r '.merged' <<<"$pr")" = true ] &&             [ "$(jq -r '.base.ref' <<<"$pr")" = main ] &&             [ "$(jq -r '.head.repo.full_name' <<<"$pr")" = "$GITHUB_REPOSITORY" ] || {
+              echo "::error::MERGED_VERIFICATION_IDENTITY_REJECTED"; exit 1;
+            }
+            merge_sha="$(jq -r '.merge_commit_sha // empty' <<<"$pr")"
+            [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || exit 1
+            contained="$(gh api "repos/$GITHUB_REPOSITORY/compare/$merge_sha...$GITHUB_SHA")"
+            [ "$(jq -r '.merge_base_commit.sha' <<<"$contained")" = "$merge_sha" ] || {
+              echo "::error::MERGED_VERIFICATION_NOT_IN_TRUSTED_MAIN"; exit 1;
+            }
+            lineage="$(gh api "repos/$GITHUB_REPOSITORY/compare/$HEAD_SHA...$merge_sha")"
+            if [ "$(jq -r '.merge_base_commit.sha' <<<"$lineage")" != "$HEAD_SHA" ]; then
+              candidate_commit="$(gh api "repos/$GITHUB_REPOSITORY/git/commits/$HEAD_SHA")"
+              merged_commit="$(gh api "repos/$GITHUB_REPOSITORY/git/commits/$merge_sha")"
+              candidate_tree="$(jq -r '.tree.sha // empty' <<<"$candidate_commit")"
+              merged_tree="$(jq -r '.tree.sha // empty' <<<"$merged_commit")"
+              [[ "$candidate_tree" =~ ^[0-9a-f]{40}$ ]] && [ "$candidate_tree" = "$merged_tree" ] || {
+                echo "::error::MERGED_VERIFICATION_CANDIDATE_NOT_CONTAINED"; exit 1;
+              }
+            fi
+            echo "MERGED_CANDIDATE_READ_ONLY_VERIFIED:$PR_NUMBER:$HEAD_SHA:$merge_sha"
+          fi
 
   admission:
     needs: candidate-identity
@@ -224,7 +250,7 @@ jobs:
         with:
           node-version: '22'
       - name: Enforce current-main file and contract conflict index
-        if: needs.plan.outputs.has_lanes == 'true'
+        if: needs.plan.outputs.has_lanes == 'true' && inputs.verification_only != true
         shell: bash
         run: |
           git fetch origin main --no-tags

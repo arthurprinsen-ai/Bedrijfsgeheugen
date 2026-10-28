@@ -3020,8 +3020,56 @@
     {
       "name": "writer_control_service_role_acl_v1",
       "version": "20261026115659"
+    },
+    {
+      "name": "calendar_experiment_closure_v1",
+      "version": "20261027160000"
+    },
+    {
+      "name": "saas_direct_checkout_published_plans_only_v1",
+      "version": "20261027170000"
+    },
+    {
+      "name": "news_approved_contacts_first_v1",
+      "version": "20261027170326"
+    },
+    {
+      "name": "connection_email_activation_v1",
+      "version": "20261027171500"
+    },
+    {
+      "name": "saas_trial_v1",
+      "version": "20261027173000"
+    },
+    {
+      "name": "news_approved_contacts_first_v1",
+      "version": "20261027180000"
+    },
+    {
+      "name": "brief_cache_daily_refresh_v1",
+      "version": "20261027185500"
+    },
+    {
+      "name": "mira_entrepreneur_signal_materializer_v1",
+      "version": "20261027190000"
+    },
+    {
+      "name": "saas_trial_mails_v1",
+      "version": "20261027200000"
+    },
+    {
+      "name": "benchmark_anoniem_intake_v1",
+      "version": "20261027210000"
+    },
+    {
+      "name": "bg_experiment_autonoom_besluit_v1",
+      "version": "20261028080000"
+    },
+    {
+      "name": "bg_experiment_wijzigingen_overzicht_v1",
+      "version": "20261028081000"
     }
   ],
-  "captured_at": "2026-10-26T14:06:28.966285+00:00",
+  "captured_at": "2026-10-28T14:07:19.772364+00:00",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

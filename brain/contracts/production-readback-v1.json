@@ -70,7 +70,8 @@
       "supabase/migration-history.lock.json",
       "config/powerhouse-runtime-backpressure-v1.json",
       "config/powerhouse-adaptive-delivery-v1.json",
-      "tools/controleer-technische-seo.mjs"
+      "tools/controleer-technische-seo.mjs",
+      "tools/content-growth/reviewed-blog-refresh.mjs"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
