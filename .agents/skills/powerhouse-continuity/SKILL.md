@@ -1741,3 +1741,6 @@ Een foutmelding of afgekeurde output blijft bij dezelfde eigenaar tot een concre
 
 
 Content SQL adapter recovery: test standalone directRpc authentication execution alongside every real query chain after SQL-client injection changes. Source parity or successful parsing alone cannot prove authenticated execution. Keep explicit RPC executor/allowlist and transaction-bound query clients separate; prove native source and canonical authenticated invocation without printing secrets. Classify only exact CI verifier helpers in the production-readback contract; never widen runtime exclusions.
+
+
+Blog SQL DATE identity recovery: postgres@3.4.7 parses DATE OID1082 into JavaScript Date as well as timestamp types. Normalize valid driver Date values to their UTC calendar day at both claim and final ownership checks; retain exact requested day, tenant/channel, unsent/provider, source recommendation, timestamp and token guards. Test Date-shaped rows plus wrong-day and invalid-Date denial. Authenticated HTTP200/NO_PENDING_ARTIFACT is not proof of actual repair; require real claim, generated source persistence and same-draft publication readback.

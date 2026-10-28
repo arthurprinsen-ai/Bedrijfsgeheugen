@@ -112,3 +112,12 @@ test('Postgres timestamp Date objects and persisted JSON timestamps retain the s
  const x=fixture();x.artifact.body='old';x.artifact.updated_at=new Date('2026-10-28T08:00:00.123Z');x.artifact.generation_evidence={recommendation_id:'source-1'};const claim={token:'owner',recommendation_id:'source-1',rejected_body:'old',rejected_updated_at:'2026-10-28T08:00:00.123Z'};x.decision.state='decided';x.decision.delivery_evidence.blog_quality_repair=claim;
  assert.equal(mod.canCommitBlogQualityRepair({...x,claim}).eligible,true);
 });
+
+test('postgres3.4.7 DATE values match the same canonical calendar day in claim and final write',()=>{
+ const x=fixture();x.artifact.run_date=new Date('2026-10-28T00:00:00.000Z');x.decision.run_date=new Date('2026-10-28T00:00:00.000Z');x.obligation.publication_date=new Date('2026-10-28T00:00:00.000Z');
+ assert.equal(mod.planBlogQualityRepair(x).eligible,true);
+ x.artifact.body='old';x.artifact.updated_at='2026-10-28T08:00:00.123Z';x.artifact.generation_evidence={recommendation_id:'source-1'};const claim={token:'owner',recommendation_id:'source-1',rejected_body:'old',rejected_updated_at:x.artifact.updated_at};x.decision.state='decided';x.decision.delivery_evidence.blog_quality_repair=claim;
+ assert.equal(mod.canCommitBlogQualityRepair({...x,claim}).eligible,true);
+ x.obligation.publication_date=new Date('2026-10-27T00:00:00.000Z');assert.equal(mod.canCommitBlogQualityRepair({...x,claim}).eligible,false);
+ x.obligation.publication_date=new Date('invalid');assert.equal(mod.canCommitBlogQualityRepair({...x,claim}).eligible,false);
+});
