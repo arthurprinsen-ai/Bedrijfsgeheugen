@@ -120,6 +120,14 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
 
+# Existing canonical email composer uses its internal x-powerhouse-token gate.
+# Register alongside content generation so native Git deployment cannot omit feedback.
+# Preserve the deployed verify_jwt=false; do not introduce another executor.
+[functions.powerhouse-commercial-message-composer]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-commercial-message-composer/index.ts"
+
 # Existing canonical content-loop; custom x-powerhouse-token authentication is
 # implemented in its entrypoint, so preserve its current verify_jwt=false.
 [functions.powerhouse-content-loop]

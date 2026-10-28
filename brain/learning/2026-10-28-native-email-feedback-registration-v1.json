@@ -1,0 +1,36 @@
+{
+  "fingerprint": "supabase|content-feedback|email-composer-native-config-missing|20261028-v1",
+  "obligation_id": "powerhouse-unified-learning-revenue-20261025",
+  "compiler": {
+    "failure_class": "NATIVE_DEPLOY_FUNCTION_UNREGISTERED",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Native Supabase preview reported success and deployed exact orchestrator source/shared helper, but email composer stayed old v29 because supabase/config.toml did not register its existing entrypoint. A green provider check did not prove the complete consumer scope.",
+  "prevention_rule": "Register every changed native consumer in canonical Supabase config, preserve actual deployed authentication settings and require entrypoint plus imported helper source readback for every function before declaring the whole loop live.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-feedback-context-20261028.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "predecessor_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5039",
+    "protected_main": "28a0700d1a888ec588504c808f44632083ae4e6b",
+    "preview_project": "jlmwhsgffumljiusjuoj",
+    "preview_orchestrator_version": 377,
+    "preview_orchestrator_entry_and_helper_exact": true,
+    "preview_email_version": 29,
+    "preview_email_entry_exact": false,
+    "preview_email_helper_present": false,
+    "production_email_verify_jwt": false,
+    "red_regression": "powerhouse-commercial-message-composer must participate in native protected-main deployment",
+    "local_registration_tests": "PASS"
+  },
+  "outcome": {
+    "status": "CANDIDATE_NOT_DEPLOYED",
+    "both_production_consumers_exact": "NOT_YET_VERIFIED",
+    "revenue_improvement": "NOT_MEASURED"
+  }
+}
