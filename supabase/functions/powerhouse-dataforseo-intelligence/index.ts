@@ -109,7 +109,7 @@ Deno.serve(async(req:Request)=>{
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'dataforseo-intelligence',soort:'external-search-intelligence',
       status:'fout',detail,gegevens:{contract:CONTRACT}
-    }).catch(()=>{});
+    }).then(()=>{},()=>{});
     return json({ok:false,contract:CONTRACT,error:detail},503);
   }
 });

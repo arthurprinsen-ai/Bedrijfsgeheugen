@@ -35,6 +35,7 @@ export default async function handler(request,context){
       content_id:observation.content_id||input.content_id||'',
       content_type:observation.content_type||input.content_type||'',
       channel:observation.channel||input.channel||'',
+      value:observation.value,
       fingerprint:envelope.fingerprint
     });
   }catch(error){return json({error:'invalid-datahub-growth-event',detail:String(error.message||error)},422);}
