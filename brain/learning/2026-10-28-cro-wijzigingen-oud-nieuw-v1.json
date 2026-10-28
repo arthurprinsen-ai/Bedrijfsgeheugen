@@ -1,0 +1,28 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "cro|wijzigingen-oud-nieuw|20261028-v1",
+  "obligation_id": "cro-wijzigingen-oud-nieuw-20261028",
+  "failure_class": "CHANGE_RESULT_NOT_VISIBLE_TO_OPERATOR",
+  "root_cause": "Applied CRO/SEO changes had no operator view with old value, new value and difference, so improvements could not be judged or learned from.",
+  "observed_evidence": {
+    "actual_sources": [
+      "portal-v2/modules/customer-agent-activity.js (shows status only, no before/after)",
+      "portal-v2/modules/agent-intelligence-analytics.js (counts only)",
+      "public.social_experiments: 0 of 222 rows have pagina (read-only query, 2026-10-28)"
+    ],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Read-only admin tab backed by a service_role read function; certainty is withheld below the minimum sample.",
+  "prevention_rule": "A before/after value is only shown with its sample size; unknown is never rendered as zero and a small sample is never labelled proven.",
+  "tests": ["tests/brain-cro-wijzigingen-oud-nieuw-20261028.test.mjs"],
+  "compiler": {"failure_class": "CHANGE_RESULT_NOT_VISIBLE_TO_OPERATOR", "scope": "SEO_CRO_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-cro-wijzigingen-oud-nieuw-20261028.test.mjs"],
+    "shadow": ["tests/brain-cro-wijzigingen-oud-nieuw-20261028.test.mjs"],
+    "canary": ["tests/brain-cro-wijzigingen-oud-nieuw-20261028.test.mjs"]
+  },
+  "terminal_rule": "Not terminal until the migration is applied and the tab shows a first registered change in production."
+}
