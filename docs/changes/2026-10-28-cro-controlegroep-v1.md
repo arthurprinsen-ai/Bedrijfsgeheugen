@@ -8,7 +8,7 @@
 - `consistent = true` alleen met voldoende steekproef (voor én tijdens), een stabiele controle (±25%) en een positief verschil t.o.v. de controle. Anders staan de redenen in het resultaat.
 
 ## Preview
-- De Supabase-preview-branch voor deze PR is handmatig gekoppeld via de GitHub-integratie (automatic branching aan, supabase changes only aan). Deze wijziging alleen aan de changedoc start de koppeling opnieuw.
+- De Supabase-preview-branch `backend/cro-controlegroep-20261028` is handmatig aangemaakt in het dashboard (git-branch gekoppeld aan deze PR). Na de merge kan die branch verwijderd worden om compute-kosten te stoppen.
 
 ## Bewust niet gedaan
 - Niet gekoppeld aan `bg_experiment_autonoom_besluit` (#5025) en `bg_experimenten_beoordelen` is niet gewijzigd: koppelen volgt in een aparte PR nadat #5025 op main staat.
