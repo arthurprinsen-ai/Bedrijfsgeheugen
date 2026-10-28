@@ -6,6 +6,7 @@ import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './inpu
 import {appendBroaderContextualActions} from './contextual-action-rules-extended.js';
 import {appendComplementaryDomainActions,DOMAIN_GAP_PAGES} from './contextual-domain-gaps.js';
 import {regulatoryContextTrace} from './regulatory-context-trace.js';
+import {appendExternalSignalActions} from './external-signal-actions.js';
 
 // One read-only projection on the existing tenant-scoped Portal V2 state.
 // A proposal is NOT a measured risk, legal applicability ruling, executed action or euro saving.
@@ -152,6 +153,7 @@ export function buildContextualActionCards(state={},options={}) {
   }
   appendBroaderContextualActions(state,cards,{card,item,today:options.today||new Date().toISOString().slice(0,10)});
   appendComplementaryDomainActions(state,cards,{card,item});
+  appendExternalSignalActions(state,cards,{card,item,today:options.today||new Date().toISOString().slice(0,10)});
   return Object.freeze(cards.sort((a,b)=>(priorityOrder[a.priority]-priorityOrder[b.priority])||a.id.localeCompare(b.id)));
 }
 

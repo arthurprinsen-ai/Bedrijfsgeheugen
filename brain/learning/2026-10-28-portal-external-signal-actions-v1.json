@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "portal|external-signals|contextual-actions|20261028-v1",
+  "fingerprint": "portal|external-signal-not-on-action-pages|20261028-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_SIGNAL_NOT_VISIBLE_WHERE_ACTION_IS_NEEDED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "bevindingen.js ranked external findings (branchenormen, onderzoek, regelgeving met datum) but they were not converted to contextual action cards. komendeVerplichtingen was defined and never registered; the normen page id 'mensen-organisatie' did not exist; regelgeving ignored the client's branch.",
+  "fix": "portal-v2/external-signal-actions.js turns bevindingen with extern provenance into contextual cards on every relevant existing page, with source, peildatum, herzienUiterlijk and reden. Stale sources drop one priority level. Regulation follows the branch. bg_externe_signalen rows pass through a strict adapter (toegestaan, vertrouwen >= 0.6, valid deadline, https) and are never tenant-verified.",
+  "prevention_rule": "An external finding is shown on each portal page it affects, with its source and date. It never becomes a euro conclusion or a legal determination, and it never gets its own scoring model.",
+  "tests": [
+    "portal-v2/tests/external-signal-actions.test.mjs",
+    "tests/brain-portal-external-signal-actions-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-portal-external-signal-actions-v1.test.mjs"],
+    "shadow": [],
+    "canary": [],
+    "invariants": [
+      "no external card without own client data",
+      "every external card carries bron, peildatum, herzienUiterlijk and reden",
+      "SCENARIO_ONLY amount only when waarde > 0",
+      "stale source drops one level and is labelled",
+      "regulation not affecting the branch yields no card",
+      "every finding points at an existing page"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
