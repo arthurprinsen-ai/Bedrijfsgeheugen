@@ -34,3 +34,8 @@ test('persoonlijk nieuws en overig krijgen nooit een DM', ()=>{
 test('sociale media en vacatureboards tellen niet als bron', ()=>{
   assert.ok(fn.includes('SOCIAAL'));
 });
+
+test('een Tavily-fout stopt de run zichtbaar en wordt niet als nul nieuws gelezen', () => {
+  assert.ok(fn.includes('if (!r.ok) throw new Error(`TAVILY_${r.status}`)'));
+  assert.ok(fn.includes("'REMOTE' : 'VALIDATION'"));
+});
