@@ -49,3 +49,13 @@ test('latest five actual production migrations are present in same original sour
  assert.equal(lock.applied.length,files.length,'entire source lock must cover executable migration manifest');
  assert.ok(lock.applied.length>=784,'all 784 independently observed production applied migrations must remain present');
 });
+
+test('learning replay reference satisfies canonical Brain admission, while general integrity test remains supported',()=>{
+ const record=JSON.parse(readFileSync('brain/learning/2026-10-29-cro-production-migration-lock-reconciled.json','utf8'));
+ assert.ok(Array.isArray(record.evaluation.historical_replay) && record.evaluation.historical_replay.length>0);
+ for(const filename of record.evaluation.historical_replay){
+  assert.match(filename,/^tests\/brain-[a-z0-9._/-]+\.test\.mjs$/i);
+  assert.ok(readdirSync('tests').includes(filename.slice('tests/'.length)));
+ }
+ assert.ok(record.tests.includes('tests/supabase-migration-history-integrity.test.mjs'));
+});

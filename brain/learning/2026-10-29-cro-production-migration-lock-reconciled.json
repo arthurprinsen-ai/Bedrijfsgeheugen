@@ -51,8 +51,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
     ]
   },
   "tests": [
@@ -61,5 +60,15 @@
   ],
   "terminal_rule": "Only protected exact-head Required, BRAIN, CodeQL and a fresh Revenue Learning run on a merged main commit may close this CI failure. This does not prove paid orders or all CRO experiments.",
   "preview_provider_execution_healthy": false,
-  "provider_preview_duplicate_issue_open": true
+  "provider_preview_duplicate_issue_open": true,
+  "ci_admission_first_attempt": {
+    "run_id": 40955712525,
+    "job_id": 123735160004,
+    "state": "LEARNING_CANONICALIZATION_BLOCKED",
+    "exact_error": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/supabase-migration-history-integrity.test.mjs",
+    "root_cause": "General migration-history integrity test is real but does not satisfy mandatory Brain evaluation path naming contract /^tests\\/brain-.*\\.test\\.mjs$/; source/test presence alone is not canonicalization.",
+    "correction": "Keep tests/brain-cro-production-migration-lock-20261029.test.mjs as historical_replay; retain general test in learning.tests and in Required/Revenue Learning. Test naming contract before PR admission.",
+    "provider_preview_already_success": true,
+    "regression": "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+  }
 }
