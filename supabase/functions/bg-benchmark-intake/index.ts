@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL') || '', role = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
   if (!url || !role) return J({ ok: false, contract: C, error: 'CONFIG' }, 500);
   const db = createClient(url, role, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { error } = await db.from('benchmark_anoniem_inzendingen').insert(v.row);
+  const { error } = await db.from('benchmark_anoniem_inzendingen').insert(v.row as any);
   if (error) return J({ ok: false, contract: C, error: 'INSERT_FAILED' }, 500);
   return J({ ok: true, contract: C });
 });

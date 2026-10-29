@@ -50,7 +50,9 @@ export function retainMediaProofFailure(job,ob,row){
 // Writes only to the SAME canonical job and obligation with CAS/version guards;
 // never rewrites the selected asset, silently retries a rejected hash or promotes
 // an unverified video. The full frame/hash verdict stays in canonical evidence.
-export async function recordMediaProofRejection(db,{job,ob,code,position,historyId,confidence,width,height}){
+/** @param {any} db @param {any} args */
+export async function recordMediaProofRejection(db,args){
+  const {job,ob,code,position,historyId,confidence,width,height}=args;
   if(!['VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH','MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED','MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH'].includes(code)||!job?.id||
      job.status!=='WAITING_PROOF'||!job.updated_at||ob?.external_id)
     return {kind:'ignored'};
