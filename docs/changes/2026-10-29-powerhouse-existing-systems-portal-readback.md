@@ -27,3 +27,6 @@ Die twee conditions zijn geen ontbrekende fysieke lagen. 54 capabilities in de i
 4. Pas dan: `PORTAL_READ_MODEL_LIVE_PROVEN`. De enterprise-brede `END_TO_END_PROVEN` status is apart en vraagt echte Brain/Heartbeat worker-emitter, exact tenant/run/skill/correlation, onafhankelijke provider-/uitkomstbevestiging, betaling en learning + preventie.
 
 Geen root/global status GROEN op basis van deze documentatie, PR of succesvolle query.
+
+## Productieconfiguratieherstel — 29 oktober 2026
+Tijdens de beveiligde Netlify providerconfiguratiecontrole bleek `SUPABASE_URL` niet te bestaan in de websiteomgeving, terwijl `BG_PORTAL_EU_SUPABASE_URL` wel in de Functions/productiecontext bestaat en overeenkomt met de bestaande canonieke Supabase-projectreferentie. De service-role-sleutel is reeds aanwezig in de Functions-scope; geen geheimen zijn in deze documentatie opgenomen. De bestaande `powerhouse-control-plane.mjs` gebruikt nu expliciet de reeds toegestane EU-URL als fallback, **na** de admincheck en uitsluitend server-side. Zonder dit herstel zou het nieuwe read-model ten onrechte `PARTIAL` blijven ondanks een succesvolle deployment. De bestaande Brain-regressietest borgt de configuratie. Dit is een gecommitte bronfix, niet vanzelf productie-readback.
