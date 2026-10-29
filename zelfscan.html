@@ -571,7 +571,13 @@ function deelScore(){
 #bgCookie .bgAccept{background:var(--blauw,#1a56db);color:#fff}
 #bgCookie .bgDeny{background:#fff;color:var(--blauw,#1a56db)}
 #bgCookie button:focus-visible{outline:3px solid rgba(26,86,219,.4);outline-offset:2px}
-@media(max-width:520px){#bgCookie .bgBtns{flex-direction:column-reverse}}
+@media(max-width:520px){
+/* Keep the consent choice accessible without hiding primary mobile navigation. */
+#bgCookie{left:.5rem;right:.5rem;bottom:.5rem;max-height:230px;max-height:min(32dvh,230px);overflow-y:auto;overscroll-behavior:contain;padding:.75rem .85rem;font-size:.84rem;line-height:1.4}
+#bgCookie h4{font-size:.94rem;margin-bottom:.3rem}
+#bgCookie .bgBtns{flex-direction:row;gap:.45rem;margin-top:.6rem;position:sticky;bottom:0;background:#fff;padding:.35rem 0 0}
+#bgCookie button{flex:1 1 0;min-width:0;min-height:44px;padding:.55rem .35rem;font-size:.83rem}
+}
 </style>
 <div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
   <h4>🍪 Cookies &amp; privacy</h4>
