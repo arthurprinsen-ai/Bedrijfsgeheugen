@@ -5,6 +5,31 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## Production runtime truth and anti-false-green routing — 29 October 2026
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+Fingerprint: `powerhouse|runtime|cron-success-without-business-proof|20261029-v1`.
+Parent: [existing Powerhouse one-loop issue #4918](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918).
+
+Every existing Brain/Heartbeat/Agent Fabric agent must re-read the **current** `public.powerhouse_one_brain_runtime_health_v1`, `public.powerhouse_loop_integrity_health_v1`, `public.powerhouse_terminal_control_plane_health_v1`, the canonical daily `content_publication_obligations`, and most recent **distinct** `powerhouse_runtime_events` (event_type + source + subject_key, latest updated_at) before asserting a terminal state. The 2026-10-29 observed baseline of 32/32 WIRED and 18/18 active jobs **coexisted** with 2 runtime errors, a BLOCKED content loop, 2 learning evidence gaps, 2 escalated `RESULT_UNKNOWN` jobs and non-green loop assurance. Wiring is not execution.
+
+A `cron.job_run_details.status=succeeded` for `net.http_post` means **only SQL submitted an HTTP request**, not that the Edge function completed, forecasts were calibrated, leads converted, or any public provider side effect happened. Demand the original Edge function's response, same-run application event, unique provider/source receipt, freshness, independent verifier and actual before/after outcome. If market evidence is missing, do not backfill 1,540 due calibrations with inferred zero or fabricate a successful forecast run. Leave `AI_PUBLIC_MARKET_EVIDENCE_REQUIRED` unresolved and delegate a bounded source-backed correction to the existing forecast owner.
+
+The two legacy resilience operations with `RESULT_UNKNOWN` must retain their `ESCALATED` jobs until the original executor verifies the remote result; `side_effect_state=NOT_STARTED` in an internal stale heartbeat alone does not authorize blind replay. For `powerhouse_full_cycle_production_proof` preserve the original failing provider, predictive, content and outcome sub-gates and their exact date even when the surrounding cron succeeded. Project each original fingerprint to existing Brain failure registry, human change log, SkillOps and authenticated portal with its **actual** source state; no database status-only GREEN patch.
+
+Before claim `ALL_GREEN`, require **zero current runtime errors, zero required learning-evidence gaps, a verified non-blocked content loop, no due/red/amber assurance gates, no unresolved escalated recovery, original provider readback, and outcome-grounded applied skill evidence**. Otherwise report the precise `AMBER/RED/UNPROVEN` partition and keep independent healthy jobs active. Reuse the already protected `assessPowerhouseHandoffs` guard only when its actual runtime emitter and independent verifier are connected; a source-level guard or synthetic test passing is not runtime-wide adoption.
+
+Regression: `tests/brain-powerhouse-runtime-truth-routing-20261029.test.mjs`. Human reference: `docs/changes/2026-10-29-powerhouse-runtime-proof-routing.md`. No extra cron, writer, publisher, store, bypass, or historical reclassification.
+
+## ONE BRAIN / Heartbeat / Agent Fabric handoff verification — 29 October 2026
+
+For material cross-domain execution, consume the existing canonical capability inventory, original tenant-bound Brain/Heartbeat run receipts, and the independent provider/outcome verification. The pure guard is `brain/operating-loop/powerhouse-integration-handoff-evidence.mjs#assessPowerhouseHandoffs` (regression `tests/brain-powerhouse-integration-handoff-20261029.test.mjs`; failure fingerprint `powerhouse|existing-brain-heartbeat-handoff-evidence|20261029-v1`).
+
+The required chain is **OBSERVE → DECIDE → EXECUTE → READBACK → OUTCOME → LEARN → PREVENT**. All stages require same tenant, correlation and source revision, a unique predecessor-linked receipt and a genuinely independent readback. AGENT execution additionally requires actual pinned skill loader/application evidence from the pre-existing validator; SQL stages must never impersonate agents. An outcome needs actual before/after measurements; paid revenue needs original provider payment proof. Missing data is UNPROVEN, never automatic zero, live, success or revenue.
+
+This guard is initially a tested source candidate, **not yet connected to all running emitters**. Only the existing Heartbeat/Agent Fabric writer may wire real receipts into the guard and the authenticated portal, following protected merge, exact runtime readback and the same Brain learning/writeback policy. No new scheduler, agent, truth store or second writer.
+
+
 Fingerprint: `powerhouse|self-improvement|evidence-eval-compare-promote-measure-learn|v1`.
 
 ## North Star

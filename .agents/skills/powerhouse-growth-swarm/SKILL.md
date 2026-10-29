@@ -317,3 +317,67 @@ Fingerprint: `commercial|contacts|bounded-review-cron|20261020`. Behoud exact be
 
 ## P0 #4198: bounded authority queue, no duplicate sends (2026-10-20)
 Fingerprint: `commercial|authority|queue-preselect-skip-locked|20261020`. Live SQL contact authority review was joining/suppression-evaluating 23k contacts before applying the candidate batch bound. After repeated 30-second statement timeouts and existing single-owner Cron reduction to a 200-row pulse and one 200-row authority batch, the canonical DB migration now materializes a small queue FIRST with `FOR UPDATE SKIP LOCKED` before the original contact join, preserving every existing authorization/suppression/cooldown gate. Cron job `powerhouse-identity-graph-v1` remains active and existing; do not invent consent or disable a scheduled executor. Test exactly on the existing SQL function and real patient rolling coverage, not on a synthetic green response. Parent #4198.
+
+## Continuous CRO Lean / Growth Hacking experimentation (29 oktober 2026)
+Fingerprint: `powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1`.
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+**Iedere bestaande CRO-, Growth Swarm-, SEO-, Heartbeat-, Brain- en website-agent erft dit contract.** Tijdens elke bestaande natuurlijke Heartbeat-cyclus:
+1. **Observe:** gebruik verse en geverifieerde Search Console, GA4, consent-aware `bg_interacties`, `growth_page_daily`, `growth_events`, `growth_outcomes`, scans, CRM/order/finance en externe onderzoekssignalen. Documenteer meetgaten; NULL is onbekend, niet nul.
+2. **Diagnose:** vind aantoonbare drop-off, formulierfrictie, CTA/WhatsApp-hulpbehoefte, lage intent-match, mobiele toegankelijkheid of meetlacunes. Koppel bron-ID, segment, noemer, tijdvenster, betrouwbaarheid en tenant.
+3. **Hypothesize:** schrijf toetsbare hypothese/falsifier, customer problem, interventie, baseline, verwacht minimaal relevant effect, primaire omzetgerichte metriek, tijdshorizon, sample-floor, controls, guardrails, rollback, eigenaar en documenteer de datum vóór eerste exposure.
+4. **Prioritize:** incrementele betaalde bijdrage (onbekend => UNKNOWN), confidence, reach, effort, kosten, risico en klantwaarde; reserveer exploratieruimte. Geen ongefundeerde impactcijfers.
+5. **Experiment:** test `whatsapp_prompt`, `progressive_form`, `contextual_help`, `exit_intent` (desktop-only), `interactive_qualifier`, `roi_calculator`, `scan_followup`, `cta_copy`. Persistente stabiele randomisatie via bestaande `powerhouse_experiment_assignments` vóór treatment; controlegroep; maximaal één relevante prompt per sessie; mobiele dialoog niet blokkerend; sluitbaar en toetsenbordtoegankelijk.
+6. **Evaluate:** meetsources en exposurededupe, provider-ID, mature cohorts, datafout/SRM (p<0,001), sample-/power-floor, vooraf vastgelegde primaire KPI, 95%-interval, guardrailregressies (privacy, CLS/INP, SEO, accessibility, formulieren, vertrouwen, betaalde conversie), geen tussentijdse ongecorrigeerde winclaims.
+7. **Implement:** winnaar is alleen `CANDIDATE_WIN`. Bestaande BG169/protected merge, Required/BRAIN/CodeQL, exact main→deploy→browser/provider readback en onafhankelijke lead/order/revenue proof zijn nodig; automatische rollback bij regressie.
+8. **Learn and remeasure:** registreer positieve, negatieve én onbesliste tests met before/after, beslissing, root cause, bewijs, failed approach, preventie en regressietest. Append via bestaande `powerhouse_cycle_events`→`brain_records` en toon tenant-gescoped in bestaand portaal. Geen alternatieve writer, database, scheduler of extern dispatch-kanaal.
+
+Codecontract: `tools/growth-intelligence/cro-experiment-cycle.mjs` en tests `tools/growth-intelligence/cro-experiment-cycle.test.mjs`; dezelfde bestaande `heartbeat-adapter.mjs` geeft `croOpportunities` en `croLearningProposals` door als voorstellen, **niet** als bewijs van persistente uitvoering. `DESIGN_BLOCKED`, `MEASUREMENT_REQUIRED`, `INCONCLUSIVE` en `INVALID` blijven zichtbaar en mogen niet worden overgeschreven met groen. Bekende meetleemtes krijgen één dedupliceerbare obligation binnen de huidige lineage, waarna agent instrumenteert, test en opnieuw meet.
+
+Onderzoek:
+- https://exp-platform.com/Documents/2023-03-11EncyclopeiaMLDSABTestingFinal.pdf
+- https://docs.statsig.com/experiments/monitoring/srm
+- https://www.optimizely.com/optimization-glossary/ab-testing
+- https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials
+- https://autoriteitpersoonsgegevens.nl/themas/internet-slimme-apparaten/cookies/trackingcookies
+
+**Release-truth:** deze toevoeging op PR #4901 is `SOURCE_CANDIDATE`; geen productieactivatie, verbetering van conversie of nieuwe orders bewezen totdat exact-head CI, beschermd merge, runtime- en portaal-readback geslaagd zijn.
+
+
+## Permanente CRO Growth Hacking / Lean experimentatie — 29 oktober 2026
+
+Fingerprint: `powerhouse|cro|evidence-gated-lean-growth-experiment|20261029-v1`.
+
+**Doel:** de bestaande CRO-agent en alle relevante SEO-, Growth Swarm-, Sales-, Content- en Self-Improvement-agents stellen in iedere bestaande Heartbeat-cyclus de vragen: "wat kan beter?", "welke kans zien we?" en "wat is de eerstvolgende meetbare verbetering?" Geen tweede scheduler, experimentcontroller, CRM, geheugen, tenantbrede observatiebus of autonome productie-writer.
+
+**Bestaande runtime- en opslagautoriteit:** `public.bg_interacties` (privacyarme interacties), `public.growth_events`, `public.growth_page_daily`, `public.growth_outcomes`, `public.social_experiments`, `public.powerhouse_experiment_policies`, `public.powerhouse_experiment_assignments` (pre-treatment assignment), `public.powerhouse_decision_cycles`, `public.powerhouse_cycle_events`, `public.brain_records` en de bestaande tenantgebonden portaalprojectie. Hergebruik `tools/growth-intelligence/decision-core.mjs` en `heartbeat-adapter.mjs` via `cro-experiment-cycle.mjs`. Dit is **kandidaatcode** zolang PR #4901 niet door Required/CodeQL, protected merge, Netlify en geauthenticeerde productie-readback is gekomen.
+
+### Verplichte gesloten Lean/PDCA-lus
+
+OBSERVE → DETECT DATA GAP → DIAGNOSE → FIND OPPORTUNITY → HYPOTHESIS + FALSIFIER → PRE-REGISTER → PRIORITIZE → PERSIST ASSIGNMENT → EXPERIMENT → MEASURE + GUARDRAILS → RECONCILE REAL LEADS/ORDERS → DECIDE → PROTECTED IMPLEMENT/ROLLBACK → VERIFY PRODUCTION → LEARN IN ONE BRAIN → NEXT EXPERIMENT.
+
+- **Iedere experimentregistratie** bevat stabiele experiment-/tenant-/pagina-/opportunity-ID, eigenaar, bronlink en versheid, basismeting (of expliciet UNKNOWN), falsifieerbare hypothese, controle en variant, eligibility, exposure-unit, 50/50 allocatie, voorregistratietijd, primaire funnelmetric, guardrails, minimum steekproef en horizon, minimaal praktisch relevant effect, analyse-/stopplan, kosten/risico, rollbackplan en implementatiebevoegdheid. Onbekend is **niet** nul.
+- **Kansscore:** verwachte *incrementele betaalde marge* × bewijsbetrouwbaarheid × toepasbaarheid ÷ (inspanning + risico). De score is een prioriteitshypothese, nooit een voorspelling met resultaatstatus.
+- **Experimentoppervlakken:** WhatsApp-click-to-chat (geen auto-bericht), dynamische/progressieve formulieren, scan-follow-up met vrijwillige opt-in, contextuele hulp, klik- en scrollgebaseerde hulp, desktop exit-intent, interactieve keuzehulp, ROI-calculator en CTA/prijs-/bewijshiërarchie. Start niet met een opdringerige mobiele overlay; alle prompts zijn wegklikbaar, keyboard-accessible en maximaal eenmaal per sessie.
+- **Kwaliteitscontract:** eerst een verse geverifieerde basismeting en privacy-grondslag; persistente toewijzing *vóór* treatment, stabiele exposure-id, gelijk gedefinieerde exposure in beide armen, dedupe, uitsluiting van bots, consent-aware tracking, geen identificerende inhoud in analytics of LLM-prompts. Meet control en treatment apart.
+- **Experimentanalyse:** controleer sample-ratio-mismatch en dataschade, vooraf bepaald analysemoment, minimaal aantal per arm, uitkomstbewijs, betrouwbaarheidsinterval en praktisch relevant effect. Bij te weinig events, SRM, peeking, onrijpe outcome-attributie of onbekende steekproef: INCONCLUSIVE/INVALID, nooit WIN. Fixed-horizon p<0,05 is alleen een kandidaat-besluit bij voldoende steekproef en valide aannames; steekproefvloer is geen statistische powergarantie.
+- **Primair zakelijk resultaat:** gekwalificeerde lead → afspraak → offerte → betaalde order → onafhankelijk geverifieerde omzet. Een WhatsApp-knopklik of formulierstart is hoogstens een microconversie. Retouren/annuleringen en werkelijke kosten tellen mee voordat een commerciële verbetering "bewezen" is.
+- **Veilig implementeren:** een `CANDIDATE_WIN` betekent alleen een geprioriteerde, omkeerbare wijziging voor BG169 / Required + CodeQL + portal/SEO/accessibility/consent tests, protected merge, Netlify readback en onafhankelijke klantuitkomst. Dit is nooit een automatische deploy, echte bestelling of gerealiseerde omzet. Regressie geeft STOP + rollback van alleen de betreffende variant. Respecteer bestaande budget-/writer-gates en menselijke goedkeuring waar nodig.
+- **Lerend geheugen:** schrijf zowel positieve, negatieve, mislukte als onbesliste experimenten via de bestaande idempotente event/Brain/learning-route; leg blootstelling, hypothese, beslismoment, effect, oorzaak, kosten, regressietest, prevention rule en volgende actie vast. Synchroniseer pas naar de juiste tenant-portalweergave na werkelijke write/readback; geen nieuwe learning-store. Iedere andere agent mag deze historische lessen hergebruiken in zijn volgende beslissing.
+
+### Eerste experimentportfolio
+1. Frisse Blik-uitkomst → vrijwillige vervolgactie versus huidige pagina, gekwalificeerde leads als primaire metric; niet de gratis scan blokkeren of zonder toestemming contactdata vastleggen.
+2. AFAS/Exact/Power BI money page → contextuele WhatsApp-hulp versus gewone CTA. Verifieer werkelijke gesprekken/gekoppelde aanvragen, niet alleen click-outs.
+3. Lange formulieren → progressief formulier versus huidige versie, succesvolle *gekwalificeerde* aanvragen en afhaakreden.
+4. Prijzenpagina → desktop exit-intent met nuttige keuzehulp versus geen overlay, guardrails voor toegankelijkheid, irritatie, SEO en orders.
+5. ROI-berekening → transparante calculator versus statische uitleg, zonder verzonnen besparingen.
+
+### Evidence en bronnen
+- Microsoft ExP / SRM: https://www.microsoft.com/en-us/research/articles/alerting-in-microsofts-experimentation-platform-exp/
+- Statsig fixed-horizon versus sequential peeking: https://docs.statsig.com/experiments/advanced-setup/sequential-testing
+- Eppo statistical plan/guardrails: https://docs.geteppo.com/administration/setting-statistical-analysis-plan-defaults/
+- Google intrusive overlays: https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials
+- NL tracking cookie consent: https://www.rijksoverheid.nl/themas/economie/telecommunicatie/veilig-gebruik-internet/vraag-en-antwoord/telecommunicatie/mag-een-website-ongevraagd-cookies-plaatsen
+
+### Verplichte release-regressie
+`tools/growth-intelligence/cro-experiment-cycle.test.mjs`; plus bestaande `tools/growth-intelligence/heartbeat-adapter.test.mjs` en `tests/brain-growth-intelligence-delivery-closure.test.mjs`. Controleer daarna in productie dat de bestaande Heartbeat een daadwerkelijk geregistreerde toewijzing/exposure/outcome/learning afhandelt en dat portal tenantisolatie en geauthenticeerde readback slagen. Tot dat bewijs: `CODE_CANDIDATE_NOT_LIVE`.

@@ -1,0 +1,40 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "portal-two-tenant-production-proof-20261029",
+  "fingerprint": "portal|authenticated-two-tenant-production-proof|20261029",
+  "status": "CANDIDATE_UNVERIFIED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "QUALITY",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Production Release Readback skipped authenticated portal proof when the change classification was only website; the existing synthetic deployment proof checked only one Identity tenant, insufficient to demonstrate independent cross-tenant isolation.",
+  "change": "Run two distinct Identity JWT-authenticated HTTPS requests against immutable deployed portal API, require correct subjects/tenant claims, distinct response scopes, no opposing-tenant marker, and cleanup of both accounts. Widen exact readback applicability to this runtime path, require two-tenant assertions.",
+  "prevention": "Permanent fail-closed production gate: verify two tenant scopes and payload shapes with count=2, cleanup DELETED, exact source SHA and deploy ID; never claim real customer proof or independently tested isolation from synthetic evidence alone.",
+  "evidence": {
+    "source": "GitHub incident and CI logs, 2026-10-29",
+    "linked_issues": "#4215 #5118",
+    "tests": [
+      "tests/portal-authenticated-production-proof.test.mjs",
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "production_verified": false,
+    "provider_auth_proof": false,
+    "live": false,
+    "ci_modes": "HISTORICAL_REPLAY_SHADOW_CANARY_PROVIDER_MOCKS_ONLY"
+  }
+}

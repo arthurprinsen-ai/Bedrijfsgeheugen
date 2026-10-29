@@ -9,6 +9,23 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
+## Gevalideerde herstelkennis voor opvolgende agents — 29 oktober 2026
+Fingerprint: `powerhouse|release-agent-incident-evidence|20261029`.
+
+Deze tabel is geen tweede foutenregister; het zijn concrete dispatch- en preventieregels bij de bestaande `public.brain_failure_registry` / `public.brain_failure_occurrences`. Gebruik `brain_observe_failure` (idempotente occurrence-ID + SHA-256) en `brain_promote_failure` (optimistic version) uitsluitend met echte evidence. Koppel het resultaat aan het bestaande GitHub-issue, de exacte protected PR-head, het ONE BRAIN-leerrecord en het development ledger. Een geslaagde write krijgt altijd read-after-write; een mislukte write blijft een open obligation.
+
+| Fingerprint | Actie volgende agent | Minimale vrijgave |
+| --- | --- | --- |
+| `portal|authenticated-two-tenant-production-proof|20261029` | Hergebruik #5126. Lees de huidige release-readback; controleer twee gescheiden echte JWT-sessies van synthetische tenants, tegengestelde scope-negative-proof en verwijderen van beide accounts. | Merge ≠ productie; exact Netlify deploy-ID, commit-SHA, `cross_tenant_scope_verified=true`, `tenant_count_verified=2`, én onafhankelijke proof-readback. Dit bewijst nog geen twee bestaande klanten. |
+| `powerhouse|website|checkout-trial-switch-dom|20261029` | Hergebruik #5125 en regressie `tests/brain-afsluiten-english-v1.test.mjs`. Controleer ontbrekende én aanwezige `#trialSwitch` in betaal- en proefroute. | Protected CI, Netlify exact-SHA deploy en echte /afsluiten browsercontrole zonder JS-TypeError. |
+| `github|pr-machine-metadata-literal-newline|20261029` | Lees de echte PR-body terug; vervang letterlijke `\\n` door echte nieuwe regels. Verifieer verplichte metadata, scope, unieke writer en CAS/head. | `hygiene/admission=success` op actuele immutable head. |
+| `brain|learning-canonicalization|portal-path-shadow-canary|20261029` | Security-sensitive `brain/learning` vereist `tests/brain-*.test.mjs`, `historical_replay`, `shadow`, `canary`. | De daadwerkelijke BRAIN/Required-uitvoering en aparte productieproof; gesimuleerde tests geen productie-effect. |
+| `powerhouse|external-search|tavily-plan-limit-432|20261029` | Gebruik alleen geregistreerde `bg-externe-signalen` binnen canonieke scheduler. 432/429 begrensd; DataForSEO alleen met echte brondata. | Config-registratie, providerfunctieversie, bronobservatie en omgevingsradar-/ONE BRAIN-readback; geen claims uit alleen functie-ACTIVE. |
+
+Laat alle bestaande executors aan; introduceer geen extra scheduler, publiceer niet dubbel, wijzig geen financiële uitgaven, OAuth of tenanttoegang zonder juiste autorisatie. Log `OBSERVED` zolang een latere bewijsfase ontbreekt. De volgende agent raadpleegt op fingerprint bestaande occurrence(s) en hergebruikt herstel-PR/issue, zodat hetzelfde incident niet opnieuw wordt gebouwd of stil blijft hangen.
+
+
+
 Besluit Arthur, geldt voor elke agent en elke skill. Beleid: `brain/policies/powerhouse-incident-register-and-self-fix-v1.json`; afwegingen in de Loop Constitution (Notion).
 
 - **Registreren, altijd.** Elke fout, elk incident en elke bijna-fout wordt vastgelegd, ook als je het zelf meteen oplost. Dedupe op fingerprint: een open incident krijgt Retry Count plus 1, geen dubbel. Leg oorzaak met bewijs, herstel en preventieregel vast via de bestaande Brain learning/errorlaag; geen parallelle opslag, geen stille fouten.

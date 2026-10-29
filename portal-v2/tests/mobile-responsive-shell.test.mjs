@@ -8,7 +8,8 @@ const read = name => readFile(new URL(name, root), 'utf8');
 test('mobile critical CSS is loaded before app execution', async () => {
   const html = await read('index.html');
   const mobile = html.indexOf('mobile-responsive.css');
-  const app = html.indexOf('src="./app.js"');
+  const appTag = html.match(/src="\.\/app\.js(?:\?bg_explain=[a-f0-9]{64})?"/)?.[0]||'';
+  const app = appTag?html.indexOf(appTag):-1;
   assert.ok(mobile >= 0, 'mobile-responsive.css must be linked from index.html');
   assert.ok(app >= 0, 'app.js must remain linked');
   assert.ok(mobile < app, 'responsive CSS must load before app.js to prevent post-load layout shift');

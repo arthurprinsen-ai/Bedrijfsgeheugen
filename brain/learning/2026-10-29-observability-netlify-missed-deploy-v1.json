@@ -1,0 +1,33 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "fingerprint": "powerhouse|portal-observability|netlify-import-deploy-not-required-false-negative|20261029-v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "DEPLOYMENT_APPLICABILITY_FALSE_NEGATIVE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original production release readback classified the protected #5145 commit as NETLIFY_DEPLOYMENT_APPLICABILITY NOT_REQUIRED (governance-only-change), although it changed brain/observability/publication-evidence-readback.mjs imported directly by the bundled Netlify admin-only powerhouse-observability API. Published Netlify deploy remained at older SHA 6487786, so the updated recovery codes could not be independently verified live.",
+  "prevention": "Any directly bundled Brain observability source file or the Netlify powerhouse-observability function requires a real Netlify deployment and authenticated tenant-scoped production readback. Governance docs remain no-deploy. Never infer browser or admin proof from a git merge.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-observability-release-parity-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-observability-release-parity-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_pr": 5145,
+    "observed_git_main_sha": "abaf31e1fe77f2662033782dba694e8e6bb89518",
+    "published_netlify_sha": "6487786733cd332edd777af3881e68aca806bf92",
+    "source": "2026-10-29 Production Release Readback job 123623227648",
+    "provider_deploy_proven": false,
+    "original_supabase_fix_production_verified": true,
+    "privacy": "public-safe no tokens, customer content or media assets"
+  }
+}

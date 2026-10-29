@@ -2,25 +2,90 @@
   "type": "BRAIN_LEARNING",
   "id": "tavily-plan-limit-canonical-fallback-20261029",
   "fingerprint": "powerhouse|external-search|tavily-plan-limit-432|20261029",
-  "status": "CANDIDATE_NOT_LIVE",
-  "maturity": "OBSERVED",
-  "root_cause": "Composio Tavily search returned HTTP 432 plan limit despite ACTIVE authorization. Existing canonical producer had DataForSEO fallback but concurrent Tavily requests could repeat blocked requests. Post-merge production authority detected the pre-existing bg-externe-signalen Edge function was absent from supabase/config.toml, so protected main->provider parity failed with SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG.",
+  "status": "V24_OPERATOR_BATCH_3_OF_3_PROVEN_NATURAL_RUN_AND_PRIOR_TOPIC_PENDING",
+  "maturity": "VALIDATED",
+  "root_cause": "Composio Tavily search returned HTTP 432 plan limit despite ACTIVE authorization. Existing canonical producer had DataForSEO fallback but concurrent Tavily requests could repeat blocked requests. Post-merge production authority detected the pre-existing bg-externe-signalen Edge function was absent from supabase/config.toml, so protected main->provider parity failed with SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG. The first authenticated production v21 run (request 15928) returned HTTP 207: 2/3 successful topics, 19 results, 1 allowed; failing DataForSEO task 40101 already internally retried at provider and may be billable, unlike real no-results code 40102.",
   "change": "Use one in-flight probe and bounded per-isolate cooldown for HTTP 432/429 before existing real DataForSEO fallback.",
   "tests": [
     "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
-    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs",
+    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs",
+    "tests/brain-external-source-proof-stage-20261029.test.mjs"
   ],
   "evidence": {
     "tavily_oauth": "ACTIVE_VIA_COMPOSIO",
     "tavily_search": "BLOCKED_432",
     "serper": "ON_DEMAND_VERIFIED",
     "exa": "ON_DEMAND_VERIFIED",
-    "supabase_runtime": "NOT_YET_LIVE_VERIFIED",
+    "supabase_runtime": "V24_ACTIVE_OPERATOR_READBACK_VERIFIED",
     "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
     "github_main": "e93852af5cc3a4c68df925ddf33260a2504f4fcc",
     "supabase_prod_function_version_before": 20,
     "production_authority_failure": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-externe-signalen",
-    "edge_registry_followup": "PREPARED_NOT_LIVE"
+    "edge_registry_followup": "PROTECTED_MERGED_PROVIDER_LIVE",
+    "verified_run": {
+      "request_id": 15928,
+      "http_status": 207,
+      "successful_topics": 2,
+      "failed_topics": 1,
+      "found": 19,
+      "allowed": 1,
+      "dataforseo_task": 40101,
+      "observed_at": "2026-10-29T14:54:23.203Z"
+    },
+    "dataforseo_docs": "https://dataforseo.com/help-center/what-does-the-40101-error-mean",
+    "billable_retry_fix": "PROTECTED_MERGED_V24_SOURCE_RULE_VERIFIED",
+    "latest_verified_fix_merge_sha": "ba27370e923e27d911ed48476a4e90657fbb988a",
+    "postrelease_operator_run": {
+      "request_id": 15935,
+      "invoked_at": "2026-10-29T15:12:46.698Z",
+      "observed_at": "2026-10-29T15:12:54.378Z",
+      "mode": "operator_once_existing_canonical_bg_roep_functie",
+      "function": "bg-externe-signalen",
+      "edge_version": 24,
+      "edge_sha256": "61db948c7079e919f550bb4459f9f80e7868897d56533f230c754befd41f9ff7",
+      "http_status": 200,
+      "processed": 3,
+      "successful": 3,
+      "failed": 0,
+      "found": 27,
+      "allowed": 5,
+      "noise": 17,
+      "topics": [
+        "Concurrentie",
+        "Cyberdreigingen",
+        "Demografie"
+      ],
+      "fallback": "DATAFORSEO_AFTER_TAVILY_PLAN_LIMIT",
+      "source_observation_confirmed": true,
+      "brain_delivery_evidence": "GREEN_FOR_THIS_BATCH_ONLY",
+      "runtime_event_dedupe": "external-intelligence:operator-postrelease-15935:v24"
+    },
+    "acceptance": {
+      "postrelease_operator_run": "PROVEN",
+      "natural_scheduler_run": "PENDING",
+      "historically_failed_topic_Bedrijfsoverdracht": "PENDING",
+      "dataforseo_cost_delta": "UNKNOWN",
+      "downstream_tenant_and_revenue_effect": "NOT_PROVEN",
+      "canonical_mux_job": 171,
+      "next_natural_slots_utc": [
+        "2026-10-30T05:31:00Z",
+        "2026-10-30T05:51:00Z",
+        "2026-10-30T06:11:00Z"
+      ]
+    },
+    "agent_cross_skill_propagation": {
+      "state": "PROTECTED_CANDIDATE_NOT_YET_MERGED",
+      "candidate_pr": 5135,
+      "main_release_predecessor": 5133,
+      "source_of_truth": "AGENTS.md + .agents/skills/powerhouse-source-universe-impact-engine/SKILL.md",
+      "same_incident_fingerprint": "powerhouse|external-search|tavily-plan-limit-432|20261029",
+      "scope": "require all external-source domain agents to load existing skill and Brain evidence before actions",
+      "pending_natural_run": "PENDING",
+      "pending_original_topic": "Bedrijfsoverdracht",
+      "safety": "NO_NEW_SCHEDULER_NO_NEW_WRITER_NO_BILLABLE_40101_RETRY_NO_FALSE_GREEN",
+      "regression": "tests/brain-external-source-proof-stage-20261029.test.mjs"
+    }
   },
   "policy": "NO_NEW_SCHEDULER_NO_NEW_WRITER_NO_UNVERIFIED_GREEN",
   "compiler": {
@@ -33,12 +98,16 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
-      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs",
+      "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs",
+      "tests/brain-external-source-proof-stage-20261029.test.mjs"
     ]
   },
-  "prevention": "On the existing scheduler-owned bg-externe-signalen source, share one in-isolate Tavily probe. On provider 432 (plan limit), block repeat Tavily calls for 15 minutes; on 429 for 1 minute. Continue independently evidenced DataForSEO organic fallback, never bypass billing cap, duplicate scheduler, unauthorized egress, RLS or false-green source receipts. Regressions enforce this behavior and source lineage. Register existing bg-externe-signalen in supabase/config.toml with enabled=true, verify_jwt=false and exact entrypoint, while retaining independent x-powerhouse-token validation. Include a regression to block future omission.",
+  "prevention": "On the existing scheduler-owned bg-externe-signalen source, share one in-isolate Tavily probe. On provider 432 (plan limit), block repeat Tavily calls for 15 minutes; on 429 for 1 minute. Continue independently evidenced DataForSEO organic fallback, never bypass billing cap, duplicate scheduler, unauthorized egress, RLS or false-green source receipts. Regressions enforce this behavior and source lineage. Register existing bg-externe-signalen in supabase/config.toml with enabled=true, verify_jwt=false and exact entrypoint, while retaining independent x-powerhouse-token validation. Include a regression to block future omission. Avoid any second client-side paid request for task 40101, retain numeric diagnosis and partial HTTP 207. Only task 40102 may return independently observed zero. A post-release manual 3/3 batch is not proof of next natural scheduler invocation, historical Bedrijfsoverdracht recovery, cost savings, tenant impact, or sales. Preserve failure receipts and verify each separately through canonical request ID, provider response, source observation and Brain receipt.",
   "regression_contract": [
     "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
-    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs",
+    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs",
+    "tests/brain-external-source-proof-stage-20261029.test.mjs"
   ]
 }

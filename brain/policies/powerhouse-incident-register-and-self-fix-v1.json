@@ -84,7 +84,7 @@
     "entrypoint": "scripts/brain/chat-learning-preflight.mjs",
     "visible_in_packet": "incident_self_fix",
     "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
-    "not_covered_yet": "Runtime agents (edge functions, Make scenarios) have no uniform file to scan; their registration duty is policy only until a runtime check exists."
+    "not_covered_yet": "Chat/skill preflight validates the runtime evidence contract, but independent runtime event emitter enforcement and authenticated tenant portal readback remain OPEN. Do not claim a healthy production implementation from this policy alone."
   },
   "revision": 3,
   "continuous_lean_loop": {
@@ -162,6 +162,113 @@
       "NO_SECURITY_OR_RELEASE_BYPASS",
       "NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE"
     ],
-    "enforcement_limit": "The chat preflight validates this policy, not each external runtime agent's actual event writes. Runtime coverage, instrumentation, portal UI, autonomous application and outcome verification require separate code integration and production evidence."
+    "enforcement_limit": "The chat preflight validates this policy, not each external runtime agent's actual event writes. Runtime coverage, instrumentation, portal UI, autonomous application and outcome verification require separate code integration and production evidence.",
+    "runtime_evidence_contract_v1": {
+      "fingerprint": "powerhouse|agent-evidence-data-quality-documentation-growth|v1",
+      "required": true,
+      "authority": "EXISTING_ONE_BRAIN_POWERHOUSE_HEARTBEAT_EXCLUSIVE_WRITER",
+      "scope": [
+        "every_material_change",
+        "incident",
+        "error",
+        "decision",
+        "execution",
+        "experiment",
+        "documentation_change",
+        "data_source_change",
+        "recovery",
+        "business_outcome"
+      ],
+      "actor_kinds": [
+        "sql_process",
+        "agent",
+        "human",
+        "external_provider"
+      ],
+      "agent_provenance_required": [
+        "agent_id",
+        "skill_version",
+        "obligation_or_correlation_id",
+        "tenant_scope",
+        "source_and_freshness",
+        "event_time",
+        "evidence_ref"
+      ],
+      "stage_evidence_required": [
+        "decision_and_reason",
+        "baseline_or_unknown_reason",
+        "code_sha_or_provider_id_when_applicable",
+        "test_and_provider_or_production_readback",
+        "outcome_or_pending_reason",
+        "learning_fingerprint",
+        "next_action"
+      ],
+      "data_quality_states": [
+        "FRESH_VERIFIED",
+        "STALE",
+        "MISSING",
+        "INVALID",
+        "CONFLICT",
+        "UNVERIFIED"
+      ],
+      "data_gap_recovery": [
+        "detect_and_fingerprint",
+        "identify_owner_and_source_lineage",
+        "check_consent_privacy_rls_tenant_boundary",
+        "attempt_safe_refresh_or_reconciliation",
+        "create_deduplicated_instrumentation_obligation_if_missing",
+        "implement_minimal_measurement_via_existing_writer",
+        "prove_capture_source_freshness_and_tenant_safe_portal_readback",
+        "compare_against_baseline_and_log_result"
+      ],
+      "always_record": [
+        "material_action",
+        "change_or_release",
+        "incident_or_near_miss",
+        "root_cause_or_unknown",
+        "test_and_regression",
+        "actual_provider_or_production_status",
+        "metric_before_after_or_unknown",
+        "outcome_attribution_or_unproven",
+        "documentation_and_system_map_drift",
+        "skill_learning_and_owner_handoff"
+      ],
+      "human_documentation_and_portal": [
+        "plain_language_what_changed_and_why",
+        "affected_components_and_data_lineage",
+        "owner_and_rollback",
+        "what_is_verified_vs_unknown",
+        "change_to_business_outcome_link",
+        "portal_projection_readback_and_tenant_isolation"
+      ],
+      "improvement_priorities": [
+        "paid_orders_and_revenue",
+        "qualified_leads_and_meetings",
+        "visitor_to_customer_conversion",
+        "organic_search_and_ai_discovery",
+        "retention_and_customer_value",
+        "product_quality_security_cost_and_latency"
+      ],
+      "experiment_guardrails": [
+        "capture_comparable_baseline",
+        "define_hypothesis_and_guardrails",
+        "select_cohort_and_exposure",
+        "protect_consent_and_privacy",
+        "require_observed_outcome_not_vanity_metric",
+        "revert_on_negative_or_unverified_result",
+        "promote_reusable_learning_only_after_regression_and_readback"
+      ],
+      "invariant_guards": [
+        "NEVER_CONFLATE_SQL_EVENTS_WITH_AGENT_ACTIONS",
+        "UNKNOWN_IS_NOT_ZERO",
+        "NO_RETROACTIVE_FABRICATED_ATTRIBUTION",
+        "NO_PARALLEL_SCHEDULER_OR_LEARNING_STORE",
+        "NO_DUPLICATE_EXTERNAL_EFFECT",
+        "NO_UNAUTHORIZED_EXTERNAL_EGRESS",
+        "NO_UNVERIFIED_GREEN"
+      ],
+      "deployment_gate": "Policy validation in preflight is necessary but insufficient. Runtime event emission, writeback, portal projection, authenticated tenant tests and independent production readback must be separately proven before claiming enforcement.",
+      "observed_gap": "Production 2026-10-29: 1587 canonical cycle events in 24h; 0 with agent_id, 0 with skill_version, 0 with before/after metric pair. Scope includes SQL-generated events; no retroactive agent attribution."
+    }
   }
 }
