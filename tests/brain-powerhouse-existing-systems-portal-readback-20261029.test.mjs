@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback }
-  from '../netlify/functions/_powerhouse-existing-integration-read-model.mjs';
+  from '../platform/portal/powerhouse-existing-integration-read-model.mjs';
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup }
   from '../portal-v2/control-plane-cockpit.js';
 
