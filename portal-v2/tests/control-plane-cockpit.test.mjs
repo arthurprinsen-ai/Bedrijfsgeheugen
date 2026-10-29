@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import { controlPlaneCockpitMarkup, mountControlPlaneCockpit } from '../control-plane-cockpit.js';
 
 test('cockpit shows only requested operational decision fields per obligation',()=>{
@@ -118,13 +119,9 @@ test('expired session, token with spaces and non-admin 403 never render an admin
 });
 
 test('server verifies request bearer and role before any Supabase service-key reads',()=>{
-  const fs=requireNoop();
-  // Read-only local source assertion prevents accidental restoration of ambient/cookie-only admin auth.
-  assert.match(fs,/getUser\(request\)/);
-  assert.match(fs,/request\.headers\?\.get\('authorization'\)/);
-  assert.ok(fs.indexOf('getUser(request)')<fs.indexOf('hasAdminRole(user)'));
-  assert.ok(fs.indexOf('hasAdminRole(user)')<fs.indexOf("BG_PORTAL_EU_SERVICE_TOKEN"));
+  const source=readFileSync('netlify/functions/powerhouse-control-plane.mjs','utf8');
+  assert.match(source,/getUser\(request\)/);
+  assert.match(source,/request\.headers\?\.get\('authorization'\)/);
+  assert.ok(source.indexOf('getUser(request)')<source.indexOf('if(!hasAdminRole(user))'));
+  assert.ok(source.indexOf('if(!hasAdminRole(user))')<source.indexOf("const baseUrl="));
 });
-function requireNoop(){
-  return globalThis.__controlPlaneBackendTestSource||'';
-}
