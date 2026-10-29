@@ -53,7 +53,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/cro-measurement-contract.test.mjs"
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "shadow": [
       "tests/brain-cro-other-data.test.mjs"
@@ -62,7 +62,7 @@
       "NOT_VERIFIED; require persisted event_uid readback after Edge and Netlify release"
     ],
     "canary": [
-      "tests/portal-cro-other-data.test.mjs"
+      "tests/brain-cro-other-data.test.mjs"
     ]
   },
   "compiler": {
