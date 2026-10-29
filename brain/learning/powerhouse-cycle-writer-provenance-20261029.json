@@ -46,5 +46,6 @@
   },
   "tests": [
     "tests/brain-cycle-writer-provenance-20261029.test.mjs"
-  ]
+  ],
+  "prevention_rule": "For every new canonical event the producer function must attest only its actual SQL writer identity, keep originating AI agent/skill and unobserved before-after metrics UNKNOWN, preserve sales execution truth and idempotency, and require independent production event readback before closing the incident."
 }
