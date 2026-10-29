@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import owners from './intent-owners.json' with { type: 'json' };
+import { decideSeoBlogCandidate } from './blog-decision.mjs';
 
 const CONTRACT='powerhouse-seo-opportunity-resolver-v1';
 const clean=(v:unknown)=>String(v??'').replace(/\s+/g,' ').trim();
@@ -64,7 +65,7 @@ Deno.serve(async(req:Request)=>{
   const runDate=localDate();
   const observedAt=new Date().toISOString();
   try{
-    const [kwResult,gscResult,forecastResult]=await Promise.all([
+    const [kwResult,gscResult,forecastResult,blogResult,externalResult,dailyBlogResult]=await Promise.all([
       db.from('bg_zoekwoordkansen')
         .select('zoekwoord,zoekvolume,concurrentie,cpc,kansscore,positie,rankende_url,bron,opgehaald_op')
         .eq('bron','dataforseo')
@@ -80,11 +81,38 @@ Deno.serve(async(req:Request)=>{
         .select('forecast_id,topic_key,predicted_search_intent,predicted_question,first_mover_score,confidence,signal_acceleration,whitespace_score,evidence,created_at')
         .eq('scope','market').eq('status','active')
         .gte('created_at',new Date(Date.now()-30*86400000).toISOString())
-        .order('first_mover_score',{ascending:false}).limit(250)
+        .order('first_mover_score',{ascending:false}).limit(250),
+      // Read only publication metadata. Unapproved copy stays in private canonical state.
+      db.from('content_publication_obligations')
+        .select('slug,status,publication_date').eq('tenant_id','canonical')
+        .eq('channel','blog')
+        .gte('publication_date',new Date(Date.now()-90*86400000).toISOString().slice(0,10))
+        .lte('publication_date',runDate)
+        .order('publication_date',{ascending:false})
+        .limit(150),
+      db.from('bg_externe_signalen')
+        .select('onderwerp,titel,vertrouwen,gepubliceerd_op,toegestaan')
+        .eq('toegestaan',true)
+        .gte('gepubliceerd_op',new Date(Date.now()-60*86400000).toISOString())
+        .order('gepubliceerd_op',{ascending:false})
+        .limit(100),
+      // Same-day canonical recommendation is a durable one-candidate lock.
+      db.from('powerhouse_content_recommendations')
+        .select('dedupe_key').eq('run_date',runDate).eq('target_channel','blog')
+        .eq('recommendation_type','seo_first_mover_intent_gap').limit(1)
     ]);
     if(kwResult.error) throw new Error('KEYWORD_CACHE_READ:'+kwResult.error.message);
     if(gscResult.error) throw new Error('GSC_READ:'+gscResult.error.message);
     if(forecastResult.error) throw new Error('FORECAST_READ:'+forecastResult.error.message);
+    if(blogResult.error) throw new Error('BLOG_METADATA_READ:'+blogResult.error.message);
+    if(externalResult.error) throw new Error('EXTERNAL_EVIDENCE_READ:'+externalResult.error.message);
+    if(dailyBlogResult.error) throw new Error('DAILY_BLOG_RESERVATION_READ:'+dailyBlogResult.error.message);
+    const hasDailyBlogReservation=(dailyBlogResult.data||[]).length>0;
+    const existingBlogSlugs=(blogResult.data||[]).map((row:any)=>row.slug).filter(Boolean);
+    const datedExternalSignals=(externalResult.data||[]).map((row:any)=>({
+      topic:row.onderwerp,title:row.titel,trust:num(row.vertrouwen),
+      allowed:row.toegestaan===true,published_at:row.gepubliceerd_op
+    }));
 
     const latestByKeyword=new Map<string,any>();
     for(const row of kwResult.data||[]){
@@ -113,8 +141,20 @@ Deno.serve(async(req:Request)=>{
       const score=scoreKeyword(row,gsc,forecast);
       const commercial=(num(row.cpc)>=2||num(row.zoekvolume)>=100);
       const ownerExists=!!owner;
-      const action=ownerExists?'UPDATE_MONEY_PAGE':(!ownerExists&&commercial&&score>=68&&(num(row.cpc)>=5||num(forecast?.first_mover_score)>=55)?'CREATE_INTENT_GAP_CONTENT':'NO_ACTION_EVIDENCE_INSUFFICIENT');
-      opportunities.push({keyword,row,gsc,owner,forecast,score,action});
+      const preliminaryAction=ownerExists?'UPDATE_MONEY_PAGE':(!ownerExists&&commercial&&score>=68&&(num(row.cpc)>=5||num(forecast?.first_mover_score)>=55)?'CREATE_INTENT_GAP_CONTENT':'NO_ACTION_EVIDENCE_INSUFFICIENT');
+      const blogDecision=decideSeoBlogCandidate({
+        keyword,existingOwner:owner,pages:(owners as any).pages||[],
+        blogSlugs:existingBlogSlugs,search:gsc,
+        forecast:{external_sources:datedExternalSignals},
+        market:{search_volume:row.zoekvolume,cpc:row.cpc,observed_at:row.opgehaald_op},
+        score,asOf:observedAt
+      });
+      // The existing commercial pre-gate can reject an unowned candidate.
+      // A nearby canonical brand owner may still request an existing-page update.
+      const action=blogDecision.action==='UPDATE_MONEY_PAGE'?'UPDATE_MONEY_PAGE':
+        preliminaryAction==='CREATE_INTENT_GAP_CONTENT'?blogDecision.action:preliminaryAction;
+      const resolvedOwner=owner||((owners as any).pages||[]).find((p:any)=>p.route===blogDecision.canonical_owner)||null;
+      opportunities.push({keyword,row,gsc,owner:resolvedOwner,forecast,score,action,decisionReason:blogDecision.reason});
     }
     opportunities.sort((a,b)=>b.score-a.score);
     const top=opportunities.slice(0,5);
@@ -137,6 +177,7 @@ Deno.serve(async(req:Request)=>{
         external_forecast:item.forecast?{forecast_id:item.forecast.forecast_id,first_mover_score:num(item.forecast.first_mover_score),confidence:num(item.forecast.confidence),semantic_overlap:num(item.forecast.semantic_overlap)}:null,
         opportunity_score:item.score,
         action:item.action,
+        blog_decision_reason:item.decisionReason,
         truth_boundary:'forecast and CPC are prioritization signals; they are not realized revenue'
       };
       const {error:fError}=await db.from('powerhouse_forecasts').upsert({
@@ -156,7 +197,7 @@ Deno.serve(async(req:Request)=>{
       if(fError) throw new Error('SEO_FORECAST_WRITE:'+fError.message);
       forecastsWritten++;
 
-      if(item.action==='CREATE_INTENT_GAP_CONTENT'){
+      if(item.action==='CREATE_INTENT_GAP_CONTENT' && !hasDailyBlogReservation && recommendations < 1){
         const dedupe='seo-first-mover:'+runDate+':'+norm(item.keyword).replaceAll(' ','-').slice(0,120);
         const reason='SEO first-mover opportunity: '+item.keyword+'; score='+item.score.toFixed(1)+'; volume='+num(item.row.zoekvolume)+'; CPC='+num(item.row.cpc)+'. Distinct intent gap only; verify no canonical owner before publication.';
         const {error:rError}=await db.from('powerhouse_content_recommendations').upsert({
