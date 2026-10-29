@@ -38,12 +38,4 @@ test('unique event UUID migration is additive',()=>{
  assert.match(sql,/CREATE UNIQUE INDEX IF NOT EXISTS/);
  assert.doesNotMatch(sql,/DROP TABLE|TRUNCATE|DELETE FROM/i);
 });
-test('Andere data is registered and protected in the canonical portal',()=>{
- const registry=read('portal-v2/page-registry.js'),shell=read('portal-v2/page-shell.js');
- assert.match(registry,/'andere-data'/);
- assert.match(shell,/'eu-ai-act-audit','andere-data'/);
- assert.match(shell,/mountOtherDataCro\(native\)/);
- const module=read('portal-v2/modules/other-data-cro.js');
- assert.match(module,/intern\/meetoverzicht/);
- assert.doesNotMatch(module,/SUPABASE_SERVICE_ROLE_KEY/);
-});
+// De bestaande native Andere data pagina is eigenaar van PR #5140; deze tests bewaken de rauwe event-ingress van issue #5141.\n
