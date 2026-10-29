@@ -58,6 +58,14 @@ Website-event → ingestbevestiging → bot-/consent-/kwaliteit-filter → geagg
 - Microsoft Clarity consent: https://learn.microsoft.com/en-us/clarity/setup-and-installation/consent-management
 - Autoriteit Persoonsgegevens, analytische vs. trackingcookies: https://autoriteitpersoonsgegevens.nl/nl/onderwerpen/internet-telefoon-tv-en-post/cookies
 
+## Portal Andere data (onderdeel van bestaande PR #5140; reparatie in #5144)
+
+Het canonieke dashboard blijft `portal-v2/modules/andere-data.js` en de eigenaar-API `/api/powerhouse-cro-other-data`. Het presenteert de bestaande CRO-experimenten en het geaggregeerde gedrag uit `bg_cro_behavior_daily_v1`: sectie waar het laatste zichtbare signaal is waargenomen, exit-capture, laatste scroll onder 25%, form-uitval, fouten, WhatsApp-intentie, herhaalklik-heuristiek, popup- en experimentblootstellingen. Alleen beheerders zien dit; geen ruwe formulieren, logs of sessieafspeelgegevens.
+
+De serverprojectie rapporteert `persisted_event_receipts` en `historical_without_receipt` apart. Bij een ontbrekend event-UID-bewijs blijft de flag `NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED` actief. `status=LIVE` van een REST-bron betekent alleen bereikbare bron, niet bewezen conversies of volledige eventcapture. De interne rapportage is leesbaar voor agenten binnen de bestaande service-role governance; pas na exacte readback mogen nieuwe meetvelden experimentbesluiten onderbouwen.
+
+PR #5144 is afhankelijk van PR #5140, niet parallel te mergen. Publicatievolgorde: #5140 beschermen en mergen → #5144 herconcilieren naar nieuwe main → UID- en viewmigraties → Edge-functie → website met asset-cachebust `v=5` → portaal → browser+DB-readback. De System Map-regenerator en alle Required/CodeQL/BRAIN-voorwaarden blijven verplicht.
+
 ## Release & readback
 
 1. Apply additive SQL migration through protected database release. Check unique event UID index and previous data counts.
