@@ -1622,6 +1622,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       outputs:Object.freeze(['commercial SEO opportunity','experience decision','bounded reversible money-page change','experiment outcome','conversion outcome','learning pattern']),
       runtime:Object.freeze({
         skill:'.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+        croEvidenceToOrders:Object.freeze({fingerprint:'cro|evidence-to-orders|telemetry-reconciliation|20261029-v1',owner:'existing Powerhouse SEO Order Engine',existingIssues:Object.freeze([4446,4900]),dataQualityGate:'source-to-durable-event-to-verified-outcome',botAndSyntheticExcluded:true,whatsappAndContextualFormExperiments:'consent-aware evidence-gated candidates only',maxDailyReversibleChanges:3,liveProof:'protected-main->Netlify-production->browser-event->lead/order/revenue',status:'POLICY_CANDIDATE_PENDING_PROTECTED_MERGE_AND_RUNTIME_PROOF'}),
         growthSkill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',
         persuasionSkill:'.agents/skills/powerhouse-persuasion-revenue/SKILL.md',
         growthLoop:'config/seo-growth-loop.json',
