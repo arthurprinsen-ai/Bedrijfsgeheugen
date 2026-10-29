@@ -3,7 +3,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   existingHandoffProof:Object.freeze({
     fingerprint:'powerhouse|existing-brain-heartbeat-handoff-evidence|20261029-v1',
     owner:'existing ONE BRAIN / Heartbeat / Agent Fabric original writer',
-    module:'tools/brain/powerhouse-integration-handoff-evidence.mjs',
+    module:'brain/operating-loop/powerhouse-integration-handoff-evidence.mjs',
     dependsOn:'tools/brain/agent-skill-execution-evidence.mjs',
     inputAuthority:'powerhouse_one_brain_capability_inventory_v1 plus actual same-tenant source/provider receipts',
     regression:'tests/brain-powerhouse-integration-handoff-20261029.test.mjs',
