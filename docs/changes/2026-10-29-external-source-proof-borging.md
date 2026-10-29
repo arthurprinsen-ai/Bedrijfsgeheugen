@@ -17,3 +17,9 @@ De reguliere mux-scheduler (job 171) draait op 30 oktober 2026 om 06:31, 06:51 e
 - Gebeurtenislog: `external-intelligence:operator-postrelease-15935:v24`.
 - Productiebewijs: request 15935; source observation 2026-10-29T15:12:54.378Z; Brain delivery GREEN voor deze batch.
 - Herstel: GitHub #5130. Skill- en borgingswijziging: GitHub #5133. Overkoepelend incident: #4215.
+
+## Cross-agent doorwerking en releasecontrole — 29 oktober 2026
+
+De beschermde, volledige release van PR #5133 is bevestigd op `main` als commit `14ced18b5876fadc4e111d42f6bbac7cdb293b5a`. Required, de drie verplichte GitHub-checks en CodeQL zijn voor dezelfde bijgewerkte PR-head geslaagd. De canonieke Source Universe-agentskill, het Brain-leerrecord en de regressie werden daadwerkelijk van `main` teruggelezen. De Supabase-functie `bg-externe-signalen` stond bij de laatste onafhankelijke productiecontrole ACTIVE op v26 met een veilige 40101-no-retry-regel; dit is **een aparte productieobservatie** en mag niet als door PR #5133 uitgevoerde Edge-uitrol worden gerapporteerd.
+
+De aanvullende borging maakt `AGENTS.md` tot expliciete router naar de reeds bestaande Source Universe-skill, het Brain-incident en de actuele providerwaarheid. Een bestaande test controleert deze router en de gescheiden bewijsstatussen. De bestaande Powerhouse-release-log bevat event `50695b94-9c3f-49ef-b53a-c66805d23307` met dedupe `github-protected-pr-5133-main-14ced18b5876fadc4e111d42f6bbac7cdb293b5a`. Het oorspronkelijke 2/3-incident blijft bewaard: natuurlijke scheduler-run, Bedrijfsoverdracht-topic, echte besparing, klantwaarde en omzet zijn **niet** bewezen. Geen tweede cron, executor, datastore, provideraccount of publisher.

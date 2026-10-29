@@ -2,6 +2,12 @@
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
+## Verplichte cross-agent preflight en nieuwe release-readback (29 oktober 2026)
+
+Iedere agent die dit domein gebruikt moet de router in `AGENTS.md`, dit bestand, bestaande `brain/learning/2026-10-29-tavily-plan-limit-canonical-fallback.json` en de **actuele** bron- en ONE BRAIN-evidence opnieuw lezen. De beschermde PR **#5133** is op `main` gemerged als `14ced18b5876fadc4e111d42f6bbac7cdb293b5a`: source-skill, Brain-leerrecord, menselijke documentatie en regressietest zijn via onafhankelijke GitHub-main-readback bewezen. Dit was een **governance/learning** release; het is geen Netlify-webrelease en heeft geen nieuwe Edge-implementatie veroorzaakt. Bij de laatste productielezing was `bg-externe-signalen` v26 ACTIVE met afzonderlijk bevestigde 40101-no-retry. Lees **altijd** de huidige versie opnieuw in plaats van v24/v26 permanent te veronderstellen.
+
+Voor elke overdracht: bestaande fingerprint `powerhouse|external-search|tavily-plan-limit-432|20261029`, de oudere 2/3- en 40101-incidentdata, de daadwerkelijke operatorbatch 15935 en alle nog ontbrekende natuurlijke/Bedrijfsoverdracht-bewijzen in één idempotente bestaande Brain/Powerhouse-lineage. Laat bewijsstatus per scope onveranderd totdat onafhankelijke provider-ID + bronwaarneming + Brain-readback de volgende overgang rechtvaardigen; geen extra paid retry om status GREEN te forceren.
+
 ## Tavily limiet en fallback — 29 oktober 2026
 - Bestaande Edge-functies die via protected-main release worden gewijzigd moeten in `supabase/config.toml` geregistreerd zijn; de releaseautoriteit moet exacte bron en providerversie teruglezen. `bg-externe-signalen` gebruikt `verify_jwt=false` uitsluitend samen met zijn eigen gecontroleerde `x-powerhouse-token`.
 - Fingerprint: `powerhouse|external-search|tavily-plan-limit-432|20261029`. Registreer in bestaande ONE BRAIN en #4215, inclusief providerbewijs, root cause, vóór/na, tests en readback.
