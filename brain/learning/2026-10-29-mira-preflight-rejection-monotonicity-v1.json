@@ -1,14 +1,35 @@
 {
-  "contract": "powerhouse-brain-learning-v1",
+  "type": "BRAIN_LEARNING",
+  "id": "mira-preflight-rejected-history-monotonicity-20261029",
   "fingerprint": "mira|media|rejected-proof-erased-by-readiness-preflight|20261029-v1",
-  "occurred_at": "2026-10-29",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
   "maturity": "OBSERVED",
-  "incident_issue": 4439,
-  "observation": "Original Mira OpenArt history i6e9teMFpPH7YwZG4PMS was truthfully rejected at face 0.900 below minimum 0.940. Production readiness poll demoted WAITING_PROOF to WAITING_ASSET and erased error without new asset.",
-  "cause": "Missing eligible asset_url treated evidence-bearing hard rejection as empty producer slot; historical ONE BRAIN recovery restricted to GENERATING.",
-  "correction": "Protect rejected WAITING_PROOF from Heartbeat writes, rehydrate exact demoted history only from independent Brain occurrence via status+updated_at CAS.",
-  "prevention": "No repeat paid verify, lowered threshold, duplicate provider send or alternative executor. One media writer.",
-  "regression": "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs",
-  "production_proven": false,
-  "seven_day_soak_proven": false
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs"
+    ]
+  },
+  "cause": "Readiness preflight erased immutable rejection because rejected history has no approved asset URL.",
+  "change": "Preflight zero-write fence on rejected WAITING_PROOF and CAS-recovery from existing immutable Brain occurrence for demoted original job.",
+  "prevention": "No duplicate candidate, re-verification cost, relaxed identity policy or alternative provider.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
+  ],
+  "regression_ref": "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs",
+  "evidence": {
+    "production_before": "same original Mira job demoted to WAITING_ASSET at 15:09 UTC; no Meta ID",
+    "provider_video_result": "start face 0.900 versus required 0.940",
+    "canonical_issue": 4439,
+    "production_verification": "NOT_LIVE"
+  }
 }
