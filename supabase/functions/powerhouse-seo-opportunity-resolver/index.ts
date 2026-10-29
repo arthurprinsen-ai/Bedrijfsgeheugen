@@ -99,7 +99,8 @@ Deno.serve(async(req:Request)=>{
       // A skipped recommendation is a rejected candidate, not a daily reservation.\n      // Only active/consumed decisions may hold the single-flight slot.
       db.from('powerhouse_content_recommendations')
         .select('dedupe_key').eq('run_date',runDate).eq('target_channel','blog')
-        .eq('recommendation_type','seo_first_mover_intent_gap')\n        .in('status',['suggested','accepted','done']).limit(1)
+        .eq('recommendation_type','seo_first_mover_intent_gap')
+        .in('status',['suggested','accepted','done']).limit(1)
     ]);
     if(kwResult.error) throw new Error('KEYWORD_CACHE_READ:'+kwResult.error.message);
     if(gscResult.error) throw new Error('GSC_READ:'+gscResult.error.message);
