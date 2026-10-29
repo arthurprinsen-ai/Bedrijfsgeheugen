@@ -424,3 +424,14 @@ test('production SQL history is non-executable delivery evidence', async () => {
   assert.deepEqual(plan.nonExecutableSharedPaths, [path]);
   assert.equal(plan.integration.required, false);
 });
+
+test('root .gitignore is classified to the protected backend lane without widening hidden paths', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const classified = createDeliveryPlan({changedPaths:['.gitignore'], headSha:'abcdef1234567890', policy});
+  assert.deepEqual(classified.lanes.map(lane => lane.id), ['backend']);
+  assert.throws(
+    () => createDeliveryPlan({changedPaths:['.unknown-sensitive-dotfile'], headSha:'abcdef1234567890', policy}),
+    /unclassified delivery path/,
+    'unknown hidden paths must remain fail-closed'
+  );
+});

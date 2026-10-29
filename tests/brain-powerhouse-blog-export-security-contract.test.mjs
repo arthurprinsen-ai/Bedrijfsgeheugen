@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
@@ -49,4 +49,27 @@ test('read-only live exporter matrix cannot run the canonical publishing job', (
   assert.match(workflow, /probe "HISTORIC_LIVE_WITHOUT_APPROVAL" "2026-10-22" "403"/);
   assert.match(workflow, /probe "APPROVED_LIVE_PROVEN" "2026-10-25" "200"/);
   assert.match(workflow, /--output \/dev\/null/);
+});
+
+test('legacy native daily publisher authenticates canonical duplicate-prevention readback', () => {
+  const workflow = read('.github/workflows/daily-blog-publisher.yml');
+  assert.ok(workflow.includes("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"));
+  assert.ok(workflow.includes('NATIVE_BLOG_EXPORT_AUTH_NOT_CONFIGURED'));
+  assert.ok(workflow.includes('Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'));
+  assert.ok(!workflow.includes('curl --fail --silent --show-error --max-time 15 "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export'));
+});
+
+test('dated private blog Brain/change/ledger evidence cannot be added to public source', () => {
+  const ignored = read('.gitignore').split(/\r?\n/).map(s => s.trim());
+  const patterns = [
+    'brain/learning/powerhouse-blog-*.json',
+    'docs/changes/powerhouse-blog-*.md',
+    'docs/development-ledger-events/powerhouse-blog-*.md'
+  ];
+  for (const pattern of patterns) assert.ok(ignored.includes(pattern), 'ignore entry required: ' + pattern);
+  for (const folder of ['brain/learning', 'docs/changes', 'docs/development-ledger-events']) {
+    const files = readdirSync(new URL('../' + folder + '/', import.meta.url));
+    const leaked = files.filter(name => /^powerhouse-blog-\d{4}-\d{2}-\d{2}\.(?:json|md)$/.test(name));
+    assert.deepEqual(leaked, [], 'private dated blog evidence must never be committed in ' + folder);
+  }
 });
