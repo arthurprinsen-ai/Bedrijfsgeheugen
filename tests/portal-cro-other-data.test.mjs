@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { projectOtherData } from '../netlify/functions/powerhouse-cro-other-data.mjs';
 import { findPage } from '../portal-v2/page-registry.js';
 
@@ -85,4 +86,12 @@ test('Source readback needs persistent event IDs before telemetry trust is estab
  const received=projectOtherData({readStates:evidence,conversionProof,experimentProof:[],behavior:[{pad:'/prijzen',page_events:7,persisted_event_receipts:7,historical_without_receipt:0}]});
  assert.equal(received.behavior.events.persisted_event_receipts,7);
  assert.ok(!received.quality.flags.includes('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED'));
+});
+
+test('Other data renders independent commercial proof and observed exit behavior in one owner-only screen',()=>{
+ const src=readFileSync('portal-v2/modules/andere-data.js','utf8');
+ assert.match(src,/Bronbewijs voor leads, orders en experimenten/);
+ assert.match(src,/Waar haken bezoekers af/);
+ assert.match(src,/badge\(source\.conversionProof\?\.status\)/);
+ assert.match(src,/badge\(source\.behavior\?\.status\)/);
 });
