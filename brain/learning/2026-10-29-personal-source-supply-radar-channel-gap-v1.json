@@ -11,8 +11,8 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "Canonical eight-slot Mira public-source radar selects only 12 entrepreneur portal problems while personal LinkedIn observational source selector accepts only 9 distinct fresh daily-life topics. Both jobs can be green but no eligible personal source is ever supplied; 2026-10-29 had zero fully qualified personal-life signals and five duplicate-safe blocked attempts.",
-  "prevention": "Use the existing single radar scheduler and eight total provider calls: six original business and two date-rotated personal-life query slots, in same signal table with mutually exclusive source contract. Keep source publication <=45d, score>=0.72, independent HTTPS/public text, unique source, no first-person claims, original dedupe/identity gates and Meta/Mira source isolation. Portal must show source counts separately from provider post status, fail closed on missing count. Do not mark outcome live until original provider ID and independent readback.",
+  "root_cause": "Canonical eight-slot Mira public-source radar selects only 12 entrepreneur portal problems while personal LinkedIn observational source selector accepts only 9 distinct fresh daily-life topics. Both jobs can be green but no eligible personal source is ever supplied; 2026-10-29 had zero fully qualified personal-life signals and five duplicate-safe blocked attempts. Additionally the existing service-role-only powerhouse_ensure_personal_source_rotation_v2(date) had no caller in the production SQL/Edge execution graph, so fresh personal sources could not materialize a recommendation within the daily radar lineage.",
+  "prevention": "Use the existing single radar scheduler and eight total provider calls: six original business and two date-rotated personal-life query slots, in same signal table with mutually exclusive source contract. Keep source publication <=45d, score>=0.72, independent HTTPS/public text, unique source, no first-person claims, original dedupe/identity gates and Meta/Mira source isolation. Portal must show source counts separately from provider post status, fail closed on missing count. Do not mark outcome live until original provider ID and independent readback. Invoke the original source rotation once per radar run after ingestion; propagate any error; do not schedule or dispatch posts from the radar.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
@@ -33,6 +33,7 @@
     "post_created": false,
     "provider_id_present": false,
     "release": "PENDING_PROTECTED_PR",
-    "user_safety": "public-safe, no source-content, private drafts, tokens or personal data"
+    "user_safety": "public-safe, no source-content, private drafts, tokens or personal data",
+    "original_personal_rotation_rpc_no_caller": true
   }
 }
