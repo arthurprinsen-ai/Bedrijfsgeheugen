@@ -1,0 +1,28 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "personal-linkedin|recommendation-jsonb-string-shape|20261029-v1",
+  "status": "SOURCE_FIX_NOT_YET_RELEASED",
+  "root_cause": "Legacy recommendation JSONB evidence may contain a string-wrapped JSON object; the existing personal source predicate reads object properties directly, excluding otherwise structurally valid entries.",
+  "prevention_rule": "Normalize only parseable plain JSON objects at existing reader boundary. Invalid types fail closed. Historical rejected story IDs and provider claim records remain immutable.",
+  "evidence": {
+    "production_deployed": false,
+    "external_publication_verified": false,
+    "public_aggregate": "Three of four sampled source recommendations were JSON strings.",
+    "tests": [
+      "tests/brain-personal-recommendation-evidence-shape-20261029.test.mjs"
+    ],
+    "private_source_payloads_excluded": true
+  },
+  "compiler": {
+    "failure_class": "CONTENT_EVIDENCE_SHAPE",
+    "scope": "CONTENT_SOURCE",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-recommendation-evidence-shape-20261029.test.mjs"
+    ]
+  }
+}
