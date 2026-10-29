@@ -82,3 +82,14 @@ test('CRO allowed event types exactly match live PostgreSQL constraint migration
  assert.match(migration,/NOT VALID/);
  assert.doesNotMatch(migration,/DROP TABLE|DISABLE TRIGGER|DISABLE ROW LEVEL SECURITY/i);
 });
+
+test('CRO 17-event CHECK validation is bounded, non-destructive and separately reviewed',()=>{
+ const sql=read('supabase/migrations/20261029185000_bg_cro_validate_event_types_v1.sql');
+ assert.match(sql,/lock_timeout\s*=\s*'2s'/);
+ assert.match(sql,/statement_timeout\s*=\s*'30s'/);
+ assert.match(sql,/ALTER TABLE public\.bg_interacties\s+VALIDATE CONSTRAINT bg_interacties_gebeurtenis_check/i);
+ const executableSql=sql.split('\n').filter(line=>!line.trimStart().startsWith('--')).join('\n');
+ assert.doesNotMatch(executableSql,/DROP CONSTRAINT|DROP TABLE|TRUNCATE|DELETE FROM|DISABLE TRIGGER|DISABLE ROW LEVEL SECURITY/i);
+ const prior=read('supabase/migrations/20261029182000_bg_cro_allowlisted_event_types_v1.sql');
+ assert.match(prior,/NOT VALID/);
+});
