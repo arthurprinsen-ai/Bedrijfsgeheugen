@@ -73,6 +73,12 @@
       "no new scheduler",
       "no false production proof"
     ],
-    "current_state": "CANDIDATE_NOT_PRODUCTION_VERIFIED"
+    "current_state": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+    "duplicate_telemetry_prevention": {
+      "root_cause": "SEO money-page injectGrowthMeasurement already emits first-party CTA/form events; sitewide meting bridge could emit a second event ID for the same click. Broad href matches also misclassified header navigation as primary CTA.",
+      "change": "Sitewide bridge skips CTA/form when canonical growth measurement script is present; it classifies CTA only within <main>, preserving mail/tel click separately.",
+      "test": "tests/brain-cro-other-data.test.mjs",
+      "verified_production": false
+    }
   }
 }
