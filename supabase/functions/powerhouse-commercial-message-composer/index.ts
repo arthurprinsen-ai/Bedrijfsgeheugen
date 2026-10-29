@@ -1,4 +1,5 @@
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+import {composerQualityProvenance,composerSourcePreflight} from '../_shared/composer-quality-provenance.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -63,7 +64,7 @@ function quality(action:any,plan:any,out:any,history:any[]=[]){
     const topic=/\b(ai[- /]?data|data governance|data-governance|use[- ]?cases?|governance|ai[- ]?initiatief|ai project|artificial intelligence|machine learning)\b/i;
     topicLeak=topic.test(msg)&&!topic.test(context);
   }
-  const sourceSpecificEvidenceOk=plan?.human_readable_context===true&&plan?.source_trigger_relevance===true&&clean(action?.source_url).startsWith('https://')&&clean(ev?.headline||ev?.summary||pub?.headline||pub?.summary).length>=24;
+  const sourceSpecificEvidenceOk=composerSourcePreflight(action,plan).ok;
   const terms=(s:string)=>new Set(normalize(s).split(/\s+/).filter(x=>x.length>=5));
   const candidateTerms=terms(msg);
   const genericAsk=(s:string)=>/proces|process|overdrachtsmoment|kennis/i.test(s)&&/slimmer|verbeter|effici|voorbeeld|kost|tijd/i.test(s);
@@ -176,6 +177,11 @@ Deno.serve(async(req:Request)=>{
             workingAction={...action,evidence:{...(action.evidence||{}),public_source_evidence:{event_id:sourceEvent.event_id,event_type:sourceEvent.event_type,source:sourceEvent.source,occurred_at:sourceEvent.occurred_at,evidence:sourceEvent.evidence,context:sourceEvent.context}}};
           }
         }
+        const sourceGate=composerSourcePreflight(workingAction,workingAction.message_plan);
+        if(!sourceGate.ok){
+          out.push({action_id:action.action_id,status:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED',quality_passed:false,model_generated:false,missing_contract_fields:sourceGate.missing});
+          continue;
+        }
         const {data:persuasionRaw,error:persuasionError}=await db.rpc('powerhouse_persuasion_revenue_optimizer_v1',{
           p_company_key:clean(workingAction.company_key),
           p_play_key:clean(workingAction.play_key||workingAction.message_plan?.play_key||'value_first'),
@@ -197,8 +203,10 @@ Deno.serve(async(req:Request)=>{
           ?await loadContentFeedback(db,{channel:clean(workingAction.channel_norm),tenantId:'canonical',playKey:clean(workingAction.play_key),now:new Date(now)})
           :null;
         const gen=await generate(db,apiKey,clean(gov.model_id),workingAction,persuasion,commercialFeedback),generated=gen.output,qv=quality(workingAction,workingAction.message_plan,generated,history),message=clean(generated.message),hash=await sha256(message);
-        await db.from('powerhouse_message_quality_v1').upsert({action_id:action.action_id,composer_version:CONTRACT,play_key:action.play_key,channel:action.channel_norm,message_hash:hash,passed:qv.passed,score:qv.score,checks:qv.checks,evidence:{model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,generated_at:now,personalization_anchor:generated.personalization_anchor,fact_used:generated.fact_used,hypothesis_used:generated.hypothesis_used,primary_problem:generated.primary_problem,micro_commitment:generated.micro_commitment,predicted_objection:generated.predicted_objection,objection_response:generated.objection_response,human_reason:generated.human_reason}},{onConflict:'action_id,message_hash'});
-        const ci={...(action.evidence?.commercial_intelligence||{}),commercial_feedback:commercialFeedback,commercial_feedback_use:commercialFeedback?'MODEL_INPUT_CONTEXT_ONLY':'NOT_APPLICABLE',message_strategy:action.play_key,persuasion_authority:{contract:'powerhouse-persuasion-revenue-optimizer-v1',play_key:clean(persuasion?.play_key),principles:persuasion?.principles||[],primary_message_strategy:clean(persuasion?.primary_message_strategy),micro_cta:clean(persuasion?.micro_cta),do_not_use:persuasion?.do_not_use||[],confidence:persuasion?.confidence??null,truth_boundary:clean(persuasion?.truth_boundary)},predicted_objection:clean(generated.predicted_objection),objection_response:clean(generated.objection_response),quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,composer_contract:CONTRACT,composer:{contract:CONTRACT,model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,source_specific_evidence_ok:qv.checks.source_specific_evidence_ok,semantic_novelty_ok:qv.checks.semantic_novelty_ok,new_followup_evidence_ok:qv.checks.new_followup_evidence_ok,generated_at:now,personalization_anchor:clean(generated.personalization_anchor),micro_commitment:clean(generated.micro_commitment),human_reason:clean(generated.human_reason)}};
+        const {error:qualityEvidenceError}=await db.from('powerhouse_message_quality_v1').upsert({action_id:action.action_id,composer_version:CONTRACT,play_key:action.play_key,channel:action.channel_norm,message_hash:hash,passed:qv.passed,score:qv.score,checks:qv.checks,evidence:{model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,generated_at:now,personalization_anchor:generated.personalization_anchor,fact_used:generated.fact_used,hypothesis_used:generated.hypothesis_used,primary_problem:generated.primary_problem,micro_commitment:generated.micro_commitment,predicted_objection:generated.predicted_objection,objection_response:generated.objection_response,human_reason:generated.human_reason}},{onConflict:'action_id,message_hash'});
+        if(qualityEvidenceError)throw new Error('COMPOSER_QUALITY_PROOF_WRITE:'+clean(qualityEvidenceError.message).slice(0,200));
+        const provenance=composerQualityProvenance({actionId:action.action_id,hash,contract:CONTRACT,previousScore:action.evidence?.commercial_intelligence?.composer?.quality_score,currentScore:qv.score});
+        const ci={...(action.evidence?.commercial_intelligence||{}),commercial_feedback:commercialFeedback,commercial_feedback_use:commercialFeedback?'MODEL_INPUT_CONTEXT_ONLY':'NOT_APPLICABLE',message_strategy:action.play_key,persuasion_authority:{contract:'powerhouse-persuasion-revenue-optimizer-v1',play_key:clean(persuasion?.play_key),principles:persuasion?.principles||[],primary_message_strategy:clean(persuasion?.primary_message_strategy),micro_cta:clean(persuasion?.micro_cta),do_not_use:persuasion?.do_not_use||[],confidence:persuasion?.confidence??null,truth_boundary:clean(persuasion?.truth_boundary)},predicted_objection:clean(generated.predicted_objection),objection_response:clean(generated.objection_response),quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,composer_contract:CONTRACT,composer:{contract:CONTRACT,...provenance,model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,source_specific_evidence_ok:qv.checks.source_specific_evidence_ok,semantic_novelty_ok:qv.checks.semantic_novelty_ok,new_followup_evidence_ok:qv.checks.new_followup_evidence_ok,generated_at:now,personalization_anchor:clean(generated.personalization_anchor),micro_commitment:clean(generated.micro_commitment),human_reason:clean(generated.human_reason)}};
         const evidence={...(action.evidence||{}),commercial_intelligence:ci};if(['email','e-mail','reply_email'].includes(action.channel_norm))evidence.email_subject=clean(generated.subject)||clean(action.evidence?.email_subject);
         const update:any={evidence,updated_at:now};if(qv.passed)update.message_draft=message;else if(clean(action.message_draft))update.message_draft='';
         const {error:uErr}=await db.from('powerhouse_sales_actions').update(update).eq('action_id',action.action_id);if(uErr)throw new Error('ACTION_WRITE:'+uErr.message);
