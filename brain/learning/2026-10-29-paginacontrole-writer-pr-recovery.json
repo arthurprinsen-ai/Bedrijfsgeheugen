@@ -12,7 +12,10 @@
     "security_sensitive": false
   },
   "evaluation": {
-    "historical_replay": []
+    "historical_replay": [
+      "tests/brain-paginacontrole-self-validation.test.mjs",
+      "tests/brain-paginacontrole-workflow-integrity.test.mjs"
+    ]
   },
   "root_cause": "Page/SEO scanner run 40889498268 generated writer/paginacontrole/bf3b4d32b170a7a7, but GitHub Actions gh pr create was rejected: Actions is not permitted to create or approve pull requests. Independent page browser scan also reported /afsluiten null replaceChildren.",
   "change": "Recover the already-generated SEO snapshot status candidate through authenticated GitHub connector PR #5123 while keeping repository PR policy unchanged. Commit canonical learning, human documentation and development ledger with the date-only update.",
@@ -24,6 +27,8 @@
       "seo-status.json: bijgewerkt 2026-10-26 → 2026-10-29"
     ],
     "productionStatus": "PENDING_REQUIRED_AND_CODEQL",
-    "live": false
+    "live": false,
+    "ci_evidence": "HISTORICAL_REPLAY_PENDING",
+    "production_verified": false
   }
 }
