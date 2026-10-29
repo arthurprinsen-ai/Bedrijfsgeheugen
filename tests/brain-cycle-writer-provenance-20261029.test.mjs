@@ -25,7 +25,7 @@ test('annotates each original canonical DB writer with source provenance without
 test('preserves canonical security, stage, truth, idempotency and append-only constraints',()=>{
  assert.match(sql,/v_action\.status='done' and v_action\.executed_at is not null/);
  assert.match(sql,/elsif v_action\.status in \('error','expired','skipped'\) then/);
- assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/);
+ assert.doesNotMatch(sql,/insert\s+into\s+public\.powerhouse_cycle_events\s*\(/i); // existing append RPC owns idempotency
  assert.doesNotMatch(sql,/SECURITY DEFINER/);
  assert.match(sql,/public\.powerhouse_append_cycle_event_v2\(/);
  assert.doesNotMatch(sql,/CREATE\s+(?:TABLE|TRIGGER|SCHEDULE|EXTENSION)|UPDATE\s+public\.powerhouse_cycle_events|DELETE\s+FROM\s+public\.powerhouse_cycle_events/i);
