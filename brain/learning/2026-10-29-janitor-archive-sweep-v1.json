@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-branch-debris|janitor-archive-sweep|20261029-v1",
+  "fingerprint": "ci|branch-debris|stale-branches-without-merge-evidence|20261029-v1",
+  "compiler": {
+    "failure_class": "BRANCH_DEBRIS_WITHOUT_MERGE_EVIDENCE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Na de jq-fix bleven 1.519 branches met een gesloten niet-gemergde PR, 512 zonder PR en 27 met een verplaatste head over. De PR-gedreven sweep kon die niet opruimen omdat er geen gemergde PR met exact dezelfde head is. Het annuleerpad voor oude runs las daarnaast nog `.protected // true`, waardoor het nooit een run op een ingesloten branch annuleerde.",
+  "fix": "Nieuw script tools/ci/branch-archive-sweep.mjs, aangeroepen door de Janitor (cap 150 per run). Het verwijdert een branch alleen als het werk herstelbaar blijft: exacte head van een gemergde of gesloten PR (GitHub bewaart refs/pull/N/head), nul commits voor op main, of eerst een archive/-tag met read-back. Nooit main, archive/, release/, hotfix/, beschermde refs, open PR's of branches jonger dan 1 dag (gesloten PR) of 3 dagen (uniek werk). Het annuleerpad leest nu ook alleen een expliciete protected=false als verwijderbaar.",
+  "prevention_rule": "Een branch wordt nooit verwijderd zonder bewijs dat het werk elders bewaard is; bij twijfel eerst archive-tag met read-back.",
+  "tests": [
+    "tests/brain-branch-archive-sweep.test.mjs",
+    "tests/brain-janitor-bounded-cleanup.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "invariants": [
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd",
+      "uniek werk wordt eerst als archive/-tag vastgelegd en teruggelezen",
+      "alleen de eigen repository wordt aangesproken"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
