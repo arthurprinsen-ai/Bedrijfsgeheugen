@@ -82,3 +82,38 @@ test('baseline contains no skill that already carries the marker (debt shrinks, 
     assert.ok(!fs.readFileSync(file, 'utf8').includes(MARKER), `${name} has the marker; remove it from loop_debt_baseline`);
   }
 });
+
+
+test('every agent preflight requires one closed Lean loop with evidence and data-gap recovery', () => {
+  const root = fixtureRoot({});
+  const info = evaluateIncidentSelfFix({ rootDir: root, policy: policy() });
+  assert.equal(info.lean_loop.required, true);
+  assert.deepEqual(info.lean_loop.stages, ['MEASURE','ANALYZE','HYPOTHESIZE','PRIORITIZE','IMPLEMENT','VERIFY','LEARN','REMEASURE']);
+  assert.ok(info.lean_loop.evidence_fields.includes('after_metric'));
+  assert.match(info.lean_loop.data_gap_rule, /UNKNOWN is not ZERO/);
+});
+
+test('a second authority, missing proof or empty instrumentation contract fails closed', () => {
+  const root = fixtureRoot({});
+  const alterations = [
+    p => { delete p.continuous_lean_loop; },
+    p => { p.continuous_lean_loop.stages = ['MEASURE','LEARN']; },
+    p => { p.continuous_lean_loop.one_authority_only = false; },
+    p => { p.continuous_lean_loop.one_existing_heartbeat_cadence_only = false; },
+    p => { delete p.continuous_lean_loop.canonical_tables.incident; },
+    p => { p.continuous_lean_loop.required_material_action_evidence = []; },
+    p => { p.continuous_lean_loop.hard_gates = []; },
+    p => { p.continuous_lean_loop.data_gap_rule = 'ignore missing data'; }
+  ];
+  for (const change of alterations) {
+    const p = policy(); change(p);
+    assert.throws(() => evaluateIncidentSelfFix({ rootDir: root, policy: p }));
+  }
+});
+
+test('agent instructions link the existing enforceable Lean loop rather than a parallel system', () => {
+  const agents = fs.readFileSync('AGENTS.md','utf8');
+  assert.match(agents, /ONE BRAIN Lean\/PDCA observability/);
+  assert.match(agents, /powerhouse-incident-register-and-self-fix-v1.json/);
+  assert.match(agents, /MEASURE → ANALYZE → HYPOTHESIZE → PRIORITIZE → IMPLEMENT → VERIFY → LEARN → REMEASURE/);
+});
