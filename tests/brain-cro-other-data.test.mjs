@@ -44,3 +44,12 @@ test('observed form intent does not imply verified revenue or causal success',()
   assert.equal(data.website.wonOrders,0);
   assert.ok(data.quality.flags.includes('EXPERIMENT_EVIDENCE_INCOMPLETE'));
 });
+
+test('provider SDK is deferred until after rejection of missing JWT; no unauthenticated import',async()=>{
+ const source=readFileSync('netlify/functions/powerhouse-cro-other-data.mjs','utf8');
+ assert.doesNotMatch(source,/^import\s+.*?@netlify\/identity/m);
+ assert.match(source,/await import\('@netlify\/identity'\)/);
+ const denied=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/powerhouse-cro-other-data'));
+ assert.equal(denied.status,401);
+ assert.equal((await denied.json()).error,'UNAUTHENTICATED');
+});
