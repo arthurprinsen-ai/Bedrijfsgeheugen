@@ -37,7 +37,7 @@
     "test": "tests/brain-instagram-meme-lus-config-v1.test.mjs"
   },
   "evaluation": {
-    "historical_replay": "tests/brain-instagram-meme-lus-config-v1.test.mjs",
+    "historical_replay": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"],
     "canary": "not_applicable_security_sensitive_false"
   },
   "openObligation": {
