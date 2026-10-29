@@ -19,6 +19,11 @@ on:
         description: 'Europe/Amsterdam business date (YYYY-MM-DD); empty=today'
         required: false
         default: ''
+      security_probe_only:
+        description: 'Read-only blog export authorization matrix; no publication'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   actions: write
@@ -31,6 +36,7 @@ concurrency:
 
 jobs:
   publish:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.security_probe_only != true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -47,6 +53,11 @@ jobs:
           node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
           echo "run=true" >> "$GITHUB_OUTPUT"
           echo "date=$date" >> "$GITHUB_OUTPUT"
+
+      - name: Deny any public draft exporter or internal PR evidence regression
+        run: |
+          set -euo pipefail
+          node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
 
       - name: Reuse the existing writer for this obligation
         if: steps.day.outputs.run == 'true'
@@ -84,11 +95,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
           PR: ${{ steps.writer.outputs.existing_pr }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           git show "$GITHUB_SHA:tools/content-growth/reviewed-blog-refresh.mjs" > /tmp/reviewed-blog-refresh.mjs
           gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" > /tmp/blog-refresh-pr.json
-          curl --fail --silent --show-error "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=$DATE" > /tmp/blog-refresh-source.json
+          [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] || { echo "::error::BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED"; exit 1; }
+          curl --fail --silent --show-error -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=$DATE" > /tmp/blog-refresh-source.json
           expected_head="$(git rev-parse HEAD)"
           decision="$(node /tmp/reviewed-blog-refresh.mjs /tmp/blog-refresh-pr.json /tmp/blog-refresh-source.json "brain/learning/powerhouse-blog-$DATE.json" "$DATE" "$GITHUB_REPOSITORY" "$expected_head")"
           if [ "$decision" = AUTHORIZED ]; then
@@ -105,6 +118,8 @@ jobs:
       - name: Render canonical Powerhouse artifact
         if: steps.day.outputs.run == 'true' && steps.writer.outputs.available == 'true'
         id: render
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           python3 tools/site-shell/publish_powerhouse_blog_artifact.py "${{ steps.day.outputs.date }}" | tee /tmp/powerhouse-blog.json
@@ -161,7 +176,9 @@ jobs:
           git fetch origin "$branch" || true
           git checkout -B "$branch"
           git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
-          git add "brain/learning/powerhouse-blog-$DATE.json" "docs/development-ledger-events/powerhouse-blog-$DATE.md" "docs/changes/powerhouse-blog-$DATE.md"
+          # The public GitHub repository is an EXTERNAL destination, not a private draft vault.
+          # Keep Brain/learning, development ledger and change evidence OUT of public PR commits.
+          # The canonical private Brain database owns those records (SEC-2026-10-29-TWINFIELD-EXPOSURE).
           git commit -m "blog: publish Powerhouse daily artifact $DATE"
 
           # Before creating the PR, replay the exact production transforms,
@@ -338,3 +355,34 @@ jobs:
         run: |
           node --test tests/brain-daily-blog-production-closure-v1.test.mjs
           node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"
+
+  security_export_probe:
+    # Reuse this canonical workflow: no additional scheduler, public PR or publisher.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.security_probe_only == true }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify source guards before live read-only matrix
+        run: node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
+      - name: Verify real service-auth approval matrix without publication
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          set +x
+          [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] || { echo "::error::BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED"; exit 1; }
+          endpoint="https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export"
+          anon_status="$(curl -sS --max-time 20 --output /dev/null --write-out '%{http_code}' "${endpoint}?date=2026-10-28")"
+          [ "$anon_status" = "401" ] || { echo "::error::BLOG_EXPORT_ANONYMOUS_NOT_DENIED:$anon_status"; exit 1; }
+          echo "EXPORT_AUTH_MATRIX_PASS:ANONYMOUS:401"
+          probe() {
+            label="$1"; date="$2"; expected="$3"
+            status="$(curl -sS --max-time 20 --output /dev/null --write-out '%{http_code}' -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" "${endpoint}?date=${date}")"
+            [ "$status" = "$expected" ] || { echo "::error::BLOG_EXPORT_MATRIX_FAIL:${label}:expected_${expected}:actual_${status}"; exit 1; }
+            echo "EXPORT_AUTH_MATRIX_PASS:${label}:${status}"
+          }
+          probe "GENERATED_WITHOUT_APPROVAL" "2026-10-28" "403"
+          probe "HISTORIC_LIVE_WITHOUT_APPROVAL" "2026-10-22" "403"
+          probe "APPROVED_LIVE_PROVEN" "2026-10-25" "200"

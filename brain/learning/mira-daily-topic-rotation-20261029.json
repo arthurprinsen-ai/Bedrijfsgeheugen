@@ -1,0 +1,31 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "mira|daily-source-topic-exhaustion|20261029-v1",
+  "status": "CANDIDATE_TEST_PENDING",
+  "root_cause": "The existing eight identical daily source queries repeatedly returned topic-family duplicates; two freshly dated results on 2026-10-29 passed individual signal checks but were rejected by the original 3-day topic uniqueness gate.",
+  "prevention_rule": "Rotate eight existing news search slots deterministically across twelve approved enterprise problem categories by original business date; preserve verified source-publication timestamps, 60-day freshness, 90-day URL/hash uniqueness, three-day topic spacing, exact media identity and canonical publisher exclusivity. Never claim publication without provider ID/readback.",
+  "evidence": {
+    "kind": "sanitized public aggregate engineering evidence",
+    "radar_version_baseline": 470,
+    "source_request_status": 200,
+    "newly_eligible_sources": 2,
+    "same_topic_family_deduped": true,
+    "private_signal_urls_excluded": true,
+    "new_search_cost_budget": 8,
+    "source_change_proven_live": false,
+    "provider_reel_published": false
+  },
+  "compiler": {
+    "failure_class": "MIRA_FRESH_SOURCE_TOPIC_EXHAUSTION",
+    "scope": "SINGLE_CANONICAL_MIRA_RADAR",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "regression_contract": "Pure deterministic date-to-query selection: eight unique approved searches per business date; twelve topics over three dates; fail-closed invalid date; existing provenance/dedupe/media gates unchanged."
+}

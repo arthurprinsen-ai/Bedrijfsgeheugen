@@ -2,9 +2,9 @@ project_id = "bedrijfsgeheugen"
 
 [functions.powerhouse-blog-export]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/powerhouse-blog-export/index.ts"
-# Approved read-only source; no provider write.
+# Confidential blog export: service JWT plus explicit publication approval required.
 
 [functions.powerhouse-blog-queue]
 enabled = true

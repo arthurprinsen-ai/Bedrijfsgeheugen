@@ -41,6 +41,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
         run: |
           set -euo pipefail
           for i in $(seq 1 48); do
@@ -51,10 +52,26 @@ jobs:
               # GitHub's Netlify status target points to app.netlify.com/.../deploys/ID,
               # not to a deploy host. Derive the immutable host only from a trusted
               # provider URL, then enforce BOTH exact commit_ref and deploy_id.
-              immutable=$(node tools/ci/netlify-immutable-preview-target.mjs "$target") || {
-                echo "::error::Untrusted Netlify provider status URL (no browser green)."
-                exit 1
-              }
+              if [ "$target" = "https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" ]; then
+                # Since 2026-10-27 Netlify reports the exact numbered PR alias instead of
+                # the dashboard deploy URL (fingerprint ci|netlify-preview-status-alias).
+                # Accept ONLY this PR's exact alias, read its release identity, require the
+                # exact head SHA and a 24-hex deploy id, then pin the immutable host. The
+                # check below verifies SHA and deploy id again on that immutable host.
+                alias_release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "${target}/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+                alias_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$alias_release")
+                alias_id=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$alias_release")
+                if [ "$alias_sha" != "$HEAD_SHA" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
+                  sleep 10
+                  continue
+                fi
+                immutable="https://${alias_id}--bedrijfsgeheugen.netlify.app"
+              else
+                immutable=$(node tools/ci/netlify-immutable-preview-target.mjs "$target") || {
+                  echo "::error::Untrusted Netlify provider status URL (no browser green)."
+                  exit 1
+                }
+              fi
               release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$immutable/release.json?sha=$HEAD_SHA&attempt=$i" || true)
               deployed_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$release")
               deploy_id=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$release")

@@ -145,3 +145,15 @@ Fingerprint: `portal|foresight|no-dom-derived-confidence-or-forecast|v1`.
 - On insufficient evidence, preserve the navigation to the existing source-bound Foresight scenario studio and do not silently generate a canonical action from an illustrative trend.
 - A cron green result says an invocation finished, not that an external source was updated. Validate original source observation timestamps and upstream provider response: Tavily returned HTTP 432 usage limit on 2026-10-19. Do not upgrade the account, create a parallel scheduler or fabricate source rows.
 - Current implementation: `portal-v2/nextgen-intelligence.js`; regression: `portal-v2/tests/nextgen-intelligence.test.mjs`; writeback: `brain/learning/2026-10-19-portal-future-lens-source-truth-v1.json`.
+
+## Calibration scope truth — 29 oktober 2026
+
+Fingerprint: `calibration|public-scope-empty|private-due-unreported|20261029`.
+
+The existing `powerhouse-forecast-calibrator` intentionally reads only public-eligible market, segment, technology, regulation and behavior forecasts using `powerhouse_public_market_calibration_due_v1`. An empty result proves only that this **public queue** is empty. It does not prove company/person or the entire revenue learning obligation backlog is empty.
+
+- The same canonical Edge Function must record an aggregate read-only due-obligation count in `bg_gezondheid` as `out_of_public_scope_due`; it must mark `NON_PUBLIC_SCOPE_BACKLOG` when nonzero.
+- No person/company forecast text, identifiers, payload, source data, customer evidence, or recipient data may be forwarded to public OpenAI calibration simply to reduce the counter.
+- Keep all truly overdue private obligations OPEN until a separate canonical, tenant-bound, independently evidenced outcome path resolves them. No fabricated materialization, failed/missed outcome, revenue impact, or approval.
+- A successful cron invocation or `PUBLIC_SCOPE_IDLE` is not a whole-system green verdict. Show both per-lane operational health and overall overdue debt, then feed a private-lane recovery obligation to the **existing** ONE BRAIN/Heartbeat owner. Do not create a new scheduler, parallel publisher, memory, or writer.
+- Run an exact-head protected release and authorized production readback before marking this rule live.

@@ -3080,8 +3080,24 @@
     {
       "name": "bg_bedrijfsprofiel_v1",
       "version": "20261028230000"
+    },
+    {
+      "name": "bg_bedrijfsprofiel_v1",
+      "version": "20261028212459"
+    },
+    {
+      "name": "bg_linkedin_lus_v1",
+      "version": "20261028220000"
+    },
+    {
+      "name": "personal_observational_source_date_gate_20261029",
+      "version": "20261029101146"
+    },
+    {
+      "name": "linkedin_personal_observational_source_freshness_20261029",
+      "version": "20261029101159"
     }
   ],
-  "captured_at": "2026-10-28T14:07:19.772364+00:00",
+  "captured_at": "2026-10-29 11:54:04.166873+00",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

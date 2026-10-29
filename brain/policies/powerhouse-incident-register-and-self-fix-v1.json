@@ -1,0 +1,168 @@
+{
+  "type": "POWERHOUSE_INCIDENT_REGISTER_SELF_FIX_POLICY",
+  "version": "POWERHOUSE-INCIDENT-REGISTER-SELF-FIX-v1",
+  "fingerprint": "agents-skills-register-and-self-fix-v1",
+  "status": "ACTIVE",
+  "default_enabled": true,
+  "fail_closed": true,
+  "scope": "all current and future Powerhouse agents and skills; chats, workflows and edge functions inherit the same duty through the agent preflight",
+  "decision": {
+    "owner": "Arthur",
+    "date": "2026-10-29",
+    "source": "Notion: Powerhouse Loop Constitution, section Incidenten en fouten: altijd registreren, altijd zelf oplossen"
+  },
+  "duties": {
+    "register": [
+      "EVERY_ERROR_INCIDENT_AND_NEAR_MISS_IS_REGISTERED_EVEN_WHEN_SELF_FIXED",
+      "DEDUPE_ON_FINGERPRINT_OPEN_INCIDENT_GETS_RETRY_COUNT_PLUS_ONE_NO_DUPLICATE",
+      "RECORD_ROOT_CAUSE_WITH_EVIDENCE_REPAIR_AND_PREVENTION_RULE",
+      "USE_EXISTING_BRAIN_LEARNING_AND_ERROR_LAYER_NO_PARALLEL_STORE",
+      "NO_SILENT_FAILURES"
+    ],
+    "self_fix": [
+      "DIAGNOSE_REPAIR_TEST_AND_READ_BACK_WITHOUT_WAITING_WHEN_A_SAFE_EXECUTABLE_STEP_EXISTS",
+      "LEAVE_A_REGRESSION_GUARD_AFTER_EVERY_FIX",
+      "NO_FIXED_OR_LIVE_CLAIM_WITHOUT_READBACK"
+    ]
+  },
+  "reserved_for_owner": [
+    "IRREVERSIBLE_OR_COSTLY_DECISIONS",
+    "PROTECTED_MERGE",
+    "PRODUCTION_MIGRATIONS",
+    "SPEND_AND_CREDITS",
+    "ANYTHING_SENT_TO_THIRD_PARTIES"
+  ],
+  "on_reserved_boundary": "PREPARE_THEN_ONE_DEDUPED_OBLIGATION_WITH_EVIDENCE_AND_RECOVERY_PATH_THEN_STOP",
+  "skill_protocol": {
+    "marker": "INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1",
+    "canonical_text_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "skills_glob": ".agents/skills/*/SKILL.md",
+    "new_skills_must_carry_marker": true,
+    "existing_skills_without_marker": "VISIBLE_LOOP_DEBT_UNTIL_NEXT_CHANGE_OF_THAT_SKILL"
+  },
+  "loop_debt_baseline": [
+    "deployment-capability-recovery",
+    "instagram-composio-publisher",
+    "linkedin-composio-publisher",
+    "merge-capability-guard",
+    "personal-linkedin-life-only",
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-autonomous-engineering-fabric",
+    "powerhouse-browser-gate-boundedness",
+    "powerhouse-company-intelligence-os",
+    "powerhouse-connector-response-normalization",
+    "powerhouse-current-main-reconstruction",
+    "powerhouse-daily-full-connection-enrichment",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-foresight-prediction-intelligence",
+    "powerhouse-github-acceleration-stack",
+    "powerhouse-green-assurance",
+    "powerhouse-growth-swarm",
+    "powerhouse-linkedin-company-growth",
+    "powerhouse-linkedin-sales-machine",
+    "powerhouse-management-accounting-intelligence",
+    "powerhouse-manual-sales-handoff",
+    "powerhouse-need-discovery",
+    "powerhouse-netlify-production-truth",
+    "powerhouse-persuasion-revenue",
+    "powerhouse-post-merge-codeql",
+    "powerhouse-relationship-external-intelligence",
+    "powerhouse-relationship-revenue",
+    "powerhouse-resource-sustainability",
+    "powerhouse-self-improvement-layer",
+    "powerhouse-seo-conversion-orders",
+    "powerhouse-source-universe-impact-engine",
+    "powerhouse-system-map-governance",
+    "powerhouse-toolchain-authority",
+    "release-check-reconciliation",
+    "release-deployment-readback",
+    "seo-revenue-growth",
+    "system-map-merge-integrity",
+    "trigger-based-mkb-acquisition"
+  ],
+  "enforcement": {
+    "entrypoint": "scripts/brain/chat-learning-preflight.mjs",
+    "visible_in_packet": "incident_self_fix",
+    "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
+    "not_covered_yet": "Runtime agents (edge functions, Make scenarios) have no uniform file to scan; their registration duty is policy only until a runtime check exists."
+  },
+  "revision": 2,
+  "continuous_lean_loop": {
+    "required": true,
+    "scope": [
+      "website",
+      "technical_seo",
+      "cro",
+      "blogs",
+      "linkedin_posts",
+      "instagram_posts",
+      "commercial_email",
+      "customer_portal",
+      "lead_generation",
+      "orders",
+      "paid_revenue"
+    ],
+    "stages": [
+      "MEASURE",
+      "ANALYZE",
+      "HYPOTHESIZE",
+      "PRIORITIZE",
+      "IMPLEMENT",
+      "VERIFY",
+      "LEARN",
+      "REMEASURE"
+    ],
+    "daily_questions": [
+      "WHAT_CAN_BE_BETTER",
+      "WHAT_CAN_BE_SMARTER",
+      "WHAT_CAN_BE_FASTER",
+      "WHAT_CREATES_VERIFIED_CUSTOMER_OR_REVENUE_VALUE"
+    ],
+    "one_authority_only": true,
+    "one_existing_heartbeat_cadence_only": true,
+    "exclusive_writer_per_obligation": true,
+    "canonical_tables": {
+      "cycle": "public.powerhouse_decision_cycles",
+      "event": "public.powerhouse_cycle_events",
+      "memory": "public.brain_records",
+      "incident": "public.brain_failure_registry",
+      "incident_occurrences": "public.brain_failure_occurrences",
+      "improvement_candidate": "public.powerhouse_optimization_candidate_v1",
+      "data_source_registry": "public.powerhouse_evidence_sources",
+      "source_observations": "public.powerhouse_evidence_source_observations",
+      "site_measurements": "public.growth_page_daily",
+      "commercial_outcomes": "public.powerhouse_sales_outcomes"
+    },
+    "required_material_action_evidence": [
+      "agent_id",
+      "skill_version",
+      "obligation_or_correlation_id",
+      "tenant_scope",
+      "occurred_at",
+      "source_and_freshness",
+      "decision_and_reason",
+      "before_metric",
+      "change_and_code_sha_or_provider_id",
+      "test_and_readback",
+      "after_metric",
+      "outcome_and_attribution",
+      "next_step_or_learning_fingerprint"
+    ],
+    "data_gap_rule": "When a decision cannot be measured, create ONE deduplicated instrumentation obligation in the existing Brain/Powerhouse lineage. Add a privacy-minimized, tenant-isolated observation through the authorized portal/source owner, prove capture and portal readback, then resume measurement; UNKNOWN is not ZERO.",
+    "autonomous_delivery_rule": "Safe authorized changes should be implemented, independently verified and iterated within the same obligation; proposals, drafts, commits and provider ACKs are not verified business outcomes.",
+    "experiment_rule": "Record baseline, hypothesis, cohort, metric, sample floor, guardrails, exposure, effect, conclusion and rollback. Do not infer causal improvement from raw page views, likes or non-comparable before/after windows.",
+    "prioritization_rule": "Rank by evidence-weighted incremental orders and paid revenue, customer value, effort, risk and consent; never optimize only vanity reach.",
+    "failure_rule": "Every failure and near-miss uses existing fingerprint, occurrence, root-cause evidence, safe recovery, regression, and next-agent discovery, with no silent error.",
+    "report_rule": "Existing portal/control center shows source freshness, instrumented/unknown coverage, backlog, decisions, actions, provider proof, customer results, orders, revenue, incident recurrence and change-to-impact latency, with UNKNOWN separate from ZERO.",
+    "hard_gates": [
+      "NO_PARALLEL_SCHEDULER_OR_WRITER",
+      "NO_SENSITIVE_DATA_IN_GENERAL_LEARNING",
+      "NO_UNAUTHORIZED_EXTERNAL_EGRESS",
+      "NO_DUPLICATE_PUBLICATION_OR_OUTREACH",
+      "NO_SECURITY_OR_RELEASE_BYPASS",
+      "NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE"
+    ],
+    "enforcement_limit": "The chat preflight validates this policy, not each external runtime agent's actual event writes. Runtime coverage, instrumentation, portal UI, autonomous application and outcome verification require separate code integration and production evidence."
+  }
+}

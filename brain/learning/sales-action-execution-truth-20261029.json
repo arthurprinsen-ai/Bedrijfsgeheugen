@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "powerhouse|sales-action-execution|not-executed-false-stage|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "root_cause": "outcome_id non-null was counted as execution even when the outcome explicitly said not_executed",
+  "baseline": {
+    "expired_without_execution_timestamp": 1959,
+    "skipped_without_execution_timestamp": 131,
+    "done_with_execution_timestamp": 136,
+    "window": "7 days"
+  },
+  "fix": "require status done and executed_at timestamp",
+  "legacy_events": "immutable, verify by source join",
+  "safety": "no new scheduler writer or table, no fake send",
+  "unresolved": [
+    "actor/skill instrumentation",
+    "paid revenue attribution"
+  ],
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+    ]
+  },
+  "prevention_rule": "Never allow negative outcome ids to mint execution; require status done + executed_at, preserve immutable history and independent provider readback.",
+  "evidence": {
+    "source": "Supabase read-only canonical source join; data inspected on 2026-10-29",
+    "negative_expired": 1959,
+    "negative_skipped": 131,
+    "real_done_with_timestamp": 136,
+    "provider_send_claim": "NOT_PROVEN"
+  },
+  "tests": [
+    "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+  ]
+}

@@ -354,7 +354,8 @@ jobs:
             encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
             branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
             [ -n "$branch_json" ] || continue
-            [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || continue
+            # jq's `//` treats false as empty, so `.protected // true` made every branch look protected.
+            [ "$(jq -r 'if .protected == false then "false" else "true" end' <<<"$branch_json")" = false ] || continue
             head_sha="$(jq -r '.commit.sha' <<<"$branch_json")"
             ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
             reason=ALREADY_CONTAINED_IN_MAIN
@@ -394,7 +395,7 @@ jobs:
               encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
               branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
               [ -n "$branch_json" ] || { sweep_missing=$((sweep_missing + 1)); continue; }
-              [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || { sweep_protected=$((sweep_protected + 1)); continue; }
+              [ "$(jq -r 'if .protected == false then "false" else "true" end' <<<"$branch_json")" = false ] || { sweep_protected=$((sweep_protected + 1)); continue; }
               [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || { sweep_moved=$((sweep_moved + 1)); continue; }
               latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
               [ "$latest_sha" = "$pr_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${pr_sha}:${latest_sha}"; exit 78; }

@@ -2,6 +2,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
+import { selectMiraSourceQueries } from '../_shared/mira-source-query-rotation.mjs';
+import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -9,16 +11,16 @@ const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 const topic=(text:string)=>{
  const t=text.toLowerCase();
  if(/offerte|salesopvolging|follow.up|acquisitie.*opvolging/.test(t))return'offertes-zonder-opvolging';
- if(/eigenaar.*besluit|directeur.*goedkeur|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
+ if(/eigenaar.*besluit|directeur.*goedkeur|directeur.*besluit|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
  if(/kennisoverdracht|kennisborg|sleutelmedewerker|sop|werkinstruct|afspraak.*hoofd/.test(t))return'kennisoverdracht';
  if(/excel|spreadsheet|verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
  if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
  if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
  if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
  if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
- if(/debiteur|dso|openstaande factur/.test(t))return'debiteuren';
- if(/late factur|facturatie.*vertraging|werk.*niet gefactureerd/.test(t))return'late-facturering';
- if(/klantconcentratie|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
+ if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling/.test(t))return'debiteuren';
+ if(/late factur|facturatie.*vertraging|facturering.*te laat|werk.*niet gefactureerd/.test(t))return'late-facturering';
+ if(/klantconcentratie|klantafhankelijk|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
  if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
  return '';
 };
@@ -28,16 +30,7 @@ const portalIds:Record<string,string>={
  'groei-zonder-winst':'PH-P003','capaciteitsplanning':'PH-P008','debiteuren':'PH-P010',
  'late-facturering':'PH-P011','klantafhankelijkheid':'PH-P012','klantverlies':'PH-P013'
 };
-const queries=[
- 'mkb offertes opvolgen',
- 'mkb kennisoverdracht',
- 'mkb excel spreadsheets',
- 'mkb dubbele invoer',
- 'mkb personeelstekort planning',
- 'mkb facturering debiteuren',
- 'mkb klantafhankelijkheid',
- 'mkb ondernemers'
-];
+// Fixed eight-call daily budget, varied by business date through the approved PH-P source-topic catalog.
 const MAX_AGE_DAYS=45; // inside the shared 60-day gate; Google News ranks by relevance, not recency
 // Provider timestamps like "2026-10-26 16:19:48 +00:00" are normalised to ISO so the
 // shared freshness gate (which stays the single authority) can parse them.
@@ -85,7 +78,7 @@ Deno.serve(async(req:Request)=>{
        taskCode=Number(b?.tasks?.[0]?.status_code||0);
        if(r.ok&&Number(b?.status_code||0)===20000&&taskCode===20000) break;
      }
-     if(r!.ok&&Number(b?.status_code||0)===20000&&taskCode===40101){ providers.dataforseo_no_results=(providers.dataforseo_no_results||0)+1; return {provider:'dataforseo_news',results:[]}; }
+     if(isDataForSeoEmptyNewsTask({httpOk:r!.ok,envelopeCode:b?.status_code,taskCode})){ providers.dataforseo_no_results=(providers.dataforseo_no_results||0)+1; return {provider:'dataforseo_news',results:[]}; }
      if(!r!.ok||Number(b?.status_code||0)!==20000||taskCode!==20000) throw new Error('DATAFORSEO_'+r!.status+'_TASK_'+taskCode);
      const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
      const rows:any[]=[];
@@ -99,6 +92,7 @@ Deno.serve(async(req:Request)=>{
  };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
+ const queries=selectMiraSourceQueries(runDate);
  let stored=0, eligible=0; const seen=new Set<string>(); const errors:string[]=[];
  for(const q of queries){
   let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}

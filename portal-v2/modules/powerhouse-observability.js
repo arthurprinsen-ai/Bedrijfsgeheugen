@@ -146,7 +146,7 @@ function overview(events,observability){
   <section class="poc-panel"><div class="poc-panelhead"><h4>Dagelijkse activiteit</h4><span>${s.events} events · ${s.sources} bronnen · ${s.layers} lagen</span></div>${timeline(events.slice(0,80))}</section>`;
 }
 
-function systemMapView(systemMap,events){
+function systemMapView(systemMap,events,observability={}){
   if(!systemMap)return empty('De canonieke System Map ontbreekt in de beveiligde runtimeprojectie.');
   const snapshot=systemMap.providerSnapshot||{};
   const inventories=systemMap.inventories||{};
@@ -154,6 +154,17 @@ function systemMapView(systemMap,events){
   const supabaseCatalog=liveSupabase.inventory||{};
   const liveTables=arr(supabaseCatalog.tables),liveViews=arr(supabaseCatalog.views),liveDbFunctions=arr(supabaseCatalog.functions),liveCron=arr(supabaseCatalog.active_cron_jobs);
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
+  const failureCoverage=systemMap.failureCoverage||{};
+  const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
+  const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
+  const agentCoverage=observability.agentCycleCoverage||{};
+  const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
+  const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
+  const publication=observability.publicationEvidence||{};
+  const publicationComplete=publication.status==='REGISTRY_READBACK_COMPLETE';
+  const publicationRows=publicationComplete?arr(publication.channels):[];
+  const publicationLabels={linkedin_company:'LinkedIn bedrijf',linkedin_personal:'LinkedIn persoonlijk',instagram:'Instagram',blog:'Blog'};
+
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
@@ -169,6 +180,43 @@ function systemMapView(systemMap,events){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  <section class="poc-panel" data-brain-failure-coverage data-evidence-status="${esc(failureCoverage.status||'UNAVAILABLE')}">
+    <div class="poc-panelhead"><h4>Fouten, oorzaken en preventie · ONE BRAIN</h4><span class="poc-badge ${failureTotals?'warn':'bad'}">${failureTotals?'Open kwaliteitspunten':'UNVERIFIED'}</span></div>
+    <p class="poc-note">Alleen aantallen uit het bestaande Supabase-foutregister. Geen klantgegevens of ruwe incidentteksten. Ontbrekende readback blijft onbekend, nooit nul.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Foutpatronen',failureMetric('patterns'),'vastgelegd, niet noodzakelijk opgelost')}
+      ${kpi('Nog geobserveerd',failureMetric('observed'),'geen bewezen herstel')}
+      ${kpi('Oorzaak ontbreekt',failureMetric('observedMissingCause'),'onderzoek blijft open')}
+      ${kpi('Regressietest ontbreekt',failureMetric('observedMissingRegression'),'preventie niet bewezen')}
+      ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
+    </div>
+    <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
+  </section>
+  <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">
+    <div class="poc-panelhead"><h4>Agentacties · meetdekking afgelopen 24 uur</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>
+    <p class="poc-note">Alleen geaggregeerde aantallen uit de bestaande canonieke cycle-events. Aanwezigheid van velden is geen bewezen juiste attributie, conversie of omzet. Ontbrekende brondata blijft UNKNOWN, nooit nul.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Cycle-events',agentMetric('events'),'volledig 24u-venster, alleen bij bronreadback')}
+      ${kpi('Agent-ID aanwezig',agentMetric('agentIds'),'top-level payloadveld')}
+      ${kpi('Skillversie aanwezig',agentMetric('skillVersions'),'top-level payloadveld')}
+      ${kpi('Voormeting aanwezig',agentMetric('beforeMetrics'),'0 is een geldige gemeten waarde')}
+      ${kpi('Nameting aanwezig',agentMetric('afterMetrics'),'nog geen causale outcome')}
+      ${kpi('Alle vier velden',agentMetric('allFour'),'geen bewijs van klantwaarde')}
+    </div>
+    <p class="poc-note">Bron: ${esc(agentCoverage.authority||'onbekend')}. Laatste gebeurtenis: ${esc(fmtTime(agentCoverage.sourceLatestAt))}. Readback: ${esc(fmtTime(agentCoverage.observedAt))}. ${esc(agentCoverage.reason||'')}</p>
+  </section>
+  <section class="poc-panel" data-publication-evidence data-evidence-status="${esc(publication.status||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Publicaties · werkelijk geregistreerde status per kanaal</h4><span class="poc-badge ${publicationComplete?'warn':'bad'}">${publicationComplete?'Bron gecontroleerd · publicatie niet automatisch bewezen':'UNVERIFIED'}</span></div>
+    <p class="poc-note">Dag ${esc(publication.date||'onbekend')} · bron ${esc(publication.source||'niet beschikbaar')}. Database-registratie is niet hetzelfde als onafhankelijk providerbewijs. Een bestaand provider-ID mag nooit opnieuw worden gepubliceerd; een ontbrekend mediabestand of duplicaat mag niet worden omzeild.</p>
+    <div class="poc-kpis compact">
+      ${publicationRows.length?publicationRows.map(row=>kpi(
+        publicationLabels[row.channel]||row.channel,
+        esc(row.registryStatus),
+        (row.providerIdRecorded?'Provider-ID geregistreerd · ':'Geen provider-ID · ')+(row.internalLiveProofRecorded?'intern livebewijs · ':'onafhankelijk livebewijs vereist · ')+row.recoveryCode
+      )).join(''):kpi('Publicatiebewijs','—',esc(publication.reason||'De canonieke publicatiebron kon niet volledig worden gelezen'))}
+    </div>
+    <p class="poc-note">Bronreadback ${esc(fmtTime(publication.observedAt))}. De herstelcode beschrijft de volgende veilige stap, niet een uitgevoerde actie. Bestaande executor, duplicate-gate, media-identiteit en protected release blijven verplicht.</p>
+  </section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
   <div class="poc-grid2">
@@ -326,7 +374,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='experiment-changes'?experimentChangesMarkup(securedRuntime.experimentChanges):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='experiment-changes'?experimentChangesMarkup(securedRuntime.experimentChanges):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all,obs):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
     if(state.tab==='delivery'){
       const panel=body.querySelector('[data-release-status-panel]');
       const evidence=obs.releaseEvidence;

@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|delivery-admission-exact-gitignore|20261029",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "P0_PRIVATE_BLOG_GIT_IGNORE_NOT_CLASSIFIED",
+  "root_cause": "The protected canonical delivery admission classified the root .gitignore path as unclassified and failed closed. No broadened wildcard should be introduced.",
+  "observed_evidence": {
+    "incident_id": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+    "blocked_candidate_pr": "#5083",
+    "admission_error": "unclassified delivery path: .gitignore",
+    "source": "existing canonical hygiene admission"
+  },
+  "fix": "Classify exactly .gitignore as protected backend delivery path, without accepting any other hidden file. Keep code and regression in Required and CodeQL; only then re-evaluate the rejected ignore-file PR.",
+  "prevention_rule": "All security-critical root ignore modifications must be classified through the same protected backend delivery admission. Unknown hidden paths remain fail-closed.",
+  "tests": [
+    "tests/brain-delivery-system.test.mjs",
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "P0_PRIVATE_BLOG_GIT_IGNORE_NOT_CLASSIFIED",
+    "scope": "REPOSITORY_SECURITY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-system.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required and CodeQL on exact final SHA plus merged-main verification; no bypass of admission or forced writes."
+}

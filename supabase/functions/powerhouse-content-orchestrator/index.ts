@@ -3,6 +3,7 @@ const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
+import {normalizeRecommendationEvidence} from '../_shared/recommendation-evidence-normalization.mjs';
 const buildVerifiedFounderReserve:(...args:any[])=>any=buildVerifiedFounderReserve_raw;
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
 const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
@@ -569,7 +570,7 @@ Deno.serve(async (req) => {
       : {data:null,error:null};
     if (winnerResult.error) throw new Error('INSTAGRAM_DAILY_WINNER_READ_FAILED');
     const instagramWinner = winnerResult.data || null;
-    const run = runResult.data, recs = recResult.data || [], rules = rulesResult.data || [], gov = governanceResult.data;
+    const run = runResult.data, recs = (recResult.data || []).map(normalizeRecommendationEvidence), rules = rulesResult.data || [], gov = governanceResult.data;
     if(capabilitiesResult.error) throw new Error('SOCIAL_PUBLICATION_AUTHORITY_RECONCILIATION_READ_FAILED');
     const consumedCapabilityChannels=new Set<string>((capabilitiesResult.data||[])
       .filter((c:any)=>!!c.consumed_at&&!c.revoked_at).map((c:any)=>clean(c.channel)));

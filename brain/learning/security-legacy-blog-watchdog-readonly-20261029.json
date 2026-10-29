@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|legacy-blog-watchdog-public-evidence-egress|20261029",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "LEGACY_WATCHDOG_PRIVATE_EVIDENCE_IN_PUBLIC_PR",
+  "root_cause": "Legacy native daily blog watchdog retained a write-enabled GitHub PR path staging Brain learning/change and development-ledger artifacts to the public repository after independent live readback.",
+  "observed_evidence": {
+    "incident_id": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+    "existing_legacy_workflow": ".github/workflows/daily-blog-live-watchdog.yml",
+    "source_behavior": "Earlier workflow stages data ledger plus brain/learning, docs/changes and docs/development-ledger-events to a public PR",
+    "canonical_writer": "Powerhouse daily blog from Supabase",
+    "private_payloads_in_record": "NONE"
+  },
+  "fix": "Preserve original scheduled and manual HTTP readback but remove all GitHub write permissions, internal evidence materialization and proof PR creation. Delegate live closure to already existing canonical Powerhouse blog publisher and Supabase.",
+  "prevention_rule": "Any public repository watchdog must be read-only and never stage private Brain, change or development-ledger evidence. CI and runtime assert absence of GitHub write commands and elevated permissions.",
+  "tests": [
+    "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs",
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "LEGACY_WATCHDOG_PRIVATE_EVIDENCE_IN_PUBLIC_PR",
+    "scope": "REPOSITORY_SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required + CodeQL on exact final commit, protected merge, public main readback; do not conflate with historical PR diff erasure."
+}

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import { selectMiraSourceQueries, MIRA_SOURCE_TOPIC_QUERIES } from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
 import {MIRA_CASES} from '../supabase/functions/_shared/mira-entrepreneur-caption.mjs';
 import {resolveMiraFrozenWinner} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
 import {evaluateMiraPublicationFreshness} from '../supabase/functions/_shared/mira-publication-freshness.mjs';
@@ -70,6 +71,30 @@ test('radar treats a failed DataForSEO task as an error instead of zero results'
 test('radar uses short news queries, a 45-day window inside the 60-day gate, and counts task 40101 as no results',()=>{
  assert.match(radar,/MAX_AGE_DAYS=45/);
  assert.doesNotMatch(radar,/mkb excel chaos spreadsheets cijfers/);
- assert.match(radar,/taskCode===40101/);
+ assert.match(radar,/isDataForSeoEmptyNewsTask\(/);
  assert.match(radar,/dataforseo_no_results/);
+});
+
+test('radar uses a fixed eight-call budget but rotates multiple approved entrepreneur topics by date',()=>{
+ assert.match(radar,/selectMiraSourceQueries\(runDate\)/);
+ assert.equal(MIRA_SOURCE_TOPIC_QUERIES.length,12);
+ assert.equal(new Set(MIRA_SOURCE_TOPIC_QUERIES.map(x=>x.topic)).size,12);
+ assert.ok(MIRA_SOURCE_TOPIC_QUERIES.every(x=>x.query.startsWith('mkb ')));
+ assert.ok(MIRA_SOURCE_TOPIC_QUERIES.some(x=>x.query==='mkb onbetaalde facturen debiteuren'));
+ assert.ok(MIRA_SOURCE_TOPIC_QUERIES.some(x=>x.query==='mkb facturering te laat'));
+ const days=['2026-10-28','2026-10-29','2026-10-30'];
+ const searches=days.map(selectMiraSourceQueries);
+ assert.ok(searches.every(v=>v.length===8&&new Set(v).size===8),'never increase daily provider requests or duplicate queries');
+ assert.notDeepEqual(searches[0],searches[1],'next business date changes topic portfolio');
+ assert.equal(new Set(searches.flat()).size,12,'rotation covers all canonical problem families');
+ assert.throws(()=>selectMiraSourceQueries('2026-02-30'),/MIRA_RUN_DATE_INVALID/);
+ assert.throws(()=>selectMiraSourceQueries(''),/MIRA_RUN_DATE_INVALID/);
+ assert.match(radar,/oninbare vorder/);
+ assert.match(radar,/onbetaalde factur/);
+ assert.match(radar,/betalingsachterstand/);
+ assert.match(radar,/directeur\.\*besluit/);
+ assert.match(radar,/facturering\.\*te laat/);
+ assert.match(radar,/klantafhankelijk/);
+ assert.match(radar,/evaluateMiraPublicationFreshness\(/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
 });

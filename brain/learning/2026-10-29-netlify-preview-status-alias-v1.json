@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-preview|netlify-status-alias|20261029-v1",
+  "fingerprint": "ci|netlify-preview-status-alias|portal-v2-live-preview|20261029-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "CONTRACT_CONSUMER_DRIFT_SILENT_RED_CHECK",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 180,
+    "security_sensitive": true
+  },
+  "root_cause": "Netlify now reports the numbered PR alias as commit status target. portal-v2-live-preview.yml only accepted the dashboard deploy URL and failed with 'Untrusted Netlify provider status URL' for at least 180 consecutive runs since 2026-10-27. portal-v2-production-dom-readback.yml already accepted the exact alias. The check is not a required status, so the red runs were not noticed.",
+  "observed_evidence": {
+    "source": "GitHub Actions runs of portal-v2-live-preview.yml, commit statuses and check-runs of PR #5101 and #5102",
+    "consecutive_failed_runs_observed": 180,
+    "first_failed_run_observed": "2026-10-27T14:49:46Z",
+    "required_check": false,
+    "registry_fingerprint_logged": true,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "portal-v2-live-preview.yml accepts only this PR's exact numbered alias, reads release.json on it, requires commit_ref equal to the head SHA and a 24-hex deploy_id, pins the immutable host and then runs the unchanged second verification. The helper tools/ci/netlify-immutable-preview-target.mjs is unchanged and still rejects aliases.",
+  "prevention_rule": "Every consumer of the Netlify status contract accepts the same two forms and no others. Repeated identical failures of any workflow are triaged as P0 even when the check is not required.",
+  "tests": [
+    "tests/brain-netlify-preview-alias-status-v1.test.mjs",
+    "tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+    ],
+    "invariants": [
+      "no alias other than the exact numbered PR alias is accepted",
+      "commit_ref must equal the exact head SHA",
+      "deploy id must be 24 hex and is pinned to the immutable host",
+      "both consumers accept the same forms"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
