@@ -1,4 +1,3 @@
-import { getUser } from '@netlify/identity';
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
@@ -118,7 +117,12 @@ async function select(base,key,table,query){
 export default async function handler(request){
   if(request.method!=='GET')return reply({error:'METHOD_NOT_ALLOWED'},405);
   if(!/^Bearer\s+\S+/i.test(request.headers.get('authorization')||''))return reply({error:'UNAUTHENTICATED'},401);
-  const user=await getUser(request);
+  // Lazily resolve provider SDK only after the unauthenticated request was rejected.
+  // GitHub protected admission runs pure contract tests without installing Netlify packages;
+  // production with valid tokens still uses the same verified Netlify Identity SDK.
+  let user;
+  try { const sdk=await import('@netlify/identity'); user=await sdk.getUser(request); }
+  catch { return reply({error:'IDENTITY_PROVIDER_UNAVAILABLE'},503); }
   if(!user?.id)return reply({error:'UNAUTHENTICATED'},401);
   if(!isPowerhouseAdmin(user,{allowedEmails:String(Netlify.env.get('POWERHOUSE_ADMIN_EMAILS')||'').trim()}))
     return reply({error:'POWERHOUSE_ADMIN_REQUIRED'},403);
