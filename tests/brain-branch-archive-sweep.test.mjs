@@ -53,5 +53,5 @@ test('sweep has a time budget, a circuit breaker and a hard timeout in the janit
   assert.match(src, /SWEEP_BUDGET_SECONDS/);
   assert.match(src, /consecutiveArchiveFailures >= 3/);
   const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
-  assert.match(wf, /timeout 420 node tools\/ci\/branch-archive-sweep\.mjs/);
+  assert.match(wf, /branch_archive_sweep:[\s\S]*timeout-minutes: 20[\s\S]*timeout 1000 node tools\/ci\/branch-archive-sweep\.mjs/);
 });
