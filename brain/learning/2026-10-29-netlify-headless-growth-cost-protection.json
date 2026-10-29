@@ -13,7 +13,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/seo-order-measurement.test.mjs"
+      "tests/brain-netlify-headless-growth-cost-guard-20261029.test.mjs"
     ]
   },
   "root_cause": "Netlify P0 usage_exceeded 503 coexists with ~123,501 HeadlessChrome/149 requests and 22,458 /api/growth-event requests within 14 hours across production and old PR previews. The website measurement injection emits page_view for browser automation as though it were real CRO traffic. The exact Netlify quota/billing credit metric is not independently available.",
@@ -25,6 +25,7 @@
     "growthEndpoint": 22458,
     "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5118",
     "tests": [
+      "tests/brain-netlify-headless-growth-cost-guard-20261029.test.mjs",
       "tests/seo-order-measurement.test.mjs"
     ],
     "productionStatus": "P0 HTTP 503 usage_exceeded even though Netlify deployment says ready. This change does NOT restore quota or public serving.",
