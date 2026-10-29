@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {requiresBrainRuntimeAuthenticatedProof} from '../tools/delivery/netlify-deployment-applicability.mjs';
+// Canonical brain- prefixed test runner includes two-tenant provider-mocked proof regressions.
+// CI shadow/canary evaluation is simulated; production evidence remains a separate release gate.
+import './portal-authenticated-production-proof.test.mjs';
 
 test('real tenant Brain runtime imports require authenticated production proof',()=>{
   for(const path of [
