@@ -41,7 +41,11 @@ async function verifiedBoundAccount(db:any,apiKey:string,toolkit:'instagram'|'li
     .select('status,result,observed_at').eq('tenant_id','canonical').eq('record_id',recordId).maybeSingle();
   if(error)throw new Error('PROVIDER_BINDING_PROOF_READ:'+error.message);
   const proof=stored?.result||{};
-  if(stored?.status!=='ACTIVE'||proof.ready!==true||proof.health_verified!==true){
+  // linkedin-composio-setup writes COMPANY_AUTH_REQUIRED when the personal profile is verified but the
+  // organization role is missing. The personal reaction readback must keep running in that state.
+  const statusOk=stored?.status==='ACTIVE'
+    ||(toolkit==='linkedin'&&stored?.status==='COMPANY_AUTH_REQUIRED'&&proof.personal_ready===true);
+  if(!statusOk||proof.ready!==true||proof.health_verified!==true){
     throw new Error(toolkit.toUpperCase()+'_VERIFIED_PROVIDER_PROOF_REQUIRED');
   }
   if(toolkit==='instagram'&&clean(proof.username).toLowerCase()!=='bedrijfsgeheugen.nl'){
@@ -180,6 +184,19 @@ async function reconcileCompanyMetricEvidence(db:any){
     inference_limits:'impressions are not customers and video views are not reach'};
 }
 
+// Company analytics come from the Windsor ingest (powerhouse_growth_source_daily_v1), not from Composio (403).
+async function companyAnalyticsState(db:any){
+  const {data,error}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('metric_date,quality,source_observed_at').eq('tenant_id','bedrijfsgeheugen')
+    .eq('source_key','linkedin_company_account_provider').order('metric_date',{ascending:false})
+    .order('source_observed_at',{ascending:false}).limit(1);
+  if(error)return {state:'WINDSOR_READBACK_ERROR',error:clean(error.message).slice(0,100)};
+  const row=(data||[])[0];
+  if(!row)return {state:'WINDSOR_NO_ROWS'};
+  const age=Date.now()-Date.parse(row.source_observed_at||'');
+  return {state:age<=48*3600000?'WINDSOR_FRESH':'WINDSOR_STALE',metric_date:row.metric_date,
+    source_observed_at:row.source_observed_at,source:'windsor.ai',composio_org_scope:'403_EXPECTED_WITHOUT_ADMIN_ROLE'};
+}
 async function instagram(db:any,apiKey:string,day:string){
   const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
   const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
@@ -257,11 +274,13 @@ Deno.serve(async(req:Request)=>{
     }
     try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    let companyState:any;
+    try{companyState=await companyAnalyticsState(db);}catch(e){companyState={state:'WINDSOR_READBACK_ERROR',error:clean((e as Error).message).slice(0,100)};}
     const total=(ig?.snapshots||0)+(li?.snapshots||0);
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',company_post_registry:companyRegistry,company_metric_link:companyMetricLink,personal_post_registry:personalRegistry,
+      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,personal_post_registry:personalRegistry,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
