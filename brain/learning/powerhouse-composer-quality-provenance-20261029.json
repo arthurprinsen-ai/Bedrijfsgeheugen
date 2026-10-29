@@ -39,5 +39,9 @@
     "OTHER_RUNTIME_AGENTS",
     "SUPABASE_EDGE_PROVIDER_DEPLOY_AND_READBACK",
     "CUSTOMER_CONVERSION_AND_PAID_REVENUE"
+  ],
+  "prevention_rule": "Composer source updates must fail closed if its authoritative quality-row upsert fails. Only the actual scoped composer writer may state its own actor/skill; before_score requires prior recorded numeric evidence, after_score derives from the current computation. Never infer provider send, lead, order or paid revenue, and do not rewrite canonical historical cycle events.",
+  "test_evidence": [
+    "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
   ]
 }
