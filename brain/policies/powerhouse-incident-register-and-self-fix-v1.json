@@ -72,7 +72,6 @@
     "powerhouse-resource-sustainability",
     "powerhouse-self-improvement-layer",
     "powerhouse-seo-conversion-orders",
-    "powerhouse-source-universe-impact-engine",
     "powerhouse-system-map-governance",
     "powerhouse-toolchain-authority",
     "release-check-reconciliation",
@@ -87,7 +86,7 @@
     "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
     "not_covered_yet": "Runtime agents (edge functions, Make scenarios) have no uniform file to scan; their registration duty is policy only until a runtime check exists."
   },
-  "revision": 2,
+  "revision": 3,
   "continuous_lean_loop": {
     "required": true,
     "scope": [
