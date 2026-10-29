@@ -150,6 +150,19 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
   if (protocol.new_skills_must_carry_marker !== true) throw new Error('incident self-fix must require the marker on new skills');
   if (!Array.isArray(policy.reserved_for_owner) || policy.reserved_for_owner.length === 0) throw new Error('incident self-fix reserved owner decisions are missing');
   if (!Array.isArray(policy.loop_debt_baseline)) throw new Error('incident self-fix loop debt baseline is missing');
+  const lean = policy.continuous_lean_loop;
+  const expectedStages = ['MEASURE','ANALYZE','HYPOTHESIZE','PRIORITIZE','IMPLEMENT','VERIFY','LEARN','REMEASURE'];
+  if (!lean || lean.required !== true) throw new Error('LEAN_LOOP_POLICY_MISSING');
+  if (JSON.stringify(lean.stages) !== JSON.stringify(expectedStages)) throw new Error('LEAN_LOOP_STAGE_DRIFT');
+  if (lean.one_authority_only !== true || lean.one_existing_heartbeat_cadence_only !== true || lean.exclusive_writer_per_obligation !== true) throw new Error('LEAN_LOOP_PARALLEL_AUTHORITY_FORBIDDEN');
+  for (const key of ['cycle','event','memory','incident','improvement_candidate','data_source_registry','source_observations','site_measurements','commercial_outcomes']) {
+    if (typeof lean.canonical_tables?.[key] !== 'string' || !lean.canonical_tables[key].startsWith('public.')) throw new Error('LEAN_LOOP_CANONICAL_AUTHORITY_MISSING:' + key);
+  }
+  if (!Array.isArray(lean.required_material_action_evidence) || lean.required_material_action_evidence.length < 12) throw new Error('LEAN_LOOP_EVIDENCE_INCOMPLETE');
+  if (!Array.isArray(lean.daily_questions) || lean.daily_questions.length !== 4) throw new Error('LEAN_LOOP_QUESTIONS_INCOMPLETE');
+  if (!Array.isArray(lean.hard_gates) || !lean.hard_gates.includes('NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE')) throw new Error('LEAN_LOOP_PROOF_GATE_MISSING');
+  if (typeof lean.data_gap_rule !== 'string' || !lean.data_gap_rule.includes('UNKNOWN is not ZERO')) throw new Error('LEAN_LOOP_MISSING_DATA_GUARD');
+
   const skillsRoot = normalizeSourcePath(rootDir, '.agents/skills');
   const names = fs.existsSync(skillsRoot.absolute)
     ? fs.readdirSync(skillsRoot.absolute).filter(name => fs.existsSync(path.join(skillsRoot.absolute, name, 'SKILL.md'))).sort()
@@ -171,6 +184,7 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
     failClosed: true,
     policySource: INCIDENT_SELF_FIX_POLICY_SOURCE,
     marker: protocol.marker,
+    lean_loop: Object.freeze({ required: true, stages: [...lean.stages], evidence_fields: [...lean.required_material_action_evidence], data_gap_rule: lean.data_gap_rule, limits: lean.enforcement_limit }),
     reservedForOwner: [...policy.reserved_for_owner],
     skills_total: names.length,
     skills_with_protocol: withProtocol.length,
