@@ -34,11 +34,13 @@
   ],
   "evidence": {
     "source": "Supabase-meting 28 okt 2026 (social_posts, social_metric_snapshots, powerhouse_instagram_media_jobs_v1)",
-    "test": "tests/brain-instagram-meme-lus-config-v1.test.mjs"
+    "test": "tests/brain-instagram-meme-lus-config-v1.test.mjs",
+    "honesty_note": "De canary-entry hieronder is een configcontrole (geen live canary). Er draait nog geen Instagram-uitvoering, dus er is geen live canary om te meten."
   },
   "evaluation": {
     "historical_replay": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"],
-    "canary": "not_applicable_security_sensitive_false"
+    "shadow": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"],
+    "canary": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"]
   },
   "openObligation": {
     "state": "OPEN_CONFIG_ONLY",
