@@ -22,7 +22,15 @@
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.floor(Math.random()*16);return(c==='x'?r:(r&3|8)).toString(16);});}
   function toestemming(){try{return localStorage.getItem('bg_consent')==='granted';}catch(e){return false;}}
   function stuur(){
-    if(bezig||!wacht.length)return;bezig=true;
+    if(bezig||!wacht.length)return;
+    // Consent revoked after collection: never upload previously queued detail events.
+    if(!toestemming()){
+      var beperkt=/^(sectie_zichtbaar|formulier_fout|formulier_verlaten|whatsapp_klik|frustratie_klik|popup_getoond|popup_gesloten|popup_conversie|experiment_blootstelling|pagina_verlaten)$/;
+      var voor=wacht.length;wacht=wacht.filter(function(e){return !beperkt.test(String(e.gebeurtenis||''));});
+      if(wacht.length!==voor)bewaar();
+      if(!wacht.length)return;
+    }
+    bezig=true;
     var batch=wacht.slice(0,30);
     var body=JSON.stringify({sessie:sid,gebied:gebied,bron_domein:bron,herkomst:herkomst,toestemming:toestemming(),events:batch});
     fetch(DOEL,{method:'POST',body:body,keepalive:true,credentials:'omit',headers:{'content-type':'text/plain'}})
