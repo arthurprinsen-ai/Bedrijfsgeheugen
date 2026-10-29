@@ -56,6 +56,11 @@ end;
 $function$
 ;
 
+-- Match the current protected production ACL: no browser role executes this SECURITY DEFINER RPC.
+-- Observed before change: anon=false; authenticated=false; service_role=true.
+REVOKE EXECUTE ON FUNCTION public.bg_growth_ingest_event(jsonb) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.bg_growth_ingest_event(jsonb) TO service_role;
+
 -- Conservative, idempotent reconciliation of observed first-party (non-robot) CTA events.
 -- Never interpret unprocessed queue receipts or synthetic/test outcomes as conversions.
 WITH observed AS (
