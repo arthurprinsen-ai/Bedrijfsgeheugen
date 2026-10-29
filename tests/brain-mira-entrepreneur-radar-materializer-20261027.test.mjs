@@ -18,7 +18,7 @@ test('radar searches fresh news only and keeps the shared freshness gate as auth
  assert.match(radar,/topic:'news',days:MAX_AGE_DAYS/);
  assert.match(radar,/serp\/google\/news\/live\/advanced/);
  assert.match(radar,/evaluateMiraPublicationFreshness\(/);
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&Boolean\(portalProblemId\)/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&\(\(Boolean\(portalProblemId\)\|\|Boolean\(personalTopic\)\)\)/);
  assert.doesNotMatch(radar,/topic:'general'/);
  assert.match(radar,/mira-entrepreneur-portal-story-v1/);
  assert.match(radar,/providers,max_age_days:MAX_AGE_DAYS/); // run response shows which provider delivered fresh items
