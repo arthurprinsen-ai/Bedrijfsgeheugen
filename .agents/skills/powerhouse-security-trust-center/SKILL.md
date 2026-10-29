@@ -42,3 +42,15 @@ Fingerprint: `portal|ai-passport|tenant-model-choice-live-projection|v1`.
 - Clear details on identity change; abort/dispose and reject late responses on navigation.
 - Even admin model preferences require same-tenant evidence, never a join to canonical admin inventory.
 - Regression: `tests/brain-portal-ai-passport-model-binding-v1.test.mjs`.
+
+## Incident egress, immutable logging and historical-copy assurance (2026-10-29)
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+- Treat **public GitHub PRs and branches**, code-review diffs, Action artifacts, Netlify previews, webhook/agent tools, email and social providers as **external egress**. Unapproved blog drafts, internal Brain/ledger data, tasks, tenant context and credentials MUST NOT be staged there.
+- Before the last egress writer, enforce explicit approval, content classification, server-side tenant and recipient/destination authorization, deterministic allowlist and duplicate prevention. Missing evidence is a denial, not a deferred green.
+- For each material attempt, persist a sanitized, idempotent audit receipt in **existing private ONE BRAIN** with UTC time, incident fingerprint, owner, source SHA, action, destination class, approval/authorization decision, provider request ID (if one exists), readback, failure class, remediation and regression proof. Do not publish raw drafts, tokens, personal identifiers or internal evidence in PRs, previews or issue comments.
+- Keep separate claims for `TECHNICAL_CONTAINED`, `HISTORIC_PUBLIC_COPIES_UNRESOLVED` and fully `RESOLVED`. Closing a PR, deleting its source branch or deploying a fix does **not** delete public historical PR diffs, cached preview assets, Git objects or third-party copies. Preserve original private evidence and re-evaluate the residual exposure.
+- Privacy controller classification, independent recipient attribution and provider access logs are distinct evidence types. Absence of a match or a bounded regex scan is never proof of exhaustive absence; reassess if contrary evidence emerges.
+- A security decision or failed release must update the same incident/failure fingerprint, its bounded recovery obligation, negative test and preventive skill. Keep the original executor running only on independently authorized lanes; never loosen GitHub Required/BRAIN/CodeQL, approval, OAuth or protected merge to get green.
+- Regression: `tests/brain-social-delivery-agent-handoff-20261029.test.mjs`; factual production authorization evidence remains in the existing private incident register, not this public skill.
