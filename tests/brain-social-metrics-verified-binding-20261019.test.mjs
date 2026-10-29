@@ -9,7 +9,7 @@ test('social metrics reuse verified canonical account IDs, never aliases',()=>{
   assert.match(source,/instagram-composio-setup-current-state-v1/);
   assert.match(source,/linkedin-composio-setup-current-state-v1/);
   assert.match(source,/proof\.ready!==true\|\|proof\.health_verified!==true/);
-  assert.match(source,/stored\?\.status!=='ACTIVE'/);
+  assert.match(source,/stored\?\.status==='ACTIVE'/);
   assert.match(source,/proof\.username\)\.toLowerCase\(\)!=='bedrijfsgeheugen\.nl'/);
   assert.match(source,/clean\(a\?\.id\|\|a\?\.connected_account_id\)===id/);
   assert.match(source,/clean\(a\?\.user_id\)===userId/);
