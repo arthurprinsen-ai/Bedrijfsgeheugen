@@ -317,3 +317,28 @@ Fingerprint: `commercial|contacts|bounded-review-cron|20261020`. Behoud exact be
 
 ## P0 #4198: bounded authority queue, no duplicate sends (2026-10-20)
 Fingerprint: `commercial|authority|queue-preselect-skip-locked|20261020`. Live SQL contact authority review was joining/suppression-evaluating 23k contacts before applying the candidate batch bound. After repeated 30-second statement timeouts and existing single-owner Cron reduction to a 200-row pulse and one 200-row authority batch, the canonical DB migration now materializes a small queue FIRST with `FOR UPDATE SKIP LOCKED` before the original contact join, preserving every existing authorization/suppression/cooldown gate. Cron job `powerhouse-identity-graph-v1` remains active and existing; do not invent consent or disable a scheduled executor. Test exactly on the existing SQL function and real patient rolling coverage, not on a synthetic green response. Parent #4198.
+
+## Continuous CRO Lean / Growth Hacking experimentation (29 oktober 2026)
+Fingerprint: `powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1`.
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+**Iedere bestaande CRO-, Growth Swarm-, SEO-, Heartbeat-, Brain- en website-agent erft dit contract.** Tijdens elke bestaande natuurlijke Heartbeat-cyclus:
+1. **Observe:** gebruik verse en geverifieerde Search Console, GA4, consent-aware `bg_interacties`, `growth_page_daily`, `growth_events`, `growth_outcomes`, scans, CRM/order/finance en externe onderzoekssignalen. Documenteer meetgaten; NULL is onbekend, niet nul.
+2. **Diagnose:** vind aantoonbare drop-off, formulierfrictie, CTA/WhatsApp-hulpbehoefte, lage intent-match, mobiele toegankelijkheid of meetlacunes. Koppel bron-ID, segment, noemer, tijdvenster, betrouwbaarheid en tenant.
+3. **Hypothesize:** schrijf toetsbare hypothese/falsifier, customer problem, interventie, baseline, verwacht minimaal relevant effect, primaire omzetgerichte metriek, tijdshorizon, sample-floor, controls, guardrails, rollback, eigenaar en documenteer de datum vóór eerste exposure.
+4. **Prioritize:** incrementele betaalde bijdrage (onbekend => UNKNOWN), confidence, reach, effort, kosten, risico en klantwaarde; reserveer exploratieruimte. Geen ongefundeerde impactcijfers.
+5. **Experiment:** test `whatsapp_prompt`, `progressive_form`, `contextual_help`, `exit_intent` (desktop-only), `interactive_qualifier`, `roi_calculator`, `scan_followup`, `cta_copy`. Persistente stabiele randomisatie via bestaande `powerhouse_experiment_assignments` vóór treatment; controlegroep; maximaal één relevante prompt per sessie; mobiele dialoog niet blokkerend; sluitbaar en toetsenbordtoegankelijk.
+6. **Evaluate:** meetsources en exposurededupe, provider-ID, mature cohorts, datafout/SRM (p<0,001), sample-/power-floor, vooraf vastgelegde primaire KPI, 95%-interval, guardrailregressies (privacy, CLS/INP, SEO, accessibility, formulieren, vertrouwen, betaalde conversie), geen tussentijdse ongecorrigeerde winclaims.
+7. **Implement:** winnaar is alleen `CANDIDATE_WIN`. Bestaande BG169/protected merge, Required/BRAIN/CodeQL, exact main→deploy→browser/provider readback en onafhankelijke lead/order/revenue proof zijn nodig; automatische rollback bij regressie.
+8. **Learn and remeasure:** registreer positieve, negatieve én onbesliste tests met before/after, beslissing, root cause, bewijs, failed approach, preventie en regressietest. Append via bestaande `powerhouse_cycle_events`→`brain_records` en toon tenant-gescoped in bestaand portaal. Geen alternatieve writer, database, scheduler of extern dispatch-kanaal.
+
+Codecontract: `tools/growth-intelligence/cro-experiment-cycle.mjs` en tests `tools/growth-intelligence/cro-experiment-cycle.test.mjs`; dezelfde bestaande `heartbeat-adapter.mjs` geeft `croOpportunities` en `croLearningProposals` door als voorstellen, **niet** als bewijs van persistente uitvoering. `DESIGN_BLOCKED`, `MEASUREMENT_REQUIRED`, `INCONCLUSIVE` en `INVALID` blijven zichtbaar en mogen niet worden overgeschreven met groen. Bekende meetleemtes krijgen één dedupliceerbare obligation binnen de huidige lineage, waarna agent instrumenteert, test en opnieuw meet.
+
+Onderzoek:
+- https://exp-platform.com/Documents/2023-03-11EncyclopeiaMLDSABTestingFinal.pdf
+- https://docs.statsig.com/experiments/monitoring/srm
+- https://www.optimizely.com/optimization-glossary/ab-testing
+- https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials
+- https://autoriteitpersoonsgegevens.nl/themas/internet-slimme-apparaten/cookies/trackingcookies
+
+**Release-truth:** deze toevoeging op PR #4901 is `SOURCE_CANDIDATE`; geen productieactivatie, verbetering van conversie of nieuwe orders bewezen totdat exact-head CI, beschermd merge, runtime- en portaal-readback geslaagd zijn.
