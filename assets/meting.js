@@ -16,8 +16,8 @@
      Eén keer per tabblad bepaald en bewaard; nooit persoonsgegevens. */
   var herkomst='';try{herkomst=sessionStorage.getItem('bg_meting_herkomst')||'';if(!herkomst){var q=new URLSearchParams(location.search);var u=[q.get('utm_source'),q.get('utm_medium'),q.get('utm_campaign')].filter(Boolean).map(function(x){return String(x).toLowerCase().replace(/[^a-z0-9._ -]/g,'').slice(0,40);});herkomst=u.length?u.join(' / '):(bron||'(direct)');sessionStorage.setItem('bg_meting_herkomst',herkomst);}}catch(e){herkomst=bron||'';}
   var WACHT_SLEUTEL='bg_meting_niet_bevestigd_v2',wacht=[],totaal=0,MAX=400,bezig=false,poging=0;
-  try{var oud=JSON.parse(sessionStorage.getItem(WACHT_SLEUTEL)||'[]');if(Array.isArray(oud))wacht=oud.filter(function(x){return x&&typeof x==='object'&&typeof x.event_uid==='string';}).slice(-150);}catch(e){}
-  function bewaar(){try{sessionStorage.setItem(WACHT_SLEUTEL,JSON.stringify(wacht.slice(-150)));}catch(e){}}
+  try{var oud=JSON.parse(sessionStorage.getItem(WACHT_SLEUTEL)||'[]');if(Array.isArray(oud))wacht=oud.filter(function(x){return x&&typeof x==='object'&&typeof x.event_uid==='string';}).slice(-400);}catch(e){}
+  function bewaar(){try{sessionStorage.setItem(WACHT_SLEUTEL,JSON.stringify(wacht.slice(-400)));}catch(e){}}
   function eventId(){try{if(crypto.randomUUID)return crypto.randomUUID();}catch(e){}
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.floor(Math.random()*16);return(c==='x'?r:(r&3|8)).toString(16);});}
   function toestemming(){try{return localStorage.getItem('bg_consent')==='granted';}catch(e){return false;}}
@@ -37,15 +37,15 @@
   }
   function meet(e){if(totaal>=MAX)return;totaal++;e.pad=location.pathname;e.gebeurd_op=new Date().toISOString();e.event_uid=eventId();wacht.push(e);bewaar();if(wacht.length>=10)stuur();}
   function ga(naam,p){try{if(toestemming()&&typeof window.gtag==='function')window.gtag('event',naam,p);}catch(e){}}
-  function tekstVan(el){return String(el.getAttribute('data-bg-meet')||el.getAttribute('aria-label')||el.id||el.getAttribute('title')||el.tagName||'').replace(/\s+/g,' ').trim().slice(0,120);}
+  function tekstVan(el){return String(el.getAttribute('data-bg-meet')||el.id||el.tagName||'').replace(/\s+/g,' ').trim().slice(0,120);}
   function onderdeelVan(el){var c=el.closest&&el.closest('[data-bg-component]');if(c)return c.getAttribute('data-bg-component').slice(0,80);var i=el.parentElement&&el.parentElement.closest&&el.parentElement.closest('section[id],[id]');return i?String(i.id).slice(0,80):'';}
   meet({gebeurtenis:'pagina'});
-  var vorig=location.pathname;function route(){if(location.pathname!==vorig){vorig=location.pathname;gehaald={};meet({gebeurtenis:'pagina'});}}
+  var vorig=location.pathname;function route(){if(location.pathname!==vorig){vorig=location.pathname;gehaald={};maxScroll=0;meet({gebeurtenis:'pagina'});}}
   addEventListener('popstate',route);addEventListener('hashchange',route);
   /* Calendly (11 sept 2026): geef de tabbladcode en de pagina mee als utm_content en utm_term, zodat het brein een geboekt
      gesprek aan de pagina en bron van dit bezoek kan koppelen (bg-calendly-sync). Geen naam of e-mailadres. */
   function tagCalendly(el){try{if(!el||el.tagName!=='A'||!/(^|\.)calendly\.com$/i.test(new URL(el.href).hostname)||!sid)return;var u=new URL(el.href);u.searchParams.set('utm_source','bedrijfsgeheugen');u.searchParams.set('utm_medium','site');if(herkomst)u.searchParams.set('utm_campaign',herkomst.slice(0,60));u.searchParams.set('utm_content',sid);u.searchParams.set('utm_term',location.pathname.slice(0,120));el.href=u.toString();}catch(e){}}
-  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),d=el.getAttribute('href')||'';meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});setTimeout(route,50);},true);
+  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),d='';try{var raw=el.getAttribute('href')||'';if(/^mailto:/i.test(raw))d='mailto';else if(/^tel:/i.test(raw))d='tel';else if(raw){var link=new URL(raw,location.href);d=link.hostname===location.hostname?link.pathname:'extern:'+link.hostname;}}catch(e){}meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});setTimeout(route,50);},true);
   var drempels=[10,25,50,75,90,100],gehaald={},wachtScroll=0,maxScroll=0;
   function scrol(){wachtScroll=0;var h=Math.max(document.documentElement.scrollHeight-window.innerHeight,1);var pct=Math.min(100,Math.round((window.scrollY||window.pageYOffset||0)/h*100));maxScroll=Math.max(maxScroll,pct);for(var i=0;i<drempels.length;i++){var d=drempels[i];if(pct>=d&&!gehaald[d]){gehaald[d]=1;meet({gebeurtenis:'scroll',diepte_pct:d});ga('scroll_diepte',{percentage:d});}}}
   addEventListener('scroll',function(){if(!wachtScroll)wachtScroll=setTimeout(scrol,250);},{passive:true});
@@ -74,7 +74,7 @@
   document.addEventListener('click',function(ev){
     var a=ev.target&&ev.target.closest&&ev.target.closest('a[href]');
     if(a){try{var h=new URL(a.href).hostname.toLowerCase();
-      if(h==='wa.me'||h==='api.whatsapp.com'||h==='web.whatsapp.com')meet({gebeurtenis:'whatsapp_klik',element_tekst:tekstVan(a),onderdeel:onderdeelVan(a),element_doel:'extern:'+h});
+      if(toestemming()&&(h==='wa.me'||h==='api.whatsapp.com'||h==='web.whatsapp.com'))meet({gebeurtenis:'whatsapp_klik',element_tekst:tekstVan(a),onderdeel:onderdeelVan(a),element_doel:'extern:'+h});
     }catch(e){}}
     if(!toestemming())return;
     var target=ev.target&&ev.target.closest&&ev.target.closest('button,[role="button"],a[data-bg-meet]');if(!target)return;
