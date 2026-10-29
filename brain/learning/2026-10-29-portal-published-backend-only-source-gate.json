@@ -13,13 +13,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs",
+      "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
     ],
     "shadow": [
-      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs",
+      "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
     ],
     "canary": [
-      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs",
+      "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
     ]
   },
   "root_cause": "After exact public Portal source commit 481c2903 was deployed, main advanced with three actual Supabase-only source files and governance/CI changes, all classified backend-only with deploymentRequired=false. The existing workflow_dispatch historic-published-SHA scope only permitted a hardcoded governance allowlist, so legitimately deployment-not-required source ancestry could not be independently browser-verified.",
@@ -31,6 +34,7 @@
       "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
     ],
     "ciOnlyCanary": "Mocked negative/positive gate tests. Does NOT substitute actual production browser readback.",
-    "realProductionWorkflow": "PENDING protected exact PR merge, then manual dispatch existing Portal V2 Production DOM Readback against immutable published 481c SHA with approved merged #5115."
+    "realProductionWorkflow": "PENDING protected exact PR merge, then manual dispatch existing Portal V2 Production DOM Readback against immutable published 481c SHA with approved merged #5115.",
+    "legacyProtectedVisualReplayContract": "Updated existing PR #4215 regression to require exact main-only dispatch, git ancestry, scope helper with independent non-Netlify backend classification and untouched strict visual baseline."
   }
 }
