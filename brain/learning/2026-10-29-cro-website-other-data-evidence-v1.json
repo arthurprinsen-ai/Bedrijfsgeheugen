@@ -59,5 +59,20 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "terminal_rule": "Keep draft PR and CLOSED-LOOP status pending required checks, two-tenant access regression, true consented browser event receipt and Supabase stored readback; no false green or fake lead uplift."
+  "terminal_rule": "Keep draft PR and CLOSED-LOOP status pending required checks, two-tenant access regression, true consented browser event receipt and Supabase stored readback; no false green or fake lead uplift.",
+  "ci_recovery_20261029": {
+    "source_run": "40914904245",
+    "failed_step": "Require canonical learning evidence at protected admission",
+    "root_cause": "Historical replay imported powerhouse-cro-other-data.mjs, eagerly requiring @netlify/identity, but standalone admission Node tests do not install site runtime dependencies.",
+    "verified_error": "ERR_MODULE_NOT_FOUND: @netlify/identity",
+    "fix": "Defer SDK import until after method/JWT preflight; missing SDK stays 503, no user/access data leaked, existing isPowerhouseAdmin and tenant scope unchanged.",
+    "regression": "tests/brain-cro-other-data.test.mjs tests/portal-cro-other-data.test.mjs",
+    "guardrails": [
+      "no provider bypass",
+      "no privileged fallback",
+      "no new scheduler",
+      "no false production proof"
+    ],
+    "current_state": "CANDIDATE_NOT_PRODUCTION_VERIFIED"
+  }
 }
