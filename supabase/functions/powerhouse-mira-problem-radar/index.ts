@@ -123,5 +123,11 @@ Deno.serve(async(req:Request)=>{
   }
  }
  const mat=await db.rpc('powerhouse_materialize_mira_problem_recommendation_v1',{p_date:runDate});
- return json({ok:errors.length===0,runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,materialized:mat.data,errors});
+ if(mat.error)errors.push('mira_materialize:'+mat.error.message);
+ // Original personal source reservation RPC, same single daily radar execution.
+ // This is source->recommendation only: no post dispatch or uniqueness bypass.
+ const personalRotation=await db.rpc('powerhouse_ensure_personal_source_rotation_v2',{p_date:runDate});
+ if(personalRotation.error)errors.push('personal_source_rotation:'+personalRotation.error.message);
+ return json({ok:errors.length===0,runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
+   materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors});
 });
