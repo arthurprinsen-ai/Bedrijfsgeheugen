@@ -29,5 +29,6 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
-  }
+  },
+  "prevention": "Require real article publication date and fresh approved topic before source selection. Keep source-specific idempotency, historical duplicate validation and ordinary publication verification."
 }
