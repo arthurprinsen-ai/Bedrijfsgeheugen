@@ -35,17 +35,21 @@
     "A material change must update the Brain learning record, activity ledger and human change documentation, and require protected tests and production readback."
   ],
   "tests": [
-    "tests/portal-cro-other-data.test.mjs"
+    "tests/portal-cro-other-data.test.mjs",
+    "tests/brain-cro-other-data.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-cro-other-data.test.mjs checks zero vs missing and incomplete causal evidence"
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "shadow": [
-      "Consent-denied/granted site click + growth-event receipt and growth_page_daily natural update: pending production verification"
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "production_readback": [
       "NOT_VERIFIED: require protected exact main Netlify release and authenticated browser + Supabase persisted event proof"
+    ],
+    "canary": [
+      "tests/brain-cro-other-data.test.mjs"
     ]
   },
   "compiler": {
