@@ -14,6 +14,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-canonical-browser-release-fence-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-canonical-browser-release-fence-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-canonical-browser-release-fence-20261029.test.mjs"
     ]
   },
   "root_cause": "Two exact-main Portal V2 DOM readback attempts on SHA 481c2903 were interrupted by 403 or no-response navigation on the immutable Netlify deploy alias. 14/16 browser tests passed per run, failures shifted between tests. Exact SHA/deploy manifest and real canonical production browser URL were publicly HTTP 200. Netlify/Playwright internal mechanism remains unproven.",
@@ -33,6 +39,7 @@
       "tests/brain-portal-canonical-browser-release-fence-20261029.test.mjs"
     ],
     "productionValidation": "PENDING_EXACT_PROTECTED_MERGE_AND_WORKFLOW_DISPATCH",
-    "closure": "DO_NOT_CLOSE_WITHOUT_NEW_BROWSER_E2E_PASS"
+    "closure": "DO_NOT_CLOSE_WITHOUT_NEW_BROWSER_E2E_PASS",
+    "evaluation_scope": "CI mock-source historical/shadow/canary contract only; real provider and browser canary remains separate mandatory protected workflow_dispatch."
   }
 }
