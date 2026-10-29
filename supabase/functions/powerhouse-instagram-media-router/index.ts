@@ -93,7 +93,7 @@ Deno.serve(async req=>{
  // The original producer may still be marked GENERATING after its OpenArt
  // history was independently rejected. Recover from immutable ONE BRAIN once,
  // without buying/rechecking rejected bytes or creating a second publisher.
- if(action==='preflight'&&job?.status==='GENERATING'&&!historical){
+ if(action==='preflight'&&['GENERATING','WAITING_ASSET','WAITING_PROVIDER_CONNECTION'].includes(clean(job?.status))&&!historical){
    const restored=await reconcileHistoricalRejectedGeneratingJob(db,{job,ob});
    if(restored.kind==='rejected')
      return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',

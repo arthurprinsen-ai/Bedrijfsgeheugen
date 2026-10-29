@@ -6,6 +6,13 @@ export async function writeMediaPreflight(db,job,row){
      job?.asset_manifest?.automatic_generation_budget_exhausted===true){
     return {kind:'preserved',status:job.status};
   }
+  // A rejected exact OpenArt history is an evidence-bearing state, not an
+  // empty producer slot. Plain preflight MUST NOT demote or clear it even
+  // when no acceptable asset_url exists. Only an independently NEW submitted
+  // and verified candidate may clear the rejection via submit_asset.
+  if(job?.status==='WAITING_PROOF'&&proofReject(job?.last_error)){
+    return {kind:'preserved',status:'WAITING_PROOF'};
+  }
   // Repeated readiness polls with identical business state must not write or
   // increment attempts. Compare all material fields, excluding updated_at.
   if (job?.id
@@ -177,7 +184,12 @@ export async function checkHistoricalMiraHistoryRejection(db,historyId){
  */
 export async function reconcileHistoricalRejectedGeneratingJob(db,{job,ob}={}){
   const hist=String(job?.asset_manifest?.openart_history_id||'').trim();
-  if(job?.status!=='GENERATING'||!job?.id||!job?.updated_at||
+  // A legacy preflight may have demoted WAITING_PROOF back to WAITING_ASSET
+  // and erased last_error after an independently rejected OpenArt history.
+  // Recover ONLY this same original non-materialized history from ONE BRAIN.
+  const eligible=['GENERATING','WAITING_ASSET','WAITING_PROVIDER_CONNECTION'].includes(String(job?.status||''));
+  const hasNewAsset=!!String(job?.asset_manifest?.asset_url||job?.asset_manifest?.assetUrl||'').trim();
+  if(!eligible||hasNewAsset||!job?.id||!job?.updated_at||
      !/^[A-Za-z0-9]{8,64}$/.test(hist)||ob?.external_id||
      ob?.live_proven_at)return {kind:'ignored'};
   const {data,error}=await db.from('brain_failure_occurrences')
@@ -212,7 +224,7 @@ export async function reconcileHistoricalRejectedGeneratingJob(db,{job,ob}={}){
   const write=await db.from('powerhouse_instagram_media_jobs_v1')
     .update({status:'WAITING_PROOF',last_error:errorCode,next_action:nextAction,
       updated_at:updatedAt})
-    .eq('id',job.id).eq('status','GENERATING').eq('updated_at',job.updated_at)
+    .eq('id',job.id).eq('status',job.status).eq('updated_at',job.updated_at)
     .select('id').maybeSingle();
   if(write.error)return {kind:'failed',code:String(write.error.code||'MEDIA_REJECTION_RECOVERY_WRITE_FAILED')};
   if(!write.data)return {kind:'stale'};
