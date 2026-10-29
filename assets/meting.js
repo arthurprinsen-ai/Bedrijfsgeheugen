@@ -43,7 +43,15 @@
       }).catch(function(){poging=Math.min(poging+1,7);bewaar();setTimeout(stuur,Math.min(60000,1000*Math.pow(2,poging)));})
       .finally(function(){bezig=false;if(wacht.length&&poging===0)setTimeout(stuur,0);});
   }
-  function meet(e){if(totaal>=MAX)return;totaal++;e.pad=location.pathname;e.gebeurd_op=new Date().toISOString();e.event_uid=eventId();wacht.push(e);bewaar();if(wacht.length>=10)stuur();}
+  function meet(e){
+    if(totaal>=MAX||wacht.length>=MAX){
+      // Never evict an unacknowledged event merely to make room for a newer one.
+      // Count the lost new observations explicitly so local QA can detect saturation.
+      try{var k='bg_meting_queue_overflow_v1';sessionStorage.setItem(k,String((Number(sessionStorage.getItem(k))||0)+1));}catch(_e){}
+      stuur();return;
+    }
+    totaal++;e.pad=location.pathname;e.gebeurd_op=new Date().toISOString();e.event_uid=eventId();wacht.push(e);bewaar();if(wacht.length>=10)stuur();
+  }
   function ga(naam,p){try{if(toestemming()&&typeof window.gtag==='function')window.gtag('event',naam,p);}catch(e){}}
 
   /* Commerciële meetpunten naar de BESTAANDE durable Powerhouse growth queue.
