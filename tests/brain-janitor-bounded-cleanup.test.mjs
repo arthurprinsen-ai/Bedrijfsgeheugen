@@ -21,3 +21,16 @@ test('cleanup mutations preserve fresh-state safety checks',()=>{
   assert.match(step,/\[ "\$latest_sha" = "\$head_sha" \]/);
   assert.match(step,/\[ "\$branch" != main \]/);
 });
+
+test('branch deletion reads protection without the jq false-default trap', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const filter = 'if .protected == false then "false" else "true" end';
+  const run = json => execFileSync('jq', ['-r', filter], { input: json, encoding: 'utf8' }).trim();
+  assert.equal(run('{"protected":false}'), 'false');
+  assert.equal(run('{"protected":true}'), 'true');
+  assert.equal(run('{}'), 'true');
+  // `.protected // true` turns a literal false into true, so no branch was ever deletable.
+  assert.equal(execFileSync('jq', ['-r', '.protected // true'], { input: '{"protected":false}', encoding: 'utf8' }).trim(), 'true');
+  const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
+  assert.equal((wf.match(/if \.protected == false then "false" else "true" end/g) || []).length, 2);
+});
