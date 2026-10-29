@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "fingerprint": "portal|powerhouse-control-plane|missing-identity-jwt|20261029-v1",
+  "obligation_id": "PORTAL-CONTROL-PLANE-JWT-20261029",
+  "failure_class": "PORTAL_ADMIN_IDENTITY_TOKEN_MISSING",
+  "root_cause": "Original portal Control Plane browser code sent only same-origin credentials with no Netlify Identity Bearer JWT; backend invoked getUser() without original Request.",
+  "observed_evidence": {
+    "source_files": [
+      "portal-v2/control-plane-cockpit.js",
+      "netlify/functions/powerhouse-control-plane.mjs"
+    ],
+    "netlify_window": "2026-10-29 18:30–18:54 UTC",
+    "netlify_auth_denied_401": 49,
+    "netlify_aborted_499": 2,
+    "claim_boundary": "401 logs do not prove which visitor made each request"
+  },
+  "fix": "Reuse existing ensureIdentityWidget, currentUser.jwt and bearer header on same endpoint, require GET and validate request JWT through getUser(request), preserve admin role gate and Supabase server-side role.",
+  "prevention_rules": [
+    "No admin data request without a real current Identity user JWT",
+    "No legacy ambient getUser() when original Request is available",
+    "Do not infer authenticated portal readback or revenue from HTTP 401/403",
+    "Endpoint remains admin-only, read-only, with same-origin and no JWT leak",
+    "No extra scheduler, publisher, data store or second portal",
+    "Protected merge, exact Netlify runtime SHA and independent authenticated browser 200 are separate evidence gates"
+  ],
+  "compiler": {
+    "failure_class": "OBSERVABILITY",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/control-plane-cockpit.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/control-plane-cockpit.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/control-plane-cockpit.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED: require exact protected main/Netlify and authenticated owner browser HTTP 200 + 401/403"
+    ]
+  },
+  "evidence": {
+    "observation": "49 401s and 2 499s observed by Netlify for original control plane URL; release source inspected",
+    "regression": [
+      "portal-v2/tests/control-plane-cockpit.test.mjs"
+    ],
+    "protected_main_proven": false,
+    "authenticated_portal_readback_proven": false,
+    "customer_outcome_proven": false,
+    "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5150"
+  },
+  "no_new_scheduler": true,
+  "no_new_writer": true,
+  "no_new_store": true
+}
