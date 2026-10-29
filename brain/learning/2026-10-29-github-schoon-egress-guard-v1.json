@@ -4,15 +4,15 @@
   "date": "2026-10-29",
   "status": "CANDIDATE_UNVERIFIED",
   "obligation_id": "ci-egress-guard|github-schoon-egress-v1|20261029-v1",
-  "fingerprint": "ci|agent-egress-unproven|github-branch-debris|20261029-v1",
+  "fingerprint": "agents|external-recipient|internal-content-leak|20261029-v1",
   "compiler": {
-    "failure_class": "AGENT_EGRESS_UNPROVEN_AND_BRANCH_DEBRIS",
+    "failure_class": "EXTERNAL_RECIPIENT_LEAK",
     "scope": "AUTOMATION",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "root_cause": "Een extern persoon ontving een intern concept. Niets in de CI bewees dat agents alleen deze repository raken, 13 workflows hadden geen permissions-blok, en de Janitor zag door een cyclus van 32x30 branches en alleen ancestry-controle nooit squash-gemergde branches (3257 branches).",
+  "root_cause": "OPEN RCA (UNKNOWN). Bewezen: in de GitHub-laag bestaat geen route naar een vreemde repo of account (egress-guard 0 overtredingen). De route zit buiten GitHub (Notion, Composio, Make of mail) en is nog niet gevonden; de Make-koppeling was in deze sessie niet bereikbaar.",
   "fix": "tools/ci/egress-guard.mjs faalt op vreemde repo, PAT-secret, write-all of ontbrekend permissions-blok en draait in de delivery-lane en voor de dagelijkse optimizer. 13 workflows krijgen contents: read, 20 verificatieworkflows annuleren verouderde PR-runs, de Janitor verwijdert ook branches met exacte head-sha van een gemergede PR in dezelfde repo.",
   "prevention_rule": "Elke workflow heeft een expliciet permissions-blok en geen workflow of CI-script schrijft naar een andere repository of gebruikt een niet-allowlisted secret.",
   "tests": [
@@ -39,5 +39,34 @@
     "netlify_preview": null,
     "production": null,
     "real_conversion_lift_proven": false
-  }
+  },
+  "title": "Interne taak en concept-blog bij een externe ontvanger: agent-egress moet bewezen binnen de eigen kanalen blijven",
+  "failure_class": "EXTERNAL_RECIPIENT_LEAK",
+  "impact": "Op 28 okt 2026 ontving een externe LinkedIn-contactpersoon via een automatische koppeling een interne taak en een concept-blog (Twinfield-koppelingen) in zijn eigen AI-assistent. De interne kwaliteitspoort had de blog al op draft gezet; er is geen publicatie bevestigd.",
+  "failed_approaches": [
+    "Aannemen dat de oorzaak in GitHub zit zonder uitgaande logs te vergelijken",
+    "Een nieuw register of een tweede scheduler naast brain_failure_registry"
+  ],
+  "regression_contract": "tests/brain-egress-guard.test.mjs",
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "security"
+  ],
+  "evidence": [
+    "AGENTS.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "docs/learning/known-error-preflight-contract.md",
+    "tools/ci/egress-guard.mjs",
+    "PR #5066"
+  ],
+  "mandatory_preflight": true,
+  "open_obligation": "RCA van de niet-GitHub-route: tipgever vraagt om platform/adres/kopie van het bericht, vergelijk met uitgaande Notion-, Composio-, Make- en mailtelemetrie; tot die tijd geldt elke uitgaande schrijfactie naar een niet-allowlisted ontvanger als geblokkeerd.",
+  "outcome": "CANDIDATE. Egress-guard, minimale rechten en registratie zijn voorgesteld; PROVEN pas na exact-SHA CI, merge, de RCA van de niet-GitHub-route en ontdekbaarheid in de volgende preflight.",
+  "prevention": [
+    "NO_WRITE_TO_NON_ALLOWLISTED_RECIPIENT",
+    "EVERY_WORKFLOW_HAS_EXPLICIT_PERMISSIONS",
+    "NO_PERSONAL_ACCESS_TOKEN_SECRETS",
+    "OPEN_RCA_STAYS_OPEN_UNTIL_ROUTE_PROVEN"
+  ]
 }
