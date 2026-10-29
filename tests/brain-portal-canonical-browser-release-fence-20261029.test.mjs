@@ -20,9 +20,12 @@ test('real canonical main browser target is permitted only after both independen
  assert.ok(visited[1][0].startsWith(canonicalUrl+'/release.json?'));
  assert.ok(visited.every(([,options])=>options.cache==='no-store'&&options.headers['cache-control']==='no-cache'));
 });
+test('a hostile lookalike hostname is not the canonical exact origin',()=>{
+  assert.notEqual(new URL('https://www.bedrijfsgeheugen.nl.evil.example/release.json').origin,canonicalUrl);
+});
 test('a drifting public main SHA is a hard failure (no screenshot or auth gate bypass)',async()=>{
  await assert.rejects(()=>verifyPortalCanonicalBrowserRelease({immutableUrl,expectedSha,expectedDeployId,
-  fetchImpl:async url=>response(url.startsWith(canonicalUrl)?{...good,commit_ref:'f'.repeat(40)}:good)}),
+  fetchImpl:async url=>response(new URL(url).origin===canonicalUrl?{...good,commit_ref:'f'.repeat(40)}:good)}),
   /PORTAL_BROWSER_RELEASE_SHA_OR_DEPLOY_MISMATCH/);
 });
 test('wrong immutable deploy ID, unauthorized access, or incomplete provider identity fails closed',async()=>{
