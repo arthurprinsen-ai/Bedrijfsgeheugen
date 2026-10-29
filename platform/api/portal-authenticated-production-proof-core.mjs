@@ -58,7 +58,7 @@ export async function runPortalAuthenticatedProductionProof({
   if(!/^[0-9a-f]{40}$/.test(commitRef))return {...base,failure_code:'INVALID_COMMIT_REF'};
   if(!deployId)return {...base,failure_code:'DEPLOY_ID_MISSING'};
   if(!immutableUrl.startsWith('https://'))return {...base,failure_code:'IMMUTABLE_DEPLOY_URL_MISSING'};
-  if(!identityAdmin?.createUser||!identityAdmin?.deleteUser)return {...base,failure_code:'IDENTITY_ADMIN_UNAVAILABLE'};
+  if(!identityAdmin?.createUser||!identityAdmin?.getUser||!identityAdmin?.updateUser||!identityAdmin?.deleteUser)return {...base,failure_code:'IDENTITY_ADMIN_UNAVAILABLE'};
   if(typeof getIdentityConfigFn!=='function')return {...base,failure_code:'IDENTITY_CONFIG_UNAVAILABLE'};
 
   const createdUsers=[];
@@ -89,6 +89,23 @@ export async function runPortalAuthenticatedProductionProof({
       });
       if(!user?.id)throw fail('SYNTHETIC_USER_CREATE_FAILED');
       createdUsers.push(user.id);
+
+      // Netlify Identity may omit custom app_metadata at initial user creation.
+      // Read back the admin-owned tenant claim and, only for this new synthetic
+      // user, repair it through the official admin API before token exchange.
+      // Do not change the signed-JWT gate or accept user-controlled metadata.
+      const storedUser=await identityAdmin.getUser(user.id);
+      const storedMetadata=storedUser?.appMetadata||storedUser?.app_metadata||{};
+      if(clean(storedMetadata.tenantId)!==tenantId){
+        await identityAdmin.updateUser(user.id,{
+          app_metadata:{...storedMetadata,tenantId},
+        });
+        const updatedUser=await identityAdmin.getUser(user.id);
+        const updatedMetadata=updatedUser?.appMetadata||updatedUser?.app_metadata||{};
+        if(clean(updatedMetadata.tenantId)!==tenantId){
+          throw fail('IDENTITY_ADMIN_TENANT_METADATA_NOT_PERSISTED');
+        }
+      }
 
       const tokenResponse=await fetchImpl(`${identityUrl}/token`,{
         method:'POST',

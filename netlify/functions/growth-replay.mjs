@@ -1,4 +1,5 @@
 import { getStore } from '@netlify/blobs';
+import { validateDatahubAck } from '../../tools/seo-growth/datahub-ack-contract.mjs';
 import { timingSafeEqual } from 'node:crypto';
 
 const MAX_REPLAY=25;
@@ -44,7 +45,8 @@ async function persistToDataHub(kind,record){
   if(kind==='event'&&!record?.datahub_event)return {attempted:false,persisted:false,reason:'datahub-event-missing'};
   if(kind==='outcome'&&!record?.outcome)return {attempted:false,persisted:false,reason:'datahub-outcome-missing'};
   const result=await dataHubPost(payload);
-  return {attempted:result.attempted,persisted:result.ok,status:result.status,reason:result.ok?'stored':result.reason,readback:result.ok?result.body?.result:null};
+  const verified=result.ok&&validateDatahubAck(kind,record,result.body);
+  return {attempted:result.attempted,persisted:verified,status:result.status,reason:verified?'stored':result.ok?'invalid-datahub-ack':result.reason,readback:verified?result.body.result:null};
 }
 async function markBrainQueue(queueId,delivery,attempts){
   if(!queueId)return {attempted:false,ok:false,reason:'queue-id-missing'};

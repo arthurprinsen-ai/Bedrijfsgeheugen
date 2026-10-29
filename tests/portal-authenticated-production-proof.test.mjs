@@ -33,6 +33,8 @@ test('production proof authenticates two distinct tenants on the immutable deplo
       const slot=input.email.includes('-a-')?'a':'b';
       return {id:`proof-user-${slot}`};
     },
+    getUser:async id=>({id,appMetadata:seen.created.find(x=>x.email.includes(id.endsWith('-a')?'-a-':'-b-')).data.app_metadata}),
+    updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
     deleteUser:async id=>seen.deleted.push(id),
   };
   const fetchImpl=async(url,options)=>{
@@ -79,6 +81,8 @@ test('failed authenticated HTTP proof fails closed but still deletes the synthet
     deploy,
     identityAdmin:{
       createUser:async()=>({id:'proof-user'}),
+      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),
+      updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
       deleteUser:async id=>deleted.push(id),
     },
     getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
@@ -103,6 +107,8 @@ test('cleanup failure can never leave a green production proof',async()=>{
     deploy,
     identityAdmin:{
       createUser:async()=>({id:'proof-user'}),
+      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),
+      updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
       deleteUser:async()=>{throw new Error('delete failed')},
     },
     getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
@@ -170,7 +176,7 @@ test('wrong-tenant JWT fails closed before any portal payload is returned',async
   const token=jwt({sub:'proof-user',app_metadata:{tenantId:'other-tenant'}});
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
-    identityAdmin:{createUser:async()=>({id:'proof-user'}),deleteUser:async id=>deleted.push(id)},
+    identityAdmin:{createUser:async()=>({id:'proof-user'}),getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},deleteUser:async id=>deleted.push(id)},
     getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
     fetchImpl:async()=>({ok:true,status:200,json:async()=>({access_token:token})}),
     randomPassword:()=> 'x'.repeat(40),
@@ -180,4 +186,76 @@ test('wrong-tenant JWT fails closed before any portal payload is returned',async
   assert.equal(proof.tenant_count_verified,0);
   assert.equal(proof.cross_tenant_scope_verified,false);
   assert.deepEqual(deleted,['proof-user']);
+});
+
+test('production proof repairs admin-owned metadata before requesting signed JWTs for two synthetic tenants',async()=>{
+  const users=new Map(),updates=[],deleted=[];
+  const admin={
+    createUser:async input=>{
+      const slot=input.email.includes('-a-')?'a':'b';
+      const id='synthetic-'+slot;
+      users.set(id,{id,appMetadata:{provider:'email'}});
+      return {id};
+    },
+    getUser:async id=>users.get(id),
+    updateUser:async(id,attrs)=>{
+      updates.push({id,attrs});
+      const u=users.get(id);
+      users.set(id,{...u,appMetadata:attrs.app_metadata});
+      return users.get(id);
+    },
+    deleteUser:async id=>{deleted.push(id);users.delete(id)},
+  };
+  const fetchImpl=async(url,options)=>{
+    if(url.endsWith('/token')){
+      const username=new URLSearchParams(options.body).get('username');
+      const slot=username.includes('-a-')?'a':'b',user=users.get('synthetic-'+slot);
+      return {ok:true,status:200,json:async()=>({
+        access_token:jwt({sub:user.id,app_metadata:user.appMetadata}),
+      })};
+    }
+    const claims=decodeJwtPayload(options.headers.authorization.replace(/^Bearer /,''));
+    return {ok:true,status:200,json:async()=>({
+      sources:[],publications:[],signals:[],intelligence:{},
+      scope:{authenticatedTenant:claims.app_metadata.tenantId},
+      stats:{generatedAt:'2026-10-29T16:15:00Z'},
+    })};
+  };
+  const proof=await runPortalAuthenticatedProductionProof({
+    deploy,identityAdmin:admin,fetchImpl,
+    getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
+    randomPassword:()=> 'x'.repeat(40),
+  });
+  assert.equal(proof.status,'PROVEN');
+  assert.equal(proof.tenant_count_verified,2);
+  assert.equal(proof.cross_tenant_scope_verified,true);
+  assert.equal(proof.synthetic_user_cleanup,'DELETED');
+  assert.deepEqual(updates.map(x=>x.attrs.app_metadata.tenantId),
+    ['proof:deploy-123:a','proof:deploy-123:b']);
+  assert.deepEqual(deleted,['synthetic-b','synthetic-a']);
+  assert.equal(users.size,0);
+});
+
+test('admin metadata not persisted fails closed without attempting a bearer token or portal request',async()=>{
+  const deleted=[];
+  let fetchCount=0;
+  const proof=await runPortalAuthenticatedProductionProof({
+    deploy,
+    identityAdmin:{
+      createUser:async()=>({id:'synthetic-a'}),
+      getUser:async()=>({appMetadata:{provider:'email'}}),
+      updateUser:async()=>({}),
+      deleteUser:async id=>deleted.push(id),
+    },
+    getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
+    fetchImpl:async()=>{fetchCount++;throw new Error('UNEXPECTED_NETWORK_CALL')},
+    randomPassword:()=> 'x'.repeat(40),
+  });
+  assert.equal(proof.status,'FAILED');
+  assert.equal(proof.failure_code,'IDENTITY_ADMIN_TENANT_METADATA_NOT_PERSISTED');
+  assert.equal(proof.tenant_count_verified,0);
+  assert.equal(proof.cross_tenant_scope_verified,false);
+  assert.equal(proof.synthetic_user_cleanup,'DELETED');
+  assert.equal(fetchCount,0);
+  assert.deepEqual(deleted,['synthetic-a']);
 });
