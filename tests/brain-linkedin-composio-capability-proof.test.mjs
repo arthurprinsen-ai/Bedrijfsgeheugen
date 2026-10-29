@@ -188,3 +188,21 @@ test('existing company side effect can become LIVE_PROVEN only after provider tr
   assert.match(publisher,/evidence\.company_oauth_fresh_verified===true/);
   assert.match(publisher,/liveProven\?'LIVE_PROVEN':'PUBLISHED'/);
 });
+
+test('company OAuth reconnect recovers a stale canonical-alias collision exactly once without treating the pending link as publish authority',()=>{
+  const start=setup.indexOf("if(action==='create_link')");
+  const end=setup.indexOf('const accountsBody',start);
+  assert.ok(start>0&&end>start,'existing canonical link handler must be inspected');
+  const link=setup.slice(start,end);
+  assert.match(link,/auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS/);
+  assert.match(link,/COMPOSIO_LINKEDIN_SETUP_400:/);
+  assert.match(link,/already in use by another connection for this entity/);
+  assert.match(link,/candidateAlias=ALIAS\+'-reauth-'\+crypto\.randomUUID\(\)\.slice\(0,12\)/);
+  assert.match(link,/alias:candidateAlias/);
+  assert.match(link,/if\(!detail\.includes\('COMPOSIO_LINKEDIN_SETUP_400:'\)/);
+  assert.match(link,/throw error/);
+  assert.match(link,/oauth_candidate_connection_id:connectedAccountId/);
+  assert.match(link,/alias_collision_recovered:candidateAlias!==ALIAS/);
+  assert.match(link,/company_oauth_fresh_verified:false/);
+  assert.doesNotMatch(link,/execute\(key,[^\n]*LINKEDIN_CREATE_LINKED_IN_POST/);
+});
