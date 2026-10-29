@@ -1,0 +1,56 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "mira|media|ensure-rpc-erases-claimed-history|20261029-v1",
+  "maturity": "OBSERVED",
+  "root_cause": "The existing daily-winner ensure RPC upsert overwrote asset_manifest/provider/next_action for a WAITING_ASSET job when asset_url and openart_resource_id were absent, without recognizing an already claimed OpenArt history or an independent rejection.",
+  "fix": "Use a conflict UPDATE guard that only updates unclaimed empty QUEUED/WAITING_ASSET/WAITING_PROVIDER_CONNECTION records; otherwise read back original ID without mutating status, attempts, provider history, rejection or proof. Existing media router alone transitions accepted new candidate.",
+  "prevention": "Retain original immutable claimed history and real face >=0.940 / temporal >=0.900 quality gates. Never retry identical rejected bytes, silently clear errors, create parallel publisher/scheduler or mark a channel live without provider ID plus independent readback.",
+  "verification": {
+    "test": "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs",
+    "source": "supabase/migrations/20261029183000_instagram_media_ensure_claim_monotonicity_v1.sql",
+    "protected_merge": "PENDING",
+    "production_pg_get_functiondef": "PENDING",
+    "same_job_multi_tick": "PENDING",
+    "instagram_meta_id": "ABSENT",
+    "linkedin_personal_live_proven": "ABSENT"
+  },
+  "related": [
+    "issue:4439",
+    "pr:5132",
+    "pr:5088"
+  ],
+  "privacy": "public-safe cause and synthetic replay only; private Brain occurrences remain private",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
+  ],
+  "evidence": {
+    "test": "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs",
+    "source": "supabase/migrations/20261029183000_instagram_media_ensure_claim_monotonicity_v1.sql",
+    "protected_merge": "PENDING",
+    "production_pg_get_functiondef": "PENDING",
+    "same_job_multi_tick": "PENDING",
+    "instagram_meta_id": "ABSENT",
+    "linkedin_personal_live_proven": "ABSENT",
+    "evidence_origin": "Supabase pg_get_functiondef+single original media job",
+    "protected_release": "PENDING_REQUIRED_AND_CODEQL",
+    "independent_provider_proof": "NOT_YET_PROVEN"
+  }
+}
