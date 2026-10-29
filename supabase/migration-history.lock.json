@@ -3096,8 +3096,28 @@
     {
       "name": "linkedin_personal_observational_source_freshness_20261029",
       "version": "20261029101159"
+    },
+    {
+      "name": "sales_cycle_execution_truth_guard_20261029",
+      "version": "20261029122836"
+    },
+    {
+      "name": "sales_cycle_negative_terminal_reconcile_v1",
+      "version": "20261029125100"
+    },
+    {
+      "name": "powerhouse_cycle_writer_provenance_20261029",
+      "version": "20261029125607"
+    },
+    {
+      "name": "growth_cta_alias_truth_and_idempotent_backfill",
+      "version": "20261029174600"
+    },
+    {
+      "name": "cro_observed_experiment_and_lead_order_evidence_v1",
+      "version": "20261029174700"
     }
   ],
-  "captured_at": "2026-10-29 11:54:04.166873+00",
+  "captured_at": "2026-10-29T17:20:29.417311Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
