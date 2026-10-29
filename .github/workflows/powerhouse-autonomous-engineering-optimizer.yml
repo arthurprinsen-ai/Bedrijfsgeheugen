@@ -35,6 +35,8 @@ jobs:
         run: node scripts/brain/powerhouse-ci-intelligence.mjs
       - name: Compute bounded daily tuning
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --optimize artifacts/ci-intelligence/latest.json
+      - name: Egress guard - agents may only touch this repository
+        run: node tools/ci/egress-guard.mjs
       - name: Persist safe tuning through protected PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
