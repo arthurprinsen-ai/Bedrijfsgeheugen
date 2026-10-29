@@ -29,6 +29,8 @@ test('branch deletion is fail-closed on protection, open PRs, containment and he
   assert.match(workflow, /\[ \"\$ahead\" = 0 \] \|\| continue/);
   assert.match(workflow, /JANITOR_BRANCH_HEAD_DRIFT/);
   assert.match(workflow, /SQUASH_MERGED_EXACT_HEAD/);
+  assert.match(workflow, /SQUASH_MERGED_EXACT_HEAD_SWEEP/);
+  assert.match(workflow, /JANITOR_SQUASH_SWEEP/);
   assert.match(workflow, /\.head\.repo\.full_name\|ascii_downcase/);
 });
 

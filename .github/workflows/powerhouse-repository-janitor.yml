@@ -361,7 +361,7 @@ jobs:
             if [ "$ahead" != 0 ]; then
               # Squash-merged work is never an ancestor of main. Accept it only when a
               # same-repository PR was merged with exactly this head sha: nothing newer is lost.
-              squash_hit="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f head="${GITHUB_REPOSITORY_OWNER}:${branch}" -f per_page=10 2>/dev/null | jq --arg sha "$head_sha" --arg repo "$GITHUB_REPOSITORY" '[.[] | select(.merged_at != null and .head.sha == $sha and (.head.repo.full_name|ascii_downcase) == ($repo|ascii_downcase))] | length' 2>/dev/null || echo 0)"
+              squash_hit="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f head="${GITHUB_REPOSITORY_OWNER}:${branch}" -f per_page=10 2>/dev/null | jq --arg sha "$head_sha" --arg repo "$GITHUB_REPOSITORY" '[.[] | select(.merged_at != null and .base.ref == "main" and .head.sha == $sha and (.head.repo.full_name|ascii_downcase) == ($repo|ascii_downcase))] | length' 2>/dev/null || echo 0)"
               [ "$squash_hit" -ge 1 ] 2>/dev/null || continue
               reason=SQUASH_MERGED_EXACT_HEAD
               ahead=0
@@ -373,6 +373,36 @@ jobs:
             gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
             jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason "$reason" '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
           done
+
+          # PR-driven sweep of squash-merged debris. The branch walk above reaches one page per run;
+          # this walks 5 pages x 100 closed PRs per run (stable created-asc order, 12-run cycle) and
+          # deletes a branch only when a merged same-repository PR had exactly this head sha and the
+          # branch still points at it. Never touches main, archive/, release/, hotfix/, open-PR
+          # branches or protected refs. Capped per run; deletions are read back by the step below.
+          sweep_start="$(( ((JANITOR_RUN_NUMBER - 1) % 12) * 5 + 1 ))"
+          sweep_deleted=0
+          for sweep_page in $(seq "$sweep_start" "$((sweep_start + 4))"); do
+            gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f sort=created -f direction=asc -f per_page=100 -f page="$sweep_page" 2>/dev/null \
+              | jq -r --arg repo "$GITHUB_REPOSITORY" '.[] | select(.merged_at != null and .base.ref == "main" and ((.head.repo.full_name // "") | ascii_downcase) == ($repo | ascii_downcase)) | [.head.ref, .head.sha] | @tsv' > .artifacts/sweep-candidates.tsv || true
+            while IFS=$'\t' read -r branch pr_sha; do
+              [ -n "$branch" ] && [ -n "$pr_sha" ] || continue
+              [ "$sweep_deleted" -lt 150 ] || break
+              [ "$branch" != main ] || continue
+              case "$branch" in archive/*|release/*|hotfix/*) continue ;; esac
+              [ "$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)" = 0 ] || continue
+              encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
+              branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
+              [ -n "$branch_json" ] || continue
+              [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || continue
+              [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || continue
+              latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
+              [ "$latest_sha" = "$pr_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${pr_sha}:${latest_sha}"; exit 78; }
+              gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+              jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$pr_sha" --arg reason SQUASH_MERGED_EXACT_HEAD_SWEEP '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
+              sweep_deleted=$((sweep_deleted + 1))
+            done < .artifacts/sweep-candidates.tsv
+          done
+          echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:deleted=${sweep_deleted}"
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
