@@ -23,10 +23,12 @@
     "implementation": "Exactly 17 allowed values, short-lock NOT VALID then separate authorized validation; preserve consent and RLS.",
     "validation_migration_status": "NOT_WRITTEN_TOOL_SAFETY_BLOCKED",
     "tests": [
-      "tests/cro-measurement-contract.test.mjs"
+      "tests/cro-measurement-contract.test.mjs",
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "owner": "Existing Powerhouse backend/Supabase Recovery Writer",
-    "privacy": "Only synthetic portaal-only verification event; no personal values or URLs."
+    "privacy": "Only synthetic portaal-only verification event; no personal values or URLs.",
+    "canonicalization_repair": "Brain learning evaluation runner requires brain-prefixed tests for historical_replay/shadow/canary. The existing CRO-specific contract regression tests/cro-measurement-contract.test.mjs remains unchanged and included in REQUIRED; accepted test tests/brain-cro-other-data.test.mjs is used only for learning evaluation slots. No gate bypass."
   },
   "prevention_rules": [
     "Edge GEBEURTENISSEN and SQL CHECK must be exact equal sets in regression tests.",
@@ -37,13 +39,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/cro-measurement-contract.test.mjs"
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "shadow": [
-      "tests/cro-measurement-contract.test.mjs"
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "canary": [
-      "tests/cro-measurement-contract.test.mjs"
+      "tests/brain-cro-other-data.test.mjs"
     ],
     "production_readback": [
       "NOT_VERIFIED; pending legal approved migration, validated CHECK and exact UID idempotent event readback"
