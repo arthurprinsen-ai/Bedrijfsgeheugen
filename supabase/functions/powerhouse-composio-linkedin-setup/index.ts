@@ -162,7 +162,24 @@ Deno.serve(async(req:Request)=>{
       }
       if(!authConfigId)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTH_CONFIG_ID_MISSING');
       const linkUserId=proofUserId||USER_ID;
-      const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS})});
+      // A revoked/stale account can still own the canonical alias. Recover the one
+      // user-initiated OAuth LINK (not a publisher) with a unique pending alias.
+      // Subsequent capability and writer authority must bind the exact proven
+      // connected_account_id + fresh organization scopes, NEVER the alias alone.
+      let candidateAlias=ALIAS;
+      let link:any;
+      try{
+        link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS})});
+      }catch(error){
+        const detail=error instanceof Error?error.message:'';
+        if(!detail.includes('COMPOSIO_LINKEDIN_SETUP_400:')
+          || !detail.includes('Alias ')
+          || !detail.includes('already in use by another connection for this entity')) throw error;
+        // Only one alias-collision retry: do not delete/reassign the old account,
+        // reuse a stale token or claim an unverified OAuth account is publish-ready.
+        candidateAlias=ALIAS+'-reauth-'+crypto.randomUUID().slice(0,12);
+        link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:candidateAlias})});
+      }
       const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
       if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_SCOPED_REDIRECT_OR_ACCOUNT_MISSING');
       const result={
@@ -171,6 +188,7 @@ Deno.serve(async(req:Request)=>{
         oauth_candidate_connection_id:connectedAccountId,user_id:linkUserId,link_available:true,
         expires_at:clean(link?.expires_at)||null,production_workspace:true,
         requested_company_scopes:COMPANY_OAUTH_SCOPES,canonical_alias:ALIAS,
+        oauth_candidate_alias:candidateAlias,alias_collision_recovered:candidateAlias!==ALIAS,
         oauth_requested_at:new Date().toISOString(),company_oauth_fresh_verified:false
       };
       await writeState(db,'AUTH_LINK_READY',result);
