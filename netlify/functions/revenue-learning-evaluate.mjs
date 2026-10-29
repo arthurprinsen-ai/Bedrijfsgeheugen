@@ -66,23 +66,40 @@ async function refreshProjection(active,now){
   return projection;
 }
 
-export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),maxDueEvidence=8}={}){
+export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),maxDueEvidence=8,concurrency=4,reconcileBudgetMs=6000}={}){
   return async()=>{
     const active=store||createRevenueLearningStore();
-    const actionEvidence=typeof active.reconcileActionLearningObligations==='function'
-      ? await active.reconcileActionLearningObligations()
-      : {reconciled:0,total:0};
-    const due=await active.listDueEvidence(now().toISOString());
+    // The action-evidence reconcile is independent of the due list and must never starve evaluation:
+    // run both together and bound the reconcile. A timeout is reported as deferred, an error still fails the run.
+    const reconcile=typeof active.reconcileActionLearningObligations==='function'
+      ? (()=>{let timer;const bounded=Promise.race([
+          Promise.resolve().then(()=>active.reconcileActionLearningObligations()),
+          new Promise(resolve=>{timer=setTimeout(()=>resolve({reconciled:0,total:0,deferred:true,reason:'RECONCILE_BUDGET_EXCEEDED'}),reconcileBudgetMs);})
+        ]);return bounded.finally(()=>clearTimeout(timer));})()
+      : Promise.resolve({reconciled:0,total:0});
+    const duePromise=Promise.resolve().then(()=>active.listDueEvidence(now().toISOString()));
+    duePromise.catch(()=>{});
+    // A failing reconcile keeps failing the run first, exactly as before the concurrency change.
+    const actionEvidence=await reconcile;
+    const due=await duePromise;
     const bounded=selectDueRevenueBatch(due,{now:now(),limit:maxDueEvidence});
-    let evaluated=0,missingVerifiedSource=0,insufficientCohort=0,noComparableMetric=0;
-    for(const target of bounded){
+    let evaluated=0,settledUnverified=0,missingVerifiedSource=0,insufficientCohort=0,noComparableMetric=0;
+    // Bounded concurrency: targets are independent (idempotent keys per evidence row), so a small
+    // worker pool replaces strictly serial gateway round-trips that exceeded the hourly time limit.
+    const evaluateTarget=async target=>{
       // Inferred page visits or unlinked social aggregates are useful research
       // context, never proof of ROI, a winning creative or a paid order.
       if(!hasVerifiedRevenueSource(target)){
         missingVerifiedSource++;
         await active.recordObligation({id:`source:${target.evidenceId}`,type:'VERIFIED_SOURCE_REQUIRED',
           status:'OPEN',contentId:target.contentId,windowHours:target.windowHours||0});
-        continue;
+        // Whether a row carries a verified source depends on that row alone. Once the typed obligation is
+        // recorded the row is settled until its data really changes (updated_at > evaluated_at), instead of
+        // staying due forever and occupying evaluation slots every hour. Cohort/metric gaps depend on OTHER
+        // rows and are deliberately not settled here.
+        await active.markEvidenceEvaluated(target.evidenceId,now().toISOString());
+        settledUnverified++;
+        return;
       }
       const rawCohort=await active.listCohort({target,limit:30});
       const cohort=(Array.isArray(rawCohort)?rawCohort:[]).filter(hasVerifiedRevenueSource);
@@ -91,14 +108,14 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),
         await active.recordObligation({id:`cohort:${target.evidenceId}`,type:'INSUFFICIENT_VERIFIED_COHORT',
           status:'OPEN',contentId:target.contentId,windowHours:target.windowHours,
           cohortSize:cohort.length});
-        continue;
+        return;
       }
       const targetVector=revenueMetricVector(target),cohortVectors=cohort.map(revenueMetricVector),selected=selectRevenueMetric(targetVector,cohortVectors,config.metricPriority||DEFAULT.metricPriority);
       if(!selected){
         noComparableMetric++;
         await active.recordObligation({id:`metric:${target.evidenceId}`,type:'NO_COMPARABLE_VERIFIED_METRIC',
           status:'OPEN',contentId:target.contentId});
-        continue;
+        return;
       }
       const dates=[...new Set(cohort.map(x=>x.publicationDate).filter(Boolean))];
       const confidence=Math.min(.99,.5+cohort.length*.1);
@@ -110,11 +127,15 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),
       await active.reconcileApplications({contentId:target.contentId,windowHours:target.windowHours,effect:selected.effectSize,verificationStatus:'VERIFIED'});
       await active.markEvidenceEvaluated(target.evidenceId,validatedAt);
       evaluated++;
-    }
+    };
+    const queue=[...bounded];
+    await Promise.all(Array.from({length:Math.max(1,Math.min(Number(concurrency)||1,queue.length||1))},async()=>{
+      for(let target=queue.shift();target;target=queue.shift())await evaluateTarget(target);
+    }));
     const projection=await refreshProjection(active,now);
     return {contract:'REVENUE_LEARNING_BOUNDED_VERIFIED_MULTI_CHANNEL-v1',
       evaluated,total:due.length,attempted:bounded.length,unprocessedDue:Math.max(0,due.length-bounded.length),
-      missingVerifiedSource,insufficientCohort,noComparableMetric,
+      missingVerifiedSource,settledUnverified,insufficientCohort,noComparableMetric,
       projectionVersion:projection.version,projectedLearnings:projection.learnings.length,actionEvidence};
   };
 }

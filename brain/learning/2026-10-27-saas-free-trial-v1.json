@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|billing|saas-free-trial|20261027-v1",
+  "compiler": {
+    "failure_class": "NO_FREE_TRIAL_ENTRY_FOR_SELF_SERVE_SAAS",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-free-trial-v1.test.mjs",
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mollie-billing-v1.test.mjs",
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-saas-free-trial-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Self-serve SaaS checkout only offered paid sign-up. Arthur asked for a one month free variant on website and portal, as every SaaS has, to raise conversion. The earlier decision 'no trial in checkout' (mollie-afsluiten-koppeling) is superseded by this explicit request.",
+  "prevention": "A 30 day trial without payment method runs through the same checkout (mode=trial) and the bg-mollie-checkout edge function: one trial per e-mail, status trialing, expiry by cron saas_expire_trials_v1, conversion on first paid payment reuses the same organisation. Netlify only forwards mode=trial; the portal shows days left and a pay-now link.",
+  "evidence": {
+    "tests": [
+      "tests/brain-saas-free-trial-v1.test.mjs",
+      "tests/brain-mollie-billing-v1.test.mjs",
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs",
+      "tests/brain-pricing-billing-toggle-20261027.test.mjs",
+      "tests/saas-pricing-entitlements.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "backend verified on production (start, duplicate guard, expiry); trial to paid conversion and website flow not yet verified end to end"
+  },
+  "limitations": [
+    "Lifecycle e-mails (day 23, day 29, expiry) are a follow-up and need Arthur's approval of the copy",
+    "Mollie remains in test mode until go-live",
+    "Test rows from the backend verification remain in production (delete blocked)"
+  ]
+}

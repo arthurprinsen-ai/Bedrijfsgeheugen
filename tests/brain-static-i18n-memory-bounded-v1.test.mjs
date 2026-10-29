@@ -7,7 +7,8 @@ test('static i18n discovery does not retain parse5 DOM trees for every route',()
   assert.doesNotMatch(source,/const parsed = new Map\(\)/);
   assert.doesNotMatch(source,/parsed\.set\(file,\{doc,refs\}\)/);
   assert.match(source,/const allStrings = new Set\(\)/);
-  assert.match(source,/Do not retain parse5 document trees across routes/i);
+  // Each route's tree is parsed, reduced to strings and dropped inside the loop body (no retention).
+  assert.match(source,/for \(const file of files\) \{\s+const html = fs\.readFileSync\(path\.join\(ROOT,file\),'utf8'\);\s+const doc = parse\(html,\{sourceCodeLocationInfo:false\}\);\s+const refs = collectTranslatables\(doc\);\s+refs\.forEach\(ref=>allStrings\.add\(ref\.source\)\);\s+\}/);
 });
 
 test('Bedrijfslek growth copy is present in the production English cache',()=>{

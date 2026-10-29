@@ -2,9 +2,9 @@ project_id = "bedrijfsgeheugen"
 
 [functions.powerhouse-blog-export]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/powerhouse-blog-export/index.ts"
-# Approved read-only source; no provider write.
+# Confidential blog export: service JWT plus explicit publication approval required.
 
 [functions.powerhouse-blog-queue]
 enabled = true
@@ -120,6 +120,14 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
 
+# Existing canonical email composer uses its internal x-powerhouse-token gate.
+# Register alongside content generation so native Git deployment cannot omit feedback.
+# Preserve the deployed verify_jwt=false; do not introduce another executor.
+[functions.powerhouse-commercial-message-composer]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-commercial-message-composer/index.ts"
+
 # Existing canonical content-loop; custom x-powerhouse-token authentication is
 # implemented in its entrypoint, so preserve its current verify_jwt=false.
 [functions.powerhouse-content-loop]
@@ -170,3 +178,40 @@ entrypoint = "./functions/social-learning-store/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-seo-opportunity-resolver/index.ts"
+
+# Mollie checkout (27 okt 2026): Netlify roept dit aan met de service role als bearer; sleutel uit Vault MOLLIE_API_KEY.
+[functions.bg-mollie-checkout]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/bg-mollie-checkout/index.ts"
+
+# Mollie webhook: publiek bereikbaar (Mollie stuurt geen JWT); verwerkt alleen een betaling-id en haalt de waarheid zelf bij Mollie op.
+[functions.bg-mollie-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-mollie-webhook/index.ts"
+
+# Proefperiode-mails (27 okt 2026): dagelijkse cron met scheduler-token (geen JWT); modes preview | samples | live | report.
+[functions.bg-trial-lifecycle-mail]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-trial-lifecycle-mail/index.ts"
+
+[functions.bg-benchmark-intake]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-benchmark-intake/index.ts"
+
+[functions.bg-bedrijfsprofiel]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/bg-bedrijfsprofiel/index.ts"
+
+# Existing scheduler-token-protected external intelligence producer; register the
+# function for protected-main Git deployment and provider source parity.
+# The entrypoint validates x-powerhouse-token before performing any work;
+# preserve the currently deployed verify_jwt=false (no browser auth bypass).
+[functions.bg-externe-signalen]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-externe-signalen/index.ts"

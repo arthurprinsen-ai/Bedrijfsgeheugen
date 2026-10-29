@@ -42,10 +42,9 @@ test('independent publisher rejects mismatched identifiers, extra text and false
 test('the existing owner and protected publisher recompute the same exact source-bound caption',()=>{
  const source=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
  const pub=readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts',import.meta.url),'utf8');
- assert.ok(source.includes('bodyText=miraCaption(miraBusinessProblem);'));
- assert.ok(source.includes('bodyText=miraCaption(miraBusinessProblem,creativeExploration);'));
+ assert.ok(source.includes('bodyText=miraResolvedCaption(resolvedMira);'));
  assert.ok(source.includes('editorial_exploration:creativeExploration'));
- assert.ok(pub.includes('validateMiraCaptionForDelivery(runDate,art.body,art.generation_evidence||{})'));
+ assert.ok(pub.includes('validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence)'));
  assert.ok(pub.includes('MIRA_MEDIA_CAPTION_SCENE_MISMATCH'));
 });
 

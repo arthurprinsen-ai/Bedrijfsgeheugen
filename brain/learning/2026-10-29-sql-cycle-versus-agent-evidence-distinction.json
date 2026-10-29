@@ -1,0 +1,29 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "sql-cycle-versus-agent-evidence-distinction-20261029",
+  "fingerprint": "powerhouse|portal|sql-cycle-events-mislabelled-agent-actions|20261029",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "OBSERVABILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-lean-action-coverage-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Admin Portal V2 labels all powerhouse_cycle_events as Agentacties, but the 24-hour canonical production data contains SQL-generated cycle stages primarily from sales_action and channel_decision, with no direct agent/skill/before-after source evidence. SQL decision materialization was being conflated with independent agent execution.",
+  "change": "Add entity_type to bounded existing server-only event readback and four aggregate origin buckets (sales_action, channel_decision, runtime-signal, other); keep actual agent-ID and before-after evidence counters separate. Show plain-Dutch distinct origin in same Portal V2 System Map without revealing individual subject IDs or changing canonical writers.",
+  "prevention": "Never count a SQL decision-cycle event as an agent execution unless an independently evidenced agent actor/skill/outcome is present. Unknown provider count and invalid row origin fail closed; do not backfill fictitious actor ID.",
+  "evidence": {
+    "tests": [
+      "tests/brain-lean-action-coverage-20261029.test.mjs"
+    ],
+    "production_readback": "2026-10-29: 1585 canonical events/24h, SQL sales-action stages 1550, channel-decision stages 31, runtime-signal stages 4, explicitly attributed agent+skill+before+after 0; expected source categorization only, not claim of autonomous agent execution.",
+    "release": "Await exact-head Required/CodeQL, protected merge, Netlify live SHA/browser, authenticated admin/tenant proof."
+  }
+}

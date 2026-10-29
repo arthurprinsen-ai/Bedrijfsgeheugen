@@ -12,36 +12,21 @@ test("heartbeat tick proposes only; does not claim deployment or revenue",()=>{
  assert.equal(r.actions.length,1);assert.equal(r.publishReady,false);assert.equal(r.revenueVerified,false);
 });
 
-test("CRO canonical learning proposals never claim product release or outcome", async ()=>{
- const {designCroExperiment}=await import("./cro-experiment-cycle.mjs");
- const all=["consent_respected","dismissible","keyboard_accessible","no_blocking_mobile_overlay",
-   "no_deceptive_copy","no_sensitive_profiling","one_prompt_per_session","no_duplicate_exposure","rollback_available"];
- const croDesign=designCroExperiment({
-  id:"cro:scan:case",tenantId:"bedrijfsgeheugen",pageCanonical:"/zelfscan",
-  surface:"scan_followup",hypothesis:"Relevant next step may increase qualified leads",
-  falsifier:"No difference in qualified leads",primaryMetric:"qualified_leads",
-  sourceEvidenceId:"ga4:verified:20261029",sourceVerified:true,baselineRate:0.02,
-  expectedMinimumLift:0.01,ownerAgent:"cro",exposureUnit:"consented-anonymous-session",
-  minimumPerArm:100,horizonHours:336,variantIds:["original","contextual"],
-  allocationTreatment:0.5,assignmentPersistedBeforeExposure:true,
-  existingHeartbeatOwner:"powerhouse-commercial-learning-v1",
-  guardrails:Object.fromEntries(all.map(k=>[k,true])),rollbackRef:"git:revert",
-  preRegisteredAt:"2026-10-29T12:00:00Z"
- });
- assert.equal(croDesign.state,"PREREGISTERED");
- const signal={id:"cro-event-1",type:"scan_abandonment",observedAt:now,estimatedIncrementalMargin:0,
-   confidence:0,dataQuality:0,effortHours:1,risk:0};
- const output=heartbeatGrowthTick({cycleId:"cro-test",
-  events:[{provider:"ga4",verified:true,evidenceId:"clicks-measured",signal}],
-  experiments:[{id:croDesign.id,croDesign,observed:{}}]},{now});
- assert.equal(output.croOpportunities.length,1);
- assert.equal(output.croLearningProposals.length,1);
- assert.equal(output.experiments[0].status,"MEASUREMENT_REQUIRED");
- assert.equal(output.croLearningProposals[0].writebackVerified,false);
- assert.equal(output.publishReady,false);
- assert.equal(output.revenueVerified,false);
-});
 
+import {createCustomerSignalCards} from "./heartbeat-adapter.mjs";
+test("verified external signals yield scoped advice, not autonomous claims",()=>{
+ const now=Date.UTC(2026,9,25);
+ const events=[
+  {provider:"search_console",verified:true,evidenceId:"provider-proof",signal:{id:"market-1",tenantId:"a",type:"search_opportunity",observedAt:now,relevanceExplanation:"Nieuwe relevante zoekvraag"}},
+  {provider:"search_console",verified:true,evidenceId:"provider-proof",signal:{id:"market-2",tenantId:"b",type:"search_opportunity",observedAt:now}},
+  {provider:"search_console",verified:false,evidenceId:"unproven",signal:{id:"market-3",tenantId:"a",type:"search_opportunity",observedAt:now}}
+ ];
+ const r=createCustomerSignalCards(events,{tenantId:"a",now});
+ assert.equal(r.cards.length,1);
+ assert.equal(r.cards[0].automatedActionAllowed,false);
+ assert.equal(r.cards[0].sourceEvidence,"search_console:provider-proof");
+ assert.deepEqual(r.rejected.map(x=>x.reason).sort(),["SOURCE_NOT_VERIFIED","TENANT_SCOPE_MISMATCH"]);
+});
 
 test("CRO experiment uses existing Heartbeat packet, emits learning candidate without side effects",()=>{
  const guards=Object.fromEntries(["consent_respected","dismissible","keyboard_accessible",

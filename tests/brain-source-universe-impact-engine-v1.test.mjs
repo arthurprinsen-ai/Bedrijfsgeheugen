@@ -41,7 +41,8 @@ test('external signals are canonical and tenant impact is separate',async()=>{
   assert.match(sql,/foreign key \(signal_key\)\s+references public\.powerhouse_intelligence_signal_projection_v1\(signal_key\)/s);
   assert.match(sql,/EXTERNAL_REFRESH_CANONICAL_ONLY/);
   assert.match(sql,/TENANT_COMPANY_CONTEXT_REQUIRED/);
-  assert.match(sql,/where signal_key=p_signal_key and tenant_id='canonical'/);
+  // Impact reads canonical external signals plus ONLY the authenticated tenant's own rows.
+  assert.match(sql,/where signal_key=p_signal_key and \(tenant_id='canonical' or tenant_id=p_tenant_id\)/);
   assert.doesNotMatch(sql,/references public\.powerhouse_intelligence_signal_projection_v1\(tenant_id,signal_key\)/);
 });
 
@@ -107,19 +108,22 @@ test('new intelligence surfaces are server-only and RLS protected',async()=>{
 });
 
 test('Portal projects canonical outside world plus authenticated tenant impact only',async()=>{
-  const [api,module,registry,shell]=await Promise.all([
+  const [api,module,registry,shell,edge]=await Promise.all([
     read('netlify/functions/portal-ondernemersdata.mjs'),
     read('portal-v2/modules/entrepreneur-intelligence.js'),
     read('portal-v2/page-registry.js'),
-    read('portal-v2/page-shell.js')
+    read('portal-v2/page-shell.js'),
+    read('supabase/functions/portal-state-eu/index.ts')
   ]);
+  // The Netlify API authenticates and resolves the tenant; privileged reads stay inside the EU Supabase Edge function.
   assert.match(api,/getUser\(request\)/);
   assert.match(api,/resolveIdentityTenant/);
-  assert.match(api,/tenant_id=eq\.canonical/);
-  assert.match(api,/powerhouse_intelligence_company_impact_v1/);
-  assert.match(api,/tenant_id=eq\.\$\{tenant\}/);
-  assert.match(api,/monetaryImpactSynthesized:false/);
-  assert.match(api,/catalogCapabilityIsConnectionTruth:false/);
+  assert.match(api,/store\.getEntrepreneurIntelligence\(tenantId\)/);
+  assert.match(edge,/\.eq\('tenant_id','canonical'\)/);
+  assert.match(edge,/powerhouse_intelligence_company_impact_v1/);
+  assert.match(edge,/\.eq\('tenant_id',tenantId\)/);
+  assert.match(edge,/monetaryImpactSynthesized:false/);
+  assert.match(edge,/catalogCapabilityIsConnectionTruth:false/);
   assert.match(module,/Source → evidence → signal → impact → actie → outcome → learning/);
   assert.match(module,/Nog niet bewezen · eigen bedrijfscontext nodig/);
   assert.match(registry,/omgevingsradar/);
@@ -179,15 +183,15 @@ test('SQL function bodies do not contain broken single-dollar delimiters',async(
 
 
 test('repo-wide inheritance remains discoverable',async()=>{
-  const [agents,companySkill,change]=await Promise.all([
-    read('AGENTS.md'),
-    read('.agents/skills/powerhouse-company-intelligence-os/SKILL.md'),
+  const [skill,change]=await Promise.all([
+    read('.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md'),
     read('docs/changes/2026-10-07-source-universe-impact-engine-v1.md')
   ]);
-  assert.match(agents,/Source Universe & Company Impact Engine — inherited/);
-  assert.match(agents,/FULFILLED obligation is not realized business outcome/);
-  assert.match(companySkill,/Source Universe & Company Impact Engine inheritance/);
-  assert.match(companySkill,/correlation\/shared exposure never proves causality/);
+  // Inheritance now lives in the dedicated skill (AGENTS.md only indexes skills).
+  assert.match(skill,/Fulfilled ≠ outcome/);
+  assert.match(skill,/A fulfilled obligation is not business value/);
+  assert.match(skill,/Correlation is not causality/);
+  assert.match(skill,/causality_claimed=false/);
   assert.match(change,/35 externe en 10 interne/);
   assert.match(change,/DONE vereist verified Outcome Memory/);
 });

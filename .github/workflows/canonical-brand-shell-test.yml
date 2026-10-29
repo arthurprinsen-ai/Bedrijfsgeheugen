@@ -7,6 +7,9 @@ concurrency:
   group: canonical-brand-shell-contract-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   brand-shell-contracts:
     timeout-minutes: 10

@@ -7,10 +7,15 @@ test('global NL/EN runtime and build injector are wired',()=>{
   const runtime=fs.readFileSync('assets/js/i18n.js','utf8');
   const injector=fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
   const fn=fs.readFileSync('netlify/functions/i18n-translate.mjs','utf8');
-  assert.match(netlify,/apply-i18n\.mjs/);
+  // Build chain is owned by tools/ci/netlify-build-entry.mjs (both netlify.toml contexts run it).
+  const buildEntry=fs.readFileSync('tools/ci/netlify-build-entry.mjs','utf8');
+  assert.match(netlify,/netlify-build-entry\.mjs/);
+  assert.match(buildEntry,/apply-i18n\.mjs/);
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
   const localized=fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
-  assert.match(localized,/STATIC_I18N_OFFLINE_RELEASE/);
+  // #3087: offline release builds fall back to the partial cache instead of skipping English generation.
+  assert.match(localized,/STATIC_I18N_PARTIAL_CACHE_FALLBACK/);
+  assert.match(localized,/STATIC_I18N_PRODUCTION_TRANSLATION_FAILED/);
   assert.match(localized,/STATIC_I18N_NETWORK/);
   assert.doesNotMatch(localized,/CONTEXT === 'production'.*ANTHROPIC_API_KEY/s);
   assert.match(runtime,/bg_locale/);
@@ -46,13 +51,19 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/stillMissing/);
   assert.match(runtime,/await requestPart\(\[source\]\)/);
   assert.doesNotMatch(runtime,/translated === source/);
-  assert.match(runtime,/synchronous so selecting English visibly changes the menu/);
+  // #2558: English is atomic across the site; on public pages a locale change navigates to the
+  // localized route instead of translating the menu in place.
+  assert.match(runtime,/location\.assign\(localizedHref\(normalized\)\)/);
+  assert.match(runtime,/localeEpoch \+= 1;/);
   assert.doesNotMatch(runtime,/locale = previous;\s*try \{ localStorage\.setItem\(STORAGE_KEY, locale\)/);
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
   assert.match(injector,/data-bg-language-switcher="mobile"/);
-  assert.match(injector,/data-bg-language-select/);
-  assert.match(injector,/<option value="en">English<\/option><option value="nl">Dutch<\/option>/);
+  // Since the NL/EN route authority (2026-09-29) the mobile switcher is two localized links, not a <select>.
+  assert.match(injector,/data-bg-language-option="nl" hreflang="nl"/);
+  assert.match(injector,/data-bg-language-option="en" hreflang="en"/);
+  assert.match(injector,/>Nederlands<\/a>/);
+  assert.match(injector,/>English<\/a>/);
   assert.match(injector,/\/inloggen/);
   assert.match(fn,/runTranslation/);
 });

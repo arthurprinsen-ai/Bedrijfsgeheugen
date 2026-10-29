@@ -28,6 +28,9 @@ concurrency:
   group: canonical-brand-shell-live-readback-${{ github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   contract:
     runs-on: ubuntu-latest

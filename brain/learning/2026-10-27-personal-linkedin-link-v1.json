@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "linkedin|personal-member-link-missing|20261027-v1",
+  "obligation_id": "linkedin-personal-link-20261027",
+  "failure_class": "LINKEDIN_PERSONAL_NO_REAUTH_PATH",
+  "root_cause": "powerhouse-composio-linkedin-setup could only create organization-scoped links; a personal member connection that failed its healthcheck had no way to be re-authorized, and the earlier company link was created for a test user id.",
+  "observed_evidence": {
+    "actual_sources": ["supabase/functions/powerhouse-composio-linkedin-setup/index.ts"],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "New action create_personal_link: personal member scopes only, bound to the canonical owner id, returns a redirect link. Company link path unchanged.",
+  "prevention_rule": "Every connection a daily process depends on must have a documented re-authorization action that uses its own scopes and owner.",
+  "tests": ["tests/brain-personal-linkedin-link-20261027.test.mjs"],
+  "compiler": {"failure_class": "LINKEDIN_PERSONAL_NO_REAUTH_PATH", "scope": "LINKEDIN_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": true},
+  "evaluation": {
+    "historical_replay": ["tests/brain-personal-linkedin-link-20261027.test.mjs"],
+    "shadow": ["tests/brain-personal-linkedin-link-20261027.test.mjs"],
+    "canary": ["tests/brain-personal-linkedin-link-20261027.test.mjs"]
+  },
+  "terminal_rule": "After merge and deploy, create_personal_link returns a redirect_url and, after approval, status reports personal_ready true."
+}

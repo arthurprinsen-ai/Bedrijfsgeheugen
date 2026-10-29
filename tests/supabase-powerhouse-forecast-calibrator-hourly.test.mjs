@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationUrl = new URL('../supabase/migrations/20260915140500_powerhouse_forecast_calibrator_hourly_v1.sql', import.meta.url);
+const migrationUrl = new URL('../supabase/migration-history/repository-only/20260915140500_powerhouse_forecast_calibrator_hourly_v1.sql', import.meta.url);
 const sql = fs.readFileSync(migrationUrl, 'utf8');
 
 test('hourly calibrator reuses the canonical existing cron command', () => {

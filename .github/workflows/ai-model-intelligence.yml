@@ -1,5 +1,8 @@
 name: AI Model Intelligence
 on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -16,8 +19,14 @@ on:
       - 'chatgpt-vs-gemini/**'
       - 'claude-vs-gemini/**'
       - '.github/workflows/ai-model-intelligence.yml'
+      - 'scripts/ai-model-freshness-watch.mjs'
+      - 'scripts/ai-model-source-probe.mjs'
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ai-model-intelligence:
     runs-on: ubuntu-latest
@@ -27,5 +36,18 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Supplier freshness early-warning (read-only)
+        run: node scripts/ai-model-freshness-watch.mjs
+      - name: Probe supplier links without approving claims
+        if: always()
+        run: node scripts/ai-model-source-probe.mjs
+      - name: Preserve model evidence worklists
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-evidence-observation
+          path: artifacts/*.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: AI Model Intelligence contracts
         run: node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs

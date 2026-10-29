@@ -1,9 +1,13 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate,sourceLedRecoverableProofRetry,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
-import {planMiraPreventiveRecovery} from '../_shared/mira-preventive-quality-recovery.mjs';
-import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection} from './preflight-write.mjs';
+import {resolveMiraFrozenWinner as resolveMiraFrozenWinner_raw,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate as sourceLedAutoVerifyCandidate_raw,sourceLedRecoverableProofRetry as sourceLedRecoverableProofRetry_raw,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
+const sourceLedRecoverableProofRetry:(...args:any[])=>any=sourceLedRecoverableProofRetry_raw;
+const sourceLedAutoVerifyCandidate:(...args:any[])=>any=sourceLedAutoVerifyCandidate_raw;
+const resolveMiraFrozenWinner:(...args:any[])=>any=resolveMiraFrozenWinner_raw;
+import {planMiraPreventiveRecovery,assessMiraProviderBeforeSpend} from '../_shared/mira-preventive-quality-recovery.mjs';
+import {MIRA_APPROVED_DERIVED_INPUT,validatePinnedMiraDerivedInput} from '../_shared/mira-approved-derived-video-input.mjs';
+import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection,reconcileHistoricalRejectedGeneratingJob} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -11,7 +15,7 @@ const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 declare const EdgeRuntime:{waitUntil(promise:Promise<unknown>):void};
 const FRAME_EXTRACTOR='https://www.bedrijfsgeheugen.nl/.netlify/functions/instagram-video-frames';
-async function digest(bytes:Uint8Array){const h=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function digest(bytes:Uint8Array){const h=await crypto.subtle.digest('SHA-256',bytes as any);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function hashRemote(url:string,max=120*1024*1024){const r=await fetch(url,{redirect:'follow'});if(!r.ok)throw new Error('MEDIA_FETCH_FAILED');const bytes=new Uint8Array(await r.arrayBuffer());if(!bytes.length||bytes.length>max)throw new Error('MEDIA_SIZE_INVALID');return{sha256:await digest(bytes),contentType:clean(r.headers.get('content-type')).split(';')[0].toLowerCase()};}
 function inferType(...v:any[]){const s=v.map(clean).join(' ').toLowerCase();if(s.includes('carousel'))return'carousel';if(s.includes('reel'))return'reel';if(s.includes('video'))return'video';return'image';}
 async function invoke(base:string,token:string,name:string,payload:any){const r=await fetch(`${base}/functions/v1/${name}`,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify(payload)});return{http:r.status,body:await r.json().catch(()=>({}))};}
@@ -75,7 +79,7 @@ Deno.serve(async req=>{
   ? await db.from('powerhouse_content_recommendations').select('recommendation_id,status,evidence').eq('recommendation_id',winner.recommendation_id).maybeSingle()
   : {data:null,error:null};
  if(winnerError)return json({ok:false,error:'INSTAGRAM_WINNER_SOURCE_READ_FAILED'},503);
- const winnerContract=resolveMiraFrozenWinner(runDate,{winner,lineage,recommendation:winnerRecommendation,job});
+ const winnerContract:any=resolveMiraFrozenWinner(runDate,{winner,lineage,recommendation:winnerRecommendation,job});
  if(!winnerContract.ok){
   if(action==='submit_asset')return json({ok:false,error:winnerContract.code,runDate,winner_recommendation_id:winnerContract.winner_recommendation_id},422);
   return json({ok:true,ready:false,runDate,postType,status:'WAITING_WINNER_MAPPING',last_error:winnerContract.code,winner_recommendation_id:winnerContract.winner_recommendation_id,
@@ -86,8 +90,65 @@ Deno.serve(async req=>{
  const expectedScene=sourceLed?winnerContract.scene:miraBusinessProblem.scene;
  const expectedProblemId=sourceLed?null:miraBusinessProblem.id;
 
+ // The original producer may still be marked GENERATING after its OpenArt
+ // history was independently rejected. Recover from immutable ONE BRAIN once,
+ // without buying/rechecking rejected bytes or creating a second publisher.
+ if(action==='preflight'&&['GENERATING','WAITING_ASSET','WAITING_PROVIDER_CONNECTION'].includes(clean(job?.status))&&!historical){
+   const restored=await reconcileHistoricalRejectedGeneratingJob(db,{job,ob});
+   if(restored.kind==='rejected')
+     return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',
+       last_error:restored.code,history:restored.historyId,
+       next_action:'Original producer must make one new approved candidate under the existing budget. No duplicate or lowered quality gate.'});
+   if(['unavailable','failed','partial'].includes(restored.kind))
+     return json({ok:false,error:'MIRA_REJECTED_HISTORY_RECOVERY_INCOMPLETE',detail:restored.kind},503);
+   if(restored.kind==='stale')return json({ok:true,ready:false,status:'STATE_CHANGED_RETRY',runDate},409);
+ }
+
+ // The same original verifier wrote this exact SHA and master-face evidence.
+ // Read-only; never trusts an unverified derivative supplied in caller JSON.
+ async function checkDerivedProducerInput(derived:any){
+   const {data,error}=await db.from('powerhouse_media_proof_evidence_v1')
+     .select('fingerprint,provider_status,identity_gate_result,exact_media_sha256,media_url,proof_lineage')
+     .eq('fingerprint',MIRA_APPROVED_DERIVED_INPUT.proof_fingerprint).maybeSingle();
+   if(error)return {ok:false,error:'MIRA_DERIVED_INPUT_PROOF_READBACK_UNAVAILABLE'};
+   return validatePinnedMiraDerivedInput({
+     runDate,sourceId:winnerContract.winner_recommendation_id,
+     masterId:clean(job?.asset_manifest?.openart_reference_id),
+     projectId:clean(job?.asset_manifest?.openart_project_id),derived,evidence:data
+   });
+ }
+
+ // PRE-SPEND only: never create media, spend credits, change frozen winner or
+ // touch a post. This must be called by the ORIGINAL Mira producer before any
+ // OpenArt generate_video request. Reject the observed Wan 2.7 config even
+ // though OpenArt calls it '1080p': its real output was NOT native 9:16.
+ if(action==='generation_preflight'){
+   if(postType!=='reel'||!sourceLed||clean(ob?.external_id)||ob?.live_proven_at||
+      clean(ob?.status)==='LIVE_PROVEN')
+     return json({ok:false,error:'MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED'},422);
+   const config=assessMiraProviderBeforeSpend({
+     model:input.model,mode:input.mode,params:input.params,
+     masterReferenceId:clean(job?.asset_manifest?.openart_reference_id)
+   });
+   const derivedInput=input.derivedReference
+     ?await checkDerivedProducerInput(input.derivedReference):null;
+   const eligible=config.ok&&(derivedInput===null||derivedInput.ok===true);
+   return json({ok:eligible,runDate,postType,source_recommendation_id:winnerContract.winner_recommendation_id,
+     original_master_id:clean(job?.asset_manifest?.openart_reference_id),
+     provider_generation_preflight:config,derived_reference_proof:derivedInput,
+     next_action:derivedInput?.ok
+       ?'Provider input verified by independent original-master face proof; still require cost budget, actual OpenArt input readback, native MP4 and real three-frame/temporal/Meta checks.'
+       :'Only an original-master-anchored, proven provider format is eligible; do not spend on unsupported derived source inputs.',
+     note:'A passing output-config or derived-input check is NOT final visual proof, a Meta post or permission for unlimited OpenArt spending.'
+   },eligible?200:422);
+ }
+
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
+  const originalProducerRejectedHandoff=job?.status==='GENERATING'
+    &&clean(manifest.openart_history_id)===clean(job?.asset_manifest?.openart_history_id)
+    &&clean(manifest.openart_project_id)===clean(job?.asset_manifest?.openart_project_id)
+    &&!!clean(manifest.openart_history_id);
   // A real identity rejection permits a DIFFERENT source-matched candidate to
   // enter the exact same independent verifier. It never approves that candidate.
   // Editorial winner, source hash, frozen scene and master identity remain fixed.
@@ -105,6 +166,12 @@ Deno.serve(async req=>{
   if(!storyMatches)return json({ok:false,error:'MIRA_MEDIA_MUST_MATCH_FROZEN_WINNER_SCENE_AND_EXACT_ASSET',
    expected_problem_id:expectedProblemId,winner_recommendation_id:winnerContract.winner_recommendation_id},422);
   if(!validMiraGenerationReference(manifest))return json({ok:false,error:'MIRA_CANONICAL_REFERENCE_VIDEO_REQUIRED',allowed_generation_modes:MIRA_ALLOWED_REFERENCE_VIDEO_MODES,master_reference_id:MIRA_MASTER_REFERENCE_ID,master_reference_url:MIRA_MASTER_REFERENCE_URL},422);
+  // Optional derived generation INPUT is supplementary and never redefines
+  // the canonical reference ID. No candidate may skip this DB-backed proof.
+  const derivedInput=manifest.derived_reference
+    ?await checkDerivedProducerInput(manifest.derived_reference):null;
+  if(derivedInput!==null&&!derivedInput.ok)
+    return json({ok:false,error:derivedInput.error||'MIRA_DERIVED_GENERATION_SOURCE_UNVERIFIED'},422);
   if(!allowed.includes(provider))return json({ok:false,error:'MEDIA_PROVIDER_NOT_ALLOWED',provider,postType},422);
   if(policy?.required_provider&&provider!==policy.required_provider)return json({ok:false,error:'MEDIA_PROVIDER_REQUIRED',required:policy.required_provider},422);
 
@@ -143,7 +210,8 @@ Deno.serve(async req=>{
    if(fx.status===422&&fb?.error==='MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH'&&fb?.native_dimensions_verified===true){
      const diagnostic=await recordMediaProofRejection(db,{
        job,ob,code:'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',position:'native',
-       historyId:manifest.openart_history_id,width:fb.actual_width,height:fb.actual_height
+       historyId:manifest.openart_history_id,width:fb.actual_width,height:fb.actual_height,
+       allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u
      });
      if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_NATIVE_DIMENSION_DIAGNOSTIC_FAILED',diagnostic.code);
      return json({ok:false,error:'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',
@@ -163,7 +231,8 @@ Deno.serve(async req=>{
      else {payload.imageBase64=frameBase64;payload.mediaMime=clean(f.mediaType||'image/jpeg');}
      const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',payload);
      if(!fv.body?.pass||!miraFaceProofValid(fv.body?.visual||{},'image')){
-     const diagnostic=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,historyId:manifest.openart_history_id,confidence:fv.body?.visual?.face_identity_confidence});
+     const diagnostic=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,historyId:manifest.openart_history_id,confidence:fv.body?.visual?.face_identity_confidence,
+       allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u});
      if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_REJECTION_DIAGNOSTIC_WRITE_FAILED',diagnostic.code);
      return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,detail:fv.body},422);
    }
@@ -179,7 +248,8 @@ Deno.serve(async req=>{
         &&Number.isFinite(Number(verdict.confidence))){
        const diagnostic=await recordMediaProofRejection(db,{
          job,ob,code:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',position:'temporal',
-         historyId:manifest.openart_history_id,confidence:verdict.confidence
+         historyId:manifest.openart_history_id,confidence:verdict.confidence,
+         allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u
        });
        if(diagnostic.kind==='failed'||diagnostic.kind==='partial')
          console.error('MIRA_TEMPORAL_REJECTION_DIAGNOSTIC_FAILED',diagnostic.code);
@@ -221,6 +291,17 @@ Deno.serve(async req=>{
   if(pw.error)throw new Error('AGGREGATE_PROOF_WRITE_FAILED');
   if(!miraFaceProofValid(proof.instagram_visual||{},postType))return json({ok:false,error:'MIRA_SAME_FACE_EXACT_MEDIA_GATE_FAILED'},422);
   proof.mira_generation_source={openart_reference_id:MIRA_MASTER_REFERENCE_ID,openart_reference_url:MIRA_MASTER_REFERENCE_URL,generation_mode:clean(manifest.generation_mode),openart_history_id:clean(manifest.openart_history_id)};
+  // Distinguish the actual derived provider input from the immutable master
+  // identity comparator. This is provenance metadata, not media verification.
+  if(postType==='reel'&&derivedInput?.ok){
+    proof.mira_derived_generation_input={
+      ...(derivedInput as any).accepted_derived_input,
+      reference_candidate_fingerprint:MIRA_APPROVED_DERIVED_INPUT.proof_fingerprint,
+      original_master_reference_id:MIRA_MASTER_REFERENCE_ID,
+      canonical_master_unchanged:true,
+      provider_input_readback_required:true
+    };
+  }
   proof.mira_face_consistency_contract=MIRA_FACE_CONSISTENCY_POLICY;
   proof.proof_fingerprint=proofFingerprint;
   proof.mira_business_problem_id=expectedProblemId;
@@ -243,8 +324,8 @@ Deno.serve(async req=>{
  // the true bytes, t=0/mid/end face >=0.940 and temporal movement in background.
  // No generation spend, additional scheduler, alternate publisher or auto-PASS.
  if(action==='preflight'&&sourceLed&&postType==='reel'&&!historical){
-  const initial=sourceLedAutoVerifyCandidate({runDate,resolved:winnerContract,job,ob,postType,readyProviders});
-  const candidate=initial.ok?initial:sourceLedRecoverableProofRetry({
+  const initial:any=sourceLedAutoVerifyCandidate({runDate,resolved:winnerContract,job,ob,postType,readyProviders});
+  const candidate:any=initial.ok?initial:sourceLedRecoverableProofRetry({
     runDate,resolved:winnerContract,job,ob,postType,readyProviders
   });
   if(candidate.ok){

@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|blog-export-auth-matrix|20261029|read-only",
+  "status": "OBSERVED_PENDING_VERIFIED_LIVE_MATRIX",
+  "failure_class": "EXPORT_AUTH_MATRIX_UNPROVEN",
+  "root_cause": "The production export authorization guard was source-reviewed and anonymous 401-proven, but authorized service 403/200 paths lacked independent live evidence.",
+  "observed_evidence": {
+    "incident_id": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+    "issue": "#5072",
+    "protected_containment_pr": "#5074",
+    "edge_version": 184,
+    "github_secret": "SUPABASE_SERVICE_ROLE_KEY PRESENT (metadata only)",
+    "test_cases": [
+      "anonymous 401",
+      "generated without approval 403",
+      "historically published without approved_at 403",
+      "approved live-proven 200"
+    ]
+  },
+  "prevention_rule": "Use the existing canonical workflow as a manual, read-only security-probe lane; skip publisher completely, perform only GET with secret held by runner, never log bodies or credentials; fail closed on unexpected status. No second scheduler, provider or publisher.",
+  "tests": [
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "EXPORT_AUTH_MATRIX_UNPROVEN",
+    "scope": "SECURITY_EXPORT",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ]
+  },
+  "verification": {
+    "protected_merge": false,
+    "live_probe": false
+  },
+  "resolution": "Safe probe implementation candidate; no live 403/200 claim until protected merge and actual service call readback."
+}

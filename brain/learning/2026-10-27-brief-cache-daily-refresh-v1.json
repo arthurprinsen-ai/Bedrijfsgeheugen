@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "commercial-brain|brief-cache-without-scheduled-refresh|20261027-v1",
+  "obligation_id": "brief-cache-daily-refresh-20261027",
+  "failure_class": "COMMERCIAL_BRIEF_CACHE_STALE_NO_SCHEDULE",
+  "root_cause": "powerhouse_predictive_commercial_brief_cache_v1 is a materialized view that no scheduled job refreshed; it was last refreshed 2026-10-05, so triggers, heat and commercial_state were 22 days old.",
+  "observed_evidence": {
+    "actual_sources": ["public.powerhouse_predictive_commercial_brief_cache_v1", "public.powerhouse_refresh_predictive_commercial_brief_cache_v1", "cron.job"],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Daily pg_cron job at 05:50 UTC refreshes the cache before outreach preparation (06:21 UTC), with an advisory lock and a 110s timeout.",
+  "prevention_rule": "Every materialized view that feeds commercial decisions needs a scheduled refresh and a freshness check.",
+  "tests": ["tests/brain-brief-cache-daily-refresh-20261027.test.mjs"],
+  "compiler": {"failure_class": "COMMERCIAL_BRIEF_CACHE_STALE_NO_SCHEDULE", "scope": "COMMERCIAL_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-brief-cache-daily-refresh-20261027.test.mjs"],
+    "shadow": ["tests/brain-brief-cache-daily-refresh-20261027.test.mjs"],
+    "canary": ["tests/brain-brief-cache-daily-refresh-20261027.test.mjs"]
+  },
+  "terminal_rule": "Next day, max(refreshed_at) of the cache is newer than 06:00 UTC."
+}

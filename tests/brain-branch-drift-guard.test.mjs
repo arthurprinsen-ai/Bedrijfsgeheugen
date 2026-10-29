@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {assessBranchDrift} from '../tools/delivery/branch-drift-guard.mjs';
+const main='a'.repeat(40),head='b'.repeat(40);
+const policy={conflictContracts:[{id:'revenue-contract',paths:['tools/revenue/','docs/revenue.md']}]};
+const sample={mainSha:main,headSha:head,behindBy:5,mergeable:true,featurePaths:['tools/revenue/event.mjs'],mainDriftPaths:['docs/other.md'],policy,snapshotComplete:true,prOpen:true};
+test('unrelated main commits never trigger rebuild or queue',()=>{const r=assessBranchDrift(sample);assert.equal(r.action,'KEEP_TESTED_FEATURE');assert.equal(r.safeToUpdate,false)});
+test('file collision triggers owner-bound compare-and-swap update',()=>{const r=assessBranchDrift({...sample,mainDriftPaths:['tools/revenue/event.mjs']});assert.equal(r.action,'SYNC_REQUIRED');assert.equal(r.preconditions.expectedHeadSha,head);assert.equal(r.preconditions.protectedChecksRequired,true)});
+test('contract collision triggers sync despite different paths',()=>{const r=assessBranchDrift({...sample,mainDriftPaths:['docs/revenue.md']});assert.equal(r.action,'SYNC_REQUIRED')});
+test('active terminal lease cannot be mutated by advisor',()=>{const r=assessBranchDrift({...sample,mainDriftPaths:['docs/revenue.md'],writerLeaseActive:true});assert.equal(r.action,'ESCALATE_TO_CANONICAL_WRITER');assert.equal(r.safeToUpdate,false)});
+test('missing or inconsistent provider snapshot fails closed',()=>{for(const input of [{snapshotComplete:false},{headSha:'invalid'},{behindBy:-1},{mergeable:null}]){const r=assessBranchDrift({...sample,...input});assert.equal(r.action,'HOLD_PROVIDER_EVIDENCE');assert.equal(r.safeToUpdate,false)}});
+test('merged and fully synchronized branches require no action',()=>{assert.equal(assessBranchDrift({...sample,prOpen:false}).action,'NO_ACTION');assert.equal(assessBranchDrift({...sample,behindBy:0}).action,'KEEP_TESTED_FEATURE')});

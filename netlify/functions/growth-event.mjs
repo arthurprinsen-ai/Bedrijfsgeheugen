@@ -35,14 +35,18 @@ export default async function handler(request,context){
       content_id:observation.content_id||input.content_id||'',
       content_type:observation.content_type||input.content_type||'',
       channel:observation.channel||input.channel||'',
+      value:observation.value,
       fingerprint:envelope.fingerprint
     });
   }catch(error){return json({error:'invalid-datahub-growth-event',detail:String(error.message||error)},422);}
 
   const store=storeForContext(context);
   const key=safeKey(envelope);
+  const pendingKey='pending/'+key; // Disposable non-PII index; original receipt remains the authority.
   const previous=await store.get(key,{type:'json'}).catch(()=>null);
   if(previous?.envelope?.event_id===envelope.event_id){
+    if(!previous?.datahub?.persisted&&!previous?.delivery?.delivered)
+      await store.setJSON(pendingKey,{source_key:key,queued_at:previous?.queued_at||new Date().toISOString()});
     return json({
       accepted:true,
       deduped:true,
@@ -61,6 +65,8 @@ export default async function handler(request,context){
     envelope,
     datahub_event:datahubEvent
   });
+  // A failed index write returns an error; a retry is safe using the same event id.
+  await store.setJSON(pendingKey,{source_key:key,queued_at:queuedAt});
 
   return json({accepted:true,deduped:false,event_id:envelope.event_id,queue:'durable',datahub:'queued',brain:'queued'},202);
 }

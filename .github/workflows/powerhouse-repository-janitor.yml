@@ -27,6 +27,10 @@ concurrency:
 
 jobs:
   janitor:
+    # Settle branch updates before cleanup or System Map writeback.
+    needs: branch_reconciler
+    if: ${{ always() && !cancelled() }}
+    timeout-minutes: 15
     # GitHub 2026 cache-token least privilege: this privileged Janitor never uses Actions caches.
     cache-mode: none
     runs-on: ubuntu-latest
@@ -63,7 +67,7 @@ jobs:
             try {
               const compare=ghJson(`repos/${process.env.GITHUB_REPOSITORY}/compare/${process.env.GITHUB_SHA}...${pr.head.sha}`);
               uniqueCommits=Number(compare.ahead_by || 0) > 0;
-              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0)};
+              compareEvidence={status:compare.status,ahead_by:Number(compare.ahead_by||0),behind_by:Number(compare.behind_by||0),total_commits:Number(compare.total_commits||0),changedFiles:Array.isArray(compare.files)?compare.files.map(file=>file.filename):[]};
             } catch (error) {
               compareEvidence={status:'UNPROVEN',error:String(error?.message||error)};
             }
@@ -90,6 +94,67 @@ jobs:
           await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
           console.log(JSON.stringify(evidence,null,2));
           NODE
+      - name: Advise owner-safe current-main reconstruction from Janitor snapshot
+        if: always()
+        continue-on-error: true
+        run: |
+          node --input-type=module - <<'NODE'
+          import {readFile,writeFile} from 'node:fs/promises';
+          import {planCurrentMainReconstruction} from './tools/delivery/current-main-reconstruction.mjs';
+          const snapshot=JSON.parse(await readFile('.artifacts/powerhouse-repository-janitor.json','utf8'));
+          const raw=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+          const indexed=new Map(snapshot.candidates.map(p=>[p.number,p]));
+          const pulls=raw.map(pr=>{
+            const evidence=indexed.get(pr.number)?.compareEvidence||{};
+            const body=pr.body||'';
+            const lease=/^Writer-Lease-Owner:\s*\S+/m.test(body) && !/^Writer-Lease-State:\s*(?:RETIRED|CLOSED)/m.test(body);
+            return {number:pr.number,behind_by:evidence.status==='UNPROVEN'?null:evidence.behind_by,
+              sameRepository:pr.head?.repo?.full_name===process.env.GITHUB_REPOSITORY,
+              optedIn:(pr.labels||[]).some(label=>label.name==='autonomous-sync'),
+              writerLeaseOwned:lease,
+              draft:pr.draft===true,
+              changedFiles:evidence.changedFiles||[]};
+          });
+          const plan=planCurrentMainReconstruction({pulls,mainSha:snapshot.main_epoch_sha});
+          await writeFile('.artifacts/powerhouse-current-main-reconstruction.json',JSON.stringify({source:'repository-janitor',mainSha:snapshot.main_epoch_sha,advisoryOnly:true,plan},null,2)+'\n');
+          console.log(JSON.stringify({advisoryOnly:true,plans:plan.length,ownerHandoffs:plan.filter(p=>p.action==='OWNER_HANDOFF').length}));
+          NODE
+      - name: Rebuild System Map only for synchronized opted-in recovery PR
+        if: needs.branch_reconciler.result == 'success' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe'))
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pr=4940
+          data="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+          [ "$(jq -r .state <<<"$data")" = open ] || exit 0
+          [ "$(jq -r .draft <<<"$data")" = false ] || exit 0
+          [ "$(jq -r .base.ref <<<"$data")" = main ] || exit 0
+          [ "$(jq -r .head.repo.full_name <<<"$data")" = "$GITHUB_REPOSITORY" ] || exit 0
+          jq -e '.labels | any(.name == "autonomous-sync")' <<<"$data" >/dev/null || exit 0
+          jq -e '(.body // "") | contains("Writer-Lease-Owner: github-merge-capability-guard-20261025")' <<<"$data" >/dev/null || exit 0
+          head="$(jq -r .head.sha <<<"$data")"
+          branch="$(jq -r .head.ref <<<"$data")"
+          behind="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${head}" --jq .behind_by)"
+          if [ "$behind" -ne 0 ]; then
+            echo "::notice::SYSTEM_MAP_RECOVERY_WAITING_FOR_BRANCH_SYNC:behind=${behind}"
+            exit 0
+          fi
+          git fetch --no-tags origin "$head"
+          git checkout --detach "$head"
+          node scripts/brain/portal-explanation-inventory.mjs --write
+          node scripts/brain/portal-explanation-inventory.mjs --check
+          node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
+          if git diff --quiet -- platform/system-map/canonical-system-map.mjs; then
+            echo "SYSTEM_MAP_ALREADY_CURRENT"
+            exit 0
+          fi
+          git add platform/system-map/canonical-system-map.mjs
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(system-map): regenerate on synchronized release candidate'
+          current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq .head.sha)"
+          [ "$current" = "$head" ] || { echo "::error::SYSTEM_MAP_HEAD_MOVED"; exit 78; }
+          git push origin "HEAD:refs/heads/${branch}"
+          echo "::notice::SYSTEM_MAP_UPDATED_REQUIRED_AND_CODEQL_MUST_RERUN"
       - name: Diagnose read-only merge freshness from existing Janitor snapshot
         if: always()
         continue-on-error: true
@@ -126,8 +191,19 @@ jobs:
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JANITOR_RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
+          # Deterministic, bounded round-robin cursor. A stable workflow run number
+          # makes reruns idempotently visit the same page; next scheduled runs advance.
+          # Mutations always re-read live provider state before taking action.
+          page_for_cycle() {
+            local cycle="$1"
+            echo "$(( ((JANITOR_RUN_NUMBER - 1) % cycle) + 1 ))"
+          }
+          actions_page="$(page_for_cycle 32)"
+          branches_page="$(page_for_cycle 70)"
+          echo "JANITOR_BOUNDED_CURSOR:actions_page=$actions_page:branches_page=$branches_page:run=$JANITOR_RUN_NUMBER"
           gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs-after.json
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
@@ -180,7 +256,7 @@ jobs:
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
               run_id="$(jq -r '.id' <<<"$run_json")"
               branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
               run_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
@@ -209,7 +285,7 @@ jobs:
                 if [ "$safe_cancel" != true ]; then
                   encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
                   branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
-                  if [ -n "$branch_json" ] && [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ]; then
+                  if [ -n "$branch_json" ] && [ "$(jq -r 'if .protected == false then "false" else "true" end' <<<"$branch_json")" = false ]; then
                     ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
                     if [ "$ahead" = 0 ]; then
                       safe_cancel=true
@@ -268,24 +344,68 @@ jobs:
           done
 
           # Delete only unprotected non-main refs with no open PR and zero commits ahead of main.
-          gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name' | while IFS= read -r branch; do
+          gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=50&page=${branches_page}" --jq '.[].name' | while IFS= read -r branch; do
             [ -n "$branch" ] || continue
             [ "$branch" != main ] || continue
+            # Release/archive refs are deliberate history; never janitor-owned.
+            case "$branch" in archive/*|release/*|hotfix/*) continue ;; esac
             open_pr_count="$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)"
             [ "$open_pr_count" = 0 ] || continue
             encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
             branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
             [ -n "$branch_json" ] || continue
-            [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || continue
+            # jq's `//` treats false as empty, so `.protected // true` made every branch look protected.
+            [ "$(jq -r 'if .protected == false then "false" else "true" end' <<<"$branch_json")" = false ] || continue
             head_sha="$(jq -r '.commit.sha' <<<"$branch_json")"
             ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
+            reason=ALREADY_CONTAINED_IN_MAIN
+            if [ "$ahead" != 0 ]; then
+              # Squash-merged work is never an ancestor of main. Accept it only when a
+              # same-repository PR was merged with exactly this head sha: nothing newer is lost.
+              squash_hit="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f head="${GITHUB_REPOSITORY_OWNER}:${branch}" -f per_page=10 2>/dev/null | jq --arg sha "$head_sha" --arg repo "$GITHUB_REPOSITORY" '[.[] | select(.merged_at != null and .base.ref == "main" and .head.sha == $sha and (.head.repo.full_name|ascii_downcase) == ($repo|ascii_downcase))] | length' 2>/dev/null || echo 0)"
+              [ "$squash_hit" -ge 1 ] 2>/dev/null || continue
+              reason=SQUASH_MERGED_EXACT_HEAD
+              ahead=0
+            fi
             [ "$ahead" = 0 ] || continue
             # Re-read branch immediately before deletion: exact-head drift makes deletion fail closed.
             latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
             [ "$latest_sha" = "$head_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${head_sha}:${latest_sha}"; exit 78; }
             gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
-            jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason ALREADY_CONTAINED_IN_MAIN '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
+            jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason "$reason" '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
           done
+
+          # PR-driven sweep of squash-merged debris. The branch walk above reaches one page per run;
+          # this walks 5 pages x 100 closed PRs per run (stable created-asc order, 12-run cycle) and
+          # deletes a branch only when a merged same-repository PR had exactly this head sha and the
+          # branch still points at it. Never touches main, archive/, release/, hotfix/, open-PR
+          # branches or protected refs. Capped per run; deletions are read back by the step below.
+          sweep_start="$(( ((JANITOR_RUN_NUMBER - 1) % 12) * 5 + 1 ))"
+          sweep_deleted=0 sweep_seen=0 sweep_open=0 sweep_missing=0 sweep_protected=0 sweep_moved=0
+          for sweep_page in $(seq "$sweep_start" "$((sweep_start + 4))"); do
+            gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f sort=created -f direction=asc -f per_page=100 -f page="$sweep_page" 2>/dev/null \
+              | jq -r --arg repo "$GITHUB_REPOSITORY" '.[] | select(.merged_at != null and .base.ref == "main" and ((.head.repo.full_name // "") | ascii_downcase) == ($repo | ascii_downcase)) | [.head.ref, .head.sha] | @tsv' > .artifacts/sweep-candidates.tsv || true
+            while IFS=$'\t' read -r branch pr_sha; do
+              [ -n "$branch" ] && [ -n "$pr_sha" ] || continue
+              sweep_seen=$((sweep_seen + 1))
+              [ "$sweep_deleted" -lt 150 ] || break
+              [ "$branch" != main ] || continue
+              case "$branch" in archive/*|release/*|hotfix/*) continue ;; esac
+              [ "$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)" = 0 ] || { sweep_open=$((sweep_open + 1)); continue; }
+              encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
+              branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
+              [ -n "$branch_json" ] || { sweep_missing=$((sweep_missing + 1)); continue; }
+              [ "$(jq -r 'if .protected == false then "false" else "true" end' <<<"$branch_json")" = false ] || { sweep_protected=$((sweep_protected + 1)); continue; }
+              [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || { sweep_moved=$((sweep_moved + 1)); continue; }
+              latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
+              [ "$latest_sha" = "$pr_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${pr_sha}:${latest_sha}"; exit 78; }
+              gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+              jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$pr_sha" --arg reason SQUASH_MERGED_EXACT_HEAD_SWEEP '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
+              sweep_deleted=$((sweep_deleted + 1))
+            done < .artifacts/sweep-candidates.tsv
+          done
+          echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:seen=${sweep_seen}:open=${sweep_open}:missing=${sweep_missing}:protected=${sweep_protected}:moved=${sweep_moved}:deleted=${sweep_deleted}"
+
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
@@ -295,10 +415,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          # Verify the final state after both cleanup phases. A recorded terminal-lease
+          # reopen legitimately supersedes a planned CLOSE_PR for the same PR.
+          # An unrecorded reopen must remain a hard readback failure.
           jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
             pr="$(jq -r '.prNumber' <<<"$action")"
-            state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
-            [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
+            expected=closed
+            if [ -f .artifacts/janitor-runtime-actions.json ] && jq -e --argjson pr "$pr" '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE" and .pr_number == $pr)' .artifacts/janitor-runtime-actions.json >/dev/null; then
+              expected=open
+            fi
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+            state="$(jq -r '.state' <<<"$current")"
+            merged="$(jq -r '.merged' <<<"$current")"
+            [ "$state" = "$expected" ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:expected=${expected}:actual=${state}"; exit 1; }
+            if [ "$expected" = open ]; then
+              [ "$merged" = false ] || { echo "::error::JANITOR_READBACK_REOPEN_MERGED:#${pr}"; exit 1; }
+            fi
           done
           if [ -f .artifacts/janitor-runtime-actions.json ]; then
             jq -c '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE")' .artifacts/janitor-runtime-actions.json | while read -r action; do
@@ -358,3 +490,49 @@ jobs:
             .artifacts/powerhouse-merge-freshness.json
             .artifacts/powerhouse-daily-learning-liveness.json
           if-no-files-found: error
+
+  # The reconciliation runs independently of preceding cleanup failures.
+  branch_reconciler:
+    cache-mode: none
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.mode == 'apply-safe')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run branch reconciler regression tests
+        run: node --test tests/brain-branch-reconciler.test.mjs
+      - name: Reconcile opted-in PR branches and verify readback
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { reconcile } = await import(`${process.env.GITHUB_WORKSPACE}/tools/delivery/branch-reconciler.mjs`);
+            const report = await reconcile({
+              github, owner: context.repo.owner, repo: context.repo.repo, logger: core,
+              wait: i => new Promise(resolve => setTimeout(resolve, Math.min(10000, (i + 1) * 1000)))
+            });
+            core.summary.addHeading('Verified autonomous branch synchronization');
+            core.summary.addCodeBlock(JSON.stringify(report, null, 2), 'json');
+            await core.summary.write();
+            if (report.blocked.length || report.pending.length) core.setFailed('Unresolved branch reconciliation');
+
+  branch_archive_sweep:
+    # Own job and time budget so a slow sweep can never cut the Janitor's readback and writeback steps.
+    needs: janitor
+    if: ${{ always() && !cancelled() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')) }}
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Remove stale branches whose work stays recoverable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SWEEP_BUDGET_SECONDS: '900'
+        run: |
+          # See tools/ci/branch-archive-sweep.mjs: PR head ref or archive/ tag keeps the work recoverable.
+          timeout 1000 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 || echo "::warning::JANITOR_ARCHIVE_SWEEP_INCOMPLETE"

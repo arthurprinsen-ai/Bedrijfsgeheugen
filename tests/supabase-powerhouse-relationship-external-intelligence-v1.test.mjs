@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260928173100_powerhouse_relationship_external_intelligence_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928173100_powerhouse_relationship_external_intelligence_v1.sql','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-relationship-external-intelligence/SKILL.md','utf8');
 
 test('external updates project into canonical person-company-customer intelligence',()=>{

@@ -6,7 +6,7 @@ const fn=fs.readFileSync('supabase/functions/powerhouse-seo-opportunity-resolver
 const owners=JSON.parse(fs.readFileSync('supabase/functions/powerhouse-seo-opportunity-resolver/intent-owners.json','utf8'));
 const base=JSON.parse(fs.readFileSync('site/seo-order-map.json','utf8'));
 const expansion=JSON.parse(fs.readFileSync('site/seo-order-expansion.json','utf8'));
-const schedule=fs.readFileSync('supabase/migrations/20260924072500_powerhouse_seo_opportunity_resolver_v1.sql','utf8');
+const schedule=fs.readFileSync('supabase/migration-history/repository-only/20260924072500_powerhouse_seo_opportunity_resolver_v1.sql','utf8');
 const sourceConfig=JSON.parse(fs.readFileSync('config/seo-search-sources.json','utf8'));
 
 test('runtime intent-owner projection remains complete with canonical SEO maps',()=>{

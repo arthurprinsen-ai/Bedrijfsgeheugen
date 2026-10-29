@@ -12,7 +12,9 @@ test('final commercial pricing writer preserves the registered measurable Frisse
 
 test('commercial pricing still runs after SEO order enrichment so last-writer protection remains required',()=>{
   const command=netlify.match(/command\s*=\s*"([^"]+)"/)?.[1]||'';
-  const seo=command.indexOf('tools/seo-order-engine/apply.mjs');
-  const pricing=command.indexOf('tools/site-shell/apply-commercial-pricing-v1.mjs');
+  assert.equal(command,'node tools/ci/netlify-build-entry.mjs');
+  const entry=fs.readFileSync('tools/ci/netlify-build-entry.mjs','utf8');
+  const seo=entry.indexOf("['seo-apply','tools/seo-order-engine/apply.mjs']");
+  const pricing=entry.indexOf("['commercial-pricing','tools/site-shell/apply-commercial-pricing-v1.mjs']");
   assert.ok(seo>=0&&pricing>seo,'commercial pricing must remain explicitly guarded as the later writer');
 });

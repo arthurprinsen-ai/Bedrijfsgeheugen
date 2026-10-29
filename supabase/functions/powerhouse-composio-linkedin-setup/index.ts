@@ -110,6 +110,31 @@ Deno.serve(async(req:Request)=>{
     const expectedCompanyScopes=proofScopes.length?proofScopes:(priorRequestedScopes.length?priorRequestedScopes:COMPANY_OAUTH_SCOPES);
     const boundOauthAccountId=clean(proofAccountId||priorState?.company_oauth_connection_id||priorState?.oauth_candidate_connection_id);
 
+    if(action==='create_personal_link'){
+      // Personal member link only: no organization scopes. Always bound to the canonical owner, never a test user.
+      const PERSONAL_OAUTH_SCOPES=['openid','profile','email','r_member_social','w_member_social'];
+      const PERSONAL_ALIAS='bedrijfsgeheugen-personal-canonical';
+      const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&show_disabled=false&limit=50');
+      const configs=(Array.isArray(configsBody?.items)?configsBody.items:[])
+        .filter((x:any)=>clean(x?.status).toUpperCase()!=='DISABLED'&&x?.is_disabled!==true);
+      const scopesOf=(value:any)=>new Set(clean(value?.credentials?.scopes||value?.credentials?.user_scopes).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean));
+      const personalConfig=configs.find((x:any)=>['r_member_social','w_member_social'].every(scope=>scopesOf(x).has(scope))&&!scopesOf(x).has('r_organization_admin'));
+      let personalAuthConfigId=clean(personalConfig?.id);
+      if(!personalAuthConfigId){
+        const created=await api(key,'/auth_configs',{method:'POST',body:JSON.stringify({
+          toolkit:{slug:'linkedin'},
+          auth_config:{type:'use_composio_managed_auth',credentials:{scopes:PERSONAL_OAUTH_SCOPES.join(',')}}
+        })});
+        personalAuthConfigId=clean(created?.auth_config?.id||created?.id);
+      }
+      if(!personalAuthConfigId)throw new Error('COMPOSIO_LINKEDIN_PERSONAL_AUTH_CONFIG_ID_MISSING');
+      const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:personalAuthConfigId,user_id:USER_ID,alias:PERSONAL_ALIAS})});
+      const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
+      if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_PERSONAL_REDIRECT_OR_ACCOUNT_MISSING');
+      return json({ok:true,ready:false,state:'PERSONAL_AUTH_LINK_READY',reason:'LINKEDIN_PERSONAL_OAUTH_REQUIRED',
+        auth_config_id:personalAuthConfigId,connected_account_id:connectedAccountId,user_id:USER_ID,
+        requested_personal_scopes:PERSONAL_OAUTH_SCOPES,expires_at:clean(link?.expires_at)||null,redirect_url:redirectUrl});
+    }
     if(action==='create_link'){
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&show_disabled=false&limit=50');
       const configs=(Array.isArray(configsBody?.items)?configsBody.items:[])
@@ -136,8 +161,25 @@ Deno.serve(async(req:Request)=>{
         authConfigId=clean(created?.auth_config?.id||created?.id);
       }
       if(!authConfigId)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTH_CONFIG_ID_MISSING');
-      const linkUserId=proofUserId||clean(priorState?.user_id)||USER_ID;
-      const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS})});
+      const linkUserId=proofUserId||USER_ID;
+      // A revoked/stale account can still own the canonical alias. Recover the one
+      // user-initiated OAuth LINK (not a publisher) with a unique pending alias.
+      // Subsequent capability and writer authority must bind the exact proven
+      // connected_account_id + fresh organization scopes, NEVER the alias alone.
+      let candidateAlias=ALIAS;
+      let link:any;
+      try{
+        link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS})});
+      }catch(error){
+        const detail=error instanceof Error?error.message:'';
+        if(!detail.includes('COMPOSIO_LINKEDIN_SETUP_400:')
+          || !detail.includes('Alias ')
+          || !detail.includes('already in use by another connection for this entity')) throw error;
+        // Only one alias-collision retry: do not delete/reassign the old account,
+        // reuse a stale token or claim an unverified OAuth account is publish-ready.
+        candidateAlias=ALIAS+'-reauth-'+crypto.randomUUID().slice(0,12);
+        link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:linkUserId,alias:candidateAlias})});
+      }
       const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
       if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_SCOPED_REDIRECT_OR_ACCOUNT_MISSING');
       const result={
@@ -146,6 +188,7 @@ Deno.serve(async(req:Request)=>{
         oauth_candidate_connection_id:connectedAccountId,user_id:linkUserId,link_available:true,
         expires_at:clean(link?.expires_at)||null,production_workspace:true,
         requested_company_scopes:COMPANY_OAUTH_SCOPES,canonical_alias:ALIAS,
+        oauth_candidate_alias:candidateAlias,alias_collision_recovered:candidateAlias!==ALIAS,
         oauth_requested_at:new Date().toISOString(),company_oauth_fresh_verified:false
       };
       await writeState(db,'AUTH_LINK_READY',result);
@@ -262,7 +305,7 @@ Deno.serve(async(req:Request)=>{
     const companyState=companyReady?'ACTIVE':personalReady?'COMPANY_AUTH_REQUIRED':'CAPABILITY_UNVERIFIED';
     const companyReason=companyReady?null:personalReady?'LINKEDIN_COMPANY_ORG_OAUTH_REQUIRED':'LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED';
     const companyOauthVerifiedAt=companyReady?new Date().toISOString():null;
-    const result={
+    const result:Record<string,any>={
       ready:personalReady,
       state:companyState,
       reason:companyReason,

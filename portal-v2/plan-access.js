@@ -57,7 +57,7 @@ export async function fetchPortalPlan(fetchFn=globalThis.fetch,headers={}){
   if(!response.ok)return null;
   const payload=await response.json().catch(()=>null);
   if(!payload?.plan)return null;
-  return Object.freeze({plan:String(payload.plan).toLowerCase(),planName:payload.plan_name||payload.plan,entitlements:payload.entitlements||{}});
+  return Object.freeze({plan:String(payload.plan).toLowerCase(),planName:payload.plan_name||payload.plan,entitlements:payload.entitlements||{},status:payload.status||'',trialEndsAt:payload.trial_ends_at||null});
 }
 export function applyPlanAccess(root=document,subscription){
   if(!subscription?.plan)return {locked:0,plan:null};
@@ -82,3 +82,16 @@ export function applyPlanAccess(root=document,subscription){
   return {locked,plan};
 }
 export {PAGE_MIN_PLAN};
+
+export function trialDaysLeft(trialEndsAt,now=Date.now()){
+  const end=Date.parse(trialEndsAt||'');
+  if(!Number.isFinite(end))return null;
+  return Math.max(0,Math.ceil((end-now)/86400000));
+}
+export function trialBannerText(subscription,now=Date.now()){
+  if(subscription?.status!=='trialing')return null;
+  const days=trialDaysLeft(subscription.trialEndsAt,now);
+  if(days===null)return null;
+  if(days<=0)return 'Je proefperiode loopt vandaag af. Kies een betaalperiode om door te gaan.';
+  return `Je proefperiode loopt nog ${days} ${days===1?'dag':'dagen'}. Daarna stopt de toegang tenzij je kiest voor betalen.`;
+}

@@ -319,7 +319,10 @@
         "tools/seo-growth/",
         "tools/supabase-",
         "tools/universal-event-",
-        "tools/universal-failure-"
+        "tools/universal-failure-",
+        "docs/delivery/sql/repository-writer-fenced-lease.sql",
+        "tests/postgres-lease-replay.sh",
+        "tests/cost-dashboard-security.test.mjs"
       ],
       "requiredContracts": [
         "BG166",

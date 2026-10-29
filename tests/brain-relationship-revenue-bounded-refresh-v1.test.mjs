@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const migration=readFileSync('supabase/migrations/20260929171000_relationship_revenue_bounded_refresh_v1.sql','utf8');
+const migration=readFileSync('supabase/migration-history/repository-only/20260929171000_relationship_revenue_bounded_refresh_v1.sql','utf8');
 
 test('relationship revenue refresh avoids population-wide intelligence views',()=>{
   assert.doesNotMatch(migration,/powerhouse_relationship_revenue_intelligence_v1/);

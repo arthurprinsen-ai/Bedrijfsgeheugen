@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const planner=fs.readFileSync('supabase/migrations/20260928114500_powerhouse_linkedin_sales_machine_v1.sql','utf8');
-const cycle=fs.readFileSync('supabase/migrations/20260928115000_powerhouse_linkedin_sales_machine_cycle_v1.sql','utf8');
+const planner=fs.readFileSync('supabase/migration-history/repository-only/20260928114500_powerhouse_linkedin_sales_machine_v1.sql','utf8');
+const cycle=fs.readFileSync('supabase/migration-history/repository-only/20260928115000_powerhouse_linkedin_sales_machine_cycle_v1.sql','utf8');
 const worker=fs.readFileSync('supabase/functions/powerhouse-linkedin-sales-machine/index.ts','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-linkedin-sales-machine/SKILL.md','utf8');

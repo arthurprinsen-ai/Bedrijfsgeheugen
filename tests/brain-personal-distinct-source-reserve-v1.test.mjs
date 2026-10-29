@@ -24,9 +24,36 @@ test('no qualified source means no story, never a fabricated send',()=>{
 });
 test('existing One Brain owners and publication truth gates preserved',()=>{
  const s=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
- assert.match(s,/buildVerifiedFounderReserve\(verified,runDate\)/);
+ assert.match(s,/buildVerifiedFounderReserve\(verified,runDate,recentTypesForReserve\)/);
  assert.match(s,/ignoreDuplicates:true/);
  assert.match(s,/validPersonalSource\(personalSource\)/);
  assert.match(s,/recoverableObligationUniquenessDenial/);
  assert.doesNotMatch(s,/powerhouse_seed_verified_personal_reserve_v1/);
+});
+
+test('same observed event family is idempotent even with new event UUID; genuinely different type creates a distinct candidate',()=>{
+ const first=buildVerifiedFounderReserve(source,'2026-10-29');
+ const sourceSameType={...source,evidence:{...source.evidence,result_event:{...source.evidence.result_event,event_id:'new-event-id'}}};
+ const same=buildVerifiedFounderReserve(sourceSameType,'2026-10-29');
+ const a=first.find(x=>x.evidence.source_focus_kind==='observed_progress');
+ const b=same.find(x=>x.evidence.source_focus_kind==='observed_progress');
+ assert.equal(a.dedupe_key,b.dedupe_key);
+ assert.equal(a.content_key,b.content_key);
+ assert.notEqual(a.evidence.content_id,b.evidence.content_id);
+ const different={...source,evidence:{...source.evidence,result_event:{...source.evidence.result_event,event_type:'actual_new_repair_proof'}}};
+ const fresh=buildVerifiedFounderReserve(different,'2026-10-29');
+ const c=fresh.find(x=>x.evidence.source_focus_kind==='observed_progress');
+ assert.notEqual(a.dedupe_key,c.dedupe_key);
+ assert.notEqual(a.content_key,c.content_key);
+ assert.ok(c.evidence.source_focus_context.event_id,'only proven source event id becomes candidate');
+});
+test('independent external sources can rotate without defeating original verified context and max-three bound',()=>{
+ const one=buildVerifiedFounderReserve(source,'2026-10-29');
+ const another=buildVerifiedFounderReserve({...source,evidence:{...source.evidence,entrepreneur_problem_sources:[{url:'https://example.org/different-source',titel:'Another evidenced topic'}]}},'2026-10-29');
+ const a=one.find(x=>x.evidence.source_focus_kind==='external_business_problem');
+ const b=another.find(x=>x.evidence.source_focus_kind==='external_business_problem');
+ assert.notEqual(a.dedupe_key,b.dedupe_key);
+ assert.equal(one.length,3);
+ assert.equal(another.length,3);
+ assert.deepEqual(buildVerifiedFounderReserve(source,'2026-10-29',new Set(['commercial_heartbeat','loop_assurance_refresh'])).map(x=>x.evidence.source_focus_kind),['external_business_problem']);
 });

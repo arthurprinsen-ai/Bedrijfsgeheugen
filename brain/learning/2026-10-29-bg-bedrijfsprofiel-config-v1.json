@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "supabase-edge-config|bg-bedrijfsprofiel-declared|20261029-v1",
+  "fingerprint": "supabase|edge-function-undeclared|bg-bedrijfsprofiel|20261029-v1",
+  "compiler": {
+    "failure_class": "EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "bg-bedrijfsprofiel was merged (PR #5058) without a [functions.*] block in supabase/config.toml. The production edge authority gate on main refuses the function and so blocks attest for every edge change.",
+  "fix": "Declare bg-bedrijfsprofiel with verify_jwt = true. The handler has no own caller authentication and spends Tavily and Anthropic budget with the service role, so public invocation is not acceptable.",
+  "prevention_rule": "Every edge function in supabase/functions that is deployed must have a [functions.<name>] block with an explicit verify_jwt value.",
+  "tests": [
+    "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "invariants": [
+      "config declares the function",
+      "verify_jwt is true"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

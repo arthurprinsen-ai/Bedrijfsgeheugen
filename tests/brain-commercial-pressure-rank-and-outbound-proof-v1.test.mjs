@@ -47,7 +47,7 @@ test('regression: 20 cooling leads cannot starve lower-ranked eligible prospects
 });
 
 test('Gmail zero-output cannot masquerade as a successful commercial delivery',()=>{
-  assert.match(sender,/status:sent===0\|\|out\.some\(x=>x\.status==='error'\)\?'waarschuwing':'ok'/);
+  assert.match(sender,/status:sent===0\|\|out\.some\(x=>x\.status==='error'\)\|\|out\.some\(x=>x\.status!=='sent'\)\?'waarschuwing':'ok'/);
   assert.match(sender,/NO_ELIGIBLE_PREPARED_EMAIL/);
   assert.match(sender,/NO_PROVIDER_CONFIRMED_EMAIL/);
   assert.match(sender,/external_outreach_executed:sent>0/);

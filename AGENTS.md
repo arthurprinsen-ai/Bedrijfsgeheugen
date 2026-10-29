@@ -1,3 +1,48 @@
+## Externe signalen — verplichte agent- en skilloverdracht (29 oktober 2026)
+
+Voor **alle** huidige en toekomstige agents die externe bronnen, Omgevingsradar, source-observations, provider-fallback, DataForSEO, Tavily of bronpublicaties aanraken geldt vóór iedere actie: lees `.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md`, `brain/learning/2026-10-29-tavily-plan-limit-canonical-fallback.json`, de actuele productie-observatie en het bestaande Brain-incident `powerhouse|external-search|tavily-plan-limit-432|20261029` (#4215). Deze verwijzing is een **preflight-router**, geen zelfstandige scheduler of extra agent.
+
+De herstelproof van operator-run `15935` (3/3) is alleen voor **die** batch GREEN; de historische `Bedrijfsoverdracht`-fout (`40101`) blijft bewijsbaar RED en de **volgende natuurlijke** scheduler-run blijft PENDING tot onafhankelijke provider- en Brain-readback. Iedere agent houdt `PROTECTED_MAIN_SKILL_LIVE`, `EDGE_PROVIDER_ACTIVE`, `OPERATOR_BATCH_VERIFIED`, `NATURAL_RUN_PENDING`, `HISTORICAL_TOPIC_PENDING` en `BUSINESS_OUTCOME_UNKNOWN` expliciet uit elkaar. Een later actuele versie van de Edge-functie is geen bewijs dat een governance-only PR die functie heeft uitgerold.
+
+Gebruik uitsluitend de bestaande scheduler #171, canonieke `bg-externe-signalen`-producer, source-observations en Brain/Powerhouse-logs. Bij afwijkingen: dedupliceer op bestaande fingerprint en bewijs-ID, registreer oorzaak, eigenaar, provider-ID, werkelijke status, regressie en eerstvolgende veilige stap; lees de schrijfuitkomst terug. Geen tweede schrijver, nieuwe scheduler, onmiddellijke betaalde 40101-herhaling, ontbrekende tenant-scope of fictieve succes-/omzetclaim. Beschermde GitHub Required/CodeQL, exacte merge-SHA en productie-providerreadback zijn aparte vrijgavepoorten.
+
+## Herstelbewijs voor release-agents — 29 oktober 2026
+Fingerprint: `powerhouse|release-agent-incident-evidence|20261029`. Dit is een verfijning van de bestaande ONE BRAIN-regels, geen tweede bron.
+
+Bij elke fout, skipped gate, provider-429/432/403/503, kapotte PR-metadata of agentoverdracht: lees eerst de actuele protected-main, exacte PR-head, de bestaande `public.brain_failure_registry` / `public.brain_failure_occurrences`, en het corresponderende GitHub-incident. Gebruik `public.brain_observe_failure` met stabiele occurrence-ID en inhoudshash; herhaling verhoogt slechts de bestaande fingerprint-teller. Bewaar oorzaak, bewijs-URL, agent/skill, eigenaar, beslissingen, voor/na, herstel, regressie, bron-SHA, provider-versie, readback en volgende actie; geen secrets, klantinhoud of credentials in publieke logs.
+
+Geverifieerde casussen: portaal-proof overgeslagen (#4215/#5126), checkout `#trialSwitch` null (#4577/#5125), letterlijke `\\n` in PR-metadata (#5118/#5125/#5126), en BRAIN-testpad/shadow-canary mismatch (#4215/#5126). Bepaal telkens afzonderlijk `SOURCE_COMMITTED`, `PROTECTED_CI_GREEN`, `MERGED`, `DEPLOYED`, `AUTHENTICATED_PRODUCTION_READBACK`, `REAL_CUSTOMER_OUTCOME`. CI, synthetische tenantproeven en externe ACK zijn nooit vanzelf het volgende stadium. Bij website-only Netlify deploys blijft de tweevoudige tenant-JWT-proof verplicht; echte klantisolatie vergt aanvullend onafhankelijk bewijs.
+
+Herstel altijd binnen de bestaande writer/obligation/Heartbeat-lineage, met tests en logreadback. GitHub-providerlimieten of 503 → bestaande begrensde herstelroute, geen retry-storm of omzeilen van Required/BRAIN/CodeQL. Een Edge-functiewijziging is pas live nadat `supabase/config.toml`, beschermd merge-bewijs, providerversie en echte productie-observatie overeenkomen. Draag open bewijsleemten en incident-fingerprints over aan de volgende agent; laat geen open herstel onterecht groen worden.
+
+## ONE BRAIN Lean/PDCA observability — 29 oktober 2026
+
+Alle bestaande en toekomstige agents, skills en runtime-workers volgen **MEASURE → ANALYZE → HYPOTHESIZE → PRIORITIZE → IMPLEMENT → VERIFY → LEARN → REMEASURE** binnen de bestaande Brain/Powerhouse/Heartbeat-lineage. Vraag per cyclus: wat kan beter, slimmer, sneller, en wat creëert onafhankelijk bewezen klantwaarde/orders/omzet? Log iedere materiële actie, beslissing, storing, herstel en uitkomst onmiddellijk met agent/versie, tenant, bron/versheid, correlatie/fingerprint, vóór/na-meting, code-SHA of provider-ID, readback en volgende actie. Hergebruik `public.powerhouse_cycle_events`, `public.brain_failure_registry` en andere bestaande canonieke tabellen; creëer geen parallel register, writer of scheduler. Ontbrekende meetdata is `UNKNOWN`, nooit nul: open één gededupliceerde meetverplichting, implementeer privacyarme instrumentatie via bestaande eigenaar, meet en toon pas als capture + portaalreadback bewezen zijn. Ontwerp/PR, provider-ACK, reach en engagement zijn geen bewezen klanten of omzet. Machinecontract en preflight: `brain/policies/powerhouse-incident-register-and-self-fix-v1.json` en `scripts/brain/chat-learning-preflight.mjs`. Deze preflight controleert policyconfiguratie; runtime-wide instrumentatie en resultaten zijn pas live wanneer onafhankelijk bewijs bestaat. Behoud egress-allowlist, tenantisolatie, consent, Required/BRAIN/CodeQL, protected merge en productie-readback.
+
+## Incidenten en fouten: registreren en zelf oplossen — 29 oktober 2026
+
+Elke agent en elke skill registreert elke fout of elk incident (gededupliceerd op fingerprint, via de bestaande Brain learning/errorlaag) en lost het zelf op zodra er een veilige uitvoerbare stap is, met test, readback en regressieguard. Onomkeerbare of kostbare besluiten, beschermde merge, productiemigraties, uitgaven en alles naar derden blijven bij Arthur: voorbereiden, één obligation, stoppen. Beleid: `brain/policies/powerhouse-incident-register-and-self-fix-v1.json`. Een nieuwe skill zonder `INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1` faalt de agentpreflight.
+
+## System Map release-integriteit — 25 oktober 2026
+
+Volg `.agents/skills/system-map-merge-integrity/SKILL.md`: één integratie-eigenaar voor workflow, System Map, testbewijs en exact candidate SHA. Regeneratie vanuit geïntegreerde boom; Required/BRAIN/CodeQL op dezelfde commit; geen groen zonder beschermde merge en onafhankelijke readback.
+
+## Merge capability guard (25 October 2026)
+
+All agents modifying GitHub rulesets or releases must load `.agents/skills/merge-capability-guard/SKILL.md`. User-owned repositories cannot enable native `merge_queue`; protected PR checks and independent production evidence remain mandatory. The new helper must still be integrated into any actual ruleset writer; policy alone is not enforcement.
+
+## Deployment-tool ontbreekt: verplichte agent-fallback — 25 oktober 2026
+
+Elke agent die release, merge, deploy, Netlify, GitHub Actions of productiereadback uitvoert, MOET vooraf `.agents/skills/deployment-capability-recovery/SKILL.md` laden, de geselecteerde fallback en skill-content-SHA in de bestaande bewijsketen vastleggen, en de bestaande Git-CD/Heartbeat/Janitor-route hergebruiken. Ontbrekende connector-write-acties worden `DELIVERY_CONTROL_PLANE_CAPABILITY_GAP`, niet stilzwijgend succes en niet een nieuwe scheduler. Behoud Required, CodeQL, Supabase-preview en beschermde merge. Alleen exact-productieproviderreadback bewijst livegang. Heropen bij herhaling dezelfde canonieke obligation, niet een duplicaat.
+
+## GitHub required-check drift — detecteer eerst, herstel via bestaande owner (#4929)
+
+Bij `3 of 3 required status checks are expected` of andere required-context-mismatch: lees eerst `.agents/skills/release-check-reconciliation/SKILL.md`, voer read-only diagnose uit via `tools/delivery/required-check-reconciliation.mjs`, en registreer fingerprint `github|required-status-expected|context-source-sha` in het bestaande incident/Brain. De diagnose mag nooit zichzelf als doorslaggevend ruleset- of merge-bewijs behandelen: effectieve regels kunnen afzonderlijke rulesets bevatten en beheerrechten kunnen ontbreken. Herstel alleen bewezen verouderde checknamen/app-bronnen met bevoegde repositoryrechten; geen branchkopieën, tweede queue, extra scheduler, groene mockchecks of verzwakte protection. De bestaande Recovery Supervisor blijft writer. Bewijs: exacte SHA, echte Required/CodeQL, beschermde merge en productie-readback. Regressie: `tests/required-check-reconciliation.test.mjs`.
+
+## Eén bewijsvaste Brain–Powerhouse–Heartbeat leerlus — 25 oktober 2026
+
+Voor alle agents en toekomstige wijzigingen geldt het integratiecontract `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md`. Gebruik de bestaande canonieke Brain-registraties, Heartbeat/Janitor-cadans, incidentfingerprints, obligations en geëvalueerde skillprojectie. Koppel bron → besluit → uitvoering → providerbewijs → klant-/omzetuitkomst → learning en skill-evaluatie met tenantisolatie en toestemming. Meet echte leads, klanten, klantwaarde en onafhankelijk betaalde omzet in plaats van bereik of acknowledgements als resultaat te behandelen. De nieuwe contracttekst is uitsluitend ontwerp tot integratie, geslaagde tests, beschermde merge, productiereadback en echte opvolgcycli bewezen zijn. Geen tweede scheduler, ongecontroleerde outreach, extra write-owner, groene status zonder bewijs of omzeiling van Required/CodeQL/RLS/preview en privacycontroles.
+
 ## Adaptieve, bewijsvaste CI-meting — 23 oktober 2026
 
 De echte Repository Janitor-run [#39921463823](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39921463823) bewees 12 runs, 17 geldige jobs, 0 providerfouten, maar nog geen p95 (minimaal 20 jobs). De bestaande `ci-throughput-telemetry.mjs` leest voortaan maximaal 24 recente runs en stopt zodra 20 jobs uit minstens 5 runs zonder eerdere providerleesfout zijn bewezen. Verlaag deze grenzen niet om kunstmatig cijfers of groene status te tonen. Een eerdere fout blijft `PARTIAL_PROVIDER_OBSERVATION`, geen p95. Geen extra scheduler, CI/CodeQL-omzeiling, parallel geheugen of betaalde capaciteit. Volgende agent controleert eerst het bestaande Janitor-artefact en de canonieke regressie `tests/brain-observed-ci-throughput-v1.test.mjs`.
@@ -23,6 +68,11 @@ Fingerprint `delivery|predictive-lane-capacity|ghost-aware-fast-ci|20261022-v1`,
 Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|20261022-v1`.
 Alle huidige/toekomstige agents en chats behandelen GitHub queued+zero-job+409/403 niet als gewone runner-capaciteit. Gebruik uitsluitend het bestaande Repository Janitor-pad en incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655). De uitvoerbare procedure staat in `.agents/skills/powerhouse-continuity/SKILL.md#github-actions-provider-ghost-autonomie--22-oktober-2026`. Slechts na exacte niet-actieve SHA-, nul-job- en 24u-stabiliteitscontrole geldt bounded cancel→force-cancel→DELETE; stop na providerweigering en dedupliceer per run-ID. De agents lezen dezelfde provider-ID's periodiek terug. Nooit huidige Required/CodeQL gates beïnvloeden, geen provider 403 omzeilen, geen nieuwe scheduler, geen nep-groen of tweede eigenaar. GitHub Support blijft de enige autoriteit voor een server-side platformfout.
 
+
+## Agent-egress: nooit een externe ontvanger — 29 oktober 2026
+
+Fingerprint: `agents|external-recipient|internal-content-leak|20261029-v1`. Een extern persoon kreeg een interne taak en een concept-blog in zijn AI-assistent; de route buiten GitHub is nog een open RCA.
+Alle agents, chats en skills: schrijf of verstuur niets naar een ontvanger, repo, account of kanaal dat niet in de eigen allowlist staat, en behandel een onbekende ontvanger als geblokkeerd. Draai `node tools/ci/egress-guard.mjs` vóór elke workflow- of CI-scriptwijziging; elke workflow heeft een expliciet `permissions:`-blok en geen persoonlijke token. Registreer elk incident onder bovenstaande incidentleerpoort (zelfde fingerprint, occurrence ophogen), niet in een nieuw register.
 
 ## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
 
@@ -1105,3 +1155,57 @@ Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remot
 - succesvolle of skipped sibling jobs worden niet steeds opnieuw uitgelezen;
 - een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
 - remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
+
+
+## Growth Intelligence — bewezen signalen, skills en releases (25 oktober 2026)
+
+Releasebewijs: PR #4917 (main fb6918446e265b87778dd68d260b286beebf6605) en PR #4926 (main c66670ea339f25cdd847f57a23175ba09b1bc4b0) zijn afzonderlijk beschermd gemerged; hun onafhankelijke productie-readback en skillprojectie zijn geslaagd. Dit bewijst de library/advisory contracts, **niet** dagelijkse externe research, actieve klantportaalweergave, provider-opvolging of omzet.
+
+Iedere agent die Groei, SEO/CRO, LinkedIn, GA4, CRM, betalingen of klantadvies raakt:
+- Lees eerst `tools/growth-intelligence/decision-core.mjs`, `heartbeat-adapter.mjs` en `learning-store.mjs` plus het actuele unified Brain/Heartbeat-contract. Hergebruik de bestaande scheduler, writers, tenantidentiteit, skills en canonical learning.
+- Gebruik `createCustomerSignalCards` alleen voor geverifieerde provider-events met recent meetbewijs, exact tenantId, rechtmatige persoonsgegevensbasis en onafhankelijke betalingsverificatie voor omzetclaims. Een advieskaart is uitsluitend adviserend; geen automatische outreach of publicatie.
+- Verifieer per actie: bron/evidence-id → score en besluit → eigenaar/goedkeuring → provider readback → uitkomst en onafhankelijk betaalbewijs → leerregistratie → beoordeelde skillprojectie. Als een schakel ontbreekt, label de uitkomst eerlijk `UNKNOWN` of `BLOCKED` en open een herstelverplichting.
+- Een geslaagde PR-preview is nooit productiebewijs. Eis beschermde Required, hygiene, CodeQL, eventuele native preview, productie-readback op de gemergede SHA en skillcontract-evaluatie.
+- De repository staat onder persoonlijk GitHub-account; een `merge_queue`-ruleset werd door GitHub geweigerd (HTTP 422). Gebruik voor herstel de bestaande beschermde PR met `update pull request branch` op expected-head-SHA, geen force-push, geen nieuwe parallelle PR of een zwakkere branchbescherming. Zie #4929.
+
+Deze sectie is een verplichte werkinstructie voor nieuwe runs; aanwezigheid van tekst bewijst nog niet dat een individuele agent haar geladen heeft. Leg werkelijke toepassing vast in de bestaande agent-run-evidence.
+
+
+## Experiment-kalender sluit zichzelf (27 oktober 2026)
+
+Oorzaak: 210 PLANNED en 8 ACTIVE `rci-*` regels in `social_experiments` bleven open omdat niets ze afsloot; de leerlus stond daardoor open bij uitkomst.
+
+Iedere agent die experimenten, content-kalender of de dagelijkse Powerhouse-run raakt:
+- Lees eerst `skills/powerhouse-experiment-calendar-closure.md`.
+- Controleer bij elke Heartbeat-run `powerhouse_calendar_experiment_staleness_v1`; ongelijk aan 0 is een herstelverplichting, geen waarschuwing.
+- Activeer nooit experimenten in bulk. Menselijk gepoorte experimenten gaan via `bg_experiment_actie`.
+- Een nieuw experimenttype zonder sluitregel en staleness-test wordt niet gemerged.
+
+## Posts, blogs en e-mail: feedback naar de volgende inhoud — 28 oktober 2026
+
+Gebruik de bestaande `content-feedback-context.mjs` in beide canonieke generatoren. Lees omzetlearnings alleen met exact tenant/channel; e-mail gebruikt uitsluitend de bestaande canonieke sales-play-resultaten. Sla `commercial_feedback` op in artifact/action-evidence, zodat de volgende agent de werkelijk meegegeven bronnen kan teruglezen. `EVIDENCE_AVAILABLE` bewijst beschikbare context, niet een toegepast of succesvol experiment, providerverzending of betaalde omzet. Te kleine, verouderde of onbereikbare bronnen blijven expliciet onbekend. Behoud bestaande identiteit, redactie, kwaliteit, suppression, toestemming, exclusieve publisher en alle releasepoorten. Regressie: `tests/brain-content-feedback-context-20261028.test.mjs`.
+
+Controleer bij dezelfde content-feedback-lus de native registratie van beide generatoren in `supabase/config.toml`. Een succesvolle providercheck is onvoldoende: lees zowel de daadwerkelijke entrypointbron als de meegebundelde gedeelde helper terug. De bestaande e-mailcomposer behoudt `verify_jwt=false` en zijn interne scheduler-tokencontrole; geen tweede deployroute.
+
+
+Merged BRAIN recovery is verification-only: exact original base/head, same repository/main, protected-main containment of the merge and candidate ancestry or squash tree equivalence are mandatory. Closed-unmerged, identity drift and promotion requests stay denied. This read-only run cannot grant deployment, move refs, republish content or retroactively claim pre-merge validation; preserve actual timing and original source.
+
+Current successor verification must preserve historical timing: original #5040 premerge BRAIN stays NOT_PROVEN. Correct stale test syntax/DOM fixtures against current runtime invariants; never loosen production quality or send gates. Reconcile migration lock only to independently observed production identities, without replaying applied SQL. Preserve failed terminal #5043 source and use the same obligation for one successor.
+
+
+## Direct herstel na content- of meetfouten — 28 oktober 2026
+Een foutmelding of afgekeurde output blijft bij dezelfde eigenaar tot een concrete herstelactie en onafhankelijke hercontrole bestaan. Gebruik de canonieke blog-quality-recovery met exact-date/channel/state/timestamp CAS alleen voor ongepubliceerde inhoud; behoud provider-ID’s en alle zij-effectgrenzen. De bestaande daily writer mag uitsluitend dezelfde draft/same-URL PR verversen vanuit werkelijk herstelde reader-ready bron, met echte BRAIN/Required/CodeQL vóór publicatie. Bij vertoningen zonder geobserveerde klikken: controleer link/meetbron, onderscheid ontbrekende meting van nul, en test bij voldoende vergelijkbaar bewijs één nuttige vervolgstap in de volgende reguliere inhoud. Geen extra post, blind retry, verzonnen winnaar of omzetclaim.
+
+
+Content SQL adapter recovery: test standalone directRpc authentication execution alongside every real query chain after SQL-client injection changes. Source parity or successful parsing alone cannot prove authenticated execution. Keep explicit RPC executor/allowlist and transaction-bound query clients separate; prove native source and canonical authenticated invocation without printing secrets. Classify only exact CI verifier helpers in the production-readback contract; never widen runtime exclusions.
+
+
+Blog SQL DATE identity recovery: postgres@3.4.7 parses DATE OID1082 into JavaScript Date as well as timestamp types. Normalize valid driver Date values to their UTC calendar day at both claim and final ownership checks; retain exact requested day, tenant/channel, unsent/provider, source recommendation, timestamp and token guards. Test Date-shaped rows plus wrong-day and invalid-Date denial. Authenticated HTTP200/NO_PENDING_ARTIFACT is not proof of actual repair; require real claim, generated source persistence and same-draft publication readback.
+
+
+Preserved-state blog repair: the live prevent_content_ready_state_regression_v1 trigger intentionally retains content_ready when an approved artifact exists. Never disable it or reset publication rows. A successful short locked same-obligation quality-repair claim may supply work locally to that same invocation even when the trigger preserves state. An unexpired or invalid-expiry prior claim remains exclusive; final write still checks exact day/tenant/channel, still-unsent/provider state, original body/timestamp/source and matching token. Accept only decided/content_ready for that owner and CAS against the actual locked state/timestamp. Model real trigger behavior in lifecycle/concurrency regression, then prove actual native generation and persistence; claims without a new body are not recovery.
+
+Preserved-state generation errors must also persist cooldown/attempt evidence under the same locked source/token and actual state/timestamp; decided-only catch writes silently lose billing/editorial retry limits. Return actual changed-row delivery evidence to preserve trigger diagnostics. Four new regressions include failed generation and wrong-owner failure denial;15 combined recovery tests are required.
+
+
+Semantic blog rejection feedback: automatic reader_ready is structural, not final editorial proof. Authenticated explicit blog/day review must use blog-reader-quality-review-v1, the exact current body SHA256, bounded allowed rejection reasons, plain notes and validated source facts. Existing short locked canonical repair verifies that hash before any claim; stale/other-day/channel/provider side-effect state cannot be regenerated. Keep review text private; pass it as model data, retain only its ID in public exportable artifact provenance. Successful changed-body persistence completes the owner claim atomically, so an independently reviewed new body can be corrected immediately without resetting an active owner. Never complete an unchanged body or infer lift/publication from regeneration.

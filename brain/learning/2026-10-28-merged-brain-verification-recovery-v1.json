@@ -1,0 +1,38 @@
+{
+  "fingerprint": "delivery|brain|merged-candidate-verification-recovery|20261028-v1",
+  "obligation_id": "powerhouse-unified-learning-revenue-20261025",
+  "compiler": {
+    "failure_class": "MERGED_CANDIDATE_VERIFICATION_UNREACHABLE",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Protected merged feedback source has exact native production proof, but terminalizer waits for exact-candidate BRAIN while its identity step rejects every closed PR, including verification_only recovery. No historical premerge BRAIN success can be inferred. Full candidate BRAIN also exposed six stale source/DOM test fixtures and an out-of-date migration lock (755 vs 767 verified applied identities), producing eight baseline failures. Runtime quality and send gates remain unchanged.",
+  "prevention_rule": "Permit explicitly read-only merged verification only at trusted main with exact base/head, same-repository main, merge containment and candidate ancestry or squash tree equality. Preserve every existing lane/admission test and keep production transport disabled. Never relabel later verification as premerge success. Reconcile test fixtures against actual protected contracts without weakening behavior assertions; refresh the migration lock only against independently read production identities. Never replay already applied SQL. Preserve failed terminal candidate source and use one successor.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-merged-verification-identity-20261028.test.mjs",
+      "tests/brain-workflow-dispatch-pr-identity-v1.test.mjs",
+      "tests/brain-bg169-explicit-dispatch-only.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "original_pr": 5040,
+    "original_head": "e3ba5121b29f023627b5c34698ff8ab7404144fb",
+    "native_provider_authority_run": 40683634199,
+    "terminalizer_cancelled_run": 40683634984,
+    "red": "valid squash/ancestor read-only merged recovery rejected by PR_NOT_OPEN",
+    "green": "10 identity and no-promotion regressions passed",
+    "email_real_consumption_at": "2026-10-28T12:02:09.150Z",
+    "email_quality_passed": false,
+    "baseline_failure_run": 40701283422,
+    "migration_identity_count": 767,
+    "migration_identity_md5": "b67c7668a1c3ffb1f6fb7acb24351d93",
+    "migration_observed_at": "2026-10-28T14:07:19.772364Z"
+  },
+  "outcome": {
+    "candidate": "LOCAL_TESTED_NOT_DEPLOYED",
+    "revenue_improvement": "NOT_PROVEN"
+  }
+}

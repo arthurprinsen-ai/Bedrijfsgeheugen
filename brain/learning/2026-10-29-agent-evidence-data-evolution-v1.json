@@ -1,0 +1,36 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "agent-evidence-data-evolution-20261029",
+  "fingerprint": "powerhouse|agent-evidence-data-quality-documentation-growth|v1",
+  "status": "CANDIDATE_POLICY_PREFLIGHT_NOT_RUNTIME_PROVEN",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "OBSERVABILITY",
+    "scope": "POWERHOUSE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-evidence-contract-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Direct 24h Supabase readback shows 1587 canonical cycle events with zero explicit agent_id, skill_version and paired before/after metrics. These are predominantly SQL-materialized stages; underlying reasons per individual agent emitter remain UNKNOWN.",
+  "change": "Strengthen the existing incident/Lean policy and mandatory chat-learning preflight with typed actor provenance, tenant-scoped evidence, data-gap recovery, human documentation and measurable revenue-first experimentation. Add contract regression tests; no new scheduler or writer.",
+  "prevention": "Never count SQL decision cycles as actual agent executions; missing or stale data is UNKNOWN not ZERO; do not retrospectively invent actor identity, outcome evidence or business revenue; synchronize real runtime evidence through existing writer, skill/Brain, human docs, System Map and tenant-scoped portal readback.",
+  "evidence": {
+    "source": "Supabase public.powerhouse_cycle_events 24h direct readback on 2026-10-29",
+    "events24h": 1587,
+    "agent_id_present": 0,
+    "skill_version_present": 0,
+    "before_after_pair_present": 0,
+    "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+    "candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5134",
+    "test": [
+      "tests/brain-agent-evidence-contract-20261029.test.mjs"
+    ],
+    "live": false,
+    "claim": "Policy/preflight candidate only; operational agent emitter coverage and authenticated portal runtime proof remain open."
+  }
+}

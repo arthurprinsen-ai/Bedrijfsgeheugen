@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots } from '../_shared/linked-company-analytics.mjs';
+import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -40,7 +41,11 @@ async function verifiedBoundAccount(db:any,apiKey:string,toolkit:'instagram'|'li
     .select('status,result,observed_at').eq('tenant_id','canonical').eq('record_id',recordId).maybeSingle();
   if(error)throw new Error('PROVIDER_BINDING_PROOF_READ:'+error.message);
   const proof=stored?.result||{};
-  if(stored?.status!=='ACTIVE'||proof.ready!==true||proof.health_verified!==true){
+  // linkedin-composio-setup writes COMPANY_AUTH_REQUIRED when the personal profile is verified but the
+  // organization role is missing. The personal reaction readback must keep running in that state.
+  const statusOk=stored?.status==='ACTIVE'
+    ||(toolkit==='linkedin'&&stored?.status==='COMPANY_AUTH_REQUIRED'&&proof.personal_ready===true);
+  if(!statusOk||proof.ready!==true||proof.health_verified!==true){
     throw new Error(toolkit.toUpperCase()+'_VERIFIED_PROVIDER_PROOF_REQUIRED');
   }
   if(toolkit==='instagram'&&clean(proof.username).toLowerCase()!=='bedrijfsgeheugen.nl'){
@@ -116,6 +121,34 @@ async function registerCompanyProofs(db:any){
     authority:'canonical_content_publication_obligations'};
 }
 
+// Same bridge for the founder's personal profile: provider-acknowledged publications from the
+// canonical obligations become measurable social_posts rows (tenant canonical, which is where
+// linkedin() below and the learning stores read). Idempotent; never overwrites existing rows.
+async function registerPersonalProofs(db:any){
+  const since=new Date(Date.now()-35*86400000).toISOString().slice(0,10);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_personal').in('status',['PUBLISHED','LIVE_PROVEN'])
+    .gte('publication_date',since).order('publication_date',{ascending:false}).limit(40);
+  if(proofError)throw new Error('PERSONAL_PUBLICATION_PROOF_READ:'+proofError.message);
+  const batch=verifiedPersonalPostBatch(proofs||[],new Date(),30);
+  if(!batch.length)return {status:'NO_ELIGIBLE_PERSONAL_POST',eligible:0,registered:0};
+  // One row per statement: the database identity gate (LINKEDIN_PERSONAL_DISPATCH_BLOCKED) may refuse a
+  // day without verified personal truth. That refusal must stay in force and must not block other days.
+  let registered=0;const guardRejected:{post_id:string,reason:string}[]=[];
+  for(const post of batch){
+    const {data:inserted,error:writeError}=await db.from('social_posts')
+      .upsert([post],{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
+      .select('post_id');
+    if(writeError){guardRejected.push({post_id:post.post_id,reason:clean(writeError.message).slice(0,70)});continue;}
+    registered+=(inserted||[]).length;
+  }
+  return {status:guardRejected.length?'PARTIAL_GUARD_REJECTED':'PROVIDER_ACKNOWLEDGED_POSTS_INDEXED_ONLY',
+    eligible:batch.length,registered,guard_rejected:guardRejected.slice(0,10),
+    authority:'canonical_content_publication_obligations',decision:'linkedin-personal-provider-ack-truth-v1',
+    metrics_scope:'REACTIONS_ONLY_VIA_PROVIDER_READBACK'};
+}
+
 // Reuse the same six-hour provider sync. Link read-only third-party post metrics
 // only when canonical LIVE_PROVEN + independent organization author exactly match.
 async function reconcileCompanyMetricEvidence(db:any){
@@ -151,6 +184,19 @@ async function reconcileCompanyMetricEvidence(db:any){
     inference_limits:'impressions are not customers and video views are not reach'};
 }
 
+// Company analytics come from the Windsor ingest (powerhouse_growth_source_daily_v1), not from Composio (403).
+async function companyAnalyticsState(db:any){
+  const {data,error}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('metric_date,quality,source_observed_at').eq('tenant_id','bedrijfsgeheugen')
+    .eq('source_key','linkedin_company_account_provider').order('metric_date',{ascending:false})
+    .order('source_observed_at',{ascending:false}).limit(1);
+  if(error)return {state:'WINDSOR_READBACK_ERROR',error:clean(error.message).slice(0,100)};
+  const row=(data||[])[0];
+  if(!row)return {state:'WINDSOR_NO_ROWS'};
+  const age=Date.now()-Date.parse(row.source_observed_at||'');
+  return {state:age<=48*3600000?'WINDSOR_FRESH':'WINDSOR_STALE',metric_date:row.metric_date,
+    source_observed_at:row.source_observed_at,source:'windsor.ai',composio_org_scope:'403_EXPECTED_WITHOUT_ADMIN_ROLE'};
+}
 async function instagram(db:any,apiKey:string,day:string){
   const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
   const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
@@ -216,7 +262,10 @@ Deno.serve(async(req:Request)=>{
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const day=localDay();
-    let ig:any,li:any,companyRegistry:any,companyMetricLink:any;
+    let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any;
+    try{personalRegistry=await registerPersonalProofs(db);}catch(e){
+      personalRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
     try{companyRegistry=await registerCompanyProofs(db);}catch(e){
       companyRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
     }
@@ -225,11 +274,13 @@ Deno.serve(async(req:Request)=>{
     }
     try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    let companyState:any;
+    try{companyState=await companyAnalyticsState(db);}catch(e){companyState={state:'WINDSOR_READBACK_ERROR',error:clean((e as Error).message).slice(0,100)};}
     const total=(ig?.snapshots||0)+(li?.snapshots||0);
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:'BLOCKED_ORGANIZATION_PERMISSION_403',company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
+      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,personal_post_registry:personalRegistry,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',

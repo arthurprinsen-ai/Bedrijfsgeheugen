@@ -164,6 +164,19 @@ If exact final bytes/frames cannot be independently read back, status remains `U
 
 Regression rules: `PROVIDER_TRANSPORT_IS_NOT_FINAL_MEDIA_IDENTITY_PROOF`, `INSTAGRAM_EXACT_FINAL_MEDIA_PROOF_REQUIRED`, `NO_GREEN_BY_REPUBLISH`.
 
+## Agent egress
+
+### `agents|external-recipient|internal-content-leak|20261029-v1`
+Aliases: `EXTERNAL_RECIPIENT_LEAK`, `internal-task-at-outsider`, `agent-misroute-external-assistant`.
+
+Symptom: een externe persoon ontvangt via een automatische koppeling een interne taak of concept-blog in zijn eigen AI-assistent.
+
+Root cause: OPEN RCA. In de GitHub-laag bewezen afwezig (egress-guard); de route zit in Notion, Composio, Make of mail en is nog niet gevonden.
+
+Required fix: alleen schrijven naar een allowlisted ontvanger; `tools/ci/egress-guard.mjs` voor elke workflow- of CI-scriptwijziging; elke workflow met expliciete `permissions:`; geen persoonlijke token.
+
+Blocked approach: een tweede register of scheduler naast `public.brain_failure_registry`; de oorzaak aannemen zonder uitgaande logs te vergelijken.
+
 ## Incident state semantics
 
 ### `incident-open-selection-semantic-mismatch-v1`
@@ -175,6 +188,34 @@ Open/closed classification must use the combination of recovery status, operatio
 
 ### `notion-query-datasource-usage-limit-v1`
 On Notion Query Data Source `usage_limit_reached`: do not immediately retry, do not autonomously upgrade a paid plan, and do not reinterpret the entitlement failure as missing data. Use read-only search/fetch fallback where semantically sufficient and retry the query only later when capacity is available.
+
+## CI preview contract
+
+### `ci|netlify-preview-status-alias|portal-v2-live-preview|20261029-v1`
+Aliases: `NETLIFY_STATUS_TARGET_ALIAS`, `Untrusted Netlify provider status URL`, `portal-preview-untrusted-target`.
+
+Symptom: the workflow `Portal V2 Live Preview` failed on every PR with `Untrusted Netlify provider status URL (no browser green)`. At least 180 consecutive runs from 2026-10-27 were red and nobody acted, because the check is not a required status.
+
+Root cause: Netlify's commit status `target_url` is now the numbered PR alias `https://deploy-preview-N--bedrijfsgeheugen.netlify.app`, not the `app.netlify.com/projects/.../deploys/<id>` dashboard URL. `tools/ci/netlify-immutable-preview-target.mjs` rejects aliases on purpose. `portal-v2-production-dom-readback.yml` already handled the exact numbered alias; `portal-v2-live-preview.yml` did not. Two consumers of one contract had drifted.
+
+Required fix: accept ONLY the exact numbered alias of the PR under test, read `release.json` on it, require `commit_ref` equal to the exact head SHA and a 24-hex `deploy_id`, pin `https://<deploy_id>--bedrijfsgeheugen.netlify.app`, then run the existing second SHA and deploy-id verification on the immutable host.
+
+Blocked approach: do not loosen `immutableNetlifyPreviewUrl` to accept aliases, do not accept any other alias, do not trust a status link without the SHA and deploy-id check, and do not skip the preview check to get green.
+
+Regression rule: both workflows that read the Netlify status must accept the same two forms (`tests/brain-netlify-preview-alias-status-v1.test.mjs`). Three or more consecutive failures of one workflow with the same error text are a P0 to triage, not noise, even when the check is not required.
+
+### `ci|netlify-preview-closed-pr-race|portal-v2-live-preview|20261029-v1`
+Aliases: `Timed out waiting for immutable Netlify preview`, `portal-preview-closed-pr-timeout`.
+
+Symptom: after the alias fix `Portal V2 Live Preview` still ended red with `Timed out waiting for immutable Netlify preview on exact head SHA`, 9 minutes after the run started.
+
+Root cause: auto-merge closes the PR within minutes and the `workflow_run` starts after that. The numbered alias of a closed PR no longer serves the PR head, so `release.json` never shows the head SHA. The alias branch itself worked.
+
+Required fix: the wait step reads the PR state every round; a closed or merged PR sets `PREVIEW_PR_CLOSED=1` and exits 0, and the later steps are skipped. An open PR keeps the full wait and still fails on a provider failure or timeout.
+
+Blocked approach: do not add `actions: write` to cancel runs, do not raise the timeout, do not mark the check optional to get green.
+
+Regression rule: `tests/brain-netlify-preview-alias-status-v1.test.mjs` (closed-PR replay and open-PR shadow). A fix of a per-PR check is proven only on a PR that stays open.
 
 ## Completion rule
 

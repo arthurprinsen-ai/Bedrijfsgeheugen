@@ -32,7 +32,8 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
    const exposure=number(metrics.reach)??number(metrics.views)??number(metrics.impressions);
    const comments=number(metrics.comments),likes=number(metrics.likes);
    if(exposure===null||exposure<50||comments===null||likes===null)continue;
-   qualifying.push({post_id:p.post_id,exposure,comments,likes,observed_at:s.observed_at});
+   const clicks=number(metrics.clicks)??number(metrics.link_clicks);
+   qualifying.push({post_id:p.post_id,exposure,comments,likes,clicks,observed_at:s.observed_at});
  }
  const base={contract:'POWERHOUSE-MEASURED-NEXT-POST-CHALLENGER-v1',
   evidence_scope:channel==='instagram_company'?'SAME_OWNED_BRAND_INSTAGRAM_ONLY':'SAME_OWNED_BRAND_LINKEDIN_COMPANY_ONLY',mode:'READ_ONLY_DECISION_CONTEXT',
@@ -47,17 +48,22 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
  if(qualifying.length<2||reach<200)return {...base,state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS',
     reason:'No two independently comparable mature posts on the same owned platform with trustworthy exposure and comments',
     cumulative_verified_exposure:reach,proposed_test:null,decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
- const candidate=comments===0?'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION':
+ const clickCohort=qualifying.filter(x=>x.clicks!==null);
+ const clickExposure=clickCohort.reduce((a,x)=>a+x.exposure,0);
+ const verifiedClicks=clickCohort.reduce((a,x)=>a+x.clicks,0);
+ const zeroClicks=clickCohort.length>=2&&clickExposure>=200&&verifiedClicks===0;
+ const candidate=zeroClicks?'TEST_USEFUL_NEXT_STEP_FOR_ZERO_CLICKS':comments===0?'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION':
     comments/reach<0.005?'TEST_CONCRETE_PROBLEM_CONSEQUENCE_HOOK':'TEST_CONCRETE_NEXT_STEP_CTA';
  return {...base,state:'ELIGIBLE_BOUNDED_NEXT_POST_TEST',
    cumulative_verified_exposure:reach,cumulative_comments:comments,
+   cumulative_verified_clicks:clickCohort.length?verifiedClicks:null,verified_click_exposure:clickExposure,
    source_post_ids:qualifying.map(x=>x.post_id).slice(0,5),
    proposed_test:{
       hypothesis_id:candidate,
-      single_change:comments===0?'Use one useful open question tied to a concrete customer situation; do not use engagement bait':
+      single_change:zeroClicks?'Clarify one useful voluntary next step and its concrete reader benefit; preserve the topic, verified destination and other copy; no clickbait or extra post':comments===0?'Use one useful open question tied to a concrete customer situation; do not use engagement bait':
        comments/reach<0.005?'Replace one generic opening with a concrete operational problem and consequence':
        'Make one relevant next step explicit without pressure or unverified outcome claims',
-      primary_metric:'provider_observed_comments_per_eligible_exposure',
+      primary_metric:zeroClicks?'provider_observed_clicks_per_eligible_exposure':'provider_observed_comments_per_eligible_exposure',
       commercial_guardrail:'never trade off qualified leads, truth, consent or customer trust for likes',
       treatment:'ONE_REVERSIBLE_CREATIVE_COMPONENT_ONLY',
       control:'retain current source-backed editorial contract and topic',

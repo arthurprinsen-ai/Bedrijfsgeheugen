@@ -1,4 +1,5 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import {shouldRecoverHeldPersonalDuplicate,evaluateSocialDayProviderProof} from '../_shared/social-recovery-proof-contract.mjs';
+
 // Protected-main promotion bootstrap: social provider-truth contract v1.
 
 const SOCIAL_CHANNELS = ["linkedin_personal", "linkedin_company", "instagram_company"] as const;
@@ -176,7 +177,8 @@ Deno.serve(async (req: Request) => {
 
   const initialDecisions = (initialReadback.decisions || []).map(safeDecision);
   const initialRequired = initialDecisions.filter((d: any) => SOCIAL_CHANNELS.includes(d.channel) && d.decision === "publish");
-  const preparationNeeded = initialRequired.some((d: any) => {
+  const heldDuplicateNeedsRecovery = shouldRecoverHeldPersonalDuplicate(initialReadback.decisions,initialReadback.obligations);
+  const preparationNeeded = heldDuplicateNeedsRecovery || initialRequired.some((d: any) => {
     const state = clean(d.state);
     return !["published", "scheduled", "content_ready"].includes(state);
   });
@@ -256,7 +258,11 @@ Deno.serve(async (req: Request) => {
       && providerSideEffectTruthHealthy(clean(d.channel), obligation)
       && !!clean(obligation.external_id);
   });
-  const recovered = required.length > 0 && unresolved.length === 0 && providerTruthHealthy;
+  // A channel set to HOLD must not disappear from the daily proof obligation.
+  // Require all three social obligations and actual independent provider readback;
+  // transport accepted / provider ack / missing ID cannot certify a successful day.
+  const socialDayProof = evaluateSocialDayProviderProof(readback.obligations);
+  const recovered = required.length > 0 && unresolved.length === 0 && providerTruthHealthy && socialDayProof.ok;
 
   const response = {
     ok: recovered,
@@ -264,11 +270,13 @@ Deno.serve(async (req: Request) => {
     loop_state: recovered ? "GREEN" : "AMBER",
     truth_contract: "RECOVERY GREEN REQUIRES CANONICAL STATE AND PROVIDER SIDE-EFFECT TRUTH",
     degraded_preparation: degradedPreparation,
+    held_duplicate_recovery_requested: heldDuplicateNeedsRecovery,
+    daily_provider_proof: socialDayProof,
     content_loop: {
       ok: loop.ok,
       http: loop.http,
       timed_out: loop.timed_out,
-      skipped: loop.skipped === true,
+      skipped: (loop as any).skipped === true,
       preparation_needed: preparationNeeded,
       loop_state: loop.body?.loop_state || null,
       error: loop.ok ? null : (loop.error || clean(loop.body?.error) || "CONTENT_LOOP_FAILED"),

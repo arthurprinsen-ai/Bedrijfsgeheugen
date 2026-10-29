@@ -7,8 +7,8 @@ const url='https://www.bedrijfsgeheugen.nl/api/checkout/create';
 const payload={plan:'starter',email:'customer@example.invalid',company_name:'Test bedrijf'};
 const request=body=>new Request(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body??payload)});
 
-test('no Stripe live authority rejects before any store or Stripe call',async()=>{
- for(const env of [{},{STRIPE_SECRET_KEY:'sk_test_fixture'},{STRIPE_WEBHOOK_SECRET:'whsec_fixture'}]){
+test('no Supabase service authority rejects before any store or Mollie-function call',async()=>{
+ for(const env of [{},{SUPABASE_URL:'https://example.supabase.co'},{SUPABASE_SERVICE_ROLE_KEY:'service-fixture'}]){
   let stores=0,providers=0;
   const handler=createCheckoutHandler({env,storeFactory:()=>{stores++;throw Error('STORE_ACCESS_FORBIDDEN');},
    fetchFn:async()=>{providers++;throw Error('PROVIDER_ACCESS_FORBIDDEN')}});
@@ -20,15 +20,16 @@ test('no Stripe live authority rejects before any store or Stripe call',async()=
  }
 });
 test('invalid plan and email retain 400 without reading store or contacting provider',async()=>{
- const handler=createCheckoutHandler({env:{},storeFactory:()=>{throw Error('STORE_FORBIDDEN');},fetchFn:async()=>{throw Error('STRIPE_FORBIDDEN')}});
+ const handler=createCheckoutHandler({env:{},storeFactory:()=>{throw Error('STORE_FORBIDDEN');},fetchFn:async()=>{throw Error('PROVIDER_FORBIDDEN')}});
  let r=await handler(request({...payload,plan:'enterprise'}));
  assert.equal(r.status,400);assert.equal((await r.json()).error,'plan_not_self_serve');
  r=await handler(request({...payload,email:'invalid-email'}));
  assert.equal(r.status,400);assert.equal((await r.json()).error,'invalid_request');
 });
-test('configured Stripe preserves canonical plan-store failure semantics',async()=>{
- const env={STRIPE_SECRET_KEY:'sk_test_fixture',STRIPE_WEBHOOK_SECRET:'whsec_fixture'};
+test('configured Mollie route preserves canonical plan-store failure semantics',async()=>{
+ const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-fixture'};
  assert.equal(billingReadiness(env).selfServeAvailable,true);
+ assert.equal(billingReadiness(env).provider,'mollie');
  let stores=0,providers=0;
  const handler=createCheckoutHandler({env,storeFactory:()=>{stores++;throw Error('STORE_DOWN')},
   fetchFn:async()=>{providers++;throw Error('PROVIDER_FORBIDDEN')}});

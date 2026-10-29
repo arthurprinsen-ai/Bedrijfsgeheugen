@@ -67,7 +67,7 @@ test('Compound intelligence feeds verified outcomes into next decision',()=>{
 });
 
 test('SQL runtime is derived, private and has one canonical orchestrator',()=>{
-  const sql=readFileSync(new URL('../supabase/migrations/20260928193000_powerhouse_company_intelligence_os_v1.sql',import.meta.url),'utf8');
+  const sql=readFileSync(new URL('../supabase/migration-history/repository-only/20260928193000_powerhouse_company_intelligence_os_v1.sql',import.meta.url),'utf8');
   for(const name of [
     'powerhouse_company_graph_nodes_v1','powerhouse_company_graph_edges_v1',
     'powerhouse_system_of_context_v1','powerhouse_autonomous_action_layer_v1',

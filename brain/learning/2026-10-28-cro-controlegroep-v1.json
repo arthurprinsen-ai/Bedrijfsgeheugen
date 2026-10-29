@@ -1,0 +1,27 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "cro|controlegroep|20261028-v1",
+  "obligation_id": "cro-controlegroep-20261028",
+  "failure_class": "UPLIFT_CLAIMED_WITHOUT_CONTROL_GROUP",
+  "root_cause": "bg_experimenten_beoordelen compares the same page before versus during, so general traffic movement is indistinguishable from the effect of a change; a keep decision cannot be made autonomously.",
+  "observed_evidence": {
+    "actual_sources": [
+      "intern.bg_experimenten_beoordelen (live definition, read-only, 2026-10-28)",
+      "intern.bg_experiment_meet (live definition, read-only, 2026-10-28)"
+    ],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Read-only difference-in-differences function over unchanged pages; consistent only with enough sample, a stable control and a positive difference.",
+  "prevention_rule": "An uplift is only treated as an effect of the change when the control group is stable and the tested page outperforms it.",
+  "tests": ["tests/brain-cro-controlegroep-20261028.test.mjs"],
+  "compiler": {"failure_class": "UPLIFT_CLAIMED_WITHOUT_CONTROL_GROUP", "scope": "SEO_CRO_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-cro-controlegroep-20261028.test.mjs"],
+    "shadow": ["tests/brain-cro-controlegroep-20261028.test.mjs"],
+    "canary": ["tests/brain-cro-controlegroep-20261028.test.mjs"]
+  },
+  "terminal_rule": "Not terminal until the function is applied, wired into the autonomous decision gate and a first experiment shows a computed control group in production."
+}

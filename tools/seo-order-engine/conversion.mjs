@@ -15,8 +15,10 @@ function markAnchorInContent(content, entry) {
     : absolute;
 
   const target = '(?:' + [...new Set([absolute, relative])].map(reEscape).join('|') + ')';
-  const re = new RegExp('<a\\b([^>]*\\bhref=(?:"' + target + '"|\'' + target + '\')[^>]*)>', 'i');
+  const re = new RegExp('<a\\b([^>]*\\bhref=(?:"' + target + '"|\'' + target + '\')[^>]*)>', 'gi');
 
+  // Mark every matching CTA within page content, not just its first occurrence.
+  // The surrounding shell (header, mobile menu, footer) is still untouched.
   return String(content).replace(re, (match, attrs) => {
     if (/\bdata-bg-conversion=/.test(match)) return match;
     return '<a' + attrs + ' data-bg-conversion="' + escapeAttr(entry.primary_cta.action) + '" data-bg-page-role="' + escapeAttr(entry.role) + '" data-bg-funnel-stage="' + escapeAttr(entry.funnel_stage) + '">';

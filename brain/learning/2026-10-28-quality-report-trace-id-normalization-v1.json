@@ -1,0 +1,41 @@
+{
+  "type": "QUALITY_IMPROVEMENT_CANDIDATE",
+  "date": "2026-10-28",
+  "fingerprint": "portal|quality-report|trace-id-dropped-in-event-normalization|20261028-v1",
+  "failure_class": "EVIDENCE_PROJECTION_GAP",
+  "root_cause": "normalizeObservabilityRecord in portal-v2/runtime-evidence.js never emitted a traceId, while the Agent Intelligence quality report counts events by e.traceId. The row 'Agents & tracekwaliteit' was therefore structurally NIET GEMETEN, even when the server records carried trace_id or traceId.",
+  "prevention_rule": "A metric that reads a field must have a regression test from the source record through the normalizer to the report. Only an explicit traceId or trace_id counts as a trace; correlationId is a loop identifier and never becomes a trace.",
+  "status": "CANDIDATE_NOT_LIVE",
+  "owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+  "related": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4761",
+  "supersedes_status_of": "brain/learning/2026-10-23-portal-agent-intelligence-evidence-analytics-v1.json (its status IMPLEMENTED_ON_FEATURE_BRANCH_NOT_LIVE is outdated: #4747, #4761 and #4777 are merged on main since 2026-10-23; production readback is still not independently verified)",
+  "tests": [
+    "tests/brain-agent-intelligence-analytics.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "EVIDENCE_PROJECTION_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-agent-intelligence-analytics.test.mjs"
+    ],
+    "invariants": [
+      "explicit traceId or trace_id is kept and trimmed",
+      "correlationId is never promoted to a trace",
+      "an observed trace is not a trace grade or quality proof",
+      "no new scheduler, endpoint, writer or source authority"
+    ]
+  },
+  "customerValueVerified": false,
+  "providerDeploymentVerified": false
+}

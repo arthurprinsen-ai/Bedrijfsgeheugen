@@ -12,6 +12,9 @@ const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u03
 
 Deno.serve(async(req)=>{
   if(!['GET','POST'].includes(req.method)) return json({ok:false,error:'METHOD_NOT_ALLOWED'},405);
+  // P0 2026-10-29: authenticated service-only export, never to anonymous/tenant clients.
+  const exportKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+  if(!exportKey || req.headers.get('authorization')!==('Bearer '+exportKey)) return json({ok:false,error:'EXPORT_AUTH_REQUIRED'},401);
   const url=Deno.env.get('SUPABASE_URL')||'', key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!key) return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
@@ -23,16 +26,18 @@ Deno.serve(async(req)=>{
   const [{data:a,error:ae},{data:d,error:de},{data:o,error:oe}]=await Promise.all([
     db.from('powerhouse_content_artifacts').select('title,body,cta,content_brief,generation_evidence,status').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
     db.from('powerhouse_channel_decisions').select('decision,state').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
-    db.from('content_publication_obligations').select('status,content_id,slug,canonical_url,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
+    db.from('content_publication_obligations').select('status,approved_at,published_at,content_id,slug,canonical_url,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
+  // Separate last-mile publication permission from model/SEO/quality decisions.
+  if(!o?.approved_at || !['APPROVED','PUBLISHED','LIVE_PROVEN'].includes(clean(o.status))) return json({ok:false,error:'BLOG_PUBLIC_EXPORT_NOT_APPROVED',runDate},403);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
 
   const generation=evidenceObject(a.generation_evidence);
   const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   // Never export a stale obligation's URL when the artifact was regenerated.
   // A proven provider side effect is immutable: reconcile it, do not replace it.
-  if (clean(o?.slug) && clean(o.slug)!==slug
+  if (clean(o?.slug) && clean(o?.slug)!==slug
       && (clean(o?.status)!=='GENERATED' || clean(o?.evidence?.provider_create_success)==='true'
           || clean(o?.evidence?.republish_forbidden)==='true')) {
     return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_REQUIRES_RECONCILIATION',runDate},409);
@@ -72,6 +77,8 @@ Deno.serve(async(req)=>{
     content_id:contentId,
     canonical_url:canonical,
     artifact_status:a.status,
+    blog_quality_repair:generation.blog_quality_repair||null,
+    reader_ready:generation.automated_blog_reader_ready===true,
     obligation_status:clean(o?.status)||null,
     obligation_idempotency_key:clean(o?.evidence?.idempotency_key)||('content-publication:'+runDate+':blog')
   });

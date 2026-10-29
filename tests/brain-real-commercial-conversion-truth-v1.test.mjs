@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const sql=readFileSync(resolve(root,'supabase/migrations/20261009190000_fix_noncommercial_conversion_projection_v1.sql'),'utf8');
+const sql=readFileSync(resolve(root,'supabase/migrations/20261009155535_fix_noncommercial_conversion_projection_v1.sql'),'utf8');
 test('fail closed for internal operations before cycle or value attribution',()=>{
  assert.match(sql,/coalesce\(new\.revenue_eur,0\)<=0/);
  assert.match(sql,/coalesce\(lower\(new\.outcome_type\),'\'\)/);

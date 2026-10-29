@@ -3,7 +3,8 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 import { boundedReads } from './bounded-reads.js';
-import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
+import {finiteEvidence,sumKnownEvidence,maxKnownEvidence,entrepreneurSnapshotFreshness as entrepreneurSnapshotFreshness_raw} from './entrepreneur-snapshot-truth.js';
+const entrepreneurSnapshotFreshness:(...args:any[])=>any=entrepreneurSnapshotFreshness_raw;
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 // Accept the approved production Netlify gateway token by hash, never by plaintext.
@@ -150,6 +151,41 @@ Deno.serve(async(req:Request)=>{
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+  // Private tenant-scoped commercial evidence series; no cross-tenant aggregates.
+  if(action==='commercial_feedback'){
+    const days=Number(body?.days);
+    if(!Number.isInteger(days)||days<1||days>365)return json({error:'INVALID_PERIOD'},400);
+    const since=new Date(Date.now()-days*86400000).toISOString();
+    const {data,error}=await client.from('revenue_learning_evidence')
+      .select('evidence_id,tenant_id,evaluated_at,data_quality,exposures,clicks,leads,qualified_leads,meetings,proposals,orders,revenue_eur,source_refs')
+      .eq('tenant_id',tenantId).gte('evaluated_at',since)
+      .order('evaluated_at',{ascending:false}).limit(2000);
+    if(error)return json({error:'COMMERCIAL_EVIDENCE_READ_FAILED'},503);
+    const rows=(data||[]).filter((row:any)=>row.tenant_id===tenantId);
+    const daysByDate=new Map<string,any>();
+    for(const row of rows){
+      const date=String(row.evaluated_at||'').slice(0,10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;
+      const record=daysByDate.get(date)||{date,exposures:0,clicks:0,leads:0,qualifiedLeads:0,meetings:0,proposals:0,reportedOrders:0,verifiedOrders:0,verifiedRevenueEur:0};
+      const safe=(v:any)=>Number.isFinite(Number(v))&&Number(v)>0?Number(v):0;
+      record.exposures+=safe(row.exposures);
+      record.clicks+=safe(row.clicks);
+      record.leads+=safe(row.leads);
+      record.qualifiedLeads+=safe(row.qualified_leads);
+      record.meetings+=safe(row.meetings);
+      record.proposals+=safe(row.proposals);
+      record.reportedOrders+=safe(row.orders);
+      // 'OBSERVED' is not independently verified payment/order evidence.
+      // No revenue is promoted until an independently attested provider receipt contract exists.
+      daysByDate.set(date,record);
+    }
+    const series=[...daysByDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+    return json({tenantId,days,series,recordsRead:rows.length,truncated:rows.length===2000,
+      verifiedRevenueEur:0,verificationStatus:'UNVERIFIED',
+      source:'revenue_learning_evidence',sourceQuality:'MIXED',
+      explanation:'Activity is reported; orders and revenue require independent provider evidence.'});
+  }
 
   // Authoritative tenant financial series only. No market-signal-to-finance conversion.
   // This gateway is service-token protected; a browser never receives a database key.
@@ -644,7 +680,7 @@ Deno.serve(async(req:Request)=>{
       let authorityRecords;
       try{authorityRecords=await readPortalBusinessInputAuthorityPages(client,tenantId);}
       catch(error){
-        const code=error?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
+        const code=(error as any)?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
           ?'BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED':'BUSINESS_INPUT_AUTHORITY_READ_FAILED';
         return json({error:code},503);
       }

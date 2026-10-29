@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deriveLearningTelemetry, agentIntelligenceMarkup, deriveQualityReport, qualityReportMarkup } from '../portal-v2/modules/agent-intelligence-analytics.js';
+import { mapRuntimeProjection } from '../portal-v2/runtime-evidence.js';
 
 const now=Date.parse('2026-10-23T11:00:00Z');
 const events=[
@@ -157,4 +158,20 @@ test('a source reference is displayed as a claim, never as independently verifie
  assert.match(markup,/Kennis met bronreferentie/);
  assert.match(markup,/inhoud niet onafhankelijk bevestigd/);
  assert.doesNotMatch(markup,/Productiebevestigde kennis/);
+});
+
+test('an explicit trace ID survives event normalization into the quality report, a correlationId does not count',()=>{
+  const projection={tenantId:'t1',records:[
+    {id:'a',type:'agent',occurredAt:'2026-10-22T08:00:00Z',status:'OK',traceId:' trace-1 '},
+    {id:'b',type:'agent',occurredAt:'2026-10-22T09:00:00Z',status:'OK',trace_id:'trace-2'},
+    {id:'c',type:'agent',occurredAt:'2026-10-22T10:00:00Z',status:'OK',correlationId:'loop-9'}
+  ]};
+  const normalized=mapRuntimeProjection(projection).observability.events;
+  assert.deepEqual(normalized.map(e=>e.traceId),['trace-1','trace-2','']);
+  const row=deriveQualityReport({events:normalized,now}).rows.find(r=>r.id==='agents');
+  assert.equal(row.count,2);
+  assert.equal(row.status,'TRACE WAARGENOMEN');
+  assert.match(row.detail,/geen onafhankelijke trace-grade/);
+  const without=deriveQualityReport({events:normalized.filter(e=>!e.traceId),now}).rows.find(r=>r.id==='agents');
+  assert.equal(without.status,'NIET GEMETEN');
 });

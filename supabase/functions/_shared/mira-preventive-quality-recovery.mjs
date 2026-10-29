@@ -7,6 +7,101 @@ const NATIVE=/^MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH:(\d{2,5})x(\d{2,5}):openart
 const clean=value=>String(value??'').trim();
 export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generation-quality-feedback-v1';
 
+export const MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT='mira-recognizable-face-and-genuine-human-motion-v1';
+
+export const MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT='mira-native-provider-output-prespend-v1';
+export const MIRA_WAN27_PROVIDER_OBSERVATION=Object.freeze({
+  model:'wan2-7',mode:'image2video',requested_resolution:'1080p',
+  actual_width:1292,actual_height:1604,actual_duration:8.08,
+  actual_has_audio:true,history_id:'4y4xrXvVDidv9gUDQZea',
+  authoritative_reference:'https://www.alibabacloud.com/help/en/model-studio/image-to-video-general-api-reference'
+});
+
+/**
+ * Prevent billing when the original fixed master cannot yield a provable
+ * EXACT 1080x1920 mute Reel with the selected provider control surface.
+ * This is an output-format preflight, NOT an identity or publication approval.
+ * Never accept caller assertions about the native output as evidence.
+ */
+export function assessMiraProviderBeforeSpend({model,mode,params,masterReferenceId}={}){
+  const name=String(model??'').trim().toLowerCase();
+  const kind=String(mode??'').trim().toLowerCase();
+  const p=params&&typeof params==='object'?params:{};
+  const base={contract:MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT,approved_for_publish:false,
+    actual_media_verified:false,requires_identity_and_motion_proofs:true,
+    output_requirement:'native-1080x1920-mp4-no-audio'};
+  if(masterReferenceId!=='Yjqu4D7v76HABNPmQPj1')
+    return {...base,ok:false,code:'MIRA_ORIGINAL_MASTER_REQUIRED'};
+  if(!['image2video','element2video'].includes(kind))
+    return {...base,ok:false,code:'MIRA_SOURCE_ANCHORED_GENERATION_REQUIRED'};
+  if(String(p.resolution??'').toLowerCase()!=='1080p'||Number(p.duration)!==8||Number(p.videoCount)!==1)
+    return {...base,ok:false,code:'MIRA_NATIVE_REEL_SETTINGS_REQUIRED'};
+  if(name==='wan2-7'&&kind==='image2video'){
+    return {...base,ok:false,code:'MIRA_WAN27_IMAGE_RATIO_NOT_EXACT_REEL',
+      observed:MIRA_WAN27_PROVIDER_OBSERVATION,
+      reason:'Wan 2.7 I2V resolution is a pixel-count tier. The provider preserves input aspect ratio; OpenArt Wan image2video has no aspect-ratio or mute output control. Actual 1080p result was 1292x1604 with audio.',
+      recommended_action:'Use a verified native-9:16, mute-capable provider mode with immutable Mira master, or obtain a separately approved original-master-preserving 9:16 input workflow.'};
+  }
+  // Only the observed Veo3.1 control surface has both explicit 9:16 and mute
+  // settings and a historical actual native 1080x1920 result. Its past face
+  // failures remain valid; compatibility here does NOT endorse retrying Veo.
+  if(name==='veo3-1'&&kind==='image2video'&&
+     p.aspectRatio==='9:16'&&p.generateAudio===false){
+    return {...base,ok:true,code:'FORMAT_CONTROLS_PROVEN_ONLY',
+      evidence:'Prior original OpenArt Veo3.1 image2video returned native 1080x1920 without audio; facial continuity still failed independent validation.',
+      do_not_reuse_rejected_history:true,
+      eligible_for_new_approved_candidate_only:true};
+  }
+  return {...base,ok:false,code:'MIRA_PROVIDER_OUTPUT_CONTRACT_UNPROVEN',
+    reason:'This model/mode has no independently verified native 1080x1920 and mute output contract for the canonical original master. Do not incur generation credits by guessing its response dimensions.',
+    recommended_action:'Inspect actual model form and producer controls, then add provider-backed exact-media evidence under the existing guarded PR before enabling spending.'};
+}
+
+
+// The previous real model prompts asked to lock the face and every facial pixel
+// throughout the video while the actual independent temporal gate required
+// natural visible HUMAN movement. Reject that impossible brief BEFORE credits
+// are spent. Stable identity is not the same as a literal frozen facial plate.
+export function checkMiraProducerPromptCompatibility(prompt=''){
+ const source=String(prompt??'');
+ const p=source.toLowerCase().replace(/\s+/g,' ');
+ const violations=[];
+ if(/(?:frozen (?:facial|face|head|portrait)|freeze (?:the )?(?:face|head|person|entire person)|(?:lock|preserve) (?:every|all) (?:facial|face) (?:landmarks(?: and pixels?)?|pixels?)|(?:face|facial area|entire head) (?:is|are|must be|as) (?:a )?(?:photographically )?frozen (?:photographic )?plate|(?:pixel-perfect|identical) (?:facial|face) pixels?)/i.test(p))
+   violations.push('IMPOSSIBLE_FROZEN_FACE_REQUIREMENT');
+ if(/(?:no (?:blinking|blink|breathing|human motion|facial animation|facial movement|head movement|hand movement)|(?:do not|never) (?:blink|breathe|move (?:her |the )?(?:head|hands|face)|have her move))/i.test(p))
+   violations.push('SUPPRESSED_NATURAL_HUMAN_MOTION');
+ if(/(?:motion only (?:in|on|of) (?:the )?(?:background|desk|phone|object)|(?:entire person|whole body) (?:perfectly |completely )?(?:still|static)|still (?:portrait|photo) (?:with|on) (?:moving|animated) background)/i.test(p))
+   violations.push('BACKGROUND_ONLY_FAKE_VIDEO');
+ if(!/(?:finger|hand|blink|breathing|human|head|gesture|interact)/i.test(source))
+   violations.push('NO_GROUNDED_HUMAN_ACTION');
+ return {ok:violations.length===0,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,violations};
+}
+
+export function buildMiraSourceLockedMotionBrief({scene,masterReferenceId,runDate}={}){
+ const frozenScene=String(scene??'').trim();
+ const master=String(masterReferenceId??'').trim();
+ if(!frozenScene||!master||!/^20\d{2}-\d{2}-\d{2}$/.test(String(runDate??'')))
+   return {ok:false,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,reason:'MISSING_FROZEN_SOURCE_OR_ORIGINAL_MASTER'};
+ const prompt=[
+  'Produce ONE photorealistic 8-second continuous-shot Instagram Reel, true native full-bleed 1080x1920 portrait 9:16. No black bars, text overlays, camera cuts, pan, zoom, reframing or identity swaps.',
+  'Use only the original approved Mira master reference as the actual original start/end frame input according to the currently permitted image2video contract. Preserve the SAME recognizable adult woman: face structure, age, hair, skin features and clothing. Keep her entire face unobscured, naturally framed and consistently illuminated, without redesign, morphing, beautifying, flicker or extreme head turns.',
+  'Keep the already-frozen source scene exactly: '+frozenScene,
+  'The character must be visibly alive throughout the shot: subtle natural blinking, small plausible breathing and one small unhurried HAND/finger interaction with the existing object already present in the approved scene. One continuous human action with physically coherent face and hand movement, no slideshow, still photograph animation or background-only motion.',
+  'Prioritize identity and a coherent living human over exaggerated expression. Keep the person clearly alive yet physically realistic, with limited, coherent natural micro-expressions. Avoid static slideshow effects while keeping movement restrained enough for original-master face verification at first, middle and last frame.',
+  'No voice, music, logos, legible third-party app brands, new characters, invented claims or altered editorial context. Output a genuinely NEW OpenArt provider history in the original project; do not reuse a rejected history.'
+ ].join(' ');
+ const compatibility=checkMiraProducerPromptCompatibility(prompt);
+ if(!compatibility.ok)return {ok:false,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,reason:'PRODUCER_BRIEF_SELF_CONTRADICTORY',violations:compatibility.violations};
+ return {ok:true,contract:MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT,
+  run_date:runDate,official_master_reference_id:master,scene:frozenScene,
+  permitted_generation_mode:'image2video',native_dimensions:'1080x1920',
+  duration_seconds:8,requires_real_human_motion:true,
+  source_and_identity_unchanged:true,openart_credits_cap_enforced_externally:true,
+  prompt,compatibility};
+}
+
+
+
 export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
  const error=clean(job?.last_error);
  const face=FACE.exec(error),motion=MOTION.exec(error),native=NATIVE.exec(error);
@@ -53,6 +148,11 @@ export function planMiraPreventiveRecovery({runDate,resolved,job,ob}={}){
   bounded_new_generations_per_decision:1,
   approved_executor:'EXISTING_CANONICAL_MIRA_PRODUCER_ONLY',
   producer_instructions:producerInstructions,
+  // Compatible human-motion brief follows the existing frozen source. Before
+  // any paid provider call, original producer must also lint its FINAL prompt.
+  motion_compatible_brief:buildMiraSourceLockedMotionBrief({
+    scene:resolved.scene,masterReferenceId:job.asset_manifest.openart_reference_id,runDate
+  }),
   candidate_must_have_distinct_history:true,
   source_and_caption_must_remain_unchanged:true,
   verified_actual_three_frames_required:true,

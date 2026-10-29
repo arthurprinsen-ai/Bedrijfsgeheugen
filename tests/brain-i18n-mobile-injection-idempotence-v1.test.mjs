@@ -13,6 +13,6 @@ test('compact mobile host keeps route-aware switcher injection idempotent', () =
   const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
   assert.match(source,/function mobileLanguageFor\(file\)/);
   assert.match(source,/data-bg-language-switcher=/);
-  assert.match(source,/html\.replace\(existing,mobileLanguage\)/);
+  assert.match(source,/html = html\.replace\(existing, \(\) => \{[\s\S]*?return mobileLanguage;/);
   assert.match(source,/mobileLanguage \+ '\$&'/);
 });

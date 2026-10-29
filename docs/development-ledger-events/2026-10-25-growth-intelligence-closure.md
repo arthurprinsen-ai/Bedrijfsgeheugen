@@ -8,18 +8,12 @@
 - Verification outstanding: Required, CodeQL, preview, protected merge, production readback.
 - No production activation, independently confirmed paid order, or actual external source-to-portal integration is claimed.
 
-## 2026-10-29 CRO experiment extension
-- Source issue #4900, existing candidate PR #4901 (no parallel scheduler or PR writing lane).
-- Root defect: CRO experiments had no evidence-gated complete design/assignment/SRM/outcome-to-learning lifecycle in the existing decision adapter; a raw p-value flag could overstate confidence.
-- Change: preregistration, privacy/accessibility/SEO guards, outcome readback, conservative statistics, explicit inconclusive/invalid states, Heartbeat proposals and System Map provenance.
-- Code-probe defect: canonical `cro` agent owner rejected by length >3; bounded fix to >=3, re-evaluated.
-- Evidence: static local V8 probe only; exact-head CI, protected merge and independent production+portal readback still PENDING.
-- Prevention: do not label candidate as a live experiment; require stable assignment and mature comparison before learning promotion. Existing incident/learning writer remains authoritative.
+## Customer-scoped external guidance increment (2026-10-25)
+Existing Heartbeat adapter now creates evidence-linked, tenant-isolated advice cards for verified events. Rejected: cross-tenant, unsupported/unverified, stale, personal data without lawful basis, and paid orders lacking independent verification. No scheduled web crawler, portal endpoint, automatic publication or contact, live source connector, or verified order is asserted. Added module regression test. Requires full protected CI and production readback.
 
-## 2026-10-29 19/19 branch source tests, analytics mapping and merge gating
-- Branch readback: 19/19 test functions passed in isolated V8 source harness; this is **not** exact-head Node Required/CodeQL/Netlify.
-- Supabase verified candidate: `c1727e17-6200-44ff-9a31-eec0ea7c1ead`, `candidate`, `owner_agent=cro`, `measured_outcome=NULL`.
-- Aggregates: 3,634 pageviews and zero funnel CTA click attribution vs 48 click-like non-robot interactions in a separate source; root cause unknown and taxonomy not comparable.
-- Patch: deterministic diagnostics returned to existing Heartbeat as `croDataGaps`; no database writer, schedule, provider message or revenue was created.
-- GitHub latest PR #4901: draft, `mergeable_state=dirty`, 16 changed paths; exact-head protected checks and runtime/portal delivery still unverified.
-- Prevention: retain incident/learning lineage, do not turn pure code into live/readback claim; hand off branch conflict reconciliation to exclusive protected release writer.
+## CRO main-first merge recovery — 2026-10-29
+- Existing PR #4901, obligation `growth-intelligence-one-loop-20261025`. Other agents already merged #5138 into main as `e335d122590cf3bad7a5786e0403915be6bc160a`, confirmed by GitHub exact merge SHA.
+- Root cause: old PR feature base and current main had independently evolved overlapping files (customer guidance, tests, learning store, delivery map and System Map); ordinary merge was dirty. Keep current main versions of all unmodified and evolved paths; add only scoped CRO changes.
+- Action: merge commit with both actual parents and a tree based on the current protected main SHA; preserve all main paths, merge the new CRO contract into current Heartbeat and verify no rollback of customer cards.
+- Safety: no force push, no direct main update, no false production-green, no new schedule. Require exact-head Required/BRAIN/CodeQL and independent portal/Netlify/paid-order proof.
+- Measurement opportunity: 3,634 pageviews / 0 attributed CTA; 1,201 non-bot interactions / 48 click-like events over seven days, separate event taxonomies and not causal proof.

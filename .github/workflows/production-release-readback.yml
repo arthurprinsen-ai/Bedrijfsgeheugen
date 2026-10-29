@@ -50,12 +50,13 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
-          import { deriveNetlifyDeploymentApplicability, requiresBrainRuntimeAuthenticatedProof } from './tools/delivery/netlify-deployment-applicability.mjs';
+          import { deriveNetlifyDeploymentApplicability, requiresBrainRuntimeAuthenticatedProof, classifyNetlifyDeploymentEvidence } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
 
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          // Manual dispatch requests browser proof, not a deployment of governance-only code.
           const manualReadback=process.env.EVENT_NAME === 'workflow_dispatch';
           const applicability=deriveNetlifyDeploymentApplicability({
             changedPaths,
@@ -87,6 +88,10 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`brain_runtime_auth_proof_required=${brainRuntimeAuthProofRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
+          const deployEvidence=classifyNetlifyDeploymentEvidence({applicability,headSha:process.env.GITHUB_SHA});
+          await appendFile(process.env.GITHUB_OUTPUT,`deployment_status=${deployEvidence.status}\n`);
+          console.log(`NETLIFY_DEPLOYMENT_APPLICABILITY: ${deployEvidence.status} (${deployEvidence.reason})`);
+          await appendFile(process.env.GITHUB_STEP_SUMMARY,`### Netlify deployment applicability\n\n- Status: **${deployEvidence.status}**\n- Reason: ${deployEvidence.reason}\n- Deployment required: **${deploymentRequired}**\n- Runtime/website proof: **not inferred from applicability**\n\n`);
           console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:applicability.deliveryLanes,required_suites:applicability.requiredSuites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,brain_runtime_auth_proof_required:brainRuntimeAuthProofRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
@@ -169,8 +174,10 @@ jobs:
           done
           echo "Production never exposed exact release marker + deploy identity for ${EXPECTED_COMMIT}" >&2
           exit 1
+      # Every real production deployment must prove two isolated authenticated tenants;
+      # governance-only changes have no new deployment and are not falsely marked live.
       - name: Verify authenticated Portal production API proof
-        if: (steps.scope.outputs.portal_required == 'true' || steps.scope.outputs.brain_runtime_auth_proof_required == 'true') && steps.deploy.outcome == 'success'
+        if: steps.scope.outputs.deployment_required == 'true' && steps.deploy.outcome == 'success'
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           EXPECTED_DEPLOY_ID: ${{ steps.deploy.outputs.deploy_id }}
@@ -194,6 +201,7 @@ jobs:
           if(proof?.deploy_id!==process.env.EXPECTED_DEPLOY_ID)throw new Error('Authenticated Portal proof deploy mismatch');
           if(proof?.http_status!==200)throw new Error('Authenticated Portal proof did not observe HTTP 200');
           if(proof?.tenant_scope_verified!==true)throw new Error('Authenticated Portal proof did not verify tenant scope');
+          if(proof?.cross_tenant_scope_verified!==true||proof?.tenant_count_verified!==2)throw new Error('Authenticated Portal proof did not verify two isolated tenants');
           if(proof?.payload_shape_verified!==true)throw new Error('Authenticated Portal proof did not verify response shape');
           if(proof?.synthetic_user_cleanup!=='DELETED')throw new Error('Authenticated Portal proof did not clean up synthetic user');
           if(/access_token|refresh_token|password|authorization|@proof\.invalid/i.test(text))throw new Error('Authenticated Portal proof leaked secret or synthetic identity material');
@@ -204,6 +212,8 @@ jobs:
             deploy_id:proof.deploy_id,
             http_status:proof.http_status,
             tenant_scope_verified:proof.tenant_scope_verified,
+            cross_tenant_scope_verified:proof.cross_tenant_scope_verified,
+            tenant_count_verified:proof.tenant_count_verified,
             payload_shape_verified:proof.payload_shape_verified,
             synthetic_user_cleanup:proof.synthetic_user_cleanup,
           }));
@@ -281,7 +291,8 @@ jobs:
           ALLOW_EXISTING_PAGE_ERRORS: 'true'
         run: timeout --signal=TERM --kill-after=30s 8m node tools/site-shell/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
       - name: Verify pricing interactions and English route in production
-        if: steps.scope.outputs.browser_required == 'true' && steps.deploy.outcome == 'success'
+        id: pricing
+        if: steps.scope.outputs.browser_required == 'true'
         env:
           BASE_URL: https://www.bedrijfsgeheugen.nl
           GITHUB_SHA: ${{ github.sha }}
@@ -309,8 +320,8 @@ jobs:
           --deploy-id '${{ steps.deploy.outputs.deploy_id }}'
           --supersession-safe '${{ steps.deploy.outputs.supersession_safe }}'
           --deployment-required 'true'
-          --routes-json '[]'
-          --routes-ok 'true'
+          --routes-json '${{ steps.scope.outputs.routes }}'
+          --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || steps.routes.outcome == 'success' }}'
           --output .artifacts/production-release-readback.json
       - name: Evaluate immutable non-deployment production truth
         if: steps.scope.outputs.deployment_required != 'true'
@@ -318,8 +329,8 @@ jobs:
           node tools/site-shell/verify-production-release.mjs
           --merge-sha '${{ github.sha }}'
           --deployment-required 'false'
-          --routes-json '[]'
-          --routes-ok 'true'
+          --routes-json '${{ steps.scope.outputs.routes }}'
+          --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || (steps.routes.outcome == 'success' && steps.pricing.outcome == 'success') }}'
           --output .artifacts/production-release-readback.json
       - name: Capture production readback failure as Brain learning evidence
         if: failure()

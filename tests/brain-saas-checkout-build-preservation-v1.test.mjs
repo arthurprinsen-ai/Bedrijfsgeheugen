@@ -26,13 +26,18 @@ test('preserved runtime selects yearly Pro and never unlocks a pending payment',
  const elements=new Map();
  const contextFor=(search,ready)=>{
   elements.clear();
-  const get=id=>{if(!elements.has(id))elements.set(id,{hidden:true,style:{},textContent:'',addEventListener(){},appendChild(){}});return elements.get(id)};
-  return {location:{search},URLSearchParams,document:{getElementById:get,createElement:()=>({remove(){}})},fetch:async()=>({ok:true,json:async()=>({ready})}),setTimeout(){},console};
+  const get=id=>{if(!elements.has(id))elements.set(id,{hidden:true,style:{},textContent:'',addEventListener(){},appendChild(){},replaceChildren(){}});return elements.get(id)};
+  get('form').querySelectorAll=selector=>{assert.equal(selector,'input');return ['plan','billingCycle','company','email','paymentConsent'].map(get);};
+  return {location:{search},URLSearchParams,document:{getElementById:get,createElement:()=>({remove(){},setAttribute(name,value){this[name]=value;}})},fetch:async()=>({ok:true,json:async()=>({ready})}),setTimeout(){},console};
  };
  vm.runInNewContext(runtime,contextFor('?plan=pro&billing=yearly',false));
  assert.equal(elements.get('plan').value,'pro');
  assert.equal(elements.get('billingCycle').value,'yearly');
  assert.equal(elements.get('price').textContent,'€ 2.990');
+ assert.equal(elements.get('submit').disabled,true,'provider readiness remains mandatory');
+ for(const id of ['plan','billingCycle','company','email','paymentConsent'])assert.equal(elements.get(id).disabled,true,id);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(elements.get('submit').disabled,true);
  vm.runInNewContext(runtime,contextFor('?success=1&session_id=cs_fixture',false));
  await new Promise(resolve=>setImmediate(resolve));
  assert.equal(elements.get('success').hidden,false);

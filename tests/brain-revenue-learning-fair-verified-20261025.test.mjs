@@ -46,6 +46,7 @@ test('hourly evaluator records evidence debt without false proven learning',asyn
     listDueEvidence:async()=>due,
     listCohort:async()=>{ops.cohorts++;return [row('blog',4,'INFERRED')];},
     recordObligation:async x=>ops.obligations.push(x),
+    markEvidenceEvaluated:async id=>{ops.settled=(ops.settled||[]).concat(id);},
     upsertLearning:async()=>{ops.writes++;},
     listCurrentLearnings:async()=>[],
     putProjection:async()=>({})

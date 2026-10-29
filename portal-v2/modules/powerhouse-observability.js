@@ -1,13 +1,15 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { deriveReleaseStatus } from '../../tools/netlify/release-status.mjs';
 import { ensureIdentityWidget } from '../portal-state.js';
 import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
+import { experimentChangesMarkup } from './experiment-changes.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['live','Live uitvoering'],['agent-learning','Leerintelligentie'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['live','Live uitvoering'],['agent-learning','Leerintelligentie'],['experiment-changes','Wijzigingen: oud vs nieuw'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
@@ -99,7 +101,12 @@ function skillsView(events){
 function deliveryView(events,observability){
   const delivery=events.filter(isDelivery);
   const economics=observability.economics||{};
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
+  // Only provider-verified, server-supplied release evidence may produce green.
+  const providerEvidence=observability.releaseEvidence;
+  const status=deriveReleaseStatus(providerEvidence||{});
+  const label={passed:'Geslaagd',failed:'Mislukt',pending:'In afwachting',unknown:'Onbekend',not_required:'Niet vereist'};
+  const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
+  return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
 function liveView(events,observability,refreshError=''){
   const now=Date.now();
@@ -139,7 +146,7 @@ function overview(events,observability){
   <section class="poc-panel"><div class="poc-panelhead"><h4>Dagelijkse activiteit</h4><span>${s.events} events · ${s.sources} bronnen · ${s.layers} lagen</span></div>${timeline(events.slice(0,80))}</section>`;
 }
 
-function systemMapView(systemMap,events){
+function systemMapView(systemMap,events,observability={}){
   if(!systemMap)return empty('De canonieke System Map ontbreekt in de beveiligde runtimeprojectie.');
   const snapshot=systemMap.providerSnapshot||{};
   const inventories=systemMap.inventories||{};
@@ -147,6 +154,17 @@ function systemMapView(systemMap,events){
   const supabaseCatalog=liveSupabase.inventory||{};
   const liveTables=arr(supabaseCatalog.tables),liveViews=arr(supabaseCatalog.views),liveDbFunctions=arr(supabaseCatalog.functions),liveCron=arr(supabaseCatalog.active_cron_jobs);
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
+  const failureCoverage=systemMap.failureCoverage||{};
+  const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
+  const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
+  const agentCoverage=observability.agentCycleCoverage||{};
+  const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
+  const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
+  const publication=observability.publicationEvidence||{};
+  const publicationComplete=publication.status==='REGISTRY_READBACK_COMPLETE';
+  const publicationRows=publicationComplete?arr(publication.channels):[];
+  const publicationLabels={linkedin_company:'LinkedIn bedrijf',linkedin_personal:'LinkedIn persoonlijk',instagram:'Instagram',blog:'Blog'};
+
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
@@ -162,6 +180,47 @@ function systemMapView(systemMap,events){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  <section class="poc-panel" data-brain-failure-coverage data-evidence-status="${esc(failureCoverage.status||'UNAVAILABLE')}">
+    <div class="poc-panelhead"><h4>Fouten, oorzaken en preventie · ONE BRAIN</h4><span class="poc-badge ${failureTotals?'warn':'bad'}">${failureTotals?'Open kwaliteitspunten':'UNVERIFIED'}</span></div>
+    <p class="poc-note">Alleen aantallen uit het bestaande Supabase-foutregister. Geen klantgegevens of ruwe incidentteksten. Ontbrekende readback blijft onbekend, nooit nul.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Foutpatronen',failureMetric('patterns'),'vastgelegd, niet noodzakelijk opgelost')}
+      ${kpi('Nog geobserveerd',failureMetric('observed'),'geen bewezen herstel')}
+      ${kpi('Oorzaak ontbreekt',failureMetric('observedMissingCause'),'onderzoek blijft open')}
+      ${kpi('Regressietest ontbreekt',failureMetric('observedMissingRegression'),'preventie niet bewezen')}
+      ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
+    </div>
+    <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
+  </section>
+  <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">
+    <div class="poc-panelhead"><h4>Besluitcyclus-events · echte herkomst en agentmeetdekking (24 uur)</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>
+    <p class="poc-note">SQL-materialisaties van verkoopacties en kanaalbesluiten zijn géén afzonderlijke autonome agenthandelingen. Alleen expliciete agent-ID, skillversie en echte voor-/nameting tellen als attributiebewijs. Ontbrekende brondata blijft UNKNOWN, nooit nul.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Cycle-events',agentMetric('events'),'volledig 24u-venster, alleen bij bronreadback')}
+      ${kpi('SQL-verkoopactie-events',agentMetric('salesActionEvents'),'origine: sales action/cycle materializer, geen agent-ID')}
+      ${kpi('SQL-kanaalbesluit-events',agentMetric('channelDecisionEvents'),'origine: kanaalbesluit, geen autonome actor')}
+      ${kpi('Runtime-signaal-events',agentMetric('runtimeSignalEvents'),'origine: bestaand runtime-signaal, niet per se agentactie')}
+      ${kpi('Andere events',agentMetric('otherEvents'),'afwijkende expliciet geregistreerde entity_type')}
+      ${kpi('Agent-ID aanwezig',agentMetric('agentIds'),'top-level payloadveld')}
+      ${kpi('Skillversie aanwezig',agentMetric('skillVersions'),'top-level payloadveld')}
+      ${kpi('Voormeting aanwezig',agentMetric('beforeMetrics'),'0 is een geldige gemeten waarde')}
+      ${kpi('Nameting aanwezig',agentMetric('afterMetrics'),'nog geen causale outcome')}
+      ${kpi('Alle vier velden',agentMetric('allFour'),'geen bewijs van klantwaarde')}
+    </div>
+    <p class="poc-note">Bron: ${esc(agentCoverage.authority||'onbekend')}. Laatste gebeurtenis: ${esc(fmtTime(agentCoverage.sourceLatestAt))}. Readback: ${esc(fmtTime(agentCoverage.observedAt))}. ${esc(agentCoverage.reason||'')}</p>
+  </section>
+  <section class="poc-panel" data-publication-evidence data-evidence-status="${esc(publication.status||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Publicaties · werkelijk geregistreerde status per kanaal</h4><span class="poc-badge ${publicationComplete?'warn':'bad'}">${publicationComplete?'Bron gecontroleerd · publicatie niet automatisch bewezen':'UNVERIFIED'}</span></div>
+    <p class="poc-note">Dag ${esc(publication.date||'onbekend')} · bron ${esc(publication.source||'niet beschikbaar')}. Database-registratie is niet hetzelfde als onafhankelijk providerbewijs. Een bestaand provider-ID mag nooit opnieuw worden gepubliceerd; een ontbrekend mediabestand of duplicaat mag niet worden omzeild.</p>
+    <div class="poc-kpis compact">
+      ${publicationRows.length?publicationRows.map(row=>kpi(
+        publicationLabels[row.channel]||row.channel,
+        esc(row.registryStatus),
+        (row.providerIdRecorded?'Provider-ID geregistreerd · ':'Geen provider-ID · ')+(row.internalLiveProofRecorded?'intern livebewijs · ':'onafhankelijk livebewijs vereist · ')+row.recoveryCode
+      )).join(''):kpi('Publicatiebewijs','—',esc(publication.reason||'De canonieke publicatiebron kon niet volledig worden gelezen'))}
+    </div>
+    <p class="poc-note">Bronreadback ${esc(fmtTime(publication.observedAt))}. De herstelcode beschrijft de volgende veilige stap, niet een uitgevoerde actie. Bestaande executor, duplicate-gate, media-identiteit en protected release blijven verplicht.</p>
+  </section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
   <div class="poc-grid2">
@@ -259,7 +318,7 @@ async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   if(response.status===403)return {status:'forbidden',runtime:null};
   if(!response.ok)return {status:'error',runtime:null};
   const projection=await response.json();
-  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null}};
+  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null,experimentChanges:projection.experimentChanges||null}};
 }
 
 async function openAdminLogin(){
@@ -319,7 +378,29 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='agent-learning'?agentIntelligenceMarkup({events,runtime:securedRuntime,period:state.period}):state.tab==='experiment-changes'?experimentChangesMarkup(securedRuntime.experimentChanges):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all,obs):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    if(state.tab==='delivery'){
+      const panel=body.querySelector('[data-release-status-panel]');
+      const evidence=obs.releaseEvidence;
+      const computed=deriveReleaseStatus(evidence||{});
+      const expected={github:computed.githubRelease,netlify:computed.netlifyDeployment,production:computed.productionReadback};
+      const stages=['github','netlify','production'];
+      const stageMatches=stages.every(name=>{
+        const el=panel?.querySelector('[data-release-stage="'+name+'"]');
+        return Boolean(el&&el.dataset.stageValue===expected[name]&&el.querySelector('strong')?.textContent?.trim());
+      });
+      const providerReadback=Boolean(evidence?.providerIdentity?.githubHeadSha&&evidence?.providerIdentity?.netlifyPublishedSha&&evidence?.evidenceStatus==='PROVIDER_IDENTITIES_AND_CHECKS_READ');
+      const message=panel?.querySelector('[data-release-canary]');
+      if(message){
+        const complete=providerReadback&&stageMatches;
+        message.textContent=complete
+          ? 'Canary gecontroleerd: beheerders-API, GitHub/Netlify-bronidentiteiten, drie berekende statussen en dashboardwaarden komen overeen.'
+          : 'Canary onvolledig: '+(!providerReadback?'onafhankelijke providergegevens ontbreken of zijn niet bevestigd':'dashboardwaarden komen niet overeen met de statusberekening')+'.';
+        message.dataset.canaryResult=complete?'verified':'incomplete';
+        message.dataset.canaryStages=stageMatches?'matched':'mismatch';
+        message.dataset.canaryProviders=providerReadback?'verified':'missing';
+      }
+    }
     if(state.tab==='integrations'){
       body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
       body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));

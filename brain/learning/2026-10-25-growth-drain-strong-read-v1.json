@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "growth-drain|eventual-blob-read|source-missing-after-index|20261025",
+  "obligation_id": "netlify|growth-drain|strong-consistency-missing-read-verification|20261025-v1",
+  "parent_issue": 4446,
+  "related_issue": 4198,
+  "failure_class": "GROWTH_DRAIN_EVENTUAL_CONSISTENCY_SOURCE_MISS",
+  "root_cause": "After PR #4911 protected merge, Netlify production logs show source missing 3 while pointer invalid 0, some concurrent pointers legitimately already deleted. Netlify official Blob documentation states eventual consistency by default, strong consistency opt-in for reads. Edge-cache transient absence can be confused with absent original source. This is a plausible cause, not independently proved for each event.",
+  "fix": "For indexed pointer and original source reads, preserve cheap default reads but perform an authoritative strong consistency read only after a null result. A strong read that finds the source proceeds with original provider-persist receipt semantics; a second missing source remains an integrity error, and a thrown strong read remains a red provider error. No fake receipts or deletion.",
+  "evidence": {
+    "netlify": "2026-10-25 16:07 UTC after #4911: source missing=3, invalid pointer=0, 4 items persisted in same run",
+    "netlify_docs": "https://docs.netlify.com/build/data-and-storage/netlify-blobs/"
+  },
+  "prevention_rules": [
+    "Never infer lost event or completed concurrent retirement from an eventually consistent null without strong read",
+    "Validate read-after-write under Netlify consistency contract",
+    "Failed authoritative read is an error, not a reason to silently skip",
+    "Keep original source immutable and durable pending pointers for retries",
+    "Do not create another scheduler or fake any qualified leads or revenue"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GROWTH_DRAIN_EVENTUAL_CONSISTENCY_SOURCE_MISS",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required, CodeQL, Netlify, protected merge and provider logs sourceStrongRecovery/reduced indexSourceMissing, plus independent Supabase ingest and realized revenue measured separately."
+}

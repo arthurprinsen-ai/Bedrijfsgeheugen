@@ -15,7 +15,7 @@ test('control-plane Edge action reads only canonical projections', async()=>{
   assert.match(src,/action==='control_plane_cockpit'/);
   assert.match(src,/powerhouse_obligation_cockpit_v1/);
   assert.match(src,/powerhouse_control_plane_metrics_v1/);
-  const block=src.slice(src.indexOf("if(action==='control_plane_cockpit')"),src.indexOf("if(action==='governance')"));
+  const block=src.slice(src.indexOf("if(action==='control_plane_cockpit')"),src.indexOf("if(action==='data_sovereignty_get')"));
   assert.doesNotMatch(block,/\.insert\(|\.update\(|\.delete\(|\.upsert\(|rpc\(/);
 });
 

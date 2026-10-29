@@ -44,7 +44,7 @@ else next=next.replace(/^(  observedAt:.*)$/m,'$1\n'+provenance);
 if(next!==original){
   if(!write){console.error('SYSTEM_MAP_WRITEBACK_INCOMPLETE: portal explanation source/inventory drift; calculated SHA256='+contentHash+'; refresh in the existing protected candidate with --write, then review semantic changes.');process.exitCode=1;}
   else{
-    next=next.replace(/^  observedAt:.*$/m,`  observedAt:'${new Date().toISOString()}',`);
+    // Stable generated content for identical source trees; no wall-clock mutations.
     await fs.writeFile(path.join(root,source),next);
     console.log('PORTAL_EXPLANATION_SOURCE_REFRESHED',JSON.stringify({contentHash,counts:Object.fromEntries(Object.entries(inventories).map(([k,v])=>[k,v.length])),providerRuntimeVerified:false}));
   }

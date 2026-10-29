@@ -3,6 +3,9 @@ name: Main Write Integrity regression
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   main-write-integrity-regression:
     runs-on: ubuntu-latest

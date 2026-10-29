@@ -73,7 +73,10 @@ test('parity proof fails closed when declared changed files do not match the can
 
 test('parity runtime is agent-executable, zero-external and reconciles only verified evidence', async () => {
   const workflow = await readFile('.github/workflows/repo-writer-parity-rollback.yml', 'utf8');
-  assert.match(workflow, /pull_request:/);
+  // Control-plane diet (#3984): dispatched only by the writer authority router for exact verify-parity/ refs.
+  assert.match(workflow, /on:\n  workflow_dispatch:/);
+  assert.doesNotMatch(workflow, /\n  pull_request:/);
+  assert.match(workflow, /startsWith\(inputs\.trigger_ref, 'verify-parity\/'\)/);
   assert.match(workflow, /verify-parity\//);
   assert.match(workflow, /repository-writer-migration\.json/);
   assert.match(workflow, /writer-git-parity-proof\.mjs/);

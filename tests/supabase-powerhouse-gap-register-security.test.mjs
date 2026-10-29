@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const migration='supabase/migrations/20260915110500_powerhouse_gap_register_security_hardening.sql';
+const migration='supabase/migration-history/repository-only/20260915110500_powerhouse_gap_register_security_hardening.sql';
 const replayHardening='supabase/migrations/20260916123957_powerhouse_internal_view_replay_hardening.sql';
 
 test('Powerhouse gap register is service-role only',()=>{

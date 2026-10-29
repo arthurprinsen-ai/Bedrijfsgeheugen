@@ -12,7 +12,7 @@ test('the business-facing channels must lead with daily steering, not AI product
   }
   assert.match(content,/: system \+ ' ' \+ STEERING_BRAND_CONTRACT/);
   assert.match(content,/personalBuilder \? ' '\+PERSONAL_STEERING_STORY/);
-  assert.match(content,/Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina/);
+  assert.match(content,/LinkedIn-bedrijfspost voor Bedrijfsgeheugen, voor de eigenaar of directeur van een MKB-bedrijf/);
   assert.match(content,/Mira verbeeldt één canoniek/);
 });
 

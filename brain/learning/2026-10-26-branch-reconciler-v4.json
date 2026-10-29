@@ -1,0 +1,34 @@
+{
+  "obligation_id": "ci-branch-reconciler-v4-20261026",
+  "date": "2026-10-26",
+  "status": "CANDIDATE",
+  "claim": "Independent opt-in GitHub branch reconciler with SHA compare-and-swap and readback",
+  "evidence": {
+    "pr": 4961,
+    "source_head": "aba5891af4a523ac23ed6bb51edd77d65ce6eb78",
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "production": "NOT_PROVEN"
+  },
+  "learning": "Accepted update-branch responses do not prove integration; compare new PR head against current base before reporting verified.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-reconciler.test.mjs"
+    ]
+  },
+  "fingerprint": "ci-branch-reconciler:accepted-update-without-verified-head-v4",
+  "root_cause": "The old inline Janitor step could be skipped after a preceding failure and treated an accepted GitHub update-branch request as an update without independent post-update head verification.",
+  "prevention_rule": "Run sync as an independent job; use expected_head_sha, require explicit enrollment, and verify open PR plus refreshed head with zero base-commit drift before reporting success.",
+  "regression_contract": "tests/brain-branch-reconciler.test.mjs",
+  "outcome_evidence": {
+    "local_tests": "4 regression tests were previously exercised; protected Required, CodeQL and production outcomes remain unproven",
+    "pr": 4961
+  }
+}

@@ -5,59 +5,38 @@ import {entitlementAllows,enforceAgentMode,enforceConnectorRefreshPolicy,enforce
 import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
 import {canAgentExecute} from '../platform/agents/agent-work.mjs';
 
-test('paid Starter, Pro and Groei provision once and resume incomplete provisioning',async()=>{
-  const module=await import('../netlify/functions/stripe-webhook.mjs');
-  assert.equal(typeof module.completeCheckout,'function','checkout completion must be testable through its real provisioning flow');
-  for(const plan of ['starter','pro','groei']){
-    let organisationCalls=0,invitations=0,saved=null,intent=null;
-    const store={getPlan:async()=>({code:plan,active:true}),findSubscription:async()=>saved,
-      ensureCheckoutOrganisation:async()=>{organisationCalls++;return {id:'org-1'}},
-      ensureCustomer:async()=>{},ensureInvitation:async()=>{invitations++},
-      upsertSubscription:async row=>{saved=row;return row},
-      completeCheckoutIntent:async row=>{intent=row;return row},recordCheckoutOutcome:async event=>{assert.equal(event.context.revenue_verified,false);assert.doesNotMatch(JSON.stringify(event),/owner@example/);return {id:'event-1'}}};
-    const session={id:'cs_123',subscription:'sub_123',metadata:{plan_code:plan,company_name:'Acme',billing_cycle:'yearly'},customer_details:{email:'owner@example.test'}};
-    const provider=async()=>({id:'sub_123',status:'active',customer:'cus_123',metadata:{}});
-    await module.completeCheckout(store,session,provider);
-    await module.completeCheckout(store,session,provider);
-    assert.equal(saved.plan_code,plan);assert.equal(saved.organisation_id,'org-1');
-    assert.equal(organisationCalls,1);assert.equal(invitations,2,'retry must repair missing invitation, not return early');
-    assert.equal(intent.provider_session_id,'cs_123');assert.equal(intent.state,'completed');
-    assert.equal(saved.metadata.billing_cycle,'yearly');
-  }
-});
+const ENV={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-fixture'};
 
-test('checkout persists intent before contacting Stripe and retry uses the same provider key',async()=>{
+test('checkout hands the validated plan, cycle and attempt to the Mollie function with the service role',async()=>{
   const module=await import('../netlify/functions/checkout-create.mjs');
   assert.equal(typeof module.createCheckoutHandler,'function');
-  const order=[],keys=[];let saved;
-  const store={getPlan:async()=>({code:'starter',name:'Starter',monthly_price_cents:9900,direct_checkout:true}),
-    ensureCheckoutIntent:async row=>{order.push('persist');saved||=row;return saved},
-    openCheckoutIntent:async()=>{order.push('readback');return {provider_session_id:'cs_123'}}};
-  const handler=module.createCheckoutHandler({storeFactory:()=>store,env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},fetchFn:async(_,options)=>{
-    order.push('provider');keys.push(options.headers['idempotency-key']);
-    const p=new URLSearchParams(options.body);assert.equal(p.get('line_items[0][price_data][unit_amount]'),'99000');
-    assert.equal(p.get('subscription_data[metadata][plan_code]'),'starter');
-    return Response.json({id:'cs_123',url:'https://checkout.stripe.com/c/pay/test'});
+  const sent=[];
+  const handler=module.createCheckoutHandler({env:ENV,storeFactory:()=>({getPlan:async()=>({code:'starter',name:'Starter',monthly_price_cents:9900,direct_checkout:true})}),fetchFn:async(url,options)=>{
+    sent.push({url,auth:options.headers.authorization,body:JSON.parse(options.body)});
+    return Response.json({url:'https://www.mollie.com/checkout/select-method/test'});
   }});
   const body={attempt_id:'7fed14f9-6e6a-4f7c-8ed9-dc0b6cf2a318',plan:'starter',billing_cycle:'yearly',email:'owner@example.test',company_name:'Acme'};
   for(let i=0;i<2;i++){
     const r=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify(body)}));
-    assert.equal(r.status,200);assert.equal((await r.json()).url,'https://checkout.stripe.com/c/pay/test');
+    assert.equal(r.status,200);assert.equal((await r.json()).url,'https://www.mollie.com/checkout/select-method/test');
   }
-  assert.deepEqual(order,['persist','provider','readback','persist','provider','readback']);
-  assert.equal(keys[0],keys[1]);assert.ok(keys[0]);
+  assert.equal(sent.length,2);
+  assert.equal(sent[0].url,'https://example.supabase.co/functions/v1/bg-mollie-checkout');
+  assert.equal(sent[0].auth,'Bearer service-fixture');
+  assert.deepEqual(sent[0].body,{plan:'starter',billing_cycle:'yearly',email:'owner@example.test',company_name:'Acme',attempt_id:body.attempt_id});
+  assert.deepEqual(sent[0].body,sent[1].body,'a retry must reuse the same attempt so the provider stays idempotent');
 });
 
-test('a failed intent write never opens a payment session',async()=>{
+test('a provider failure or unsafe redirect never reaches the browser',async()=>{
   const module=await import('../netlify/functions/checkout-create.mjs');
-  assert.equal(typeof module.createCheckoutHandler,'function');
-  let calls=0;
-  const handler=module.createCheckoutHandler({env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},storeFactory:()=>({
-    getPlan:async()=>({code:'starter',direct_checkout:true,monthly_price_cents:9900}),
-    ensureCheckoutIntent:async()=>{throw Error('database unavailable')}
-  }),fetchFn:async()=>{calls++}});
-  const response=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:'starter',email:'a@example.test',company_name:'Acme'})}));
-  assert.equal(response.status,503);assert.equal(calls,0);
+  const make=fetchFn=>module.createCheckoutHandler({env:ENV,storeFactory:()=>({getPlan:async()=>({code:'starter',direct_checkout:true,monthly_price_cents:9900})}),fetchFn});
+  const call=handler=>handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:'starter',email:'a@example.test',company_name:'Acme'})}));
+  let r=await call(make(async()=>{throw Error('network')}));
+  assert.equal(r.status,502);assert.equal((await r.json()).error,'checkout_provider_failed');
+  r=await call(make(async()=>Response.json({url:'https://evil.example/pay'})));
+  assert.equal(r.status,502);
+  r=await call(make(async()=>Response.json({error:'checkout_expired'},{status:409})));
+  assert.equal(r.status,409);assert.equal((await r.json()).error,'checkout_expired');
 });
 
 test('account activation accepts only a confirmed identity and one paid organisation',async()=>{
@@ -75,31 +54,20 @@ test('account activation accepts only a confirmed identity and one paid organisa
   assert.equal((await handler(request())).status,409);assert.equal(writes,1);
 });
 
-test('a previously completed provider session cannot create another checkout',async()=>{
-  const {createCheckoutHandler}=await import('../netlify/functions/checkout-create.mjs');
-  let posts=0;
-  const handler=createCheckoutHandler({env:{STRIPE_SECRET_KEY:'test',STRIPE_WEBHOOK_SECRET:'test'},storeFactory:()=>({
-    getPlan:async()=>({code:'starter',direct_checkout:true,monthly_price_cents:9900}),
-    ensureCheckoutIntent:async row=>({...row,provider_session_id:'cs_original'})
-  }),fetchFn:async(_,options)=>{if(options.method==='POST')posts++;return Response.json({id:'cs_original',status:'complete'})}});
-  const response=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:'starter',email:'owner@example.test',company_name:'Acme'})}));
-  assert.equal(response.status,200);assert.match((await response.json()).url,/success=1&session_id=cs_original/);assert.equal(posts,0);
+test('Control, Scale and Enterprise stay out of direct checkout in the database migration',async()=>{
+  const sql=await readFile(new URL('../supabase/migrations/20261027170000_saas_direct_checkout_published_plans_only_v1.sql',import.meta.url),'utf8');
+  assert.match(sql,/set direct_checkout = false/);
+  assert.match(sql,/code not in \('starter','pro','groei'\)/);
 });
 
-test('checkout status needs persisted matching subscription proof, never only a completed redirect',async()=>{
+test('checkout status needs the provider-side proof, never only a redirect',async()=>{
   const {checkoutStatus}=await import('../platform/saas/billing-readiness.mjs');
-  const fetchFn=async()=>Response.json({status:'complete',subscription:'sub_123'});
-  assert.deepEqual(await checkoutStatus('cs_123',{fetchFn,env:{},store:{findSubscription:async()=>null}}),{ready:false,state:'provisioning'});
-  assert.deepEqual(await checkoutStatus('cs_123',{fetchFn,env:{},store:{findSubscription:async()=>({status:'active',metadata:{checkout_session_id:'cs_123'}})}}),{ready:true,state:'ready'});
-});
-
-test('subscription synchronisation preserves the durable checkout receipt',async()=>{
-  const module=await import('../netlify/functions/stripe-webhook.mjs');
-  assert.equal(typeof module.syncSubscription,'function');
-  let saved={organisation_id:'org-1',plan_code:'pro',status:'active',metadata:{checkout_session_id:'cs_receipt',billing_cycle:'yearly'}};
-  const store={findSubscription:async()=>saved,patchSubscription:async(_,patch)=>{saved={...saved,...patch}}};
-  await module.syncSubscription(store,{id:'sub_1'},async()=>({id:'sub_1',status:'active',metadata:{plan_code:'pro'}}));
-  assert.equal(saved.metadata.checkout_session_id,'cs_receipt');assert.equal(saved.metadata.billing_cycle,'yearly');
+  const id='7fed14f9-6e6a-4f7c-8ed9-dc0b6cf2a318';
+  const calls=[];
+  const make=data=>async(url,options)=>{calls.push(url);assert.equal(options.headers.authorization,'Bearer service-fixture');return Response.json(data)};
+  assert.deepEqual(await checkoutStatus(id,{fetchFn:make({ready:false,state:'provisioning'}),env:ENV}),{ready:false,state:'provisioning'});
+  assert.deepEqual(await checkoutStatus(id,{fetchFn:make({ready:true,state:'ready'}),env:ENV}),{ready:true,state:'ready'});
+  assert.match(calls[0],/bg-mollie-checkout\?status=7fed14f9/);
 });
 
 test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=>{
@@ -130,7 +98,7 @@ test('checkout backend trusts canonical plans and direct-checkout entitlement',a
   assert.match(source,/getPlan\(code\)/);
   assert.match(source,/direct_checkout/);
   assert.match(source,/monthly_price_cents/);
-  assert.match(source,/mode','subscription/);
+  assert.match(source,/bg-mollie-checkout|functionUrl/);
 });
 
 
@@ -140,22 +108,16 @@ test('yearly checkout remains ten monthly fees with the new plans',async()=>{
     readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
   ]);
   for(const token of ["starter:{","pro:{","groei:{","yearly:'€ 990'","yearly:'€ 2.990'","yearly:'€ 7.490'"]) assert.ok(checkoutPage.includes(token),token);
-  assert.match(backend,/monthly_price_cents\)\*10/);
-  assert.match(backend,/billingCycle==='yearly'\?'year':'month'/);
-  assert.match(backend,/metadata\[billing_cycle\]/);
+  assert.match(backend,/billing_cycle:billingCycle/);
+  const mollie=await readFile(new URL('../supabase/functions/_shared/mollie-billing.mjs',import.meta.url),'utf8');
+  assert.match(mollie,/monthly \* 10/);
+  assert.match(mollie,/'12 months' : '1 month'/);
 });
 
 test('connector store enforces the server-side source entitlement',async()=>{
   const source=await readFile(new URL('../netlify/functions/_portal-connectors-store.mjs',import.meta.url),'utf8');
   assert.match(source,/saas_active_entitlements/);
   assert.match(source,/PLAN_DATA_SOURCE_LIMIT/);
-});
-
-test('subscription webhook verifies signatures and provisions portal access',async()=>{
-  const source=await readFile(new URL('../netlify/functions/stripe-webhook.mjs',import.meta.url),'utf8');
-  assert.match(source,/stripe-signature/);
-  assert.match(source,/ensureInvitation/);
-  assert.match(source,/upsertSubscription/);
 });
 
 test('central entitlement policy fails closed without an active subscription',()=>{
@@ -187,18 +149,16 @@ test('connector creation now requires an active subscription policy',async()=>{
   assert.match(source,/PLAN_DATA_SOURCE_LIMIT/);
 });
 
-test('billing readiness fails closed until both Stripe secrets exist',()=>{
-  assert.deepEqual(billingReadiness({}),{
-    provider:'stripe',stripeSecretConfigured:false,webhookSecretConfigured:false,selfServeAvailable:false,state:'blocked'
-  });
+test('billing readiness fails closed until the Supabase service authority exists',()=>{
+  assert.deepEqual(billingReadiness({}),{provider:'mollie',functionConfigured:false,selfServeAvailable:false,state:'blocked'});
   assert.throws(()=>requireBillingReady({}),/BILLING_NOT_CONFIGURED/);
-  assert.equal(billingReadiness({STRIPE_SECRET_KEY:'sk_live_x',STRIPE_WEBHOOK_SECRET:'whsec_x'}).selfServeAvailable,true);
+  assert.equal(billingReadiness(ENV).selfServeAvailable,true);
 });
 
 test('checkout endpoint uses the billing readiness contract',async()=>{
   const source=await readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8');
-  assert.match(source,/billingReadiness/);
-  assert.match(source,/selfServeAvailable/);
+  assert.match(source,/billingConfig/);
+  assert.match(source,/billing_not_configured/);
 });
 
 test('checkout readiness endpoint never exposes secret values',async()=>{

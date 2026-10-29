@@ -19,6 +19,11 @@ on:
         description: 'Europe/Amsterdam business date (YYYY-MM-DD); empty=today'
         required: false
         default: ''
+      security_probe_only:
+        description: 'Read-only blog export authorization matrix; no publication'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   actions: write
@@ -31,6 +36,7 @@ concurrency:
 
 jobs:
   publish:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.security_probe_only != true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -47,6 +53,11 @@ jobs:
           node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
           echo "run=true" >> "$GITHUB_OUTPUT"
           echo "date=$date" >> "$GITHUB_OUTPUT"
+
+      - name: Deny any public draft exporter or internal PR evidence regression
+        run: |
+          set -euo pipefail
+          node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
 
       - name: Reuse the existing writer for this obligation
         if: steps.day.outputs.run == 'true'
@@ -78,9 +89,37 @@ jobs:
           fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
+      - name: Authorize same-draft canonical quality repair
+        if: steps.writer.outputs.existing_pr != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATE: ${{ steps.day.outputs.date }}
+          PR: ${{ steps.writer.outputs.existing_pr }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          git show "$GITHUB_SHA:tools/content-growth/reviewed-blog-refresh.mjs" > /tmp/reviewed-blog-refresh.mjs
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" > /tmp/blog-refresh-pr.json
+          [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] || { echo "::error::BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED"; exit 1; }
+          curl --fail --silent --show-error -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=$DATE" > /tmp/blog-refresh-source.json
+          expected_head="$(git rev-parse HEAD)"
+          decision="$(node /tmp/reviewed-blog-refresh.mjs /tmp/blog-refresh-pr.json /tmp/blog-refresh-source.json "brain/learning/powerhouse-blog-$DATE.json" "$DATE" "$GITHUB_REPOSITORY" "$expected_head")"
+          if [ "$decision" = AUTHORIZED ]; then
+            git config user.name "Powerhouse Daily Publisher"
+            git config user.email "actions@users.noreply.github.com"
+            git fetch origin main --no-tags
+            git merge --no-edit origin/main
+            echo "POWERHOUSE_BLOG_FORCE_REGENERATE=1" >> "$GITHUB_ENV"
+            echo "POWERHOUSE_BLOG_SOURCE_SNAPSHOT=/tmp/blog-refresh-source.json" >> "$GITHUB_ENV"
+            echo "QUALITY_REFRESH=true" >> "$GITHUB_ENV"
+            echo "BLOG_EXPECTED_HEAD=$expected_head" >> "$GITHUB_ENV"
+          fi
+
       - name: Render canonical Powerhouse artifact
         if: steps.day.outputs.run == 'true' && steps.writer.outputs.available == 'true'
         id: render
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           python3 tools/site-shell/publish_powerhouse_blog_artifact.py "${{ steps.day.outputs.date }}" | tee /tmp/powerhouse-blog.json
@@ -103,6 +142,7 @@ jobs:
         run: node tools/content-growth/daily-blog-proof-bundle.mjs "$DATE" /tmp/powerhouse-blog.json
 
       - name: Create exactly one protected candidate
+        id: candidate
         if: steps.render.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -117,15 +157,28 @@ jobs:
           if [ -n "${EXISTING_PR:-}" ]; then
             # Do not reset a reviewed candidate when approved source changed.
             # Its original writer must apply an exact-diff in-place recovery.
-            echo "::error::EXISTING_DAILY_BLOG_REQUIRES_IN_PLACE_REFRESH:$DATE:$EXISTING_PR"
-            exit 1
+            if [ "${QUALITY_REFRESH:-false}" != true ]; then
+              echo "::error::EXISTING_DAILY_BLOG_REQUIRES_IN_PLACE_REFRESH:$DATE:$EXISTING_PR"
+              exit 1
+            fi
+            git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
+            git diff --cached --quiet || git commit -m "blog: repair rejected canonical content $DATE"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$EXISTING_PR" > /tmp/blog-refresh-pr-write.json
+            git show "$GITHUB_SHA:tools/content-growth/reviewed-blog-refresh.mjs" > /tmp/reviewed-blog-refresh.mjs
+            [ "$(node /tmp/reviewed-blog-refresh.mjs /tmp/blog-refresh-pr-write.json /tmp/blog-refresh-source.json "brain/learning/powerhouse-blog-$DATE.json" "$DATE" "$GITHUB_REPOSITORY" "$BLOG_EXPECTED_HEAD")" = AUTHORIZED ] || { echo "::error::BLOG_REFRESH_WRITE_AUTHORITY_CHANGED"; exit 1; }
+            git push --force-with-lease="refs/heads/$branch:$BLOG_EXPECTED_HEAD" origin "HEAD:$branch"
+            echo "BLOG_REFRESHED_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+            echo "CANONICAL_DRAFT_REPAIRED:$DATE:$EXISTING_PR"
+            exit 0
           fi
           git config user.name "Powerhouse Daily Publisher"
           git config user.email "actions@users.noreply.github.com"
           git fetch origin "$branch" || true
           git checkout -B "$branch"
           git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
-          git add "brain/learning/powerhouse-blog-$DATE.json" "docs/development-ledger-events/powerhouse-blog-$DATE.md" "docs/changes/powerhouse-blog-$DATE.md"
+          # The public GitHub repository is an EXTERNAL destination, not a private draft vault.
+          # Keep Brain/learning, development ledger and change evidence OUT of public PR commits.
+          # The canonical private Brain database owns those records (SEC-2026-10-29-TWINFIELD-EXPOSURE).
           git commit -m "blog: publish Powerhouse daily artifact $DATE"
 
           # Before creating the PR, replay the exact production transforms,
@@ -168,7 +221,7 @@ jobs:
       - name: Persist English cache before protected CI
         id: i18n
         # Runs for new and existing candidates. Never relaxes the required cache gate.
-        if: always() && steps.day.outputs.run == 'true'
+        if: always() && steps.day.outputs.run == 'true' && (env.QUALITY_REFRESH != 'true' || steps.candidate.outcome == 'success')
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
@@ -189,6 +242,9 @@ jobs:
           git reset --hard HEAD
           git clean -fd
           git fetch origin "$branch"
+          if [ "${QUALITY_REFRESH:-false}" = true ]; then
+            [ -n "${BLOG_REFRESHED_HEAD:-}" ] && [ "$(git rev-parse "origin/$branch")" = "$BLOG_REFRESHED_HEAD" ] || { echo "::error::BLOG_REFRESH_HEAD_DRIFT"; exit 1; }
+          fi
           git checkout -B "$branch" "origin/$branch"
           npm install --prefer-offline --no-audit --no-fund --silent
           patch="config/bg-static-i18n-en.d/powerhouse-blog-$DATE.json"
@@ -221,9 +277,12 @@ jobs:
           else
             echo "CANONICAL_I18N_CACHE_ALREADY_COMPLETE:$pr:$DATE"
           fi
+          if [ "${QUALITY_REFRESH:-false}" = true ]; then
+            echo "BLOG_VERIFIED_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          fi
 
       - name: Self-heal required checks for the canonical daily candidate
-        if: always() && steps.day.outputs.run == 'true' && steps.i18n.outcome == 'success'
+        if: always() && steps.day.outputs.run == 'true' && steps.i18n.outcome == 'success' && (env.QUALITY_REFRESH != 'true' || steps.candidate.outcome == 'success')
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
@@ -238,8 +297,18 @@ jobs:
           pr_json="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr")"
           base_sha="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(x.base.sha)' "$pr_json")"
           head_sha="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(x.head.sha)' "$pr_json")"
+          # BEGIN BLOG_REFRESH_RELEASE_FENCE
+          if [ "${QUALITY_REFRESH:-false}" = true ]; then
+            [ -n "${BLOG_REFRESHED_HEAD:-}" ] && [ -n "${BLOG_VERIFIED_HEAD:-}" ] && [ "$head_sha" = "$BLOG_VERIFIED_HEAD" ] || { echo "::error::BLOG_REFRESH_RELEASE_IDENTITY_UNPROVEN"; exit 1; }
+          fi
+          # END BLOG_REFRESH_RELEASE_FENCE
           body="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(x.body||"")' "$pr_json")"
           labels="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(JSON.stringify((x.labels||[]).map(v=>v.name)))' "$pr_json")"
+          if [ "${QUALITY_REFRESH:-false}" = true ]; then
+            PR_BODY="$body" BASE_SHA="$base_sha" node -e 'const fs=require("fs");fs.writeFileSync("/tmp/blog-refresh-body.md",process.env.PR_BODY.replace(/^Base-SHA:.*$/m,"Base-SHA: "+process.env.BASE_SHA));'
+            gh pr edit "$pr" --body-file /tmp/blog-refresh-body.md
+            body="$(cat /tmp/blog-refresh-body.md)"
+          fi
           test_state="$(gh api "repos/$GITHUB_REPOSITORY/commits/$head_sha/check-runs" --jq '[.check_runs[] | select(.name=="test")] | sort_by(.started_at) | last | (.conclusion // .status // "missing")' 2>/dev/null || echo missing)"
           case "$test_state" in
             success)
@@ -253,6 +322,27 @@ jobs:
               gh workflow run required-test.yml --ref "$branch"                 -f pr_number="$pr"                 -f base_sha="$base_sha"                 -f head_sha="$head_sha"                 -f candidate_branch="$branch"                 -f pr_body="$body"                 -f pr_labels_json="$labels"
               ;;
           esac
+          if [ "${QUALITY_REFRESH:-false}" = true ]; then
+            expected_title="BRAIN delivery PR #$pr $head_sha"
+            brain_query="repos/$GITHUB_REPOSITORY/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100"
+            run="$(gh api "$brain_query" --jq ".workflow_runs | map(select(.display_title == \"$expected_title\")) | sort_by(.created_at) | last | .id // empty")"
+            if [ -z "$run" ]; then
+              gh workflow run unified-brain-delivery.yml --ref main -f pr_number="$pr" -f base_sha="$base_sha" -f head_sha="$head_sha" -f candidate_branch="$branch" -f verification_only=true
+            fi
+            brain_ok=false
+            for attempt in $(seq 1 72); do
+              state="$(gh api "$brain_query" --jq ".workflow_runs | map(select(.display_title == \"$expected_title\")) | sort_by(.created_at) | last | (.conclusion // .status // \"missing\")")"
+              case "$state" in
+                success) brain_ok=true; break ;;
+                failure|cancelled|timed_out|action_required) echo "::error::BLOG_REPAIR_BRAIN_FAILED:$state:$head_sha"; exit 1 ;;
+                *) sleep 5 ;;
+              esac
+            done
+            [ "$brain_ok" = true ] || { echo "::error::BLOG_REPAIR_BRAIN_PENDING:$head_sha"; exit 1; }
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" > /tmp/blog-refresh-pr-ready.json
+            [ "$(node /tmp/reviewed-blog-refresh.mjs /tmp/blog-refresh-pr-ready.json /tmp/blog-refresh-source.json "brain/learning/powerhouse-blog-$DATE.json" "$DATE" "$GITHUB_REPOSITORY" "$head_sha")" = AUTHORIZED ] || { echo "::error::BLOG_REFRESH_READY_AUTHORITY_CHANGED"; exit 1; }
+            gh pr ready "$pr"
+          fi
           gh pr merge "$pr" --auto --squash
 
       - name: Reconcile merged daily blog only after production HTTP and immutable release proof
@@ -265,3 +355,34 @@ jobs:
         run: |
           node --test tests/brain-daily-blog-production-closure-v1.test.mjs
           node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"
+
+  security_export_probe:
+    # Reuse this canonical workflow: no additional scheduler, public PR or publisher.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.security_probe_only == true }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify source guards before live read-only matrix
+        run: node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
+      - name: Verify real service-auth approval matrix without publication
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          set +x
+          [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] || { echo "::error::BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED"; exit 1; }
+          endpoint="https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export"
+          anon_status="$(curl -sS --max-time 20 --output /dev/null --write-out '%{http_code}' "${endpoint}?date=2026-10-28")"
+          [ "$anon_status" = "401" ] || { echo "::error::BLOG_EXPORT_ANONYMOUS_NOT_DENIED:$anon_status"; exit 1; }
+          echo "EXPORT_AUTH_MATRIX_PASS:ANONYMOUS:401"
+          probe() {
+            label="$1"; date="$2"; expected="$3"
+            status="$(curl -sS --max-time 20 --output /dev/null --write-out '%{http_code}' -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" "${endpoint}?date=${date}")"
+            [ "$status" = "$expected" ] || { echo "::error::BLOG_EXPORT_MATRIX_FAIL:${label}:expected_${expected}:actual_${status}"; exit 1; }
+            echo "EXPORT_AUTH_MATRIX_PASS:${label}:${status}"
+          }
+          probe "GENERATED_WITHOUT_APPROVAL" "2026-10-28" "403"
+          probe "HISTORIC_LIVE_WITHOUT_APPROVAL" "2026-10-22" "403"
+          probe "APPROVED_LIVE_PROVEN" "2026-10-25" "200"

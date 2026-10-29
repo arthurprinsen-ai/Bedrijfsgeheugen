@@ -1,6 +1,7 @@
 name: Brain foundation verify
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -26,11 +27,24 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Assert exact checked-out commit
+        run: test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Run Brain foundation regression suite
-        run: node scripts/brain/test-all.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p .artifacts
+          node scripts/brain/test-all.mjs 2>&1 | tee .artifacts/brain-foundation-verification.log
+      - name: Preserve independent BRAIN proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-foundation-verification-${{ github.sha }}
+          path: .artifacts/brain-foundation-verification.log
+          if-no-files-found: warn

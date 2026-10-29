@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928161000_powerhouse_all_20_growth_plays_v3.sql','utf8');
 const scan=fs.readFileSync('pages/scan.html','utf8');
 const scanJs=fs.readFileSync('assets/scan-workshop.js','utf8');
 const ingest=fs.readFileSync('supabase/functions/powerhouse-scan-ingest/index.ts','utf8');
@@ -39,7 +39,7 @@ test('noncanonical duplicate persuasion side path is explicitly removed',()=>{
 
 test('SEO switch play reuses canonical content/SEO owner and truth gates',()=>{
   assert.match(migration,/seo_first_mover_intent_gap/);
-  assert.match(migration,/existing-owner\/cannibalization/i);
+  assert.match(migration,/Existing canonical owner\/cannibalization check remains mandatory before publication\./i);
   assert.match(migration,/no_fake_comparison/);
   assert.match(migration,/competitor_claims_public_evidence_only/);
 });

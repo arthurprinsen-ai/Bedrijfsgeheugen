@@ -47,6 +47,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lease-postgres-pr-replay:
+    needs: hygiene
+    if: needs.hygiene.outputs.admitted == 'true' && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: lease_integration
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify exact candidate SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Verify PostgreSQL 17 and replay lease contract
+        shell: bash
+        env:
+          DATABASE_URL: postgresql://postgres:test-only@localhost:5432/lease_integration
+        run: |
+          set -euo pipefail
+          version="$(psql "$DATABASE_URL" -Atqc 'SHOW server_version_num')"
+          test "$version" -ge 170000
+          test "$version" -lt 180000
+          test -s docs/delivery/sql/repository-writer-fenced-lease.sql
+          test -s tests/postgres-lease-replay.sh
+          bash tests/postgres-lease-replay.sh
   hygiene:
     uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
     with:
@@ -81,6 +121,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify System Map integrity on exact candidate tree
+        run: |
+          node --test tests/delivery-system-map-merge-integrity.test.mjs
+          SYSTEM_MAP_GENERATE_COMMAND='node scripts/brain/portal-explanation-inventory.mjs --write' SYSTEM_MAP_PATH='platform/system-map/canonical-system-map.mjs' EXPECTED_INTEGRATION_SHA="$(git rev-parse HEAD)" node tools/delivery/assert-system-map-integrity.mjs
       - name: Verify portal explanation source freshness
         run: |
           node scripts/brain/portal-explanation-inventory.mjs --check
@@ -105,6 +149,14 @@ jobs:
         run: node --test tests/brain-mira-native-format-before-vision-20261025.test.mjs
       - name: Reject every historically failed Mira OpenArt asset before costly vision
         run: node --test tests/brain-mira-rejected-history-permanent-dedupe-20261025.test.mjs
+      - name: Refuse contradiction between frozen face and real human motion before OpenArt cost
+        run: node --test tests/brain-mira-compatible-human-motion-prompt-20261025.test.mjs
+      - name: Prevent OpenArt Wan 2.7 wrong-native-ratio credits before generation
+        run: node --test tests/brain-mira-provider-native-prespend-20261025.test.mjs
+      - name: Verify 9:16 derived Mira reference cannot bypass canonical identity and publication controls
+        run: node --test tests/brain-mira-portrait-reference-proof-20261025.test.mjs
+      - name: Verify pinned Mira derivative is eligible only with independent real identity proof
+        run: node --test tests/brain-mira-pinned-derived-generation-input-20261025.test.mjs
       - name: Verify exact canonical commercial publication evidence reconciliation
         run: node --test tests/brain-commercial-daily-provider-proof-reconciliation-20261025.test.mjs
       - name: Enforce authenticated Portal evidence freshness
@@ -815,12 +867,13 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website]
+    needs: [hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website, lease-postgres-pr-replay]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       EVENT_NAME: ${{ github.event_name }}
       HYGIENE: ${{ needs.hygiene.result }}
+      POSTGRES_LEASE: ${{ needs.lease-postgres-pr-replay.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
       MERGE_SPECIALIST: ${{ needs.merge_specialist.result }}
@@ -847,6 +900,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$HYGIENE" = success
+          [ "$EVENT_NAME" != pull_request ] || [ "$POSTGRES_LEASE" = success ]
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
           [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST" = success ]

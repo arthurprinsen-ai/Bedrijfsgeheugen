@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql','utf8');
 const worker=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-relationship-revenue/SKILL.md','utf8');
 
