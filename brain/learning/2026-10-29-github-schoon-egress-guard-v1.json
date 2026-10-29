@@ -16,17 +16,17 @@
   "fix": "tools/ci/egress-guard.mjs faalt op vreemde repo, PAT-secret, write-all of ontbrekend permissions-blok en draait in de delivery-lane en voor de dagelijkse optimizer. 13 workflows krijgen contents: read, 20 verificatieworkflows annuleren verouderde PR-runs, de Janitor verwijdert ook branches met exacte head-sha van een gemergede PR in dezelfde repo.",
   "prevention_rule": "Elke workflow heeft een expliciet permissions-blok en geen workflow of CI-script schrijft naar een andere repository of gebruikt een niet-allowlisted secret.",
   "tests": [
-    "tests/delivery-egress-guard.test.mjs"
+    "tests/brain-egress-guard.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-egress-guard.test.mjs"
+      "tests/brain-egress-guard.test.mjs"
     ],
     "shadow": [
-      "tests/delivery-egress-guard.test.mjs"
+      "tests/brain-egress-guard.test.mjs"
     ],
     "canary": [
-      "tests/delivery-egress-guard.test.mjs"
+      "tests/brain-egress-guard.test.mjs"
     ],
     "invariants": [
       "repository heeft 0 egress-overtredingen",
