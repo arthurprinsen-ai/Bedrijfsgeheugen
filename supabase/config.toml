@@ -215,3 +215,14 @@ entrypoint = "./functions/bg-bedrijfsprofiel/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-externe-signalen/index.ts"
+
+# Existing canonical browser-side, privacy-minimal CRO telemetry receiver.
+# This function already runs publicly with provider verify_jwt=false: browser
+# requests do not carry Supabase JWTs. Preserve its exact existing auth mode.
+# Edge code enforces allowed origins, consent for detailed events, strict data
+# shape/limits, idempotent database UID writes and 503 on database failure.
+# This declaration is required by protected Supabase Edge Production Authority.
+[functions.bg-interactie]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-interactie/index.ts"
