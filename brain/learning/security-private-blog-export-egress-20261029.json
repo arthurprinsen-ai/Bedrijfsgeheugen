@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|public-github-draft-egress|20261029|twinfield",
+  "status": "OBSERVED_PARTIALLY_CONTAINED",
+  "failure_class": "PUBLIC_PREAPPROVAL_BLOG_EXPORT",
+  "root_cause": "Publicly readable API and public GitHub candidate path did not require authorization plus explicit publication approval. A content-ready decision alone was treated as delivery permission.",
+  "observed_evidence": {
+    "incident_id": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+    "github_issue": "#5072",
+    "public_pr_reference": "#5042",
+    "emergency_edge_function": "powerhouse-blog-export",
+    "emergency_version": 183,
+    "scope": "NO_PRIVATE_PAYLOADS_IN_PUBLIC_LEARNING",
+    "external_recipient_transfer": "NOT_VERIFIED"
+  },
+  "prevention_rule": "Deny all non-approved public export, enforce service authorization and last-mile publication approval, keep internal workflow evidence private. No unapproved public PR artifacts; preserve independent authorized publishing.",
+  "tests": [
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_PREAPPROVAL_BLOG_EXPORT",
+    "scope": "SECURITY_EXPORT",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ]
+  },
+  "resolution": "Emergency edge v183 active; protected PR #5074 and independent HTTP/readback not yet confirmed. NOT RESOLVED.",
+  "verification": {
+    "protected_merge": false,
+    "public_negative_live_http": false,
+    "authorized_positive_live_http": false
+  }
+}

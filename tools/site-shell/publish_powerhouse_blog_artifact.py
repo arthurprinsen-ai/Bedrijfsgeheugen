@@ -3,6 +3,7 @@
 import datetime as dt
 import html
 import json
+import os
 import pathlib
 import re
 import sys
@@ -22,7 +23,15 @@ def fail(message):
 
 def fetch(date):
     try:
-        with urllib.request.urlopen(f"{EXPORT}?date={date}", timeout=30) as response:
+        token = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+        if not token:
+            fail("BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED")
+        request = urllib.request.Request(
+            f"{EXPORT}?date={date}",
+            headers={"Authorization": f"Bearer {token}"},
+            method="GET",
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
             data = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         if error.code == 404:
