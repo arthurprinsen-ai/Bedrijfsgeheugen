@@ -3054,16 +3054,16 @@
       "version": "20261027190000"
     },
     {
+      "name": "revenue_learning_evidence_timestamp_guard",
+      "version": "20261027195341"
+    },
+    {
       "name": "saas_trial_mails_v1",
       "version": "20261027200000"
     },
     {
       "name": "benchmark_anoniem_intake_v1",
       "version": "20261027210000"
-    },
-    {
-      "name": "revenue_learning_evidence_timestamp_guard",
-      "version": "20261027195341"
     },
     {
       "name": "bg_experiment_autonoom_besluit_v1",
@@ -3079,15 +3079,15 @@
     },
     {
       "name": "bg_bedrijfsprofiel_v1",
-      "version": "20261028230000"
-    },
-    {
-      "name": "bg_bedrijfsprofiel_v1",
       "version": "20261028212459"
     },
     {
       "name": "bg_linkedin_lus_v1",
       "version": "20261028220000"
+    },
+    {
+      "name": "bg_bedrijfsprofiel_v1",
+      "version": "20261028230000"
     },
     {
       "name": "personal_observational_source_date_gate_20261029",
@@ -3096,8 +3096,48 @@
     {
       "name": "linkedin_personal_observational_source_freshness_20261029",
       "version": "20261029101159"
+    },
+    {
+      "name": "sales_cycle_execution_truth_guard_20261029",
+      "version": "20261029122836"
+    },
+    {
+      "name": "sales_cycle_negative_terminal_reconcile_v1",
+      "version": "20261029125100"
+    },
+    {
+      "name": "powerhouse_cycle_writer_provenance_20261029",
+      "version": "20261029125607"
+    },
+    {
+      "name": "growth_cta_alias_truth_and_idempotent_backfill",
+      "version": "20261029174600"
+    },
+    {
+      "name": "cro_observed_experiment_and_lead_order_evidence_v1",
+      "version": "20261029174700"
+    },
+    {
+      "name": "bg_cro_event_uid_v1",
+      "version": "20261029180000"
+    },
+    {
+      "name": "bg_cro_behavior_daily_v1",
+      "version": "20261029181000"
+    },
+    {
+      "name": "bg_cro_allowlisted_event_types_v1",
+      "version": "20261029182000"
+    },
+    {
+      "name": "instagram_media_ensure_claim_monotonicity_v1",
+      "version": "20261029183000"
+    },
+    {
+      "name": "bg_cro_validate_event_types_v1",
+      "version": "20261029185000"
     }
   ],
-  "captured_at": "2026-10-29 11:54:04.166873+00",
+  "captured_at": "2026-10-29T21:10:36.738Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
