@@ -8,7 +8,9 @@ test('real tenant Brain runtime imports require authenticated production proof',
     'brain/operating-loop/living-memory.mjs',
     'brain/operating-loop/store.mjs',
     'netlify/functions/brain-operating-loop.mjs',
-    'platform/api/brain-operating-loop-handler.mjs'
+    'platform/api/brain-operating-loop-handler.mjs',
+    'platform/api/portal-authenticated-production-proof-core.mjs',
+    'netlify/functions/portal-authenticated-production-proof.mjs'
   ]) assert.equal(requiresBrainRuntimeAuthenticatedProof([path]),true,path);
 });
 test('unrelated governance and hosted functions do not create duplicate portal probes',()=>{
