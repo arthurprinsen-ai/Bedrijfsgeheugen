@@ -164,6 +164,19 @@ If exact final bytes/frames cannot be independently read back, status remains `U
 
 Regression rules: `PROVIDER_TRANSPORT_IS_NOT_FINAL_MEDIA_IDENTITY_PROOF`, `INSTAGRAM_EXACT_FINAL_MEDIA_PROOF_REQUIRED`, `NO_GREEN_BY_REPUBLISH`.
 
+## Agent egress
+
+### `agents|external-recipient|internal-content-leak|20261029-v1`
+Aliases: `EXTERNAL_RECIPIENT_LEAK`, `internal-task-at-outsider`, `agent-misroute-external-assistant`.
+
+Symptom: een externe persoon ontvangt via een automatische koppeling een interne taak of concept-blog in zijn eigen AI-assistent.
+
+Root cause: OPEN RCA. In de GitHub-laag bewezen afwezig (egress-guard); de route zit in Notion, Composio, Make of mail en is nog niet gevonden.
+
+Required fix: alleen schrijven naar een allowlisted ontvanger; `tools/ci/egress-guard.mjs` voor elke workflow- of CI-scriptwijziging; elke workflow met expliciete `permissions:`; geen persoonlijke token.
+
+Blocked approach: een tweede register of scheduler naast `public.brain_failure_registry`; de oorzaak aannemen zonder uitgaande logs te vergelijken.
+
 ## Incident state semantics
 
 ### `incident-open-selection-semantic-mismatch-v1`

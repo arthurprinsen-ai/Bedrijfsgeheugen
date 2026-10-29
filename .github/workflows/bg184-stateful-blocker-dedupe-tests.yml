@@ -9,6 +9,13 @@ on:
       - 'brain/learning/incidents/bg184-repeated-known-blocker-dispatch-2026-08-30.json'
       - '.github/workflows/bg184-stateful-blocker-dedupe-tests.yml'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   stateful-blocker-dedupe:
     runs-on: ubuntu-latest
