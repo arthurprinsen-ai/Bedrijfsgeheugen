@@ -5,6 +5,16 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+## Cross-channel production failure handoff — 29 October 2026
+
+Fingerprint: `powerhouse|social|due-obligation-not-terminal|20261029-v1`. The original personal LinkedIn, company LinkedIn, Instagram/Mira and blog obligations must be evaluated **independently** by date and provider ID: a successful company post never certifies another channel. Read `public.content_publication_obligations` and original provider before every reattempt. Keep completed LinkedIn company immutable provider URN and the existing global claim; never post it again.
+
+Canonical personal LinkedIn OAuth scope repair `#5159` was protected merged and original `powerhouse-composio-linkedin-setup` Edge v479 deployed with `openid,profile,email,w_member_social`, without closed `r_member_social`. This fixes only the **OAuth request code**, not a `REVOKED_ACCESS_TOKEN`. An account labeled Composio `ACTIVE` is not provider authentication. Require true owner consent through the original managed OAuth link, exact connected account principal and write scope, then original daily claim and provider create ID; never switch to a different ChatGPT connection/Make/Buffer publisher or copy a token. Human OAuth consent is non-automatable and must remain PENDING until really completed.
+
+The old OpenArt candidate with start-frame Mira identity confidence `0.900` is **rejected** against the unchanged `0.940` threshold. Do not publish/revalidate these rejected bytes or clear the failure. A distinct new budget-approved video must pass original three-frame identity, 9:16, temporal and source quality gates, then pass the original Instagram router and provider observer. A successful Instagram account self-read is not evidence of valid media. A `GENERATED` blog without protected merge, Netlify deploy and public canonical URL readback is not `LIVE_PROVEN`.
+
+Update the existing Brain fingerprint, affected owner, evidence, regression, next safe action, agent/skill usage and human documentation in the same obligation lineage. Any unsupported endpoint health or missing provider ID keeps that channel `NOT_PROVEN`; never disable the daily Heartbeat executor because a single channel requires human consent or new media. Regression: `tests/brain-powerhouse-runtime-truth-routing-20261029.test.mjs`. No new scheduler or second writer.
+
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 Fingerprint: `powerhouse|one-brain|social-delivery-recovery-cooperation|v1`.
