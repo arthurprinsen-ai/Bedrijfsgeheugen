@@ -6,6 +6,8 @@
   "stage": "PR_VERIFICATION",
   "component": "instagram",
   "status": "DESIGN_RECORDED_NOT_EXECUTED",
+  "failure_class": "RECOVERY",
+  "failureClass": "RECOVERY",
   "security_sensitive": false,
   "scope": "DATABASE",
   "context": {
