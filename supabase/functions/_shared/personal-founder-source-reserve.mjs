@@ -41,9 +41,12 @@ export function buildVerifiedFounderReserve(source,date,recentTypes=[]){
  const seen=new Set();
  return s.filter(x=>{if(seen.has(x.ref))return false;seen.add(x.ref);return true;})
   .slice(0,3).map((x,i)=>({
-   dedupe_key:'founder-proof-reserve:'+date+':'+x.kind,
+   // A rejected same-day family cannot be reactivated by changing only an event UUID.
+   // A genuinely different verified event TYPE or external SOURCE can rotate to its own
+   // immutable canonical source-family recommendation while semantic dedupe remains enforced.
+   dedupe_key:'founder-proof-reserve:'+date+':'+x.kind+':'+(x.source_context.event_type? 'event-type:'+x.source_context.event_type : 'source-ref:'+x.ref),
    run_date:date,topic_key:'founder-distinct:'+x.kind,
-   content_key:'linkedin-personal-distinct:'+date+':'+x.kind,
+   content_key:'linkedin-personal-distinct:'+date+':'+x.kind+':'+(x.source_context.event_type? 'event-type:'+x.source_context.event_type : 'source-ref:'+x.ref),
    target_channel:'linkedin_personal',recommendation_type:'verified_ai_native_builder_story',
    priority:99-i,status:'suggested',
    reason:'Maak een inhoudelijk nieuw, controleerbaar ondernemershoofdstuk over '+x.focus+
