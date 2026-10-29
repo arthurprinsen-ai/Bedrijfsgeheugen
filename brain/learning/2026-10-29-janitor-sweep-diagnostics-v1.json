@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-branch-debris|janitor-sweep-diagnostics|20261029-v1",
+  "fingerprint": "ci|branch-debris|janitor-sweep-zero-deletions-unexplained|20261029-v1",
+  "compiler": {
+    "failure_class": "BRANCH_SWEEP_ZERO_DELETIONS_UNEXPLAINED",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "De eerste Janitor-run met de PR-gestuurde sweep verwijderde 0 branches, terwijl een read-only reproductie voor 40 van 40 kandidaten bevestigde dat de branch bestaat met dezelfde head-sha, niet beschermd en zonder open PR. OPEN RCA: de skip-reden in CI is onbekend.",
+  "fix": "De sweep telt nu per skip-reden (seen, open, missing, protected, moved) en schrijft die in JANITOR_SQUASH_SWEEP, zodat de volgende run de oorzaak toont. Geen gedragswijziging.",
+  "prevention_rule": "Een opruimlus die 0 acties uitvoert moet per overgeslagen reden telbaar zijn; stil overslaan is geen bewijs dat er niets te doen is.",
+  "tests": [
+    "tests/brain-janitor-bounded-cleanup.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "invariants": [
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd",
+      "verwijderen alleen bij exacte head-sha van een gemergde PR naar main"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
