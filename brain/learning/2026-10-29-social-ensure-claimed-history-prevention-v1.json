@@ -21,5 +21,24 @@
     "pr:5132",
     "pr:5088"
   ],
-  "privacy": "public-safe cause and synthetic replay only; private Brain occurrences remain private"
+  "privacy": "public-safe cause and synthetic replay only; private Brain occurrences remain private",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
+  ]
 }
