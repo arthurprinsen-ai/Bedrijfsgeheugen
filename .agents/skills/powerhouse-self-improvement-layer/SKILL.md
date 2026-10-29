@@ -5,6 +5,15 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## ONE BRAIN / Heartbeat / Agent Fabric handoff verification — 29 October 2026
+
+For material cross-domain execution, consume the existing canonical capability inventory, original tenant-bound Brain/Heartbeat run receipts, and the independent provider/outcome verification. The pure guard is `tools/brain/powerhouse-integration-handoff-evidence.mjs#assessPowerhouseHandoffs` (regression `tests/brain-powerhouse-integration-handoff-20261029.test.mjs`; failure fingerprint `powerhouse|existing-brain-heartbeat-handoff-evidence|20261029-v1`).
+
+The required chain is **OBSERVE → DECIDE → EXECUTE → READBACK → OUTCOME → LEARN → PREVENT**. All stages require same tenant, correlation and source revision, a unique predecessor-linked receipt and a genuinely independent readback. AGENT execution additionally requires actual pinned skill loader/application evidence from the pre-existing validator; SQL stages must never impersonate agents. An outcome needs actual before/after measurements; paid revenue needs original provider payment proof. Missing data is UNPROVEN, never automatic zero, live, success or revenue.
+
+This guard is initially a tested source candidate, **not yet connected to all running emitters**. Only the existing Heartbeat/Agent Fabric writer may wire real receipts into the guard and the authenticated portal, following protected merge, exact runtime readback and the same Brain learning/writeback policy. No new scheduler, agent, truth store or second writer.
+
+
 Fingerprint: `powerhouse|self-improvement|evidence-eval-compare-promote-measure-learn|v1`.
 
 ## North Star
