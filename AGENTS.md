@@ -1,3 +1,7 @@
+## Incidenten en fouten: registreren en zelf oplossen — 29 oktober 2026
+
+Elke agent en elke skill registreert elke fout of elk incident (gededupliceerd op fingerprint, via de bestaande Brain learning/errorlaag) en lost het zelf op zodra er een veilige uitvoerbare stap is, met test, readback en regressieguard. Onomkeerbare of kostbare besluiten, beschermde merge, productiemigraties, uitgaven en alles naar derden blijven bij Arthur: voorbereiden, één obligation, stoppen. Beleid: `brain/policies/powerhouse-incident-register-and-self-fix-v1.json`. Een nieuwe skill zonder `INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1` faalt de agentpreflight.
+
 ## System Map release-integriteit — 25 oktober 2026
 
 Volg `.agents/skills/system-map-merge-integrity/SKILL.md`: één integratie-eigenaar voor workflow, System Map, testbewijs en exact candidate SHA. Regeneratie vanuit geïntegreerde boom; Required/BRAIN/CodeQL op dezelfde commit; geen groen zonder beschermde merge en onafhankelijke readback.

@@ -1,0 +1,33 @@
+{
+  "fingerprint": "agents-skills-register-and-self-fix-v1",
+  "obligation_id": "powerhouse-incident-register-self-fix-20261029",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "GENERAL"
+  },
+  "root_cause": "The rule that every error is registered and fixed by the agent existed only as Loop Constitution text and per-incident practice. Nothing in the agent preflight made it visible or required for skills, so a new skill could be added without any registration or self-fix duty and the gap would stay silent.",
+  "prevention_rule": "The mandatory chat-learning preflight loads brain/policies/powerhouse-incident-register-and-self-fix-v1.json, fails closed on policy drift, fails when a skill outside the loop_debt_baseline lacks the INCIDENT_PROTOCOL marker, and reports baseline skills as visible loop debt in incident_self_fix.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ]
+  },
+  "enforcement_paths": [
+    "scripts/brain/chat-learning-preflight.mjs",
+    "brain/policies/powerhouse-incident-register-and-self-fix-v1.json"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "source_revision": "e2319949bcc34e2d0836c8a3004205ea72edc122",
+    "red_phase": "On the base commit the new test cannot import evaluateIncidentSelfFix and fails.",
+    "local_targeted_regressions": "7 new tests pass; 161 existing skill, preflight, system-map and learning tests pass.",
+    "preflight_after_change": "READY, 99 sources, 67653 bytes of 256000; 41 skills, 1 with protocol, 40 visible loop debt."
+  },
+  "outcome": {
+    "status": "CANDIDATE_TESTED_NOT_DEPLOYED",
+    "runtime_agents_covered": "NO: edge functions and Make scenarios have no uniform file to scan; their duty is policy only",
+    "incident_rate_effect": "NOT_MEASURED"
+  }
+}
