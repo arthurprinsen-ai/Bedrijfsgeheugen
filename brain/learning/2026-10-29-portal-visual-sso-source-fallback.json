@@ -1,0 +1,31 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "portal-visual-preview-SSO-safe-fallback-20261029",
+  "fingerprint": "delivery|portal-visual|sso-preview-exact-source-fallback|20261029",
+  "maturity": "OBSERVED",
+  "status": "CANDIDATE_TESTED",
+  "compiler": {
+    "failure_class": "PREVIEW_IDENTITY_UNAVAILABLE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Numbered Netlify preview alias was protected by non-production SSO and returned 401; workflow exited even though existing exact protected source reconstruction was available.",
+  "prevention": "An inaccessible alias is never accepted as an immutable preview. Reconstruct exact SHA protected PR source, produce a real browser screenshot and compare it against independently pinned production. Non-empty mismatched alias identity remains hard failure.",
+  "evidence": {
+    "tests": [
+      "tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs",
+      "tests/brain-portal-approved-visual-source-v1.test.mjs"
+    ],
+    "local_result": "13/13 targeted tests passed",
+    "historical_failed_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40864486952",
+    "production_readback": "NOT_VERIFIED_PENDING_PROTECTED_RELEASE"
+  },
+  "outcome": "Safe candidate; live provider and screenshot delta pending protected merge."
+}

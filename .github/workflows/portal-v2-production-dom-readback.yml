@@ -238,24 +238,32 @@ jobs:
               # Netlify sometimes returns the exact PR's preview alias rather
               # than a provider deploy dashboard URL. Verify exact SHA there,
               # then pin the returned deploy ID to the immutable host.
-              alias_release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${target}/release.json?head=${pr_head_sha}")" || {
-                echo "::error::Exact numbered Netlify PR alias could not serve release identity."
-                exit 1
-              }
-              alias_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$alias_release")"
-              alias_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$alias_release")"
-              if [ "$alias_sha" != "$pr_head_sha" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
-                echo "::error::Unpinned Netlify PR alias does not match the exact protected head."
-                exit 1
+              # A non-production SSO policy may intentionally return 401/403.
+              # No authenticated alias evidence means NO preview acceptance:
+              # the exact-source baseline below remains mandatory.
+              alias_release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${target}/release.json?head=${pr_head_sha}" || true)"
+              if [ -n "$alias_release" ]; then
+                alias_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$alias_release")"
+                alias_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$alias_release")"
+                if [ "$alias_sha" != "$pr_head_sha" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
+                  echo "::error::Unpinned Netlify PR alias does not match the exact protected head."
+                  exit 1
+                fi
+                preview_url="https://${alias_id}--bedrijfsgeheugen.netlify.app"
+              else
+                echo "::notice::Numbered Netlify preview inaccessible; require approved exact-source visual baseline (no waiver)."
+                preview_url=""
               fi
-              preview_url="https://${alias_id}--bedrijfsgeheugen.netlify.app"
             else
               preview_url="$(node tools/ci/netlify-immutable-preview-target.mjs "$target")" || {
                 echo "::error::Netlify preview target is not an allowed immutable deployment."
                 exit 1
               }
             fi
-            release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}" || true)"
+            release=""
+            if [ -n "$preview_url" ]; then
+              release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}" || true)"
+            fi
             verified_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$release")"
             verified_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$release")"
             expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\.netlify\.app$#\1#p')"
