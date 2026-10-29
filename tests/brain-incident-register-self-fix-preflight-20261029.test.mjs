@@ -117,3 +117,46 @@ test('agent instructions link the existing enforceable Lean loop rather than a p
   assert.match(agents, /powerhouse-incident-register-and-self-fix-v1.json/);
   assert.match(agents, /MEASURE → ANALYZE → HYPOTHESIZE → PRIORITIZE → IMPLEMENT → VERIFY → LEARN → REMEASURE/);
 });
+
+function edgeFixture(functions) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'incident-edge-'));
+  for (const [name, body] of Object.entries(functions)) {
+    fs.mkdirSync(path.join(root, 'supabase/functions', name), { recursive: true });
+    fs.writeFileSync(path.join(root, 'supabase/functions', name, 'index.ts'), body);
+  }
+  return root;
+}
+
+test('edge functions: real repository exposes coverage and every function is marked or baseline debt', () => {
+  const packet = compileChatLearningPreflight();
+  const edge = packet.incident_self_fix.edge_functions;
+  assert.ok(edge.total > 0);
+  assert.equal(edge.with_protocol + edge.loop_debt.count, edge.total);
+});
+
+test('edge functions: a new function without the marker fails the preflight', () => {
+  const root = edgeFixture({ 'nieuwe-functie': 'export default () => {}\n' });
+  assert.throws(() => evaluateIncidentSelfFix({ rootDir: root, policy: policy() }), /INCIDENT_PROTOCOL_MISSING_ON_NEW_EDGE_FUNCTION:nieuwe-functie/);
+});
+
+test('edge functions: a new function with the marker passes; a baseline function is visible debt', () => {
+  const p = policy();
+  const old = p.edge_function_protocol.loop_debt_baseline[0];
+  const root = edgeFixture({ 'nieuwe-functie': `// ${MARKER}\n`, [old]: 'export default () => {}\n' });
+  const result = evaluateIncidentSelfFix({ rootDir: root, policy: p });
+  assert.equal(result.edge_functions.with_protocol, 1);
+  assert.deepEqual(result.edge_functions.loop_debt.functions, [old]);
+});
+
+test('edge functions: baseline lists only existing, unmarked functions and policy drift fails closed', () => {
+  const p = policy();
+  for (const name of p.edge_function_protocol.loop_debt_baseline) {
+    const file = path.join('supabase/functions', name, 'index.ts');
+    assert.ok(fs.existsSync(file), `edge baseline names a missing function: ${name}`);
+    assert.ok(!fs.readFileSync(file, 'utf8').includes(MARKER), `${name} has the marker; remove it from the edge baseline`);
+  }
+  for (const mutate of [q => { delete q.edge_function_protocol; }, q => { q.edge_function_protocol.new_functions_must_carry_marker = false; }, q => { q.edge_function_protocol.marker = 'x'; }]) {
+    const q = policy(); mutate(q);
+    assert.throws(() => evaluateIncidentSelfFix({ rootDir: edgeFixture({}), policy: q }), /INCIDENT_EDGE_PROTOCOL_POLICY_INVALID/);
+  }
+});

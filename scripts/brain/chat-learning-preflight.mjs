@@ -177,6 +177,22 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
     if (baseline.has(name)) loopDebt.push(name); else violations.push(name);
   }
   if (violations.length) throw new Error(`INCIDENT_PROTOCOL_MISSING_ON_NEW_SKILL:${violations.join(',')}`);
+  const edgeProtocol = policy.edge_function_protocol;
+  if (!edgeProtocol || edgeProtocol.marker !== protocol.marker || edgeProtocol.new_functions_must_carry_marker !== true || !Array.isArray(edgeProtocol.loop_debt_baseline)) throw new Error('INCIDENT_EDGE_PROTOCOL_POLICY_INVALID');
+  const functionsRoot = normalizeSourcePath(rootDir, 'supabase/functions');
+  const functionNames = fs.existsSync(functionsRoot.absolute)
+    ? fs.readdirSync(functionsRoot.absolute).filter(name => name !== '_shared' && fs.existsSync(path.join(functionsRoot.absolute, name, 'index.ts'))).sort()
+    : [];
+  const edgeBaseline = new Set(edgeProtocol.loop_debt_baseline);
+  const edgeWithProtocol = [];
+  const edgeDebt = [];
+  const edgeViolations = [];
+  for (const name of functionNames) {
+    const raw = fs.readFileSync(path.join(functionsRoot.absolute, name, 'index.ts'), 'utf8');
+    if (raw.includes(edgeProtocol.marker)) { edgeWithProtocol.push(name); continue; }
+    if (edgeBaseline.has(name)) edgeDebt.push(name); else edgeViolations.push(name);
+  }
+  if (edgeViolations.length) throw new Error(`INCIDENT_PROTOCOL_MISSING_ON_NEW_EDGE_FUNCTION:${edgeViolations.join(',')}`);
   return Object.freeze({
     fingerprint: policy.fingerprint,
     version: policy.version,
@@ -189,6 +205,7 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
     skills_total: names.length,
     skills_with_protocol: withProtocol.length,
     loop_debt: Object.freeze({ count: loopDebt.length, skills: loopDebt }),
+    edge_functions: Object.freeze({ total: functionNames.length, with_protocol: edgeWithProtocol.length, loop_debt: Object.freeze({ count: edgeDebt.length, functions: edgeDebt }), limit: edgeProtocol.limit }),
     not_covered_yet: policy.enforcement?.not_covered_yet ?? null
   });
 }

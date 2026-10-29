@@ -1,0 +1,20 @@
+{
+  "fingerprint": "agents-skills-register-and-self-fix-v1",
+  "obligation_id": "powerhouse-edge-incident-coverage-20261029",
+  "compiler": { "failure_class": "CLASSIFIER_GAP", "scope": "GENERAL" },
+  "root_cause": "The incident register and self-fix duty was enforced for skills only. The 59 edge functions had no countable coverage, so a new edge function could be added without any incident duty and the gap stayed invisible. A survey showed only a handful of functions write to powerhouse_runtime_events at all.",
+  "prevention_rule": "The existing chat-learning preflight scans supabase/functions/*/index.ts, fails when a function outside edge_function_protocol.loop_debt_baseline lacks the INCIDENT_PROTOCOL marker, fails closed on edge policy drift, and reports the rest as visible loop debt in incident_self_fix.edge_functions.",
+  "evaluation": { "historical_replay": ["tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"] },
+  "enforcement_paths": ["scripts/brain/chat-learning-preflight.mjs", "brain/policies/powerhouse-incident-register-and-self-fix-v1.json"],
+  "skill_targets": [".agents/skills/powerhouse-continuity/SKILL.md"],
+  "evidence": {
+    "source_revision": "b94948bbeaa2b5f9816a7bf498e8c1d0318c3fbd",
+    "survey": "59 edge functions; 0 carry the marker; 59 baseline debt; 46 contain catch handling, about 6 write to powerhouse_runtime_events.",
+    "local_targeted_regressions": "14 tests in the incident suite pass (4 new)."
+  },
+  "outcome": {
+    "status": "CANDIDATE_TESTED_NOT_DEPLOYED",
+    "limit": "The marker is a declaration, not proof that errors are written. Make scenarios remain uncovered.",
+    "incident_rate_effect": "NOT_MEASURED"
+  }
+}
