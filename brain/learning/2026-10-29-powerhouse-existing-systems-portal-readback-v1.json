@@ -1,0 +1,29 @@
+{
+  "fingerprint": "portal|powerhouse-existing-system-integration-status|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "date": "2026-10-29",
+  "owner": "existing Portal V2 Control Plane",
+  "authority": "ONE BRAIN/Heartbeat existing read models",
+  "sourceRefs": [
+    "public.powerhouse_one_brain_runtime_health_v1",
+    "public.powerhouse_one_brain_capability_inventory_v1",
+    "public.powerhouse_one_brain_intelligence_inventory_v1",
+    "public.powerhouse_autonomous_experiment_readiness_v1",
+    "public.powerhouse_revenue_event_spine_health_v1"
+  ],
+  "prevention": "Always render source accessibility and actual runtime/agent/outcome proof separately; fail closed on no source, missing load receipt, no payment, lack of consent, auth or tenant isolation.",
+  "rootCause": "Presenting source-connected infrastructure without independent stage-level executed learning and business outcome creates false-green status.",
+  "regression": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+  "ownership": "Backend stage proof remains under PR #5148, CRO event ACK remains under PR #5144.",
+  "noNewScheduler": true,
+  "noNewWriter": true,
+  "noNewStore": true,
+  "proofGates": [
+    "Required/BRAIN/CodeQL exact PR head",
+    "protected merge",
+    "Netlify deploy exact source",
+    "authenticated admin readback",
+    "verified independent outcome",
+    "real skill load/apply evidence"
+  ]
+}
