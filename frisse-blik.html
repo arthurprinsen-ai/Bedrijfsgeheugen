@@ -731,7 +731,7 @@ async function deliverToContact(subject,payload){
   return ok;
 }
 /* Webhook (Azure Function / Power Automate) die het lead + scan-payload ontvangt en in Azure DevOps een Epic/Feature/User Story aanmaakt. Leeg laten = alleen downloaden, geen registratie. */
-const WEBHOOK_URL='';
+const WEBHOOK_URL='https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/lead-intake';
 /* ---- DIRECTE Azure DevOps-koppeling (zonder tussenlaag) ----
    ⚠ WAARSCHUWING: dit token staat leesbaar in de HTML-bron. Gebruik ALLEEN:
    - een PAT met uitsluitend scope "Work Items (Read & Write)" en korte looptijd,
