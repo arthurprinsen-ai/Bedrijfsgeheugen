@@ -12,6 +12,9 @@ test('CRO browser retains pending observations until database ACK',()=>{
  assert.doesNotMatch(src,/wacht\.splice\(0,50\)/);
  assert.doesNotMatch(src,/navigator\.sendBeacon/);
  assert.match(src,/keepalive:true/);
+ assert.match(src,/wacht\.length>=MAX/);
+ assert.match(src,/bg_meting_queue_overflow_v1/);
+ assert.match(src,/Never evict an unacknowledged event/);
 });
 
 test('CRO server is idempotent and does not claim success on DB failure',()=>{
