@@ -52,9 +52,16 @@ export function retainMediaProofFailure(job,ob,row){
 // an unverified video. The full frame/hash verdict stays in canonical evidence.
 /** @param {any} db @param {any} args */
 export async function recordMediaProofRejection(db,args){
-  const {job,ob,code,position,historyId,confidence,width,height}=args;
+  const {job,ob,code,position,historyId,confidence,width,height,allowGeneratingExactHistory=false,assetUrl=''}=args;
+  const approvedGenerating=allowGeneratingExactHistory===true
+    &&job?.status==='GENERATING'
+    &&String(job?.asset_manifest?.openart_history_id||'')===String(historyId||'')
+    &&String(job?.asset_manifest?.openart_project_id||'')
+    &&String(assetUrl||'').startsWith('https://cdn.openart.ai/')
+    &&String(assetUrl||'').endsWith('.mp4')
+    &&!job?.asset_manifest?.asset_url;
   if(!['VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH','MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED','MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH'].includes(code)||!job?.id||
-     job.status!=='WAITING_PROOF'||!job.updated_at||ob?.external_id)
+     (!approvedGenerating&&job.status!=='WAITING_PROOF')||!job.updated_at||ob?.external_id)
     return {kind:'ignored'};
   const temporal=code==='MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED';
   const nativeMismatch=code==='MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH';
@@ -79,14 +86,24 @@ export async function recordMediaProofRejection(db,args){
       ? 'Independent temporal continuity verdict below 0.900; reject this exact OpenArt history and keep original frozen winner. Produce a genuinely different rights-cleared candidate with more natural continuous motion, then repeat all frame, temporal and publisher checks. No resend, override or threshold change.'
       : 'Exact Mira video failed canonical face verification. Retain rejection evidence; create or select a genuinely different licensed OpenArt candidate, then verify all three frames at >=0.94 before canonical publishing. No duplicate dispatch.';
   const updated_at=new Date().toISOString();
+  // A completed exact-history provider result may arrive while the original
+  // producer claim still says GENERATING. Convert only that CAS-matched job
+  // to a rejected-proof state; never mark media approved or publish it.
+  const patch=approvedGenerating
+    ?{status:'WAITING_PROOF',last_error,next_action,updated_at,
+      asset_manifest:{...job.asset_manifest,
+        rejected_asset_url:String(assetUrl),
+        rejected_openart_history_id:String(historyId),
+        producer_receipt:'OPENART_COMPLETED_MEDIA_REJECTED'}}
+    :{last_error,next_action,updated_at};
   const write=await db.from('powerhouse_instagram_media_jobs_v1')
-    .update({last_error,next_action,updated_at})
-    .eq('id',job.id).eq('status','WAITING_PROOF').eq('updated_at',job.updated_at)
+    .update(patch)
+    .eq('id',job.id).eq('status',job.status).eq('updated_at',job.updated_at)
     .select('id').maybeSingle();
   if(write.error)return {kind:'failed',code:String(write.error.code||'MEDIA_PROOF_DIAGNOSTIC_WRITE_FAILED')};
   if(!write.data)return {kind:'stale'};
   // Obligation is a read-model diagnostic, NOT permission to publish.
-  if(['BLOCKED','FAILED'].includes(ob?.status)&&ob?.updated_at){
+  if(['BLOCKED','FAILED','PLANNED','APPROVED'].includes(ob?.status)&&ob?.updated_at){
     const other=await db.from('content_publication_obligations')
       .update({last_error,next_action,updated_at})
       .eq('tenant_id','canonical').eq('publication_date',job.publication_date)
@@ -149,4 +166,63 @@ export async function checkHistoricalMiraHistoryRejection(db,historyId){
     if(!Array.isArray(data))return {kind:'unavailable'};
     return data.length>0?{kind:'rejected',historyId:hist}:{kind:'clear',historyId:hist};
   }catch{return {kind:'unavailable'};}
+}
+
+
+/**
+ * A previously recorded independent Mira rejection is final for that exact
+ * OpenArt history. If a media job is still GENERATING, recover the SAME
+ * original job from ONE BRAIN evidence without downloading/verifying/charging
+ * the rejected bytes a second time. Read-only preflight polls are idempotent.
+ */
+export async function reconcileHistoricalRejectedGeneratingJob(db,{job,ob}={}){
+  const hist=String(job?.asset_manifest?.openart_history_id||'').trim();
+  if(job?.status!=='GENERATING'||!job?.id||!job?.updated_at||
+     !/^[A-Za-z0-9]{8,64}$/.test(hist)||ob?.external_id||
+     ob?.live_proven_at)return {kind:'ignored'};
+  const {data,error}=await db.from('brain_failure_occurrences')
+    .select('occurrence_id,fingerprint,evidence')
+    .like('occurrence_id','router:openart:'+hist+':instagram:%')
+    .limit(10);
+  if(error||!Array.isArray(data))return {kind:'unavailable'};
+  const known={
+    'powerhouse|instagram-mira|video-frame-identity-below-094|20261022-v1':'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',
+    'powerhouse|instagram-mira|temporal-continuity-below-090|20261025-v1':'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',
+    'powerhouse|instagram-mira|native-video-dimensions-before-vision|20261025-v1':'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH'
+  };
+  const matched=data.find(x=>known[x?.fingerprint]&&x?.evidence?.openart_history_id===hist);
+  if(!matched)return {kind:'clear'};
+  const code=known[matched.fingerprint];
+  const raw=code==='VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'
+    ?Number(matched.evidence?.face_identity_confidence)
+    :code==='MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED'
+      ?Number(matched.evidence?.temporal_confidence):null;
+  const score=raw!==null&&Number.isFinite(raw)&&raw>=0&&raw<=1?raw.toFixed(3):'unknown';
+  // Keep EXACT established producer recovery format including trailing
+  // ':openart=history' so the original preventive_recovery contract can parse
+  // this rejection and select a genuinely different budget-bound candidate.
+  const position=String(matched.evidence?.frame_position||'start').replace(/[^a-z]/gi,'').slice(0,16)||'start';
+  const errorCode=code==='VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'
+    ?code+':'+position+':face='+score+':openart='+hist
+    :code==='MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED'
+      ?code+':confidence='+score+':openart='+hist
+      :code+':'+Number(matched.evidence?.native_video_width||0)+'x'+Number(matched.evidence?.native_video_height||0)+':openart='+hist;
+  const nextAction='Existing OpenArt history rejected by independent Mira proof. Do not re-download, reverify, republish or relax thresholds. Original producer must use a materially different source-locked and budget-approved candidate; preserve same daily obligation.';
+  const updatedAt=new Date().toISOString();
+  const write=await db.from('powerhouse_instagram_media_jobs_v1')
+    .update({status:'WAITING_PROOF',last_error:errorCode,next_action:nextAction,
+      updated_at:updatedAt})
+    .eq('id',job.id).eq('status','GENERATING').eq('updated_at',job.updated_at)
+    .select('id').maybeSingle();
+  if(write.error)return {kind:'failed',code:String(write.error.code||'MEDIA_REJECTION_RECOVERY_WRITE_FAILED')};
+  if(!write.data)return {kind:'stale'};
+  if(['PLANNED','APPROVED','BLOCKED','FAILED'].includes(ob?.status)&&ob?.updated_at){
+    const result=await db.from('content_publication_obligations')
+      .update({last_error:errorCode,next_action:nextAction,updated_at:updatedAt})
+      .eq('tenant_id','canonical').eq('publication_date',job.publication_date)
+      .eq('channel','instagram').eq('updated_at',ob.updated_at)
+      .eq('status',ob.status).is('external_id',null);
+    if(result.error)return {kind:'partial',code:'OBLIGATION_DIAGNOSTIC_WRITE_FAILED'};
+  }
+  return {kind:'rejected',historyId:hist,code,score,proof:matched.occurrence_id};
 }
