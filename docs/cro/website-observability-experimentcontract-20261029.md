@@ -1,0 +1,68 @@
+# Website/CRO observability — canoniek meet- en experimentcontract (29 oktober 2026)
+
+**Scope:** bedrijfsgeheugen.nl / bestaande Supabase `public.bg_interacties`, `bg-interactie`, `bg-meetoverzicht`, `bg-experimentcyclus`, Powerhouse + Brain, beveiligde `/intern/meetoverzicht/` en Portal V2 `Andere data`. Dit is **geen** nieuwe executor, scheduler, CRM, of los experimentregister.
+
+## Actuele gecontroleerde nulmeting (2026-10-29, database-read)
+
+- In `growth_events` stonden 222.752 rijen en was de meest recente waarneming 2026-10-29 16:18 UTC.
+- In `powerhouse_experiment_assignments` stond 1 toewijzing, laatst 2026-10-02.
+- In de laatste 24 uur: website 34.859 robot-geclassificeerde events (565 sessies), website 101 mens-geclassificeerde events (46 sessies) en portaal 124 robot-geclassificeerde events (62 sessies).
+- Dit zijn events/sessies, **niet** unieke menselijke bezoekers, orders of bewezen conversies. De classificatie kan onjuist zijn en vereist controle.
+- Voorheen antwoordde `bg-interactie` bij databasefout met HTTP 202 / `ok:true` / `opgeslagen:0`, terwijl de browser zijn batch al had gewist. Root cause: geen end-to-end opslag-ACK en geen idempotente replay.
+- Nieuwe events kunnen pas als live worden beschouwd nadat database-migratie → Edge ingest → assets → beveiligd portaal → brondata → experimentreadback onafhankelijk zijn bewezen.
+
+## Datacontract (geen ingevoerde waarden)
+
+| Dimensie | Event of afleiding | Definitie | Interpretatie |
+| --- | --- | --- | --- |
+| Pagina | `pagina` | pagina-oproep, zonder querystring | Niet gelijk aan unieke bezoeker |
+| Scrollbereik | `scroll` 10/25/50/75/90/100 | bereikte diepte per sessie/pagina | Niet gelijk aan gelezen content |
+| Laatste zichtbare sectie | `sectie_zichtbaar` + `pagina_verlaten.onderdeel` | laatst in viewport geregistreerde semantische sectie | Exit kan worden gemist; schatting, geen exacte oorzaak |
+| Vertrekdiepte | `pagina_verlaten.diepte_pct` | laatst gemeten maximale scroll | Browser kan `pagehide` overslaan |
+| Klik | `klik`, `whatsapp_klik` | expliciet aangeklikte CTA / contact | Klik ≠ gesprek of order |
+| Frictie | `frustratie_klik` | ≥ 3 snelle klikken op hetzelfde expliciet benoemde element | Heuristiek; nooit definitief 'dead click' |
+| Formulier | `formulier_start`, `formulier_fout`, `formulier_verlaten`, `formulier_verzonden` | starts, validatiefout, uitval, submit | Submit ≠ geverifieerde lead |
+| Popup | `popup_getoond/gesloten/conversie` | UI moet expliciet een `bg:cro-popup` event sturen | Niet automatisch aannemen dat popup bestaat |
+| Experiment | `experiment_blootstelling` | UI stuurt `bg:cro-exposure` na echte behandeling, arm control/treatment | Geen exposure zonder autoritatieve assignment |
+| Omzet | bestaand outcome-register | provider-gevalideerde order + bedrag | Geen conversie als omzet presenteren |
+
+De huidige event-schema-velden `pad`, `onderdeel`, `element_tekst`, `element_doel`, `diepte_pct`, `seconden`, `bron_domein`, `herkomst`, `apparaat`, `is_robot` en `toestemming` blijven de bestaande opslagroute. `event_uid` is uitsluitend een willekeurige event-ID voor veilige retries.
+
+## Privacy & datakwaliteit (harde gates)
+
+1. Uitgebreide gedrags- en experimentmetingen alleen bij aantoonbare toestemming; GPC/DNT blokkeren de bestaande client. Functionele en beperkte analytische metingen vereisen een afzonderlijke privacytoets. Geen sessiereplay, ingevulde velden, e-mail, telefoonnummer, IP, user-agent of URL-querystrings opslaan.
+2. Ingest bevestigt een batch alleen na succesvolle database-write/readback; bij 503/degraded geen bevestiging. Browser wist de queue pas na exact ACK. Beperkte sessionStorage-queue en bounded exponential backoff; risico op verlies bij tabbladsluiting blijft als onopgeloste meetbeperking zichtbaar.
+3. `event_uid` uniek in Supabase; nieuwe migratie vóór producer/Edge release. Dubbele retries mogen niet leiden tot dubbele events.
+4. Botverkeer en interne tests gescheiden van menselijke data. Elke CRO-resultaatstaat toont menselijke sessies, consent/dekking, databron, versheid, teller/noemer en definitie. Geen `n=0` als onbekend of ontbrekend.
+5. Beveiligde tenant-/beheerdersgrens blijft ongewijzigd. Portal `Andere data` toont het **bestaande code-beveiligde** interne Meetoverzicht; er komt geen publieke data-endpoint bij.
+6. `pagehide`/visibility zijn onvolledig; niet iedere uitstap kan waargenomen worden. Een exit-map mag alleen uit daadwerkelijk waargenomen gebeurtenissen worden afgeleid.
+
+## Experimentprotocol dat alle bestaande CRO-agents volgen
+
+Per hypothese verplicht: owner, trigger/kans, concrete gebruikersfrictie, pagina/segment, control, behandeling, exposure-criterium, primaire conversie, secundaire metrics, kosten, resultaatdefinitie (lead/order/revenue), guardrails (performance, errorrate, privacy, bounce), start/stop, minimaal zinvolle steekproef, randomisatie-eenheid, sample-ratio-mismatch, praktische effectgrootte en onzekerheidsinterval. Besluit: WON / LOST / INCONCLUSIVE / INVALID, met bewijslinks en Brain-leerrecord.
+
+**Niet doen:** automatisch winst claimen bij statistisch onvoldoende verkeer; peeking/stoppen zodra p<0,05 zonder vooraf vastgesteld stopprotocol; experimenten overlappend aan dezelfde gebruiker zonder collision-guard; fake omzet/gesprekken; donkere patronen of hinderlijke popups.
+
+Prioriteit bij weinig menselijk verkeer: eerst betrouwbare instrumentatie en grotere, betekenisvolle wijzigingen (propositie, formulierfrictie, contactkeuze). Alleen uitgevoerde experimenten verschijnen als `RUNNING`; voorgestelde experimenten zijn `PROPOSED`.
+
+## Continue gesloten lus binnen de bestaande executor
+
+Website-event → ingestbevestiging → bot-/consent-/kwaliteit-filter → geaggregeerde pagina/trechter/variantdata → agent-hypothese → geautoriseerde versiebeheerwijziging → Required/CI → productie-readback → onafhankelijke lead/order outcome → Brain-leerrecord → nieuwe prioritering. Als noodzakelijke meetdata ontbreken: markeer `DATA_GAP`, leg eigenaar en incident vast, maak veilige instrumentatie-PR, controleer effect na release. Geen tweede scheduler.
+
+## Externe, controleerbare referenties
+
+- Google Analytics events: https://developers.google.com/analytics/devguides/collection/ga4/events
+- Google Analytics recommended events: https://developers.google.com/analytics/devguides/collection/ga4/reference/events
+- Microsoft Clarity scroll/drop-off maps: https://learn.microsoft.com/en-us/clarity/heatmaps/scroll-maps
+- Microsoft Clarity click maps (dead/rage/error/last): https://learn.microsoft.com/en-us/clarity/heatmaps/click-maps
+- Microsoft Clarity consent: https://learn.microsoft.com/en-us/clarity/setup-and-installation/consent-management
+- Autoriteit Persoonsgegevens, analytische vs. trackingcookies: https://autoriteitpersoonsgegevens.nl/nl/onderwerpen/internet-telefoon-tv-en-post/cookies
+
+## Release & readback
+
+1. Apply additive SQL migration through protected database release. Check unique event UID index and previous data counts.
+2. Deploy `bg-interactie` Edge code. Test wrong-origin, no-consent detail rejection, db-degraded=503, duplicate UID idempotency, ACK mismatch.
+3. Release `assets/meting.js`; simulate reload, network failure, 503→200, retry, form invalid, click, scroll, click spam, popup exposure, and no-consent.
+4. Release portal. Verify `?page=andere-data` is unavailable when unauthenticated and loads the existing internal code-gated report when authenticated.
+5. Reconcile latest persisted data and actual experiment inputs before agents may use new events to decide actions.
+6. No `LIVE` / `GREEN` without GitHub main SHA, Netlify deploy SHA, Supabase function version, database readback, portal browser proof and first genuine human events.
