@@ -20,11 +20,8 @@
     "rollback": "Revert only this provider-provisioning repair through a protected PR if admin update is ineffective; preserve stringent JWT and tenant checks."
   },
   "tests": [
-    "tests/portal-authenticated-production-proof.test.mjs",
-    "Signed JWT tenant mismatches remain fail closed",
-    "Provider admin metadata may be corrected only for the newly-created synthetic user",
-    "Unpersisted admin metadata forbids token request and cleans up",
-    "End-to-end exact provider two-tenant production proof is still required"
+    "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs",
+    "tests/portal-authenticated-production-proof.test.mjs"
   ],
   "rollout": {
     "source_status": "CANDIDATE",
@@ -46,13 +43,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-authenticated-production-proof.test.mjs"
+      "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs"
     ],
     "shadow": [
-      "tests/portal-authenticated-production-proof.test.mjs"
+      "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs"
     ],
     "canary": [
-      "tests/portal-authenticated-production-proof.test.mjs"
+      "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs"
     ],
     "invariants": [
       "signed app_metadata.tenantId exactly equals newly created and admin-readback tenantId",
