@@ -36,10 +36,12 @@ function projectExperiment(row){
   };
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],readStates={},at=new Date().toISOString()}={}){
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
-  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE';
+  const conversionProofOk=readStates.conversionProof==='LIVE'&&conversionProof.length===1;
+  const experimentProofOk=readStates.experimentProof==='LIVE';
+  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&conversionProofOk&&experimentProofOk;
   const dailyLast=daily.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const experimentLast=experiments.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const totals=dailyOk?{
@@ -51,17 +53,37 @@ export function projectOtherData({daily=[],experiments=[],policies=[],readStates
   if(!dailyOk)flags.push('WEBSITE_DAILY_SOURCE_UNAVAILABLE');
   if(!experimentsOk)flags.push('EXPERIMENT_SOURCE_UNAVAILABLE');
   if(readStates.policies!=='LIVE')flags.push('EXPERIMENT_POLICY_UNAVAILABLE');
+  if(!conversionProofOk)flags.push('PERSISTED_CONVERSION_PROOF_SOURCE_UNAVAILABLE');
+  if(!experimentProofOk)flags.push('CONTROLLED_EXPERIMENT_PROOF_SOURCE_UNAVAILABLE');
   if(dailyOk&&totals.pageViews>0&&totals.ctaClicks===0)flags.push('CTA_TRACKING_NOT_VERIFIED');
   if(experimentsOk&&experiments.some(e=>!e.causal_status||e.causal_status==='insufficient_evidence'))flags.push('EXPERIMENT_EVIDENCE_INCOMPLETE');
+  const cp=conversionProofOk?conversionProof[0]:null;
+  if(cp?.event_evidence_status!=='PERSISTED_EVENTS_OBSERVED')flags.push('PERSISTED_EVENT_PARITY_NOT_PROVEN');
+  if(cp?.lead_evidence_status!=='LINKED_RECORDS_REQUIRE_INDEPENDENT_BUYER_VERIFICATION')flags.push('QUALIFIED_LEAD_READBACK_NOT_PROVEN');
+  flags.push('INDEPENDENT_PAID_ORDER_VERIFICATION_REQUIRED');
   return {
     contract:'POWERHOUSE_CRO_OTHER_DATA_V1',generatedAt:at,
     scope:'canonical',status:complete?'LIVE':'PARTIAL',
     sources:{
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
       experiments:{status:readStates.experiments||'UNAVAILABLE',lastObservedAt:experimentLast||null,records:experimentsOk?experiments.length:null},
-      policies:{status:readStates.policies||'UNAVAILABLE',records:readStates.policies==='LIVE'?policies.length:null}
+      policies:{status:readStates.policies||'UNAVAILABLE',records:readStates.policies==='LIVE'?policies.length:null},
+      conversionProof:{status:conversionProofOk?'LIVE':readStates.conversionProof||'UNAVAILABLE',records:conversionProofOk?1:null},
+      experimentProof:{status:experimentProofOk?'LIVE':readStates.experimentProof||'UNAVAILABLE',records:experimentProofOk?experimentProof.length:null}
     },
-    quality:{flags,botFiltering:'UNKNOWN_IN_THIS_PROJECTION',deliveryAcknowledgement:'UNVERIFIED',message:'Website-events zijn observaties, geen onafhankelijke leads/orders. Onbekend is nooit nul.'},
+    quality:{flags,botFiltering:'UNKNOWN_IN_THIS_PROJECTION',deliveryAcknowledgement:'UNVERIFIED',message:'Geregistreerde events, leadrecords en providerreferenties zijn niet hetzelfde als onafhankelijk bevestigde klanten of betaalde orders.'},
+    conversionProof:cp?{
+      eventStatus:safeText(cp.event_evidence_status,100),leadStatus:safeText(cp.lead_evidence_status,100),orderStatus:safeText(cp.order_evidence_status,120),experimentStatus:safeText(cp.experiment_evidence_status,120),
+      observedCtaEvents7d:safeNumber(cp.observed_cta_events_7d),dailyCtaAggregated7d:safeNumber(cp.daily_cta_aggregated_7d),
+      recordedLeads30d:safeNumber(cp.recorded_leads_30d),linkedQualifiedLeadRecords30d:safeNumber(cp.linked_qualified_lead_records_30d),
+      ordersWithRecordedProviderReadback30d:safeNumber(cp.orders_with_recorded_provider_readback_30d),lastPersistedEventAt:cp.last_persisted_event_at||null,
+      paidOrdersIndependentlyVerified:null,realizedRevenueIndependentlyVerifiedEur:null
+    }:null,
+    experimentProof:experimentProofOk?experimentProof.map(row=>({
+      key:safeText(row.experiment_key,120),status:safeText(row.evidence_status,120),policyStatus:safeText(row.policy_status,100),
+      primaryMetric:safeText(row.primary_metric,100),minimumPerArm:safeNumber(row.minimum_matured_per_arm),
+      maturedTreatment:safeNumber(row.matured_treatment),maturedHoldout:safeNumber(row.matured_holdout),lastAssignmentAt:row.last_assignment_at||null
+    })):null,
     website:totals,
     policies:readStates.policies==='LIVE'?policies.map(row=>({
       key:safeText(row.experiment_key,120),status:safeText(row.status,100),
@@ -107,11 +129,15 @@ export default async function handler(request){
     select(base,key,'powerhouse_experiment_learning_v2',
       'select=experiment_id,hypothesis,commercial_hypothesis,pagina,onderdeel,variant,controle,primary_metric,meetpunt,status,started_at,ended_at,updated_at,min_steekproef,treatment_assignments,holdout_assignments,causal_status,promotion_status,promotion_eligible,readiness_reason,advies,besluit,resultaat,basislijn,realized_revenue_eur&tenant_id=eq.'+allowedTenant+'&order=started_at.desc&limit=151'),
     select(base,key,'powerhouse_experiment_policies',
-      'select=experiment_key,status,primary_metric,min_matured_per_arm,treatment_pct&limit=51')
+      'select=experiment_key,status,primary_metric,min_matured_per_arm,treatment_pct&limit=51'),
+    select(base,key,'powerhouse_cro_conversion_evidence_v1',
+      'select=event_evidence_status,lead_evidence_status,order_evidence_status,experiment_evidence_status,observed_cta_events_7d,daily_cta_aggregated_7d,recorded_leads_30d,linked_qualified_lead_records_30d,orders_with_recorded_provider_readback_30d,last_persisted_event_at&limit=2'),
+    select(base,key,'powerhouse_cro_experiment_evidence_v1',
+      'select=experiment_key,evidence_status,policy_status,primary_metric,minimum_matured_per_arm,matured_treatment,matured_holdout,last_assignment_at&limit=151')
   ];
   const responses=await Promise.allSettled(queries);
-  const limits=[2000,150,50];
-  const stateNames=['daily','experiments','policies'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof'],readStates={},datasets=[];
   for(let i=0;i<responses.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -119,7 +145,7 @@ export default async function handler(request){
     readStates[stateNames[i]]=complete?'LIVE':rows.length>limits[i]?'TRUNCATED':'UNAVAILABLE';
     datasets[i]=complete?rows:[];
   }
-  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],readStates});
+  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};
