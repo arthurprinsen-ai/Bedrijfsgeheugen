@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "obligation_id": "bg-profiel-tavily-fout-20261028",
+  "fingerprint": "powerhouse|external-enrichment|tavily-quota-silent-zero-yield-20261028-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_ENRICHMENT_SILENT_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ]
+  },
+  "root_cause": "De eerste run van bg-bedrijfsprofiel gaf 12 onjuiste afwijzingen 'geen eigen website gevonden'. Tavily weigerde met HTTP 432 (plan usage limit). De functie behandelde een fout als leeg resultaat en sloeg de afwijzing op voor 90 dagen.",
+  "prevention": "Elke Tavily-fout gooit een fout (TAVILY_<status>) en stopt de run met een REMOTE-alarm. Er wordt geen afwijzing meer opgeslagen op basis van een fout.",
+  "evidence": {
+    "tests": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "Eerste run met 12 onjuiste afwijzingen gemeten; de 12 rijen zijn teruggezet naar niet gecontroleerd. Fix nog niet uitgerold."
+  },
+  "limitations": [
+    "bg-bedrijfsnieuws heeft dezelfde blinde vlek; die functie staat niet in de repo en is apart op te pakken",
+    "Geen run tijdens de Tavily-limiet; geen cron"
+  ]
+}

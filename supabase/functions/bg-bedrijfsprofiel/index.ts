@@ -32,7 +32,7 @@ Deno.serve(async (req: Request) => {
   const tavily = await geheim('TAVILY_API_KEY'); const ak = await geheim('ANTHROPIC_API_KEY');
   if (!tavily || !ak) return fail(503, { error: 'CONFIG_UNAVAILABLE', missing: { tavily: !tavily, anthropic: !ak } }, 'AUTH');
   let body: any = {}; try { body = await req.json(); } catch { /* leeg */ }
-  const tav = (pad: string, payload: unknown) => fetch('https://api.tavily.com/' + pad, { method: 'POST', headers: { authorization: `Bearer ${tavily}`, 'content-type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json()).catch(() => ({} as any));
+  const tav = async (pad: string, payload: unknown): Promise<any> => { const r = await fetch('https://api.tavily.com/' + pad, { method: 'POST', headers: { authorization: `Bearer ${tavily}`, 'content-type': 'application/json' }, body: JSON.stringify(payload) }); const j: any = await r.json().catch(() => ({})); if (!r.ok) throw new Error(`TAVILY_${r.status}`); return j; };
 
   try {
     const { data, error } = await db.rpc('bg_bedrijven_voor_profiel', { p_limiet: Math.min(Number(body?.bedrijven) || MAX_BEDRIJVEN, 40) });
@@ -76,6 +76,7 @@ Deno.serve(async (req: Request) => {
     await bewijs(!nulOpbrengst, nulOpbrengst ? { ...r, reden: 'ZERO_YIELD: geen enkel profiel bij 8 of meer gecontroleerde bedrijven' } : r, nulOpbrengst ? 'REMOTE' : null);
     return json(r);
   } catch (e: any) {
-    return fail(500, { error: String(e?.message || e).slice(0, 300) }, 'VALIDATION');
+    const msg = String(e?.message || e).slice(0, 300);
+    return fail(500, { error: msg }, /^TAVILY_|^AI_/.test(msg) ? 'REMOTE' : 'VALIDATION');
   }
 });
