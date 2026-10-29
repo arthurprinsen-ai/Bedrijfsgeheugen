@@ -66,12 +66,18 @@ export function rankRecoveryCandidates({prs=[],requiredRuns=[],repo='',mainSha='
     const lengths=runs.map(duration).filter(Number.isFinite);
     const observedSuccess=runs.some(r=>r.status==='completed'&&r.conclusion==='success');
     const eligible=lease.valid&&(lease.state==='MAIN_SYNC'||lease.state==='TERMINAL_DELIVERY');
+    // A lease may be acquired against current main while the PR's own base
+    // still points at an earlier SHA. Treat that mismatch as advisory drift,
+    // never as proof of behind_by>0; the supervisor rechecks the live compare.
+    const baseTip=pr?.base?.sha;
+    const baseSnapshotDiffers=SHA.test(baseTip??'')&&baseTip!==mainSha;
+    const refreshEvidence=lease.main_epoch_stale||baseSnapshotDiffers;
     const tier=eligible&&lease.state==='MAIN_SYNC'?0:
-      eligible&&lease.main_epoch_stale&&!active&&observedSuccess?1:
-      eligible&&lease.main_epoch_stale&&!active?2:
-      eligible&&lease.main_epoch_stale?3:4;
+      eligible&&refreshEvidence&&!active&&observedSuccess?1:
+      eligible&&refreshEvidence&&!active?2:
+      eligible&&refreshEvidence?3:4;
     const updated=Date.parse(pr.updated_at??'');
-    return {pr,index,lease,tier,active,observedSuccess,repeats:Math.max(0,completed.length-1),
+    return {pr,index,lease,tier,baseSnapshotDiffers,active,observedSuccess,repeats:Math.max(0,completed.length-1),
       successes:lengths.length,median:median(lengths),
       updated:Number.isFinite(updated)?updated:0};
   });
@@ -96,6 +102,7 @@ export function rankRecoveryCandidates({prs=[],requiredRuns=[],repo='',mainSha='
         r.tier<=2?'PREFLIGHT_STALE_TERMINAL_LEASE':
         r.tier===3?'OBSERVE_ACTIVE_EXACT_HEAD':'UNCHANGED_OTHER_RECOVERY',
       lease_valid:r.lease.valid,prior_drift_refreshes:r.lease.count,
+      base_snapshot_differs_from_main:r.baseSnapshotDiffers,
       observed_active_required:r.active,
       observed_completed_exact_head_required_success:r.observedSuccess,
       potential_same_head_repeats:r.repeats,
