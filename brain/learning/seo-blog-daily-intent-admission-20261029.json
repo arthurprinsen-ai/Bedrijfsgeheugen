@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_SEO_PUBLIC_SOURCE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "seo|daily-blog|fresh-intent-owner-evidence-admission|v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "UNOWNED_OR_DUPLICATE_SEO_BLOG_CANDIDATE",
+  "root_cause": "A keyword score and short alias may be insufficient to prove that an entirely new search-intent article is needed when an existing commercial canonical owner is available.",
+  "observed_evidence": {
+    "kind": "PUBLIC_CODE_CONTRACT_ONLY",
+    "private_payloads": "NONE",
+    "original_owner": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts"
+  },
+  "fix": "Apply deterministic source-freshness, service-relevance, canonical owner, pending-topic deduplication and independent-evidence gates inside the existing resolver. Admit only one private new candidate per daily resolver cycle.",
+  "prevention_rule": "Do not create a new blog recommendation from search volume, CPC or modeled forecasts alone. A recommendation is not permission to export a draft or publish.",
+  "tests": [
+    "tests/brain-seo-blog-daily-decision-20261029.test.mjs",
+    "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "SEO_BLOG_DUPLICATE_OR_STALE_SOURCE",
+    "scope": "SEARCH_CONTENT_DECISION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected exact-head CI and sole-writer source merge, authorized Supabase production deployment and independent source/readback; downstream public blog still needs separate approval, public-only egress and Netlify URL proof. No conversion impact is claimed."
+}
