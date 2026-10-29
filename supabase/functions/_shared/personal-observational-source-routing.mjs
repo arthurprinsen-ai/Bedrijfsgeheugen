@@ -1,17 +1,21 @@
 // Existing canonical radar: split the SAME eight daily external-source calls
 // between 6 entrepreneur/Mira sources and 2 actual personal-life source slots.
 // No separate worker, scheduler, provider budget, writer, or publication route.
+// Production HTTP 200 can still mean no eligible personal sources: 2026-10-29
+// probe #16037 returned DataForSEO NEWS_NO_RESULTS for 7/8 long searches.
+// Use short, high-recall Dutch-news terms; keep exact 6+2 / 8-call provider budget,
+// the 45-day dated-source gate, 0.72 scoring and independent evidence unchanged.
 import {selectMiraSourceQueries} from './mira-source-query-rotation.mjs';
 
 export const PERSONAL_OBSERVATIONAL_SOURCE_QUERIES=Object.freeze([
-  Object.freeze({topic:'bezorging-en-pakketten',query:'Nederland pakket bezorging niet thuis app bezorgklacht ervaringen'}),
-  Object.freeze({topic:'schoolapps-en-oudercommunicatie',query:'Nederland schoolapp oudercommunicatie berichten meldingen ervaringen'}),
-  Object.freeze({topic:'parkeren-en-apps',query:'Nederland parkeren betaalapp parkeerapp frustratie ervaring'}),
-  Object.freeze({topic:'wachtwoord-en-inloggen',query:'Nederland wachtwoord inloggen tweestapsverificatie digitale diensten klachten'}),
-  Object.freeze({topic:'abonnementen-en-opzeggen',query:'Nederland abonnement opzeggen app ervaringen onduidelijke regels'}),
-  Object.freeze({topic:'chatbots-en-klantenservice',query:'Nederland klantenservice chatbot mens spreken irritatie ervaringen'}),
-  Object.freeze({topic:'meldingen-en-groepsapps',query:'Nederland groepsapp meldingen berichtjes teveel frustratie'}),
-  Object.freeze({topic:'appstapeling-en-digitale-frictie',query:'Nederland meerdere apps digitale diensten dagelijks gedoe'})
+  Object.freeze({topic:'bezorging-en-pakketten',query:'pakketbezorging bezorger'}),
+  Object.freeze({topic:'schoolapps-en-oudercommunicatie',query:'schoolapp Magister'}),
+  Object.freeze({topic:'parkeren-en-apps',query:'parkeerapp parkeren'}),
+  Object.freeze({topic:'wachtwoord-en-inloggen',query:'inloggen wachtwoord'}),
+  Object.freeze({topic:'abonnementen-en-opzeggen',query:'abonnement opzeggen'}),
+  Object.freeze({topic:'chatbots-en-klantenservice',query:'chatbot klantenservice'}),
+  Object.freeze({topic:'meldingen-en-groepsapps',query:'groepsapp meldingen'}),
+  Object.freeze({topic:'appstapeling-en-digitale-frictie',query:'digitale diensten apps'})
 ]);
 export const RADAR_TOTAL_EXTERNAL_QUERIES=8;
 export const RADAR_PERSONAL_EXTERNAL_QUERIES=2;

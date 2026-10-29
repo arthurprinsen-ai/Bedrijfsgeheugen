@@ -55,3 +55,18 @@ test('shared source_url cannot silently overwrite the other channel contract',()
  assert.match(radar,/source_contract_collision_skipped/);
  assert.match(radar,/if\(prior\.error\)\{errors\.push\('source_contract_read:'\+prior\.error\.message\);continue\}/);
 });
+
+// 2026-10-29 production probe #16037 returned 7 DataForSEO 40101/no-news results
+// (personalEligible=0). Short news keywords maximize recall without extra calls.
+test('personal-life radar queries are short and rotate without relaxing evidence gates',()=>{
+ for(const day of ['2026-10-29','2026-10-30','2026-10-31','2026-11-01']){
+  const all=selectCanonicalRadarSourceQueries(day);
+  const personal=all.filter(x=>x.channel==='linkedin_personal');
+  assert.equal(all.length,8);
+  assert.equal(personal.length,2);
+  assert.ok(personal.every(x=>x.query.trim().split(/\s+/).length<=3));
+  assert.ok(personal.every(x=>!x.query.toLowerCase().includes(' ervaringen ')));
+ }
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/MAX_AGE_DAYS=45/);
+});
