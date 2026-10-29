@@ -19,6 +19,40 @@ const stateClass=item=>{
   return 'active';
 };
 
+const knownNum=value=>value===null||value===undefined?'—':num(value);
+const knownMoney=value=>value===null||value===undefined?'—':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value);
+
+/**
+ * This read-only control-plane panel is an observation, NOT an integration
+ * executor or a certificate that autonomous agents executed/learned.
+ */
+export function powerhouseIntegrationMarkup(snapshot){
+  const source=snapshot?.sourceReadStates||{},a=snapshot?.architecture||null,
+    capabilities=snapshot?.capabilities||null, intelligence=snapshot?.intelligence||null,
+    experiments=snapshot?.experiments||null, commercial=snapshot?.commercial||null;
+  const sourceState=snapshot?.sourceState||'UNAVAILABLE';
+  const gaps=Array.isArray(snapshot?.gapCodes)?snapshot.gapCodes:[];
+  const rows=[
+    ['Powerhouse / Brain',a?esc(a.state||'UNKNOWN'):'GEEN BRON',a?'Lagen '+knownNum(a.wiredLayers)+' / '+knownNum(a.totalLayers)+' · leerstatus '+esc(a.learningState||'UNKNOWN'):'Geen actuele runtime-readback'],
+    ['Heartbeat',a?'ACTIEF VOLGENS BRON':'GEEN BRON',a?'Core jobs '+knownNum(a.activeJobs)+' / '+knownNum(a.requiredJobs)+' · fouten '+knownNum(a.currentRuntimeErrors):'Geen live jobbewijs'],
+    ['Capability-register',capabilities?'GERAADPLEEGD':'GEEN BRON',capabilities?'Verbonden '+knownNum(capabilities.wired)+' / '+knownNum(capabilities.registered)+' · zonder bewijs '+knownNum(capabilities.withoutEvidence):'Geen inventaris'],
+    ['Intelligentielagen',intelligence?'GERAADPLEEGD':'GEEN BRON',intelligence?'Bekend '+knownNum(intelligence.wired)+' / '+knownNum(intelligence.registered)+' · zonder bewijs '+knownNum(intelligence.withoutEvidence):'Geen bronbewijs'],
+    ['CRO / experimenten',experiments?esc(experiments.readiness||'UNKNOWN'):'GEEN BRON',experiments?'Toewijzingen '+knownNum(experiments.assignments)+' · controlegroep '+knownNum(experiments.holdoutAssignments):'Geen experimenteerbewijs'],
+    ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht']
+  ].map(row=>'<tr><th scope="row">'+esc(row[0])+'</th><td>'+row[1]+'</td><td>'+row[2]+'</td></tr>').join('');
+  const messages=gaps.length?gaps.slice(0,18).map(v=>'<li>'+esc(v)+'</li>').join(''):'<li>Geen stage-voor-stage providerbewijs in deze projectie.</li>';
+  return '<section class="cp-integration" data-bg-component="powerhouse-integration-health" data-proof="END_TO_END_UNPROVEN">'+
+    '<h3>Powerhouse · gezamenlijke systeemstatus</h3>'+
+    '<p>Één brongevoed overzicht van Brain, Heartbeat, Growth, experimenten en intelligente lagen. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
+    '<p><strong>Broncontrole: '+esc(sourceState)+'</strong> · Volledige uitvoeringsketen: <strong>NIET BEWEZEN</strong> · Gecontroleerd: '+esc(snapshot?.observedAt||'onbekend')+'</p>'+
+    '<div class="cp-integration-scroll"><table><thead><tr><th>Onderdeel</th><th>Bronstatus</th><th>Meetstand</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<details><summary>Ontbrekend bewijs en bronstatussen ('+knownNum(gaps.length)+')</summary>'+
+    '<ul>'+messages+'</ul>'+
+    '<p>Bronnen: '+Object.entries(source).map(([k,v])=>esc(k)+': '+esc(v)).join(' · ')+'</p>'+
+    '<p>Alleen originele uitvoering, onafhankelijke provider-readback, uitkomst, Brain-leertoepassing en regressietest sluiten de keten. Onbekend blijft onbekend.</p></details>'+
+    '</section>';
+}
+
 export function controlPlaneCockpitMarkup(data={}){
   const obligations=Array.isArray(data.obligations)?data.obligations:[];
   const metrics=data.metrics||{};
@@ -45,6 +79,7 @@ export function controlPlaneCockpitMarkup(data={}){
       <article><small>Mediaan naar terminal</small><b>${sec(metrics.median_time_to_terminal_seconds)}</b><span>P90 ${sec(metrics.p90_time_to_terminal_seconds)}</span></article>
     </div>
     ${unverifiedFulfilled?`<p class="cp-proof-warning" role="status">${num(unverifiedFulfilled)} getoonde obligations claimen FULFILLED zonder geverifieerde uitkomst. Geen productiesucces bewezen.</p>`:''}
+    ${powerhouseIntegrationMarkup(data.systemIntegration)}
     <div class="cp-obligations">${rows||'<p class="cp-empty">Nog geen obligations in de canonical cockpit.</p>'}</div>
   </section>`;
 }
@@ -52,7 +87,7 @@ export function controlPlaneCockpitMarkup(data={}){
 function ensureStyles(doc){
   if(!doc?.head||doc.getElementById('bg-control-plane-cockpit-style'))return;
   const style=doc.createElement('style');style.id='bg-control-plane-cockpit-style';
-  style.textContent=`.cp-proof-warning{padding:12px 14px;margin:0 0 14px;border:1px solid #f0b4ae;border-radius:10px;color:#8b1e18;background:#fff5f3;font-weight:600}.cp-admin-cockpit{margin:28px 0;padding:20px;border:1px solid #d9e2ef;border-radius:18px;background:#fff}.cp-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.cp-head h2{margin:2px 0 4px}.cp-head p{margin:0;color:#5c6675}.cp-head>span{font-size:11px;color:#7b8492}.cp-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.cp-metrics article{padding:12px;border-radius:12px;background:#f6f8fb}.cp-metrics small,.cp-metrics span{display:block;color:#697386}.cp-metrics b{display:block;font-size:20px;margin:3px 0}.cp-obligations{display:grid;gap:10px}.cp-obligation{padding:14px;border:1px solid #e0e6ef;border-left:4px solid #6b7280;border-radius:12px}.cp-obligation[data-state="ok"]{border-left-color:#27845a}.cp-obligation[data-state="bad"]{border-left-color:#b42318}.cp-obligation[data-state="active"]{border-left-color:#2f6fdd}.cp-obligation-head{display:flex;justify-content:space-between;gap:12px}.cp-obligation-head h4{margin:2px 0 8px}.cp-obligation-head small{color:#6c7685}.cp-obligation-head>span{font-size:12px;font-weight:700}.cp-obligation dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}.cp-obligation dl>div{background:#f8fafc;padding:8px;border-radius:8px}.cp-obligation dt{font-size:11px;color:#727c8a}.cp-obligation dd{margin:3px 0 0;font-size:13px}.cp-obligation footer{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#697386}@media(max-width:900px){.cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-obligation dl{grid-template-columns:1fr}.cp-head{display:block}.cp-head>span{display:block;margin-top:8px}}`;
+  style.textContent=`.cp-integration{padding:16px;margin:14px 0 18px;border:1px solid #b5c6da;border-radius:14px;background:#f7fafc;color:#182842}.cp-integration h3{margin:0 0 8px}.cp-integration p{line-height:1.5}.cp-integration-scroll{max-width:100%;overflow:auto}.cp-integration table{width:100%;border-collapse:collapse}.cp-integration th,.cp-integration td{padding:9px;text-align:left;border-bottom:1px solid #dce4ef;font-size:13px;vertical-align:top}.cp-integration details{margin-top:14px}.cp-integration summary{cursor:pointer;font-weight:700}.cp-integration li{overflow-wrap:anywhere}.cp-proof-warning{padding:12px 14px;margin:0 0 14px;border:1px solid #f0b4ae;border-radius:10px;color:#8b1e18;background:#fff5f3;font-weight:600}.cp-admin-cockpit{margin:28px 0;padding:20px;border:1px solid #d9e2ef;border-radius:18px;background:#fff}.cp-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.cp-head h2{margin:2px 0 4px}.cp-head p{margin:0;color:#5c6675}.cp-head>span{font-size:11px;color:#7b8492}.cp-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.cp-metrics article{padding:12px;border-radius:12px;background:#f6f8fb}.cp-metrics small,.cp-metrics span{display:block;color:#697386}.cp-metrics b{display:block;font-size:20px;margin:3px 0}.cp-obligations{display:grid;gap:10px}.cp-obligation{padding:14px;border:1px solid #e0e6ef;border-left:4px solid #6b7280;border-radius:12px}.cp-obligation[data-state="ok"]{border-left-color:#27845a}.cp-obligation[data-state="bad"]{border-left-color:#b42318}.cp-obligation[data-state="active"]{border-left-color:#2f6fdd}.cp-obligation-head{display:flex;justify-content:space-between;gap:12px}.cp-obligation-head h4{margin:2px 0 8px}.cp-obligation-head small{color:#6c7685}.cp-obligation-head>span{font-size:12px;font-weight:700}.cp-obligation dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}.cp-obligation dl>div{background:#f8fafc;padding:8px;border-radius:8px}.cp-obligation dt{font-size:11px;color:#727c8a}.cp-obligation dd{margin:3px 0 0;font-size:13px}.cp-obligation footer{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#697386}@media(max-width:900px){.cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-obligation dl{grid-template-columns:1fr}.cp-head{display:block}.cp-head>span{display:block;margin-top:8px}}`;
   doc.head.appendChild(style);
 }
 
