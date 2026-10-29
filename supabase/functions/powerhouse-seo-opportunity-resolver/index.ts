@@ -65,7 +65,7 @@ Deno.serve(async(req:Request)=>{
   const runDate=localDate();
   const observedAt=new Date().toISOString();
   try{
-    const [kwResult,gscResult,forecastResult,blogResult,externalResult]=await Promise.all([
+    const [kwResult,gscResult,forecastResult,blogResult,externalResult,dailyBlogResult]=await Promise.all([
       db.from('bg_zoekwoordkansen')
         .select('zoekwoord,zoekvolume,concurrentie,cpc,kansscore,positie,rankende_url,bron,opgehaald_op')
         .eq('bron','dataforseo')
@@ -87,18 +87,27 @@ Deno.serve(async(req:Request)=>{
         .select('slug,status,publication_date').eq('tenant_id','canonical')
         .eq('channel','blog')
         .gte('publication_date',new Date(Date.now()-90*86400000).toISOString().slice(0,10))
+        .lte('publication_date',runDate)
+        .order('publication_date',{ascending:false})
         .limit(150),
       db.from('bg_externe_signalen')
         .select('onderwerp,titel,vertrouwen,gepubliceerd_op,toegestaan')
         .eq('toegestaan',true)
         .gte('gepubliceerd_op',new Date(Date.now()-60*86400000).toISOString())
-        .limit(100)
+        .order('gepubliceerd_op',{ascending:false})
+        .limit(100),
+      // Same-day canonical recommendation is a durable one-candidate lock.
+      db.from('powerhouse_content_recommendations')
+        .select('dedupe_key').eq('run_date',runDate).eq('target_channel','blog')
+        .eq('recommendation_type','seo_first_mover_intent_gap').limit(1)
     ]);
     if(kwResult.error) throw new Error('KEYWORD_CACHE_READ:'+kwResult.error.message);
     if(gscResult.error) throw new Error('GSC_READ:'+gscResult.error.message);
     if(forecastResult.error) throw new Error('FORECAST_READ:'+forecastResult.error.message);
     if(blogResult.error) throw new Error('BLOG_METADATA_READ:'+blogResult.error.message);
     if(externalResult.error) throw new Error('EXTERNAL_EVIDENCE_READ:'+externalResult.error.message);
+    if(dailyBlogResult.error) throw new Error('DAILY_BLOG_RESERVATION_READ:'+dailyBlogResult.error.message);
+    const hasDailyBlogReservation=(dailyBlogResult.data||[]).length>0;
     const existingBlogSlugs=(blogResult.data||[]).map((row:any)=>row.slug).filter(Boolean);
     const datedExternalSignals=(externalResult.data||[]).map((row:any)=>({
       topic:row.onderwerp,title:row.titel,trust:num(row.vertrouwen),
@@ -188,7 +197,7 @@ Deno.serve(async(req:Request)=>{
       if(fError) throw new Error('SEO_FORECAST_WRITE:'+fError.message);
       forecastsWritten++;
 
-      if(item.action==='CREATE_INTENT_GAP_CONTENT' && recommendations < 1){
+      if(item.action==='CREATE_INTENT_GAP_CONTENT' && !hasDailyBlogReservation && recommendations < 1){
         const dedupe='seo-first-mover:'+runDate+':'+norm(item.keyword).replaceAll(' ','-').slice(0,120);
         const reason='SEO first-mover opportunity: '+item.keyword+'; score='+item.score.toFixed(1)+'; volume='+num(item.row.zoekvolume)+'; CPC='+num(item.row.cpc)+'. Distinct intent gap only; verify no canonical owner before publication.';
         const {error:rError}=await db.from('powerhouse_content_recommendations').upsert({
