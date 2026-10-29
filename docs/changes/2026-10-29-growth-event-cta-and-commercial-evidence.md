@@ -27,3 +27,6 @@
 - After verified readback, update the existing portal **Data & intelligence → Andere data** (PR #5140), Brain record and skill runbooks. This PR does not attest that PR #5140 is merged/live.
 
 **Rollback:** revert protected migration/code via new PR and run tests; do not delete event receipts, rewrite historical evidence, create a new scheduler, reclassify failed ACKs as successful, or reset consent.
+
+## CI admission correction
+The initial #5143 Required run was rejected by the preflight parser with `PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING`; this was a missing machine header in the PR description, not evidence that the actual datahub tests had failed. The exact original branch parent is `1a7dbb3ddacef863f4fcb58b91868edd2cb0676c`. The PR metadata now includes this immutable base. Admission, conflicts, lease, protected checks, PostgreSQL migration, and deployment remain separate gates requiring fresh validation.
