@@ -1,0 +1,46 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "supabase|preview|duplicate-migration-version-23505|20261029-v1",
+  "compiler": {
+    "failure_class": "PREVIEW_PROVIDER_LEDGER_DUPLICATE_REPLAY",
+    "scope": "SUPABASE_PREVIEW",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing Supabase-owned preview branches can replay a version already present in schema_migrations ledger (SQLSTATE 23505) while Git migration filenames remain unique. CRO PR #5146 existing preview is behind production 779 vs 784 version/name entries. Vendor internal cause beyond verified request/response is unproven.",
+  "prevention": [
+    "Classify exact provider-owned SQLSTATE 23505 schema_migrations_pkey early with version and check ID; never retry unchanged history blindly.",
+    "Read original owned branch migration version/name sets against main production and Git first.",
+    "At most one supported existing-branch rebase by the original owner, and count submission as IN_PROGRESS until branch parity + exact-head provider SUCCESS.",
+    "No direct history update, no new chargeable preview, no bypass or fabricated GREEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_check_pr5161": 123727839934,
+    "duplicate_version_pr5161": "20261011111605",
+    "provider_check_pr5146": 123617378601,
+    "duplicate_version_pr5146": "20261005142118",
+    "git_unique_migration_files": 784,
+    "production_migrations": 784,
+    "cro_existing_preview_migrations_before_rebase": 779,
+    "original_rebase_requested": true,
+    "post_request_status": "CREATING_PROJECT",
+    "post_request_migration_count": 779,
+    "provider_preview_green_proven": false,
+    "original_mira_edge_http_200_preflight_id": 16107,
+    "instagram_post_proven": false,
+    "no_new_scheduler": true,
+    "no_replay_issued": true
+  }
+}

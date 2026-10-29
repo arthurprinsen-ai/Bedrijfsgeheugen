@@ -148,3 +148,41 @@ test('Supabase source provenance is mandatory: a manual branch replay cannot jus
   assert.equal(existsSync('supabase/migrations/20261006085100_legacy_cron_replay_preconditions.sql'),false);
   assert.equal(existsSync('tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs'),false);
 });
+
+
+test('repeated Supabase Preview 23505 on the ORIGINAL applied migration ledger fails closed with the exact version', () => {
+  for(const [id,version] of [[450,'20261011111605'],[451,'20261005142118']]) {
+    const msg = 'ERROR: duplicate key value violates unique constraint "schema_migrations_pkey" (SQLSTATE 23505) Key (version)=('+version+') already exists. At statement: 3 INSERT INTO supabase_migrations.schema_migrations';
+    const v=diagnosePreviewCheckRuns({check_runs:[check(id,'failure',msg)]});
+    assert.equal(v.code,'MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION');
+    assert.equal(v.id,String(id));
+    assert.equal(v.migrationVersion,version);
+    assert.equal(v.conclusion,'failure');
+    assert.equal(v.retryPolicy,'READBACK_BEFORE_SINGLE_OWNER_REBASE');
+    assert.match(v.remediation,/SAME existing preview branch/i);
+    assert.match(v.remediation,/Never modify applied schema_migrations rows/i);
+    assert.equal(v.terminal,true);
+  }
+});
+
+test('provider-owned actual latest failure can never be promoted from stale success, fake app or unrelated unique key',()=>{
+  const old=check(451,'success','previous check was successful');
+  const failure=check(452,'failure','duplicate key value violates unique constraint "schema_migrations_pkey" (SQLSTATE 23505) Key (version)=(20261011111605) already exists');
+  const result=diagnosePreviewCheckRuns({check_runs:[old,failure]});
+  assert.equal(result.code,'MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION');
+  assert.equal(result.id,'452');
+  assert.notEqual(result.code,'PREVIEW_PROVIDER_SUCCEEDED');
+  const fake={...failure,app:{slug:'github-actions'}};
+  assert.equal(diagnosePreviewCheckRuns({check_runs:[fake]}).code,'PREVIEW_PROVIDER_MISSING');
+  const different=check(453,'failure','duplicate key value violates unique constraint "user_email_unique" (SQLSTATE 23505)');
+  assert.notEqual(diagnosePreviewCheckRuns({check_runs:[different]}).code,'MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION');
+});
+
+test('migration replay diagnosis stays mandatory inside original Required and does not skip external failure',()=>{
+  const workflow=readFileSync('.github/workflows/required-test.yml','utf8');
+  const diagnosis=readFileSync('tools/ci/supabase-preview-diagnosis.mjs','utf8');
+  assert.match(workflow,/SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS/);
+  assert.match(workflow,/node tools\\/ci\\/supabase-preview-diagnosis\\.mjs/);
+  assert.match(diagnosis,/READBACK_BEFORE_SINGLE_OWNER_REBASE/);
+  assert.match(diagnosis,/PREVIEW_PROVIDER_SUCCEEDED/);
+});

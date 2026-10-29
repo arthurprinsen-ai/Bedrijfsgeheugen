@@ -5,6 +5,19 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## Zero-blind-retry: duplicate Supabase Preview migration replay (29 October 2026)
+
+Observed incident `supabase|preview|duplicate-migration-version-23505|20261029-v1`: the external Supabase Preview app returned SQLSTATE **23505**, unique constraint `schema_migrations_pkey` (versions `20261005142118` on original CRO PR #5146 and `20261011111605` on original Mira PR #5161), even though protected Git had **784 unique migration version filenames**. The original production migration ledger had **784** records, whereas the owned CRO preview ledger had **779**; the five missing production versions must never be applied twice or written directly to migration history. A successful GitHub Required test or auto-merge does **not** imply the provider preview passed.
+
+**Mandatory pre-action invariant for every existing release/agent/SkillOps writer:**
+1. READBACK original candidate SHA, original PR writer lease, latest **provider-owned** check-run ID, producer/consumer app ID, production+Git+owned-preview migration `version,name` sets, and preview branch state. Distinguish missing versions, already applied versions, distinct name conflicts and provider transport/authorization failures.
+2. CLASSIFY `MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION` using original `tools/ci/supabase-preview-diagnosis.mjs`, capture exact version and immutable occurrence, and RECORD root cause and blocked status in the existing ONE BRAIN registry plus protected human documentation. A second blind replay of the same unchanged immutable version/source is **forbidden**.
+3. RECOVER using original Supabase/GitHub owners only. If preview is stale with matching history, a **single supported rebase of the SAME original existing preview branch**, not a new paid preview project or a destructive reset, can be attempted under the original writer ownership. After the call returns, treat `CREATING_PROJECT` as **IN_PROGRESS**, NOT green. If provider rebase fails or remains stuck, leave the existing PR blocked and escalate precise provider evidence; no forced auto retry.
+4. VERIFY completion only on the same original branch and exact candidate SHA: compare `version,name` with production/Git, require independent **Supabase provider check SUCCESS**, protected Required/BRAIN/CodeQL, exact main merge, Edge/Netlify production SHA, and finally real provider/outcome browser readback. A passing preview rebase receipt by itself is not success.
+5. LEARN from one immutable fingerprint with exact failure cause, owner, before/after version counts, safe correction, regression test, Skills and portal System Map update; measure fewer repeated provider checks and zero ambiguous/orphan writes. No new cron, parallel branch, fake check-run, modified migration ledger, weaker mandatory gate, or fabricated release status.
+
+This is a **prevention and fail-fast protocol**, not a guarantee that an external provider always succeeds on its first attempt. New checks must never conceal provider red when source checks are green. Regression: `tests/brain-supabase-preview-diagnosis-v1.test.mjs`.
+
 ## Production runtime truth and anti-false-green routing — 29 October 2026
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1

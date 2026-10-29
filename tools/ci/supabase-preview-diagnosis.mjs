@@ -28,6 +28,10 @@ export function diagnosePreviewCheckRuns(payload) {
   } else if (/not associated with any Supabase Branch|not associated with.*Supabase.*Branch/i.test(evidence)) {
     code = 'PREVIEW_BRANCH_UNASSOCIATED';
     remediation = 'Restore the GitHub PR-to-Supabase Preview Branch association and rerun the provider-managed preview on the exact candidate HEAD.';
+  } else if (/duplicate key value violates unique constraint[^.]*schema_migrations_pkey/i.test(evidence) &&
+             /(?:SQLSTATE\\s*23505|Key\\s*\\(version\\))/i.test(evidence)) {
+    code = 'MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION';
+    remediation = 'The provider tried to INSERT a migration version already recorded in the preview branch. STOP blind replay. Read the exact provider check, unique Git migration filenames, original production and ORIGINAL PR-owned preview applied-version/name ledgers. Confirm differences and owner lease. Use provider-supported rebase of the SAME existing preview branch once when authorized; wait for provider branch migration convergence and a fresh exact-head check. Never modify applied schema_migrations rows, rename historical migration SQL, delete another preview branch, bypass checks or create a chargeable replacement.';
   } else if (/migration (?:history|versions?).*(?:mismatch|out.of.sync)|remote migration.*not found/i.test(evidence)) {
     code = 'MIGRATION_HISTORY_DRIFT';
     remediation = 'Reconcile repository migrations with the provider ledger; do not fabricate applied migration history.';
@@ -35,7 +39,10 @@ export function diagnosePreviewCheckRuns(payload) {
     code = 'PREVIEW_PROVIDER_AUTHORIZATION';
     remediation = 'Repair the provider-side credentials or privileges; do not relax production RLS.';
   }
-  return { code, id, terminal: true, conclusion: check.conclusion || 'unknown', summary: evidence, remediation, detailsUrl: check.details_url || '' };
+  const migrationVersion = code === 'MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION'
+    ? (evidence.match(/Key\\s*\\(version\\)\\s*=\\s*\\((\\d{14})\\)/i)?.[1] || null) : null;
+  return { code, id, terminal: true, conclusion: check.conclusion || 'unknown', summary: evidence, remediation, detailsUrl: check.details_url || '', migrationVersion,
+    retryPolicy: code === 'MIGRATION_PREVIEW_REPLAY_DUPLICATE_VERSION' ? 'READBACK_BEFORE_SINGLE_OWNER_REBASE' : 'FOLLOW_CLASSIFIED_OWNER_PROCEDURE' };
 }
 
 function cli() {
