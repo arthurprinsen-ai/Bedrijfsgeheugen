@@ -1,5 +1,16 @@
 # Powerhouse Source Universe & Impact Engine
 
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+## Tavily limiet en fallback — 29 oktober 2026
+- Bestaande Edge-functies die via protected-main release worden gewijzigd moeten in `supabase/config.toml` geregistreerd zijn; de releaseautoriteit moet exacte bron en providerversie teruglezen. `bg-externe-signalen` gebruikt `verify_jwt=false` uitsluitend samen met zijn eigen gecontroleerde `x-powerhouse-token`.
+- Fingerprint: `powerhouse|external-search|tavily-plan-limit-432|20261029`. Registreer in bestaande ONE BRAIN en #4215, inclusief providerbewijs, root cause, vóór/na, tests en readback.
+- Gebruik uitsluitend `bg-externe-signalen` binnen `powerhouse_runtime_scheduler_mux_v3`. Op 432: singleflight probe en 15 minuten cooldown per isolate; op 429: 1 minuut cooldown. Gebruik de bestaande geautoriseerde DataForSEO fallback en label `fallback_reason`.
+- Een gedeeltelijk geslaagde bronbatch blijft NON-GREEN; geen fictieve signalen, geen nieuwe scheduler/writer, geen gevoelig providerpayload in bewijs, geen omzeiling van Tavily-planlimieten.
+- DataForSEO 40101 is a potentially billable search-engine failure after provider-internal retries, NEVER a verified empty SERP. Never immediately resubmit the same paid request; 40102 alone denotes observed no results. Preserve numeric evidence and partial 207 non-GREEN. Incident #4215.
+- Serper en Exa zijn via Composio alleen **on demand** geverifieerd. Er is geen bewijs voor Composio-accountrechten of automatische Serper/Exa-failover in Supabase-productie.
+- Alleen beschermde merge, echte Supabase-functieversie, source observation, portaalreadback en gemeten effect rechtvaardigen de status LIVE.
+
 Use this skill for any Bedrijfsgeheugen task that adds, changes, consumes, scores or presents external or internal intelligence.
 
 ## Canonical lineage

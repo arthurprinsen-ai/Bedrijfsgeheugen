@@ -59,7 +59,11 @@ export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
   return unique(changedPaths).some(path =>
     path.startsWith('brain/operating-loop/') ||
     path === 'netlify/functions/brain-operating-loop.mjs' ||
-    path === 'platform/api/brain-operating-loop-handler.mjs'
+    path === 'platform/api/brain-operating-loop-handler.mjs' ||
+    path === 'platform/api/portal-authenticated-production-proof-core.mjs' ||
+    path === 'netlify/functions/portal-authenticated-production-proof.mjs' ||
+    path === 'netlify/functions/portal-ondernemersdata.mjs' ||
+    path === 'netlify/functions/_portal-supabase-store.mjs'
   );
 }
 

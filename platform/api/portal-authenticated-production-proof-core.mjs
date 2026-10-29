@@ -49,6 +49,8 @@ export async function runPortalAuthenticatedProductionProof({
     http_status:null,
     identity_transport:'netlify-identity-jwt',
     tenant_scope_verified:false,
+    cross_tenant_scope_verified:false,
+    tenant_count_verified:0,
     payload_shape_verified:false,
     synthetic_user_cleanup:'NOT_CREATED',
     failure_code:null,
@@ -59,89 +61,103 @@ export async function runPortalAuthenticatedProductionProof({
   if(!identityAdmin?.createUser||!identityAdmin?.deleteUser)return {...base,failure_code:'IDENTITY_ADMIN_UNAVAILABLE'};
   if(typeof getIdentityConfigFn!=='function')return {...base,failure_code:'IDENTITY_CONFIG_UNAVAILABLE'};
 
-  const password=clean(randomPassword?.());
-  if(password.length<24)return {...base,failure_code:'SYNTHETIC_PASSWORD_UNAVAILABLE'};
-
-  const email=`bg-portal-proof-${deployId}@proof.invalid`;
-  const requestedTenant=`proof:${deployId}`;
-  let user=null;
+  const createdUsers=[];
+  const observations=[];
   let httpStatus=null;
-  let tenantScopeVerified=false;
-  let payloadShapeVerified=false;
   let cleanup='NOT_CREATED';
   let failureCode=null;
+  let crossTenantScopeVerified=false;
 
   try{
     const identity=getIdentityConfigFn();
     const identityUrl=clean(identity?.url).replace(/\/$/,'');
     if(!identityUrl.startsWith('https://'))throw fail('IDENTITY_CONFIG_MISSING');
 
-    user=await identityAdmin.createUser({
-      email,
-      password,
-      data:{
-        app_metadata:{tenantId:requestedTenant},
-        user_metadata:{full_name:'Bedrijfsgeheugen production proof'},
-      },
-    });
-    if(!user?.id)throw fail('SYNTHETIC_USER_CREATE_FAILED');
+    // Distinct real authenticated requests, never a shared session or a mocked
+    // tenant header. Synthetic accounts are removed even when one probe fails.
+    for(const slot of ['a','b']){
+      const password=clean(randomPassword?.());
+      if(password.length<24)throw fail('SYNTHETIC_PASSWORD_UNAVAILABLE');
+      const tenantId=`proof:${deployId}:${slot}`;
+      const email=`bg-portal-proof-${slot}-${deployId}@proof.invalid`;
+      const user=await identityAdmin.createUser({
+        email,password,
+        data:{
+          app_metadata:{tenantId},
+          user_metadata:{full_name:'Bedrijfsgeheugen production proof'},
+        },
+      });
+      if(!user?.id)throw fail('SYNTHETIC_USER_CREATE_FAILED');
+      createdUsers.push(user.id);
 
-    const tokenResponse=await fetchImpl(`${identityUrl}/token`,{
-      method:'POST',
-      headers:{'content-type':'application/x-www-form-urlencoded','cache-control':'no-store'},
-      body:new URLSearchParams({grant_type:'password',username:email,password}).toString(),
-    });
-    if(!tokenResponse?.ok)throw fail(`IDENTITY_TOKEN_EXCHANGE_HTTP_${Number(tokenResponse?.status)||0}`);
-    const tokenBody=await tokenResponse.json();
-    const accessToken=clean(tokenBody?.access_token);
-    if(!accessToken)throw fail('IDENTITY_ACCESS_TOKEN_MISSING');
+      const tokenResponse=await fetchImpl(`${identityUrl}/token`,{
+        method:'POST',
+        headers:{'content-type':'application/x-www-form-urlencoded','cache-control':'no-store'},
+        body:new URLSearchParams({grant_type:'password',username:email,password}).toString(),
+      });
+      if(!tokenResponse?.ok)throw fail(`IDENTITY_TOKEN_EXCHANGE_HTTP_${Number(tokenResponse?.status)||0}`);
+      const tokenBody=await tokenResponse.json();
+      const accessToken=clean(tokenBody?.access_token);
+      if(!accessToken)throw fail('IDENTITY_ACCESS_TOKEN_MISSING');
+      const claims=decodeJwtPayload(accessToken);
+      if(clean(claims?.sub)!==clean(user.id))throw fail('IDENTITY_SUBJECT_MISMATCH');
+      if(clean(claims?.app_metadata?.tenantId)!==tenantId)throw fail('IDENTITY_TENANT_CLAIM_MISMATCH');
 
-    const claims=decodeJwtPayload(accessToken);
-    const expectedTenant=clean(claims?.app_metadata?.tenantId)||`user:${clean(claims?.sub)}`;
-    if(!expectedTenant)throw fail('IDENTITY_TENANT_CLAIM_MISSING');
-
-    const apiResponse=await fetchImpl(`${immutableUrl}/api/portal-ondernemersdata`,{
-      method:'GET',
-      headers:{
-        accept:'application/json',
-        authorization:`Bearer ${accessToken}`,
-        'cache-control':'no-cache',
-      },
-    });
-    httpStatus=Number(apiResponse?.status)||0;
-    if(!apiResponse?.ok)throw fail(`AUTHENTICATED_PORTAL_API_HTTP_${httpStatus}`);
-
-    const body=await apiResponse.json();
-    tenantScopeVerified=clean(body?.scope?.authenticatedTenant)===expectedTenant;
-    if(!tenantScopeVerified)throw fail('AUTHENTICATED_TENANT_SCOPE_MISMATCH');
-
-    payloadShapeVerified=
-      Array.isArray(body?.sources)&&
-      Array.isArray(body?.publications)&&
-      Array.isArray(body?.signals)&&
-      typeof body?.intelligence==='object'&&body.intelligence!==null&&
-      typeof body?.stats==='object'&&body.stats!==null&&
-      Boolean(clean(body?.stats?.generatedAt));
-    if(!payloadShapeVerified)throw fail('AUTHENTICATED_PORTAL_PAYLOAD_INVALID');
+      const apiResponse=await fetchImpl(`${immutableUrl}/api/portal-ondernemersdata`,{
+        method:'GET',
+        headers:{
+          accept:'application/json',
+          authorization:`Bearer ${accessToken}`,
+          'cache-control':'no-cache',
+        },
+      });
+      httpStatus=Number(apiResponse?.status)||0;
+      if(!apiResponse?.ok)throw fail(`AUTHENTICATED_PORTAL_API_HTTP_${httpStatus}`);
+      const body=await apiResponse.json();
+      if(clean(body?.scope?.authenticatedTenant)!==tenantId)throw fail('AUTHENTICATED_TENANT_SCOPE_MISMATCH');
+      const validShape=
+        Array.isArray(body?.sources)&&
+        Array.isArray(body?.publications)&&
+        Array.isArray(body?.signals)&&
+        typeof body?.intelligence==='object'&&body.intelligence!==null&&
+        typeof body?.stats==='object'&&body.stats!==null&&
+        Boolean(clean(body?.stats?.generatedAt));
+      if(!validShape)throw fail('AUTHENTICATED_PORTAL_PAYLOAD_INVALID');
+      const otherSlot=slot==='a'?'b':'a';
+      if(JSON.stringify(body).includes(`proof:${deployId}:${otherSlot}`)){
+        throw fail('CROSS_TENANT_PAYLOAD_LEAK');
+      }
+      observations.push({tenantId,httpStatus,validShape});
+    }
+    crossTenantScopeVerified=
+      observations.length===2&&
+      observations[0].tenantId!==observations[1].tenantId&&
+      observations.every(o=>o.httpStatus===200&&o.validShape);
   }catch(error){
     failureCode=safeCode(error);
   }finally{
-    if(user?.id){
-      try{
-        await identityAdmin.deleteUser(user.id);
-        cleanup='DELETED';
-      }catch{
-        cleanup='FAILED';
-        failureCode='SYNTHETIC_USER_CLEANUP_FAILED';
+    if(createdUsers.length){
+      cleanup='DELETED';
+      // Never retain credentials or tenant payloads in proof artifacts/logs.
+      for(const id of [...createdUsers].reverse()){
+        try{await identityAdmin.deleteUser(id);}
+        catch{
+          cleanup='FAILED';
+          failureCode='SYNTHETIC_USER_CLEANUP_FAILED';
+        }
       }
     }
   }
 
+  const tenantScopeVerified=crossTenantScopeVerified;
+  const payloadShapeVerified=crossTenantScopeVerified;
   return {
     ...base,
-    status:!failureCode&&httpStatus===200&&tenantScopeVerified&&payloadShapeVerified&&cleanup==='DELETED'?'PROVEN':'FAILED',
+    status:!failureCode&&tenantScopeVerified&&payloadShapeVerified&&cleanup==='DELETED'?'PROVEN':'FAILED',
     http_status:httpStatus,
     tenant_scope_verified:tenantScopeVerified,
+    cross_tenant_scope_verified:crossTenantScopeVerified,
+    tenant_count_verified:observations.length,
     payload_shape_verified:payloadShapeVerified,
     synthetic_user_cleanup:cleanup,
     failure_code:failureCode,

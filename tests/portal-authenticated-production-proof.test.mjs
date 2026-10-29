@@ -21,62 +21,59 @@ const jwt=payload=>[
   'signature',
 ].join('.');
 
-test('authenticated production proof uses a real identity bearer against the immutable deploy and cleans up',async()=>{
-  const seen={deleted:[],requests:[]};
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123'}});
+test('production proof authenticates two distinct tenants on the immutable deploy and cleans up both',async()=>{
+  const seen={created:[],deleted:[],requests:[]};
+  const tokens={
+    a:jwt({sub:'proof-user-a',app_metadata:{tenantId:'proof:deploy-123:a'}}),
+    b:jwt({sub:'proof-user-b',app_metadata:{tenantId:'proof:deploy-123:b'}}),
+  };
   const identityAdmin={
     createUser:async input=>{
-      seen.created=input;
-      return {id:'proof-user'};
+      seen.created.push(input);
+      const slot=input.email.includes('-a-')?'a':'b';
+      return {id:`proof-user-${slot}`};
     },
     deleteUser:async id=>seen.deleted.push(id),
   };
   const fetchImpl=async(url,options)=>{
     seen.requests.push({url,options});
     if(url.endsWith('/token')){
-      return {ok:true,status:200,json:async()=>({access_token:token})};
+      const slot=new URLSearchParams(options.body).get('username').includes('-a-')?'a':'b';
+      return {ok:true,status:200,json:async()=>({access_token:tokens[slot]})};
     }
-    return {
-      ok:true,
-      status:200,
-      json:async()=>({
-        sources:[],
-        publications:[],
-        signals:[],
-        intelligence:{tenantId:'proof:deploy-123'},
-        scope:{authenticatedTenant:'proof:deploy-123'},
-        stats:{generatedAt:'2026-10-07T20:00:00.000Z'},
-      }),
-    };
+    const slot=options.headers.authorization===`Bearer ${tokens.a}`?'a':'b';
+    return {ok:true,status:200,json:async()=>({
+      sources:[],publications:[],signals:[],
+      intelligence:{tenantId:`proof:deploy-123:${slot}`},
+      scope:{authenticatedTenant:`proof:deploy-123:${slot}`},
+      stats:{generatedAt:'2026-10-07T20:00:00.000Z'},
+    })};
   };
-
   const proof=await runPortalAuthenticatedProductionProof({
-    deploy,
-    identityAdmin,
+    deploy,identityAdmin,fetchImpl,
     getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
-    fetchImpl,
     randomPassword:()=> 'x'.repeat(40),
     now:()=> '2026-10-07T20:00:01.000Z',
   });
-
   assert.equal(proof.contract,PORTAL_AUTH_PROOF_CONTRACT);
   assert.equal(proof.status,'PROVEN');
   assert.equal(proof.http_status,200);
+  assert.equal(proof.tenant_count_verified,2);
   assert.equal(proof.tenant_scope_verified,true);
+  assert.equal(proof.cross_tenant_scope_verified,true);
   assert.equal(proof.payload_shape_verified,true);
   assert.equal(proof.synthetic_user_cleanup,'DELETED');
   assert.equal(proof.failure_code,null);
-  assert.equal(seen.created.data.app_metadata.tenantId,'proof:deploy-123');
-  assert.deepEqual(seen.deleted,['proof-user']);
-  assert.equal(seen.requests[1].url,'https://deploy-123--bedrijfsgeheugen.netlify.app/api/portal-ondernemersdata');
-  assert.equal(seen.requests[1].options.headers.authorization,`Bearer ${token}`);
-  assert.equal(JSON.stringify(proof).includes(token),false);
+  assert.deepEqual(seen.created.map(u=>u.data.app_metadata.tenantId),['proof:deploy-123:a','proof:deploy-123:b']);
+  assert.deepEqual(seen.deleted,['proof-user-b','proof-user-a']);
+  assert.equal(seen.requests.filter(r=>r.url.endsWith('/api/portal-ondernemersdata')).length,2);
+  assert.equal(JSON.stringify(proof).includes('proof-user'),false);
   assert.equal(JSON.stringify(proof).includes('@proof.invalid'),false);
 });
 
 test('failed authenticated HTTP proof fails closed but still deletes the synthetic user',async()=>{
   const deleted=[];
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123'}});
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a'}});
   let calls=0;
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
@@ -100,7 +97,7 @@ test('failed authenticated HTTP proof fails closed but still deletes the synthet
 });
 
 test('cleanup failure can never leave a green production proof',async()=>{
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123'}});
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a'}});
   let calls=0;
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
@@ -114,7 +111,7 @@ test('cleanup failure can never leave a green production proof',async()=>{
       if(calls===1)return {ok:true,status:200,json:async()=>({access_token:token})};
       return {ok:true,status:200,json:async()=>({
         sources:[],publications:[],signals:[],intelligence:{},
-        scope:{authenticatedTenant:'proof:deploy-123'},
+        scope:{authenticatedTenant:'proof:deploy-123:a'},
         stats:{generatedAt:'2026-10-07T20:00:00.000Z'},
       })};
     },
@@ -166,4 +163,21 @@ test('protected Portal ondernemersdata keeps privileged Supabase access behind t
   assert.match(store,/action:'entrepreneur_intelligence'/);
   assert.match(edge,/if\(action==='entrepreneur_intelligence'\)/);
   assert.match(edge,/Deno\.env\.get\('SUPABASE_SERVICE_ROLE_KEY'\)/);
+});
+
+test('wrong-tenant JWT fails closed before any portal payload is returned',async()=>{
+  const deleted=[];
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'other-tenant'}});
+  const proof=await runPortalAuthenticatedProductionProof({
+    deploy,
+    identityAdmin:{createUser:async()=>({id:'proof-user'}),deleteUser:async id=>deleted.push(id)},
+    getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
+    fetchImpl:async()=>({ok:true,status:200,json:async()=>({access_token:token})}),
+    randomPassword:()=> 'x'.repeat(40),
+  });
+  assert.equal(proof.status,'FAILED');
+  assert.equal(proof.failure_code,'IDENTITY_TENANT_CLAIM_MISMATCH');
+  assert.equal(proof.tenant_count_verified,0);
+  assert.equal(proof.cross_tenant_scope_verified,false);
+  assert.deepEqual(deleted,['proof-user']);
 });
