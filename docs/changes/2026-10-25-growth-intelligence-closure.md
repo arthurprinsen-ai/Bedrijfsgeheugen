@@ -17,3 +17,11 @@ Critical control: minimum 50 per arm, persistent pre-treatment assignment, exact
 Ownership: `powerhouse-commercial-learning-v1`, Growth Swarm CRO agent, canonical `powerhouse_experiment_assignments`/`powerhouse_cycle_events`/`brain_records`, BG169 release authority, System Map candidate projection. Changes: `tools/growth-intelligence/cro-experiment-cycle.mjs`, existing decision core, heartbeat adapter, Growth Swarm skill, system map, automation lane and regression tests.
 
 Self-review: the first local code probe found that a 4-character minimum string check excluded canonical owner `cro`; fixed to 3-character minimum before CI, with explicit preregistration test. Local browser/provider/SQL readback and production effect are **not proved**. PR remains a candidate until Required/CodeQL and protected release/readback.
+
+## Further source verification — 29 October 2026
+
+A source-based isolated JavaScript execution of the exact branch experiment, decision-core, adapter and closure test functions passed **19/19**. This is not Node CI/Required/CodeQL. New pure `diagnoseCroMeasurementGap` returns explicit `MEASUREMENT_REQUIRED`, `INCOMPARABLE` or `RECONCILIATION_REQUIRED` rather than inventing lost conversions. The existing Heartbeat packet now exposes `croDataGaps`; actual canonical persisted-write/readback remains unimplemented and unverified.
+
+Supabase readback (last seven days): `growth_page_daily` 3,634 views, 0 CTA clicks, 0 qualified leads; `bg_interacties` 1,201 non-bot interactions and 48 click-like events. These are **different taxonomies**, not evidence of 48 missing CTA clicks. The existing review-required optimization candidate is `c1727e17-6200-44ff-9a31-eec0ea7c1ead`, root cause UNKNOWN.
+
+PR #4901 remains DRAFT with GitHub mergeability `dirty`; behind an independently moving main. The most recent head does not have exact-head Required/CodeQL evidence. Do not merge or deploy from stale test results and do not reset or force-push a shared branch. Next responsible writer: perform conflict-aware, main-preserving branch reconciliation; run all protected gates and independent production/portal readback.
