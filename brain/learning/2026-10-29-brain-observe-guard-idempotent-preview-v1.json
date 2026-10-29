@@ -1,0 +1,38 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "brain-observe-guard-idempotent-preview-20261029",
+  "fingerprint": "delivery|supabase-preview|brain-failure-observe-source-guard-replay|20261029",
+  "maturity": "OBSERVED",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-failure-observe-current-source-preview-20261029.test.mjs",
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-failure-observe-current-source-preview-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-failure-observe-current-source-preview-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Supabase Preview replay may start from a provider snapshot containing the protected, already upgraded brain_observe_failure definition; historical 20261022173500 guard accepted only the previous pre-repair evidence-overwriting function source. The new canonical current function preserves promoted evidence and already has hardened identity/ACL, so that obsolete preimage gate created BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT false red.",
+  "change": "Do not drop the guard. Accept previous exact marker OR current evidence-preserving function only when semantic conflict checks, advisory lock, restricted search_path, SECURITY DEFINER, and anon/auth-deny + service_role-allow are all evidenced. Existing SQL function behavior after guard untouched.",
+  "prevention": "Any provider preview starting from a post-migration database must prove function identity/ACL before replay. Missing functions, altered evidence logic and weaker privileges remain hard red. Tests cover both source variants and negative markers.",
+  "evidence": {
+    "tests": [
+      "tests/brain-failure-observe-current-source-preview-20261029.test.mjs",
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
+    ],
+    "provider_readback": "Production current source has evidence=coalesce(evidence,p_evidence), semantic event key, alias conflicts, advisory lock, security definer, restricted search path, anon/auth EXECUTE false, service_role EXECUTE true.",
+    "failed_preview": "PR #5106 exact-head Supabase Preview: BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT at statement 3; still failed pending protected guard repair.",
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_PROVIDER_PREVIEW_PROOF"
+  }
+}
