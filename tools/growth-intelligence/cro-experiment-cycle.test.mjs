@@ -72,7 +72,7 @@ test('no assignment readback and no outcome readback never count as proof',()=>{
 });
 test('sample, horizon and zero-variance guards are explicit',()=>{
  const d=designCroExperiment(input);
- assert.equal(evaluateCroExperiment(d,{...readback,controlExposures:60,treatmentExposures:60}).status,'INCONCLUSIVE');
+ assert.equal(evaluateCroExperiment(d,{...readback,controlExposures:60,treatmentExposures:60,controlConversions:2,treatmentConversions:3}).status,'INCONCLUSIVE');
  assert.equal(evaluateCroExperiment(d,{...readback,horizonMatured:false}).status,'INCONCLUSIVE');
  assert.equal(evaluateCroExperiment(d,{...readback,controlConversions:0,treatmentConversions:0}).status,'INCONCLUSIVE');
 });
