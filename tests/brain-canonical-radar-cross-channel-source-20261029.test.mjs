@@ -48,3 +48,10 @@ test('existing source-to-recommendation materializer is called within original r
  assert.match(radar,/personalSourceRotation:personalRotation\.data\|\|null/);
  assert.doesNotMatch(radar,/linkedin_create_post|INSTAGRAM_PUBLISH|cron\.schedule/i);
 });
+
+test('shared source_url cannot silently overwrite the other channel contract',()=>{
+ assert.match(radar,/select\('metadata'\)\.eq\('source_url',sourceUrl\)\.maybeSingle\(\)/);
+ assert.match(radar,/priorContract && priorContract!==row\.metadata\.contract/);
+ assert.match(radar,/source_contract_collision_skipped/);
+ assert.match(radar,/if\(prior\.error\)\{errors\.push\('source_contract_read:'\+prior\.error\.message\);continue\}/);
+});
