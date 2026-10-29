@@ -64,5 +64,20 @@
     "fix": "Add explicit trusted compiler classification, bounded canonical scope and machine-checkable regression/evaluation evidence.",
     "prevent": "All future candidate learning records are preflighted against the existing Brain learning compiler before protected admission; do not treat an open PR as live.",
     "verified": false
+  },
+  "production_config_fallback_20261029": {
+    "fingerprint": "portal|powerhouse-existing-system-status|missing-supabase-url-env|20261029",
+    "status": "CODE_FIX_PROTECTED_PR_NOT_PRODUCT_VERIFIED",
+    "observation": "Netlify website config has SUPABASE_SERVICE_ROLE_KEY and BG_PORTAL_EU_SUPABASE_URL in function scope, but SUPABASE_URL is absent.",
+    "cause": "The new Powerhouse Control Plane source read-model addressed only missing SUPABASE_URL and would have returned PARTIAL even if deployed.",
+    "fix": "Reuse the existing BG_PORTAL_EU_SUPABASE_URL as server-only fallback after established Powerhouse admin authorization. Do not create or expose another secret.",
+    "prevention_test": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+    "required_readback": [
+      "Required/BRAIN/CodeQL exact updated PR head",
+      "protected merge",
+      "actual Netlify deploy",
+      "authenticated admin source readback of five canonical views"
+    ],
+    "verified": false
   }
 }
