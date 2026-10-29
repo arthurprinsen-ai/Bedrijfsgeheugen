@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|revenue-learning|migration-history-lock-stale-after-production-20261029",
+  "obligation_id": "CRO-PRODUCTION-MIGRATION-HISTORY-LOCK-20261029",
+  "failure_class": "METADATA_DRIFT",
+  "root_cause": "Git source supabase/migration-history.lock.json was captured through 20261029101159 while production migration-history contained five later canonical applied versions, including two protected PR #5143 CRO migrations. Revenue Learning push workflow failed exact local-only check on 40919925385 attempt 1 and retry 2.",
+  "observed_evidence": {
+    "verified_provider": "Supabase production supabase_migrations.schema_migrations",
+    "github_failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40919925385",
+    "merged_backend_sha": "3ce83006f53a22f3f3d5aa19d99a1b4aed024cfc",
+    "exact_applied_versions": [
+      "20261029122836",
+      "20261029125100",
+      "20261029125607",
+      "20261029174600",
+      "20261029174700"
+    ],
+    "backend_netlify_deploy": "6ae37fb06560c830c2117c32",
+    "human_proof": "docs/changes/2026-10-29-cro-production-migration-lock-reconciliation.md",
+    "no_credentials_or_customer_data": true
+  },
+  "fix": "Append exact five independently read-back production migration identities to canonical source lock without changing or rerunning migration DDL.",
+  "prevention_rule": "Every protected production schema migration must sync the exact source lock from supabase_migrations.schema_migrations under the same protected owner; preserve version+name identity and do not bypass the GitHub Revenue Learning gate.",
+  "production_provider_history_verified": true,
+  "new_natural_website_conversion_proven": false,
+  "customer_revenue_proven": false,
+  "production_candidate_merged": false,
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "terminal_rule": "Only protected exact-head Required, BRAIN, CodeQL and a fresh Revenue Learning run on a merged main commit may close this CI failure. This does not prove paid orders or all CRO experiments."
+}
