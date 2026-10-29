@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-branch-debris|janitor-archive-sweep-hardening|20261029-v1",
+  "fingerprint": "ci|branch-debris|archive-tag-write-failure-burns-job-budget|20261029-v1",
+  "compiler": {
+    "failure_class": "ARCHIVE_WRITE_FAILURE_BURNS_BUDGET",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Bewezen in Janitor-run 40879041940: elke archive-tag aanmaak faalde, elke poging kostte 5-60 seconden, en de job liep na 12 minuten in de timeout. Er is niets verwijderd (ontwerp werkte: geen archief, geen verwijdering), maar de foutreden stond niet in het log.",
+  "fix": "De sweep logt nu de echte foutmelding, stopt met archiveren na 3 mislukkingen op rij (uniek werk wordt dan nooit verwijderd), heeft een tijdbudget van 360 seconden en draait onder timeout 420 zodat de rest van de Janitor nooit wordt afgekapt.",
+  "prevention_rule": "Een best-effort stap in een gedeelde job heeft een eigen tijdbudget en een circuit breaker; een fout wordt nooit zonder oorzaak gelogd.",
+  "tests": [
+    "tests/brain-branch-archive-sweep.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "invariants": [
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd",
+      "uniek werk wordt eerst als archive/-tag vastgelegd en teruggelezen",
+      "alleen de eigen repository wordt aangesproken"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
