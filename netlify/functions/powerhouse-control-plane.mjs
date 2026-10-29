@@ -1,4 +1,5 @@
 import { getUser } from '@netlify/identity';
+import { readPowerhouseIntegrationReadback } from './_powerhouse-existing-integration-read-model.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 
@@ -26,7 +27,13 @@ export default async function handler(){
   });
   const body=await response.json().catch(()=>({error:'INVALID_EDGE_RESPONSE'}));
   if(!response.ok)return json({error:body?.error||'CONTROL_PLANE_READ_FAILED'},response.status);
-  return json(body,200);
+  // Existing admin session already passed before any Supabase service-role request.
+  // Read-only and deliberately fail closed: SOURCE_READABLE != END_TO_END_VERIFIED.
+  const systemIntegration=await readPowerhouseIntegrationReadback({
+    baseUrl:process.env.SUPABASE_URL,
+    key:process.env.SUPABASE_SERVICE_ROLE_KEY
+  });
+  return json({...body,systemIntegration},200);
 }
 
 export const config={path:'/api/powerhouse-control-plane'};
