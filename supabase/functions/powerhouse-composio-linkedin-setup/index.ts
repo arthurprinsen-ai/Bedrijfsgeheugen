@@ -111,14 +111,25 @@ Deno.serve(async(req:Request)=>{
     const boundOauthAccountId=clean(proofAccountId||priorState?.company_oauth_connection_id||priorState?.oauth_candidate_connection_id);
 
     if(action==='create_personal_link'){
-      // Personal member link only: no organization scopes. Always bound to the canonical owner, never a test user.
-      const PERSONAL_OAUTH_SCOPES=['openid','profile','email','r_member_social','w_member_social'];
+      // Personal member OAuth. LinkedIn's r_member_social is a CLOSED permission:
+      // requesting it causes unauthorized_scope_error even when w_member_social
+      // is available. A provider create acknowledgement must still be independently
+      // reconciled; NEVER treat lack of r_member_social as permission to skip proof.
+      // This is the original owner-bound connector, never a second publisher.
+      const PERSONAL_OAUTH_SCOPES=['openid','profile','email','w_member_social'];
       const PERSONAL_ALIAS='bedrijfsgeheugen-personal-canonical';
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&show_disabled=false&limit=50');
       const configs=(Array.isArray(configsBody?.items)?configsBody.items:[])
         .filter((x:any)=>clean(x?.status).toUpperCase()!=='DISABLED'&&x?.is_disabled!==true);
       const scopesOf=(value:any)=>new Set(clean(value?.credentials?.scopes||value?.credentials?.user_scopes).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean));
-      const personalConfig=configs.find((x:any)=>['r_member_social','w_member_social'].every(scope=>scopesOf(x).has(scope))&&!scopesOf(x).has('r_organization_admin'));
+      // Only reuse an EXACT least-privilege member config. Historical configs
+      // including r_member_social (or org scopes) fail LinkedIn consent, so
+      // never pick those merely because they also contain w_member_social.
+      const personalConfig=configs.find((x:any)=>{
+        const scopes=scopesOf(x);
+        return PERSONAL_OAUTH_SCOPES.every(scope=>scopes.has(scope))
+          && [...scopes].every(scope=>PERSONAL_OAUTH_SCOPES.includes(scope));
+      });
       let personalAuthConfigId=clean(personalConfig?.id);
       if(!personalAuthConfigId){
         const created=await api(key,'/auth_configs',{method:'POST',body:JSON.stringify({

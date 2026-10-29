@@ -204,6 +204,19 @@ Blocked approach: do not loosen `immutableNetlifyPreviewUrl` to accept aliases, 
 
 Regression rule: both workflows that read the Netlify status must accept the same two forms (`tests/brain-netlify-preview-alias-status-v1.test.mjs`). Three or more consecutive failures of one workflow with the same error text are a P0 to triage, not noise, even when the check is not required.
 
+### `ci|netlify-preview-closed-pr-race|portal-v2-live-preview|20261029-v1`
+Aliases: `Timed out waiting for immutable Netlify preview`, `portal-preview-closed-pr-timeout`.
+
+Symptom: after the alias fix `Portal V2 Live Preview` still ended red with `Timed out waiting for immutable Netlify preview on exact head SHA`, 9 minutes after the run started.
+
+Root cause: auto-merge closes the PR within minutes and the `workflow_run` starts after that. The numbered alias of a closed PR no longer serves the PR head, so `release.json` never shows the head SHA. The alias branch itself worked.
+
+Required fix: the wait step reads the PR state every round; a closed or merged PR sets `PREVIEW_PR_CLOSED=1` and exits 0, and the later steps are skipped. An open PR keeps the full wait and still fails on a provider failure or timeout.
+
+Blocked approach: do not add `actions: write` to cancel runs, do not raise the timeout, do not mark the check optional to get green.
+
+Regression rule: `tests/brain-netlify-preview-alias-status-v1.test.mjs` (closed-PR replay and open-PR shadow). A fix of a per-PR check is proven only on a PR that stays open.
+
 ## Completion rule
 
 A learning item is structurally guarded only when all applicable layers agree: persistent Activity/Telemetry log, shared Brain learning, searchable knowledge/fingerprint, compatibility/current-state mapping and a deterministic regression/prevention rule. Historical evidence is retained; later canonical rulings supersede stale interim conclusions without deleting audit history.

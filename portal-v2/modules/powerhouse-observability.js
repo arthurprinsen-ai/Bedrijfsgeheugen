@@ -161,6 +161,7 @@ function systemMapView(systemMap,events,observability={}){
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
   const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
   const publication=observability.publicationEvidence||{};
+  const personalSourceSupply=observability.personalSourceSupply||{};
   const publicationComplete=publication.status==='REGISTRY_READBACK_COMPLETE';
   const publicationRows=publicationComplete?arr(publication.channels):[];
   const publicationLabels={linkedin_company:'LinkedIn bedrijf',linkedin_personal:'LinkedIn persoonlijk',instagram:'Instagram',blog:'Blog'};
@@ -218,6 +219,12 @@ function systemMapView(systemMap,events,observability={}){
         esc(row.registryStatus),
         (row.providerIdRecorded?'Provider-ID geregistreerd · ':'Geen provider-ID · ')+(row.internalLiveProofRecorded?'intern livebewijs · ':'onafhankelijk livebewijs vereist · ')+row.recoveryCode
       )).join(''):kpi('Publicatiebewijs','—',esc(publication.reason||'De canonieke publicatiebron kon niet volledig worden gelezen'))}
+    </div>
+    <div class="poc-kpis compact">
+      ${kpi('LinkedIn persoonlijk · verse bronaanvoer',
+        personalSourceSupply.status==='FRESH_ELIGIBLE_SOURCES_PRESENT'?String(personalSourceSupply.freshEligibleSourceCount)+' actuele bronnen':
+        personalSourceSupply.status==='SOURCE_SUPPLY_REQUIRED'?'0 geschikte bronnen':'Niet geverifieerd',
+        'Bronselectie '+esc(personalSourceSupply.status||personalSourceSupply.reason||'UNVERIFIED')+' · een bron is geen verhaal, post of provider-ID')}
     </div>
     <p class="poc-note">Bronreadback ${esc(fmtTime(publication.observedAt))}. De herstelcode beschrijft de volgende veilige stap, niet een uitgevoerde actie. Bestaande executor, duplicate-gate, media-identiteit en protected release blijven verplicht.</p>
   </section>

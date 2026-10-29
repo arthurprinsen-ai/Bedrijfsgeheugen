@@ -13,8 +13,20 @@ const codeFor=(row)=>{
     return 'NO_REPOST_COLLECT_OUTCOMES';
   if(row.external_id)
     return 'PROVIDER_CREATE_RECORDED_VERIFY_READBACK_NO_REPOST';
+  // An APPROVED draft is NOT provider-ready when its own original auth preflight failed.
+  // Read only safe scalar fields from the canonical obligation, never provider tokens.
+  if(row.channel==='linkedin_personal' &&
+     (String(row.auth_preflight||'').toLowerCase()==='failed'||
+      String(row.auth_error||'').toUpperCase().includes('LINKEDIN_REAUTH_REQUIRED')))
+    return 'LINKEDIN_PERSONAL_CANONICAL_OAUTH_CONSENT_REQUIRED';
   if(error.includes('STORY_FAMILY_DUPLICATE')||error.includes('GLOBAL_POST_DUPLICATE'))
     return 'NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED';
+  if(error.includes('VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH')||
+     error.includes('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED'))
+    return 'MIRA_REJECTED_REQUIRES_NEW_APPROVED_MEDIA';
+  if(error.includes('SOURCE_SUPPLY_REQUIRED')||
+     error.includes('NO_UNIQUE_VERIFIED_PERSONAL_SOURCE'))
+    return 'FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED';
   if(error.includes('MEDIA_ASSET_REQUIRED'))
     return 'CANONICAL_MEDIA_ASSET_REQUIRED';
   if(row.channel==='instagram')return 'MEDIA_IDENTITY_AND_PROVIDER_EVIDENCE_PENDING';
@@ -52,7 +64,7 @@ export async function loadPublicationEvidence({baseUrl,key,observedAt=new Date()
   const date=dateAmsterdam(observedAt);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return unknown('INVALID_DATE');
   const url=new URL(String(baseUrl).replace(/\/$/,'')+'/rest/v1/content_publication_obligations');
-  url.searchParams.set('select','tenant_id,publication_date,channel,status,external_id,live_proven_at,last_error');
+  url.searchParams.set('select','tenant_id,publication_date,channel,status,external_id,live_proven_at,last_error,auth_preflight:evidence->>provider_auth_preflight,auth_error:evidence->>error');
   url.searchParams.set('tenant_id','eq.canonical');
   url.searchParams.set('publication_date','eq.'+date);
   url.searchParams.set('limit','8');
@@ -65,4 +77,38 @@ export async function loadPublicationEvidence({baseUrl,key,observedAt=new Date()
     const rows=await response.json();
     return summarizePublicationEvidence(rows,{count:countMatch?Number(countMatch[1]):null,date,observedAt});
   }catch{return unknown('PUBLICATION_READ_FAILED');}
+}
+
+/**
+ * Read-only, admin-route aggregate evidence of the existing source table.
+ * A usable source is NOT publication proof and cannot change an obligation.
+ * Fail closed on an unknown HTTP count; no fabricated zero or ready state.
+ */
+export async function loadPersonalSourceSupply({baseUrl,key,observedAt=new Date().toISOString(),fetchImpl=globalThis.fetch}={}){
+  if(!baseUrl||!key)return unknown('PERSONAL_SOURCE_CONFIG_MISSING');
+  const date=dateAmsterdam(observedAt);
+  const since=new Date(Date.parse(date+'T00:00:00Z')-45*86400000).toISOString().slice(0,10);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(since)))return unknown('PERSONAL_SOURCE_DATE_INVALID');
+  const url=new URL(String(baseUrl).replace(/\/$/,'')+'/rest/v1/powerhouse_mira_problem_signals_v1');
+  url.searchParams.set('select','signal_id');
+  url.searchParams.set('metadata->>contract','eq.personal-observational-life-source-v1');
+  url.searchParams.set('eligible','eq.true');
+  url.searchParams.append('source_published_at','gte.'+since);
+  url.searchParams.append('source_published_at','lte.'+date+'T23:59:59Z');
+  url.searchParams.set('limit','1');
+  try{
+    const response=await fetchImpl(url.toString(),{method:'GET',headers:{
+      apikey:key,authorization:'Bearer '+key,accept:'application/json',prefer:'count=exact'
+    },signal:AbortSignal.timeout(5000)});
+    if(!response.ok)return unknown('PERSONAL_SOURCE_HTTP_'+response.status);
+    const match=/\/(\d+)$/.exec(String(response.headers?.get('content-range')||''));
+    if(!match)return unknown('PERSONAL_SOURCE_COUNT_UNVERIFIED');
+    const count=Number(match[1]);
+    if(!Number.isSafeInteger(count)||count<0)return unknown('PERSONAL_SOURCE_COUNT_INVALID');
+    return {status:count>0?'FRESH_ELIGIBLE_SOURCES_PRESENT':'SOURCE_SUPPLY_REQUIRED',
+      source:'public.powerhouse_mira_problem_signals_v1',
+      sourceContract:'personal-observational-life-source-v1',tenant:'canonical',date,observedAt,
+      freshEligibleSourceCount:count,
+      caveat:'A fresh external public-life source is not proof of a unique drafted personal story or a LinkedIn provider-side publication.'};
+  }catch{return unknown('PERSONAL_SOURCE_READ_FAILED');}
 }

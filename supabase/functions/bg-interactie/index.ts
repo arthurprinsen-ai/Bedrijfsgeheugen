@@ -5,7 +5,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const ORIGINS = /^https:\/\/(?:www\.)?bedrijfsgeheugen\.nl$|^https:\/\/(?:deploy-preview-\d+--|main--)?bedrijfsgeheugen\.netlify\.app$/i;
-const GEBEURTENISSEN = new Set(['pagina', 'klik', 'scroll', 'formulier_start', 'formulier_verzonden', 'tijd_op_pagina', 'zichtbaar']);
+const GEBEURTENISSEN = new Set(['pagina','klik','scroll','formulier_start','formulier_verzonden','tijd_op_pagina','zichtbaar','sectie_zichtbaar','formulier_fout','formulier_verlaten','whatsapp_klik','frustratie_klik','popup_getoond','popup_gesloten','popup_conversie','experiment_blootstelling','pagina_verlaten']);
+const DETAIL_GEBEURTENISSEN = new Set(['sectie_zichtbaar','formulier_fout','formulier_verlaten','whatsapp_klik','frustratie_klik','popup_getoond','popup_gesloten','popup_conversie','experiment_blootstelling','pagina_verlaten']);
 const ROBOT = /bot|crawl|spider|slurp|headless|lighthouse|playwright|puppeteer|phantom|preview|monitor|uptime|curl|wget|python|axios|node-fetch|go-http|java\/|facebookexternalhit|embedly|quora|pinterest|vkshare|w3c_validator/i;
 const PII = /[\w.+-]+@[\w-]+\.[\w.]+|(?:\+31|0031|\b0)[\s-]?[1-9](?:[\s-]?\d){7,8}\b/;
 const MAX_BYTES = 32_000, MAX_EVENTS = 50;
@@ -13,8 +14,8 @@ const TELEMETRY_DB_TIMEOUT_MS = 2_500, TELEMETRY_BREAKER_MS = 30_000;
 let degradedUntil = 0;
 
 function degradedResponse(origin: string, reason: string) {
-  return new Response(JSON.stringify({ ok: true, opgeslagen: 0, degraded: true, reason }), {
-    status: 202,
+  return new Response(JSON.stringify({ ok: false, opgeslagen: 0, bevestigd: 0, degraded: true, reason }), {
+    status: 503,
     headers: { ...cors(origin), 'content-type': 'application/json', 'cache-control': 'no-store', 'x-bg-telemetry-degraded': '1' },
   });
 }
@@ -47,11 +48,18 @@ Deno.serve(async (req: Request) => {
   const gebied = body?.gebied === 'portaal' ? 'portaal' : 'site';
   const rijen = (Array.isArray(body?.events) ? body.events : [body]).slice(0, MAX_EVENTS).map((e: any) => {
     const g = String(e?.gebeurtenis || ''); const p = pad(e?.pad);
-    if (!GEBEURTENISSEN.has(g) || !p) return null;
+    if (!GEBEURTENISSEN.has(g) || !p || (DETAIL_GEBEURTENISSEN.has(g) && toestemming !== true)) return null;
     const t = Date.parse(e?.gebeurd_op || ''); const nu = Date.now();
-    return { gebeurd_op: Number.isFinite(t) && Math.abs(nu - t) < 86_400_000 ? new Date(t).toISOString() : null, gebeurtenis: g, pad: p, gebied, element_tekst: tekst(e?.element_tekst, 120), element_soort: tekst(e?.element_soort, 30), element_doel: doel(e?.element_doel), onderdeel: tekst(e?.onderdeel, 80), diepte_pct: getal(e?.diepte_pct, 0, 100), seconden: getal(e?.seconden, 0, 86400), sessie, apparaat, bron_domein: bron, herkomst, toestemming, is_robot: robot };
+    const uid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(e?.event_uid || '')) ? String(e.event_uid).toLowerCase() : null;
+    return { event_uid:uid, gebeurd_op: Number.isFinite(t) && Math.abs(nu - t) < 86_400_000 ? new Date(t).toISOString() : null, gebeurtenis: g, pad: p, gebied, element_tekst: tekst(e?.element_tekst, 120), element_soort: tekst(e?.element_soort, 30), element_doel: doel(e?.element_doel), onderdeel: tekst(e?.onderdeel, 80), diepte_pct: getal(e?.diepte_pct, 0, 100), seconden: getal(e?.seconden, 0, 86400), sessie, apparaat, bron_domein: bron, herkomst, toestemming, is_robot: robot };
   }).filter(Boolean);
-  if (!rijen.length) return new Response(JSON.stringify({ ok: true, opgeslagen: 0 }), { status: 200, headers: { ...cors(origin), 'content-type': 'application/json' } });
+  const ontvangenAantal = (Array.isArray(body?.events) ? body.events : [body]).slice(0, MAX_EVENTS).length;
+  // Reject entire mixed/invalid batch; never acknowledge and silently drop rows.
+  if (rijen.length !== ontvangenAantal)
+    return new Response(JSON.stringify({ ok: false, opgeslagen: 0, bevestigd: 0, error: 'INVALID_OR_UNCONSENTED_EVENT_BATCH' }), {
+      status: 422, headers: { ...cors(origin), 'content-type':'application/json', 'cache-control':'no-store' }
+    });
+  if (!rijen.length) return new Response(JSON.stringify({ ok: true, opgeslagen: 0, bevestigd: 0 }), { status: 200, headers: { ...cors(origin), 'content-type': 'application/json' } });
   if (Date.now() < degradedUntil) return degradedResponse(origin, 'DATA_API_CIRCUIT_OPEN');
 
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
@@ -60,10 +68,10 @@ Deno.serve(async (req: Request) => {
   });
 
   try {
-    const { error } = await db.from('bg_interacties').insert(rijen);
+    const { data, error } = await db.from('bg_interacties').upsert(rijen, { onConflict: 'event_uid', ignoreDuplicates: true }).select('event_uid');
     if (error) throw error;
     degradedUntil = 0;
-    return new Response(JSON.stringify({ ok: true, opgeslagen: rijen.length }), { status: 200, headers: { ...cors(origin), 'content-type': 'application/json' } });
+    return new Response(JSON.stringify({ ok: true, opgeslagen: data?.length ?? 0, bevestigd: rijen.length, idempotent: true }), { status: 200, headers: { ...cors(origin), 'content-type': 'application/json' } });
   } catch (error) {
     degradedUntil = Date.now() + TELEMETRY_BREAKER_MS;
     console.error('BG_INTERACTIE_DATA_API_DEGRADED', error instanceof Error ? error.message : String(error));
