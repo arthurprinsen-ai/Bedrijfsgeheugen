@@ -198,7 +198,15 @@ export async function reconcileHistoricalRejectedGeneratingJob(db,{job,ob}={}){
     :code==='MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED'
       ?Number(matched.evidence?.temporal_confidence):null;
   const score=raw!==null&&Number.isFinite(raw)&&raw>=0&&raw<=1?raw.toFixed(3):'unknown';
-  const errorCode=code+':brain_rejected_history='+hist+':score='+score;
+  // Keep EXACT established producer recovery format including trailing
+  // ':openart=history' so the original preventive_recovery contract can parse
+  // this rejection and select a genuinely different budget-bound candidate.
+  const position=String(matched.evidence?.frame_position||'start').replace(/[^a-z]/gi,'').slice(0,16)||'start';
+  const errorCode=code==='VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'
+    ?code+':'+position+':face='+score+':openart='+hist
+    :code==='MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED'
+      ?code+':confidence='+score+':openart='+hist
+      :code+':'+Number(matched.evidence?.native_video_width||0)+'x'+Number(matched.evidence?.native_video_height||0)+':openart='+hist;
   const nextAction='Existing OpenArt history rejected by independent Mira proof. Do not re-download, reverify, republish or relax thresholds. Original producer must use a materially different source-locked and budget-approved candidate; preserve same daily obligation.';
   const updatedAt=new Date().toISOString();
   const write=await db.from('powerhouse_instagram_media_jobs_v1')
