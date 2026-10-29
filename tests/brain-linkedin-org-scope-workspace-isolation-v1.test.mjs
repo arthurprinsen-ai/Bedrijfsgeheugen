@@ -27,3 +27,29 @@ test('the connected production Composio account remains bound to its own proof',
   assert.match(source,/companyReady=personalReady&&companyOauthFreshVerified&&companyAdminReadReady/);
   assert.doesNotMatch(source,/LINKEDIN_CREATE_LINKED_IN_POST',\{\}/);
 });
+
+
+test('personal OAuth never requests LinkedIn closed r_member_social permission',()=>{
+  // Restrict to the original personal OAuth branch: other products may legitimately
+  // mention read scopes, but no unavailable scope may enter a personal Connect URL.
+  const branch=source.slice(source.indexOf("if(action==='create_personal_link')"),source.indexOf("if(action==='create_link')"));
+  assert.match(branch,/const PERSONAL_OAUTH_SCOPES=\['openid','profile','email','w_member_social'\]/);
+  assert.doesNotMatch(branch,/PERSONAL_OAUTH_SCOPES=\[[^\]]*'r_member_social'/);
+  assert.match(branch,/PERSONAL_OAUTH_SCOPES\.every\(scope=>scopes\.has\(scope\)\)/);
+  assert.match(branch,/\[\.\.\.scopes\]\.every\(scope=>PERSONAL_OAUTH_SCOPES\.includes\(scope\)\)/);
+  assert.match(branch,/const PERSONAL_ALIAS='bedrijfsgeheugen-personal-canonical'/);
+  assert.match(branch,/user_id:USER_ID,alias:PERSONAL_ALIAS/);
+  assert.match(branch,/requested_personal_scopes:PERSONAL_OAUTH_SCOPES/);
+  assert.doesNotMatch(branch,/w_organization_social|r_organization_admin/);
+});
+
+test('canonical publisher still requires source reservation, records provider side effects and does not downgrade proof',()=>{
+  const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  assert.match(publisher,/powerhouse_reserve_unique_publication_v1/);
+  assert.match(publisher,/preflightLinkedInComposio\(db\)/);
+  assert.match(publisher,/provider_create_success:true/);
+  assert.match(publisher,/verification_pending:true/);
+  assert.match(publisher,/republish_forbidden:true/);
+  assert.match(publisher,/readback_permission_limited/);
+  assert.match(publisher,/LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+});
