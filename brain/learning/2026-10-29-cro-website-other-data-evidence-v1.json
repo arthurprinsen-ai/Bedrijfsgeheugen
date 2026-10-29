@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "parent_issue": 5141,
+  "obligation_id": "SITE-CRO-OTHER-DATA-20261029",
+  "fingerprint": "site|cro|unverified-cta-and-experiment-evidence|silent-telemetry-loss|20261029",
+  "failure_class": "CRO_INTERACTION_ATTRIBUTION_AND_EVIDENCE_GAP",
+  "observed_evidence": {
+    "sql_source": "public.bg_interacties, public.growth_page_daily, public.growth_events, public.powerhouse_experiment_learning_v2",
+    "bg_interacties_all_time": 707276,
+    "growth_events_all_time": 222727,
+    "window": "2026-10-22 through 2026-10-29",
+    "robots": "bg_interacties form_submitted: 731 of 731 classified robots in 7d; cannot count as verified leads",
+    "daily_growth_30d": "7949 page_views and zero recorded CTA clicks, qualified leads and won orders (unverified attribution)",
+    "canonical_experiments": 111,
+    "another_tenant_duplicates": 111,
+    "source_files": [
+      "assets/meting.js",
+      "supabase/functions/bg-interactie/index.ts",
+      "netlify/functions/growth-event.mjs"
+    ],
+    "effect": "Existing analytics can look green while conversion attribution is missing. CRO experiments need one evidence surface."
+  },
+  "root_cause": "Existing bg_interacties client removes batches before server acceptance; Edge can return 202 ok:true while zero rows were persisted. Growth daily read model contains page_views but no verified CTA conversions, and CRO experiment evidence is only in separate admin tabs. Most observed form sends are bots.",
+  "fix": "In PR #5140 add an owner-only canonical Supabase website/CRO projection to native Andere data; use existing consent-gated durable /api/growth-event queue for primary CTA, mail/tel and form-intent signals without a new scheduler; indicate evidence gaps and open issue #5141 for raw event idempotency and ACK recovery.",
+  "prevention_rules": [
+    "Never present page views, client form intent, or robot traffic as independently verified people, leads, or orders.",
+    "Missing source/readback is UNAVAILABLE and truncated result is TRUNCATED, never a zero or green status.",
+    "Customer and admin experiment data must be tenant-scoped; owner-only global queries use existing Netlify Identity admin allowlist.",
+    "The only browser-to-commercial event path is consent-gated and uses the already durable canonical queue with bounded retries using the same event_id.",
+    "Do not delete raw telemetry from a local batch before a persisted ACK. Historic raw telemetry remains unverified until issue #5141 closes.",
+    "Never add a scheduler, fallback publisher, third-party tracker, raw form values or browser fingerprint to fill measurement gaps.",
+    "A material change must update the Brain learning record, activity ledger and human change documentation, and require protected tests and production readback."
+  ],
+  "tests": [
+    "tests/portal-cro-other-data.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-cro-other-data.test.mjs checks zero vs missing and incomplete causal evidence"
+    ],
+    "shadow": [
+      "Consent-denied/granted site click + growth-event receipt and growth_page_daily natural update: pending production verification"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED: require protected exact main Netlify release and authenticated browser + Supabase persisted event proof"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CRO_INTERACTION_ATTRIBUTION_AND_EVIDENCE_GAP",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Keep draft PR and CLOSED-LOOP status pending required checks, two-tenant access regression, true consented browser event receipt and Supabase stored readback; no false green or fake lead uplift."
+}
