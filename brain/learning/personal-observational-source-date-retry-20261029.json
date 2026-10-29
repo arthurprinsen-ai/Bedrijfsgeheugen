@@ -22,5 +22,12 @@
     "redacted": true,
     "production_verified": false,
     "provider_post_created": false
+  },
+  "compiler": {
+    "failure_class": "SOURCE_ELIGIBILITY_CONTRACT_DRIFT",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
