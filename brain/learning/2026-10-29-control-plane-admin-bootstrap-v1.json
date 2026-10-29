@@ -51,5 +51,14 @@
   "no_new_scheduler": true,
   "no_new_store": true,
   "no_second_writer": true,
-  "docs": "docs/changes/2026-10-29-control-plane-admin-bootstrap.md"
+  "docs": "docs/changes/2026-10-29-control-plane-admin-bootstrap.md",
+  "ci_recovery_20261029": {
+    "run": "40939254997",
+    "failed_step": "Require canonical learning evidence at protected admission",
+    "class": "LEARNING_EVALUATION_FAILED",
+    "root_cause": "An overly broad negative test regex matched ordinary unrelated prose 'new scheduler' in portal-v2/app.js instead of identifying a real setInterval call invoking the canonical cockpit mount.",
+    "fix": "Use narrowly scoped /setInterval\\\\([^;\\\\n]*mountControlPlaneCockpit/ assertion; preserve exactly-once identity subscription and no scheduling.",
+    "regression": "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs",
+    "state": "SOURCE_FIX_PENDING_EXACT_HEAD_CI"
+  }
 }
