@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { evaluateIncidentSelfFix } from './chat-learning-preflight.mjs';
+import { evaluateIncidentSelfFix } from '../scripts/brain/chat-learning-preflight.mjs';
 
-const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const source = path.join(rootDir, 'brain/policies/powerhouse-incident-register-and-self-fix-v1.json');
 const readPolicy = () => JSON.parse(fs.readFileSync(source, 'utf8'));
 

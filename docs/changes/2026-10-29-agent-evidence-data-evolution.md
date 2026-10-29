@@ -13,7 +13,7 @@ Use ONE BRAIN + Powerhouse + Heartbeat + the existing exclusive writer, canonica
 This candidate **does not instrument each live agent producer** and **does not by itself update the live portal**. Runtime attribution, provider acknowledgments, 2-tenant authenticated browser readback, precise revenue attribution, protected merge and exact production readback are OPEN obligations. Unknown metrics are not zero; no invented uplift.
 
 ## Acceptance and prevention
-- Verify `node --test scripts/brain/agent-evidence-contract.test.mjs`, Required, BRAIN and CodeQL on exact head.
+- Verify `node --test tests/brain-agent-evidence-contract-20261029.test.mjs`, Required, BRAIN and CodeQL on exact head.
 - Confirm live agent producer event fields/ACK through the existing writer and independent source readback.
 - Ensure privacy-minimized tenant-scoped portal/handbook/System Map projections and test errors, stale data, duplicate effects and rollback.
 - Compare qualified visitors → leads → orders → paid revenue against a valid baseline. Only verified improvements become reusable skills/guards.
