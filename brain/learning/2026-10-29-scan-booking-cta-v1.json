@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|sales|scan-result-booking-cta|20261029-v1",
+  "fingerprint": "website|sales|scan-result-no-booking-route|20261029-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "SCAN_RESULT_WITHOUT_BOOKING_STEP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Live CTAs send visitors to /frisse-blik, which opens the scan view. The scan result offers portal and signup only; there is no booking step. Calendly shows one active consultation since 1 September.",
+  "fix": "Build adds one booking link next to the scan result signup button, behind a uniqueness guard that fails the build if the anchor changes.",
+  "prevention_rule": "Every money-page result must offer a next step that leads to a booking or a contact route.",
+  "tests": [
+    "tests/brain-scan-booking-cta-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-scan-booking-cta-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-scan-booking-cta-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-scan-booking-cta-v1.test.mjs"
+    ],
+    "live_readback": [
+      "Calendly bookings count after deploy versus 1 before"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_order_proven": false
+  }
+}
