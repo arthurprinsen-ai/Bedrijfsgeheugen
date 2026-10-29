@@ -25,5 +25,44 @@
     "authenticated admin readback",
     "verified independent outcome",
     "real skill load/apply evidence"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "OBSERVABILITY",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED: protected merge and exact Netlify/admin/API production proof required"
+    ]
+  },
+  "evidence": {
+    "observation": "29 Oct source audit: 32/32 WIRED, 18/18 required jobs active yet AMBER; 19 actions without economics, 1753 overdue forecast calibration; source connected is not executed proof.",
+    "regression": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "protected_main_proven": false,
+    "authenticated_admin_portal_readback_proven": false,
+    "realized_business_outcome_proven": false,
+    "existing_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918#issuecomment-6503569386"
+  },
+  "recovery_20261029": {
+    "failed_run": "40925783664",
+    "failure": "LEARNING_CANONICALIZATION_FAILED: LEARNING_FAILURE_CLASS_REQUIRED",
+    "root_cause": "The candidate Brain learning JSON missed compiler.failure_class and machine-readable evaluation evidence required by protected CI admission.",
+    "fix": "Add explicit trusted compiler classification, bounded canonical scope and machine-checkable regression/evaluation evidence.",
+    "prevent": "All future candidate learning records are preflighted against the existing Brain learning compiler before protected admission; do not treat an open PR as live.",
+    "verified": false
+  }
 }
