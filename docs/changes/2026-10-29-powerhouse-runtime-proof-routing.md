@@ -21,3 +21,7 @@ Geen automatische **GREEN** bij werkende code alleen. Vereist na deze kandidaat:
 Regressie: `tests/brain-powerhouse-runtime-truth-routing-20261029.test.mjs`.
 Brain learning: `brain/learning/2026-10-29-powerhouse-runtime-proof-routing-v1.json`.
 Publieke issue bevat uitsluitend niet-gevoelige technische status; privé cliënt-/tokenmateriaal blijft buiten GitHub.
+
+## Protected admission incident — exact source-PR metadata
+
+De eerste Required-run van deze kandidaat ([40943838921](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40943838921)) faalde terecht vóór implementatietests met `PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING`: de originele PR-omschrijving had geen `Base-SHA`-veld. Dit is niet hetzelfde als een runtime-fout. De volledige, exacte oorsprongswaarde `Base-SHA: bc4ce4a1776fe59d9b7ae70d8191af5151c208d9` is in dezelfde PR toegevoegd. Het issue is in het bestaande `public.brain_failure_registry` opgenomen met fingerprint `delivery|hygiene|missing-base-sha|pr5160|20261029-v1`, occurrence 1, oorzaak, herstel, preventie en bronrun. De volgende codecommit triggert nieuwe head-checks; eerdere FAIL wordt niet gewist of omzeild. Pas na Required/BRAIN/CodeQL en beschermd merge/readback wordt de source-status aangepast.
