@@ -73,6 +73,8 @@ test('canonical Heartbeat preflight reconciles old rejection only from exact Bra
  assert.equal(result.kind,'rejected');
  assert.equal(result.historyId,history);
  assert.equal(result.score,'0.900');
+ assert.match(calls.find(x=>x[0]==='update'&&x[1]==='powerhouse_instagram_media_jobs_v1')?.[2]?.last_error||'',
+   /^VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH:start:face=0\.900:openart=i6e9teMFpPH7YwZG4PMS$/);
  assert.equal(calls[0].table,'brain_failure_occurrences');
  assert.ok(calls[0].filters.some(x=>x[0]==='like'&&x[2].includes(history)));
  assert.equal(calls[1].fields.status,'WAITING_PROOF');
