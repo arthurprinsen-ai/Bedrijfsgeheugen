@@ -5,6 +5,19 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## Incidenten en fouten: altijd registreren, altijd zelf oplossen — 29 oktober 2026
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+Besluit Arthur, geldt voor elke agent en elke skill. Beleid: `brain/policies/powerhouse-incident-register-and-self-fix-v1.json`; afwegingen in de Loop Constitution (Notion).
+
+- **Registreren, altijd.** Elke fout, elk incident en elke bijna-fout wordt vastgelegd, ook als je het zelf meteen oplost. Dedupe op fingerprint: een open incident krijgt Retry Count plus 1, geen dubbel. Leg oorzaak met bewijs, herstel en preventieregel vast via de bestaande Brain learning/errorlaag; geen parallelle opslag, geen stille fouten.
+- **Zelf oplossen.** Is er een veilige uitvoerbare stap, dan diagnosticeer, repareer, test en lees je zelf terug, en laat je een regressieguard achter. Geen "fixed" of "live" zonder readback.
+- **Grens bij de eigenaar.** Onomkeerbare of kostbare besluiten, beschermde merge, productiemigraties, uitgaven en credits, en alles wat naar derden gaat: voorbereiden, één gededupliceerde obligation met bewijs en herstelpad, en stoppen.
+- **Nieuwe skills** moeten de regel `INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1` bevatten, anders faalt `scripts/brain/chat-learning-preflight.mjs`. Bestaande skills staan als zichtbare loop debt in `incident_self_fix.loop_debt` en krijgen de regel bij hun eerstvolgende wijziging; haal ze dan ook uit `loop_debt_baseline`.
+- **Nog niet gedekt:** runtime-agents (edge functions, Make-scenario's) hebben geen uniform bestand om te scannen; daar is dit nog beleid, geen afdwinging.
+
+
 ## Unified learning-to-customer-value and verified revenue — 25 October 2026
 
 Read `docs/brain/unified-brain-heartbeat-learning-revenue-contract-20261025.md` before work on any agent, portal, customer insight, content, CRO, CRM, SEO, Heartbeat, Brain, Powerhouse, learning, sales or release pathway. This is a proposed integration contract, not proof of implementation or LIVE status. Reuse existing canonical memory, failure fingerprints, obligations, skills, owner and scheduler. Every action must retain provenance, scope, decision, proof, result and learning; independently verify customer value and actual paid revenue before claiming success. Project only evaluated and source-grounded lessons into skills. Never loosen permission, security, tenant separation, protected merge, provider readback or financial controls to obtain green status. Work remaining in the contract is an open obligation.

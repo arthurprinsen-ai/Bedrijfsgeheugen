@@ -12,6 +12,7 @@ const FAST_DEVELOPMENT_V2_ENTRYPOINT = 'scripts/brain/powerhouse-fast-execution.
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
 const UNIVERSAL_INGRESS_POLICY_SOURCE = 'config/powerhouse-universal-ingress-v1.json';
 const SKILL_PROJECTION_INDEX_SOURCE = 'brain/skills/powerhouse-learning-skill-index-v1.json';
+const INCIDENT_SELF_FIX_POLICY_SOURCE = 'brain/policies/powerhouse-incident-register-and-self-fix-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/branch-delivery-ownership-guard.json',
   'config/powerhouse-engineering-os.json',
@@ -25,6 +26,7 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/policies/live-completion-learning-contract-v1.json',
   'brain/policies/powerhouse-agent-continuity-v1.json',
   'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json',
+  INCIDENT_SELF_FIX_POLICY_SOURCE,
   'brain/contracts/resource-intelligence-v1.json',
   'docs/brain/learning-plane-authority-contract-v1.md',
   'brain/policies/chat-to-brain-completeness-v1.json',
@@ -137,6 +139,46 @@ function validateUniversalIngressPolicy(policy) {
   });
 }
 
+export function evaluateIncidentSelfFix({ rootDir, policy }) {
+  if (!policy || policy.type !== 'POWERHOUSE_INCIDENT_REGISTER_SELF_FIX_POLICY') throw new Error('incident self-fix policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-INCIDENT-REGISTER-SELF-FIX-v1') throw new Error(`unsupported incident self-fix policy version: ${policy.version ?? 'missing'}`);
+  if (policy.fingerprint !== 'agents-skills-register-and-self-fix-v1') throw new Error('incident self-fix fingerprint drift');
+  if (policy.status !== 'ACTIVE' || policy.default_enabled !== true || policy.fail_closed !== true) throw new Error('incident self-fix policy must be ACTIVE, default enabled and fail-closed');
+  if (typeof policy.scope !== 'string' || !/agents/i.test(policy.scope) || !/skills/i.test(policy.scope)) throw new Error('incident self-fix scope does not cover agents and skills');
+  const protocol = policy.skill_protocol ?? {};
+  if (typeof protocol.marker !== 'string' || !protocol.marker) throw new Error('incident self-fix skill marker is missing');
+  if (protocol.new_skills_must_carry_marker !== true) throw new Error('incident self-fix must require the marker on new skills');
+  if (!Array.isArray(policy.reserved_for_owner) || policy.reserved_for_owner.length === 0) throw new Error('incident self-fix reserved owner decisions are missing');
+  if (!Array.isArray(policy.loop_debt_baseline)) throw new Error('incident self-fix loop debt baseline is missing');
+  const skillsRoot = normalizeSourcePath(rootDir, '.agents/skills');
+  const names = fs.existsSync(skillsRoot.absolute)
+    ? fs.readdirSync(skillsRoot.absolute).filter(name => fs.existsSync(path.join(skillsRoot.absolute, name, 'SKILL.md'))).sort()
+    : [];
+  const baseline = new Set(policy.loop_debt_baseline);
+  const withProtocol = [];
+  const loopDebt = [];
+  const violations = [];
+  for (const name of names) {
+    const raw = fs.readFileSync(path.join(skillsRoot.absolute, name, 'SKILL.md'), 'utf8');
+    if (raw.includes(protocol.marker)) { withProtocol.push(name); continue; }
+    if (baseline.has(name)) loopDebt.push(name); else violations.push(name);
+  }
+  if (violations.length) throw new Error(`INCIDENT_PROTOCOL_MISSING_ON_NEW_SKILL:${violations.join(',')}`);
+  return Object.freeze({
+    fingerprint: policy.fingerprint,
+    version: policy.version,
+    status: policy.status,
+    failClosed: true,
+    policySource: INCIDENT_SELF_FIX_POLICY_SOURCE,
+    marker: protocol.marker,
+    reservedForOwner: [...policy.reserved_for_owner],
+    skills_total: names.length,
+    skills_with_protocol: withProtocol.length,
+    loop_debt: Object.freeze({ count: loopDebt.length, skills: loopDebt }),
+    not_covered_yet: policy.enforcement?.not_covered_yet ?? null
+  });
+}
+
 export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = null, maxBytes = null, executionContext = {} } = {}) {
   const preflightStarted = nowMs();
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
@@ -159,6 +201,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   let fastDevelopmentV2Policy = null;
   let universalCompletionPolicy = null;
   let universalIngressPolicy = null;
+  let incidentSelfFixPolicy = null;
   let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
   while (queue.length) {
     const requested = queue.shift();
@@ -176,6 +219,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
       if (normalized === FAST_DEVELOPMENT_V2_SOURCE) fastDevelopmentV2Policy = parsed;
       if (normalized === UNIVERSAL_COMPLETION_POLICY_SOURCE) universalCompletionPolicy = parsed;
       if (normalized === UNIVERSAL_INGRESS_POLICY_SOURCE) universalIngressPolicy = parsed;
+      if (normalized === INCIDENT_SELF_FIX_POLICY_SOURCE) incidentSelfFixPolicy = parsed;
       collectSignals(parsed, signals);
       if (Array.isArray(parsed.linked_learning_sources)) for (const linked of parsed.linked_learning_sources) {
         if (typeof linked !== 'string' || !linked.trim()) throw new Error(`invalid linked_learning_sources entry in ${normalized}`);
@@ -200,6 +244,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   if (!fs.existsSync(ingressEntrypoint.absolute)) throw new Error(`missing universal-ingress entrypoint: ${universalIngress.runtimeEntrypoint}`);
   const ingressCompletionEntrypoint = normalizeSourcePath(rootDir, universalIngress.completionEntrypoint);
   if (!fs.existsSync(ingressCompletionEntrypoint.absolute)) throw new Error(`missing universal-ingress completion entrypoint: ${universalIngress.completionEntrypoint}`);
+  const incidentSelfFix = evaluateIncidentSelfFix({ rootDir, policy: incidentSelfFixPolicy });
   const skillIndexLocation = normalizeSourcePath(rootDir, SKILL_PROJECTION_INDEX_SOURCE);
   if (!fs.existsSync(skillIndexLocation.absolute)) throw new Error(`missing skill projection index: ${SKILL_PROJECTION_INDEX_SOURCE}`);
   const skillIndexManifest = JSON.parse(fs.readFileSync(skillIndexLocation.absolute, 'utf8'));
@@ -279,6 +324,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     telemetry,
     universalCompletion,
     universalIngress,
+    incident_self_fix: incidentSelfFix,
     skill_projection: {
       status: 'READY',
       fingerprint: skillProjectionIndex.fingerprint,
