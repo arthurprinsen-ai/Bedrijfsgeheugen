@@ -17,6 +17,7 @@
   "fix": "Reuse existing /api/growth-event and its durable queue to capture explicitly marked button CTA events, first in-content form focus and submission intent. Do not read form values or treat intent as a converted lead.",
   "prevention_rule": "Test both front-end events and backend allowlist together. Keep unknown form outcomes and failed tracking as UNKNOWN until actual provider persistence and commercial outcome are verified. No second tracker, sender or schedule.",
   "tests": [
+    "tests/brain-seo-cro-public-form-coverage-v1.test.mjs",
     "tests/seo-order-measurement.test.mjs"
   ],
   "compiler": {
@@ -27,13 +28,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/seo-order-measurement.test.mjs"
+      "tests/brain-seo-cro-public-form-coverage-v1.test.mjs"
     ],
     "shadow": [
-      "tests/seo-order-measurement.test.mjs"
+      "tests/brain-seo-cro-public-form-coverage-v1.test.mjs"
     ],
     "canary": [
-      "tests/seo-order-measurement.test.mjs"
+      "tests/brain-seo-cro-public-form-coverage-v1.test.mjs"
     ]
   },
   "terminal_rule": "Exact candidate Required/BRAIN/CodeQL, protected merge, Netlify production matching SHA, public browser event and private first-party provider persistence readback. This public record is generic source-level software documentation, not a private Brain export."
