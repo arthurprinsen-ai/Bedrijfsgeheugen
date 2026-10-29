@@ -1,0 +1,3 @@
+# LinkedIn persoonlijk blijft meetbaar bij COMPANY_AUTH_REQUIRED (2026-10-29)
+
+Sinds 27 oktober gaf `bg-social-metrics-sync` voor LinkedIn persoonlijk `LINKEDIN_VERIFIED_PROVIDER_PROOF_REQUIRED`. De setup (`powerhouse-composio-linkedin-setup`) schrijft `COMPANY_AUTH_REQUIRED` zodra het persoonlijke profiel geverifieerd is maar de bedrijfsrol ontbreekt; de sync eiste echter `ACTIVE`. De persoonlijke reactie-uitlezing is nu toegestaan bij `COMPANY_AUTH_REQUIRED`, uitsluitend met `personal_ready=true`, `ready=true` en `health_verified=true`. Instagram is niet versoepeld. De bedrijfsstatus in de uitkomst komt uit de bestaande Windsor-rijen (`linkedin_company_account_provider`) in plaats van een vaste 403-tekst. Geen DDL, geen nieuwe scheduler, geen secrets.
