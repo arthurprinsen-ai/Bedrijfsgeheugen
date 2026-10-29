@@ -137,7 +137,7 @@ begin
     'daily_winner_recommendation_id',v_winner.recommendation_id,'daily_winner_score_version',v_winner.score_version,
     'republish_forbidden',v_ob.external_id is not null);
 end
-$function$
+$function$;
 
 revoke all on function public.powerhouse_ensure_instagram_media_job_v1(date) from public,anon,authenticated;
 grant execute on function public.powerhouse_ensure_instagram_media_job_v1(date) to postgres,service_role;
