@@ -31,5 +31,10 @@
       "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
       "tests/brain-external-signal-quota-failover-20261019.test.mjs"
     ]
-  }
+  },
+  "prevention": "On the existing scheduler-owned bg-externe-signalen source, share one in-isolate Tavily probe. On provider 432 (plan limit), block repeat Tavily calls for 15 minutes; on 429 for 1 minute. Continue independently evidenced DataForSEO organic fallback, never bypass billing cap, duplicate scheduler, unauthorized egress, RLS or false-green source receipts. Regressions enforce this behavior and source lineage.",
+  "regression_contract": [
+    "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ]
 }
