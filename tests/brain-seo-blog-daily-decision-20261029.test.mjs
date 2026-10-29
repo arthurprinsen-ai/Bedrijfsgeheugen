@@ -42,3 +42,18 @@ test('existing resolver uses a single candidate and canonical evidence sources',
   assert.match(source,/bg_externe_signalen/);
   assert.match(source,/recommendations < 1/);
 });
+
+test('skipped legacy blog recommendations never reserve the daily publication slot',()=>{
+  const source=readFileSync('supabase/functions/powerhouse-seo-opportunity-resolver/index.ts','utf8');
+  assert.match(source,/\.in\('status',\['suggested','accepted','done'\]\)/);
+  assert.match(source,/!hasDailyBlogReservation && recommendations < 1/);
+  assert.doesNotMatch(source,/\.eq\('recommendation_type','seo_first_mover_intent_gap'\)\.limit\(1\)/);
+});
+
+test('TypeScript status filter contains a real newline, not an escaped two-character sequence',()=>{
+  const source=readFileSync('supabase/functions/powerhouse-seo-opportunity-resolver/index.ts','utf8');
+  const escaped=String.fromCharCode(92)+"n        .in('status'";
+  const correct=String.fromCharCode(10)+"        .in('status'";
+  assert.equal(source.includes(escaped),false,'literal backslash-n prevents the Edge Function bundler from parsing');
+  assert.equal(source.includes(correct),true,'status filter must have a genuine newline separator');
+});
