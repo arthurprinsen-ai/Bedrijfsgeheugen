@@ -41,3 +41,10 @@ test('personal source collection cannot claim personal lived experience nor rela
  assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
  assert.match(radar,/return json\(\{ok:errors\.length===0,runDate,stored,eligible,personalStored,personalEligible/);
 });
+test('existing source-to-recommendation materializer is called within original radar only',()=>{
+ assert.match(radar,/db\.rpc\('powerhouse_ensure_personal_source_rotation_v2',\{p_date:runDate\}\)/);
+ assert.match(radar,/db\.rpc\('powerhouse_materialize_mira_problem_recommendation_v1',\{p_date:runDate\}\)/);
+ assert.match(radar,/if\(personalRotation\.error\)errors\.push\('personal_source_rotation:'/);
+ assert.match(radar,/personalSourceRotation:personalRotation\.data\|\|null/);
+ assert.doesNotMatch(radar,/linkedin_create_post|INSTAGRAM_PUBLISH|cron\.schedule/i);
+});
