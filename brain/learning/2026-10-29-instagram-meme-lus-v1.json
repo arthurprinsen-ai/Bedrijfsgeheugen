@@ -1,0 +1,53 @@
+{
+  "version": "POWERHOUSE-LEARNING-v1",
+  "date": "2026-10-29",
+  "fingerprint": "instagram-meme-lus-v1-config-only",
+  "domain": "delivery",
+  "stage": "PR_VERIFICATION",
+  "component": "instagram",
+  "status": "DESIGN_RECORDED_NOT_EXECUTED",
+  "failure_class": "RECOVERY",
+  "compiler": {
+    "failure_class": "RECOVERY"
+  },
+  "security_sensitive": false,
+  "scope": "DATABASE",
+  "context": {
+    "pull_request": 5062,
+    "parent": 4198,
+    "linkedin_spoor": 5056,
+    "notion": "https://app.notion.com/p/407da36aac8a8137ad04dedccec43312"
+  },
+  "symptoms": [
+    "Instagram publiceert sinds 3 okt niet; mediajobs staan op WAITING_ASSET of WAITING_PROOF",
+    "13 Instagram-posts sinds 14 sept met 0 shares en 0 saves; geen leersignaal"
+  ],
+  "root_cause": {
+    "primary": "Geen leerlus voor Instagram; meting mist kijktijd, skip rate en sends per post",
+    "secondary": "Gezichtsscore 0,92 en 0,93 onder drempel 0,94 blokkeert video's (PR 4270 open)"
+  },
+  "recovery": [
+    "Config vastgelegd met dagplafond 400 credits en poorten, zonder uitvoering",
+    "Uitvoering pas na PR 4270, uitgebreide meting en afdwingen van het plafond in code"
+  ],
+  "prevention_rules": [
+    "Gezichtspoort 0,94 nooit versoepelen om een gat te dichten",
+    "Geen Instagram-leerlus starten zonder meting van kijktijd en sends per post"
+  ],
+  "evidence": {
+    "source": "Supabase-meting 28 okt 2026 (social_posts, social_metric_snapshots, powerhouse_instagram_media_jobs_v1)",
+    "test": "tests/brain-instagram-meme-lus-config-v1.test.mjs",
+    "honesty_note": "De canary-entry hieronder is een configcontrole (geen live canary). Er draait nog geen Instagram-uitvoering, dus er is geen live canary om te meten."
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"],
+    "shadow": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"],
+    "canary": ["tests/brain-instagram-meme-lus-config-v1.test.mjs"]
+  },
+  "openObligation": {
+    "state": "OPEN_CONFIG_ONLY",
+    "terminal": false,
+    "resume": "PR 4270 landen -> meting uitbreiden -> plafond in code -> akkoord Arthur -> uitvoering"
+  },
+  "reuseGuidance": "Bij een nieuwe Instagram-poging eerst dit bestand en de config lezen; het plafond en de poorten zijn leidend."
+}
