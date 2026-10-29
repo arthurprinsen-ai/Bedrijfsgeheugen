@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|existing-brain-heartbeat-handoff-evidence|20261029-v1",
+  "observed_at": "2026-10-29",
+  "type": "INTEGRATION_GUARD_CANDIDATE",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "authority": "existing ONE BRAIN / Powerhouse / Heartbeat",
+  "owner": "original Agent Fabric and Brain delivery owner",
+  "source": "tools/brain/powerhouse-integration-handoff-evidence.mjs",
+  "regression": "tests/brain-powerhouse-integration-handoff-20261029.test.mjs",
+  "human_documentation": "docs/changes/2026-10-29-powerhouse-integration-handoff-evidence.md",
+  "root_cause": "A wired capability or successful cron/SQL event is not linked evidence of action, verified customer outcome or applied learning.",
+  "scope": [
+    "ONE BRAIN",
+    "Powerhouse",
+    "Heartbeat",
+    "Agent Fabric",
+    "SkillOps",
+    "Growth and Revenue",
+    "Content",
+    "SEO/CRO",
+    "Portal"
+  ],
+  "prevention": "Gate end-to-end closure on single-tenant/source-revision lineage, real actor/skill execution, independent provider receipts, measurements, Brain learning and regression proof.",
+  "no_new_scheduler": true,
+  "no_new_store": true,
+  "no_second_writer": true,
+  "source_claim_boundary": "No direct revenue or deployment claim. No live runtime consumer verified.",
+  "open_evidence": [
+    "protected merge",
+    "actual Heartbeat/Agent Fabric consumption",
+    "real source receipts and independent verifier",
+    "customer/provider outcome",
+    "portal readback"
+  ]
+}
