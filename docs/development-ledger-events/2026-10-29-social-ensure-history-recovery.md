@@ -10,3 +10,4 @@
 - Publication proof: Instagram provider ID absent; LinkedIn personal 2026-10-29 provider ID absent. Company LinkedIn existing proof is unrelated and must not be republished.
 - Release proof: PENDING; protected PR checks and production SQL/readback must update this ledger before any live claim.
 - Portal: no false green, expose missing data/source and provider proof as blocked action requirements; independent success needed to close.
+- Protected candidate: PR #5145, https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5145, covers one original database function, existing admin-only portal projection, regression tests and skill. The first CI attempt was correctly rejected by the machine admission contract due to missing Base-SHA; PR metadata was repaired. An admission failure is an engineering incident, not a provider publication.
