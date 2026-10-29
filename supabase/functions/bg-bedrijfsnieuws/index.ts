@@ -45,6 +45,7 @@ Deno.serve(async (req: Request) => {
       const naam = schoon(b.bedrijf); const k = kern(naam);
       if (k.length < 3) { await db.from('bg_bedrijf_gecheckt').upsert({ bedrijf: b.bedrijf, laatst_gecheckt: new Date().toISOString(), resultaten: 0 }, { onConflict: 'bedrijf' }); continue; }
       const r = await fetch('https://api.tavily.com/search', { method: 'POST', headers: { authorization: `Bearer ${tavily}`, 'content-type': 'application/json' }, body: JSON.stringify({ query: `"${naam}"`, topic: 'news', days: DAGEN, max_results: 5, search_depth: 'basic' }) });
+      if (!r.ok) throw new Error(`TAVILY_${r.status}`);
       const res: any = await r.json().catch(() => ({}));
       const hits = (res.results || []).filter((x: any) => {
         if (SOCIAAL.test(domeinVan(x.url)) || !kern(`${x.title} ${x.content}`).includes(k)) return false;
@@ -78,6 +79,7 @@ Deno.serve(async (req: Request) => {
     await bewijs(true, r);
     return json(r);
   } catch (e: any) {
-    return fail(500, { error: String(e?.message || e).slice(0, 300) }, 'VALIDATION');
+    const msg = String(e?.message || e).slice(0, 300);
+    return fail(500, { error: msg }, /^TAVILY_/.test(msg) ? 'REMOTE' : 'VALIDATION');
   }
 });
