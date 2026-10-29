@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { assessPowerhouseHandoffs, INTEGRATION_STAGES } from '../tools/brain/powerhouse-integration-handoff-evidence.mjs';
+import { assessPowerhouseHandoffs, INTEGRATION_STAGES } from '../brain/operating-loop/powerhouse-integration-handoff-evidence.mjs';
 import { sha256 } from '../tools/brain/agent-skill-execution-evidence.mjs';
 
 const tenantId='bedrijfsgeheugen', correlationId='cycle-29', sourceRevision='main-abc';
