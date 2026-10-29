@@ -275,6 +275,17 @@ Leg per kandidaat vast: werkelijk probleem/bron, hypothese, vooraf gemeten basis
 
 Ieder voorstel blijft `CANDIDATE` tot geautoriseerde writer de echte code veilig door Required/BRAIN/CodeQL heeft gebracht, beschermde merge heeft plaatsgevonden en exact commit -> Netlify productie -> publieke browser plus eventuele ingelogde tenant-readback is bewezen. Alleen daadwerkelijke consented opt-ins en onafhankelijke order-/betalingsbewijzen zijn commerciële uitkomsten. Synchroniseer dezelfde lineage met bestaande ONE BRAIN, deze skill, menselijke change/ledger, canonieke System Map, portaalstatus, test en incidentregressie; nooit `ALL_GREEN` door alleen een beleidsupdate.
 
+## CTA-to-verified-revenue event receipt invariant — 29 oktober 2026
+
+Fingerprint: `powerhouse|cro|cta-event-alias-mismatch|20261029`; authority: bestaande `netlify/functions/growth-event.mjs`, `growth-replay.mjs`, `growth-outcome.mjs`, `public.bg_growth_ingest_event(jsonb)`, `growth_events`, `growth_page_daily`, `powerhouse_experiment_assignments` en bestaande Brain/Heartbeat. Geen nieuwe scheduler, eventwriter, analytics-cookie of CRM.
+
+- Bij elke wijziging aan een website-CTA, formulieren of CRO-publicatie controleert de eigenaar de **exacte** `event_type`-namen tegen de Supabase rollup: `cta_click`, `primary_cta_click`, `secondary_cta_click`, `money_link_click`; test event-ID-uniciteit en robotfiltering.
+- `/api/growth-event` met HTTP 202 is alleen `durable queued`. `datahub:'persisted'` vereist uit de **bestaande** Supabase RPC de correcte `datahub`-tabel, overeenkomende `event_id`/`outcome_id`, `queue_id` en exclusieve `stored` of `deduped` waarheidswaarde; bij mismatch blijf veilig in de bestaande retryqueue.
+- Echte `form_submit_intent` bewijst uitsluitend intentie; zet geen lead of order op basis van een klik, scroll, 202 of intern `execution_completed`. Gekwalificeerde leads alleen na geverifieerde opt-in/kwalificatie met bronkoppeling; omzet alleen na contract-/factuur-/betalingsprovider-readback.
+- Experimenten: eerst preregistratie, willekeurige persistente toewijzing vóór variantzicht, één exclusieve pagina/metric-owner, gelijke behandelings- en controlegroep volgens beleid, SRM, volwassen observatievenster, betrouwbaarheidsinterval, rollback bij guardrail-regressie, nooit promotiestatus GROEN zonder onafhankelijk bewezen verbetering. 1 assignment is onvoldoende.
+- Elke gebeurtenis en fout krijgt bestaande Heartbeat/Brain-fingerprint, eigenaar, oorzaak, voor/na, test en provider-/Supabase-ID; projecteer status naar `Data & intelligence → Andere data` zodra eigen geauthenticeerde tenant- en productiereadback slaagt. Onbekende data = `UNVERIFIED`, nooit 0 of GROEN.
+- Regressie: `tests/brain-growth-datahub-ack-cta-20261029.test.mjs`; beschermde merge, SQL-migratieledger en live browser→Netlify→Supabase→portal proof zijn aparte gates.
+
 ## CRO observability & experimentcontract (29 oktober 2026)
 Canonieke bron: `docs/cro/website-observability-experimentcontract-20261029.md`.
 
