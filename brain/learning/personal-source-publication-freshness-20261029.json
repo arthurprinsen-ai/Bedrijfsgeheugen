@@ -1,0 +1,27 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "personal|source-rotation|undated-stale-news-selected|20261029-v1",
+  "status": "NOT_LIVE",
+  "root_cause": "Existing observed-personal-source recovery had no verified provider publication-date predicate, so it could generate a suggestion from old or undated content and block meaningful daily recovery.",
+  "prevention_rule": "Use only original dated provider-confirmed source within 45 days, not future, and never duplicate prior source URLs or protected story families. A missing compliant source must be an actionable NO_FRESH state, not a false green or fabricated citation.",
+  "compiler": {
+    "failure_class": "STALE_SOURCE_ACCEPTANCE",
+    "scope": "PERSONAL_CONTENT_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-observational-source-date-guard-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_patch_status": "PENDING_REQUIRED",
+    "source_published_at_absent": true,
+    "source_recommendation_skipped": true,
+    "provider_post_verified": false,
+    "public_pii_excluded": true
+  }
+}
