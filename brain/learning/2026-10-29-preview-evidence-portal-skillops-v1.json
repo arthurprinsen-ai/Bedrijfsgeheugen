@@ -1,0 +1,47 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|portal|wiring-hidden-red-loop-and-preview-repeat|20261029-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Existing admin Powerhouse Control Plane read projection showed 32/32 wired and 18/18 active but did not fetch two canonical live health sources: loop integrity RED and terminal control unhealthy with unknown remote outcomes; concurrent Supabase Preview migration-history replay SQLSTATE 23505 was tracked separately from source-lock drift.",
+  "prevention": "Existing source projection must independently fetch loop integrity and terminal control views and display their red/amber/blocked counts, never implicit all-green. Existing original source-lock owner handles 784 Git/provider identity drift; preview replay SQLSTATE 23505 requires independent provider remediation, never bypass. No new service, scheduler, incident store, paid preview or duplicate publisher.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-preview-evidence-cockpit-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-preview-evidence-cockpit-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Supabase canonical powerhouse_loop_integrity_health_v1 and powerhouse_terminal_control_plane_health_v1",
+    "observed_at": "2026-10-29T21:17:00Z",
+    "wiring": "32/32",
+    "jobs": "18/18",
+    "loop_state": "RED",
+    "loops": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "terminal": {
+      "blocked": 2,
+      "escalated_unknown": 2,
+      "healthy": false
+    },
+    "migration_lock_source_gap": "784 production / 774 original main / 779 old preview",
+    "protected_ci_proven": false,
+    "admin_browser_readback_proven": false,
+    "commercial_outcome_proven": false,
+    "no_second_scheduler": true,
+    "security_gate_retained": true
+  }
+}
