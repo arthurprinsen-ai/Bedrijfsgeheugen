@@ -8,20 +8,29 @@
   "compiler": {
     "failure_class": "SOURCE_NOT_IN_REPO",
     "scope": "RUNTIME",
-    "machine_enforceable": false,
+    "machine_enforceable": true,
+    "repeat_count": 1,
     "security_sensitive": false
   },
   "evaluation": {
-    "historical_replay": [],
-    "shadow": [],
-    "canary": []
+    "historical_replay": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ]
   },
   "root_cause": "De deployed functie bg-bedrijfsnieuws (v10) bestond alleen in Supabase, niet in git. Daardoor was de Tavily-foutafhandeling niet controleerbaar in de repo.",
-  "prevention": "Elke deployed Edge Function moet een broncode-spiegel in supabase/functions hebben voordat er een wijziging op gaat.",
+  "prevention": "Elke deployed Edge Function moet een broncode-spiegel in supabase/functions hebben, en een contracttest, voordat er een wijziging op gaat.",
   "evidence": {
-    "tests": [],
+    "tests": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
     "workflow": ".github/workflows/required-test.yml",
-    "runtime_status": "Broncode 1-op-1 teruggezet uit de live functie (v10, 10 sept 2026); geen wijziging."
+    "runtime_status": "Broncode 1-op-1 teruggezet uit de live functie (v10); geen wijziging. Contracttest legt governance, DM-filters en drempels vast."
   },
   "limitations": [
     "Alleen herstel van broncode; de Tavily-fix volgt in een aparte PR",
