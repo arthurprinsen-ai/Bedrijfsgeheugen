@@ -27,3 +27,10 @@ A failed attempt must produce a *different* validated source or a tested impleme
 ## Evidence and tests
 
 Existing immutable runtime events, `content_publication_obligations`, `powerhouse_channel_decisions`, ONE BRAIN and the exclusive protected GitHub writer remain the sole authorities. Use regression `tests/brain-social-delivery-agent-handoff-20261029.test.mjs`. This skill represents a candidate until a protected merge plus production agent-registry readback; a registered agent definition is not independently proof of scheduled execution or public posting.
+
+## Required audit receipt and learning handoff (2026-10-29)
+
+- Before a side effect, classify the destination: public GitHub/PR/branch, Netlify preview, website, provider API, private Brain or customer tenant. A draft or internal Brain/ledger payload cannot be copied to any public destination, even if its PR is marked DRAFT. Require explicit `approved_at` and tenant/recipient authorization at the last writer.
+- Each failed, skipped, recovered or completed action appends **one deduplicated audit receipt** to the existing private ONE BRAIN failure/incident lineage: UTC time, fingerprint, affected obligation, owner, source SHA, decision, safe source/destination class, permission result, attempted action, provider ID where applicable, independently observed readback, remediation, regression and next recheck. Never log secrets or private payload to GitHub comments/PRs.
+- PR closure and source-branch deletion can be independently verified and recorded as partial containment; neither proves deletion of historical GitHub PR diffs, Netlify caches or copies. Report `HISTORIC_PUBLIC_COPIES_UNRESOLVED` until separate evidence supports closure.
+- After diagnosis ask **what can be safer, faster and better**, create at most one bounded, source-backed testable improvement in the same writer lineage, measure against a real baseline and project a proven rule back to the existing skill and Heartbeat. No retry of an identical rejected candidate and no second executor.
