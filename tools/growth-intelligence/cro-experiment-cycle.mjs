@@ -146,3 +146,43 @@ export function projectCroLearning(design, evaluation) {
     nextAction:evaluation.nextAction||'COLLECT_FRESH_MEASUREMENT_OR_REDESIGN'
   };
 }
+
+
+/**
+ * First-party analytics reconciliation is diagnostic only. A generic click
+ * in bg_interacties is NOT automatically a CTA click in growth_page_daily.
+ * This never fabricates a funnel outcome or treats missing data as zero.
+ */
+export function diagnoseCroMeasurementGap(snapshot = {}) {
+  const validNumber = v => Number.isSafeInteger(v) && v >= 0;
+  const present = ['pageViews','ctaClicks','nonBotInteractions','clickLikeEvents'].every(
+    key => validNumber(snapshot[key]));
+  const sameWindow = ref(snapshot.windowStart) && ref(snapshot.windowEnd) &&
+    snapshot.windowStart < snapshot.windowEnd &&
+    snapshot.pageDailyWindowStart === snapshot.windowStart &&
+    snapshot.pageDailyWindowEnd === snapshot.windowEnd &&
+    snapshot.interactionsWindowStart === snapshot.windowStart &&
+    snapshot.interactionsWindowEnd === snapshot.windowEnd;
+  const bothVerified = snapshot.pageDailyVerified === true &&
+    snapshot.interactionsVerified === true &&
+    ref(snapshot.pageDailyEvidenceRef) && ref(snapshot.interactionsEvidenceRef);
+  const common={contract:CRO_EXPERIMENT_CONTRACT,ownerAgent:'cro',
+    conclusion:'NO_CAUSAL_OR_LOST_REVENUE_INFERENCE',writebackVerified:false,
+    productionVerified:false,evidenceRefs:unique([
+      snapshot.pageDailyEvidenceRef,snapshot.interactionsEvidenceRef])};
+  if(!bothVerified || !present) return {...common,status:'MEASUREMENT_REQUIRED',
+    reason:'MISSING_VERIFIED_METRIC_DATA',nextAction:'INSTRUMENT_AND_VERIFY_CURRENT_BASELINE'};
+  if(!sameWindow) return {...common,status:'INCOMPARABLE',
+    reason:'SOURCE_WINDOWS_NOT_ALIGNED',nextAction:'ALIGN_SOURCE_WINDOWS_AND_DEFINITIONS'};
+  if(snapshot.clickLikeEvents > snapshot.nonBotInteractions) return {...common,
+    status:'INVALID',reason:'CLICK_EVENTS_EXCEED_INTERACTION_EVENTS',
+    nextAction:'VERIFY_SOURCE_COUNTER_DEFINITIONS'};
+  if(snapshot.ctaClicks===0 && snapshot.clickLikeEvents>0) return {...common,
+    status:'RECONCILIATION_REQUIRED',reason:'INTERACTION_VS_FUNNEL_MAPPING_GAP',
+    observation:{pageViews:snapshot.pageViews,ctaClicks:snapshot.ctaClicks,
+      nonBotInteractions:snapshot.nonBotInteractions,clickLikeEvents:snapshot.clickLikeEvents},
+    note:'Not proof of a missing CTA click: these counters have different event taxonomies.',
+    nextAction:'AUDIT_EVENT_TAXONOMY_ROUTE_AND_FUNNEL_PROJECTION'};
+  return {...common,status:'OBSERVED_NOT_CAUSAL',reason:'NO_OBVIOUS_CROSS_SOURCE_GAP',
+    nextAction:'VERIFY_EVENT_MAPPING_AND_CONTINUE_EXPERIMENT_DESIGN'};
+}
