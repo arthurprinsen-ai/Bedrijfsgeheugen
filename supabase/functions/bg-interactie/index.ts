@@ -53,6 +53,12 @@ Deno.serve(async (req: Request) => {
     const uid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(e?.event_uid || '')) ? String(e.event_uid).toLowerCase() : null;
     return { event_uid:uid, gebeurd_op: Number.isFinite(t) && Math.abs(nu - t) < 86_400_000 ? new Date(t).toISOString() : null, gebeurtenis: g, pad: p, gebied, element_tekst: tekst(e?.element_tekst, 120), element_soort: tekst(e?.element_soort, 30), element_doel: doel(e?.element_doel), onderdeel: tekst(e?.onderdeel, 80), diepte_pct: getal(e?.diepte_pct, 0, 100), seconden: getal(e?.seconden, 0, 86400), sessie, apparaat, bron_domein: bron, herkomst, toestemming, is_robot: robot };
   }).filter(Boolean);
+  const ontvangenAantal = (Array.isArray(body?.events) ? body.events : [body]).slice(0, MAX_EVENTS).length;
+  // Reject entire mixed/invalid batch; never acknowledge and silently drop rows.
+  if (rijen.length !== ontvangenAantal)
+    return new Response(JSON.stringify({ ok: false, opgeslagen: 0, bevestigd: 0, error: 'INVALID_OR_UNCONSENTED_EVENT_BATCH' }), {
+      status: 422, headers: { ...cors(origin), 'content-type':'application/json', 'cache-control':'no-store' }
+    });
   if (!rijen.length) return new Response(JSON.stringify({ ok: true, opgeslagen: 0, bevestigd: 0 }), { status: 200, headers: { ...cors(origin), 'content-type': 'application/json' } });
   if (Date.now() < degradedUntil) return degradedResponse(origin, 'DATA_API_CIRCUIT_OPEN');
 
