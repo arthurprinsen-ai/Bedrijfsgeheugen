@@ -40,3 +40,11 @@
 .pai-quality-actions{padding:12px;border-radius:10px;background:#f8faff;border:1px solid #e3eafa;font-size:.82rem}
 .pai-quality-actions ol{padding-left:22px;margin:8px 0 0}
 .pai-quality-actions li+li{margin-top:5px}
+
+/* Canonical System Map relationships, rendered from the existing source-of-truth graph. */
+.psm-architecture-grid{list-style:none;padding:0;margin:12px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.psm-architecture-link{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:6px;align-items:center;border:1px solid #dce5f4;border-radius:12px;padding:12px;background:#f8faff}
+.psm-architecture-link strong{overflow-wrap:anywhere;font-size:.81rem}
+.psm-architecture-link>span{color:#1769ff;font-weight:900;text-align:center}
+.psm-architecture-link small{grid-column:1/-1;line-height:1.4;color:#53617b}
+@media(max-width:600px){.psm-architecture-grid{grid-template-columns:1fr}}
