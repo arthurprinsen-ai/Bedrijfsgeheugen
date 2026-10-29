@@ -14,7 +14,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs"
     ]
   },
   "root_cause": "Supabase production migration integration applied the once-unapplied local-only LinkedIn migration during protected #5104 release, plus three already-applied sources mirrored in #5104; migration-history.lock remained an earlier 770-row snapshot and would falsely classify four truly applied identities as local-only.",
@@ -23,6 +23,7 @@
   "evidence": {
     "tests": [
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs",
       "tests/supabase-migration-history-integrity.test.mjs"
     ],
     "provider_migration_count": 774,
