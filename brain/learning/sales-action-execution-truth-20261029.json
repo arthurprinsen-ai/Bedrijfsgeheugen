@@ -33,5 +33,15 @@
       "tests/brain-sales-action-execution-truth-20261029.test.mjs"
     ]
   },
-  "prevention_rule": "Never allow negative outcome ids to mint execution; require status done + executed_at, preserve immutable history and independent provider readback."
+  "prevention_rule": "Never allow negative outcome ids to mint execution; require status done + executed_at, preserve immutable history and independent provider readback.",
+  "evidence": {
+    "source": "Supabase read-only canonical source join; data inspected on 2026-10-29",
+    "negative_expired": 1959,
+    "negative_skipped": 131,
+    "real_done_with_timestamp": 136,
+    "provider_send_claim": "NOT_PROVEN"
+  },
+  "tests": [
+    "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+  ]
 }
