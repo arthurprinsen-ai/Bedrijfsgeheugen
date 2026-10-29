@@ -31,7 +31,17 @@ test('strict channel separation leaves original Mira winner protection in place'
  assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
  assert.match(radar,/source_published_at:publication\.publishedAt/);
  assert.match(originalSql,/x\.metadata->>'contract'='mira-entrepreneur-portal-story-v1'/);
- assert.match(originalSql,/coalesce\(x\.metadata->>'portal_problem_id',''\) ~ '\^PH-P\[0-9\]\{3\}\$'/);
+ assert.ok(originalSql.includes("coalesce(x.metadata->>'portal_problem_id','') ~ '^PH-P[0-9]{3}
+ assert.match(originalSql,/WINNER_ALREADY_FROZEN/);
+});
+test('personal source collection cannot claim personal lived experience nor relax source verification',()=>{
+ assert.match(radar,/source_publication_date_evidence:publication\.publishedAt\?'DATED':'UNVERIFIED'/);
+ assert.match(radar,/observational_personal_theme_verified:Boolean\(personalTopic\)/);
+ assert.match(radar,/first_person_claims_present:false/);
+ assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
+ assert.match(radar,/return json\(\{ok:errors\.length===0,runDate,stored,eligible,personalStored,personalEligible/);
+});
+"));
  assert.match(originalSql,/WINNER_ALREADY_FROZEN/);
 });
 test('personal source collection cannot claim personal lived experience nor relax source verification',()=>{
