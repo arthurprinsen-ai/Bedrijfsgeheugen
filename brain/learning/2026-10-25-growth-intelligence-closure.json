@@ -16,5 +16,30 @@
   },
   "production_readback": {
     "verified": false
+  },
+  "cro_experiment_extension": {
+    "fingerprint": "powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1",
+    "change_reason": "Guarded CRO design, assignment, SRM and outcome learning were not linked in the draft Heartbeat decision adapter",
+    "owner": "existing Powerhouse CRO agent and commercial Heartbeat",
+    "production_verified": false,
+    "portal_readback_verified": false,
+    "existing_brain_writeback_required": true,
+    "tests": [
+      "tools/growth-intelligence/cro-experiment-cycle.test.mjs",
+      "tools/growth-intelligence/heartbeat-adapter.test.mjs"
+    ],
+    "initial_local_probe": "11/11 pure CRO contract tests passed in V8 harness (not exact-head Node CI)",
+    "observed_defect": "String owner ref threshold excluded canonical CRO owner; fixed and retested",
+    "measurement_gap": {
+      "observed_at": "2026-10-29",
+      "growth_page_daily_14d_page_views": 3634,
+      "growth_page_daily_cta_clicks": 0,
+      "bg_interacties_7d_clicks": 48,
+      "root_cause": "UNKNOWN",
+      "note": "Different sources and windows; investigation candidate only; not a proven lost conversion"
+    },
+    "canonical_candidate_source_key": "growth:cro-measurement-reconciliation:20261029",
+    "guarded_promotion": "Only BG169 / protected main / exact production and provider readback",
+    "next_safe_action": "Reconcile observation and event definitions, deploy only after Required and CodeQL, then verify mature real customer cohorts"
   }
 }
