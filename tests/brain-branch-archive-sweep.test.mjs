@@ -47,3 +47,11 @@ test('janitor runs the sweep with a cap and only against its own repository', ()
   const src = readFileSync('tools/ci/branch-archive-sweep.mjs', 'utf8');
   assert.ok(!/--repo|-R /.test(src));
 });
+
+test('sweep has a time budget, a circuit breaker and a hard timeout in the janitor', () => {
+  const src = readFileSync('tools/ci/branch-archive-sweep.mjs', 'utf8');
+  assert.match(src, /SWEEP_BUDGET_SECONDS/);
+  assert.match(src, /consecutiveArchiveFailures >= 3/);
+  const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
+  assert.match(wf, /branch_archive_sweep:[\s\S]*timeout-minutes: 20[\s\S]*timeout 1000 node tools\/ci\/branch-archive-sweep\.mjs/);
+});

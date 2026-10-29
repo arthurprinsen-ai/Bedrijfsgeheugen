@@ -406,8 +406,6 @@ jobs:
           done
           echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:seen=${sweep_seen}:open=${sweep_open}:missing=${sweep_missing}:protected=${sweep_protected}:moved=${sweep_moved}:deleted=${sweep_deleted}"
 
-          # Stale branches whose work stays recoverable (PR head ref or archive/ tag); see tools/ci/branch-archive-sweep.mjs.
-          node tools/ci/branch-archive-sweep.mjs --apply --cap 150 --actions .artifacts/janitor-runtime-actions.ndjson
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
@@ -517,3 +515,24 @@ jobs:
             core.summary.addCodeBlock(JSON.stringify(report, null, 2), 'json');
             await core.summary.write();
             if (report.blocked.length || report.pending.length) core.setFailed('Unresolved branch reconciliation');
+
+  branch_archive_sweep:
+    # Own job and time budget so a slow sweep can never cut the Janitor's readback and writeback steps.
+    needs: janitor
+    if: ${{ always() && !cancelled() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')) }}
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Remove stale branches whose work stays recoverable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SWEEP_BUDGET_SECONDS: '900'
+        run: |
+          # See tools/ci/branch-archive-sweep.mjs: PR head ref or archive/ tag keeps the work recoverable.
+          timeout 1000 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 || echo "::warning::JANITOR_ARCHIVE_SWEEP_INCOMPLETE"
