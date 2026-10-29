@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-branch-debris|janitor-protected-jq-fix|20261029-v1",
+  "fingerprint": "ci|branch-debris|jq-false-default-protected-always-true|20261029-v1",
+  "compiler": {
+    "failure_class": "JQ_FALSE_DEFAULT_TRAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Bewezen: de sweep-teller toonde seen=219, protected=219, deleted=0. De Janitor las `.protected // true`; in jq geldt `//` voor false als leeg, dus `false // true` is true en elke branch leek beschermd. Het vlak-voor-verwijderen-pad van de Janitor kon daardoor nooit iets verwijderen, wat de 3.257 branches verklaart.",
+  "fix": "Beide verwijderpaden (branch-wandeling en PR-sweep) lezen nu `if .protected == false then \"false\" else \"true\" end`: alleen een expliciete false is verwijderbaar, ontbrekend of null blijft beschermd. Het annuleerpad voor oude runs blijft ongemoeid.",
+  "prevention_rule": "Gebruik in jq nooit `//` om een boolean een standaard te geven; test elke fail-closed filter met een letterlijke false.",
+  "tests": [
+    "tests/brain-janitor-bounded-cleanup.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "invariants": [
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd",
+      "verwijderen alleen bij exacte head-sha van een gemergde PR naar main"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
