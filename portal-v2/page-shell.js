@@ -20,6 +20,7 @@ import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
 import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
 import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
+import { mountOtherData } from './modules/andere-data.js';
 import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js';
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
@@ -86,6 +87,7 @@ const COPY = {
   'brain-verwerking':['Brain-verwerking','Het Brein verbindt jouw invoer, bronnen en geleerde lessen. Powerhouse vertaalt die context naar beslissingen en acties; Heartbeat verwerkt geplande taken. Dit scherm toont de vastgelegde stappen en hun bewijsstatus.'],
   agentstatus:['Agenta · jouw data & acties','Bekijk welke bedrijfsdata de agents gebruiken, welke acties zijn uitgevoerd en welk bewijs daarvan beschikbaar is.'],
   rekenwijze:['Hoe dit portaal rekent','Bekijk de formule, benodigde invoer en uitkomst van de getoonde berekeningen. Dit zijn berekeningen op basis van beschikbare gegevens; een berekende baat is nog geen gerealiseerde winst en een scenario is geen gemeten resultaat.'],
+  'andere-data':['Andere data','Websitebezoeken, interactiekwaliteit, geregistreerde CRO-experimenten, hypotheses, controlevarianten en resultaten met betrouwbaarheidsstatus.'],
   'powerhouse-control-center':['Powerhouse Control Center','Volg dagelijks wat AI, chats, agents, workflows en infrastructuur doen: activiteit, fouten, learnings, skills, delivery, kosten en bewijs in één filterbare cockpit.'],
   'actieve-acties':['Actieve acties','Van inzicht naar concrete uitvoering, eigenaar, voortgang en bewijs.'],
   'recovery-obligations':['Open recovery obligations','Elke containment of blokkade blijft zichtbaar totdat root cause, fix, test en heractivatie aantoonbaar gesloten zijn.'],
@@ -350,6 +352,7 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
+  else if(pageId==='andere-data'){native.innerHTML='';mountOtherData(native);}
   else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
    else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
   else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
