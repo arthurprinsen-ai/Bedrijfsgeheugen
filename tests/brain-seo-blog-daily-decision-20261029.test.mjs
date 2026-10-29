@@ -52,7 +52,7 @@ test('skipped legacy blog recommendations never reserve the daily publication sl
 
 test('TypeScript status filter contains a real newline, not an escaped two-character sequence',()=>{
   const source=readFileSync('supabase/functions/powerhouse-seo-opportunity-resolver/index.ts','utf8');
-  const escaped=String.raw`\\n        .in('status'`;
+  const escaped=String.fromCharCode(92)+"n        .in('status'";
   const correct=String.fromCharCode(10)+"        .in('status'";
   assert.equal(source.includes(escaped),false,'literal backslash-n prevents the Edge Function bundler from parsing');
   assert.equal(source.includes(correct),true,'status filter must have a genuine newline separator');
