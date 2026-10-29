@@ -108,4 +108,11 @@ test('admin gate executes before service-role source read and no new scheduled w
   assert.doesNotMatch(helper,/method\s*:\s*['"](?:POST|PATCH|PUT|DELETE)/);
   assert.doesNotMatch(helper,/schedule\s*:/);
   assert.match(backend,/cache-control.*private, no-store/);
+  // Production Netlify sets the existing EU portal URL and service role;
+  // SUPABASE_URL is intentionally absent. Do not silently turn the view PARTIAL.
+  assert.match(backend,/BG_PORTAL_EU_SUPABASE_URL/);
+  assert.match(backend,/SUPABASE_SERVICE_ROLE_KEY/);
+  assert.ok(backend.indexOf("process.env.BG_PORTAL_EU_SUPABASE_URL")>
+    backend.indexOf('if(!hasAdminRole(user))'));
+
 });
