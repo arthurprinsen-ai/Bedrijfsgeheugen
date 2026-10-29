@@ -1650,6 +1650,26 @@
           "paid_order",
           "realized_revenue"
         ]
+      },
+      "cro_evidence_to_orders": {
+        "fingerprint": "cro|evidence-to-orders|telemetry-reconciliation|20261029-v1",
+        "owner": "existing Powerhouse SEO Order Engine",
+        "quality_gate": "source -> durable event receipt -> verified outcome",
+        "experimental_options": [
+          "optional-consented-whatsapp-contact",
+          "interactive-form",
+          "multi-step-form",
+          "nonintrusive-contextual-popup",
+          "cta-message-match",
+          "mobile-ux"
+        ],
+        "privacy": "no form values, customer identifiers, dark patterns, unsolicited outbound or non-consensual tracking",
+        "max_daily_reversible_changes": 3,
+        "existing_issues": [
+          4446,
+          4900
+        ],
+        "status": "POLICY_CANDIDATE_PENDING_PROTECTED_MERGE_AND_RUNTIME_PROOF"
       }
     },
     {
