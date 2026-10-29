@@ -28,18 +28,19 @@ test('mixed batch cannot skip proof when a Brain module changes',()=>{
     'brain/operating-loop/living-memory.mjs'
   ]),true);
 });
-test('existing production readback demands actual authenticated tenant proof for Brain runtime',async()=>{
+test('every production deployment demands two-tenant authenticated proof',async()=>{
   const workflow=await readFile(new URL('../.github/workflows/production-release-readback.yml',import.meta.url),'utf8');
   assert.match(workflow,/import \{ deriveNetlifyDeploymentApplicability, requiresBrainRuntimeAuthenticatedProof(?:, [A-Za-z]+)* \}/);
   assert.match(workflow,/const brainRuntimeAuthProofRequired=requiresBrainRuntimeAuthenticatedProof\(changedPaths\)/);
   assert.match(workflow,/brain_runtime_auth_proof_required=\$\{brainRuntimeAuthProofRequired\}/);
   const step=workflow.match(/- name: Verify authenticated Portal production API proof\n\s*if: ([^\n]+)/);
   assert.ok(step,'canonical authenticated proof step missing');
-  assert.match(step[1],/steps\.scope\.outputs\.portal_required == 'true'/);
-  assert.match(step[1],/steps\.scope\.outputs\.brain_runtime_auth_proof_required == 'true'/);
-  assert.match(step[1],/\|\|/); // either trigger alone requires the proof
+  assert.match(step[1],/steps\.scope\.outputs\.deployment_required == 'true'/);
+  assert.doesNotMatch(step[1],/portal_required|brain_runtime_auth_proof_required/); // no website-only loophole
   assert.match(step[1],/steps\.deploy\.outcome == 'success'/);
   assert.match(workflow,/proof\?\.status!=='PROVEN'/);
   assert.match(workflow,/proof\?\.tenant_scope_verified!==true/);
+  assert.match(workflow,/proof\?\.cross_tenant_scope_verified!==true/);
+  assert.match(workflow,/proof\?\.tenant_count_verified!==2/);
   assert.match(workflow,/proof\?\.synthetic_user_cleanup!=='DELETED'/);
 });
