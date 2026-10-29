@@ -84,11 +84,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
           PR: ${{ steps.writer.outputs.existing_pr }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           git show "$GITHUB_SHA:tools/content-growth/reviewed-blog-refresh.mjs" > /tmp/reviewed-blog-refresh.mjs
           gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" > /tmp/blog-refresh-pr.json
-          curl --fail --silent --show-error "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=$DATE" > /tmp/blog-refresh-source.json
+          [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] || { echo "::error::BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED"; exit 1; }
+          curl --fail --silent --show-error -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=$DATE" > /tmp/blog-refresh-source.json
           expected_head="$(git rev-parse HEAD)"
           decision="$(node /tmp/reviewed-blog-refresh.mjs /tmp/blog-refresh-pr.json /tmp/blog-refresh-source.json "brain/learning/powerhouse-blog-$DATE.json" "$DATE" "$GITHUB_REPOSITORY" "$expected_head")"
           if [ "$decision" = AUTHORIZED ]; then
@@ -105,6 +107,8 @@ jobs:
       - name: Render canonical Powerhouse artifact
         if: steps.day.outputs.run == 'true' && steps.writer.outputs.available == 'true'
         id: render
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           python3 tools/site-shell/publish_powerhouse_blog_artifact.py "${{ steps.day.outputs.date }}" | tee /tmp/powerhouse-blog.json
@@ -161,7 +165,9 @@ jobs:
           git fetch origin "$branch" || true
           git checkout -B "$branch"
           git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
-          git add "brain/learning/powerhouse-blog-$DATE.json" "docs/development-ledger-events/powerhouse-blog-$DATE.md" "docs/changes/powerhouse-blog-$DATE.md"
+          # The public GitHub repository is an EXTERNAL destination, not a private draft vault.
+          # Keep Brain/learning, development ledger and change evidence OUT of public PR commits.
+          # The canonical private Brain database owns those records (SEC-2026-10-29-TWINFIELD-EXPOSURE).
           git commit -m "blog: publish Powerhouse daily artifact $DATE"
 
           # Before creating the PR, replay the exact production transforms,
