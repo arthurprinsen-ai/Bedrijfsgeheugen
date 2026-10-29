@@ -9,7 +9,8 @@
   "tests": [
     "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
     "tests/brain-external-signal-quota-failover-20261019.test.mjs",
-    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs"
+    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs",
+    "tests/brain-external-source-proof-stage-20261029.test.mjs"
   ],
   "evidence": {
     "tavily_oauth": "ACTIVE_VIA_COMPOSIO",
@@ -72,6 +73,18 @@
         "2026-10-30T05:51:00Z",
         "2026-10-30T06:11:00Z"
       ]
+    },
+    "agent_cross_skill_propagation": {
+      "state": "PROTECTED_CANDIDATE_NOT_YET_MERGED",
+      "candidate_pr": 5135,
+      "main_release_predecessor": 5133,
+      "source_of_truth": "AGENTS.md + .agents/skills/powerhouse-source-universe-impact-engine/SKILL.md",
+      "same_incident_fingerprint": "powerhouse|external-search|tavily-plan-limit-432|20261029",
+      "scope": "require all external-source domain agents to load existing skill and Brain evidence before actions",
+      "pending_natural_run": "PENDING",
+      "pending_original_topic": "Bedrijfsoverdracht",
+      "safety": "NO_NEW_SCHEDULER_NO_NEW_WRITER_NO_BILLABLE_40101_RETRY_NO_FALSE_GREEN",
+      "regression": "tests/brain-external-source-proof-stage-20261029.test.mjs"
     }
   },
   "policy": "NO_NEW_SCHEDULER_NO_NEW_WRITER_NO_UNVERIFIED_GREEN",
@@ -86,13 +99,15 @@
     "historical_replay": [
       "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
       "tests/brain-external-signal-quota-failover-20261019.test.mjs",
-      "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs"
+      "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs",
+      "tests/brain-external-source-proof-stage-20261029.test.mjs"
     ]
   },
   "prevention": "On the existing scheduler-owned bg-externe-signalen source, share one in-isolate Tavily probe. On provider 432 (plan limit), block repeat Tavily calls for 15 minutes; on 429 for 1 minute. Continue independently evidenced DataForSEO organic fallback, never bypass billing cap, duplicate scheduler, unauthorized egress, RLS or false-green source receipts. Regressions enforce this behavior and source lineage. Register existing bg-externe-signalen in supabase/config.toml with enabled=true, verify_jwt=false and exact entrypoint, while retaining independent x-powerhouse-token validation. Include a regression to block future omission. Avoid any second client-side paid request for task 40101, retain numeric diagnosis and partial HTTP 207. Only task 40102 may return independently observed zero. A post-release manual 3/3 batch is not proof of next natural scheduler invocation, historical Bedrijfsoverdracht recovery, cost savings, tenant impact, or sales. Preserve failure receipts and verify each separately through canonical request ID, provider response, source observation and Brain receipt.",
   "regression_contract": [
     "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
     "tests/brain-external-signal-quota-failover-20261019.test.mjs",
-    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs"
+    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs",
+    "tests/brain-external-source-proof-stage-20261029.test.mjs"
   ]
 }
