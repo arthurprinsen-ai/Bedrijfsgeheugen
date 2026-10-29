@@ -65,3 +65,20 @@ test('cryptographically secure event UID fallback never uses Math.random or sile
   assert.match(uuid,/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
   assert.equal(runInNewContext(fn+';eventId()',{window:{crypto:null},crypto:null,Uint8Array,Array}),null);
 });
+
+test('CRO allowed event types exactly match live PostgreSQL constraint migration',()=>{
+ const edge=read('supabase/functions/bg-interactie/index.ts');
+ const migration=read('supabase/migrations/20261029182000_bg_cro_allowlisted_event_types_v1.sql');
+ const acceptSource=edge.match(/const GEBEURTENISSEN = new Set\(\[([^\]]+)\]\)/);
+ const acceptDb=migration.match(/CHECK\s*\(\s*gebeurtenis\s+IN\s*\(([\s\S]*?)\)\s*\)/);
+ assert.ok(acceptSource,'server must publish an explicit event allowlist');
+ assert.ok(acceptDb,'schema must use a corresponding explicit checked allowlist');
+ const values=s=>[...s.matchAll(/'([^']+)'/g)].map(m=>m[1]).sort();
+ const source=values(acceptSource[1]),db=values(acceptDb[1]);
+ assert.equal(source.length,17,'17 supported event types in current contract');
+ assert.equal(new Set(source).size,source.length);
+ assert.deepEqual(db,source,'every server-accepted event type must be accepted by PostgreSQL');
+ assert.match(migration,/lock_timeout\s*=\s*'2s'/);
+ assert.match(migration,/NOT VALID/);
+ assert.doesNotMatch(migration,/DROP TABLE|DISABLE TRIGGER|DISABLE ROW LEVEL SECURITY/i);
+});
