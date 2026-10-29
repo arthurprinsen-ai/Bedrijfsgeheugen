@@ -32,20 +32,37 @@ function render(container,data){
   const website=data?.website;
   const experiments=Array.isArray(data?.experiments)?data.experiments:null;
   const flags=Array.isArray(data?.quality?.flags)?data.quality.flags:[];
+  const proof=data?.conversionProof||null;
+  const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
+  const proofCards=proof?[
+    field('Opgeslagen CTA-events (7 dagen)',fmt(proof.observedCtaEvents7d)),
+    field('CTA-events in dagaggregatie (7 dagen)',fmt(proof.dailyCtaAggregated7d)),
+    field('Geregistreerde contactleads (30 dagen)',fmt(proof.recordedLeads30d)),
+    field('Gekoppelde kwalificatierecords (30 dagen)',fmt(proof.linkedQualifiedLeadRecords30d)),
+    field('Orders met vastgelegde providerreferenties',fmt(proof.ordersWithRecordedProviderReadback30d)),
+    field('Onafhankelijk bevestigde betaalde orders',fmt(proof.paidOrdersIndependentlyVerified)),
+    field('Onafhankelijk bevestigde gerealiseerde omzet',money(proof.realizedRevenueIndependentlyVerifiedEur))
+  ].join(''):field('Onafhankelijke commerciële bewijsbron','Niet beschikbaar');
+  const cohortRows=cohorts?cohorts.map(r=>'<tr><td>'+esc(r.key)+'</td><td>'+badge(r.status)+'</td><td>'+esc(fmt(r.maturedTreatment))+' / '+esc(fmt(r.maturedHoldout))+'</td><td>'+esc(fmt(r.minimumPerArm))+'</td></tr>').join(''):'';
   const cardData=website
     ? field('Geregistreerde paginabezoeken (30 dagen)',fmt(website.pageViews))+
       field('Geregistreerde CTA-klikken (30 dagen)',fmt(website.ctaClicks))+
-      field('Gekwalificeerde leads met bewijs',fmt(website.qualifiedLeads))+
-      field('Gerealiseerde orders met bewijs',fmt(website.wonOrders))+
-      field('Toegerekende omzet met bewijs',money(website.revenueEur))
+      field('In dagtotalen gemelde gekwalificeerde leads',fmt(website.qualifiedLeads))+
+      field('In dagtotalen gemelde orders (onbevestigd)',fmt(website.wonOrders))+
+      field('Toegerekende omzet (nog te verifiëren)',money(website.revenueEur))
     :field('Website-meetgegevens','Bron niet beschikbaar');
   container.innerHTML='<section class="cro-od" aria-labelledby="croOtherDataTitle">'+
     '<style>'+css+'</style>'+
     '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
     '<h3 id="croOtherDataTitle">Websitegegevens & CRO-experimenten</h3>'+
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
-    '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
+    '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
+    '<section class="od-card"><h3>Bronbewijs voor leads, orders en experimenten</h3><p>De dagtotalen hierboven zijn observaties. Onderstaande bronbewijzen komen uit de bestaande Supabase-registraties. Ook een geregistreerde providerreferentie is nog geen onafhankelijk bevestigd betaalbewijs.</p><div class="od-grid">'+proofCards+'</div>'+
+    '<p class="od-foot">Eventstatus: '+badge(proof?.eventStatus)+' · Leadstatus: '+badge(proof?.leadStatus)+' · Orderstatus: '+badge(proof?.orderStatus)+'</p>'+
+    '<h4>Gerandomiseerde experimentcohorten</h4>'+
+    (cohorts?'<div class="od-scroll"><table><thead><tr><th>Experiment</th><th>Bewijsstatus</th><th>Volwassen treatment / holdout</th><th>Minimum per arm</th></tr></thead><tbody>'+(cohortRows||'<tr><td colspan="4">Geen toegelaten, bewezen experimenten.</td></tr>')+'</tbody></table></div>':'<p>Controle- en behandelingscohorten zijn niet beschikbaar. Geen causale winnaar bevestigd.</p>')+
+    '</section>'+
     (flags.length?'<div class="od-warn" role="status"><strong>Meetkwaliteit nog niet volledig bewezen</strong><p>'+esc(flags.join(' · '))+'</p><small>'+esc(data.quality?.message||'')+'</small></div>':'')+
     '<section class="od-card"><h3>CRO-experimentregister</h3>'+
     (experiments?'<p>'+fmt(experiments.length)+' experimenten uit de canonieke Powerhouse-bron. Ook geplande, onvolledige en afgekeurde proeven blijven zichtbaar.</p>':'<p>De experimentbron is niet beschikbaar; conclusies blijven open.</p>')+
