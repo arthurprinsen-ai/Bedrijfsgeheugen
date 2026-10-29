@@ -58,3 +58,12 @@ test('missing behavior projection cannot be green even with healthy experiment s
  assert.equal(data.behavior,null);
  assert.ok(data.quality.flags.includes('BEHAVIOR_EXIT_SOURCE_UNAVAILABLE'));
 });
+
+test('Source readback needs persistent event IDs before telemetry trust is established',()=>{
+ const absent=projectOtherData({readStates:evidence,behavior:[{pad:'/prijzen',page_events:7,persisted_event_receipts:0,historical_without_receipt:7}]});
+ assert.equal(absent.behavior.events.persisted_event_receipts,0);
+ assert.ok(absent.quality.flags.includes('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED'));
+ const received=projectOtherData({readStates:evidence,behavior:[{pad:'/prijzen',page_events:7,persisted_event_receipts:7,historical_without_receipt:0}]});
+ assert.equal(received.behavior.events.persisted_event_receipts,7);
+ assert.ok(!received.quality.flags.includes('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED'));
+});
