@@ -5,6 +5,25 @@ import { injectGrowthMeasurement, hasGrowthMeasurement } from '../tools/seo-orde
 
 test('growth measurement is idempotent and contains non-blocking event delivery',()=>{const base='<html><body data-bg-page-role="money"><main><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan</a></main></body></html>';const out=injectGrowthMeasurement(base,{canonical:'https://www.bedrijfsgeheugen.nl/prijzen',page_role:'money',funnel_stage:'decide',intent:'kosten digitalisering mkb',keyword_cluster:'kosten digitalisering mkb'});assert.ok(hasGrowthMeasurement(out));assert.match(out,/navigator\.sendBeacon/);assert.match(out,/keepalive:true/);assert.match(out,/page_view/);assert.match(out,/organic_landing/);assert.match(out,/engaged_view/);assert.match(out,/primary_cta_click/);assert.match(out,/\/api\/growth-event/);assert.equal(injectGrowthMeasurement(out,{}),out);});
 
+test('synthetic webdriver pageviews and interaction hooks never send paid Netlify growth events',()=>{
+  const base='<html><body><main><a data-bg-conversion="frisse-blik" href="/frisse-blik">Plan</a></main></body></html>';
+  const html=injectGrowthMeasurement(base,{canonical:'https://www.bedrijfsgeheugen.nl/prijzen',page_role:'money'});
+  const script=html.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/i)?.[1];
+  assert.ok(script);
+  let eventCalls=0,sessionCalls=0,networkCalls=0;
+  const window={__bgGrowthMeasurement:false,location:{origin:'https://www.bedrijfsgeheugen.nl'},addEventListener:()=>{eventCalls++;}};
+  const context={window,navigator:{webdriver:true,sendBeacon:()=>{networkCalls++;return true;}},
+    sessionStorage:{getItem:()=>{sessionCalls++;return '';},setItem:()=>{sessionCalls++;}},
+    document:{addEventListener:()=>{eventCalls++;}},
+    fetch:()=>{networkCalls++;return Promise.resolve({ok:true});}};
+  assert.doesNotThrow(()=>vm.runInNewContext(script,context));
+  assert.equal(window.__bgGrowthMeasurement,true);
+  assert.equal(networkCalls,0,'automation must not invoke /api/growth-event');
+  assert.equal(eventCalls,0,'automation must not install CRO event handlers');
+  assert.equal(sessionCalls,0,'automation must not create visitor attribution sessions');
+  assert.match(script,/navigator\\.webdriver===true/);
+});
+
 test('generated growth measurement inline script is valid JavaScript',()=>{
   const base='<html><body><a href="https://www.bedrijfsgeheugen.nl/zelfscan" data-bg-conversion="zelfscan">Start</a><a href="https://www.bedrijfsgeheugen.nl/frisse-blik" data-bg-conversion="frisse-blik">Plan</a></body></html>';
   const out=injectGrowthMeasurement(base,{canonical:'https://www.bedrijfsgeheugen.nl/'});
