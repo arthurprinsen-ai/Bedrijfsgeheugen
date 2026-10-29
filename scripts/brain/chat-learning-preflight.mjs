@@ -162,6 +162,25 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
   if (!Array.isArray(lean.daily_questions) || lean.daily_questions.length !== 4) throw new Error('LEAN_LOOP_QUESTIONS_INCOMPLETE');
   if (!Array.isArray(lean.hard_gates) || !lean.hard_gates.includes('NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE')) throw new Error('LEAN_LOOP_PROOF_GATE_MISSING');
   if (typeof lean.data_gap_rule !== 'string' || !lean.data_gap_rule.includes('UNKNOWN is not ZERO')) throw new Error('LEAN_LOOP_MISSING_DATA_GUARD');
+  const runtime = lean.runtime_evidence_contract_v1;
+  if (!runtime || runtime.required !== true || runtime.authority !== 'EXISTING_ONE_BRAIN_POWERHOUSE_HEARTBEAT_EXCLUSIVE_WRITER')
+    throw new Error('AGENT_RUNTIME_EVIDENCE_AUTHORITY_MISSING');
+  const requiredSets = {
+    actor_kinds: ['sql_process','agent','human','external_provider'],
+    agent_provenance_required: ['agent_id','skill_version','obligation_or_correlation_id','tenant_scope','source_and_freshness','event_time','evidence_ref'],
+    data_quality_states: ['FRESH_VERIFIED','STALE','MISSING','INVALID','CONFLICT','UNVERIFIED'],
+    invariant_guards: ['NEVER_CONFLATE_SQL_EVENTS_WITH_AGENT_ACTIONS','UNKNOWN_IS_NOT_ZERO','NO_RETROACTIVE_FABRICATED_ATTRIBUTION','NO_PARALLEL_SCHEDULER_OR_LEARNING_STORE','NO_DUPLICATE_EXTERNAL_EFFECT','NO_UNAUTHORIZED_EXTERNAL_EGRESS','NO_UNVERIFIED_GREEN']
+  };
+  for (const [key, expected] of Object.entries(requiredSets)) {
+    if (!Array.isArray(runtime[key]) || expected.some(item => !runtime[key].includes(item)))
+      throw new Error('AGENT_RUNTIME_EVIDENCE_CONTRACT_DRIFT:' + key);
+  }
+  for (const key of ['scope','stage_evidence_required','data_gap_recovery','always_record','human_documentation_and_portal','improvement_priorities','experiment_guardrails']) {
+    if (!Array.isArray(runtime[key]) || runtime[key].length < 5)
+      throw new Error('AGENT_RUNTIME_EVIDENCE_CONTRACT_INCOMPLETE:' + key);
+  }
+  if (!runtime.deployment_gate?.includes('independent production readback'))
+    throw new Error('AGENT_RUNTIME_EVIDENCE_FALSE_GREEN_FORBIDDEN');
 
   const skillsRoot = normalizeSourcePath(rootDir, '.agents/skills');
   const names = fs.existsSync(skillsRoot.absolute)
@@ -184,7 +203,7 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
     failClosed: true,
     policySource: INCIDENT_SELF_FIX_POLICY_SOURCE,
     marker: protocol.marker,
-    lean_loop: Object.freeze({ required: true, stages: [...lean.stages], evidence_fields: [...lean.required_material_action_evidence], data_gap_rule: lean.data_gap_rule, limits: lean.enforcement_limit }),
+    lean_loop: Object.freeze({ required: true, stages: [...lean.stages], evidence_fields: [...lean.required_material_action_evidence], data_gap_rule: lean.data_gap_rule, runtime_evidence: Object.freeze({ fingerprint: runtime.fingerprint, authority: runtime.authority, provenance_fields: [...runtime.agent_provenance_required], data_quality_states: [...runtime.data_quality_states], production_enforcement: 'UNVERIFIED_UNTIL_RUNTIME_PROVIDER_READBACK' }), limits: lean.enforcement_limit }),
     reservedForOwner: [...policy.reserved_for_owner],
     skills_total: names.length,
     skills_with_protocol: withProtocol.length,
