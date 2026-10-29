@@ -115,3 +115,11 @@ test('the real portal app imports and attaches exactly one canonical admin contr
   assert.match(app,/mountImpl:mountControlPlaneCockpit/);
   assert.doesNotMatch(app,/setInterval\([^;\n]*mountControlPlaneCockpit/);
 });
+
+test('portal HTML entrypoint must use canonical generated System Map hash for new app.js',()=>{
+  const html=readFileSync('portal-v2/index.html','utf8');
+  const map=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
+  const match=map.match(/explanationInventory:Object\.freeze\(\{contract:'portal-explanation-autosync-v1',contentHash:'([a-f0-9]{64})'/);
+  assert.ok(match,'canonical System Map hash unavailable');
+  assert.ok(html.includes('./app.js?bg_explain='+match[1]),'browser may reuse stale unversioned app.js for seven days');
+});
