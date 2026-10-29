@@ -40,6 +40,31 @@
     },
     "canonical_candidate_source_key": "growth:cro-measurement-reconciliation:20261029",
     "guarded_promotion": "Only BG169 / protected main / exact production and provider readback",
-    "next_safe_action": "Reconcile observation and event definitions, deploy only after Required and CodeQL, then verify mature real customer cohorts"
+    "next_safe_action": "Reconcile observation and event definitions, deploy only after Required and CodeQL, then verify mature real customer cohorts",
+    "source_verified_test_report": {
+      "method": "isolated V8 execution of retrieved branch source and exact test functions",
+      "passed": 19,
+      "failed": 0,
+      "exact_node_ci": false,
+      "release_test_proof": false
+    },
+    "data_diagnostic": {
+      "module": "tools/growth-intelligence/cro-experiment-cycle.mjs#diagnoseCroMeasurementGap",
+      "source_windows": "must be aligned and verified",
+      "source_taxonomy": "CTA vs click-like cannot be assumed equal",
+      "status": "CANDIDATE_ONLY",
+      "root_cause": "UNKNOWN",
+      "lost_conversions": "NOT_PROVEN",
+      "existing_candidate_id": "c1727e17-6200-44ff-9a31-eec0ea7c1ead",
+      "next_action": "RECONCILE_FIRST_PARTY_EVENT_MAPPING_WITH_EXISTING_CANONICAL_OWNER"
+    },
+    "release_observation": {
+      "current_draft_pr": 4901,
+      "mergeability": "DIRTY_CONFLICTED",
+      "fresh_required": "NOT_VERIFIED",
+      "protected_merge": false,
+      "netlify_production_readback": false,
+      "next_step": "Resolve main divergence without force-writing, run exact-head Required/CodeQL, then protected release and independent production/tenant readback"
+    }
   }
 }
