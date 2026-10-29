@@ -27,16 +27,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "case": "dated fresh unique source",
-        "expected": "materialize exactly one daily winner only after source verification",
-        "observed": "not yet exercised in production"
-      },
-      {
-        "case": "undated or already frozen source",
-        "expected": "no new winner, media job or duplicate publication",
-        "observed": "the current selector returned NO_DAILY_WINNER"
-      }
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
     ]
   },
   "regression_contract": "An unchanged eight-query call budget, strict source-publication freshness gate, no duplicate topic/source and mandatory canonical media identity proof."
