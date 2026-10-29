@@ -15,6 +15,8 @@ import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage, trial
 import { mountEntrepreneurHome } from './entrepreneur-home.js';
 import { mountWinstnavigator } from './winstnavigator.js';
 import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountControlPlaneCockpit } from './control-plane-cockpit.js';
+import { attachExistingControlPlaneCockpit } from './control-plane-boot.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -301,6 +303,18 @@ const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({
  }
 });
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
+/*
+ * Original owner-only Control Plane must be mounted by the real app, not merely
+ * exported by a module. Same Netlify Identity/JWT and admin-API as before.
+ * The subscription clears private DOM and aborts stale reads on logout/change.
+ */
+const existingControlPlaneBoot=attachExistingControlPlaneCockpit({
+ stateClient:portalStateClient,
+ root:document,
+ fetchImpl:(...args)=>globalThis.fetch(...args),
+ mountImpl:mountControlPlaneCockpit
+});
+
 configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
 // One guided entry over the existing authenticated tenant state and Brain authority.

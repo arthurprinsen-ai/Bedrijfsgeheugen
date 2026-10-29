@@ -1,0 +1,34 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "paginacontrole-pr-writer-permission-recovery-20261029",
+  "fingerprint": "powerhouse|website|paginacontrole|20261029",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-paginacontrole-self-validation.test.mjs",
+      "tests/brain-paginacontrole-workflow-integrity.test.mjs"
+    ]
+  },
+  "root_cause": "Page/SEO scanner run 40889498268 generated writer/paginacontrole/bf3b4d32b170a7a7, but GitHub Actions gh pr create was rejected: Actions is not permitted to create or approve pull requests. Independent page browser scan also reported /afsluiten null replaceChildren.",
+  "change": "Recover the already-generated SEO snapshot status candidate through authenticated GitHub connector PR #5123 while keeping repository PR policy unchanged. Commit canonical learning, human documentation and development ledger with the date-only update.",
+  "prevention": "Maintain exactly one authorized writer and protected PR validation. Resolve GH Actions PR authorization via approved mechanism; never grant unreviewed broad write permissions, suppress failures or treat PR creation as clean scanner proof.",
+  "evidence": {
+    "workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40889498268",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5123",
+    "changes": [
+      "seo-status.json: bijgewerkt 2026-10-26 → 2026-10-29"
+    ],
+    "productionStatus": "PENDING_REQUIRED_AND_CODEQL",
+    "live": false,
+    "ci_evidence": "HISTORICAL_REPLAY_PENDING",
+    "production_verified": false
+  }
+}

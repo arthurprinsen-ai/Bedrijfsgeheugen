@@ -31,3 +31,21 @@ test('migration repair does not forge a customer conversion or production runtim
  assert.equal(learning.customer_revenue_proven,false);
  assert.equal(learning.new_natural_website_conversion_proven,false);
 });
+
+test('latest five actual production migrations are present in same original source lock',()=>{
+ const latest=new Map([
+  ['20261029180000','bg_cro_event_uid_v1'],
+  ['20261029181000','bg_cro_behavior_daily_v1'],
+  ['20261029182000','bg_cro_allowlisted_event_types_v1'],
+  ['20261029183000','instagram_media_ensure_claim_monotonicity_v1'],
+  ['20261029185000','bg_cro_validate_event_types_v1'],
+ ]);
+ for(const [version,name] of latest){
+  assert.equal(names.get(version),name,'missing actual production migration '+version);
+  assert.ok(readdirSync('supabase/migrations').includes(version+'_'+name+'.sql'));
+ }
+ const files=readdirSync('supabase/migrations').filter(x=>/^\d{14}_.+\.sql$/.test(x));
+ assert.equal(new Set(files.map(x=>x.slice(0,14))).size,files.length,'no duplicate executable migration versions');
+ assert.equal(lock.applied.length,files.length,'entire source lock must cover executable migration manifest');
+ assert.ok(lock.applied.length>=784,'all 784 independently observed production applied migrations must remain present');
+});

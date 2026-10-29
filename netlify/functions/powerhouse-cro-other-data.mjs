@@ -36,14 +36,41 @@ function projectExperiment(row){
   };
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],readStates={},at=new Date().toISOString()}={}){
+
+function summarizeBehavior(rows){
+  const keys=['page_events','persisted_event_receipts','historical_without_receipt','tab_sessions','scroll_reached_25','scroll_reached_50','scroll_reached_75','scroll_reached_100','observed_exits','observed_exits_under_25','form_starts','form_errors','form_abandons','whatsapp_clicks','rapid_click_heuristics','popup_exposures','experiment_exposures'];
+  const events=Object.fromEntries(keys.map(key=>[key,sum(rows,key)]));
+  const pages=new Map(),sections=new Map();
+  for(const row of rows){
+    const pad=safeText(row.pad,260),section=safeText(row.last_visible_section,80);
+    const page=pages.get(pad)||{pad,observedExits:0,earlyExitSignals:0,formAbandons:0};
+    page.observedExits+=safeNumber(row.observed_exits)||0;
+    page.earlyExitSignals+=safeNumber(row.observed_exits_under_25)||0;
+    page.formAbandons+=safeNumber(row.form_abandons)||0;
+    pages.set(pad,page);
+    if(section&&section!=='_overige_events'){
+      const id=pad+'|'+section,entry=sections.get(id)||{pad,section,observedExits:0,earlyExitSignals:0};
+      entry.observedExits+=safeNumber(row.observed_exits)||0;
+      entry.earlyExitSignals+=safeNumber(row.observed_exits_under_25)||0;
+      sections.set(id,entry);
+    }
+  }
+  return {events,pages:[...pages.values()].sort((a,b)=>b.observedExits-a.observedExits).slice(0,30),
+    exitSections:[...sections.values()].sort((a,b)=>b.observedExits-a.observedExits).slice(0,30),
+    interpretation:'Only consented non-bot events; pagehide is incomplete, tab sessions are not unique visitors, and this is no causal proof.'};
+}
+
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
+  const behaviorOk=readStates.behavior==='LIVE';
   const conversionProofOk=readStates.conversionProof==='LIVE'&&conversionProof.length===1;
   const experimentProofOk=readStates.experimentProof==='LIVE';
-  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&conversionProofOk&&experimentProofOk;
+  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk;
   const dailyLast=daily.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const experimentLast=experiments.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
+  const behaviorLast=behavior.reduce((latest,row)=>String(row.last_observed_at||'')>latest?String(row.last_observed_at):latest,'');
+  const behaviorData=behaviorOk?summarizeBehavior(behavior):null;
   const totals=dailyOk?{
     pageViews:sum(daily,'page_views'),ctaClicks:sum(daily,'cta_clicks'),
     qualifiedLeads:sum(daily,'qualified_leads'),wonOrders:sum(daily,'won_orders'),
@@ -53,8 +80,10 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(!dailyOk)flags.push('WEBSITE_DAILY_SOURCE_UNAVAILABLE');
   if(!experimentsOk)flags.push('EXPERIMENT_SOURCE_UNAVAILABLE');
   if(readStates.policies!=='LIVE')flags.push('EXPERIMENT_POLICY_UNAVAILABLE');
+  if(!behaviorOk)flags.push('BEHAVIOR_EXIT_SOURCE_UNAVAILABLE');
   if(!conversionProofOk)flags.push('PERSISTED_CONVERSION_PROOF_SOURCE_UNAVAILABLE');
   if(!experimentProofOk)flags.push('CONTROLLED_EXPERIMENT_PROOF_SOURCE_UNAVAILABLE');
+  if(behaviorOk&&(!behaviorData||behaviorData.events.persisted_event_receipts===0))flags.push('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED');
   if(dailyOk&&totals.pageViews>0&&totals.ctaClicks===0)flags.push('CTA_TRACKING_NOT_VERIFIED');
   if(experimentsOk&&experiments.some(e=>!e.causal_status||e.causal_status==='insufficient_evidence'))flags.push('EXPERIMENT_EVIDENCE_INCOMPLETE');
   const cp=conversionProofOk?conversionProof[0]:null;
@@ -68,10 +97,13 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
       experiments:{status:readStates.experiments||'UNAVAILABLE',lastObservedAt:experimentLast||null,records:experimentsOk?experiments.length:null},
       policies:{status:readStates.policies||'UNAVAILABLE',records:readStates.policies==='LIVE'?policies.length:null},
+      behavior:{status:readStates.behavior||'UNAVAILABLE',lastObservedAt:behaviorLast||null,records:behaviorOk?behavior.length:null},
       conversionProof:{status:conversionProofOk?'LIVE':readStates.conversionProof||'UNAVAILABLE',records:conversionProofOk?1:null},
       experimentProof:{status:experimentProofOk?'LIVE':readStates.experimentProof||'UNAVAILABLE',records:experimentProofOk?experimentProof.length:null}
     },
-    quality:{flags,botFiltering:'UNKNOWN_IN_THIS_PROJECTION',deliveryAcknowledgement:'UNVERIFIED',message:'Geregistreerde events, leadrecords en providerreferenties zijn niet hetzelfde als onafhankelijk bevestigde klanten of betaalde orders.'},
+    quality:{flags,botFiltering:'UNKNOWN_IN_THIS_PROJECTION',deliveryAcknowledgement:'UNVERIFIED',message:'Website-events zijn observaties, geen onafhankelijk bevestigde leads, klanten of betaalde orders. Onbekend is nooit nul.'},
+    website:totals,
+    behavior:behaviorData,
     conversionProof:cp?{
       eventStatus:safeText(cp.event_evidence_status,100),leadStatus:safeText(cp.lead_evidence_status,100),orderStatus:safeText(cp.order_evidence_status,120),experimentStatus:safeText(cp.experiment_evidence_status,120),
       observedCtaEvents7d:safeNumber(cp.observed_cta_events_7d),dailyCtaAggregated7d:safeNumber(cp.daily_cta_aggregated_7d),
@@ -84,7 +116,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       primaryMetric:safeText(row.primary_metric,100),minimumPerArm:safeNumber(row.minimum_matured_per_arm),
       maturedTreatment:safeNumber(row.matured_treatment),maturedHoldout:safeNumber(row.matured_holdout),lastAssignmentAt:row.last_assignment_at||null
     })):null,
-    website:totals,
+
     policies:readStates.policies==='LIVE'?policies.map(row=>({
       key:safeText(row.experiment_key,120),status:safeText(row.status,100),
       primaryMetric:safeText(row.primary_metric,120),minPerArm:safeNumber(row.min_matured_per_arm),
@@ -133,11 +165,13 @@ export default async function handler(request){
     select(base,key,'powerhouse_cro_conversion_evidence_v1',
       'select=event_evidence_status,lead_evidence_status,order_evidence_status,experiment_evidence_status,observed_cta_events_7d,daily_cta_aggregated_7d,recorded_leads_30d,linked_qualified_lead_records_30d,orders_with_recorded_provider_readback_30d,last_persisted_event_at&limit=2'),
     select(base,key,'powerhouse_cro_experiment_evidence_v1',
-      'select=experiment_key,evidence_status,policy_status,primary_metric,minimum_matured_per_arm,matured_treatment,matured_holdout,last_assignment_at&limit=151')
+      'select=experiment_key,evidence_status,policy_status,primary_metric,minimum_matured_per_arm,matured_treatment,matured_holdout,last_assignment_at&limit=151'),
+    select(base,key,'bg_cro_behavior_daily_v1',
+      'select=day,pad,device,last_visible_section,page_events,persisted_event_receipts,historical_without_receipt,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001')
   ];
   const responses=await Promise.allSettled(queries);
-  const limits=[2000,150,50,1,150];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior'],readStates={},datasets=[];
   for(let i=0;i<responses.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -145,7 +179,7 @@ export default async function handler(request){
     readStates[stateNames[i]]=complete?'LIVE':rows.length>limits[i]?'TRUNCATED':'UNAVAILABLE';
     datasets[i]=complete?rows:[];
   }
-  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],readStates});
+  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};

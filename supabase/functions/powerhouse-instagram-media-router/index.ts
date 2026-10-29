@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner as resolveMiraFrozenWinner_raw,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate as sourceLedAutoVerifyCandidate_raw,sourceLedRecoverableProofRetry as sourceLedRecoverableProofRetry_raw,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner as resolveMiraFrozenWinner_raw,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate as sourceLedAutoVerifyCandidate_raw,sourceLedRecoverableProofRetry as sourceLedRecoverableProofRetry_raw,eligibleSourceLedMediaReplacement,eligibleFrozenLibraryMediaGeneration} from '../_shared/mira-frozen-winner-contract.mjs';
 const sourceLedRecoverableProofRetry:(...args:any[])=>any=sourceLedRecoverableProofRetry_raw;
 const sourceLedAutoVerifyCandidate:(...args:any[])=>any=sourceLedAutoVerifyCandidate_raw;
 const resolveMiraFrozenWinner:(...args:any[])=>any=resolveMiraFrozenWinner_raw;
@@ -123,12 +123,21 @@ Deno.serve(async req=>{
  // OpenArt generate_video request. Reject the observed Wan 2.7 config even
  // though OpenArt calls it '1080p': its real output was NOT native 9:16.
  if(action==='generation_preflight'){
-   if(postType!=='reel'||!sourceLed||clean(ob?.external_id)||ob?.live_proven_at||
+   // A quality-rejected PH-P library winner may request a format preflight
+   // ONLY when the frozen source, problem, exact scene, original rejected
+   // provider history, budget and unique unsent claim all match.
+   const frozenLibraryRecovery=eligibleFrozenLibraryMediaGeneration({
+     resolved:winnerContract,job,ob,input,postType
+   });
+   if(postType!=='reel'||(!sourceLed&&!frozenLibraryRecovery)||
+      clean(ob?.external_id)||ob?.live_proven_at||
       clean(ob?.status)==='LIVE_PROVEN')
      return json({ok:false,error:'MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED'},422);
    const config=assessMiraProviderBeforeSpend({
      model:input.model,mode:input.mode,params:input.params,
-     masterReferenceId:clean(job?.asset_manifest?.openart_reference_id)
+     // Library winner rows predate the stored reference-id column. The exact
+     // immutable original master is pinned in source; caller cannot override it.
+     masterReferenceId:frozenLibraryRecovery?MIRA_MASTER_REFERENCE_ID:clean(job?.asset_manifest?.openart_reference_id)
    });
    const derivedInput=input.derivedReference
      ?await checkDerivedProducerInput(input.derivedReference):null;

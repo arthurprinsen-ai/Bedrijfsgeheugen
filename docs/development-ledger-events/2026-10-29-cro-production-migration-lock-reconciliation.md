@@ -9,3 +9,8 @@
 - **Human documentation:** `docs/changes/2026-10-29-cro-production-migration-lock-reconciliation.md`.
 - **Carry-forward:** protect live consented event→durable queue→Supabase ID→rollup, portal owner-only evidence and independent partner/billing readback. Neither a passing test nor 0 leads means success in paid conversions.
 - **Outcome status:** CANDIDATE_NOT_MERGED; CI_RECOVERY_UNVERIFIED; REAL_ORDER_OUTCOME_UNVERIFIED until actual provider and main readback.
+
+
+- Second independent provider readback: 784 production version+name identities == 784 tracked executable files; original main lock 774, original PR 779; five additional exact production versions now included for 784.
+- Independent CRO preview branch 779, five newest production versions not present; original provider check reports SQLSTATE 23505 on an older version ALREADY in preview history. Mira preview reproduces same class on another already-present version. No SQL migration file contains history DML. Separate provider replay incident remains unresolved.
+- New prevention: original same PR/source owner includes complete provider/lock/repository identity gate and independent Supabase provider replay proof; no blind rerun, no fake READY, no direct schema_migrations edit, no additional scheduler.
