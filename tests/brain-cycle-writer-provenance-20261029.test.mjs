@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const sql=readFileSync('supabase/migrations/20261029124801_powerhouse_cycle_writer_provenance_20261029.sql','utf8');
+const sql=readFileSync('supabase/migrations/20261029125607_powerhouse_cycle_writer_provenance_20261029.sql','utf8');
 const funcs={
  powerhouse_advance_channel_cycle_v1:9,
  powerhouse_advance_sales_action_v1:4,
@@ -26,6 +26,7 @@ test('annotates each original canonical DB writer with source provenance without
 });
 test('preserves canonical security, stage, truth, idempotency and append-only constraints',()=>{
  assert.match(sql,/v_action\.status='done' and v_action\.executed_at is not null/);
+ assert.match(sql,/elsif v_action\.status in \('error','expired','skipped'\) then/);
  assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/);
  assert.match(sql,/SECURITY DEFINER/);
  assert.match(sql,/public\.powerhouse_append_cycle_event_v2\(/);

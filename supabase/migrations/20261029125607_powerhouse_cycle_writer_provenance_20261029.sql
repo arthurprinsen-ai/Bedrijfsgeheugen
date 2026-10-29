@@ -1,4 +1,6 @@
 -- Canonical source-writer provenance for existing ONE BRAIN cycle materializers.
+-- Version ordered strictly after protected 20261029125100 negative-terminal reconciliation.
+-- Preserve status in (error,expired,skipped) as blocked.
 -- No new scheduler, trigger, table, agent identity or metric. Idempotency and source guards unchanged.
 -- Note: writer_component identifies the known PostgreSQL function, NOT the AI agent that originally acted.
 -- agent_attribution stays UNKNOWN_NOT_ATTESTED until a separately verified producer writes true agent_id.
@@ -7,6 +9,7 @@ DO $guard$
 BEGIN
  IF to_regprocedure('public.powerhouse_advance_sales_action_v1(uuid)') IS NULL THEN RAISE EXCEPTION 'missing original canonical sales action writer'; END IF;
  IF strpos(pg_get_functiondef('public.powerhouse_advance_sales_action_v1(uuid)'::regprocedure), 'v_action.status=''done'' and v_action.executed_at is not null')=0 THEN RAISE EXCEPTION 'canonical done/executed_at truth guard changed; review source before deployment'; END IF;
+ IF strpos(pg_get_functiondef('public.powerhouse_advance_sales_action_v1(uuid)'::regprocedure), '''error'',''expired'',''skipped''')=0 THEN RAISE EXCEPTION 'negative terminal skipped block missing; abort source writer migration'; END IF;
 END
 $guard$;
 CREATE OR REPLACE FUNCTION public.powerhouse_advance_channel_cycle_v1(p_run_date date, p_channel text)
@@ -202,7 +205,7 @@ begin
     end if;
     update public.powerhouse_decision_cycles set status='outcome_pending',updated_at=now()
       where tenant_id='canonical' and cycle_id=v_cycle and status<>'complete';
-  elsif v_action.status in ('error','expired') then
+  elsif v_action.status in ('error','expired','skipped') then
     update public.powerhouse_decision_cycles set status='blocked',updated_at=now()
       where tenant_id='canonical' and cycle_id=v_cycle and status<>'complete';
   end if;
