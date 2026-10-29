@@ -34,7 +34,7 @@ test('source errors, truncation and unknown human counts are not reported green'
 });
 test('observed form intent does not imply verified revenue or causal success',()=>{
   const data=projectOtherData({
-    readStates:{daily:'LIVE',experiments:'LIVE',policies:'LIVE',behavior:'LIVE'},
+    readStates:{daily:'LIVE',experiments:'LIVE',policies:'LIVE'},
     daily:[{page_views:30,cta_clicks:2,qualified_leads:0,won_orders:0,revenue_eur:0}],
     experiments:[{experiment_id:'intent',status:'ACTIVE',causal_status:'insufficient_evidence',
       treatment_assignments:1,holdout_assignments:0,promotion_eligible:false,realized_revenue_eur:null}]
@@ -43,6 +43,24 @@ test('observed form intent does not imply verified revenue or causal success',()
   assert.equal(data.experiments[0].eligible,false);
   assert.equal(data.website.wonOrders,0);
   assert.ok(data.quality.flags.includes('EXPERIMENT_EVIDENCE_INCOMPLETE'));
+});
+
+test('provider SDK is deferred until after rejection of missing JWT; no unauthenticated import',async()=>{
+ const source=readFileSync('netlify/functions/powerhouse-cro-other-data.mjs','utf8');
+ assert.doesNotMatch(source,/^import\s+.*?@netlify\/identity/m);
+ assert.match(source,/await import\('@netlify\/identity'\)/);
+ const denied=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/powerhouse-cro-other-data'));
+ assert.equal(denied.status,401);
+ assert.equal((await denied.json()).error,'UNAUTHENTICATED');
+});
+
+test('commercial CTA and form events have exactly one canonical growth producer on money pages',()=>{
+ const js=readFileSync('assets/meting.js','utf8');
+ assert.match(js,/getElementById\('bg-growth-measurement'\)/);
+ assert.match(js,/type==='primary_cta_click'\|\|type==='form_start'\|\|type==='form_submit_intent'/);
+ assert.match(js,/el\.closest\('main'\)/);
+ assert.match(js,/meetGroei\('money_link_click'\)/);
+ assert.match(js,/!toestemming\(\)/);
 });
 
 test('CRO raw ACK Brain incident remains recorded for all future agents',()=>{
