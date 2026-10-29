@@ -206,3 +206,12 @@ entrypoint = "./functions/bg-benchmark-intake/index.ts"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/bg-bedrijfsprofiel/index.ts"
+
+# Existing scheduler-token-protected external intelligence producer; register the
+# function for protected-main Git deployment and provider source parity.
+# The entrypoint validates x-powerhouse-token before performing any work;
+# preserve the currently deployed verify_jwt=false (no browser auth bypass).
+[functions.bg-externe-signalen]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-externe-signalen/index.ts"
