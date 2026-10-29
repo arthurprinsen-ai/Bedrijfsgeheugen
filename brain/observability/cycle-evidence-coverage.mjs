@@ -12,17 +12,26 @@ export function summarizeCycleEvidenceCoverage(rows, expectedTotal, observedAt =
     return invalid('INCOMPLETE_CYCLE_EVENT_READBACK');
   if (Number.isNaN(Date.parse(observedAt))) return invalid('INVALID_OBSERVATION_TIME');
   const totals = {events:rows.length, evidenceRefs:0, idempotencyKeys:0, agentIds:0,
-    skillVersions:0, beforeMetrics:0, afterMetrics:0, allFour:0};
+    skillVersions:0, beforeMetrics:0, afterMetrics:0, allFour:0,
+    salesActionEvents:0, channelDecisionEvents:0, runtimeSignalEvents:0, otherEvents:0};
   const seen = new Set();
   let sourceLatestAt = null;
   for (const row of rows) {
     if (!row || typeof row !== 'object' || typeof row.event_id !== 'string'
       || !row.event_id || seen.has(row.event_id) || row.tenant_id !== 'canonical'
+      || typeof row.entity_type !== 'string' || !row.entity_type.trim()
       || !row.payload || typeof row.payload !== 'object' || Array.isArray(row.payload))
       return invalid('INVALID_OR_DUPLICATE_CYCLE_EVENT');
     if (!row.occurred_at || Number.isNaN(Date.parse(row.occurred_at)))
       return invalid('INVALID_CYCLE_EVENT_TIMESTAMP');
     seen.add(row.event_id);
+    // Event producers and autonomous actors are distinct. SQL-generated
+    // sales/channel decisions are never fabricated into agent IDs.
+    if (row.entity_type==='sales_action' || row.entity_type==='powerhouse_sales_actions')
+      totals.salesActionEvents++;
+    else if (row.entity_type==='channel_decision') totals.channelDecisionEvents++;
+    else if (row.entity_type==='powerhouse_runtime_events') totals.runtimeSignalEvents++;
+    else totals.otherEvents++;
     if (present(row,'evidence_ref')) totals.evidenceRefs++;
     if (present(row,'idempotency_key')) totals.idempotencyKeys++;
     const actor=present(row.payload,'agent_id'), skill=present(row.payload,'skill_version');
@@ -37,7 +46,7 @@ export function summarizeCycleEvidenceCoverage(rows, expectedTotal, observedAt =
   }
   return {status:'READBACK_COMPLETE',authority:'public.powerhouse_cycle_events',
     tenantScope:'canonical',windowHours:24,observedAt,sourceLatestAt,totals,
-    caveat:'Field presence is not proof of correct actor attribution, causal effect or paid revenue.'};
+    caveat:'Cycle events originate mainly from SQL sales/channel decision materializers. Entity type is not agent identity. Field presence is not proof of correct actor attribution, causal effect or paid revenue.'};
 }
 
 export async function loadCycleEvidenceCoverage({
@@ -51,7 +60,7 @@ export async function loadCycleEvidenceCoverage({
   let total=null;
   for (let offset=0;offset<MAX_ROWS;offset+=PAGE_SIZE) {
     const url=new URL(String(baseUrl).replace(/\/$/,'')+'/rest/v1/powerhouse_cycle_events');
-    url.searchParams.set('select','event_id,tenant_id,occurred_at,payload,evidence_ref,idempotency_key');
+    url.searchParams.set('select','event_id,tenant_id,entity_type,occurred_at,payload,evidence_ref,idempotency_key');
     url.searchParams.set('tenant_id','eq.canonical');
     url.searchParams.set('occurred_at',`gte.${start}`);
     url.searchParams.append('occurred_at',`lt.${stop}`);
