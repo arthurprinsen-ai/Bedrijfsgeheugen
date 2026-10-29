@@ -2,7 +2,7 @@
  * Adapter contract for the EXISTING Powerhouse Brain/Heartbeat.
  * Feed only consent-aware, aggregated metrics; no credentials and no outbound actions.
  */
-import {runGrowthDecisionCycle, evaluateExperiment} from "./decision-core.mjs";
+import {runGrowthDecisionCycle, evaluateExperiment, CRO_EXPERIMENT_CONTRACT, evaluateCroExperiment, projectCroLearning} from "./decision-core.mjs";
 const ACCEPTED = Object.freeze({
  ga4:["page_dropoff","scan_abandonment","cta_underperformance"],
  search_console:["search_opportunity"],
@@ -31,7 +31,20 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
  const {accepted,quarantined}=ingestSignals(input.events??[],{now});
  const decisions=runGrowthDecisionCycle(accepted,{now});
  const experiments=(input.experiments??[]).map(e=>({
-  id:e.id,...evaluateExperiment(e)
+  id:e.id,...(e.croDesign?.contract===CRO_EXPERIMENT_CONTRACT
+    ? evaluateCroExperiment(e.croDesign,e.observed||{})
+    : evaluateExperiment(e))
+ }));
+ const croLearningProposals=(input.experiments??[]).flatMap((e,i)=>
+   e.croDesign?.contract===CRO_EXPERIMENT_CONTRACT
+     ? [projectCroLearning(e.croDesign,experiments[i])]
+     : []);
+ const croOpportunities=decisions.proposals.filter(p=>p.agent==='cro').map(p=>({
+   opportunityId:p.id,owner:'cro',signalId:p.signalId,evidenceSource:p.source,
+   requiredAction:'PREREGISTER_CONTEXTUAL_EXPERIMENT',status:'PROPOSED_NOT_EXECUTED',
+   eligibleSurfaces:['whatsapp_prompt','progressive_form','contextual_help','exit_intent',
+     'interactive_qualifier','roi_calculator','scan_followup','cta_copy'],
+   nextStep:'VERIFY_BASELINE_AND_PRETREATMENT_ASSIGNMENT'
  }));
  return {
   schemaVersion:1,generatedAt:now,
@@ -39,6 +52,8 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
   opportunities:decisions.proposals,
   rejected:[...quarantined,...decisions.rejected],
   experiments,
+  croOpportunities,
+  croLearningProposals,
   actions:decisions.proposals.map(p=>({
    id:`action:${p.id}`,owner:p.agent,kind:"DESIGN_EXPERIMENT",
    status:"PROPOSED",requiresExistingApprovalAndReadback:true,
