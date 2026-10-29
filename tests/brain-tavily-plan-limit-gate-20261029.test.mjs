@@ -38,3 +38,10 @@ test('agents skill incident marker is indexed, not masked as baseline debt',()=>
  assert.match(s,/INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1/);
  assert.ok(!p.loop_debt_baseline.includes('powerhouse-source-universe-impact-engine'));
 });
+
+test('existing Supabase Edge authority deploys external signals through registered scheduler-token-protected function',()=>{
+ const cfg=fs.readFileSync('supabase/config.toml','utf8');
+ assert.match(cfg,/\[functions\.bg-externe-signalen\]\s*enabled = true\s*verify_jwt = false\s*entrypoint = "\.\/functions\/bg-externe-signalen\/index\.ts"/);
+ const source=fs.readFileSync('supabase/functions/bg-externe-signalen/index.ts','utf8');
+ assert.match(source,/req\.headers\.get\('x-powerhouse-token'\)!==expected/);
+});
