@@ -19,3 +19,11 @@ Update the existing lock from 770 to 774 **provider-recorded** identities; do no
 - Run `tests/brain-supabase-migration-lock-provider-20261029.test.mjs` and existing strict `tests/supabase-migration-history-integrity.test.mjs`, then protected Required, CodeQL, source-contract and post-merge provider recheck.
 - No new Supabase project, paid preview, scheduler, writer, external posting or direct main mutation. Database migrations were not applied by this candidate: it only records their already observed provider state.
 - This restores historical bookkeeping; the success of the LinkedIn order/revenue loop still requires independent provider and outcome evidence.
+
+## Protected Preview replay guard — independently diagnosed
+
+The current-head Supabase Preview surfaced `BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT` in the **already recorded** migration `20261022173500_brain_failure_observe_semantic_guard_v1.sql`. Direct live Supabase function readback proves that the earlier guard's only accepted text (`evidence=coalesce(p_evidence,evidence)`) is now **false**, whereas the stronger already-deployed function uses `evidence=coalesce(evidence,p_evidence)`, enforces semantic conflict detection, advisory-lock serialization, and private service-role execution only.
+
+The **precondition guard** is adjusted to accept exactly two safe replay situations: the original baseline about to be migrated, or the already-correct modern postcondition with explicit semantic and ACL proof. Missing, unrecognized or publicly executable implementations still raise `BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT`. The migration identity, SQL body after the guard (SHA256 `972f35b0ec503e08a7267b3e2b05f2dda94842965af4e9370df1d0d47d76611a`), production records, and all DDL remain unchanged. This does **not** bypass failed preview checks: a new protected exact-head Supabase Preview and Required run must independently pass.
+
+This is an explicit source-level correction of a historical migration's replay precondition; the already applied production SQL is not reapplied or its migration-history entry rewritten.
