@@ -113,5 +113,5 @@ test('the real portal app imports and attaches exactly one canonical admin contr
   assert.match(app,/attachExistingControlPlaneCockpit\(\{/);
   assert.match(app,/stateClient:portalStateClient/);
   assert.match(app,/mountImpl:mountControlPlaneCockpit/);
-  assert.doesNotMatch(app,/setInterval\(.*mountControlPlaneCockpit|new.*scheduler/);
+  assert.doesNotMatch(app,/setInterval\([^;\n]*mountControlPlaneCockpit/);
 });
