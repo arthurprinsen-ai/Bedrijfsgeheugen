@@ -5,3 +5,8 @@ assets/vendor/netlify-identity.mjs
 assets/vendor/gotrue.mjs
 .artifacts/
 node_modules/
+
+# P0-2026-10-29: private canonical blog Brain/change/ledger evidence belongs in ONE BRAIN, not public Git.
+brain/learning/powerhouse-blog-*.json
+docs/changes/powerhouse-blog-*.md
+docs/development-ledger-events/powerhouse-blog-*.md
