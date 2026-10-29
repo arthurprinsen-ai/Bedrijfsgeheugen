@@ -131,7 +131,7 @@ function contextualActionMarkup(pageId,state){
   const cardsHtml=cards.slice(0,12).map(card=>{
     const pages=card.pages.filter(id=>id!==pageId).slice(0,card.regulatoryImpact?card.pages.length:8);
     return '<article class="fsv-card" data-context-card="'+esc(card.id)+'"><header><div><span class="fsv-kicker">'+esc(card.priority)+' · '+esc(card.sourcePath)+'</span><h4>'+esc(card.title)+'</h4></div><b class="fsv-pill warn">'+esc(CARD_TITLES[card.priority]||'Beoordelen')+'</b></header>'+
-      '<p>'+esc(card.description)+'</p><p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
+      '<p>'+esc(card.description)+'</p>'+(card.externalBasis?'<p><strong>Waarom hier:</strong> '+esc(card.externalBasis.reden)+'</p><p><small>Bron: '+esc(card.externalBasis.bron)+' · peildatum '+esc(card.externalBasis.peildatum)+' · herzien uiterlijk '+esc(card.externalBasis.herzienUiterlijk)+(card.externalBasis.verouderd?' · <b>bron is over zijn herzieningsdatum: aandacht één niveau lager gezet</b>':'')+'</small></p>':'')+'<p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
       (card.regulatoryImpact?
         '<p><strong>Wettelijk onderwerp:</strong> '+esc(card.regulatoryImpact.framework)+
         ' · <strong>Ingangsdatum:</strong> '+esc(card.regulatoryImpact.effectiveDate||'nog te verifiëren')+
