@@ -26,6 +26,10 @@
      Acknowledgement 202 betekent QUEUED, niet dat Supabase-opslag of order bewezen is. */
   function meetGroei(type){
     if(gebied!=='site'||!toestemming())return;
+    /* Money-page growth measurement is already the canonical CTA/form producer.
+       Keep one writer per visitor action: do not create a second event ID. */
+    if((type==='primary_cta_click'||type==='form_start'||type==='form_submit_intent') &&
+       document.getElementById&&document.getElementById('bg-growth-measurement'))return;
     if(!/^https?:$/.test(location.protocol)||!/(^|\.)bedrijfsgeheugen\.nl$/i.test(location.hostname))return;
     var pad=location.pathname.replace(/[^a-zA-Z0-9/_-]/g,'').slice(0,180)||'/';
     var id='';try{id=crypto.randomUUID();}catch(e){id='g'+Date.now().toString(36)+Math.random().toString(36).slice(2);}
@@ -56,7 +60,7 @@
   /* Calendly (11 sept 2026): geef de tabbladcode en de pagina mee als utm_content en utm_term, zodat het brein een geboekt
      gesprek aan de pagina en bron van dit bezoek kan koppelen (bg-calendly-sync). Geen naam of e-mailadres. */
   function tagCalendly(el){try{if(!el||el.tagName!=='A'||!/(^|\.)calendly\.com$/i.test(new URL(el.href).hostname)||!sid)return;var u=new URL(el.href);u.searchParams.set('utm_source','bedrijfsgeheugen');u.searchParams.set('utm_medium','site');if(herkomst)u.searchParams.set('utm_campaign',herkomst.slice(0,60));u.searchParams.set('utm_content',sid);u.searchParams.set('utm_term',location.pathname.slice(0,120));el.href=u.toString();}catch(e){}}
-  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),d=el.getAttribute('href')||'';meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});if(/^mailto:|^tel:/i.test(d))meetGroei('money_link_click');else if(el.matches('[data-bg-primary-cta],.btn-primary,.btn-primaire,.cta-primary')||/\/(contact|frisse-blik|aanmelden|prijzen|zelfscan)(\/|$)/i.test(d))meetGroei('primary_cta_click');setTimeout(route,50);},true);
+  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),d=el.getAttribute('href')||'';meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});if(/^mailto:|^tel:/i.test(d))meetGroei('money_link_click');else if(el.closest&&el.closest('main')&&(el.matches('[data-bg-primary-cta],[data-bg-conversion],.btn-primary,.btn-primaire,.cta-primary')||/\/(contact|frisse-blik|aanmelden|prijzen|zelfscan)(\/|$)/i.test(d)))meetGroei('primary_cta_click');setTimeout(route,50);},true);
   var drempels=[25,50,75,90,100],gehaald={},wachtScroll=0;
   function scrol(){wachtScroll=0;var h=Math.max(document.documentElement.scrollHeight-window.innerHeight,1);var pct=Math.min(100,Math.round((window.scrollY||window.pageYOffset||0)/h*100));for(var i=0;i<drempels.length;i++){var d=drempels[i];if(pct>=d&&!gehaald[d]){gehaald[d]=1;meet({gebeurtenis:'scroll',diepte_pct:d});ga('scroll_diepte',{percentage:d});}}}
   addEventListener('scroll',function(){if(!wachtScroll)wachtScroll=setTimeout(scrol,250);},{passive:true});
