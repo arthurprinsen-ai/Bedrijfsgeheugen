@@ -1,13 +1,14 @@
 // Provider quota exhaustion is explicit; fallback uses independently observed DataForSEO SERP results, not synthetic signals.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { selectExternalTopics } from './topic-selection.mjs';
-import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry,safeDataforseoDiagnostic,sourceBatchEvidenceVerdict} from './provider-retry.mjs';
+import {isTransientDataforseoStatus,isEmptyDataforseoResult,withOneTransientDataforseoRetry,safeDataforseoDiagnostic,sourceBatchEvidenceVerdict,createTavilyQuotaGate} from './provider-retry.mjs';
 
 const BRON='bg-externe-signalen';
 const CONTRACT='tavily-signal-ingest-v2-bounded';
 const DREMPEL=0.6;
 const BATCH=3;
 const TAVILY_TIMEOUT_MS=12000;
+const tavilyQuotaGate=createTavilyQuotaGate(); // Reuse canonical producer; no extra executor.
 const BETROUWBAAR:Record<string,number>={
   'rijksoverheid.nl':1,'overheid.nl':1,'europa.eu':1,'autoriteitpersoonsgegevens.nl':1,'rvo.nl':1,'kvk.nl':0.95,'cbs.nl':1,'dnb.nl':1,'belastingdienst.nl':1,
   'mkb.nl':0.9,'fd.nl':0.9,'nos.nl':0.9,'nu.nl':0.8,'rtl.nl':0.8,'computable.nl':0.8,'emerce.nl':0.8,'accountancyvanmorgen.nl':0.85,'accountant.nl':0.85,
@@ -111,9 +112,12 @@ Deno.serve(async(req:Request)=>{
         let fallbackReason:string|null=null;
         if(tavily){
           try{
-            const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:`Bearer ${tavily}`,'content-type':'application/json'},body:JSON.stringify({query:o.zoekvraag,topic:'news',days:7,max_results:6,search_depth:'basic',include_answer:false}),signal:AbortSignal.timeout(TAVILY_TIMEOUT_MS)});
-            const b:any=await r.json().catch(()=>({}));
-            if(!r.ok)throw new Error(`HTTP_${r.status}:${String(b?.detail?.error||b?.error||'').slice(0,100)}`);
+            const b:any=await tavilyQuotaGate.run(async()=>{
+              const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:`Bearer ${tavily}`,'content-type':'application/json'},body:JSON.stringify({query:o.zoekvraag,topic:'news',days:7,max_results:6,search_depth:'basic',include_answer:false}),signal:AbortSignal.timeout(TAVILY_TIMEOUT_MS)});
+              const response:any=await r.json().catch(()=>({}));
+              if(!r.ok)throw new Error(`HTTP_${r.status}:${String(response?.detail?.error||response?.error||'').slice(0,100)}`);
+              return response;
+            });
             res=Array.isArray(b.results)?b.results:[];
           }catch(error){
             if(!dataforseoReady)throw error;
