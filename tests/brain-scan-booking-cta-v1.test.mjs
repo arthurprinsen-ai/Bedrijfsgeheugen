@@ -7,7 +7,7 @@ test('historical replay: one signup button gets a booking link', () => {
   const fixture = '<div><button class="secondary v18-btn-ghost bgx-magneet" data-view="signup">Aanmelden</button></div>';
   assert.equal((fixture.match(re) || []).length, 1);
   assert.match(src, /SCAN_BOOK_RE/);
-  assert.match(src, /calendly\.com\/arthur-prinsen/);
+  assert.ok(src.includes('calendly.com/arthur-prinsen'));
 });
 test('shadow: a non-unique anchor skips the link and does not fail the build', () => {
   assert.match(src, /scan booking link skipped: signup anchor count/);
