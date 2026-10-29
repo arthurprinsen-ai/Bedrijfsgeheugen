@@ -267,6 +267,11 @@ const navigationStateContract = `<script id="v18-navigation-state-contract">
 html = html.replace('</head>', `${canonicalChromeGeometryContract}\n<script src="https://www.bedrijfsgeheugen.nl/assets/scan-persistence.js?v=20261021" data-bg-scan-persistence></script>\n</head>`);
 html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n${navigationStateContract}\n</body>`);
 
+// Booking step on the scan result: the scan had no route to a consultation.
+const SCAN_BOOK_ANCHOR='<button class="secondary v18-btn-ghost bgx-magneet" data-view="signup">Aanmelden</button>';
+const SCAN_BOOK_LINK='<a class="cta v18-btn-primary bgx-magneet" href="https://calendly.com/arthur-prinsen" target="_blank" rel="noopener">Plan een adviesgesprek →</a>';
+if (html.split(SCAN_BOOK_ANCHOR).length !== 2) throw new Error('scan result booking anchor not unique');
+html = html.replace(SCAN_BOOK_ANCHOR, SCAN_BOOK_ANCHOR + SCAN_BOOK_LINK);
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
 console.log(`Accepted historical V18 production homepage restored from pinned payload: ${EXPECTED_HTML_SHA256}`);
