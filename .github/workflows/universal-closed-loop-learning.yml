@@ -13,6 +13,13 @@ on:
       - 'tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs'
       - '.github/workflows/universal-closed-loop-learning.yml'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   universal-closed-loop:
     runs-on: ubuntu-latest

@@ -65,6 +65,7 @@ Geldt voor elk bestaand en toekomstig agent-/chat-/CI-/runtime-/providerpad dat 
 - `SQL_ARCHIVE_ORACLE_DRIFT`: historische SQL-bronpad-/migratieverwijzingen moeten met huidige canonical source en ledger worden vergeleken, zonder DDL-replay of ongeoorloofde oracle-versoepeling.
 - `SCHEDULER_UNREACHABLE_BRANCH`: toets cron-vuurminuten tegen mux-branchminuten inclusief UTC/DST; succes van mux is niet succes van alle taken.
 - `SOCIAL_PROVIDER_DELIVERY_GAP`: provider ack is geen geverifieerde post of exact-final-media; opnieuw posten is verboden zonder bewijs dat geen side effect bestaat.
+- `EXTERNAL_RECIPIENT_LEAK` (`agents|external-recipient|internal-content-leak|20261029-v1`): een interne taak of concept bij een externe ontvanger is nooit een gewone fout. Blokkeer elke schrijfactie naar een niet-allowlisted ontvanger, draai `tools/ci/egress-guard.mjs`, houd de RCA van de route buiten GitHub open tot de route bewezen is.
 - `TOOL_OR_STREAM_INTERRUPTION`: bewaar checkpoint en hervat dezelfde obligation na tool/context/stream-uitval; maak geen dubbele PR, post, mail of mutatie.
 
 

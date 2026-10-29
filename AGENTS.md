@@ -44,6 +44,11 @@ Fingerprint: `github-actions|stale-queued-zero-jobs|bounded-self-repair-dedupe|2
 Alle huidige/toekomstige agents en chats behandelen GitHub queued+zero-job+409/403 niet als gewone runner-capaciteit. Gebruik uitsluitend het bestaande Repository Janitor-pad en incident [#4655](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655). De uitvoerbare procedure staat in `.agents/skills/powerhouse-continuity/SKILL.md#github-actions-provider-ghost-autonomie--22-oktober-2026`. Slechts na exacte niet-actieve SHA-, nul-job- en 24u-stabiliteitscontrole geldt bounded cancel→force-cancel→DELETE; stop na providerweigering en dedupliceer per run-ID. De agents lezen dezelfde provider-ID's periodiek terug. Nooit huidige Required/CodeQL gates beïnvloeden, geen provider 403 omzeilen, geen nieuwe scheduler, geen nep-groen of tweede eigenaar. GitHub Support blijft de enige autoriteit voor een server-side platformfout.
 
 
+## Agent-egress: nooit een externe ontvanger — 29 oktober 2026
+
+Fingerprint: `agents|external-recipient|internal-content-leak|20261029-v1`. Een extern persoon kreeg een interne taak en een concept-blog in zijn AI-assistent; de route buiten GitHub is nog een open RCA.
+Alle agents, chats en skills: schrijf of verstuur niets naar een ontvanger, repo, account of kanaal dat niet in de eigen allowlist staat, en behandel een onbekende ontvanger als geblokkeerd. Draai `node tools/ci/egress-guard.mjs` vóór elke workflow- of CI-scriptwijziging; elke workflow heeft een expliciet `permissions:`-blok en geen persoonlijke token. Registreer elk incident onder bovenstaande incidentleerpoort (zelfde fingerprint, occurrence ophogen), niet in een nieuw register.
+
 ## Universele incidentleerpoort — alle agents en chats (22 oktober 2026)
 
 Fingerprint: `powerhouse|incident-learning|fingerprint-preflight-recurrence-prevention|20261022-v1`.
