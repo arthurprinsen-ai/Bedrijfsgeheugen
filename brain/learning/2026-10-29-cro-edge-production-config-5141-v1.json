@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": 5141,
+  "obligation_id": "SITE-CRO-RAW-ACK-5141-20261029-EDGE-CONFIG",
+  "fingerprint": "site|cro|edge-function-config-declaration-missing|20261029",
+  "failure_class": "SUPABASE_EDGE_DEPLOYMENT_AUTHORITY_GAP",
+  "scope": "SITE_PORTAL_BACKEND",
+  "observed_evidence": {
+    "git_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40927339145",
+    "failed_job": 123636253798,
+    "exact_error": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-interactie",
+    "main_sha": "a3ca8e41d22963fe7ceef1c9173955f6d818ef1f",
+    "provider": "Supabase Edge slug bg-interactie ACTIVE version 10 verify_jwt=false",
+    "related_merged_pr": 5144
+  },
+  "root_cause": "Protected production edge attestation checks changed function source against an explicit supabase/config.toml declaration; bg-interactie was deployed historically but missing from config. The fail-closed rule correctly refused to deploy.",
+  "fix": "Register only existing bg-interactie in the existing Supabase config with enabled=true, preserve provider verify_jwt=false and exact source entrypoint. Do not create a new function or bypass release checks.",
+  "prevention_rules": [
+    "Every changed Supabase Edge function must have exactly one matching supabase/config.toml declaration, preserving current authentication and execution authority.",
+    "Never bypass SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG via manual deployment, disabled checks, new scheduler or duplicate function.",
+    "After protected Required/CodeQL and main merge, verify Supabase migration history and Edge source/provider version, Netlify published SHA, exact user-consent UID readback and tenant-bound owner portal.",
+    "Human documentation, Brain incident and agent skill must be updated in the same PR lineage; no false-green orders, visitors, leads or causality."
+  ],
+  "tests": [
+    "tests/brain-cro-edge-config-5141.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-edge-config-5141.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-edge-config-5141.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-edge-config-5141.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED: do not claim live before protected merge and provider edge readback"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SUPABASE_EDGE_DEPLOYMENT_AUTHORITY_GAP",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Remain OBSERVED/CANDIDATE until protected main merge, Supabase Edge production source readback, migrations, Netlify exact live SHA and real consented UID path are proven."
+}

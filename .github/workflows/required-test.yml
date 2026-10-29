@@ -400,6 +400,7 @@ jobs:
           tests/brain-production-promotion-observability.test.mjs
           tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
+          tests/cro-measurement-contract.test.mjs
           tests/compliance-status-page.test.mjs
           tests/control-plane-first-fanout-reduction.test.mjs
           tests/control-plane-fourth-fanout-reduction.test.mjs

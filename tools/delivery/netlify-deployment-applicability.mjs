@@ -49,6 +49,11 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   'platform/brain/verified-ai-runtime.mjs',
   'platform/brain/production-ai.mjs',
   'platform/policy/customer-ai-deployment.mjs',
+  // Server-bundled by netlify/functions/powerhouse-observability.mjs.
+  // It changes the authenticated portal API even though it lives under brain/.
+  'brain/observability/publication-evidence-readback.mjs',
+  'brain/observability/failure-coverage-projection.mjs',
+  'brain/observability/cycle-evidence-coverage.mjs',
 ]));
 
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
@@ -63,7 +68,9 @@ export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
     path === 'platform/api/portal-authenticated-production-proof-core.mjs' ||
     path === 'netlify/functions/portal-authenticated-production-proof.mjs' ||
     path === 'netlify/functions/portal-ondernemersdata.mjs' ||
-    path === 'netlify/functions/_portal-supabase-store.mjs'
+    path === 'netlify/functions/_portal-supabase-store.mjs' ||
+    path === 'brain/observability/publication-evidence-readback.mjs' ||
+    path === 'netlify/functions/powerhouse-observability.mjs'
   );
 }
 
