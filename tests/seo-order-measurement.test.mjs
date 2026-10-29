@@ -59,7 +59,7 @@ test('unmarked external and non-content links do not become commercial conversio
 test('explicit button CTA and first-party form intents use safe non-PII events',()=>{
   const ORIGIN='https://www.bedrijfsgeheugen.nl';
   const source=injectGrowthMeasurement('<html><body><main><button data-bg-conversion="zelfscan">Start</button><form data-bg-conversion="advies"><input type="email"><button type="submit">Verstuur</button></form></main></body></html>',{canonical:ORIGIN+'/prijzen'});
-  const script=source.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/i)?.[1];
+  const script=source.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/i)?.[1];
   assert.ok(script);
   const sent=[],listeners={},location={origin:ORIGIN,href:ORIGIN+'/prijzen',pathname:'/prijzen',hostname:'www.bedrijfsgeheugen.nl'};
   vm.runInNewContext(script,{
