@@ -364,7 +364,9 @@ jobs:
               squash_hit="$(gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f head="${GITHUB_REPOSITORY_OWNER}:${branch}" -f per_page=10 2>/dev/null | jq --arg sha "$head_sha" --arg repo "$GITHUB_REPOSITORY" '[.[] | select(.merged_at != null and .head.sha == $sha and (.head.repo.full_name|ascii_downcase) == ($repo|ascii_downcase))] | length' 2>/dev/null || echo 0)"
               [ "$squash_hit" -ge 1 ] 2>/dev/null || continue
               reason=SQUASH_MERGED_EXACT_HEAD
+              ahead=0
             fi
+            [ "$ahead" = 0 ] || continue
             # Re-read branch immediately before deletion: exact-head drift makes deletion fail closed.
             latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
             [ "$latest_sha" = "$head_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${head_sha}:${latest_sha}"; exit 78; }
