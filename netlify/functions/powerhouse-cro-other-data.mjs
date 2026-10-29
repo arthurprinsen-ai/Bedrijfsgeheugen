@@ -38,7 +38,7 @@ function projectExperiment(row){
 
 
 function summarizeBehavior(rows){
-  const keys=['page_events','tab_sessions','scroll_reached_25','scroll_reached_50','scroll_reached_75','scroll_reached_100','observed_exits','observed_exits_under_25','form_starts','form_errors','form_abandons','whatsapp_clicks','rapid_click_heuristics','popup_exposures','experiment_exposures'];
+  const keys=['page_events','persisted_event_receipts','historical_without_receipt','tab_sessions','scroll_reached_25','scroll_reached_50','scroll_reached_75','scroll_reached_100','observed_exits','observed_exits_under_25','form_starts','form_errors','form_abandons','whatsapp_clicks','rapid_click_heuristics','popup_exposures','experiment_exposures'];
   const events=Object.fromEntries(keys.map(key=>[key,sum(rows,key)]));
   const pages=new Map(),sections=new Map();
   for(const row of rows){
@@ -79,6 +79,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],behavior=[
   if(!experimentsOk)flags.push('EXPERIMENT_SOURCE_UNAVAILABLE');
   if(readStates.policies!=='LIVE')flags.push('EXPERIMENT_POLICY_UNAVAILABLE');
   if(!behaviorOk)flags.push('BEHAVIOR_EXIT_SOURCE_UNAVAILABLE');
+  if(behaviorOk&&(!behaviorData||behaviorData.events.persisted_event_receipts===0))flags.push('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED');
   if(dailyOk&&totals.pageViews>0&&totals.ctaClicks===0)flags.push('CTA_TRACKING_NOT_VERIFIED');
   if(experimentsOk&&experiments.some(e=>!e.causal_status||e.causal_status==='insufficient_evidence'))flags.push('EXPERIMENT_EVIDENCE_INCOMPLETE');
   return {
@@ -139,7 +140,7 @@ export default async function handler(request){
     select(base,key,'powerhouse_experiment_policies',
       'select=experiment_key,status,primary_metric,min_matured_per_arm,treatment_pct&limit=51'),
     select(base,key,'bg_cro_behavior_daily_v1',
-      'select=day,pad,device,last_visible_section,page_events,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001')
+      'select=day,pad,device,last_visible_section,page_events,persisted_event_receipts,historical_without_receipt,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001')
   ];
   const responses=await Promise.allSettled(queries);
   const limits=[2000,150,50,5000];
