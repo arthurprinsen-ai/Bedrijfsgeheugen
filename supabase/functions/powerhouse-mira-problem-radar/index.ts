@@ -16,7 +16,7 @@ const topic=(text:string)=>{
  if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
  if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
  if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
- if(/debiteur|dso|openstaande factur/.test(t))return'debiteuren';
+ if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling/.test(t))return'debiteuren';
  if(/late factur|facturatie.*vertraging|werk.*niet gefactureerd/.test(t))return'late-facturering';
  if(/klantconcentratie|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
  if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
@@ -34,9 +34,9 @@ const queries=[
  'mkb excel spreadsheets',
  'mkb dubbele invoer',
  'mkb personeelstekort planning',
- 'mkb facturering debiteuren',
- 'mkb klantafhankelijkheid',
- 'mkb ondernemers'
+ 'mkb onbetaalde facturen debiteuren',
+ 'mkb facturering te laat',
+ 'mkb klantafhankelijkheid'
 ];
 const MAX_AGE_DAYS=45; // inside the shared 60-day gate; Google News ranks by relevance, not recency
 // Provider timestamps like "2026-10-26 16:19:48 +00:00" are normalised to ISO so the

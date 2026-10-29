@@ -73,3 +73,17 @@ test('radar uses short news queries, a 45-day window inside the 60-day gate, and
  assert.match(radar,/taskCode===40101/);
  assert.match(radar,/dataforseo_no_results/);
 });
+
+test('radar keeps eight bounded searches while prioritizing concrete mkb receivables and billing friction',()=>{
+ const querySection=radar.match(/const queries=\[([\s\S]*?)\];/)[1];
+ assert.equal((querySection.match(/'mkb /g)||[]).length,8,'preserve bounded provider request count');
+ assert.match(querySection,/mkb onbetaalde facturen debiteuren/);
+ assert.match(querySection,/mkb facturering te laat/);
+ assert.doesNotMatch(querySection,/'mkb ondernemers'/);
+ assert.match(radar,/oninbare vorder/);
+ assert.match(radar,/onbetaalde factur/);
+ assert.match(radar,/betalingsachterstand/);
+ // The actual source publication timestamp and uniqueness gate are not relaxed.
+ assert.match(radar,/evaluateMiraPublicationFreshness\(/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+});
