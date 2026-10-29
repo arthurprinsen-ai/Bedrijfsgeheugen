@@ -13,7 +13,12 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-authenticated-production-proof.test.mjs",
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "canary": [
       "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
     ]
   },
@@ -29,6 +34,7 @@
     ],
     "production_verified": false,
     "provider_auth_proof": false,
-    "live": false
+    "live": false,
+    "ci_modes": "HISTORICAL_REPLAY_SHADOW_CANARY_PROVIDER_MOCKS_ONLY"
   }
 }
