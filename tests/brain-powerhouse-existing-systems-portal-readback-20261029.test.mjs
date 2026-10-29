@@ -102,7 +102,7 @@ test('untrusted text is escaped before reaching dashboard HTML',()=>{
 });
 test('admin gate executes before service-role source read and no new scheduled writer exists',()=>{
   const backend=readFileSync('netlify/functions/powerhouse-control-plane.mjs','utf8');
-  const helper=readFileSync('netlify/functions/_powerhouse-existing-integration-read-model.mjs','utf8');
+  const helper=readFileSync('platform/portal/powerhouse-existing-integration-read-model.mjs','utf8');
   assert.ok(backend.indexOf('if(!hasAdminRole(user))')<
     backend.indexOf('readPowerhouseIntegrationReadback('));
   assert.doesNotMatch(helper,/method\s*:\s*['"](?:POST|PATCH|PUT|DELETE)/);
