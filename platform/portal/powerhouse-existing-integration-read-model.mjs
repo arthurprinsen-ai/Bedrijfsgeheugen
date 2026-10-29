@@ -8,7 +8,9 @@ const SOURCES=Object.freeze([
   {name:'capabilities',table:'powerhouse_one_brain_capability_inventory_v1',query:'select=capability_key,domain,connection_state,evidence_rows&limit=101',max:100},
   {name:'layers',table:'powerhouse_one_brain_intelligence_inventory_v1',query:'select=layer_key,domain,wiring_state,evidence_state,evidence_rows&limit=101',max:100},
   {name:'experiments',table:'powerhouse_autonomous_experiment_readiness_v1',query:'select=readiness_state,assignments,treatment_assignments,holdout_assignments,observed_at&limit=2',max:1},
-  {name:'revenue',table:'powerhouse_revenue_event_spine_health_v1',query:'select=measured_at,scored_prospects,next_best_actions,attribution_touches,realized_revenue_eur,attributed_revenue_eur&limit=2',max:1}
+  {name:'revenue',table:'powerhouse_revenue_event_spine_health_v1',query:'select=measured_at,scored_prospects,next_best_actions,attribution_touches,realized_revenue_eur,attributed_revenue_eur&limit=2',max:1},
+  {name:'loops',table:'powerhouse_loop_integrity_health_v1',query:'select=observed_at,total_loops,green_loops,amber_loops,red_loops,fully_evidenced_loops,overall_status&limit=2',max:1},
+  {name:'terminal',table:'powerhouse_terminal_control_plane_health_v1',query:'select=observed_at,nonterminal_obligations,blocked_obligations,escalated_reconciliation_jobs,control_plane_healthy,stale_green_truths&limit=2',max:1}
 ]);
 const metric=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
 const text=v=>typeof v==='string'?v.slice(0,90):null;
@@ -21,7 +23,10 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   const layers=usable(readStates,'layers')?rows(datasets.layers):[];
   const expRows=usable(readStates,'experiments')?rows(datasets.experiments):[];
   const revenueRows=usable(readStates,'revenue')?rows(datasets.revenue):[];
+  const loopRows=usable(readStates,'loops')?rows(datasets.loops):[];
+  const terminalRows=usable(readStates,'terminal')?rows(datasets.terminal):[];
   const health=healthRows[0]||null, experiments=expRows[0]||null, revenue=revenueRows[0]||null;
+  const loops=loopRows[0]||null, terminal=terminalRows[0]||null;
   const sourceNames=SOURCES.map(x=>x.name);
   const sourceComplete=sourceNames.every(n=>usable(readStates,n));
   const gaps=['END_TO_END_HANDOFF_EVIDENCE_NOT_IN_THIS_PROJECTION',
@@ -33,6 +38,14 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   if(health?.content_loop_state&&health.content_loop_state!=='VERIFIED')gaps.push('CONTENT_LOOP_NOT_VERIFIED');
   if(experiments && metric(experiments.holdout_assignments)===0)
     gaps.push('CAUSAL_HOLDOUT_NOT_OBSERVED');
+  if(loops && (loops.overall_status!=='GREEN'||metric(loops.red_loops)!==0||metric(loops.amber_loops)!==0))
+    gaps.push('LOOP_ASSURANCE_NOT_GREEN');
+  if(terminal && terminal.control_plane_healthy!==true)
+    gaps.push('TERMINAL_CONTROL_PLANE_UNHEALTHY');
+  if(terminal && metric(terminal.blocked_obligations)>0)
+    gaps.push('BLOCKED_OBLIGATIONS_REQUIRE_ORIGINAL_OWNER');
+  if(terminal && metric(terminal.escalated_reconciliation_jobs)>0)
+    gaps.push('RESULT_UNKNOWN_RECONCILIATION_REQUIRES_READBACK');
   return {
     contract:'POWERHOUSE_EXISTING_SYSTEMS_ADMIN_READBACK_V1',
     observedAt:at,
@@ -64,6 +77,20 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
       readiness:text(experiments.readiness_state),
       assignments:metric(experiments.assignments),holdoutAssignments:metric(experiments.holdout_assignments),
       readAt:experiments.observed_at||null
+    }:null,
+    loopAssurance:loops?{
+      state:text(loops.overall_status),total:metric(loops.total_loops),
+      green:metric(loops.green_loops),amber:metric(loops.amber_loops),
+      red:metric(loops.red_loops),fullyEvidenced:metric(loops.fully_evidenced_loops),
+      readAt:loops.observed_at||null
+    }:null,
+    terminalControl:terminal?{
+      healthy:terminal.control_plane_healthy===true,
+      nonterminal:metric(terminal.nonterminal_obligations),
+      blocked:metric(terminal.blocked_obligations),
+      escalated:metric(terminal.escalated_reconciliation_jobs),
+      staleGreen:metric(terminal.stale_green_truths),
+      readAt:terminal.observed_at||null
     }:null,
     commercial:revenue?{
       prospects:metric(revenue.scored_prospects),nextBestActions:metric(revenue.next_best_actions),
