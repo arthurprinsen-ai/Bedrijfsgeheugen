@@ -53,3 +53,12 @@ test('provider SDK is deferred until after rejection of missing JWT; no unauthen
  assert.equal(denied.status,401);
  assert.equal((await denied.json()).error,'UNAUTHENTICATED');
 });
+
+test('commercial CTA and form events have exactly one canonical growth producer on money pages',()=>{
+ const js=readFileSync('assets/meting.js','utf8');
+ assert.match(js,/getElementById\('bg-growth-measurement'\)/);
+ assert.match(js,/type==='primary_cta_click'\|\|type==='form_start'\|\|type==='form_submit_intent'/);
+ assert.match(js,/el\.closest\('main'\)/);
+ assert.match(js,/meetGroei\('money_link_click'\)/);
+ assert.match(js,/!toestemming\(\)/);
+});
