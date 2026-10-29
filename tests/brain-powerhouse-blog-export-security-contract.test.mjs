@@ -37,3 +37,16 @@ test('canonical public PR workflow never stages internal Brain or ledger evidenc
   assert.match(renderer, /BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED/);
   assert.match(renderer, /headers=\{"Authorization": f"Bearer \{token\}"\}/);
 });
+
+test('read-only live exporter matrix cannot run the canonical publishing job', () => {
+  const workflow = read('.github/workflows/powerhouse-daily-blog.yml');
+  assert.match(workflow, /security_probe_only:/);
+  assert.ok(workflow.includes("    if: ${{ github.event_name != 'workflow_dispatch' || inputs.security_probe_only != true }}"), 'probe-only dispatch skips publisher');
+  assert.match(workflow, /security_export_probe:/);
+  assert.match(workflow, /github.event_name == 'workflow_dispatch' && inputs.security_probe_only == true/);
+  assert.match(workflow, /contents: read/);
+  assert.match(workflow, /probe "GENERATED_WITHOUT_APPROVAL" "2026-10-28" "403"/);
+  assert.match(workflow, /probe "HISTORIC_LIVE_WITHOUT_APPROVAL" "2026-10-22" "403"/);
+  assert.match(workflow, /probe "APPROVED_LIVE_PROVEN" "2026-10-25" "200"/);
+  assert.match(workflow, /--output \/dev\/null/);
+});
