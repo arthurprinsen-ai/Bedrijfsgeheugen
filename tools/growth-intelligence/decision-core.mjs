@@ -93,4 +93,4 @@ export function runGrowthDecisionCycle(signals,{now=Date.now(),limit=10}={}) {
 }
 
 // Canonical CRO experiment contract: no additional writer, data store, or schedule.
-export {CRO_EXPERIMENT_CONTRACT,CRO_SURFACES,designCroExperiment,evaluateCroExperiment,projectCroLearning} from './cro-experiment-cycle.mjs';
+export {CRO_EXPERIMENT_CONTRACT,CRO_SURFACES,designCroExperiment,evaluateCroExperiment,projectCroLearning,diagnoseCroMeasurementGap} from './cro-experiment-cycle.mjs';
