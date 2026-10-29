@@ -1,8 +1,10 @@
 // Canonical bg-externe-signalen provider resilience. No additional scheduler or API.
 //
-// DataForSEO documents transient HTTP 5xx and internal/task processing errors.
+// DataForSEO documents transient HTTP 5xx and task errors. Its 40101 internal
+// search-engine failure may be billed AFTER provider retries: never immediately
+// repeat this paid task. Only 40102 is a real no-results observation.
 // Billing, authentication and rate-limit errors must never be retried here.
-const RETRYABLE_TASK_CODES=new Set([40101,40103,50000,50001,50301,50302,50303,50304,50401,50402]);
+const RETRYABLE_TASK_CODES=new Set([40103,50000,50001,50301,50302,50303,50304,50401,50402]);
 
 export function isTransientDataforseoStatus(httpStatus,apiStatus,taskStatus){
   const http=Number(httpStatus);

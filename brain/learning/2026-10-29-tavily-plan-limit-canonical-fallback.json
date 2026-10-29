@@ -2,25 +2,38 @@
   "type": "BRAIN_LEARNING",
   "id": "tavily-plan-limit-canonical-fallback-20261029",
   "fingerprint": "powerhouse|external-search|tavily-plan-limit-432|20261029",
-  "status": "CANDIDATE_NOT_LIVE",
+  "status": "V21_LIVE_FALLBACK_PARTIAL_207_40101_COST_GUARD_CANDIDATE",
   "maturity": "OBSERVED",
-  "root_cause": "Composio Tavily search returned HTTP 432 plan limit despite ACTIVE authorization. Existing canonical producer had DataForSEO fallback but concurrent Tavily requests could repeat blocked requests. Post-merge production authority detected the pre-existing bg-externe-signalen Edge function was absent from supabase/config.toml, so protected main->provider parity failed with SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG.",
+  "root_cause": "Composio Tavily search returned HTTP 432 plan limit despite ACTIVE authorization. Existing canonical producer had DataForSEO fallback but concurrent Tavily requests could repeat blocked requests. Post-merge production authority detected the pre-existing bg-externe-signalen Edge function was absent from supabase/config.toml, so protected main->provider parity failed with SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG. The first authenticated production v21 run (request 15928) returned HTTP 207: 2/3 successful topics, 19 results, 1 allowed; failing DataForSEO task 40101 already internally retried at provider and may be billable, unlike real no-results code 40102.",
   "change": "Use one in-flight probe and bounded per-isolate cooldown for HTTP 432/429 before existing real DataForSEO fallback.",
   "tests": [
     "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
-    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs",
+    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs"
   ],
   "evidence": {
     "tavily_oauth": "ACTIVE_VIA_COMPOSIO",
     "tavily_search": "BLOCKED_432",
     "serper": "ON_DEMAND_VERIFIED",
     "exa": "ON_DEMAND_VERIFIED",
-    "supabase_runtime": "NOT_YET_LIVE_VERIFIED",
+    "supabase_runtime": "V21_LIVE_VERIFIED",
     "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
     "github_main": "e93852af5cc3a4c68df925ddf33260a2504f4fcc",
     "supabase_prod_function_version_before": 20,
     "production_authority_failure": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-externe-signalen",
-    "edge_registry_followup": "PREPARED_NOT_LIVE"
+    "edge_registry_followup": "PREPARED_NOT_LIVE",
+    "verified_run": {
+      "request_id": 15928,
+      "http_status": 207,
+      "successful_topics": 2,
+      "failed_topics": 1,
+      "found": 19,
+      "allowed": 1,
+      "dataforseo_task": 40101,
+      "observed_at": "2026-10-29T14:54:23.203Z"
+    },
+    "dataforseo_docs": "https://dataforseo.com/help-center/what-does-the-40101-error-mean",
+    "billable_retry_fix": "CANDIDATE_NOT_LIVE"
   },
   "policy": "NO_NEW_SCHEDULER_NO_NEW_WRITER_NO_UNVERIFIED_GREEN",
   "compiler": {
@@ -33,12 +46,14 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
-      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs",
+      "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs"
     ]
   },
-  "prevention": "On the existing scheduler-owned bg-externe-signalen source, share one in-isolate Tavily probe. On provider 432 (plan limit), block repeat Tavily calls for 15 minutes; on 429 for 1 minute. Continue independently evidenced DataForSEO organic fallback, never bypass billing cap, duplicate scheduler, unauthorized egress, RLS or false-green source receipts. Regressions enforce this behavior and source lineage. Register existing bg-externe-signalen in supabase/config.toml with enabled=true, verify_jwt=false and exact entrypoint, while retaining independent x-powerhouse-token validation. Include a regression to block future omission.",
+  "prevention": "On the existing scheduler-owned bg-externe-signalen source, share one in-isolate Tavily probe. On provider 432 (plan limit), block repeat Tavily calls for 15 minutes; on 429 for 1 minute. Continue independently evidenced DataForSEO organic fallback, never bypass billing cap, duplicate scheduler, unauthorized egress, RLS or false-green source receipts. Regressions enforce this behavior and source lineage. Register existing bg-externe-signalen in supabase/config.toml with enabled=true, verify_jwt=false and exact entrypoint, while retaining independent x-powerhouse-token validation. Include a regression to block future omission. Avoid any second client-side paid request for task 40101, retain numeric diagnosis and partial HTTP 207. Only task 40102 may return independently observed zero.",
   "regression_contract": [
     "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
-    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs",
+    "tests/brain-dataforseo-40101-billable-guard-20261029.test.mjs"
   ]
 }
