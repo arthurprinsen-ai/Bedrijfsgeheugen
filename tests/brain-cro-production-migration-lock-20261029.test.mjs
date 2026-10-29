@@ -59,3 +59,12 @@ test('learning replay reference satisfies canonical Brain admission, while gener
  }
  assert.ok(record.tests.includes('tests/supabase-migration-history-integrity.test.mjs'));
 });
+
+test('original autonomous agents enforce migration triple-source gate before first provider preview',()=>{
+ const skill=readFileSync('.agents/skills/powerhouse-self-improvement-layer/SKILL.md','utf8');
+ for(const phrase of ['supabase/migration-history.lock.json','supabase_migrations.schema_migrations','supabase/migrations/*.sql','PREVIEW_PROVIDER_HISTORY_REPLAY_CONFLICT','tests/brain-','FUNCTIONS_DEPLOYED']){
+  assert.ok(skill.includes(phrase),'canonical migration prevention: '+phrase);
+ }
+ const record=JSON.parse(readFileSync('brain/learning/2026-10-29-cro-production-migration-lock-reconciled.json','utf8'));
+ assert.equal(record.preview_provider_execution_healthy,false,'candidate learning cannot claim exact-head perpetual success');
+});

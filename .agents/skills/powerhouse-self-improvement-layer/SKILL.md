@@ -5,6 +5,18 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## Supabase migration first-pass source-of-truth and prevention — 29 October 2026
+
+INCIDENT_PROTOCOL: `supabase|revenue-learning|migration-history-lock-stale-after-production-20261029` and `supabase|preview|duplicate-migration-version-23505|20261029-v1`.
+
+All ORIGINAL migration, CRO, Heartbeat, ONE BRAIN, CI and release agents must run a **read-only three-way preflight before the first preview/merge**: compare the complete set of `(version,name)` from `supabase/migrations/*.sql`, `supabase/migration-history.lock.json` `applied`, and REAL Supabase production `supabase_migrations.schema_migrations`. Require 1:1 matching exact version/name identities and unique executable versions; never infer parity from a partial list, a cron status, a file count alone, or a `MIGRATIONS_FAILED` preview.
+
+If production applied additional migrations, the SAME original migration writer must add only independently read-back identities to the source lock within ONE protected PR, with Brain evaluation under the canonical `tests/brain-*.test.mjs` path and separate generic tests under `learning.tests`. No blind SQL migration replay, direct history-table DML, renamed applied version, fabricated statement hash, new migrations writer, second scheduled executor or branch-history deletion. Protected Required/CodeQL and original Revenue Learning must pass again at exact candidate/main.
+
+Classify GitHub Supabase Preview `SQLSTATE 23505` on an already present version as `PREVIEW_PROVIDER_HISTORY_REPLAY_CONFLICT`. Read exact provider preview migration history and source file (not just red check summary), compare version+name, and do NOT blindly re-run or falsely mark success. Use only Supabase-supported branch reconciliation within the original branch's authorized cost/data boundaries; no new paid preview without explicit permission, and never bypass the independent provider check. Exact-head provider SUCCESS and preview `FUNCTIONS_DEPLOYED` plus 1:1 provider migration readback are independent release obligations; if not proved, retain BLOCKED.
+
+Observed 2026-10-29 correction: protected source lock 774, original CRO PR 779 and production Git SQL manifest 784; the original 779-row preview initially missed five newest migrations and yielded SQLSTATE 23505 on older already-present versions. The original provider rerun now reports 784/784 and `FUNCTIONS_DEPLOYED` after source reconciliation. Counts are historical **not perpetual thresholds**; evaluate the current complete set every time. Every new failure must be fingerprinted with exact provider request/check ID, cause, safe action, regression and human/portal evidence. A test passing once proves the test route, not perpetual flawless provider execution.
+
 ## Production runtime truth and anti-false-green routing — 29 October 2026
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
