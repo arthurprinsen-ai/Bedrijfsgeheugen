@@ -4,6 +4,6 @@
 - **Waarneming**: Netlify `/api/powerhouse-control-plane`: 49×401 en 2×499 (18:30–18:54 UTC). Gedeployde source leverde geen zelfstandig geauthenticeerde admin-200-readback.
 - **Oorzaak**: client gaf geen Netlify Identity Authorization JWT mee; server `getUser()` kreeg het originele HTTP-request niet.
 - **Herstel**: browser `ensureIdentityWidget + currentUser.jwt` → bestaand admin endpoint; backend GET/Bearer/request-bound `getUser(request)`; admin-check vóór Supabase service-role; behoud originele errors.
-- **Regressie**: `portal-v2/tests/control-plane-cockpit.test.mjs` met niet-geauthenticeerde/no-JWT/bad-token/403 en echte Authorization-header contracten.
+- **Regressie**: `tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs` met niet-geauthenticeerde/no-JWT/bad-token/403 en echte Authorization-header contracten.
 - **Leren / verspreiden**: `brain/learning/2026-10-29-portal-admin-jwt-readback-v1.json`, menselijke documentatie en Notion Operating Skill/Portal Dashboard Hub. Releasestatus `SOURCE_CANDIDATE` tot protected merge en live owner/browser-readback.
 - **Security**: geen JWT/secrets in logs; geen extra tracker, scheduler, writer, parallel systeem of fictieve uitkomst.
