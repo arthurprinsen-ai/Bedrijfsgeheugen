@@ -1,0 +1,31 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "checkout-trial-switch-null-guard-20261029",
+  "fingerprint": "powerhouse|website|checkout-trialswitch-null|20261029",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "RUNTIME",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/checkout-trial-switch-recovery.test.mjs"
+    ]
+  },
+  "root_cause": "Actual GitHub website-page scanner run 40889498268 reported TypeError on /afsluiten: setTrialLink tried replaceChildren on null. Original source contains #trialSwitch but the built browser page did not supply it at runtime; the missing DOM container was not guarded.",
+  "change": "Keep the existing mode-switch link, restoring a missing #trialSwitch element inside existing checkout form before replacing its child link. Fail explicitly if the checkout form itself is absent.",
+  "prevention": "Permanent deterministic regression for both existing and missing trial switch containers; retain generated-site browser E2E and exact-source production release readback. Do not classify as live until protected checks, merge and production scan pass.",
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4577",
+    "workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40889498268",
+    "tests": [
+      "tests/checkout-trial-switch-recovery.test.mjs"
+    ],
+    "productionStatus": "PENDING_NEW_PR_VALIDATION",
+    "live": false
+  }
+}
