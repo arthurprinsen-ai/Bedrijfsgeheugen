@@ -34,7 +34,7 @@ test('source errors, truncation and unknown human counts are not reported green'
 });
 test('observed form intent does not imply verified revenue or causal success',()=>{
   const data=projectOtherData({
-    readStates:{daily:'LIVE',experiments:'LIVE',policies:'LIVE'},
+    readStates:{daily:'LIVE',experiments:'LIVE',policies:'LIVE',behavior:'LIVE'},
     daily:[{page_views:30,cta_clicks:2,qualified_leads:0,won_orders:0,revenue_eur:0}],
     experiments:[{experiment_id:'intent',status:'ACTIVE',causal_status:'insufficient_evidence',
       treatment_assignments:1,holdout_assignments:0,promotion_eligible:false,realized_revenue_eur:null}]
