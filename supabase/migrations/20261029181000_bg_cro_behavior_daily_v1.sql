@@ -10,6 +10,8 @@ SELECT
     ELSE '_overige_events'
   END AS last_visible_section,
   count(*) FILTER (WHERE gebeurtenis = 'pagina')::bigint AS page_events,
+  count(*) FILTER (WHERE event_uid IS NOT NULL)::bigint AS persisted_event_receipts,
+  count(*) FILTER (WHERE event_uid IS NULL)::bigint AS historical_without_receipt,
   count(DISTINCT sessie) FILTER (WHERE gebeurtenis = 'pagina')::bigint AS tab_sessions,
   count(*) FILTER (WHERE gebeurtenis = 'scroll' AND diepte_pct = 25)::bigint AS scroll_reached_25,
   count(*) FILTER (WHERE gebeurtenis = 'scroll' AND diepte_pct = 50)::bigint AS scroll_reached_50,
