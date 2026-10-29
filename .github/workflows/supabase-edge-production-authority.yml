@@ -215,7 +215,7 @@ jobs:
 
       - name: Install pinned Supabase CLI for read-only provider parity
         if: steps.scope.outputs.applicable == 'true'
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1.7.3
         with:
           version: 2.119.0
 
