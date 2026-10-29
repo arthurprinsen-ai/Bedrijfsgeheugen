@@ -1,0 +1,39 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "supabase-live-774-migration-lock-20261029",
+  "fingerprint": "delivery|supabase-preview|live-provider-774-history-lock-drift|20261029",
+  "status": "CANDIDATE_TESTED_NOT_MERGED",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ]
+  },
+  "root_cause": "Supabase production migration integration applied the once-unapplied local-only LinkedIn migration during protected #5104 release, plus three already-applied sources mirrored in #5104; migration-history.lock remained an earlier 770-row snapshot and would falsely classify four truly applied identities as local-only.",
+  "change": "Refresh the existing migration-history lock to 774 exact provider identities and verified provider observation time; preserve the deployed 20261028220000 source in executable lane, no quarantine.",
+  "prevention": "Before classifying a migration as unapplied or archiving source, re-read live provider migrations after every protected release; separate historical pre-deployment observation from latest state.",
+  "evidence": {
+    "tests": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "provider_migration_count": 774,
+    "provider_observed_at": "2026-10-29 11:54:04.166873+00",
+    "deployed_identity": "20261028220000_bg_linkedin_lus_v1",
+    "production_readback": {
+      "table_exists": true,
+      "cycle_function_exists": true,
+      "applied_history_exists": true
+    },
+    "unchanged_source_sha256": "1076c415675c1d7545703fb7bdbed95511954fd2500d89ec801582b50df801a3",
+    "release": "Protected merge and fresh check required; no direct production SQL executed by this PR."
+  }
+}
