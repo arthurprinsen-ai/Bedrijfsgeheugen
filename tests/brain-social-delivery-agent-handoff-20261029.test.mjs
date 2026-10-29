@@ -31,3 +31,22 @@ test('the registry contains no active Make executor, no alternative social sende
  const skill=readFileSync('.agents/skills/powerhouse-social-recovery-cooperation/SKILL.md','utf8');
  for(const gate of ['same canonical obligation','duplicate','0.940','one integration writer','provider ID','independent readback','security boundary','no new scheduler']) assert.ok(skill.toLowerCase().includes(gate.toLowerCase()),gate);
 });
+
+test('incident skills guarantee private audit, last-writer authorization and truthful historical closure',()=>{
+ const security=readFileSync('.agents/skills/powerhouse-security-trust-center/SKILL.md','utf8');
+ const social=readFileSync('.agents/skills/powerhouse-social-recovery-cooperation/SKILL.md','utf8');
+ const policy=JSON.parse(readFileSync('brain/policies/powerhouse-incident-register-and-self-fix-v1.json','utf8'));
+ for(const skill of [security,social]) {
+   assert.ok(skill.includes('INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1'));
+   assert.match(skill,/approved_at/);
+   assert.match(skill,/ONE BRAIN/);
+   assert.match(skill,/Netlify/);
+   assert.match(skill,/GitHub/);
+ }
+ assert.match(security,/HISTORIC_PUBLIC_COPIES_UNRESOLVED/);
+ assert.match(security,/last egress writer/);
+ assert.match(social,/one deduplicated audit receipt/);
+ assert.match(social,/independently observed readback/);
+ assert.ok(!policy.loop_debt_baseline.includes('powerhouse-security-trust-center'));
+ assert.equal(policy.skill_protocol.marker,'INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1');
+});
