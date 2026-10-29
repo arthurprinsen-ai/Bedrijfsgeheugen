@@ -1,0 +1,27 @@
+{
+  "schema": "ONE_BRAIN_LEARNING_v1",
+  "fingerprint": "powerhouse|cycle-events|missing-truthful-writer-provenance|20261029",
+  "obligation_id": "powerhouse-lean-agent-loop-20261029",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "observed_on": "2026-10-29",
+  "evidence": {
+    "source": "public.powerhouse_cycle_events, PostgreSQL schema introspection",
+    "sales_action_events_per_stage": 315,
+    "agent_id_coverage": 0,
+    "before_after_coverage": 0,
+    "notes": "Existing materializers know their SQL writer identity but cannot attest actual AI agent identity."
+  },
+  "root_cause": "Seven canonical PostgreSQL materializer functions do not include their own provable writer component identity in event payloads. Originating AI agent/skill identity is not available in historical source action evidence.",
+  "safe_fix": "Annotate only future, new canonical cycle events with the explicitly known SQL function writer_component, writer_contract_version and agent_attribution=UNKNOWN_NOT_ATTESTED; preserve original grant/search_path/trigger and idempotent event order.",
+  "no_false_success": [
+    "do_not_invent_agent_id",
+    "do_not_invent_before_metric",
+    "do_not_invent_after_metric",
+    "never_rewrite_historical_events",
+    "no_new_writer_or_scheduler",
+    "revenue_zero_or_missing_is_not_paid_success"
+  ],
+  "regression_ref": "tests/brain-cycle-writer-provenance-20261029.test.mjs",
+  "next_step": "After protected migration, independently verify SQL function source and new events from existing schedules. Then instrument actor identity and actual baseline/outcomes in originating authorized agents before closing the candidate.",
+  "closure_gate": "independently verified agent_id/skill_version, before/after metric evidence, provider outcome and commercial revenue attribution; this migration alone does not close the gate"
+}
