@@ -31,6 +31,7 @@ function render(container,data){
   const source=data?.sources||{};
   const website=data?.website;
   const experiments=Array.isArray(data?.experiments)?data.experiments:null;
+  const behavior=data?.behavior||null;
   const flags=Array.isArray(data?.quality?.flags)?data.quality.flags:[];
   const proof=data?.conversionProof||null;
   const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
@@ -44,6 +45,20 @@ function render(container,data){
     field('Onafhankelijk bevestigde gerealiseerde omzet',money(proof.realizedRevenueIndependentlyVerifiedEur))
   ].join(''):field('Onafhankelijke commerciële bewijsbron','Niet beschikbaar');
   const cohortRows=cohorts?cohorts.map(r=>'<tr><td>'+esc(r.key)+'</td><td>'+badge(r.status)+'</td><td>'+esc(fmt(r.maturedTreatment))+' / '+esc(fmt(r.maturedHoldout))+'</td><td>'+esc(fmt(r.minimumPerArm))+'</td></tr>').join(''):'';
+  const sectionRows=(behavior?.exitSections||[]).slice(0,20).map(r=>
+    '<tr><td><code>'+esc(r.pad)+'</code></td><td>'+esc(r.section)+'</td><td>'+esc(fmt(r.observedExits))+'</td><td>'+esc(fmt(r.earlyExitSignals))+'</td></tr>').join('');
+  const behaviorCards=behavior?[
+    field('Menselijke events: paginaweergaven met toestemming',fmt(behavior.events.page_events)),
+    field('Betrouwbaar opgeslagen event-ID’s (geen unieke bezoekers)',fmt(behavior.events.persisted_event_receipts)),
+    field('Historische events zonder bevestigde event-ID',fmt(behavior.events.historical_without_receipt)),
+    field('Waargenomen vertrekgebeurtenissen (geen volledig exit-totaal)',fmt(behavior.events.observed_exits)),
+    field('Laatste scroll onder 25% bij waargenomen vertrek',fmt(behavior.events.observed_exits_under_25)),
+    field('Formulieren verlaten (waargenomen)',fmt(behavior.events.form_abandons)),
+    field('Formulierfouten',fmt(behavior.events.form_errors)),
+    field('WhatsApp-intentieklikken',fmt(behavior.events.whatsapp_clicks)),
+    field('Snelle herhaalde klikken (heuristiek)',fmt(behavior.events.rapid_click_heuristics)),
+    field('Waargenomen experimentblootstellingen',fmt(behavior.events.experiment_exposures))
+  ].join(''):field('Gedragsbron','Nog niet verifieerbaar');
   const cardData=website
     ? field('Geregistreerde paginabezoeken (30 dagen)',fmt(website.pageViews))+
       field('Geregistreerde CTA-klikken (30 dagen)',fmt(website.ctaClicks))+
@@ -56,7 +71,7 @@ function render(container,data){
     '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
     '<h3 id="croOtherDataTitle">Websitegegevens & CRO-experimenten</h3>'+
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
-    '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
+    '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
     '<section class="od-card"><h3>Bronbewijs voor leads, orders en experimenten</h3><p>De dagtotalen hierboven zijn observaties. Onderstaande bronbewijzen komen uit de bestaande Supabase-registraties. Ook een geregistreerde providerreferentie is nog geen onafhankelijk bevestigd betaalbewijs.</p><div class="od-grid">'+proofCards+'</div>'+
     '<p class="od-foot">Eventstatus: '+badge(proof?.eventStatus)+' · Leadstatus: '+badge(proof?.leadStatus)+' · Orderstatus: '+badge(proof?.orderStatus)+'</p>'+
@@ -64,6 +79,13 @@ function render(container,data){
     (cohorts?'<div class="od-scroll"><table><thead><tr><th>Experiment</th><th>Bewijsstatus</th><th>Volwassen treatment / holdout</th><th>Minimum per arm</th></tr></thead><tbody>'+(cohortRows||'<tr><td colspan="4">Geen toegelaten, bewezen experimenten.</td></tr>')+'</tbody></table></div>':'<p>Controle- en behandelingscohorten zijn niet beschikbaar. Geen causale winnaar bevestigd.</p>')+
     '</section>'+
     (flags.length?'<div class="od-warn" role="status"><strong>Meetkwaliteit nog niet volledig bewezen</strong><p>'+esc(flags.join(' · '))+'</p><small>'+esc(data.quality?.message||'')+'</small></div>':'')+
+    '<section class="od-card"><h3>Waar haken bezoekers af? · waargenomen websitegedrag</h3>'+
+    '<p>Alleen geaggregeerde events met toestemming, zonder botverkeer. Het laatst zichtbare blok is geen bewezen vertrekreden. Niet elke browser verstuurt een vertrek-event.</p>'+
+    '<div class="od-grid">'+behaviorCards+'</div>'+
+    '<h4>Laatste zichtbare sectie bij vastgelegd vertrek</h4>'+
+    '<div class="od-scroll"><table><thead><tr><th>Pagina</th><th>Laatst zichtbare sectie</th><th>Vertreksignalen</th><th>Daarvan onder 25% scroll</th></tr></thead><tbody>'+
+    (behavior?(sectionRows||'<tr><td colspan="4">Geen bewezen sectie-exit-events binnen deze periode.</td></tr>'):'<tr><td colspan="4">Bron ontbreekt of is niet actueel.</td></tr>')+
+    '</tbody></table></div></section>'+
     '<section class="od-card"><h3>CRO-experimentregister</h3>'+
     (experiments?'<p>'+fmt(experiments.length)+' experimenten uit de canonieke Powerhouse-bron. Ook geplande, onvolledige en afgekeurde proeven blijven zichtbaar.</p>':'<p>De experimentbron is niet beschikbaar; conclusies blijven open.</p>')+
     '<div class="od-controls"><label>Zoek experiment <input data-cro-search type="search" placeholder="Hypothese, pagina, experiment-ID"></label><label>Status <select data-cro-status><option value="">Alle statussen</option>'+

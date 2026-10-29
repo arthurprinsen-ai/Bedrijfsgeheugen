@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { projectOtherData } from '../netlify/functions/powerhouse-cro-other-data.mjs';
 import { findPage } from '../portal-v2/page-registry.js';
 
-const evidence={daily:'LIVE',experiments:'LIVE',policies:'LIVE',conversionProof:'LIVE',experimentProof:'LIVE'};
+const evidence={daily:'LIVE',experiments:'LIVE',policies:'LIVE',conversionProof:'LIVE',experimentProof:'LIVE',behavior:'LIVE'};
 const conversionProof=[{event_evidence_status:'PERSISTED_EVENTS_OBSERVED',lead_evidence_status:'NO_LINKED_QUALIFIED_LEAD_PROOF',order_evidence_status:'EXTERNAL_PROVIDER_READBACK_REQUIRED_FOR_REVENUE_CLAIM',experiment_evidence_status:'CONTROLLED_ASSIGNMENT_AND_MATURED_OUTCOMES_REQUIRED',observed_cta_events_7d:2,daily_cta_aggregated_7d:2,recorded_leads_30d:0,linked_qualified_lead_records_30d:0,orders_with_recorded_provider_readback_30d:0}];
 test('Andere data is a single native portal route',()=>{
   assert.equal(findPage('andere-data')?.label,'Andere data');
@@ -57,4 +58,40 @@ test('CRO portal fails closed before migration has exposed the restricted proof 
  assert.equal(data.conversionProof,null);
  assert.equal(data.experimentProof,null);
  assert.ok(data.quality.flags.includes('PERSISTED_CONVERSION_PROOF_SOURCE_UNAVAILABLE'));
+});
+
+test('last visible section is an observed exit proxy, never a verified lead',()=>{
+ const data=projectOtherData({readStates:evidence,conversionProof,experimentProof:[],behavior:[
+  {pad:'/prijzen',last_visible_section:'faq',page_events:0,observed_exits:3,observed_exits_under_25:2,form_abandons:1},
+  {pad:'/prijzen',last_visible_section:'_overige_events',page_events:10,observed_exits:0,observed_exits_under_25:0,form_abandons:0},
+  {pad:'/contact',last_visible_section:'formulier',page_events:0,observed_exits:1,observed_exits_under_25:0,form_abandons:1}
+ ]});
+ assert.equal(data.status,'LIVE');
+ assert.equal(data.behavior.events.observed_exits,4);
+ assert.equal(data.behavior.exitSections.find(x=>x.section==='faq').observedExits,3);
+ assert.equal(data.behavior.events.form_abandons,2);
+ assert.equal(data.website.wonOrders,0);
+});
+test('missing behavior projection cannot be green even with healthy experiment sources',()=>{
+ const data=projectOtherData({readStates:{daily:'LIVE',experiments:'LIVE',policies:'LIVE',conversionProof:'LIVE',experimentProof:'LIVE',behavior:'UNAVAILABLE'},conversionProof,experimentProof:[]});
+ assert.equal(data.status,'PARTIAL');
+ assert.equal(data.behavior,null);
+ assert.ok(data.quality.flags.includes('BEHAVIOR_EXIT_SOURCE_UNAVAILABLE'));
+});
+
+test('Source readback needs persistent event IDs before telemetry trust is established',()=>{
+ const absent=projectOtherData({readStates:evidence,conversionProof,experimentProof:[],behavior:[{pad:'/prijzen',page_events:7,persisted_event_receipts:0,historical_without_receipt:7}]});
+ assert.equal(absent.behavior.events.persisted_event_receipts,0);
+ assert.ok(absent.quality.flags.includes('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED'));
+ const received=projectOtherData({readStates:evidence,conversionProof,experimentProof:[],behavior:[{pad:'/prijzen',page_events:7,persisted_event_receipts:7,historical_without_receipt:0}]});
+ assert.equal(received.behavior.events.persisted_event_receipts,7);
+ assert.ok(!received.quality.flags.includes('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED'));
+});
+
+test('Other data renders independent commercial proof and observed exit behavior in one owner-only screen',()=>{
+ const src=readFileSync('portal-v2/modules/andere-data.js','utf8');
+ assert.match(src,/Bronbewijs voor leads, orders en experimenten/);
+ assert.match(src,/Waar haken bezoekers af/);
+ assert.match(src,/badge\(source\.conversionProof\?\.status\)/);
+ assert.match(src,/badge\(source\.behavior\?\.status\)/);
 });
