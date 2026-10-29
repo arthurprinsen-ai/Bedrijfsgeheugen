@@ -1,9 +1,9 @@
 {
-  "type": "POWERHOUSE_SEO_PUBLIC_SOURCE_LEARNING",
+  "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-10-29",
   "fingerprint": "seo|daily-blog|fresh-intent-owner-evidence-admission|v1",
-  "status": "CANDIDATE_NOT_LIVE",
+  "status": "CANDIDATE_UNVERIFIED",
   "failure_class": "UNOWNED_OR_DUPLICATE_SEO_BLOG_CANDIDATE",
   "root_cause": "A keyword score and short alias may be insufficient to prove that an entirely new search-intent article is needed when an existing commercial canonical owner is available.",
   "observed_evidence": {
@@ -34,5 +34,6 @@
       "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
     ]
   },
-  "terminal_rule": "Protected exact-head CI and sole-writer source merge, authorized Supabase production deployment and independent source/readback; downstream public blog still needs separate approval, public-only egress and Netlify URL proof. No conversion impact is claimed."
+  "terminal_rule": "Protected exact-head CI and sole-writer source merge, authorized Supabase production deployment and independent source/readback; downstream public blog still needs separate approval, public-only egress and Netlify URL proof. No conversion impact is claimed.",
+  "obligation_id": "seo-blog-evidence-decision-20261029"
 }
