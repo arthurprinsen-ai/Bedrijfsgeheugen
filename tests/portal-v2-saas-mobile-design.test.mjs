@@ -33,7 +33,8 @@ test('CSRD mobile layout is card-first and critical mobile styles load before hy
 
   const csrdStyle = '<link rel="stylesheet" href="./csrd-mobile-saas.css">';
   const mobileStyle = '<link rel="stylesheet" href="./mobile-responsive.css">';
-  const appScript = '<script type="module" src="./app.js"></script>';
+  // Cache-versioned entrypoints still start only after critical mobile CSS.
+  const appScript = html.match(/<script type="module" src="\.\/app\.js(?:\?bg_explain=[a-f0-9]{64})?"><\/script>/)?.[0]||'';
   const csrdStyleIndex = html.indexOf(csrdStyle);
   const mobileStyleIndex = html.indexOf(mobileStyle);
   const appScriptIndex = html.indexOf(appScript);
