@@ -1,0 +1,73 @@
+{
+  "schema_version": "BRAIN_FAILURE_LEARNING-v1",
+  "obligation_id": "portal|production-authenticated-tenant-claim-persistence|20261029-v1",
+  "fingerprint": "portal|production-auth|jwt-tenant-claim-mismatch|20261029",
+  "observed_at": "2026-10-29",
+  "source_evidence": {
+    "production_readback": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40909428921",
+    "verified_runtime_event": "0f8e4c3f-5715-460b-8c2e-fbc3fa6b0a98",
+    "protected_main_at_failure": "eead20219269341e1933bd33d3a10c7bf2ad43e9",
+    "netlify_deploy_id": "6ae370a59cc60cf4ee32e9d1",
+    "failure_code": "IDENTITY_TENANT_CLAIM_MISMATCH",
+    "retries": 30
+  },
+  "analysis": {
+    "observation": "A newly provisioned synthetic Identity user exchanged a JWT without the exact expected admin-owned app_metadata.tenantId; no portal tenant data was read.",
+    "suspected_cause": "Netlify Identity createUser may omit admin-owned custom app_metadata; actual provider cause is not yet proven.",
+    "correction": "Read the admin user's metadata after create, use authenticated admin.updateUser for the synthetic user only if missing, read back again, then exchange token and strictly check signed claims, authenticate two separated tenants, check payload shapes and always delete synthetic users.",
+    "prevention": "No JWT bypass or user_metadata/header substitute; require two independent signed JWTs and independently observed cross-tenant isolation; fail closed and log typed cause and cleanup.",
+    "safety": "Never store synthetic passwords, JWTs, external data, or personally identifiable user IDs in evidence.",
+    "rollback": "Revert only this provider-provisioning repair through a protected PR if admin update is ineffective; preserve stringent JWT and tenant checks."
+  },
+  "tests": [
+    "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs",
+    "tests/portal-authenticated-production-proof.test.mjs"
+  ],
+  "rollout": {
+    "source_status": "CANDIDATE",
+    "ci": "NOT_YET_PROVEN",
+    "protected_main": "NOT_YET_MERGED",
+    "netlify": "NOT_YET_LIVE",
+    "two_tenant_readback": "NOT_YET_PROVEN"
+  },
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "IDENTITY_TENANT_CLAIM_MISMATCH",
+    "scope": "PORTAL_AUTH",
+    "machine_enforceable": true,
+    "repeat_count": 30,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs"
+    ],
+    "invariants": [
+      "signed app_metadata.tenantId exactly equals newly created and admin-readback tenantId",
+      "two separate Identity user subjects and signed tokens have distinct tenant scopes",
+      "admin metadata missing after update never triggers token exchange or portal request",
+      "synthetic users are deleted regardless of success or error",
+      "exact Netlify SHA/deploy and independent production readback are required"
+    ]
+  },
+  "root_cause": "A newly provisioned synthetic Identity user exchanged a JWT without the exact expected admin-owned app_metadata.tenantId; no portal tenant data was read.",
+  "prevention_rule": "No JWT bypass or user_metadata/header substitute; require two independent signed JWTs and independently observed cross-tenant isolation; fail closed and log typed cause and cleanup.",
+  "fix": "Read the admin user's metadata after create, use authenticated admin.updateUser for the synthetic user only if missing, read back again, then exchange token and strictly check signed claims, authenticate two separated tenants, check payload shapes and always delete synthetic users.",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5118",
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "production": null,
+    "auth_two_tenant_provider": null,
+    "proven_business_outcome": false
+  }
+}
