@@ -1,0 +1,24 @@
+{
+  "version": "v1",
+  "fingerprint": "personal-linkedin|founder-reserve|date-kind-only-rejected-family-deadlock|20261029-v1",
+  "compiler": {
+    "failure_class": "SOURCE_FAMILY_ROTATION_STALL",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing founder reserve used only run date and broad story kind as upsert key. Once a particular recommendation ID was rejected under the semantic family gate, a later independently observed event of a different type within the same kind could not obtain its own immutable recommendation record.",
+  "prevention": "Use a stable exact source family key (event type for internal verified events; URL for externally verified facts). Same family with different event IDs remains idempotent. A different real family can receive a new recommendation ID; retain recent seven-day event family filter, all original publisher/quality/source/identity checks and no duplicate override.",
+  "evidence": {
+    "original_duplicates": "four 2026-10-29 canonical personal recommendation IDs rejected",
+    "real_post_proven": false,
+    "source_patch_pending_protected_merge": true,
+    "private_payloads_in_public_repository": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-distinct-source-reserve-v1.test.mjs"
+    ]
+  }
+}
