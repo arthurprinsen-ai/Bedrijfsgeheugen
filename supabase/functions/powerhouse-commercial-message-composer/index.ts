@@ -1,5 +1,5 @@
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
-import {composerQualityProvenance} from '../_shared/composer-quality-provenance.mjs';
+import {composerQualityProvenance,composerSourcePreflight} from '../_shared/composer-quality-provenance.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -64,7 +64,7 @@ function quality(action:any,plan:any,out:any,history:any[]=[]){
     const topic=/\b(ai[- /]?data|data governance|data-governance|use[- ]?cases?|governance|ai[- ]?initiatief|ai project|artificial intelligence|machine learning)\b/i;
     topicLeak=topic.test(msg)&&!topic.test(context);
   }
-  const sourceSpecificEvidenceOk=plan?.human_readable_context===true&&plan?.source_trigger_relevance===true&&clean(action?.source_url).startsWith('https://')&&clean(ev?.headline||ev?.summary||pub?.headline||pub?.summary).length>=24;
+  const sourceSpecificEvidenceOk=composerSourcePreflight(action,plan).ok;
   const terms=(s:string)=>new Set(normalize(s).split(/\s+/).filter(x=>x.length>=5));
   const candidateTerms=terms(msg);
   const genericAsk=(s:string)=>/proces|process|overdrachtsmoment|kennis/i.test(s)&&/slimmer|verbeter|effici|voorbeeld|kost|tijd/i.test(s);
@@ -176,6 +176,11 @@ Deno.serve(async(req:Request)=>{
           if(sourceEvent){
             workingAction={...action,evidence:{...(action.evidence||{}),public_source_evidence:{event_id:sourceEvent.event_id,event_type:sourceEvent.event_type,source:sourceEvent.source,occurred_at:sourceEvent.occurred_at,evidence:sourceEvent.evidence,context:sourceEvent.context}}};
           }
+        }
+        const sourceGate=composerSourcePreflight(workingAction,workingAction.message_plan);
+        if(!sourceGate.ok){
+          out.push({action_id:action.action_id,status:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED',quality_passed:false,model_generated:false,missing_contract_fields:sourceGate.missing});
+          continue;
         }
         const {data:persuasionRaw,error:persuasionError}=await db.rpc('powerhouse_persuasion_revenue_optimizer_v1',{
           p_company_key:clean(workingAction.company_key),

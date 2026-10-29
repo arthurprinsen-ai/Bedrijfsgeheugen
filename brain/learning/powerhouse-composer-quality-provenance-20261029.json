@@ -40,8 +40,21 @@
     "SUPABASE_EDGE_PROVIDER_DEPLOY_AND_READBACK",
     "CUSTOMER_CONVERSION_AND_PAID_REVENUE"
   ],
-  "prevention_rule": "Composer source updates must fail closed if its authoritative quality-row upsert fails. Only the actual scoped composer writer may state its own actor/skill; before_score requires prior recorded numeric evidence, after_score derives from the current computation. Never infer provider send, lead, order or paid revenue, and do not rewrite canonical historical cycle events.",
+  "prevention_rule": "Composer source updates must fail closed if its authoritative quality-row upsert fails. Only the actual scoped composer writer may state its own actor/skill; before_score requires prior recorded numeric evidence, after_score derives from the current computation. Never infer provider send, lead, order or paid revenue, and do not rewrite canonical historical cycle events. For source-deficient actions skip the composer AI request *before* the persuasion/model call, without weakening pass thresholds or switching off the existing executor; retry normal processing only after the source is enriched.",
   "test_evidence": [
     "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
-  ]
+  ],
+  "observed_evidence": {
+    "kind": "SUPABASE_READ_ONLY_AGGREGATE",
+    "window_days": 14,
+    "quality_evaluation_rows": 1021,
+    "distinct_source_actions": 22,
+    "quality_passed": 0,
+    "source_specific_evidence_failed": 1021,
+    "source_ref_runtime_matches": 15,
+    "with_runtime_headline_min_24": 11,
+    "paid_revenue_eur": "0",
+    "note": "Counts at observation time; original source text and customer identities not logged."
+  },
+  "additional_fix": "Use the same source-specific evidence quality gate before any expensive model generation, persisting no false success or fabricated source. If context absent, return SOURCE_SPECIFIC_EVIDENCE_REQUIRED with missing field names only. No repeated LLM call for an action until truthful source conditions are met."
 }

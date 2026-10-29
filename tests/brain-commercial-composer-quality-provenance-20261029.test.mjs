@@ -42,3 +42,22 @@ test('composer validates quality evidence persistence before updating source act
  assert.match(src,/if\(qv\.passed\)update\.message_draft=message/);
  assert.match(src,/if\(uErr\)throw new Error\('ACTION_WRITE:/);
 });
+
+test('source preflight enforces same real-evidence contract before model invocation',async()=>{
+ const {composerSourcePreflight}=await import('../supabase/functions/_shared/composer-quality-provenance.mjs');
+ const ready={source_url:'https://example.com/real-story',evidence:{headline:'Concrete verifieerbare wijziging met impact op proces'}};
+ const plan={human_readable_context:true,source_trigger_relevance:true};
+ assert.deepEqual(composerSourcePreflight(ready,plan).missing,[]);
+ assert.equal(composerSourcePreflight(ready,plan).ok,true);
+ assert.equal(composerSourcePreflight({...ready,source_url:'http://example.com'},plan).ok,false);
+ assert.ok(composerSourcePreflight({...ready,evidence:{headline:'vaag'}},plan).missing.includes('specific_source_context'));
+ assert.ok(composerSourcePreflight(ready,{...plan,source_trigger_relevance:false}).missing.includes('source_trigger_relevance'));
+ assert.ok(composerSourcePreflight(ready,{...plan,human_readable_context:false}).missing.includes('human_readable_context'));
+ const source=readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
+ const guard=source.indexOf('const sourceGate=composerSourcePreflight(workingAction,workingAction.message_plan)');
+ const modelCall=source.indexOf('const gen=await generate(');
+ const gateResult=source.indexOf("status:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'");
+ assert.ok(guard>=0&&gateResult>guard&&modelCall>gateResult);
+ assert.match(source,/const sourceSpecificEvidenceOk=composerSourcePreflight\(action,plan\)\.ok/);
+ assert.match(source,/model_generated:false/);
+});
