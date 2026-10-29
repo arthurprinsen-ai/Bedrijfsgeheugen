@@ -104,3 +104,19 @@ test("missing CRO verification never generates a winner or revenue",()=>{
  assert.equal(packet.publishReady,false);
  assert.equal(packet.revenueVerified,false);
 });
+
+test("Heartbeat emits analytics reconciliation candidate without inventing an experiment win",()=>{
+ const snapshot={windowStart:'2026-10-22',windowEnd:'2026-10-29',
+  pageDailyWindowStart:'2026-10-22',pageDailyWindowEnd:'2026-10-29',
+  interactionsWindowStart:'2026-10-22',interactionsWindowEnd:'2026-10-29',
+  pageViews:3634,ctaClicks:0,nonBotInteractions:1201,clickLikeEvents:48,
+  pageDailyVerified:true,interactionsVerified:true,
+  pageDailyEvidenceRef:'supabase:growth_page_daily:20261029',
+  interactionsEvidenceRef:'supabase:bg_interacties:20261029'};
+ const packet=heartbeatGrowthTick({cycleId:'growth:cro:data-audit',events:[],croMeasurementSnapshots:[snapshot]},{now});
+ assert.equal(packet.croDataGaps[0].status,'RECONCILIATION_REQUIRED');
+ assert.equal(packet.experiments.length,0);
+ assert.equal(packet.croDataGaps[0].writebackVerified,false);
+ assert.equal(packet.publishReady,false);
+ assert.equal(packet.revenueVerified,false);
+});
