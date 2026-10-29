@@ -37,6 +37,8 @@ function render(container,data){
     '<tr><td><code>'+esc(r.pad)+'</code></td><td>'+esc(r.section)+'</td><td>'+esc(fmt(r.observedExits))+'</td><td>'+esc(fmt(r.earlyExitSignals))+'</td></tr>').join('');
   const behaviorCards=behavior?[
     field('Menselijke events: paginaweergaven met toestemming',fmt(behavior.events.page_events)),
+    field('Betrouwbaar opgeslagen event-ID’s (geen unieke bezoekers)',fmt(behavior.events.persisted_event_receipts)),
+    field('Historische events zonder bevestigde event-ID',fmt(behavior.events.historical_without_receipt)),
     field('Waargenomen vertrekgebeurtenissen (geen volledig exit-totaal)',fmt(behavior.events.observed_exits)),
     field('Laatste scroll onder 25% bij waargenomen vertrek',fmt(behavior.events.observed_exits_under_25)),
     field('Formulieren verlaten (waargenomen)',fmt(behavior.events.form_abandons)),
