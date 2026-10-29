@@ -160,6 +160,10 @@ function systemMapView(systemMap,events,observability={}){
   const agentCoverage=observability.agentCycleCoverage||{};
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
   const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
+  const publication=observability.publicationEvidence||{};
+  const publicationComplete=publication.status==='REGISTRY_READBACK_COMPLETE';
+  const publicationRows=publicationComplete?arr(publication.channels):[];
+  const publicationLabels={linkedin_company:'LinkedIn bedrijf',linkedin_personal:'LinkedIn persoonlijk',instagram:'Instagram',blog:'Blog'};
 
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
@@ -200,6 +204,18 @@ function systemMapView(systemMap,events,observability={}){
       ${kpi('Alle vier velden',agentMetric('allFour'),'geen bewijs van klantwaarde')}
     </div>
     <p class="poc-note">Bron: ${esc(agentCoverage.authority||'onbekend')}. Laatste gebeurtenis: ${esc(fmtTime(agentCoverage.sourceLatestAt))}. Readback: ${esc(fmtTime(agentCoverage.observedAt))}. ${esc(agentCoverage.reason||'')}</p>
+  </section>
+  <section class="poc-panel" data-publication-evidence data-evidence-status="${esc(publication.status||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Publicaties · werkelijk geregistreerde status per kanaal</h4><span class="poc-badge ${publicationComplete?'warn':'bad'}">${publicationComplete?'Bron gecontroleerd · publicatie niet automatisch bewezen':'UNVERIFIED'}</span></div>
+    <p class="poc-note">Dag ${esc(publication.date||'onbekend')} · bron ${esc(publication.source||'niet beschikbaar')}. Database-registratie is niet hetzelfde als onafhankelijk providerbewijs. Een bestaand provider-ID mag nooit opnieuw worden gepubliceerd; een ontbrekend mediabestand of duplicaat mag niet worden omzeild.</p>
+    <div class="poc-kpis compact">
+      ${publicationRows.length?publicationRows.map(row=>kpi(
+        publicationLabels[row.channel]||row.channel,
+        esc(row.registryStatus),
+        (row.providerIdRecorded?'Provider-ID geregistreerd · ':'Geen provider-ID · ')+(row.internalLiveProofRecorded?'intern livebewijs · ':'onafhankelijk livebewijs vereist · ')+row.recoveryCode
+      )).join(''):kpi('Publicatiebewijs','—',esc(publication.reason||'De canonieke publicatiebron kon niet volledig worden gelezen'))}
+    </div>
+    <p class="poc-note">Bronreadback ${esc(fmtTime(publication.observedAt))}. De herstelcode beschrijft de volgende veilige stap, niet een uitgevoerde actie. Bestaande executor, duplicate-gate, media-identiteit en protected release blijven verplicht.</p>
   </section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
