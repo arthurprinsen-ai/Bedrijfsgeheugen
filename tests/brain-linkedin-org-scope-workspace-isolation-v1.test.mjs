@@ -43,6 +43,19 @@ test('personal OAuth never requests LinkedIn closed r_member_social permission',
   assert.doesNotMatch(branch,/w_organization_social|r_organization_admin/);
 });
 
+test('personal OAuth recovers an expired alias with one bounded owner-scoped retry',()=>{
+  const personal=source.slice(source.indexOf("if(action==='create_personal_link')"),source.indexOf("if(action==='create_link')"));
+  assert.match(personal,/let candidateAlias=PERSONAL_ALIAS/);
+  assert.match(personal,/user_id:USER_ID,alias:PERSONAL_ALIAS/);
+  assert.match(personal,/COMPOSIO_LINKEDIN_SETUP_400:/);
+  assert.match(personal,/already in use by another connection for this entity/);
+  assert.match(personal,/candidateAlias=PERSONAL_ALIAS\+'-reauth-'\+crypto\.randomUUID\(\)\.slice\(0,12\)/);
+  assert.match(personal,/user_id:USER_ID,alias:candidateAlias/);
+  assert.match(personal,/alias_collision_recovered:candidateAlias!==PERSONAL_ALIAS/);
+  assert.doesNotMatch(personal,/DELETE|\/connected_accounts\/.*delete|statuses:\['DELETED'\]/);
+  assert.doesNotMatch(personal,/r_organization_admin|w_organization_social/);
+});
+
 test('canonical publisher still requires source reservation, records provider side effects and does not downgrade proof',()=>{
   const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
   assert.match(publisher,/powerhouse_reserve_unique_publication_v1/);

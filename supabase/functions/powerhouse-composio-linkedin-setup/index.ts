@@ -139,12 +139,26 @@ Deno.serve(async(req:Request)=>{
         personalAuthConfigId=clean(created?.auth_config?.id||created?.id);
       }
       if(!personalAuthConfigId)throw new Error('COMPOSIO_LINKEDIN_PERSONAL_AUTH_CONFIG_ID_MISSING');
-      const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:personalAuthConfigId,user_id:USER_ID,alias:PERSONAL_ALIAS})});
+      // An expired/pending canonical connection may still reserve the alias.
+      // Retry the SAME owner-bound OAuth link once with a unique pending alias;
+      // never delete the previous connection or change the member scopes.
+      let candidateAlias=PERSONAL_ALIAS;
+      let link:any;
+      try{
+        link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:personalAuthConfigId,user_id:USER_ID,alias:PERSONAL_ALIAS})});
+      }catch(error){
+        const detail=error instanceof Error?error.message:'';
+        if(!detail.includes('COMPOSIO_LINKEDIN_SETUP_400:')
+          || !detail.includes('Alias ')
+          || !detail.includes('already in use by another connection for this entity'))throw error;
+        candidateAlias=PERSONAL_ALIAS+'-reauth-'+crypto.randomUUID().slice(0,12);
+        link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:personalAuthConfigId,user_id:USER_ID,alias:candidateAlias})});
+      }
       const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
       if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_PERSONAL_REDIRECT_OR_ACCOUNT_MISSING');
       return json({ok:true,ready:false,state:'PERSONAL_AUTH_LINK_READY',reason:'LINKEDIN_PERSONAL_OAUTH_REQUIRED',
         auth_config_id:personalAuthConfigId,connected_account_id:connectedAccountId,user_id:USER_ID,
-        requested_personal_scopes:PERSONAL_OAUTH_SCOPES,expires_at:clean(link?.expires_at)||null,redirect_url:redirectUrl});
+        requested_personal_scopes:PERSONAL_OAUTH_SCOPES,canonical_alias:PERSONAL_ALIAS,oauth_candidate_alias:candidateAlias,alias_collision_recovered:candidateAlias!==PERSONAL_ALIAS,expires_at:clean(link?.expires_at)||null,redirect_url:redirectUrl});
     }
     if(action==='create_link'){
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&show_disabled=false&limit=50');
