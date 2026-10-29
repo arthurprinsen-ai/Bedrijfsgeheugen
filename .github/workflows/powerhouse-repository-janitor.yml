@@ -407,7 +407,7 @@ jobs:
           echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:seen=${sweep_seen}:open=${sweep_open}:missing=${sweep_missing}:protected=${sweep_protected}:moved=${sweep_moved}:deleted=${sweep_deleted}"
 
           # Stale branches whose work stays recoverable (PR head ref or archive/ tag); see tools/ci/branch-archive-sweep.mjs.
-          node tools/ci/branch-archive-sweep.mjs --apply --cap 150 --actions .artifacts/janitor-runtime-actions.ndjson
+          timeout 420 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 --actions .artifacts/janitor-runtime-actions.ndjson || echo "::warning::JANITOR_ARCHIVE_SWEEP_INCOMPLETE"
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
