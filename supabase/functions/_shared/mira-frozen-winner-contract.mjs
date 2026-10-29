@@ -48,6 +48,38 @@ const APPROVED_SOURCE_LED=Object.freeze({
  * rejected OpenArt generation forever. This is ONLY an admission to run the
  * existing independent final-media verifier, never a PASS or publish right.
  */
+/**
+ * Admit ONE provider-preflight for the ORIGINAL frozen PH-P library winner
+ * after an independently measured invalid media result. It does NOT buy,
+ * approve, publish, or mutate a video; the original full verifier still owns
+ * exact native MP4, three-frame face >= 0.940, continuity and provider proof.
+ */
+export function eligibleFrozenLibraryMediaGeneration({resolved,job,ob,input,postType}={}){
+ const manifest=job?.asset_manifest||{};
+ const error=String(job?.last_error||'');
+ const qualityRejection=/^(?:VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH|MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED|MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH):/.test(error);
+ const rejectedHistory=/:openart=([A-Za-z0-9]+)$/.exec(error)?.[1]||'';
+ const winner=String(resolved?.winner_recommendation_id||'');
+ const problem=resolved?.problem||{};
+ const proposal=input||{};
+ return resolved?.kind==='approved_frozen_library_mapping'
+  &&postType==='reel'&&job?.status==='WAITING_PROOF'
+  &&qualityRejection&&Boolean(rejectedHistory)
+  &&String(manifest.openart_history_id||'')===rejectedHistory
+  &&String(manifest.openart_project_id||'')!==''
+  &&String(manifest.recommendation_id||'')===winner
+  &&String(manifest.daily_winner_recommendation_id||'')===winner
+  &&Boolean(winner)&&Boolean(String(problem.scene||''))
+  &&String(proposal.scene||'')===String(problem.scene||'')
+  &&String(proposal.canonical_problem_id||'')===String(problem.id||'')
+  &&String(proposal.recommendation_id||'')===winner
+  &&Number(job.attempts)>=1&&Number(job.attempts)<=2
+  &&manifest.automatic_generation_budget_exhausted!==true
+  &&!ob?.external_id&&!ob?.live_proven_at
+  &&ob?.evidence?.republish_forbidden!==true
+  &&job?.republish_forbidden!==true;
+}
+
 export function eligibleSourceLedMediaReplacement({resolved,job,ob,manifest}={}){
  const previous=job?.asset_manifest||{};
  const rejected=String(job?.last_error||'');
