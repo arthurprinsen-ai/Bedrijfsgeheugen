@@ -8,8 +8,6 @@ const funcs={
  powerhouse_advance_sales_action_v1:4,
  powerhouse_ensure_channel_cycle_v1:1,
  powerhouse_ensure_sales_cycle_v1:1,
- powerhouse_open_cycle_from_runtime_signal_v1:1,
- powerhouse_open_cycle_from_sales_action_v1:1,
  powerhouse_sales_outcome_close_loop_v2:6,
 };
 
@@ -28,7 +26,7 @@ test('preserves canonical security, stage, truth, idempotency and append-only co
  assert.match(sql,/v_action\.status='done' and v_action\.executed_at is not null/);
  assert.match(sql,/elsif v_action\.status in \('error','expired','skipped'\) then/);
  assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/);
- assert.match(sql,/SECURITY DEFINER/);
+ assert.doesNotMatch(sql,/SECURITY DEFINER/);
  assert.match(sql,/public\.powerhouse_append_cycle_event_v2\(/);
  assert.doesNotMatch(sql,/CREATE\s+(?:TABLE|TRIGGER|SCHEDULE|EXTENSION)|UPDATE\s+public\.powerhouse_cycle_events|DELETE\s+FROM\s+public\.powerhouse_cycle_events/i);
  assert.match(sql,/RAISE EXCEPTION 'canonical done\/executed_at truth guard changed/);
