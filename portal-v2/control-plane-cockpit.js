@@ -1,3 +1,5 @@
+import { ensureIdentityWidget } from './portal-state.js';
+
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const num=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(Number(value)||0);
 const pct=value=>value==null?'—':`${Number(value).toFixed(1)}%`;
@@ -91,11 +93,23 @@ function ensureStyles(doc){
   doc.head.appendChild(style);
 }
 
-export async function mountControlPlaneCockpit(root=document,{fetchImpl=globalThis.fetch}={}){
+export async function mountControlPlaneCockpit(root=document,{fetchImpl=globalThis.fetch,identityImpl=ensureIdentityWidget}={}){
   if(!root?.querySelector||typeof fetchImpl!=='function')return null;
   const main=root.querySelector('.main'); if(!main)return null;
+  // Same Netlify Identity JWT flow already used by the existing CRO "Andere data".
+  // A session cookie alone does not establish this admin-only endpoint's access.
+  const identity=globalThis.window?.netlifyIdentity||(typeof identityImpl==='function'?await identityImpl():null);
+  const user=identity?.currentUser?.();
+  if(!user)return null;
+  let token='';
+  try{token=String(await user.jwt?.()||'');}catch{return null;}
+  if(!token||/\s/.test(token))return null;
   ensureStyles(root.ownerDocument||document);
-  const response=await fetchImpl('/api/powerhouse-control-plane',{credentials:'same-origin',headers:{accept:'application/json'}});
+  const response=await fetchImpl('/api/powerhouse-control-plane',{
+    credentials:'same-origin',
+    cache:'no-store',
+    headers:{accept:'application/json',authorization:'Bearer '+token}
+  });
   if(response.status===401||response.status===403||response.status===404)return null;
   if(!response.ok)throw new Error(`CONTROL_PLANE_COCKPIT_${response.status}`);
   const data=await response.json();
