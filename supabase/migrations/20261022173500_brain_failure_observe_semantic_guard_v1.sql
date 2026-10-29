@@ -7,11 +7,32 @@ SET LOCAL lock_timeout = '2s';
 SET LOCAL statement_timeout = '30s';
 
 DO $guard$
+DECLARE
+  v_source text;
 BEGIN
   IF to_regprocedure('public.brain_observe_failure(text,text,text,jsonb)') IS NULL
-     OR position('evidence=coalesce(p_evidence,evidence)' IN
-       pg_get_functiondef('public.brain_observe_failure(text,text,text,jsonb)'::regprocedure)) = 0
   THEN RAISE EXCEPTION 'BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT';
+  END IF;
+  v_source := pg_get_functiondef('public.brain_observe_failure(text,text,text,jsonb)'::regprocedure);
+  -- A fresh replay may start with the old, known pre-repair implementation.
+  -- A provider snapshot replay may already contain the *same* canonical,
+  -- evidence-preserving and alias-locked implementation defined below.
+  -- Refuse everything else: merely finding the function is insufficient.
+  IF NOT (
+    position('evidence=coalesce(p_evidence,evidence)' IN v_source) > 0
+    OR (
+      position('evidence=coalesce(evidence,p_evidence)' IN v_source) > 0
+      AND position('FAILURE_SEMANTIC_EVENT_CONFLICT' IN v_source) > 0
+      AND position('FAILURE_SEMANTIC_EVENT_LEGACY_CONFLICT' IN v_source) > 0
+      AND position('brain_failure_semantic_event_key' IN v_source) > 0
+      AND position('pg_advisory_xact_lock' IN v_source) > 0
+      AND position('SECURITY DEFINER' IN v_source) > 0
+      AND position('search_path' IN v_source) > 0
+      AND NOT has_function_privilege('anon','public.brain_observe_failure(text,text,text,jsonb)','EXECUTE')
+      AND NOT has_function_privilege('authenticated','public.brain_observe_failure(text,text,text,jsonb)','EXECUTE')
+      AND has_function_privilege('service_role','public.brain_observe_failure(text,text,text,jsonb)','EXECUTE')
+    )
+  ) THEN RAISE EXCEPTION 'BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT';
   END IF;
   IF to_regclass('public.brain_failure_occurrences') IS NULL
      OR to_regclass('public.brain_failure_registry') IS NULL
