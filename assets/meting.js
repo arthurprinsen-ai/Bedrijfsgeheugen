@@ -18,8 +18,18 @@
   var WACHT_SLEUTEL='bg_meting_niet_bevestigd_v2',wacht=[],totaal=0,MAX=400,bezig=false,poging=0;
   try{var oud=JSON.parse(sessionStorage.getItem(WACHT_SLEUTEL)||'[]');if(Array.isArray(oud))wacht=oud.filter(function(x){return x&&typeof x==='object'&&typeof x.event_uid==='string';}).slice(-400);}catch(e){}
   function bewaar(){try{sessionStorage.setItem(WACHT_SLEUTEL,JSON.stringify(wacht.slice(-400)));}catch(e){}}
-  function eventId(){try{if(crypto.randomUUID)return crypto.randomUUID();}catch(e){}
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.floor(Math.random()*16);return(c==='x'?r:(r&3|8)).toString(16);});}
+  function eventId(){
+    try{
+      if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();
+      if(window.crypto&&crypto.getRandomValues){
+        var bytes=new Uint8Array(16);crypto.getRandomValues(bytes);
+        bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+        var h=Array.from(bytes,function(b){return b.toString(16).padStart(2,'0');}).join('');
+        return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+      }
+    }catch(e){}
+    return null; // No weak Math.random() fallback for the persistence/deduplication key.
+  }
   function toestemming(){try{return localStorage.getItem('bg_consent')==='granted';}catch(e){return false;}}
   function stuur(){
     if(bezig||!wacht.length)return;
@@ -50,7 +60,13 @@
       try{var k='bg_meting_queue_overflow_v1';sessionStorage.setItem(k,String((Number(sessionStorage.getItem(k))||0)+1));}catch(_e){}
       stuur();return;
     }
-    totaal++;e.pad=location.pathname;e.gebeurd_op=new Date().toISOString();e.event_uid=eventId();wacht.push(e);bewaar();if(wacht.length>=10)stuur();
+    var uid=eventId();
+    if(!uid){
+      // Fail closed: an untrusted event UID must never enter the persisted/retried queue.
+      try{var k='bg_meting_uid_unavailable_v1';sessionStorage.setItem(k,String((Number(sessionStorage.getItem(k))||0)+1));}catch(_e){}
+      return;
+    }
+    totaal++;e.pad=location.pathname;e.gebeurd_op=new Date().toISOString();e.event_uid=uid;wacht.push(e);bewaar();if(wacht.length>=10)stuur();
   }
   function ga(naam,p){try{if(toestemming()&&typeof window.gtag==='function')window.gtag('event',naam,p);}catch(e){}}
 

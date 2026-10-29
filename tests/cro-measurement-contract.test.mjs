@@ -50,3 +50,18 @@ test('canonical growth writer never emits a second CTA event for generated money
 });
 
 // De bestaande native Andere data pagina is eigenaar van PR #5140; deze tests bewaken de rauwe event-ingress van issue #5141.\n
+test('cryptographically secure event UID fallback never uses Math.random or silently persists without crypto',async()=>{
+  const src=read('assets/meting.js');
+  const start=src.indexOf('function eventId()'),end=src.indexOf('function toestemming()',start);
+  assert.ok(start>0&&end>start);
+  const fn=src.slice(start,end);
+  assert.match(fn,/crypto\.getRandomValues\(bytes\)/);
+  assert.doesNotMatch(fn,/Math\.random\(\)/);
+  assert.match(src,/if\(!uid\)\{/);
+  assert.match(src,/bg_meting_uid_unavailable_v1/);
+  const {runInNewContext}=await import('node:vm');
+  const ctx={window:{crypto:true},crypto:{getRandomValues(bytes){for(let i=0;i<bytes.length;i++)bytes[i]=(i*13+17)&255;return bytes;}},Uint8Array,Array};
+  const uuid=runInNewContext(fn+';eventId()',ctx);
+  assert.match(uuid,/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  assert.equal(runInNewContext(fn+';eventId()',{window:{crypto:null},crypto:null,Uint8Array,Array}),null);
+});

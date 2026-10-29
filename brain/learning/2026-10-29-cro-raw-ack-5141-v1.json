@@ -40,7 +40,14 @@
       "observed last section not true exit reason",
       "form intent not qualified lead"
     ],
-    "owner": "Existing website CRO / Powerhouse Recovery Writer; no additional scheduler or executor."
+    "owner": "Existing website CRO / Powerhouse Recovery Writer; no additional scheduler or executor.",
+    "security_hotfix": {
+      "source": "CodeQL high alert on PR #5144 assets/meting.js eventId()",
+      "cause": "non-cryptographic Math.random UUID fallback in event deduplication",
+      "fix": "Web Crypto getRandomValues RFC4122 UUIDv4 fallback; no secure crypto => no event enqueued; diagnostic counter",
+      "regression": "tests/cro-measurement-contract.test.mjs",
+      "production_verified": false
+    }
   },
   "prevention_rules": [
     "Never delete any unacknowledged raw batch: require exact count/UID receipt after successful storage; test 503 and duplicate retry.",
@@ -49,7 +56,8 @@
     "Keep one canonical CTA event producer; generated money pages are owner; skip duplicate sitewide bridge.",
     "Only count consented non-bot behavior with source freshness and human session denominators; missing data must remain unknown.",
     "Never promote CRO WINNER, lead or revenue without independent provider/outcome proof.",
-    "Required/CodeQL/BRAIN/System Map, DB schema, Edge, Netlify exact main and browser 2-tenant + UID readback before live closure."
+    "Required/CodeQL/BRAIN/System Map, DB schema, Edge, Netlify exact main and browser 2-tenant + UID readback before live closure.",
+    "CodeQL high-severity insecure randomness: canonical event_uid must use Web Crypto randomUUID/getRandomValues; if unavailable fail closed and record local diagnostic, never Math.random fallback or false persisted ACK."
   ],
   "evaluation": {
     "historical_replay": [
