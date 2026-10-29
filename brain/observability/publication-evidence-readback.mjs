@@ -13,6 +13,12 @@ const codeFor=(row)=>{
     return 'NO_REPOST_COLLECT_OUTCOMES';
   if(row.external_id)
     return 'PROVIDER_CREATE_RECORDED_VERIFY_READBACK_NO_REPOST';
+  // An APPROVED draft is NOT provider-ready when its own original auth preflight failed.
+  // Read only safe scalar fields from the canonical obligation, never provider tokens.
+  if(row.channel==='linkedin_personal' &&
+     (String(row.auth_preflight||'').toLowerCase()==='failed'||
+      String(row.auth_error||'').toUpperCase().includes('LINKEDIN_REAUTH_REQUIRED')))
+    return 'LINKEDIN_PERSONAL_CANONICAL_OAUTH_CONSENT_REQUIRED';
   if(error.includes('STORY_FAMILY_DUPLICATE')||error.includes('GLOBAL_POST_DUPLICATE'))
     return 'NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED';
   if(error.includes('VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH')||
@@ -58,7 +64,7 @@ export async function loadPublicationEvidence({baseUrl,key,observedAt=new Date()
   const date=dateAmsterdam(observedAt);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return unknown('INVALID_DATE');
   const url=new URL(String(baseUrl).replace(/\/$/,'')+'/rest/v1/content_publication_obligations');
-  url.searchParams.set('select','tenant_id,publication_date,channel,status,external_id,live_proven_at,last_error');
+  url.searchParams.set('select','tenant_id,publication_date,channel,status,external_id,live_proven_at,last_error,auth_preflight:evidence->>provider_auth_preflight,auth_error:evidence->>error');
   url.searchParams.set('tenant_id','eq.canonical');
   url.searchParams.set('publication_date','eq.'+date);
   url.searchParams.set('limit','8');
