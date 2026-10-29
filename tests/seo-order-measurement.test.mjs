@@ -8,7 +8,7 @@ test('growth measurement is idempotent and contains non-blocking event delivery'
 test('synthetic webdriver pageviews and interaction hooks never send paid Netlify growth events',()=>{
   const base='<html><body><main><a data-bg-conversion="frisse-blik" href="/frisse-blik">Plan</a></main></body></html>';
   const html=injectGrowthMeasurement(base,{canonical:'https://www.bedrijfsgeheugen.nl/prijzen',page_role:'money'});
-  const script=html.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/i)?.[1];
+  const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/i)?.[1];
   assert.ok(script);
   let eventCalls=0,sessionCalls=0,networkCalls=0;
   const window={__bgGrowthMeasurement:false,location:{origin:'https://www.bedrijfsgeheugen.nl'},addEventListener:()=>{eventCalls++;}};
@@ -21,7 +21,7 @@ test('synthetic webdriver pageviews and interaction hooks never send paid Netlif
   assert.equal(networkCalls,0,'automation must not invoke /api/growth-event');
   assert.equal(eventCalls,0,'automation must not install CRO event handlers');
   assert.equal(sessionCalls,0,'automation must not create visitor attribution sessions');
-  assert.match(script,/navigator\\.webdriver===true/);
+  assert.match(script,/navigator\.webdriver===true/);
 });
 
 test('generated growth measurement inline script is valid JavaScript',()=>{
