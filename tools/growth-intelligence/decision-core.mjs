@@ -91,3 +91,6 @@ export function runGrowthDecisionCycle(signals,{now=Date.now(),limit=10}={}) {
     summary:{observed:signals.length,accepted:proposals.length,rejected:rejected.length},
     note:"Advisory only: existing Heartbeat executes gated actions and independent readback."};
 }
+
+// Canonical CRO experiment contract: no additional writer, data store, or schedule.
+export {CRO_EXPERIMENT_CONTRACT,CRO_SURFACES,designCroExperiment,evaluateCroExperiment,projectCroLearning} from './cro-experiment-cycle.mjs';
