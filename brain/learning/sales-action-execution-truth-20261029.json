@@ -1,0 +1,19 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "powerhouse|sales-action-execution|not-executed-false-stage|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "root_cause": "outcome_id non-null was counted as execution even when the outcome explicitly said not_executed",
+  "baseline": {
+    "expired_without_execution_timestamp": 1959,
+    "skipped_without_execution_timestamp": 131,
+    "done_with_execution_timestamp": 136,
+    "window": "7 days"
+  },
+  "fix": "require status done and executed_at timestamp",
+  "legacy_events": "immutable, verify by source join",
+  "safety": "no new scheduler writer or table, no fake send",
+  "unresolved": [
+    "actor/skill instrumentation",
+    "paid revenue attribution"
+  ]
+}
