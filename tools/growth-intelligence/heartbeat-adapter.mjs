@@ -2,7 +2,7 @@
  * Adapter contract for the EXISTING Powerhouse Brain/Heartbeat.
  * Feed only consent-aware, aggregated metrics; no credentials and no outbound actions.
  */
-import {runGrowthDecisionCycle, evaluateExperiment, CRO_EXPERIMENT_CONTRACT, evaluateCroExperiment, projectCroLearning} from "./decision-core.mjs";
+import {runGrowthDecisionCycle, evaluateExperiment, CRO_EXPERIMENT_CONTRACT, evaluateCroExperiment, projectCroLearning, diagnoseCroMeasurementGap} from "./decision-core.mjs";
 const ACCEPTED = Object.freeze({
  ga4:["page_dropoff","scan_abandonment","cta_underperformance"],
  search_console:["search_opportunity"],
@@ -39,6 +39,7 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
    e.croDesign?.contract===CRO_EXPERIMENT_CONTRACT
      ? [projectCroLearning(e.croDesign,experiments[i])]
      : []);
+ const croDataGaps=(input.croMeasurementSnapshots??[]).map(diagnoseCroMeasurementGap);
  const croOpportunities=decisions.proposals.filter(p=>p.agent==='cro').map(p=>({
    opportunityId:p.id,owner:'cro',signalId:p.signalId,evidenceSource:p.source,
    requiredAction:'PREREGISTER_CONTEXTUAL_EXPERIMENT',status:'PROPOSED_NOT_EXECUTED',
@@ -54,6 +55,7 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
   experiments,
   croOpportunities,
   croLearningProposals,
+  croDataGaps,
   actions:decisions.proposals.map(p=>({
    id:`action:${p.id}`,owner:p.agent,kind:"DESIGN_EXPERIMENT",
    status:"PROPOSED",requiresExistingApprovalAndReadback:true,
