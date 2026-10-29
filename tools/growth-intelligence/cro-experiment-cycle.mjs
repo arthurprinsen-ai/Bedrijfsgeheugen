@@ -15,7 +15,7 @@ const REQUIRED_GUARDS = ['consent_respected','dismissible','keyboard_accessible'
   'one_prompt_per_session','no_duplicate_exposure','rollback_available'];
 const integer = n => Number.isSafeInteger(n) && n >= 0;
 const positive = n => typeof n === 'number' && Number.isFinite(n) && n > 0;
-const ref = v => typeof v === 'string' && v.trim().length > 3;
+const ref = v => typeof v === 'string' && v.trim().length >= 3;
 const unique = list => [...new Set((list || []).filter(ref))];
 const finiteRate = (numerator,denominator) => denominator > 0 ? numerator / denominator : null;
 
