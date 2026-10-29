@@ -107,7 +107,9 @@ Deno.serve(async(req:Request)=>{
    if(!problemTopic||(!personalTopic&&!portalProblemId)) continue;
    const all=(title+' '+excerpt).toLowerCase();
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
-   const personal=/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|excel|proces|klant)/.test(all)?1:0.6;
+   // Recognition is validated differently per lane: a real matched daily-life
+   // source should not need entrepreneur vocabulary to reach the SAME 0.72 floor.
+   const personal=personalTopic?1:/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|excel|proces|klant)/.test(all)?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
    const evidence=clamp(Number(x.score)||0.5);
    const publication=evaluateMiraPublicationFreshness({providerPublishedAt:x.publishedAt,title,excerpt,observedAt:Date.now()});
