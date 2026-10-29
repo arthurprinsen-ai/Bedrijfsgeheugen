@@ -189,6 +189,21 @@ Open/closed classification must use the combination of recovery status, operatio
 ### `notion-query-datasource-usage-limit-v1`
 On Notion Query Data Source `usage_limit_reached`: do not immediately retry, do not autonomously upgrade a paid plan, and do not reinterpret the entitlement failure as missing data. Use read-only search/fetch fallback where semantically sufficient and retry the query only later when capacity is available.
 
+## CI preview contract
+
+### `ci|netlify-preview-status-alias|portal-v2-live-preview|20261029-v1`
+Aliases: `NETLIFY_STATUS_TARGET_ALIAS`, `Untrusted Netlify provider status URL`, `portal-preview-untrusted-target`.
+
+Symptom: the workflow `Portal V2 Live Preview` failed on every PR with `Untrusted Netlify provider status URL (no browser green)`. At least 180 consecutive runs from 2026-10-27 were red and nobody acted, because the check is not a required status.
+
+Root cause: Netlify's commit status `target_url` is now the numbered PR alias `https://deploy-preview-N--bedrijfsgeheugen.netlify.app`, not the `app.netlify.com/projects/.../deploys/<id>` dashboard URL. `tools/ci/netlify-immutable-preview-target.mjs` rejects aliases on purpose. `portal-v2-production-dom-readback.yml` already handled the exact numbered alias; `portal-v2-live-preview.yml` did not. Two consumers of one contract had drifted.
+
+Required fix: accept ONLY the exact numbered alias of the PR under test, read `release.json` on it, require `commit_ref` equal to the exact head SHA and a 24-hex `deploy_id`, pin `https://<deploy_id>--bedrijfsgeheugen.netlify.app`, then run the existing second SHA and deploy-id verification on the immutable host.
+
+Blocked approach: do not loosen `immutableNetlifyPreviewUrl` to accept aliases, do not accept any other alias, do not trust a status link without the SHA and deploy-id check, and do not skip the preview check to get green.
+
+Regression rule: both workflows that read the Netlify status must accept the same two forms (`tests/brain-netlify-preview-alias-status-v1.test.mjs`). Three or more consecutive failures of one workflow with the same error text are a P0 to triage, not noise, even when the check is not required.
+
 ## Completion rule
 
 A learning item is structurally guarded only when all applicable layers agree: persistent Activity/Telemetry log, shared Brain learning, searchable knowledge/fingerprint, compatibility/current-state mapping and a deterministic regression/prevention rule. Historical evidence is retained; later canonical rulings supersede stale interim conclusions without deleting audit history.
