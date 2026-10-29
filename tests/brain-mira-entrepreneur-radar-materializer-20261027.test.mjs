@@ -18,7 +18,7 @@ test('radar searches fresh news only and keeps the shared freshness gate as auth
  assert.match(radar,/topic:'news',days:MAX_AGE_DAYS/);
  assert.match(radar,/serp\/google\/news\/live\/advanced/);
  assert.match(radar,/evaluateMiraPublicationFreshness\(/);
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&Boolean\(portalProblemId\)/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&\(Boolean\(portalProblemId\)\|\|Boolean\(personalTopic\)\)/);
  assert.doesNotMatch(radar,/topic:'general'/);
  assert.match(radar,/mira-entrepreneur-portal-story-v1/);
  assert.match(radar,/providers,max_age_days:MAX_AGE_DAYS/); // run response shows which provider delivered fresh items
@@ -76,7 +76,7 @@ test('radar uses short news queries, a 45-day window inside the 60-day gate, and
 });
 
 test('radar uses a fixed eight-call budget but rotates multiple approved entrepreneur topics by date',()=>{
- assert.match(radar,/selectMiraSourceQueries\(runDate\)/);
+ assert.match(radar,/selectCanonicalRadarSourceQueries\(runDate\)/);
  assert.equal(MIRA_SOURCE_TOPIC_QUERIES.length,12);
  assert.equal(new Set(MIRA_SOURCE_TOPIC_QUERIES.map(x=>x.topic)).size,12);
  assert.ok(MIRA_SOURCE_TOPIC_QUERIES.every(x=>x.query.startsWith('mkb ')));
