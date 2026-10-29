@@ -174,8 +174,10 @@ jobs:
           done
           echo "Production never exposed exact release marker + deploy identity for ${EXPECTED_COMMIT}" >&2
           exit 1
+      # Every real production deployment must prove two isolated authenticated tenants;
+      # governance-only changes have no new deployment and are not falsely marked live.
       - name: Verify authenticated Portal production API proof
-        if: (steps.scope.outputs.portal_required == 'true' || steps.scope.outputs.brain_runtime_auth_proof_required == 'true') && steps.deploy.outcome == 'success'
+        if: steps.scope.outputs.deployment_required == 'true' && steps.deploy.outcome == 'success'
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           EXPECTED_DEPLOY_ID: ${{ steps.deploy.outputs.deploy_id }}
