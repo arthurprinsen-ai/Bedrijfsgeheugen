@@ -41,4 +41,12 @@ test('unique event UUID migration is additive',()=>{
  assert.match(sql,/CREATE UNIQUE INDEX IF NOT EXISTS/);
  assert.doesNotMatch(sql,/DROP TABLE|TRUNCATE|DELETE FROM/i);
 });
+
+test('canonical growth writer never emits a second CTA event for generated money pages',()=>{
+ const src=read('assets/meting.js');
+ assert.match(src,/getElementById\('bg-growth-measurement'\)/);
+ assert.match(src,/el\.closest\('main'\)/);
+ assert.match(src,/\[data-bg-conversion\]/);
+});
+
 // De bestaande native Andere data pagina is eigenaar van PR #5140; deze tests bewaken de rauwe event-ingress van issue #5141.\n
