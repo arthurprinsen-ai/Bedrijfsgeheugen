@@ -23,5 +23,28 @@
   ],
   "regression_ref": "tests/brain-cycle-writer-provenance-20261029.test.mjs",
   "next_step": "After protected migration, independently verify SQL function source and new events from existing schedules. Then instrument actor identity and actual baseline/outcomes in originating authorized agents before closing the candidate.",
-  "closure_gate": "independently verified agent_id/skill_version, before/after metric evidence, provider outcome and commercial revenue attribution; this migration alone does not close the gate"
+  "closure_gate": "independently verified agent_id/skill_version, before/after metric evidence, provider outcome and commercial revenue attribution; this migration alone does not close the gate",
+  "type": "POWERHOUSE_LEARNING",
+  "failure_class": "CANONICAL_SQL_WRITER_PROVENANCE_GAP",
+  "compiler": {
+    "failure_class": "CANONICAL_SQL_WRITER_PROVENANCE_GAP",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+  ]
 }
