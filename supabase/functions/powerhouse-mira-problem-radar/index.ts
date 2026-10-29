@@ -3,6 +3,7 @@ import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-au
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 import { selectMiraSourceQueries } from '../_shared/mira-source-query-rotation.mjs';
+import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -77,7 +78,7 @@ Deno.serve(async(req:Request)=>{
        taskCode=Number(b?.tasks?.[0]?.status_code||0);
        if(r.ok&&Number(b?.status_code||0)===20000&&taskCode===20000) break;
      }
-     if(r!.ok&&Number(b?.status_code||0)===20000&&taskCode===40101){ providers.dataforseo_no_results=(providers.dataforseo_no_results||0)+1; return {provider:'dataforseo_news',results:[]}; }
+     if(isDataForSeoEmptyNewsTask({httpOk:r!.ok,envelopeCode:b?.status_code,taskCode})){ providers.dataforseo_no_results=(providers.dataforseo_no_results||0)+1; return {provider:'dataforseo_news',results:[]}; }
      if(!r!.ok||Number(b?.status_code||0)!==20000||taskCode!==20000) throw new Error('DATAFORSEO_'+r!.status+'_TASK_'+taskCode);
      const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
      const rows:any[]=[];

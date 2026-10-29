@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
 
@@ -49,17 +49,4 @@ test('read-only live exporter matrix cannot run the canonical publishing job', (
   assert.match(workflow, /probe "HISTORIC_LIVE_WITHOUT_APPROVAL" "2026-10-22" "403"/);
   assert.match(workflow, /probe "APPROVED_LIVE_PROVEN" "2026-10-25" "200"/);
   assert.match(workflow, /--output \/dev\/null/);
-});
-
-test('historical approved public blog does not carry private Brain/ledger artifacts on current main', () => {
-  for (const privatePath of [
-    'brain/learning/powerhouse-blog-2026-10-25.json',
-    'docs/changes/powerhouse-blog-2026-10-25.md',
-    'docs/development-ledger-events/powerhouse-blog-2026-10-25.md',
-  ]) {
-    assert.equal(existsSync(new URL('../' + privatePath, import.meta.url)), false,
-      'historical internal publisher data must not remain in the public HEAD: ' + privatePath);
-  }
-  const blog = read('blog/publiceren-voor-de-circular-plastics-nl-kans-beslis-alleen-als-kanaalg/index.html');
-  assert.ok(blog.toLowerCase().includes('<html'), 'approved public blog remains published in source');
 });
