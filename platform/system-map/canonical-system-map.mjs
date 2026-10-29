@@ -1,4 +1,5 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  croExperimentIntelligence:Object.freeze({fingerprint:'powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1',owner:'existing commercial Heartbeat and Growth Swarm',module:'tools/growth-intelligence/cro-experiment-cycle.mjs',adapter:'tools/growth-intelligence/heartbeat-adapter.mjs',skill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',storage:'existing powerhouse_experiment_assignments / powerhouse_cycle_events / brain_records / growth_outcomes',portfolio:'whatsapp,progressive-form,contextual-help,exit-intent,calculator,scan-followup,cta',noNewScheduler:true,noSecondWriter:true,stage:'SOURCE_CANDIDATE',productionVerified:false,portalVerified:false}),
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-10-25T13:45:00.000Z',
