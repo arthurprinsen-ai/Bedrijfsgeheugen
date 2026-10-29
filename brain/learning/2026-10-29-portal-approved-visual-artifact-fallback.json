@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|portal|approved-visual-baseline-artifact-missing|20261029",
+  "obligation_id": "PORTAL-VISUAL-BASELINE-ARTIFACT-READBACK-20261029",
+  "failure_class": "CI",
+  "root_cause": "Portal V2 Production DOM Readback 40921310588 Resolve approved visual baseline selected a successful exact-head PR workflow_run, then called gh run download for a screenshot artifact without verifying that artifact existed. GitHub returned no valid artifacts found to download. This is evidence-unavailable; not a proven visual layout failure.",
+  "observed_evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40921310588",
+    "production_main_sha": "6487786733cd332edd777af3881e68aca806bf92",
+    "netlify_deploy_id": "6ae381b55f2b8b632681f6be",
+    "production_dom_visual_proof": false,
+    "raw_private_payloads_committed": false
+  },
+  "fix": "In existing portal visual workflow, verify an unexpired screenshot artifact with exact expected PR head before calling gh run download; when unavailable, use only the already-existing exact-protected-merged-source/immutable-preview browser capture and mandatory screenshot pixel comparison.",
+  "prevention_rule": "A successful GitHub workflow is not proof that its optional artifact exists. Never bypass the visual baseline or use an unrelated PR screenshot; keep exact head match, provider approval and image comparison.",
+  "production_proven": false,
+  "privacy_sensitive": false,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-approved-visual-artifact-fallback-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-approved-visual-artifact-fallback-20261029.test.mjs"
+  ],
+  "human_documentation": "docs/changes/2026-10-29-portal-approved-visual-baseline-evidence-recovery.md",
+  "terminal_rule": "Only exact-head Required + CodeQL, protected merge, fresh real production browser screenshot baseline and visual comparison allow visual GREEN; actual orders and experiment results separately unverified."
+}
