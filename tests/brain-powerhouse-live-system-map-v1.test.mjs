@@ -79,3 +79,22 @@ test('trigger-based MKB acquisition runtime is registered with fail-closed produ
   assert.equal(capability.productionEvidence?.firstControlledEligibleTriggers,0);
   assert.equal(capability.productionEvidence?.ordinaryConnectionFalsePositives,0);
 });
+
+
+test('human architecture diagram follows canonical arrows without inventing provider success',async()=>{
+  const ui=await readFile('portal-v2/modules/powerhouse-observability.js','utf8');
+  const css=await readFile('portal-v2/powerhouse-observability.css','utf8');
+  const ids=new Set(POWERHOUSE_SYSTEM_MAP.sources.map(source=>source.id));
+  assert.ok(POWERHOUSE_SYSTEM_MAP.flow.length>0);
+  for(const edge of POWERHOUSE_SYSTEM_MAP.flow){
+    assert.ok(ids.has(edge.from),`architecture edge source unknown: ${edge.from}`);
+    assert.ok(ids.has(edge.to),`architecture edge target unknown: ${edge.to}`);
+  }
+  assert.match(ui,/data-system-map-diagram/);
+  assert.match(ui,/arr\(systemMap\.flow\)\.map\(edge/);
+  assert.match(ui,/sourceLabels\.get\(edge\.from\)/);
+  assert.match(ui,/sourceLabels\.get\(edge\.to\)/);
+  assert.match(ui,/data-provider-evidence-status/);
+  assert.match(ui,/UNVERIFIED: Supabase-broninventaris/);
+  assert.match(css,/\.psm-architecture-grid/);
+});

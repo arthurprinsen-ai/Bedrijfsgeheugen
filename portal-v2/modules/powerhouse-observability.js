@@ -157,6 +157,8 @@ function systemMapView(systemMap,events){
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
+  const sourceLabels=new Map(arr(systemMap.sources).map(source=>[source.id,source.label]));
+  const architectureDiagram=arr(systemMap.flow).map(edge=>`<li class="psm-architecture-link"><strong>${esc(sourceLabels.get(edge.from)||edge.from)}</strong><span aria-hidden="true">→</span><strong>${esc(sourceLabels.get(edge.to)||edge.to)}</strong><small>${esc(edge.label)}</small></li>`).join('');
   const inventory=(title,items)=>`<details class="psm-inventory"><summary><b>${esc(title)}</b><span>${arr(items).length}</span></summary><div>${arr(items).map(item=>`<code>${esc(item)}</code>`).join('')}</div></details>`;
   const contract=systemMap.agentRegistrationContract||{};
   return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>Het Brein bewaart en verbindt bedrijfscontext, bronnen en geleerde lessen. Powerhouse gebruikt die context om signalen te beoordelen, acties te kiezen en resultaten te volgen. Heartbeat laat de bestaande taken op hun eigen ritme uitvoeren en controleert hun uitkomst. Het portaal toont de beschikbare gegevens en bewijsstatus; GitHub levert de code, Supabase verwerkt en bewaart, Netlify ontsluit en Notion documenteert. Een geplande taak of opgeslagen keuze bewijst nog geen uitgevoerde actie.</p></div><small>Broninventaris gecontroleerd: ${esc(fmtTime(systemMap.observedAt))}</small></section>
@@ -169,6 +171,13 @@ function systemMapView(systemMap,events){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  <section class="poc-panel psm-architecture" data-system-map-diagram data-source-hash="${esc(systemMap.explanationInventory?.contentHash||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Architectuurplaat: hoe de systemen samenwerken</h4><span>rechtstreeks uit de canonieke System Map</span></div>
+    <p class="poc-note">Elke pijl is een geregistreerde afhankelijkheid; niet per definitie een bewezen geslaagde uitvoering. De bronversie wordt bij codewijzigingen door de bestaande releasecontrole bewaakt. Notion- en providerreadback worden afzonderlijk geverifieerd.</p>
+    <ul class="psm-architecture-grid" aria-label="Systeemrelaties">${architectureDiagram||'<li>Geen relaties geregistreerd — controle vereist.</li>'}</ul>
+    <p class="poc-note" data-provider-evidence-status>Providergegevens: ${esc(liveSupabase.status==='LIVE'?'live Supabase-inventaris ontvangen; uitvoeringsbewijs per actie apart':'UNVERIFIED: Supabase-broninventaris niet onafhankelijk beschikbaar')}. Broncodehash: ${esc(systemMap.explanationInventory?.contentHash?.slice(0,12)||'UNVERIFIED')}.</p>
+  </section>
+
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
   <div class="poc-grid2">

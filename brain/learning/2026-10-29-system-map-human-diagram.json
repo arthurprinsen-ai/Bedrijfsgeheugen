@@ -1,0 +1,36 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "powerhouse|system-map|human-architecture-diagram|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "root_cause": "System Map relations were visible as technical line items but lacked a visually structured automatically source-driven diagram for human portal users.",
+  "prevention_rule": "All architecture visualizations must derive edges and labels from the canonical System Map, escape values and distinguish code-topology evidence from independent provider/runtime truth; Required rejects stale generated map hashes.",
+  "compiler": {
+    "failure_class": "HUMAN_ARCHITECTURE_PROJECTION_GAP",
+    "scope": "EXISTING_PORTAL_SYSTEM_MAP",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-portal-explanation-autosync-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-portal-explanation-autosync-v1.test.mjs"
+    ],
+    "tests_passed": 9,
+    "public_safe_only": true,
+    "raw_customer_or_tenant_payloads": false,
+    "private_incident_evidence_exported": false,
+    "protected_merge_verified": false,
+    "production_readback_verified": false
+  },
+  "terminal_rule": "Promote only on exact-head Required/BRAIN/CodeQL, protected main merge, Netlify production/browser readback and independent source proof."
+}
