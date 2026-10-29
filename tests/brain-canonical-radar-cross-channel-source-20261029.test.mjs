@@ -41,13 +41,3 @@ test('personal source collection cannot claim personal lived experience nor rela
  assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
  assert.match(radar,/return json\(\{ok:errors\.length===0,runDate,stored,eligible,personalStored,personalEligible/);
 });
-"));
- assert.match(originalSql,/WINNER_ALREADY_FROZEN/);
-});
-test('personal source collection cannot claim personal lived experience nor relax source verification',()=>{
- assert.match(radar,/source_publication_date_evidence:publication\.publishedAt\?'DATED':'UNVERIFIED'/);
- assert.match(radar,/observational_personal_theme_verified:Boolean\(personalTopic\)/);
- assert.match(radar,/first_person_claims_present:false/);
- assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
- assert.match(radar,/return json\(\{ok:errors\.length===0,runDate,stored,eligible,personalStored,personalEligible/);
-});
