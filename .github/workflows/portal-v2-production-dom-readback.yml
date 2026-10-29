@@ -222,6 +222,18 @@ jobs:
             echo "Waiting for successful exact-head PR readback ${pr_head_sha} (attempt ${attempt}/60)"
             sleep 4
           done
+          # A successful workflow_run can have NO screenshot artifact (for example,
+          # a skipped visual lane). Do not treat run success as screenshot evidence.
+          # Fall through to the EXISTING exact-PR-HEAD screenshot capture if absent.
+          if [ -n "$run_id" ]; then
+            artifact_name="visual-baseline-pr-${pr_number}-${pr_head_sha}"
+            artifacts="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100")"
+            artifact_id="$(jq -r --arg expected "$artifact_name" '[.artifacts[] | select(.name == $expected and .expired == false)] | first | .id // empty' <<<"$artifacts")"
+            if [ -z "$artifact_id" ]; then
+              echo "::notice::Successful exact-head PR readback ${run_id} has no unexpired ${artifact_name}; requiring verified approved-source browser screenshot instead."
+              run_id=""
+            fi
+          fi
           mkdir -p artifacts/visual-baseline-pr
           if [ -n "$run_id" ]; then
             gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
