@@ -1,5 +1,5 @@
 import { getUser } from '@netlify/identity';
-import { readPowerhouseIntegrationReadback } from './_powerhouse-existing-integration-read-model.mjs';
+import { readPowerhouseIntegrationReadback } from '../../platform/portal/powerhouse-existing-integration-read-model.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 
