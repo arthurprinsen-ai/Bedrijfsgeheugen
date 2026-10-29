@@ -50,3 +50,11 @@ test('read-only live exporter matrix cannot run the canonical publishing job', (
   assert.match(workflow, /probe "APPROVED_LIVE_PROVEN" "2026-10-25" "200"/);
   assert.match(workflow, /--output \/dev\/null/);
 });
+
+test('legacy native daily publisher authenticates canonical duplicate-prevention readback', () => {
+  const workflow = read('.github/workflows/daily-blog-publisher.yml');
+  assert.ok(workflow.includes("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"));
+  assert.ok(workflow.includes('NATIVE_BLOG_EXPORT_AUTH_NOT_CONFIGURED'));
+  assert.ok(workflow.includes('Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'));
+  assert.ok(!workflow.includes('curl --fail --silent --show-error --max-time 15 "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export'));
+});

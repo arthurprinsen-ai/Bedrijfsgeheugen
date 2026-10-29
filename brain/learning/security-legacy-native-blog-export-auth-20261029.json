@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|legacy-native-blog-export-auth|20261029",
+  "status": "SOURCE_CANDIDATE_UNVERIFIED",
+  "incident_id": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+  "root_cause": "A legacy native daily blog duplicate-prevention check called the newly service-authenticated canonical exporter anonymously; after P0 production fix this results in 401 and can miss canonical live readback.",
+  "prevention_rule": "All blog exporter consumers use the existing GitHub Actions service credential and never silently treat missing credentials as publication approval; canonical exporter still demands approved_at.",
+  "scope": [
+    ".github/workflows/daily-blog-publisher.yml",
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ]
+  },
+  "verification": {
+    "protected_merge": false,
+    "production_scheduler_readback": false
+  },
+  "no_new_schedule": true
+}
