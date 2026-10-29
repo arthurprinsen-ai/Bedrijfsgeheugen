@@ -40,5 +40,15 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
-  ]
+  ],
+  "evidence": {
+    "production_before": "2026-10-29 inspected function lacked openart_history_id / attempts / last_error protection in WAITING_ASSET upsert",
+    "independent_media_gate": "OpenArt old video rejected, Mira start frame 0.900 < 0.940, no Instagram provider ID",
+    "protected_release": "PENDING_REQUIRED_CODEQL",
+    "production_readback": "PENDING",
+    "tests": [
+      "tests/brain-mira-ensure-claim-monotonicity-20261029.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ]
+  }
 }
