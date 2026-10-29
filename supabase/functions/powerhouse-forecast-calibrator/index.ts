@@ -23,7 +23,31 @@ Deno.serve(async(req:Request)=>{
     ]);
     if(dueError)throw new Error('CALIBRATION_DUE_READ_FAILED');
     if(!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='OpenAI') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
-    if(!due?.length){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'ok',detail:'NO_DUE_CALIBRATIONS',gegevens:{contract:'predictive-first-mover-intelligence-v1'}});return json({ok:true,due:0,calibrated:0});}
+    if(!due?.length){
+      // The public market RPC intentionally excludes company/person forecasts.
+      // Its empty queue must not be reported as a globally empty calibration backlog.
+      // Read only a count; do not copy a private forecast or its payload to the LLM.
+      const {count:allDue,error:backlogError}=await db.from('revenue_learning_obligations')
+        .select('obligation_id',{count:'exact',head:true})
+        .eq('tenant_id','canonical').eq('type','FORECAST_CALIBRATION')
+        .eq('status','OPEN').lte('due_at',new Date().toISOString());
+      if(backlogError) throw new Error('CALIBRATION_BACKLOG_COUNT_READ_FAILED');
+      const outOfPublicScopeDue=Number(allDue||0);
+      const state=outOfPublicScopeDue>0?'NON_PUBLIC_SCOPE_BACKLOG':'PUBLIC_SCOPE_IDLE';
+      const evidence={
+        contract:'predictive-first-mover-intelligence-v1',
+        public_scope_due:0,
+        out_of_public_scope_due:outOfPublicScopeDue,
+        state,
+        truth_boundary:'public AI calibration cannot process company or person forecasts; private first-party closure requires independent evidence'
+      };
+      await db.from('bg_gezondheid').insert({
+        gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',
+        soort:'calibration-run',status:'ok',detail:state,gegevens:evidence
+      });
+      return json({ok:true,due:0,calibrated:0,public_scope_due:0,
+        out_of_public_scope_due:outOfPublicScopeDue,state});
+    }
     const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data); if(!apiKey) throw new Error('AI_KEY_UNAVAILABLE');
     const tool={name:'calibration',description:'Assess forecast materialization using only supplied evidence',input_schema:{type:'object',additionalProperties:false,properties:{outcome:{type:'string',enum:['materialized','missed','uncertain']},confidence:{type:'number',minimum:0,maximum:1},actual_event_at:{type:'string'},evidence_refs:{type:'array',items:{type:'string'}},reason:{type:'string'}},required:['outcome','confidence','actual_event_at','evidence_refs','reason']}};
     let calibrated=0,uncertain=0; const results:any[]=[];
