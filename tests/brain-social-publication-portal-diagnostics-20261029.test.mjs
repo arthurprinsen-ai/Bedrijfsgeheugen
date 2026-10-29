@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import { summarizePublicationEvidence } from '../brain/observability/publication-evidence-readback.mjs';
 
 const date='2026-10-29',observedAt='2026-10-29T17:16:00Z';
@@ -57,3 +58,48 @@ test('provider-effect readback outranks auth fault; no duplicate post to repair 
  assert.equal(result.channels[1].recoveryCode,'NO_REPOST_COLLECT_OUTCOMES');
  assert.doesNotMatch(JSON.stringify(result),/urn:li|private-post/);
 });
+
+test('PUBLISHED personal LinkedIn with exact provider ID and 403 remains unproven and no-repost',()=>{
+  const rows=[
+    row('linkedin_company','LIVE_PROVEN','','urn:li:share:other','2026-10-29T09:04:29Z'),
+    {...row('linkedin_personal','PUBLISHED','','urn:li:share:personal',null),
+      provider_readback_error:'COMPOSIO_LINKEDIN_GET_POST_CONTENT_200:Forbidden. You do not have permission to access this post.',
+      auth_preflight:'failed',auth_error:'LINKEDIN_REAUTH_REQUIRED'},
+    row('instagram','BLOCKED','MEDIA_ASSET_REQUIRED'),row('blog','GENERATED')
+  ];
+  const out=summarizePublicationEvidence(rows,{count:4,date,observedAt});
+  const personal=out.channels.find(c=>c.channel==='linkedin_personal');
+  assert.equal(personal.registryStatus,'PUBLISHED');
+  assert.equal(personal.providerIdRecorded,true);
+  assert.equal(personal.internalLiveProofRecorded,false);
+  assert.equal(personal.recoveryCode,'LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST');
+  assert.doesNotMatch(JSON.stringify(out),/urn:li:|Forbidden|LINKEDIN_REAUTH_REQUIRED|access this post/);
+});
+
+test('readback permission error is not conflated with absent provider side effect or live proof',()=>{
+  const base=[
+    row('linkedin_company','LIVE_PROVEN','','urn:li:share:other','2026-10-29T09:04:29Z'),
+    {...row('linkedin_personal','PUBLISHED','','urn:li:share:existing',null),provider_readback_error:'HTTP 403'},
+    row('instagram','BLOCKED','MEDIA_ASSET_REQUIRED'),row('blog','GENERATED')
+  ];
+  const verified=summarizePublicationEvidence(base,{count:4,date,observedAt});
+  assert.equal(verified.channels[1].recoveryCode,'LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST');
+  const noEffect=structuredClone(base);
+  noEffect[1].external_id=null;
+  assert.notEqual(summarizePublicationEvidence(noEffect,{count:4,date,observedAt}).channels[1].recoveryCode,
+    'LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST');
+  const honestLive=structuredClone(base);
+  honestLive[1].status='LIVE_PROVEN';honestLive[1].live_proven_at='2026-10-29T22:00:00Z';
+  assert.equal(summarizePublicationEvidence(honestLive,{count:4,date,observedAt}).channels[1].recoveryCode,'NO_REPOST_COLLECT_OUTCOMES');
+});
+
+test('original Netlify/Portal V2 remains private, read-only, and human-readable',()=>{
+  const server=readFileSync('netlify/functions/powerhouse-observability.mjs','utf8');
+  const source=readFileSync('brain/observability/publication-evidence-readback.mjs','utf8');
+  const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
+  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v3'/);
+  assert.match(source,/provider_readback_error:evidence->>readback_error/);
+  assert.match(portal,/Nooit opnieuw publiceren; alleen bestaand bericht verifiëren/);
+  assert.doesNotMatch(portal,/urn:li:share:7521667096859201536/);
+});
+
