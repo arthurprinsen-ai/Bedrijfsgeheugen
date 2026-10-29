@@ -92,6 +92,9 @@ test('radar uses a fixed eight-call budget but rotates multiple approved entrepr
  assert.match(radar,/oninbare vorder/);
  assert.match(radar,/onbetaalde factur/);
  assert.match(radar,/betalingsachterstand/);
+ assert.match(radar,/directeur\.\*besluit/);
+ assert.match(radar,/facturering\.\*te laat/);
+ assert.match(radar,/klantafhankelijk/);
  assert.match(radar,/evaluateMiraPublicationFreshness\(/);
  assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
 });

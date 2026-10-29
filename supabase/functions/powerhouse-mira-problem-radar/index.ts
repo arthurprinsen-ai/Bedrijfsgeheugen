@@ -10,7 +10,7 @@ const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 const topic=(text:string)=>{
  const t=text.toLowerCase();
  if(/offerte|salesopvolging|follow.up|acquisitie.*opvolging/.test(t))return'offertes-zonder-opvolging';
- if(/eigenaar.*besluit|directeur.*goedkeur|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
+ if(/eigenaar.*besluit|directeur.*goedkeur|directeur.*besluit|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
  if(/kennisoverdracht|kennisborg|sleutelmedewerker|sop|werkinstruct|afspraak.*hoofd/.test(t))return'kennisoverdracht';
  if(/excel|spreadsheet|verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
  if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
@@ -18,8 +18,8 @@ const topic=(text:string)=>{
  if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
  if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
  if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling/.test(t))return'debiteuren';
- if(/late factur|facturatie.*vertraging|werk.*niet gefactureerd/.test(t))return'late-facturering';
- if(/klantconcentratie|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
+ if(/late factur|facturatie.*vertraging|facturering.*te laat|werk.*niet gefactureerd/.test(t))return'late-facturering';
+ if(/klantconcentratie|klantafhankelijk|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
  if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
  return '';
 };
