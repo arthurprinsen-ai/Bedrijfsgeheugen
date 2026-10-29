@@ -1,0 +1,37 @@
+// Aggregated error completeness for the existing authenticated admin portal.
+const missing = value => value == null || String(value).trim() === '';
+export function summarizeFailureCoverage(rows, expectedTotal, observedAt = new Date().toISOString()) {
+  if (!Array.isArray(rows) || !Number.isSafeInteger(expectedTotal) || rows.length !== expectedTotal || expectedTotal > 1000)
+    return {status:'UNVERIFIED',reason:'INCOMPLETE_REGISTRY_READBACK'};
+  const totals = {patterns:rows.length,observed:0,validated:0,proven:0,other:0,observedMissingCause:0,observedMissingRegression:0,observedMissingPrevention:0};
+  let sourceLatestAt = null;
+  for (const row of rows) {
+    if (!row || typeof row !== 'object') return {status:'UNVERIFIED',reason:'INVALID_REGISTRY_RECORD'};
+    const maturity = String(row.maturity || '').toUpperCase();
+    if (maturity === 'OBSERVED') {
+      totals.observed++;
+      if (missing(row.root_cause)) totals.observedMissingCause++;
+      if (missing(row.regression_ref)) totals.observedMissingRegression++;
+      if (missing(row.prevention_rule)) totals.observedMissingPrevention++;
+    } else if (maturity === 'VALIDATED') totals.validated++;
+    else if (maturity === 'PROVEN') totals.proven++;
+    else totals.other++;
+    if (typeof row.last_seen_at === 'string' && !Number.isNaN(Date.parse(row.last_seen_at)) &&
+      (!sourceLatestAt || Date.parse(row.last_seen_at) > Date.parse(sourceLatestAt))) sourceLatestAt = row.last_seen_at;
+  }
+  return {status:'READBACK_COMPLETE',authority:'Supabase brain_failure_registry',totals,observedAt,sourceLatestAt};
+}
+// Reads only server-to-server; only aggregate counts enter the browser response.
+export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetch}={}) {
+  if (!baseUrl || !key) return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_CONFIG_MISSING'};
+  const url=String(baseUrl).replace(/\/$/,'')+'/rest/v1/brain_failure_registry?select=maturity,root_cause,regression_ref,prevention_rule,last_seen_at&limit=1000';
+  try {
+    const response=await fetchImpl(url,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json',prefer:'count=exact'},signal:AbortSignal.timeout(5000)});
+    if (!response.ok) return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_HTTP_'+response.status};
+    const contentRange=response.headers.get('content-range')||'';
+    const match=/\/(\d+)$/.exec(contentRange);
+    return summarizeFailureCoverage(await response.json(),match?Number(match[1]):null);
+  } catch {
+    return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_READ_FAILED'};
+  }
+}
