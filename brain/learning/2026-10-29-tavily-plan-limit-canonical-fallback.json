@@ -1,0 +1,22 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "tavily-plan-limit-canonical-fallback-20261029",
+  "fingerprint": "powerhouse|external-search|tavily-plan-limit-432|20261029",
+  "status": "CANDIDATE_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "root_cause": "Composio Tavily search returned HTTP 432 plan limit despite ACTIVE authorization. Existing canonical producer had DataForSEO fallback but concurrent Tavily requests could repeat blocked requests.",
+  "change": "Use one in-flight probe and bounded per-isolate cooldown for HTTP 432/429 before existing real DataForSEO fallback.",
+  "tests": [
+    "tests/brain-tavily-plan-limit-gate-20261029.test.mjs",
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "evidence": {
+    "tavily_oauth": "ACTIVE_VIA_COMPOSIO",
+    "tavily_search": "BLOCKED_432",
+    "serper": "ON_DEMAND_VERIFIED",
+    "exa": "ON_DEMAND_VERIFIED",
+    "supabase_runtime": "NOT_YET_LIVE_VERIFIED",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  },
+  "policy": "NO_NEW_SCHEDULER_NO_NEW_WRITER_NO_UNVERIFIED_GREEN"
+}
