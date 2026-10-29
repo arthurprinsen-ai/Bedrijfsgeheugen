@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|legacy-blog-watchdog-stale-ledger-reuse|20261029",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "STALE_LEGACY_LEDGER_FALSE_HEALTH_RESULT",
+  "root_cause": "The legacy read-only watchdog still selected the most recent historical not-live record when the requested/current date was absent from its five-row GitHub ledger. It could falsely fail a daily schedule, even though canonical Supabase blog obligations have newer dates.",
+  "observed_evidence": {
+    "incident": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+    "manual_run_missing_date": 40856082954,
+    "missing_date": "2026-10-25",
+    "legacy_ledger_latest": "2026-10-09",
+    "validated_manual_run": 40856250847,
+    "validated_business_date": "2026-10-09",
+    "sensitive_payloads": "NONE"
+  },
+  "fix": "Fail safely and explicitly with NO_ACTION and skip external readback when exact date is absent; never substitute an unrelated older date. Canonical Powerhouse publisher remains current truth and only publication/ledger writer.",
+  "prevention_rule": "Monitor cannot claim a successful recent blog proof from stale GitHub ledger or fail on a mismatched historical day. Only an exact ledger date can be read back; missing date is NO_ACTION delegated to canonical Powerhouse.",
+  "tests": [
+    "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "STALE_LEGACY_LEDGER_FALSE_HEALTH_RESULT",
+    "scope": "WORKFLOW_SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required CodeQL and exact production workflow_dispatch with missing ledger date no-op, historical valid date still works; no Git writes."
+}

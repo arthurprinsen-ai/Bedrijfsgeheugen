@@ -23,3 +23,13 @@ test('read-only watchdog retains original triggers but no alternate scheduler', 
   assert.match(source, /workflow_dispatch:/);
   assert.match(source, /node --test tests\/brain-daily-blog-watchdog-no-public-private-proof\.test\.mjs/);
 });
+
+test('stale legacy GitHub ledger never selects an older date as current proof', () => {
+  const source=workflow();
+  assert.match(source, /NO_ACTION_LEGACY_LEDGER_DATE_MISSING/);
+  assert.match(source, /CANONICAL_POWERHOUSE_OWNS_DATE/);
+  assert.doesNotMatch(source, /const dates=Object\.keys\(days\)/);
+  assert.match(source, /if: steps\.record\.outputs\.run == 'true'/);
+  assert.match(source, /if: steps\.record\.outputs\.run == 'true' && steps\.record\.outputs\.state == 'live'/);
+  assert.match(source, /if: steps\.record\.outputs\.run == 'true' && steps\.proof\.outputs\.ok == 'true'/);
+});
