@@ -12,6 +12,8 @@ import { loadFailureCoverage } from '../../brain/observability/failure-coverage-
 import { loadCycleEvidenceCoverage } from '../../brain/observability/cycle-evidence-coverage.mjs';
 import { loadPublicationEvidence } from '../../brain/observability/publication-evidence-readback.mjs';
 
+// Verifiable admin-only runtime version: required when imported publication readback changes.
+export const PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v2';
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
   'pragma':'no-cache',
@@ -137,7 +139,7 @@ export default async request=>{
   try{
     const projection=await store.getProjection(tenantId,{principal});
     const [supabaseInventory,releaseEvidence,experimentChanges,failureCoverage,agentCycleCoverage,publicationEvidence]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence(),loadExperimentChanges(),loadFailureCoverage({baseUrl:String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim(),key:String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim()}),loadCycleEvidenceCoverage({baseUrl:String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim(),key:String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim()}),loadPublicationEvidence({baseUrl:String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim(),key:String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim()})]);
-    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence,agentCycleCoverage,publicationEvidence}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage}, experimentChanges },200);
+    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence,agentCycleCoverage,publicationEvidence:{...publicationEvidence,contract:PUBLICATION_EVIDENCE_CONTRACT}}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage}, experimentChanges },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
