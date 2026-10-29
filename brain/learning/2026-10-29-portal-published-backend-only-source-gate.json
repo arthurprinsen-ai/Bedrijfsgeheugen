@@ -1,0 +1,36 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "portal-published-backend-only-source-gate-20261029",
+  "fingerprint": "delivery|portal|published-main-older-than-backend-only-head|20261029-v1",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "CI_BROWSER_READBACK",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "After exact public Portal source commit 481c2903 was deployed, main advanced with three actual Supabase-only source files and governance/CI changes, all classified backend-only with deploymentRequired=false. The existing workflow_dispatch historic-published-SHA scope only permitted a hardcoded governance allowlist, so legitimately deployment-not-required source ancestry could not be independently browser-verified.",
+  "change": "Replace only legacy file-name allowlist with fail-closed validation: evidence/governance paths remain historically allowed, Supabase backend paths require existing exact-main Netlify applicability classifier to independently return deploymentRequired=false, browserRequired=false, portalRequired=false, websiteRequired=false, netlifyRuntimeRequired=false and backend-only lanes; all other paths deny. Existing main-only workflow dispatch, protected merged ancestry, exact immutable+canonical product manifests and all Playwright/visual gates remain.",
+  "prevention": "No false red when backend-only non-Netlify changes occur after immutable production; never accept Portal/Netlify/runtime-source drift. Any classifier or config modification, unexpected path, duplicate/traversal, invalid SHA or provider manifest mismatch fails closed.",
+  "evidence": {
+    "verifiedSourceDiff": "published 481c2903ceba2f4e9163f62a4ec8925468b21a3b → main a7d28c30e75b8ebfca404d05fd138269d32a197c: 24 changed files, 3 Supabase backend source files, 21 governance/evidence/CI files, zero Netlify runtime/portal/website/asset impacts according to canonical deriveNetlifyDeploymentApplicability",
+    "unitTests": [
+      "tests/brain-portal-backend-only-published-sha-override-20261029.test.mjs"
+    ],
+    "ciOnlyCanary": "Mocked negative/positive gate tests. Does NOT substitute actual production browser readback.",
+    "realProductionWorkflow": "PENDING protected exact PR merge, then manual dispatch existing Portal V2 Production DOM Readback against immutable published 481c SHA with approved merged #5115."
+  }
+}
