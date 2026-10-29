@@ -47,3 +47,8 @@ test('de tabel is service-only en de migratie plant niets in',()=>{
   assert.ok(sql.includes('least(coalesce(p_limiet, 12), 40)'));
   assert.ok(!sql.includes('cron.schedule'));
 });
+
+test('een Tavily-fout stopt de run zichtbaar en wordt niet als afwijzing opgeslagen',()=>{
+  assert.ok(fn.includes('TAVILY_'));
+  assert.ok(fn.includes("'REMOTE' : 'VALIDATION'"));
+});
