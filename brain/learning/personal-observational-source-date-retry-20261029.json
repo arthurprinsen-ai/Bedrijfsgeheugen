@@ -1,0 +1,26 @@
+{
+  "kind": "PUBLIC_SAFE_SOFTWARE_LEARNING",
+  "created": "2026-10-29",
+  "fingerprint": "personal-linkedin|observational-fallback|stale-undated-recycled-source|20261029-v1",
+  "classification": "SOURCE_ELIGIBILITY_CONTRACT_DRIFT",
+  "root_cause": "Pre-existing source-rotation v2 ranked eligible signals by observation time and score without requiring a published date, source recency or personal-life topic; date-only recommendation dedupe could recycle a skipped source candidate.",
+  "fix": "Strict dated published source <=45d old, HTTPS, eligible score and human-life topic, source-identity-aware same-day dedupe; same existing privileged RPC; no new schedulers, no provider side effects.",
+  "safety": {
+    "stale_source_never_reclassified": true,
+    "duplicate_claims_untouched": true,
+    "private_source_payload_exported": false,
+    "personal_first_person_claims": false,
+    "expected_daily_post_live": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-observation-freshness-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "independent 2026-10-29 query/source gate",
+    "redacted": true,
+    "production_verified": false,
+    "provider_post_created": false
+  }
+}
