@@ -86,5 +86,83 @@
     "visible_in_packet": "incident_self_fix",
     "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
     "not_covered_yet": "Runtime agents (edge functions, Make scenarios) have no uniform file to scan; their registration duty is policy only until a runtime check exists."
+  },
+  "revision": 2,
+  "continuous_lean_loop": {
+    "required": true,
+    "scope": [
+      "website",
+      "technical_seo",
+      "cro",
+      "blogs",
+      "linkedin_posts",
+      "instagram_posts",
+      "commercial_email",
+      "customer_portal",
+      "lead_generation",
+      "orders",
+      "paid_revenue"
+    ],
+    "stages": [
+      "MEASURE",
+      "ANALYZE",
+      "HYPOTHESIZE",
+      "PRIORITIZE",
+      "IMPLEMENT",
+      "VERIFY",
+      "LEARN",
+      "REMEASURE"
+    ],
+    "daily_questions": [
+      "WHAT_CAN_BE_BETTER",
+      "WHAT_CAN_BE_SMARTER",
+      "WHAT_CAN_BE_FASTER",
+      "WHAT_CREATES_VERIFIED_CUSTOMER_OR_REVENUE_VALUE"
+    ],
+    "one_authority_only": true,
+    "one_existing_heartbeat_cadence_only": true,
+    "exclusive_writer_per_obligation": true,
+    "canonical_tables": {
+      "cycle": "public.powerhouse_decision_cycles",
+      "event": "public.powerhouse_cycle_events",
+      "memory": "public.brain_records",
+      "incident": "public.brain_failure_registry",
+      "incident_occurrences": "public.brain_failure_occurrences",
+      "improvement_candidate": "public.powerhouse_optimization_candidate_v1",
+      "data_source_registry": "public.powerhouse_evidence_sources",
+      "source_observations": "public.powerhouse_evidence_source_observations",
+      "site_measurements": "public.growth_page_daily",
+      "commercial_outcomes": "public.powerhouse_sales_outcomes"
+    },
+    "required_material_action_evidence": [
+      "agent_id",
+      "skill_version",
+      "obligation_or_correlation_id",
+      "tenant_scope",
+      "occurred_at",
+      "source_and_freshness",
+      "decision_and_reason",
+      "before_metric",
+      "change_and_code_sha_or_provider_id",
+      "test_and_readback",
+      "after_metric",
+      "outcome_and_attribution",
+      "next_step_or_learning_fingerprint"
+    ],
+    "data_gap_rule": "When a decision cannot be measured, create ONE deduplicated instrumentation obligation in the existing Brain/Powerhouse lineage. Add a privacy-minimized, tenant-isolated observation through the authorized portal/source owner, prove capture and portal readback, then resume measurement; UNKNOWN is not ZERO.",
+    "autonomous_delivery_rule": "Safe authorized changes should be implemented, independently verified and iterated within the same obligation; proposals, drafts, commits and provider ACKs are not verified business outcomes.",
+    "experiment_rule": "Record baseline, hypothesis, cohort, metric, sample floor, guardrails, exposure, effect, conclusion and rollback. Do not infer causal improvement from raw page views, likes or non-comparable before/after windows.",
+    "prioritization_rule": "Rank by evidence-weighted incremental orders and paid revenue, customer value, effort, risk and consent; never optimize only vanity reach.",
+    "failure_rule": "Every failure and near-miss uses existing fingerprint, occurrence, root-cause evidence, safe recovery, regression, and next-agent discovery, with no silent error.",
+    "report_rule": "Existing portal/control center shows source freshness, instrumented/unknown coverage, backlog, decisions, actions, provider proof, customer results, orders, revenue, incident recurrence and change-to-impact latency, with UNKNOWN separate from ZERO.",
+    "hard_gates": [
+      "NO_PARALLEL_SCHEDULER_OR_WRITER",
+      "NO_SENSITIVE_DATA_IN_GENERAL_LEARNING",
+      "NO_UNAUTHORIZED_EXTERNAL_EGRESS",
+      "NO_DUPLICATE_PUBLICATION_OR_OUTREACH",
+      "NO_SECURITY_OR_RELEASE_BYPASS",
+      "NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE"
+    ],
+    "enforcement_limit": "The chat preflight validates this policy, not each external runtime agent's actual event writes. Runtime coverage, instrumentation, portal UI, autonomous application and outcome verification require separate code integration and production evidence."
   }
 }
