@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "powerhouse|agent-cycle-evidence-coverage-gap|20261029-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "powerhouse-lean-agent-loop-runtime-coverage-20261029",
+  "parent_obligation": "powerhouse-lean-agent-loop-20261029",
+  "failure_class": "RUNTIME_AGENT_METRICS_ABSENT",
+  "root_cause": "Canonical cycle events persist source evidence and idempotency but top-level actor, skill and before/after metrics are absent in the observed 24h sample. This PR does not attribute the individual writers without independent proof.",
+  "observed_evidence": {
+    "kind": "SUPABASE_READ_ONLY_AGGREGATES",
+    "cycle_events_24h": 1587,
+    "evidence_ref_present": 1587,
+    "idempotency_key_present": 1587,
+    "top_level_actor_present": 0,
+    "top_level_skill_version_present": 0,
+    "top_level_before_metric_present": 0,
+    "top_level_after_metric_present": 0,
+    "notes": "Baseline at original sampling; counts change over time. Top-level fields only."
+  },
+  "fix": "Read-only bounded canonical event evidence coverage projection from existing Supabase table, only in current authenticated/admin Netlify Powerhouse observability API; render UNKNOWN-safe 24h aggregates in existing System Map tab.",
+  "prevention_rule": "Never report completeness from partial, malformed, non-canonical tenant, count-drift, unverified-source or >4000-row windows. Never expose raw event payloads to the browser. Field presence is not independently verified business outcome.",
+  "tests": [
+    "tests/brain-lean-action-coverage-20261029.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CYCLE_EVIDENCE_COVERAGE_NOT_VISIBLE",
+    "scope": "AUTHENTICATED_ADMIN_PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-lean-action-coverage-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-lean-action-coverage-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-lean-action-coverage-20261029.test.mjs"
+    ]
+  },
+  "open_gaps": [
+    "RUNTIME_WRITER_ACTOR_AND_SKILL_INSTRUMENTATION",
+    "BEFORE_AFTER_METRIC_SOURCE_PROOF",
+    "PAID_REVENUE_ATTRIBUTION",
+    "POST_DEPLOY_ADMIN_READBACK"
+  ],
+  "terminal_rule": "Only exact protected merge plus independently verified Netlify production SHA and authenticated portal response can prove dashboard live; real agent data and outcomes require separately measured source writer changes."
+}

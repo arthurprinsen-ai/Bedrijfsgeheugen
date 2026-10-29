@@ -9,6 +9,7 @@ import { POWERHOUSE_SYSTEM_MAP } from '../../platform/system-map/canonical-syste
 import { deriveNetlifyDeploymentApplicability } from '../../tools/delivery/netlify-deployment-applicability.mjs';
 import deliveryPolicy from '../../config/brain-delivery-system.json' with { type: 'json' };
 import { loadFailureCoverage } from '../../brain/observability/failure-coverage-projection.mjs';
+import { loadCycleEvidenceCoverage } from '../../brain/observability/cycle-evidence-coverage.mjs';
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
@@ -134,8 +135,8 @@ export default async request=>{
   const principal=principalFromUser(user,tenantId);
   try{
     const projection=await store.getProjection(tenantId,{principal});
-    const [supabaseInventory,releaseEvidence,experimentChanges,failureCoverage]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence(),loadExperimentChanges(),loadFailureCoverage({baseUrl:String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim(),key:String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim()})]);
-    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage}, experimentChanges },200);
+    const [supabaseInventory,releaseEvidence,experimentChanges,failureCoverage,agentCycleCoverage]=await Promise.all([loadSupabaseSystemMapInventory(),releaseProviderEvidence(),loadExperimentChanges(),loadFailureCoverage({baseUrl:String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim(),key:String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim()}),loadCycleEvidenceCoverage({baseUrl:String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim(),key:String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim()})]);
+    return reply({ ...projection, observability:{...(projection.observability||{}),releaseEvidence,agentCycleCoverage}, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage}, experimentChanges },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
