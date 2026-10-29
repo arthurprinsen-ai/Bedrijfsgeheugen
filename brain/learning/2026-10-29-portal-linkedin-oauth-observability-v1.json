@@ -1,0 +1,42 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|personal|portal-auth-evidence-masked-by-empty-last-error|20261029-v1",
+  "compiler": {
+    "failure_class": "PORTAL_READBACK_AUTH_PROOF_OMITTED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The existing canonical social publisher records exact LINKEDIN_REAUTH_REQUIRED and provider_auth_preflight=failed inside content_publication_obligations.evidence when LinkedIn personal has APPROVED draft without provider ID, but portal readback selected only last_error. The empty last_error made the portal show an unspecific provider/source recovery code.",
+  "prevention": "Use canonical-tenant admin readback and select only scalar evidence->>provider_auth_preflight and evidence->>error; never expose raw error, secret OAuth link, provider ID or account ID. A real external_id always triggers no-repost path before any auth diagnostic. Missing external_id and approved content must never mean provider-side publication or legitimate bypass of user OAuth consent.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs",
+      "tests/brain-portal-canonical-publication-recovery-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "#4439",
+    "source": "Supabase original content publication obligation and canonical setup, 2026-10-29",
+    "original_personal_content_status": "APPROVED",
+    "original_personal_delivery_state": "content_ready",
+    "original_personal_provider_id_present": false,
+    "provider_preflight": "failed",
+    "underlying_reason": "LINKEDIN_REAUTH_REQUIRED",
+    "original_oauth_link_request": 16046,
+    "owner_consent_completed": false,
+    "git_protected_release_pending": true,
+    "portal_authenticated_live_proof_pending": true,
+    "other_channels_untouched": true,
+    "additional_schedulers": 0,
+    "post_created": false,
+    "contains_no_oauth_url": true
+  }
+}
