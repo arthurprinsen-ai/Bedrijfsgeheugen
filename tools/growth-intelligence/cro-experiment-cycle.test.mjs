@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {CRO_EXPERIMENT_CONTRACT,designCroExperiment,evaluateCroExperiment,projectCroLearning} from './cro-experiment-cycle.mjs';
+import {CRO_EXPERIMENT_CONTRACT,designCroExperiment,evaluateCroExperiment,projectCroLearning,diagnoseCroMeasurementGap} from './cro-experiment-cycle.mjs';
 
 const guards=Object.fromEntries([
  'consent_respected','dismissible','keyboard_accessible','no_blocking_mobile_overlay',
@@ -93,4 +93,24 @@ test('inconclusive or negative effects cannot promote',()=>{
  const negative=evaluateCroExperiment(d,{...readback,treatmentConversions:20});
  assert.equal(negative.status,'CANDIDATE_LOSS');
  assert.equal(negative.releaseAllowed,false);
+});
+
+test('cross-source aggregate mismatch is a diagnostic obligation, never fake lost conversions',()=>{
+ const window={windowStart:'2026-10-22',windowEnd:'2026-10-29',
+   pageDailyWindowStart:'2026-10-22',pageDailyWindowEnd:'2026-10-29',
+   interactionsWindowStart:'2026-10-22',interactionsWindowEnd:'2026-10-29'};
+ const data={...window,pageViews:3634,ctaClicks:0,nonBotInteractions:1201,clickLikeEvents:48,
+   pageDailyVerified:true,interactionsVerified:true,
+   pageDailyEvidenceRef:'supabase:growth_page_daily:20261029',
+   interactionsEvidenceRef:'supabase:bg_interacties:20261029'};
+ const d=diagnoseCroMeasurementGap(data);
+ assert.equal(d.status,'RECONCILIATION_REQUIRED');
+ assert.equal(d.writebackVerified,false);
+ assert.equal(d.conclusion,'NO_CAUSAL_OR_LOST_REVENUE_INFERENCE');
+ assert.equal(d.observation.ctaClicks,0);
+ assert.equal(d.observation.clickLikeEvents,48);
+ assert.equal(d.nextAction,'AUDIT_EVENT_TAXONOMY_ROUTE_AND_FUNNEL_PROJECTION');
+ assert.equal(diagnoseCroMeasurementGap({...data,interactionsVerified:false}).status,'MEASUREMENT_REQUIRED');
+ assert.equal(diagnoseCroMeasurementGap({...data,interactionsWindowStart:'2026-10-20'}).status,'INCOMPARABLE');
+ assert.equal(diagnoseCroMeasurementGap({...data,ctaClicks:null}).status,'MEASUREMENT_REQUIRED');
 });
