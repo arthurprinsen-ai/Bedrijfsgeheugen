@@ -117,6 +117,15 @@ Deno.serve(async(req:Request)=>{
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
    const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
+   // Existing source_url is globally unique, but personal and Mira contracts MUST
+   // never overwrite each other's previously collected evidence or frozen lineage.
+   const prior=await db.from('powerhouse_mira_problem_signals_v1').select('metadata').eq('source_url',sourceUrl).maybeSingle();
+   if(prior.error){errors.push('source_contract_read:'+prior.error.message);continue}
+   const priorContract=String(prior.data?.metadata?.contract||'');
+   if(priorContract && priorContract!==row.metadata.contract){
+     providers.source_contract_collision_skipped=(providers.source_contract_collision_skipped||0)+1;
+     continue;
+   }
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
    stored++; if(row.eligible) eligible++;
    if(personalTopic){personalStored++;if(row.eligible)personalEligible++;}
