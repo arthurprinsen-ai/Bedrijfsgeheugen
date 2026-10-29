@@ -11,8 +11,12 @@ function hasAdminRole(user){
   return user?.app_metadata?.powerhouse_admin===true || roles.includes('admin') || roles.includes('powerhouse_admin');
 }
 
-export default async function handler(){
-  const user=await getUser();
+export default async function handler(request){
+  if(request?.method!=='GET')return json({error:'METHOD_NOT_ALLOWED'},405);
+  if(!/^Bearer\s+\S+$/i.test(request.headers?.get('authorization')||''))return json({error:'UNAUTHORIZED'},401);
+  let user;
+  try{user=await getUser(request);}
+  catch{return json({error:'IDENTITY_PROVIDER_UNAVAILABLE'},503);}
   if(!user?.id)return json({error:'UNAUTHORIZED'},401);
   if(!hasAdminRole(user))return json({error:'FORBIDDEN'},403);
 
