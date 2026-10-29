@@ -380,21 +380,22 @@ jobs:
           # branch still points at it. Never touches main, archive/, release/, hotfix/, open-PR
           # branches or protected refs. Capped per run; deletions are read back by the step below.
           sweep_start="$(( ((JANITOR_RUN_NUMBER - 1) % 12) * 5 + 1 ))"
-          sweep_deleted=0
+          sweep_deleted=0 sweep_seen=0 sweep_open=0 sweep_missing=0 sweep_protected=0 sweep_moved=0
           for sweep_page in $(seq "$sweep_start" "$((sweep_start + 4))"); do
             gh api -X GET "repos/${GITHUB_REPOSITORY}/pulls" -f state=closed -f sort=created -f direction=asc -f per_page=100 -f page="$sweep_page" 2>/dev/null \
               | jq -r --arg repo "$GITHUB_REPOSITORY" '.[] | select(.merged_at != null and .base.ref == "main" and ((.head.repo.full_name // "") | ascii_downcase) == ($repo | ascii_downcase)) | [.head.ref, .head.sha] | @tsv' > .artifacts/sweep-candidates.tsv || true
             while IFS=$'\t' read -r branch pr_sha; do
               [ -n "$branch" ] && [ -n "$pr_sha" ] || continue
+              sweep_seen=$((sweep_seen + 1))
               [ "$sweep_deleted" -lt 150 ] || break
               [ "$branch" != main ] || continue
               case "$branch" in archive/*|release/*|hotfix/*) continue ;; esac
-              [ "$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)" = 0 ] || continue
+              [ "$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)" = 0 ] || { sweep_open=$((sweep_open + 1)); continue; }
               encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
               branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
-              [ -n "$branch_json" ] || continue
-              [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || continue
-              [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || continue
+              [ -n "$branch_json" ] || { sweep_missing=$((sweep_missing + 1)); continue; }
+              [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || { sweep_protected=$((sweep_protected + 1)); continue; }
+              [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || { sweep_moved=$((sweep_moved + 1)); continue; }
               latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
               [ "$latest_sha" = "$pr_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${pr_sha}:${latest_sha}"; exit 78; }
               gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
@@ -402,7 +403,7 @@ jobs:
               sweep_deleted=$((sweep_deleted + 1))
             done < .artifacts/sweep-candidates.tsv
           done
-          echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:deleted=${sweep_deleted}"
+          echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:seen=${sweep_seen}:open=${sweep_open}:missing=${sweep_missing}:protected=${sweep_protected}:moved=${sweep_moved}:deleted=${sweep_deleted}"
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
