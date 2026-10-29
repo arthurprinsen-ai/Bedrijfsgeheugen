@@ -70,6 +70,7 @@ function render(container,data){
 
 export function mountOtherData(container,{fetchImpl=globalThis.fetch}={}){
   let cancelled=false;
+  const active=()=>!cancelled&&container.isConnected&&container.closest('[data-page-id]')?.dataset.pageId==='andere-data';
   async function load(){
     container.innerHTML='<section class="cro-od"><p>Beveiligde website- en CRO-data worden gecontroleerd…</p></section>';
     let user=globalThis.netlifyIdentity?.currentUser?.()||null;
@@ -77,26 +78,28 @@ export function mountOtherData(container,{fetchImpl=globalThis.fetch}={}){
       const identity=await ensureIdentityWidget();
       user=identity?.currentUser?.()||null;
     }
+    if(!active())return;
     if(!user){
       container.innerHTML='<section class="cro-od"><h3>Andere data · toegang vereist</h3><p>Log in als Powerhouse-beheerder om de website- en CRO-gegevens te bekijken.</p><button type="button" data-cro-login>Inloggen</button></section>';
       container.querySelector('[data-cro-login]')?.addEventListener('click',async()=>{const identity=await ensureIdentityWidget();identity?.open?.('login');});
       return;
     }
     let token='';try{token=await user.jwt?.()||'';}catch{}
+    if(!active())return;
     if(!token){container.textContent='Identiteitsbewijs niet beschikbaar.';return;}
     try{
       const response=await fetchImpl('/api/powerhouse-cro-other-data',{
         headers:{accept:'application/json',authorization:'Bearer '+token},
         credentials:'same-origin',cache:'no-store'
       });
-      if(!cancelled&&!container.isConnected)return;
+      if(!active())return;
       if(response.status===403){container.textContent='Alleen de Powerhouse-beheerder heeft toegang tot de globale website- en experimentgegevens.';return;}
       if(response.status===401){container.textContent='De beheerderssessie is verlopen. Log opnieuw in.';return;}
       if(!response.ok){container.textContent='De gecontroleerde readback is niet beschikbaar (HTTP '+response.status+'). Er worden geen statistieken verzonnen.';return;}
       const data=await response.json();
-      if(!cancelled){render(container,data);container.querySelector('[data-cro-reload]')?.addEventListener('click',load);}
+      if(active()){render(container,data);container.querySelector('[data-cro-reload]')?.addEventListener('click',load);}
     }catch{
-      if(!cancelled)container.textContent='De broncontrole kon niet worden afgerond. Meetresultaten blijven onbewezen.';
+      if(active())container.textContent='De broncontrole kon niet worden afgerond. Meetresultaten blijven onbewezen.';
     }
   }
   void load();
