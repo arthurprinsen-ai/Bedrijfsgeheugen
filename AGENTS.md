@@ -1,3 +1,11 @@
+## Externe signalen — verplichte agent- en skilloverdracht (29 oktober 2026)
+
+Voor **alle** huidige en toekomstige agents die externe bronnen, Omgevingsradar, source-observations, provider-fallback, DataForSEO, Tavily of bronpublicaties aanraken geldt vóór iedere actie: lees `.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md`, `brain/learning/2026-10-29-tavily-plan-limit-canonical-fallback.json`, de actuele productie-observatie en het bestaande Brain-incident `powerhouse|external-search|tavily-plan-limit-432|20261029` (#4215). Deze verwijzing is een **preflight-router**, geen zelfstandige scheduler of extra agent.
+
+De herstelproof van operator-run `15935` (3/3) is alleen voor **die** batch GREEN; de historische `Bedrijfsoverdracht`-fout (`40101`) blijft bewijsbaar RED en de **volgende natuurlijke** scheduler-run blijft PENDING tot onafhankelijke provider- en Brain-readback. Iedere agent houdt `PROTECTED_MAIN_SKILL_LIVE`, `EDGE_PROVIDER_ACTIVE`, `OPERATOR_BATCH_VERIFIED`, `NATURAL_RUN_PENDING`, `HISTORICAL_TOPIC_PENDING` en `BUSINESS_OUTCOME_UNKNOWN` expliciet uit elkaar. Een later actuele versie van de Edge-functie is geen bewijs dat een governance-only PR die functie heeft uitgerold.
+
+Gebruik uitsluitend de bestaande scheduler #171, canonieke `bg-externe-signalen`-producer, source-observations en Brain/Powerhouse-logs. Bij afwijkingen: dedupliceer op bestaande fingerprint en bewijs-ID, registreer oorzaak, eigenaar, provider-ID, werkelijke status, regressie en eerstvolgende veilige stap; lees de schrijfuitkomst terug. Geen tweede schrijver, nieuwe scheduler, onmiddellijke betaalde 40101-herhaling, ontbrekende tenant-scope of fictieve succes-/omzetclaim. Beschermde GitHub Required/CodeQL, exacte merge-SHA en productie-providerreadback zijn aparte vrijgavepoorten.
+
 ## Herstelbewijs voor release-agents — 29 oktober 2026
 Fingerprint: `powerhouse|release-agent-incident-evidence|20261029`. Dit is een verfijning van de bestaande ONE BRAIN-regels, geen tweede bron.
 
