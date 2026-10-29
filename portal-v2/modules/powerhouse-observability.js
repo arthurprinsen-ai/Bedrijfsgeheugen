@@ -193,10 +193,14 @@ function systemMapView(systemMap,events,observability={}){
     <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
   </section>
   <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">
-    <div class="poc-panelhead"><h4>Agentacties · meetdekking afgelopen 24 uur</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>
-    <p class="poc-note">Alleen geaggregeerde aantallen uit de bestaande canonieke cycle-events. Aanwezigheid van velden is geen bewezen juiste attributie, conversie of omzet. Ontbrekende brondata blijft UNKNOWN, nooit nul.</p>
+    <div class="poc-panelhead"><h4>Besluitcyclus-events · echte herkomst en agentmeetdekking (24 uur)</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>
+    <p class="poc-note">SQL-materialisaties van verkoopacties en kanaalbesluiten zijn géén afzonderlijke autonome agenthandelingen. Alleen expliciete agent-ID, skillversie en echte voor-/nameting tellen als attributiebewijs. Ontbrekende brondata blijft UNKNOWN, nooit nul.</p>
     <div class="poc-kpis compact">
       ${kpi('Cycle-events',agentMetric('events'),'volledig 24u-venster, alleen bij bronreadback')}
+      ${kpi('SQL-verkoopactie-events',agentMetric('salesActionEvents'),'origine: sales action/cycle materializer, geen agent-ID')}
+      ${kpi('SQL-kanaalbesluit-events',agentMetric('channelDecisionEvents'),'origine: kanaalbesluit, geen autonome actor')}
+      ${kpi('Runtime-signaal-events',agentMetric('runtimeSignalEvents'),'origine: bestaand runtime-signaal, niet per se agentactie')}
+      ${kpi('Andere events',agentMetric('otherEvents'),'afwijkende expliciet geregistreerde entity_type')}
       ${kpi('Agent-ID aanwezig',agentMetric('agentIds'),'top-level payloadveld')}
       ${kpi('Skillversie aanwezig',agentMetric('skillVersions'),'top-level payloadveld')}
       ${kpi('Voormeting aanwezig',agentMetric('beforeMetrics'),'0 is een geldige gemeten waarde')}
