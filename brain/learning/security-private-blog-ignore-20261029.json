@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_SECURITY_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "security|private-dated-blog-gitignore|20261029",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "PRIVATE_DATED_BLOG_SOURCE_GUARD_MISSING",
+  "root_cause": "Historically generated blog Brain, change and ledger files had previously been committed into public PRs and, on 25 October, public main. The canonical publisher allowlist alone was not a global Git staging guard.",
+  "observed_evidence": {
+    "incident_id": "SEC-2026-10-29-TWINFIELD-EXPOSURE",
+    "historic_public_prs": "redacted to canonical private incident",
+    "public_main_tip_cleanup": "protected PR #5082 merge independently verified",
+    "admission_exact_root_path": "protected PR #5085 merged",
+    "external_private_assistant_delivery": "NOT_VERIFIED"
+  },
+  "fix": "Use exact .gitignore patterns for dated private blog Brain/change/ledger files and require existing canonical contract tests to verify the ignore patterns and absence of these private files in the current public source tree.",
+  "prevention_rule": "The public repository must not contain dated blog Brain/change/ledger evidence; stage only approved public blog HTML and translations. No private content in public Git. Retain service-only approved exporter and the same canonical publisher.",
+  "tests": [
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PRIVATE_DATED_BLOG_SOURCE_GUARD_MISSING",
+    "scope": "PUBLIC_REPOSITORY_BLOG_SOURCE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact final SHA Required/BRAIN/CodeQL, protected merge, latest main-tree readback. No claim of deleting historic public GitHub PR cached copies."
+}
