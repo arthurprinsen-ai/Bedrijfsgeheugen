@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": 5141,
+  "obligation_id": "SITE-CRO-EVENTCHECK-23514-VALIDATION-20261029",
+  "fingerprint": "site|bg-interactie|db-check-17-types-not-validated|20261029",
+  "failure_class": "DATABASE_INTEGRITY",
+  "scope": "existing_one_brain_powerhouse_heartbeat",
+  "observed_evidence": {
+    "source": [
+      "production pg_constraint readback 2026-10-29 18:46 UTC",
+      "protected PR #5153 merge 91f87cdcac878e5c1266a2635f3230896f902810",
+      "prod migration 20261029182000"
+    ],
+    "root_cause": "Broadened exact 17-type CHECK deliberately created NOT VALID on ~750k-row database for short live lock, so convalidated=false despite enforcement for all new records.",
+    "impact": "Catalog has not yet independently verified all historical rows against the new superset CHECK; no independent browser consented behavior or commercial outcome follows from a schema change."
+  },
+  "remediation": {
+    "source": "supabase/migrations/20261029185000_bg_cro_validate_event_types_v1.sql",
+    "implementation": "Bounded VALIDATE CONSTRAINT under 2-second lock timeout and 30-second statement timeout; no data deletion, trigger suppression or RLS bypass.",
+    "test": "tests/cro-measurement-contract.test.mjs",
+    "owner": "Existing Powerhouse backend/Supabase Recovery Writer",
+    "production_verified": false
+  },
+  "prevention_rules": [
+    "Use NOT VALID only for safe additive rollout; schedule a separately reviewed bounded VALIDATE migration and verify convalidated=true.",
+    "Catalog convalidated=false is a distinct open proof obligation even when writes are accepted.",
+    "Run exact-head Required/BRAIN/CodeQL; never force-merge, bypass provider release gates or assert a paid order from a DB receipt."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED; requires actual migration 20261029185000 and convalidated=true readback"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "NOT LIVE until protected merge, SQL migration provider readback and 17-type convalidated=true; separate consented browser, full funnel and paid order proof remains open."
+}
