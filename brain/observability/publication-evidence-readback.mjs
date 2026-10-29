@@ -11,8 +11,15 @@ const codeFor=(row)=>{
   const error=String(row.last_error||'').toUpperCase();
   if(row.external_id && row.status==='LIVE_PROVEN' && row.live_proven_at)
     return 'NO_REPOST_COLLECT_OUTCOMES';
-  if(row.external_id)
+  if(row.external_id){
+    // An existing side effect outranks OAuth/other errors: never republish.
+    // A denied readback is a verification gap, NOT a missing post or a reason
+    // to request LinkedIn's unavailable r_member_social permission.
+    if(row.channel==='linkedin_personal' &&
+       /(?:FORBIDDEN|PERMISSION|\b403\b)/i.test(String(row.provider_readback_error||'')))
+      return 'LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST';
     return 'PROVIDER_CREATE_RECORDED_VERIFY_READBACK_NO_REPOST';
+  }
   // An APPROVED draft is NOT provider-ready when its own original auth preflight failed.
   // Read only safe scalar fields from the canonical obligation, never provider tokens.
   if(row.channel==='linkedin_personal' &&
@@ -64,7 +71,7 @@ export async function loadPublicationEvidence({baseUrl,key,observedAt=new Date()
   const date=dateAmsterdam(observedAt);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return unknown('INVALID_DATE');
   const url=new URL(String(baseUrl).replace(/\/$/,'')+'/rest/v1/content_publication_obligations');
-  url.searchParams.set('select','tenant_id,publication_date,channel,status,external_id,live_proven_at,last_error,auth_preflight:evidence->>provider_auth_preflight,auth_error:evidence->>error');
+  url.searchParams.set('select','tenant_id,publication_date,channel,status,external_id,live_proven_at,last_error,auth_preflight:evidence->>provider_auth_preflight,auth_error:evidence->>error,provider_readback_error:evidence->>readback_error');
   url.searchParams.set('tenant_id','eq.canonical');
   url.searchParams.set('publication_date','eq.'+date);
   url.searchParams.set('limit','8');
