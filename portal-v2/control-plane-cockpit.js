@@ -31,7 +31,8 @@ const knownMoney=value=>value===null||value===undefined?'—':new Intl.NumberFor
 export function powerhouseIntegrationMarkup(snapshot){
   const source=snapshot?.sourceReadStates||{},a=snapshot?.architecture||null,
     capabilities=snapshot?.capabilities||null, intelligence=snapshot?.intelligence||null,
-    experiments=snapshot?.experiments||null, commercial=snapshot?.commercial||null;
+    experiments=snapshot?.experiments||null, commercial=snapshot?.commercial||null,
+    loops=snapshot?.loopAssurance||null, terminal=snapshot?.terminalControl||null;
   const sourceState=snapshot?.sourceState||'UNAVAILABLE';
   const gaps=Array.isArray(snapshot?.gapCodes)?snapshot.gapCodes:[];
   const rows=[
@@ -39,13 +40,15 @@ export function powerhouseIntegrationMarkup(snapshot){
     ['Heartbeat',a?'ACTIEF VOLGENS BRON':'GEEN BRON',a?'Core jobs '+knownNum(a.activeJobs)+' / '+knownNum(a.requiredJobs)+' · fouten '+knownNum(a.currentRuntimeErrors):'Geen live jobbewijs'],
     ['Capability-register',capabilities?'GERAADPLEEGD':'GEEN BRON',capabilities?'Verbonden '+knownNum(capabilities.wired)+' / '+knownNum(capabilities.registered)+' · zonder bewijs '+knownNum(capabilities.withoutEvidence):'Geen inventaris'],
     ['Intelligentielagen',intelligence?'GERAADPLEEGD':'GEEN BRON',intelligence?'Bekend '+knownNum(intelligence.wired)+' / '+knownNum(intelligence.registered)+' · zonder bewijs '+knownNum(intelligence.withoutEvidence):'Geen bronbewijs'],
+    ['Integriteitslussen',loops?esc(loops.state||'UNKNOWN'):'GEEN BRON',loops?'Groen '+knownNum(loops.green)+' · oranje '+knownNum(loops.amber)+' · rood '+knownNum(loops.red)+' / totaal '+knownNum(loops.total):'Geen actuele lus-readback; nooit impliciet groen'],
+    ['Terminale verplichtingen',terminal?(terminal.healthy===true?'CONTROLPLANE GEZOND':'HERSTEL OPEN'):'GEEN BRON',terminal?'Niet-afgerond '+knownNum(terminal.nonterminal)+' · geblokkeerd '+knownNum(terminal.blocked)+' · geëscaleerde onbekende resultaten '+knownNum(terminal.escalated):'Geen terminale bewijscontrole; nooit impliciet groen'],
     ['CRO / experimenten',experiments?esc(experiments.readiness||'UNKNOWN'):'GEEN BRON',experiments?'Toewijzingen '+knownNum(experiments.assignments)+' · controlegroep '+knownNum(experiments.holdoutAssignments):'Geen experimenteerbewijs'],
     ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht']
   ].map(row=>'<tr><th scope="row">'+esc(row[0])+'</th><td>'+row[1]+'</td><td>'+row[2]+'</td></tr>').join('');
   const messages=gaps.length?gaps.slice(0,18).map(v=>'<li>'+esc(v)+'</li>').join(''):'<li>Geen stage-voor-stage providerbewijs in deze projectie.</li>';
   return '<section class="cp-integration" data-bg-component="powerhouse-integration-health" data-proof="END_TO_END_UNPROVEN">'+
     '<h3>Powerhouse · gezamenlijke systeemstatus</h3>'+
-    '<p>Één brongevoed overzicht van Brain, Heartbeat, Growth, experimenten en intelligente lagen. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
+    '<p>Één brongevoed overzicht van Brain, Heartbeat, de 15 integriteitslussen, terminale bewijsplichten, Growth en experimenten. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
     '<p><strong>Broncontrole: '+esc(sourceState)+'</strong> · Volledige uitvoeringsketen: <strong>NIET BEWEZEN</strong> · Gecontroleerd: '+esc(snapshot?.observedAt||'onbekend')+'</p>'+
     '<div class="cp-integration-scroll"><table><thead><tr><th>Onderdeel</th><th>Bronstatus</th><th>Meetstand</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<details><summary>Ontbrekend bewijs en bronstatussen ('+knownNum(gaps.length)+')</summary>'+
