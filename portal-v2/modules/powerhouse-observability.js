@@ -154,6 +154,10 @@ function systemMapView(systemMap,events){
   const supabaseCatalog=liveSupabase.inventory||{};
   const liveTables=arr(supabaseCatalog.tables),liveViews=arr(supabaseCatalog.views),liveDbFunctions=arr(supabaseCatalog.functions),liveCron=arr(supabaseCatalog.active_cron_jobs);
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
+  const failureCoverage=systemMap.failureCoverage||{};
+  const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
+  const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
+
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
@@ -169,6 +173,18 @@ function systemMapView(systemMap,events){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  <section class="poc-panel" data-brain-failure-coverage data-evidence-status="${esc(failureCoverage.status||'UNAVAILABLE')}">
+    <div class="poc-panelhead"><h4>Fouten, oorzaken en preventie · ONE BRAIN</h4><span class="poc-badge ${failureTotals?'warn':'bad'}">${failureTotals?'Open kwaliteitspunten':'UNVERIFIED'}</span></div>
+    <p class="poc-note">Alleen aantallen uit het bestaande Supabase-foutregister. Geen klantgegevens of ruwe incidentteksten. Ontbrekende readback blijft onbekend, nooit nul.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Foutpatronen',failureMetric('patterns'),'vastgelegd, niet noodzakelijk opgelost')}
+      ${kpi('Nog geobserveerd',failureMetric('observed'),'geen bewezen herstel')}
+      ${kpi('Oorzaak ontbreekt',failureMetric('observedMissingCause'),'onderzoek blijft open')}
+      ${kpi('Regressietest ontbreekt',failureMetric('observedMissingRegression'),'preventie niet bewezen')}
+      ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
+    </div>
+    <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
+  </section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
   <div class="poc-grid2">
