@@ -15,5 +15,29 @@
   "risk": "This improves the producer's own evidence, but does not retroactively populate immutable cycle_events, prove other agent identities or write provider outcomes.",
   "next": "Extend canonical stage-appropriate cycle event producers under protected DB migration and independently validate exact live source quality and customer outcome attribution.",
   "extra_schedulers": 0,
-  "extra_writers": 0
+  "extra_writers": 0,
+  "compiler": {
+    "failure_class": "SOURCE_WRITER_EVIDENCE_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+    ]
+  },
+  "open_gaps": [
+    "CANONICAL_CYCLE_STAGE_WRITER_FORWARDING",
+    "OTHER_RUNTIME_AGENTS",
+    "SUPABASE_EDGE_PROVIDER_DEPLOY_AND_READBACK",
+    "CUSTOMER_CONVERSION_AND_PAID_REVENUE"
+  ]
 }
