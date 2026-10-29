@@ -71,7 +71,7 @@ test('radar treats a failed DataForSEO task as an error instead of zero results'
 test('radar uses short news queries, a 45-day window inside the 60-day gate, and counts task 40101 as no results',()=>{
  assert.match(radar,/MAX_AGE_DAYS=45/);
  assert.doesNotMatch(radar,/mkb excel chaos spreadsheets cijfers/);
- assert.match(radar,/taskCode===40101/);
+ assert.match(radar,/isDataForSeoEmptyNewsTask\(/);
  assert.match(radar,/dataforseo_no_results/);
 });
 
