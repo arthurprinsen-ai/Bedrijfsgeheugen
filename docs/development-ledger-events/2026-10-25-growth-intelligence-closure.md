@@ -15,3 +15,11 @@
 - Code-probe defect: canonical `cro` agent owner rejected by length >3; bounded fix to >=3, re-evaluated.
 - Evidence: static local V8 probe only; exact-head CI, protected merge and independent production+portal readback still PENDING.
 - Prevention: do not label candidate as a live experiment; require stable assignment and mature comparison before learning promotion. Existing incident/learning writer remains authoritative.
+
+## 2026-10-29 19/19 branch source tests, analytics mapping and merge gating
+- Branch readback: 19/19 test functions passed in isolated V8 source harness; this is **not** exact-head Node Required/CodeQL/Netlify.
+- Supabase verified candidate: `c1727e17-6200-44ff-9a31-eec0ea7c1ead`, `candidate`, `owner_agent=cro`, `measured_outcome=NULL`.
+- Aggregates: 3,634 pageviews and zero funnel CTA click attribution vs 48 click-like non-robot interactions in a separate source; root cause unknown and taxonomy not comparable.
+- Patch: deterministic diagnostics returned to existing Heartbeat as `croDataGaps`; no database writer, schedule, provider message or revenue was created.
+- GitHub latest PR #4901: draft, `mergeable_state=dirty`, 16 changed paths; exact-head protected checks and runtime/portal delivery still unverified.
+- Prevention: retain incident/learning lineage, do not turn pure code into live/readback claim; hand off branch conflict reconciliation to exclusive protected release writer.
