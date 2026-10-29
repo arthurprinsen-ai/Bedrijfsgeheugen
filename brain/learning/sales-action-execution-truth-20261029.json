@@ -15,5 +15,23 @@
   "unresolved": [
     "actor/skill instrumentation",
     "paid revenue attribution"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sales-action-execution-truth-20261029.test.mjs"
+    ]
+  },
+  "prevention_rule": "Never allow negative outcome ids to mint execution; require status done + executed_at, preserve immutable history and independent provider readback."
 }
