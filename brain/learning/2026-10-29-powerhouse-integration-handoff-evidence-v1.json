@@ -43,5 +43,15 @@
     "historical_replay": [
       "tests/brain-powerhouse-integration-handoff-20261029.test.mjs"
     ]
+  },
+  "evidence": {
+    "observation": "Supabase ONE BRAIN and Heartbeat inventory; 32 wired layers, 54 capability registry entries, zero agent identity provenance in the previously audited 24-hour top-level cycle payload",
+    "regression": [
+      "tests/brain-powerhouse-integration-handoff-20261029.test.mjs"
+    ],
+    "protected_main_proven": false,
+    "runtime_emitter_readback_proven": false,
+    "realized_business_outcome_proven": false,
+    "existing_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918#issuecomment-6503569386"
   }
 }
