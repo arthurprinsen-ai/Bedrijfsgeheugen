@@ -296,3 +296,9 @@ Fingerprint: `seo|nl-en|static-i18n-cache-complete|v1`.
 - Run the canonical localized-route cache validation before protected merge. Missing translations are a production blocker, never a deploy-time surprise.
 - SEO title, description, H1, CTA, governance copy, footer copy and commercial handoff copy are all inside this contract.
 - A Netlify build failure caused by `STATIC_I18N_CACHE_INCOMPLETE` must be repaired at the source cache and then replayed through protected delivery; never disable the cache gate or silently fall back to Dutch on English routes.
+
+## Skipped recommendation recovery — 2026-10-29
+
+Fingerprint: `seo|daily-blog|skipped-not-reserved|v1`.
+
+The daily first-mover single-flight reservation is held only by active (`suggested`), accepted (`accepted`) or completed (`done`) content decisions. `skipped` remains historical evidence, not capacity. A rejected duplicate keyword must not block a distinct, independently evidenced search-intent candidate; still never create more than one new blog candidate per natural day. When retroactively correcting canonical aliases, update the original recommendation status to `skipped` with intent-owner attribution and production runtime proof, never erase its history, reset approval or introduce another executor. The daily resolver, canonical blog queue, protected publisher and independent production readback remain the only authority.
