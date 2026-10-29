@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback }
   from '../platform/portal/powerhouse-existing-integration-read-model.mjs';
-import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup }
+import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
 
 const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE'};
@@ -115,4 +115,72 @@ test('admin gate executes before service-role source read and no new scheduled w
   assert.ok(backend.indexOf("process.env.BG_PORTAL_EU_SUPABASE_URL")>
     backend.indexOf('if(!hasAdminRole(user))'));
 
+});
+
+function makeControlPlaneRoot(){
+  let host=null;
+  const doc={head:{appendChild(){}},getElementById(){return true},createElement(){
+    return {dataset:{},innerHTML:''};
+  }};
+  const main={querySelector(){return host},appendChild(value){host=value}};
+  return {root:{ownerDocument:doc,querySelector(selector){return selector==='.main'?main:null}},
+    host:()=>host};
+}
+
+test('anonymous visitors cannot call the admin control-plane endpoint',async()=>{
+  const {root}=makeControlPlaneRoot();
+  let calls=0;
+  const result=await mountControlPlaneCockpit(root,{identityImpl:async()=>null,fetchImpl:async()=>{calls++;throw Error('SHOULD_NOT_CALL')}});
+  assert.equal(result,null);
+  assert.equal(calls,0);
+});
+
+test('valid Identity JWT is sent only in authorization header to same-origin read-only endpoint',async()=>{
+  const {root,host}=makeControlPlaneRoot();
+  let requests=0;
+  const result=await mountControlPlaneCockpit(root,{
+    identityImpl:async()=>({currentUser:()=>({jwt:async()=>'real-signed-token'})}),
+    fetchImpl:async(url,options)=>{
+      requests++;
+      assert.equal(url,'/api/powerhouse-control-plane');
+      assert.equal(options.headers.authorization,'Bearer real-signed-token');
+      assert.equal(options.headers.accept,'application/json');
+      assert.equal(options.credentials,'same-origin');
+      assert.equal(options.cache,'no-store');
+      assert.equal(options.method,undefined);
+      return {ok:true,status:200,json:async()=>({metrics:{obligations_total:1},obligations:[],
+        systemIntegration:{sourceState:'PARTIAL',gapCodes:['INDEPENDENT_BUSINESS_OUTCOME_VERIFICATION_REQUIRED']}})};
+    }
+  });
+  assert.equal(requests,1);
+  assert.ok(result?.host===host());
+  assert.match(result.host.innerHTML,/END_TO_END_UNPROVEN/);
+});
+
+test('expired session, token with spaces and non-admin 403 never render an admin readback',async()=>{
+  const {root,host}=makeControlPlaneRoot();
+  let calls=0;
+  for(const identityImpl of [
+    async()=>({currentUser:()=>({jwt:async()=>''})}),
+    async()=>({currentUser:()=>({jwt:async()=>{throw Error('EXPIRED')}})}),
+    async()=>({currentUser:()=>({jwt:async()=> 'malformed jwt'})})
+  ]){
+    const value=await mountControlPlaneCockpit(root,{identityImpl,fetchImpl:async()=>{calls++;throw Error('UNSAFE')}});
+    assert.equal(value,null);
+  }
+  assert.equal(calls,0);
+  const blocked=await mountControlPlaneCockpit(root,{
+    identityImpl:async()=>({currentUser:()=>({jwt:async()=>'token'})}),
+    fetchImpl:async()=>({status:403,ok:false})
+  });
+  assert.equal(blocked,null);
+  assert.equal(host(),null);
+});
+
+test('server verifies request bearer and role before any Supabase service-key reads',()=>{
+  const source=readFileSync('netlify/functions/powerhouse-control-plane.mjs','utf8');
+  assert.match(source,/getUser\(request\)/);
+  assert.match(source,/request\.headers\?\.get\('authorization'\)/);
+  assert.ok(source.indexOf('getUser(request)')<source.indexOf('if(!hasAdminRole(user))'));
+  assert.ok(source.indexOf('if(!hasAdminRole(user))')<source.indexOf("const baseUrl="));
 });

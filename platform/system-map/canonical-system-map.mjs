@@ -16,6 +16,18 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     noNewStateStore:true,
     noSecondWriter:true
   }),
+  portalAdminIdentityJwtReadback:Object.freeze({
+    fingerprint:'portal|powerhouse-control-plane|missing-identity-jwt|20261029-v1',
+    originalAdminRoute:'/api/powerhouse-control-plane',
+    browser:'portal-v2/control-plane-cockpit.js',
+    server:'netlify/functions/powerhouse-control-plane.mjs',
+    identity:'existing Netlify Identity currentUser.jwt + request-bound getUser(request)',
+    test:'tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs',
+    learning:'brain/learning/2026-10-29-portal-admin-jwt-readback-v1.json',
+    humanDocumentation:'docs/changes/2026-10-29-powerhouse-admin-identity-jwt-readback.md',
+    runtime:'SOURCE_CANDIDATE_AWAITING_PROTECTED_MERGE_AND_AUTHENTICATED_READBACK',
+    adminOnly:true,requestJwtRequired:true,noNewScheduler:true,noNewWriter:true,productionVerified:false
+  }),
   version:'powerhouse-live-system-map-v2',
   immediateContentQualityRecovery:Object.freeze({owner:'existing canonical content orchestrator and daily publisher',policy:'supabase/functions/_shared/blog-quality-recovery.mjs',draftRefresh:'tools/content-growth/reviewed-blog-refresh.mjs',sameObligation:true,unsentOnly:true,casRequired:true,standaloneRpcExecutionRegression:true,exactCiHelperReadbackClassification:true,driverDateIdentityNormalized:true,preservedStateOwnedClaimSelection:true,exactBodyHashSemanticQualityFeedback:true,zeroClickHypothesis:'one useful next step from explicit comparable click metrics',noNewScheduler:true,productionVerified:false}),
   contentFeedbackContext:Object.freeze({source:'supabase/functions/_shared/content-feedback-context.mjs',consumers:Object.freeze(['powerhouse-content-orchestrator','powerhouse-commercial-message-composer']),inputs:Object.freeze(['revenue_learnings','powerhouse_sales_play_learning_v1']),output:'existing artifact/action commercial_feedback evidence',nativeFunctionRegistry:'supabase/config.toml',providerSourceReadbackRequired:true,postMergeVerification:'unified-brain-delivery verification_only with immutable merged identity',currentSuccessorVerification:true,historicalPremergeBrain:'NOT_PROVEN',noNewScheduler:true,productionVerified:false}),
@@ -24,11 +36,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   intentLearningPreflight:Object.freeze({fingerprint:'powerhouse|learning-preflight|intent-only-target-inference|20261025-v1',authority:'canonical Brain learning and skill projection',entrypoint:'scripts/brain/chat-learning-preflight.mjs',selector:'scripts/brain/powerhouse-skill-projection.mjs',skill:'.agents/skills/powerhouse-self-improvement-layer/SKILL.md',boundedRelevantEntries:24,mandatoryAndExactUncapped:true,receipt:'skill_projection.selection',productionVerified:false}),
   requiredGateWatchdogResilience:Object.freeze({owner:'Required Gate Watchdog',source:'.github/scripts/required-gate-watchdog.mjs',cron:'*/5 * * * *',boundedGetAttempts:2,readTimeoutMs:8000,perPrErrorIsolation:true,ambiguousWriteRetry:false,productionVerified:false}),
   brainFullFailureTriage:Object.freeze({fingerprint:'delivery|brain|first-failure-only-learning-blindspot|20261022-v1',source:'tools/delivery/brain-failure-clustering.mjs',workflow:'.github/workflows/unified-brain-delivery.yml',authority:'existing-failed-lane-artifact',maxCases:5000,model:'observation-only',productionVerified:false}),
-  portalControlPlaneOutcomeProof:Object.freeze({fingerprint:'portal|control-plane|fulfilled-without-outcome-proof|20261023-v1',source:'portal-v2/control-plane-cockpit.js',authority:'existing /api/powerhouse-control-plane',guard:'FULFILLED requires outcome_verified === true',tests:'portal-v2/tests/control-plane-cockpit.test.mjs',dailyWorkflow:'.github/workflows/universal-closed-loop-learning.yml',productionVerified:false}),
+  portalControlPlaneOutcomeProof:Object.freeze({fingerprint:'portal|control-plane|fulfilled-without-outcome-proof|20261023-v1',source:'portal-v2/control-plane-cockpit.js',authority:'existing /api/powerhouse-control-plane',guard:'FULFILLED requires outcome_verified === true',tests:'tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs',dailyWorkflow:'.github/workflows/universal-closed-loop-learning.yml',productionVerified:false}),
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'32053867b03a31893b50325afed1913e9548637c1e74b2e4a82e7e46bef65a93',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'c40ee1e916915d08fb144b801842e02fdf93537dcb7f72efb2c883a53fd34883',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
