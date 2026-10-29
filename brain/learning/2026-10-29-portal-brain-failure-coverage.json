@@ -14,5 +14,17 @@
     "no_raw_evidence_exposure": true,
     "no_parallel_store": true,
     "no_new_scheduler": true
+  },
+  "compiler": {
+    "failure_class": "OBSERVABILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ]
   }
 }
