@@ -285,7 +285,7 @@ jobs:
                 if [ "$safe_cancel" != true ]; then
                   encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
                   branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
-                  if [ -n "$branch_json" ] && [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ]; then
+                  if [ -n "$branch_json" ] && [ "$(jq -r 'if .protected == false then "false" else "true" end' <<<"$branch_json")" = false ]; then
                     ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
                     if [ "$ahead" = 0 ]; then
                       safe_cancel=true
@@ -405,6 +405,9 @@ jobs:
             done < .artifacts/sweep-candidates.tsv
           done
           echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:seen=${sweep_seen}:open=${sweep_open}:missing=${sweep_missing}:protected=${sweep_protected}:moved=${sweep_moved}:deleted=${sweep_deleted}"
+
+          # Stale branches whose work stays recoverable (PR head ref or archive/ tag); see tools/ci/branch-archive-sweep.mjs.
+          node tools/ci/branch-archive-sweep.mjs --apply --cap 150 --actions .artifacts/janitor-runtime-actions.ndjson
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json

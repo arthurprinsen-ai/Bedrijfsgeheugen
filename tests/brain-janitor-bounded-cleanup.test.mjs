@@ -32,5 +32,6 @@ test('branch deletion reads protection without the jq false-default trap', async
   // `.protected // true` turns a literal false into true, so no branch was ever deletable.
   assert.equal(execFileSync('jq', ['-r', '.protected // true'], { input: '{"protected":false}', encoding: 'utf8' }).trim(), 'true');
   const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
-  assert.equal((wf.match(/if \.protected == false then "false" else "true" end/g) || []).length, 2);
+  assert.equal((wf.match(/if \.protected == false then "false" else "true" end/g) || []).length, 3);
+  assert.ok(!wf.replace(/#.*/g, '').includes("jq -r '.protected // true'"), 'no false-defaulting jq filter may remain');
 });
