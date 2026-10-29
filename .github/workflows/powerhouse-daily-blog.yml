@@ -48,6 +48,11 @@ jobs:
           echo "run=true" >> "$GITHUB_OUTPUT"
           echo "date=$date" >> "$GITHUB_OUTPUT"
 
+      - name: Deny any public draft exporter or internal PR evidence regression
+        run: |
+          set -euo pipefail
+          node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
+
       - name: Reuse the existing writer for this obligation
         if: steps.day.outputs.run == 'true'
         id: writer
