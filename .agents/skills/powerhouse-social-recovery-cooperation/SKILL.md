@@ -5,6 +5,8 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
 Fingerprint: `powerhouse|one-brain|social-delivery-recovery-cooperation|v1`.
 
 ## Canonical lifecycle
