@@ -51,6 +51,14 @@ test('read-only live exporter matrix cannot run the canonical publishing job', (
   assert.match(workflow, /--output \/dev\/null/);
 });
 
+test('legacy native daily publisher authenticates canonical duplicate-prevention readback', () => {
+  const workflow = read('.github/workflows/daily-blog-publisher.yml');
+  assert.ok(workflow.includes("SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"));
+  assert.ok(workflow.includes('NATIVE_BLOG_EXPORT_AUTH_NOT_CONFIGURED'));
+  assert.ok(workflow.includes('Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'));
+  assert.ok(!workflow.includes('curl --fail --silent --show-error --max-time 15 "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export'));
+});
+
 test('dated private blog Brain/change/ledger evidence cannot be added to public source', () => {
   const ignored = read('.gitignore').split(/\r?\n/).map(s => s.trim());
   const patterns = [
