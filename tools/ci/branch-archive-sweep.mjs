@@ -86,8 +86,10 @@ export function main(argv = process.argv.slice(2), env = process.env) {
   const branches = pages(repo, 'branches', []).map((b) => ({ name: b.name, sha: b.commit.sha, protected: b.protected === true }));
   const counts = { seen: 0, skipped: 0, deleted: 0, archived: 0, drift: 0, failed: 0 };
   const now = Date.now();
+  const deadline = now + (Number(env.SWEEP_BUDGET_SECONDS) || 360) * 1000;
+  let consecutiveArchiveFailures = 0;
   for (const branch of branches) {
-    if (counts.deleted >= cap) break;
+    if (counts.deleted >= cap || Date.now() > deadline) break;
     counts.seen += 1;
     const cls = classifyBranch(branch, prsByHead);
     if (cls.skip) { counts.skipped += 1; continue; }
@@ -104,6 +106,8 @@ export function main(argv = process.argv.slice(2), env = process.env) {
     }
     const verdict = decide(cls, { aheadBy, ageDays });
     if (verdict.action === 'SKIP') { counts.skipped += 1; continue; }
+    // Circuit breaker: if archive tags cannot be written, never fall back to deleting unique work.
+    if (verdict.action === 'ARCHIVE_THEN_DELETE' && consecutiveArchiveFailures >= 3) { counts.skipped += 1; continue; }
     if (!apply) { console.log(`DRY ${verdict.action} ${branch.name} ${verdict.reason}`); counts.deleted += 1; continue; }
     try {
       const head = gh(['api', `repos/${repo}/git/ref/heads/${enc}`, '--jq', '.object.sha'], { allow404: true });
@@ -118,6 +122,7 @@ export function main(argv = process.argv.slice(2), env = process.env) {
         const readback = gh(['api', `repos/${repo}/git/ref/tags/${tag}`, '--jq', '.object.sha']).trim();
         if (readback !== branch.sha) throw new Error(`ARCHIVE_READBACK_MISMATCH:${tag}`);
         counts.archived += 1;
+        consecutiveArchiveFailures = 0;
       }
       gh(['api', '-X', 'DELETE', `repos/${repo}/git/refs/heads/${enc}`]);
       counts.deleted += 1;
@@ -126,7 +131,9 @@ export function main(argv = process.argv.slice(2), env = process.env) {
       }
     } catch (error) {
       counts.failed += 1;
-      console.log(`::warning::JANITOR_ARCHIVE_SWEEP_FAILED:${branch.name}:${String(error.message).split('\n')[0]}`);
+      if (verdict.action === 'ARCHIVE_THEN_DELETE') consecutiveArchiveFailures += 1;
+      const detail = `${String(error.stdout || '').trim()} ${String(error.stderr || '').trim()}`.replace(/\s+/g, ' ').slice(0, 300) || String(error.message).split('\n')[0];
+      console.log(`::warning::JANITOR_ARCHIVE_SWEEP_FAILED:${branch.name}:${detail}`);
     }
   }
   console.log(`JANITOR_ARCHIVE_SWEEP:apply=${apply}:cap=${cap}:seen=${counts.seen}:skipped=${counts.skipped}:archived=${counts.archived}:deleted=${counts.deleted}:drift=${counts.drift}:failed=${counts.failed}`);
