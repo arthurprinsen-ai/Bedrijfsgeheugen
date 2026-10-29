@@ -26,5 +26,15 @@
     "historical_replay": [
       "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
     ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs",
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs"
+    ],
+    "local_regression": "24/24 targeted tests passed on synchronized GitHub candidate",
+    "historical_replay": "LEARNING_CANONICALIZATION_GREEN on candidate 3d641327b13da6b1e9e2eae5c00f38b77d013390",
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_AUTHENTICATED_PORTAL_CANARY",
+    "closure": "No direct source-to-portal LIVE claim, observed registry gaps remain open"
   }
 }
