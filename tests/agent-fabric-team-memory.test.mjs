@@ -15,11 +15,11 @@ function eventSink() {
 test('default team contains every approved specialist as one shared registry', () => {
   const expected = [
     'agent-reliability','agent-security','agent-cost','agent-performance','agent-data-quality',
-    'agent-website-ux','agent-seo-content','agent-growth-market','agent-integration-make',
+    'agent-website-ux','agent-seo-content','agent-growth-market','agent-integration-composio','agent-social-delivery-recovery',
     'agent-governance-ai-act','agent-product-opportunity','agent-integration-engineer','agent-code-quality',
   ];
   assert.deepEqual(DEFAULT_AGENT_TEAM.map(a=>a.id).sort(), expected.sort());
-  assert.equal(createDefaultAgentRegistry().all().length, 13);
+  assert.equal(createDefaultAgentRegistry().all().length, 14);
 });
 
 test('Fabric emits coordination events for assignment, transition and learning reuse', () => {

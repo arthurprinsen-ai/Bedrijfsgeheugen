@@ -83,13 +83,26 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     playbooks:['market-opportunity-triage','growth-experiment-loop','commercial-signal-validation'],
     learningContracts:[...sharedLearning,'growth.v1','market.v1'],
   }),
+  // The legacy Make executor is retired: route integrations only to the approved
+  // canonical connector/Composio lineage and never instantiate an alternate publisher.
   Object.freeze({
-    id:'agent-integration-make',
-    domains:['Integration','Make','Automation'],
-    capabilities:['analyze','integrate','recover','optimize'],
-    tasks:['validate-integration-contract','diagnose-scenario-failure','repair-safe-mapping','optimize-automation-cost'],
-    playbooks:['make-runtime-recovery','mapping-contract-repair','idempotent-integration-delivery'],
-    learningContracts:[...sharedLearning,'integration.v1','make.v1'],
+    id:'agent-integration-composio',
+    domains:['Integration','Automation'],
+    capabilities:['analyze','integrate','recover','optimize','verify'],
+    tasks:['validate-canonical-connector-contract','diagnose-provider-identity-or-scope','repair-safe-mapping','reconcile-provider-readback'],
+    playbooks:['composio-canonical-connector-recovery','least-privilege-capability-reconciliation','idempotent-integration-delivery'],
+    learningContracts:[...sharedLearning,'integration.v1','delivery.v1'],
+  }),
+  // This is an existing-fabric specialist, not a new scheduler, publisher or writer.
+  // It owns source-to-provider handoffs; the protected integration engineer remains
+  // the sole code writer and the authorized original publisher remains the only sender.
+  Object.freeze({
+    id:'agent-social-delivery-recovery',
+    domains:['Social','Content','Integration','Reliability'],
+    capabilities:['analyze','diagnose','recover','verify','coordinate'],
+    tasks:['diagnose-stalled-daily-obligation','request-fresh-verified-source','coordinate-editorial-and-security-gates','reconcile-original-provider-publication','submit-verified-outcome-learning'],
+    playbooks:['same-obligation-fingerprint-recovery','fresh-source-not-rephrased-duplicate','single-writer-protected-release','identity-and-provider-readback-truth'],
+    learningContracts:[...sharedLearning,'reliability.v1','content.v1','delivery.v1'],
   }),
   Object.freeze({
     id:'agent-governance-ai-act',
