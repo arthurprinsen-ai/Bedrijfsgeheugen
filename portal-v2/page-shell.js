@@ -28,7 +28,6 @@ import {mountWinstnavigator} from './winstnavigator.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
 import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 import { mountAiModelChoice } from './modules/ai-model-choice.js';
-import { mountOtherDataCro } from './modules/other-data-cro.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -37,7 +36,6 @@ const COPY = {
   'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
   'ai-modelkeuze':['Kies jouw AI-modellen','Alle 110 modellen vergelijken en als gewenste AI-route vastleggen, met data-soevereiniteit, leveranciersbewijs en EU AI Act-toepassingscontrole.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
-  'andere-data':['Andere data · CRO & experimenten','Beveiligd websitegedrag, formulieruitval, scrollbereik, experimenten en hun betrouwbare bewijsstromen.'],
   'trust-center':['Security Trust Center','Bekijk aantoonbaar hoe data, toegang, leveranciers, securitycontrols en relevante normen zijn ingericht.'],
   'data-ai-passport':['Data & AI Sovereignty','Zie waar data wordt opgeslagen en verwerkt, welke AI-routes actief zijn en welke soevereiniteitsbeperkingen gelden.'],
   'ai-scan':['AI-scan: kansenkaart','Prioriteer AI-kansen op waarde, haalbaarheid, risico en benodigde data.'],
@@ -102,7 +100,7 @@ const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gege
 const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
-export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','ai-modelkeuze','compliance-governance','compliance-command-center','eu-ai-act-audit','andere-data']);
+export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','ai-modelkeuze','compliance-governance','compliance-command-center','eu-ai-act-audit']);
 const protectedTrustSet=new Set(PROTECTED_TRUST_PAGES);
 const portalContext={domainState:null,stateClient:null};
 
@@ -352,7 +350,6 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
-  else if(pageId==='andere-data'){native.innerHTML='';mountOtherDataCro(native);}
   else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
    else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
   else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
