@@ -28,7 +28,7 @@
         return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
       }
     }catch(e){}
-    return null; // No weak Math.random() fallback for the persistence/deduplication key.
+    return null; // Secure randomness unavailable: never enqueue an untrusted UID.
   }
   function toestemming(){try{return localStorage.getItem('bg_consent')==='granted';}catch(e){return false;}}
   function stuur(){
