@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
+import { selectMiraSourceQueries } from '../_shared/mira-source-query-rotation.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -28,16 +29,7 @@ const portalIds:Record<string,string>={
  'groei-zonder-winst':'PH-P003','capaciteitsplanning':'PH-P008','debiteuren':'PH-P010',
  'late-facturering':'PH-P011','klantafhankelijkheid':'PH-P012','klantverlies':'PH-P013'
 };
-const queries=[
- 'mkb offertes opvolgen',
- 'mkb kennisoverdracht',
- 'mkb excel spreadsheets',
- 'mkb dubbele invoer',
- 'mkb personeelstekort planning',
- 'mkb onbetaalde facturen debiteuren',
- 'mkb facturering te laat',
- 'mkb klantafhankelijkheid'
-];
+// Fixed eight-call daily budget, varied by business date through the approved PH-P source-topic catalog.
 const MAX_AGE_DAYS=45; // inside the shared 60-day gate; Google News ranks by relevance, not recency
 // Provider timestamps like "2026-10-26 16:19:48 +00:00" are normalised to ISO so the
 // shared freshness gate (which stays the single authority) can parse them.
@@ -99,6 +91,7 @@ Deno.serve(async(req:Request)=>{
  };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
+ const queries=selectMiraSourceQueries(runDate);
  let stored=0, eligible=0; const seen=new Set<string>(); const errors:string[]=[];
  for(const q of queries){
   let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
