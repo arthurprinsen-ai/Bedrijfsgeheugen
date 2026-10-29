@@ -13,14 +13,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-social-delivery-agent-handoff-20261029.test.mjs",
-      "tests/agent-fabric-team-memory.test.mjs"
+      "tests/brain-social-delivery-agent-handoff-20261029.test.mjs"
     ]
   },
   "evidence": {
     "source_repair_implemented": false,
     "production_verified": false,
     "provider_publication_live": false,
-    "private_payload_excluded": true
+    "private_payload_excluded": true,
+    "legacy_registry_test_covered_by_required": true
   }
 }
