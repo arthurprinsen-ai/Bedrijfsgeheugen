@@ -1,5 +1,21 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   croExperimentIntelligence:Object.freeze({fingerprint:'powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1',owner:'existing commercial Heartbeat and Growth Swarm',module:'tools/growth-intelligence/cro-experiment-cycle.mjs',adapter:'tools/growth-intelligence/heartbeat-adapter.mjs',skill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',storage:'existing powerhouse_experiment_assignments / powerhouse_cycle_events / brain_records / growth_outcomes',portfolio:'whatsapp,progressive-form,contextual-help,exit-intent,calculator,scan-followup,cta',noNewScheduler:true,noSecondWriter:true,stage:'SOURCE_CANDIDATE',productionVerified:false,portalVerified:false}),
+  existingHandoffProof:Object.freeze({
+    fingerprint:'powerhouse|existing-brain-heartbeat-handoff-evidence|20261029-v1',
+    owner:'existing ONE BRAIN / Heartbeat / Agent Fabric original writer',
+    module:'tools/brain/powerhouse-integration-handoff-evidence.mjs',
+    dependsOn:'tools/brain/agent-skill-execution-evidence.mjs',
+    inputAuthority:'powerhouse_one_brain_capability_inventory_v1 plus actual same-tenant source/provider receipts',
+    regression:'tests/brain-powerhouse-integration-handoff-20261029.test.mjs',
+    learning:'brain/learning/2026-10-29-powerhouse-integration-handoff-evidence-v1.json',
+    documentation:'docs/changes/2026-10-29-powerhouse-integration-handoff-evidence.md',
+    lifecycle:'SOURCE_CANDIDATE_NOT_LIVE',
+    runtimeIntegrationProven:false,
+    independentOutcomeProven:false,
+    noNewScheduler:true,
+    noNewStateStore:true,
+    noSecondWriter:true
+  }),
   version:'powerhouse-live-system-map-v2',
   immediateContentQualityRecovery:Object.freeze({owner:'existing canonical content orchestrator and daily publisher',policy:'supabase/functions/_shared/blog-quality-recovery.mjs',draftRefresh:'tools/content-growth/reviewed-blog-refresh.mjs',sameObligation:true,unsentOnly:true,casRequired:true,standaloneRpcExecutionRegression:true,exactCiHelperReadbackClassification:true,driverDateIdentityNormalized:true,preservedStateOwnedClaimSelection:true,exactBodyHashSemanticQualityFeedback:true,zeroClickHypothesis:'one useful next step from explicit comparable click metrics',noNewScheduler:true,productionVerified:false}),
   contentFeedbackContext:Object.freeze({source:'supabase/functions/_shared/content-feedback-context.mjs',consumers:Object.freeze(['powerhouse-content-orchestrator','powerhouse-commercial-message-composer']),inputs:Object.freeze(['revenue_learnings','powerhouse_sales_play_learning_v1']),output:'existing artifact/action commercial_feedback evidence',nativeFunctionRegistry:'supabase/config.toml',providerSourceReadbackRequired:true,postMergeVerification:'unified-brain-delivery verification_only with immutable merged identity',currentSuccessorVerification:true,historicalPremergeBrain:'NOT_PROVEN',noNewScheduler:true,productionVerified:false}),
