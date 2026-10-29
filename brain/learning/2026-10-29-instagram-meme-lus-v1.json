@@ -7,7 +7,9 @@
   "component": "instagram",
   "status": "DESIGN_RECORDED_NOT_EXECUTED",
   "failure_class": "RECOVERY",
-  "failureClass": "RECOVERY",
+  "compiler": {
+    "failure_class": "RECOVERY"
+  },
   "security_sensitive": false,
   "scope": "DATABASE",
   "context": {
@@ -20,7 +22,7 @@
     "Instagram publiceert sinds 3 okt niet; mediajobs staan op WAITING_ASSET of WAITING_PROOF",
     "13 Instagram-posts sinds 14 sept met 0 shares en 0 saves; geen leersignaal"
   ],
-  "rootCause": {
+  "root_cause": {
     "primary": "Geen leerlus voor Instagram; meting mist kijktijd, skip rate en sends per post",
     "secondary": "Gezichtsscore 0,92 en 0,93 onder drempel 0,94 blokkeert video's (PR 4270 open)"
   },
@@ -28,7 +30,7 @@
     "Config vastgelegd met dagplafond 400 credits en poorten, zonder uitvoering",
     "Uitvoering pas na PR 4270, uitgebreide meting en afdwingen van het plafond in code"
   ],
-  "preventionRules": [
+  "prevention_rules": [
     "Gezichtspoort 0,94 nooit versoepelen om een gat te dichten",
     "Geen Instagram-leerlus starten zonder meting van kijktijd en sends per post"
   ],
