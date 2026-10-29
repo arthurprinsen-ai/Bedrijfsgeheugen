@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-egress-guard|github-schoon-egress-v1|20261029-v1",
+  "fingerprint": "ci|agent-egress-unproven|github-branch-debris|20261029-v1",
+  "compiler": {
+    "failure_class": "AGENT_EGRESS_UNPROVEN_AND_BRANCH_DEBRIS",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Een extern persoon ontving een intern concept. Niets in de CI bewees dat agents alleen deze repository raken, 13 workflows hadden geen permissions-blok, en de Janitor zag door een cyclus van 32x30 branches en alleen ancestry-controle nooit squash-gemergde branches (3257 branches).",
+  "fix": "tools/ci/egress-guard.mjs faalt op vreemde repo, PAT-secret, write-all of ontbrekend permissions-blok en draait in de delivery-lane en voor de dagelijkse optimizer. 13 workflows krijgen contents: read, 20 verificatieworkflows annuleren verouderde PR-runs, de Janitor verwijdert ook branches met exacte head-sha van een gemergede PR in dezelfde repo.",
+  "prevention_rule": "Elke workflow heeft een expliciet permissions-blok en geen workflow of CI-script schrijft naar een andere repository of gebruikt een niet-allowlisted secret.",
+  "tests": [
+    "tests/delivery-egress-guard.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-egress-guard.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-egress-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-egress-guard.test.mjs"
+    ],
+    "invariants": [
+      "repository heeft 0 egress-overtredingen",
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
