@@ -2,7 +2,7 @@
   "type": "BRAIN_LEARNING",
   "id": "supabase-live-774-migration-lock-20261029",
   "fingerprint": "delivery|supabase-preview|live-provider-774-history-lock-drift|20261029",
-  "status": "CANDIDATE_TESTED_NOT_MERGED",
+  "status": "CANDIDATE_TESTED_PREVIEW_REPLAY_PENDING",
   "maturity": "OBSERVED",
   "compiler": {
     "failure_class": "SCHEMA_DRIFT",
@@ -14,17 +14,20 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs"
+      "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs",
+      "tests/brain-incident-observe-safe-replay-20261029.test.mjs"
     ]
   },
   "root_cause": "Supabase production migration integration applied the once-unapplied local-only LinkedIn migration during protected #5104 release, plus three already-applied sources mirrored in #5104; migration-history.lock remained an earlier 770-row snapshot and would falsely classify four truly applied identities as local-only.",
   "change": "Refresh the existing migration-history lock to 774 exact provider identities and verified provider observation time; preserve the deployed 20261028220000 source in executable lane, no quarantine.",
-  "prevention": "Before classifying a migration as unapplied or archiving source, re-read live provider migrations after every protected release; separate historical pre-deployment observation from latest state.",
+  "prevention": "Before classifying a migration as unapplied or archiving source, re-read live provider migrations after every protected release; separate historical pre-deployment observation from latest state. Corrected safely replayed postcondition accepted only when the entire Brain semantic and ACL contract is present; old baseline and missing proof remain fail-closed.",
   "evidence": {
     "tests": [
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
       "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-incident-observe-safe-replay-20261029.test.mjs",
+      "tests/brain-incident-observe-semantic-recovery-v1.test.mjs"
     ],
     "provider_migration_count": 774,
     "provider_observed_at": "2026-10-29 11:54:04.166873+00",
@@ -35,6 +38,24 @@
       "applied_history_exists": true
     },
     "unchanged_source_sha256": "1076c415675c1d7545703fb7bdbed95511954fd2500d89ec801582b50df801a3",
-    "release": "Protected merge and fresh check required; no direct production SQL executed by this PR."
+    "release": "Protected merge and fresh check required; no direct production SQL executed by this PR.",
+    "live_source_readback": {
+      "legacy_overwrites_proof": false,
+      "new_preserves_proof": true,
+      "conflict_guard": true,
+      "serialization": true,
+      "semantic_key": true,
+      "anon_can_execute": false,
+      "authenticated_can_execute": false,
+      "service_can_execute": true
+    }
+  },
+  "failure_recurrence": {
+    "trigger": "Supabase Preview reconstructed/replayed legacy 20261022173500 migration against already-correct modern brain_observe_failure implementation.",
+    "observed_error": "BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT",
+    "provider": "Supabase Preview check on PR #5106 head 524dc71c699ba1b795ecab263e5119a7c2d00d7c",
+    "legacy_guard_only": "evidence=coalesce(p_evidence,evidence)",
+    "safe_current_function": "evidence=coalesce(evidence,p_evidence)",
+    "correctness_gate": "modern function accepted only if evidence preservation, both semantic conflict checks, advisory lock, semantic key and least-privilege execution ACL hold"
   }
 }
