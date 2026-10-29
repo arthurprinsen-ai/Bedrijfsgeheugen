@@ -1,0 +1,38 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "immutable-alias-browser-transient-403-20261029",
+  "fingerprint": "delivery|portal|immutable-netlify-alias-browser-403-or-no-response|20261029-v1",
+  "maturity": "OBSERVED",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "compiler": {
+    "failure_class": "CI_BROWSER_READBACK",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-canonical-browser-release-fence-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Two exact-main Portal V2 DOM readback attempts on SHA 481c2903 were interrupted by 403 or no-response navigation on the immutable Netlify deploy alias. 14/16 browser tests passed per run, failures shifted between tests. Exact SHA/deploy manifest and real canonical production browser URL were publicly HTTP 200. Netlify/Playwright internal mechanism remains unproven.",
+  "change": "Use the real public production host for browser checks only after an independent exact immutable-deploy AND public-domain release.json match, with strict production context, contract, sha and deploy-ID equality; check again afterward. Keep immutable alias for immutable provenance and visual source; never treat a 403 as success, disable DOM tests, or bypass auth.",
+  "prevention": "Bound legitimate browser verification to canonical actual production host, double-pin version before/after, and fail closed on any drift/denial. Preserve all Playwright route/visual/readback tests; do not relax identity, tenant or release gates.",
+  "evidence": {
+    "initialFailedJob": "123461712317",
+    "retryFailedJob": "123464047036",
+    "commitVerified": "481c2903ceba2f4e9163f62a4ec8925468b21a3b",
+    "observations": [
+      "immutable and canonical production /release.json exact-identity matched",
+      "Public and immutable /klantportaal?klant=demoAI HTTP 200 from independent HTTP client",
+      "First browser attempt 403 in specialist-models test; second browser attempt no response in full-parity test",
+      "Each attempt 14 Playwright tests passed, one failure"
+    ],
+    "tests": [
+      "tests/brain-portal-canonical-browser-release-fence-20261029.test.mjs"
+    ],
+    "productionValidation": "PENDING_EXACT_PROTECTED_MERGE_AND_WORKFLOW_DISPATCH",
+    "closure": "DO_NOT_CLOSE_WITHOUT_NEW_BROWSER_E2E_PASS"
+  }
+}
