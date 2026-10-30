@@ -27,7 +27,6 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
       "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
     ]
   },
