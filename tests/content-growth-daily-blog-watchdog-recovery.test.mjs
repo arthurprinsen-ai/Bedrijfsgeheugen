@@ -22,6 +22,6 @@ test('legacy watchdog only reports independent production readback; canonical pu
   assert.match(workflow, /PROOF_WRITER:EXISTING_CANONICAL_POWERHOUSE_BLOG/);
   assert.match(workflow, /LEGACY_BLOG_WATCHDOG_READ_ONLY/);
   for (const forbidden of ['git add','git commit','git push','gh pr create','gh pr merge','createWriterCandidate']) {
-    assert.doesNotMatch(workflow,new RegExp(forbidden.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+    assert.equal(workflow.includes(forbidden), false, 'legacy watchdog cannot publish: '+forbidden);
   }
 });
