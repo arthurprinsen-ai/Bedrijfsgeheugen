@@ -34,10 +34,11 @@ export function summarizePredictiveSourceRecovery(row){
     && Number(evidence.new_forecasts_written)>0
     && Number(evidence.independent_db_forecast_evidence_count)>=2;
   const natural=evidence.next_natural_runtime_proven===true;
-  const outcome=evidence.forecast_outcome_proven===true;
+  const maturity=['OBSERVED','VALIDATED','PROVEN'].includes(String(row.maturity||'').toUpperCase())?String(row.maturity).toUpperCase():'UNVERIFIED';
+  const outcome=evidence.forecast_outcome_proven===true&&maturity==='PROVEN';
   return {
     status:technical?(natural?(outcome?'OUTCOME_EVIDENCE_PROVEN':'NATURAL_RUNTIME_PROVEN_OUTCOME_PENDING'):'TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING'):'RECOVERY_EVIDENCE_PENDING',
-    maturity:['OBSERVED','VALIDATED','PROVEN'].includes(String(row.maturity||'').toUpperCase())?String(row.maturity).toUpperCase():'UNVERIFIED',
+    maturity,
     technicalRuntimeProven:technical,
     naturalRuntimeProven:technical&&natural,
     outcomeProven:technical&&natural&&outcome,
