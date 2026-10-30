@@ -36,6 +36,7 @@ function render(container,data){
   const growth=data?.growthDirection||null;
   const commercialFunnel=data?.commercialGrowthFunnel||null;
   const providerRepair=data?.ga4PredictiveRepair||null;
+  const recoveryAudit=data?.recoveryClosureAudit||null;
   const improvement=data?.compoundImprovement||null;
   const acquisition=data?.acquisitionCta||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
@@ -210,6 +211,20 @@ function render(container,data){
     '<tbody>'+(growthQueue||'<tr><td colspan="4">Geen zelfstandig bewezen uitvoerbare opdracht uit de actuele originele data.</td></tr>')+'</tbody></table></div>'+
     '<p class="od-foot">Views, likes en mailantwoorden zijn geen bewezen kopers. 48-uurs sociale trends, afgesloten websiteweken, 7-daagse CTA’s en 30-daagse orders zijn verschillende cohorten; de kaart berekent daarom geen misleidende totaalconversie. Een stijgende lijn is het optimalisatiedoel, nooit een gegarandeerde uitkomst. De originele beveiliging, toestemming en 15-lussenassurance blijven leidend.</p></section>';
 
+  const recoveryRows=(recoveryAudit?.cases||[]).map(row=>'<tr><td><strong>'+esc(row.fingerprint)+'</strong><br><small>Laatste melding: '+esc(moment(row.latestIncidentAt))+'</small></td>'+
+    '<td>'+badge(row.state)+'<br><small>Herhalingen: '+esc(row.occurrences??'—')+'</small></td>'+
+    '<td>'+esc((row.missing||[]).join(', ')||'Extern crosscheckbewijs nog vereist')+'</td></tr>').join('');
+  const recoveryAuditCard='<section class="od-card" data-recovery-closure-audit>'+
+    '<h3>ONE BRAIN · herstel pas sluiten na onafhankelijke hercontrole</h3>'+
+    '<p>Originele incidenten, geen nieuw foutenregister. Een fix, test of geslaagde cron is geen bewezen herstel. Alleen een volgende natuurlijke eigenarun én afzonderlijke latere bron-/terugvalcontrole ondersteunen afsluiting.</p>'+
+    '<p>Broncontrole: '+badge(recoveryAudit?.status||'UNVERIFIED')+' · onafhankelijk bevestigd: '+badge(recoveryAudit?.independentlyVerified?'VERIFIED':'NOT_PROVEN')+'</p>'+
+    '<div class="od-grid">'+field('Gecontroleerde incidentfamilies',fmt(recoveryAudit?.rowsInspected))+
+    field('Bewijsachterstand',fmt(recoveryAudit?.evidenceDebt))+
+    field('In register opgenomen complete bewijssets',fmt(recoveryAudit?.recordedProofCandidates))+'</div>'+
+    '<div class="od-scroll"><table><thead><tr><th>Incident</th><th>Status</th><th>Ontbrekende sluitingsschakel</th></tr></thead><tbody>'+
+    (recoveryRows||'<tr><td colspan="3">Geen complete originele broncontrole; herstel blijft onbewezen.</td></tr>')+
+    '</tbody></table></div><p class="od-foot">Exacte providerreceipt, daarna natuurlijke agentrun, onafhankelijk effect en latere herhalingstest blijven vereist. Een volledig gevuld ONE BRAIN-register bewijst geen externe providertoestand. Geen zelfgekozen groen, dubbele scheduler of fictieve conversie.</p></section>';
+
   const providerRepairRows=(providerRepair?.priorities||[]).map(row=>
     '<tr><td>'+esc(row.priority)+'</td><td><strong>'+esc(row.code)+'</strong>'+
     '<br><small>'+esc(row.owner)+'</small></td><td>'+badge(row.status)+
@@ -265,6 +280,7 @@ function render(container,data){
     weeklyCard+
     commercialFunnelCard+
     providerRepairCard+
+    recoveryAuditCard+
     compoundCard+
     innovationCard+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
