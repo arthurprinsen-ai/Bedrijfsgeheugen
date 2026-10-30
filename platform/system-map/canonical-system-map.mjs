@@ -1,4 +1,20 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  commercialSocialToPaidOrderFunnel:Object.freeze({
+    fingerprint:'powerhouse|one-brain|growth-funnel-observed-engagement-not-attributed-sales|20261030-v1',
+    contract:'POWERHOUSE_ONE_BRAIN_COMMERCIAL_FUNNEL_V1',
+    originalAuthority:'Powerhouse Growth Revenue + ONE BRAIN + Heartbeat original exclusive owner',
+    pureProjection:'netlify/functions/_powerhouse-commercial-growth-funnel.mjs',
+    originalAdminApi:'netlify/functions/powerhouse-cro-other-data.mjs',
+    originalOwnerPortal:'portal-v2/modules/andere-data.js',
+    originalSources:'powerhouse_growth_source_daily_v1 + social_posts + social_metric_snapshots + powerhouse_email_reply_events + powerhouse_cro_conversion_evidence_v1 + powerhouse_revenue_flywheel_v1 + social/revenue_learning_applications',
+    test:'tests/brain-commercial-growth-funnel-closed-loop-20261030.test.mjs',
+    learning:'brain/learning/2026-10-30-commercial-cross-channel-cta-to-paid-order-proof-v1.json',
+    humanDocumentation:'docs/changes/2026-10-30-original-one-brain-commercial-growth-funnel.md',
+    original15LoopStatusPreserved:true,noSecondScheduler:true,noSecondPublisher:true,
+    currentAttributionOrPaidCustomerOutcomeVerified:false,
+    protectedProductionVerified:false,naturalAgentAppliedVerified:false
+  }),
+
   allAgentInnovationDutyAssurance:Object.freeze({
     fingerprint:'powerhouse|all-agent-innovation|roster-unchecked-during-daily-self-evolution|20261030-v1',
     owner:'existing Powerhouse ONE BRAIN/Heartbeat Self Evolution and original Growth/Portal owners',
