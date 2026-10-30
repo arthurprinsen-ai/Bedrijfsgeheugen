@@ -20,6 +20,7 @@ test('only bounded explicitly owned channels are admitted',()=>{
  assert.equal(socialChannel(post('linkedin_company',4,1)), 'linkedin_company');
  assert.equal(socialChannel(post('instagram',4,1)), 'instagram');
  assert.equal(socialChannel({...post('linkedin_personal',4,1),tenant_id:'bedrijfsgeheugen'}),null);
+ assert.equal(socialChannel({...post('linkedin_company',4,1),channel_kind:null}),null);
  assert.ok(queries.social.includes("s.tenant_id='canonical'"));
  assert.ok(queries.social.includes("s.tenant_id='bedrijfsgeheugen'"));
  assert.ok(queries.social.includes("interval '48 hours'"));
