@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { regulatoryFrameworkDigest, applyRegulatoryBaselineToPortalControls } from '../portal-v2/regulatory-baseline.js';
 
 const monitor=readFileSync('tools/regulatory-source-monitor.py','utf8');
 const ingest=readFileSync('tools/regulatory-brain-ingest.py','utf8');
@@ -99,4 +100,20 @@ test('existing regulatory source watcher stays in one original schedule and cann
   assert.match(w,/Open governed source-state candidate/);
   assert.match(w,/GitHub Actions is not permitted to create or approve pull requests|CANONICAL_REGULATORY_PR_PERMISSION_DENIED/);
   assert.match(w,/gh pr merge --auto --squash/);
+});
+
+test('regulatory portal cannot approve previously trusted controls on HTTP202 pseudo-baselines',()=>{
+ const state={sources:{
+  eur:{id:'eu-ai-act',framework:'EU_AI_ACT',httpStatus:202,contentSha256:'historical-challenge-html',changed:true},
+  nis:{id:'eu-nis2-directive',framework:'NIS2_CBW',httpStatus:202,contentSha256:'historical-challenge-html'},
+  nl:{id:'nl-cyberbeveiligingswet',framework:'NIS2_CBW',httpStatus:200,contentSha256:'ncsc-official-html'}
+ }};
+ assert.equal(regulatoryFrameworkDigest(state,'EU_AI_ACT'),null);
+ assert.equal(regulatoryFrameworkDigest(state,'NIS2_CBW'),'nl-cyberbeveiligingswet:ncsc-official-html');
+ const [control]=applyRegulatoryBaselineToPortalControls([{framework:'EU_AI_ACT',reviewed:true,approved:true,evidence:[{id:'kept'}]}],state);
+ assert.equal(control.regulatoryReviewRequired,true);
+ assert.equal(control.reviewed,false);
+ assert.equal(control.approved,false);
+ assert.equal(control.regulatorySourceVerification,'UNVERIFIED');
+ assert.deepEqual(control.evidence,[{id:'kept'}]);
 });
