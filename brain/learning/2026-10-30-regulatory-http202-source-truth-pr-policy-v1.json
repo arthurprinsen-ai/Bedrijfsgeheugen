@@ -11,7 +11,8 @@
     "scope": "EXTERNAL_INTELLIGENCE",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": true
+    "security_sensitive": true,
+    "regression_test_count": 2
   },
   "observed_evidence": {
     "github_run_id": 41036966479,
@@ -47,5 +48,14 @@
     "tools/regulatory-brain-ingest.py",
     "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
   ],
-  "business_truth": "NO_VERIFIED_LEGISLATIVE_CHANGE_OR_COMPLIANCE_CONTROL_LIFT"
+  "business_truth": "NO_VERIFIED_LEGISLATIVE_CHANGE_OR_COMPLIANCE_CONTROL_LIFT",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
+      "tests/regulatory-organism-feed.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
+    ]
+  }
 }
