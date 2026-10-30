@@ -68,3 +68,16 @@ test('original authenticated Heartbeat, single store and owner-only portal are t
  assert.match(ui,/ONE BRAIN · commerciële CRO-terugkoppeling/);
  assert.match(ui,/badge\(brain\?\.technicalReadbackVerified/);
 });
+
+test('natural Heartbeat writes an actual JSONB OBJECT and refuses string-scalar readback',()=>{
+ const edge=readFileSync('supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts','utf8');
+ assert.match(edge,/\(\$2::text\)::jsonb/);
+ assert.doesNotMatch(edge,/\,\$2::jsonb\,\$1/);
+ assert.match(edge,/jsonb_typeof\(payload\) payload_kind/);
+ assert.match(edge,/payload_kind==="object"/);
+ const malformed=record();
+ malformed.payload=JSON.stringify(malformed.payload);
+ const result=projectCroBrainProof([malformed],{at});
+ assert.equal(result.status,'NOT_VERIFIED');
+ assert.equal(result.reason,'ONE_BRAIN_RECORD_CONTRACT_MISMATCH');
+});
