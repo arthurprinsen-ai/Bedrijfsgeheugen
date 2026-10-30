@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { canRebindUnsentBlog, originalBlogSlugGuard } from '../_shared/blog-null-lineage-recovery.mjs';
+import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
 
 const VERSION='v8-null-safe-blog-lineage-cas';
 const clean=(v:unknown)=>String(v??'').trim();
@@ -38,6 +39,9 @@ Deno.serve(async(req)=>{
   ]);
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
+  const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
+  if(!fact.ok)return json({ok:false,queued:false,error:fact.code,runDate,
+    source:fact.source||null,requires_corrected_source:true},422);
 
   const generationEvidence=jsonObject(a.generation_evidence);
   const deliveryEvidence=jsonObject(d.delivery_evidence);
