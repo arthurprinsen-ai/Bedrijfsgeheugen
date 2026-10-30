@@ -71,5 +71,22 @@
     "one natural Heartbeat/Brain learning applied",
     "no claim of commercial uplift without actual baseline+sample and paid provider proof"
   ],
-  "businessOutcomeProven": false
+  "businessOutcomeProven": false,
+  "tests": [
+    "tests/brain-powerhouse-growth-direction-20261030.test.mjs"
+  ],
+  "evidence": {
+    "source": "Original production Powerhouse/Supabase readback 2026-10-30",
+    "one_loop_counts": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "historical_email_reply_events": 4,
+    "original_ga4_source": "MISSING_OR_EMPTY",
+    "original_search_console_source": "AWAITING_PROVIDER",
+    "independent_paid_orders": "NOT_PROVEN",
+    "source_lineage": "powerhouse_growth_source_daily_v1 + powerhouse_email_reply_events + original social 48h funnel; no new scheduler",
+    "note": "Observations only; no customer uplift and no post-merge run yet"
+  }
 }
