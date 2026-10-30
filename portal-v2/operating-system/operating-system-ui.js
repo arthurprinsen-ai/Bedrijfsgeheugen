@@ -1,3 +1,5 @@
+import {buildExecutiveProjection} from './executive-projection.js';
+import {strategicAdvisorMarkup} from './strategic-advisor.js';
 import {CAPABILITIES} from '../capability-catalog.js';
 import {normalizeImpact,rankImpact} from './impact-engine.js';
 import {createScenario,simulateScenario} from './scenario-engine.js';
@@ -43,7 +45,10 @@ function bindScenarios(root,state){
 }
 
 function renderDecisions(state){
- const actions=state?.powerhouse?.executive?.next_best_actions||[];return `${renderCompanyIntelligenceContext(state,'next-best-actions')}${renderProblemContext(state,'next-best-actions')}${items('Next Best Actions & besluiten',actions,item=>{const risk=classifyActionRisk(item);const eligibility=evaluateActionEligibility({...item,risk_class:risk},{approved:false,policy_allowed:false});return `<div><strong>${esc(item.title||item.id)}</strong><p>${esc(item.explanation||'')}</p><small>Risicoklasse ${risk} · ${esc(eligibility.state)}</small><div class="os-actions">${DECISIONS.map(d=>`<button type="button" data-os-decision="${esc(d)}" data-action-id="${esc(item.id)}">${esc(d)}</button>`).join('')}</div></div>`;})}`;
+ const tenantId=state?.tenant_id||state?.powerhouse?.tenant_id;
+ const role=state?.portal?.role||state?.portal?.executiveRole||'directie';
+ const advisor=strategicAdvisorMarkup(buildExecutiveProjection(state,{tenantId,role}));
+ const actions=state?.powerhouse?.executive?.next_best_actions||[];return `${advisor}`+`${renderCompanyIntelligenceContext(state,'next-best-actions')}${renderProblemContext(state,'next-best-actions')}${items('Next Best Actions & besluiten',actions,item=>{const risk=classifyActionRisk(item);const eligibility=evaluateActionEligibility({...item,risk_class:risk},{approved:false,policy_allowed:false});return `<div><strong>${esc(item.title||item.id)}</strong><p>${esc(item.explanation||'')}</p><small>Risicoklasse ${risk} · ${esc(eligibility.state)}</small><div class="os-actions">${DECISIONS.map(d=>`<button type="button" data-os-decision="${esc(d)}" data-action-id="${esc(item.id)}">${esc(d)}</button>`).join('')}</div></div>`;})}`;
 }
 
 function bindDecisions(root,domainState,state){
