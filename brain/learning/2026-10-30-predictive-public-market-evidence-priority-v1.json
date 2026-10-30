@@ -14,10 +14,12 @@
   "prevention": "Apply market scope and allowed source-type predicate in DB BEFORE ranking and limit, with independent 24-news and 16-search quotas; preserve public-market privacy filter and minimum 2-source forecast evidence.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-predictive-public-market-priority-20261030.test.mjs"
+      "tests/brain-predictive-public-market-priority-20261030.test.mjs",
+      "tests/brain-predictive-portal-runtime-proof-20261030.test.mjs"
     ],
     "canary": [
-      "tests/brain-predictive-public-market-priority-20261030.test.mjs"
+      "tests/brain-predictive-public-market-priority-20261030.test.mjs",
+      "tests/brain-predictive-portal-runtime-proof-20261030.test.mjs"
     ]
   },
   "evidence": {
@@ -31,6 +33,18 @@
     "scheduler_unchanged": true,
     "public_market_boundary_preserved": true,
     "production_runtime_proven": false,
-    "forecast_outcome_proven": false
+    "forecast_outcome_proven": false,
+    "protected_merge_sha": "596c4cbcb5fa0e0cbd953d0483e4f98eb3dff613",
+    "production_edge_version": 569,
+    "prod_main_parity_verified": true,
+    "authorized_canary_http_status": 200,
+    "authorized_canary_response_id": 16430,
+    "authorized_canary_public_signals": 18,
+    "authorized_canary_forecasts_written": 1,
+    "authorized_canary_rejected": 0,
+    "portal_runtime_evidence_projection": "SOURCE_CANDIDATE_UNTIL_PROTECTED_MERGE_AND_AUTHENTICATED_READBACK",
+    "natural_heartbeat_followup_proven": false,
+    "prediction_realized_proven": false,
+    "revenue_proven": false
   }
 }
