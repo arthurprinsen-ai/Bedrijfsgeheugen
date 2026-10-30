@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { projectOtherData } from '../netlify/functions/powerhouse-cro-other-data.mjs';
+import { projectOtherData, projectCroMeasurementCoverage } from '../netlify/functions/powerhouse-cro-other-data.mjs';
 import { findPage } from '../portal-v2/page-registry.js';
 
 const evidence={daily:'LIVE',experiments:'LIVE',policies:'LIVE',conversionProof:'LIVE',experimentProof:'LIVE',behavior:'LIVE'};
@@ -94,4 +94,57 @@ test('Other data renders independent commercial proof and observed exit behavior
  assert.match(src,/Waar haken bezoekers af/);
  assert.match(src,/badge\(source\.conversionProof\?\.status\)/);
  assert.match(src,/badge\(source\.behavior\?\.status\)/);
+});
+
+test('original CRO denominator: 4403 nonrobot flagged page events and 0 CTA are evidence-due, never a proven 0% lead conversion',()=>{
+ const row={
+  evaluated_at:'2026-10-30T10:33:28.596902Z',
+  human_flagged_pageviews_7d:4403,observed_cta_events_7d:0,daily_cta_aggregated_7d:0,
+  form_submit_intents_7d:0,recorded_leads_30d:0,
+  experiment_assignments_30d:1,matured_treatment_30d:1,matured_holdout_30d:0
+ };
+ const coverage=projectCroMeasurementCoverage(row);
+ assert.equal(coverage.status,'CTA_SIGNAL_UNVERIFIED_WITH_PAGEVIEWS');
+ assert.equal(coverage.pageviewsNonRobotFlag7d,4403);
+ assert.equal(coverage.ctaEvents7d,0);
+ assert.equal(coverage.ctaToPageviewEventRatioPct,null);
+ assert.equal(coverage.uniqueHumanVisitorsVerified,false);
+ assert.equal(coverage.ctaClickTrackingVerified,false);
+ const data=projectOtherData({conversionProof:[{...conversionProof[0],...row}],
+   readStates:evidence,experimentProof:[],daily:[{page_views:4403,cta_clicks:0}]});
+ assert.equal(data.croMeasurement.status,'CTA_SIGNAL_UNVERIFIED_WITH_PAGEVIEWS');
+ assert.equal(data.conversionProof.humanFlaggedPageviews7d,4403);
+ assert.equal(data.conversionProof.maturedHoldout30d,0);
+ assert.ok(data.quality.flags.includes('CTA_EVENT_GAP_REQUIRES_ORIGINAL_PRODUCER_TO_DATAHUB_READBACK'));
+ assert.equal(data.conversionProof.paidOrdersIndependentlyVerified,null);
+});
+
+test('original CRO denominator: misaligned event counts must fail closed and no false uplift',()=>{
+ const base={evaluated_at:'2026-10-30T10:33:00Z',
+   human_flagged_pageviews_7d:100,observed_cta_events_7d:4,
+   daily_cta_aggregated_7d:0,form_submit_intents_7d:0};
+ const failed=projectCroMeasurementCoverage(base);
+ assert.equal(failed.status,'CTA_EVENT_AGGREGATION_MISMATCH');
+ assert.equal(failed.ctaClickTrackingVerified,false);
+ assert.equal(failed.ctaToPageviewEventRatioPct,4); // descriptive event ratio, not buyers
+ const aligned=projectCroMeasurementCoverage({...base,daily_cta_aggregated_7d:4});
+ assert.equal(aligned.status,'CTA_EVENTS_OBSERVED_NOT_BUYER_CONVERSION');
+ assert.equal(aligned.ctaClickTrackingVerified,true);
+ assert.equal(aligned.uniqueHumanVisitorsVerified,false);
+ assert.equal(projectCroMeasurementCoverage(null).status,'UNVERIFIED');
+ assert.equal(projectCroMeasurementCoverage({human_flagged_pageviews_7d:-2,
+   observed_cta_events_7d:0,daily_cta_aggregated_7d:0,form_submit_intents_7d:0}).status,'UNVERIFIED');
+});
+
+test('existing admin-only CRO portal gets real 7-day denominator fields from same Supabase view',()=>{
+ const api=readFileSync('netlify/functions/powerhouse-cro-other-data.mjs','utf8');
+ const ui=readFileSync('portal-v2/modules/andere-data.js','utf8');
+ assert.match(api,/select=evaluated_at,human_flagged_pageviews_7d/);
+ assert.match(api,/form_submit_intents_7d/);
+ assert.match(api,/Powerhouse Growth\/SEO CRO original event producer/); // The existing original owner
+ assert.match(ui,/data-original-cro-measurement/);
+ assert.match(ui,/geen unieke mensen/);
+ assert.match(ui,/Geen.*bezoek.*le(i|e)dt|Meer bezoek leidt niet automatisch tot meer orders/);
+ assert.match(ui,/Niet vast te stellen/);
+ assert.doesNotMatch(ui,/0% klantconversie bewezen/i);
 });
