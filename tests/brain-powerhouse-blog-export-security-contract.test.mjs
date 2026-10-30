@@ -73,3 +73,31 @@ test('dated private blog Brain/change/ledger evidence cannot be added to public 
     assert.deepEqual(leaked, [], 'private dated blog evidence must never be committed in ' + folder);
   }
 });
+
+test('official CPNL deadline inversion cannot enter original blog public delivery',async()=>{
+ const {assessOfficialBlogDateTruth} = await import('../supabase/functions/_shared/blog-official-date-truth.mjs');
+ const original="Volgens een recente voorspelling opent de Circular Plastics NL-subsidie op 6 oktober 2026 met een totaalbudget van €40 miljoen.";
+ const result=assessOfficialBlogDateTruth({title:'Circular Plastics NL subsidie',body:original,runDate:'2026-10-30'});
+ assert.equal(result.ok,false);
+ assert.equal(result.code,'BLOG_OFFICIAL_SUBSIDY_DEADLINE_INVERTED');
+ assert.equal(result.published_approval_allowed,false);
+ const past=assessOfficialBlogDateTruth({title:'Circular Plastics NL',body:original,runDate:'2026-09-20'});
+ assert.equal(past.ok,true,'do not invent a past tense review from future');
+ const trueHistorical=assessOfficialBlogDateTruth({title:'Circular Plastics NL',body:'De regeling opende 21 april 2026 en sloot op 6 oktober 2026.',runDate:'2026-10-30'});
+ assert.equal(trueHistorical.ok,true,'historically accurate RVO source statement remains eligible');
+ const unrelated=assessOfficialBlogDateTruth({title:'Andere subsidie',body:'Een andere regeling opent op 6 oktober 2026.',runDate:'2026-10-30'});
+ assert.equal(unrelated.ok,true,'do not apply CPNL policy to unrelated schemes');
+});
+
+test('real blog queue and exporter reject known wrong subsidy facts without changing service auth/approval gates',()=>{
+ const queue=read('supabase/functions/powerhouse-blog-queue/index.ts');
+ const exporter=read('supabase/functions/powerhouse-blog-export/index.ts');
+ const py=read('tools/site-shell/publish_powerhouse_blog_artifact.py');
+ assert.match(queue,/assessOfficialBlogDateTruth\(/);
+ assert.match(exporter,/assessOfficialBlogDateTruth\(/);
+ assert.ok(exporter.indexOf('BLOG_PUBLIC_EXPORT_NOT_APPROVED')<exporter.indexOf('const fact=assessOfficialBlogDateTruth'), 'approval boundary must remain before source body reads for external requests');
+ assert.match(py,/reason == 'BLOG_PUBLIC_EXPORT_NOT_APPROVED'/);
+ assert.match(py,/if error.code == 403:/);
+ assert.match(py,/if error.code == 404:/);
+ assert.match(exporter,/'EXPORT_AUTH_REQUIRED'\},401/);
+});
