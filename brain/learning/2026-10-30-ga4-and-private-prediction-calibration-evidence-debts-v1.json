@@ -1,0 +1,68 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|ga4-calibration|provider-report-empty-and-private-outcomes-not-public-ai|20261030-v1",
+  "compiler": {
+    "failure_class": "GA4_SOURCE_DATA_AND_PRIVATE_FORECAST_CALIBRATION_PROOF_GAP",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+    ]
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "GA4 canonical sync reported HTTP/job success for 2026-10-29 but its original dated provider batch contained zero rows, while the original Data Spine truth from 2026-10-29 06:05Z was stale. The latest nonempty GA4 batch was one true organic session on 2026-10-28, unmatched to any social campaign, so a new success receipt is not a new visitor. Original public AI forecast calibrator is healthy but has zero eligible public forecasts; 2085 overdue original obligations are non-public person/company predictions. Original predictive control has a different denominator 2005 due, 138 resolved and 1867 resolution debt. No independent first-party exact forecast-to-provider-outcome links found for the uncalibrated private forecasts. The previous original admin portal did not display these source, population and authorization differences together.",
+  "evidence": {
+    "baseline_date": "2026-10-30",
+    "canonical_ga4_property": "properties/546874601",
+    "ga4_source": "bg_ga4_csv_batches + powerhouse_evidence_source_coverage_v1",
+    "latest_reporting_day": "2026-10-29",
+    "latest_reporting_rows": 0,
+    "last_nonempty_day": "2026-10-28",
+    "last_nonempty_rows": 1,
+    "last_nonempty_campaign_matches": 0,
+    "original_data_spine_state": "stale",
+    "connected_windsor_ga4_property": "546874601",
+    "independent_windsor_20261028_rows": 1,
+    "independent_windsor_20261029_rows": 0,
+    "original_public_calibration_due": 0,
+    "original_nonpublic_calibration_obligations_due": 2085,
+    "person_due": 1714,
+    "company_due": 371,
+    "prediction_control_due": 2005,
+    "prediction_control_resolved": 138,
+    "prediction_control_debt": 1867,
+    "original_forecast_sales_outcomes_with_exact_forecast_id": 0,
+    "original_calibrator_cron_active": true,
+    "source_qualifier": "The empty provider report is not evidence that every real user avoided the site, nor that consented GA4 tag is broken. Calibration counts have distinct populations, not additive."
+  },
+  "correction": "In the ORIGINAL admin-only Powerhouse CRO API and Portal V2, project a pure GA4 last-real-provider-data vs original Data Spine freshness report and source-backed public-market vs tenant-private calibration evidence/owner recovery plan. Agents can make one guarded original-owner source or first-party evidence improvement on natural runs, but no synthetic GA4 visit or silent negative/private public-LLM calibration.",
+  "prevention": [
+    "Never set GA4 green for HTTP200/job success, zero-row provider batch, replayed old date or an unmatched campaign. Require actual original nonempty dated GA4 provider rows, fresh original Data Spine source observation, independently matched campaign where relevant.",
+    "Respect original GA4 consent before tracking; do not fabricate visitors or send first-party event IDs to analytics without permission.",
+    "Never count original public-scope hourly calibrator as closing person/company forecasts; its eligible public queue is zero and separate private backlog remains open.",
+    "Only original authorized first-party provider outcomes with forecast_id, event time, predicted-event semantics and tenant permission can close a private forecast. No negative evidence from silence.",
+    "Preserve two distinct calibration denominators (2005 due vs 2085 non-public obligation records; 1867 unresolved forecasts) and do not sum, relabel or auto-close them.",
+    "One existing scheduler/writer/portal/ONE BRAIN/Heartbeat remains canonical; protected Required/BRAIN/CodeQL exact Netlify live, future real source natural application and independent outcomes required."
+  ],
+  "tests": [
+    "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+  ],
+  "original_api": "netlify/functions/powerhouse-cro-other-data.mjs",
+  "original_portal": "portal-v2/modules/andere-data.js",
+  "human_doc": "docs/changes/2026-10-30-ga4-private-calibration-repair-evidence.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-ga4-private-calibration-repair-evidence.md",
+  "delivery": {
+    "status": "SOURCE_CANDIDATE",
+    "protected_release_verified": false,
+    "exact_provider_source_improved": false,
+    "private_calibration_debt_reduced": false,
+    "paid_business_uplift_verified": false
+  }
+}
