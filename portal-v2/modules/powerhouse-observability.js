@@ -157,6 +157,16 @@ function systemMapView(systemMap,events,observability={}){
   const failureCoverage=systemMap.failureCoverage||{};
   const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
   const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
+  const predictiveProof=failureCoverage.predictiveRecovery||{};
+  const predictiveCode=String(predictiveProof.status||'UNVERIFIED');
+  const predictiveText={
+    TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING:'Technisch herstel in Supabase bewezen. Volgende natuurlijke agentrun en daadwerkelijke zakelijke uitkomst nog niet bewezen.',
+    NATURAL_RUNTIME_PROVEN_OUTCOME_PENDING:'Natuurlijke runtime bewezen; daadwerkelijke forecast-uitkomst nog niet bewezen.',
+    OUTCOME_EVIDENCE_PROVEN:'Forecast-uitkomst met afzonderlijk bewijs vastgelegd; dit bewijst geen algemene omzet- of publicatiedoelen.',
+    RECOVERY_EVIDENCE_PENDING:'Herstel bestaat als incident, maar ontbrekend productie- of runtimebewijs verhindert groen.',
+    UNVERIFIED:'Geen volledige onafhankelijke incidentreadback. Niet als opgelost weergeven.'
+  }[predictiveCode]||'Herstelstatus onbekend; geen succesclaim zonder bronreadback.';
+
   const agentCoverage=observability.agentCycleCoverage||{};
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
   const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
@@ -210,6 +220,7 @@ function systemMapView(systemMap,events,observability={}){
       ${kpi('Regressietest ontbreekt',failureMetric('observedMissingRegression'),'preventie niet bewezen')}
       ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
     </div>
+    <p class="poc-note" data-predictive-source-proof data-evidence-status="${esc(predictiveCode)}"><b>Voorspellingsagent · publieke bronselectie:</b> ${esc(predictiveText)} Status uit het bestaande ONE BRAIN-foutregister; de portaalweergave voert geen predictie- of publicatieactie uit.</p>
     <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
   </section>
   <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">

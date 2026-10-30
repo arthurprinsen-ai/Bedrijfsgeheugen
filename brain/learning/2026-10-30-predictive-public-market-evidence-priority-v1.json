@@ -32,5 +32,18 @@
     "public_market_boundary_preserved": true,
     "production_runtime_proven": false,
     "forecast_outcome_proven": false
-  }
+  },
+  "portalProjection": {
+    "source": "brain/observability/failure-coverage-projection.mjs",
+    "consumer": "portal-v2/modules/powerhouse-observability.js",
+    "status_source": "existing Supabase brain_failure_registry",
+    "server_side_whitelisted_summary_only": true,
+    "raw_incident_evidence_in_browser": false,
+    "technical_runtime_canary_proven": true,
+    "naturally_scheduled_runtime_proven": false,
+    "business_outcome_proven": false,
+    "no_false_green": true,
+    "regression": "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+  },
+  "skill": ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
 }

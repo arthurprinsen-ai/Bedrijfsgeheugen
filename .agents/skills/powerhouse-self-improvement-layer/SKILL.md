@@ -5,6 +5,15 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## Predictive public-market source priority and honest proof — 30 October 2026
+
+- **Fingerprint:** `predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1`; parent #4198, protected PR #5169, deployed original Edge `powerhouse-predictive-engine` v569.
+- **Proven cause:** a global `ORDER BY strength LIMIT 80` selected 80 relationship-evidence rows, crowding out 7 public-news and 11 search-demand rows. The existing public-market payload correctly rejected the relationship evidence and the natural run returned `AI_PUBLIC_MARKET_EVIDENCE_REQUIRED`. Never fix this by exposing private signals, making up market evidence, or relaxing the min-two-independent-sources gate.
+- **Permanent preflight:** filter `entity_scope=market` and exact approved source types **before** source-specific ranking limits. Reserve separate 24 `external_news` and 16 `search_demand` slots; use original signal provenance and key allowlists. Regression: `tests/brain-predictive-public-market-priority-20261030.test.mjs`.
+- **Observed runtime acceptance:** protected merge `596c4cbcb5fa0e0cbd953d0483e4f98eb3dff613`; original Supabase Edge v569 source exactly matches main; authorized provider response 200 (18 source signals, 1 new forecast, 0 rejects); independent `powerhouse_forecasts` row carries 5 actual signal references. This proves a bounded technical canary, **not** the next natural scheduled run, forecast correctness, realized revenue or any social publication.
+- **Recovery/learning:** record error → cause → unique source-index fix → protected tests → exact source/deploy readback → genuine runtime → independent forecast evidence → original outcome and calibration → Brain maturity. The portal must distinguish `TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING` from `NATURAL_RUNTIME_PROVEN_OUTCOME_PENDING` and `OUTCOME_EVIDENCE_PROVEN`; missing readback is `UNVERIFIED`. Do not promote BRAIN `OBSERVED` just because a repair or one manually authorized canary exists. No extra scheduler, fallback publisher, paid preview or duplicate side effects.
+
+
 ## Supabase migration first-pass source-of-truth and prevention — 29 October 2026
 
 INCIDENT_PROTOCOL: `supabase|revenue-learning|migration-history-lock-stale-after-production-20261029` and `supabase|preview|duplicate-migration-version-23505|20261029-v1`.
