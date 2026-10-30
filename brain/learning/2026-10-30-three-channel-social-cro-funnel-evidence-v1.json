@@ -1,0 +1,35 @@
+{
+  "id": "brain-social-funnel-three-channel-20261030-v1",
+  "fingerprint": "content-growth|three-channel-social-funnel-personal-omitted-age-bias|20261030-v1",
+  "status": "CANDIDATE",
+  "owner": "EXISTING_POWERHOUSE_CONTENT_GROWTH_LEARNING",
+  "failure_class": "SOCIAL_FUNNEL_PERSONAL_CHANNEL_OMITTED_AND_UNCOMPARABLE_POST_AGE",
+  "root_cause": "Daily collector only read brand tenant, missing canonical personal LinkedIn. Latest cumulative post snapshots have non-equivalent publication ages.",
+  "observed_evidence": {
+    "instagram_snapshots": 144,
+    "linkedin_personal_partial_snapshots": 51,
+    "linkedin_company_linked_snapshots": 25,
+    "brand_social_learning_latest": "2026-10-24",
+    "aligned_48h": {
+      "instagram": 7,
+      "linkedin_company": 15,
+      "linkedin_personal": 4
+    },
+    "cro_pageviews_7d": 4347,
+    "cro_cta_events_7d": 0,
+    "commercial_leads_30d": 0,
+    "verified_paid_orders_30d": 0
+  },
+  "fix": "Reuse daily collector for 3 tenant-scoped channels with publish timing/content traits and provider-observed 48h cohort trend. Require >=5 samples in both cohorts for each metric.",
+  "prevention": "Do not infer views, identities, visitors, leads, revenue, causal effects or improvements without corresponding provider and attribution proof. Keep one scheduler and established learning/application owners.",
+  "regression": [
+    "tests/brain-three-channel-social-funnel-trend-v1.test.mjs",
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "rollout": {
+    "source": "PR_CANDIDATE",
+    "production": "UNVERIFIED",
+    "natural_run": "PENDING",
+    "outcome": "UNPROVEN"
+  }
+}
