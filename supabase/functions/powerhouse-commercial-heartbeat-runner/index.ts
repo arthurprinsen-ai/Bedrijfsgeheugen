@@ -321,7 +321,7 @@ async function observeCroCommercialProof(){
         "values('canonical',$1,'Verification','verification','cro-commercial-closure','powerhouse-cro-commercial-closure-v1','powerhouse-commercial-heartbeat-runner','OBSERVED',now(),true,false,"+
         "jsonb_build_object('commercial_proof_status','EVIDENCE_INCOMPLETE','business_outcome_verified',false,'causal_winner_proven',false),"+
         "ARRAY['supabase:powerhouse_cro_conversion_evidence_v1','supabase:powerhouse_cro_experiment_evidence_v1']::text[],"+
-        "jsonb_build_object('owner','original-commercial-heartbeat','no_parallel_scheduler',true),$2::jsonb,$1,'original-heartbeat-cro-proof-v1') "+
+        "jsonb_build_object('owner','original-commercial-heartbeat','no_parallel_scheduler',true),($2::text)::jsonb,$1,'original-heartbeat-cro-proof-v1') "+
         "on conflict(tenant_id,idempotency_key) do update set observed_at=excluded.observed_at,executed=true,verified=false,"+
         "result=excluded.result,payload=excluded.payload,provenance=excluded.provenance,updated_at=now() "+
         "where public.brain_records.record_type='Verification' and public.brain_records.owner_id='powerhouse-commercial-heartbeat-runner' "+
@@ -333,13 +333,13 @@ async function observeCroCommercialProof(){
     });
     // Independent readback AFTER commit, never inferred from a successful SQL call alone.
     const again=await db().unsafe(
-      "select record_id,status,executed,verified,payload->>'contract' contract from public.brain_records "+
+      "select record_id,status,executed,verified,payload->>'contract' contract,jsonb_typeof(payload) payload_kind from public.brain_records "+
       "where tenant_id='canonical' and record_id=$1 order by observed_at desc limit 1",
       [outcome.record_id]
     );
     const verified=again.length===1&&again[0].record_id===outcome.record_id&&
       again[0].status==="OBSERVED"&&again[0].executed===true&&
-      again[0].verified===false&&again[0].contract==="POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1";
+      again[0].verified===false&&again[0].payload_kind==="object"&&again[0].contract==="POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1";
     return {state:verified?"BRAIN_OBSERVATION_READBACK_VERIFIED":"BRAIN_OBSERVATION_READBACK_MISSING",
       source:"canonical_brain_records",record_id:outcome.record_id,
       technical_readback_verified:verified,business_outcome_verified:false,
