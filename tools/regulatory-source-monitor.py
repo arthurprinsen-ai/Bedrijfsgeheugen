@@ -10,6 +10,21 @@ def stable_bytes(raw, content_type):
     text=re.sub(r'\s+',' ',text).strip()
     return text.encode('utf-8')
 
+def unverified_response_reason(result):
+    """An HTTP challenge/accepted page is not an authoritative legal text revision."""
+    status=result.get('status')
+    if status != 200:
+        return 'HTTP_STATUS_NOT_200'
+    raw=result.get('raw') or b''
+    if not raw.strip():
+        return 'EMPTY_SOURCE_BODY'
+    content_type=(result.get('contentType') or '').lower()
+    if 'html' in content_type:
+        preview=raw[:8192].decode('utf-8','replace').lower()
+        if re.search(r'just a moment|enable javascript and cookies|verify you are human|checking your browser|captcha|bot protection|access denied',preview):
+            return 'HTML_CHALLENGE_NOT_AUTHORITY'
+    return None
+
 def fetch(source):
     request=urllib.request.Request(source['url'],headers={'User-Agent':UA,'Accept':'text/html,application/xhtml+xml,application/json,text/plain;q=0.9,*/*;q=0.1'})
     with urllib.request.urlopen(request,timeout=45) as response:
@@ -44,16 +59,29 @@ def main():
         sha=hashlib.sha256(result['stable']).hexdigest()
         raw_sha=hashlib.sha256(result['raw']).hexdigest()
         previous=old.get(source['id'],{})
-        changed=bool(previous.get('contentSha256') and previous.get('contentSha256')!=sha)
+        unverified_reason=unverified_response_reason(result)
+        trusted=unverified_reason is None
+        # Fail closed: never interpret HTTP 202/challenge/empty bodies as a legal change.
+        changed=bool(trusted and previous.get('contentSha256') and previous.get('contentSha256')!=sha)
+        first=bool(trusted and not previous.get('contentSha256'))
         record={
           'id':source['id'],'framework':source['framework'],'authority':source['authority'],'jurisdiction':source['jurisdiction'],
           'url':source['url'],'finalUrl':result['finalUrl'],'checkedAt':now,'httpStatus':result['status'],
           'contentType':result['contentType'],'contentSha256':sha,'rawSha256':raw_sha,'bytes':len(result['raw']),
           'etag':result['etag'],'lastModified':result['lastModified'],'previousSha256':previous.get('contentSha256'),
-          'changed':changed,'firstObservation':not bool(previous.get('contentSha256'))
+          'changed':changed,'firstObservation':first,
+          'observationTrusted':trusted,'unverifiedReason':unverified_reason
         }
         checks['sources'][source['id']]=record
-        first=record['firstObservation']
+        if not trusted:
+            # Keep the previous verified baseline byte-for-byte. Diagnostic raw
+            # is retained separately for Brain, explicitly UNVERIFIED.
+            if previous:
+                out['sources'][source['id']]=previous
+            raw_path=pathlib.Path(args.raw_dir)/source['id']/(raw_sha+'.bin')
+            raw_path.parent.mkdir(parents=True,exist_ok=True)
+            raw_path.write_bytes(result['raw'])
+            continue
         if changed or first:
             out['sources'][source['id']]=record
             out['checkedAt']=now
