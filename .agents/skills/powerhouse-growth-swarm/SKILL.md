@@ -1,5 +1,12 @@
 # Skill: Powerhouse Growth Swarm
 
+## Predictive opportunities: source-backed execution and proof separation — 30 October 2026
+
+The original predictive engine #5169 is protected merged and `powerhouse-predictive-engine` v569 exact source has executed a successful one-off authorized canary (18 public signals, 1 forecast, 0 rejected, SQL request 16430). The causal bug was prefilter top-80 crowd-out by higher-ranked private relationship rows; only market/public news and keyword demand may enter its privacy-safe AI payload, selected independently before ranking/limiting. Root fingerprint: `predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1`.
+
+Treat model output as a hypothesis and forecast queue, never a delivered order or realized revenue. Business action may proceed only through existing next-best-action, consent/contact-pressure, original owner writer, provider-ID and outcome evidence. The canonical Portal V2 dashboard shows source/run receipts separately from follow-up natural agent application and actual economic outcome. Do not set campaign or growth FULL_GREEN without verified sales outcome; preserve all the original public/private evidence segregation and single Heartbeat scheduler.
+
+
 Fingerprint: `powerhouse-growth-swarm-v1`
 
 ## Doel
