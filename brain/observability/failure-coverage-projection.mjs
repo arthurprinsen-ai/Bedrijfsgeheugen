@@ -21,6 +21,30 @@ export function summarizeFailureCoverage(rows, expectedTotal, observedAt = new D
   }
   return {status:'READBACK_COMPLETE',authority:'Supabase brain_failure_registry',totals,observedAt,sourceLatestAt};
 }
+// Only a bounded, whitelisted incident summary leaves the admin-only server.
+// Raw incident evidence, source IDs, and forecast content stay in Supabase.
+const PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT='predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1';
+export function summarizePredictiveSourceRecovery(row){
+  if(!row||row.fingerprint!==PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)
+    return {status:'UNVERIFIED',reason:'PREDICTIVE_INCIDENT_NOT_RETURNED'};
+  const evidence=row.evidence&&typeof row.evidence==='object'&&!Array.isArray(row.evidence)?row.evidence:{};
+  const technical= evidence.runtime_canary_proven===true
+    && evidence.source_parity===true
+    && evidence.authorized_runtime_http===200
+    && Number(evidence.new_forecasts_written)>0
+    && Number(evidence.independent_db_forecast_evidence_count)>=2;
+  const natural=evidence.next_natural_runtime_proven===true;
+  const outcome=evidence.forecast_outcome_proven===true;
+  return {
+    status:technical?(natural?(outcome?'OUTCOME_EVIDENCE_PROVEN':'NATURAL_RUNTIME_PROVEN_OUTCOME_PENDING'):'TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING'):'RECOVERY_EVIDENCE_PENDING',
+    maturity:['OBSERVED','VALIDATED','PROVEN'].includes(String(row.maturity||'').toUpperCase())?String(row.maturity).toUpperCase():'UNVERIFIED',
+    technicalRuntimeProven:technical,
+    naturalRuntimeProven:technical&&natural,
+    outcomeProven:technical&&natural&&outcome,
+    observedAt:typeof row.last_seen_at==='string'&&Number.isFinite(Date.parse(row.last_seen_at))?row.last_seen_at:null
+  };
+}
+
 // Reads only server-to-server; only aggregate counts enter the browser response.
 export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetch}={}) {
   if (!baseUrl || !key) return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_CONFIG_MISSING'};
@@ -30,7 +54,17 @@ export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetc
     if (!response.ok) return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_HTTP_'+response.status};
     const contentRange=response.headers.get('content-range')||'';
     const match=/\/(\d+)$/.exec(contentRange);
-    return summarizeFailureCoverage(await response.json(),match?Number(match[1]):null);
+    const aggregate=summarizeFailureCoverage(await response.json(),match?Number(match[1]):null);
+    if(aggregate.status!=='READBACK_COMPLETE')return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCOMPLETE_REGISTRY_READBACK'}};
+    const incidentUrl=String(baseUrl).replace(/\\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq.'+encodeURIComponent(PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)+'&limit=1';
+    try{
+      const evidenceResponse=await fetchImpl(incidentUrl,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json'},signal:AbortSignal.timeout(5000)});
+      if(!evidenceResponse.ok)return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCIDENT_READBACK_HTTP_'+evidenceResponse.status}};
+      const rows=await evidenceResponse.json();
+      return {...aggregate,predictiveRecovery:summarizePredictiveSourceRecovery(Array.isArray(rows)&&rows.length===1?rows[0]:null)};
+    }catch{
+      return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCIDENT_READBACK_FAILED'}};
+    }
   } catch {
     return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_READ_FAILED'};
   }
