@@ -30,6 +30,21 @@ function experimentRows(rows){
 function render(container,data){
   const source=data?.sources||{};
   const website=data?.website;
+  const social=data?.socialFunnel||null;
+  const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
+  const socialRows=(social?.channels||[]).map(row=>{
+    const metric=key=>{
+      const m=row?.metrics?.[key];
+      if(!m||m.direction==='INSUFFICIENT_COMPARABLE_SAMPLE')return 'Onvoldoende vergelijkbare bronmetingen';
+      const delta=m.relative_change_pct===null?'Niet berekenbaar':fmt(m.relative_change_pct)+'%';
+      return esc(m.direction)+' ('+esc(delta)+')';
+    };
+    return '<tr><td><strong>'+esc(channelNames[row.channel]||row.channel)+'</strong></td>'+
+      '<td>'+esc(fmt(row.posts_registered))+'</td>'+
+      '<td>'+esc(fmt(row.recent_aligned_snapshots))+' / '+esc(fmt(row.baseline_aligned_snapshots))+'</td>'+
+      '<td>'+metric('views')+'</td><td>'+metric('likes')+'</td><td>'+metric('comments')+'</td>'+
+      '<td>'+metric('shares')+'</td><td>'+metric('clicks')+'</td></tr>';
+  }).join('');
   const experiments=Array.isArray(data?.experiments)?data.experiments:null;
   const behavior=data?.behavior||null;
   const flags=Array.isArray(data?.quality?.flags)?data.quality.flags:[];
@@ -94,7 +109,7 @@ function render(container,data){
     '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
     '<h3 id="croOtherDataTitle">Websitegegevens & CRO-experimenten</h3>'+
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
-    '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
+    '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · Social CRO: '+badge(source.socialFunnel?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
     '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
@@ -129,6 +144,14 @@ function render(container,data){
     (brainRows||'<tr><td colspan="2">Nog geen onafhankelijk teruggelezen natuurlijke Heartbeat-run.</td></tr>')+
     '</tbody></table></div>'+
     '<p class="od-foot">Dit overzicht leest alleen het bestaande ONE BRAIN-registratiepad. Ontbrekende leads, orders en betalingen worden nooit groen gezet.</p></section>'+
+    '<section class="od-card"><h3>Social CRO · LinkedIn persoonlijk, bedrijf en Instagram</h3>'+
+    '<p>Dezelfde ONE BRAIN-bronnen, drie gescheiden kanalen. Meetvenster 48 uur na publicatie (±6 uur), afgelopen 7 dagen versus vorige 21 dagen. Minimaal vijf echte providerwaarnemingen per periode en per metriek. Geen identiteiten van kijkers.</p>'+
+    '<p>Provider-meetbewijs: '+badge(social?.status||'UNAVAILABLE')+' · Exacte 48-uursmetingen: '+esc(fmt(social?.observedAlignedWindows))+
+    ' · Website- en orderattributie: '+badge(social?.conversionClaim||'ONBEKEND')+'</p>'+
+    (social?'<div class="od-scroll"><table><thead><tr><th>Kanaal</th><th>Posts</th><th>7d/voorgaande 21d gemeten</th><th>Views</th><th>Likes</th><th>Comments</th><th>Reposts</th><th>Clicks</th></tr></thead><tbody>'+
+      (socialRows||'<tr><td colspan="8">Geen geverifieerde socialpostmetingen.</td></tr>')+'</tbody></table></div>':
+      '<p class="od-warn">Socialmediabron niet onafhankelijk beschikbaar. Geen groei of daling vastgesteld.</p>')+
+    '<p class="od-foot">Richtlijn: bereik en engagement zijn vroege signalen, geen orders. Gezaghebbende funnel: echte post/provider-ID → betrouwbaar gemeten interactie → toegeschreven website-CTA → gekwalificeerde lead → onafhankelijke betaling → toegepaste leerregel.</p></section>'+
     '<section class="od-card"><h3>Bronbewijs voor leads, orders en experimenten</h3><p>De dagtotalen hierboven zijn observaties. Onderstaande bronbewijzen komen uit de bestaande Supabase-registraties. Ook een geregistreerde providerreferentie is nog geen onafhankelijk bevestigd betaalbewijs.</p><div class="od-grid">'+proofCards+'</div>'+
     '<p class="od-foot">Eventstatus: '+badge(proof?.eventStatus)+' · Leadstatus: '+badge(proof?.leadStatus)+' · Orderstatus: '+badge(proof?.orderStatus)+'</p>'+
     '<h4>Gerandomiseerde experimentcohorten</h4>'+
