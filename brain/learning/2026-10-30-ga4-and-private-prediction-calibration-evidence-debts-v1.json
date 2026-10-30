@@ -46,7 +46,26 @@
     "prediction_control_debt": 1867,
     "original_forecast_sales_outcomes_with_exact_forecast_id": 0,
     "original_calibrator_cron_active": true,
-    "source_qualifier": "The empty provider report is not evidence that every real user avoided the site, nor that consented GA4 tag is broken. Calibration counts have distinct populations, not additive."
+    "source_qualifier": "The empty provider report is not evidence that every real user avoided the site, nor that consented GA4 tag is broken. Calibration counts have distinct populations, not additive.",
+    "source_health_conflict": {
+      "state": "SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH",
+      "original_health_view": "public.powerhouse_source_freshness_v1",
+      "health_status": "ok",
+      "health_freshness": "fresh",
+      "original_data_spine_view": "public.powerhouse_data_spine_health_v1",
+      "data_spine_freshness": "STALE",
+      "data_spine_last_observation_utc": "2026-10-29T06:05:02.292Z",
+      "technical_health_timestamp_is_not_new_provider_data": true,
+      "external_windsor_ga4_20261030": {
+        "property_id": "546874601",
+        "session_source_medium": "linkedin.com / referral",
+        "sessions": 1,
+        "active_users": 1,
+        "event_count": 4
+      },
+      "external_windsor_is_not_canonical_import": true,
+      "verified_direct_resolution_candidates": 0
+    }
   },
   "correction": "In the ORIGINAL admin-only Powerhouse CRO API and Portal V2, project a pure GA4 last-real-provider-data vs original Data Spine freshness report and source-backed public-market vs tenant-private calibration evidence/owner recovery plan. Agents can make one guarded original-owner source or first-party evidence improvement on natural runs, but no synthetic GA4 visit or silent negative/private public-LLM calibration.",
   "prevention": [
@@ -55,7 +74,8 @@
     "Never count original public-scope hourly calibrator as closing person/company forecasts; its eligible public queue is zero and separate private backlog remains open.",
     "Only original authorized first-party provider outcomes with forecast_id, event time, predicted-event semantics and tenant permission can close a private forecast. No negative evidence from silence.",
     "Preserve two distinct calibration denominators (2005 due vs 2085 non-public obligation records; 1867 unresolved forecasts) and do not sum, relabel or auto-close them.",
-    "One existing scheduler/writer/portal/ONE BRAIN/Heartbeat remains canonical; protected Required/BRAIN/CodeQL exact Netlify live, future real source natural application and independent outcomes required."
+    "One existing scheduler/writer/portal/ONE BRAIN/Heartbeat remains canonical; protected Required/BRAIN/CodeQL exact Netlify live, future real source natural application and independent outcomes required.",
+    "Reject GA4 source GREEN when technical powerhouse_source_freshness_v1 says fresh but latest real dated provider rows are empty or original Data Spine is STALE: emit SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH in the original secured read-only Powerhouse projection and portal. External independent GA4 provider rows must be imported only via the original authorized duplicate-safe collector, never relabelled as already imported."
   ],
   "tests": [
     "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
@@ -69,6 +89,9 @@
     "protected_release_verified": false,
     "exact_provider_source_improved": false,
     "private_calibration_debt_reduced": false,
-    "paid_business_uplift_verified": false
+    "paid_business_uplift_verified": false,
+    "source_health_conflict_guard": "SOURCE_CANDIDATE_NOT_YET_PROTECTED_OR_LIVE",
+    "prior_original_repair_main_sha": "6311a1911ec27f3725b6a87e4bfd9e6897c8b546",
+    "prior_original_repair_netlify_ready_verified": true
   }
 }
