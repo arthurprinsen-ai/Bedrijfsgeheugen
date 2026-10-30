@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {ingestSignals,heartbeatGrowthTick} from "./heartbeat-adapter.mjs";
+import {ingestSignals,heartbeatGrowthTick,reconcileCommercialCroProof} from "./heartbeat-adapter.mjs";
 import {designCroExperiment} from "./decision-core.mjs";
 const now=1750000000000,signal={id:"abc",type:"scan_abandonment",observedAt:now,estimatedIncrementalMargin:2900,confidence:0.6,dataQuality:0.8,effortHours:4,risk:0.1};
 test("ingest only independently verified and fresh metrics",()=>{
@@ -131,7 +131,6 @@ test("missing CRO readback stays unassessed rather than falsely green",()=>{
  assert.equal(packet.publishReady,false);
 });
 test("aggregate count alone cannot turn into independently verified lead or order",()=>{
- const {reconcileCommercialCroProof}=await import('./heartbeat-adapter.mjs');
  const r=reconcileCommercialCroProof({cycle_id:'2026-10-30',conversion:{
    event_evidence_status:'PERSISTED_EVENTS_OBSERVED',
    source_readback_verified:true,event_receipt_id:'event:persisted:001',
@@ -149,7 +148,6 @@ test("aggregate count alone cannot turn into independently verified lead or orde
  assert.equal(r.writebackProposal.verified,false);
 });
 test("even fully attested CRO proof only permits independent audit, not automatic promotion",()=>{
- const {reconcileCommercialCroProof}=await import('./heartbeat-adapter.mjs');
  const r=reconcileCommercialCroProof({cycle_id:'verified-replay',conversion:{
    event_evidence_status:'PERSISTED_EVENTS_OBSERVED',
    source_readback_verified:true,event_receipt_id:'event:persisted:001',
