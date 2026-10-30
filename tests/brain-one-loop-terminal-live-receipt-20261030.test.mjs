@@ -26,6 +26,12 @@ test('old historical failure observation stays immutable, software proof is not 
  const old=JSON.parse(read('brain/learning/2026-10-30-one-loop-deploy-proof-release-guard-v1.json'));
  assert.equal(old.maturity,'OBSERVED');
  assert.equal(old.evidence.nested_proof_payload_readback_proven,false);
+ assert.equal(old.terminal_proof.state,'PROVEN_SOFTWARE_AND_ADMIN_ROUTE_ONLY');
+ assert.equal(old.terminal_proof.nested_one_loop_proof,'PROVEN');
+ assert.equal(old.terminal_proof.original_provider_readback_run,41030754918);
+ assert.equal(old.terminal_proof.original_brain_loop_counts.overallStatus,'RED');
+ assert.equal(old.terminal_proof.commercial_outcome_evidence_proven,false);
+ assert.equal(old.terminal_proof.natural_agent_learning_application_proven,false);
  const skill=read('.agents/skills/powerhouse-netlify-production-truth/SKILL.md');
  assert.ok(skill.includes(proofSha));
  assert.match(skill,/ORIGINAL_15_LOOP_GUARDS/);
