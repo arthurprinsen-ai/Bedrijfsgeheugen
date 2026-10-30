@@ -70,3 +70,20 @@ Externe uitgangspunten:
 - Nielsen Norman Group progressive disclosure: https://www.nngroup.com/articles/progressive-disclosure/
 
 Deze architectuur is een uitbreidingsbesluit voor Portal V2. Nieuwe agents hergebruiken dezelfde component en veranderen de interface alleen wanneer een betere bewezen oplossing bestaat.
+
+## Uitbreiding strategisch advies — diagnose, afweging en uitvoerbaar besluit
+
+Dezelfde kandidaat-PR bouwt de leesbare `strategic-advisor.js` op basis van de bestaande `executive-projection.js`. De ondernemerscockpit en bestaande Next Best Actions-beslispagina krijgen identiek advies: reden, oorspronkelijke probleemcontext, bron, prioriteit, voorspelde impact (apart gelabeld), onderbouwde alternatieven, ontbrekende afwegingen, toestemmingsgrens, vervolgactie en geverifieerde outcome-koppeling.
+
+De module voegt **geen** nieuwe bron, opslag, AI-executor, planner, autonome writer of klantdata toe. Het is nadrukkelijk geen generieke 'McKinsey/BCG' claim: strategische kwaliteit is een toetsbaar productdoel, geen externe affiliatie.
+
+Minimaal vijf evalvragen voor iedere advieskaart:
+1. Is het onderliggende signaal actueel, tenant-scoped en herleidbaar?
+2. Zijn de alternatieven expliciet onderbouwd of wordt het ontbrekende bewijs zichtbaar?
+3. Is verwacht effect duidelijk gescheiden van gerealiseerd effect?
+4. Is de actie omkeerbaar en/of is toestemming vereist?
+5. Kan de ondernemer het besluit binnen enkele seconden begrijpen en de volgende stap zelfstandig nemen?
+
+Gecontroleerde productiebron 30-10-2026: Powerhouse lagen 32/32, jobs 18/18, errors 3, architecture AMBER, 7d 9.202 niet-robot growth-events, 0 persisted primaire CTA events en 0 growth-outcomes. Niet interpreteren als 'geen echte klikken' of 'geen orders' voordat bron- en attributieketens correct zijn. Originele CRO agents repareren meetbewijs eerst en testen daarna optimalisaties. Resultaat/impact moet expliciet geverifieerd worden.
+
+Regressie: `tests/brain-strategic-advisor-one-loop-20261030.test.mjs`.
