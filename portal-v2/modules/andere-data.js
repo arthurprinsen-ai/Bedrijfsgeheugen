@@ -52,6 +52,7 @@ function render(container,data){
   const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
   const brain=data?.brainClosure||null;
   const oneLoop=data?.oneLoop||null;
+  const outreach=data?.outreachRecovery||null;
   const loopRows=oneLoop?.status==='READBACK_COMPLETE'&&Array.isArray(oneLoop.loops)
     ?oneLoop.loops.filter(row=>row.status!=='GREEN').slice(0,15).map(row=>
       '<tr><td>'+esc(row.key)+'</td><td>'+badge(row.status)+'</td><td>'+
@@ -121,6 +122,15 @@ function render(container,data){
     loopRows+'</tbody></table></div>':
     '<p>Geen onbewezen groene status: '+esc(oneLoop?.reason||'Geen rode of oranje lussen waargenomen')+'.</p>')+
     '<p class="od-foot">Een ontbrekende of verouderde 15-lussenreadback blijft UNVERIFIED. Nooit kunstmatig groen maken; resultaten pas sluiten met onafhankelijk uitvoerings-, conversie- en providerbewijs.</p></section>'+
+    '<section class="od-card"><h3>Autonome outreach · brononderzoek → uitvoering → ontvangstbewijs</h3>'+
+    '<p>Gedeelde Powerhouse/ONE BRAIN-waarheid uit de oorspronkelijke sales-actions. Een intern onderzoek is geen verzonden e-mail; een cronstatus is geen Gmail-bewijs.</p>'+
+    '<p>Bronreadback: '+badge(outreach?.status)+' · Verantwoordelijke onderzoeksagent: '+
+    esc(outreach?.nextOwner||'Niet bevestigd')+'</p>'+
+    '<div class="od-grid">'+field('E-mails geblokkeerd op bronbewijs',fmt(outreach?.sourceResearchHeld))+
+    field('Open interne onderzoeksacties',fmt(outreach?.internalResearchPending))+
+    field('Afgeronde onderzoeksacties (geen verzendbewijs)',fmt(outreach?.internalResearchDone))+
+    field('Verzendingen met vastgelegde Gmail-readback',fmt(outreach?.providerVerifiedSends))+'</div>'+
+    '<p class="od-foot">Ontbrekende actuele bedrijfsspecifieke bron → bestaande interne onderzoeksactie (dedupe) → originele tekstkwaliteitscontrole → geautoriseerde e-mail → onafhankelijke Gmail SENT-label/ontvanger-readback → Heartbeat action/readback. Bij ontbrekend bewijs blijft de lus AMBER en wordt er niets verzonnen. '+esc(outreach?.reason||'')+'</p></section>'+
     '<section class="od-card"><h3>ONE BRAIN · commerciële CRO-terugkoppeling</h3>'+
     '<p>Originele Heartbeat → canonieke Brain-opslag, zonder tweede scheduler of losse registratie. Een technische readback bewijst nog geen verkoop of experimentele verbetering.</p>'+
     '<p>Commerciële lus: '+badge(data.commercialLoopStatus||'NOT_VERIFIED')+
