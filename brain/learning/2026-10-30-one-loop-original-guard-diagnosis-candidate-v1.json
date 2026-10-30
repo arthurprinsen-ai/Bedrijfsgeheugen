@@ -15,6 +15,12 @@
     "historical_replay": [
       "tests/brain-one-loop-original-guard-diagnostics-20261030.test.mjs",
       "tests/brain-one-loop-assurance-readback-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-one-loop-original-guard-diagnostics-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-loop-original-guard-diagnostics-20261030.test.mjs"
     ]
   },
   "observed_state": {
@@ -27,7 +33,12 @@
     "source": "public.powerhouse_loop_assurance_state_v1 and public.powerhouse_loop_assurance_receipts_v1",
     "originalGuardsFailed": 6,
     "candidateOnly": true,
-    "revenueUpliftVerified": false
+    "revenueUpliftVerified": false,
+    "ci_admission_first_attempt": {
+      "run_id": 41128308649,
+      "reason": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+      "fix": "Run explicit shadow and canary regression modes through the existing security-sensitive ONE BRAIN evaluation gate."
+    }
   },
   "humanDocumentation": "docs/changes/2026-10-30-one-loop-original-guard-diagnosis-v1.md",
   "regression": "tests/brain-one-loop-original-guard-diagnostics-20261030.test.mjs",
