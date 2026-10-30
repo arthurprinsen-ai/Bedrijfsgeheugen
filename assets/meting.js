@@ -10,7 +10,7 @@
   try{if(navigator.globalPrivacyControl===true||navigator.doNotTrack==='1'||window.doNotTrack==='1'||navigator.msDoNotTrack==='1')return;}catch(e){}
   var DOEL='https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-interactie';
   var gebied=/^\/(klantportaal|portal-v2|portaal|mijn)/.test(location.pathname)?'portaal':'site';
-  var sid='';try{sid=sessionStorage.getItem('bg_meting_sessie')||'';if(!sid){sid=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));sessionStorage.setItem('bg_meting_sessie',sid);}}catch(e){sid='';}
+  var sid='';try{sid=sessionStorage.getItem('bg_meting_sessie')||sessionStorage.getItem('bg_growth_session')||'';if(!sid){sid=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));}sessionStorage.setItem('bg_meting_sessie',sid);sessionStorage.setItem('bg_growth_session',sid);}catch(e){sid='';}
   var bron='';try{if(document.referrer){var r=new URL(document.referrer);if(r.hostname!==location.hostname)bron=r.hostname;}}catch(e){}
   /* Herkomst per sessie (11 sept 2026): utm-bron / -medium / -campagne van de binnenkomst, anders het verwijzende domein.
      Eén keer per tabblad bepaald en bewaard; nooit persoonsgegevens. */
@@ -70,6 +70,30 @@
   }
   function ga(naam,p){try{if(toestemming()&&typeof window.gtag==='function')window.gtag('event',naam,p);}catch(e){}}
 
+  /* Acquisition truth only after optional analytics consent: map external UTM/referrer
+     to fixed categories, never forward raw URLs, names, UTM values or PII. */
+  function bronCategorie(){
+    if(!toestemming())return {source:'website',medium:'unattributed',campaign:''};
+    var parts=String(herkomst||'').toLowerCase().split(/\s+\/\s+/);
+    var source=String(parts[0]||'').trim(),medium=String(parts[1]||'').trim(),campaign=String(parts[2]||'').trim();
+    var out={source:'website',medium:'direct',campaign:''};
+    if(/^(linkedin|li|linkedin\.com|www\.linkedin\.com|lnkd\.in|linkedin_personal|linkedin_company)$/.test(source)){
+      out.source='linkedin';out.medium='social';
+      if(/(personal|persoonlijk)/.test(source+' '+campaign))out.campaign='linkedin_personal';
+      else if(/(company|bedrijf|pagina)/.test(source+' '+campaign))out.campaign='linkedin_company';
+    }else if(/^(instagram|ig|instagram\.com|www\.instagram\.com)$/.test(source)){
+      out.source='instagram';out.medium='social';out.campaign='instagram';
+    }else if(/^(email|e-mail|mail|newsletter|nieuwsbrief)$/.test(source)||/^(email|e-mail|newsletter)$/.test(medium)){
+      out.source='email';out.medium='email';out.campaign='email';
+    }else if(/^(google|google\.com|www\.google\.com|bing|bing\.com|www\.bing\.com|duckduckgo\.com)$/.test(source)){
+      out.source=source.split('.')[0].replace(/^www$/,'google');
+      out.medium=/^(paid|cpc|ppc)$/.test(medium)?'paid':'organic';
+    }else if(source&&source!=='(direct)'&&source!=='direct'){
+      out.source='referral';out.medium='referral';
+    }
+    return out;
+  }
+
   /* Commerciële meetpunten naar de BESTAANDE durable Powerhouse growth queue.
      Alleen bij analytics-toestemming; geen formulierinhoud, identifiers of raw kliktekst.
      Acknowledgement 202 betekent QUEUED, niet dat Supabase-opslag of order bewezen is. */
@@ -81,10 +105,12 @@
     if(!/^https?:$/.test(location.protocol)||!/(^|\.)bedrijfsgeheugen\.nl$/i.test(location.hostname))return;
     var pad=location.pathname.replace(/[^a-zA-Z0-9/_-]/g,'').slice(0,180)||'/';
     var id='';try{id=crypto.randomUUID();}catch(e){id='g'+Date.now().toString(36)+Math.random().toString(36).slice(2);}
+    var acq=bronCategorie();
     var event={
       event_id:id,event_type:type,
       canonical:'https://www.bedrijfsgeheugen.nl'+pad,
-      intent_id:pad,source:'website',channel:'website',
+      intent_id:pad,source:acq.source,medium:acq.medium,campaign:acq.campaign,
+      attribution_root:sid,channel:'website',
       content_type:'page',funnel_stage:'consideration'
     };
     var pogingen=0;
