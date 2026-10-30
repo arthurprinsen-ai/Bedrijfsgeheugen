@@ -1,0 +1,36 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-30",
+  "fingerprint": "powerhouse|one-brain|failed-guard-cause-hidden-by-aggregate|20261030-v1",
+  "compiler": {
+    "failure_class": "ONE_LOOP_ORIGINAL_GUARD_CAUSE_VISIBILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original authenticated 15-loop portal only projected failed/unknown guard status, hiding specific fail-closed causes already stored in the canonical stage receipts.",
+  "prevention": "Only source-linked, time-bounded, code-allowlisted original guard receipts may annotate the 15-loop readback. Never change original loop status, count stages as success, leak raw provider state, or create another writer/scheduler.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-loop-original-guard-diagnostics-20261030.test.mjs",
+      "tests/brain-one-loop-assurance-readback-20261030.test.mjs"
+    ]
+  },
+  "observed_state": {
+    "green": 8,
+    "amber": 1,
+    "red": 6,
+    "as_of": "2026-10-30T20:59:00Z"
+  },
+  "evidence": {
+    "source": "public.powerhouse_loop_assurance_state_v1 and public.powerhouse_loop_assurance_receipts_v1",
+    "originalGuardsFailed": 6,
+    "candidateOnly": true,
+    "revenueUpliftVerified": false
+  },
+  "humanDocumentation": "docs/changes/2026-10-30-one-loop-original-guard-diagnosis-v1.md",
+  "regression": "tests/brain-one-loop-original-guard-diagnostics-20261030.test.mjs",
+  "productionReadbackVerified": false,
+  "commercialResultVerified": false
+}
