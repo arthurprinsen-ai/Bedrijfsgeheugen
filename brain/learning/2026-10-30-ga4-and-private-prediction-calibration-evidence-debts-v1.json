@@ -14,6 +14,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
     ]
   },
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
