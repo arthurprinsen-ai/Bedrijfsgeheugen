@@ -29,3 +29,14 @@ De Executive Cockpit toonde afzonderlijk 'Meten' en 'Leren', maar de ondernemer 
 5. Bij bewezen verbetering pas als vaardigheid promoveren en in ONE BRAIN outcome memory/agent routine toepassen.
 
 Protect last-known-good. RED or unverified is an open obligation, not green by convention.
+
+## Integratie: strategische advieskwaliteit en CRO-waarheid
+
+- Nieuw bestand: `portal-v2/operating-system/strategic-advisor.js` (read-only, fail-closed).
+- Directie en besluiten: bestaande `executive-cockpit.js` en `operating-system-ui.js`.
+- Tests: `tests/brain-strategic-advisor-one-loop-20261030.test.mjs`, inclusief ongefundeerde uitkomsten/ROI, brongezondheid, XSS, onjuiste action-ID en lege tenant.
+- Standaard: strategieadvies met diagnose, alternatieven, expected-value/consent grens, actie en onafhankelijk gemeten resultaat. Geen fictieve McKinsey/BCG-affiliatie.
+- Observatie: 9.202 growth-events (7 dagen) maar 0 persistent primary CTA en 0 growth outcomes, onafhankelijk omzetbewijs voor deze keten ontbreekt. Dit is een meetgat/hypothese, geen bewezen 0 engagement.
+- PR #5211 eerste CI admission faalde met ontbrekende vier machine-metadata-velden, bronrun 41105463495. Exacte metadata is bijgewerkt in dezelfde PR; opnieuw verifiëren alvorens Required groen te claimen.
+- Supabase ONE BRAIN: `delivery|hygiene|pr5211-missing-candidate-metadata|20261030-v1` OBSERVED, occurrence 1, providerbron/run vastgelegd. CAS-promotie van oorzaak/preventie is nog niet gelukt; niet als afgerond presenteren. Repositorydoc en agent-skill bewaren de oorzaak en preventie.
+- Status blijft CANDIDATE tot protected checks, exacte main→Netlify en browser/tenant-readback; zakelijk succes bovendien vereist eigen bron-/provider- en gecontroleerd CRO-bewijs.
