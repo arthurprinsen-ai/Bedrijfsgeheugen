@@ -37,6 +37,9 @@
     ],
     "canary": [
       "tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs"
     ]
   },
   "tests": [
