@@ -8,6 +8,32 @@ const CSS=`
 .os-executive-scan{display:grid;grid-template-columns:1.25fr .75fr;gap:12px;margin-bottom:12px}.os-executive-scan h3{margin:0 0 10px}.os-executive-scan ol{margin:0;padding-left:20px}.os-executive-scan li{padding:7px 0}
 .os-detail{border-top:1px solid rgba(15,23,42,.08);padding-top:12px}.os-detail summary{cursor:pointer;font-weight:800;padding:8px 0}.os-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:8px}.os-card h3,.os-health h3,.os-page-card h3{margin:0 0 10px}.os-card ol{margin:0;padding-left:20px}.os-card li{padding:7px 0}.os-evidence{margin-top:4px}.os-health{margin-top:12px}.os-health p,.os-muted,.os-empty,.os-page-empty p{margin:0;opacity:.72}.os-module-tabs,.os-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.os-module-tabs button,.os-actions button,.os-graph-list button{appearance:none;border:1px solid rgba(15,23,42,.16);background:#fff;border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer;text-align:left}.os-module-tabs button[aria-pressed="true"]{font-weight:700;border-color:currentColor}.os-module-detail{margin-top:12px}.os-page-card+.os-page-card{margin-top:12px}.os-list{display:grid;gap:10px}.os-list article{border-top:1px solid rgba(15,23,42,.08);padding-top:10px}.os-list article:first-child{border-top:0;padding-top:0}.os-impact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.os-impact-grid article{padding:12px;border:1px solid rgba(15,23,42,.08);border-radius:12px}.os-impact-grid b{display:block;font-size:20px;margin:6px 0}.os-scenario-result pre{white-space:pre-wrap;overflow:auto;padding:12px;border-radius:10px;background:rgba(15,23,42,.05)}.os-graph-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.os-graph-list button{display:flex;flex-direction:column;gap:3px}.os-module-tabs button:focus-visible,.os-actions button:focus-visible,.os-graph-list button:focus-visible,.os-detail summary:focus-visible{outline:3px solid currentColor;outline-offset:2px}
 
+
+/* Strategic consultant-quality decision framing, with no new data or decisions. */
+.os-strategy-advisor{margin:0 0 18px;padding:20px;border-radius:18px;background:linear-gradient(128deg,#eef4ff,#fff);border:1px solid #c8d8f2;color:#17243b}
+.os-strategy-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:14px}
+.os-strategy-head small{display:block;color:#1549a6;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.065em}
+.os-strategy-head h3{font-size:clamp(18px,2.6vw,26px);margin:5px 0 0;line-height:1.2}
+.os-strategy-head p{max-width:350px;margin:0;color:#475569;font-size:13px;line-height:1.5}
+.os-strategy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:12px}
+.os-strategy-card,.os-strategy-empty{background:#fff;border:1px solid #dbe6f5;border-radius:15px;padding:16px;min-width:0;box-shadow:0 8px 20px #0f172a08}
+.os-strategy-card-header{display:flex;justify-content:space-between;gap:12px;color:#1647ae;font-size:11px;font-weight:700}
+.os-strategy-card h4{margin:10px 0;font-size:18px;line-height:1.3}
+.os-strategy-card p{font-size:13px;line-height:1.55;margin:8px 0;color:#334155}
+.os-strategy-impact{display:grid;gap:4px;background:#f3f7fc;border-radius:12px;padding:12px;margin:12px 0}
+.os-strategy-impact>span{font-size:11px;color:#475569;font-weight:700}
+.os-strategy-impact>strong{font-size:18px}
+.os-strategy-impact>small{font-size:12px;color:#475569}
+.os-strategy-card details{border-top:1px solid #e2e8f0;padding:9px 0}
+.os-strategy-card details summary{cursor:pointer;font-size:13px;color:#1647ae;font-weight:800}
+.os-strategy-card details ul{margin:8px 0;padding-left:20px}.os-strategy-card details li{margin-bottom:8px;font-size:13px}
+.os-strategy-card details li span{display:block;color:#475569}
+.os-strategy-card .os-strategy-status{font-size:12px;color:#475569}
+.os-strategy-card button,.os-strategy-empty button{border:1px solid #1647ae;border-radius:10px;background:#1647ae;color:#fff;padding:10px 12px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;min-height:44px;margin-top:10px}
+.os-strategy-card button:focus-visible,.os-strategy-empty button:focus-visible,.os-strategy-card summary:focus-visible{outline:3px solid #115be8;outline-offset:3px}
+.os-strategy-empty{display:grid;gap:8px}.os-strategy-empty p{margin:0;font-size:13px}.os-strategy-empty button{justify-self:start}
+@media(max-width:700px){.os-strategy-advisor{padding:14px}.os-strategy-head{display:block}.os-strategy-head p{margin-top:8px}.os-strategy-grid{grid-template-columns:1fr}}
+
 /* Entrepreneur result feedback: consistent progressive disclosure on mobile/desktop. */
 .os-outcome-feedback{margin:16px 0;padding:20px;border:1px solid rgba(17,91,232,.24);border-radius:18px;background:linear-gradient(145deg,#f0f6ff,#fff);color:#0f172a}
 .os-outcome-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}
