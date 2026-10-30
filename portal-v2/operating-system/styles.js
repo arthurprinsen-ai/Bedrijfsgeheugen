@@ -33,6 +33,8 @@ const CSS=`
 .os-outcome-card summary{cursor:pointer;font-weight:800;padding:5px 0;color:#1647ae}
 .os-outcome-card summary:focus-visible{outline:3px solid #115be8;outline-offset:3px}
 .os-outcome-card details p{overflow-wrap:anywhere;line-height:1.5}
+.os-outcome-more{display:block;width:100%;margin-top:12px;border:1px solid #1647ae;background:#fff;color:#1647ae;border-radius:10px;padding:10px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-align:center}.os-outcome-more:focus-visible{outline:3px solid #115be8;outline-offset:3px}
+
 @media(max-width:700px){.os-outcome-intro{display:block}.os-outcome-intro p{margin-top:7px}.os-outcome-feedback{padding:14px}.os-outcome-compare{grid-template-columns:1fr}.os-outcome-card-head{display:block}.os-outcome-card-head>span{display:inline-block;margin-top:8px;max-width:none}}
 
 @media(max-width:900px){.os-attention{grid-template-columns:1fr}.os-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.os-impact-grid{grid-template-columns:1fr 1fr}.os-executive-scan{grid-template-columns:1fr}.os-context-strip-grid{grid-template-columns:1fr}}
