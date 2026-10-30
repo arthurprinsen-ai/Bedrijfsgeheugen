@@ -48,5 +48,23 @@
     "exact_prod_verified": false,
     "persisted_new_cta_event_verified": false,
     "paid_order_or_causal_uplift_verified": false
+  },
+  "evidence": {
+    "observed_original_sources": [
+      "assets/meting.js",
+      "tools/seo-order-engine/measurement.mjs",
+      "public.powerhouse_cro_conversion_evidence_v1"
+    ],
+    "historical_replay": "tests/brain-cro-generated-primary-cta-owner-gap-20261030.test.mjs",
+    "original_exclusive_writer_rule": "Global meter suppresses CTA when SEO inline #bg-growth-measurement exists",
+    "newly_covered_routes": [
+      "/contact",
+      "/aanmelden",
+      "/prijzen"
+    ],
+    "real_persisted_new_click_id": null,
+    "independently_paid_order": null,
+    "release_readback_verified": false,
+    "limits": "Code coverage and synthetic historical replay are not an actual visitor CTA nor proven lead/payment"
   }
 }
