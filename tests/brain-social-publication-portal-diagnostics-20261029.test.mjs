@@ -97,9 +97,45 @@ test('original Netlify/Portal V2 remains private, read-only, and human-readable'
   const server=readFileSync('netlify/functions/powerhouse-observability.mjs','utf8');
   const source=readFileSync('brain/observability/publication-evidence-readback.mjs','utf8');
   const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
-  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v3'/);
+  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v4'/);
   assert.match(source,/provider_readback_error:evidence->>readback_error/);
   assert.match(portal,/Nooit opnieuw publiceren; alleen bestaand bericht verifiëren/);
   assert.doesNotMatch(portal,/urn:li:share:7521667096859201536/);
 });
 
+
+test('30 October personal source UNVERIFIED is a fact/provenance gate, not an OAuth or empty feed claim',()=>{
+  const today='2026-10-30';
+  const rows=[
+    {...row('linkedin_company','PLANNED'),publication_date:today},
+    {...row('linkedin_personal','BLOCKED','PERSONAL_SOURCE_UNVERIFIED'),publication_date:today},
+    {...row('instagram','PLANNED'),publication_date:today},
+    {...row('blog','GENERATED'),publication_date:today}
+  ];
+  const result=summarizePublicationEvidence(rows,{count:4,date:today,observedAt:'2026-10-30T06:20:00Z'});
+  assert.equal(result.status,'REGISTRY_READBACK_COMPLETE');
+  const personal=result.channels.find(c=>c.channel==='linkedin_personal');
+  assert.equal(personal.recoveryCode,'PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT');
+  assert.equal(personal.registryStatus,'BLOCKED');
+  assert.equal(personal.providerIdRecorded,false);
+  assert.equal(personal.internalLiveProofRecorded,false);
+  assert.doesNotMatch(JSON.stringify(result),/PERSONAL_SOURCE_UNVERIFIED|urn:li:|token|secret/i);
+});
+test('a later actual provider side effect outranks PERSONAL_SOURCE_UNVERIFIED: never resend',()=>{
+  const rows=[
+    row('linkedin_company','PLANNED'),
+    row('linkedin_personal','PUBLISHED','PERSONAL_SOURCE_UNVERIFIED','urn:li:share:existing'),
+    row('instagram','PLANNED'),
+    row('blog','GENERATED')
+  ];
+  const result=summarizePublicationEvidence(rows,{count:4,date,observedAt});
+  assert.equal(result.channels[1].recoveryCode,'PROVIDER_CREATE_RECORDED_VERIFY_READBACK_NO_REPOST');
+  assert.equal(result.channels[1].providerIdRecorded,true);
+});
+test('original admin-only portal and server have a readable fact verification recovery contract',()=>{
+  const server=readFileSync('netlify/functions/powerhouse-observability.mjs','utf8');
+  const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
+  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v4'/);
+  assert.match(portal,/Controleer concreet feit, herkomst, datum en nieuw verhaal/);
+  assert.doesNotMatch(portal,/PERSONAL_SOURCE_UNVERIFIED.*true/);
+});
