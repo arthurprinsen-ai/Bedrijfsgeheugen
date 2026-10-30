@@ -58,5 +58,6 @@
     "tests/brain-cro-commercial-proof-closure-v1.test.mjs",
     "tools/growth-intelligence/heartbeat-adapter.test.mjs"
   ],
-  "production_proven": false
+  "production_proven": false,
+  "prevention_rule": "Never treat BG211 delivery-disabled, queued Growth events, browser HTTP ACK, one treatment arm, lead intent or estimated sales outcome as proof of a closed CRO/commercial learning loop; independently verify every gate and subsequent natural Heartbeat application."
 }
