@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  seoGeneratedCtaRouteParity:Object.freeze({
+    fingerprint:'powerhouse|cro|seo-generated-cta-owner-route-parity-gap|20261030-v1',
+    owner:'existing Powerhouse SEO Order Engine + original Growth/Revenue CRO agents',
+    source:'tools/seo-order-engine/measurement.mjs',
+    duplicateGuard:'assets/meting.js',
+    protectedEventReceiver:'netlify/functions/growth-event.mjs',
+    originalPersistentReadback:'growth_events + powerhouse_cro_conversion_evidence_v1',
+    originalAdminFunnel:'netlify/functions/_powerhouse-commercial-growth-funnel.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    sixFirstPartyRoutes:Object.freeze(['/zelfscan','/frisse-blik','/afsluiten','/contact','/aanmelden','/prijzen']),
+    originalSingleWriter:true,unchangedConsentAndBotGates:true,
+    noAdditionalSchedulerOrEventType:true,
+    regression:'tests/brain-cro-generated-primary-cta-owner-gap-20261030.test.mjs',
+    brain:'brain/learning/2026-10-30-exclusive-generated-primary-cta-coverage-gap-v1.json',
+    humanDoc:'docs/changes/2026-10-30-generated-primary-cta-route-coverage-fix.md',
+    independentlyPersistedNewCtaVerified:false,
+    independentlyPaidCustomerOutcomeVerified:false
+  }),
+
   commercialSocialToPaidOrderFunnel:Object.freeze({
     fingerprint:'powerhouse|one-brain|growth-funnel-observed-engagement-not-attributed-sales|20261030-v1',
     contract:'POWERHOUSE_ONE_BRAIN_COMMERCIAL_FUNNEL_V1',
