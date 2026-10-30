@@ -1,0 +1,39 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-30",
+  "fingerprint": "portal|operating-system|nested-page-navigation-unbound|20261030-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "rootCause": "Initial cockpit bindQuery on original buttons does not include later innerHTML-created adviser buttons.",
+  "repair": "Single delegated click listener on persistent existing cockpit host; canonical page whitelist and current domain state.",
+  "prevention": "Regressions for nested button, rerender, external node, invalid page and current-state lookup; do not create another scheduler/router.",
+  "regression": "tests/brain-portal-os-delegated-navigation-20261030.test.mjs",
+  "humanDocumentation": "docs/changes/2026-10-30-portal-os-nested-navigation-recovery.md",
+  "agentSkill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+  "productionVerified": false,
+  "independentBrowserVerified": false,
+  "commercialLiftVerified": false,
+  "compiler": {
+    "failure_class": "PORTAL_NESTED_NAVIGATION_HANDLER_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-os-delegated-navigation-20261030.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Required #41116714944 rejected first candidate with LEARNING_FAILURE_CLASS_REQUIRED; canonical compiler + historical replay required.",
+    "pending": "Exact-head Required and CodeQL, protected merge, Netlify and browser/tenant readback."
+  },
+  "root_cause": "Initial cockpit bindQuery on original buttons does not include later innerHTML-created adviser buttons.",
+  "prevention_rule": "Regressions for nested button, rerender, external node, invalid page and current-state lookup; do not create another scheduler/router.",
+  "evidence": {
+    "ci_hygiene_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41117024543",
+    "finding": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning, camelCase rootCause was not accepted by canonical semantic gate.",
+    "expected_next_run": "protected Required and CodeQL; independent Netlify production and browser readback pending"
+  }
+}
