@@ -193,6 +193,7 @@ jobs:
               -o live-portal-authenticated-proof.json; then
               if EXPECTED_COMMIT="${EXPECTED_COMMIT}" EXPECTED_DEPLOY_ID="${EXPECTED_DEPLOY_ID}" node --input-type=module - <<'NODE'
           import {readFile} from 'node:fs/promises';
+          import {assertOneLoopProductionReleaseProof} from './platform/api/portal-authenticated-production-proof-core.mjs';
           const text=await readFile('live-portal-authenticated-proof.json','utf8');
           const proof=JSON.parse(text);
           if(proof?.contract!=='PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1')throw new Error('Authenticated Portal proof contract mismatch');
@@ -204,6 +205,7 @@ jobs:
           if(proof?.cross_tenant_scope_verified!==true||proof?.tenant_count_verified!==2)throw new Error('Authenticated Portal proof did not verify two isolated tenants');
           if(proof?.payload_shape_verified!==true)throw new Error('Authenticated Portal proof did not verify response shape');
           if(proof?.synthetic_user_cleanup!=='DELETED')throw new Error('Authenticated Portal proof did not clean up synthetic user');
+          const oneLoopProof=assertOneLoopProductionReleaseProof(proof); // 15 genuine loops may remain RED/AMBER
           if(/access_token|refresh_token|password|authorization|@proof\.invalid/i.test(text))throw new Error('Authenticated Portal proof leaked secret or synthetic identity material');
           console.log(JSON.stringify({
             contract:proof.contract,
@@ -216,6 +218,11 @@ jobs:
             tenant_count_verified:proof.tenant_count_verified,
             payload_shape_verified:proof.payload_shape_verified,
             synthetic_user_cleanup:proof.synthetic_user_cleanup,
+            one_loop_assurance_proof:oneLoopProof.status,
+            one_loop_counts:{total:oneLoopProof.count,green:oneLoopProof.green,amber:oneLoopProof.amber,red:oneLoopProof.red},
+            one_loop_overall_status:oneLoopProof.overallStatus,
+            one_loop_nonadmin_denied:oneLoopProof.nonadminDenied,
+            one_loop_unauthenticated_denied:oneLoopProof.unauthenticatedDenied,
           }));
           NODE
               then

@@ -255,3 +255,44 @@ export async function runPortalAuthenticatedProductionProof({
 }
 
 export const PORTAL_AUTH_PROOF_CONTRACT=CONTRACT;
+
+
+/**
+ * Original Production Release Readback's terminal assurance gate.
+ * The generic signed two-tenant portal proof is intentionally independent.
+ * Fail closed if the exact deploy's admin-only original 15-loop proof is due.
+ * This never changes source RED/AMBER flags or implies business outcomes.
+ */
+export function assertOneLoopProductionReleaseProof(proof){
+  if(proof?.one_loop_assurance_proof!=='PROVEN')throw fail('ONE_LOOP_ADMIN_PROOF_NOT_PROVEN');
+  if(proof?.one_loop_assurance_admin_verified!==true)
+    throw fail('ONE_LOOP_ADMIN_READBACK_NOT_VERIFIED');
+  if(proof?.one_loop_assurance_nonadmin_denied!==true)
+    throw fail('ONE_LOOP_NONADMIN_BOUNDARY_NOT_VERIFIED');
+  if(proof?.one_loop_assurance_unauthenticated_denied!==true)
+    throw fail('ONE_LOOP_ANONYMOUS_BOUNDARY_NOT_VERIFIED');
+  if(proof?.synthetic_user_cleanup!=='DELETED')
+    throw fail('ONE_LOOP_SYNTHETIC_CLEANUP_NOT_VERIFIED');
+  if(proof?.one_loop_assurance_failure_code!==null)
+    throw fail('ONE_LOOP_SOURCE_FAILURE_NOT_RESOLVED');
+  const counts=proof?.one_loop_assurance_counts;
+  if(!counts||!Number.isInteger(counts.total)||counts.total!==15||
+    !['green','amber','red'].every(k=>Number.isInteger(counts[k])&&counts[k]>=0)||
+    counts.green+counts.amber+counts.red!==15)
+    throw fail('ONE_LOOP_CANONICAL_15_COUNT_INCONSISTENT');
+  const expectedStatus=counts.red>0?'RED':counts.amber>0?'AMBER':'GREEN';
+  if(counts.overallStatus!==expectedStatus)
+    throw fail('ONE_LOOP_CANONICAL_OVERALL_STATUS_CONFLICT');
+  return Object.freeze({
+    contract:'one-brain-original-loop-assurance-readback-v1',
+    status:'PROVEN',
+    count:15,
+    green:counts.green,
+    amber:counts.amber,
+    red:counts.red,
+    overallStatus:counts.overallStatus,
+    nonadminDenied:true,
+    unauthenticatedDenied:true,
+    cleanup:'DELETED'
+  });
+}
