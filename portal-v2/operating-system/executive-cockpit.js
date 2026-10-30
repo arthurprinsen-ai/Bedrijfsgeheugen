@@ -1,3 +1,4 @@
+import {outcomeFeedbackMarkup} from './outcome-feedback.js';
 import {buildExecutiveProjection} from './executive-projection.js';
 import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js';
 import {ensureOperatingSystemStyles} from './styles.js';
@@ -72,6 +73,7 @@ export function executiveCockpitMarkup(model){
     <article><small>3 · Doen</small><strong>Eerstvolgende actie</strong><span>Nog geen bewezen actie beschikbaar.</span></article>
     ${dailyFeedbackCards(model)}
   </div>
+  ${outcomeFeedbackMarkup(model.outcomes)}
  </section>`;
  const tabs=OPERATING_SYSTEM_PAGES.map(page=>`<button type="button" data-os-page="${page}" aria-pressed="false">${esc(LABELS[page]||page)}</button>`).join('');
  const attention=model.attention||[];
@@ -85,6 +87,7 @@ export function executiveCockpitMarkup(model){
     <article><small>3 · Doen</small><strong>${model.next_best_actions[0]?.title?esc(model.next_best_actions[0].title):'Geen actie met bewijs'}</strong><span>${model.next_best_actions[0]?esc(model.next_best_actions[0].next_action||model.next_best_actions[0].explanation||model.next_best_actions[0].summary||''):'Zodra bewijs beschikbaar is verschijnt hier de eerstvolgende actie.'}</span></article>
     ${dailyFeedbackCards(model)}
   </div>
+  ${outcomeFeedbackMarkup(model.outcomes)}
   <section class="os-attention" aria-label="Wat vraagt vandaag aandacht?">
   <div class="os-section-heading"><h3>Wat vraagt vandaag aandacht?</h3><p>Maximaal vijf geprioriteerde problemen uit dezelfde PH-Pxxx waarheid die ook Problem Radar, content en capabilities gebruiken.</p></div>
   ${problems.length?problems.map(problemCard).join(''):(attention.length?attention.map(attentionCard).join(''):'<article class="os-attention-empty"><strong>Geen gevalideerde problemen</strong><span>Externe signalen blijven hypotheses totdat intern bewijs beschikbaar is.</span></article>')}
