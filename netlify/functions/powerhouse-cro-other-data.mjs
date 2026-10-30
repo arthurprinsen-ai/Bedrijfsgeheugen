@@ -1,5 +1,6 @@
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import {projectSocialCroFunnel} from './_social-cro-funnel-projection.mjs';
+import {projectOriginalCommercialMomentum} from '../../tools/cro/original-commercial-momentum.mjs';
 import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
@@ -198,6 +199,17 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(oneLoopAssurance!==undefined&&oneLoop.status!=='READBACK_COMPLETE')flags.push('ORIGINAL_15_LOOP_ASSURANCE_UNVERIFIED');
   if(oneLoop.status==='READBACK_COMPLETE'&&oneLoop.counts.red>0)flags.push('ORIGINAL_15_LOOP_RED_GUARDS_OPEN');
   const cp=conversionProofOk?conversionProof[0]:null;
+  // One original read-only decision surface for website conversion and outreach.
+  // A spike in pageviews with 0 persisted CTA events is a measurement review,
+  // never proof of a zero true conversion rate, lead loss or paid order.
+  const growthMomentum=projectOriginalCommercialMomentum({
+    daily,readStatus:readStates.daily,conversionProof:cp,
+    experimentProof:experimentProofOk?experimentProof:[],
+    socialFunnel,outreachRecovery,at
+  });
+  for(const flag of growthMomentum.flags){
+    if(!flags.includes(flag))flags.push(flag);
+  }
   if(cp?.event_evidence_status!=='PERSISTED_EVENTS_OBSERVED')flags.push('PERSISTED_EVENT_PARITY_NOT_PROVEN');
   if(cp?.lead_evidence_status!=='LINKED_RECORDS_REQUIRE_INDEPENDENT_BUYER_VERIFICATION')flags.push('QUALIFIED_LEAD_READBACK_NOT_PROVEN');
   flags.push('INDEPENDENT_PAID_ORDER_VERIFICATION_REQUIRED');
@@ -209,6 +221,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     commercialLoopStatus:brainClosure.status,
     brainClosure,
     socialFunnel,
+    growthMomentum,
     sources:{
       socialFunnel:{status:socialFunnel?.status||'UNAVAILABLE',records:socialFunnel?.channels?.reduce((a,c)=>a+c.posts_registered,0)??null},
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
