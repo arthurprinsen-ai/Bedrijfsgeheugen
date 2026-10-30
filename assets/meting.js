@@ -97,7 +97,17 @@
   /* Commerciële meetpunten naar de BESTAANDE durable Powerhouse growth queue.
      Alleen bij analytics-toestemming; geen formulierinhoud, identifiers of raw kliktekst.
      Acknowledgement 202 betekent QUEUED, niet dat Supabase-opslag of order bewezen is. */
-  function meetGroei(type){
+  // A CMS selector already marks its rendered element with the original editorial
+  // key/version. Attach that lineage ONLY to the existing consented growth event.
+  function cmsContentId(el){
+    var node=el&&el.closest&&el.closest('[data-bg-cms-key][data-bg-cms-version]');
+    if(!node)return '';
+    var key=String(node.getAttribute('data-bg-cms-key')||'').trim();
+    var version=String(node.getAttribute('data-bg-cms-version')||'').trim();
+    if(!/^[a-z0-9][a-z0-9._-]{0,119}$/i.test(key)||!/^[1-9][0-9]{0,8}$/.test(version))return '';
+    return 'cms:'+key+':v'+version;
+  }
+  function meetGroei(type,element){
     if(gebied!=='site'||!toestemming())return;
     // Keep one commercial-event writer: generated money pages already have this producer.
     if((type==='primary_cta_click'||type==='form_start'||type==='form_submit_intent') &&
@@ -113,6 +123,8 @@
       attribution_root:sid,channel:'website',
       content_type:'page',funnel_stage:'consideration'
     };
+    var cmsId=cmsContentId(element);
+    if(cmsId)event.content_id=cmsId; // Existing DataHub content_id, same event_id/writer.
     var pogingen=0;
     function poging(){
       if(++pogingen>3)return;
@@ -134,13 +146,13 @@
   /* Calendly (11 sept 2026): geef de tabbladcode en de pagina mee als utm_content en utm_term, zodat het brein een geboekt
      gesprek aan de pagina en bron van dit bezoek kan koppelen (bg-calendly-sync). Geen naam of e-mailadres. */
   function tagCalendly(el){try{if(!el||el.tagName!=='A'||!/(^|\.)calendly\.com$/i.test(new URL(el.href).hostname)||!sid||!toestemming())return;var u=new URL(el.href);u.searchParams.set('utm_source','bedrijfsgeheugen');u.searchParams.set('utm_medium','site');if(herkomst)u.searchParams.set('utm_campaign',herkomst.slice(0,60));u.searchParams.set('utm_content',sid);u.searchParams.set('utm_term',location.pathname.slice(0,120));el.href=u.toString();}catch(e){}}
-  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),dRaw=el.getAttribute('href')||'',d='';try{if(/^mailto:/i.test(dRaw))d='mailto';else if(/^tel:/i.test(dRaw))d='tel';else if(dRaw){var link=new URL(dRaw,location.href);d=link.hostname===location.hostname?link.pathname:'extern:'+link.hostname;}}catch(e){}meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});if(/^mailto:|^tel:/i.test(dRaw))meetGroei('money_link_click');else if(el.closest&&el.closest('main')&&(el.matches('[data-bg-primary-cta],[data-bg-conversion],.btn-primary,.btn-primaire,.cta-primary')||/\/(contact|frisse-blik|aanmelden|prijzen|zelfscan)(\/|$)/i.test(d)))meetGroei('primary_cta_click');setTimeout(route,50);},true);
+  document.addEventListener('click',function(ev){var el=ev.target&&ev.target.closest&&ev.target.closest('a,button,[role="button"],[role="tab"],input[type="submit"],input[type="button"],summary,[data-bg-meet]');if(!el)return;tagCalendly(el);var t=tekstVan(el),o=onderdeelVan(el),dRaw=el.getAttribute('href')||'',d='';try{if(/^mailto:/i.test(dRaw))d='mailto';else if(/^tel:/i.test(dRaw))d='tel';else if(dRaw){var link=new URL(dRaw,location.href);d=link.hostname===location.hostname?link.pathname:'extern:'+link.hostname;}}catch(e){}meet({gebeurtenis:'klik',element_tekst:t,element_soort:(el.getAttribute('role')||el.tagName).toLowerCase(),element_doel:d,onderdeel:o});ga('klik',{element_tekst:t,onderdeel:o,link_pad:d.split('?')[0].split('#')[0]});if(/^mailto:|^tel:/i.test(dRaw))meetGroei('money_link_click',el);else if(el.closest&&el.closest('main')&&(el.matches('[data-bg-primary-cta],[data-bg-conversion],.btn-primary,.btn-primaire,.cta-primary')||/\/(contact|frisse-blik|aanmelden|prijzen|zelfscan)(\/|$)/i.test(d)))meetGroei('primary_cta_click',el);setTimeout(route,50);},true);
   var drempels=[10,25,50,75,90,100],gehaald={},wachtScroll=0,maxScroll=0;
   function scrol(){wachtScroll=0;var h=Math.max(document.documentElement.scrollHeight-window.innerHeight,1);var pct=Math.min(100,Math.round((window.scrollY||window.pageYOffset||0)/h*100));maxScroll=Math.max(maxScroll,pct);for(var i=0;i<drempels.length;i++){var d=drempels[i];if(pct>=d&&!gehaald[d]){gehaald[d]=1;meet({gebeurtenis:'scroll',diepte_pct:d});ga('scroll_diepte',{percentage:d});}}}
   addEventListener('scroll',function(){if(!wachtScroll)wachtScroll=setTimeout(scrol,250);},{passive:true});
   function formNaam(f){return String(f.getAttribute('name')||f.id||f.getAttribute('aria-label')||'formulier').slice(0,80);}
-  document.addEventListener('focusin',function(ev){var f=ev.target&&(ev.target.form||(ev.target.closest&&ev.target.closest('form')));if(!f||f.__bgGestart)return;f.__bgGestart=1;var n=formNaam(f);meet({gebeurtenis:'formulier_start',element_tekst:n,onderdeel:onderdeelVan(f)});ga('formulier_start',{formulier:n});meetGroei('form_start');},true);
-  document.addEventListener('submit',function(ev){var f=ev.target;if(!f||!f.tagName)return;var n=formNaam(f);meet({gebeurtenis:'formulier_verzonden',element_tekst:n,onderdeel:onderdeelVan(f)});ga('formulier_verzonden',{formulier:n});meetGroei('form_submit_intent');stuur();},true);
+  document.addEventListener('focusin',function(ev){var f=ev.target&&(ev.target.form||(ev.target.closest&&ev.target.closest('form')));if(!f||f.__bgGestart)return;f.__bgGestart=1;var n=formNaam(f);meet({gebeurtenis:'formulier_start',element_tekst:n,onderdeel:onderdeelVan(f)});ga('formulier_start',{formulier:n});meetGroei('form_start',f);},true);
+  document.addEventListener('submit',function(ev){var f=ev.target;if(!f||!f.tagName)return;var n=formNaam(f);meet({gebeurtenis:'formulier_verzonden',element_tekst:n,onderdeel:onderdeelVan(f)});ga('formulier_verzonden',{formulier:n});meetGroei('form_submit_intent',f);stuur();},true);
   var actief=0,sinds=document.hidden?0:Date.now(),tijdGemeten=false;
   document.addEventListener('visibilitychange',function(){if(document.hidden){if(sinds){actief+=Date.now()-sinds;sinds=0;}if(!tijdGemeten){tijdGemeten=true;meet({gebeurtenis:'tijd_op_pagina',seconden:Math.round(actief/1000)});}stuur();}else{sinds=Date.now();}});
   /* Toestemmingsgebonden CRO-instrumentatie; nooit vrije veldwaarden of sessiereplay. */
