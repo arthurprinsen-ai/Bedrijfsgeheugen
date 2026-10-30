@@ -54,6 +54,12 @@ export async function runPortalAuthenticatedProductionProof({
     payload_shape_verified:false,
     synthetic_user_cleanup:'NOT_CREATED',
     failure_code:null,
+    one_loop_assurance_proof:'UNVERIFIED',
+    one_loop_assurance_admin_verified:false,
+    one_loop_assurance_nonadmin_denied:false,
+    one_loop_assurance_unauthenticated_denied:false,
+    one_loop_assurance_counts:null,
+    one_loop_assurance_failure_code:'NOT_EXECUTED',
   };
   if(!/^[0-9a-f]{40}$/.test(commitRef))return {...base,failure_code:'INVALID_COMMIT_REF'};
   if(!deployId)return {...base,failure_code:'DEPLOY_ID_MISSING'};
@@ -67,6 +73,11 @@ export async function runPortalAuthenticatedProductionProof({
   let cleanup='NOT_CREATED';
   let failureCode=null;
   let crossTenantScopeVerified=false;
+  // One original deploySucceeded proof, three independent auth outcomes:
+  // ephemeral signed admin, normal synthetic tenant and anonymous caller.
+  // Never serialize Identity tokens, private forecasts or raw loop rows.
+  const assurance={admin:false,nonadmin:false,anonymous:false,counts:null,failure:'NOT_EXECUTED'};
+  const oneLoopUrl=`${immutableUrl}/api/powerhouse-one-loop-assurance`;
 
   try{
     const identity=getIdentityConfigFn();
@@ -79,11 +90,14 @@ export async function runPortalAuthenticatedProductionProof({
       const password=clean(randomPassword?.());
       if(password.length<24)throw fail('SYNTHETIC_PASSWORD_UNAVAILABLE');
       const tenantId=`proof:${deployId}:${slot}`;
+      // Privilege only the ephemeral synthetic 'a' identity using admin-owned
+      // app_metadata. The other synthetic tenant remains strictly non-admin.
+      const proofRoles=slot==='a'?['powerhouse-admin']:[];
       const email=`bg-portal-proof-${slot}-${deployId}@proof.invalid`;
       const user=await identityAdmin.createUser({
         email,password,
         data:{
-          app_metadata:{tenantId},
+          app_metadata:{tenantId,roles:proofRoles},
           user_metadata:{full_name:'Bedrijfsgeheugen production proof'},
         },
       });
@@ -96,15 +110,23 @@ export async function runPortalAuthenticatedProductionProof({
       // Do not change the signed-JWT gate or accept user-controlled metadata.
       const storedUser=await identityAdmin.getUser(user.id);
       const storedMetadata=storedUser?.appMetadata||storedUser?.app_metadata||{};
-      if(clean(storedMetadata.tenantId)!==tenantId){
+      const originalRoles=Array.isArray(storedMetadata.roles)?storedMetadata.roles:[];
+      if(clean(storedMetadata.tenantId)!==tenantId||
+         (slot==='a'&&!originalRoles.includes('powerhouse-admin'))||
+         (slot==='b'&&originalRoles.some(r=>['admin','owner','powerhouse-admin','powerhouse_admin'].includes(r)))){
         await identityAdmin.updateUser(user.id,{
-          app_metadata:{...storedMetadata,tenantId},
+          app_metadata:{...storedMetadata,tenantId,roles:proofRoles},
         });
         const updatedUser=await identityAdmin.getUser(user.id);
         const updatedMetadata=updatedUser?.appMetadata||updatedUser?.app_metadata||{};
         if(clean(updatedMetadata.tenantId)!==tenantId){
           throw fail('IDENTITY_ADMIN_TENANT_METADATA_NOT_PERSISTED');
         }
+        const confirmedRoles=Array.isArray(updatedMetadata.roles)?updatedMetadata.roles:[];
+        if(slot==='a'&&!confirmedRoles.includes('powerhouse-admin'))
+          throw fail('IDENTITY_SYNTHETIC_ADMIN_ROLE_NOT_PERSISTED');
+        if(slot==='b'&&confirmedRoles.some(r=>['admin','owner','powerhouse-admin','powerhouse_admin'].includes(r)))
+          throw fail('IDENTITY_SYNTHETIC_NONADMIN_ROLE_OVERGRANTED');
       }
 
       const tokenResponse=await fetchImpl(`${identityUrl}/token`,{
@@ -119,6 +141,11 @@ export async function runPortalAuthenticatedProductionProof({
       const claims=decodeJwtPayload(accessToken);
       if(clean(claims?.sub)!==clean(user.id))throw fail('IDENTITY_SUBJECT_MISMATCH');
       if(clean(claims?.app_metadata?.tenantId)!==tenantId)throw fail('IDENTITY_TENANT_CLAIM_MISMATCH');
+      const signedRoles=Array.isArray(claims?.app_metadata?.roles)?claims.app_metadata.roles:[];
+      if(slot==='a'&&!signedRoles.includes('powerhouse-admin'))
+        throw fail('SIGNED_SYNTHETIC_ADMIN_ROLE_MISSING');
+      if(slot==='b'&&signedRoles.some(r=>['admin','owner','powerhouse-admin','powerhouse_admin'].includes(r)))
+        throw fail('SIGNED_SYNTHETIC_NONADMIN_ROLE_OVERGRANTED');
 
       const apiResponse=await fetchImpl(`${immutableUrl}/api/portal-ondernemersdata`,{
         method:'GET',
@@ -145,11 +172,49 @@ export async function runPortalAuthenticatedProductionProof({
         throw fail('CROSS_TENANT_PAYLOAD_LEAK');
       }
       observations.push({tenantId,httpStatus,validShape});
+      // Probe the exact immutable deploy, never the public alias or a mock.
+      // Failed provider readback is a separate evidence gap, not proof of RED
+      // or a reason to bypass existing auth/tenant protection.
+      try{
+        const response=await fetchImpl(oneLoopUrl,{
+          method:'GET',
+          headers:{accept:'application/json',authorization:`Bearer ${accessToken}`,'cache-control':'no-cache'},
+        });
+        if(slot==='a'){
+          const projection=response?.status===200?await response.json().catch(()=>null):null;
+          const count=projection?.counts;
+          const valid=projection?.contract==='one-brain-original-loop-assurance-readback-v1'&&
+            projection?.status==='READBACK_COMPLETE'&&projection?.source==='public.powerhouse_loop_assurance_state_v1'&&
+            Number(count?.total)===15&&
+            Number(count?.green)+Number(count?.amber)+Number(count?.red)===15&&
+            Array.isArray(projection.loops)&&projection.loops.length===15&&
+            ['RED','AMBER','GREEN'].includes(projection.overallStatus);
+          if(valid){
+            assurance.admin=true;
+            assurance.counts={total:15,green:count.green,amber:count.amber,red:count.red,
+              overallStatus:projection.overallStatus};
+            assurance.failure=null;
+          }else assurance.failure='ORIGINAL_ASSURANCE_ADMIN_READBACK_UNVERIFIED';
+        }else{
+          const body=response?.status===403?await response.json().catch(()=>null):null;
+          assurance.nonadmin=response?.status===403&&body?.error==='POWERHOUSE_ADMIN_REQUIRED';
+          if(!assurance.nonadmin)assurance.failure='ORIGINAL_ASSURANCE_NONADMIN_NOT_DENIED';
+        }
+      }catch{
+        assurance.failure='ORIGINAL_ASSURANCE_ROUTE_HTTP_UNVERIFIED';
+      }
     }
     crossTenantScopeVerified=
       observations.length===2&&
       observations[0].tenantId!==observations[1].tenantId&&
       observations.every(o=>o.httpStatus===200&&o.validShape);
+    try{
+      const response=await fetchImpl(oneLoopUrl,{method:'GET',
+        headers:{accept:'application/json','cache-control':'no-cache'}});
+      const body=response?.status===401?await response.json().catch(()=>null):null;
+      assurance.anonymous=response?.status===401&&body?.error==='UNAUTHENTICATED';
+      if(!assurance.anonymous)assurance.failure='ORIGINAL_ASSURANCE_ANONYMOUS_NOT_DENIED';
+    }catch{assurance.failure='ORIGINAL_ASSURANCE_ANONYMOUS_HTTP_UNVERIFIED';}
   }catch(error){
     failureCode=safeCode(error);
   }finally{
@@ -178,6 +243,14 @@ export async function runPortalAuthenticatedProductionProof({
     payload_shape_verified:payloadShapeVerified,
     synthetic_user_cleanup:cleanup,
     failure_code:failureCode,
+    one_loop_assurance_proof:!failureCode&&cleanup==='DELETED'&&assurance.admin&&
+      assurance.nonadmin&&assurance.anonymous?'PROVEN':'UNVERIFIED',
+    one_loop_assurance_admin_verified:assurance.admin&&cleanup==='DELETED',
+    one_loop_assurance_nonadmin_denied:assurance.nonadmin,
+    one_loop_assurance_unauthenticated_denied:assurance.anonymous,
+    one_loop_assurance_counts:assurance.admin&&cleanup==='DELETED'?assurance.counts:null,
+    one_loop_assurance_failure_code:assurance.admin&&assurance.nonadmin&&assurance.anonymous&&
+      cleanup==='DELETED'&&!failureCode?null:assurance.failure||failureCode||'PROOF_INCOMPLETE',
   };
 }
 
