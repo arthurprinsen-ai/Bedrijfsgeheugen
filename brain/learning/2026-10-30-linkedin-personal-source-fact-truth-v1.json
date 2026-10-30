@@ -1,0 +1,39 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|personal|source-fact-unverified-but-feed-eligible|20261030-v1",
+  "compiler": {
+    "failure_class": "PERSONAL_FACT_SOURCE_UNVERIFIED_DAILY_BLOCK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original 2026-10-30 canonical LinkedIn personal obligation is BLOCKED, last_error PERSONAL_SOURCE_UNVERIFIED, personal_truth_verified=false. Six eligible external signals exist, but they are not a verified original, distinct personal story. Existing admin-only portal classified this exact root cause as generic pending.",
+  "prevention": "Preserve original no-duplicate and source truth gates and active single scheduler. Classify exact personal source fact failure with public-safe PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT; show human action to verify original fact, provenance/date, concrete situation, cause/effect and unique viewpoint before existing content approval. No OAuth retry, post creation, forced truth flag or fake green.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "canonical public.content_publication_obligations 2026-10-30",
+    "channel": "linkedin_personal",
+    "status": "BLOCKED",
+    "error_class": "PERSONAL_SOURCE_UNVERIFIED",
+    "personal_truth_verified": false,
+    "provider_side_effect_present": false,
+    "independent_fact_verified": false,
+    "eligible_external_signals": 6,
+    "eligible_signal_is_unique_verified_personal_story": false,
+    "production_portal_release_verified": false,
+    "next_natural_source_recovery_verified": false,
+    "existing_publisher_preserved": true,
+    "new_scheduler": false
+  }
+}
