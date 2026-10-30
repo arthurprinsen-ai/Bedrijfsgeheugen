@@ -109,7 +109,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   const behaviorOk=readStates.behavior==='LIVE';
   const conversionProofOk=readStates.conversionProof==='LIVE'&&conversionProof.length===1;
   const experimentProofOk=readStates.experimentProof==='LIVE';
-  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk;
+  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk&&(readStates.brainProof===undefined||readStates.brainProof==='LIVE');
   const dailyLast=daily.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const experimentLast=experiments.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const behaviorLast=behavior.reduce((latest,row)=>String(row.last_observed_at||'')>latest?String(row.last_observed_at):latest,'');
