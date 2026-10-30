@@ -50,3 +50,15 @@ test('real portal and authenticated original source wiring are present',()=>{
  assert.match(ui,/data-recovery-closure-audit/);
  assert.doesNotMatch(api,/config\s*=\s*\{\s*schedule\s*:/);
 });
+
+test('already PROVEN original learning is not confused with deprecated or retired',()=>{
+ for(const maturity of ['VALIDATED','PROVEN','PREFERRED']){
+  const p=projectRecoveryClosureAudit([{...full,maturity}],{sourceState:'LIVE',at:now});
+  assert.equal(p.recordedProofCandidates,1);
+  assert.equal(p.independentlyVerified,false);
+ }
+ for(const maturity of ['OBSERVED','DEPRECATED','RETIRED']){
+  const p=projectRecoveryClosureAudit([{...full,maturity}],{sourceState:'LIVE',at:now});
+  assert.equal(p.recordedProofCandidates,0);
+ }
+});
