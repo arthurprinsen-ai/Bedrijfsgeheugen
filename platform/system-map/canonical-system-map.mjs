@@ -1,4 +1,20 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  croEventRecencyReadback:Object.freeze({
+    fingerprint:'powerhouse|cro|event-recency-hidden-under-healthy-minute-drain|20261030-v1',
+    owner:'original Powerhouse Growth/CRO + ONE BRAIN/Heartbeat',
+    source:'public.powerhouse_cro_conversion_evidence_v1',
+    property:'last_persisted_event_at as event occurred_at, not persisted insertion time',
+    readModel:'netlify/functions/powerhouse-cro-other-data.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    test:'tests/brain-cro-event-recency-proof-20261030.test.mjs',
+    learning:'brain/learning/2026-10-30-cro-event-recency-not-false-green-v1.json',
+    skill:'.agents/skills/powerhouse-social-cro-funnel/SKILL.md',
+    noRecentEventsNotZeroTraffic:true,drain204NotProviderProof:true,
+    noNewScheduler:true,noSecondWriter:true,
+    sourceReleaseCandidate:true,authenticatedProductionReadbackProven:false,
+    commercialOutcomeProven:false
+  }),
+
   portalAdminCockpitBootstrap:Object.freeze({fingerprint:'portal|powerhouse-control-plane|unmounted-owner-ui|20261029-v1',authority:'existing Portal V2 state client and Netlify Identity',module:'portal-v2/control-plane-boot.js',app:'portal-v2/app.js',dependsOn:'portal-v2/control-plane-cockpit.js',server:'netlify/functions/powerhouse-control-plane.mjs',owner:'original Portal V2 owner bootstrap',proof:'tests/brain-portal-control-plane-bootstrap-20261029.test.mjs',learning:'brain/learning/2026-10-29-control-plane-admin-bootstrap-v1.json',requiresAdminJwt:true,loginSubjectIsolation:true,logoutClearsPrivateDom:true,noNewScheduler:true,noSecondWriter:true,productionAdminReadbackVerified:false,stage:'SOURCE_CANDIDATE'}),
   croWeeklyGrowthProof:Object.freeze({fingerprint:'powerhouse|cro|weekly-growth-missing-comparable-closed-periods|20261030-v1',
     owner:'existing Powerhouse Growth/CRO and ONE BRAIN/Heartbeat',source:'public.growth_page_daily',
