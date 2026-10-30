@@ -67,5 +67,5 @@ test('existing authenticated Portal V2 server and UI show bounded predictive evi
   assert.match(ui,/Natuurlijke vervolgrun/);
   assert.match(ui,/Echte forecast-uitkomst/);
   assert.match(ui,/Gerealiseerde omzet/);
-  assert.match(ui,/prediction/i);
+  assert.match(ui,/predictiveRunEvidence/);
 });
