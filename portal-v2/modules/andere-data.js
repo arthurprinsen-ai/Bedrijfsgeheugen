@@ -200,6 +200,7 @@ function render(container,data){
     field('Toegepaste leerregels 7d (records)',fmt(commercialFunnel?.observed?.naturalLearningApplications7d))+
     field('Onafhankelijk geverifieerde betaalde orders',fmt(commercialFunnel?.observed?.verifiedPaidOrders))+
     field('Geverifieerde betaalde omzet',money(commercialFunnel?.observed?.verifiedRevenueEur))+'</div>'+
+    '<p class="od-note">CTA-dekkingsregel: op SEO-pagina’s heeft de oorspronkelijke meetproducer nu dezelfde contact-, aanmeld- en prijsroutes als de algemene websitecode. Dit is alleen broncode-dekking; een werkelijk opgeslagen klik-ID en een betaalde order moeten nog onafhankelijk zijn bevestigd.</p>'+
     '<h4>Van bereik naar order: iedere schakel, eigenaar en noodzakelijk bewijs</h4>'+
     '<div class="od-scroll"><table><thead><tr><th>Schakel</th><th>Bewijsstatus</th><th>Waarneming</th><th>Volgende broncontrole</th></tr></thead>'+
     '<tbody>'+(commercialStages||'<tr><td colspan="4">Originele bronnen ontbreken; geen verzonnen funnel.</td></tr>')+'</tbody></table></div>'+

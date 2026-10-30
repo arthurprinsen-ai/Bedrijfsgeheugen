@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  seoGeneratedCtaRouteParity:Object.freeze({
+    fingerprint:'powerhouse|cro|seo-generated-cta-owner-route-parity-gap|20261030-v1',
+    owner:'existing Powerhouse SEO Order Engine + original Growth/Revenue CRO agents',
+    source:'tools/seo-order-engine/measurement.mjs',
+    duplicateGuard:'assets/meting.js',
+    protectedEventReceiver:'netlify/functions/growth-event.mjs',
+    originalPersistentReadback:'growth_events + powerhouse_cro_conversion_evidence_v1',
+    originalAdminFunnel:'netlify/functions/_powerhouse-commercial-growth-funnel.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    sixFirstPartyRoutes:Object.freeze(['/zelfscan','/frisse-blik','/afsluiten','/contact','/aanmelden','/prijzen']),
+    originalSingleWriter:true,unchangedConsentAndBotGates:true,
+    noAdditionalSchedulerOrEventType:true,
+    regression:'tests/brain-cro-generated-primary-cta-owner-gap-20261030.test.mjs',
+    brain:'brain/learning/2026-10-30-exclusive-generated-primary-cta-coverage-gap-v1.json',
+    humanDoc:'docs/changes/2026-10-30-generated-primary-cta-route-coverage-fix.md',
+    independentlyPersistedNewCtaVerified:false,
+    independentlyPaidCustomerOutcomeVerified:false
+  }),
+
   commercialSocialToPaidOrderFunnel:Object.freeze({
     fingerprint:'powerhouse|one-brain|growth-funnel-observed-engagement-not-attributed-sales|20261030-v1',
     contract:'POWERHOUSE_ONE_BRAIN_COMMERCIAL_FUNNEL_V1',
@@ -139,7 +158,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'6d5f85360dcd2e7456190f63add63597200b957bb43f45b57782203f3542b014',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'827e2ffb4447f1b25bb733515c6f407ce99658a3c6fd5eb38e746856a164b775',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
