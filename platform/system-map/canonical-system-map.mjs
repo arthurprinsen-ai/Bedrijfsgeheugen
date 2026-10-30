@@ -1,5 +1,14 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalAdminCockpitBootstrap:Object.freeze({fingerprint:'portal|powerhouse-control-plane|unmounted-owner-ui|20261029-v1',authority:'existing Portal V2 state client and Netlify Identity',module:'portal-v2/control-plane-boot.js',app:'portal-v2/app.js',dependsOn:'portal-v2/control-plane-cockpit.js',server:'netlify/functions/powerhouse-control-plane.mjs',owner:'original Portal V2 owner bootstrap',proof:'tests/brain-portal-control-plane-bootstrap-20261029.test.mjs',learning:'brain/learning/2026-10-29-control-plane-admin-bootstrap-v1.json',requiresAdminJwt:true,loginSubjectIsolation:true,logoutClearsPrivateDom:true,noNewScheduler:true,noSecondWriter:true,productionAdminReadbackVerified:false,stage:'SOURCE_CANDIDATE'}),
+  croWeeklyGrowthProof:Object.freeze({fingerprint:'powerhouse|cro|weekly-growth-missing-comparable-closed-periods|20261030-v1',
+    owner:'existing Powerhouse Growth/CRO and ONE BRAIN/Heartbeat',source:'public.growth_page_daily',
+    readModel:'netlify/functions/powerhouse-cro-other-data.mjs',portal:'portal-v2/modules/andere-data.js',
+    test:'tests/brain-cro-weekly-growth-evidence-20261030.test.mjs',
+    learning:'brain/learning/2026-10-30-cro-weekly-growth-evidence-v1.json',
+    skill:'.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+    windows:'two complete seven-calendar-day Europe/Amsterdam periods',
+    missingDaysFailClosed:true,independentPaymentRequired:true,noNewScheduler:true,noNewWriter:true,
+    delivery:'SOURCE_CANDIDATE',productionVerified:false}),
   croExperimentIntelligence:Object.freeze({fingerprint:'powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1',owner:'existing commercial Heartbeat and Growth Swarm',module:'tools/growth-intelligence/cro-experiment-cycle.mjs',adapter:'tools/growth-intelligence/heartbeat-adapter.mjs',skill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',storage:'existing powerhouse_experiment_assignments / powerhouse_cycle_events / brain_records / growth_outcomes',portfolio:'whatsapp,progressive-form,contextual-help,exit-intent,calculator,scan-followup,cta',noNewScheduler:true,noSecondWriter:true,stage:'SOURCE_CANDIDATE',productionVerified:false,portalVerified:false}),
   existingHandoffProof:Object.freeze({
     fingerprint:'powerhouse|existing-brain-heartbeat-handoff-evidence|20261029-v1',
