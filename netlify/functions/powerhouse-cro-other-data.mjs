@@ -1,4 +1,5 @@
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
+import {projectSocialCroFunnel} from './_social-cro-funnel-projection.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
 // No new scheduler, experiment writer, customer-data leak or duplicate data store.
@@ -103,7 +104,7 @@ export function projectCroBrainProof(rows,{at=new Date().toISOString()}={}){
    }};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],readStates={},at=new Date().toISOString()}={}){
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
@@ -129,6 +130,9 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(behaviorOk&&(!behaviorData||behaviorData.events.persisted_event_receipts===0))flags.push('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED');
   if(dailyOk&&totals.pageViews>0&&totals.ctaClicks===0)flags.push('CTA_TRACKING_NOT_VERIFIED');
   if(experimentsOk&&experiments.some(e=>!e.causal_status||e.causal_status==='insufficient_evidence'))flags.push('EXPERIMENT_EVIDENCE_INCOMPLETE');
+  const socialFunnel=readStates.socialPosts==='LIVE'&&readStates.socialSnapshots==='LIVE'
+    ?projectSocialCroFunnel({posts:socialPosts,snapshots:socialSnapshots,at}):null;
+  if(!socialFunnel||socialFunnel.status!=='COMPARABLE_DESCRIPTIVE_METRICS')flags.push('SOCIAL_FUNNEL_48H_COMPARABLE_EVIDENCE_INSUFFICIENT');
   const brainClosure=projectCroBrainProof(readStates.brainProof==='LIVE'?brainProof:[],{at});
   if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
   if(!brainClosure.businessOutcomeVerified)flags.push('CRO_COMMERCIAL_CLOSED_LOOP_NOT_PROVEN');
@@ -141,7 +145,9 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     scope:'canonical',status:complete?'LIVE':'PARTIAL',
     commercialLoopStatus:brainClosure.status,
     brainClosure,
+    socialFunnel,
     sources:{
+      socialFunnel:{status:socialFunnel?.status||'UNAVAILABLE',records:socialFunnel?.channels?.reduce((a,c)=>a+c.posts_registered,0)??null},
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
       experiments:{status:readStates.experiments||'UNAVAILABLE',lastObservedAt:experimentLast||null,records:experimentsOk?experiments.length:null},
       policies:{status:readStates.policies||'UNAVAILABLE',records:readStates.policies==='LIVE'?policies.length:null},
@@ -218,11 +224,20 @@ export default async function handler(request){
     select(base,key,'bg_cro_behavior_daily_v1',
       'select=day,pad,device,last_visible_section,page_events,persisted_event_receipts,historical_without_receipt,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001'),
     select(base,key,'brain_records',
-      'select=record_id,record_type,record_kind,owner_id,status,observed_at,executed,verified,payload&tenant_id=eq.canonical&record_id=like.cro-commercial-evidence:*&order=observed_at.desc&limit=2')
+      'select=record_id,record_type,record_kind,owner_id,status,observed_at,executed,verified,payload&tenant_id=eq.canonical&record_id=like.cro-commercial-evidence:*&order=observed_at.desc&limit=2'),
+    // Existing social_posts / social_metric_snapshots, owner-only; no actor identities or second analytics store.
+    select(base,key,'social_posts',
+      'select=tenant_id,post_id,platform,channel_kind,published_at,topic,content_pillar,format,hook_type,cta_type&tenant_id=eq.canonical&platform=eq.linkedin&channel_kind=eq.linkedin_personal&published_at=gte.'+from+'&order=published_at.desc&limit=201'),
+    select(base,key,'social_posts',
+      'select=tenant_id,post_id,platform,channel_kind,published_at,topic,content_pillar,format,hook_type,cta_type&tenant_id=eq.bedrijfsgeheugen&platform=in.(linkedin,instagram)&published_at=gte.'+from+'&order=published_at.desc&limit=301'),
+    select(base,key,'social_metric_snapshots',
+      'select=tenant_id,post_id,observed_at,data_quality,metrics&tenant_id=eq.canonical&observed_at=gte.'+from+'&data_quality=in.(OBSERVED,PROVIDER_OBSERVED)&order=observed_at.desc&limit=1201'),
+    select(base,key,'social_metric_snapshots',
+      'select=tenant_id,post_id,observed_at,data_quality,metrics&tenant_id=eq.bedrijfsgeheugen&observed_at=gte.'+from+'&data_quality=in.(OBSERVED,PROVIDER_OBSERVED)&order=observed_at.desc&limit=2401')
   ];
   const responses=await Promise.allSettled(queries);
-  const limits=[2000,150,50,1,150,5000,1];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots'],readStates={},datasets=[];
   for(let i=0;i<responses.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -230,7 +245,11 @@ export default async function handler(request){
     readStates[stateNames[i]]=complete?'LIVE':rows.length>limits[i]?'TRUNCATED':'UNAVAILABLE';
     datasets[i]=complete?rows:[];
   }
-  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],readStates});
+  readStates.socialPosts=readStates.personalSocialPosts==='LIVE'&&readStates.brandSocialPosts==='LIVE'?'LIVE':'UNAVAILABLE';
+  readStates.socialSnapshots=readStates.personalSocialSnapshots==='LIVE'&&readStates.brandSocialSnapshots==='LIVE'?'LIVE':'UNAVAILABLE';
+  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],
+    conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],
+    socialPosts:[...datasets[7],...datasets[8]],socialSnapshots:[...datasets[9],...datasets[10]],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};
