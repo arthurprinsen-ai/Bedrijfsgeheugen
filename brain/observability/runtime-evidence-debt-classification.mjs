@@ -30,7 +30,6 @@ export function classifyPowerhouseRuntimeEvidenceDebt(events,{now=new Date().toI
   if(fly.state!=='error'||cycle.state!=='error')return unknown('SOURCE_STATE_CHANGED_REVALIDATE_IN_CANONICAL_HEALTH_VIEW');
   const due=fly.evidence?.due_uncalibrated_forecasts;
   const overdue=cycle.evidence?.overdue_calibrations;
-  const privateDue=cycle.evidence?.calibration?.private_due;
   if(fly.context?.calibration_gap!==true||cycle.evidence?.healthy!==false||
      !finiteCount(due)||!finiteCount(overdue)||due===0||overdue===0)
      return unknown('MISSING_OR_CONTRADICTORY_HEALTH_GUARDS');
