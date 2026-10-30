@@ -1,0 +1,73 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|compound-organism|connected-not-proven-daily-value|20261030-v1",
+  "compiler": {
+    "failure_class": "COMPOUND_DAILY_VALUE_EVIDENCE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-compound-revenue-portal-learning-proof-20261030.test.mjs"
+    ]
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "One Brain reports 54 connected capabilities, 32/32 wired layers and 18/18 required jobs active, but next natural social/revenue learning applications in 7d remain 0; revenue flywheel independently realized revenue is 0 and scoped customer activation/task-completion evidence is not verified. Engineering wiring and aggregate outcomes were being conflated with daily business and portal-value improvements.",
+  "evidence": {
+    "observed_on": "2026-10-30",
+    "capabilities_connected": 54,
+    "required_runtime_layers_connected": 32,
+    "required_jobs_active": 18,
+    "learning_readiness": {
+      "open": 501,
+      "overdue": 20,
+      "missing_feedback_evidence": 481
+    },
+    "social_learning_applications_7d": 0,
+    "revenue_learning_applications_7d": 0,
+    "revenue_flywheel": {
+      "opportunities": 938,
+      "realized_revenue_eur": 0,
+      "revenue_outcomes": 0
+    },
+    "client_portal_customer_activation_verified": false,
+    "caveat": "Neither unverified human page events nor expired/no-response actions are buyer conversions. No individual consumer profiles or private tenant data in this record."
+  },
+  "correction": "Reuses ORIGINAL admin-protected CRO read-model and Portal V2; joins read-only original learning-readiness, revenue-flywheel, runtime health and social/revenue learning applications plus existing consented aggregate portal route observations. Displays three separate proof loops and action priorities for original owners, without independent side effects.",
+  "prevention_rules": [
+    "Every affected agent must distinguish wired, observed, applied, independently evaluated, paid and customer-value verified.",
+    "Treat missing, stale, truncated, tenant-invalid or ambiguous source as UNVERIFIED, not zero or GREEN.",
+    "Portal routes may be admin/preview; never equate observed route event with paying customer, activation, task completion, retention or renewal.",
+    "An aggregate flywheel or application record is not a causal attributable paid order, nor a verified next natural generator consumption.",
+    "Use exact actual source identities and existing controlled experiment policy; no new publisher, scheduler, CRM, user tracker or competing event store.",
+    "Do not claim a daily monotonic rise in likes, traffic, leads or orders; compare independent consistent cohorts and prioritize actual paid customer outcomes.",
+    "Do not overwrite historical Brain observations after protected merge; append production SHA and natural proof to original #4198 under same fingerprint."
+  ],
+  "owner": "Original Powerhouse Revenue/Growth, ONE BRAIN/Heartbeat, existing Portal V2/customer success and Self-Improvement",
+  "source_projection": "netlify/functions/_powerhouse-compound-improvement-proof.mjs",
+  "original_server": "netlify/functions/powerhouse-cro-other-data.mjs",
+  "original_portal": "portal-v2/modules/andere-data.js",
+  "tests": "tests/brain-compound-revenue-portal-learning-proof-20261030.test.mjs",
+  "skills": [
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md"
+  ],
+  "human_doc": "docs/changes/2026-10-30-compound-customer-revenue-three-loop-proof.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-compound-customer-revenue-three-loop-proof.md",
+  "delivery": {
+    "stage": "SOURCE_CANDIDATE",
+    "required_verified": false,
+    "codeql_verified": false,
+    "merged_main": false,
+    "netlify_exact_commit_ready": false,
+    "authenticated_portal_readback": false,
+    "natural_agent_application_verified": false,
+    "causal_customer_or_revenue_uplift_verified": false
+  }
+}
