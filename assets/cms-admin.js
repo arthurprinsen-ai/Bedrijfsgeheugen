@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var items=[],selected=null,activeArea='',picking=false;
+var items=[],selected=null,activeArea='',picking=false,cmsLoop=null,unsaved=false;
 var $=function(s,r){return (r||document).querySelector(s)};
 var all=function(s,r){return Array.from((r||document).querySelectorAll(s))};
 function on(s,event,handler){var el=$(s);if(el)el.addEventListener(event,handler);return el}
@@ -19,6 +19,38 @@ function currentDraft(){
     element_type:$('#elementType').value,selector:$('#selector').value.trim()||null,
     content:content,sort_order:Number($('#sortOrder').value||0),status:'draft'
   };
+}
+function renderCmsLoop(){
+  var host=$('#cmsPowerhouseLoop'),summary=$('#cmsLoopSummary'),stages=$('#cmsLoopStages');
+  if(!host||!summary||!stages)return;
+  var loop=cmsLoop;
+  if(!loop||loop.status==='UNAVAILABLE'){
+    host.dataset.status='UNAVAILABLE';summary.textContent='CMS- en Heartbeat-bronbewijs niet beschikbaar.';stages.replaceChildren();return;
+  }
+  host.dataset.status=loop.status;
+  var t=loop.totals||{};
+  summary.textContent=(t.draft||0)+' concept · '+(t.qualityBlocked||0)+' kwaliteitsblokkades · '+(t.published||0)+' gepubliceerd. Groei en opbrengst zijn niet bewezen door CMS-publicatie.';
+  stages.replaceChildren();
+  (loop.stages||[]).forEach(function(step){
+    var badge=document.createElement('span');badge.dataset.evidence=step.status;
+    badge.textContent=step.id+' · '+step.status;stages.appendChild(badge);
+  });
+}
+function renderItemQuality(){
+  var host=$('#cmsQuality'),copy=$('#cmsQualityText'),publish=$('#publishBtn');
+  if(!host||!copy||!publish)return;
+  var quality=selected?.cms_quality;
+  if(!quality||!selected?.id){
+    host.dataset.status='UNAVAILABLE';copy.textContent='Sla een concept op om serverkwaliteit en revisiebewijs te controleren.';
+    publish.disabled=true;return;
+  }
+  host.dataset.status=unsaved?'UNSAVED':quality.status;
+  copy.textContent=unsaved?'Wijzigingen zijn nog niet opgeslagen. Sla de nieuwe revisie eerst op.':
+    (quality.publishEligible?'Kwaliteit technisch toelaatbaar;':'Publicatie geblokkeerd;')+
+    (quality.errors.length?' Fouten: '+quality.errors.join(', ')+'.':'')+
+    (quality.warnings.length?' Aandachtspunten: '+quality.warnings.join(', ')+'.':'')+
+    ' Definitieve publicatie vraagt een bevoegd beheerder en een publieke terugleescontrole.';
+  publish.disabled=unsaved||selected.status!=='draft'||!quality.publishEligible;
 }
 async function renderCmsReview(generatedAt){
   var host=$('#cmsReview'),copy=$('#cmsReviewText');
@@ -43,6 +75,8 @@ async function apiList(){
   var d=await r.json().catch(function(){return{}});
   if(!r.ok)throw new Error(d.error||'Laden mislukt');
   items=Array.isArray(d.items)?d.items:[];
+  cmsLoop=d.cms_powerhouse_loop||null;
+  renderCmsLoop();
   renderList();
   await renderCmsReview(d.generatedAt);
 }
@@ -70,12 +104,12 @@ function renderList(){
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
 function selectItem(x){
-  selected=x||null;
+  selected=x||null;unsaved=false;
   $('#surface').value=x?.surface||'website';$('#locale').value=x?.locale||'nl-NL';$('#route').value=x?.route||'/';$('#area').value=x?.area||'content';
   $('#elementKey').value=x?.element_key||'';$('#elementType').value=x?.element_type||'text';$('#selector').value=x?.selector||'';$('#sortOrder').value=x?.sort_order||0;
   $('#content').value=JSON.stringify(x?.content||{},null,2);$('#editorTitle').textContent=x?.element_key||'Nieuw element';
   var s=x?.status||'draft';$('#editorStatus').className='status '+statusClass(s);$('#editorStatus').textContent=s;
-  $('#publishBtn').disabled=!x?.id;$('#archiveBtn').disabled=!x?.id;renderList();
+  $('#archiveBtn').disabled=!x?.id;renderList();renderItemQuality();
 }
 function uniqueSelector(el,doc){
   if(el.id)return '#'+CSS.escape(el.id);
@@ -139,19 +173,20 @@ async function save(e){
 }
 async function changeStatus(action){
   if(!selected?.id)return;
-  try{var d=await mutate({action:action,id:selected.id});selected=d.item;toast(action==='publish'?'Gepubliceerd':'Gearchiveerd');await apiList();selectItem(items.find(function(x){return x.id===selected.id})||selected);if(action==='publish'&&window.BGCMS)window.BGCMS.reload()}
+  try{var d=await mutate({action:action,id:selected.id,expected_version:selected.version});selected=d.item;toast(action==='publish'?'Gepubliceerd':'Gearchiveerd');await apiList();selectItem(items.find(function(x){return x.id===selected.id})||selected);if(action==='publish'&&window.BGCMS)window.BGCMS.reload()}
   catch(err){toast(err.message||String(err))}
 }
 function bind(){
   on('#loginBtn','click',function(){window.netlifyIdentity?.open?.()});on('#logoutBtn','click',function(){window.netlifyIdentity?.logout?.()});
   on('#refreshBtn','click',function(){apiList().catch(function(e){toast(e.message)})});on('#editor','submit',save);on('#publishBtn','click',function(){changeStatus('publish')});on('#archiveBtn','click',function(){changeStatus('archive')});
+  on('#editor','input',function(){if(selected?.id){unsaved=true;renderItemQuality()}});
   on('#clearBtn','click',function(){selectItem(null)});on('#newItemBtn','click',function(){selectItem(null);window.scrollTo({top:0,behavior:'smooth'})});
   ['surfaceFilter','localeFilter','statusFilter','searchFilter'].forEach(function(id){on('#'+id,id==='searchFilter'?'input':'change',renderList)});
   all('[data-area]').forEach(function(b){b.addEventListener('click',function(){all('[data-area]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeArea=b.dataset.area||'';renderList()})});
   on('#loadPreviewBtn','click',function(){var input=$('#previewUrl'),frame=$('#previewFrame');var raw=input?input.value.trim()||'/':'/';try{var u=new URL(raw,location.origin);if(u.origin!==location.origin||!['http:','https:'].includes(u.protocol))throw new Error('Alleen pagina’s op bedrijfsgeheugen.nl zijn toegestaan.');if(frame?.contentWindow)frame.contentWindow.location.replace(u.pathname+u.search+u.hash)}catch(e){toast(e.message||'Ongeldige previewroute')}});on('#pickBtn','click',startPick);
 }
 async function enter(u){
-  if(!u){items=[];selected=null;var s=$('#cmsReview'),c=$('#cmsReviewText');if(s)s.dataset.status='UNAVAILABLE';if(c)c.textContent='Niet ingelogd: geen CMS-bewijs beschikbaar.';$('#authGate').classList.remove('hidden');$('#app').classList.add('hidden');return}
+  if(!u){items=[];selected=null;cmsLoop=null;renderCmsLoop();var s=$('#cmsReview'),c=$('#cmsReviewText');if(s)s.dataset.status='UNAVAILABLE';if(c)c.textContent='Niet ingelogd: geen CMS-bewijs beschikbaar.';$('#authGate').classList.remove('hidden');$('#app').classList.add('hidden');return}
   $('#authGate').classList.add('hidden');$('#app').classList.remove('hidden');$('#userLabel').textContent=u.email||u.id;
   try{await apiList();selectItem(null)}catch(e){toast(e.message||String(e))}
 }
