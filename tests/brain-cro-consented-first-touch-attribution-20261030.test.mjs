@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import {injectGrowthMeasurement} from '../tools/seo-order-engine/measurement.mjs';
 import {normalizeBehaviorEvent} from '../tools/seo-growth/normalize-observation.mjs';
 import {normalizeGrowthEventForDataHub} from '../tools/seo-growth/datahub-contract.mjs';
+import {projectAcquisitionCtaSource} from '../netlify/functions/powerhouse-cro-other-data.mjs';
 
 const staticJs=readFileSync('assets/meting.js','utf8');
 const html=injectGrowthMeasurement('<html><body><main><a data-bg-conversion="zelfscan" href="/zelfscan">Start</a></main></body></html>',{
@@ -89,4 +90,40 @@ test('without analytics permission no marketing/referrer or campaign is supplied
  const {seen}=runInline(false);
  assert.ok(seen.length);
  assert.ok(seen.every(r=>r.source==='website'&&r.medium==='unattributed'&&r.campaign===''));
+});
+
+test('owner-only acquisition projection dedupes CTA source categories and withholds customer revenue claims',()=>{
+ const at='2026-10-30T11:00:00Z',start='2026-10-29T16:00:00Z';
+ const sample=[
+  {event_id:'a',event_type:'primary_cta_click',source:'linkedin',medium:'social',campaign:'linkedin_personal',occurred_at:start,is_robot:false},
+  {event_id:'a',event_type:'primary_cta_click',source:'linkedin',medium:'social',campaign:'linkedin_personal',occurred_at:start,is_robot:false},
+  {event_id:'b',event_type:'primary_cta_click',source:'email',medium:'email',campaign:'email',occurred_at:start,is_robot:false},
+  {event_id:'c',event_type:'primary_cta_click',source:'website',medium:'unattributed',campaign:'',occurred_at:start,is_robot:false},
+  {event_id:'robot',event_type:'primary_cta_click',source:'instagram',occurred_at:start,is_robot:true},
+  {event_id:'old',event_type:'primary_cta_click',source:'linkedin',occurred_at:'2026-09-20T00:00:00Z',is_robot:false},
+  {event_id:'submit',event_type:'form_submit_intent',source:'instagram',occurred_at:start,is_robot:false}
+ ];
+ const result=projectAcquisitionCtaSource(sample,{status:'LIVE',at});
+ assert.equal(result.status,'RECORDED_SOURCE_CATEGORIES_NOT_PROVIDER_VERIFIED');
+ assert.equal(result.observedCtaEvents,3);
+ assert.equal(result.byChannel.linkedin_personal,1);
+ assert.equal(result.byChannel.email,1);
+ assert.equal(result.byChannel.unattributed,1);
+ assert.equal(result.byChannel.instagram,0);
+ assert.equal(result.providerAttributionVerified,false);
+ assert.equal(result.paidOrderAttributionVerified,false);
+ assert.equal(result.consentIndependentlyVerified,false);
+ assert.equal(projectAcquisitionCtaSource(sample,{status:'TRUNCATED',at}).status,'UNVERIFIED');
+ assert.equal(projectAcquisitionCtaSource([],{status:'LIVE',at}).status,'NO_CTA_SOURCE_EVENTS_OBSERVED');
+});
+test('original owner-only portal binds PII-free acquisition readback after social and growth sources',()=>{
+ const api=readFileSync('netlify/functions/powerhouse-cro-other-data.mjs','utf8');
+ const page=readFileSync('portal-v2/modules/andere-data.js','utf8');
+ assert.match(api,/isPowerhouseAdmin\(user/);
+ assert.match(api,/growth_events/);
+ assert.match(api,/event_type=eq\.primary_cta_click&is_robot=eq\.false/);
+ assert.match(api,/acquisitionEvents:datasets\[15\]/);
+ assert.match(page,/CRO-bronattributie/);
+ assert.match(page,/Orders uit social of e-mail pas na daadwerkelijke klant-/);
+ assert.doesNotMatch(api,/CREATE TABLE|cron\.schedule/);
 });
