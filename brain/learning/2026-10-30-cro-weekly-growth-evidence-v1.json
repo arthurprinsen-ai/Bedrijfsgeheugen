@@ -30,5 +30,20 @@
     "Protected merge; exact Netlify deploy and 2-tenant CRO admin auth/negative test",
     "Confirm 14 complete days and independent event receipts before weekly growth status can be comparable",
     "Link qualified lead, contract/order, independent payment and later learning to same original obligation"
-  ]
+  ],
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "CRO_PERIOD_COVERAGE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-weekly-growth-evidence-20261030.test.mjs"
+    ]
+  }
 }
