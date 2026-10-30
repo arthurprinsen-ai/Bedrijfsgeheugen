@@ -163,3 +163,19 @@ Elke overzichtskaart, inclusief de historische Bedrijfslek-weergave, moet ontbre
 ### Veilige vluchtige Brain-runtime in de ondernemersreis
 
 Fingerprint `portal|eight-outcomes|principal-bound-live-runtime|v1`. De geautoriseerde `/api/brain-operating-loop`-projectie is géén duurzaam `portal.business_context`-antwoord. Bied live runtime uitsluitend aan de **huidige** geauthenticeerde principal aan; bij accountwisseling of logout direct wissen en de frontend opnieuw projecteren zonder identiteit of payload in browser-events. Nooit via `domainState`-data van een vorige gebruiker hergebruiken. Brain-runtime-observatie mag niet als bewijs voor connector-provideracties, Heartbeat-SLA, financiële forecast of gerealiseerde winst gelden. Houd de oorspronkelijke Supabase/Brain-writeautoriteit en tenant/RLS intact. Regressie via `portal-v2/tests/entrepreneur-journey.test.mjs` en root-learning-replay.
+
+
+## Living Business Interface — UX decision-first ratchet (2026-10-30)
+
+Fingerprint: `portal|ux|decision-first-cognitive-load-and-evidence|20261030-v1`.
+Permanente UX-verplichting voor bestaande Portal V2, Company Intelligence, Powerhouse Growth/CRO en Self Evolution:
+- Neem de **ondernemersvraag** als startpunt, niet menu's of interne systeemlagen. Maak één onderbouwde eerstvolgende stap onmiddellijk zichtbaar; doelwissel en bewijsdetails worden progressief ontsloten, niet weggelaten.
+- Eén volledige tenantgebonden autoriteit blijft `portalStateClient` → `portalDomainState` → bestaand `buildEntrepreneurHomeModel`/Brain. Geen tweede data-, goedkeurings-, navigatie- of uitvoeringssysteem.
+- Gebruik ondernemerswoorden: 'Wat speelt er?', 'Waarom nu?', 'Wat kan ik doen?', 'Wat is bewezen?'; geef het verschil tussen voorstel, scenario, uitvoering en onafhankelijk gemeten resultaat **in de UI** expliciet aan.
+- Bied toetsenbord, native `details/summary`, zichtbare focus, touch en reduced motion; richt op WCAG 2.2 AA en controleer handmatig met echte gebruikers.
+- Elke natuurlijke bestaande UX/CRO-agentcyclus toetst consented, tenant-veilige taakvoltooiing, foutfrequentie, duidelijkheid, tijd-tot-besluit, activatie en uiteindelijk onafhankelijk geverifieerde klantwaarde; een verbeterde stijl of AI-generatie alleen is geen bewezen UX-winst.
+- Ontbrekende sessiedata of echte gebruikersstudies blijven `EVIDENCE_DUE`; nooit nep-telemetrie, verzonnen omzet of fictieve dag-op-dag-groei gebruiken.
+- Verwerk iedere bewezen frictie → hypothese → afgebakend experiment → protected PR → exacte productie-readback → effectmeting → volgende natuurlijke leertoepassing in dezelfde ONE BRAIN/Heartbeat en skill; geen tweede scheduler.
+- Bij tenantwissel, logout, demo/guest: wissen van vluchtige detailstatus en geen bedrijfsdata uit een eerdere principal tonen. Externe provideracties blijven achter de bestaande toestemming.
+
+Bron/acceptatie: `docs/changes/2026-10-30-living-business-interface-entrepreneur-compass.md`, `portal-v2/tests/entrepreneur-home.test.mjs`. De eerste verandering is **CANDIDATE_PR** totdat protected CI, provider-deploy en echte klant-UX-acceptatie onafhankelijk zijn bevestigd.
