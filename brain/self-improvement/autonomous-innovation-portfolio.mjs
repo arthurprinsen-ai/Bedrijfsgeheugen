@@ -75,14 +75,14 @@ const cases={
     reason:a===null||b===null?'APPLICATION_SOURCE_UNVERIFIED':a===0&&b===0?'NO_FRESH_APPLICATION_EVIDENCE':'APPLICATIONS_OBSERVED_EFFECT_STILL_NEEDS_VERIFICATION'};
  },
  'customer-action-copilot':({proof})=>{
-  const activity=src(proof,'portalActivity'),n=activity?.status!=='UNVERIFIED'?count(activity?.pageEvents):null;
+  const activity=src(proof,'portalActivity'),n=activity&&activity.status!=='UNVERIFIED'?count(activity.pageEvents):null;
   return {observed:n!==null&&activity.payingCustomersVerified===false,
     measurements:[evidence(n,'original scoped portal route events, possibly administrators/previews')],
     reason:n===null?'PORTAL_SCOPE_UNVERIFIED':'CUSTOMER_VALUE_AND_ACTUAL_TASK_EVIDENCE_DUE'};
  },
  'adaptive-portal-ux':({proof})=>{
-  const x=src(proof,'portalActivity'),errors=x?.status!=='UNVERIFIED'?count(x.formErrors):null;
-  const abandons=x?.status!=='UNVERIFIED'?count(x.formAbandons):null;
+  const x=src(proof,'portalActivity'),errors=x&&x.status!=='UNVERIFIED'?count(x.formErrors):null;
+  const abandons=x&&x.status!=='UNVERIFIED'?count(x.formAbandons):null;
   return {observed:errors!==null&&abandons!==null,
     measurements:[evidence(errors,'original scoped portal form errors'),evidence(abandons,'original scoped portal form abandons')],
     reason:errors===null||abandons===null?'PORTAL_UX_SOURCE_UNVERIFIED':'CUSTOMER_COHORT_MISSING_NO_WINNER_PROVEN'};
