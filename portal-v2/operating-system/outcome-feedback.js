@@ -9,7 +9,7 @@ const formatter=new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2});
 
 export function outcomeFeedbackRows(items=[]){
  if(!Array.isArray(items))return Object.freeze([]);
- return Object.freeze(items.slice(0,4).map(item=>{
+ return Object.freeze(items.map(item=>{
   const status=String(first(item?.verification_status,item?.status,'')).toUpperCase();
   const refs=Array.isArray(item?.source_refs)?item.source_refs.filter(ref=>typeof ref==='string'&&ref.trim()):[];
   const verified=allowedStatuses.has(status)&&item?.evidence_health?.status==='healthy'&&refs.length>0;
@@ -33,7 +33,7 @@ export function outcomeFeedbackRows(items=[]){
    learningSummary:learned?String(first(item?.learning_summary,item?.learning_title,'Geverifieerde leerstap')):'',
    nextDecision:learned?String(first(item?.next_decision,item?.next_decision_id,'')):''
   });
- }));
+ }).sort((a,b)=>Number(b.verified)-Number(a.verified)).slice(0,4));
 }
 
 function valueLabel(value,unit){
@@ -65,7 +65,7 @@ export function outcomeFeedbackMarkup(items=[]){
    +(row.actionId?'<p class="os-outcome-action">Gekoppelde actie: '+escapeHtml(row.actionId)+'</p>':'')
    +'<dl class="os-outcome-compare"><div><dt>Vooraf verwacht</dt><dd>'+escapeHtml(valueLabel(row.expected,row.expectedUnit))+'</dd></div>'
    +'<div><dt>Werkelijk gerealiseerd</dt><dd>'+escapeHtml(valueLabel(row.realized,row.actualUnit))+'</dd></div>'+compare+'</dl>'
-   +learn+'<details><summary>Hoe weten we dit?</summary>'+evidence+'</details></article>';
+   +learn+'<details><summary>Hoe weten we dit?</summary>'+evidence+'</details><button type="button" class="os-outcome-more" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs →</button></article>';
  }).join('');
  return '<section class="os-outcome-feedback" data-outcome-feedback="results" aria-label="Effect van acties">'+intro+'<div class="os-outcome-cards">'+cards+'</div></section>';
 }
