@@ -160,6 +160,71 @@ export function projectOutreachSourceRecovery(actions,research,{actionsStatus='U
     source:'public.powerhouse_sales_actions',note:'Original action metadata, not independently audited Gmail or revenue.'};
 }
 
+
+/**
+ * Descriptive closed-day website trend from the EXISTING growth_page_daily source.
+ * No visitors, payment, provider, order, conversion or causal-success claims.
+ * A missing calendar day is UNKNOWN, not zero. Never extrapolate partial periods.
+ */
+export function projectWebsiteWeeklyGrowth(rows,{state='UNAVAILABLE',at=new Date().toISOString()}={}){
+  const empty=(reason,details={})=>({status:'UNVERIFIED',reason,metricEvidence:'OBSERVATIONAL_ONLY',
+    periodDays:7,metrics:null,missingDays:[],...details});
+  if(state!=='LIVE'||!Array.isArray(rows))return empty('DAILY_SOURCE_NOT_VERIFIED');
+  const moment=new Date(at);
+  if(!Number.isFinite(moment.getTime()))return empty('INVALID_OBSERVATION_DATE');
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'
+  }).formatToParts(moment).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+  const today=`${parts.year}-${parts.month}-${parts.day}`;
+  const base=Date.parse(today+'T00:00:00Z');
+  if(!Number.isFinite(base))return empty('INVALID_BUSINESS_DATE');
+  const keys=['page_views','cta_clicks','qualified_leads','won_orders'];
+  const dayAt=back=>new Date(base-back*86400000).toISOString().slice(0,10);
+  const dates=Array.from({length:14},(_,i)=>dayAt(14-i));
+  const byDay=new Map();
+  for(const row of rows){
+    const day=typeof row?.day==='string'?row.day.slice(0,10):'';
+    if(!dates.includes(day))continue;
+    const values={};
+    for(const key of keys){
+      const raw=row[key],n=Number(raw);
+      if(raw===null||raw===undefined||raw===''||!Number.isFinite(n)||n<0)
+        return empty('INVALID_OR_MISSING_DAY_METRIC',{invalidDay:day,invalidMetric:key});
+      values[key]=n;
+    }
+    const prior=byDay.get(day)||Object.fromEntries(keys.map(key=>[key,0]));
+    for(const key of keys)prior[key]+=values[key];
+    byDay.set(day,prior);
+  }
+  const missingDays=dates.filter(day=>!byDay.has(day));
+  const baseDates=dates.slice(0,7),recentDates=dates.slice(7);
+  const result={baseline:{from:baseDates[0],through:baseDates.at(-1)},
+    recent:{from:recentDates[0],through:recentDates.at(-1)}};
+  if(missingDays.length)return empty('INCOMPLETE_DAILY_COVERAGE',{
+    ...result,observedDays:byDay.size,missingDays});
+  const sums=days=>Object.fromEntries(keys.map(key=>[key,days.reduce((v,day)=>v+byDay.get(day)[key],0)]));
+  const earlier=sums(baseDates),current=sums(recentDates);
+  const metrics={};
+  for(const key of keys){
+    const prev=earlier[key],now=current[key];
+    metrics[key]={previous:prev,current:now,
+      changePct:prev>0?Math.round((now-prev)/prev*10000)/100:null,
+      direction:prev===0?(now===0?'FLAT_ZERO':'BASELINE_ZERO'):
+        now>prev?'UP':now<prev?'DOWN':'FLAT'};
+  }
+  const rate=(numerator,denominator)=>denominator>0?
+    Math.round(numerator/denominator*10000)/100:null;
+  return {status:earlier.page_views>=30&&current.page_views>=30?
+    'COMPARABLE_DESCRIPTIVE_OBSERVATIONS':'LOW_SAMPLE_DESCRIPTIVE_ONLY',
+    reason:null,metricEvidence:'OBSERVATIONAL_ONLY',periodDays:7,missingDays:[],
+    observedDays:14,...result,metrics,
+    ctaRate:{previous:rate(earlier.cta_clicks,earlier.page_views),
+      current:rate(current.cta_clicks,current.page_views)},
+    businessClaims:{paidOrdersVerified:false,qualifiedBuyersIndependentlyVerified:false,
+      uniqueVisitorsKnown:false,attributedRevenueVerified:false},
+    note:'Two completed Europe/Amsterdam calendar weeks. Page views are not unique visitors; lead/order counts are unverified rollup observations, not paid orders.'};
+}
+
 /**
  * Reuse the existing service-role CRO evidence view. "is_robot=false" is only
  * a first-party event flag, not an independently verified human visitor.
@@ -220,7 +285,10 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     qualifiedLeads:sum(daily,'qualified_leads'),wonOrders:sum(daily,'won_orders'),
     revenueEur:sum(daily,'revenue_eur')
   }:null;
+  const websiteWeeklyGrowth=projectWebsiteWeeklyGrowth(daily,{state:readStates.daily||'UNAVAILABLE',at});
   const flags=[];
+  if(websiteWeeklyGrowth.status==='UNVERIFIED')flags.push('WEEKLY_WEBSITE_GROWTH_EVIDENCE_INCOMPLETE');
+  if(websiteWeeklyGrowth.status==='LOW_SAMPLE_DESCRIPTIVE_ONLY')flags.push('WEEKLY_WEBSITE_GROWTH_LOW_SAMPLE');
   if(!dailyOk)flags.push('WEBSITE_DAILY_SOURCE_UNAVAILABLE');
   if(!experimentsOk)flags.push('EXPERIMENT_SOURCE_UNAVAILABLE');
   if(readStates.policies!=='LIVE')flags.push('EXPERIMENT_POLICY_UNAVAILABLE');
@@ -272,6 +340,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     },
     quality:{flags,botFiltering:'UNKNOWN_IN_THIS_PROJECTION',deliveryAcknowledgement:'UNVERIFIED',message:'Website-events zijn observaties, geen onafhankelijk bevestigde leads, klanten of betaalde orders. Onbekend is nooit nul.'},
     website:totals,
+    websiteWeeklyGrowth,
     behavior:behaviorData,
     croMeasurement,
     conversionProof:cp?{
