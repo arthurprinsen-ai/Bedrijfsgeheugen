@@ -35,4 +35,12 @@ with tempfile.TemporaryDirectory() as d:
  original['sources']={}
  no_prior,diag=run(202,b'<html>accepted</html>')
  assert 'eu-ai-act' not in no_prior['sources'] and not diag['sources']['eu-ai-act']['firstObservation']
+ # Untrusted config must not escape its original audit directory.
+ malicious=dict(source,id='../escape')
+ config.write_text(json.dumps({'sources':[malicious]}),encoding='utf8')
+ try:
+  with contextlib.redirect_stdout(io.StringIO()): mod.main()
+  assert False, 'path-traversal source ID unexpectedly accepted'
+ except ValueError as e:
+  assert str(e)=='REGULATORY_SOURCE_ID_INVALID'
 print('REGULATORY_HTTP202_TRUST_GATE_PASSED')
