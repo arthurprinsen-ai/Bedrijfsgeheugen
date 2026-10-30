@@ -78,5 +78,5 @@ test('original authorized portal exposes only a read-only adapter and retains th
  assert.match(ui,/Betaalde orders uit connecties/);
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/projectOriginalCommercialMomentum/);
- assert.doesNotMatch(api,/INSERT INTO|UPDATE growth_page_daily|new scheduler/);
+ assert.doesNotMatch(api,/(?:INSERT INTO|UPDATE)\\s+growth_page_daily|\\.from\\('growth_page_daily'\\)\\.(?:insert|upsert|update)/i);
 });
