@@ -140,7 +140,7 @@ export function projectCroOneLoopAssurance(source){
 export function projectOutreachSourceRecovery(actions,research,{actionsStatus='UNAVAILABLE',researchStatus='UNAVAILABLE'}={}){
   const valid=actionsStatus==='LIVE'&&researchStatus==='LIVE'&&Array.isArray(actions)&&Array.isArray(research);
   if(!valid)return {status:'UNVERIFIED',reason:'ORIGINAL_OUTREACH_READBACK_UNAVAILABLE',
-    sourceResearchHeld:null,internalResearchPending:null,internalResearchDone:null,providerVerifiedSends:null};
+    sourceResearchHeld:null,internalResearchPending:null,internalResearchDone:null,providerVerifiedSends:null,researchNoCurrentSignal:null,researchSourceCandidatesUnverified:null,nextOriginalResearchAt:null};
   const held=actions.filter(r=>r?.status==='prepared'&&r?.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED').length;
   const provider=actions.filter(r=>r?.status==='done'&&
     r.evidence?.autonomous_outbound?.provider_ack_verified===true&&
@@ -150,6 +150,10 @@ export function projectOutreachSourceRecovery(actions,research,{actionsStatus='U
   return {status:'SOURCE_READBACK_COMPLETE',reason:null,sourceResearchHeld:held,
     internalResearchPending:research.filter(r=>['suggested','prepared','waiting'].includes(r.status)).length,
     internalResearchDone:research.filter(r=>r.status==='done').length,
+    researchNoCurrentSignal:research.filter(r=>r?.status==='waiting'&&r?.evidence?.public_research_execution?.no_current_trigger_evidence===true).length,
+    researchSourceCandidatesUnverified:research.filter(r=>r?.evidence?.relationship_source_candidate?.status==='UNVERIFIED_SOURCE_CANDIDATE').length,
+    nextOriginalResearchAt:research.map(r=>r?.evidence?.public_research_execution?.next_research_at)
+      .filter(t=>typeof t==='string'&&Number.isFinite(Date.parse(t))).sort()[0]||null,
     providerVerifiedSends:provider,
     businessOutcomeVerified:false,
     owner:'original-powerhouse-autonomous-outreach',nextOwner:'original-powerhouse-relationship-public-research',
@@ -298,7 +302,7 @@ export default async function handler(request){
     select(base,key,'powerhouse_sales_actions',
       'select=status,updated_at,evidence&action_type=eq.autonomous_email&channel=eq.email&updated_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=updated_at.desc&limit=301'),
     select(base,key,'powerhouse_sales_actions',
-      'select=status,updated_at&action_type=eq.research_enrichment&channel=eq.internal&dedupe_key=like.relationship-research:outreach-source:*&order=updated_at.desc&limit=301')
+      'select=status,updated_at,evidence&action_type=eq.research_enrichment&channel=eq.internal&dedupe_key=like.relationship-research:outreach-source:*&order=updated_at.desc&limit=301')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
