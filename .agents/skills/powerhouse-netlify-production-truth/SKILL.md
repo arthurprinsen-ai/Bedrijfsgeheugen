@@ -248,3 +248,12 @@ Verplichte diagnose voordat CSS of content wordt veranderd: bewaar de echte layo
 De diagnose is uitsluitend meetinstrumentatie. `CLS > 0.100` blijft **release-blocking**; niet boven de limiet gaan zitten, geen uitzondering voor de AFAS-route en geen extra scheduler, providerpublishing of parallel foutregister. Alleen herstel van een bewezen DOM/CSS-oorzaak met herhaalde volledige browserregressie, exact-head Required/CodeQL en Netlify-productiereadback mag het incident `PROVEN` maken.
 
 Regressie: `tests/brain-mobile-cls-attribution-20261022.test.mjs`. Incident authority: `public.brain_failure_registry`, issue #4215 en originele website PR #4606.
+
+
+## 30-10-2026 — 15-loop portal admin production readback in bestaande Identity-deployproef
+
+**Incident:** #4918. De bestaande portal-auth production proof controleerde twee tenants maar niet `/api/powerhouse-one-loop-assurance`. Een geldige commit/deploy en generic `PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1=PROVEN` zijn geen bewijs dat de 15-lussenroute admin-only veilig werkt. Dit is één ontbrekende **verificatiegrens**, geen tweede Powerhouse-executor.
+
+**Verplichte run:** hergebruik dezelfde `deploySucceeded`-hook, officiële Netlify Identity admin API en dezelfde korte twee synthetische tenantaccounts van `platform/api/portal-authenticated-production-proof-core.mjs`. Role-provisioning alleen via door admin beheerde app_metadata. Signed JWT voor tenant-a moet `powerhouse-admin` claimen, tenant-b mag dat niet. Op identiek immutable deploy: admin GET moet `READBACK_COMPLETE` met 15 brongebonden loops, consistente counts en `overallStatus` hebben; tenant-b GET = 403 POWERHOUSE_ADMIN_REQUIRED; unauth GET = 401 UNAUTHENTICATED. Beide synthetische accounts worden in `finally` verwijderd. Een rode bron is een **geldige betrouwbare waarneming**, niet een mislukte API-test.
+
+**Gescheiden uitkomstgates:** `one_loop_assurance_proof=PROVEN` uitsluitend als alle drie onafhankelijke readbacks én cleanup zijn bevestigd; anders `UNVERIFIED`, mét foutcode. De algemene portaalauth en netto-deploy kunnen onafhankelijk PROVEN blijven, maar betekent nooit 15/15 GREEN, LinkedIn/Mira/blog gepost of gerealiseerde orders. BRAIN-incidentfingerprint/herstel/preventie en menselijk ontwikkellog blijven de bestaande exclusieve lineage. Geen nieuwe scheduler, globale adminrol uit user_metadata, tokenlogging, gefingeerde provideruitslagen of versoepelde rollen. Test `tests/portal-authenticated-production-proof.test.mjs`; document `docs/changes/2026-10-30-one-loop-admin-production-proof.md`.
