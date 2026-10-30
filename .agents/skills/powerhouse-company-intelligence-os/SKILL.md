@@ -173,3 +173,12 @@ De bestaande UX-agent en Company Intelligence/Portal-agent gebruiken de ontwerp-
 - Toon verwachte en gerealiseerde cijfers alleen met passende meeteenheid en bewijs. Een verschil is niet automatisch ROI; een taak of provider-ACK is geen geverifieerde uitkomst.
 - Gebruik bestaande consented CRO/UX-bronnen om taakvoltooiing, begrijpelijkheid, tijd tot besluit en aantoonbaar zakelijke waarde te meten; geen verzonnen lift.
 - UX-technieken worden pas als nieuwe standaard gepromoveerd na aantoonbaar beter gebruikersresultaat met regressiepreventie, toegankelijke mobiele werking en veilig rollbackpad. Houd ongetoetste ideeën expliciet `CANDIDATE/EVIDENCE_DUE`.
+
+## Strategic Adviser Board Brief · kandidaat 2026-10-30
+
+Fingerprint: `portal|strategic-advisor|consulting-grade-evidence-to-decision|20261030-v1`.
+De ondernemer krijgt geen technisch dashboard of ongecontroleerde AI-conclusie maar een strategisch bestuursadvies: diagnose → root cause → expliciete strategische alternatieven inclusief niets doen → verwachte waarde/risico's → beslissing → toegestane actie → onafhankelijke uitkomst → Brain-leereffect. Gedraag je als een kritische bedrijfsadviseur; claim géén relatie met McKinsey/BCG.
+
+Het bestaande `portal-v2/operating-system/strategic-advisor.js` is alleen een read-only projectie van de reeds tenant-scoped Executive Projection, op `executive-cockpit.js` en `operating-system-ui.js`. Het weigert stale/ongefundeerd advies en onbekende ROI; door de ondernemer geautoriseerde acties blijven in de originele Next Best Action/Decision flow. Een onbewezen optie is nooit een doorgerekend alternatief en een voorgestelde euro-impact is nooit gerealiseerde omzet.
+
+Dezelfde UI/UX kwaliteitslat geldt op alle pagina's: maximaal drie keuzes voor de dag, gewone ondernemerstaal, voorspelbare navigatie, keyboard/mobile, uitleg en bron onder een disclosure. Een nieuwe UX- of AI-aanpak wordt alleen de nieuwe standaard na representatieve gebruikers-evaluatie, bewijs van taakverbetering en protected productie-readback. Geen tweede model-store, scheduler of eigen CRM; originele ONE BRAIN/Heartbeat leveren de leerlus. De kandidaat wordt getest in `tests/brain-strategic-advisor-one-loop-20261030.test.mjs`.
