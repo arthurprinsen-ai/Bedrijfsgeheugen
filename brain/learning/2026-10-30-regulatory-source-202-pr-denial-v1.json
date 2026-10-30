@@ -50,7 +50,14 @@
       "tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs"
     ],
     "provider_replay_required": true,
-    "live_source_quality_not_yet_verified": true
+    "live_source_quality_not_yet_verified": true,
+    "shadow": [
+      "tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs"
+    ],
+    "meaning": "SHADOW and CANARY are guarded replay tests at admission; they do not represent a genuine natural regulatory provider run, a GitHub-authorized PR or a live compliance impact."
   },
   "evidence_state": {
     "protected_main": "PENDING_REQUIRED",
