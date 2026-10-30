@@ -45,7 +45,8 @@ export function buildAllAgentInnovationDuties({agents=[],innovationPortfolio=nul
     const domains=new Set(agent.domains.filter(d=>typeof d==='string'));
     const scored=candidates.map(candidate=>{
       const eligible=domainMatches[candidate.id]||[];
-      const overlap=eligible.filter(domain=>domains.has(domain)).length;
+      const overlap=eligible.filter(domain=>domains.has(domain)).length+
+        (candidate.id==='adaptive-portal-ux'&&domains.has('UX')?2:0);
       const canAct=agent.capabilities.some(x=>['create','optimize','experiment','recover','design','integrate','research','harden','audit','verify','govern','diagnose','analyze','measure','validate','reconcile','prioritize'].includes(x));
       return {candidate,overlap,canAct};
     }).filter(x=>x.overlap>0&&x.canAct).sort((a,b)=>
