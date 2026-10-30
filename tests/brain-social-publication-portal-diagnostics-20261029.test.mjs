@@ -180,3 +180,24 @@ test('human portal describes original one-loop recovery for duplicate and media 
  assert.match(portal,/Blog nog niet live bewezen/);
  assert.doesNotMatch(portal,/claim:2026-10-27:linkedin_personal/);
 });
+
+test('exhausted personal source families show Dutch recovery without false green',()=>{
+ const day='2026-10-30';
+ const rows=[
+   {...row('linkedin_company','APPROVED'),publication_date:day},
+   {...row('linkedin_personal','BLOCKED','NO_UNIQUE_VERIFIED_PERSONAL_SOURCE'),publication_date:day},
+   {...row('instagram','PLANNED'),publication_date:day},
+   {...row('blog','GENERATED'),publication_date:day}
+ ];
+ const result=summarizePublicationEvidence(rows,{count:4,date:day,observedAt:'2026-10-30T07:31:00Z'});
+ const personal=result.channels.find(c=>c.channel==='linkedin_personal');
+ assert.equal(personal.recoveryCode,'FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED');
+ assert.equal(personal.registryStatus,'BLOCKED');
+ assert.equal(personal.providerIdRecorded,false);
+ assert.equal(personal.internalLiveProofRecorded,false);
+ const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
+ assert.match(portal,/code==='FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED'/);
+ assert.match(portal,/zonder bewijs blijft LinkedIn persoonlijk geblokkeerd/);
+ assert.match(portal,/code==='NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED'/);
+ assert.match(portal,/Geen oude tekst herschrijven of opnieuw plaatsen/);
+});
