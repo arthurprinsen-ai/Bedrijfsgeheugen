@@ -36,8 +36,17 @@ function render(container,data){
   const proof=data?.conversionProof||null;
   const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
   const brain=data?.brainClosure||null;
+  const oneLoop=data?.oneLoop||null;
+  const loopRows=oneLoop?.status==='READBACK_COMPLETE'&&Array.isArray(oneLoop.loops)
+    ?oneLoop.loops.filter(row=>row.status!=='GREEN').slice(0,15).map(row=>
+      '<tr><td>'+esc(row.key)+'</td><td>'+badge(row.status)+'</td><td>'+
+      esc(row.guard)+'</td><td>'+
+      esc((row.missingStages||[]).join(', ')||row.problem||'Afhandeling of onafhankelijk bewijs nodig')+'</td></tr>').join('')
+    :'';
+  const loopCounts=oneLoop?.status==='READBACK_COMPLETE'?oneLoop.counts:null;
+
   const gateNames={
-    BRAIN_DELIVERY_READBACK:'Afgeleverd aan ONE BRAIN',
+    BRAIN_DELIVERY_READBACK:'Growth-event afgeleverd aan ONE BRAIN (niet alleen Heartbeat-opslag)',
     FIRST_PARTY_EVENT_RECEIPT:'Exacte opslagbevestiging website-event',
     ACTUAL_CTA_EXPOSURE:'Echte CTA-interactie',
     CONTROLLED_CRO_EXPERIMENT:'Gerandomiseerde controlegroep met volwassen uitkomst',
@@ -86,6 +95,17 @@ function render(container,data){
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
+    '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
+    '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
+    '<p>Oorspronkelijke 15-lussenbron: '+badge(source.oneLoop?.status)+
+    ' · Organisme: '+badge(oneLoop?.overallStatus)+
+    ' · Laatste controle: '+esc(date(oneLoop?.checkedAt))+'</p>'+
+    '<div class="od-grid">'+field('Groen',fmt(loopCounts?.green))+
+    field('Oranje',fmt(loopCounts?.amber))+field('Rood',fmt(loopCounts?.red))+'</div>'+
+    (loopRows?'<div class="od-scroll"><table><thead><tr><th>Lus</th><th>Status</th><th>Broncontrole</th><th>Open bewijs</th></tr></thead><tbody>'+
+    loopRows+'</tbody></table></div>':
+    '<p>Geen onbewezen groene status: '+esc(oneLoop?.reason||'Geen rode of oranje lussen waargenomen')+'.</p>')+
+    '<p class="od-foot">Een ontbrekende of verouderde 15-lussenreadback blijft UNVERIFIED. Nooit kunstmatig groen maken; resultaten pas sluiten met onafhankelijk uitvoerings-, conversie- en providerbewijs.</p></section>'+
     '<section class="od-card"><h3>ONE BRAIN · commerciële CRO-terugkoppeling</h3>'+
     '<p>Originele Heartbeat → canonieke Brain-opslag, zonder tweede scheduler of losse registratie. Een technische readback bewijst nog geen verkoop of experimentele verbetering.</p>'+
     '<p>Commerciële lus: '+badge(data.commercialLoopStatus||'NOT_VERIFIED')+
