@@ -108,6 +108,32 @@ function deliveryView(events,observability){
   const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
   return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
+function oneLoopAssuranceView(assurance){
+  const source=assurance||{},complete=source.status==='READBACK_COMPLETE' &&
+    source.contract==='one-brain-original-loop-assurance-readback-v1' &&
+    Number(source.counts?.total)===15 && arr(source.loops).length===15;
+  if(!complete){
+    return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="UNVERIFIED"><div class="poc-panelhead"><h4>ONE BRAIN · één organisme · 15 lussen</h4><span class="poc-badge bad">Niet geverifieerd</span></div><p class="poc-note">De onafhankelijke canonieke Supabase-assurance kon niet volledig en actueel worden gelezen. Niet nul of groen; geen extra scheduler. Oorzaak: ${esc(source.reason||'BRONBEWIJS_ONTBREEKT')}.</p></section>`;
+  }
+  const counts=source.counts,status=source.overallStatus||'UNVERIFIED';
+  const label={RED:'Rood · guards of bewijs blokkeren',AMBER:'Oranje · bewijs ontbreekt',GREEN:'Groen · bronbevestigd'};
+  const toneStatus={RED:'bad',AMBER:'warn',GREEN:'good'}[status]||'bad';
+  const list=arr(source.loops).map(row=>{
+    const t={RED:'bad',AMBER:'warn',GREEN:'good'}[row.status]||'bad';
+    const reason=row.guard==='FAILED'?'Originele guard faalt':row.missingStages?.length?
+      'Ontbrekende fasen: '+row.missingStages.join(', '):row.status==='GREEN'?
+      'Stadia en guard-status actueel':'Uitvoerings- of externe bewijscontrole ontbreekt';
+    return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small></div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
+  }).join('');
+  return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="READBACK_COMPLETE" data-overall-status="${esc(status)}">
+    <div class="poc-panelhead"><h4>ONE BRAIN + Powerhouse + Heartbeat · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
+    <p class="poc-note">Eén bestaande uitvoeringsarchitectuur; dit is uitsluitend onafhankelijke broncontrole van de 15 bestaande lussen, géén tweede executor. Een succesvolle job is geen bewezen klantresultaat. Laatste controle: ${esc(fmtTime(source.observedAt))}.</p>
+    <div class="poc-kpis compact">${kpi('Lussen',counts.total,'bestaande canonieke inventaris')}${kpi('Groen',counts.green,'bron-gates voldoen')}${kpi('Oranje',counts.amber,'nog ontbrekend bewijs')}${kpi('Rood',counts.red,'guard of outcome faalt')}</div>
+    <details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
+    <p class="poc-note">Eén overkoepelende status wordt ROOD zodra één originele lus rood is. Publicatie, OAuth-toestemming, omzet en agentleereffect worden nooit kunstmatig afgetekend.</p>
+  </section>`;
+}
+
 function liveView(events,observability,refreshError=''){
   const now=Date.now();
   const groups=[
@@ -132,7 +158,7 @@ function liveView(events,observability,refreshError=''){
   const eventLine=e=>`<article class="poc-error"><div>${statusBadge(e)}<b>${esc(e.title||e.rawType||'Activiteit')}</b></div><p>${esc(e.detail||e.subjectId||'Geen nadere oorzaak of actie vastgelegd.')}</p><small>${esc(fmtTime(e.occurredAt))} · ${esc(e.actor||'Onbekend')} · ${esc(e.source||'Onbekend')}${e.referenceUrl?` · <a href="${esc(e.referenceUrl)}" target="_blank" rel="noopener noreferrer">Open bronbewijs ↗</a>`:''}</small></article>`;
   const time=observability.updatedAt||latest[0]?.occurredAt;
   const outdated=!timeMs(time)||now-timeMs(time)>7200000;
-  return `<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
+  return `${oneLoopAssuranceView(observability.oneLoopAssurance)}<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
   <div class="poc-grid3">${blocks}</div>
   <div class="poc-grid2"><section class="poc-panel"><h4>Blokkades en herstel</h4>${blockers.length?blockers.map(eventLine).join(''):empty('Geen blokkades geregistreerd in deze selectie; dit bewijst niet dat alle externe systemen probleemloos draaien.')}</section>
   <section class="poc-panel"><h4>Actuele werkstroom en bewijslinks</h4>${recent.length?recent.map(eventLine).join(''):empty('Geen actuele uitvoering in de canonieke projectie. Er worden geen werkzaamheden gesuggereerd.')}</section></div>`;
@@ -359,7 +385,19 @@ async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   if(response.status===403)return {status:'forbidden',runtime:null};
   if(!response.ok)return {status:'error',runtime:null};
   const projection=await response.json();
-  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null,experimentChanges:projection.experimentChanges||null}};
+  let oneLoopAssurance={status:'UNVERIFIED',reason:'CANONICAL_ASSURANCE_READBACK_NOT_AVAILABLE'};
+  try {
+    const evidence=await fetchImpl('/api/powerhouse-one-loop-assurance',{
+      method:'GET',credentials:'same-origin',
+      headers:{accept:'application/json',authorization:`Bearer ${token}`}
+    });
+    if(evidence.ok)oneLoopAssurance=await evidence.json();
+    else oneLoopAssurance={status:'UNVERIFIED',reason:'CANONICAL_ASSURANCE_HTTP_'+evidence.status};
+  }catch{oneLoopAssurance={status:'UNVERIFIED',reason:'CANONICAL_ASSURANCE_READBACK_FAILED'};}
+  const mapped=mapRuntimeProjection(projection);
+  return {status:'ready',runtime:{...mapped,
+    observability:{...(mapped.observability||{}),oneLoopAssurance},
+    systemMap:projection.systemMap||null,experimentChanges:projection.experimentChanges||null}};
 }
 
 async function openAdminLogin(){
