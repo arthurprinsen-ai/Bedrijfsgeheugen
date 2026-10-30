@@ -1,3 +1,5 @@
+import {strategicAdvisorMarkup} from './strategic-advisor.js';
+import {outcomeFeedbackMarkup} from './outcome-feedback.js';
 import {buildExecutiveProjection} from './executive-projection.js';
 import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js';
 import {ensureOperatingSystemStyles} from './styles.js';
@@ -66,12 +68,14 @@ export function executiveCockpitMarkup(model){
  if(!model.available)return `<section class="os-executive os-executive-unavailable" data-os-status="unavailable">
   <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role||'Directie')}</small><h2>Wat moet ik vandaag weten, beslissen en doen?</h2><p class="os-subtitle">De cockpit blijft de startpagina. Cijfers en adviezen verschijnen pas zodra ze tenant-scoped en bewezen zijn.</p></div><span>Data wordt geladen</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
+  ${strategicAdvisorMarkup(model)}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>Belangrijkste afwijkingen</strong><span>Nog geen bewezen aandachtspunten beschikbaar.</span></article>
     <article><small>2 · Beslissen</small><strong>Besluiten die vandaag nodig zijn</strong><span>Nog geen bewezen besluitvraag beschikbaar.</span></article>
     <article><small>3 · Doen</small><strong>Eerstvolgende actie</strong><span>Nog geen bewezen actie beschikbaar.</span></article>
     ${dailyFeedbackCards(model)}
   </div>
+  ${outcomeFeedbackMarkup(model.outcomes)}
  </section>`;
  const tabs=OPERATING_SYSTEM_PAGES.map(page=>`<button type="button" data-os-page="${page}" aria-pressed="false">${esc(LABELS[page]||page)}</button>`).join('');
  const attention=model.attention||[];
@@ -79,12 +83,14 @@ export function executiveCockpitMarkup(model){
  return `<section class="os-executive" data-os-status="live">
   <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role)}</small><h2>Waar moet de directie vandaag op sturen?</h2><p class="os-subtitle">Dagelijkse ondernemingssturing: weten → beslissen → doen → meten → leren. Alle inzichten en acties komen uit hetzelfde Bedrijfsgeheugen.</p></div><span>${model.evidence_health.healthy}/${model.evidence_health.total} bronnen gezond</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
+  ${strategicAdvisorMarkup(model)}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>${attention[0]?.title?esc(attention[0].title):'Geen urgente afwijking'}</strong><span>${attention[0]?esc(attention[0].explanation||attention[0].summary||attention[0].reason||''):'Geen bewezen aandachtspunt dat nu actie vraagt.'}</span></article>
     <article><small>2 · Beslissen</small><strong>${model.decision_queue[0]?.title?esc(model.decision_queue[0].title):'Geen besluit nodig'}</strong><span>${model.decision_queue[0]?esc(model.decision_queue[0].next_action||model.decision_queue[0].explanation||model.decision_queue[0].summary||''):'Geen bewezen besluitvraag voor vandaag.'}</span></article>
     <article><small>3 · Doen</small><strong>${model.next_best_actions[0]?.title?esc(model.next_best_actions[0].title):'Geen actie met bewijs'}</strong><span>${model.next_best_actions[0]?esc(model.next_best_actions[0].next_action||model.next_best_actions[0].explanation||model.next_best_actions[0].summary||''):'Zodra bewijs beschikbaar is verschijnt hier de eerstvolgende actie.'}</span></article>
     ${dailyFeedbackCards(model)}
   </div>
+  ${outcomeFeedbackMarkup(model.outcomes)}
   <section class="os-attention" aria-label="Wat vraagt vandaag aandacht?">
   <div class="os-section-heading"><h3>Wat vraagt vandaag aandacht?</h3><p>Maximaal vijf geprioriteerde problemen uit dezelfde PH-Pxxx waarheid die ook Problem Radar, content en capabilities gebruiken.</p></div>
   ${problems.length?problems.map(problemCard).join(''):(attention.length?attention.map(attentionCard).join(''):'<article class="os-attention-empty"><strong>Geen gevalideerde problemen</strong><span>Externe signalen blijven hypotheses totdat intern bewijs beschikbaar is.</span></article>')}

@@ -163,3 +163,22 @@ Elke overzichtskaart, inclusief de historische Bedrijfslek-weergave, moet ontbre
 ### Veilige vluchtige Brain-runtime in de ondernemersreis
 
 Fingerprint `portal|eight-outcomes|principal-bound-live-runtime|v1`. De geautoriseerde `/api/brain-operating-loop`-projectie is géén duurzaam `portal.business_context`-antwoord. Bied live runtime uitsluitend aan de **huidige** geauthenticeerde principal aan; bij accountwisseling of logout direct wissen en de frontend opnieuw projecteren zonder identiteit of payload in browser-events. Nooit via `domainState`-data van een vorige gebruiker hergebruiken. Brain-runtime-observatie mag niet als bewijs voor connector-provideracties, Heartbeat-SLA, financiële forecast of gerealiseerde winst gelden. Houd de oorspronkelijke Supabase/Brain-writeautoriteit en tenant/RLS intact. Regressie via `portal-v2/tests/entrepreneur-journey.test.mjs` en root-learning-replay.
+
+## Ondernemersgerichte impactfeedback — kandidaatregel (2026-10-30)
+
+De bestaande UX-agent en Company Intelligence/Portal-agent gebruiken de ontwerp- en bewijsgrenzen in `docs/changes/2026-10-30-entrepreneur-impact-feedback-ux-v1.md` als context voor volgende veilige Portal V2-verbeteringen. Dit is **nog geen bewezen nieuwe skill**: promotie vereist eerst Required/BRAIN/CodeQL, exacte live-readback en latere onafhankelijke gebruikers- of outcome-evaluatie.
+
+- Houd op beslis- en actieplekken dezelfde begrijpelijke keten aan: aanleiding → voorspelde impact → beslissing → uitgevoerde actie → werkelijk bewezen impact → leereffect → volgende stap.
+- Hergebruik `portal-v2/operating-system/outcome-feedback.js` als read-only visuele component waar tenant-scope en brongezondheid uit bestaande canonical projections gewaarborgd zijn; voeg geen tweede schrijver of meetbron toe.
+- Toon verwachte en gerealiseerde cijfers alleen met passende meeteenheid en bewijs. Een verschil is niet automatisch ROI; een taak of provider-ACK is geen geverifieerde uitkomst.
+- Gebruik bestaande consented CRO/UX-bronnen om taakvoltooiing, begrijpelijkheid, tijd tot besluit en aantoonbaar zakelijke waarde te meten; geen verzonnen lift.
+- UX-technieken worden pas als nieuwe standaard gepromoveerd na aantoonbaar beter gebruikersresultaat met regressiepreventie, toegankelijke mobiele werking en veilig rollbackpad. Houd ongetoetste ideeën expliciet `CANDIDATE/EVIDENCE_DUE`.
+
+## Strategic Adviser Board Brief · kandidaat 2026-10-30
+
+Fingerprint: `portal|strategic-advisor|consulting-grade-evidence-to-decision|20261030-v1`.
+De ondernemer krijgt geen technisch dashboard of ongecontroleerde AI-conclusie maar een strategisch bestuursadvies: diagnose → root cause → expliciete strategische alternatieven inclusief niets doen → verwachte waarde/risico's → beslissing → toegestane actie → onafhankelijke uitkomst → Brain-leereffect. Gedraag je als een kritische bedrijfsadviseur; claim géén relatie met McKinsey/BCG.
+
+Het bestaande `portal-v2/operating-system/strategic-advisor.js` is alleen een read-only projectie van de reeds tenant-scoped Executive Projection, op `executive-cockpit.js` en `operating-system-ui.js`. Het weigert stale/ongefundeerd advies en onbekende ROI; door de ondernemer geautoriseerde acties blijven in de originele Next Best Action/Decision flow. Een onbewezen optie is nooit een doorgerekend alternatief en een voorgestelde euro-impact is nooit gerealiseerde omzet.
+
+Dezelfde UI/UX kwaliteitslat geldt op alle pagina's: maximaal drie keuzes voor de dag, gewone ondernemerstaal, voorspelbare navigatie, keyboard/mobile, uitleg en bron onder een disclosure. Een nieuwe UX- of AI-aanpak wordt alleen de nieuwe standaard na representatieve gebruikers-evaluatie, bewijs van taakverbetering en protected productie-readback. Geen tweede model-store, scheduler of eigen CRM; originele ONE BRAIN/Heartbeat leveren de leerlus. De kandidaat wordt getest in `tests/brain-strategic-advisor-one-loop-20261030.test.mjs`.

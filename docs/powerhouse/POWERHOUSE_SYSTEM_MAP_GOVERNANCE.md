@@ -234,3 +234,23 @@ Inventory entries are repository source modules, including helper directories/fi
 Prevention: source additions/deletions/changes must fail the check until refreshed; refresh must be idempotent. Protected release and exact production/readback remain required. Unknown evidence stays unknown.
 
 Browser freshness: the live portal served unversioned module imports with Cache-Control max-age=604800. The existing build now versions the entry and local JS import graph (plus styles) using a normalized source-content fingerprint. Real portal source changes invalidate entry/import URLs; repeated builds keep the same fingerprint. This operates only on the built artifact, not a second runtime/store/scheduler. Source checks normalize the generated query marker. Preview/production readback must confirm the fingerprint in entry and imported modules.
+
+## Ondernemersgerichte UX: verwacht → gerealiseerd → geleerd (30-10-2026, kandidaat)
+
+Fingerprint: `portal|entrepreneur-experience|prediction-action-outcome-feedback|20261030-v1`.
+
+De bestaande Powerhouse/ONE BRAIN Outcome Memory en tenant-scoped `executive-projection.js` leveren de enige uitkomstcontext aan `portal-v2/operating-system/outcome-feedback.js`. Die read-only UI wordt in `executive-cockpit.js` binnen dezelfde vijfstappen-dagstart getoond en verwijst via de bestaande route naar `monitoring-learning`.
+
+Verbindingsketen: **Company Graph / Context → forecast → action/decision → provider readback → verified outcome → UX feedback → ONE BRAIN learning → next decision**. Deze UX-projection voegt geen database, agent, executive state, telemetry, actie-writer of scheduler toe.
+
+Resultaatbewijs vereist expliciete verificatiestatus, gezonde tenant-scoped evidence en bronverwijzingen. Delta vereist bovendien dezelfde metriek, baseline, periode en eenheid; een geleerd resultaat vereist learning-evidence plus een gekoppelde volgende beslissing. De kandidaat is gedocumenteerd in `docs/changes/2026-10-30-entrepreneur-impact-feedback-ux-v1.md`, beschermd door `tests/brain-entrepreneur-impact-feedback-20261030.test.mjs` en geregistreerd in ONE BRAIN als **OBSERVED/CANDIDATE**, niet als geverifieerde productieverbetering.
+
+Openstaande release-obligation: protected CI/CodeQL, exact source→Netlify, geauthenticeerde portal readback, gebruikersproeven en onafhankelijke UX- of bedrijfsresultaatmeting. Daarna pas promotie van de nieuwe ervaring en relevante skills.
+
+## Strategische adviseur → aantoonbare commerciële opbrengst (2026-10-30, kandidaat)
+
+De reeds bestaande `entrepreneurActionImpactFeedbackV1` System Map-knoop verbindt nu de originele `executive-projection.js` met de read-only `strategic-advisor.js` in de directiecockpit en de oorspronkelijke Next Best Actions-pagina. Hij koppelt aan dezelfde `outcome-feedback.js`, Company Intelligence, Outcome Memory, ONE BRAIN en Heartbeat.
+
+Ontwerpvolgorde: probleemdiagnose → oorzaakhypothese met bron → strategische alternatieven (inclusief niets doen) → prognose met onzekerheid → besluit → bevoegde actie → werkelijk onafhankelijke uitkomst → toekomstige kalibratie. Ontbrekend advies-/omzetbewijs blijft EVIDENCE_DUE. Alternatieven met alleen aannames mogen niet worden gepresenteerd als doorgerekend feit.
+
+De bestaande commerciële autoriteit `netlify/functions/_powerhouse-commercial-growth-funnel.mjs` blijft de enige cross-channel bron voor social/email → website → CTA → opt-in → sales → onafhankelijk betaalde order. De strategische UI mag geen globale adminmetrieken zonder tenant-gate tonen. Geen extra datalaag, eventcollector, planner, uitvoeringsagent of commerciële scheduler. Nieuwe productkwaliteit pas PROVEN na exact protected merge/deploy, readback en werkelijk verbeterde ondernemers-taakuitkomsten.

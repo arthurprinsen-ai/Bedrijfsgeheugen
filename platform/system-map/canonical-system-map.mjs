@@ -1,4 +1,26 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  entrepreneurActionImpactFeedbackV1:Object.freeze({
+    fingerprint:'portal|entrepreneur-experience|prediction-action-outcome-feedback|20261030-v1',
+    owner:'existing Portal V2 UX + Company Intelligence OS + ONE BRAIN/Heartbeat',
+    canonicalSource:'portal-v2/operating-system/executive-projection.js',
+    existingOutcomeAuthority:'powerhouse.executive.outcomes + existing Powerhouse Outcome Memory',
+    visualProjection:'portal-v2/operating-system/outcome-feedback.js',
+    strategicAdvisorProjection:'portal-v2/operating-system/strategic-advisor.js',
+    strategySurface:'portal-v2/operating-system/operating-system-ui.js',
+    originalCommercialGrowthAuthority:'netlify/functions/_powerhouse-commercial-growth-funnel.mjs',
+    strategyRegression:'tests/brain-strategic-advisor-one-loop-20261030.test.mjs',
+    customerSurface:'portal-v2/operating-system/executive-cockpit.js',
+    monitoringRoute:'monitoring-learning',
+    skill:'.agents/skills/powerhouse-company-intelligence-os/SKILL.md',
+    regression:'tests/brain-entrepreneur-impact-feedback-20261030.test.mjs',
+    humanDocumentation:'docs/changes/2026-10-30-entrepreneur-impact-feedback-ux-v1.md',
+    ledger:'docs/development-ledger-events/2026-10-30-entrepreneur-impact-feedback-v1.md',
+    brainCandidate:'brain/learning/2026-10-30-entrepreneur-impact-feedback-candidate-v1.json',
+    noNewScheduler:true,noNewWriter:true,noNewAnalyticsAuthority:true,
+    onlyIndependentlyVerifiedRealizedResults:true,
+    exactProductionVerified:false,independentUXUpliftVerified:false
+  }),
+
   ga4PrivateCalibrationEvidenceRepair:Object.freeze({
     fingerprint:'powerhouse|ga4-calibration|provider-report-empty-and-private-outcomes-not-public-ai|20261030-v1',
     contract:'POWERHOUSE_ONE_BRAIN_GA4_PRIVATE_CALIBRATION_REPAIR_V1',
@@ -176,7 +198,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'4b57c939767afe73cb8907b57fe68c278e898e6d50689a33ac19da5f67845888',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'2494778bfbfca4589edccbee9bd24228b9e2a0a2082f50bf47b94b7d7142a303',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
