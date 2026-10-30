@@ -74,7 +74,7 @@
      to fixed categories, never forward raw URLs, names, UTM values or PII. */
   function bronCategorie(){
     if(!toestemming())return {source:'website',medium:'unattributed',campaign:''};
-    var parts=String(herkomst||'').toLowerCase().split(/\s+\/\s+/);
+    var parts=String(herkomst||'').toLowerCase().split(' / ');
     var source=String(parts[0]||'').trim(),medium=String(parts[1]||'').trim(),campaign=String(parts[2]||'').trim();
     var out={source:'website',medium:'direct',campaign:''};
     if(/^(linkedin|li|linkedin\.com|www\.linkedin\.com|lnkd\.in|linkedin_personal|linkedin_company)$/.test(source)){
