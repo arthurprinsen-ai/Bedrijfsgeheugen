@@ -1,0 +1,82 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|runtime-health|two-evidence-debt-flags-not-cron-crashes|20261030-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_HEALTH_EVIDENCE_DEBT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "existing_fingerprints": [
+    "powerhouse|revenue-flywheel|forecast-calibration-evidence-due|20261029-v1",
+    "powerhouse|full-cycle|publication-predictive-proof-gaps|20261029-v1"
+  ],
+  "root_cause": "Two latest canonical event states are error because independently evidenced calibration and full-cycle public/provider outcomes are due. They are not two cron execution failures. Public calibrator cannot resolve private person/company outcomes.",
+  "prevention": "No customer or financial outcomes may be fabricated. Distinguish technical cron/HTTP execution from outcome proof, preserve independent view denominators, never use public market AI calibration on person/company scopes, keep error states until original owners obtain authorized first-party and provider receipts.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "checked_date": "2026-10-30",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "runtime_event_ids": [
+      "6008e9a4-5b4d-4e31-ad4c-258e79639fa4",
+      "aff25914-b086-4f35-a602-4e75acb3f30e"
+    ],
+    "revenue_flywheel_due_uncalibrated_forecasts": 1867,
+    "full_cycle_overdue_calibrations": 2085,
+    "private_person_due": 1714,
+    "private_company_due": 371,
+    "public_market_due": 0,
+    "matched_verified_outcome_candidates": 0,
+    "latest_predictive_run_ok": true,
+    "latest_predictive_success_at": "2026-10-30T07:02:15.524Z",
+    "latest_predictive_signals": 18,
+    "latest_predictive_new_forecasts": 1,
+    "latest_predictive_rejected": 0,
+    "original_runtime_health_errors": 2,
+    "original_jobs_active": 18,
+    "original_jobs_required": 18,
+    "original_layer_wiring_complete": "32/32",
+    "original_full_cycle_healthy": false,
+    "latest_proof_rerun_at": "2026-10-30T07:34:33.518Z",
+    "observed_in_existing_brain_failure_registry": true,
+    "protected_source_merged": false,
+    "independent_main_readback": false,
+    "natural_agent_application_proven": false,
+    "full_cycle_business_outcome_proven": false
+  },
+  "owner": "existing Powerhouse/Heartbeat/private-outcome and channel publication owners",
+  "fail_closed_rules": [
+    "missing source event or stale timestamp means UNVERIFIED",
+    "never treat cron success as HTTP business success",
+    "do not flatten flywheel due counts and full cycle overdue obligations into one denominator",
+    "private person/company outcomes need consented first-party actuals",
+    "no new scheduler, agent, publisher, hidden retry, fake payment, duplicate LinkedIn post or OAuth bypass"
+  ],
+  "sources": [
+    "public.powerhouse_one_brain_runtime_health_v1",
+    "public.powerhouse_runtime_events",
+    "public.powerhouse_predictive_health(date)",
+    "public.powerhouse_forecast_resolution_candidates_v3",
+    "public.revenue_learning_obligations",
+    "public.brain_failure_registry"
+  ],
+  "code_helper": "brain/observability/runtime-evidence-debt-classification.mjs",
+  "agent_instruction": "AGENTS.md",
+  "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+  "human_doc": "docs/changes/2026-10-30-two-runtime-evidence-debts.md",
+  "development_ledger": "docs/development-ledger-events/2026-10-30-two-runtime-evidence-debts.md"
+}
