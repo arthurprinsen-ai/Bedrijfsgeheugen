@@ -170,6 +170,18 @@ function systemMapView(systemMap,events,observability={}){
       return 'Bericht aangemaakt; LinkedIn weigert de onafhankelijke uitleescontrole (403). Nooit opnieuw publiceren; alleen bestaand bericht verifiëren.';
     if(code==='PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT')
       return 'Persoonlijke bron nog niet geverifieerd. Controleer concreet feit, herkomst, datum en nieuw verhaal vóór de bestaande goedkeurings- en publicatiestap; niet forceren of dubbel posten.';
+    if(code==='NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED')
+      return 'Dubbel verhaal afgekeurd. Laat de bestaande bronagent een aantoonbaar ander, gedateerd bronfeit met nieuwe gebeurtenis en eigen invalshoek controleren; herschrijven of opnieuw plaatsen van dezelfde verhaalfamilie is verboden. Laat de oorspronkelijke duplicaat- en publicatiepoorten opnieuw beslissen.';
+    if(code==='FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED')
+      return 'Geen voldoende nieuwe persoonlijke bron. Laat de bestaande bronradar een actuele onafhankelijke bron zoeken en factchecken vóór het maken van een nieuw concept. Geen verzonnen ervaringen of hergebruik van afgekeurde teksten.';
+    if(code==='MIRA_REJECTED_REQUIRES_NEW_APPROVED_MEDIA')
+      return 'Mira-beeld afgekeurd: verifieer herkenbare identiteit, mediaoverdracht en de geldende gezichtsdrempel in de bestaande producer; nooit een afgekeurde video publiceren.';
+    if(code==='MEDIA_IDENTITY_AND_PROVIDER_EVIDENCE_PENDING'||code==='CANONICAL_MEDIA_ASSET_REQUIRED')
+      return 'Instagram nog niet bewezen: controleer originele media, identiteit, overdracht en daarna provider-ID plus onafhankelijke readback. Geen publicatie zonder goedgekeurd beeld.';
+    if(code==='PROTECTED_PUBLICATION_AND_PUBLIC_URL_READBACK')
+      return 'Blog nog niet live bewezen: voer de bestaande beschermde websitepublicatie uit en controleer daarna de echte publieke artikel-URL. GENERATED of goedgekeurd is geen productiepublicatie.';
+    if(code==='LINKEDIN_PERSONAL_CANONICAL_OAUTH_CONSENT_REQUIRED')
+      return 'LinkedIn-eigenaarstoestemming vereist via de oorspronkelijke beveiligde OAuth-route. Niet omzeilen, geen alternatieve publisher en geen duplicaatpost.';
     return code;
   };
 
