@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  allAgentInnovationDutyAssurance:Object.freeze({
+    fingerprint:'powerhouse|all-agent-innovation|roster-unchecked-during-daily-self-evolution|20261030-v1',
+    owner:'existing Powerhouse ONE BRAIN/Heartbeat Self Evolution and original Growth/Portal owners',
+    contract:'POWERHOUSE_ALL_AGENT_INNOVATION_DUTY_V1',
+    sourceAgentRegistry:'platform/agents/agent-team.mjs',
+    sourcePortfolio:'brain/self-improvement/autonomous-innovation-portfolio.mjs',
+    pureAssurance:'brain/self-improvement/all-agent-innovation-duties.mjs',
+    originalAdminRead:'netlify/functions/_powerhouse-compound-improvement-proof.mjs',
+    originalPortal:'portal-v2/modules/andere-data.js',
+    originalDailySnapshot:'scripts/brain/daily-self-evolution.mjs',
+    originalDailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml',
+    regression:'tests/brain-all-agent-innovation-duty-20261030.test.mjs',
+    originalLearning:'brain/learning/2026-10-30-all-agent-innovation-assignment-is-not-execution-v1.json',
+    humanDoc:'docs/changes/2026-10-30-all-agent-innovation-duty-closed-loop.md',
+    original15LoopTruthPreserved:true,noNewScheduler:true,noNewWriter:true,
+    assignmentIsNotExecution:true,naturalApplicationVerified:false,
+    independentClientOrPaidOutcomeVerified:false
+  }),
+
   autonomousAgentInnovationV1:Object.freeze({
     fingerprint:'innovation|agent-self-development|no-verified-build-from-canonical-data|20261030-v1',
     contract:'POWERHOUSE_AGENT_AUTONOMOUS_INNOVATION_V1',
