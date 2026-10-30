@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations,companyStoryFamily} from '../supabase/functions/_shared/company-linkedin-editorial-contract.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations,companyStoryFamily,companyRecurringFrictionFamily} from '../supabase/functions/_shared/company-linkedin-editorial-contract.mjs';
 
 const good='Een ondernemer heeft drie systemen, maar geen antwoord op één simpele vraag: welke offertes moeten vandaag worden opgevolgd? Sales kijkt in het CRM. Finance ziet de facturen. De werkvoorbereider heeft een eigen lijst. Niemand ziet wie de klant al heeft gesproken. Zo gaat kostbare tijd verloren en kan een kans blijven liggen. Bedrijfsgeheugen maakt die informatie op één plek bruikbaar, koppelt de bestaande systemen en helpt bepalen wie vandaag welke actie oppakt. Zonder dat je alle software hoeft te vervangen. Begin bij de vraag die je iedere ochtend beantwoord wilt hebben. Welke klant wacht er vandaag nog op een reactie? Bekijk de Frisse Blik op https://www.bedrijfsgeheugen.nl/frisse-blik.';
 const old='Signaal: TKI Bouw en Techniek stelt €3 miljoen subsidie beschikbaar voor innovaties die bestaande gebouwen beter benutten. \nContext: voor bouwbedrijven is dit een kans.\nBeslissing: richt een MT-commissie in.';
@@ -23,4 +23,21 @@ test('rephrasing the same TKI story cannot bypass historical semantic dedupe',()
 test('different customer problems are not treated as the same story',()=>{
   const unrelated='Bij een groeiend handelsbedrijf stapelt de voorraad zich op en blijft geld langer vaststaan. Dat merk je pas als facturen later worden betaald. De ondernemer ziet de omzet, maar mist de gevolgen voor de kasstroom. Door orders, voorraad en facturatie te verbinden, worden afwijkingen eerder zichtbaar. Dat betekent niet dat iedere voorspelling klopt. Wel kun je een vervolgstap kiezen, eigenaar aanwijzen en achteraf controleren wat werkte. Bedrijfsgeheugen helpt die kennis en acties vast te leggen, zonder je bestaande systemen te vervangen. Start met een Frisse Blik om te zien waar tijd of geld blijft liggen. https://www.bedrijfsgeheugen.nl/frisse-blik';
   assert.ok(!companyEditorialViolations(unrelated,{recentPosts:[good]}).some(v=>v.code.includes('REPEAT')||v.code.includes('DUPLICATE')));
+});
+
+test('two differently worded lost-offer follow-up stories are rejected before provider reservation',()=>{
+ const prior='Een verloren offerte bleef wekenlang zonder opvolging. Sales en finance keken in andere systemen en het bleef onduidelijk wie de klant had gesproken. Dat veroorzaakt vertraging.';
+ const candidate='Een offerte blijft liggen omdat niemand de opvolging beheert. Zelfs als teams CRM en boekhouding verbinden, gaat zonder eigenaar een verkoopkans verloren. Daardoor kost een gemiste reactie opnieuw tijd en geld.';
+ assert.equal(companyRecurringFrictionFamily(prior),'missing-or-unfollowed-offer');
+ assert.equal(companyRecurringFrictionFamily(candidate),'missing-or-unfollowed-offer');
+ const errors=companyEditorialViolations(candidate,{recentPosts:[prior]}).map(x=>x.code);
+ assert.ok(errors.includes('COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'));
+});
+test('a genuinely different operational theme is not blocked by the offer-family gate',()=>{
+ const prior='De opvolging van een verloren offerte bleef liggen en kostte een order.';
+ const different='Een hoge voorraad blijft maandenlang op de plank liggen, waardoor geld in producten vastzit en het magazijn uitpuilt.';
+ assert.equal(companyRecurringFrictionFamily(prior),'missing-or-unfollowed-offer');
+ assert.equal(companyRecurringFrictionFamily(different),null);
+ assert.ok(!companyEditorialViolations(different,{recentPosts:[prior]})
+   .some(x=>x.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'));
 });
