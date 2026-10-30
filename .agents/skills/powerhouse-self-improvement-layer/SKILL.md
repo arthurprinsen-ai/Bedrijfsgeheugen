@@ -5,6 +5,13 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## Terminal exact-candidate BRAIN proof must exist before protected merge (30 October 2026)
+
+Fingerprint `delivery|terminal|merged-pr-missing-exact-head-brain-dispatch|20261029-v1`. Original PR #5146 proved GitHub Required and CodeQL success; its merge commit `dde2f826b9c81180d404ab0bed3a457fe6e25fa0` separately proved **Revenue Learning push** and **Brain foundation verify push** SUCCESS. These are not the *separate* Unified Brain Delivery identity proof for original PR head `cb6a5103489d935778c819df9510c5f390f4324c`. Original terminal closure #40957939814 rightly failed `TERMINAL_CRITICAL_GATE_NOT_TERMINAL:BRAIN`.
+
+For every original protected candidate, existing delivery/Brain specialist must verify that the original `unified-brain-delivery.yml` **workflow_dispatch** ran on trusted protected main with its exact PR number, exact immutable base and head SHA and `verification_only=true` when postmerge read-only; then independently observe `conclusion=success` with matching `BRAIN delivery PR #<number> <head>` display title, BEFORE letting a terminal closure claim proceed. An absent run is `BRAIN_HANDOFF_PROOF_MISSING`, never a green check. Do not automatically retry the same failed terminal job for 24 minutes, substitute a main push Brain foundation result, disable the original terminal gate, fabricate a run, start a separate scheduler or re-execute unknown external side effects. Escalate to the original owner-bound dispatcher and preserve nonterminal obligation state until real proof.
+
+
 ## Supabase migration first-pass source-of-truth and prevention — 29 October 2026
 
 INCIDENT_PROTOCOL: `supabase|revenue-learning|migration-history-lock-stale-after-production-20261029` and `supabase|preview|duplicate-migration-version-23505|20261029-v1`.

@@ -34,6 +34,18 @@ def fetch(date):
         with urllib.request.urlopen(request, timeout=30) as response:
             data = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
+        if error.code == 403:
+            # The ORIGINAL service-only exporter intentionally rejects
+            # unapproved drafts. Classify only this exact dated provider code
+            # as WAITING_APPROVAL; all other 403s remain real security failures.
+            try:
+                rejection = json.loads(error.read().decode("utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                rejection = {}
+            if (isinstance(rejection, dict)
+                    and rejection.get("error") == "BLOG_PUBLIC_EXPORT_NOT_APPROVED"
+                    and rejection.get("runDate") == date):
+                return {"_original_publication_approval_pending": True, "run_date": date}
         if error.code == 404:
             return None
         raise
@@ -334,6 +346,9 @@ def main():
     data = json.loads(pathlib.Path(source_snapshot).read_text(encoding="utf-8")) if source_snapshot else fetch(business_date)
     if source_snapshot and data is not None and data.get("run_date") != business_date:
         fail("BLOG_SOURCE_SNAPSHOT_DATE_MISMATCH")
+    if not source_snapshot and isinstance(data, dict) and data.get("_original_publication_approval_pending") is True:
+        print(f"NO_ACTION:AWAITING_ORIGINAL_PUBLICATION_APPROVAL:{business_date}")
+        return
     if data is None:
         print(f"NO_ACTION:NO_APPROVED_BLOG_ARTIFACT:{business_date}")
         return

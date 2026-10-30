@@ -1,0 +1,38 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "fingerprint": "blog|publication|export-forbidden-approval-pending|20261030-v1",
+  "compiler": {
+    "failure_class": "EXPECTED_APPROVAL_GATE_MISCLASSIFIED_AS_OUTAGE",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Hourly native blog renderer treated original exporter HTTP403 BLOG_PUBLIC_EXPORT_NOT_APPROVED (for GENERATED blog lacking approved_at) as an infrastructure error. Existing content was ready but original publication authorization not granted.",
+  "prevention": "Match only exact JSON error and exact run date, defer without rendering, PR, deployed page or provider side effect; keep all other 403s as failure. Retain original approval, unique writer, and independent LIVE_PROVEN proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-original-approval-and-terminal-proof-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "run_ids": [
+      40954413989,
+      40982375638
+    ],
+    "edge": "powerhouse-blog-export",
+    "edge_version": 240,
+    "provider_http": 403,
+    "observed_status": "GENERATED",
+    "approved_at": null,
+    "previous_attempts": "29 and 30 October 2026",
+    "last_mile_publication_approved": false,
+    "render_no_action_not_live": true,
+    "full_runtime_green_proven": false,
+    "no_new_scheduler": true
+  },
+  "status": "SOURCE_CANDIDATE_NOT_MERGED"
+}

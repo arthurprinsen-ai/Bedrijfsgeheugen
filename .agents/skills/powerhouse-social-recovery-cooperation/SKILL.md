@@ -5,6 +5,13 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+## Blog export authorization — no phantom technical outage (30 October 2026)
+
+Fingerprint: `blog|publication|export-forbidden-approval-pending|20261030-v1`. Original `powerhouse-blog-export` Edge v240 is a **service-only** last-mile approval boundary, NOT a public article API. A `GENERATED` blog with `approved_at=NULL` is *not* an exportable, approved, deployed or LIVE article, even when the original blog artifact is `content_ready` and the channel decision is `publish`. The original producer must get actual approval using its existing authorized review process. Never directly mark `approved_at`, forge review evidence, relax `verify_jwt`, or use an alternative publisher.
+
+On a 403, the original website renderer may emit `NO_ACTION:AWAITING_ORIGINAL_PUBLICATION_APPROVAL:<exact-date>` **only** if the provider response is JSON `error=BLOG_PUBLIC_EXPORT_NOT_APPROVED` and the provider's `runDate` equals the requested business date. Any other 403, including invalid service token, stays a real error. This explicit NO_ACTION is a safe delivery **deferral**, never a successful publication: `content_publication_obligations` remains nonterminal, the original daily blog executor stays active, and human/Brain/portal show the approver owner and missing proof. A later real approval allows the same original writer to resume without duplicate candidate or new cron. After protected GitHub merge, require Netlify exact commit and public canonical browser readback before `LIVE_PROVEN`.
+
+
 ## Cross-channel production failure handoff — 29 October 2026
 
 Fingerprint: `powerhouse|social|due-obligation-not-terminal|20261029-v1`. The original personal LinkedIn, company LinkedIn, Instagram/Mira and blog obligations must be evaluated **independently** by date and provider ID: a successful company post never certifies another channel. Read `public.content_publication_obligations` and original provider before every reattempt. Keep completed LinkedIn company immutable provider URN and the existing global claim; never post it again.
