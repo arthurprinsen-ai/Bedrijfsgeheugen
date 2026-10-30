@@ -5,6 +5,18 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+## Canonical blog subsidy date-fact and approval error prevention (30 October 2026)
+
+- **Proven incident:** generated 29/30 October CPNL articles falsely predicted that Circular Plastics NL would open on 6 October 2026, although the primary RVO authority states **21 April to 6 October 2026 17:00**, and the scheme is now temporarily CLOSED. Do not publish stale forecast statements or misrepresent historical dates as future open calls. Root fingerprint `blog|factual-freshness|cpnl-deadline-inverted|20261030-v1`.
+- **Independent approval gate:** `powerhouse-blog-export` is strictly service-only and MUST return 403 `BLOG_PUBLIC_EXPORT_NOT_APPROVED` for `GENERATED` obligations lacking `approved_at`. `powerhouse_channel_decisions.decision=publish` and `state=content_ready` is NOT public editorial approval. Original scheduled publisher must classify this exact 403 as WAITING_APPROVAL/NO_ACTION (no repeated failed attempt, no duplicate writer); any other 401/403, security or untrusted evidence still FAILS CLOSED. Fingerprint `blog|delivery|export-403-unapproved-obligation|20261030-v1`.
+- **Prepublication content contract:** the ORIGINAL canonical blog queue, original private exporter and the original GitHub static renderer each require deterministic protection against inverted official date claims. For new financial/legal/government facts, source URL, source checked-at date, effective status and comparison to the Europe/Amsterdam publication date must be independently verified before author/editor approval. This specific code gate protects 2026 CPNL; it is NOT a universal guarantee for every external source. No hardcoded next opening without RVO source, no invented human approval.
+- Continue the existing daily publisher and hourly reconciliation; no new scheduler or Make/Buffer fallback. An eligible draft must be corrected under its original business-date lineage, reviewed, approved and then proven as protected exact GitHub merge → exact Netlify deploy → public canonical browser readback. Do not mark a PR or blog LIVE_PROVEN from queue status, GitHub cron success or a 403.
+- Log the source-of-truth correction, provider denial, owner, fingerprint, actual GitHub/Netlify source SHA, quality tests and outcome in existing ONE BRAIN, current portal and human runbook. Learning is VALIDATED only when a next natural runtime execution consumes the updated skill and avoids the earlier failure.
+
+
+
+
+
 ## Cross-channel production failure handoff — 29 October 2026
 
 Fingerprint: `powerhouse|social|due-obligation-not-terminal|20261029-v1`. The original personal LinkedIn, company LinkedIn, Instagram/Mira and blog obligations must be evaluated **independently** by date and provider ID: a successful company post never certifies another channel. Read `public.content_publication_obligations` and original provider before every reattempt. Keep completed LinkedIn company immutable provider URN and the existing global claim; never post it again.
