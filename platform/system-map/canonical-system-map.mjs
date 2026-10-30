@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  predictivePublicMarketRuntimeEvidence:Object.freeze({
+    fingerprint:'predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1',
+    authority:'existing canonical Powerhouse predictive engine, ONE BRAIN and authenticated Portal V2',
+    producer:'supabase/functions/powerhouse-predictive-engine/index.ts',
+    runtime:'existing Supabase bg_gezondheid and brain_failure_registry',
+    readModel:'brain/observability/predictive-run-evidence.mjs',
+    server:'netlify/functions/powerhouse-observability.mjs',
+    portal:'portal-v2/modules/powerhouse-observability.js',
+    skill:'.agents/skills/powerhouse-self-improvement-layer/SKILL.md',
+    learning:'brain/learning/2026-10-30-predictive-public-market-evidence-priority-v1.json',
+    humanDocumentation:'docs/changes/2026-10-30-predictive-portal-runtime-truth.md',
+    regression:'tests/brain-predictive-portal-runtime-proof-20261030.test.mjs',
+    originalPredictiveCodeProductionVerified:true,
+    newPortalCodeProductionVerified:false,
+    nextNaturalRunEvidenceDue:true,
+    forecastOutcomeEvidenceDue:true,
+    revenueEvidenceDue:true,
+    adminOnly:true,noNewScheduler:true,noSecondWriter:true
+  }),
   portalAdminCockpitBootstrap:Object.freeze({fingerprint:'portal|powerhouse-control-plane|unmounted-owner-ui|20261029-v1',authority:'existing Portal V2 state client and Netlify Identity',module:'portal-v2/control-plane-boot.js',app:'portal-v2/app.js',dependsOn:'portal-v2/control-plane-cockpit.js',server:'netlify/functions/powerhouse-control-plane.mjs',owner:'original Portal V2 owner bootstrap',proof:'tests/brain-portal-control-plane-bootstrap-20261029.test.mjs',learning:'brain/learning/2026-10-29-control-plane-admin-bootstrap-v1.json',requiresAdminJwt:true,loginSubjectIsolation:true,logoutClearsPrivateDom:true,noNewScheduler:true,noSecondWriter:true,productionAdminReadbackVerified:false,stage:'SOURCE_CANDIDATE'}),
   croExperimentIntelligence:Object.freeze({fingerprint:'powerhouse|cro-experiment-intelligence|lean-pdca|20261029-v1',owner:'existing commercial Heartbeat and Growth Swarm',module:'tools/growth-intelligence/cro-experiment-cycle.mjs',adapter:'tools/growth-intelligence/heartbeat-adapter.mjs',skill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',storage:'existing powerhouse_experiment_assignments / powerhouse_cycle_events / brain_records / growth_outcomes',portfolio:'whatsapp,progressive-form,contextual-help,exit-intent,calculator,scan-followup,cta',noNewScheduler:true,noSecondWriter:true,stage:'SOURCE_CANDIDATE',productionVerified:false,portalVerified:false}),
   existingHandoffProof:Object.freeze({
