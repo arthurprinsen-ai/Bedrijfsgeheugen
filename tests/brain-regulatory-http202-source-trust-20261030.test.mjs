@@ -16,6 +16,7 @@ test('original Brain ingest retains raw diagnostic but never declares untrusted 
  assert.match(ingest,/unverified_reason/);
  assert.match(ingest,/powerhouse_record_source_observation_v1/);
  assert.match(monitor,/unverified_response_reason/);
- assert.match(monitor,/out\['sources'\]\[source\['id'\]\]=previous/);
+ assert.match(monitor,/REGULATORY_SOURCE_ID_INVALID/);
+ assert.match(monitor,/out\['sources'\]\[source_id\]=previous/);
  assert.match(monitor,/raw_path\.write_bytes\(result\['raw'\]\)/);
 });
