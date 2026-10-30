@@ -52,5 +52,10 @@
     "natural_original_agent_applied_verified": false,
     "customer_impact_verified": false,
     "paid_order_uplift_verified": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-innovation-portfolio-20261030.test.mjs"
+    ]
   }
 }
