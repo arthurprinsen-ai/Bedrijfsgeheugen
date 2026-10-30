@@ -28,5 +28,12 @@
   "test_evidence": {
     "observed": "Required #41116714944 rejected first candidate with LEARNING_FAILURE_CLASS_REQUIRED; canonical compiler + historical replay required.",
     "pending": "Exact-head Required and CodeQL, protected merge, Netlify and browser/tenant readback."
+  },
+  "root_cause": "Initial cockpit bindQuery on original buttons does not include later innerHTML-created adviser buttons.",
+  "prevention_rule": "Regressions for nested button, rerender, external node, invalid page and current-state lookup; do not create another scheduler/router.",
+  "evidence": {
+    "ci_hygiene_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41117024543",
+    "finding": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning, camelCase rootCause was not accepted by canonical semantic gate.",
+    "expected_next_run": "protected Required and CodeQL; independent Netlify production and browser readback pending"
   }
 }
