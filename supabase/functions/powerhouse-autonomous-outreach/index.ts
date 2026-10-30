@@ -1,4 +1,4 @@
-import {composerHandoffForAction,outboundDeliveryGap} from '../_shared/outreach-composer-hold.mjs';
+import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction} from '../_shared/outreach-composer-hold.mjs';
 import {createClient} from 'npm:@supabase/supabase-js@2';
 const C='powerhouse-autonomous-relationship-outreach-v3',B='https://backend.composio.dev/api/v3.1';
 const s=(v:any)=>String(v??'').trim(),J=(b:any,n=200)=>new Response(JSON.stringify(b),{status:n,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -111,12 +111,21 @@ Deno.serve(async(req)=>{
    // or invent an 'action' / 'provider readback' stage when no quality proof exists.
    const composerHandoff=composerHandoffForAction(composerBody?.results,a.action_id);
    if(recipientApproved&&composerHandoff){
+    const researchTask=sourceResearchTaskForAction(a,composerHandoff,now);
+    if(researchTask){
+      // Reuse the original research_enrichment pipeline and dedupe. No provider call.
+      const {error:researchError}=await db.from('powerhouse_sales_actions')
+        .upsert(researchTask,{onConflict:'dedupe_key',ignoreDuplicates:true});
+      if(researchError)throw{code:'ORIGINAL_RELATIONSHIP_RESEARCH_HANDOFF',message:researchError.message};
+    }
     const ev={...(a.evidence||{}),execution_gate:{
       contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,
       reason:composerHandoff.reason,missing_contract_fields:composerHandoff.missingFields,
       owner:'existing-powerhouse-relationship-public-research',
       next_action:'RESEARCH_REAL_SOURCE_BEFORE_ORIGINAL_COMPOSER_RETRY',
       provider_attempted:false,provider_readback_verified:false,
+      research_dedupe_key:researchTask?.dedupe_key||null,
+      research_routed:Boolean(researchTask),
       original_composer_contract:'powerhouse-human-commercial-message-composer-v2',
       same_action_lineage:true,duplicate_send_forbidden:true
     }};
@@ -125,7 +134,7 @@ Deno.serve(async(req)=>{
     if(writeError)throw{code:'COMPOSER_HOLD_WRITEBACK',message:writeError.message};
     out.push({action_id:a.action_id,status:'held',reason:composerHandoff.reason,
       missing_contract_fields:composerHandoff.missingFields,
-      provider_attempted:false});
+      provider_attempted:false,research_routed:Boolean(researchTask)});
     continue;
    }
 
