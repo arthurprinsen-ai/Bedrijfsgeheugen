@@ -573,7 +573,7 @@ export default async function handler(request){
     select(base,key,'powerhouse_source_freshness_v1',
       'select=source_key,canonical_health_status,freshness_status,health_checked_at&source_key=eq.ga4-analytics&limit=2'),
     select(base,key,'brain_failure_registry',
-      'select=fingerprint,maturity,root_cause,proven_fix,prevention_rule,regression_ref,occurrence_count,last_seen_at,evidence&order=last_seen_at.desc&limit=21')
+      'select=fingerprint,maturity,root_cause,proven_fix,prevention_rule,regression_ref,occurrence_count,last_seen_at,evidence&order=last_seen_at.desc&limit=20')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
