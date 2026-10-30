@@ -29,5 +29,21 @@
   "userOutcome": "UNKNOWN",
   "newScheduler": false,
   "newPublisher": false,
-  "mutation": false
+  "mutation": false,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-closure-audit-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-closure-audit-20261030.test.mjs"
+    ]
+  },
+  "canonicalLearningStatus": "EVALUATION_REQUIRED_NEVER_ASSUME_PRODUCTION_GREEN"
 }
