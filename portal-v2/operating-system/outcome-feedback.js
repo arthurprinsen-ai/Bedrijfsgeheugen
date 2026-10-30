@@ -18,7 +18,17 @@ export function outcomeFeedbackRows(items=[]){
   const expectedUnit=String(first(item?.expected?.unit,item?.expected_unit,item?.unit,'')).toUpperCase();
   const actualUnit=String(first(item?.realized?.unit,item?.realized_unit,item?.unit,'')).toUpperCase();
   const realized=verified?recorded:null;
-  const comparable=verified&&expected!==null&&realized!==null&&expectedUnit===actualUnit&&supportedUnits.has(expectedUnit);
+  // A unit match alone is not a meaningful comparison: both values must
+  // describe the same metric, starting baseline and measurement horizon.
+  const sameKey=(left,right)=>left!==undefined&&left!==null&&String(left)!==''&&right!==undefined&&right!==null&&String(left)===String(right);
+  const expectedMetric=first(item?.expected?.metric_id,item?.expected_metric_id,item?.metric_id);
+  const actualMetric=first(item?.realized?.metric_id,item?.realized_metric_id,item?.metric_id);
+  const expectedBaseline=first(item?.expected?.baseline_id,item?.expected_baseline_id,item?.baseline_id);
+  const actualBaseline=first(item?.realized?.baseline_id,item?.realized_baseline_id,item?.baseline_id);
+  const expectedPeriod=first(item?.expected?.period_id,item?.expected_period_id,item?.measurement_period);
+  const actualPeriod=first(item?.realized?.period_id,item?.realized_period_id,item?.measurement_period);
+  const comparable=verified&&expected!==null&&realized!==null&&expectedUnit===actualUnit&&supportedUnits.has(expectedUnit)
+   &&sameKey(expectedMetric,actualMetric)&&sameKey(expectedBaseline,actualBaseline)&&sameKey(expectedPeriod,actualPeriod);
   const learningRefs=Array.isArray(item?.learning_evidence_refs)?item.learning_evidence_refs.filter(Boolean):[];
   const learned=verified&&item?.learning_verified===true&&learningRefs.length>0&&Boolean(item?.next_decision_id||item?.next_decision);
   return Object.freeze({
