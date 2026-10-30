@@ -4,6 +4,7 @@ import { ensureIdentityWidget } from '../portal-state.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const fmt=(value,fallback='—')=>value===null||value===undefined?fallback:new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(value);
 const date=value=>{if(!value)return '—';const t=Date.parse(value);return Number.isFinite(t)?new Intl.DateTimeFormat('nl-NL',{dateStyle:'short'}).format(new Date(t)):'—';};
+const moment=value=>{if(!value)return '—';const t=Date.parse(value);return Number.isFinite(t)?new Intl.DateTimeFormat('nl-NL',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Amsterdam'}).format(new Date(t)):'—';};
 const money=value=>value===null||value===undefined?'—':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value);
 const css='.cro-od{font:inherit;color:#18233e}.cro-od h3{margin:.15rem 0 .65rem}.cro-od p{line-height:1.5}.cro-od .od-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin:1rem 0}.cro-od .od-card{border:1px solid #dae3f1;background:#fff;padding:1rem;border-radius:13px}.cro-od .od-card small{display:block;color:#536278}.cro-od .od-card strong{font-size:1.6rem;display:block;margin:.35rem 0}.cro-od .od-note{background:#edf3ff;padding:.85rem 1rem;border-radius:10px}.cro-od .od-warn{border-left:4px solid #bd7114;background:#fff7e6;padding:.8rem;margin:.75rem 0}.cro-od .od-controls{display:flex;flex-wrap:wrap;gap:.6rem;margin:1rem 0}.cro-od input,.cro-od select{font:inherit;border:1px solid #b6c7df;border-radius:8px;padding:.6rem;max-width:100%;background:white;color:#18233e}.cro-od table{width:100%;border-collapse:collapse;font-size:.9rem}.cro-od th,.cro-od td{text-align:left;border-bottom:1px solid #dce5ef;vertical-align:top;padding:.65rem .45rem}.cro-od th{white-space:nowrap}.cro-od .od-scroll{overflow-x:auto}.cro-od details{max-width:440px}.cro-od summary{cursor:pointer}.cro-od code{white-space:pre-wrap;overflow-wrap:anywhere}.cro-od .od-actions{display:flex;gap:.5rem;flex-wrap:wrap}.cro-od button{cursor:pointer;border:1px solid #8eaad0;border-radius:8px;padding:.55rem .8rem;color:#153f7a;background:#eef5ff}.cro-od .od-status{font-size:.8rem;font-weight:700}.cro-od .od-foot{font-size:.85rem;color:#56657c}';
 function badge(value){
@@ -52,6 +53,7 @@ function render(container,data){
   const flags=Array.isArray(data?.quality?.flags)?data.quality.flags:[];
   const proof=data?.conversionProof||null;
   const coverage=data?.croMeasurement||null;
+  const recency=data?.croEventRecency||null;
   const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
   const brain=data?.brainClosure||null;
   const oneLoop=data?.oneLoop||null;
@@ -213,6 +215,14 @@ function render(container,data){
     field('Formulierintenties (7d)',fmt(coverage?.formSubmitIntents7d))+
     field('CTA-events per pagina-event · géén klantconversie',coverage?.ctaToPageviewEventRatioPct===null||coverage?.ctaToPageviewEventRatioPct===undefined?'Niet vast te stellen':fmt(coverage.ctaToPageviewEventRatioPct)+'%')+'</div>'+
     '<p class="od-foot">Oorzaakstatus: '+esc(coverage?.reason||'ORIGINAL_SOURCE_UNAVAILABLE')+'. Meer bezoek leidt niet automatisch tot meer orders. De bestaande eventproducer → duurzame Netlify ontvangst → Supabase-event → dagaggregatie moet met identiek event-ID worden gecontroleerd vóór een CRO-upliftbesluit.</p>'+
+    '<div data-cro-ingest-freshness><h4>Versheid van de oorspronkelijke website-eventbron</h4>'+
+    '<p>Laatste opgeslagen eventtijd (gebeurtenistijd, géén bewijs van ontvangtijd): '+
+    esc(moment(recency?.lastEventOccurredAt))+' · Bron gecontroleerd: '+
+    esc(moment(recency?.sourceEvaluatedAt))+
+    ' · Leeftijd van het laatste event: '+esc(fmt(recency?.eventAgeHours))+' uur</p>'+
+    '<p>Versheidsstatus: '+badge(recency?.status||'UNVERIFIED')+
+    ' · '+esc(recency?.reason||'Nog geen verifieerbaar eventbewijs')+'.</p>'+
+    '<p class="od-foot">Geen recent opgeslagen event betekent niet dat er geen bezoekers of CTA-klikken waren en bewijst geen defecte queue. Controleer alleen echte, toegestane event-ID’s van de bestaande Netlify-queue naar Supabase, daarna onafhankelijke leads, betaalde orders en toepassing in ONE BRAIN. Geen testbezoek of 202-antwoord als commerciële conversie tellen.</p></div>'+
     '</section>'+
     '<section class="od-card"><h3>Bronbewijs voor leads, orders en experimenten</h3><p>De dagtotalen hierboven zijn observaties. Onderstaande bronbewijzen komen uit de bestaande Supabase-registraties. Ook een geregistreerde providerreferentie is nog geen onafhankelijk bevestigd betaalbewijs.</p><div class="od-grid">'+proofCards+'</div>'+
     '<p class="od-foot">Eventstatus: '+badge(proof?.eventStatus)+' · Leadstatus: '+badge(proof?.leadStatus)+' · Orderstatus: '+badge(proof?.orderStatus)+'</p>'+

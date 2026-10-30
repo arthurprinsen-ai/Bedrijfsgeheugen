@@ -1,4 +1,20 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  croEventRecencyReadback:Object.freeze({
+    fingerprint:'powerhouse|cro|event-recency-hidden-under-healthy-minute-drain|20261030-v1',
+    owner:'original Powerhouse Growth/CRO + ONE BRAIN/Heartbeat',
+    source:'public.powerhouse_cro_conversion_evidence_v1',
+    property:'last_persisted_event_at as event occurred_at, not persisted insertion time',
+    readModel:'netlify/functions/powerhouse-cro-other-data.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    test:'tests/brain-cro-event-recency-proof-20261030.test.mjs',
+    learning:'brain/learning/2026-10-30-cro-event-recency-not-false-green-v1.json',
+    skill:'.agents/skills/powerhouse-social-cro-funnel/SKILL.md',
+    noRecentEventsNotZeroTraffic:true,drain204NotProviderProof:true,
+    noNewScheduler:true,noSecondWriter:true,
+    sourceReleaseCandidate:true,authenticatedProductionReadbackProven:false,
+    commercialOutcomeProven:false
+  }),
+
   portalAdminCockpitBootstrap:Object.freeze({fingerprint:'portal|powerhouse-control-plane|unmounted-owner-ui|20261029-v1',authority:'existing Portal V2 state client and Netlify Identity',module:'portal-v2/control-plane-boot.js',app:'portal-v2/app.js',dependsOn:'portal-v2/control-plane-cockpit.js',server:'netlify/functions/powerhouse-control-plane.mjs',owner:'original Portal V2 owner bootstrap',proof:'tests/brain-portal-control-plane-bootstrap-20261029.test.mjs',learning:'brain/learning/2026-10-29-control-plane-admin-bootstrap-v1.json',requiresAdminJwt:true,loginSubjectIsolation:true,logoutClearsPrivateDom:true,noNewScheduler:true,noSecondWriter:true,productionAdminReadbackVerified:false,stage:'SOURCE_CANDIDATE'}),
   croWeeklyGrowthProof:Object.freeze({fingerprint:'powerhouse|cro|weekly-growth-missing-comparable-closed-periods|20261030-v1',
     owner:'existing Powerhouse Growth/CRO and ONE BRAIN/Heartbeat',source:'public.growth_page_daily',
@@ -50,7 +66,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'f15d2292c209b90e704ec383b4045d53ea46aee12f9f80a5fcc4f2be2c003bdc',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'41e7dc45a465ae37f42dc34696740aedd01b530bb022cb45814aa850370e9e0f',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',

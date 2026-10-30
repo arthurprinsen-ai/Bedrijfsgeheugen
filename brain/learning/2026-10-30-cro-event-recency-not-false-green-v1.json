@@ -1,0 +1,55 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|cro|event-recency-hidden-under-healthy-minute-drain|20261030-v1",
+  "compiler": {
+    "failure_class": "CRO_EVENT_RECENCY_EVIDENCE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-event-recency-proof-20261030.test.mjs"
+    ]
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Existing owner-only CRO view has last_persisted_event_at, but UI did not display its age beside current CTA coverage. A successful minute growth-drain HTTP204 does not prove a recent consented website event, provider delivery or paid-order funnel. The field represents occurred_at of a stored event, not when its queue ACK or insert completed.",
+  "evidence": {
+    "verified_cro_original_view_at": "2026-10-30T10:45:36Z",
+    "human_flagged_page_views_last_7d": 4410,
+    "observed_cta_events_last_7d": 0,
+    "last_event_occurred_at": "2026-10-30T02:20:34.179Z",
+    "netlify_minute_drain_readback": "239 observed HTTP204 results in recent 4h; only technical drain success, not event receipt",
+    "independent_email_or_paid_order_outcome_proven": false,
+    "canonical_15_loop_status": "9 GREEN / 1 AMBER / 5 RED at 2026-10-30T10:59:00Z"
+  },
+  "repair": "Pure read-only projectCroEventRecency in existing /api/powerhouse-cro-other-data, original owner-only portal and quality flags; preserve original statuses, no new cron, store or publisher.",
+  "prevention": [
+    "Historical source event occurrence is not insertion/ACK time.",
+    "Missing event time, stale source or future timestamp cannot turn GREEN.",
+    "No recent event is evidence due, never definite zero traffic/CTA or a broken provider.",
+    "Recent event occurrence is not proof of unique human, qualified lead, provider send, paid order, revenue or applied learning.",
+    "Existing original CRO/Heartbeat owner correlates real consented event_id, Netlify durable ACK, persisted growth_events and original daily rollup before considering experiment winner."
+  ],
+  "owner": "existing Powerhouse Growth/CRO / ONE BRAIN / Heartbeat original writers",
+  "code": "netlify/functions/powerhouse-cro-other-data.mjs",
+  "portal": "portal-v2/modules/andere-data.js",
+  "skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+  "test": "tests/brain-cro-event-recency-proof-20261030.test.mjs",
+  "human_doc": "docs/changes/2026-10-30-cro-event-recency-not-false-green.md",
+  "development_ledger": "docs/development-ledger-events/2026-10-30-cro-event-recency-not-false-green.md",
+  "delivery": {
+    "stage": "SOURCE_CANDIDATE",
+    "exact_required": false,
+    "codeql": false,
+    "merged": false,
+    "netlify_ready": false,
+    "authenticated_portal_readback": false,
+    "natural_agent_application": false,
+    "actual_commercial_uplift_proven": false
+  }
+}

@@ -267,6 +267,53 @@ export function projectCroMeasurementCoverage(row){
   };
 }
 
+/**
+ * Source-recency check for the ORIGINAL restricted 7-day CRO view.
+ * last_persisted_event_at is MAX(occurred_at) from persisted events:
+ * it is the event's occurrence time, NOT its insertion/ACK timestamp.
+ * An old or absent event never proves the site had no visitors or that
+ * Netlify queue/drain is broken. No new collector, heartbeat or writer.
+ */
+export function projectCroEventRecency(row,{at=new Date().toISOString()}={}){
+  const unverified=(reason,extra={})=>({
+    status:'UNVERIFIED',reason,lastEventOccurredAt:null,
+    sourceEvaluatedAt:null,eventAgeHours:null,sourceAgeMinutes:null,
+    persistedIdReadbackVerified:false,deliveryPathHealthyVerified:false,
+    businessOutcomeVerified:false,...extra
+  });
+  const now=Date.parse(String(at||''));
+  if(!Number.isFinite(now))return unverified('INVALID_OBSERVATION_CLOCK');
+  if(!row||typeof row!=='object')return unverified('ORIGINAL_VIEW_UNAVAILABLE');
+  const evaluated=Date.parse(String(row.evaluated_at||''));
+  if(!Number.isFinite(evaluated)||evaluated>now+300000)
+    return unverified('ORIGINAL_VIEW_TIMESTAMP_UNVERIFIED');
+  const sourceAgeMinutes=Math.max(0,Math.floor((now-evaluated)/60000));
+  const sourceEvaluatedAt=new Date(evaluated).toISOString();
+  if(sourceAgeMinutes>60)return unverified('ORIGINAL_VIEW_STALE',{
+    sourceEvaluatedAt,sourceAgeMinutes
+  });
+  const raw=row.last_persisted_event_at;
+  if(raw===null||raw===undefined||raw==='')return {
+    ...unverified('NO_RECORDED_EVENT_OCCURRENCE'),
+    status:'NO_EVENT_TIME_RECORDED',sourceEvaluatedAt,sourceAgeMinutes
+  };
+  const occurred=Date.parse(String(raw));
+  if(!Number.isFinite(occurred)||occurred>now+300000)
+    return unverified('RECORDED_EVENT_TIME_INVALID_OR_FUTURE',{
+      sourceEvaluatedAt,sourceAgeMinutes
+    });
+  const eventAgeHours=Math.max(0,Math.round((now-occurred)/36000)/100);
+  const status=eventAgeHours>=24?'EVENT_RECENCY_EVIDENCE_DUE':
+    eventAgeHours>=6?'NO_RECENT_EVENT_EVIDENCE':'RECENT_STORED_EVENT_OBSERVED';
+  return {status,reason:status==='RECENT_STORED_EVENT_OBSERVED'?
+    'RECORDED_OCCURRENCE_ONLY_NOT_QUEUE_OR_PROVIDER_HEALTH':
+    'ORIGINAL_EVENT_SOURCE_RECENCY_REQUIRES_REAL_TRAFFIC_AND_QUEUE_READBACK',
+    lastEventOccurredAt:new Date(occurred).toISOString(),sourceEvaluatedAt,
+    eventAgeHours,sourceAgeMinutes,persistedIdReadbackVerified:false,
+    deliveryPathHealthyVerified:false,businessOutcomeVerified:false,
+    interpretation:'No recent persisted event timestamp is not evidence of zero human traffic, zero CTA use, a broken queue or revenue; confirm real consented event-ID and downstream provider receipts independently.'};
+}
+
 export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
@@ -311,6 +358,10 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(oneLoop.status==='READBACK_COMPLETE'&&oneLoop.counts.red>0)flags.push('ORIGINAL_15_LOOP_RED_GUARDS_OPEN');
   const cp=conversionProofOk?conversionProof[0]:null;
   const croMeasurement=projectCroMeasurementCoverage(cp);
+  const croEventRecency=projectCroEventRecency(cp,{at});
+  if(['EVENT_RECENCY_EVIDENCE_DUE','NO_RECENT_EVENT_EVIDENCE',
+      'NO_EVENT_TIME_RECORDED','UNVERIFIED'].includes(croEventRecency.status))
+    flags.push('CRO_EVENT_SOURCE_RECENCY_OR_READBACK_UNVERIFIED');
   if(croMeasurement.status==='CTA_SIGNAL_UNVERIFIED_WITH_PAGEVIEWS')
     flags.push('CTA_EVENT_GAP_REQUIRES_ORIGINAL_PRODUCER_TO_DATAHUB_READBACK');
   if(croMeasurement.status==='CTA_EVENT_AGGREGATION_MISMATCH')
@@ -349,6 +400,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     websiteWeeklyGrowth,
     behavior:behaviorData,
     croMeasurement,
+    croEventRecency,
     conversionProof:cp?{
       humanFlaggedPageviews7d:safeNumber(cp.human_flagged_pageviews_7d),
       formSubmitIntents7d:safeNumber(cp.form_submit_intents_7d),
