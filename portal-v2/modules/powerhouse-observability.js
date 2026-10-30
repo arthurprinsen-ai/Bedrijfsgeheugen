@@ -96,7 +96,7 @@ function knowledgeView(events){
 }
 function skillsView(events){
   const skills=events.filter(isSkill);
-  return `<section class="poc-panel"><h4>Skill projection & wijzigingen</h4>${skills.length?timeline(skills):empty('Geen expliciete skill-events in de gekozen periode. Skill-projectie blijft alleen groen met runtime-evidence.')}</section>`;
+  return `<section class="poc-panel"><h4>Skill projection & wijzigingen</h4><p class="poc-note">Een gevonden of voorgestelde leerregel is nog niet toegepast. Een agent mag leren pas als uitgevoerd tonen na een eigen natuurlijke run, exacte skill-/bronversie, toegepaste beslissing én onafhankelijke productie- of providercontrole. Ontbreekt dat bewijs, dan blijft de toepassing onbewezen.</p>${skills.length?timeline(skills):empty('Geen expliciete skill-events in de gekozen periode. Skill-projectie blijft alleen groen met runtime-evidence.')}</section>`;
 }
 function deliveryView(events,observability){
   const delivery=events.filter(isDelivery);
