@@ -8,3 +8,13 @@
 - Herstelkandidaat: originele `portal-authenticated-production-proof-core.mjs` pure fail-closed validator; huidige `production-release-readback.yml` vereist die geneste auth/15-loop/cleanup-status bij exact immutable deployment. Geen tweede workflow, scheduler, writer, extra portal of statusmanipulatie.
 - Regressie: `tests/brain-one-loop-release-terminal-proof-20261030.test.mjs` historische 8/3/4 status (route bewezen maar bedrijfslus niet), ontbreken geneste proof, 403/401-verificatie faalt, cleanup faalt, inconsistente statusaantallen falen. Alle oorspronkelijke releases blijven beschermd.
 - Eindevaluatie: pas na bestaande Required/BRAIN/CodeQL, protected native merge en eerstvolgende echte originele production release receipt met geneste `PROVEN` + independently witnessed counts. Ondertussen `OBSERVED`, geen claim volledige omzet-/CRO-lus.
+
+## Bevestigde terminale productievoltooiing — 30 oktober 2026, 09:06:13 UTC
+
+- **Beschermde eigen merge:** PR #5184 naar GitHub main `c986ae2a49c09daf349ae365e95c7fbc31a1f8ba`, nadat #5183 de oorspronkelijke 15 lussen in CRO Andere data had opgenomen. Required, BRAIN, CodeQL en exact-main control bleven actief.
+- **Provideridentiteit:** Netlify productiedeploy `6ae45d9944f9ea2b285e27f3`, `READY`, commit_ref exact de merge-SHA; niet alleen een preview of branchdeploy.
+- **Onafhankelijk oorspronkelijk runtimebewijs:** GitHub Actions `Production Release Readback` run 41030754918, SUCCESS, genuine signed providerrespons om 09:06:13Z. `PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1.status=PROVEN` én `one_loop_assurance_proof=PROVEN` binnen dezelfde immutable release; admin succes, nonadmin 403, anonymous 401, twee gescheiden tenants, opruiming `DELETED`, geen geheimen opgeslagen.
+- **Oorspronkelijke bronstatus:** exact 15 lussen: 9 GREEN, 1 AMBER, 5 RED, overall RED. De release is software-/toegangs-groen, niet het bedrijfsorganisme.
+- **Canoniek Brain-register:** `powerhouse|release|generic-portal-auth-certified-without-15-loop-admin-proof|20261030-v1` is al `PROVEN` voor de softwaregrens. Gerelateerd CRO-bronisolatie-incident `powerhouse|cro|15-loop-assurance-isolated-from-other-data|20261030-v1` CAS-validatie versie 4 met live-bewijs; geen tweede BRAIN, geen statuswrite naar lussen.
+- **Nog open:** afzonderlijke `/api/powerhouse-cro-other-data` geauthenticeerde tenant-readback; echte CTA met exact idempotent event-ID en receipt; echte social provider ID / readback; consented lead, geverifieerde betaling en causale holdout met uitkomsten. Oude observaties in dit ledger blijven onveranderd.
+
