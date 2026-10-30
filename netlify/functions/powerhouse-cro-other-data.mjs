@@ -1,6 +1,7 @@
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import {projectSocialCroFunnel} from './_social-cro-funnel-projection.mjs';
 import {projectPowerhouseGrowthDirection} from './_powerhouse-growth-direction.mjs';
+import {projectCompoundImprovementProof} from './_powerhouse-compound-improvement-proof.mjs';
 import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
@@ -348,7 +349,7 @@ export function projectAcquisitionCtaSource(events,{status='UNAVAILABLE',at=new 
    consentIndependentlyVerified:false,providerAttributionVerified:false,paidOrderAttributionVerified:false};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],readStates={},at=new Date().toISOString()}={}){
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],learningReadiness=[],revenueFlywheel=[],runtimeHealth=[],socialApplications=[],revenueApplications=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
@@ -385,6 +386,9 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(!socialFunnel||socialFunnel.status!=='COMPARABLE_DESCRIPTIVE_METRICS')flags.push('SOCIAL_FUNNEL_48H_COMPARABLE_EVIDENCE_INSUFFICIENT');
   const brainClosure=projectCroBrainProof(readStates.brainProof==='LIVE'?brainProof:[],{at});
   const acquisitionCta=projectAcquisitionCtaSource(acquisitionEvents,{status:readStates.acquisitionEvents||'UNAVAILABLE',at});
+  const compoundImprovement=projectCompoundImprovementProof({learningReadiness,revenueFlywheel,runtimeHealth,
+    socialApplications,revenueApplications,portalBehavior:behavior,readStates,at});
+  if(compoundImprovement.status!=='EVIDENCE_DUE')flags.push('COMPOUND_IMPROVEMENT_SOURCE_READBACK_INCOMPLETE');
   const growthDirection=projectPowerhouseGrowthDirection({dailySources:growthDaily,replyEvents:emailReplies,
     socialFunnel,brainClosure,conversionProof:readStates.conversionProof==='LIVE'?conversionProof[0]:null,readStates,at});
   if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
@@ -416,10 +420,16 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     socialFunnel,
     growthDirection,
     acquisitionCta,
+    compoundImprovement,
     sources:{
       growthDaily:{status:readStates.growthDaily||'UNAVAILABLE',records:readStates.growthDaily==='LIVE'?growthDaily.length:null},
       acquisitionEvents:{status:readStates.acquisitionEvents||'UNAVAILABLE',records:readStates.acquisitionEvents==='LIVE'?acquisitionEvents.length:null},
       emailReplies:{status:readStates.emailReplies||'UNAVAILABLE',records:readStates.emailReplies==='LIVE'?emailReplies.length:null},
+      compoundReadiness:{status:readStates.learningReadiness||'UNAVAILABLE'},
+      compoundRevenue:{status:readStates.revenueFlywheel||'UNAVAILABLE'},
+      compoundRuntime:{status:readStates.runtimeHealth||'UNAVAILABLE'},
+      socialLearningApplications:{status:readStates.socialApplications||'UNAVAILABLE'},
+      revenueLearningApplications:{status:readStates.revenueApplications||'UNAVAILABLE'},
       socialFunnel:{status:socialFunnel?.status||'UNAVAILABLE',records:socialFunnel?.channels?.reduce((a,c)=>a+c.posts_registered,0)??null},
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
       experiments:{status:readStates.experiments||'UNAVAILABLE',lastObservedAt:experimentLast||null,records:experimentsOk?experiments.length:null},
@@ -527,13 +537,23 @@ export default async function handler(request){
     select(base,key,'powerhouse_email_reply_events',
       'select=reply_event_id,occurred_at,provider,reply_class&occurred_at=gte.'+new Date(Date.now()-15*86400000).toISOString()+'&order=occurred_at.desc&limit=151'),
     select(base,key,'growth_events',
-      'select=event_id,event_type,source,medium,campaign,occurred_at,is_robot&event_type=eq.primary_cta_click&is_robot=eq.false&occurred_at=gte.'+new Date(Date.now()-14*86400000).toISOString()+'&order=occurred_at.desc&limit=1001')
+      'select=event_id,event_type,source,medium,campaign,occurred_at,is_robot&event_type=eq.primary_cta_click&is_robot=eq.false&occurred_at=gte.'+new Date(Date.now()-14*86400000).toISOString()+'&order=occurred_at.desc&limit=1001'),
+    select(base,key,'powerhouse_action_learning_readiness_v1',
+      'select=open_obligations,overdue_obligations,missing_outcome_evidence,missing_economics_evidence,missing_feedback_evidence,overdue_system_obligations,observed_at&limit=2'),
+    select(base,key,'powerhouse_revenue_flywheel_v1',
+      'select=measured_at,open_opportunities,executed_actions,revenue_outcomes,due_uncalibrated_forecasts,pending_external_outcomes,realized_revenue_eur&limit=2'),
+    select(base,key,'powerhouse_one_brain_runtime_health_v1',
+      'select=observed_at,total_layers,wired_layers,required_jobs,active_jobs,current_runtime_errors,evidence_sparse_required_layers,architecture_state&limit=2'),
+    select(base,key,'social_learning_applications',
+      'select=tenant_id,application_id,learning_id,applied_at,actual_effect,verification_status&tenant_id=in.(canonical,bedrijfsgeheugen)&applied_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=applied_at.desc&limit=201'),
+    select(base,key,'revenue_learning_applications',
+      'select=tenant_id,application_id,learning_id,applied_at,actual_effect,verification_status&tenant_id=in.(canonical,bedrijfsgeheugen)&applied_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=applied_at.desc&limit=201')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
   const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
-  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000,1,1,1,200,200];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents','learningReadiness','revenueFlywheel','runtimeHealth','socialApplications','revenueApplications'],readStates={},datasets=[];
   for(let i=0;i<stateNames.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -547,7 +567,9 @@ export default async function handler(request){
     conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],
     socialPosts:[...datasets[7],...datasets[8]],socialSnapshots:[...datasets[9],...datasets[10]],
     oneLoopAssurance,outreachActions:datasets[11],outreachResearch:datasets[12],
-    growthDaily:datasets[13],emailReplies:datasets[14],acquisitionEvents:datasets[15],readStates});
+    growthDaily:datasets[13],emailReplies:datasets[14],acquisitionEvents:datasets[15],
+    learningReadiness:datasets[16],revenueFlywheel:datasets[17],runtimeHealth:datasets[18],
+    socialApplications:datasets[19],revenueApplications:datasets[20],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};

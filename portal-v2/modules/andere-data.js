@@ -34,6 +34,7 @@ function render(container,data){
   const weekly=data?.websiteWeeklyGrowth||null;
   const social=data?.socialFunnel||null;
   const growth=data?.growthDirection||null;
+  const improvement=data?.compoundImprovement||null;
   const acquisition=data?.acquisitionCta||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
   const socialRows=(social?.channels||[]).map(row=>{
@@ -133,6 +134,33 @@ function render(container,data){
     '% · recente week '+esc(fmt(weekly?.ctaRate?.current))+
     '%. Dit is géén bezoekers-naar-betaalde-orders-conversie. De werkelijke betaalde-orderfunnel vereist onafhankelijke betalings- en attributiebewijzen.</p></section>';
 
+  const loops=(improvement?.loops||[]);
+  const compoundCards=loops.map(loop=>'<article class="od-card">'+
+    '<h4>'+esc(({'commercial-to-next-action':'Orders → volgende betere actie',
+      'customer-portal-to-better-product':'Klantgebruik → slimmer portaal',
+      'incident-to-prevented-repeat':'Fout → bewezen preventie'})[loop.key]||loop.key)+'</h4>'+
+    '<p>Status: '+badge(loop.status)+'</p>'+
+    '<p class="od-foot">Bestaande eigenaar: '+esc(loop.owner)+
+    '. Volgend onafhankelijk bewijs: '+esc(loop.nextProof)+'</p>'+
+    '<div class="od-scroll"><table><tbody>'+Object.entries(loop.observed||{}).map(([key,val])=>
+      '<tr><th>'+esc(key.replace(/([A-Z])/g,' $1'))+'</th><td>'+esc(typeof val==='boolean'?
+        (val?'Bewezen':'Niet bewezen'):fmt(val))+'</td></tr>').join('')+'</tbody></table></div></article>').join('');
+  const improvementPriorities=(improvement?.priorities||[]).map(item=>
+    '<tr><td>'+esc(item.priority)+'</td><td><strong>'+esc(item.key)+'</strong>'+
+    '<br><small>'+esc(item.basis)+'</small></td><td>'+esc(item.owner)+'</td>'+
+    '<td>'+badge(item.status)+'<br><small>'+esc(item.next)+'</small></td></tr>').join('');
+  const compoundCard='<section class="od-card" data-one-brain-compound-proof>'+
+    '<h3>ONE BRAIN + Heartbeat · drie dagelijkse verbeterlussen</h3>'+
+    '<p>Gedeelde originele commerciële, leer-, runtime- en portaalbronnen. De agents hebben één gezamenlijke bewijslijst; alleen geregistreerde acties, werkelijke klantwaarde en onafhankelijke betaalbewijzen kunnen een resultaat sluiten. Een groen technisch systeem is niet automatisch meer omzet.</p>'+
+    '<p>Bewijsstatus: '+badge(improvement?.status||'UNVERIFIED')+
+    ' · Laatste controle '+esc(improvement?.at||'—')+'</p>'+
+    '<div class="od-grid">'+(compoundCards||field('Bestaande verbeterlussen','Bronbewijs niet beschikbaar'))+'</div>'+
+    '<h4>Geprioriteerde opdrachten voor bestaande agents (nog geen uitvoering)</h4>'+
+    '<div class="od-scroll"><table><thead><tr><th>#</th><th>Bewijsachterstand</th><th>Oorspronkelijke eigenaar</th><th>Veilige volgende stap</th></tr></thead>'+
+    '<tbody>'+(improvementPriorities||'<tr><td colspan="4">Geen actuele, verifieerbare prioritering beschikbaar.</td></tr>')+
+    '</tbody></table></div>'+
+    '<p class="od-foot">Portaalroute-events bevatten mogelijk beheerders en previews: dit zijn geen geverifieerde betalende klanten of unieke bezoekers. De kaart toont geen persoonsgegevens, verzendt niets en kan de oorspronkelijke vijftien Heartbeat-lussen niet groen maken. Ontbrekende, verouderde of niet-toegestane bronnen blijven UNVERIFIED.</p></section>';
+
   container.innerHTML='<section class="cro-od" aria-labelledby="croOtherDataTitle">'+
     '<style>'+css+'</style>'+
     '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
@@ -141,6 +169,7 @@ function render(container,data){
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · Social CRO: '+badge(source.socialFunnel?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
     weeklyCard+
+    compoundCard+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
     '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
     '<p>Oorspronkelijke 15-lussenbron: '+badge(source.oneLoop?.status)+
