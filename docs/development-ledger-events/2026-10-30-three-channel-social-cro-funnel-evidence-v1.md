@@ -4,7 +4,7 @@
 - Existing daily source collector read tenant `bedrijfsgeheugen` only, omitting `canonical/linkedin_personal` from unified read-only diagnostics.
 - Latest snapshots: Instagram 144 `composio-instagram/OBSERVED` (30 Oct), LinkedIn personal 51 `composio-linkedin/OBSERVED_PARTIAL_SCOPE` (30 Oct), LinkedIn company 25 `windsor-linkedin-company/PROVIDER_OBSERVED_LINKED` (last 27 Oct).
 - Brand social-learning evaluations: 13, newest 24 Oct; canonical evaluations last 19 Sep. Only one historically recorded canonical learning application; no proven continuous application on the next post.
-- 48-hour provider-aligned samples on owned posts in the last 60 days: Instagram 7, company 15, personal 4. This is NOT enough to conclude a current improvement on each channel.
+- 48-hour provider-aligned samples on clearly owned posts in the last 60 days: Instagram 7, explicitly tagged company 0, explicitly tagged personal 4. An additional 15 LinkedIn samples belong to 58 legacy brand-tenant posts with NO_CHANNEL and must not be counted as company performance. This is NOT enough to conclude a current improvement on each channel.
 - Seven-day CRO view: 4,347 human-flagged pageviews; zero observed CTA events. Zero commercial_leads and zero independently proven provider orders in 30 days. Pageviews are not users, attributed social traffic or orders.
 
 ## Fix inside the existing canonical workflow
