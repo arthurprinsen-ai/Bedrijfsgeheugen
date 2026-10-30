@@ -62,3 +62,14 @@ test('obligation-only duplicates keep different personal source lineage and cann
  assert.match(orchestrator,/personalRejectedSourceIds\.includes\(clean\(source\.recommendation_id\)\)/);
  assert.match(orchestrator,/recs\.filter\(validPersonalSource\)/);
 });
+
+test('no stale personal-event fallback is allowed when original sources are exhausted',()=>{
+  const isStalePersonalSource = (row,types)=>Array.from([row?.evidence?.result_event,row?.evidence?.friction_event,row?.evidence?.source_focus_context]).some(x=>x?.event_type && types.has(x.event_type));
+  const old={evidence:{result_event:{event_type:'commercial_heartbeat'}}};
+  assert.equal(isStalePersonalSource(old,new Set(['commercial_heartbeat'])),true);
+  assert.equal(isStalePersonalSource(old,new Set(['revenue_flywheel_health'])),false);
+  const text=orchestrator.slice(orchestrator.indexOf('const eligiblePersonal ='),orchestrator.indexOf('const instagramObligation ='));
+  assert.match(text,/eligiblePersonal\.find\(\(s:any\)=>!isStalePersonalSource\(s,recentPersonalTypes\)\)/);
+  assert.doesNotMatch(text,/\|\|\s*eligiblePersonal\[0\]/);
+  assert.match(text,/\|\| null;/);
+});
