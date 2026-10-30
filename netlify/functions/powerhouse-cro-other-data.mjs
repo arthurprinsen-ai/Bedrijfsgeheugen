@@ -225,6 +225,47 @@ export function projectWebsiteWeeklyGrowth(rows,{state='UNAVAILABLE',at=new Date
     note:'Two completed Europe/Amsterdam calendar weeks. Page views are not unique visitors; lead/order counts are unverified rollup observations, not paid orders.'};
 }
 
+/**
+ * Reuse the existing service-role CRO evidence view. "is_robot=false" is only
+ * a first-party event flag, not an independently verified human visitor.
+ * Never divide by all 30-day daily pageviews to label a 7-day conversion rate.
+ * A zero CTA observation with nonzero pageviews is an instrument/behavior
+ * ambiguity, NOT proof of 0% buyer conversion or zero real clicks.
+ */
+export function projectCroMeasurementCoverage(row){
+  const count=key=>safeNumber(row?.[key]);
+  const visits=count('human_flagged_pageviews_7d');
+  const ctas=count('observed_cta_events_7d');
+  const daily=count('daily_cta_aggregated_7d');
+  const intents=count('form_submit_intents_7d');
+  const epoch=Date.parse(String(row?.evaluated_at||''));
+  const observedAt=Number.isFinite(epoch)?new Date(epoch).toISOString():null;
+  if(!row||visits===null||ctas===null||daily===null||intents===null||
+    [visits,ctas,daily,intents].some(x=>!Number.isInteger(x)||x<0))
+    return {status:'UNVERIFIED',reason:'ORIGINAL_SOURCE_COUNTS_UNAVAILABLE',observedAt,
+      pageviewsNonRobotFlag7d:null,ctaEvents7d:null,formSubmitIntents7d:null,
+      ctaToPageviewEventRatioPct:null,uniqueHumanVisitorsVerified:false,
+      ctaClickTrackingVerified:false};
+  const parity=ctas===daily;
+  const missingClicks=visits>=100&&ctas===0;
+  const status=!parity?'CTA_EVENT_AGGREGATION_MISMATCH':
+    missingClicks?'CTA_SIGNAL_UNVERIFIED_WITH_PAGEVIEWS':
+    ctas>0?'CTA_EVENTS_OBSERVED_NOT_BUYER_CONVERSION':'INSUFFICIENT_EVENT_EVIDENCE';
+  return {status,reason:!parity?'PERSISTED_CTA_DAILY_SOURCE_INCONSISTENT':
+    missingClicks?'CLICK_INSTRUMENTATION_OR_BEHAVIOR_NOT_RESOLVED':
+    ctas>0?'CLICK_EVENTS_NOT_QUALIFIED_LEADS_OR_PAID_ORDERS':
+    'NO_RELIABLE_CLICK_DENOMINATOR',observedAt,
+    pageviewsNonRobotFlag7d:visits,ctaEvents7d:ctas,
+    dailyCtaEvents7d:daily,formSubmitIntents7d:intents,
+    ctaToPageviewEventRatioPct:ctas>0&&visits>0?
+      Math.round(ctas/visits*10000)/100:null,
+    uniqueHumanVisitorsVerified:false,
+    ctaClickTrackingVerified:ctas>0&&parity,
+    claim:'DESCRIPTIVE_EVENT_RATIO_ONLY_NEVER_VERIFIED_VISITOR_CONVERSION',
+    nextOriginalOwner:'Powerhouse Growth/SEO CRO original event producer -> Netlify durable ACK -> original Supabase growth_events -> growth_page_daily'
+  };
+}
+
 export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
@@ -266,6 +307,13 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(oneLoopAssurance!==undefined&&oneLoop.status!=='READBACK_COMPLETE')flags.push('ORIGINAL_15_LOOP_ASSURANCE_UNVERIFIED');
   if(oneLoop.status==='READBACK_COMPLETE'&&oneLoop.counts.red>0)flags.push('ORIGINAL_15_LOOP_RED_GUARDS_OPEN');
   const cp=conversionProofOk?conversionProof[0]:null;
+  const croMeasurement=projectCroMeasurementCoverage(cp);
+  if(croMeasurement.status==='CTA_SIGNAL_UNVERIFIED_WITH_PAGEVIEWS')
+    flags.push('CTA_EVENT_GAP_REQUIRES_ORIGINAL_PRODUCER_TO_DATAHUB_READBACK');
+  if(croMeasurement.status==='CTA_EVENT_AGGREGATION_MISMATCH')
+    flags.push('CTA_EVENT_AGGREGATION_MISMATCH');
+  if(croMeasurement.status==='UNVERIFIED')
+    flags.push('CTA_DENOMINATOR_SOURCE_UNAVAILABLE');
   if(cp?.event_evidence_status!=='PERSISTED_EVENTS_OBSERVED')flags.push('PERSISTED_EVENT_PARITY_NOT_PROVEN');
   if(cp?.lead_evidence_status!=='LINKED_RECORDS_REQUIRE_INDEPENDENT_BUYER_VERIFICATION')flags.push('QUALIFIED_LEAD_READBACK_NOT_PROVEN');
   flags.push('INDEPENDENT_PAID_ORDER_VERIFICATION_REQUIRED');
@@ -294,7 +342,14 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     website:totals,
     websiteWeeklyGrowth,
     behavior:behaviorData,
+    croMeasurement,
     conversionProof:cp?{
+      humanFlaggedPageviews7d:safeNumber(cp.human_flagged_pageviews_7d),
+      formSubmitIntents7d:safeNumber(cp.form_submit_intents_7d),
+      experimentAssignments30d:safeNumber(cp.experiment_assignments_30d),
+      maturedTreatment30d:safeNumber(cp.matured_treatment_30d),
+      maturedHoldout30d:safeNumber(cp.matured_holdout_30d),
+      sourceEvaluatedAt:cp.evaluated_at||null,
       eventStatus:safeText(cp.event_evidence_status,100),leadStatus:safeText(cp.lead_evidence_status,100),orderStatus:safeText(cp.order_evidence_status,120),experimentStatus:safeText(cp.experiment_evidence_status,120),
       observedCtaEvents7d:safeNumber(cp.observed_cta_events_7d),dailyCtaAggregated7d:safeNumber(cp.daily_cta_aggregated_7d),
       recordedLeads30d:safeNumber(cp.recorded_leads_30d),linkedQualifiedLeadRecords30d:safeNumber(cp.linked_qualified_lead_records_30d),
@@ -353,7 +408,7 @@ export default async function handler(request){
     select(base,key,'powerhouse_experiment_policies',
       'select=experiment_key,status,primary_metric,min_matured_per_arm,treatment_pct&limit=51'),
     select(base,key,'powerhouse_cro_conversion_evidence_v1',
-      'select=event_evidence_status,lead_evidence_status,order_evidence_status,experiment_evidence_status,observed_cta_events_7d,daily_cta_aggregated_7d,recorded_leads_30d,linked_qualified_lead_records_30d,orders_with_recorded_provider_readback_30d,last_persisted_event_at&limit=2'),
+      'select=evaluated_at,human_flagged_pageviews_7d,event_evidence_status,lead_evidence_status,order_evidence_status,experiment_evidence_status,observed_cta_events_7d,daily_cta_aggregated_7d,form_submit_intents_7d,recorded_leads_30d,linked_qualified_lead_records_30d,orders_with_recorded_provider_readback_30d,experiment_assignments_30d,matured_treatment_30d,matured_holdout_30d,last_persisted_event_at&limit=2'),
     select(base,key,'powerhouse_cro_experiment_evidence_v1',
       'select=experiment_key,evidence_status,policy_status,primary_metric,minimum_matured_per_arm,matured_treatment,matured_holdout,last_assignment_at&limit=151'),
     select(base,key,'bg_cro_behavior_daily_v1',

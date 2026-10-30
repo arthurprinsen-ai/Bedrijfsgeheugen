@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-30",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|cro|7d-cta-denominator-missing-portal-projection|20261030-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "owner": "original Powerhouse Growth/SEO CRO + Portal V2 + ONE BRAIN/Heartbeat (#4446)",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "root_cause": "The existing portal API read the 7-day CTA event numerator from powerhouse_cro_conversion_evidence_v1 but omitted its 7-day is_robot=false pageevent denominator and form-submit intents, while displaying 30-day daily pageviews. A zero-click result could be mistaken for independently verified 0% visitor-to-order conversion.",
+  "prevention": "Always align original CRO event numerator and denominator to the same source and date window, mark an observation of zero CTA with nonrobot pageevents as measurement/behavior unresolved, require exact event ID→Netlify durable ACK→Supabase persisted→growth_page_daily parity before a true CTA claim, and require consented buyer/paid order provider evidence before growth/ROI learning claims. Keep original admin permissions and one Heartbeat scheduler.",
+  "change": "Extend ONLY existing server-side original CRO view select and owner-only Andere data projection with safe 7d measurements; preserve existing publisher and agent/skill lineages; no new tables, scheduler, analytics collector or unverified revenue.",
+  "evidence": {
+    "source": "public.powerhouse_cro_conversion_evidence_v1",
+    "observed_at": "2026-10-30T10:33:28.596902Z",
+    "human_flagged_pageview_events_7d": 4403,
+    "observed_cta_events_7d": 0,
+    "daily_cta_aggregated_7d": 0,
+    "form_submit_intents_7d": 0,
+    "qualified_lead_records_30d": 0,
+    "provider_verified_paid_orders_30d": 0,
+    "experiment_matured_treatment": 1,
+    "experiment_matured_holdout": 0,
+    "social_personal_linkedin_scope": "reactions_only; views_unavailable",
+    "site_deploy_new_source_proven": false,
+    "natural_agent_applied_proven": false,
+    "actual_visitor_to_order_conversion_proven": false,
+    "verified_business_uplift_proven": false,
+    "observer_note": "is_robot=false does not independently verify a unique human; raw CTA 0 is observation, not independent 0% buyer conversion."
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-cta-denominator-proof-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-cta-denominator-proof-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-cta-denominator-proof-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-cta-denominator-proof-20261030.test.mjs",
+    "tests/portal-cro-other-data.test.mjs"
+  ],
+  "production_proven": false,
+  "human_documentation": "docs/changes/2026-10-30-cro-original-cta-denominator-readback.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-cro-original-cta-denominator-readback.md",
+  "original_skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+  "source_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4446",
+  "next_proof": "protected Required/BRAIN/CodeQL, exact main→Netlify READY, original authenticated admin portal readback, next natural Heartbeat event-ID attribution and independent lead/order evidence."
+}
