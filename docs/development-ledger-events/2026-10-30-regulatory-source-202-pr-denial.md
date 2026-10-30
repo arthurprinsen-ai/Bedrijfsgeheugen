@@ -15,3 +15,7 @@
 ## Extra oorspronkelijke portalgrens — zelfde werkpakket
 
 Inspectie `portal-v2/regulatory-baseline.js` toonde dat bestaande 202-bronhashes nog in de huidige wettelijke review-digest werden meegenomen. Correctie voor alle drie de gemonitorde frameworks: alleen bron-HTTP 200, geen negatieve `sourceContentVerified` en geen `UNVERIFIED_*`; een ontbrekende betrouwbare basis zet bestaande approval/review op wachtstand maar bewaart alle auditbewijs. Nieuwe portalregressie en BRAIN source/portal-replay meegenomen in dezelfde beveiligde PR. Releasegates apart: exact merge commit, Netlify READY commit, browserreadback, echte volgende bronrun, GitHub PR-auth. Ook dit betekent géén geverifieerde inhoudelijke wetswijziging.
+
+## Systeemkaart exact herleidbaar — dezelfde portal-release
+
+Protected Required preflight #41039859917 voerde de bestaande generator `scripts/brain/portal-explanation-inventory.mjs --write` uit. Omdat `portal-v2/regulatory-baseline.js` nu terecht extra bronkwaliteitsregels bevat, werd de canonieke portaalcontenthash `cc41a549a79ecd88bc96bfd18eac4fbf3d79d187388641eb5b7cc70244ed4ef3` in plaats van oude `a6abf62ad06989d9dd96f8ea305536b6d9ba64c74200e1610468c05b2c0cb200`. De oorspronkelijke System Map-bewaking blokkeerde juist. Deze PR neemt **alleen de exact door de generator getoonde éénregelige contenthashwijziging** op in `platform/system-map/canonical-system-map.mjs`, zonder de beveiligingsdrempel of een tweede kaart te wijzigen. Regressie, beveiligde review en productiebrowserbewijs blijven verplicht.
