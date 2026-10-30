@@ -48,7 +48,7 @@ test('partial, stale or contradictory original 15-loop proof never becomes green
 });
 test('original sources are separately represented: API availability is not revenue or 15-loop GREEN',()=>{
  const canonical=summarizeOneLoopAssurance(rows,{observedAt:at});
- const states={daily:'LIVE',experiments:'LIVE',policies:'LIVE',conversionProof:'LIVE',experimentProof:'LIVE',behavior:'LIVE',brainProof:'UNAVAILABLE'};
+ const states={daily:'LIVE',experiments:'LIVE',policies:'LIVE',conversionProof:'LIVE',experimentProof:'LIVE',behavior:'LIVE',brainProof:'LIVE'};
  const projection=projectOtherData({oneLoopAssurance:canonical,readStates:states,
   conversionProof:[{event_evidence_status:'PERSISTED_EVENTS_OBSERVED',observed_cta_events_7d:0}],
   experimentProof:[]});
