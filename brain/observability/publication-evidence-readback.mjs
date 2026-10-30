@@ -31,6 +31,11 @@ const codeFor=(row)=>{
   if(error.includes('VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH')||
      error.includes('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED'))
     return 'MIRA_REJECTED_REQUIRES_NEW_APPROVED_MEDIA';
+  // A source feed may contain eligible signals without any fact-checked,
+  // distinctive personal story. Never turn PERSONAL_SOURCE_UNVERIFIED
+  // into publishing permission or mistake it for an OAuth scope failure.
+  if(row.channel==='linkedin_personal' && error.includes('PERSONAL_SOURCE_UNVERIFIED'))
+    return 'PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT';
   if(error.includes('SOURCE_SUPPLY_REQUIRED')||
      error.includes('NO_UNIQUE_VERIFIED_PERSONAL_SOURCE'))
     return 'FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED';
