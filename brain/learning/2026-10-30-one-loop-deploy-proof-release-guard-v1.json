@@ -74,5 +74,36 @@
     "keep signed admin and RLS",
     "do not infer forecast outcomes from source route",
     "do not mark learning PROVEN until protected merge and subsequent natural release proof"
-  ]
+  ],
+  "terminal_proof": {
+    "scope": "SEPARATE_LATER_PROVIDER_RUNTIME_ATTESTATION",
+    "state": "PROVEN_SOFTWARE_AND_ADMIN_ROUTE_ONLY",
+    "observed_at": "2026-10-30T09:06:13.932Z",
+    "original_issue": 4918,
+    "protected_merged_pr": 5184,
+    "main_commit": "c986ae2a49c09daf349ae365e95c7fbc31a1f8ba",
+    "netlify_production_deploy_id": "6ae45d9944f9ea2b285e27f3",
+    "netlify_state": "READY",
+    "original_provider_readback_run": 41030754918,
+    "original_provider_readback_conclusion": "success",
+    "nested_one_loop_proof": "PROVEN",
+    "signed_admin_allowed": true,
+    "signed_nonadmin_denied": true,
+    "anonymous_denied": true,
+    "independent_test_tenants": 2,
+    "cleanup": "DELETED",
+    "original_brain_loop_counts": {
+      "total": 15,
+      "green": 9,
+      "amber": 1,
+      "red": 5,
+      "overallStatus": "RED"
+    },
+    "historical_original_observation_preserved": true,
+    "cro_other_data_route_signed_two_tenant_proof": "NOT_SEPARATELY_VERIFIED",
+    "commercial_outcome_evidence_proven": false,
+    "natural_agent_learning_application_proven": false,
+    "no_parallel_writer_or_scheduler": true,
+    "evidence_file": "docs/development-ledger-events/2026-10-30-one-loop-deploy-proof-release-guard.md"
+  }
 }
