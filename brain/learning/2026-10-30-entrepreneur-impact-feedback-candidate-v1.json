@@ -44,5 +44,44 @@
     "historical_replay": [
       "tests/brain-entrepreneur-impact-feedback-20261030.test.mjs"
     ]
+  },
+  "strategyAdvisor": {
+    "fingerprint": "portal|strategic-advisor|consulting-grade-evidence-to-decision|20261030-v1",
+    "source": "portal-v2/operating-system/executive-projection.js",
+    "readOnlyRenderer": "portal-v2/operating-system/strategic-advisor.js",
+    "originalDecisionPage": "portal-v2/operating-system/operating-system-ui.js",
+    "onlyTenantScopedTrustedActions": true,
+    "guaranteedBusinessLift": false,
+    "expectedValuesAreNotRealized": true,
+    "realOutcomesMustLinkActionId": true,
+    "testedPureFunctionChecks": 6,
+    "regression": "tests/brain-strategic-advisor-one-loop-20261030.test.mjs",
+    "status": "CANDIDATE_AWAITING_REQUIRED_CI_AND_PRODUCTION_READBACK"
+  },
+  "incidents": [
+    {
+      "fingerprint": "delivery|hygiene|pr5211-missing-candidate-metadata|20261030-v1",
+      "registry": "public.brain_failure_registry",
+      "maturity": "OBSERVED",
+      "run_id": 41105463495,
+      "root_cause": "Missing four canonical machine-readable metadata fields in original PR body; fixed in body, protected admission still requires fresh pass.",
+      "prevention": "Require literal metadata fields in PR creation; protect Required/CodeQL, no bypass.",
+      "cas_promotion": "REJECTED_FAILURE_VERSION_CONFLICT"
+    }
+  ],
+  "commercialBaseline": {
+    "observed_date": "2026-10-30",
+    "time_window_days": 7,
+    "source": "original public.growth_events + growth_outcomes + powerhouse_one_brain_runtime_health_v1",
+    "growth_events_nonrobot": 9202,
+    "persisted_primary_cta_events": 0,
+    "growth_outcomes": 0,
+    "original_runtime_errors": 3,
+    "original_layers": "32/32",
+    "original_jobs": "18/18",
+    "architecture": "AMBER",
+    "meaning": "Measurement gap and unresolved outcome proof. No claim of zero actual clicks, visitors or customer orders.",
+    "requires": "original measurement producer→receiver→persisted ID readback and independent paid order verification",
+    "no_new_collector": true
   }
 }
