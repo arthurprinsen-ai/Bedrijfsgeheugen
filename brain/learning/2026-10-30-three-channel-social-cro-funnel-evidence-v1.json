@@ -12,9 +12,10 @@
     "brand_social_learning_latest": "2026-10-24",
     "aligned_48h": {
       "instagram": 7,
-      "linkedin_company": 15,
+      "linkedin_company": 0,
       "linkedin_personal": 4
     },
+    "legacy_linkedin_unclassified_48h": 15,
     "cro_pageviews_7d": 4347,
     "cro_cta_events_7d": 0,
     "commercial_leads_30d": 0,
