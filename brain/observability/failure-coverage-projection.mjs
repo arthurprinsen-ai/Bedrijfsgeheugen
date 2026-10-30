@@ -56,7 +56,7 @@ export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetc
     const match=/\/(\d+)$/.exec(contentRange);
     const aggregate=summarizeFailureCoverage(await response.json(),match?Number(match[1]):null);
     if(aggregate.status!=='READBACK_COMPLETE')return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCOMPLETE_REGISTRY_READBACK'}};
-    const incidentUrl=String(baseUrl).replace(/\\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq.'+encodeURIComponent(PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)+'&limit=1';
+    const incidentUrl=String(baseUrl).replace(/\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq.'+encodeURIComponent(PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)+'&limit=1';
     try{
       const evidenceResponse=await fetchImpl(incidentUrl,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json'},signal:AbortSignal.timeout(5000)});
       if(!evidenceResponse.ok)return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCIDENT_READBACK_HTTP_'+evidenceResponse.status}};
