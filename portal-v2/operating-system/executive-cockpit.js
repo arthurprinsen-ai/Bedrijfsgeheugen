@@ -119,8 +119,16 @@ export function mountExecutiveCockpit(root,state,{tenantId=state?.tenant_id||sta
  let host=main.querySelector('.os-executive-host');
  if(!host){host=doc.createElement('div');host.className='os-executive-host';main.insertBefore(host,main.firstChild);}
  host.innerHTML=executiveCockpitMarkup(model);
- const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
- host.querySelectorAll('[data-os-page]').forEach(btn=>btn.addEventListener('click',()=>openModule(host,btn.dataset.osPage,domainState)));
+ // One delegated listener also handles buttons rendered later by mountOperatingSystemPage().
+ // The same host survives cockpit refreshes; never attach a second listener.
+ if(!host.__bgOsPageNavigationBound){
+  host.__bgOsPageNavigationBound=true;
+  host.addEventListener('click',event=>{
+   const button=event.target?.closest?.('[data-os-page]');
+   if(!button||!host.contains(button))return;
+   openModule(host,button.dataset.osPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
+  });
+ }
  if(!doc.__bgOsRouteBound){
   doc.__bgOsRouteBound=true;
   doc.addEventListener('bg:open-os-page',event=>{
