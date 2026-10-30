@@ -156,6 +156,8 @@ function systemMapView(systemMap,events,observability={}){
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
   const failureCoverage=systemMap.failureCoverage||{};
   const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
+  const predictiveRunEvidence=observability.predictiveRunEvidence||{};
+  const predictiveRunProven=predictiveRunEvidence.status==='RUN_READBACK_PROVEN';
   const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
   const agentCoverage=observability.agentCycleCoverage||{};
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
@@ -199,6 +201,19 @@ function systemMapView(systemMap,events,observability={}){
       ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
     </div>
     <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
+  </section>
+  <section class="poc-panel" data-predictive-run-evidence data-evidence-status="${esc(predictiveRunEvidence.status||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Voorspellingslus · daadwerkelijk bewijs</h4><span class="poc-badge ${predictiveRunProven?'good':'warn'}">${predictiveRunProven?'Runtime bewezen':'Uitvoering niet bewezen'}</span></div>
+    <p class="poc-note">Hier tonen we uitsluitend teruggelezen brongegevens uit de bestaande Supabase-runtime en ONE BRAIN. Een correcte code-release of een forecast is geen bewezen klantuitkomst.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Openbare marktsignalen',predictiveRunProven?predictiveRunEvidence.signals:'—','echte productiegegevens')}
+      ${kpi('Nieuwe forecasts',predictiveRunProven?predictiveRunEvidence.forecasts:'—','opgeslagen, nog niet gematerialiseerd')}
+      ${kpi('Afgewezen forecasts',predictiveRunProven?predictiveRunEvidence.rejected:'—','volgens runtime')}
+      ${kpi('Natuurlijke vervolgrun',predictiveRunProven&&predictiveRunEvidence.nextNaturalRunProven?'BEWEZEN':'OPEN','onafhankelijke volgende Heartbeat-run')}
+      ${kpi('Echte forecast-uitkomst',predictiveRunProven&&predictiveRunEvidence.realizedOutcomeProven?'BEWEZEN':'OPEN','geen hypothetische omzet')}
+      ${kpi('Gerealiseerde omzet',predictiveRunProven&&predictiveRunEvidence.commercialRevenueProven?'BEWEZEN':'ONBEWEZEN','uitsluitend externe resultaatmeting')}
+    </div>
+    <p class="poc-note">Laatste uitvoer: ${esc(fmtTime(predictiveRunEvidence.runObservedAt))}; BRAIN-leermaturiteit: ${esc(predictiveRunProven?predictiveRunEvidence.learningMaturity:'ONBEWEZEN')}. ${esc(predictiveRunEvidence.note||predictiveRunEvidence.reason||'Bronreadback ontbreekt.')}. <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5169" target="_blank" rel="noopener noreferrer">Onderliggende herstelrelease</a>.</p>
   </section>
   <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">
     <div class="poc-panelhead"><h4>Besluitcyclus-events · echte herkomst en agentmeetdekking (24 uur)</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>
