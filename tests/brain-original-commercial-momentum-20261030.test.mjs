@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {projectOriginalCommercialMomentum} from '../tools/cro/original-commercial-momentum.mjs';
+import {projectOriginalCommercialMomentum} from '../tools/content-growth/original-commercial-momentum.mjs';
 import {projectOtherData} from '../netlify/functions/powerhouse-cro-other-data.mjs';
 
 const at='2026-10-30T10:30:00Z';
