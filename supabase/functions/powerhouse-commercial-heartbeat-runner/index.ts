@@ -279,7 +279,7 @@ async function observeCroCommercialProof(){
       const conversion=conversionRows?.[0]??null;
       if(!conversion)throw new Error("CRO_CONVERSION_PROOF_SOURCE_UNAVAILABLE");
       const exp=experimentRows?.[0]??null;
-      const positiveInt=(n:unknown)=>Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):null;
+      const positiveInt=(n:unknown)=>n!==null&&n!==undefined&&Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):null;
       // These views are observations: no independent buyer/payment, event UID
       // receipt, pre-treatment assignment or Brain delivery attestation.
       const gates=[
@@ -314,7 +314,7 @@ async function observeCroCommercialProof(){
       };
       const current=await tx.unsafe("select to_char((now() at time zone 'Europe/Amsterdam')::date,'YYYY-MM-DD') as day");
       const day=String(current?.[0]?.day||"");
-      if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(day))throw new Error("CRO_DAY_UNAVAILABLE");
+      if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day))throw new Error("CRO_DAY_UNAVAILABLE");
       const key="cro-commercial-evidence:"+day;
       const written=await tx.unsafe(
         "insert into public.brain_records(tenant_id,record_id,record_type,record_kind,subject_id,correlation_id,owner_id,status,observed_at,executed,verified,result,evidence_ids,provenance,payload,idempotency_key,source_revision) "+
