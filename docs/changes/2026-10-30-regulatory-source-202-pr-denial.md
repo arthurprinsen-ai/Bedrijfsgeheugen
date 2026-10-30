@@ -24,3 +24,9 @@ CANONICAL: `brain/learning/2026-10-30-regulatory-source-202-pr-denial-v1.json`. 
 Regressie: `tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs`; bestaande `tests/regulatory-organism-feed.test.mjs` en writer-allowlist. Beschermde Required/BRAIN/CodeQL, onafhankelijke echte runtime/bronproof en originele GitHub PR-readback zijn nodig voor terminal groen. Geen Netlify deploy vereist voor een uitsluitend Python/workflow/skill-documentatiecorrectie: een live werkende volgende natuurlijke watcher moet apart worden bewezen.
 
 **Grenzen:** geen echte inhoudelijke EUR-Lex-update bevestigd; geen versnelde herpublicatie, geen mutatie van klantcompliance zonder bewijs en geen versoepeling van OAuth/toestemming/PR-bescherming.
+
+## Portalcorrectie in dezelfde canonieke lus
+
+De oorspronkelijke `portal-v2/regulatory-baseline.js` kende aan HTTP 202-hashes van EUR-Lex een officieel `currentRegulatoryBaselineDigest` toe, waardoor een eerder beoordeelde AI Act- of AVG-control `approved=true` kon blijven. De bestaande compliance-module laat nu alleen HTTP 200 met expliciete of historisch acceptabele bronverificatie als wettelijke baseline toe. Als AI Act, NIS2 of AVG geen geverifieerde bronbaseline heeft, worden eerder goedgekeurde controls `regulatoryReviewRequired=true`, `approved=false`, `reviewed=false`; bestaande bewijsstukken blijven behouden. Niet-gerelateerde controles worden niet veranderd. Regresstests: `portal-v2/tests/regulatory-baseline.test.mjs` en `tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs`.
+
+Deze UI-verbetering is pas productie wanneer beschermd main exact op Netlify READY met onafhankelijke browser/tenantreadback is; oude bronhashes in `data/regulatory-source-state.json` blijven audit-historie en mogen niet met terugwerkende kracht als wetstekst worden verheven.
