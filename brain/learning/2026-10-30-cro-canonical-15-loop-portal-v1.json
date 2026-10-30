@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|cro|15-loop-assurance-isolated-from-other-data|20261030-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "PORTAL",
+  "owner": "original ONE BRAIN/Heartbeat and owner-only Portal V2 Andere data",
+  "root_cause": "Original Powerhouse Control Center had a separately verified 15-loop read-only assurance projection, while the original CRO Andere data admin page showed only CRO commercial gates and source-availability statuses; users could mistake working technical CRO readbacks for a completely green unified business organism.",
+  "prevention_rule": "Render the original 15-loop assurance view and 7 independent CRO gates in the same existing owner-only Andere data page using its own admin API and the imported canonical readback loader; preserve exact GREEN/AMBER/RED, fresh guard flags, separate HTTP data availability from business outcomes. No parallel scoring, second executor, scheduler or independent truth store.",
+  "observed_evidence": {
+    "at": "2026-10-30T08:29:00Z",
+    "loop_source": "public.powerhouse_loop_assurance_state_v1",
+    "total": 15,
+    "green": 8,
+    "amber": 2,
+    "red": 5,
+    "red_keys": [
+      "daily-compound-learning",
+      "full-cycle-production-proof",
+      "revenue-flywheel",
+      "content-closed-loop",
+      "one-brain-reconcile"
+    ],
+    "cro_brain_record": "cro-commercial-evidence:2026-10-30",
+    "cro_gates_verified": 0,
+    "source": "read-only production Supabase SQL"
+  },
+  "repair": "Import existing loadOneLoopAssurance into the existing Powerhouse CRO owner API; fail closed on stale/missing/duplicate, add original source status, 15 loop counts, unresolved guard and missing stages to existing Andere data module. Keep tenant auth and separate commercial/technical truth.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-one-loop-portal-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-one-loop-portal-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-one-loop-portal-20261030.test.mjs",
+    "tests/portal-cro-other-data.test.mjs",
+    "tests/brain-one-loop-assurance-readback-20261030.test.mjs"
+  ],
+  "production_proven": false,
+  "next_proof": [
+    "exact PR head Required/BRAIN/CodeQL + System Map",
+    "protected main merge",
+    "Netlify READY exact merged commit",
+    "admin-only CRO route 200 signed tenant-a and nonadmin tenant-b 403",
+    "browser Andere data shows source exact 15 loops with same 8/2/5 counts at read time",
+    "separate genuine CRO outcomes before any business green"
+  ]
+}
