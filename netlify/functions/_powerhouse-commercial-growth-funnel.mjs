@@ -83,7 +83,7 @@ export function projectCommercialGrowthFunnel({growthDirection=null,socialFunnel
     'powerhouse_cro_conversion_evidence_v1',cta,
     !cp?'UNVERIFIED_OR_STALE':views!==null&&views>0&&cta===0?
       'CTA_EVENT_OR_INSTRUMENTATION_EVIDENCE_DUE':'PERSISTED_CTA_COUNT_ONLY',
-    'Bestaande consented primary_cta_click → growth-event 202 → drain → exact opgeslagen event-ID; niet afleiden uit HTTP 202/204.',
+    'Bestaande CTA-dekking op /zelfscan, /frisse-blik, /afsluiten, /contact, /aanmelden en /prijzen, via precies één SEO/CRO-meetproducer → growth-event 202 → oorspronkelijke drain → exact opgeslagen event-ID; 202/204 is geen opslag- of conversiebewijs.',
     'Original CRO Event Agent'),
   stage('buyer_lead','CTA → gekwalificeerde opt-in lead (30d)',
     'powerhouse_cro_conversion_evidence_v1',leads,
