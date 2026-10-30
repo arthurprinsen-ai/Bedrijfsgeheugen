@@ -98,6 +98,12 @@ export function executiveCockpitMarkup(model){
   <div class="os-metrics"><article><small>Bedrijfsgezondheid</small><b>${pct(model.health_score)}</b></article><article><small>Strategievoortgang</small><b>${pct(model.strategy_progress)}</b></article><article><small>Besluiten nodig</small><b>${model.decision_queue.length}</b></article><article><small>Open toprisico’s</small><b>${model.risks.length}</b></article></div>
   <div class="os-executive-scan"><section><h3>Nu beslissen / uitvoeren</h3>${model.next_best_actions.length?`<ol>${model.next_best_actions.map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.next_action||item.explanation||item.summary||'')}</small></li>`).join('')}</ol>`:'<p class="os-empty">Geen bewezen acties.</p>'}</section><section><h3>Vooruitkijken</h3>${model.forecasts.length?`<ol>${model.forecasts.slice(0,4).map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.explanation||item.summary||'')}</small></li>`).join('')}</ol>`:'<p class="os-empty">Geen bewezen forecasts.</p>'}</section></div>
   <details class="os-detail"><summary>Verdieping: risico’s, kansen, veranderingen en outcomes</summary><div class="os-grid">${list('Toprisico’s',model.risks)}${list('Kansen',model.opportunities)}${list('Wat veranderde?',model.changes)}${list('Gerealiseerde outcomes',model.outcomes)}</div></details>
+  <section class="os-cms-workstream" aria-label="Content en CMS in Powerhouse">
+    <h3>Content als bedrijfsproces · CMS → kwaliteit → publicatie → meting → ONE BRAIN</h3>
+    <p>De bestaande CMS-beheeromgeving controleert redactionele kwaliteit, toegestane links, toegankelijkheid, opgeslagen versies en publieke publicatiebewijzen. GA4, CTA, lead, order en leereffect blijven afzonderlijk bewijs vereisen.</p>
+    <a href="/cms.html" rel="noopener">Open CMS-kwaliteits- en publicatiebeheer →</a>
+    <small>Alleen bevoegde beheerders mogen publiceren. Een CMS-publicatie is geen bewezen conversiestijging.</small>
+  </section>
   <section class="os-health"><h3>Data & bewijs</h3><p>${model.evidence_health.stale} verouderd · ${model.evidence_health.low_confidence} lage confidence · ${model.evidence_health.unavailable} onvolledig</p></section>
   <nav class="os-module-tabs" aria-label="Powerhouse modules">${tabs}</nav><div class="os-module-detail" aria-live="polite"></div>
  </section>`;
