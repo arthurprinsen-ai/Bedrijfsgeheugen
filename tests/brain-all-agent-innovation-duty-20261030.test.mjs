@@ -56,6 +56,18 @@ test('unknown, duplicate or unprotected roster and candidate source fail closed'
  assert.deepEqual(violated.assignments,[]);
 });
 
+test('original innovation planner is safe with completely absent customer portal data',()=>{
+ const absent=buildAutonomousInnovationPortfolio({at});
+ assert.equal(absent.contract,'POWERHOUSE_AGENT_AUTONOMOUS_INNOVATION_V1');
+ assert.equal(absent.innovationCandidates.length,6);
+ assert.equal(absent.innovationCandidates.find(x=>x.id==='adaptive-portal-ux').stage,'MEASUREMENT_OR_SOURCE_REPAIR');
+ assert.equal(absent.innovationCandidates.find(x=>x.id==='customer-action-copilot').stage,'MEASUREMENT_OR_SOURCE_REPAIR');
+ assert.equal(absent.innovationCandidates.every(x=>x.automaticPromotionAuthorized===false),true);
+ const duty=buildAllAgentInnovationDuties({agents:DEFAULT_AGENT_TEAM,innovationPortfolio:absent,at});
+ assert.equal(duty.assignedCount,DEFAULT_AGENT_TEAM.length);
+ assert.equal(duty.appliedToNaturalRunVerified,false);
+});
+
 test('daily existing self evolution checks every registered agent without new scheduler',()=>{
  const snapshot=buildDailySelfEvolutionSnapshot({now:at});
  assert.equal(snapshot.status,'READY_FOR_DAILY_SELF_EVOLUTION');
