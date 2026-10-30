@@ -97,7 +97,7 @@ test('original Netlify/Portal V2 remains private, read-only, and human-readable'
   const server=readFileSync('netlify/functions/powerhouse-observability.mjs','utf8');
   const source=readFileSync('brain/observability/publication-evidence-readback.mjs','utf8');
   const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
-  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v4'/);
+  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5'/);
   assert.match(source,/provider_readback_error:evidence->>readback_error/);
   assert.match(portal,/Nooit opnieuw publiceren; alleen bestaand bericht verifiëren/);
   assert.doesNotMatch(portal,/urn:li:share:7521667096859201536/);
@@ -135,7 +135,48 @@ test('a later actual provider side effect outranks PERSONAL_SOURCE_UNVERIFIED: n
 test('original admin-only portal and server have a readable fact verification recovery contract',()=>{
   const server=readFileSync('netlify/functions/powerhouse-observability.mjs','utf8');
   const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
-  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v4'/);
+  assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5'/);
   assert.match(portal,/Controleer concreet feit, herkomst, datum en nieuw verhaal/);
   assert.doesNotMatch(portal,/PERSONAL_SOURCE_UNVERIFIED.*true/);
+});
+
+test('30 October duplicate family remains blocked, raw reservation is never exposed to Portal',()=>{
+ const today='2026-10-30',stamp='2026-10-30T07:04:25Z';
+ const rows=[
+  {...row('linkedin_company','APPROVED'),publication_date:today},
+  {...row('linkedin_personal','BLOCKED','GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE:{"matched_reservation_key":"claim:2026-10-27:linkedin_personal"}'),publication_date:today},
+  {...row('instagram','PLANNED'),publication_date:today},
+  {...row('blog','GENERATED'),publication_date:today}
+ ];
+ const out=summarizePublicationEvidence(rows,{count:4,date:today,observedAt:stamp});
+ assert.equal(out.status,'REGISTRY_READBACK_COMPLETE');
+ const personal=out.channels.find(x=>x.channel==='linkedin_personal');
+ assert.equal(personal.registryStatus,'BLOCKED');
+ assert.equal(personal.providerIdRecorded,false);
+ assert.equal(personal.internalLiveProofRecorded,false);
+ assert.equal(personal.recoveryCode,'NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED');
+ assert.doesNotMatch(JSON.stringify(out),/matched_reservation_key|claim:2026-10-27/);
+});
+test('real provider side effect outranks even duplicate-family error: no automatic retry',()=>{
+ const today='2026-10-30';
+ const rows=[
+  {...row('linkedin_company','APPROVED'),publication_date:today},
+  {...row('linkedin_personal','PUBLISHED','GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE','urn:li:share:original'),publication_date:today},
+  {...row('instagram','PLANNED'),publication_date:today},
+  {...row('blog','GENERATED'),publication_date:today}
+ ];
+ const out=summarizePublicationEvidence(rows,{count:4,date:today,observedAt:'2026-10-30T07:04:25Z'});
+ assert.equal(out.channels[1].recoveryCode,'PROVIDER_CREATE_RECORDED_VERIFY_READBACK_NO_REPOST');
+ assert.equal(out.channels[1].providerIdRecorded,true);
+ assert.doesNotMatch(JSON.stringify(out),/urn:li:share:original/);
+});
+test('human portal describes original one-loop recovery for duplicate and media without exposing raw source',()=>{
+ const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
+ const server=readFileSync('netlify/functions/powerhouse-observability.mjs','utf8');
+ assert.match(server,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5'/);
+ assert.match(portal,/Laat de bestaande bronagent een aantoonbaar ander, gedateerd bronfeit/);
+ assert.match(portal,/herschrijven of opnieuw plaatsen van dezelfde verhaalfamilie is verboden/i);
+ assert.match(portal,/Mira-beeld afgekeurd/);
+ assert.match(portal,/Blog nog niet live bewezen/);
+ assert.doesNotMatch(portal,/claim:2026-10-27:linkedin_personal/);
 });
