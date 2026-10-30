@@ -1,0 +1,46 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|native-content-growth|stale-blog-watchdog-recovery-test-after-readonly|20261030-v1",
+  "compiler": {
+    "failure_class": "STALE_REGRESSION_ASSERTION_CONTRADICTS_CANONICAL_SECURITY",
+    "scope": "CI_CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "parent_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5072",
+  "root_cause": "The native Content Growth push suite still asserted an earlier legacy GitHub blog watchdog that retried historical unresolved ledger dates and wrote proof PR artifacts. On 2026-10-29 protected fixes removed both behaviors: canonical Supabase publisher owns the current-day blog and the legacy watchdog is read-only exact-date monitoring. The stale test fails a correct secured workflow.",
+  "prevention": "Contract-test only the current read-only exact-date no-op and public HTML verification; assert absence of older-date selection and PR/Git write permissions. Preserve legacy privacy/tenant source gates and external provider readback; never reintroduce removed historical proof writing just to make an obsolete test pass.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_failing_run": 41034792790,
+    "original_job_id": 123992869752,
+    "original_main_commit": "8f0f68ea78bacd7146faacb082074522f243a34c",
+    "expected_outdated_match": "if (days[today] && days[today].state !== 'live') { console.log(today); process.exit(0); }",
+    "actual_original_workflow": ".github/workflows/daily-blog-live-watchdog.yml",
+    "actual_authority": "CANONICAL_POWERHOUSE_OWNS_DATE",
+    "actual_permissions": "contents: read",
+    "actual_noop": "NO_ACTION_LEGACY_LEDGER_DATE_MISSING",
+    "original_safe_regression": "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs",
+    "old_write_assertions": "OBSOLETE_AFTER_2026-10-29_SECURITY_FIX",
+    "provider_post_or_blog_live_proven": false,
+    "protected_merge_completed": false,
+    "production_test_replay_verified": false,
+    "content_growth_targeted_regression": "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+    "learning_canonicalization": "Security-sensitive learning evidence must anchor to a pre-existing tests/brain-*.test.mjs security contract. The content-growth tests still execute separately in native CI; no safety check removed."
+  },
+  "authoritative_release_process": "Existing Required/BRAIN/CodeQL, exact main commit, subsequent natural Native content growth push-suite; no new workflow, Cron, publisher, provider, public private data or false business result."
+}
