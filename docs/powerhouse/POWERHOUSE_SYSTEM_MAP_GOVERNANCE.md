@@ -246,3 +246,11 @@ Verbindingsketen: **Company Graph / Context → forecast → action/decision →
 Resultaatbewijs vereist expliciete verificatiestatus, gezonde tenant-scoped evidence en bronverwijzingen. Delta vereist bovendien dezelfde metriek, baseline, periode en eenheid; een geleerd resultaat vereist learning-evidence plus een gekoppelde volgende beslissing. De kandidaat is gedocumenteerd in `docs/changes/2026-10-30-entrepreneur-impact-feedback-ux-v1.md`, beschermd door `tests/brain-entrepreneur-impact-feedback-20261030.test.mjs` en geregistreerd in ONE BRAIN als **OBSERVED/CANDIDATE**, niet als geverifieerde productieverbetering.
 
 Openstaande release-obligation: protected CI/CodeQL, exact source→Netlify, geauthenticeerde portal readback, gebruikersproeven en onafhankelijke UX- of bedrijfsresultaatmeting. Daarna pas promotie van de nieuwe ervaring en relevante skills.
+
+## Strategische adviseur → aantoonbare commerciële opbrengst (2026-10-30, kandidaat)
+
+De reeds bestaande `entrepreneurActionImpactFeedbackV1` System Map-knoop verbindt nu de originele `executive-projection.js` met de read-only `strategic-advisor.js` in de directiecockpit en de oorspronkelijke Next Best Actions-pagina. Hij koppelt aan dezelfde `outcome-feedback.js`, Company Intelligence, Outcome Memory, ONE BRAIN en Heartbeat.
+
+Ontwerpvolgorde: probleemdiagnose → oorzaakhypothese met bron → strategische alternatieven (inclusief niets doen) → prognose met onzekerheid → besluit → bevoegde actie → werkelijk onafhankelijke uitkomst → toekomstige kalibratie. Ontbrekend advies-/omzetbewijs blijft EVIDENCE_DUE. Alternatieven met alleen aannames mogen niet worden gepresenteerd als doorgerekend feit.
+
+De bestaande commerciële autoriteit `netlify/functions/_powerhouse-commercial-growth-funnel.mjs` blijft de enige cross-channel bron voor social/email → website → CTA → opt-in → sales → onafhankelijk betaalde order. De strategische UI mag geen globale adminmetrieken zonder tenant-gate tonen. Geen extra datalaag, eventcollector, planner, uitvoeringsagent of commerciële scheduler. Nieuwe productkwaliteit pas PROVEN na exact protected merge/deploy, readback en werkelijk verbeterde ondernemers-taakuitkomsten.
