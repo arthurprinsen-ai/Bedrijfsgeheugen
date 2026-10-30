@@ -69,7 +69,9 @@ test('portal exposes aggregate fields only; original admin gate and single sourc
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/action_type=eq\.autonomous_email/);
  assert.match(api,/dedupe_key=like\.relationship-research:outreach-source:\*/);
- assert.match(api,/outreachResearch:datasets\[8\]/);
+ assert.match(api,/outreachResearch:datasets\[12\]/);
+ assert.match(api,/socialPosts:\[\.\.\.datasets\[7\],\.\.\.datasets\[8\]\]/);
+ assert.match(api,/socialSnapshots:\[\.\.\.datasets\[9\],\.\.\.datasets\[10\]\]/);
  assert.match(page,/Autonome outreach · brononderzoek/);
  assert.match(page,/Verzendingen met vastgelegde Gmail-readback/);
  assert.doesNotMatch(api,/setInterval|cron\.schedule|CREATE TABLE/);
