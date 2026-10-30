@@ -156,6 +156,11 @@ function render(container,data){
     '<td>'+esc(item.owner)+'</td>'+
     '<td>'+esc(item.implementationBrief)+'<br><small>Technieken: '+esc((item.technologyOptions||[]).join(' · '))+
     '<br>Meetdoel: '+esc(item.primaryOutcome)+'</small></td></tr>').join('');
+  const agentCoverage=innovation?.agentDutyCoverage||null;
+  const agentRows=(agentCoverage?.assignments||[]).map(a=>
+    '<tr><td>'+esc(a.agentId)+'</td><td>'+esc(a.innovationId)+
+    '<br><small>'+esc(a.responsibility)+'</small></td><td>'+badge(a.executionState)+
+    '<br><small>'+esc(a.evidenceState)+'</small></td></tr>').join('');
   const innovationCard='<section class="od-card" data-powerhouse-autonomous-innovation>'+
     '<h3>Autonomous Innovation Lab · agents bedenken en ontwikkelen zelfstandig</h3>'+
     '<p>De bestaande Growth, Customer Success, AI/ONE BRAIN en Engineering-agents gebruiken deze voortdurend opnieuw berekende verbeteragenda. Zij kunnen binnen hun bestaande bevoegdheden veilige, omkeerbare kandidaten ontwikkelen, testen en via Required, CodeQL en een beschermde release uitrollen. Dit overzicht is een plan, géén bewezen ontwikkelactie, live AI-model of omzetstijging.</p>'+
@@ -164,6 +169,12 @@ function render(container,data){
     '<div class="od-scroll"><table><thead><tr><th>Innovatie</th><th>Bewijs en fase</th><th>Eigenaar</th><th>Technologie, verandering en meetdoel</th></tr></thead>'+
     '<tbody>'+(innovationRows||'<tr><td colspan="4">Eerst originele Brain-, CRO- en klantbronnen controleren; geen fictieve AI-ideeën als actie afvinken.</td></tr>')+
     '</tbody></table></div>'+
+    '<h4>Alle bestaande agenten · dagelijkse ontwikkelplicht</h4>'+
+    '<p>Agentdekking: '+badge(agentCoverage?.status||'UNVERIFIED')+
+    ' · '+esc(agentCoverage?.assignedCount??'—')+' van '+esc(agentCoverage?.agentCount??'—')+
+    ' agents hebben een brongebonden opdracht. Toewijzing is geen bewijs van uitvoering of orders.</p>'+
+    '<div class="od-scroll"><table><thead><tr><th>Originele agent</th><th>Zelf te verbeteren onderdeel</th><th>Bewijsstatus</th></tr></thead>'+
+    '<tbody>'+(agentRows||'<tr><td colspan="3">Eerst het originele agentregister valideren.</td></tr>')+'</tbody></table></div>'+
     '<p class="od-foot">Automatische technologiekeuze vereist een echte champion/challenger-evaluatie op kwaliteit, veiligheid, privacy, kosten en snelheid. Alle klanteninzichten blijven per tenant afgeschermd. Live pas na exacte releasebewijs; slimmer alleen na onafhankelijk geverifieerde klantwaarde of verkoopuitkomst.</p></section>';
 
   const compoundCard='<section class="od-card" data-one-brain-compound-proof>'+
