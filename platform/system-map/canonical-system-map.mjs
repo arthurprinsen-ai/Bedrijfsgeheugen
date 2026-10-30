@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  compoundRevenueCustomerLearningProof:Object.freeze({
+    fingerprint:'powerhouse|compound-organism|connected-not-proven-daily-value|20261030-v1',
+    owner:'original Powerhouse Growth/Revenue + Portal V2/customer success + ONE BRAIN/Heartbeat',
+    originalSources:'public.powerhouse_action_learning_readiness_v1 + powerhouse_revenue_flywheel_v1 + powerhouse_one_brain_runtime_health_v1 + social/revenue_learning_applications + bg_cro_behavior_daily_v1',
+    adapter:'netlify/functions/_powerhouse-compound-improvement-proof.mjs',
+    protectedReadModel:'netlify/functions/powerhouse-cro-other-data.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    test:'tests/brain-compound-revenue-portal-learning-proof-20261030.test.mjs',
+    learning:'brain/learning/2026-10-30-compound-customer-revenue-three-loop-proof-v1.json',
+    skills:'.agents/skills/powerhouse-growth-swarm/SKILL.md + powerhouse-self-improvement-layer + powerhouse-seo-conversion-orders',
+    humanDocumentation:'docs/changes/2026-10-30-compound-customer-revenue-three-loop-proof.md',
+    original15LoopAssurancePreserved:true,originalTenantAndAdminAuthPreserved:true,
+    noSecondStore:true,noSecondPublisher:true,noNewScheduler:true,
+    release:'SOURCE_CANDIDATE',authenticatedPortalReadbackVerified:false,
+    naturalAgentLearningAppliedVerified:false,
+    independentPaidRevenueOrCustomerUpliftVerified:false
+  }),
+
+
   croEventRecencyReadback:Object.freeze({
     fingerprint:'powerhouse|cro|event-recency-hidden-under-healthy-minute-drain|20261030-v1',
     owner:'original Powerhouse Growth/CRO + ONE BRAIN/Heartbeat',
