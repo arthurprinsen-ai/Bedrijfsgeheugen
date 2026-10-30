@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory() as d:
  assert baseline==original,baseline
  c=obs['sources']['eu-ai-act']
  assert c['httpStatus']==202 and c['observationTrusted'] is False and c['unverifiedReason']=='HTTP_STATUS_NOT_200' and not c['changed'] and not c['firstObservation'],c
- assert (raw/'eu-ai-act'/(c['rawSha256']+'.bin')).exists()
+ assert not (raw/'eu-ai-act'/(c['rawSha256']+'.bin')).exists(), 'unverified body must not be saved'
  blank,diag=run(200,b'')
  assert blank==original and diag['sources']['eu-ai-act']['unverifiedReason']=='EMPTY_SOURCE_BODY'
  challenge,diag=run(200,b'<html><title>Just a moment</title><p>Enable JavaScript and cookies</p></html>')
@@ -36,6 +36,7 @@ with tempfile.TemporaryDirectory() as d:
  assert valid['sources']['eu-ai-act']['changed'] is True
  assert diag['sources']['eu-ai-act']['observationTrusted'] is True
  assert diag['sources']['eu-ai-act']['unverifiedReason'] is None
+ assert (raw/'eu-ai-act'/(diag['sources']['eu-ai-act']['rawSha256']+'.bin')).exists(), 'trusted changed legal source raw retained'
  # No false first observation when a source is unverified.
  original['sources']={}
  no_prior,diag=run(202,b'<html>accepted</html>')
