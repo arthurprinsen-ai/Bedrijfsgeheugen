@@ -1,4 +1,22 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  ga4PrivateCalibrationEvidenceRepair:Object.freeze({
+    fingerprint:'powerhouse|ga4-calibration|provider-report-empty-and-private-outcomes-not-public-ai|20261030-v1',
+    contract:'POWERHOUSE_ONE_BRAIN_GA4_PRIVATE_CALIBRATION_REPAIR_V1',
+    originalOwners:'bg-analytics-sync-composio + Powerhouse Predictive/Revenue + ONE BRAIN/Heartbeat',
+    originalGa4:'bg_ga4_csv_batches + powerhouse_evidence_source_coverage_v1',
+    originalCalibration:'bg_gezondheid + powerhouse_prediction_intelligence_control_v2',
+    originalAdminApi:'netlify/functions/powerhouse-cro-other-data.mjs',
+    pureReadOnlyProjection:'netlify/functions/_powerhouse-ga4-predictive-source-repair.mjs',
+    originalPortal:'portal-v2/modules/andere-data.js',
+    test:'tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs',
+    learning:'brain/learning/2026-10-30-ga4-and-private-prediction-calibration-evidence-debts-v1.json',
+    humanDoc:'docs/changes/2026-10-30-ga4-private-calibration-repair-evidence.md',
+    noExtraSchedulerOrWriter:true,neverFabricateProviderRows:true,
+    noPrivateForecastToPublicModel:true,
+    actualGa4DataFreshnessRestored:false,actualPrivateForecastCalibrationsVerified:false,
+    nextNaturalAgentApplicationVerified:false
+  }),
+
   seoGeneratedCtaRouteParity:Object.freeze({
     fingerprint:'powerhouse|cro|seo-generated-cta-owner-route-parity-gap|20261030-v1',
     owner:'existing Powerhouse SEO Order Engine + original Growth/Revenue CRO agents',
