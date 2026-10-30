@@ -157,3 +157,12 @@ Productieproof 2026-09-29:
 - Tech Festival → `objection_timing` + één nurture-action voor 2027;
 - `powerhouse_refresh_email_learning_stats()` telt deze replies terug in de revenue-first learning projection;
 - parallelle `powerhouse-email-reply-loop-hourly-v1` cron is verwijderd; één canonieke owner blijft over.
+
+
+## Geen fictieve verzending bij ontbrekende bron — 30 oktober 2026
+Fingerprint: `powerhouse|outreach|composer-source-preflight-held-but-dispatcher-loses-exact-cause|20261030-v1`.
+ONE BRAIN-bron: `brain/learning/2026-10-30-outreach-composer-source-handoff-v1.json`; menselijk herstelcontract: `docs/changes/2026-10-30-outreach-composer-source-handoff.md`.
+
+Bij de oorspronkelijke autonome outreach-lus is **een geslaagde cronrun, een ontvangersgoedkeuring of een voorbereid bericht nooit een bewezen verzending**. Een actie met alleen een LinkedIn-profiel, `human_readable_context=false`, `source_trigger_relevance=false` of zonder concrete gebeurtenis blijft `prepared`. De originele `powerhouse-commercial-message-composer` retourneert dan `SOURCE_SPECIFIC_EVIDENCE_REQUIRED` met exacte ontbrekende velden. De oorspronkelijke `powerhouse-autonomous-outreach` moet deze reden veilig in de **dezelfde actie** en bestaande `bg_gezondheid` opslaan; geen tweede herstelagent, scheduler of e-mailkanaal. De bestaande relationship-public-research-agent mag alleen een **werkelijk** geverifieerd bedrijfssignaal van de **juiste** relatie aanvullen. Afwezigheid van bewijs blijft een open researchverplichting, geen kunstmatige `source_trigger_relevance=true`.
+
+Neem altijd broncontext → echte persoonsgebonden autorisatie → opt-out/suppression/fatigue → originele subject/body → geslaagd `powerhouse_message_quality_v1` score-/noveltyrapport → exacte claim → Gmail provider-ID → onafhankelijke `GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID` met `SENT` en exacte ontvanger → status `done` → Heartbeat `action/readback`-receipts. Bij een ambigu providerresultaat geen nieuwe verzending. De dagelijkse executor blijft actief, maar een geldige blokkade wordt niet als succes vermomd. Geen versoepeling van de kwaliteits- of privacydrempels. Regressie: `tests/brain-outreach-composer-source-handoff-20261030.test.mjs`; deze SkillOps-regel is alleen als **live** bewezen na beschermde merge, originele Edge-deploy en onafhankelijke volgende natuurlijke run.
