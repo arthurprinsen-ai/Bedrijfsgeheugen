@@ -1,6 +1,7 @@
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
+import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
 import {normalizeRecommendationEvidence} from '../_shared/recommendation-evidence-normalization.mjs';
@@ -944,6 +945,8 @@ Deno.serve(async (req) => {
       if(editorialViolations.length) throw new Error('PERSONAL_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map(x=>x.code).join(','));
       if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     }
+    let officialBlogDateTruth:any=null;
+    let officialBlogSourceRewriteAttempted=false;
     if(pending.channel==='blog'){
       let violations=blogReaderReadyViolations({...artifact,body:bodyText});
       if(violations.length && generationProvider==='OpenAI' && apiKey){
@@ -958,6 +961,47 @@ Deno.serve(async (req) => {
         }
       }
       if(violations.length)throw new Error('BLOG_READER_READY_CONTRACT_FAILED:'+violations.join(','));
+      // Source truth must be validated BEFORE an artifact is written. The
+      // canonical blog queue retains its independent final prepublication gate.
+      // One bounded, original-model rewrite is permitted, never a second
+      // scheduler, publisher, provider or bypass of the approved article.
+      officialBlogDateTruth=assessOfficialBlogDateTruth({
+        title:artifact.title,body:bodyText,cta:artifact.cta,runDate
+      });
+      if(!officialBlogDateTruth.ok){
+        const sourceError=officialBlogDateTruth.code;
+        if(generationProvider!=='OpenAI'||!apiKey){
+          throw new Error('BLOG_OFFICIAL_DATE_SOURCE_REPAIR_NOT_AUTHORIZED:'+sourceError);
+        }
+        officialBlogSourceRewriteAttempted=true;
+        const sourceFact={
+          source:'https://www.rvo.nl/subsidies-financiering/cpnl',
+          opens:'21 april 2026 09:00 Europe/Amsterdam',
+          closes:'6 oktober 2026 17:00 Europe/Amsterdam',
+          date_state_after_closing:'CLOSED',
+          original_rejection_code:sourceError
+        };
+        const corrected=await callAI(apiKey,gov.model_id,
+          editorialSystem+' BRONVERPLICHTE FEITENCORRECTIE: RVO CPNL 2026 opende 21 april 2026 om 09:00 en sloot 6 oktober 2026 om 17:00 (Europe/Amsterdam). De subsidie is op publicatiedatum GESLOTEN. Zeg nergens dat deze op 6 oktober opent, nu nog open is of zeker opnieuw opengaat. Geef een concreet leesbaar ondernemersverhaal met situatie, gevolg, een haalbaar besluit en meetpunt; behoud alle bestaande lezers- en bronkwaliteitsregels. Gebruik uitsluitend officiële bronfeiten, geen gefingeerde aanvraag of omzet.',
+          {...artifactInput,rejected_draft:{
+            title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta)},
+            official_source_correction:sourceFact,
+            editorial_rejection_codes:[sourceError]},artifactTool,6500);
+        const revisedBody=clean(corrected?.body);
+        const revisedCheck=assessOfficialBlogDateTruth({
+          title:corrected?.title,body:revisedBody,cta:corrected?.cta,runDate
+        });
+        if(!revisedCheck.ok ||
+           blogReaderReadyViolations({...corrected,body:revisedBody}).length>0){
+          throw new Error('BLOG_OFFICIAL_DATE_SOURCE_REWRITE_REJECTED:'+revisedCheck.code);
+        }
+        artifact={...artifact,...corrected,body:revisedBody};
+        bodyText=revisedBody;
+        officialBlogDateTruth=revisedCheck;
+      }
+      if(!officialBlogDateTruth.ok){
+        throw new Error('BLOG_OFFICIAL_DATE_PREWRITE_GUARD_FAILED');
+      }
     }
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
@@ -997,6 +1041,15 @@ Deno.serve(async (req) => {
     const artifactPayload={run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
       content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
       measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,linkedin_loop:linkedinLoop,source_freshness_fallback:sourceFreshnessFallback,
+      official_blog_source_prewrite:pending.channel==='blog'?{
+        contract:'POWERHOUSE-ORIGINAL-CPNL-OFFICIAL-DATE-PREWRITE-v1',
+        check_code:officialBlogDateTruth?.code||'MISSING_GUARD',
+        source:officialBlogDateTruth?.source||null,
+        rewrite_attempted:officialBlogSourceRewriteAttempted,
+        prewrite_validated:officialBlogDateTruth?.ok===true,
+        publication_proven:false,
+        original_queue_second_gate_required:true
+      }:null,
       blog_quality_repair:blogRepairClaim?{contract:blogRepairClaim.contract,rejected_body_sha256:blogRepairClaim.rejected_body_sha256,rejection_codes:blogRepairClaim.rejection_codes,recommendation_id:blogRepairClaim.recommendation_id,requested_at:blogRepairClaim.requested_at,quality_review_id:blogRepairClaim.quality_review?.review_id||null}:null,seo_slug:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.seo_slug||null:null,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
