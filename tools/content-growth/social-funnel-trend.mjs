@@ -9,7 +9,7 @@ const timestamp=x=>{const n=Date.parse(String(x||''));return Number.isFinite(n)?
 const median=a=>{const sorted=[...a].sort((x,y)=>x-y),m=Math.floor(sorted.length/2);return sorted.length?sorted.length%2?sorted[m]:(sorted[m-1]+sorted[m])/2:null;};
 export function socialChannel(row){
   if(row?.tenant_id==='canonical'&&row?.platform==='linkedin'&&row?.channel_kind==='linkedin_personal')return 'linkedin_personal';
-  if(row?.tenant_id==='bedrijfsgeheugen'&&row?.platform==='linkedin'&&(!row?.channel_kind||row?.channel_kind==='linkedin_company'))return 'linkedin_company';
+  if(row?.tenant_id==='bedrijfsgeheugen'&&row?.platform==='linkedin'&&row?.channel_kind==='linkedin_company')return 'linkedin_company';
   if(row?.tenant_id==='bedrijfsgeheugen'&&row?.platform==='instagram')return 'instagram';
   return null; // Never mix unknown identities or separate tenants.
 }
