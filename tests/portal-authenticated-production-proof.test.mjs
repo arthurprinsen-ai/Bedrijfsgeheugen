@@ -24,7 +24,7 @@ const jwt=payload=>[
 test('production proof authenticates two distinct tenants on the immutable deploy and cleans up both',async()=>{
   const seen={created:[],deleted:[],requests:[]};
   const tokens={
-    a:jwt({sub:'proof-user-a',app_metadata:{tenantId:'proof:deploy-123:a'}}),
+    a:jwt({sub:'proof-user-a',app_metadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),
     b:jwt({sub:'proof-user-b',app_metadata:{tenantId:'proof:deploy-123:b'}}),
   };
   const identityAdmin={
@@ -42,6 +42,17 @@ test('production proof authenticates two distinct tenants on the immutable deplo
     if(url.endsWith('/token')){
       const slot=new URLSearchParams(options.body).get('username').includes('-a-')?'a':'b';
       return {ok:true,status:200,json:async()=>({access_token:tokens[slot]})};
+    }
+    if(url.endsWith('/api/powerhouse-one-loop-assurance')){
+      const token=options.headers.authorization||'';
+      if(!token)return {ok:false,status:401,json:async()=>({error:'UNAUTHENTICATED'})};
+      if(token===`Bearer ${tokens.a}`)return {ok:true,status:200,json:async()=>({
+        contract:'one-brain-original-loop-assurance-readback-v1',
+        status:'READBACK_COMPLETE',source:'public.powerhouse_loop_assurance_state_v1',
+        counts:{total:15,green:8,amber:3,red:4},overallStatus:'RED',
+        loops:Array.from({length:15},(_,i)=>({key:'loop-'+i,status:i<4?'RED':'GREEN'}))
+      })};
+      return {ok:false,status:403,json:async()=>({error:'POWERHOUSE_ADMIN_REQUIRED'})};
     }
     const slot=options.headers.authorization===`Bearer ${tokens.a}`?'a':'b';
     return {ok:true,status:200,json:async()=>({
@@ -66,6 +77,12 @@ test('production proof authenticates two distinct tenants on the immutable deplo
   assert.equal(proof.payload_shape_verified,true);
   assert.equal(proof.synthetic_user_cleanup,'DELETED');
   assert.equal(proof.failure_code,null);
+  assert.equal(proof.one_loop_assurance_proof,'PROVEN');
+  assert.equal(proof.one_loop_assurance_admin_verified,true);
+  assert.equal(proof.one_loop_assurance_nonadmin_denied,true);
+  assert.equal(proof.one_loop_assurance_unauthenticated_denied,true);
+  assert.deepEqual(proof.one_loop_assurance_counts,{total:15,green:8,amber:3,red:4,overallStatus:'RED'});
+  assert.equal(proof.one_loop_assurance_failure_code,null);
   assert.deepEqual(seen.created.map(u=>u.data.app_metadata.tenantId),['proof:deploy-123:a','proof:deploy-123:b']);
   assert.deepEqual(seen.deleted,['proof-user-b','proof-user-a']);
   assert.equal(seen.requests.filter(r=>r.url.endsWith('/api/portal-ondernemersdata')).length,2);
@@ -75,13 +92,13 @@ test('production proof authenticates two distinct tenants on the immutable deplo
 
 test('failed authenticated HTTP proof fails closed but still deletes the synthetic user',async()=>{
   const deleted=[];
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a'}});
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}});
   let calls=0;
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
     identityAdmin:{
       createUser:async()=>({id:'proof-user'}),
-      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),
+      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),
       updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
       deleteUser:async id=>deleted.push(id),
     },
@@ -101,13 +118,13 @@ test('failed authenticated HTTP proof fails closed but still deletes the synthet
 });
 
 test('cleanup failure can never leave a green production proof',async()=>{
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a'}});
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}});
   let calls=0;
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
     identityAdmin:{
       createUser:async()=>({id:'proof-user'}),
-      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),
+      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),
       updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
       deleteUser:async()=>{throw new Error('delete failed')},
     },
@@ -176,7 +193,7 @@ test('wrong-tenant JWT fails closed before any portal payload is returned',async
   const token=jwt({sub:'proof-user',app_metadata:{tenantId:'other-tenant'}});
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
-    identityAdmin:{createUser:async()=>({id:'proof-user'}),getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},deleteUser:async id=>deleted.push(id)},
+    identityAdmin:{createUser:async()=>({id:'proof-user'}),getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},deleteUser:async id=>deleted.push(id)},
     getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
     fetchImpl:async()=>({ok:true,status:200,json:async()=>({access_token:token})}),
     randomPassword:()=> 'x'.repeat(40),
@@ -214,6 +231,19 @@ test('production proof repairs admin-owned metadata before requesting signed JWT
         access_token:jwt({sub:user.id,app_metadata:user.appMetadata}),
       })};
     }
+    if(url.endsWith('/api/powerhouse-one-loop-assurance')){
+      const bearer=options.headers.authorization||'';
+      if(!bearer)return {ok:false,status:401,json:async()=>({error:'UNAUTHENTICATED'})};
+      const claims=decodeJwtPayload(bearer.replace(/^Bearer /,''));
+      if(!claims.app_metadata.roles?.includes('powerhouse-admin'))
+        return {ok:false,status:403,json:async()=>({error:'POWERHOUSE_ADMIN_REQUIRED'})};
+      return {ok:true,status:200,json:async()=>({
+        contract:'one-brain-original-loop-assurance-readback-v1',
+        status:'READBACK_COMPLETE',source:'public.powerhouse_loop_assurance_state_v1',
+        counts:{total:15,green:9,amber:1,red:5},overallStatus:'RED',
+        loops:Array.from({length:15},(_,i)=>({key:'loop-'+i,status:i<5?'RED':'GREEN'}))
+      })};
+    }
     const claims=decodeJwtPayload(options.headers.authorization.replace(/^Bearer /,''));
     return {ok:true,status:200,json:async()=>({
       sources:[],publications:[],signals:[],intelligence:{},
@@ -230,6 +260,8 @@ test('production proof repairs admin-owned metadata before requesting signed JWT
   assert.equal(proof.tenant_count_verified,2);
   assert.equal(proof.cross_tenant_scope_verified,true);
   assert.equal(proof.synthetic_user_cleanup,'DELETED');
+  assert.equal(proof.one_loop_assurance_proof,'PROVEN');
+  assert.deepEqual(proof.one_loop_assurance_counts,{total:15,green:9,amber:1,red:5,overallStatus:'RED'});
   assert.deepEqual(updates.map(x=>x.attrs.app_metadata.tenantId),
     ['proof:deploy-123:a','proof:deploy-123:b']);
   assert.deepEqual(deleted,['synthetic-b','synthetic-a']);
@@ -258,4 +290,49 @@ test('admin metadata not persisted fails closed without attempting a bearer toke
   assert.equal(proof.synthetic_user_cleanup,'DELETED');
   assert.equal(fetchCount,0);
   assert.deepEqual(deleted,['synthetic-a']);
+});
+
+
+test('independent 15-loop admin route evidence cannot turn generic auth green into route green',async()=>{
+  const deleted=[],tokens={
+    a:jwt({sub:'proof-a',app_metadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),
+    b:jwt({sub:'proof-b',app_metadata:{tenantId:'proof:deploy-123:b',roles:[]}}),
+  };
+  const admin={
+    createUser:async input=>({id:input.email.includes('-a-')?'proof-a':'proof-b'}),
+    getUser:async id=>({id,appMetadata:{tenantId:`proof:deploy-123:${id.endsWith('a')?'a':'b'}`,roles:id.endsWith('a')?['powerhouse-admin']:[]}}),
+    updateUser:async()=>{throw Error('UNEXPECTED_UPDATE')},
+    deleteUser:async id=>deleted.push(id),
+  };
+  const response=await runPortalAuthenticatedProductionProof({
+    deploy,identityAdmin:admin,
+    getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
+    randomPassword:()=> 'x'.repeat(40),
+    fetchImpl:async(url,opts)=>{
+      if(url.endsWith('/token')){
+        const slot=new URLSearchParams(opts.body).get('username').includes('-a-')?'a':'b';
+        return {ok:true,status:200,json:async()=>({access_token:tokens[slot]})};
+      }
+      if(url.endsWith('/api/powerhouse-one-loop-assurance')){
+        const bearer=opts.headers.authorization||'';
+        if(!bearer)return {ok:false,status:401,json:async()=>({error:'UNAUTHENTICATED'})};
+        if(bearer===`Bearer ${tokens.a}`)return {ok:false,status:503,json:async()=>({error:'CANONICAL_ASSURANCE_PROVIDER_503'})};
+        return {ok:false,status:403,json:async()=>({error:'POWERHOUSE_ADMIN_REQUIRED'})};
+      }
+      const claims=decodeJwtPayload(opts.headers.authorization.replace(/^Bearer /,''));
+      return {ok:true,status:200,json:async()=>({
+        sources:[],publications:[],signals:[],intelligence:{},
+        scope:{authenticatedTenant:claims.app_metadata.tenantId},
+        stats:{generatedAt:'2026-10-30T08:18:00Z'},
+      })};
+    },
+  });
+  assert.equal(response.status,'PROVEN','generic original authenticated release may remain proven');
+  assert.equal(response.one_loop_assurance_proof,'UNVERIFIED');
+  assert.equal(response.one_loop_assurance_admin_verified,false);
+  assert.equal(response.one_loop_assurance_nonadmin_denied,true);
+  assert.equal(response.one_loop_assurance_unauthenticated_denied,true);
+  assert.equal(response.one_loop_assurance_counts,null);
+  assert.equal(response.one_loop_assurance_failure_code,'ORIGINAL_ASSURANCE_ADMIN_READBACK_UNVERIFIED');
+  assert.deepEqual(deleted,['proof-b','proof-a']);
 });
