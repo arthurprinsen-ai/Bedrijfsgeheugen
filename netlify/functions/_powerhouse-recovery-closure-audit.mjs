@@ -40,7 +40,7 @@ export function projectRecoveryClosureAudit(rows,{sourceState='UNAVAILABLE',at=n
       NEXT_NATURAL_AGENT_RUN:nonEmpty(next.runId)&&next.canonicalOwnerVerified===true&&tn!==null,
       INDEPENDENT_RESULT_READBACK:nonEmpty(outcome.source)&&nonEmpty(outcome.providerReceiptId)&&outcome.verified===true&&to!==null,
       LATER_RECURRENCE_CHECK:recurrence.passed===true&&nonEmpty(recurrence.sourceId)&&chronology&&distinctReceipts&&
-        row.maturity==='VALIDATED'&&Number.isSafeInteger(row.occurrence_count)&&row.occurrence_count>0&&
+        ['VALIDATED','PROVEN','PREFERRED'].includes(row.maturity)&&Number.isSafeInteger(row.occurrence_count)&&row.occurrence_count>0&&
         row.last_seen_at===recurrence.lastIncidentAt
     };
     const missing=required.filter(key=>!checks[key]);
