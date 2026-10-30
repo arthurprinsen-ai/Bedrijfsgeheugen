@@ -129,7 +129,11 @@ function render(container,data){
     '<div class="od-grid">'+field('E-mails geblokkeerd op bronbewijs',fmt(outreach?.sourceResearchHeld))+
     field('Open interne onderzoeksacties',fmt(outreach?.internalResearchPending))+
     field('Afgeronde onderzoeksacties (geen verzendbewijs)',fmt(outreach?.internalResearchDone))+
+    field('Onderzoek: geen actueel signaal gevonden',fmt(outreach?.researchNoCurrentSignal))+
+    field('Niet-onafhankelijk geverifieerde bronkandidaten',fmt(outreach?.researchSourceCandidatesUnverified))+
+    field('Eerstvolgende reguliere onderzoekscontrole',esc(date(outreach?.nextOriginalResearchAt)))+
     field('Verzendingen met vastgelegde Gmail-readback',fmt(outreach?.providerVerifiedSends))+'</div>'+
+    '<p class="od-foot">Een SERP-resultaat of interne bronkandidaat is géén geverifieerd actueel bedrijfssignaal. Zonder onafhankelijk bron- en kwaliteitsbewijs blijft de e-mail tegen verzending beschermd.</p>'+ 
     '<p class="od-foot">Ontbrekende actuele bedrijfsspecifieke bron → bestaande interne onderzoeksactie (dedupe) → originele tekstkwaliteitscontrole → geautoriseerde e-mail → onafhankelijke Gmail SENT-label/ontvanger-readback → Heartbeat action/readback. Bij ontbrekend bewijs blijft de lus AMBER en wordt er niets verzonnen. '+esc(outreach?.reason||'')+'</p></section>'+
     '<section class="od-card"><h3>ONE BRAIN · commerciële CRO-terugkoppeling</h3>'+
     '<p>Originele Heartbeat → canonieke Brain-opslag, zonder tweede scheduler of losse registratie. Een technische readback bewijst nog geen verkoop of experimentele verbetering.</p>'+
