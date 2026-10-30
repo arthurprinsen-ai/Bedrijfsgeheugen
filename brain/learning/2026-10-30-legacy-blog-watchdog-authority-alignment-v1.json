@@ -1,0 +1,52 @@
+{
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "date": "2026-10-30",
+  "fingerprint": "powerhouse|content-growth-ci|legacy-daily-blog-watchdog-old-history-writer-assertion|20261030-v1",
+  "failure_class": "FALSE_GREEN",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "owner": "original Powerhouse Content Growth/Source Universe publishing release owner",
+  "owner_issue": "#4439",
+  "root_cause": "Native Content Growth Contracts on protected main 8f0f68e (run 41034792790) failed 1 of 69 tests: the legacy watchdog test asserted a deleted historical GitHub-ledger fallback and BASE_SHA writer, contradictory to the current read-only watcher and exclusive canonical Supabase/Powerhouse publisher.",
+  "evidence": {
+    "production_main_at_observation": "8f0f68ea78bacd7146faacb082074522f243a34c",
+    "original_failed_workflow_id": 41034792790,
+    "original_failed_job_id": 123992869752,
+    "test_results_before": {
+      "passed": 68,
+      "failed": 1,
+      "total": 69
+    },
+    "failing_test": "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+    "actual_live_workflow": ".github/workflows/daily-blog-live-watchdog.yml",
+    "original_current_date_authority": "Powerhouse Supabase content_publication_obligations",
+    "original_publication_side_effect_proven": false,
+    "original_blog_queue_repair": "2026-10-30T09:34:15.041Z POST 200 after RVO official CPNL correction; still GENERATED",
+    "no_independent_publication_or_order_evidence": true,
+    "security_policy_existing": "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+  },
+  "remediation": "Replace only obsolete legacy-writer assertion in original test with current-date exact original read-only watchdog, no selecting old ledger dates, no Git write/PR/export, original Supabase Powerhouse publisher remains sole writer.",
+  "prevention": "On authority migration update both old and new regression contracts; never restore historical GitHub writer merely to satisfy stale test. Do not remove original private proof containment or change original schedule.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs"
+    ],
+    "shadow": [
+      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs"
+    ],
+    "canary": [
+      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs"
+    ]
+  },
+  "skill": ".agents/skills/powerhouse-source-universe-impact-engine/SKILL.md",
+  "human_documentation": "docs/changes/2026-10-30-native-blog-watchdog-single-owner-recovery.md",
+  "development_ledger": "docs/development-ledger-events/2026-10-30-native-blog-watchdog-single-owner-recovery.md",
+  "no_secondary_scheduler": true,
+  "production_status": "NOT_LIVE_UNTIL_PROTECTED_MAIN_AND_NATURAL_CONTENT_GROWTH_RUN"
+}
