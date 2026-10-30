@@ -2,6 +2,7 @@ import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import {projectSocialCroFunnel} from './_social-cro-funnel-projection.mjs';
 import {projectPowerhouseGrowthDirection} from './_powerhouse-growth-direction.mjs';
 import {projectCompoundImprovementProof} from './_powerhouse-compound-improvement-proof.mjs';
+import {projectCommercialGrowthFunnel} from './_powerhouse-commercial-growth-funnel.mjs';
 import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
@@ -391,6 +392,9 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(compoundImprovement.status!=='EVIDENCE_DUE')flags.push('COMPOUND_IMPROVEMENT_SOURCE_READBACK_INCOMPLETE');
   const growthDirection=projectPowerhouseGrowthDirection({dailySources:growthDaily,replyEvents:emailReplies,
     socialFunnel,brainClosure,conversionProof:readStates.conversionProof==='LIVE'?conversionProof[0]:null,readStates,at});
+  const commercialGrowthFunnel=projectCommercialGrowthFunnel({growthDirection,socialFunnel,
+    conversionProof:readStates.conversionProof==='LIVE'&&conversionProof.length===1?conversionProof[0]:null,
+    acquisitionCta,compoundImprovement,readStates,at});
   if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
   if(!brainClosure.businessOutcomeVerified)flags.push('CRO_COMMERCIAL_CLOSED_LOOP_NOT_PROVEN');
   if(oneLoopAssurance!==undefined&&oneLoop.status!=='READBACK_COMPLETE')flags.push('ORIGINAL_15_LOOP_ASSURANCE_UNVERIFIED');
@@ -419,6 +423,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     brainClosure,
     socialFunnel,
     growthDirection,
+    commercialGrowthFunnel,
     acquisitionCta,
     compoundImprovement,
     sources:{
