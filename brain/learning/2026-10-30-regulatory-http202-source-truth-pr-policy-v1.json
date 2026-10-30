@@ -29,8 +29,8 @@
     "source_content_change_verified": false
   },
   "root_cause": "The original source monitor computes and promotes content hash changes for non-authoritative HTTP 202/HTML anti-bot responses. The original writer's built-in GitHub Actions token cannot open a PR under the current repository policy; that is a distinct security boundary and must not be bypassed or falsely called live.",
-  "fix": "Classify any status other than HTTP 200, empty response, and recognizable HTML challenge as UNVERIFIED; retain previous legal source-state baseline, store diagnosis/raw bytes separately in the existing Brain ingestion, and mark freshness_heartbeat true only on a trusted authoritative response. No new writer, cron or provider.",
-  "prevention": "Treat source HTTP acceptance/challenge as source health, not legal text change; only validated HTTP 200 authoritative content may advance the source baseline. Preserve existing GitHub permission boundary and put any legitimate source-change PR through an approved repository owner. Do not merge HTTP202 candidate branch.",
+  "fix": "Classify any HTTP status other than 200, empty body, or recognizable HTML challenge as UNVERIFIED. Preserve previous authoritative legal source-state baseline; emit only diagnostic status/hash/reason into existing Brain heartbeat, never save untrusted raw HTML to an output path. Keep raw bytes only for validated, changed HTTP 200 authoritative content; freshness heartbeat true only when trusted. No new writer, cron or provider.",
+  "prevention": "Treat source HTTP acceptance/challenge as source health, not legal text change; only validated HTTP 200 authoritative content may advance the source baseline. Preserve existing GitHub permission boundary and put any legitimate source-change PR through an approved repository owner. Do not merge HTTP202 candidate branch. A high-severity CodeQL PR check exposed additional risk during verification; no override. The newly added untrusted raw-file write was removed before merge.",
   "regression": [
     "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
     "tests/regulatory-organism-feed.test.mjs"
@@ -70,6 +70,7 @@
     "provider_pr_creation": "DENIED_CURRENT_POLICY",
     "regression": "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
     "tested_policy": "HTTP200_NONCHALLENGE_ONLY",
-    "current_state": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+    "current_state": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+    "security_review": "Untrusted regulatory HTTP202 raw-file write sink removed before protected CodeQL recheck"
   }
 }
