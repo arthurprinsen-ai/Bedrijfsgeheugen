@@ -118,18 +118,25 @@ function oneLoopAssuranceView(assurance){
   const counts=source.counts,status=source.overallStatus||'UNVERIFIED';
   const label={RED:'Rood · guards of bewijs blokkeren',AMBER:'Oranje · bewijs ontbreekt',GREEN:'Groen · bronbevestigd'};
   const toneStatus={RED:'bad',AMBER:'warn',GREEN:'good'}[status]||'bad';
+  const diagnosis=source.guardDiagnostics?.status==='READBACK_COMPLETE'?source.guardDiagnostics:null;
+  const byKey=new Map(arr(diagnosis?.cases).map(c=>[c.key,c]));
+  const diagnosticState=diagnosis?'Bronoorzaken gecontroleerd':
+    'Guard-oorzaken nog niet onafhankelijk teruggelezen; raadpleeg de originele receipts.';
   const list=arr(source.loops).map(row=>{
     const t={RED:'bad',AMBER:'warn',GREEN:'good'}[row.status]||'bad';
     const reason=row.guard==='FAILED'?'Originele guard faalt':row.missingStages?.length?
       'Ontbrekende fasen: '+row.missingStages.join(', '):row.status==='GREEN'?
       'Stadia en guard-status actueel':'Uitvoerings- of externe bewijscontrole ontbreekt';
-    return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small></div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
+    const caseInfo=byKey.get(row.key);
+    const remediation=caseInfo&&row.status!=='GREEN'?
+      arr(caseInfo.reasons).map(x=>'<div><b>'+esc(x.code)+'</b><small>Vervolgactie: '+esc(x.nextAction)+'</small></div>').join(''):'';
+    return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small>${remediation}</div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
   }).join('');
   return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="READBACK_COMPLETE" data-overall-status="${esc(status)}">
     <div class="poc-panelhead"><h4>ONE BRAIN + Powerhouse + Heartbeat · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
     <p class="poc-note">Eén bestaande uitvoeringsarchitectuur; dit is uitsluitend onafhankelijke broncontrole van de 15 bestaande lussen, géén tweede executor. Een succesvolle job is geen bewezen klantresultaat. Laatste controle: ${esc(fmtTime(source.observedAt))}.</p>
     <div class="poc-kpis compact">${kpi('Lussen',counts.total,'bestaande canonieke inventaris')}${kpi('Groen',counts.green,'bron-gates voldoen')}${kpi('Oranje',counts.amber,'nog ontbrekend bewijs')}${kpi('Rood',counts.red,'guard of outcome faalt')}</div>
-    <details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
+    <p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
     <p class="poc-note">Eén overkoepelende status wordt ROOD zodra één originele lus rood is. Publicatie, OAuth-toestemming, omzet en agentleereffect worden nooit kunstmatig afgetekend.</p>
   </section>`;
 }
