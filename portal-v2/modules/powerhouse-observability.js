@@ -183,6 +183,16 @@ function systemMapView(systemMap,events,observability={}){
   const failureCoverage=systemMap.failureCoverage||{};
   const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
   const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
+  const predictiveProof=failureCoverage.predictiveRecovery||{};
+  const predictiveCode=String(predictiveProof.status||'UNVERIFIED');
+  const predictiveText={
+    TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING:'Technisch herstel in Supabase bewezen. Volgende natuurlijke agentrun en daadwerkelijke zakelijke uitkomst nog niet bewezen.',
+    NATURAL_RUNTIME_PROVEN_OUTCOME_PENDING:'Natuurlijke runtime bewezen; daadwerkelijke forecast-uitkomst nog niet bewezen.',
+    OUTCOME_EVIDENCE_PROVEN:'Forecast-uitkomst met afzonderlijk bewijs vastgelegd; dit bewijst geen algemene omzet- of publicatiedoelen.',
+    RECOVERY_EVIDENCE_PENDING:'Herstel bestaat als incident, maar ontbrekend productie- of runtimebewijs verhindert groen.',
+    UNVERIFIED:'Geen volledige onafhankelijke incidentreadback. Niet als opgelost weergeven.'
+  }[predictiveCode]||'Herstelstatus onbekend; geen succesclaim zonder bronreadback.';
+
   const agentCoverage=observability.agentCycleCoverage||{};
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
   const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
@@ -196,6 +206,22 @@ function systemMapView(systemMap,events,observability={}){
       return 'Bericht aangemaakt; LinkedIn weigert de onafhankelijke uitleescontrole (403). Nooit opnieuw publiceren; alleen bestaand bericht verifiëren.';
     if(code==='PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT')
       return 'Persoonlijke bron nog niet geverifieerd. Controleer concreet feit, herkomst, datum en nieuw verhaal vóór de bestaande goedkeurings- en publicatiestap; niet forceren of dubbel posten.';
+    if(code==='NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED')
+      return 'Bestaande verhaal-familie is al gebruikt. De originele contentagent moet een aantoonbaar ander feit met nieuwe bron en oorzaak/gevolg kiezen en opnieuw redactioneel, op identiteit en duplicaten toetsen. Geen oude tekst herschrijven of opnieuw plaatsen.';
+    if(code==='FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED')
+      return 'Nieuwe onafhankelijke bron ontbreekt of alle bekende gebeurtenissen zijn al gebruikt. De bestaande bronradar verzamelt op een volgende natuurlijke run andere gedateerde feiten; zonder bewijs blijft LinkedIn persoonlijk geblokkeerd, de overige kanalen lopen door.';
+    if(code==='NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED')
+      return 'Dubbel verhaal afgekeurd. Laat de bestaande bronagent een aantoonbaar ander, gedateerd bronfeit met nieuwe gebeurtenis en eigen invalshoek controleren; herschrijven of opnieuw plaatsen van dezelfde verhaalfamilie is verboden. Laat de oorspronkelijke duplicaat- en publicatiepoorten opnieuw beslissen.';
+    if(code==='FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED')
+      return 'Geen voldoende nieuwe persoonlijke bron. Laat de bestaande bronradar een actuele onafhankelijke bron zoeken en factchecken vóór het maken van een nieuw concept. Geen verzonnen ervaringen of hergebruik van afgekeurde teksten.';
+    if(code==='MIRA_REJECTED_REQUIRES_NEW_APPROVED_MEDIA')
+      return 'Mira-beeld afgekeurd: verifieer herkenbare identiteit, mediaoverdracht en de geldende gezichtsdrempel in de bestaande producer; nooit een afgekeurde video publiceren.';
+    if(code==='MEDIA_IDENTITY_AND_PROVIDER_EVIDENCE_PENDING'||code==='CANONICAL_MEDIA_ASSET_REQUIRED')
+      return 'Instagram nog niet bewezen: controleer originele media, identiteit, overdracht en daarna provider-ID plus onafhankelijke readback. Geen publicatie zonder goedgekeurd beeld.';
+    if(code==='PROTECTED_PUBLICATION_AND_PUBLIC_URL_READBACK')
+      return 'Blog nog niet live bewezen: voer de bestaande beschermde websitepublicatie uit en controleer daarna de echte publieke artikel-URL. GENERATED of goedgekeurd is geen productiepublicatie.';
+    if(code==='LINKEDIN_PERSONAL_CANONICAL_OAUTH_CONSENT_REQUIRED')
+      return 'LinkedIn-eigenaarstoestemming vereist via de oorspronkelijke beveiligde OAuth-route. Niet omzeilen, geen alternatieve publisher en geen duplicaatpost.';
     return code;
   };
 
@@ -224,6 +250,7 @@ function systemMapView(systemMap,events,observability={}){
       ${kpi('Regressietest ontbreekt',failureMetric('observedMissingRegression'),'preventie niet bewezen')}
       ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
     </div>
+    <p class="poc-note" data-predictive-source-proof data-evidence-status="${esc(predictiveCode)}"><b>Voorspellingsagent · publieke bronselectie:</b> ${esc(predictiveText)} Status uit het bestaande ONE BRAIN-foutregister; de portaalweergave voert geen predictie- of publicatieactie uit.</p>
     <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
   </section>
   <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">

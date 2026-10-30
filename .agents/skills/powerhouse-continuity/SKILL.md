@@ -5,6 +5,23 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## 30 oktober 2026 — herstelbesluit twee runtime errors: bewijsachterstand, geen tweede scheduler
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+Twee bestaande **unieke** incident-fingerprints blijven eigenaar: `powerhouse|revenue-flywheel|forecast-calibration-evidence-due|20261029-v1` en `powerhouse|full-cycle|publication-predictive-proof-gaps|20261029-v1`. Parent https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198; originele ONE BRAIN-registratie `powerhouse-runtime-dual-evidence-debt:2026-10-30`. Geen tweede incidentfamilie of parallelle publicatie/kalibratiescheduler.
+
+**Mandatory read-before-action (alle bestaande agents):** haal de echte `public.powerhouse_one_brain_runtime_health_v1` en de nieuwste unieke `public.powerhouse_runtime_events` op; valideer de oorspronkelijke `cron.job_run_details`, de Edge HTTP-respons en `bg_gezondheid` afzonderlijk. Gebruik `brain/observability/runtime-evidence-debt-classification.mjs` uitsluitend als side-effect-vrije classificatie van twee echte eventrecords; `UNVERIFIED` als record ontbreekt, stale (>2 uur) of tegenstrijdig is. De helper wijzigt geen status, bewijst geen uitvoering en mag geen privédata, secrets of forecastinhoud uitlekken.
+
+**Exact verified 30-oktober-snapshot:** 32/32 wired, 18/18 jobs actief; twee laatste `state=error` zijn `revenue_flywheel_health` (1.867 `due_uncalibrated_forecasts`, `calibration_gap=true`) en `full_cycle_production_proof` (2.085 `overdue_calibrations`, ontbrekend provider/outcome-bewijs). De tellers hebben **verschillende brondefinities**. Van de 2.085 private overdues zijn 1.714 persoons- en 371 bedrijfsvoorspellingen; voor publieke scope zijn er nul. De bestaande kalibrator draaide HTTP 200 met `NON_PUBLIC_SCOPE_BACKLOG`; nul bestaande `powerhouse_forecast_resolution_candidates_v3` matches. Cron SQL `succeeded` = geen echte kalibratie of providerresultaat.
+
+**Veilige herstelroute:** de oorspronkelijke privé-outcome-eigenaar reconcilieert eerst geautoriseerde 1e-partij uitkomsten met forecast-/tenant-/tijdvenster-/provider-ID, suppressie/consent en exact evidence. Pas bij onafhankelijk bewezen positieve óf methodologisch valide negatieve outcome mag het bestaande model-/learningpad idempotent sluiten. Onbekend blijft OPEN; niet blind public-AI op persoonsrecords draaien, `missed` of €0 verzinnen, historische posts opnieuw versturen of de daily executor pauzeren. De originele kanaaleigenaren doen LinkedIn/Instagram/blog met echte provider-ID/readback, en de omzetoutcome-eigenaar controleert echte contract/factuur/betaling. OAuth-grens is expliciete menselijke consent.
+
+**Wat wel hersteld is:** originele predictive 30 oktober 07:02:15 UTC met 18 toegestane signalen/1 forecast/0 afwijzingen; `predictive_run_ok=true`. Dit sluit `full_cycle_healthy=false` en private kalibratieachterstand niet. Hergebruik bestaande GitHub P0 en `public.brain_observe_failure`; twee event-occurrence-IDs `powerhouse-runtime-event:6008e9a4-5b4d-4e31-ad4c-258e79639fa4` en `powerhouse-runtime-event:aff25914-b086-4f35-a602-4e75acb3f30e` zijn al vastgelegd en onafhankelijk teruggelezen. Nieuwe herhalingen zijn nieuwe gebeurtenissen onder dezelfde bestaande fingerprint.
+
+**Releasing:** `tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs` → Required/BRAIN/CodeQL/System Map exact head → protected merge → werkelijk toepasselijke release → originele natuurlijke agentrun/skill-readback → echte outcome-readback. Tot dan `OBSERVED` / `EVIDENCE_DUE` / `UNVERIFIED`; nooit `FULL_GREEN` met status-only writes. Menselijk runbook `docs/changes/2026-10-30-two-runtime-evidence-debts.md`, append-only ledger `docs/development-ledger-events/2026-10-30-two-runtime-evidence-debts.md`.
+
+
 ## Incidenten en fouten: altijd registreren, altijd zelf oplossen — 29 oktober 2026
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
