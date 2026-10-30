@@ -12,5 +12,21 @@
   "agentSkill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
   "productionVerified": false,
   "independentBrowserVerified": false,
-  "commercialLiftVerified": false
+  "commercialLiftVerified": false,
+  "compiler": {
+    "failure_class": "PORTAL_NESTED_NAVIGATION_HANDLER_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-os-delegated-navigation-20261030.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Required #41116714944 rejected first candidate with LEARNING_FAILURE_CLASS_REQUIRED; canonical compiler + historical replay required.",
+    "pending": "Exact-head Required and CodeQL, protected merge, Netlify and browser/tenant readback."
+  }
 }
