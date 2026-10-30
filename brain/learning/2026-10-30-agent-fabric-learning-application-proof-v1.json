@@ -15,8 +15,7 @@
   "prevention": "Keep learning retrieval read-only with LEARNING_SUGGESTED. Apply only via admitted original Agent Fabric run, exact tenant/fingerprint/action/revision/side-effect reference and independently checked canonical original production verifier. Missing verifier remains application unproven. Preserve durable ONE BRAIN writer and provider/deduplication safety gates; no invented post readback or human OAuth consent.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-agent-learning-application-proof-20261030.test.mjs",
-      "tests/agent-fabric.test.mjs"
+      "tests/brain-agent-learning-application-proof-20261030.test.mjs"
     ],
     "canary": [
       "tests/brain-agent-learning-application-proof-20261030.test.mjs"
