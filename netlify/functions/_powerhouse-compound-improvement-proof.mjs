@@ -1,3 +1,5 @@
+import { buildAutonomousInnovationPortfolio } from '../../brain/self-improvement/autonomous-innovation-portfolio.mjs';
+
 // Read-only synthesis for the ORIGINAL Powerhouse / ONE BRAIN / Heartbeat owners.
 // This does not create another truth store, scheduler, customer identity or action writer.
 const MINUTE=60_000;
@@ -117,7 +119,7 @@ function safeRuntime(row){
  */
 export function projectCompoundImprovementProof({
   learningReadiness=[],revenueFlywheel=[],runtimeHealth=[],
-  socialApplications=[],revenueApplications=[],portalBehavior=[],
+  socialApplications=[],revenueApplications=[],portalBehavior=[],croConversionEvidence=[],
   readStates={},at=new Date().toISOString()
 }={}){
   const now=timestamp(at);
@@ -177,12 +179,22 @@ export function projectCompoundImprovementProof({
       status:'REQUIRES_EVIDENCE',basis:'ORIGINAL_LEARNING_READINESS_AND_RUNTIME',
       next:'Prioritize overdue original learning obligations and prevent repeat failures with exact regression and next-run verified application.'}
   ];
+  const evidenceSources={readiness,revenue,runtime,socialApplications:social,
+    revenueApplications:salesLearning,portalActivity:portal};
+  const originalCro=readStates.conversionProof==='LIVE'&&Array.isArray(croConversionEvidence)&&croConversionEvidence.length===1
+    ?croConversionEvidence[0]:null;
+  const cro=originalCro?{
+    humanFlaggedPageviews7d:integer(originalCro.human_flagged_pageviews_7d),
+    observedCtaEvents7d:integer(originalCro.observed_cta_events_7d),
+    recordedLeads30d:integer(originalCro.recorded_leads_30d)
+  }:null;
+  const innovationPortfolio=buildAutonomousInnovationPortfolio({
+    proof:{evidenceSources},cro,at
+  });
   return {contract:'POWERHOUSE_COMPOUND_IMPROVEMENT_READONLY_V1',
     status:commercialOk&&learningOk&&customerOk?'EVIDENCE_DUE':'PARTIAL_SOURCE_READBACK',
     at:new Date(now).toISOString(),source:'existing canonical Powerhouse/ONE BRAIN/Heartbeat',
-    loops,priorities,evidenceSources:{
-      readiness,revenue,runtime,socialApplications:social,revenueApplications:salesLearning,portalActivity:portal
-    },
+    loops,priorities,evidenceSources,innovationPortfolio,
     guarantees:{newScheduledExecutors:0,newWriters:0,externalSideEffects:0,
       customerOrPaymentIdentityInOutput:false,tenantScopePreserved:true,
       original15LoopStatusUnchanged:true,causalUpliftProven:false,
