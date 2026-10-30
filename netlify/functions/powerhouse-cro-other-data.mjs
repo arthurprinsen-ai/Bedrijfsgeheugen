@@ -5,7 +5,8 @@ import {projectCompoundImprovementProof} from './_powerhouse-compound-improvemen
 import {projectRecoveryClosureAudit} from './_powerhouse-recovery-closure-audit.mjs';
 import {projectCommercialGrowthFunnel} from './_powerhouse-commercial-growth-funnel.mjs';
 import {projectGa4PredictiveSourceRepair} from './_powerhouse-ga4-predictive-source-repair.mjs';
-import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
+import {ONE_LOOP_ASSURANCE_CONTRACT} from '../../brain/observability/one-loop-assurance-readback.mjs';
+import {loadOneLoopAssuranceWithDiagnostics} from '../../brain/observability/one-loop-guard-diagnostics.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
 // No new scheduler, experiment writer, customer-data leak or duplicate data store.
@@ -575,7 +576,7 @@ export default async function handler(request){
     select(base,key,'brain_failure_registry',
       'select=fingerprint,maturity,root_cause,proven_fix,prevention_rule,regression_ref,occurrence_count,last_seen_at,evidence&order=last_seen_at.desc&limit=20')
   ];
-  const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
+  const responses=await Promise.allSettled([...queries,loadOneLoopAssuranceWithDiagnostics({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
   const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
   const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000,1,1,1,200,200,30,1,2,1,1,20];
