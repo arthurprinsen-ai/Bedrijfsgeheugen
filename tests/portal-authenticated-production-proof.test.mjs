@@ -92,13 +92,13 @@ test('production proof authenticates two distinct tenants on the immutable deplo
 
 test('failed authenticated HTTP proof fails closed but still deletes the synthetic user',async()=>{
   const deleted=[];
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a'}});
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}});
   let calls=0;
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
     identityAdmin:{
       createUser:async()=>({id:'proof-user'}),
-      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),
+      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),
       updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
       deleteUser:async id=>deleted.push(id),
     },
@@ -118,13 +118,13 @@ test('failed authenticated HTTP proof fails closed but still deletes the synthet
 });
 
 test('cleanup failure can never leave a green production proof',async()=>{
-  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a'}});
+  const token=jwt({sub:'proof-user',app_metadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}});
   let calls=0;
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
     identityAdmin:{
       createUser:async()=>({id:'proof-user'}),
-      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),
+      getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),
       updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},
       deleteUser:async()=>{throw new Error('delete failed')},
     },
@@ -193,7 +193,7 @@ test('wrong-tenant JWT fails closed before any portal payload is returned',async
   const token=jwt({sub:'proof-user',app_metadata:{tenantId:'other-tenant'}});
   const proof=await runPortalAuthenticatedProductionProof({
     deploy,
-    identityAdmin:{createUser:async()=>({id:'proof-user'}),getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a'}}),updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},deleteUser:async id=>deleted.push(id)},
+    identityAdmin:{createUser:async()=>({id:'proof-user'}),getUser:async()=>({appMetadata:{tenantId:'proof:deploy-123:a',roles:['powerhouse-admin']}}),updateUser:async()=>{throw new Error('UNEXPECTED_USER_UPDATE')},deleteUser:async id=>deleted.push(id)},
     getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
     fetchImpl:async()=>({ok:true,status:200,json:async()=>({access_token:token})}),
     randomPassword:()=> 'x'.repeat(40),
