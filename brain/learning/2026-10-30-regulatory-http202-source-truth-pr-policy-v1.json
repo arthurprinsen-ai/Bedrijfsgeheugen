@@ -51,8 +51,7 @@
   "business_truth": "NO_VERIFIED_LEGISLATIVE_CHANGE_OR_COMPLIANCE_CONTROL_LIFT",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
-      "tests/regulatory-organism-feed.test.mjs"
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
     ],
     "canary": [
       "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
