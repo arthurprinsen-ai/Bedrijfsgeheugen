@@ -5,6 +5,15 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## Public market forecast evidence and one-loop portal proof — 30 October 2026
+
+Incident `predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1` has an **exact protected live repair**: #5169 merged `596c4cbcb5fa0e0cbd953d0483e4f98eb3dff613`, original Supabase `powerhouse-predictive-engine` ACTIVE v569 exact main source. Read-only HTTP receipt `net._http_response.id=16430` confirmed a postmerge canary with 18 eligible public signals, one written forecast, zero rejects. This is `RUNTIME_CANARY_PROVEN`, **not** a proven next natural run, forecast realization, learning reuse or commercial revenue. Keep the existing `brain_failure_registry.maturity=OBSERVED` until independently attributed natural agent application and outcome proof.
+
+Agents must filter public `external_news` and `search_demand`, `entity_scope=market`, **before** per-source strength limits (24 news / 16 search), then apply the original canonical signal-key privacy allowlist and two-source independent evidence requirement. A high-strength personal/relationship record must never consume a public evidence quota; do not loosen data privacy or score thresholds to make forecasts.
+
+Existing admin Portal V2 proof is a read-only projection over `bg_gezondheid` and `brain_failure_registry`, fetched only server-side in `netlify/functions/powerhouse-observability.mjs`, sanitized in `brain/observability/predictive-run-evidence.mjs`, shown in original `portal-v2/modules/powerhouse-observability.js`. Separate indicators: deployed/source-parity, successful runtime receipt, next natural run, independently observed predicted outcome and revenue. Never show green for the whole commercial organism based only on an HTTP 200 canary. Tests: `tests/brain-predictive-public-market-priority-20261030.test.mjs` and `tests/brain-predictive-portal-runtime-proof-20261030.test.mjs`. No new cron, publisher, model authority, customer PII, forecast fabrication or bypass of protected merge.
+
+
 ## Supabase migration first-pass source-of-truth and prevention — 29 October 2026
 
 INCIDENT_PROTOCOL: `supabase|revenue-learning|migration-history-lock-stale-after-production-20261029` and `supabase|preview|duplicate-migration-version-23505|20261029-v1`.
