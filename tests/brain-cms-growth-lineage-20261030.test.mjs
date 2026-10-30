@@ -10,7 +10,7 @@ test('existing consented CRO event retains canonical CMS editorial lineage witho
  assert.match(cmsRuntime,/setAttribute\('data-bg-cms-key'/);
  assert.match(cmsRuntime,/setAttribute\('data-bg-cms-version'/);
  assert.match(tracker,/function cmsContentId\(el\)/);
- assert.match(tracker,/node\.closest\('\[data-bg-cms-key\]\[data-bg-cms-version\]'\)/);
+ assert.ok(tracker.includes("el.closest('[data-bg-cms-key][data-bg-cms-version]')"));
  assert.match(tracker,/event\.content_id=cmsId/);
  assert.match(tracker,/if\(gebied!=='site'\|\|!toestemming\(\)\)return/);
  assert.match(tracker,/document\.getElementById\('bg-growth-measurement'\)/);
