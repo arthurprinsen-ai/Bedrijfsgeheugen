@@ -49,6 +49,7 @@ function render(container,data){
   const behavior=data?.behavior||null;
   const flags=Array.isArray(data?.quality?.flags)?data.quality.flags:[];
   const proof=data?.conversionProof||null;
+  const coverage=data?.croMeasurement||null;
   const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
   const brain=data?.brainClosure||null;
   const oneLoop=data?.oneLoop||null;
@@ -74,6 +75,8 @@ function render(container,data){
     '<tr><td>'+esc(gateNames[g.gate]||g.gate)+'</td><td>'+badge(g.verified?'BRONBEWIJS AANWEZIG':'BEWIJS ONTBREEKT')+'</td></tr>').join(''):'';
 
   const proofCards=proof?[
+    field('Pagina-events zonder botvlag (7 dagen; geen unieke mensen)',fmt(proof.humanFlaggedPageviews7d)),
+    field('Formulierverzendintenties (7 dagen; geen lead)',fmt(proof.formSubmitIntents7d)),
     field('Opgeslagen CTA-events (7 dagen)',fmt(proof.observedCtaEvents7d)),
     field('CTA-events in dagaggregatie (7 dagen)',fmt(proof.dailyCtaAggregated7d)),
     field('Geregistreerde contactleads (30 dagen)',fmt(proof.recordedLeads30d)),
@@ -156,6 +159,16 @@ function render(container,data){
       (socialRows||'<tr><td colspan="8">Geen geverifieerde socialpostmetingen.</td></tr>')+'</tbody></table></div>':
       '<p class="od-warn">Socialmediabron niet onafhankelijk beschikbaar. Geen groei of daling vastgesteld.</p>')+
     '<p class="od-foot">Richtlijn: bereik en engagement zijn vroege signalen, geen orders. Gezaghebbende funnel: echte post/provider-ID → betrouwbaar gemeten interactie → toegeschreven website-CTA → gekwalificeerde lead → onafhankelijke betaling → toegepaste leerregel.</p></section>'+
+    '<section class="od-card" data-original-cro-measurement><h3>CTA- en meetdekking · originele Powerhouse-bron</h3>'+
+    '<p>Vergelijk uitsluitend de 7-daagse waarden uit dezelfde bron: pagina-events zonder botvlag, CTA-events, dagaggregatie en formulierintenties. Zonder onafhankelijk gecontroleerde bezoeker, conversie en event-ID is een nulmeting geen bewezen 0% conversie.</p>'+
+    '<p>Meetstatus: '+badge(coverage?.status||'UNVERIFIED')+' · Broncontrole: '+esc(date(coverage?.observedAt))+'</p>'+
+    '<div class="od-grid">'+field('Pagina-events zonder botvlag (7d)',fmt(coverage?.pageviewsNonRobotFlag7d))+
+    field('Opgeslagen CTA-events (7d)',fmt(coverage?.ctaEvents7d))+
+    field('CTA-events in dagbron (7d)',fmt(coverage?.dailyCtaEvents7d))+
+    field('Formulierintenties (7d)',fmt(coverage?.formSubmitIntents7d))+
+    field('CTA-events per pagina-event · géén klantconversie',coverage?.ctaToPageviewEventRatioPct===null||coverage?.ctaToPageviewEventRatioPct===undefined?'Niet vast te stellen':fmt(coverage.ctaToPageviewEventRatioPct)+'%')+'</div>'+
+    '<p class="od-foot">Oorzaakstatus: '+esc(coverage?.reason||'ORIGINAL_SOURCE_UNAVAILABLE')+'. Meer bezoek leidt niet automatisch tot meer orders. De bestaande eventproducer → duurzame Netlify ontvangst → Supabase-event → dagaggregatie moet met identiek event-ID worden gecontroleerd vóór een CRO-upliftbesluit.</p>'+
+    '</section>'+
     '<section class="od-card"><h3>Bronbewijs voor leads, orders en experimenten</h3><p>De dagtotalen hierboven zijn observaties. Onderstaande bronbewijzen komen uit de bestaande Supabase-registraties. Ook een geregistreerde providerreferentie is nog geen onafhankelijk bevestigd betaalbewijs.</p><div class="od-grid">'+proofCards+'</div>'+
     '<p class="od-foot">Eventstatus: '+badge(proof?.eventStatus)+' · Leadstatus: '+badge(proof?.leadStatus)+' · Orderstatus: '+badge(proof?.orderStatus)+'</p>'+
     '<h4>Gerandomiseerde experimentcohorten</h4>'+
