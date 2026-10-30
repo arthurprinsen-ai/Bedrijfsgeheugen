@@ -14,6 +14,7 @@ const verified=(extra={})=>({
  id:'o-1',title:'Offertes sneller verwerken',action_id:'action-5',impact_domain:'Proces',
  status:'OUTCOME_VERIFIED',evidence_health:{status:'healthy',confidence:.97},
  source_refs:['source:customer:1'],observed_at:'2026-10-30T10:00:00Z',
+ metric_id:'process-hours',baseline_id:'baseline:2026-09',measurement_period:'2026-10',
  expected:{amount:100,unit:'HOURS'},realized:{amount:120,unit:'HOURS'},
  learning_verified:true,learning_evidence_refs:['brain:verified:1'],
  learning_summary:'Vereenvoudig intake',next_decision_id:'decision:6',
@@ -73,6 +74,28 @@ test('missing/mismatched units or amounts prevent false comparison',()=>{
   assert.equal(row.delta,null);
   assert.match(outcomeFeedbackMarkup([verified(overrides)]),/Nog niet betrouwbaar mogelijk/);
  }
+});
+
+
+test('unmatched metric, baseline or measurement horizon never produce a misleading delta',()=>{
+ for(const overrides of [
+  {expected:{amount:100,unit:'HOURS',baseline_id:'b1'},realized:{amount:120,unit:'HOURS',baseline_id:'b2'}},
+  {expected:{amount:100,unit:'HOURS',period_id:'jan'},realized:{amount:120,unit:'HOURS',period_id:'feb'}},
+  {expected:{amount:100,unit:'HOURS',metric_id:'profit'},realized:{amount:120,unit:'HOURS',metric_id:'hours'}},
+  {metric_id:null,baseline_id:null,measurement_period:null}
+ ]){
+  const row=outcomeFeedbackRows([verified(overrides)])[0];
+  assert.equal(row.delta,null);
+  assert.match(outcomeFeedbackMarkup([verified(overrides)]),/Nog niet betrouwbaar mogelijk/);
+ }
+});
+
+test('verified outcomes remain visible when unverified outcomes precede them',()=>{
+ const items=[...Array.from({length:6},(_,i)=>verified({id:'pending-'+i,status:'PROVIDER_VERIFIED'})),verified({id:'real'})];
+ const rows=outcomeFeedbackRows(items);
+ assert.equal(rows.length,4);
+ assert.equal(rows[0].id,'real');
+ assert.match(outcomeFeedbackMarkup(items),/data-os-page="monitoring-learning"/);
 });
 
 test('learning is never claimed from an outcome alone',()=>{
