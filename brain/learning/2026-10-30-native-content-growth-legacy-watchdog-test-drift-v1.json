@@ -1,0 +1,39 @@
+{
+  "id": "brain-content-growth-watchdog-regression-drift-20261030-v1",
+  "fingerprint": "content-growth|legacy-blog-watchdog-asserts-retired-history-recovery|20261030-v1",
+  "status": "CANDIDATE",
+  "owner": "EXISTING_POWERHOUSE_CONTENT_GROWTH",
+  "failure_class": "CONTENT_GROWTH_TEST_EXPECTATION_DRIFT",
+  "root_cause": "Native content-growth-ci push run 41034792790 failed 1 test: tests/content-growth-daily-blog-watchdog-recovery.test.mjs still asserted retired historical ledger date fallback, BASE_SHA writer selection and alternate old read/write behavior. Current main watchdog intentionally verifies only the exact business date with read-only provider proof, leaving publication and private Brain lineage to canonical Powerhouse.",
+  "observed_evidence": {
+    "main_commit": "8f0f68ea78bacd7146faacb082074522f243a34c",
+    "failed_workflow_run": "41034792790",
+    "failed_job_id": "123992869752",
+    "failed_test": "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+    "observed_failure": "AssertionError ERR_ASSERTION stale regex for historical unresolved date fallback"
+  },
+  "fix": "Replace obsolete static assertions with fail-closed verification of exact current Europe/Amsterdam business date, absent-day no-op, read-only provider proof, existing sole canonical publisher and prohibition of Git/PR writes. Do not change live watchdog or scheduler.",
+  "prevention": "Test source authority must track current canonical single-publisher behavior; do not resurrect legacy writers or alter a running publisher to satisfy a stale assertion. Preserve independent production, main and all ONE BRAIN proof gates.",
+  "regression": [
+    "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+    "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_GROWTH_TEST_EXPECTATION_DRIFT",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
+    ]
+  },
+  "evidence_state": {
+    "protected_main": "PENDING",
+    "github_ci": "PENDING",
+    "production": "NOT_APPLICABLE_GOVERNANCE_TEST_ONLY"
+  }
+}
