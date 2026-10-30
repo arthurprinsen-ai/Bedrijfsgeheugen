@@ -1,11 +1,18 @@
 const ref='adhjwmvyoixzjtmiroln';
 export const queries={
   social:[
-    "with ranked as (select s.post_id,s.platform,s.published_at,s.format,s.hook_type,s.cta_type,m.observed_at,m.data_quality,m.source,m.metrics,",
+    "with ranked as (select s.tenant_id,s.post_id,s.platform,s.channel_kind,s.published_at,s.format,s.hook_type,s.cta_type,s.topic,s.content_pillar,s.narrative_type,m.observed_at,m.data_quality,m.source,m.metrics,",
     "row_number() over (partition by s.tenant_id,s.post_id order by m.observed_at desc nulls last,m.snapshot_id desc) rn",
     "from public.social_posts s left join public.social_metric_snapshots m on m.tenant_id=s.tenant_id and m.post_id=s.post_id",
-    "where s.tenant_id='bedrijfsgeheugen' and s.published_at>=now()-interval '180 days')",
-    "select post_id,platform,published_at,format,hook_type,cta_type,observed_at,data_quality,source,metrics from ranked where rn=1 order by published_at desc limit 300"
+    "where s.published_at>=now()-interval '180 days' and ((s.tenant_id='bedrijfsgeheugen' and s.platform in ('instagram','linkedin'))",
+    "or (s.tenant_id='canonical' and s.platform='linkedin' and s.channel_kind='linkedin_personal')))",
+    "select r.tenant_id,r.post_id,r.platform,r.channel_kind,r.published_at,r.format,r.hook_type,r.cta_type,r.topic,r.content_pillar,r.narrative_type,r.observed_at,r.data_quality,r.source,r.metrics,",
+    "w.observed_at trend_observed_at,w.data_quality trend_data_quality,w.metrics trend_metrics",
+    "from ranked r left join lateral (select x.observed_at,x.data_quality,x.metrics from public.social_metric_snapshots x",
+    "where x.tenant_id=r.tenant_id and x.post_id=r.post_id and x.data_quality in ('OBSERVED','PROVIDER_OBSERVED')",
+    "and x.observed_at between r.published_at+interval '42 hours' and r.published_at+interval '54 hours'",
+    "order by abs(extract(epoch from (x.observed_at-(r.published_at+interval '48 hours')))) limit 1) w on true",
+    "where r.rn=1 order by r.published_at desc limit 300"
   ].join(' '),
   pages:[
     "select pad page_path,count(distinct sessie) filter(where gebeurtenis='pagina') human_page_sessions,",
