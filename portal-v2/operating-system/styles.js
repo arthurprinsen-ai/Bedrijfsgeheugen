@@ -79,6 +79,7 @@ const CSS=`
  .os-module-tabs button{flex:1 1 46%}
  .os-context-strip-head{display:block}.os-context-strip-head small{display:block;margin-top:4px}.os-signal-meter{grid-template-columns:76px 1fr 26px}
 }
+.os-cms-workstream{margin:14px 0;padding:18px;border:1px solid #cbd5e1;border-radius:14px;background:linear-gradient(120deg,#f4f8ff,#fff)}.os-cms-workstream h3{font-size:18px;line-height:1.25;margin:0 0 8px}.os-cms-workstream p{margin:0 0 10px;font-size:14px;line-height:1.5}.os-cms-workstream a{display:inline-block;font-weight:800;color:#214bd4;text-decoration:underline;margin-bottom:7px}.os-cms-workstream small{display:block;color:#64748b;font-size:12px}
 `;
 
 export function ensureOperatingSystemStyles(doc=document){
