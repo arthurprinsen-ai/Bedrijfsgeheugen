@@ -34,7 +34,10 @@ def main():
           'content_sha256':meta.get('contentSha256'),'raw_sha256':meta.get('rawSha256'),
           'bytes':meta.get('bytes'),'etag':meta.get('etag'),'last_modified':meta.get('lastModified'),
           'previous_sha256':meta.get('previousSha256'),'first_observation':meta.get('firstObservation',False),
-          'change_detected':meta.get('changed',False),'freshness_heartbeat':True
+          'change_detected':meta.get('changed',False),
+          'observation_trusted':meta.get('observationTrusted') is True,
+          'unverified_reason':meta.get('unverifiedReason'),
+          'freshness_heartbeat':meta.get('observationTrusted') is True
         }
         heartbeat_key='regulatory-check:'+source_id+':'+checked_at
         rpc(url,key,{'p_source_key':'regulatory-'+source_id,'p_dedupe_key':heartbeat_key,
@@ -56,7 +59,9 @@ def main():
           'raw_encoding':'gzip+base64','raw_body_gzip_base64':base64.b64encode(compressed).decode(),
           'etag':meta.get('etag'),'last_modified':meta.get('lastModified'),
           'previous_sha256':meta.get('previousSha256'),'first_observation':meta.get('firstObservation',False),
-          'change_detected':meta.get('changed',False)
+          'change_detected':meta.get('changed',False),
+          'observation_trusted':meta.get('observationTrusted') is True,
+          'unverified_reason':meta.get('unverifiedReason')
         }
         dedupe='regulatory-content:'+source_id+':'+raw_sha
         rpc(url,key,{'p_source_key':'regulatory-'+source_id,'p_dedupe_key':dedupe,'p_external_event_id':raw_sha,

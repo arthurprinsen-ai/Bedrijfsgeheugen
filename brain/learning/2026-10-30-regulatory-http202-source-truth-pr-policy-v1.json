@@ -1,0 +1,75 @@
+{
+  "type": "ONE_BRAIN_ERROR_LEARNING",
+  "id": "regulatory-source-watch-nonauthoritative-http202-github-policy-20261030-v1",
+  "date": "2026-10-30",
+  "fingerprint": "powerhouse|regulatory-source-watch|202-body-claimed-as-legal-change-and-gh-app-policy|20261030-v1",
+  "maturity": "OBSERVED",
+  "owner": "EXISTING_POWERHOUSE_REGULATORY_SOURCE_WATCH",
+  "failure_class": "SOURCE_TRUTH_AND_RELEASE_AUTHORITY",
+  "compiler": {
+    "failure_class": "REGULATORY_SOURCE_HTTP_CHALLENGE_AS_CHANGE",
+    "scope": "EXTERNAL_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true,
+    "regression_test_count": 2
+  },
+  "observed_evidence": {
+    "github_run_id": 41036966479,
+    "job_id": 124000057814,
+    "main_sha": "6134d2cc1030b87b77441ee110d7a33fd367a620",
+    "branch": "writer/regulatory-source-watch/41036966479",
+    "provider_http_status": 202,
+    "source": "eu-ai-act",
+    "response_bytes": 2035,
+    "created_unmerged_candidate_sha": "3852c965c95d26713216178eaca02e79d43a2263",
+    "pr_create_error": "GitHub Actions is not permitted to create or approve pull requests (createPullRequest)",
+    "original_brain_ingest_completed": true,
+    "original_regulatory_source_baseline_changed_in_main": false,
+    "source_content_change_verified": false
+  },
+  "root_cause": "The original source monitor computes and promotes content hash changes for non-authoritative HTTP 202/HTML anti-bot responses. The original writer's built-in GitHub Actions token cannot open a PR under the current repository policy; that is a distinct security boundary and must not be bypassed or falsely called live.",
+  "fix": "Classify any status other than HTTP 200, empty response, and recognizable HTML challenge as UNVERIFIED; retain previous legal source-state baseline, store diagnosis/raw bytes separately in the existing Brain ingestion, and mark freshness_heartbeat true only on a trusted authoritative response. No new writer, cron or provider.",
+  "prevention": "Treat source HTTP acceptance/challenge as source health, not legal text change; only validated HTTP 200 authoritative content may advance the source baseline. Preserve existing GitHub permission boundary and put any legitimate source-change PR through an approved repository owner. Do not merge HTTP202 candidate branch.",
+  "regression": [
+    "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
+    "tests/regulatory-organism-feed.test.mjs"
+  ],
+  "state": {
+    "implementation": "CANDIDATE",
+    "protected_ci": "PENDING",
+    "merged_main": false,
+    "production_runtime_verified": false,
+    "next_natural_source_run_verified": false,
+    "github_actions_create_pr_permission": "DENIED_IN_RUN_41036966479"
+  },
+  "scope": [
+    "tools/regulatory-source-monitor.py",
+    "tools/regulatory-brain-ingest.py",
+    "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
+  ],
+  "business_truth": "NO_VERIFIED_LEGISLATIVE_CHANGE_OR_COMPLIANCE_CONTROL_LIFT",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_run": "github-actions:41036966479",
+    "job": "124000057814",
+    "provider_source": "eu-ai-act",
+    "http_status": 202,
+    "baseline_promoted": false,
+    "observed_branch": "writer/regulatory-source-watch/41036966479",
+    "provider_pr_creation": "DENIED_CURRENT_POLICY",
+    "regression": "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
+    "tested_policy": "HTTP200_NONCHALLENGE_ONLY",
+    "current_state": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+  }
+}
