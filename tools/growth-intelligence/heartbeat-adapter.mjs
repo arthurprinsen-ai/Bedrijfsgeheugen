@@ -40,6 +40,12 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
      ? [projectCroLearning(e.croDesign,experiments[i])]
      : []);
  const croDataGaps=(input.croMeasurementSnapshots??[]).map(diagnoseCroMeasurementGap);
+ const croCommercialProof=reconcileCommercialCroProof(input.croCommercialProof);
+ const croRecoveryProposals=croCommercialProof.status==='EVIDENCE_INCOMPLETE'?[{
+   owner:'cro',status:'PROPOSED_NOT_EXECUTED',nextAction:croCommercialProof.nextAction,
+   existingOwner:'powerhouse-commercial-learning-v1',noProviderSideEffect:true,
+   brainWritebackVerified:false
+ }]:[];
  const croOpportunities=decisions.proposals.filter(p=>p.agent==='cro').map(p=>({
    opportunityId:p.id,owner:'cro',signalId:p.signalId,evidenceSource:p.source,
    requiredAction:'PREREGISTER_CONTEXTUAL_EXPERIMENT',status:'PROPOSED_NOT_EXECUTED',
@@ -56,6 +62,8 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
   croOpportunities,
   croLearningProposals,
   croDataGaps,
+  croCommercialProof,
+  croRecoveryProposals,
   actions:decisions.proposals.map(p=>({
    id:`action:${p.id}`,owner:p.agent,kind:"DESIGN_EXPERIMENT",
    status:"PROPOSED",requiresExistingApprovalAndReadback:true,
@@ -64,6 +72,59 @@ export function heartbeatGrowthTick(input,{now=Date.now()}={}){
   publishReady:false,
   revenueVerified:false
  };
+}
+
+
+/**
+ * Reconcile existing Supabase CRO evidence in the ORIGINAL Heartbeat packet.
+ * A queued Growth event, an HTTP ACK, a click or a proposed experiment is never
+ * a Brain-learning readback, independently verified lead or paid order.
+ * This module never writes a second store, invokes BG211 or schedules work.
+ */
+export function reconcileCommercialCroProof(snapshot) {
+ const empty={contract:'POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1',owner:'powerhouse-commercial-learning-v1',
+   status:'NOT_ASSESSED',gates:[],nextAction:null,writebackVerified:false,
+   outcomeVerified:false,promotionAllowed:false,newScheduler:false,parallelBrain:false};
+ if(snapshot===undefined)return empty;
+ const count=n=>Number.isSafeInteger(n)&&n>=0?n:null;
+ const hasRef=v=>typeof v==='string'&&v.trim().length>=3;
+ const conversion=snapshot?.conversion||{};
+ const experiment=snapshot?.experiment||{};
+ const brain=snapshot?.brain||{};
+ const proof=snapshot?.proof||{};
+ const checks=[
+  ['BRAIN_DELIVERY_READBACK',brain.delivery_status==='DELIVERED'&&brain.readback_verified===true&&hasRef(brain.record_id),'RECONCILE_EXISTING_BRAIN_DELIVERY_WITHOUT_BG211_REPLAY'],
+  ['FIRST_PARTY_EVENT_RECEIPT',conversion.event_evidence_status==='PERSISTED_EVENTS_OBSERVED'&&conversion.source_readback_verified===true&&hasRef(conversion.event_receipt_id),'VERIFY_CONSENTED_EVENT_ACK_AND_PERSISTENT_SOURCE_ID'],
+  ['ACTUAL_CTA_EXPOSURE',count(conversion.observed_cta_events_7d)>0,'INSTRUMENT_AND_READBACK_REAL_CTA_INTERACTION'],
+  ['CONTROLLED_CRO_EXPERIMENT',
+    count(experiment.matured_treatment)!==null&&count(experiment.matured_holdout)!==null&&
+    count(experiment.minimum_matured_per_arm)>0&&
+    experiment.matured_treatment>=experiment.minimum_matured_per_arm&&
+    experiment.matured_holdout>=experiment.minimum_matured_per_arm&&
+    experiment.pretreatment_assignment_readback_verified===true&&
+    experiment.causal_result_verified===true,
+    'PREREGISTER_CONTROL_TREATMENT_AND_WAIT_FOR_MATURED_OUTCOMES'],
+  ['QUALIFIED_BUYER_READBACK',count(conversion.linked_qualified_lead_records_30d)>0&&
+    proof.qualified_buyer_readback_verified===true&&hasRef(proof.qualified_lead_provider_ref),
+    'OBTAIN_VOLUNTARY_CONSENTED_LEAD_AND_INDEPENDENT_QUALIFICATION'],
+  ['PAID_ORDER_READBACK',count(conversion.orders_with_recorded_provider_readback_30d)>0&&
+    proof.payment_provider_readback_verified===true&&hasRef(proof.payment_provider_id),
+    'RECONCILE_ACTUAL_ORDER_INVOICE_AND_PAYMENT_PROVIDER_READBACK'],
+  ['ONE_BRAIN_LEARNING_APPLIED',brain.learning_application_readback_verified===true&&
+    hasRef(brain.applied_learning_id)&&proof.same_attribution_lineage_verified===true,
+    'APPLY_VERIFIED_RESULT_VIA_EXISTING_ONE_BRAIN_AND_REMEASURE']
+ ];
+ const gates=checks.map(([gate,ok,nextAction])=>({gate,verified:ok===true,nextAction:ok===true?null:nextAction}));
+ const pending=gates.filter(g=>!g.verified);
+ return {...empty,status:pending.length?'EVIDENCE_INCOMPLETE':'EVIDENCE_COMPLETE_REQUIRES_INDEPENDENT_AUDIT',
+   gates,nextAction:pending[0]?.nextAction||'VERIFY_SAME_CUSTOMER_LINEAGE_IN_PRODUCTION',
+   evidenceRefs:[conversion.event_receipt_id,brain.record_id,proof.qualified_lead_provider_ref,
+     proof.payment_provider_id,brain.applied_learning_id].filter(hasRef),
+   writebackProposal:{kind:'learning',tenantId:'canonical',
+     target:'brain_records',status:'CANDIDATE_NOT_WRITTEN',
+     fingerprint:'growth-cro-commercial-proof:'+String(snapshot?.cycle_id||'unspecified'),
+     requiredEvidenceGates:checks.map(c=>c[0]),verified:false},
+   message:'Real action, control cohort, qualified buyer, payment and applied learning require separate independent readbacks; no synthetic green.'};
 }
 
 
