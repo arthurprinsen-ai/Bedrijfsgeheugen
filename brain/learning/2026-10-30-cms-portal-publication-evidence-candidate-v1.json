@@ -1,0 +1,34 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-30",
+  "fingerprint": "cms|portal|software-release-vs-editorial-status-confused|20261030-v1",
+  "compiler": {
+    "failure_class": "CMS_EDITORIAL_PROOF_SCOPE_CONFUSION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "CMS admin showed element statuses without an authoritative overall publication summary; users could confuse software deploy approval with editorial publication.",
+  "prevention": "Surface only verified original admin CMS readback with separate portal/shared scope, fail closed if missing evidence, never treat published CMS item as software release approval.",
+  "evidence": {
+    "observed_cms_items": 6,
+    "observed_drafts": 6,
+    "observed_published": 0,
+    "as_of": "2026-10-30",
+    "technical_release": "d53eea34c0b0d0bfdb2c440dd823e9244df6ae41",
+    "editorialApproved": false,
+    "candidate": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cms-portal-release-assurance-20261030.test.mjs"
+    ]
+  },
+  "status": "OBSERVED",
+  "humanDocs": "docs/changes/2026-10-30-cms-portal-publication-evidence-v1.md",
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false
+}
