@@ -1,0 +1,12 @@
+# Menselijk bruikbaar herstel bij LinkedIn-duplicaat — 30 oktober 2026
+
+## Oorzaak en onafhankelijke bron
+De oorspronkelijke dagverplichting in Supabase toont LinkedIn persoonlijk `BLOCKED` op `GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE`. De bestaande controle herkent een verhaalfamilie die op 27 oktober al was gereserveerd. Dat is een **terecht geblokkeerde herhaling**. De oorspronkelijke private Portal V2-kaart vertaalde de veilige enum `NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED` onvoldoende naar een concrete menselijke herstelstap. De persoonlijk LinkedIn-post van 29 oktober heeft al een extern provider-ID (`PUBLISHED`) en mag niet opnieuw worden verzonden. Op 30 oktober is de bedrijfsversie `APPROVED`, Instagram `PLANNED` en blog `GENERATED`: geen van die statuslabels bewijst publicatie.
+
+## Oplossing in de bestaande lus
+De privé-adminkaart toont expliciet dat de oorspronkelijke bronagent een **inhoudelijk ander, datum- en bronverifieerbaar nieuw feit**, met een concreet probleem, oorzaak/gevolg en andere verhaalfamilie moet controleren. Niet simpelweg herschrijven, geen nieuwe willekeurige IDs of handmatige `personal_truth_verified=true`. Na correcte bronkwaliteit bepaalt de oorspronkelijke dagwriter met bestaande duplicate-gate, kanaal/identiteitscontrole, eigenaarstoestemming en provider-readback of publicatie kan doorgaan. Ook brongebrek, niet-goedgekeurde Mira-media, `GENERATED` blog en OAuth-eigenaarstoestemming krijgen begrijpelijke Nederlandse instructies via de bestaande Portal V2-kaart; geen nieuwe schedulers of publishers. Geen vertrouwelijke reserveringssleutel, ruwe fout of externe provider-ID naar het portaal.
+
+## Borging
+In dezelfde GitHub PR: bestaande Portal V2, originele Netlify readback-contract `social-publication-proof-v5`, regressietest met 27-oktober-duplicaat en prioriteit bestaand provider-ID, sociale herstel-skill, ONE BRAIN `OBSERVED` leervingerafdruk `powerhouse|portal|social-duplicate-recovery-code-not-human-actionable|20261030-v1`, menselijke wijzigingsregistratie en append-only ontwikkellog. Systeemkaart exact door oorspronkelijke generator vóór merge. Protected Required/BRAIN/CodeQL -> main -> Netlify READY exact SHA -> geauthenticeerde browser/negatieve tenant -> natuurlijke bronrun/provider-uitkomst. SOFTWARE-code live is geen bewijs dat er een nieuw uniek bericht gepubliceerd is.
+
+Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439.

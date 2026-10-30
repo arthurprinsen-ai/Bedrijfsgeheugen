@@ -1,0 +1,38 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|portal|social-duplicate-recovery-code-not-human-actionable|20261030-v1",
+  "compiler": {
+    "failure_class": "DUPLICATE_BLOCK_CORRECT_BUT_ADMIN_RECOVERY_UNACTIONABLE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original personal LinkedIn 30-Oct obligation had a verified duplicate-family rejection referring to 27-Oct claim. Existing private portal displayed the low-level recovery enum instead of concrete guidance to verify a genuinely different fact and re-run the original gates.",
+  "prevention": "Keep original rejection and daily executor active, never suppress dedupe, fake personal truth, call alternate provider or repost an existing provider side effect. Existing private portal now translates duplicate, source missing, Mira rejected media, generated blog and OAuth required into human-readable specific steps without raw error/ID leak.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "canonical 2026-10-30 content_publication_obligations",
+    "current_personal_status": "BLOCKED",
+    "error_class": "GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE",
+    "matched_date": "2026-10-27",
+    "original_personal_provider_id_present": false,
+    "company_approval_is_not_publication": true,
+    "media_gate_preserved": true,
+    "previous_personal_post_no_repost": true,
+    "provider_live_proven": false,
+    "agent_natural_application_proven": false,
+    "no_new_scheduler": true,
+    "protected_release_pending": true
+  }
+}

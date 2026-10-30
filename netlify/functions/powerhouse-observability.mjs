@@ -13,7 +13,7 @@ import { loadCycleEvidenceCoverage } from '../../brain/observability/cycle-evide
 import { loadPublicationEvidence, loadPersonalSourceSupply } from '../../brain/observability/publication-evidence-readback.mjs';
 
 // Verifiable admin-only runtime version: required when imported publication readback changes.
-export const PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v4';
+export const PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5';
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
   'pragma':'no-cache',
