@@ -20,6 +20,17 @@ export function companyStoryFamily(text) {
   if (/\bbank lending survey\b/.test(t)) return 'ecb-bank-lending-survey';
   return null;
 }
+// Safeguard against repeating one *concrete operational problem* under a different
+// headline. This is deliberately narrow: broad industry topics (AI, MKB, CRM)
+// never constitute a story family on their own.
+export function companyRecurringFrictionFamily(text) {
+  const t=normalized(text);
+  if (/\boffert(?:e|es)\b/.test(t) &&
+      /\b(?:verloren|verdwenen|verdwijnt|kwijt|zoekgeraakt|opvolging|opvolgen|onopgevolgd|blijft liggen)\b/.test(t)) {
+    return 'missing-or-unfollowed-offer';
+  }
+  return null;
+}
 function nearDuplicate(a,b) {
   const tokens=(s)=>new Set(normalized(s).slice(0,650).split(/[^a-z0-9]+/)
     .filter(w=>w.length>=5&&!/^(bedrijf|bedrijven|ondernem|ondernemers|signaal|context|gevolg|directie|risico|resultaat|strategie|bedrijfsgeheugen|powerhouse|website|kunnen|worden|wordt)$/.test(w)));
@@ -44,8 +55,11 @@ export function companyEditorialViolations(text, {recentPosts=[]}={}) {
     fail('COMPANY_BUSINESS_CONSEQUENCE_REQUIRED');
   const previous=Array.isArray(recentPosts)?recentPosts:[];
   const family=companyStoryFamily(t);
+  const operationalFamily=companyRecurringFrictionFamily(t);
   if(previous.some(p=>family&&companyStoryFamily(typeof p==='string'?p:p?.body)===family))
     fail('COMPANY_RECENT_STORY_FAMILY_REPEAT');
+  else if(previous.some(p=>operationalFamily&&companyRecurringFrictionFamily(typeof p==='string'?p:p?.body)===operationalFamily))
+    fail('COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT');
   else if(previous.some(p=>nearDuplicate(t,typeof p==='string'?p:p?.body)))
     fail('COMPANY_RECENT_STORY_NEAR_DUPLICATE');
   // A source-backed niche example is allowed only if novel; a company page
