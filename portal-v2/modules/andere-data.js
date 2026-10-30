@@ -35,6 +35,7 @@ function render(container,data){
   const social=data?.socialFunnel||null;
   const growth=data?.growthDirection||null;
   const commercialFunnel=data?.commercialGrowthFunnel||null;
+  const providerRepair=data?.ga4PredictiveRepair||null;
   const improvement=data?.compoundImprovement||null;
   const acquisition=data?.acquisitionCta||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
@@ -209,6 +210,37 @@ function render(container,data){
     '<tbody>'+(growthQueue||'<tr><td colspan="4">Geen zelfstandig bewezen uitvoerbare opdracht uit de actuele originele data.</td></tr>')+'</tbody></table></div>'+
     '<p class="od-foot">Views, likes en mailantwoorden zijn geen bewezen kopers. 48-uurs sociale trends, afgesloten websiteweken, 7-daagse CTA’s en 30-daagse orders zijn verschillende cohorten; de kaart berekent daarom geen misleidende totaalconversie. Een stijgende lijn is het optimalisatiedoel, nooit een gegarandeerde uitkomst. De originele beveiliging, toestemming en 15-lussenassurance blijven leidend.</p></section>';
 
+  const providerRepairRows=(providerRepair?.priorities||[]).map(row=>
+    '<tr><td>'+esc(row.priority)+'</td><td><strong>'+esc(row.code)+'</strong>'+
+    '<br><small>'+esc(row.owner)+'</small></td><td>'+badge(row.status)+
+    '</td><td>'+esc(row.action)+'<br><small>Acceptatie: '+esc(row.success)+'</small></td></tr>').join('');
+  const providerRepairCard='<section class="od-card" data-one-brain-ga4-private-calibration-repair>'+
+    '<h3>ONE BRAIN · GA4-bron en voorspellingskalibratie herstellen</h3>'+
+    '<p>Originele GA4-data en de bestaande publieke/privé kalibratie lopen via de bestaande Powerhouse-executors. Een geslaagde connectorcall is geen nieuw GA4-bezoek. Een actieve publieke kalibrator mag geen privé-bedrijfs- of persoonsvoorspellingen ongecontroleerd afvinken.</p>'+
+    '<p>Gezamenlijk herstelbewijs: '+badge(providerRepair?.status||'UNVERIFIED')+
+    ' · Broncontrole: '+esc(providerRepair?.asOf||'—')+'</p>'+
+    '<h4>GA4 · bron is niet hetzelfde als verwerking</h4>'+
+    '<div class="od-grid">'+
+    field('GA4 providerdata',badge(providerRepair?.ga4?.status||'UNVERIFIED'))+
+    field('Nieuwste gevraagde GA4-datum',esc(providerRepair?.ga4?.latestReportingDay||'—'))+
+    field('Echte GA4-providerregels',fmt(providerRepair?.ga4?.latestProviderRows))+
+    field('Echt gekoppelde socialcampagne-rijen',fmt(providerRepair?.ga4?.latestProviderMatches))+
+    field('Laatst bevestigde niet-lege GA4-datum',esc(providerRepair?.ga4?.lastNonemptyDay||'—'))+
+    field('Oorspronkelijke Data Spine',badge(providerRepair?.ga4?.originalDataSpineState||'UNVERIFIED'))+'</div>'+
+    '<h4>Voorspellingen · onafhankelijke uitkomst versus niet-publieke achterstand</h4>'+
+    '<div class="od-grid">'+
+    field('Oorspronkelijke voorspellingstatus',badge(providerRepair?.prediction?.originalPredictionState||'UNVERIFIED'))+
+    field('Voorspellingen due (Control V2)',fmt(providerRepair?.prediction?.forecastDue))+
+    field('Met uitkomst beoordeeld (Control V2)',fmt(providerRepair?.prediction?.forecastResolved))+
+    field('Resolutieachterstand (Control V2)',fmt(providerRepair?.prediction?.forecastResolutionDebt))+
+    field('Publieke voorspellingen voor bestaande kalibrator',fmt(providerRepair?.prediction?.publicDue))+
+    field('Niet-publieke oorspronkelijke kalibratieverplichtingen',fmt(providerRepair?.prediction?.privateDue))+'</div>'+
+    '<p>De 1.867 achterstallige voorspellingen in de Revenue Flywheel en de 2.085 niet-publieke kalibratieverplichtingen zijn twee verschillende telpopulaties; ze mogen niet worden opgeteld of onderling afgeboekt.</p>'+
+    '<h4>Oorspronkelijke agentherstelopdrachten · nog geen bewezen uitvoering</h4>'+
+    '<div class="od-scroll"><table><thead><tr><th>#</th><th>Probleem en eigenaar</th><th>Bewijsstatus</th><th>Veilig herstel en acceptatie</th></tr></thead>'+
+    '<tbody>'+(providerRepairRows||'<tr><td colspan="4">Bron of eigenaar niet zelfstandig verifieerbaar.</td></tr>')+'</tbody></table></div>'+
+    '<p class="od-foot">Geen extra scheduler, ongevraagde tracking, uitkomst uit geen antwoord, gegevens van personen in publieke AI-modellen of gefingeerde ROI. Eerst nieuwe échte GA4-observaties en zelfstandig geverifieerde privé-uitkomsten; daarna pas groen en causaliteitscontrole voor CRO.</p></section>';
+
   const compoundCard='<section class="od-card" data-one-brain-compound-proof>'+
     '<h3>ONE BRAIN + Heartbeat · drie dagelijkse verbeterlussen</h3>'+
     '<p>Gedeelde originele commerciële, leer-, runtime- en portaalbronnen. De agents hebben één gezamenlijke bewijslijst; alleen geregistreerde acties, werkelijke klantwaarde en onafhankelijke betaalbewijzen kunnen een resultaat sluiten. Een groen technisch systeem is niet automatisch meer omzet.</p>'+
@@ -230,6 +262,7 @@ function render(container,data){
     '<div class="od-grid">'+cardData+'</div>'+
     weeklyCard+
     commercialFunnelCard+
+    providerRepairCard+
     compoundCard+
     innovationCard+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+

@@ -3,6 +3,7 @@ import {projectSocialCroFunnel} from './_social-cro-funnel-projection.mjs';
 import {projectPowerhouseGrowthDirection} from './_powerhouse-growth-direction.mjs';
 import {projectCompoundImprovementProof} from './_powerhouse-compound-improvement-proof.mjs';
 import {projectCommercialGrowthFunnel} from './_powerhouse-commercial-growth-funnel.mjs';
+import {projectGa4PredictiveSourceRepair} from './_powerhouse-ga4-predictive-source-repair.mjs';
 import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
@@ -350,7 +351,7 @@ export function projectAcquisitionCtaSource(events,{status='UNAVAILABLE',at=new 
    consentIndependentlyVerified:false,providerAttributionVerified:false,paidOrderAttributionVerified:false};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],learningReadiness=[],revenueFlywheel=[],runtimeHealth=[],socialApplications=[],revenueApplications=[],readStates={},at=new Date().toISOString()}={}){
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],learningReadiness=[],revenueFlywheel=[],runtimeHealth=[],socialApplications=[],revenueApplications=[],ga4Batches=[],ga4Coverage=[],calibrationHealth=[],predictionControl=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
@@ -395,6 +396,8 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   const commercialGrowthFunnel=projectCommercialGrowthFunnel({growthDirection,socialFunnel,
     conversionProof:readStates.conversionProof==='LIVE'&&conversionProof.length===1?conversionProof[0]:null,
     acquisitionCta,compoundImprovement,readStates,at});
+  const ga4PredictiveRepair=projectGa4PredictiveSourceRepair({ga4Batches,ga4Coverage,calibrationHealth,predictionControl,
+    revenueFlywheel,readStates,at});
   if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
   if(!brainClosure.businessOutcomeVerified)flags.push('CRO_COMMERCIAL_CLOSED_LOOP_NOT_PROVEN');
   if(oneLoopAssurance!==undefined&&oneLoop.status!=='READBACK_COMPLETE')flags.push('ORIGINAL_15_LOOP_ASSURANCE_UNVERIFIED');
@@ -424,6 +427,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     socialFunnel,
     growthDirection,
     commercialGrowthFunnel,
+    ga4PredictiveRepair,
     acquisitionCta,
     compoundImprovement,
     sources:{
@@ -552,13 +556,21 @@ export default async function handler(request){
     select(base,key,'social_learning_applications',
       'select=tenant_id,application_id,learning_id,applied_at,actual_effect,verification_status&tenant_id=in.(canonical,bedrijfsgeheugen)&applied_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=applied_at.desc&limit=201'),
     select(base,key,'revenue_learning_applications',
-      'select=tenant_id,application_id,learning_id,applied_at,actual_effect,verification_status&tenant_id=in.(canonical,bedrijfsgeheugen)&applied_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=applied_at.desc&limit=201')
+      'select=tenant_id,application_id,learning_id,applied_at,actual_effect,verification_status&tenant_id=in.(canonical,bedrijfsgeheugen)&applied_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=applied_at.desc&limit=201'),
+    select(base,key,'bg_ga4_csv_batches',
+      'select=run_id,period_start,period_end,source,rows_total,rows_attributed,rows_unmatched,status,completed_at&completed_at=gte.'+new Date(Date.now()-7*86400000).toISOString()+'&order=completed_at.desc&limit=31'),
+    select(base,key,'powerhouse_evidence_source_coverage_v1',
+      'select=source_key,last_observed_at,observation_count,coverage_state&source_key=eq.ga4-analytics&limit=2'),
+    select(base,key,'bg_gezondheid',
+      'select=onderdeel,gemeten_op,status,detail,gegevens&onderdeel=eq.powerhouse-forecast-calibrator&order=gemeten_op.desc&limit=3'),
+    select(base,key,'powerhouse_prediction_intelligence_control_v2',
+      'select=observed_at,forecast_total,forecasts_due,resolved_total,resolution_debt,prediction_state&limit=2')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
   const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
-  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000,1,1,1,200,200];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents','learningReadiness','revenueFlywheel','runtimeHealth','socialApplications','revenueApplications'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000,1,1,1,200,200,30,1,2,1];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents','learningReadiness','revenueFlywheel','runtimeHealth','socialApplications','revenueApplications','ga4Batches','ga4Coverage','calibrationHealth','predictionControl'],readStates={},datasets=[];
   for(let i=0;i<stateNames.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -574,7 +586,8 @@ export default async function handler(request){
     oneLoopAssurance,outreachActions:datasets[11],outreachResearch:datasets[12],
     growthDaily:datasets[13],emailReplies:datasets[14],acquisitionEvents:datasets[15],
     learningReadiness:datasets[16],revenueFlywheel:datasets[17],runtimeHealth:datasets[18],
-    socialApplications:datasets[19],revenueApplications:datasets[20],readStates});
+    socialApplications:datasets[19],revenueApplications:datasets[20],
+    ga4Batches:datasets[21],ga4Coverage:datasets[22],calibrationHealth:datasets[23],predictionControl:datasets[24],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};
