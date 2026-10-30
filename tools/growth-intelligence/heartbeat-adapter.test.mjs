@@ -105,3 +105,65 @@ test("Heartbeat emits analytics reconciliation candidate without inventing an ex
  assert.equal(packet.publishReady,false);
  assert.equal(packet.revenueVerified,false);
 });
+
+test("commercial CRO cannot promote historical delivery-disabled queue or a single treatment",()=>{
+ const packet=heartbeatGrowthTick({cycleId:'cro:real-prod-observation',events:[],
+  croCommercialProof:{cycle_id:'2026-10-30',conversion:{
+   event_evidence_status:'PERSISTED_EVENTS_OBSERVED',
+   observed_cta_events_7d:0,linked_qualified_lead_records_30d:0,
+   orders_with_recorded_provider_readback_30d:0},
+   experiment:{matured_treatment:1,matured_holdout:0,minimum_matured_per_arm:20},
+   brain:{delivery_status:'QUEUED',last_error:'delivery-disabled',readback_verified:false}}
+ },{now});
+ assert.equal(packet.croCommercialProof.status,'EVIDENCE_INCOMPLETE');
+ assert.equal(packet.croCommercialProof.gates[0].gate,'BRAIN_DELIVERY_READBACK');
+ assert.equal(packet.croCommercialProof.gates[0].verified,false);
+ assert.equal(packet.croCommercialProof.nextAction,'RECONCILE_EXISTING_BRAIN_DELIVERY_WITHOUT_BG211_REPLAY');
+ assert.equal(packet.croCommercialProof.promotionAllowed,false);
+ assert.equal(packet.croRecoveryProposals[0].noProviderSideEffect,true);
+ assert.equal(packet.croRecoveryProposals[0].brainWritebackVerified,false);
+ assert.equal(packet.revenueVerified,false);
+});
+test("missing CRO readback stays unassessed rather than falsely green",()=>{
+ const packet=heartbeatGrowthTick({cycleId:'cro:no-snapshot',events:[]},{now});
+ assert.equal(packet.croCommercialProof.status,'NOT_ASSESSED');
+ assert.deepEqual(packet.croRecoveryProposals,[]);
+ assert.equal(packet.publishReady,false);
+});
+test("aggregate count alone cannot turn into independently verified lead or order",()=>{
+ const {reconcileCommercialCroProof}=await import('./heartbeat-adapter.mjs');
+ const r=reconcileCommercialCroProof({cycle_id:'2026-10-30',conversion:{
+   event_evidence_status:'PERSISTED_EVENTS_OBSERVED',
+   source_readback_verified:true,event_receipt_id:'event:persisted:001',
+   observed_cta_events_7d:12,linked_qualified_lead_records_30d:5,
+   orders_with_recorded_provider_readback_30d:2},
+   experiment:{matured_treatment:100,matured_holdout:100,minimum_matured_per_arm:20,
+     pretreatment_assignment_readback_verified:true,causal_result_verified:true},
+   brain:{delivery_status:'DELIVERED',readback_verified:true,record_id:'brain:read:001',
+     learning_application_readback_verified:false},
+   proof:{qualified_buyer_readback_verified:false,payment_provider_readback_verified:false}});
+ assert.equal(r.status,'EVIDENCE_INCOMPLETE');
+ assert.ok(r.gates.some(g=>g.gate==='QUALIFIED_BUYER_READBACK'&&!g.verified));
+ assert.ok(r.gates.some(g=>g.gate==='PAID_ORDER_READBACK'&&!g.verified));
+ assert.equal(r.outcomeVerified,false);
+ assert.equal(r.writebackProposal.verified,false);
+});
+test("even fully attested CRO proof only permits independent audit, not automatic promotion",()=>{
+ const {reconcileCommercialCroProof}=await import('./heartbeat-adapter.mjs');
+ const r=reconcileCommercialCroProof({cycle_id:'verified-replay',conversion:{
+   event_evidence_status:'PERSISTED_EVENTS_OBSERVED',
+   source_readback_verified:true,event_receipt_id:'event:persisted:001',
+   observed_cta_events_7d:12,linked_qualified_lead_records_30d:5,
+   orders_with_recorded_provider_readback_30d:2},
+   experiment:{matured_treatment:100,matured_holdout:100,minimum_matured_per_arm:20,
+     pretreatment_assignment_readback_verified:true,causal_result_verified:true},
+   brain:{delivery_status:'DELIVERED',readback_verified:true,record_id:'brain:read:001',
+     learning_application_readback_verified:true,applied_learning_id:'learning:readback:001'},
+   proof:{qualified_buyer_readback_verified:true,qualified_lead_provider_ref:'lead:readback:001',
+     payment_provider_readback_verified:true,payment_provider_id:'payment:readback:001',
+     same_attribution_lineage_verified:true}});
+ assert.equal(r.status,'EVIDENCE_COMPLETE_REQUIRES_INDEPENDENT_AUDIT');
+ assert.equal(r.gates.filter(g=>!g.verified).length,0);
+ assert.equal(r.promotionAllowed,false);
+ assert.equal(r.writebackVerified,false);
+});
