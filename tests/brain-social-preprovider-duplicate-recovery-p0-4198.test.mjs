@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {isStalePersonalSource} from '../supabase/functions/_shared/personal-founder-source-reserve.mjs';
 const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const social=read('supabase/functions/powerhouse-social-publisher/index.ts');
 const orchestrator=read('supabase/functions/powerhouse-content-orchestrator/index.ts');
@@ -64,7 +65,6 @@ test('obligation-only duplicates keep different personal source lineage and cann
 });
 
 test('no stale personal-event fallback is allowed when original sources are exhausted',()=>{
-  const isStalePersonalSource = (row,types)=>Array.from([row?.evidence?.result_event,row?.evidence?.friction_event,row?.evidence?.source_focus_context]).some(x=>x?.event_type && types.has(x.event_type));
   const old={evidence:{result_event:{event_type:'commercial_heartbeat'}}};
   assert.equal(isStalePersonalSource(old,new Set(['commercial_heartbeat'])),true);
   assert.equal(isStalePersonalSource(old,new Set(['revenue_flywheel_health'])),false);
