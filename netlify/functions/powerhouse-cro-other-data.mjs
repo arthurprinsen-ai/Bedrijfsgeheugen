@@ -1,4 +1,5 @@
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
+import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
 // No new scheduler, experiment writer, customer-data leak or duplicate data store.
@@ -103,13 +104,45 @@ export function projectCroBrainProof(rows,{at=new Date().toISOString()}={}){
    }};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],readStates={},at=new Date().toISOString()}={}){
+
+/** An adapter, never a second classifier: preserve the original 15-loop status. */
+export function projectCroOneLoopAssurance(source){
+  const unavailable=reason=>({status:'UNVERIFIED',reason:String(reason||'ORIGINAL_LOOP_SOURCE_UNAVAILABLE').slice(0,120),
+    counts:null,overallStatus:'UNVERIFIED',loops:[],source:'public.powerhouse_loop_assurance_state_v1'});
+  if(!source||source.status!=='READBACK_COMPLETE'||source.contract!==ONE_LOOP_ASSURANCE_CONTRACT)
+    return unavailable(source?.reason);
+  const counts=source.counts,rows=source.loops;
+  if(!Array.isArray(rows)||rows.length!==15||counts?.total!==15||
+     ![counts.green,counts.amber,counts.red].every(n=>Number.isInteger(n)&&n>=0)||
+     counts.green+counts.amber+counts.red!==15||new Set(rows.map(r=>r?.key)).size!==15)
+    return unavailable('CANONICAL_LOOP_COUNT_MISMATCH');
+  if(rows.some(r=>!['GREEN','AMBER','RED'].includes(r?.status)||typeof r?.key!=='string'||
+       !['FAILED','PASSED','NOT_RECORDED'].includes(r?.guard)||
+       !Array.isArray(r?.missingStages)||r.missingStages.some(s=>typeof s!=='string')||
+       (r.status==='GREEN'&&(r.guard==='FAILED'||r.missingStages.length))))
+    return unavailable('ORIGINAL_LOOP_GUARD_MISMATCH');
+  if(rows.filter(r=>r.status==='GREEN').length!==counts.green||
+     rows.filter(r=>r.status==='AMBER').length!==counts.amber||
+     rows.filter(r=>r.status==='RED').length!==counts.red)
+    return unavailable('ORIGINAL_LOOP_STATUS_COUNT_MISMATCH');
+  return {status:'READBACK_COMPLETE',reason:null,
+    counts:{total:15,green:counts.green,amber:counts.amber,red:counts.red},
+    overallStatus:source.overallStatus,source:'public.powerhouse_loop_assurance_state_v1',
+    checkedAt:source.observedAt,loops:rows.map(r=>({
+      key:r.key,status:r.status,guard:r.guard,
+      missingStages:r.missingStages.slice(0,12),problem:String(r.problem||'').slice(0,80)
+    }))};
+}
+
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],oneLoopAssurance=undefined,readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
   const conversionProofOk=readStates.conversionProof==='LIVE'&&conversionProof.length===1;
   const experimentProofOk=readStates.experimentProof==='LIVE';
   const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk&&(readStates.brainProof===undefined||readStates.brainProof==='LIVE');
+  const oneLoop=projectCroOneLoopAssurance(oneLoopAssurance);
+  const completeWithOneLoop=complete&&(oneLoopAssurance===undefined||oneLoop.status==='READBACK_COMPLETE');
   const dailyLast=daily.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const experimentLast=experiments.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const behaviorLast=behavior.reduce((latest,row)=>String(row.last_observed_at||'')>latest?String(row.last_observed_at):latest,'');
@@ -132,13 +165,16 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   const brainClosure=projectCroBrainProof(readStates.brainProof==='LIVE'?brainProof:[],{at});
   if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
   if(!brainClosure.businessOutcomeVerified)flags.push('CRO_COMMERCIAL_CLOSED_LOOP_NOT_PROVEN');
+  if(oneLoopAssurance!==undefined&&oneLoop.status!=='READBACK_COMPLETE')flags.push('ORIGINAL_15_LOOP_ASSURANCE_UNVERIFIED');
+  if(oneLoop.status==='READBACK_COMPLETE'&&oneLoop.counts.red>0)flags.push('ORIGINAL_15_LOOP_RED_GUARDS_OPEN');
   const cp=conversionProofOk?conversionProof[0]:null;
   if(cp?.event_evidence_status!=='PERSISTED_EVENTS_OBSERVED')flags.push('PERSISTED_EVENT_PARITY_NOT_PROVEN');
   if(cp?.lead_evidence_status!=='LINKED_RECORDS_REQUIRE_INDEPENDENT_BUYER_VERIFICATION')flags.push('QUALIFIED_LEAD_READBACK_NOT_PROVEN');
   flags.push('INDEPENDENT_PAID_ORDER_VERIFICATION_REQUIRED');
   return {
     contract:'POWERHOUSE_CRO_OTHER_DATA_V1',generatedAt:at,
-    scope:'canonical',status:complete?'LIVE':'PARTIAL',
+    scope:'canonical',status:completeWithOneLoop?'LIVE':'PARTIAL',
+    oneLoop,
     commercialLoopStatus:brainClosure.status,
     brainClosure,
     sources:{
@@ -147,6 +183,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       policies:{status:readStates.policies||'UNAVAILABLE',records:readStates.policies==='LIVE'?policies.length:null},
       behavior:{status:readStates.behavior||'UNAVAILABLE',lastObservedAt:behaviorLast||null,records:behaviorOk?behavior.length:null},
       brainProof:{status:readStates.brainProof||'UNAVAILABLE',lastObservedAt:brainClosure.lastObservedAt,records:brainClosure.technicalReadbackVerified?1:null},
+      oneLoop:{status:oneLoop.status,lastObservedAt:oneLoop.checkedAt||null,records:oneLoop.status==='READBACK_COMPLETE'?15:null},
       conversionProof:{status:conversionProofOk?'LIVE':readStates.conversionProof||'UNAVAILABLE',records:conversionProofOk?1:null},
       experimentProof:{status:experimentProofOk?'LIVE':readStates.experimentProof||'UNAVAILABLE',records:experimentProofOk?experimentProof.length:null}
     },
@@ -220,17 +257,19 @@ export default async function handler(request){
     select(base,key,'brain_records',
       'select=record_id,record_type,record_kind,owner_id,status,observed_at,executed,verified,payload&tenant_id=eq.canonical&record_id=like.cro-commercial-evidence:*&order=observed_at.desc&limit=2')
   ];
-  const responses=await Promise.allSettled(queries);
+  const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
+  const assuranceResult=responses[queries.length];
+  const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
   const limits=[2000,150,50,1,150,5000,1];
   const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof'],readStates={},datasets=[];
-  for(let i=0;i<responses.length;i++){
+  for(let i=0;i<stateNames.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
     const complete=answer.status==='fulfilled'&&rows.length<=limits[i];
     readStates[stateNames[i]]=complete?'LIVE':rows.length>limits[i]?'TRUNCATED':'UNAVAILABLE';
     datasets[i]=complete?rows:[];
   }
-  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],readStates});
+  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],oneLoopAssurance,readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};
