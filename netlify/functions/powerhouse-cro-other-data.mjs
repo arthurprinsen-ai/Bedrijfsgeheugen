@@ -1,6 +1,6 @@
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import {projectSocialCroFunnel} from './_social-cro-funnel-projection.mjs';
-import {projectOriginalCommercialMomentum} from '../../tools/cro/original-commercial-momentum.mjs';
+import {projectOriginalCommercialMomentum} from '../../tools/content-growth/original-commercial-momentum.mjs';
 import { loadOneLoopAssurance, ONE_LOOP_ASSURANCE_CONTRACT } from '../../brain/observability/one-loop-assurance-readback.mjs';
 
 // Owner-only, read-only projection of the EXISTING Supabase growth and CRO authorities.
