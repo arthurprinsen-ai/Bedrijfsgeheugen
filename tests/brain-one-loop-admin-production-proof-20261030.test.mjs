@@ -17,7 +17,7 @@ test('ONE BRAIN learning invokes the original deploy proof and never relabels bu
   for(const mode of ['historical_replay','shadow','canary'])
     assert.deepEqual(learning.evaluation[mode],['tests/brain-one-loop-admin-production-proof-20261030.test.mjs']);
   assert.match(core,/one_loop_assurance_proof/);
-  assert.match(core,/assurance\.admin&&assurance\.nonadmin&&assurance\.anonymous/);
+  assert.match(core,/assurance\.admin&&\s*assurance\.nonadmin&&assurance\.anonymous/);
   assert.match(core,/synthetic_user_cleanup/);
   assert.match(route,/isPowerhouseAdmin\(user/);
   assert.match(route,/UNAUTHENTICATED/);
