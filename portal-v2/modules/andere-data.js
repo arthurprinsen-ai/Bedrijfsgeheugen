@@ -30,6 +30,7 @@ function experimentRows(rows){
 function render(container,data){
   const source=data?.sources||{};
   const website=data?.website;
+  const weekly=data?.websiteWeeklyGrowth||null;
   const social=data?.socialFunnel||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
   const socialRows=(social?.channels||[]).map(row=>{
@@ -107,6 +108,27 @@ function render(container,data){
       field('In dagtotalen gemelde orders (onbevestigd)',fmt(website.wonOrders))+
       field('Toegerekende omzet (nog te verifiëren)',money(website.revenueEur))
     :field('Website-meetgegevens','Bron niet beschikbaar');
+  const weeklyLabels={page_views:'Paginaweergaven (niet unieke bezoekers)',
+    cta_clicks:'CTA-klikken',qualified_leads:'Geregistreerde leads (onbevestigd)',
+    won_orders:'Geregistreerde orders (niet betaald geverifieerd)'};
+  const weeklyRows=weekly?.metrics?Object.entries(weeklyLabels).map(([key,label])=>{
+    const m=weekly.metrics[key];
+    const change=m.changePct===null?'Geen % bij nulbasislijn':fmt(m.changePct)+'%';
+    return '<tr><td>'+esc(label)+'</td><td>'+esc(fmt(m.previous))+'</td><td>'+
+      esc(fmt(m.current))+'</td><td>'+badge(m.direction)+' · '+esc(change)+'</td></tr>';
+  }).join(''):'';
+  const weeklyCard='<section class="od-card"><h3>Websitegroei · twee volledig afgesloten weken</h3>'+
+    '<p>Meet het verschil tussen twee opeenvolgende perioden van zeven volledige kalenderdagen (Europe/Amsterdam). Alleen oorspronkelijke daggegevens; geen berekende unieke bezoekers en geen fictieve orders of omzet.</p>'+
+    '<p>Bronbewijs: '+badge(weekly?.status||'UNVERIFIED')+' · vorige week '+
+      esc(weekly?.baseline?.from||'—')+' t/m '+esc(weekly?.baseline?.through||'—')+
+      ' · recente week '+esc(weekly?.recent?.from||'—')+' t/m '+esc(weekly?.recent?.through||'—')+'</p>'+
+    (weeklyRows?'<div class="od-scroll"><table><thead><tr><th>Meetpunt</th><th>Vorige 7 dagen</th><th>Recente 7 dagen</th><th>Richting / verandering</th></tr></thead><tbody>'+weeklyRows+'</tbody></table></div>':
+      '<p class="od-warn">Vergelijking niet verantwoord: '+esc(weekly?.reason||'Bronbewijs ontbreekt')+
+      '. Ontbrekende kalenderdagen: '+esc((weekly?.missingDays||[]).join(', ')||'niet vastgesteld')+'.</p>')+
+    '<p class="od-foot">CTA-percentage van paginaweergaven: vorige week '+esc(fmt(weekly?.ctaRate?.previous))+
+    '% · recente week '+esc(fmt(weekly?.ctaRate?.current))+
+    '%. Dit is géén bezoekers-naar-betaalde-orders-conversie. De werkelijke betaalde-orderfunnel vereist onafhankelijke betalings- en attributiebewijzen.</p></section>';
+
   container.innerHTML='<section class="cro-od" aria-labelledby="croOtherDataTitle">'+
     '<style>'+css+'</style>'+
     '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
@@ -114,6 +136,7 @@ function render(container,data){
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · Social CRO: '+badge(source.socialFunnel?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
+    weeklyCard+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
     '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
     '<p>Oorspronkelijke 15-lussenbron: '+badge(source.oneLoop?.status)+
