@@ -73,7 +73,7 @@ test('original CMS netlify route gates publish on saved item quality/version and
  assert.match(ui,/unsaved=true/);
  assert.match(markup,/id="cmsPowerhouseLoop"/);
  assert.match(markup,/id="cmsQuality"/);
- assert.match(cockpit,/href="\/cms\.html"/);
+ assert.match(cockpit,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/cms\.html"/);
  assert.match(original,/\.eq\('status','published'\)/);
  assert.doesNotMatch(admin,/setInterval|cron\.schedule|cms_content_items\)\.insert/);
 });
