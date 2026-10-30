@@ -5,7 +5,7 @@ const number=x=>x===null||x===undefined||x===''?null:Number.isSafeInteger(Number
 const stamp=x=>typeof x==='string'&&Number.isFinite(Date.parse(x))?Date.parse(x):null;
 const safeDay=x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)?x:null;
 export function projectGa4PredictiveSourceRepair({
-  ga4Batches=[],ga4Coverage=[],calibrationHealth=[],predictionControl=[],revenueFlywheel=[],
+  ga4Batches=[],ga4Coverage=[],ga4Health=[],calibrationHealth=[],predictionControl=[],revenueFlywheel=[],
   readStates={},at=new Date().toISOString()
 }={}){
   const now=stamp(at);
@@ -35,6 +35,13 @@ export function projectGa4PredictiveSourceRepair({
     'GA4_ROWS_OBSERVED_ATTRIBUTION_SEPARATE';
   const spineStatus=cov?.coverage_state==='fresh'&&age!==null&&now-age<=30*3600000?
     'SOURCE_OBSERVATION_FRESH':cov?'ORIGINAL_DATA_SPINE_STALE_OR_INCOMPLETE':'UNVERIFIED';
+  // Original technical health can say fresh while dated provider observations are stale.
+  // A health-check timestamp is NEVER a provider event timestamp.
+  const ga4HealthRow=safe('ga4Health',ga4Health)&&ga4Health.length===1?ga4Health[0]:null;
+  const healthFreshness=ga4HealthRow?String(ga4HealthRow.freshness_status||'UNVERIFIED').slice(0,50):null;
+  const healthCheckStatus=ga4HealthRow?String(ga4HealthRow.canonical_health_status||'UNVERIFIED').slice(0,50):null;
+  const sourceHealthConflict=healthFreshness==='fresh'&&(
+    spineStatus!=='SOURCE_OBSERVATION_FRESH'||ga4Status!=='GA4_ROWS_OBSERVED_ATTRIBUTION_SEPARATE');
   const ga4={
     status:ga4Status,
     providerResponded:latest!==null,
@@ -46,6 +53,9 @@ export function projectGa4PredictiveSourceRepair({
     lastNonemptyDay:nonempty?safeDay(nonempty.period_start):null,
     lastNonemptyProviderRows:nonempty?number(nonempty.rows_total):null,
     lastNonemptyMatches:nonempty?number(nonempty.rows_attributed):null,
+    originalHealthCheckStatus:healthCheckStatus,
+    originalHealthFreshness:healthFreshness,
+    sourceHealthConflict:sourceHealthConflict?'SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH':ga4HealthRow?'NO_CONFLICT_OBSERVED':'HEALTH_CHECK_UNVERIFIED',
     originalDataSpineState:spineStatus,
     originalSpineLastObservedAt:cov?.last_observed_at||null,
     sourceScope:'GA4 verified provider report; campaign-to-social-post attribution is independent of GA4 page/sessions',
@@ -91,7 +101,7 @@ export function projectGa4PredictiveSourceRepair({
       priority:1,code:'GA4_REAL_SOURCE_REPORTING_AND_CONSENT',
       owner:'Original bg-analytics-sync-composio / GA4 Data Spine / SEO CRO',
       status:'SOURCE_EVIDENCE_DUE_NOT_EXECUTED',
-      action:'Check original GA4 property and consent-gated gtag stream against real provider dated report. Check delayed 24–48h provider rows and missing campaign match separately, then use existing canonical importer only on genuine measured rows; do not mark an empty/old day as new visits.',
+      action:'Check original GA4 property and consent-gated gtag stream against real provider dated report. Check delayed 24–48h provider rows and missing campaign match separately. Reconcile technical powerhouse_source_freshness_v1 with dated provider rows and Data Spine; a fresh healthcheck is not new provider evidence. Use existing canonical importer only on genuine measured rows; do not mark an empty/old day as new visits.',
       success:'Recent dated nonempty original GA4 provider rows AND genuinely fresh same-property source observation; attributed campaign matches checked separately.'
     });
   if(privateDue>0)

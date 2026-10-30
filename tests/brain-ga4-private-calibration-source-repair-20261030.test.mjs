@@ -5,7 +5,7 @@ import {projectGa4PredictiveSourceRepair,GA4_PREDICTIVE_REPAIR_CONTRACT}
  from '../netlify/functions/_powerhouse-ga4-predictive-source-repair.mjs';
 import {projectOtherData} from '../netlify/functions/powerhouse-cro-other-data.mjs';
 const at='2026-10-30T14:10:00.000Z';
-const states={ga4Batches:'LIVE',ga4Coverage:'LIVE',calibrationHealth:'LIVE',
+const states={ga4Batches:'LIVE',ga4Coverage:'LIVE',ga4Health:'LIVE',calibrationHealth:'LIVE',
  predictionControl:'LIVE',revenueFlywheel:'LIVE'};
 const snapshot={
  at,readStates:states,ga4Batches:[
@@ -16,6 +16,8 @@ const snapshot={
  ],
  ga4Coverage:[{source_key:'ga4-analytics',last_observed_at:'2026-10-29T06:05:02Z',
   coverage_state:'stale',observation_count:93}],
+ ga4Health:[{source_key:'ga4-analytics',canonical_health_status:'ok',
+   freshness_status:'fresh',health_checked_at:'2026-10-30T13:57:00Z'}],
  calibrationHealth:[{onderdeel:'powerhouse-forecast-calibrator',gemeten_op:'2026-10-30T13:50:01Z',
    status:'ok',gegevens:{contract:'predictive-first-mover-intelligence-v1',
     public_scope_due:0,out_of_public_scope_due:2085,state:'NON_PUBLIC_SCOPE_BACKLOG'}}],
@@ -34,6 +36,8 @@ test('real-source historical GA4/forecast: one nonempty past day is NOT fresh to
  assert.equal(p.ga4.lastNonemptyProviderRows,1);
  assert.equal(p.ga4.lastNonemptyMatches,0);
  assert.equal(p.ga4.originalDataSpineState,'ORIGINAL_DATA_SPINE_STALE_OR_INCOMPLETE');
+ assert.equal(p.ga4.originalHealthFreshness,'fresh');
+ assert.equal(p.ga4.sourceHealthConflict,'SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH');
  assert.equal(p.ga4.hasVerifiedCurrentVisitors,false);
  assert.equal(p.prediction.status,'PUBLIC_ENGINE_IDLE_PRIVATE_FIRST_PARTY_PROOF_REQUIRED');
  assert.equal(p.prediction.publicDue,0);
@@ -59,6 +63,7 @@ test('genuine recent GA4 rows with current source observation do not imply socia
  assert.equal(p.ga4.latestProviderRows,3);
  assert.equal(p.ga4.latestProviderMatches,0);
  assert.equal(p.ga4.originalDataSpineState,'SOURCE_OBSERVATION_FRESH');
+ assert.equal(p.ga4.sourceHealthConflict,'NO_CONFLICT_OBSERVED');
  assert.equal(p.prediction.privateBuyerOrCompanyOutcomeVerified,false);
  assert.equal(p.status,'EVIDENCE_DUE','other private evidence remains due');
  assert.equal(p.priorities.length,1);
@@ -72,11 +77,13 @@ test('a completed zero-row daily report never gets a synthetic fresh observation
  assert.equal(p.ga4.status,'LATEST_COMPLETE_DAY_PROVIDER_ROWS_EMPTY');
  assert.equal(p.ga4.hasVerifiedCurrentVisitors,false);
  assert.equal(p.ga4.lastNonemptyDay,null);
+ assert.equal(p.ga4.sourceHealthConflict,'SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH');
  assert.equal(p.status,'EVIDENCE_DUE');
 });
 test('missing, too old, malformed or truncated sources remain UNVERIFIED rather than counted as zero',()=>{
  const absent=projectGa4PredictiveSourceRepair({at,readStates:{}});
  assert.equal(absent.ga4.latestProviderRows,null);
+ assert.equal(absent.ga4.sourceHealthConflict,'HEALTH_CHECK_UNVERIFIED');
  assert.equal(absent.ga4.status,'PROVIDER_REPORT_READBACK_UNVERIFIED');
  assert.equal(absent.prediction.forecastDue,null);
  assert.equal(absent.prediction.publicDue,null);
@@ -97,8 +104,11 @@ test('original admin-only API and portal reuse all original publishers and avoid
  const handler=readFileSync('netlify/functions/_powerhouse-ga4-predictive-source-repair.mjs','utf8');
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/ga4Batches:datasets\[21\]/);
+ assert.match(api,/powerhouse_source_freshness_v1/);
+ assert.match(api,/ga4Health:datasets\[25\]/);
  assert.match(api,/calibrationHealth:datasets\[23\]/);
  assert.match(panel,/data-one-brain-ga4-private-calibration-repair/);
+ assert.match(panel,/Healthcheck versus providerbewijs/);
  assert.match(skill,/POWERHOUSE_ONE_BRAIN_GA4_PRIVATE_CALIBRATION_REPAIR_V1/);
  assert.doesNotMatch(handler,/\bfetch\(|\bINSERT INTO|setInterval|cron\.schedule|private[_ ]?email/);
  assert.equal(projectOtherData({at,readStates:{}}).ga4PredictiveRepair.status,'EVIDENCE_DUE');

@@ -226,7 +226,9 @@ function render(container,data){
     field('Echte GA4-providerregels',fmt(providerRepair?.ga4?.latestProviderRows))+
     field('Echt gekoppelde socialcampagne-rijen',fmt(providerRepair?.ga4?.latestProviderMatches))+
     field('Laatst bevestigde niet-lege GA4-datum',esc(providerRepair?.ga4?.lastNonemptyDay||'—'))+
-    field('Oorspronkelijke Data Spine',badge(providerRepair?.ga4?.originalDataSpineState||'UNVERIFIED'))+'</div>'+
+    field('Oorspronkelijke Data Spine',badge(providerRepair?.ga4?.originalDataSpineState||'UNVERIFIED'))+
+    field('Technische bronhealth (niet providerdata)',badge(providerRepair?.ga4?.originalHealthFreshness||'UNVERIFIED'))+
+    field('Healthcheck versus providerbewijs',badge(providerRepair?.ga4?.sourceHealthConflict||'HEALTH_CHECK_UNVERIFIED'))+'</div>'+
     '<h4>Voorspellingen · onafhankelijke uitkomst versus niet-publieke achterstand</h4>'+
     '<div class="od-grid">'+
     field('Oorspronkelijke voorspellingstatus',badge(providerRepair?.prediction?.originalPredictionState||'UNVERIFIED'))+
