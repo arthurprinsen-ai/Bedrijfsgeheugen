@@ -1,5 +1,14 @@
 # Powerhouse Source Universe & Impact Engine
 
+
+## 30 oktober 2026 — originele RVO-blog bronwaarheid vóór AI-artefactwrite
+
+Bij het genereren van een blog over Circular Plastics NL (CPNL) moeten de bestaande Content Orchestrator, Bronagent en Blog Queue **dezelfde officiële bronwaarheid** gebruiken: RVO `https://www.rvo.nl/subsidies-financiering/cpnl`; CPNL 2026 was aan te vragen van 21 april 09:00 tot 6 oktober 17:00, daarna gesloten. Een voorspelling dat de regeling op 6 oktober opnieuw opent is **geen feit** en mag niet gepubliceerd of in een concept opgeslagen worden. Incident: `powerhouse|blog|false-open-cpnl-date|20261030-v1`; menselijke lijn: issue #4439.
+
+De originele generator toetst met `assessOfficialBlogDateTruth` **na de lezerskwaliteitstoets en vóór `write-artifact`**. Alleen het reeds toegelaten OpenAI-model mag een enkele brongetrouwe herformulering uitvoeren; daarna opnieuw feitentoets én lezerskwaliteit. Zonder goedgekeurd herstel: `BLOG_OFFICIAL_DATE_SOURCE_REWRITE_REJECTED` / fail-closed. De originele `powerhouse-blog-queue` bewaart zijn onafhankelijke tweede controle; bij `GENERATED` zonder externe ID mag de oorspronkelijke queue alleen CAS-metadata herstellen. Geen tweede scheduler, blogwriter, vertaler of provider; geen gedwongen omzet-, media-, SEO- of publicatiebewijs.
+
+Bewijsgates blijven gescheiden: originele queue 200 betekent niet publicatie; alleen protected GitHub main → Netlify exact-SHA → publieke blog-readback plus het originele provider- of publicatie-ID legitimeert `LIVE_PROVEN`. ONE BRAIN behoudt OBSERVED voor een correct concept totdat een natuurlijke nieuwe generatorrun de toegepaste skill en een echte provideruitkomst vastlegt. Regression: `tests/brain-original-blog-official-date-prewrite-20261030.test.mjs`. Nieuwe agents moeten dezelfde RVO-bron, datumgrens en outcome-waarheidsregels hergebruiken en geen parallelle waarheid of scheduler starten.
+
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 ## Verplichte cross-agent preflight en nieuwe release-readback (29 oktober 2026)
