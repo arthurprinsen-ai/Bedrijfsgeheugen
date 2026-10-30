@@ -3,7 +3,7 @@
 import {getUser} from '@netlify/identity';
 import {isPowerhouseAdmin} from '../../platform/auth/powerhouse-admin.mjs';
 import {resolveIdentityTenant} from '../../platform/read-models/portal-server-state.mjs';
-import {loadOneLoopAssurance} from '../../brain/observability/one-loop-assurance-readback.mjs';
+import {loadOneLoopAssuranceWithDiagnostics} from '../../brain/observability/one-loop-guard-diagnostics.mjs';
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store','pragma':'no-cache','vary':'authorization, cookie',
@@ -21,7 +21,7 @@ export default async request=>{
   if(!tenantId)return reply({error:'TENANT_UNRESOLVED'},403);
   const baseUrl=String(Netlify.env.get('SUPABASE_URL')||Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim();
   const key=String(Netlify.env.get('SUPABASE_SERVICE_ROLE_KEY')||'').trim();
-  const assurance=await loadOneLoopAssurance({baseUrl,key});
+  const assurance=await loadOneLoopAssuranceWithDiagnostics({baseUrl,key});
   return reply(assurance,200);
 };
 export const config={path:'/api/powerhouse-one-loop-assurance'};
