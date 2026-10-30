@@ -267,7 +267,41 @@ export function projectCroMeasurementCoverage(row){
   };
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],readStates={},at=new Date().toISOString()}={}){
+// Read-only, PII-free CTA acquisition labels from ORIGINAL durable growth_events.
+// These are recorded consent-dependent marketing categories, not independently verified buyers.
+export function projectAcquisitionCtaSource(events,{status='UNAVAILABLE',at=new Date().toISOString()}={}){
+ const empty={status:'UNVERIFIED',reason:'ORIGINAL_GROWTH_EVENT_READBACK_UNAVAILABLE',
+   observedCtaEvents:null,unattributedCtaEvents:null,byChannel:null,providerAttributionVerified:false,
+   paidOrderAttributionVerified:false};
+ if(status!=='LIVE'||!Array.isArray(events)||!Number.isFinite(Date.parse(at)))return empty;
+ const end=Date.parse(at),start=end-14*86400000;
+ const byChannel={linkedin_personal:0,linkedin_company:0,linkedin_unassigned:0,instagram:0,
+   email:0,organic_search:0,paid_search:0,referral:0,unattributed:0};
+ const seen=new Set();let valid=0;
+ for(const r of events){
+   const when=Date.parse(r?.occurred_at||''),key=String(r?.event_id||'');
+   if(!key||seen.has(key)||!Number.isFinite(when)||when<start||when>end||
+      r?.is_robot!==false||r?.event_type!=='primary_cta_click')continue;
+   seen.add(key);valid++;
+   const src=String(r?.source||'').toLowerCase(),medium=String(r?.medium||'').toLowerCase();
+   const campaign=String(r?.campaign||'').toLowerCase();
+   let bucket='unattributed';
+   if(src==='linkedin')bucket=campaign==='linkedin_personal'?'linkedin_personal':
+      campaign==='linkedin_company'?'linkedin_company':'linkedin_unassigned';
+   else if(src==='instagram')bucket='instagram';
+   else if(src==='email')bucket='email';
+   else if(src==='google'||src==='bing')bucket=medium==='paid'?'paid_search':'organic_search';
+   else if(src==='referral')bucket='referral';
+   byChannel[bucket]++;
+ }
+ return {status:valid?'RECORDED_SOURCE_CATEGORIES_NOT_PROVIDER_VERIFIED':'NO_CTA_SOURCE_EVENTS_OBSERVED',
+   reason:valid?'ACQUISITION_ORIGINAL_PROVIDER_RECEIPTS_REQUIRED':'INSUFFICIENT_REAL_CTA_INTERACTIONS',
+   observedCtaEvents:valid,unattributedCtaEvents:byChannel.unattributed,byChannel,
+   horizon:'ROLLING_14_DAYS',source:'public.growth_events',botFlagFiltered:true,
+   consentIndependentlyVerified:false,providerAttributionVerified:false,paidOrderAttributionVerified:false};
+}
+
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
@@ -303,6 +337,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     ?projectSocialCroFunnel({posts:socialPosts,snapshots:socialSnapshots,at}):null;
   if(!socialFunnel||socialFunnel.status!=='COMPARABLE_DESCRIPTIVE_METRICS')flags.push('SOCIAL_FUNNEL_48H_COMPARABLE_EVIDENCE_INSUFFICIENT');
   const brainClosure=projectCroBrainProof(readStates.brainProof==='LIVE'?brainProof:[],{at});
+  const acquisitionCta=projectAcquisitionCtaSource(acquisitionEvents,{status:readStates.acquisitionEvents||'UNAVAILABLE',at});
   const growthDirection=projectPowerhouseGrowthDirection({dailySources:growthDaily,replyEvents:emailReplies,
     socialFunnel,brainClosure,conversionProof:readStates.conversionProof==='LIVE'?conversionProof[0]:null,readStates,at});
   if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
@@ -329,8 +364,10 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     brainClosure,
     socialFunnel,
     growthDirection,
+    acquisitionCta,
     sources:{
       growthDaily:{status:readStates.growthDaily||'UNAVAILABLE',records:readStates.growthDaily==='LIVE'?growthDaily.length:null},
+      acquisitionEvents:{status:readStates.acquisitionEvents||'UNAVAILABLE',records:readStates.acquisitionEvents==='LIVE'?acquisitionEvents.length:null},
       emailReplies:{status:readStates.emailReplies||'UNAVAILABLE',records:readStates.emailReplies==='LIVE'?emailReplies.length:null},
       socialFunnel:{status:socialFunnel?.status||'UNAVAILABLE',records:socialFunnel?.channels?.reduce((a,c)=>a+c.posts_registered,0)??null},
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
@@ -436,13 +473,15 @@ export default async function handler(request){
     select(base,key,'powerhouse_growth_source_daily_v1',
       'select=metric_date,source_key,quality,metrics,source_observed_at&tenant_id=eq.bedrijfsgeheugen&metric_date=gte.'+new Date(Date.now()-16*86400000).toISOString().slice(0,10)+'&source_key=in.(website_interactions,ga4,search_console,linkedin_company_account_provider,revenue_goal)&order=metric_date.desc&limit=181'),
     select(base,key,'powerhouse_email_reply_events',
-      'select=reply_event_id,occurred_at,provider,reply_class&occurred_at=gte.'+new Date(Date.now()-15*86400000).toISOString()+'&order=occurred_at.desc&limit=151')
+      'select=reply_event_id,occurred_at,provider,reply_class&occurred_at=gte.'+new Date(Date.now()-15*86400000).toISOString()+'&order=occurred_at.desc&limit=151'),
+    select(base,key,'growth_events',
+      'select=event_id,event_type,source,medium,campaign,occurred_at,is_robot&event_type=eq.primary_cta_click&is_robot=eq.false&occurred_at=gte.'+new Date(Date.now()-14*86400000).toISOString()+'&order=occurred_at.desc&limit=1001')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
   const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
-  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents'],readStates={},datasets=[];
   for(let i=0;i<stateNames.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -456,7 +495,7 @@ export default async function handler(request){
     conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],
     socialPosts:[...datasets[7],...datasets[8]],socialSnapshots:[...datasets[9],...datasets[10]],
     oneLoopAssurance,outreachActions:datasets[11],outreachResearch:datasets[12],
-    growthDaily:datasets[13],emailReplies:datasets[14],readStates});
+    growthDaily:datasets[13],emailReplies:datasets[14],acquisitionEvents:datasets[15],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};
