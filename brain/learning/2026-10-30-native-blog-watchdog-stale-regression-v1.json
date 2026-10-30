@@ -16,14 +16,13 @@
   "prevention": "Contract-test only the current read-only exact-date no-op and public HTML verification; assert absence of older-date selection and PR/Git write permissions. Preserve legacy privacy/tenant source gates and external provider readback; never reintroduce removed historical proof writing just to make an obsolete test pass.",
   "evaluation": {
     "historical_replay": [
-      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
       "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
     ],
     "shadow": [
-      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs"
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
     ],
     "canary": [
-      "tests/content-growth-daily-blog-watchdog-recovery.test.mjs"
+      "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs"
     ]
   },
   "evidence": {
@@ -39,7 +38,9 @@
     "old_write_assertions": "OBSOLETE_AFTER_2026-10-29_SECURITY_FIX",
     "provider_post_or_blog_live_proven": false,
     "protected_merge_completed": false,
-    "production_test_replay_verified": false
+    "production_test_replay_verified": false,
+    "content_growth_targeted_regression": "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+    "learning_canonicalization": "Security-sensitive learning evidence must anchor to a pre-existing tests/brain-*.test.mjs security contract. The content-growth tests still execute separately in native CI; no safety check removed."
   },
   "authoritative_release_process": "Existing Required/BRAIN/CodeQL, exact main commit, subsequent natural Native content growth push-suite; no new workflow, Cron, publisher, provider, public private data or false business result."
 }
