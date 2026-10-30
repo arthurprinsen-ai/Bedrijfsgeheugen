@@ -34,6 +34,7 @@ function render(container,data){
   const weekly=data?.websiteWeeklyGrowth||null;
   const social=data?.socialFunnel||null;
   const growth=data?.growthDirection||null;
+  const commercialFunnel=data?.commercialGrowthFunnel||null;
   const improvement=data?.compoundImprovement||null;
   const acquisition=data?.acquisitionCta||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
@@ -177,6 +178,36 @@ function render(container,data){
     '<tbody>'+(agentRows||'<tr><td colspan="3">Eerst het originele agentregister valideren.</td></tr>')+'</tbody></table></div>'+
     '<p class="od-foot">Automatische technologiekeuze vereist een echte champion/challenger-evaluatie op kwaliteit, veiligheid, privacy, kosten en snelheid. Alle klanteninzichten blijven per tenant afgeschermd. Live pas na exacte releasebewijs; slimmer alleen na onafhankelijk geverifieerde klantwaarde of verkoopuitkomst.</p></section>';
 
+  const commercialStages=(commercialFunnel?.stages||[]).map(row=>
+    '<tr><td><strong>'+esc(row.label)+'</strong><br><small>'+esc(row.source)+'</small></td>'+
+    '<td>'+badge(row.quality)+'</td><td>'+esc(row.observed===null?'Geen onafhankelijk bruikbare waarde':
+      typeof row.observed==='object'?JSON.stringify(row.observed).slice(0,320):fmt(row.observed))+'</td>'+
+    '<td>'+esc(row.nextProof)+'<br><small>Eigenaar: '+esc(row.originalOwner)+'</small></td></tr>').join('');
+  const growthQueue=(commercialFunnel?.priorities||[]).map(row=>
+    '<tr><td>'+esc(row.priority)+'</td><td><strong>'+esc(row.code)+'</strong><br><small>'+esc(row.metric)+'</small></td>'+
+    '<td>'+badge(row.executionState)+'<br><small>'+esc(row.stageStatus)+'</small></td>'+
+    '<td>'+esc(row.task)+'<br><small>Eigenaar: '+esc(row.owner)+'</small></td></tr>').join('');
+  const commercialFunnelCard='<section class="od-card" data-one-brain-commercial-funnel>'+
+    '<h3>Powerhouse → ONE BRAIN → Heartbeat · één commerciële groeilus</h3>'+
+    '<p>Originele bronketen: LinkedIn persoonlijk/bedrijf + Instagram bereik, likes, reacties en reposts → clicks en connecties → website → CTA → vrijwillige gekwalificeerde lead → onafhankelijke betaalde order → leren en verbeteren. Mailantwoorden worden als eigen origineel kanaal gecontroleerd. Er is geen tweede publisher, agent, CRM of scheduler.</p>'+
+    '<p>Funnelbewijs: '+badge(commercialFunnel?.status||'UNVERIFIED')+' · Laatste readback: '+esc(commercialFunnel?.observedAt||'—')+'</p>'+
+    '<div class="od-grid">'+
+    field('Pagina-events 7d (geen unieke bezoekers)',fmt(commercialFunnel?.observed?.pageviewEvents7d))+
+    field('Opgeslagen CTA-events 7d',fmt(commercialFunnel?.observed?.persistedCtaEvents7d))+
+    field('Gekoppelde leadrecords 30d',fmt(commercialFunnel?.observed?.linkedQualifiedLeads30d))+
+    field('Orders met providerreferentie 30d',fmt(commercialFunnel?.observed?.orderProviderReferenceRecords30d))+
+    field('Geregistreerde mailantwoorden 14d',fmt(commercialFunnel?.observed?.emailReplyEvents14d))+
+    field('Toegepaste leerregels 7d (records)',fmt(commercialFunnel?.observed?.naturalLearningApplications7d))+
+    field('Onafhankelijk geverifieerde betaalde orders',fmt(commercialFunnel?.observed?.verifiedPaidOrders))+
+    field('Geverifieerde betaalde omzet',money(commercialFunnel?.observed?.verifiedRevenueEur))+'</div>'+
+    '<h4>Van bereik naar order: iedere schakel, eigenaar en noodzakelijk bewijs</h4>'+
+    '<div class="od-scroll"><table><thead><tr><th>Schakel</th><th>Bewijsstatus</th><th>Waarneming</th><th>Volgende broncontrole</th></tr></thead>'+
+    '<tbody>'+(commercialStages||'<tr><td colspan="4">Originele bronnen ontbreken; geen verzonnen funnel.</td></tr>')+'</tbody></table></div>'+
+    '<h4>Automatisch gerangschikte herstel-/CRO-opdrachten voor oorspronkelijke agents</h4>'+
+    '<div class="od-scroll"><table><thead><tr><th>#</th><th>Doel / meetpunt</th><th>Uitvoering</th><th>Veilige volgende stap</th></tr></thead>'+
+    '<tbody>'+(growthQueue||'<tr><td colspan="4">Geen zelfstandig bewezen uitvoerbare opdracht uit de actuele originele data.</td></tr>')+'</tbody></table></div>'+
+    '<p class="od-foot">Views, likes en mailantwoorden zijn geen bewezen kopers. 48-uurs sociale trends, afgesloten websiteweken, 7-daagse CTA’s en 30-daagse orders zijn verschillende cohorten; de kaart berekent daarom geen misleidende totaalconversie. Een stijgende lijn is het optimalisatiedoel, nooit een gegarandeerde uitkomst. De originele beveiliging, toestemming en 15-lussenassurance blijven leidend.</p></section>';
+
   const compoundCard='<section class="od-card" data-one-brain-compound-proof>'+
     '<h3>ONE BRAIN + Heartbeat · drie dagelijkse verbeterlussen</h3>'+
     '<p>Gedeelde originele commerciële, leer-, runtime- en portaalbronnen. De agents hebben één gezamenlijke bewijslijst; alleen geregistreerde acties, werkelijke klantwaarde en onafhankelijke betaalbewijzen kunnen een resultaat sluiten. Een groen technisch systeem is niet automatisch meer omzet.</p>'+
@@ -197,6 +228,7 @@ function render(container,data){
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · Social CRO: '+badge(source.socialFunnel?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
     weeklyCard+
+    commercialFunnelCard+
     compoundCard+
     innovationCard+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
