@@ -130,3 +130,25 @@ test('guided homepage is mounted once in original V2 with auth boundaries and na
  assert.match(ui,/findPage\(target\)/);
  assert.doesNotMatch(ui,/localStorage|sessionStorage|Math\.random|fetch\(/);
 });
+
+
+test('entrepreneur compass puts one next decision before optional details without changing evidence authority',async()=>{
+ const [ui,css,html]=await Promise.all([
+  readFile(new URL('../entrepreneur-home.js',import.meta.url),'utf8'),
+  readFile(new URL('../entrepreneur-home.css',import.meta.url),'utf8'),
+  readFile(new URL('../index.html',import.meta.url),'utf8')
+ ]);
+ assert.ok(ui.indexOf("const next=add(host,'section','eh-next eh-compass')")>0);
+ assert.ok(ui.indexOf("const next=add(host,'section','eh-next eh-compass')")<ui.indexOf("const columns=add(depthBody,'div','eh-cards')"));
+ assert.match(ui,/model\.selectedGoal\?'details':'section'/);
+ assert.match(ui,/depth\.dataset\.entrepreneurDepth='true'/);
+ assert.match(ui,/renderEntrepreneurJourney\(depthBody,journey\)/);
+ assert.match(ui,/more\.dataset\.entrepreneurDetails='true'/);
+ assert.match(ui,/depthOpen=false/);
+ assert.match(ui,/stateClient\.getSnapshot\(\)\?\.state/);
+ assert.doesNotMatch(ui,/localStorage|sessionStorage|Math\.random|fetch\(/);
+ assert.match(css,/\.eh-change-goal:focus-visible/);
+ assert.match(css,/\.eh-depth-summary:focus-visible/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(html,/entrepreneur-home\.css\?v=20261030-compass/);
+});
