@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|outreach|research-source-found-but-not-returned-to-original-action-and-no-signal-retries|20261030-v1",
+  "failure_class": "INCOMPLETE_CLOSURE",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse-relationship-public-research → original powerhouse-autonomous-outreach → ONE BRAIN → native Andere data",
+  "root_cause": "Original relationship-public-research writes found SERP candidates to runtime events and its internal research action, but never returns provenance to the original source-held autonomous email. On no match it sets waiting without a future due_at, making the same paid research eligible on each natural run. SERP snippet alone cannot prove source freshness or authorize an email.",
+  "observed_evidence": {
+    "original_outreach_action_status": "prepared",
+    "source_gate": "SOURCE_SPECIFIC_EVIDENCE_REQUIRED",
+    "original_research_task_status": "waiting",
+    "original_research_observed_at": "2026-10-30T09:50:07Z",
+    "no_current_trigger_in_bounded_search": true,
+    "provider_send": false,
+    "original_15loop_status": "AMBER",
+    "missing_stages": [
+      "action",
+      "readback"
+    ],
+    "original_project": "adhjwmvyoixzjtmiroln",
+    "code_owner": "supabase/functions/powerhouse-relationship-public-research/index.ts"
+  },
+  "fix": "Reuse exact existing original research Edge with pure candidate validator. On matched organic result, independently compare original action_id, person_key, company_key, status PREPARED, source hold gate, and updated_at CAS; append only relationship_source_candidate with source and origin lineage marked UNVERIFIED, never public_source_evidence, source_url, approved plan, provider permissions or sent status. On no result, move same internal research action due_at 24h later using existing queue, same scheduler. Owner-only Andere data shows aggregated waiting no signal, candidate still unverified, next original retry and actual Gmail readbacks as separate counters.",
+  "prevention_rule": "Require explicit source provenance/freshness proof and original composer quality gates before external contact; avoid claiming a SERP hit verifies current company trigger. An empty original bounded search must have a bounded next natural due_at, no extra cron, cost blow-up or fake green. Link all evidence to existing original action with CAS and no personal leak to portal.",
+  "regression_contract": "Historical no signal and positive source snippet replay, company/lineage/URL mismatch, 24h retry, original action CAS and provider no-side-effect, owner-only portal aggregates.",
+  "compiler": {
+    "failure_class": "INCOMPLETE_CLOSURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-relationship-research-source-backfeed-20261030.test.mjs",
+    "tests/brain-outreach-research-to-portal-20261030.test.mjs",
+    "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "exact-head protected Required/BRAIN/CodeQL and System Map hash",
+    "protected main merge",
+    "original relationship-public-research Edge ACTIVE exact main source/helper",
+    "Netlify READY exact main and no regression to social CRO",
+    "natural source-gap no-result readback yields waiting with future due_at",
+    "positive real-source case may only return unverified candidate until independently audited",
+    "actual Gmail message id/recipient SENT readback required before original outreach action/readback can turn green"
+  ]
+}
