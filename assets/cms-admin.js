@@ -20,13 +20,31 @@ function currentDraft(){
     content:content,sort_order:Number($('#sortOrder').value||0),status:'draft'
   };
 }
+async function renderCmsReview(generatedAt){
+  var host=$('#cmsReview'),copy=$('#cmsReviewText');
+  if(!host||!copy)return;
+  try{
+    var mod=await import('/assets/cms-review-contract.mjs');
+    var proof=mod.cmsReviewStatus(items,{generatedAt:generatedAt});
+    host.dataset.status=proof.status;
+    if(proof.status==='UNAVAILABLE'){copy.textContent='CMS-bronbewijs ontbreekt of is ongeldig. Geen goedkeuring afgeleid.';return}
+    copy.textContent=proof.published+' gepubliceerd · '+proof.draft+' concept · '+proof.archived+' gearchiveerd ('+proof.total+' totaal). Portaal/gedeeld: '+proof.portalPublished+' gepubliceerd, '+proof.portalDraft+' concept. '+(proof.portalPublished===0?'Geen portaalcontent gepubliceerd.':'Portaalcontent gepubliceerd; dit is géén goedkeuring van een software-release.')+' CMS-broncontrole: '+generatedAt+'.';
+  }catch{
+    host.dataset.status='UNAVAILABLE';
+    copy.textContent='CMS-statusmodule of bronbewijs niet beschikbaar. Geen goedkeuring afgeleid.';
+  }
+}
 async function apiList(){
+  var statusEl=$('#cmsReview'),statusText=$('#cmsReviewText');
+  if(statusEl)statusEl.dataset.status='UNAVAILABLE';
+  if(statusText)statusText.textContent='CMS-publicatiebewijs wordt gecontroleerd. Geen goedkeuring afgeleid.';
   var h=await headers();if(!h.authorization)throw new Error('Niet ingelogd');
   var r=await fetch('/api/cms-admin',{headers:{accept:'application/json',...h},credentials:'same-origin'});
   var d=await r.json().catch(function(){return{}});
   if(!r.ok)throw new Error(d.error||'Laden mislukt');
   items=Array.isArray(d.items)?d.items:[];
   renderList();
+  await renderCmsReview(d.generatedAt);
 }
 async function mutate(body){
   var h=await headers();if(!h.authorization)throw new Error('Niet ingelogd');
@@ -133,7 +151,7 @@ function bind(){
   on('#loadPreviewBtn','click',function(){var input=$('#previewUrl'),frame=$('#previewFrame');var raw=input?input.value.trim()||'/':'/';try{var u=new URL(raw,location.origin);if(u.origin!==location.origin||!['http:','https:'].includes(u.protocol))throw new Error('Alleen pagina’s op bedrijfsgeheugen.nl zijn toegestaan.');if(frame?.contentWindow)frame.contentWindow.location.replace(u.pathname+u.search+u.hash)}catch(e){toast(e.message||'Ongeldige previewroute')}});on('#pickBtn','click',startPick);
 }
 async function enter(u){
-  if(!u){$('#authGate').classList.remove('hidden');$('#app').classList.add('hidden');return}
+  if(!u){items=[];selected=null;var s=$('#cmsReview'),c=$('#cmsReviewText');if(s)s.dataset.status='UNAVAILABLE';if(c)c.textContent='Niet ingelogd: geen CMS-bewijs beschikbaar.';$('#authGate').classList.remove('hidden');$('#app').classList.add('hidden');return}
   $('#authGate').classList.add('hidden');$('#app').classList.remove('hidden');$('#userLabel').textContent=u.email||u.id;
   try{await apiList();selectItem(null)}catch(e){toast(e.message||String(e))}
 }
