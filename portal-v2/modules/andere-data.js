@@ -33,6 +33,7 @@ function render(container,data){
   const weekly=data?.websiteWeeklyGrowth||null;
   const social=data?.socialFunnel||null;
   const growth=data?.growthDirection||null;
+  const acquisition=data?.acquisitionCta||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
   const socialRows=(social?.channels||[]).map(row=>{
     const metric=key=>{
@@ -196,6 +197,22 @@ function render(container,data){
         esc(r.reason)+'</td><td>'+esc(r.action)+'</td></tr>').join('')+'</tbody></table></div>':
       '<p>Geen controleerbare CRO-prioriteiten uit de huidige bron vastgesteld.</p>')+
     '<p class="od-foot">Een stijging in likes, views of replies mag nooit worden vertaald naar orders zonder echte attributie en betaling. Alle voorstellen hier zijn nog geen uitgevoerde experimenten. Ontbrekende providerdekking is onbekend, niet nul; CRO alleen opschalen na geldige treatment/holdout-uitkomsten en ONE BRAIN-readback.</p></section>'+
+    '<section class="od-card"><h3>CRO-bronattributie · website-CTA naar LinkedIn, Instagram en e-mail</h3>'+
+    '<p>Dezelfde oorspronkelijke Growth Events en ONE BRAIN-bron. Na analytics-toestemming koppelen beide bestaande website-meetmodules een vaste kanaalcategorie en dezelfde tabbladsessie aan de CTA. Geen extra tracker, nieuwe scheduler of identificatie van bezoekers.</p>'+
+    '<p>Bronstatus: '+badge(acquisition?.status||'UNVERIFIED')+
+      ' · Providerattributie: '+badge(acquisition?.providerAttributionVerified?'BEVESTIGD':'NIET ONAFHANKELIJK BEVESTIGD')+'</p>'+
+    '<div class="od-grid">'+
+      field('CTA-events met vastgelegde bron (14d, niet-bot-vlag)',fmt(acquisition?.observedCtaEvents))+
+      field('Zonder toewijsbare bron',fmt(acquisition?.unattributedCtaEvents))+
+      field('LinkedIn persoonlijk',fmt(acquisition?.byChannel?.linkedin_personal))+
+      field('LinkedIn bedrijf',fmt(acquisition?.byChannel?.linkedin_company))+
+      field('LinkedIn zonder kanaalbewijs',fmt(acquisition?.byChannel?.linkedin_unassigned))+
+      field('Instagram',fmt(acquisition?.byChannel?.instagram))+
+      field('E-mail',fmt(acquisition?.byChannel?.email))+
+      field('Organisch zoeken',fmt(acquisition?.byChannel?.organic_search))+
+      field('Betaald zoeken',fmt(acquisition?.byChannel?.paid_search))+
+      field('Overige verwijzingen',fmt(acquisition?.byChannel?.referral))+'</div>'+
+    '<p class="od-foot">Dit zijn geregistreerde CTA-bronlabels, geen geverifieerde personen, leads of orders. Bij ontbrekende events is de bronstatus onzeker; ontbrekende CTA-events betekenen niet dat websitebezoekers niets wilden. Orders uit social of e-mail pas na daadwerkelijke klant- en providerbetalingsreadback toeschrijven.</p></section>'+
     '<section class="od-card"><h3>Social CRO · LinkedIn persoonlijk, bedrijf en Instagram</h3>'+
     '<p>Dezelfde ONE BRAIN-bronnen, drie gescheiden kanalen. Meetvenster 48 uur na publicatie (±6 uur), afgelopen 7 dagen versus vorige 21 dagen. Minimaal vijf echte providerwaarnemingen per periode en per metriek. Geen identiteiten van kijkers.</p>'+
     '<p>Provider-meetbewijs: '+badge(social?.status||'UNAVAILABLE')+' · Exacte 48-uursmetingen: '+esc(fmt(social?.observedAlignedWindows))+
