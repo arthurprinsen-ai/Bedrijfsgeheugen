@@ -73,6 +73,7 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
       <p id="cmsReviewText">CMS-publicatiebewijs niet beschikbaar. Geen goedkeuring afgeleid.</p>
       <small>GitHub/CodeQL/Netlify-goedkeuring publiceert geen CMS-tekst. Alleen een bevoegde beheerder kan een inhoudselement publiceren; de publieke CMS-route toont uitsluitend gepubliceerde items.</small>
     </section>
+    <section id="cmsPowerhouseLoop" class="cms-review" role="region" data-status="UNAVAILABLE" aria-label="Powerhouse CMS learning loop"><strong>Powerhouse · CMS → kwaliteit → publicatie → Heartbeat → CRO → ONE BRAIN</strong><p id="cmsLoopSummary">CMS-bewijs wordt geladen.</p><div id="cmsLoopStages" aria-live="polite"></div><small>Bezoek, CTA, leads, orders en leereffecten vragen onafhankelijk bewijs.</small></section>
     <div class="grid">
       <section class="panel">
         <div class="panel-head"><h2>Elementen</h2><span id="countLabel" class="count"></span></div>
@@ -88,6 +89,7 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
           <label>CSS-selector<input id="selector" placeholder="#hero h1, .pricing-card:nth-of-type(1) h3"></label>
           <label>Content (JSON)<textarea id="content">{}</textarea></label>
           <div class="note">Voorbeelden: tekst <code>{"text":"..."}</code>, link <code>{"text":"...","href":"/contact"}</code>, afbeelding <code>{"src":"/img/x.jpg","alt":"..."}</code>, meta <code>{"content":"..."}</code>, HTML <code>{"html":"<p>...</p>"}</code>.</div>
+          <section id="cmsQuality" class="note" role="status" data-status="UNAVAILABLE"><strong>CMS-kwaliteitscontrole</strong><p id="cmsQualityText">Selecteer een concept om de publicatievoorwaarden te controleren.</p></section>
           <div class="actions"><button class="btn primary" type="submit">Draft opslaan</button><button id="publishBtn" class="btn primary" type="button">Publiceren</button><button id="archiveBtn" class="btn danger" type="button">Archiveren</button><button id="clearBtn" class="btn ghost" type="button">Nieuw</button></div>
         </form>
       </section>
