@@ -55,6 +55,9 @@
     ],
     "canary": [
       "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
     ]
   }
 }
