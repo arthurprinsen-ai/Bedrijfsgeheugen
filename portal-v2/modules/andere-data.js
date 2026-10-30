@@ -35,6 +35,19 @@ function render(container,data){
   const flags=Array.isArray(data?.quality?.flags)?data.quality.flags:[];
   const proof=data?.conversionProof||null;
   const cohorts=Array.isArray(data?.experimentProof)?data.experimentProof:null;
+  const brain=data?.brainClosure||null;
+  const gateNames={
+    BRAIN_DELIVERY_READBACK:'Afgeleverd aan ONE BRAIN',
+    FIRST_PARTY_EVENT_RECEIPT:'Exacte opslagbevestiging website-event',
+    ACTUAL_CTA_EXPOSURE:'Echte CTA-interactie',
+    CONTROLLED_CRO_EXPERIMENT:'Gerandomiseerde controlegroep met volwassen uitkomst',
+    QUALIFIED_BUYER_READBACK:'Gekwalificeerde lead onafhankelijk bevestigd',
+    PAID_ORDER_READBACK:'Betaling onafhankelijk bevestigd',
+    ONE_BRAIN_LEARNING_APPLIED:'Leerregel toegepast in volgende natuurlijke run'
+  };
+  const brainRows=Array.isArray(brain?.gates)?brain.gates.map(g=>
+    '<tr><td>'+esc(gateNames[g.gate]||g.gate)+'</td><td>'+badge(g.verified?'BRONBEWIJS AANWEZIG':'BEWIJS ONTBREEKT')+'</td></tr>').join(''):'';
+
   const proofCards=proof?[
     field('Opgeslagen CTA-events (7 dagen)',fmt(proof.observedCtaEvents7d)),
     field('CTA-events in dagaggregatie (7 dagen)',fmt(proof.dailyCtaAggregated7d)),
@@ -73,6 +86,19 @@ function render(container,data){
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
+    '<section class="od-card"><h3>ONE BRAIN · commerciële CRO-terugkoppeling</h3>'+
+    '<p>Originele Heartbeat → canonieke Brain-opslag, zonder tweede scheduler of losse registratie. Een technische readback bewijst nog geen verkoop of experimentele verbetering.</p>'+
+    '<p>Commerciële lus: '+badge(data.commercialLoopStatus||'NOT_VERIFIED')+
+    ' · Brain-bron: '+badge(source.brainProof?.status)+
+    ' · Laatst waargenomen: '+esc(date(brain?.lastObservedAt))+
+    ' · Technische readback: '+badge(brain?.technicalReadbackVerified?'BEVESTIGD':'NIET BEVESTIGD')+'</p>'+
+    '<div class="od-grid">'+field('Onafhankelijk bevestigde omzet',money(brain?.verifiedPaidRevenueEur))+
+    field('Volwassen treatment',fmt(brain?.observed?.maturedTreatment))+
+    field('Volwassen controlegroep',fmt(brain?.observed?.maturedHoldout))+'</div>'+
+    '<div class="od-scroll"><table><thead><tr><th>Verificatiestap</th><th>Bewijsstatus</th></tr></thead><tbody>'+
+    (brainRows||'<tr><td colspan="2">Nog geen onafhankelijk teruggelezen natuurlijke Heartbeat-run.</td></tr>')+
+    '</tbody></table></div>'+
+    '<p class="od-foot">Dit overzicht leest alleen het bestaande ONE BRAIN-registratiepad. Ontbrekende leads, orders en betalingen worden nooit groen gezet.</p></section>'+
     '<section class="od-card"><h3>Bronbewijs voor leads, orders en experimenten</h3><p>De dagtotalen hierboven zijn observaties. Onderstaande bronbewijzen komen uit de bestaande Supabase-registraties. Ook een geregistreerde providerreferentie is nog geen onafhankelijk bevestigd betaalbewijs.</p><div class="od-grid">'+proofCards+'</div>'+
     '<p class="od-foot">Eventstatus: '+badge(proof?.eventStatus)+' · Leadstatus: '+badge(proof?.leadStatus)+' · Orderstatus: '+badge(proof?.orderStatus)+'</p>'+
     '<h4>Gerandomiseerde experimentcohorten</h4>'+
