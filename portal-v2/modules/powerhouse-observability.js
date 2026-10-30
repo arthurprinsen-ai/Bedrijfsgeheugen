@@ -165,9 +165,13 @@ function systemMapView(systemMap,events,observability={}){
   const publicationComplete=publication.status==='REGISTRY_READBACK_COMPLETE';
   const publicationRows=publicationComplete?arr(publication.channels):[];
   const publicationLabels={linkedin_company:'LinkedIn bedrijf',linkedin_personal:'LinkedIn persoonlijk',instagram:'Instagram',blog:'Blog'};
-  const publicationRecoveryText=code=>code==='LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST'
-    ?'Bericht aangemaakt; LinkedIn weigert de onafhankelijke uitleescontrole (403). Nooit opnieuw publiceren; alleen bestaand bericht verifiëren.'
-    :code;
+  const publicationRecoveryText=code=>{
+    if(code==='LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST')
+      return 'Bericht aangemaakt; LinkedIn weigert de onafhankelijke uitleescontrole (403). Nooit opnieuw publiceren; alleen bestaand bericht verifiëren.';
+    if(code==='PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT')
+      return 'Persoonlijke bron nog niet geverifieerd. Controleer concreet feit, herkomst, datum en nieuw verhaal vóór de bestaande goedkeurings- en publicatiestap; niet forceren of dubbel posten.';
+    return code;
+  };
 
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
