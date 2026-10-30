@@ -22,7 +22,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   host.setAttribute('aria-label','Jouw ondernemersroute');
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
-  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null;
+  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null,depthOpen=false;
   const updatePageGuide=()=>{
     const root=documentRef.getElementById('portalView');
     if(!root)return;
@@ -87,8 +87,11 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       add(host,'p','eh-truth','Een scanresultaat, cijfer of aanbeveling verschijnt uitsluitend voor de eigen ingelogde organisatie.');
       return;
     }
-    const chooser=add(host,'div','eh-goals');
-    add(chooser,'h3','','Wat wil jij met je bedrijf bereiken?');
+    const chooser=add(host,model.selectedGoal?'details':'section','eh-goals'+(model.selectedGoal?' eh-goals-collapsible':''));
+    if(model.selectedGoal){
+      const label=model.goals.find(goal=>goal.id===model.selectedGoal)?.label||'Mijn gekozen doel';
+      add(chooser,'summary','eh-change-goal','Mijn doel: '+label+' · wijzigen');
+    }else add(chooser,'h3','','Wat wil jij met je bedrijf bereiken?');
     add(chooser,'p','eh-muted','Kies jouw belangrijkste doel. Je kunt later veranderen; andere vastgelegde doelen blijven bewaard.');
     const choices=add(chooser,'div','eh-goal-grid');
     for(const goal of model.goals){
@@ -98,7 +101,26 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       button.disabled=saving;
     }
 
-    const columns=add(host,'div','eh-cards');
+    const next=add(host,'section','eh-next eh-compass');
+    add(next,'span','eh-compass-eyebrow','ONDERNEMERSKOMPAS · ÉÉN STAP TEGELIJK');
+    const eyebrow=add(next,'span','eh-next-label',model.next.kind==='verified-proposal'?'ONDERBOUWD VOORSTEL':'JOUW BESTE VOLGENDE STAP');
+    add(next,'h3','',model.next.title);
+    add(next,'p','',model.next.explanation);
+    if(model.next.kind==='verified-proposal'){
+      add(next,'small','eh-truth',model.next.evidenceCount+' bronverwijzing(en). '+(model.next.requiresApproval?'Voor uitvoering kan goedkeuring nodig zijn.':'Een voorstel is nog geen uitgevoerde handeling.'));
+    }else add(next,'small','eh-truth','Deze stap is begeleiding op basis van je gekozen doel, geen bewezen financieel rendement.');
+    if(model.next.page){
+      const action=add(next,'button','eh-main-action',model.next.kind==='verified-proposal'?'Bekijk voorstel en onderbouwing →':'Ga verder met deze stap →');
+      action.type='button';action.dataset.entrepreneurPage=model.next.page;
+    }else add(next,'p','eh-small','Begin door hierboven een doel te kiezen.');
+    const more=add(next,'button','eh-evidence-trigger','Waarom deze stap? Bekijk mijn scan, onderbouwing en voortgang ↓');
+    more.type='button';more.dataset.entrepreneurDetails='true';
+    const depth=add(host,'details','eh-depth');
+    depth.dataset.entrepreneurDepth='true';
+    depth.open=depthOpen;
+    add(depth,'summary','eh-depth-summary','Verdieping · mijn scan, bedrijfsgegevens en voortgang');
+    const depthBody=add(depth,'div','eh-depth-body');
+    const columns=add(depthBody,'div','eh-cards');
     const scan=add(columns,'article','eh-info-card');
     add(scan,'span','eh-card-label','Wat weten we uit jouw scan?');
     add(scan,'h3','',model.scan.verified?(model.scan.score===null?(model.scan.count?'Nulmetingen gekoppeld: '+model.scan.count:'Nulmeting gekoppeld'):'Nulmeting '+model.scan.score+'/100'):'Scanstatus nog niet bevestigd');
@@ -114,25 +136,14 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const measure=add(ambition,'button','eh-text-action','Doel en bedrijfsgegevens bekijken →');
     measure.type='button';measure.dataset.entrepreneurPage='bedrijfssituatie';
 
-    const next=add(host,'article','eh-next');
-    const eyebrow=add(next,'span','eh-next-label',model.next.kind==='verified-proposal'?'ONDERBOUWD VOORSTEL':'JOUW BESTE VOLGENDE STAP');
-    add(next,'h3','',model.next.title);
-    add(next,'p','',model.next.explanation);
-    if(model.next.kind==='verified-proposal'){
-      add(next,'small','eh-truth',model.next.evidenceCount+' bronverwijzing(en). '+(model.next.requiresApproval?'Voor uitvoering kan goedkeuring nodig zijn.':'Een voorstel is nog geen uitgevoerde handeling.'));
-    }else add(next,'small','eh-truth','Deze stap is begeleiding op basis van je gekozen doel, geen bewezen financieel rendement.');
-    if(model.next.page){
-      const action=add(next,'button','eh-main-action',model.next.kind==='verified-proposal'?'Bekijk voorstel en onderbouwing →':'Ga verder met deze stap →');
-      action.type='button';action.dataset.entrepreneurPage=model.next.page;
-    }else add(next,'p','eh-small','Begin door hierboven een doel te kiezen.');
     // Existing Brain/Powerhouse cockpit and scenario navigator are projections of
     // this same authenticated snapshot, not separate onboarding databases.
     const journey=buildEntrepreneurJourneyModel(customerState||{},{
       authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt,
       tenantRuntime:loggedIn&&customerState?getTenantRuntime():null
     });
-    renderEntrepreneurJourney(host,journey);
-    const footer=add(host,'div','eh-foot');
+    renderEntrepreneurJourney(depthBody,journey);
+    const footer=add(depthBody,'div','eh-foot');
     add(footer,'span','','1 · Kies je doel');
     add(footer,'span','','2 · Maak het meetbaar');
     add(footer,'span','','3 · Onderzoek en besluit');
@@ -149,6 +160,12 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!button||!host.contains(button))return;
     if(button.dataset.entrepreneurLogin==='true'){globalThis.netlifyIdentity?.open?.('login');return;}
     if(!auth())return;
+    if(button.dataset.entrepreneurDetails==='true'){
+      depthOpen=true;
+      const depth=host.querySelector('[data-entrepreneur-depth]');
+      if(depth){depth.open=true;depth.querySelector('summary')?.focus();}
+      return;
+    }
     if(button.dataset.entrepreneurScan==='true'){
       const scans=documentRef.getElementById('portalCanonicalScans');
       if(scans&&!scans.hidden){scans.scrollIntoView?.({behavior:'smooth',block:'center'});return;}
@@ -183,7 +200,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       if(request===generation&&owner===principal()){saving=false;draw();}
     }
   });
-  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;}draw();};
+  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;depthOpen=false;}draw();};
   const onVerifiedScans=event=>{if(!auth())return;const count=event?.detail?.count;verifiedScanCount=Number.isInteger(count)&&count>=0?count:null;draw();};
   const onImpact=event=>{
     if(!auth()||!principal()||principal()!==subject)return;
@@ -201,6 +218,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     brainReceipt={acknowledged:true};
     draw();
   };
+  host.addEventListener('toggle',event=>{if(event.target?.dataset?.entrepreneurDepth==='true')depthOpen=event.target.open;},true);
   const events=documentRef.defaultView;
   const onTenantRuntime=()=>{if(auth())draw();};
   events?.addEventListener?.('bg:portal-owner-runtime-updated',onTenantRuntime);
