@@ -31,6 +31,7 @@ function render(container,data){
   const source=data?.sources||{};
   const website=data?.website;
   const social=data?.socialFunnel||null;
+  const momentum=data?.growthMomentum||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
   const socialRows=(social?.channels||[]).map(row=>{
     const metric=key=>{
@@ -111,6 +112,28 @@ function render(container,data){
     '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · Social CRO: '+badge(source.socialFunnel?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
+    '<section class="od-card" data-cro-original-momentum><h3>Groei & conversie · één Powerhouse/ONE BRAIN-lus</h3>'+
+    '<p>Vergelijk uitsluitend zeven volledig afgesloten kalenderdagen met de zeven voorafgaande dagen (Europe/Amsterdam). Niet alle pageviews zijn onafhankelijk als menselijke bezoekers bevestigd; onbekende conversie is geen 0%. Geen beloofde dagelijkse stijging.</p>'+
+    '<p>Bronkwaliteit: '+badge(momentum?.status||'UNVERIFIED')+
+      ' · Historische vergelijking: '+badge(momentum?.metrics?.websitePageViews?.direction||'UNVERIFIED')+
+      ' · Laatst gecontroleerd: '+esc(date(momentum?.at))+'</p>'+
+    '<div class="od-grid">'+
+      field('Paginaweergaven · laatste 7 volledige dagen',fmt(momentum?.current?.pageViews))+
+      field('Paginaweergaven · voorgaande 7 dagen',fmt(momentum?.previous?.pageViews))+
+      field('Meetdagen nieuw / voorheen',esc(fmt(momentum?.current?.activeObservedDays))+' / '+esc(fmt(momentum?.previous?.activeObservedDays)))+
+      field('CTA-klikken · laatste 7 volledige dagen',fmt(momentum?.current?.ctaClicks))+
+      field('CTA-conversie op betrouwbare eventbasis',momentum?.ctaMeasurement?.conversionRatePercent===null?'Onbekend':esc(fmt(momentum?.ctaMeasurement?.conversionRatePercent))+'%')+
+      field('Pagina met hoogste aandeel',esc(momentum?.topPage?.canonical||'Niet beschikbaar'))+
+      field('Aandeel paginaweergaven op die pagina',momentum?.topPage?.share===undefined||momentum?.topPage?.share===null?'Onbekend':esc(fmt(momentum?.topPage?.share))+'%')+
+      field('E-mailantwoorden via provider',fmt(momentum?.email?.verifiedReplies))+
+      field('Betaalde orders uit e-mail',fmt(momentum?.email?.paidOrdersFromEmail))+
+      field('Betaalde orders uit connecties',fmt(momentum?.email?.paidOrdersFromConnections))+
+      field('Onafhankelijk betaalde website-orders',fmt(momentum?.orders?.verifiedPaidOrders))+
+    '</div>'+
+    '<p><strong>Prioriteit bestaande CRO-agent:</strong> '+esc(momentum?.priority?.decision||'BRONCONTROLE_NODIG')+
+    ' · Verantwoordelijke: '+esc(momentum?.priority?.owner||'ONE BRAIN CRO')+'</p>'+
+    '<p class="od-foot">De website- en socialgroei wordt alleen op vergelijkbaar bronbewijs beoordeeld. Mailreacties, individuele viewer-identiteiten en orders worden niet uit bereik, clicks of interne actiebevestigingen afgeleid. Afwijkingen: '+esc((momentum?.flags||[]).join(' · ')||'Geen verifieerbare bronmeting')+'.</p></section>'+
+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
     '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
     '<p>Oorspronkelijke 15-lussenbron: '+badge(source.oneLoop?.status)+
