@@ -615,11 +615,14 @@ Deno.serve(async (req) => {
       : [];
     // Rotation by story family: a source whose event types were already used for a
     // personal story in the last 7 days is the same story, so prefer a fresh one.
-    // Never worse than before: if nothing is fresh the previous choice stays.
+    // A stale event family is never an acceptable fallback. Retrying it under
+    // another recommendation ID creates the same story and repeated denials.
+    // No independently fresh source: leave the original claim blocked and let
+    // other channels proceed. The provider uniqueness gate remains mandatory.
     const eligiblePersonal = recs.filter(validPersonalSource).filter((source:any)=>
       !personalRejectedSourceIds.includes(clean(source.recommendation_id)));
     const personalSource = eligiblePersonal.find((s:any)=>!isStalePersonalSource(s,recentPersonalTypes))
-      || eligiblePersonal[0] || null;
+      || null;
     const instagramObligation = obligations.find((o:any) => o.channel === 'instagram') || null;
     const instagramProof = {
       ...(instagramObligation?.evidence || {}),

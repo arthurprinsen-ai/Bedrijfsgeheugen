@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {isStalePersonalSource} from '../supabase/functions/_shared/personal-founder-source-reserve.mjs';
 const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const social=read('supabase/functions/powerhouse-social-publisher/index.ts');
 const orchestrator=read('supabase/functions/powerhouse-content-orchestrator/index.ts');
@@ -61,4 +62,14 @@ test('obligation-only duplicates keep different personal source lineage and cann
  assert.match(orchestrator,/currentObligation\?\.evidence\?\.fallback_recommendation_id/);
  assert.match(orchestrator,/personalRejectedSourceIds\.includes\(clean\(source\.recommendation_id\)\)/);
  assert.match(orchestrator,/recs\.filter\(validPersonalSource\)/);
+});
+
+test('no stale personal-event fallback is allowed when original sources are exhausted',()=>{
+  const old={evidence:{result_event:{event_type:'commercial_heartbeat'}}};
+  assert.equal(isStalePersonalSource(old,new Set(['commercial_heartbeat'])),true);
+  assert.equal(isStalePersonalSource(old,new Set(['revenue_flywheel_health'])),false);
+  const text=orchestrator.slice(orchestrator.indexOf('const eligiblePersonal ='),orchestrator.indexOf('const instagramObligation ='));
+  assert.match(text,/eligiblePersonal\.find\(\(s:any\)=>!isStalePersonalSource\(s,recentPersonalTypes\)\)/);
+  assert.doesNotMatch(text,/\|\|\s*eligiblePersonal\[0\]/);
+  assert.match(text,/\|\| null;/);
 });
