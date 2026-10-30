@@ -1,0 +1,8 @@
+# Engineering event: one source-grounded revenue CRO funnel 2026-10-30
+- Fingerprint: `powerhouse|one-brain|growth-funnel-observed-engagement-not-attributed-sales|20261030-v1`. Parent #4198. Class CROSS_CHANNEL_COMMERCIAL_CONVERSION_PROOF_GAP.
+- Observed at original production: 32/32 connected, 18/18 jobs active, 8 GREEN/3 AMBER/4 RED; 938 opportunities, registered 0 independently realized EUR, 4464 nonbot-flag page-event records, 0 stored CTA, 0 linked leads and 0 orders with provider reference. These are not unique visitors, no proof of causal zero sales, and do not cover external revenue records.
+- Cause: original portal presentations of social views/likes/shares, reply records, website sessions, CRO events and paid provider outcomes were separate. No single bounded source freshness and next-owner evidence list to repair the earliest missing commercial stage.
+- Repair: original Powerhouse admin-only read model and Portal V2 add 8-stage source-aware, privacy-preserving original-owner priority graph, no new writer/scheduler/CRM. First evidence priority is original consented primary_cta_click producer → 202 → original drain → exact stored ID. All recommended actions remain PROPOSED_NOT_EXECUTED.
+- Regressions: historical missing CTA, missing provider, unmatched social snapshots, stale CRO readback, provider reference not verified paid, no alternative publisher and original auth contract.
+- Learning: same ONE BRAIN fingerprint, AGENTS/SEO/Growth/Content skills, original System Map, human change log and append-only ledger. Protected Required, CodeQL, exact Netlify READY and next natural agent/business outcome proof are mandatory separately.
+- Candidate status: SOURCE_CANDIDATE, do not claim all original 15 loops green or increase in actual orders.
