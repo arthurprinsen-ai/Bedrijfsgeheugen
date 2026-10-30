@@ -34,13 +34,21 @@ def main():
           'content_sha256':meta.get('contentSha256'),'raw_sha256':meta.get('rawSha256'),
           'bytes':meta.get('bytes'),'etag':meta.get('etag'),'last_modified':meta.get('lastModified'),
           'previous_sha256':meta.get('previousSha256'),'first_observation':meta.get('firstObservation',False),
-          'change_detected':meta.get('changed',False),'freshness_heartbeat':True
+          'change_detected':meta.get('changed',False),
+          'source_content_verified':meta.get('sourceContentVerified') is True,
+          'verification':meta.get('verification') or 'UNVERIFIED_LEGACY_CHECK',
+          'diagnostic_response_sha256':meta.get('diagnosticResponseSha256'),
+          'freshness_heartbeat':True
         }
         heartbeat_key='regulatory-check:'+source_id+':'+checked_at
         rpc(url,key,{'p_source_key':'regulatory-'+source_id,'p_dedupe_key':heartbeat_key,
-                     'p_external_event_id':str(meta.get('contentSha256')),'p_observed_at':checked_at,'p_evidence':heartbeat})
+                     'p_external_event_id':str(meta.get('contentSha256') or ('UNVERIFIED:'+source_id+':'+str(meta.get('httpStatus')))),'p_observed_at':checked_at,'p_evidence':heartbeat})
         written+=1
 
+        # Only exact verified official content may receive a regulatory-content event.
+        # A 202 or challenge response is telemetry, never an interpreted regulation.
+        if meta.get('sourceContentVerified') is not True or meta.get('verification') != 'VERIFIED_HTTP_DOCUMENT':
+            continue
         raw_sha=str(meta.get('rawSha256') or '')
         raw_path=pathlib.Path(args.raw_dir)/source_id/(raw_sha+'.bin')
         if not raw_sha or not raw_path.exists():
@@ -56,7 +64,8 @@ def main():
           'raw_encoding':'gzip+base64','raw_body_gzip_base64':base64.b64encode(compressed).decode(),
           'etag':meta.get('etag'),'last_modified':meta.get('lastModified'),
           'previous_sha256':meta.get('previousSha256'),'first_observation':meta.get('firstObservation',False),
-          'change_detected':meta.get('changed',False)
+          'change_detected':meta.get('changed',False),
+          'source_content_verified':True,'verification':'VERIFIED_HTTP_DOCUMENT'
         }
         dedupe='regulatory-content:'+source_id+':'+raw_sha
         rpc(url,key,{'p_source_key':'regulatory-'+source_id,'p_dedupe_key':dedupe,'p_external_event_id':raw_sha,
