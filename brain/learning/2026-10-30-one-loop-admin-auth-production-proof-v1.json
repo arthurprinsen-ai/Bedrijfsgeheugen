@@ -61,5 +61,26 @@
       "tests/brain-one-loop-admin-production-proof-20261030.test.mjs"
     ]
   },
-  "source_status": "PR_OPEN_REGRESSION_REQUIRED_NOT_LIVE"
+  "source_status": "PR_OPEN_REGRESSION_REQUIRED_NOT_LIVE",
+  "evidence": {
+    "source": "public.powerhouse_loop_assurance_state_v1",
+    "observed_at": "2026-10-30T08:20:10Z",
+    "source_loop_counts": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "original_runtime_error_flags": 2,
+    "original_portal_code_live_commit": "91923c762ea91470c453b11f0198712de50a5dc4",
+    "original_netlify_deploy_id": "6ae45124c1fff5d31946433b",
+    "original_generic_tenant_proof_status": "PROVEN",
+    "specific_one_loop_admin_route_proof_status": "UNVERIFIED",
+    "protected_CI_security_replays": "HISTORICAL_SHADOW_CANARY_PASS_ON_PR_5181",
+    "production_admin_route_proven": false,
+    "source_issue": "#4918",
+    "source_pr": "#5181"
+  },
+  "tests": [
+    "tests/brain-one-loop-admin-production-proof-20261030.test.mjs"
+  ]
 }
