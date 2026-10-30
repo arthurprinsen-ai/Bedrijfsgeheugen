@@ -111,9 +111,10 @@ test('learning is never claimed from an outcome alone',()=>{
 });
 
 test('untrusted titles, values and source references are escaped',()=>{
- const html=outcomeFeedbackMarkup([verified({title:'<img src=x onerror=alert(1)>',source_refs:['<script>']})]);
- assert.doesNotMatch(html,/<script>|<img src/);
+ const html=outcomeFeedbackMarkup([verified({title:'<img src=x onerror=alert(1)> <IMG SRC=x onerror=alert(2)>',source_refs:['<script>','<ScRiPt>']})]);
+ assert.doesNotMatch(html,/<\s*(?:script|img)\b/i);
  assert.match(html,/&lt;script&gt;/);
+ assert.match(html,/&lt;ScRiPt&gt;/);
 });
 
 test('executive cockpit puts consistent comparison on both tenant and empty states',()=>{
