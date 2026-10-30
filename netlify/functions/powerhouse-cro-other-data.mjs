@@ -387,7 +387,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   const brainClosure=projectCroBrainProof(readStates.brainProof==='LIVE'?brainProof:[],{at});
   const acquisitionCta=projectAcquisitionCtaSource(acquisitionEvents,{status:readStates.acquisitionEvents||'UNAVAILABLE',at});
   const compoundImprovement=projectCompoundImprovementProof({learningReadiness,revenueFlywheel,runtimeHealth,
-    socialApplications,revenueApplications,portalBehavior:behavior,readStates,at});
+    socialApplications,revenueApplications,portalBehavior:behavior,croConversionEvidence:conversionProof,readStates,at});
   if(compoundImprovement.status!=='EVIDENCE_DUE')flags.push('COMPOUND_IMPROVEMENT_SOURCE_READBACK_INCOMPLETE');
   const growthDirection=projectPowerhouseGrowthDirection({dailySources:growthDaily,replyEvents:emailReplies,
     socialFunnel,brainClosure,conversionProof:readStates.conversionProof==='LIVE'?conversionProof[0]:null,readStates,at});

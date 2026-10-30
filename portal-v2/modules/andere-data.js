@@ -149,6 +149,23 @@ function render(container,data){
     '<tr><td>'+esc(item.priority)+'</td><td><strong>'+esc(item.key)+'</strong>'+
     '<br><small>'+esc(item.basis)+'</small></td><td>'+esc(item.owner)+'</td>'+
     '<td>'+badge(item.status)+'<br><small>'+esc(item.next)+'</small></td></tr>').join('');
+  const innovation=improvement?.innovationPortfolio||null;
+  const innovationRows=(innovation?.innovationCandidates||[]).map(item=>
+    '<tr><td><strong>'+esc(item.id)+'</strong><br><small>'+esc(item.domain)+'</small></td>'+
+    '<td>'+badge(item.stage)+'<br><small>'+esc(item.reason)+'</small></td>'+
+    '<td>'+esc(item.owner)+'</td>'+
+    '<td>'+esc(item.implementationBrief)+'<br><small>Technieken: '+esc((item.technologyOptions||[]).join(' · '))+
+    '<br>Meetdoel: '+esc(item.primaryOutcome)+'</small></td></tr>').join('');
+  const innovationCard='<section class="od-card" data-powerhouse-autonomous-innovation>'+
+    '<h3>Autonomous Innovation Lab · agents bedenken en ontwikkelen zelfstandig</h3>'+
+    '<p>De bestaande Growth, Customer Success, AI/ONE BRAIN en Engineering-agents gebruiken deze voortdurend opnieuw berekende verbeteragenda. Zij kunnen binnen hun bestaande bevoegdheden veilige, omkeerbare kandidaten ontwikkelen, testen en via Required, CodeQL en een beschermde release uitrollen. Dit overzicht is een plan, géén bewezen ontwikkelactie, live AI-model of omzetstijging.</p>'+
+    '<p>Innovatieprojectie: '+badge(innovation?.status||'UNVERIFIED')+
+    ' · Broncontrole: '+esc(innovation?.observedAt||'—')+'</p>'+
+    '<div class="od-scroll"><table><thead><tr><th>Innovatie</th><th>Bewijs en fase</th><th>Eigenaar</th><th>Technologie, verandering en meetdoel</th></tr></thead>'+
+    '<tbody>'+(innovationRows||'<tr><td colspan="4">Eerst originele Brain-, CRO- en klantbronnen controleren; geen fictieve AI-ideeën als actie afvinken.</td></tr>')+
+    '</tbody></table></div>'+
+    '<p class="od-foot">Automatische technologiekeuze vereist een echte champion/challenger-evaluatie op kwaliteit, veiligheid, privacy, kosten en snelheid. Alle klanteninzichten blijven per tenant afgeschermd. Live pas na exacte releasebewijs; slimmer alleen na onafhankelijk geverifieerde klantwaarde of verkoopuitkomst.</p></section>';
+
   const compoundCard='<section class="od-card" data-one-brain-compound-proof>'+
     '<h3>ONE BRAIN + Heartbeat · drie dagelijkse verbeterlussen</h3>'+
     '<p>Gedeelde originele commerciële, leer-, runtime- en portaalbronnen. De agents hebben één gezamenlijke bewijslijst; alleen geregistreerde acties, werkelijke klantwaarde en onafhankelijke betaalbewijzen kunnen een resultaat sluiten. Een groen technisch systeem is niet automatisch meer omzet.</p>'+
@@ -170,6 +187,7 @@ function render(container,data){
     '<div class="od-grid">'+cardData+'</div>'+
     weeklyCard+
     compoundCard+
+    innovationCard+
     '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
     '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
     '<p>Oorspronkelijke 15-lussenbron: '+badge(source.oneLoop?.status)+

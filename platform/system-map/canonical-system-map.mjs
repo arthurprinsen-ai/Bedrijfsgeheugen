@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  autonomousAgentInnovationV1:Object.freeze({
+    fingerprint:'innovation|agent-self-development|no-verified-build-from-canonical-data|20261030-v1',
+    contract:'POWERHOUSE_AGENT_AUTONOMOUS_INNOVATION_V1',
+    implementation:'brain/self-improvement/autonomous-innovation-portfolio.mjs',
+    source:'netlify/functions/_powerhouse-compound-improvement-proof.mjs',
+    protectedApi:'netlify/functions/powerhouse-cro-other-data.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    owner:'existing Powerhouse Growth/Revenue + Portal V2 Customer Success + ONE BRAIN/Heartbeat + Self-Improvement Engineering',
+    originalExecutionAuthority:'.github/workflows/powerhouse-daily-self-evolution.yml + original Supabase Powerhouse scheduler and existing Work tasks',
+    technologySelection:'existing brain/self-improvement/self-improvement-layer.mjs evaluatePromotionCandidate',
+    requiredTests:'tests/brain-autonomous-innovation-portfolio-20261030.test.mjs',
+    brainLearning:'brain/learning/2026-10-30-autonomous-agent-innovation-proof-v1.json',
+    humanDoc:'docs/changes/2026-10-30-autonomous-agent-innovation-portfolio.md',
+    noNewScheduler:true,noSecondWriter:true,noNewBrainStore:true,
+    original15LoopAssurancePreserved:true,originalTenantAndAdminAuthPreserved:true,
+    verifiedProtectedDeployment:false,verifiedNaturalAgentApplication:false,
+    verifiedRevenueAndCustomerUplift:false
+  }),
+
   compoundRevenueCustomerLearningProof:Object.freeze({
     fingerprint:'powerhouse|compound-organism|connected-not-proven-daily-value|20261030-v1',
     owner:'original Powerhouse Growth/Revenue + Portal V2/customer success + ONE BRAIN/Heartbeat',
@@ -85,7 +104,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'3b366cb19dc3c56a20b7bd9b96182754619d79de30073f1d5ea5cc4f69f2e4be',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'b0fa17ef5b47bff8c279eecdf13c3a6a465573a517b879013788ba9120c7f76c',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
