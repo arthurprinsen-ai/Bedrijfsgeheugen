@@ -134,7 +134,29 @@ export function projectCroOneLoopAssurance(source){
     }))};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],oneLoopAssurance=undefined,readStates={},at=new Date().toISOString()}={}){
+
+/** Read-only aggregate. Original sales actions remain the one system of record.
+ * Never infer actual external provider delivery from a prepared email or internal research. */
+export function projectOutreachSourceRecovery(actions,research,{actionsStatus='UNAVAILABLE',researchStatus='UNAVAILABLE'}={}){
+  const valid=actionsStatus==='LIVE'&&researchStatus==='LIVE'&&Array.isArray(actions)&&Array.isArray(research);
+  if(!valid)return {status:'UNVERIFIED',reason:'ORIGINAL_OUTREACH_READBACK_UNAVAILABLE',
+    sourceResearchHeld:null,internalResearchPending:null,internalResearchDone:null,providerVerifiedSends:null};
+  const held=actions.filter(r=>r?.status==='prepared'&&r?.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED').length;
+  const provider=actions.filter(r=>r?.status==='done'&&
+    r.evidence?.autonomous_outbound?.provider_ack_verified===true&&
+    r.evidence?.autonomous_outbound?.provider_readback_verified===true&&
+    typeof r.evidence?.autonomous_outbound?.provider_message_id==='string'&&
+    r.evidence.autonomous_outbound.provider_message_id.length>0).length;
+  return {status:'SOURCE_READBACK_COMPLETE',reason:null,sourceResearchHeld:held,
+    internalResearchPending:research.filter(r=>['suggested','prepared','waiting'].includes(r.status)).length,
+    internalResearchDone:research.filter(r=>r.status==='done').length,
+    providerVerifiedSends:provider,
+    businessOutcomeVerified:false,
+    owner:'original-powerhouse-autonomous-outreach',nextOwner:'original-powerhouse-relationship-public-research',
+    source:'public.powerhouse_sales_actions',note:'Original action metadata, not independently audited Gmail or revenue.'};
+}
+
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
@@ -142,6 +164,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   const experimentProofOk=readStates.experimentProof==='LIVE';
   const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk&&(readStates.brainProof===undefined||readStates.brainProof==='LIVE');
   const oneLoop=projectCroOneLoopAssurance(oneLoopAssurance);
+  const outreachRecovery=projectOutreachSourceRecovery(outreachActions,outreachResearch,{actionsStatus:readStates.outreachActions,researchStatus:readStates.outreachResearch});
   const completeWithOneLoop=complete&&(oneLoopAssurance===undefined||oneLoop.status==='READBACK_COMPLETE');
   const dailyLast=daily.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const experimentLast=experiments.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
@@ -175,6 +198,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
     contract:'POWERHOUSE_CRO_OTHER_DATA_V1',generatedAt:at,
     scope:'canonical',status:completeWithOneLoop?'LIVE':'PARTIAL',
     oneLoop,
+    outreachRecovery,
     commercialLoopStatus:brainClosure.status,
     brainClosure,
     sources:{
@@ -184,6 +208,8 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       behavior:{status:readStates.behavior||'UNAVAILABLE',lastObservedAt:behaviorLast||null,records:behaviorOk?behavior.length:null},
       brainProof:{status:readStates.brainProof||'UNAVAILABLE',lastObservedAt:brainClosure.lastObservedAt,records:brainClosure.technicalReadbackVerified?1:null},
       oneLoop:{status:oneLoop.status,lastObservedAt:oneLoop.checkedAt||null,records:oneLoop.status==='READBACK_COMPLETE'?15:null},
+      outreachActions:{status:readStates.outreachActions||'UNAVAILABLE',records:readStates.outreachActions==='LIVE'?outreachActions.length:null},
+      outreachResearch:{status:readStates.outreachResearch||'UNAVAILABLE',records:readStates.outreachResearch==='LIVE'?outreachResearch.length:null},
       conversionProof:{status:conversionProofOk?'LIVE':readStates.conversionProof||'UNAVAILABLE',records:conversionProofOk?1:null},
       experimentProof:{status:experimentProofOk?'LIVE':readStates.experimentProof||'UNAVAILABLE',records:experimentProofOk?experimentProof.length:null}
     },
@@ -255,13 +281,17 @@ export default async function handler(request){
     select(base,key,'bg_cro_behavior_daily_v1',
       'select=day,pad,device,last_visible_section,page_events,persisted_event_receipts,historical_without_receipt,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001'),
     select(base,key,'brain_records',
-      'select=record_id,record_type,record_kind,owner_id,status,observed_at,executed,verified,payload&tenant_id=eq.canonical&record_id=like.cro-commercial-evidence:*&order=observed_at.desc&limit=2')
+      'select=record_id,record_type,record_kind,owner_id,status,observed_at,executed,verified,payload&tenant_id=eq.canonical&record_id=like.cro-commercial-evidence:*&order=observed_at.desc&limit=2'),
+    select(base,key,'powerhouse_sales_actions',
+      'select=status,updated_at,evidence&action_type=eq.autonomous_email&channel=eq.email&updated_at=gte.'+new Date(Date.now()-30*86400000).toISOString()+'&order=updated_at.desc&limit=301'),
+    select(base,key,'powerhouse_sales_actions',
+      'select=status,updated_at&action_type=eq.research_enrichment&channel=eq.internal&dedupe_key=like.relationship-research:outreach-source:*&order=updated_at.desc&limit=301')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssurance({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
   const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
-  const limits=[2000,150,50,1,150,5000,1];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1,300,300];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','outreachActions','outreachResearch'],readStates={},datasets=[];
   for(let i=0;i<stateNames.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -269,7 +299,7 @@ export default async function handler(request){
     readStates[stateNames[i]]=complete?'LIVE':rows.length>limits[i]?'TRUNCATED':'UNAVAILABLE';
     datasets[i]=complete?rows:[];
   }
-  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],oneLoopAssurance,readStates});
+  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],oneLoopAssurance,outreachActions:datasets[7],outreachResearch:datasets[8],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};
