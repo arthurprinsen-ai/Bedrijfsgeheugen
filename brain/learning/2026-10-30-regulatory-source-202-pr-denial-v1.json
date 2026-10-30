@@ -38,12 +38,13 @@
     "existing_original_source_store": "public.powerhouse_evidence_source_observations",
     "facts": "HTTP 202 is not proof of an applicable legislative change; the raw 202 response was observed but its content identity is not verified official legislative text."
   },
-  "change": "The original monitor separates transport diagnostics from verified HTML content. Non-200, unexpected redirect, short HTML, wrong MIME, and challenge/interstitial are check-only; original canonical source state and prior content hash remain unchanged. Original Brain ingest writes a fail-closed unverified heartbeat but not a regulatory-content record for such responses. Original workflow retains pushed candidate and fails explicitly if GitHub Actions PR creation is denied; never claims protected delivery.",
+  "change": "The original monitor separates transport diagnostics from verified HTML content. Non-200, unexpected redirect, short HTML, wrong MIME, and challenge/interstitial are check-only; original canonical source state and prior content hash remain unchanged. Original Brain ingest writes a fail-closed unverified heartbeat but not a regulatory-content record for such responses. Original workflow retains pushed candidate and fails explicitly if GitHub Actions PR creation is denied; never claims protected delivery. Existing portal-v2/regulatory-baseline.js now refuses HTTP202 hashes and unknown/unverified source records as a verified baseline for AI Act, NIS2 and GDPR. A previously approved monitored control becomes review-required without erasing existing evidence; unrelated controls stay unchanged.",
   "prevention": "Source content quality gates must be enforced before hash change, raw canonical content and regulatory interpretation. Authorized GitHub-PR creation is an independent external permissions gate; never bypass branch protection, grant unreviewed permissions or substitute a branch push for a merged/published PR. No second scheduler, provider, writer or database.",
   "regression": [
     "tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs",
     "tests/regulatory-organism-feed.test.mjs",
-    "tests/repo-writer-regulatory-source-watch-v1.test.mjs"
+    "tests/repo-writer-regulatory-source-watch-v1.test.mjs",
+    "portal-v2/tests/regulatory-baseline.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
@@ -64,7 +65,9 @@
     "original_natural_watcher": "NOT_YET_REPLAYED",
     "verified_eurlex_content": "UNVERIFIED",
     "protected_pr_creation": "HUMAN_OR_AUTHORIZED_APP_ACTION_REQUIRED",
-    "external_business_outcome": "NOT_APPLICABLE"
+    "external_business_outcome": "NOT_APPLICABLE",
+    "native_portal_proof": "PENDING_EXACT_NETLIFY_MAIN_AND_BROWSER",
+    "portal_approval_guards": "NEW_REGRESSION_GATES_UNDER_PROTECTED_PR"
   },
   "human_documents": [
     "docs/changes/2026-10-30-regulatory-source-202-pr-denial.md",
