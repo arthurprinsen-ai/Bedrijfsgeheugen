@@ -101,7 +101,7 @@ export function executiveCockpitMarkup(model){
   <section class="os-cms-workstream" aria-label="Content en CMS in Powerhouse">
     <h3>Content als bedrijfsproces · CMS → kwaliteit → publicatie → meting → ONE BRAIN</h3>
     <p>De bestaande CMS-beheeromgeving controleert redactionele kwaliteit, toegestane links, toegankelijkheid, opgeslagen versies en publieke publicatiebewijzen. GA4, CTA, lead, order en leereffect blijven afzonderlijk bewijs vereisen.</p>
-    <a href="/cms.html" rel="noopener">Open CMS-kwaliteits- en publicatiebeheer →</a>
+    <a href="https://www.bedrijfsgeheugen.nl/cms.html" rel="noopener">Open CMS-kwaliteits- en publicatiebeheer →</a>
     <small>Alleen bevoegde beheerders mogen publiceren. Een CMS-publicatie is geen bewezen conversiestijging.</small>
   </section>
   <section class="os-health"><h3>Data & bewijs</h3><p>${model.evidence_health.stale} verouderd · ${model.evidence_health.low_confidence} lage confidence · ${model.evidence_health.unavailable} onvolledig</p></section>
