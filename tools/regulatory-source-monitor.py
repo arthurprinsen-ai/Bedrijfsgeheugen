@@ -74,13 +74,11 @@ def main():
         }
         checks['sources'][source['id']]=record
         if not trusted:
-            # Keep the previous verified baseline byte-for-byte. Diagnostic raw
-            # is retained separately for Brain, explicitly UNVERIFIED.
+            # Keep previous authoritative baseline intact. Only status, hash
+            # and rejection reason enter Brain; do not persist untrusted HTML
+            # in a writer path or treat it as legal source content.
             if previous:
                 out['sources'][source['id']]=previous
-            raw_path=pathlib.Path(args.raw_dir)/source['id']/(raw_sha+'.bin')
-            raw_path.parent.mkdir(parents=True,exist_ok=True)
-            raw_path.write_bytes(result['raw'])
             continue
         if changed or first:
             out['sources'][source['id']]=record
