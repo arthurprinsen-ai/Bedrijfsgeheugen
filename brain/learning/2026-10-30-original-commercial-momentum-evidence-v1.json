@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "version": "v1",
+  "fingerprint": "powerhouse|cro|unverifiable-zero-cta-and-noncomparable-growth-baseline|20261030-v1",
+  "owner": "original Powerhouse CRO Control Center, SEO Growth, ONE BRAIN/Heartbeat commercial learning, Portal V2",
+  "compiler": {
+    "failure_class": "MEASUREMENT_INTEGRITY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Original 7d CRO source had 4401 non-bot-flagged pageviews but zero CTA, form submit or qualified lead events. Roughly 2377 pageviews clustered on /over-ons, not independently verified as human. Original CRO portal combined 30d source totals but did not show full-calendar 7d vs previous 7d source sufficiency or named CTA attribution next action; email reply/paid channel outcomes cannot be inferred.",
+  "official_source": "public.powerhouse_cro_conversion_evidence_v1 / public.growth_page_daily / authorized social provider snapshots",
+  "prevention": "Read only canonical old source; compare only full Amsterdam days and require at least 3 positive observation days per arm. Missing baseline or CTA event IDs means unknown, not 0% conversion. No seller/sales attribution from raw pageviews or Gmail sends; separate social, conversion, buyer/order and applied learning readbacks; one original owner and no extra scheduler.",
+  "evidence": {
+    "checked_at": "2026-10-30T10:27:00Z",
+    "pageviews_nonrobot_flagged_7d": 4401,
+    "recorded_cta_events_7d": 0,
+    "linked_qualified_leads_30d": 0,
+    "provider_verified_orders_30d": 0,
+    "verified_revenue_eur": 0,
+    "original_experiment_treatment": 1,
+    "original_experiment_holdout": 0,
+    "top_page_path": "/over-ons",
+    "top_page_nonbot_flagged_pageviews": 2377,
+    "source_population_not_unique_humans": true,
+    "provider_social_views_unavailable_for_personal_linkedin": true,
+    "production_change_proven": false,
+    "natural_agent_applied_rule_proven": false,
+    "commercial_increase_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-commercial-momentum-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-commercial-momentum-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-commercial-momentum-20261030.test.mjs"
+    ]
+  },
+  "regression": [
+    "tests/brain-original-commercial-momentum-20261030.test.mjs",
+    "tests/portal-cro-other-data.test.mjs",
+    "tests/brain-three-channel-social-funnel-trend-v1.test.mjs"
+  ],
+  "skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+  "human_documentation": "docs/changes/2026-10-30-original-commercial-growth-momentum.md",
+  "development_ledger": "docs/development-ledger-events/2026-10-30-original-commercial-growth-momentum.md",
+  "constraints": [
+    "No fake social engagement, provider replies, unique visitors or paid revenue",
+    "No extra scheduler or truth store; only original CRO and social owners",
+    "Do not promote underpowered CRO experiment",
+    "Use existing Portal V2 owner-only auth and no customer PII in projection",
+    "No status GREEN until original exact SHA production and natural agent outcome readback"
+  ]
+}
