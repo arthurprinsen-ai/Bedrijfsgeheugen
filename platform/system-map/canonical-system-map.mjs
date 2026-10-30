@@ -7,7 +7,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     protectedApi:'netlify/functions/powerhouse-cro-other-data.mjs',
     portal:'portal-v2/modules/andere-data.js',
     owner:'existing Powerhouse Growth/Revenue + Portal V2 Customer Success + ONE BRAIN/Heartbeat + Self-Improvement Engineering',
-    originalExecutionAuthority:'.github/workflows/powerhouse-daily-self-evolution.yml + original Supabase Powerhouse scheduler and user's existing Work tasks',
+    originalExecutionAuthority:'.github/workflows/powerhouse-daily-self-evolution.yml + original Supabase Powerhouse scheduler and existing Work tasks',
     technologySelection:'existing brain/self-improvement/self-improvement-layer.mjs evaluatePromotionCandidate',
     requiredTests:'tests/brain-autonomous-innovation-portfolio-20261030.test.mjs',
     brainLearning:'brain/learning/2026-10-30-autonomous-agent-innovation-proof-v1.json',
