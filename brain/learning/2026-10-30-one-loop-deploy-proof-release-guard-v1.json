@@ -1,0 +1,78 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|release|generic-portal-auth-certified-without-15-loop-admin-proof|20261030-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "prior_proof_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5181",
+  "root_cause": "Original protected Production Release Readback verified the two-tenant generic portal auth proof and exact Netlify deploy but never asserted one_loop_assurance_proof=PROVEN and its 15-loop count, allowing a false green release when the separately admin-protected original source route was UNVERIFIED.",
+  "prevention": "Use the same original Production Release Readback workflow and original portal-authenticated-production-proof-core.mjs. Treat the independent admin/403/401 and 15-row source statuses as a mandatory exact-deploy release gate. Fail closed with the original bounded retries and incident learning. A genuine RED original revenue/content loop remains RED even when authorized route is PROVEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-loop-release-terminal-proof-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-one-loop-release-terminal-proof-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-loop-release-terminal-proof-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "checked_at": "2026-10-30T08:48:30Z",
+    "source_sha": "9fc929fcb057e6d78686ba287778c293a46a322f",
+    "original_netlify_deploy_id": "6ae458c2f4d6723c8bf2ff5d",
+    "original_production_readback_run_id": 41028407937,
+    "original_production_readback_conclusion": "success",
+    "original_generic_tenant_auth_proof": "PROVEN",
+    "original_generic_synthetic_tenants": 2,
+    "original_generic_cleanup": "DELETED",
+    "actual_admin_http_status": 200,
+    "actual_nonadmin_http_status": 403,
+    "actual_anonymous_http_status": 401,
+    "original_edge_request_ids": [
+      "01M65ZRNPC7TWY7H04CK69C6DH",
+      "01M65ZRRS7XRKTTZE40W03XQT1",
+      "01M65ZRRWJNTDKWS6GN10VBA21"
+    ],
+    "nested_proof_payload_readback_proven": false,
+    "original_public_assurance_counts": {
+      "green": 8,
+      "amber": 3,
+      "red": 4,
+      "total": 15
+    },
+    "original_one_brain_wired": "32/32",
+    "original_heartbeat_jobs": "18/18",
+    "original_runtime_error_flags": 2,
+    "proof_gating_release_source_proven": false,
+    "proof_of_all_business_outcomes": false
+  },
+  "owner": "original Powerhouse Netlify Production Truth / Portal Reliability / ONE BRAIN",
+  "regression": [
+    "tests/brain-one-loop-release-terminal-proof-20261030.test.mjs"
+  ],
+  "human_documentation": "docs/changes/2026-10-30-one-loop-deploy-proof-release-guard.md",
+  "development_ledger": "docs/development-ledger-events/2026-10-30-one-loop-deploy-proof-release-guard.md",
+  "code": [
+    "platform/api/portal-authenticated-production-proof-core.mjs",
+    ".github/workflows/production-release-readback.yml"
+  ],
+  "skill": ".agents/skills/powerhouse-netlify-production-truth/SKILL.md",
+  "constraints": [
+    "no second scheduler or provider",
+    "no fake exact-SHA proof",
+    "no duplicate LinkedIn/Instagram post",
+    "keep signed admin and RLS",
+    "do not infer forecast outcomes from source route",
+    "do not mark learning PROVEN until protected merge and subsequent natural release proof"
+  ]
+}

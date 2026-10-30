@@ -1,0 +1,10 @@
+# Ontwikkelregistratie — terminale 15-loop productie-authbewijsgate
+**Datum:** 30 oktober 2026 · eigenaar oorspronkelijk Netlify/ONE BRAIN release, issue #4918.
+
+- Originele PR #5181 beschermd gemerged op `main` `9fc929fcb057e6d78686ba287778c293a46a322f`. Netlify productiedeploy `6ae458c2f4d6723c8bf2ff5d` READY, provider-side production release readback #41028407937 SUCCESS.
+- Oorspronkelijke autonome Identity-proef: 2 tenants onderscheiden, opruiming van tijdelijke accounts `DELETED`, generic auth `PROVEN`. Netlify originele verzoeken naar `/api/powerhouse-one-loop-assurance`: admin 200, niet-admin 403, anoniem 401; het geneste `one_loop_assurance_proof` was niet geëvalueerd door de releaseworkflow. Geen bron-ID of koopbewijs verzonnen.
+- Bronnen op 08:48 UTC: 32/32 intelligentielagen gekoppeld, 18/18 vereiste jobs actief, 15 lussen 8 GREEN / 3 AMBER / 4 RED, 2 originele runtimefoutstatussen. Nog geen bewezen private forecast resolver outcomes of alle 15 GREEN.
+- Oorzaak/risico: oudere `Production Release Readback` eist alleen generiek `status=PROVEN`; de nieuwe onafhankelijke adminroutebewijsstatus kan `UNVERIFIED` zijn terwijl het releasebewijs als geheel groen zou tonen.
+- Herstelkandidaat: originele `portal-authenticated-production-proof-core.mjs` pure fail-closed validator; huidige `production-release-readback.yml` vereist die geneste auth/15-loop/cleanup-status bij exact immutable deployment. Geen tweede workflow, scheduler, writer, extra portal of statusmanipulatie.
+- Regressie: `tests/brain-one-loop-release-terminal-proof-20261030.test.mjs` historische 8/3/4 status (route bewezen maar bedrijfslus niet), ontbreken geneste proof, 403/401-verificatie faalt, cleanup faalt, inconsistente statusaantallen falen. Alle oorspronkelijke releases blijven beschermd.
+- Eindevaluatie: pas na bestaande Required/BRAIN/CodeQL, protected native merge en eerstvolgende echte originele production release receipt met geneste `PROVEN` + independently witnessed counts. Ondertussen `OBSERVED`, geen claim volledige omzet-/CRO-lus.
