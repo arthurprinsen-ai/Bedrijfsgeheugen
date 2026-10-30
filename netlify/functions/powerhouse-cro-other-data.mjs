@@ -60,13 +60,56 @@ function summarizeBehavior(rows){
     interpretation:'Only consented non-bot events; pagehide is incomplete, tab sessions are not unique visitors, and this is no causal proof.'};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],readStates={},at=new Date().toISOString()}={}){
+// Read ONLY the existing canonical ONE BRAIN record. This is not a second
+// outcome engine: verified=false means neither customer value nor payment was proven.
+const CRO_GATES=Object.freeze([
+ 'BRAIN_DELIVERY_READBACK','FIRST_PARTY_EVENT_RECEIPT','ACTUAL_CTA_EXPOSURE',
+ 'CONTROLLED_CRO_EXPERIMENT','QUALIFIED_BUYER_READBACK',
+ 'PAID_ORDER_READBACK','ONE_BRAIN_LEARNING_APPLIED'
+]);
+export function projectCroBrainProof(rows,{at=new Date().toISOString()}={}){
+ const fail=reason=>({status:'NOT_VERIFIED',reason,recordId:null,
+   lastObservedAt:null,technicalReadbackVerified:false,businessOutcomeVerified:false,
+   verifiedPaidRevenueEur:null,gates:[]});
+ if(!Array.isArray(rows)||rows.length!==1)return fail('ONE_BRAIN_RECORD_MISSING');
+ const r=rows[0],p=r?.payload;
+ if(r?.record_type!=='Verification'||r?.record_kind!=='verification'||
+    r?.owner_id!=='powerhouse-commercial-heartbeat-runner'||
+    r?.executed!==true||r?.verified!==false||r?.status!=='OBSERVED'||
+    typeof r?.record_id!=='string'||!/^cro-commercial-evidence:[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(r.record_id)||
+    p?.contract!=='POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1'||
+    p?.status!=='EVIDENCE_INCOMPLETE')return fail('ONE_BRAIN_RECORD_CONTRACT_MISMATCH');
+ const seen=new Set(),gates=[];
+ for(const row of p.gates||[]){
+   if(!CRO_GATES.includes(row?.gate)||typeof row.verified!=='boolean'||seen.has(row.gate))return fail('GATE_SET_INVALID');
+   seen.add(row.gate);gates.push({gate:row.gate,verified:row.verified});
+ }
+ if(gates.length!==CRO_GATES.length)return fail('GATE_SET_INCOMPLETE');
+ const ts=Date.parse(r.observed_at),now=Date.parse(at);
+ if(!Number.isFinite(ts)||!Number.isFinite(now)||ts>now+300000||now-ts>2*3600000)
+   return fail('ONE_BRAIN_READBACK_STALE_OR_FUTURE');
+ const allGates=gates.every(g=>g.verified);
+ // A read-only record can never attest an independently verified paid outcome.
+ return {status:'EVIDENCE_INCOMPLETE',reason:allGates?'INDEPENDENT_PROVIDER_AUDIT_REQUIRED':'MISSING_COMMERCIAL_PROOF',
+   recordId:r.record_id,lastObservedAt:r.observed_at,
+   technicalReadbackVerified:true,businessOutcomeVerified:false,
+   verifiedPaidRevenueEur:null,gates,
+   observed:{
+     ctaEvents7d:safeNumber(p.observed?.ctaEvents7d),
+     linkedLeadRecords30d:safeNumber(p.observed?.linkedLeadRecords30d),
+     orderProviderReferenceRecords30d:safeNumber(p.observed?.orderProviderReferenceRecords30d),
+     maturedTreatment:safeNumber(p.observed?.maturedTreatment),
+     maturedHoldout:safeNumber(p.observed?.maturedHoldout)
+   }};
+}
+
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
   const conversionProofOk=readStates.conversionProof==='LIVE'&&conversionProof.length===1;
   const experimentProofOk=readStates.experimentProof==='LIVE';
-  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk;
+  const complete=dailyOk&&experimentsOk&&readStates.policies==='LIVE'&&behaviorOk&&conversionProofOk&&experimentProofOk&&(readStates.brainProof===undefined||readStates.brainProof==='LIVE');
   const dailyLast=daily.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const experimentLast=experiments.reduce((latest,row)=>String(row.updated_at||'')>latest?String(row.updated_at):latest,'');
   const behaviorLast=behavior.reduce((latest,row)=>String(row.last_observed_at||'')>latest?String(row.last_observed_at):latest,'');
@@ -86,6 +129,9 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   if(behaviorOk&&(!behaviorData||behaviorData.events.persisted_event_receipts===0))flags.push('NEW_EVENT_UID_READBACK_NOT_YET_VERIFIED');
   if(dailyOk&&totals.pageViews>0&&totals.ctaClicks===0)flags.push('CTA_TRACKING_NOT_VERIFIED');
   if(experimentsOk&&experiments.some(e=>!e.causal_status||e.causal_status==='insufficient_evidence'))flags.push('EXPERIMENT_EVIDENCE_INCOMPLETE');
+  const brainClosure=projectCroBrainProof(readStates.brainProof==='LIVE'?brainProof:[],{at});
+  if(!brainClosure.technicalReadbackVerified)flags.push('ONE_BRAIN_CRO_RUNTIME_READBACK_NOT_VERIFIED');
+  if(!brainClosure.businessOutcomeVerified)flags.push('CRO_COMMERCIAL_CLOSED_LOOP_NOT_PROVEN');
   const cp=conversionProofOk?conversionProof[0]:null;
   if(cp?.event_evidence_status!=='PERSISTED_EVENTS_OBSERVED')flags.push('PERSISTED_EVENT_PARITY_NOT_PROVEN');
   if(cp?.lead_evidence_status!=='LINKED_RECORDS_REQUIRE_INDEPENDENT_BUYER_VERIFICATION')flags.push('QUALIFIED_LEAD_READBACK_NOT_PROVEN');
@@ -93,11 +139,14 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
   return {
     contract:'POWERHOUSE_CRO_OTHER_DATA_V1',generatedAt:at,
     scope:'canonical',status:complete?'LIVE':'PARTIAL',
+    commercialLoopStatus:brainClosure.status,
+    brainClosure,
     sources:{
       website:{status:readStates.daily||'UNAVAILABLE',lastObservedAt:dailyLast||null,records:dailyOk?daily.length:null},
       experiments:{status:readStates.experiments||'UNAVAILABLE',lastObservedAt:experimentLast||null,records:experimentsOk?experiments.length:null},
       policies:{status:readStates.policies||'UNAVAILABLE',records:readStates.policies==='LIVE'?policies.length:null},
       behavior:{status:readStates.behavior||'UNAVAILABLE',lastObservedAt:behaviorLast||null,records:behaviorOk?behavior.length:null},
+      brainProof:{status:readStates.brainProof||'UNAVAILABLE',lastObservedAt:brainClosure.lastObservedAt,records:brainClosure.technicalReadbackVerified?1:null},
       conversionProof:{status:conversionProofOk?'LIVE':readStates.conversionProof||'UNAVAILABLE',records:conversionProofOk?1:null},
       experimentProof:{status:experimentProofOk?'LIVE':readStates.experimentProof||'UNAVAILABLE',records:experimentProofOk?experimentProof.length:null}
     },
@@ -167,11 +216,13 @@ export default async function handler(request){
     select(base,key,'powerhouse_cro_experiment_evidence_v1',
       'select=experiment_key,evidence_status,policy_status,primary_metric,minimum_matured_per_arm,matured_treatment,matured_holdout,last_assignment_at&limit=151'),
     select(base,key,'bg_cro_behavior_daily_v1',
-      'select=day,pad,device,last_visible_section,page_events,persisted_event_receipts,historical_without_receipt,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001')
+      'select=day,pad,device,last_visible_section,page_events,persisted_event_receipts,historical_without_receipt,tab_sessions,scroll_reached_25,scroll_reached_50,scroll_reached_75,scroll_reached_100,observed_exits,observed_exits_under_25,form_starts,form_errors,form_abandons,whatsapp_clicks,rapid_click_heuristics,popup_exposures,experiment_exposures,last_observed_at&day=gte.'+from+'&order=day.desc&limit=5001'),
+    select(base,key,'brain_records',
+      'select=record_id,record_type,record_kind,owner_id,status,observed_at,executed,verified,payload&tenant_id=eq.canonical&record_id=like.cro-commercial-evidence:*&order=observed_at.desc&limit=2')
   ];
   const responses=await Promise.allSettled(queries);
-  const limits=[2000,150,50,1,150,5000];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof'],readStates={},datasets=[];
   for(let i=0;i<responses.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -179,7 +230,7 @@ export default async function handler(request){
     readStates[stateNames[i]]=complete?'LIVE':rows.length>limits[i]?'TRUNCATED':'UNAVAILABLE';
     datasets[i]=complete?rows:[];
   }
-  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],readStates});
+  const projection=projectOtherData({daily:datasets[0],experiments:datasets[1],policies:datasets[2],conversionProof:datasets[3],experimentProof:datasets[4],behavior:datasets[5],brainProof:datasets[6],readStates});
   return reply(projection,projection.status==='LIVE'?200:206);
 }
 export const config={path:'/api/powerhouse-cro-other-data'};

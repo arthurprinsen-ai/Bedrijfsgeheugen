@@ -263,6 +263,94 @@ async function reviewContactAuthority(){
   }
 }
 
+// Source-only CRO observation within the ORIGINAL authorized Heartbeat runner.
+// No outbound messages, new scheduler, separate Brain, claim of revenue, or BG211 replay.
+async function observeCroCommercialProof(){
+  try{
+    const outcome=await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '8500ms'");
+      await tx.unsafe("set local lock_timeout = '1500ms'");
+      const conversionRows=await tx.unsafe(
+        "select event_evidence_status,observed_cta_events_7d,linked_qualified_lead_records_30d,orders_with_recorded_provider_readback_30d,last_persisted_event_at from public.powerhouse_cro_conversion_evidence_v1 limit 1"
+      );
+      const experimentRows=await tx.unsafe(
+        "select experiment_key,evidence_status,minimum_matured_per_arm,matured_treatment,matured_holdout from public.powerhouse_cro_experiment_evidence_v1 order by experiment_key limit 2"
+      );
+      const conversion=conversionRows?.[0]??null;
+      if(!conversion)throw new Error("CRO_CONVERSION_PROOF_SOURCE_UNAVAILABLE");
+      const exp=experimentRows?.[0]??null;
+      const positiveInt=(n:unknown)=>n!==null&&n!==undefined&&Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):null;
+      // These views are observations: no independent buyer/payment, event UID
+      // receipt, pre-treatment assignment or Brain delivery attestation.
+      const gates=[
+        {gate:"BRAIN_DELIVERY_READBACK",verified:false},
+        {gate:"FIRST_PARTY_EVENT_RECEIPT",verified:false},
+        {gate:"ACTUAL_CTA_EXPOSURE",verified:positiveInt(conversion.observed_cta_events_7d)>0},
+        {gate:"CONTROLLED_CRO_EXPERIMENT",verified:false},
+        {gate:"QUALIFIED_BUYER_READBACK",verified:false},
+        {gate:"PAID_ORDER_READBACK",verified:false},
+        {gate:"ONE_BRAIN_LEARNING_APPLIED",verified:false}
+      ];
+      const snapshot={
+        contract:"POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1",
+        status:"EVIDENCE_INCOMPLETE",
+        evidence_origin:"existing_supabase_read_models",
+        verified_paid_revenue_eur:null,
+        verified_qualified_leads:null,
+        verified_paid_orders:null,
+        gates,
+        observed:{
+          eventStatus:String(conversion.event_evidence_status||"UNKNOWN").slice(0,90),
+          ctaEvents7d:positiveInt(conversion.observed_cta_events_7d),
+          linkedLeadRecords30d:positiveInt(conversion.linked_qualified_lead_records_30d),
+          orderProviderReferenceRecords30d:positiveInt(conversion.orders_with_recorded_provider_readback_30d),
+          experimentStatus:String(exp?.evidence_status||"NO_EXPERIMENT_SOURCE").slice(0,90),
+          maturedTreatment:positiveInt(exp?.matured_treatment),
+          maturedHoldout:positiveInt(exp?.matured_holdout),
+          minimumPerArm:positiveInt(exp?.minimum_matured_per_arm)
+        },
+        truth_boundary:"Read-model metrics and an internal heartbeat receipt do not independently verify buyer, payment, delivery or applied CRO learning.",
+        nextAction:"USE_ORIGINAL_HEARTBEAT_OWNER_TO_VERIFY_EVENT_IDS_AND_REAL_CONTROL_BUYER_PAYMENT_OUTCOMES"
+      };
+      const current=await tx.unsafe("select to_char((now() at time zone 'Europe/Amsterdam')::date,'YYYY-MM-DD') as day");
+      const day=String(current?.[0]?.day||"");
+      if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day))throw new Error("CRO_DAY_UNAVAILABLE");
+      const key="cro-commercial-evidence:"+day;
+      const written=await tx.unsafe(
+        "insert into public.brain_records(tenant_id,record_id,record_type,record_kind,subject_id,correlation_id,owner_id,status,observed_at,executed,verified,result,evidence_ids,provenance,payload,idempotency_key,source_revision) "+
+        "values('canonical',$1,'Verification','verification','cro-commercial-closure','powerhouse-cro-commercial-closure-v1','powerhouse-commercial-heartbeat-runner','OBSERVED',now(),true,false,"+
+        "jsonb_build_object('commercial_proof_status','EVIDENCE_INCOMPLETE','business_outcome_verified',false,'causal_winner_proven',false),"+
+        "ARRAY['supabase:powerhouse_cro_conversion_evidence_v1','supabase:powerhouse_cro_experiment_evidence_v1']::text[],"+
+        "jsonb_build_object('owner','original-commercial-heartbeat','no_parallel_scheduler',true),$2::jsonb,$1,'original-heartbeat-cro-proof-v1') "+
+        "on conflict(tenant_id,idempotency_key) do update set observed_at=excluded.observed_at,executed=true,verified=false,"+
+        "result=excluded.result,payload=excluded.payload,provenance=excluded.provenance,updated_at=now() "+
+        "where public.brain_records.record_type='Verification' and public.brain_records.owner_id='powerhouse-commercial-heartbeat-runner' "+
+        "returning record_id,status,verified,executed",
+        [key,JSON.stringify(snapshot)]
+      );
+      if(written.length!==1)throw new Error("CRO_CANONICAL_BRAIN_OWNER_CONFLICT");
+      return {record_id:key,status:"OBSERVED",business_outcome_verified:false};
+    });
+    // Independent readback AFTER commit, never inferred from a successful SQL call alone.
+    const again=await db().unsafe(
+      "select record_id,status,executed,verified,payload->>'contract' contract from public.brain_records "+
+      "where tenant_id='canonical' and record_id=$1 order by observed_at desc limit 1",
+      [outcome.record_id]
+    );
+    const verified=again.length===1&&again[0].record_id===outcome.record_id&&
+      again[0].status==="OBSERVED"&&again[0].executed===true&&
+      again[0].verified===false&&again[0].contract==="POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1";
+    return {state:verified?"BRAIN_OBSERVATION_READBACK_VERIFIED":"BRAIN_OBSERVATION_READBACK_MISSING",
+      source:"canonical_brain_records",record_id:outcome.record_id,
+      technical_readback_verified:verified,business_outcome_verified:false,
+      commercial_loop_closed:false};
+  }catch(error){
+    console.error("CRO_COMMERCIAL_OBSERVATION_FAILED",error instanceof Error?error.message:String(error));
+    return {state:"EVIDENCE_UNAVAILABLE",technical_readback_verified:false,
+      business_outcome_verified:false,commercial_loop_closed:false};
+  }
+}
+
 async function runOutboundLanes(){
   const results=await Promise.allSettled(outboundLanes.map(def=>runOneOutboundLane(def)));
   return results.map((item,i)=>item.status==="fulfilled"?item.value:{
@@ -284,7 +372,8 @@ Deno.serve(async(req:Request)=>{
   const outboundLanesResult=await runOutboundLanes();
   try{
     const result=await runHeartbeat();
-    return json({...result,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
+    const croCommercialEvidence=await observeCroCommercialProof();
+    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
   }catch(error){
     console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
     return json({
