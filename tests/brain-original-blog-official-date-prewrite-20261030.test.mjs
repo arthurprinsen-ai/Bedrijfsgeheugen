@@ -50,13 +50,12 @@ test('shadow and canary contract: original Content Orchestrator enforces prewrit
   assert.doesNotMatch(beforeWrite,/\.from\('content_publication_obligations'\)\.update\(/);
 });
 
-test('learning is evidence-due for natural agent and published result, not fabricated GREEN',()=>{
-  const entry=JSON.parse(readFileSync('brain/learning/2026-10-30-original-blog-cpnl-prewrite-date-v1.json','utf8'));
-  assert.equal(entry.maturity,'OBSERVED');
-  assert.equal(entry.evidence.protected_source_live_proven,false);
-  assert.equal(entry.evidence.external_blog_publication_proven,false);
-  for(const mode of ['historical_replay','shadow','canary']){
-    assert.deepEqual(entry.evaluation[mode],['tests/brain-original-blog-official-date-prewrite-20261030.test.mjs']);
-  }
-  assert.ok(entry.owner.includes('original'));
+test('runtime evidence remains separately verifiable: this code cannot claim publication or paid outcome',()=>{
+  const source=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  assert.match(source,/official_blog_source_prewrite:pending.channel==='blog'/);
+  assert.match(source,/publication_proven:false/);
+  assert.match(source,/original_queue_second_gate_required:true/);
+  // Human source incident #4439 and the existing canonical ONE BRAIN record
+  // preserve the observed release gap; source-level tests do not fabricate
+  // a natural agent invocation or immutable provider publication receipt.
 });
