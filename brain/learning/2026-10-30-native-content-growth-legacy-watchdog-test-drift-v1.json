@@ -34,5 +34,15 @@
     "protected_main": "PENDING",
     "github_ci": "PENDING",
     "production": "NOT_APPLICABLE_GOVERNANCE_TEST_ONLY"
+  },
+  "evidence": {
+    "main_commit": "8f0f68ea78bacd7146faacb082074522f243a34c",
+    "failed_workflow_run": "41034792790",
+    "failed_job_id": "123992869752",
+    "failed_test": "tests/content-growth-daily-blog-watchdog-recovery.test.mjs",
+    "observed_failure": "AssertionError ERR_ASSERTION stale regex for historical unresolved date fallback",
+    "original_watchdog_source": ".github/workflows/daily-blog-live-watchdog.yml",
+    "verified_read_only_contract": "tests/brain-daily-blog-watchdog-no-public-private-proof.test.mjs",
+    "native_post_merge_run": "41034792790"
   }
 }
