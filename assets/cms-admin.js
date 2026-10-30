@@ -173,7 +173,7 @@ async function save(e){
 }
 async function changeStatus(action){
   if(!selected?.id)return;
-  try{var d=await mutate({action:action,id:selected.id,expected_version:selected.version});selected=d.item;toast(action==='publish'?'Gepubliceerd':'Gearchiveerd');await apiList();selectItem(items.find(function(x){return x.id===selected.id})||selected);if(action==='publish'&&window.BGCMS)window.BGCMS.reload()}
+  try{var d=await mutate({action:action,id:selected.id,expected_version:selected.version});selected=d.item;toast(action==='publish'?(d.cms_public_readback?.verified?'CMS gepubliceerd; publieke projectie bevestigd':'CMS-publicatie opgeslagen; publiek terugleesbewijs nog nodig'):'Gearchiveerd');await apiList();selectItem(items.find(function(x){return x.id===selected.id})||selected);if(action==='publish'&&window.BGCMS)window.BGCMS.reload()}
   catch(err){toast(err.message||String(err))}
 }
 function bind(){
