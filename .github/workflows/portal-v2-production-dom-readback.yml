@@ -72,17 +72,12 @@ jobs:
             echo "::error::Selected published revision is not an ancestor of current main."
             exit 1
           fi
-          changed="$(git diff --name-only "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA")"
-          while IFS= read -r file; do
-            [ -n "$file" ] || continue
-            case "$file" in
-              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
-              *)
-                echo "::error::Runtime source changed after selected production SHA: $file"
-                exit 1
-                ;;
-            esac
-          done <<< "$changed"
+          # Preserve the original ancestor + main workflow_dispatch restriction.
+          # Backend-only changes are allowed only when the existing canonical
+          # Netlify applicability classifier proves there is no Portal/Netlify
+          # runtime, website, browser or asset deployment impact. Exact pinned
+          # immutable + public provider manifests are checked before/after E2E.
+          node tools/ci/portal-backend-only-production-sha-override.mjs --verify
           echo "SCOPE_ONLY_PRODUCTION_TARGET:deployed=$PORTAL_EXPECTED_SHA:workflow_main=$GITHUB_SHA"
       - name: Classify visual baseline impact fail-closed
         env:
