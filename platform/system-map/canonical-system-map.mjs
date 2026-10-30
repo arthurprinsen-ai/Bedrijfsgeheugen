@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  allAgentInnovationDutyAssurance:Object.freeze({
+    fingerprint:'powerhouse|all-agent-innovation|roster-unchecked-during-daily-self-evolution|20261030-v1',
+    owner:'existing Powerhouse ONE BRAIN/Heartbeat Self Evolution and original Growth/Portal owners',
+    contract:'POWERHOUSE_ALL_AGENT_INNOVATION_DUTY_V1',
+    sourceAgentRegistry:'platform/agents/agent-team.mjs',
+    sourcePortfolio:'brain/self-improvement/autonomous-innovation-portfolio.mjs',
+    pureAssurance:'brain/self-improvement/all-agent-innovation-duties.mjs',
+    originalAdminRead:'netlify/functions/_powerhouse-compound-improvement-proof.mjs',
+    originalPortal:'portal-v2/modules/andere-data.js',
+    originalDailySnapshot:'scripts/brain/daily-self-evolution.mjs',
+    originalDailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml',
+    regression:'tests/brain-all-agent-innovation-duty-20261030.test.mjs',
+    originalLearning:'brain/learning/2026-10-30-all-agent-innovation-assignment-is-not-execution-v1.json',
+    humanDoc:'docs/changes/2026-10-30-all-agent-innovation-duty-closed-loop.md',
+    original15LoopTruthPreserved:true,noNewScheduler:true,noNewWriter:true,
+    assignmentIsNotExecution:true,naturalApplicationVerified:false,
+    independentClientOrPaidOutcomeVerified:false
+  }),
+
   autonomousAgentInnovationV1:Object.freeze({
     fingerprint:'innovation|agent-self-development|no-verified-build-from-canonical-data|20261030-v1',
     contract:'POWERHOUSE_AGENT_AUTONOMOUS_INNOVATION_V1',
@@ -104,7 +123,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'b0fa17ef5b47bff8c279eecdf13c3a6a465573a517b879013788ba9120c7f76c',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'ffb63a4cb227576d6bf59ed9108b4ce83225005a5baad8ea9602f4dc53200f3d',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',

@@ -1,4 +1,6 @@
 import { buildAutonomousInnovationPortfolio } from '../../brain/self-improvement/autonomous-innovation-portfolio.mjs';
+import { buildAllAgentInnovationDuties } from '../../brain/self-improvement/all-agent-innovation-duties.mjs';
+import { DEFAULT_AGENT_TEAM } from '../../platform/agents/agent-team.mjs';
 
 // Read-only synthesis for the ORIGINAL Powerhouse / ONE BRAIN / Heartbeat owners.
 // This does not create another truth store, scheduler, customer identity or action writer.
@@ -190,6 +192,9 @@ export function projectCompoundImprovementProof({
   }:null;
   const innovationPortfolio=buildAutonomousInnovationPortfolio({
     proof:{evidenceSources},cro,at
+  });
+  innovationPortfolio.agentDutyCoverage=buildAllAgentInnovationDuties({
+    agents:DEFAULT_AGENT_TEAM,innovationPortfolio,at
   });
   return {contract:'POWERHOUSE_COMPOUND_IMPROVEMENT_READONLY_V1',
     status:commercialOk&&learningOk&&customerOk?'EVIDENCE_DUE':'PARTIAL_SOURCE_READBACK',

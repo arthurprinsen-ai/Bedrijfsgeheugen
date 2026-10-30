@@ -99,7 +99,11 @@
     "no_uncontrolled_self_modification": true,
     "agent_objective_required": true,
     "architecture_health_guard_required": true,
-    "provider_neutral_model_routing": true
+    "provider_neutral_model_routing": true,
+    "all_registered_agents_innovation_duty_required": true,
+    "agent_innovation_assignment_not_execution": true,
+    "new_agent_must_inherit_safe_innovation_duty": true,
+    "independent_next_natural_application_and_outcome_required": true
   },
   "autonomy": {
     "safe_reversible_changes": "auto",
