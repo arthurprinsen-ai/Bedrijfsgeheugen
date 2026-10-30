@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  autonomousAgentInnovationV1:Object.freeze({
+    fingerprint:'innovation|agent-self-development|no-verified-build-from-canonical-data|20261030-v1',
+    contract:'POWERHOUSE_AGENT_AUTONOMOUS_INNOVATION_V1',
+    implementation:'brain/self-improvement/autonomous-innovation-portfolio.mjs',
+    source:'netlify/functions/_powerhouse-compound-improvement-proof.mjs',
+    protectedApi:'netlify/functions/powerhouse-cro-other-data.mjs',
+    portal:'portal-v2/modules/andere-data.js',
+    owner:'existing Powerhouse Growth/Revenue + Portal V2 Customer Success + ONE BRAIN/Heartbeat + Self-Improvement Engineering',
+    originalExecutionAuthority:'.github/workflows/powerhouse-daily-self-evolution.yml + original Supabase Powerhouse scheduler and user's existing Work tasks',
+    technologySelection:'existing brain/self-improvement/self-improvement-layer.mjs evaluatePromotionCandidate',
+    requiredTests:'tests/brain-autonomous-innovation-portfolio-20261030.test.mjs',
+    brainLearning:'brain/learning/2026-10-30-autonomous-agent-innovation-proof-v1.json',
+    humanDoc:'docs/changes/2026-10-30-autonomous-agent-innovation-portfolio.md',
+    noNewScheduler:true,noSecondWriter:true,noNewBrainStore:true,
+    original15LoopAssurancePreserved:true,originalTenantAndAdminAuthPreserved:true,
+    verifiedProtectedDeployment:false,verifiedNaturalAgentApplication:false,
+    verifiedRevenueAndCustomerUplift:false
+  }),
+
   compoundRevenueCustomerLearningProof:Object.freeze({
     fingerprint:'powerhouse|compound-organism|connected-not-proven-daily-value|20261030-v1',
     owner:'original Powerhouse Growth/Revenue + Portal V2/customer success + ONE BRAIN/Heartbeat',
