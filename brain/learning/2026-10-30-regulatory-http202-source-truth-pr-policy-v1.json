@@ -59,5 +59,17 @@
     "shadow": [
       "tests/brain-regulatory-http202-source-trust-20261030.test.mjs"
     ]
+  },
+  "evidence": {
+    "source_run": "github-actions:41036966479",
+    "job": "124000057814",
+    "provider_source": "eu-ai-act",
+    "http_status": 202,
+    "baseline_promoted": false,
+    "observed_branch": "writer/regulatory-source-watch/41036966479",
+    "provider_pr_creation": "DENIED_CURRENT_POLICY",
+    "regression": "tests/brain-regulatory-http202-source-trust-20261030.test.mjs",
+    "tested_policy": "HTTP200_NONCHALLENGE_ONLY",
+    "current_state": "CANDIDATE_NOT_PRODUCTION_PROVEN"
   }
 }
