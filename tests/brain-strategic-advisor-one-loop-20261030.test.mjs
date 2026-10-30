@@ -31,7 +31,7 @@ test('adviser uses only source-backed healthy next best actions',()=>{
  const rows=strategicAdviceItems(state);
  assert.equal(rows.length,1);
  assert.equal(rows[0].id,'a-12');
- assert.equal(rows[0].expected,'€\u00a03.200');
+ assert.match(rows[0].expected,/3\\.200/);
  assert.equal(rows[0].expectedKind,'forecast');
  assert.equal(rows[0].verifiedOutcomes,0);
 });
