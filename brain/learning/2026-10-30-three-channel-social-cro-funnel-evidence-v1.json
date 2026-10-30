@@ -32,5 +32,17 @@
     "production": "UNVERIFIED",
     "natural_run": "PENDING",
     "outcome": "UNPROVEN"
+  },
+  "compiler": {
+    "failure_class": "SOCIAL_FUNNEL_PERSONAL_CHANNEL_OMITTED_AND_UNCOMPARABLE_POST_AGE",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-three-channel-social-funnel-trend-v1.test.mjs"
+    ]
   }
 }
