@@ -34,5 +34,29 @@
     "closed-loop business result"
   ],
   "safety": "No legacy BG211 replay, additional scheduler, parallel Brain or CRM, privacy bypass, synthetic traffic, changed OAuth status or automatic experiment promotion.",
-  "next_step": "Existing canonical Brain/Heartbeat owner supplies trusted aggregated readbacks to croCommercialProof and independently confirms actual action/outcome feedback; protected Required+BRAIN+CodeQL, merge and live provider check required."
+  "next_step": "Existing canonical Brain/Heartbeat owner supplies trusted aggregated readbacks to croCommercialProof and independently confirms actual action/outcome feedback; protected Required+BRAIN+CodeQL, merge and live provider check required.",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-commercial-proof-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-commercial-proof-closure-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-commercial-proof-closure-v1.test.mjs",
+    "tools/growth-intelligence/heartbeat-adapter.test.mjs"
+  ],
+  "production_proven": false
 }
