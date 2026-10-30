@@ -1,0 +1,36 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1",
+  "compiler": {
+    "failure_class": "AI_PUBLIC_MARKET_EVIDENCE_REQUIRED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Top 80 strongest recent signals were all external_relationship_evidence, although 7 public news and 11 search demand signals were available. PublicMarketPayload dropped all top80 rows because privacy/evidence allowlist runs after the DB limit.",
+  "prevention": "Apply market scope and allowed source-type predicate in DB BEFORE ranking and limit, with independent 24-news and 16-search quotas; preserve public-market privacy filter and minimum 2-source forecast evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-public-market-priority-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-public-market-priority-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_on": "2026-10-30",
+    "scheduled_request_http": 500,
+    "scheduled_request_error": "AI_PUBLIC_MARKET_EVIDENCE_REQUIRED",
+    "old_top80_relationship_rows": 80,
+    "qualified_external_news": 7,
+    "qualified_search_demand": 11,
+    "supabase_function": "powerhouse-predictive-engine",
+    "scheduler_unchanged": true,
+    "public_market_boundary_preserved": true,
+    "production_runtime_proven": false,
+    "forecast_outcome_proven": false
+  }
+}
