@@ -64,9 +64,10 @@ test('independent verified outcome must have a matching nonempty action ID',()=>
 });
 test('no title, source or rationale can inject HTML into executive briefing',()=>{
  const html=strategicAdvisorMarkup(model([action({title:'<img src=x onerror=alert(1)>',
-  explanation:'<script>alert(1)</script>',source_refs:['<svg onload=alert(1)>']})]));
- assert.doesNotMatch(html,/<script>|<img src/);
+  explanation:'<script>alert(1)</script>',source_refs:['<svg onload=alert(1)>','<ScRiPt>alert(2)</ScRiPt>']})]));
+ assert.doesNotMatch(html,/<\s*(?:script|img)\b/i);
  assert.match(html,/&lt;script&gt;/);
+ assert.match(html,/&lt;ScRiPt&gt;/);
  assert.match(html,/&lt;svg/);
 });
 test('executive cockpit and decision page reuse one visible strategic adviser',async()=>{
