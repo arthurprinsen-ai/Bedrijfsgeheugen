@@ -1,3 +1,4 @@
+import {composerHandoffForAction,outboundDeliveryGap} from '../_shared/outreach-composer-hold.mjs';
 import {createClient} from 'npm:@supabase/supabase-js@2';
 const C='powerhouse-autonomous-relationship-outreach-v3',B='https://backend.composio.dev/api/v3.1';
 const s=(v:any)=>String(v??'').trim(),J=(b:any,n=200)=>new Response(JSON.stringify(b),{status:n,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -104,6 +105,30 @@ Deno.serve(async(req)=>{
    const to=s(a.evidence?.recipient_email),sub=s(a.evidence?.email_subject),body=s(a.message_draft);
    // Known email or LinkedIn connection is not proof of approved recipient outreach.
    const recipientApproved=await verifyRecipientAuthority(db,a,to);
+
+   // The original composer has already checked the public-source preflight.
+   // Preserve its exact, allowlisted failure and retain PREPARED: never send
+   // or invent an 'action' / 'provider readback' stage when no quality proof exists.
+   const composerHandoff=composerHandoffForAction(composerBody?.results,a.action_id);
+   if(recipientApproved&&composerHandoff){
+    const ev={...(a.evidence||{}),execution_gate:{
+      contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,
+      reason:composerHandoff.reason,missing_contract_fields:composerHandoff.missingFields,
+      owner:'existing-powerhouse-relationship-public-research',
+      next_action:'RESEARCH_REAL_SOURCE_BEFORE_ORIGINAL_COMPOSER_RETRY',
+      provider_attempted:false,provider_readback_verified:false,
+      original_composer_contract:'powerhouse-human-commercial-message-composer-v2',
+      same_action_lineage:true,duplicate_send_forbidden:true
+    }};
+    const {error:writeError}=await db.from('powerhouse_sales_actions')
+      .update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
+    if(writeError)throw{code:'COMPOSER_HOLD_WRITEBACK',message:writeError.message};
+    out.push({action_id:a.action_id,status:'held',reason:composerHandoff.reason,
+      missing_contract_fields:composerHandoff.missingFields,
+      provider_attempted:false});
+    continue;
+   }
+
    if(!recipientApproved){
     const ev={...(a.evidence||{}),execution_gate:{contract:'commercial-recipient-authority-p0-v1',blocked_at:now,reason:'RECIPIENT_AUTHORITY_UNVERIFIED',owner:'contact-permission-verification',repair:'Verify lawful recipient-specific authority and human approval in CRM before dispatch; retain contact suppression and cooldown.'}};
     const{error:ae}=await db.from('powerhouse_sales_actions').update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
@@ -136,7 +161,9 @@ Deno.serve(async(req)=>{
     out.push({action_id:a.action_id,status:'unverified',reason:er,checkpoint_written:!ue});
    }
   }
-  const sent=out.filter(x=>x.status==='sent').length;await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:sent===0||out.some(x=>x.status==='error')||out.some(x=>x.status!=='sent')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null}});
-  return J({ok:true,contract:C,selected:(acts||[]).length,sent,results:out,external_outreach_executed:sent>0,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null});
+  const sent=out.filter(x=>x.status==='sent').length;
+  const deliveryGap=outboundDeliveryGap({selected:(acts||[]).length,sent,results:out});
+  await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:sent===0||out.some(x=>x.status==='error')||out.some(x=>x.status!=='sent')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true,delivery_gap:deliveryGap}});
+  return J({ok:true,contract:C,selected:(acts||[]).length,sent,results:out,external_outreach_executed:sent>0,delivery_gap:deliveryGap});
  }catch(e:any){return J({ok:false,contract:C,error:safe(e)},503)}
 });
