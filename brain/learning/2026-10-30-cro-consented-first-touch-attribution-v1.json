@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|cro|consented-channel-to-cta-attribution-and-session-root-split|20261030-v1",
+  "failure_class": "INCOMPLETE_CLOSURE",
+  "scope": "RUNTIME",
+  "owner": "original website CRO event producers → original Netlify Growth Event queue → original Supabase Growth Events → ONE BRAIN/Heartbeat → owner-only Andere data",
+  "root_cause": "Two existing website producers emitted CTA events with source:'website' regardless of the session's consented LinkedIn/Instagram/email acquisition source. Their sessionStorage keys bg_meting_sessie and bg_growth_session were independent, while Calendly attribution used the first and the generated growth events used the second. This prevented deterministic same-tab source→CTA→voluntary lead lineage. 2026-10-30 source had 4418 nonrobot-flagged page_view events but 0 persisted primary_cta_click and 0 qualified leads/orders; source data cannot prove real CTAs were clicked, nor real buyers.",
+  "source_evidence": {
+    "as_of": "2026-10-30T11:05Z",
+    "nonrobot_heuristic_pageviews_7d": 4418,
+    "persisted_cta_7d": 0,
+    "verified_qualified_leads_30d": 0,
+    "independently_verified_paid_orders_30d": 0,
+    "nonrobot_consented_clicks_observed_3d": 3,
+    "bot_clicks_observed_3d": 1632,
+    "growth_brain_queue_queued_delivery_disabled": 199422,
+    "missing_provider_ga4": "EMPTY_SOURCE_BATCH",
+    "linkedin_company": "PROVIDER_OBSERVED/UNLINKED",
+    "original_one_brain_growth_scorecard_pr": 5197
+  },
+  "repair": "Retain the same two mutually exclusive producers (inline SEO money-page and sitewide meting) without double counting. Share one existing tab-scoped UUID, while marketing source is emitted ONLY after current bg_consent=granted. Use fixed enums, never raw UTM/referrer, person, address or arbitrary campaign. Preserve source+medium+coarse channel campaign and existing growth attribution root. The existing owner-only Andere data API reads original, bounded, bot-flag-filtered growth_events and presents recorded 14d CTA categories separately from independently verified paid buyer outcomes.",
+  "prevention_rule": "Do not count unconsented source as attributed acquisition. Do not infer paid orders from CTA labels, 202 queue acknowledgement, historical source/referrer or untrusted pageview bot heuristics. No second scheduler, event writer, order register or BG211 legacy bulk replay. Before claiming conversion lift use mature randomized control/treatment, source/consent/readback and actual verified paid transaction.",
+  "regression_contract": "Replay both original producers at optional consent and without consent, same tab root, validated category mapping for LinkedIn personal/company, Instagram, email, organic/paid search and unknown, duplicate suppression on money pages, first-party datahub schema round trip, admin aggregation fail closed and no raw PII.",
+  "compiler": {
+    "failure_class": "INCOMPLETE_CLOSURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs",
+    "tests/brain-cro-other-data.test.mjs",
+    "tests/seo-order-measurement.test.mjs"
+  ],
+  "production_proven": false,
+  "requirements": [
+    "exact-head Required/BRAIN/CodeQL/System Map",
+    "protected main merge",
+    "Netlify READY exact commit and original sitewide source/inline injection proof",
+    "consented real visitor provider readback with original CTA event category and matching root",
+    "qualified lead/payments independently verified before any order attribution or experimental lift claim"
+  ]
+}
