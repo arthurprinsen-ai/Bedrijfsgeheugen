@@ -5,6 +5,11 @@ description: Use when materially operating, changing, debugging, recovering, doc
 
 # Powerhouse Continuity
 
+## 30 oktober 2026 — social CRO lineage, bronnen en eindbewijs
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Voor alle Bedrijfsgeheugen social/Growth/CRO/Heartbeat/Brain/Portal-handoffs is `.agents/skills/powerhouse-social-cro-funnel/SKILL.md` het geactualiseerde bestaande instructiepad. Meet de drie expliciet toegestane kanaalidentiteiten afzonderlijk en vergelijk alleen 48h±6h providerdata met voldoende steekproef. Missing impressions op LinkedIn persoonlijk = UNKNOWN. Houd de actieve originele publisher en broncollector aan en eis source→provider ID→website event→consented lead→independent paid order→applied learning evidence. Verander geen statussen zonder readback; geen parallelle scheduler, contentwriter, attribuutiemodel of prospectidentiteitsinferentie. PR #5182, BRAIN fingerprint `content-growth|three-channel-social-funnel-personal-omitted-age-bias|20261030-v1`. Menselijk runbook: `docs/changes/2026-10-30-three-channel-social-cro-funnel-v1.md`.
+
+
 ## 30 oktober 2026 — herstelbesluit twee runtime errors: bewijsachterstand, geen tweede scheduler
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
