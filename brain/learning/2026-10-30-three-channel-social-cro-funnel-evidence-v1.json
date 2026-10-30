@@ -51,12 +51,14 @@
     "portal_native_page": "portal-v2/modules/andere-data.js",
     "social_metric_trend": "tools/content-growth/social-funnel-trend.mjs",
     "social_portal_projection": "netlify/functions/_social-cro-funnel-projection.mjs",
-    "agent_rules": "AGENTS.md",
+    "agent_rules": ".agents/skills/powerhouse-continuity/SKILL.md",
     "skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
     "continuity": ".agents/skills/powerhouse-continuity/SKILL.md",
     "single_scheduler": true,
     "provider_maturity_evidence": "48H_PLUS_MINUS_6H",
     "privacy": "NO_ACTOR_PII",
-    "production_status": "CANDIDATE_NOT_LIVE_PROVEN"
+    "production_status": "CANDIDATE_NOT_LIVE_PROVEN",
+    "agent_root_update": "UNMODIFIED_SAFETY_REJECTED",
+    "agent_enforcement": "NEW_SOCIAL_CRO_SKILL_PLUS_EXISTING_CONTINUITY"
   }
 }
