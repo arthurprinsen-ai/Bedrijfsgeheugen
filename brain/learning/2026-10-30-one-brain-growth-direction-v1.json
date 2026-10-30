@@ -1,0 +1,75 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|cro|cross-channel-reach-to-paid-order-growth-direction-unjoined-and-unproven|20261030-v1",
+  "failure_class": "INCOMPLETE_CLOSURE",
+  "scope": "RUNTIME",
+  "owner": "existing Powerhouse SEO Order Engine + Content Growth + CRO Experiment + Outreach + Heartbeat/ONE BRAIN + native Andere data",
+  "root_cause": "Provider social 48h scores, site CRO daily counts, GA4/GSC source coverage and Gmail reply/paid-order evidence existed in separate original systems; owner-only Andere data did not present one fail-closed 7-day directional cross-funnel scoreboard and ordered owner actions. This allowed engagement gains to be mistaken for buyer/order growth. Original daily source logs show GA4 MISSING/EMPTY_SOURCE_BATCH, GSC AWAITING_PROVIDER, noisy website bot-heavy events and provider snapshots with mixed scope; buyer/payment not independently proven.",
+  "observed": {
+    "source_date": "2026-10-30",
+    "loop_counts": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "email_learning_stats_lifetime": {
+      "sent_count": 27,
+      "reply_count": 2,
+      "order_count": 0,
+      "provider_verified_send_total": "NOT_PROVEN_BY_THESE_AGGREGATES"
+    },
+    "reply_events_historical": 4,
+    "recent_leads_in_original_commercial_leads_90d": 0,
+    "recent_growth_outcomes_30d": 0,
+    "revenue_attribution_snapshot_channel_sum_verified_positive_eur": 0,
+    "social_snapshots": {
+      "instagram": "OBSERVED",
+      "personal_linkedin": "OBSERVED_PARTIAL_SCOPE",
+      "company_linkedin": "PROVIDER_OBSERVED_LINKED"
+    },
+    "provider_source_latest": {
+      "ga4": "MISSING_OR_EMPTY",
+      "search_console": "AWAITING_PROVIDER",
+      "website_interactions": "OBSERVED_NONROBOT_HEURISTIC"
+    }
+  },
+  "fix": "Existing admin-only Andere data API reads bounded 14 complete UTC days of original powerhouse_growth_source_daily_v1 and original non-PII powerhouse_email_reply_events; pure projection uses source-specific quality, minimum 5 comparable days per week, previous-vs-current 7d trends for heuristic site sessions/clicks, existing original age-aligned social 48h metrics, original seven paid-order CRO gates and original email reply source. Explicit null for independent order, attribution and visitor-to-paid conversion when evidence missing. Dynamic prioritized owner actions from existing source gaps; no new tracker, scheduler, DB, sender or experiment promotion.",
+  "prevention_rule": "Never guarantee an upward trend, treat unknown as zero, treat LinkedIn/Instagram raw screenshots as verified, sum different snapshot ages or infer website/paid order from impressions. Only original provider-ID readback, consented event/campaign attribution, qualified buyer, payment and applied learning can close commercial funnel. Each agent prioritizes most valuable evidence failure then applies a safe experiment and measures after enough time/samples; never mark recommendation as executed.",
+  "regression": "tests/brain-powerhouse-growth-direction-20261030.test.mjs; 5/7 coverage fail-closed, no false revenue, deduped original replies, age-aligned source, admin-only portal, original existing 15-loop/CRO sources preserved",
+  "compiler": {
+    "failure_class": "INCOMPLETE_CLOSURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-growth-direction-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-growth-direction-20261030.test.mjs"
+    ]
+  },
+  "sources": [
+    "public.powerhouse_growth_source_daily_v1",
+    "public.powerhouse_email_reply_events",
+    "public.growth_page_daily",
+    "public.powerhouse_cro_conversion_evidence_v1",
+    "public.brain_records/cro-commercial-evidence",
+    "public.social_posts",
+    "public.social_metric_snapshots"
+  ],
+  "requiredRelease": [
+    "protected exact-head Required/BRAIN/CodeQL and System Map generator",
+    "protected main merge",
+    "Netlify READY exact commit",
+    "authenticated owner and unauthorized tenant readback",
+    "one natural Heartbeat/Brain learning applied",
+    "no claim of commercial uplift without actual baseline+sample and paid provider proof"
+  ],
+  "businessOutcomeProven": false
+}
