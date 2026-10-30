@@ -15,7 +15,8 @@
   "prevention": "Single original admin publishing gate with deterministic HTML/URL/alt/CTA validation and required expected revision; original writer and public projection readback only; unproven commercial stages remain EVIDENCE_DUE; no second scheduler.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-cms-powerhouse-one-loop-20261030.test.mjs"
+      "tests/brain-cms-powerhouse-one-loop-20261030.test.mjs",
+      "tests/brain-cms-growth-lineage-20261030.test.mjs"
     ]
   },
   "evidence": {
@@ -25,7 +26,8 @@
     "baseline_live_source_commit": "841d7b8f71eb8737f22e527ee4327299970303e0",
     "release_pending": true,
     "full_funnel_verified": false,
-    "human_publication_approved": false
+    "human_publication_approved": false,
+    "cms_growth_lineage": "Existing assets/meting.js adds cms:<element_key>:v<version> only to original consented /api/growth-event content_id, still provider/outcome evidence due."
   },
   "regression_ref": "tests/brain-cms-powerhouse-one-loop-20261030.test.mjs",
   "human_documentation": "docs/changes/2026-10-30-cms-powerhouse-brain-heartbeat-quality-one-loop-v1.md",
