@@ -31,6 +31,7 @@ function render(container,data){
   const source=data?.sources||{};
   const website=data?.website;
   const social=data?.socialFunnel||null;
+  const growth=data?.growthDirection||null;
   const channelNames={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',instagram:'Instagram'};
   const socialRows=(social?.channels||[]).map(row=>{
     const metric=key=>{
@@ -148,6 +149,27 @@ function render(container,data){
     (brainRows||'<tr><td colspan="2">Nog geen onafhankelijk teruggelezen natuurlijke Heartbeat-run.</td></tr>')+
     '</tbody></table></div>'+
     '<p class="od-foot">Dit overzicht leest alleen het bestaande ONE BRAIN-registratiepad. Ontbrekende leads, orders en betalingen worden nooit groen gezet.</p></section>'+
+    '<section class="od-card"><h3>Powerhouse · stijgende lijn van bereik naar betaalde orders</h3>'+
+    '<p>Één ONE BRAIN/CRO-scorecard: zeven volledig afgesloten UTC-dagen versus de zeven daarvoor. Website-sessies zijn bronheuristieken; social vergelijkt uitsluitend leeftijdsgelijke providerdata. Het doel is groei, niet een garantie of kunstmatig groen.</p>'+
+    '<p>Brontoestand: '+badge(growth?.status||'UNVERIFIED')+' · Venster: '+esc(growth?.period||'Niet beschikbaar')+
+    ' · GA4: '+badge(growth?.providers?.ga4?.state||'UNAVAILABLE')+
+    ' · Search Console: '+badge(growth?.providers?.search_console?.state||'UNAVAILABLE')+'</p>'+
+    '<div class="od-grid">'+
+      field('Website-sessies (niet-bot-heuristiek) 7d vs 7d',growth?.website?.metrics?.human_sessions?.direction==='INSUFFICIENT_COMPARABLE_DATA'?'Onvoldoende betrouwbare dagen':esc(growth?.website?.metrics?.human_sessions?.direction||'Onbekend')+' · '+fmt(growth?.website?.metrics?.human_sessions?.relative_change_pct)+'%')+
+      field('Menselijke websitekliks 7d vs 7d',growth?.website?.metrics?.human_clicks?.direction==='INSUFFICIENT_COMPARABLE_DATA'?'Onvoldoende betrouwbare dagen':esc(growth?.website?.metrics?.human_clicks?.direction||'Onbekend')+' · '+fmt(growth?.website?.metrics?.human_clicks?.relative_change_pct)+'%')+
+      field('Geregistreerde e-mailantwoorden, 14d',fmt(growth?.email?.recordedEvents14d))+
+      field('Onafhankelijk bewezen betaalde orders',fmt(growth?.qualifiedOrders?.paidOrders))+
+      field('Orders vanuit e-mail',fmt(growth?.email?.ordersFromEmail))+
+      field('Orders vanuit connecties',fmt(growth?.email?.ordersFromConnections))+
+      field('Websitebezoek → betaalde order',fmt(growth?.qualifiedOrders?.websiteToPaidOrderRate))+
+      field('Commerciële uitkomstbewijsstatus',badge(growth?.qualifiedOrders?.status))+'</div>'+
+    '<h4>CRO-prioriteiten voor de bestaande agents</h4>'+
+    (Array.isArray(growth?.priorities)&&growth.priorities.length?
+      '<div class="od-scroll"><table><thead><tr><th>Prioriteit</th><th>Eigenaar</th><th>Oorzaak</th><th>Volgende gecontroleerde verbetering</th></tr></thead><tbody>'+
+      growth.priorities.slice(0,7).map(r=>'<tr><td>'+esc(r.code)+'</td><td>'+esc(r.owner)+'</td><td>'+
+        esc(r.reason)+'</td><td>'+esc(r.action)+'</td></tr>').join('')+'</tbody></table></div>':
+      '<p>Geen controleerbare CRO-prioriteiten uit de huidige bron vastgesteld.</p>')+
+    '<p class="od-foot">Een stijging in likes, views of replies mag nooit worden vertaald naar orders zonder echte attributie en betaling. Alle voorstellen hier zijn nog geen uitgevoerde experimenten. Ontbrekende providerdekking is onbekend, niet nul; CRO alleen opschalen na geldige treatment/holdout-uitkomsten en ONE BRAIN-readback.</p></section>'+
     '<section class="od-card"><h3>Social CRO · LinkedIn persoonlijk, bedrijf en Instagram</h3>'+
     '<p>Dezelfde ONE BRAIN-bronnen, drie gescheiden kanalen. Meetvenster 48 uur na publicatie (±6 uur), afgelopen 7 dagen versus vorige 21 dagen. Minimaal vijf echte providerwaarnemingen per periode en per metriek. Geen identiteiten van kijkers.</p>'+
     '<p>Provider-meetbewijs: '+badge(social?.status||'UNAVAILABLE')+' · Exacte 48-uursmetingen: '+esc(fmt(social?.observedAlignedWindows))+
