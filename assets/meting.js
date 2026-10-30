@@ -86,7 +86,7 @@
     }else if(/^(email|e-mail|mail|newsletter|nieuwsbrief)$/.test(source)||/^(email|e-mail|newsletter)$/.test(medium)){
       out.source='email';out.medium='email';out.campaign='email';
     }else if(/^(google|google\.com|www\.google\.com|bing|bing\.com|www\.bing\.com|duckduckgo\.com)$/.test(source)){
-      out.source=source.split('.')[0].replace(/^www$/,'google');
+      out.source=source.replace(/^www\./,'').split('.')[0];
       out.medium=/^(paid|cpc|ppc)$/.test(medium)?'paid':'organic';
     }else if(source&&source!=='(direct)'&&source!=='direct'){
       out.source='referral';out.medium='referral';
