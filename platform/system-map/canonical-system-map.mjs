@@ -1,4 +1,22 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  entrepreneurActionImpactFeedbackV1:Object.freeze({
+    fingerprint:'portal|entrepreneur-experience|prediction-action-outcome-feedback|20261030-v1',
+    owner:'existing Portal V2 UX + Company Intelligence OS + ONE BRAIN/Heartbeat',
+    canonicalSource:'portal-v2/operating-system/executive-projection.js',
+    existingOutcomeAuthority:'powerhouse.executive.outcomes + existing Powerhouse Outcome Memory',
+    visualProjection:'portal-v2/operating-system/outcome-feedback.js',
+    customerSurface:'portal-v2/operating-system/executive-cockpit.js',
+    monitoringRoute:'monitoring-learning',
+    skill:'.agents/skills/powerhouse-company-intelligence-os/SKILL.md',
+    regression:'tests/brain-entrepreneur-impact-feedback-20261030.test.mjs',
+    humanDocumentation:'docs/changes/2026-10-30-entrepreneur-impact-feedback-ux-v1.md',
+    ledger:'docs/development-ledger-events/2026-10-30-entrepreneur-impact-feedback-v1.md',
+    brainCandidate:'brain/learning/2026-10-30-entrepreneur-impact-feedback-candidate-v1.json',
+    noNewScheduler:true,noNewWriter:true,noNewAnalyticsAuthority:true,
+    onlyIndependentlyVerifiedRealizedResults:true,
+    exactProductionVerified:false,independentUXUpliftVerified:false
+  }),
+
   ga4PrivateCalibrationEvidenceRepair:Object.freeze({
     fingerprint:'powerhouse|ga4-calibration|provider-report-empty-and-private-outcomes-not-public-ai|20261030-v1',
     contract:'POWERHOUSE_ONE_BRAIN_GA4_PRIVATE_CALIBRATION_REPAIR_V1',
