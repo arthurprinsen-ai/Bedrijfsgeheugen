@@ -13,13 +13,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs",
+      "tests/brain-ga4-original-owner-metadata-20261030.test.mjs"
     ],
     "shadow": [
-      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs",
+      "tests/brain-ga4-original-owner-metadata-20261030.test.mjs"
     ],
     "canary": [
-      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+      "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs",
+      "tests/brain-ga4-original-owner-metadata-20261030.test.mjs"
     ]
   },
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
@@ -65,6 +68,20 @@
       },
       "external_windsor_is_not_canonical_import": true,
       "verified_direct_resolution_candidates": 0
+    },
+    "canonical_owner_drift_20261030": {
+      "source_key": "ga4-analytics",
+      "original_registry_owner": "bg-ga4-sync",
+      "deprecated_function_status": 410,
+      "intended_actual_owner": "bg-analytics-sync-composio",
+      "existing_original_batch_trigger": "powerhouse_capture_ga4_batch_v1",
+      "trigger_requires_nonempty_real_provider_rows": true,
+      "source_freshness_remains_stale_until_real_data": true,
+      "verified_forecast_resolution_candidates": 0,
+      "checkpoint": "2026-10-30",
+      "human_doc": "docs/changes/2026-10-30-ga4-canonical-owner-metadata.md",
+      "migration": "supabase/migrations/20261030165000_ga4_source_owner_reconciliation_v1.sql",
+      "production_owner_readback_verified": false
     }
   },
   "correction": "In the ORIGINAL admin-only Powerhouse CRO API and Portal V2, project a pure GA4 last-real-provider-data vs original Data Spine freshness report and source-backed public-market vs tenant-private calibration evidence/owner recovery plan. Agents can make one guarded original-owner source or first-party evidence improvement on natural runs, but no synthetic GA4 visit or silent negative/private public-LLM calibration.",
@@ -75,10 +92,12 @@
     "Only original authorized first-party provider outcomes with forecast_id, event time, predicted-event semantics and tenant permission can close a private forecast. No negative evidence from silence.",
     "Preserve two distinct calibration denominators (2005 due vs 2085 non-public obligation records; 1867 unresolved forecasts) and do not sum, relabel or auto-close them.",
     "One existing scheduler/writer/portal/ONE BRAIN/Heartbeat remains canonical; protected Required/BRAIN/CodeQL exact Netlify live, future real source natural application and independent outcomes required.",
-    "Reject GA4 source GREEN when technical powerhouse_source_freshness_v1 says fresh but latest real dated provider rows are empty or original Data Spine is STALE: emit SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH in the original secured read-only Powerhouse projection and portal. External independent GA4 provider rows must be imported only via the original authorized duplicate-safe collector, never relabelled as already imported."
+    "Reject GA4 source GREEN when technical powerhouse_source_freshness_v1 says fresh but latest real dated provider rows are empty or original Data Spine is STALE: emit SOURCE_HEALTH_VS_PROVIDER_DATA_MISMATCH in the original secured read-only Powerhouse projection and portal. External independent GA4 provider rows must be imported only via the original authorized duplicate-safe collector, never relabelled as already imported.",
+    "Keep powerhouse_evidence_sources ga4-analytics owner_component equal to the active canonical bg-analytics-sync-composio; retired bg-ga4-sync returns 410. A metadata owner repair MUST NOT modify provider batches, source freshness, health or forecast resolution. Verify the original owner row after the protected migration and wait for authentic nonempty GA4 source observations."
   ],
   "tests": [
-    "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs"
+    "tests/brain-ga4-private-calibration-source-repair-20261030.test.mjs",
+    "tests/brain-ga4-original-owner-metadata-20261030.test.mjs"
   ],
   "original_api": "netlify/functions/powerhouse-cro-other-data.mjs",
   "original_portal": "portal-v2/modules/andere-data.js",
@@ -92,6 +111,8 @@
     "paid_business_uplift_verified": false,
     "source_health_conflict_guard": "SOURCE_CANDIDATE_NOT_YET_PROTECTED_OR_LIVE",
     "prior_original_repair_main_sha": "6311a1911ec27f3725b6a87e4bfd9e6897c8b546",
-    "prior_original_repair_netlify_ready_verified": true
+    "prior_original_repair_netlify_ready_verified": true,
+    "canonical_source_owner_reconciliation": "SOURCE_CANDIDATE_PROTECTED_MIGRATION_AND_READBACK_REQUIRED",
+    "exact_ga4_source_owner_verified": false
   }
 }
