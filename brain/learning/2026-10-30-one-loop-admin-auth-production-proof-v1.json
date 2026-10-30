@@ -28,7 +28,8 @@
   "accepted_status": "OBSERVED until exact merged source+protected checks, Netlify deployed function and original readback, correct admin/non-admin/unauth provider behavior and natural agent use independently verified",
   "regressions": [
     "tests/portal-authenticated-production-proof.test.mjs",
-    "tests/brain-one-loop-assurance-readback-20261030.test.mjs"
+    "tests/brain-one-loop-assurance-readback-20261030.test.mjs",
+    "tests/brain-one-loop-admin-production-proof-20261030.test.mjs"
   ],
   "skill": ".agents/skills/powerhouse-netlify-production-truth/SKILL.md",
   "agents": "AGENTS.md",
@@ -41,5 +42,24 @@
     "Never retain access tokens",
     "Single original deploySucceeded hook only",
     "No new scheduler, status spoof, alternate portal, OAuth override or private customer outcome fabrication"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-loop-admin-production-proof-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-one-loop-admin-production-proof-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-loop-admin-production-proof-20261030.test.mjs"
+    ]
+  },
+  "source_status": "PR_OPEN_REGRESSION_REQUIRED_NOT_LIVE"
 }
