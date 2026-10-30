@@ -60,6 +60,9 @@ jobs:
           git commit -m "Regulatory source baseline observed"
           HEAD_SHA=$(git rev-parse HEAD)
           git push origin "HEAD:$BRANCH"
+          # Preserve the existing candidate branch when repository Actions PR creation is denied.
+          # Do not weaken repository settings or claim source delivery from a pushed branch.
+          set +e
           PR_URL=$(gh pr create --base main --head "$BRANCH" --title "Regulatory source candidate ${GITHUB_RUN_ID}" --body "$(cat <<EOF
           Obligation-ID: regulatory-source-watch-${GITHUB_RUN_ID}
           Delivery-Lane: automation
@@ -78,5 +81,16 @@ jobs:
 
           Raw official-source evidence was persisted before this projection candidate.
           EOF
-          )")
+          )" 2> /tmp/regulatory-pr-attempt.err)
+          pr_status=$?
+          set -e
+          if [ "$pr_status" -ne 0 ]; then
+            if grep -Fq "GitHub Actions is not permitted to create or approve pull requests" /tmp/regulatory-pr-attempt.err; then
+              echo "::error::CANONICAL_REGULATORY_PR_PERMISSION_DENIED:branch=$BRANCH:authorized_repository_owner_action_required"
+            else
+              cat /tmp/regulatory-pr-attempt.err >&2
+            fi
+            echo "UNMERGED_REGULATORY_CANDIDATE_HELD:$BRANCH"
+            exit "$pr_status"
+          fi
           gh pr merge --auto --squash "$PR_URL"

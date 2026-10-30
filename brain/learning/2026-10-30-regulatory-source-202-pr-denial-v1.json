@@ -1,0 +1,66 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "regulatory-source-http202-and-pr-permission-20261030-v1",
+  "fingerprint": "powerhouse|regulatory|http202-not-legislative-content|20261030-v1",
+  "related_fingerprint": "powerhouse|regulatory|actions-pr-create-denied|20261030-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "maturity": "OBSERVED",
+  "owner": "EXISTING_POWERHOUSE_REGULATORY_SOURCE_WATCH",
+  "compiler": {
+    "failure_class": "SOURCE_TRUTH_AND_DELIVERY_AUTHORITY",
+    "scope": "REGULATORY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The existing regulatory monitor treated urllib transport HTTP 202 and short HTML as an authoritative source document, compared hashes against baseline and produced false regulatory changes. The original GitHub Actions PR creation then failed because the Actions GITHUB_TOKEN lacked provider authorization, despite declared pull-requests:write.",
+  "observed_evidence": {
+    "run": 41036966479,
+    "failed_job": 124000057814,
+    "protected_main_at_run": "6134d2cc1030b87b77441ee110d7a33fd367a620",
+    "original_candidate_branch": "writer/regulatory-source-watch/41036966479",
+    "candidate_sha": "3852c965c95d26713216178eaca02e79d43a2263",
+    "candidate_state": "UNMERGED_UNVERIFIED_SOURCE",
+    "upstream_regulatory_http": {
+      "eur_lex": [
+        202,
+        202,
+        202
+      ],
+      "each_html_bytes": 2035,
+      "ncsc": 200
+    },
+    "source_registry_baseline": {
+      "checked_at": "2026-09-24T08:23:53.925624Z",
+      "historic_eurlex_http": 202
+    },
+    "error": "GitHub Actions is not permitted to create or approve pull requests (createPullRequest)",
+    "existing_original_source_store": "public.powerhouse_evidence_source_observations",
+    "facts": "HTTP 202 is not proof of an applicable legislative change; the raw 202 response was observed but its content identity is not verified official legislative text."
+  },
+  "change": "The original monitor separates transport diagnostics from verified HTML content. Non-200, unexpected redirect, short HTML, wrong MIME, and challenge/interstitial are check-only; original canonical source state and prior content hash remain unchanged. Original Brain ingest writes a fail-closed unverified heartbeat but not a regulatory-content record for such responses. Original workflow retains pushed candidate and fails explicitly if GitHub Actions PR creation is denied; never claims protected delivery.",
+  "prevention": "Source content quality gates must be enforced before hash change, raw canonical content and regulatory interpretation. Authorized GitHub-PR creation is an independent external permissions gate; never bypass branch protection, grant unreviewed permissions or substitute a branch push for a merged/published PR. No second scheduler, provider, writer or database.",
+  "regression": [
+    "tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs",
+    "tests/regulatory-organism-feed.test.mjs",
+    "tests/repo-writer-regulatory-source-watch-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-source-http202-pr-failclosed-20261030.test.mjs"
+    ],
+    "provider_replay_required": true,
+    "live_source_quality_not_yet_verified": true
+  },
+  "evidence_state": {
+    "protected_main": "PENDING_REQUIRED",
+    "original_natural_watcher": "NOT_YET_REPLAYED",
+    "verified_eurlex_content": "UNVERIFIED",
+    "protected_pr_creation": "HUMAN_OR_AUTHORIZED_APP_ACTION_REQUIRED",
+    "external_business_outcome": "NOT_APPLICABLE"
+  },
+  "human_documents": [
+    "docs/changes/2026-10-30-regulatory-source-202-pr-denial.md",
+    "docs/development-ledger-events/2026-10-30-regulatory-source-202-pr-denial.md"
+  ]
+}
