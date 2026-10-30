@@ -45,5 +45,33 @@
       "tests/brain-recovery-closure-audit-20261030.test.mjs"
     ]
   },
-  "canonicalLearningStatus": "EVALUATION_REQUIRED_NEVER_ASSUME_PRODUCTION_GREEN"
+  "canonicalLearningStatus": "EVALUATION_REQUIRED_NEVER_ASSUME_PRODUCTION_GREEN",
+  "root_cause": "Repeated incident observations were not being distinguished from evidence-backed fix, next natural run and later repeat-prevention proof in the same authenticated CRO portal read model.",
+  "evidence": {
+    "source": "public.brain_failure_registry",
+    "date": "2026-10-30",
+    "sample": [
+      {
+        "fingerprint": "brein-status|pg_cron|FOUT",
+        "occurrences": 1162,
+        "rootCauseRecorded": false
+      },
+      {
+        "fingerprint": "brein-status|bg-experimentcyclus|NOOIT_BEWEZEN",
+        "occurrences": 799,
+        "rootCauseRecorded": false
+      },
+      {
+        "fingerprint": "brein-status|bg-native-content-generate|NOOIT_BEWEZEN",
+        "occurrences": 89,
+        "rootCauseRecorded": false
+      }
+    ],
+    "production_proven": false,
+    "post_release_natural_run_proven": false,
+    "recurrence_proven": false
+  },
+  "tests": [
+    "tests/brain-recovery-closure-audit-20261030.test.mjs"
+  ]
 }
