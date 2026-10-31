@@ -36,3 +36,17 @@ test('existing original handoff writer keeps the same one-loop CAS and independe
  assert.match(code,/const TERMINAL_GREEN = new Set\(\['LIVE_PROVEN','MEASURED','LEARNED'\]\)/);
  assert.match(code,/const LOOP_LEASE_MS = 240_000/);
 });
+
+test('original ONE BRAIN portal renders only sanitized measured handoff churn without false green',async()=>{
+ const [guard,portal]=await Promise.all([
+  readFile(new URL('../brain/observability/one-loop-guard-diagnostics.mjs',import.meta.url),'utf8'),
+  readFile(new URL('../portal-v2/modules/powerhouse-observability.js',import.meta.url),'utf8')]);
+ assert.match(guard,/function safePublicationHandoffWriteback\(row,receipt\)/);
+ assert.match(guard,/handoff\?\.contract!=='original-publication-obligation-recovery-v1'/);
+ assert.match(guard,/Number\.isSafeInteger\(handoff\[k\]\)/);
+ assert.match(guard,/publicationHandoffWriteback:safePublicationHandoffWriteback\(row,receipt\)/);
+ assert.match(portal,/publicationHandoffWriteback/);
+ assert.match(portal,/data-publication-handoff-writeback/);
+ assert.match(portal,/Werkelijke publicatie vereist apart providerbewijs/);
+ assert.match(portal,/data-publication-recovery="RECOVERY_DUE"/);
+});
