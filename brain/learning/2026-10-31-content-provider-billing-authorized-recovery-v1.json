@@ -41,5 +41,11 @@
     "canary": [
       "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
     ]
+  },
+  "test_evidence": {
+    "observed": "2026-10-31 08:50 UTC original production SQL: three channels classified PROVIDER_BILLING after bounded OpenAI 429 insufficient_quota; governed fallback SUSPENDED; zero content artifacts. Original ONE BRAIN record observed separately.",
+    "protected_admission": "Required #41186491076 correctly rejected missing machine semantic evidence key; same real incident learning updated to meet evidence/writeback requirement.",
+    "regression": "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
+    "pending": "Exact-head protected Required/BRAIN/CodeQL, main and Supabase Edge source/readback, next original natural run and independent provider proof."
   }
 }
