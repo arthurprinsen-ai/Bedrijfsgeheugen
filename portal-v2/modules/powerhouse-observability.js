@@ -115,12 +115,23 @@ function oneLoopAssuranceView(assurance){
   const diagnosis=source.guardDiagnostics?.status==='READBACK_COMPLETE'?source.guardDiagnostics:null;
   const byKey=new Map(arr(diagnosis?.cases).map(c=>[c.key,c]));
   const publicationRecovery=arr(byKey.get('content-closed-loop')?.publicationRecovery);
+  const publicationHandoff=byKey.get('content-closed-loop')?.publicationHandoffWriteback||null;
+  // This is ONLY the original ONE BRAIN guard readback, never a separate status
+  // projection. Even zero changes cannot prove posts/blog/email delivered.
+  const handoffTelemetry=publicationHandoff&&
+    publicationHandoff.contract==='original-publication-obligation-recovery-v1'
+    ?'<p class="poc-note" data-publication-handoff-writeback="'+esc(String(publicationHandoff.applied))+'">'+
+      'Herstelacties gesynchroniseerd: '+esc(publicationHandoff.applied)+' wijzigingen; '+
+      esc(publicationHandoff.conflicts)+' conflicten; '+esc(publicationHandoff.errors)+
+      ' fouten. Werkelijke publicatie vereist apart providerbewijs.</p>'
+    :'';
   // Read-only original ONE BRAIN receipts: never infer publication from CI success.
   const anyMissedPublication=publicationRecovery.some(item=>item.phase==='MISSED_DEADLINE');
   const publicationPanel=publicationRecovery.length?
     '<div data-publication-recovery="RECOVERY_DUE" role="alert" class="poc-panel">'+
     '<h4>'+(anyMissedPublication?'Publicatie gemist · herstel vereist':'Publicatie in gevaar · herstel vereist')+'</h4>'+
     '<p class="poc-note">De bestaande kanaalagent hervat dezelfde verplichting. Bij een onzekere verzending eerst provider-readback, dan pas een idempotente herstelpoging; geen dubbele e-mails of posts en nooit groen zonder bewijs.</p>'+
+    handoffTelemetry+
     publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'" data-publication-phase="'+esc(item.phase)+'">'+
       '<div><b>'+esc(item.label)+'</b><small>'+esc(item.nextAction)+
       ' · Gepland: '+esc(fmtTime(item.scheduledFor))+'</small>'+
