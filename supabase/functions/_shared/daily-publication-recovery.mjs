@@ -46,7 +46,12 @@ export function assessDailyPublicationRecovery({
     // A real provider acknowledgement/readback is authoritative; no resend
     // merely because a later readback endpoint becomes unavailable.
     if(obligation&&isTerminal(obligation))continue;
-    const scheduledFor=str(decision?.scheduled_for);
+    // The original Supabase postgres driver returns timestamptz as a Date
+    // object. Accept only a valid Date or a timestamp string; rejecting Date
+    // as "missing schedule" falsely hides the actual overdue publication.
+    const rawSchedule=decision?.scheduled_for;
+    const scheduledFor=rawSchedule instanceof Date && Number.isFinite(rawSchedule.getTime())
+      ? rawSchedule.toISOString() : str(rawSchedule);
     const scheduleMs=Date.parse(scheduledFor);
     const isScheduled=scheduledFor.length>0&&Number.isFinite(scheduleMs);
     const isExpired=isScheduled && observed>=scheduleMs+graceMs;
