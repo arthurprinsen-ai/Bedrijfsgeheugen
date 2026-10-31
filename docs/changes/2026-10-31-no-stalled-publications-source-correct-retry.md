@@ -16,3 +16,5 @@
 `tests/brain-daily-publication-no-silent-gap-20261031.test.mjs` exercises early provider billing, native Postgres Date deadlines, correct late classification, safe handoff without leaking provider secrets, honest portal states, and no duplicate when a real provider ID exists.
 
 Original P0 owner: [issue #4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198). Protected GitHub CI plus source parity, existing Edge normal-run result and real external provider receipt are required before claims of production success.
+
+**Release admission:** the protected delivery-hygiene workflow must bind this candidate to the current immutable main base, original P0 obligation, one canonical backend recovery lane, seven changed paths and one exclusive writer lease. A PR metadata failure is not code-test success. Do not bypass admission.
