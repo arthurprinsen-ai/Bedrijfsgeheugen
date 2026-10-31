@@ -69,7 +69,7 @@ function render(container,data){
     ?oneLoop.loops.filter(row=>row.status!=='GREEN').slice(0,15).map(row=>{
       const diagnosis=guardCauses.get(row.key);
       const nextSteps=diagnosis?.reasons?.length?diagnosis.reasons.map(x=>
-        '<div><strong>'+esc(x.code)+'</strong><br><small>'+esc(x.nextAction)+'</small></div>').join(''):
+        '<div><strong>'+esc(x.code)+'</strong><br><small>Oorspronkelijke luseigenaar: '+esc(x.nextAction)+'</small></div>').join(''):
         'Onderliggend guardbewijs niet onafhankelijk beschikbaar.';
       return '<tr><td>'+esc(row.key)+'</td><td>'+badge(row.status)+'</td><td>'+
         esc(row.guard)+'</td><td>'+
