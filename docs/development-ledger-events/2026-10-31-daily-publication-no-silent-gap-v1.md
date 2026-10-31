@@ -27,3 +27,13 @@
 - **Correction:** existing read-only classifier and original guard/portal add sanitized `CONTENT_GENERATION_BILLING_ACTION_REQUIRED`, accountable real authorized human provider billing/approved fallback. This is not a provider-side-effect and does not attempt to buy credits or bypass model governance.
 - **Regression:** `tests/brain-daily-publication-no-silent-gap-20261031.test.mjs`, code and existing SkillOps contract. No additional cron, sender, model exception, or account leak.
 - **Pending:** protected merge, original runtime exact readback, real next natural run after authorized provider recovery and provider post receipts.
+
+
+## 2026-10-31 — Mira source selection before approved media; Netlify bundled guard authority
+
+- Evidence: independent original production SQL at 09:05 UTC. 31 October `powerhouse_instagram_daily_winners_v1` empty. Two otherwise complete Mira-story source candidates violated both original 90-day source-use and 3-day topic-use exclusions. 31 October daily Instagram recommendation is only a generic `calendar_seed`, **not** an accepted `source_backed_private_problem` with frozen lineage.
+- Fault: new original due-time classifier reports `MIRA_FINAL_MEDIA_PROOF_REQUIRED` even when no daily winner exists. This sends the media agent to the wrong prerequisite before the existing source-research lane can select a unique topic.
+- Repair: immutable winner ID gates the original diagnosis. Without it: `MIRA_UNIQUE_SOURCE_WINNER_REQUIRED`, existing autonomous source owner and new public date/source; with it: retain final media/identity gate. No provider posts or fabricated source.
+- Second independent closure gap: authenticated original Netlify `powerhouse-one-loop-assurance` and `powerhouse-cro-other-data` import `brain/observability/one-loop-guard-diagnostics.mjs`, but central Netlify applicability lacked that exact path. Add it to require actual Netlify build/attested runtime for a guard behavior change; no second Netlify release route.
+- ONE BRAIN original failure fingerprint: `powerhouse|mira|no-new-unique-source-backed-daily-winner|20261031-v1`, observed and documented, no `PROVEN` closure. Regressions: `tests/brain-daily-publication-no-silent-gap-20261031.test.mjs`, `tests/brain-mira-source-and-netlify-guard-impact-20261031.test.mjs`.
+- Remaining acceptance: protected Required/BRAIN/CodeQL, original main→Supabase vN→Netlify exact SHA and owner-visible runtime readback; independently observed next natural execution identifying source block; only final approved Mira media and provider URL/ID can close daily public delivery.
