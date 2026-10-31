@@ -69,7 +69,10 @@ export function assessDailyPublicationRecovery({
     const isMissingSchedule=!isScheduled;
     const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision);
     const item={
-      channel:entry.channel, owner:entry.owner, code,
+      channel:entry.channel,
+      owner:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED'
+        ? 'powerhouse-mira-public-problem-source-agent / original-daily-winner-selector'
+        : entry.owner, code,
       action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
       requiresAuthorization:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED' ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
