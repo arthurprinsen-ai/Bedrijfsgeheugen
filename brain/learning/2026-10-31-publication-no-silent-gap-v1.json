@@ -26,5 +26,24 @@
   "regression": "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
   "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
   "verification_required": "exact-head protected Required/BRAIN/CodeQL -> squash merge -> source-to-Edge/Netlify parity -> original natural run -> independently verified public post IDs / URL or actionable blocked outcome",
-  "no_fabricated_success": true
+  "no_fabricated_success": true,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Required run 41185099413 correctly rejected missing machine compiler failure class; same incident learning repaired without bypass.",
+    "pending": "Exact current-head Required/CodeQL and actual original production next-natural-run provider publication proof."
+  }
 }
