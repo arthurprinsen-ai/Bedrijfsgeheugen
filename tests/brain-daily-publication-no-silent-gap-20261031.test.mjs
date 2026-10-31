@@ -114,3 +114,39 @@ test('real Postgres Date object preserves publication deadline and root cause',(
   isTerminal:proof});
  assert.ok(invalid.overdue.every(x=>x.code==='PUBLICATION_SCHEDULE_MISSING'));
 });
+
+
+test('approved provider 429 insufficient_quota is safe human-action reason, never retry/sending proof',()=>{
+ const quota='429 insufficient_quota:do-not-leak-PROVIDER_SECRET';
+ const billed=decisions.map(d=>['blog','linkedin_personal','linkedin_company'].includes(d.channel)?
+  {...d,scheduled_for:new Date(d.scheduled_for),delivery_evidence:{
+   artifact_generation_failure:{classification:'PROVIDER_BILLING',reason:quota,
+    retry_after:'2026-10-31T09:44:10Z',provider_side_effect:false}}}:
+  {...d,scheduled_for:new Date(d.scheduled_for)});
+ const output=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T08:51:00Z',
+  obligations,decisions:billed,isTerminal:proof});
+ const content=output.overdue.filter(x=>['blog','linkedin_personal','linkedin_company'].includes(x.channel));
+ assert.equal(content.length,3);
+ assert.ok(content.every(x=>x.code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'));
+ assert.ok(content.every(x=>x.requiresAuthorization===true));
+ assert.ok(content.every(x=>x.scheduledFor==='2026-10-31T07:00:00.000Z'));
+ assert.equal(output.overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ assert.equal(output.overdue.find(x=>x.channel==='email_newsletter').code,'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED');
+ assert.doesNotMatch(JSON.stringify(output),/do-not-leak-PROVIDER_SECRET|insufficient_quota/i);
+ const names=['content-closed-loop','daily-compound-learning','data-spine-watchdog','full-cycle-production-proof',
+ 'one-brain-reconcile','revenue-flywheel','autonomous-outreach','execution-resilience','external-intelligence-universe',
+ 'mira-problem-loop','portal-visual-density','self-improvement-layer','seo-opportunity-resolver',
+ 'signal-taxonomy-self-heal','source-backed-outbound'];
+ const at='2026-10-31T08:51:00Z';
+ const assurance=summarizeOneLoopAssurance(names.map((loop_key,i)=>({
+  loop_key,status:i===0?'RED':'GREEN',checked_at:at,fresh_stage_count:8,required_stage_count:8,
+  missing_stages:[],evidence:{guard_pass:i!==0}})),{observedAt:at});
+ const projected=projectOriginalGuardDiagnostics(assurance,[{loop_key:'content-closed-loop',
+  stage:'guard',observed_at:at,evidence:{pass:false,state:{status:'BLOCKED',
+   result:JSON.stringify({recovery:output})}}}],{observedAt:at});
+ const caseInfo=projected.cases.find(x=>x.key==='content-closed-loop');
+ assert.ok(caseInfo.reasons.some(x=>x.code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'));
+ assert.equal(caseInfo.publicationRecovery.find(x=>x.channel==='linkedin_personal').code,
+  'CONTENT_GENERATION_BILLING_ACTION_REQUIRED');
+ assert.doesNotMatch(JSON.stringify(projected),/do-not-leak-PROVIDER_SECRET/);
+});

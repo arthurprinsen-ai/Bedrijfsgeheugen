@@ -33,6 +33,7 @@ const CODES=Object.freeze({
  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Laat originele Mira-producer definitief video-/frame- en identiteitsbewijs valideren (minimaal 0,940).',
  BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel originele bloggoedkeuring, protected merge, Netlify en exact publiek artikelbewijs.',
  EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Herstel canonieke e-mailbevoegdheid en ontvangeropt-in; verzend nooit zonder toestemming.',
+ CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Tekstgeneratie door huidige goedgekeurde AI-provider geweigerd wegens ontbrekend tegoed. Bevoegde accountbeheerder moet tegoed of formeel goedgekeurde fallback herstellen; nooit automatische betaling of uitwijkroute buiten governance.',
  EXACT_PROVIDER_PUBLICATION_PROOF_MISSING:'Controleer exact provider-ID en oorspronkelijke idempotente verzending; vermijd dubbele side effects.',
  CHANNEL_CAPABILITY_PROOF_REQUIRED:'Verifieer providerautorisatie in originele connector; benodigde menselijke OAuth-toestemming niet omzeilen.',
  PUBLICATION_SCHEDULE_MISSING:'Laat de originele planner de ontbrekende expliciete dagdeadline herstellen.'

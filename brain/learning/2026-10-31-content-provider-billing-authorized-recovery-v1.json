@@ -1,0 +1,51 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|content-generation|approved-openai-quota-and-governed-fallback-suspended|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "source": "original production powerhouse_channel_decisions.delivery_evidence.artifact_generation_failure and brain_ai_governance_registry",
+  "failure_class": "CONTENT_GENERATION_BILLING_ACTION_REQUIRED",
+  "root_cause": "OpenAI gpt-5-mini original approved generator returns HTTP 429 insufficient_quota for blog and both LinkedIn channels, with five bounded retry attempts; governed Composio/Groq backup is approved=true but SUSPENDED, therefore not an authorized fallback. HTTP 200 orchestration is not a generated artifact.",
+  "prevention_rule": "Canonical original content-loop classifier and original guarded Portal V2 must translate typed artifact_generation_failure.classification=PROVIDER_BILLING into sanitized human billing action with original owner and without exposing provider messages or tokens. Keep executor running, honor cooldown, never auto-pay, never unsuspend/replace provider without approval, never synthesize posts/IDs.",
+  "observed_evidence": {
+    "observed_at_utc": "2026-10-31T08:51:08Z",
+    "channels": [
+      "linkedin_personal",
+      "linkedin_company",
+      "blog"
+    ],
+    "provider_response": "429 insufficient_quota",
+    "fallback_governance": "SUSPENDED",
+    "artifact_count": 0,
+    "external_publication_proof": false,
+    "canonical_production_failure_logged": true
+  },
+  "repair": "Add allowlisted billing cause to existing original due-time read-only classifier and existing guard projection, with proper user-visible accountable authorization boundary.",
+  "owner": "original powerhouse-content-orchestrator + authorized account billing/model governance owner",
+  "next_action": "An authorized person must restore existing approved OpenAI API credit or formally approve and independently validate an already-governed available fallback, then the canonical content producer's next eligible run must create valid artifacts and original publisher must read back provider IDs.",
+  "no_secondary_executor": true,
+  "production_verified": false,
+  "verification_required": "Protected Required/BRAIN/CodeQL and exact main/Edge/Netlify source parity, original next natural run showing specific cause, independent eventual external publication proof.",
+  "compiler": {
+    "failure_class": "PROVIDER_BILLING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "2026-10-31 08:50 UTC original production SQL: three channels classified PROVIDER_BILLING after bounded OpenAI 429 insufficient_quota; governed fallback SUSPENDED; zero content artifacts. Original ONE BRAIN record observed separately.",
+    "protected_admission": "Required #41186491076 correctly rejected missing machine semantic evidence key; same real incident learning updated to meet evidence/writeback requirement.",
+    "regression": "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
+    "pending": "Exact-head protected Required/BRAIN/CodeQL, main and Supabase Edge source/readback, next original natural run and independent provider proof."
+  }
+}
