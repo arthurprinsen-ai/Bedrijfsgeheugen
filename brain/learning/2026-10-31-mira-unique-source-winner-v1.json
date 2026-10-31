@@ -4,7 +4,7 @@
   "fingerprint": "powerhouse|mira|no-new-unique-source-backed-daily-winner|20261031-v1",
   "maturity": "OBSERVED",
   "candidateOnly": true,
-  "owner": "original Mira public problem signal source agent -> frozen daily winner selector -> existing media router",
+  "owner": "powerhouse-mira-problem-radar-v1 (existing cron job 120) / public.powerhouse_select_instagram_daily_winner_v1 (existing original selector)",
   "root_cause": "The 2026-10-31 original Mira selector has no daily winner because only two otherwise complete, fresh, dated public signal candidates meet canonical PH-P### scene contract, and both violate the original 90-day source-use and 3-day topic-use uniqueness gates. The original channel decision says EXACT_FINAL_MEDIA_PROOF_REQUIRED, which is downstream of the actual current missing source winner.",
   "prevention_rule": "Classify absence of canonical delivery_evidence.daily_winner_recommendation_id as MIRA_UNIQUE_SOURCE_WINNER_REQUIRED (existing autonomous source intelligence owner), never as a media-production or OAuth permission problem. Only AFTER an immutable source-backed winner exists may original media identity >=0.940, definitive asset proof, consent/provider and post readback follow. Preserve source/subject deduplication and refuse prior rejected OpenArt media.",
   "additional_root_cause": "The original authenticated private Portal Netlify handlers both bundle one-loop-guard-diagnostics.mjs, but its path had been omitted from shared Netlify deployment applicability. Without a real rebuild, GitHub/Edge contains new guard reasons while Netlify can still serve the previous bundled code.",
@@ -21,7 +21,10 @@
     "source_proof_outcome": "NO_FRESH_UNIQUE_WINNER",
     "historical_video_identity_score": 0.9,
     "required_video_identity_score": 0.94,
-    "provider_publication_proven": false
+    "provider_publication_proven": false,
+    "canonical_source_radar_job": "powerhouse-mira-problem-radar-v1",
+    "canonical_source_radar_active": true,
+    "canonical_source_radar_cron_job_id": 120
   },
   "compiler": {
     "failure_class": "SOURCE_UNIQUENESS_CANDIDATE_EXHAUSTED",
@@ -45,5 +48,6 @@
   "no_new_scheduler": true,
   "proven_fix": null,
   "human_documentation": "docs/changes/2026-10-31-daily-publication-no-silent-gap-v1.md",
-  "activity_ledger": "docs/development-ledger-events/2026-10-31-daily-publication-no-silent-gap-v1.md"
+  "activity_ledger": "docs/development-ledger-events/2026-10-31-daily-publication-no-silent-gap-v1.md",
+  "agent_skill": ".agents/skills/instagram-composio-publisher/SKILL.md"
 }
