@@ -22,5 +22,19 @@
     "no duplicate source of truth",
     "no weakening consent/identity/provider checks"
   ],
-  "provenFix": null
+  "provenFix": null,
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-evidence-status-truth-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-evidence-status-truth-20261031.test.mjs"
+    ]
+  },
+  "evaluation_rule": "Both historical replay and canary mode must run the original pure classifier regression; live deployment needs separate exact Netlify+browser independent readback."
 }
