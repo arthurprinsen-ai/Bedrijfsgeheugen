@@ -24,7 +24,7 @@ test('the same original insertion still establishes four genuine obligations wit
  assert.match(sql,/from public\.social_experiments e/);
  assert.match(sql,/e\.tenant_id='canonical'/);
  assert.match(sql,/ch\.channel in \('linkedin_personal','linkedin_company','instagram','blog'\)/);
- assert.match(sql,/\b'PLANNED'\b/);
+ assert.match(sql,/,\s*'PLANNED'\s*,/);
  assert.match(sql,/next_action,updated_at/);
  assert.doesNotMatch(sql,/\bnet\.http_post\b|\bcron\.schedule\b|\bprovider_create\b|\bexecute\s+http/i);
 });
