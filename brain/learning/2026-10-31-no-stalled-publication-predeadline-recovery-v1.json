@@ -1,0 +1,49 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|publication|predeadline-provider-billing-failure-not-immediate|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-content-loop and powerhouse-content-orchestrator, existing single channel publisher, blog and authorized email owners",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Canonical original publication classifier recognized PROVIDER_BILLING but isFailed only saw failed/blocked status. Pre-deadline generation 429 persisted on decided original channels was incorrectly PENDING_PROOF until deadline+30m, delaying recovery.",
+  "observed_evidence": {
+    "date": "2026-10-31",
+    "production_provider_error": "429 insufficient_quota",
+    "affected_original_channels": [
+      "blog",
+      "linkedin_company",
+      "linkedin_personal"
+    ],
+    "provider_publication_proven": false,
+    "original_channel_state": "PLANNED",
+    "original_brain_fingerprint_status": "OBSERVED",
+    "source": "original public.powerhouse_channel_decisions and source readback"
+  },
+  "prevention_rule": "Treat a proven persisted generation billing failure as RECOVERY_DUE/EARLY_RECOVERY immediately even before due time. Assign exact original channel owner and non-executable repairHandoff; regenerate correct factual content only after restoration of originally approved provider or explicit authorization, then original editorial/quality/canonical send and independently verified provider ID/readback. Pre-provider reconciliation is mandatory: never duplicate an acknowledged post or opted-in email. No extra scheduler, alternative sender, auto-credit purchase, revoked OAuth bypass, privacy/identity/semantic duplicate gate relaxation, or fabricated green.",
+  "fix_candidate": "Original daily-publication-recovery read-only classifier, existing original guard projection and private portal only; existing content-loop and orchestrator natural runs retain exclusive lease and original provider side-effect reconciliation.",
+  "approval_boundaries": "Existing genuine provider credit/OAuth approval and original authorized e-mail sender+recipient opt-in, suppression and per-recipient idempotency are mandatory. Mira immutable winner and identity >=0.940, blog protected editorial release, external provider ACK/readback remain hard gates.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Original Supabase channel decisions 2026-10-31 11:49 UTC document provider 429 and no daily provider IDs. GitHub main classifier ignored this persisted generation failure in its early isFailed calculation.",
+    "regression": "Exercise native Date deadlines, proved generation billing before and after deadline, original source/regeneration handoff, no authorized fallback, safe provider ACK no-resend, sanitized one-loop portal.",
+    "pending": "Protected Required/BRAIN/CodeQL; exact main merge; original Edge bundle and native Netlify source parity; next original natural run showing early correction; only actual provider readback can close publication obligations."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-10-31-no-stalled-publications-source-correct-retry.md",
+  "activity_ledger": "docs/development-ledger-events/2026-10-31-no-stalled-publication-predeadline-recovery-v1.md"
+}

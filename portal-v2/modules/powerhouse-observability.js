@@ -122,14 +122,15 @@ function oneLoopAssuranceView(assurance){
   const byKey=new Map(arr(diagnosis?.cases).map(c=>[c.key,c]));
   const publicationRecovery=arr(byKey.get('content-closed-loop')?.publicationRecovery);
   // Read-only original ONE BRAIN receipts: never infer publication from CI success.
+  const anyMissedPublication=publicationRecovery.some(item=>item.phase==='MISSED_DEADLINE');
   const publicationPanel=publicationRecovery.length?
     '<div data-publication-recovery="RECOVERY_DUE" role="alert" class="poc-panel">'+
-    '<h4>Publicatie gemist · herstel vereist</h4>'+
-    '<p class="poc-note">Automatische herstelplicht bij de bestaande kanaalagent. Geen tweede verzender en geen groene status zonder extern publicatiebewijs.</p>'+
-    publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'">'+
+    '<h4>'+(anyMissedPublication?'Publicatie gemist · herstel vereist':'Publicatie in gevaar · herstel vereist')+'</h4>'+
+    '<p class="poc-note">De bestaande kanaalagent hervat dezelfde verplichting. Bij een onzekere verzending eerst provider-readback, dan pas een idempotente herstelpoging; geen dubbele e-mails of posts en nooit groen zonder bewijs.</p>'+
+    publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'" data-publication-phase="'+esc(item.phase)+'">'+
       '<div><b>'+esc(item.label)+'</b><small>'+esc(item.nextAction)+
       ' · Gepland: '+esc(fmtTime(item.scheduledFor))+'</small></div>'+
-      '<span class="poc-badge bad">Herstel nodig</span></article>').join('')+'</div>':'';
+      '<span class="poc-badge bad">'+(item.phase==='EARLY_RECOVERY'?'Herstel vóór deadline':'Herstel nodig')+'</span></article>').join('')+'</div>':'';
   const diagnosticState=diagnosis?'Bronoorzaken gecontroleerd':
     'Guard-oorzaken nog niet onafhankelijk teruggelezen; raadpleeg de originele receipts.';
   const list=arr(source.loops).map(row=>{

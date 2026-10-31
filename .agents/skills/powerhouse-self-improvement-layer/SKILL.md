@@ -5,6 +5,17 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## NO_STALLED_DELIVERY_REPAIR_V1 — permanent post, blog and consented-email recovery
+
+Every original canonical publication run handles an unfinished promise as an owned **recovery obligation**, never a terminal `SKIPPED`. For LinkedIn, Instagram/Mira, CMS/blog and approved email, follow source → editor → reliability/security → single original publisher → independent provider observer → outcome → ONE BRAIN fingerprint/root cause/fix/regression/learn. On content-quality rejection, do not reword a rejected duplicate: acquire genuinely new provable facts and regenerate a better concrete situation → cause → impact → point, pass editorial and identity rules, and resume the **same original daily obligation**. On a known technical failure, use a bounded changed-input or proven implementation repair on the normal original run; never spin or replay identical rejected content.
+
+**Immediately actionable, including before deadline:** if `artifact_generation_failure.classification=PROVIDER_BILLING`, the original `assessDailyPublicationRecovery` returns `RECOVERY_DUE/EARLY_RECOVERY`, while retaining the original source and cooldown. Account-credit restoration, explicit OAuth consent, sender authorization, editorial approval and quality restrictions remain hard boundaries. A future natural run may resume automatically once capability is independently proven restored, but may not auto-buy credits, release suspended models or fabricate a provider receipt.
+
+**Resend only when objectively safe:** first reconcile provider create/ACK/side effects using the immutable same-day idempotency and recipient/message IDs. A provider acknowledgement means **do not resend** even if the later readback fails. An uncertain provider effect means **reconcile before retry**, never blind double-send. Email requires original authorized sender, proven recipient opt-in, suppressions and per-recipient idempotency; never a speculative blast. Blog requires approved source and protected release, then exact public URL/readback. Mira requires new original dated winner, safe final media and identity score >=0.940. A quality-fixed artifact is not delivery success until the provider independently confirms it.
+
+**Observability and learning:** retain `RED/RECOVERY_DUE` until independent proof. `EARLY_RECOVERY` is a publication at risk, `MISSED_DEADLINE` is already missed. Record one fingerprint with root cause, responsible owner, changed recovery action, side-effect reconciliation, provider proof, prevention and future regression test. Promote to VALIDATED only for a proven technical repair; never equate it with social delivery. Preserve original scheduler, existing 15-loop heartbeat and exclusive writer. No Make/Buffer fallback or second delivery runtime.
+
+
 ## PUBLICATION_NO_SILENT_GAP_V1 — 31 October 2026 (mandatory publisher recovery skill)
 
 **Trigger:** every original, natural Powerhouse publication/Heartbeat agent run, and every missing same-day LinkedIn-personal, LinkedIn-company, Instagram-Mira, blog or authorized-email delivery proof. Reuse the existing original content-loop and exclusive lease; never schedule a second watchdog or introduce an alternative sender.
