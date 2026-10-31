@@ -161,7 +161,7 @@ test('Mira requires genuinely new immutable daily source winner before generatin
  assert.equal(todo.code,'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED');
  assert.equal(todo.scheduledFor,deadline.toISOString());
  assert.equal(todo.requiresAuthorization,false);
- assert.match(todo.owner,/mira-public-problem-source-agent/);
+ assert.match(todo.owner,/powerhouse-mira-problem-radar/);
  assert.doesNotMatch(todo.owner,/media-router/);
  assert.match(todo.action,/bronagent/);
  const winner={...old,delivery_evidence:{...old.delivery_evidence,
