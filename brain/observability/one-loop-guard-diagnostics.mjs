@@ -31,6 +31,7 @@ const CODES=Object.freeze({
  PUBLICATION_PROOF_OVERDUE:'Dagpublicatie mist providerbewijs na geplande tijd; herstel onmiddellijk via originele kanaaleigenaar en controleer de volgende natuurlijke uitvoering.',
  DISTINCT_VERIFIED_STORY_REQUIRED:'Selecteer inhoudelijk nieuw, bronbevestigd LinkedIn-verhaal; nooit de duplicate-beveiliging uitschakelen.',
  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Laat originele Mira-producer definitief video-/frame- en identiteitsbewijs valideren (minimaal 0,940).',
+ MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'Laat oorspronkelijke Mira-bronagent een nieuw controleerbaar MKB-probleem met bronpublicatiedatum vinden. Behoud 90-dagen bron-/3-dagen onderwerpduplicaatcontrole; selecteer daarna exact één nieuwe dagwinnaar, vóór video en identiteitstest.',
  BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel originele bloggoedkeuring, protected merge, Netlify en exact publiek artikelbewijs.',
  EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Herstel canonieke e-mailbevoegdheid en ontvangeropt-in; verzend nooit zonder toestemming.',
  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Tekstgeneratie door huidige goedgekeurde AI-provider geweigerd wegens ontbrekend tegoed. Bevoegde accountbeheerder moet tegoed of formeel goedgekeurde fallback herstellen; nooit automatische betaling of uitwijkroute buiten governance.',
