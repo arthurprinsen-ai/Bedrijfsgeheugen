@@ -172,3 +172,72 @@ test('Mira requires genuinely new immutable daily source winner before generatin
  assert.equal(media.overdue.find(x=>x.channel==='instagram').requiresAuthorization,true);
  assert.equal(obligations.find(x=>x.channel==='instagram').external_id,null);
 });
+
+
+test('failed original AI generation enters recovery immediately BEFORE publication deadline',()=>{
+ const billing={classification:'PROVIDER_BILLING',
+  reason:'429 insufficient_quota SECRET_MUST_NEVER_LEAK',provider_side_effect:false,
+  retry_after:'2026-10-31T09:30:00Z'};
+ const source=[{channel:'linkedin_personal',state:'decided',
+  scheduled_for:new Date('2026-10-31T07:00:00Z'),
+  delivery_evidence:{artifact_generation_failure:billing}}];
+ const p=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T06:15:00Z',
+  decisions:source,obligations:obligations.filter(x=>x.channel==='linkedin_personal'),isTerminal:proof});
+ const item=p.overdue.find(x=>x.channel==='linkedin_personal');
+ assert.equal(p.status,'RECOVERY_DUE');
+ assert.equal(item.code,'CONTENT_GENERATION_BILLING_ACTION_REQUIRED');
+ assert.equal(item.phase,'EARLY_RECOVERY');
+ assert.equal(item.repairHandoff,'RESTORE_APPROVED_GENERATION_CAPABILITY_THEN_REGENERATE');
+ assert.equal(item.requiresAuthorization,true);
+ assert.doesNotMatch(JSON.stringify(p),/SECRET_MUST_NEVER_LEAK|insufficient_quota/);
+ const late=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T08:00:00Z',
+  decisions:source,obligations:obligations.filter(x=>x.channel==='linkedin_personal'),isTerminal:proof});
+ assert.equal(late.overdue.find(x=>x.channel==='linkedin_personal').phase,'MISSED_DEADLINE');
+ const proven=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T09:00:00Z',
+  decisions:source,obligations:[{channel:'linkedin_personal',status:'LIVE_PROVEN',
+   external_id:'urn:li:share:actual-provider-id'}],isTerminal:proof});
+ assert.equal(proven.overdue.some(x=>x.channel==='linkedin_personal'),false);
+});
+
+test('unknown provider side effect requires external reconciliation before retry, email holds opt-in',()=>{
+ const result=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T09:00:00Z',
+  decisions,obligations,isTerminal:proof});
+ assert.equal(result.overdue.find(x=>x.channel==='linkedin_personal').repairHandoff,
+  'RECONCILE_EXTERNAL_SIDE_EFFECT_BEFORE_IDEMPOTENT_RETRY');
+ assert.equal(result.overdue.find(x=>x.channel==='blog').repairHandoff,
+  'CORRECT_EDITORIAL_RELEASE_AND_READBACK');
+ const email=result.overdue.find(x=>x.channel==='email_newsletter');
+ assert.equal(email.repairHandoff,'VERIFY_SENDER_OPT_IN_AND_SUPPRESSION_THEN_RESUME');
+ assert.equal(email.requiresAuthorization,true);
+});
+
+test('original Brain guard and portal distinguish early recovery from missed deadline',async()=>{
+ const raw=[{...decisions[0],
+  delivery_evidence:{artifact_generation_failure:{classification:'PROVIDER_BILLING',
+   reason:'DO_NOT_EXPOSE_SECRET'}}}];
+ const result=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T06:15:00Z',
+  decisions:raw,obligations:obligations.filter(x=>x.channel==='linkedin_personal'),isTerminal:proof});
+ const at='2026-10-31T06:15:00Z';
+ const names=['content-closed-loop','daily-compound-learning','data-spine-watchdog',
+  'full-cycle-production-proof','one-brain-reconcile','revenue-flywheel','autonomous-outreach',
+  'execution-resilience','external-intelligence-universe','mira-problem-loop',
+  'portal-visual-density','self-improvement-layer','seo-opportunity-resolver',
+  'signal-taxonomy-self-heal','source-backed-outbound'];
+ const a=summarizeOneLoopAssurance(names.map((loop_key,i)=>({
+  loop_key,status:i===0?'RED':'GREEN',checked_at:at,fresh_stage_count:8,
+  required_stage_count:8,missing_stages:[],evidence:{guard_pass:i!==0}})),{observedAt:at});
+ const details=projectOriginalGuardDiagnostics(a,[{
+  loop_key:'content-closed-loop',stage:'guard',observed_at:at,
+  evidence:{pass:false,state:{status:'BLOCKED',result:JSON.stringify({recovery:result})}}
+ }],{observedAt:at});
+ const caseInfo=details.cases.find(c=>c.key==='content-closed-loop');
+ assert.equal(caseInfo.publicationRecovery.find(x=>x.channel==='linkedin_personal').phase,
+  'EARLY_RECOVERY');
+ assert.equal(caseInfo.publicationRecovery.find(x=>x.channel==='linkedin_personal').repairHandoff,
+  'RESTORE_APPROVED_GENERATION_CAPABILITY_THEN_REGENERATE');
+ assert.doesNotMatch(JSON.stringify(details),/DO_NOT_EXPOSE_SECRET/);
+ const portal=await readFile(new URL('../portal-v2/modules/powerhouse-observability.js',import.meta.url),'utf8');
+ assert.match(portal,/Publicatie in gevaar/);
+ assert.match(portal,/Publicatie gemist/);
+ assert.match(portal,/data-publication-phase/);
+});
