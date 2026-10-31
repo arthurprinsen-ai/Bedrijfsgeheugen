@@ -15,7 +15,9 @@ test('real provider latency is accommodated by ORIGINAL setup audit budget, not 
  assert.ok(Number.isFinite(lease)&&timeoutMs<lease/6,'One setup audit must not consume the original lease');
  assert.match(code,/signal:\s*AbortSignal\.timeout\(timeoutMs\)/);
  assert.match(code,/return\s*\{\s*name, http: 0, ok: false, timed_out:/);
- assert.match(code,/if\s*\(!schedulerOk/); // Don't accidentally disable auth (where present).
+ assert.match(code,/CONTENT_LOOP_AUTH_LOOKUP_FAILED/);
+ assert.match(code,/authSecret\.data/);
+ assert.match(code,/x-powerhouse-token/);
 });
 test('setup timeout fix never changes content generation or publisher quality/duplication gates',async()=>{
  const [code,skill]=await Promise.all([
