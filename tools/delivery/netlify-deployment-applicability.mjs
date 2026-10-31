@@ -52,6 +52,11 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   // Server-bundled by netlify/functions/powerhouse-observability.mjs.
   // It changes the authenticated portal API even though it lives under brain/.
   'brain/observability/publication-evidence-readback.mjs',
+  // Imported into Netlify's authenticated /api/powerhouse-one-loop-assurance.
+  // Without this exact dependency, a protected main merge can leave the live
+  // portal displaying stale cause/action codes even while Supabase is current.
+  'brain/observability/one-loop-guard-diagnostics.mjs',
+  'brain/observability/one-loop-assurance-readback.mjs',
   'brain/observability/failure-coverage-projection.mjs',
   'brain/observability/cycle-evidence-coverage.mjs',
 ]));
@@ -70,6 +75,9 @@ export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
     path === 'netlify/functions/portal-ondernemersdata.mjs' ||
     path === 'netlify/functions/_portal-supabase-store.mjs' ||
     path === 'brain/observability/publication-evidence-readback.mjs' ||
+    path === 'brain/observability/one-loop-guard-diagnostics.mjs' ||
+    path === 'brain/observability/one-loop-assurance-readback.mjs' ||
+    path === 'netlify/functions/powerhouse-one-loop-assurance.mjs' ||
     path === 'netlify/functions/powerhouse-observability.mjs'
   );
 }

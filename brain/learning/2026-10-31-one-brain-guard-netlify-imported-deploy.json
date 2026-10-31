@@ -1,0 +1,45 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|delivery|one-brain-guard-imported-netlify-deploy-undetected|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "root_cause": "The original authenticated Netlify handler imports brain/observability/one-loop-guard-diagnostics.mjs, but central deriveNetlifyDeploymentApplicability omitted that exact imported runtime file and one-loop-assurance-readback.mjs. PR #5219 changed its sanitized billing code, and production Netlify remained at earlier ready deploy 6ae5a9432b59433f424c7db6 (commit 873ce9f) while source main was bcb377b. A Supabase Edge exact-main match is not Netlify-API parity.",
+  "prevention_rule": "Original ONE BRAIN guard and its assurance-readback must be explicitly classified as imported Netlify runtime dependencies requiring a real deploy, and strict authenticated production readback. No release allowed to call portal LIVE because GitHub Required, source merge or Supabase Edge alone succeeded.",
+  "evidence": {
+    "original_handler": "netlify/functions/powerhouse-one-loop-assurance.mjs",
+    "original_import": "brain/observability/one-loop-guard-diagnostics.mjs",
+    "observed_live_netlify_deploy": "6ae5a9432b59433f424c7db6",
+    "observed_live_netlify_main_sha": "873ce9f8271ab277ad4e49a3a11480917acf520b",
+    "observed_new_main_sha": "bcb377b6f53159176d6d2eeec20971485d1def62",
+    "observed_supabase_edge_version": 466,
+    "live_portal_new_code_unverified": true,
+    "provider_publication_proof": false
+  },
+  "owner": "original GitHub protected delivery + Netlify source parity / authenticated ONE BRAIN portal owner",
+  "repair": "Add imported ONE BRAIN guard source paths to existing Netlify deploy applicability and authenticated proof selectors. Touch only the existing authenticated Netlify handler's import documentation to force one normal protected production build; never dispatch a second deploy or bypass Netlify's original Git provider.",
+  "regression": "tests/brain-one-brain-guard-netlify-import-impact-20261031.test.mjs",
+  "agent_contract": ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+  "human_documentation": "docs/changes/2026-10-31-one-brain-guard-netlify-imported-deploy.md",
+  "productionVerified": false,
+  "independentBrowserVerified": false,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-brain-guard-netlify-import-impact-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-brain-guard-netlify-import-impact-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "31 October 2026 Netlify site metadata showed current deploy still at original #5216 main SHA while Supabase Edge v466 had latest cause changes; native source importer verified.",
+    "pending": "Protect exact-head Required/BRAIN/CodeQL, merge, Netlify deploy exact SHA, authenticated no-cache portal API proof and real original ONE BRAIN provider results."
+  }
+}
