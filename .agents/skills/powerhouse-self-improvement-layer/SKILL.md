@@ -5,6 +5,12 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## ONE_BRAIN_PORTAL_STATUS_TRUTH_V1 — no repeated false-green projection
+
+All existing Powerhouse/ONE BRAIN/Heartbeat agents must treat the ORIGINAL fifteen-loop state and independent provider/outcome evidence as authoritative. The generic Portal V2 event filter, error count and badge classifier must use the single read-only `classifyPowerhouseTone` projection: RED/RECOVERY_DUE and blocked/degraded = bad; AMBER and evidence debt = warn; `UNVERIFIED`, `NOT_VERIFIED`, `NOT_LIVE`, `NOT_PROVEN`, `UNPROVEN`, `UNFULFILLED`, `UNSUCCESSFUL`, `PENDING_PROOF` must never be green just because positive substrings appear. `NOT_REQUIRED` is neutral, not commercial success. Never set database status to green to compensate for a presentation problem.
+
+When the original agent detects an unfamiliar provider/evidence label, first reproduce the exact classifier decision and log fingerprint `powerhouse|portal|status-label-substring-false-green|20261031-v1`, root cause, independent source receipt, regression, remediation, release SHA and next natural original run to the original ONE BRAIN. The same original portal pipeline must be used; no second projection/write authority, scheduler, external sender or weakening of authorization, duplicate, opt-in or identity gates. New positive status words require an explicit negative-meaning regression first. Shipping the UI correction is not delivery of LinkedIn, Instagram, blog, email, orders or calibrated predictions.
+
 ## NO_STALLED_DELIVERY_REPAIR_V1 — permanent post, blog and consented-email recovery
 
 Every original canonical publication run handles an unfinished promise as an owned **recovery obligation**, never a terminal `SKIPPED`. For LinkedIn, Instagram/Mira, CMS/blog and approved email, follow source → editor → reliability/security → single original publisher → independent provider observer → outcome → ONE BRAIN fingerprint/root cause/fix/regression/learn. On content-quality rejection, do not reword a rejected duplicate: acquire genuinely new provable facts and regenerate a better concrete situation → cause → impact → point, pass editorial and identity rules, and resume the **same original daily obligation**. On a known technical failure, use a bounded changed-input or proven implementation repair on the normal original run; never spin or replay identical rejected content.
