@@ -4,9 +4,7 @@
   "parentIssue": 4198,
   "maturity": "OBSERVED",
   "problem": "Generic Portal V2 status badges/event counts can show UNVERIFIED or NOT_LIVE as green, RED/AMBER as neutral, despite original 15-loop truth.",
-  "rootCause": "Positive substring matching precedes negative-evidence handling; direct RED/AMBER tokens absent.",
   "fix": "Single read-only source-backed status projection; priority red/critical/blocked -> amber/evidence due -> green verified and no positive matches for negated statuses.",
-  "prevention": "A status cannot look green unless positive semantics survive negative/evidence-missing guards. Regression test negative and mixed meanings; original 15-loop raw source remains authority.",
   "regression": "tests/brain-portal-evidence-status-truth-20261031.test.mjs",
   "releaseGates": [
     "protected required",
@@ -36,5 +34,28 @@
       "tests/brain-portal-evidence-status-truth-20261031.test.mjs"
     ]
   },
-  "evaluation_rule": "Both historical replay and canary mode must run the original pure classifier regression; live deployment needs separate exact Netlify+browser independent readback."
+  "evaluation_rule": "Both historical replay and canary mode must run the original pure classifier regression; live deployment needs separate exact Netlify+browser independent readback.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Positive substring matching precedes negative-evidence handling; direct RED/AMBER tokens absent.",
+  "prevention_rule": "A status cannot look green unless positive semantics survive negative/evidence-missing guards. Regression test negative and mixed meanings; original 15-loop raw source remains authority.",
+  "evidence": {
+    "observed_main_source_sha": "7e936f388b98ad0b6014e1bb6a680aba389b54cc",
+    "source": "portal-v2/modules/powerhouse-observability.js original generic tone()",
+    "failing_cases": [
+      "RED:neutral",
+      "AMBER:neutral",
+      "UNVERIFIED:good",
+      "UNPROVEN:good",
+      "NOT_LIVE:good"
+    ],
+    "regression": "tests/brain-portal-evidence-status-truth-20261031.test.mjs",
+    "release_proof": null,
+    "provider_outcome_proof": null
+  }
 }
