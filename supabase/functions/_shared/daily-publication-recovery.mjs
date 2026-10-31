@@ -20,7 +20,8 @@ function reasonFor(channel,obligation,decision){
   if(decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING')
     return 'CONTENT_GENERATION_BILLING_ACTION_REQUIRED';
   if(error.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED'))return 'DISTINCT_VERIFIED_STORY_REQUIRED';
-  if(channel==='instagram')return 'MIRA_FINAL_MEDIA_PROOF_REQUIRED';
+  if(channel==='instagram')return str(decision?.delivery_evidence?.daily_winner_recommendation_id)
+    ? 'MIRA_FINAL_MEDIA_PROOF_REQUIRED' : 'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED';
   if(channel==='blog')return 'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED';
   if(boundary)return 'CHANNEL_CAPABILITY_PROOF_REQUIRED';
   return 'EXACT_PROVIDER_PUBLICATION_PROOF_MISSING';
@@ -30,6 +31,7 @@ const REMEDIATION=Object.freeze({
   CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Oorspronkelijke AI-tekstgenerator heeft geen providertegoed; vraag bevoegde accountbeheerder om herstel of gebruik pas een opnieuw goedgekeurde en bewezen beschikbare bestaande fallback. Niet automatisch betalen, route wisselen of extra sends proberen.',
   DISTINCT_VERIFIED_STORY_REQUIRED:'Laat oorspronkelijke bronagent een wezenlijk nieuw geverifieerd verhaal vinden; behoud onveranderlijke duplicate-gate en provider-ID.',
   MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Maak/controleer nieuwe Mira-media in de originele router met frame-identiteit >= 0,940, inhoudskwaliteit en exact definitief mediabewijs.',
+  MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'Laat de bestaande Mira-bronagent eerst een nieuw, gedateerd en onafhankelijk MKB-probleem vinden, bestaande onderwerp- en brondubbelingen uitsluiten en daarna exact één originele dagwinnaar vastleggen. Pas na die stap mag de mediarouter een nieuwe video voorbereiden.',
   BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel oorspronkelijke redactionele goedkeuring, protected PR, Required/CodeQL/BRAIN, merge, Netlify en exact publiek artikelbewijs.',
   CHANNEL_CAPABILITY_PROOF_REQUIRED:'Herstel de oorspronkelijke providerbevoegdheid veilig, vraag vereiste menselijke OAuth-consent; geen alternatieve account of publisher.',
   EXACT_PROVIDER_PUBLICATION_PROOF_MISSING:'Herneem alleen de oorspronkelijke idempotente lane na controle op mogelijk extern effect; lees provider-ID terug, nooit blind opnieuw publiceren.',
@@ -67,10 +69,13 @@ export function assessDailyPublicationRecovery({
     const isMissingSchedule=!isScheduled;
     const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision);
     const item={
-      channel:entry.channel, owner:entry.owner, code,
+      channel:entry.channel,
+      owner:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED'
+        ? 'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1'
+        : entry.owner, code,
       action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
-      requiresAuthorization:code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
+      requiresAuthorization:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED' ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
         || entry.channel==='email_newsletter'
         ||str(decision?.delivery_evidence?.capability_state)==='BLOCKED_HARD_BOUNDARY'
     };
