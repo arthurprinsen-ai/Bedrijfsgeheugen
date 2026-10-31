@@ -49,5 +49,18 @@
   "proven_fix": null,
   "human_documentation": "docs/changes/2026-10-31-daily-publication-no-silent-gap-v1.md",
   "activity_ledger": "docs/development-ledger-events/2026-10-31-daily-publication-no-silent-gap-v1.md",
-  "agent_skill": ".agents/skills/instagram-composio-publisher/SKILL.md"
+  "agent_skill": ".agents/skills/instagram-composio-publisher/SKILL.md",
+  "protected_merge_regression": {
+    "observed_at_utc": "2026-10-31T09:32:00Z",
+    "source": "original GitHub protected main branch and official 405 merge attempt",
+    "parent_issue": 4198,
+    "superseded_unmergeable_pr": 5221,
+    "canonical_active_pr": 5222,
+    "merged_netlify_dependency_pr": 5220,
+    "observed": "PR #5222 original PR-native Required failed admission from metadata syntax and supersession obligation identity. After metadata-only fixes a workflow_dispatch run succeeded, but branch protection still reported 2 of 3 required checks failing, demonstrating dispatch success is not a substitute for fresh original PR-native checks.",
+    "root_cause": "Required branch protection binds original pull-request check contexts; a new workflow_dispatch check cannot retroactively replace failed native PR contexts for protected merge.",
+    "prevention": "After correcting PR metadata, make a real scoped source/learning correction on the original PR head so GitHub triggers the original native pull_request Required+CodeQL. Never disable required checks or force merge. Verify exact head, source scope, native green, squash protected merge, original Edge+Netlify+provider outcome.",
+    "consent": "No external publishing/provider side effect from this CI repair.",
+    "release_status": "CANDIDATE_NOT_MERGED"
+  }
 }
