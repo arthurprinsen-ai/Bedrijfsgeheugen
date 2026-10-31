@@ -1,4 +1,5 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { classifyPowerhouseTone as tone } from './powerhouse-status-tone.mjs';
 import { deriveReleaseStatus } from '../../tools/netlify/release-status.mjs';
 import { ensureIdentityWidget } from '../portal-state.js';
 import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
@@ -19,13 +20,6 @@ function withinPeriod(event,period){
   const days=PERIODS[period]??7;if(!days)return true;
   const at=timeMs(event.occurredAt);if(!at)return true;
   return at>=Date.now()-days*86400000;
-}
-function tone(status,severity){
-  const s=lower(status),v=lower(severity);
-  if(v.includes('critical')||v.includes('error')||s.includes('fail')||s.includes('block')||s.includes('drift'))return'bad';
-  if(v.includes('warn')||s.includes('pending')||s.includes('stale')||s.includes('open')||s.includes('queue'))return'warn';
-  if(s.includes('success')||s.includes('green')||s.includes('verified')||s.includes('live')||s.includes('proven')||s.includes('fulfilled'))return'good';
-  return'neutral';
 }
 function isError(event){return tone(event.status,event.severity)==='bad'||lower(event.category).includes('error')||lower(event.rawType).includes('error')}
 function isKnowledge(event){const s=[event.category,event.layer,event.rawType,event.title].map(lower).join(' ');return /learning|document|ledger|memory|knowledge|writeback/.test(s)}
