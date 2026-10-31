@@ -41,4 +41,4 @@ begin
        (excluded.experiment_id,excluded.content_kind);
  get diagnostics v_count=row_count;
  return v_count;
-end;$function$
+end;$function$;
