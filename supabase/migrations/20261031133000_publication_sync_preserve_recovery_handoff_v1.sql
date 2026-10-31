@@ -42,3 +42,9 @@ begin
  get diagnostics v_count=row_count;
  return v_count;
 end;$function$;
+
+-- Existing production ACL is {postgres=X/postgres,service_role=X/postgres}.
+-- The same SECURITY DEFINER is still private to the original service caller;
+-- never expose the bootstrap sync via public / anon / authenticated Data API.
+REVOKE EXECUTE ON FUNCTION public.sync_content_publication_obligations(date,date)
+  FROM PUBLIC, anon, authenticated;
