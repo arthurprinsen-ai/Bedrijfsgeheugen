@@ -9,6 +9,20 @@ const CHANNELS=Object.freeze([
   {channel:'email_newsletter',decision:'email_newsletter',owner:'canonical Powerhouse email / authorized recipient owner'}
 ]);
 const GRACE_MS=30*60*1000;
+// Each retry remains inside the ORIGINAL channel owner's existing scheduled
+// execution. This classification never publishes, creates a scheduler, or
+// changes the provider's idempotency / permission boundaries.
+const REPAIR_HANDOFF=Object.freeze({
+  EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'VERIFY_SENDER_OPT_IN_AND_SUPPRESSION_THEN_RESUME',
+  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'RESTORE_APPROVED_GENERATION_CAPABILITY_THEN_REGENERATE',
+  DISTINCT_VERIFIED_STORY_REQUIRED:'DISCOVER_DIFFERENT_VERIFIED_SOURCE_THEN_REGENERATE',
+  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'REBUILD_AND_VERIFY_FINAL_MEDIA_THEN_RESUME',
+  MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'FIND_FRESH_DISTINCT_SOURCE_AND_FREEZE_WINNER',
+  BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'CORRECT_EDITORIAL_RELEASE_AND_READBACK',
+  CHANNEL_CAPABILITY_PROOF_REQUIRED:'RESTORE_ORIGINAL_PROVIDER_PERMISSION_THEN_RECONCILE',
+  EXACT_PROVIDER_PUBLICATION_PROOF_MISSING:'RECONCILE_EXTERNAL_SIDE_EFFECT_BEFORE_IDEMPOTENT_RETRY',
+  PUBLICATION_SCHEDULE_MISSING:'REPAIR_ORIGINAL_DAILY_DECISION_THEN_RESUME'
+});
 const str=x=>typeof x==='string'?x.trim():'';
 function reasonFor(channel,obligation,decision){
   const error=str(obligation?.last_error);
@@ -63,8 +77,12 @@ export function assessDailyPublicationRecovery({
     const scheduleMs=Date.parse(scheduledFor);
     const isScheduled=scheduledFor.length>0&&Number.isFinite(scheduleMs);
     const isExpired=isScheduled && observed>=scheduleMs+graceMs;
+    // An explicit failed AI generation is actionable immediately, even when the
+    // planned publication time has not passed. Waiting for due+30m loses the
+    // chance to restore the approved provider and regenerate good content.
+    const providerGenerationFailed=decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING';
     const isFailed=['FAILED','BLOCKED'].includes(str(obligation?.status))
-      ||str(decision?.state)==='blocked';
+      ||str(decision?.state)==='blocked'||providerGenerationFailed;
     // Missing decision is itself a recovery obligation: never silently skip a lane.
     const isMissingSchedule=!isScheduled;
     const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision);
@@ -74,6 +92,12 @@ export function assessDailyPublicationRecovery({
         ? 'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1'
         : entry.owner, code,
       action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
+      // Present deadline risk as risk, never falsely as a missed publication.
+      phase:isExpired?'MISSED_DEADLINE':isFailed||isMissingSchedule?'EARLY_RECOVERY':'PENDING',
+      // Original publisher MUST reconcile external provider side effects before
+      // any retry; content regeneration is a new qualified artifact, not a
+      // duplicate of an already-delivered post or email.
+      repairHandoff:REPAIR_HANDOFF[code],
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
       requiresAuthorization:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED' ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
         || entry.channel==='email_newsletter'
