@@ -111,6 +111,9 @@ function safePublicationRecovery(row,receipt){
    .filter(x=>typeof x?.channel==='string'&&CHANNEL_LABELS[x.channel]&&CODES[x.code])
    .slice(0,5).map(x=>Object.freeze({
     channel:x.channel,label:CHANNEL_LABELS[x.channel],code:x.code,
+    // Accountable canonical owner; never expose arbitrary provider payload.
+    owner:typeof x.owner==='string'&&/^[a-zA-Z0-9 /._-]{5,120}$/.test(x.owner)
+      ?x.owner:null,
     nextAction:CODES[x.code],scheduledFor:Number.isFinite(Date.parse(x.scheduledFor||''))?
       new Date(x.scheduledFor).toISOString():null,
     phase:['EARLY_RECOVERY','MISSED_DEADLINE'].includes(x.phase)?x.phase:'MISSED_DEADLINE',
