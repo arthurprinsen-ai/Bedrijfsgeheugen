@@ -1,0 +1,26 @@
+{
+  "contract": "ONE_BRAIN_ORIGINAL_FAILURE_LEARNING_V1",
+  "fingerprint": "powerhouse|portal|status-label-substring-false-green|20261031-v1",
+  "parentIssue": 4198,
+  "maturity": "OBSERVED",
+  "problem": "Generic Portal V2 status badges/event counts can show UNVERIFIED or NOT_LIVE as green, RED/AMBER as neutral, despite original 15-loop truth.",
+  "rootCause": "Positive substring matching precedes negative-evidence handling; direct RED/AMBER tokens absent.",
+  "fix": "Single read-only source-backed status projection; priority red/critical/blocked -> amber/evidence due -> green verified and no positive matches for negated statuses.",
+  "prevention": "A status cannot look green unless positive semantics survive negative/evidence-missing guards. Regression test negative and mixed meanings; original 15-loop raw source remains authority.",
+  "regression": "tests/brain-portal-evidence-status-truth-20261031.test.mjs",
+  "releaseGates": [
+    "protected required",
+    "CodeQL",
+    "original Portal V2 tested",
+    "native Netlify exact SHA",
+    "production browser readback"
+  ],
+  "effect": "UI truth only; neither provider publication nor realized revenue can be inferred from a badge.",
+  "safety": [
+    "no new scheduler",
+    "no second publisher",
+    "no duplicate source of truth",
+    "no weakening consent/identity/provider checks"
+  ],
+  "provenFix": null
+}
