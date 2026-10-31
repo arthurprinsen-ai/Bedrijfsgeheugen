@@ -3,6 +3,10 @@
 import {getUser} from '@netlify/identity';
 import {isPowerhouseAdmin} from '../../platform/auth/powerhouse-admin.mjs';
 import {resolveIdentityTenant} from '../../platform/read-models/portal-server-state.mjs';
+// Runtime dependency boundary: guard diagnostics and assurance-readback are
+// bundled by Netlify in this authenticated function. The canonical deployment
+// applicability MUST require a new production build if either imported module
+// changes; a Supabase Edge deployment alone cannot update these portal replies.
 import {loadOneLoopAssuranceWithDiagnostics} from '../../brain/observability/one-loop-guard-diagnostics.mjs';
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
