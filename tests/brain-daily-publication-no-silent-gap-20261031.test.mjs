@@ -27,7 +27,7 @@ test('past 30-minute scheduled deadline is a recovery duty, never success',()=>{
  assert.equal(result.overdue.find(x=>x.channel==='blog').code,'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED');
  assert.equal(result.overdue.find(x=>x.channel==='email_newsletter').requiresAuthorization,true);
  assert.ok(result.overdue.every(x=>x.owner&&x.action));
- assert.equal(result.overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ assert.equal(result.overdue.find(x=>x.channel==='instagram').code,'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED');
  assert.deepEqual(JSON.stringify({obligations,decisions}),before);
  assert.doesNotMatch(JSON.stringify(result),/service_role|private_token|provider_payload/i);
 });
@@ -102,7 +102,7 @@ test('real Postgres Date object preserves publication deadline and root cause',(
  assert.ok(result.overdue.every(x=>x.code!=='PUBLICATION_SCHEDULE_MISSING'));
  assert.equal(result.overdue.find(x=>x.channel==='linkedin_personal').scheduledFor,'2026-10-31T07:00:00.000Z');
  assert.equal(result.overdue.find(x=>x.channel==='blog').code,'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED');
- assert.equal(result.overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ assert.equal(result.overdue.find(x=>x.channel==='instagram').code,'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED');
  assert.equal(result.overdue.find(x=>x.channel==='email_newsletter').code,'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED');
  // A valid future date must not be marked overdue before its due/grace time.
  const fresh=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T07:05:00Z',
@@ -130,7 +130,7 @@ test('approved provider 429 insufficient_quota is safe human-action reason, neve
  assert.ok(content.every(x=>x.code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'));
  assert.ok(content.every(x=>x.requiresAuthorization===true));
  assert.ok(content.every(x=>x.scheduledFor==='2026-10-31T07:00:00.000Z'));
- assert.equal(output.overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ assert.equal(output.overdue.find(x=>x.channel==='instagram').code,'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED');
  assert.equal(output.overdue.find(x=>x.channel==='email_newsletter').code,'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED');
  assert.doesNotMatch(JSON.stringify(output),/do-not-leak-PROVIDER_SECRET|insufficient_quota/i);
  const names=['content-closed-loop','daily-compound-learning','data-spine-watchdog','full-cycle-production-proof',
@@ -149,4 +149,26 @@ test('approved provider 429 insufficient_quota is safe human-action reason, neve
  assert.equal(caseInfo.publicationRecovery.find(x=>x.channel==='linkedin_personal').code,
   'CONTENT_GENERATION_BILLING_ACTION_REQUIRED');
  assert.doesNotMatch(JSON.stringify(projected),/do-not-leak-PROVIDER_SECRET/);
+});
+
+
+test('Mira requires genuinely new immutable daily source winner before generating media',()=>{
+ const deadline=new Date('2026-10-31T08:00:00Z');
+ const old={...decisions.find(x=>x.channel==='instagram_company'),scheduled_for:deadline};
+ const overdue=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T09:04:00Z',
+  decisions:[old],obligations:obligations.filter(x=>x.channel==='instagram'),isTerminal:proof});
+ const todo=overdue.overdue.find(x=>x.channel==='instagram');
+ assert.equal(todo.code,'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED');
+ assert.equal(todo.scheduledFor,deadline.toISOString());
+ assert.equal(todo.requiresAuthorization,false);
+ assert.match(todo.owner,/powerhouse-mira-problem-radar/);
+ assert.doesNotMatch(todo.owner,/media-router/);
+ assert.match(todo.action,/bronagent/);
+ const winner={...old,delivery_evidence:{...old.delivery_evidence,
+  daily_winner_recommendation_id:'new-eligible-immutable-winner'}};
+ const media=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T09:04:00Z',
+  decisions:[winner],obligations:obligations.filter(x=>x.channel==='instagram'),isTerminal:proof});
+ assert.equal(media.overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ assert.equal(media.overdue.find(x=>x.channel==='instagram').requiresAuthorization,true);
+ assert.equal(obligations.find(x=>x.channel==='instagram').external_id,null);
 });
