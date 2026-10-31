@@ -71,7 +71,7 @@ export function assessDailyPublicationRecovery({
     const item={
       channel:entry.channel,
       owner:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED'
-        ? 'powerhouse-mira-problem-radar / powerhouse_select_instagram_daily_winner_v1'
+        ? 'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1'
         : entry.owner, code,
       action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
