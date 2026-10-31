@@ -12,3 +12,7 @@ The private original ONE BRAIN guard and portal show counts from that same authe
 
 ## Gate and independent verification
 Regression: `tests/brain-publication-sync-no-rewrite-churn-20261031.test.mjs` plus existing original no-stalled-delivery and CAS tests, Required/Backend/Automation/Portal/CodeQL/System Map, protected merge; apply tracked migration only after protected merge, validate pg_get_functiondef + original ACL and call `sync` twice to show 0 updates/no mutation; read back next ordinary original Heartbeat result and updated `handoffWriteback`. Verify native Netlify deploy SHA for portal count display. If any test fails, preserve original status and report blocker; do not claim live.
+
+## Protected integration continuity
+
+The initial recovery candidate #5229 was closed on a stale base after a different protected portal status-truth release (#5228). This same single-writer remediation was rebased from exact protected `main` `b39a10638f643d8426044f7afb6db53989fd3be9` in PR #5231. The portaal status-tone classification, prior original Brain/Heartbeat lease and other agent rules are preserved. Only the calendar source reset, genuine original handoff counters, regression, machine learning and documentation are added; no direct database patch before protected merge.
