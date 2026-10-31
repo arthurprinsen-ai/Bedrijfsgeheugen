@@ -122,6 +122,21 @@ function safePublicationRecovery(row,receipt){
       ?x.repairHandoff:null
    }));
 }
+// Original content-loop lease owns BOTH the typed recovery action and its
+// source writeback count. Read only proven receipt fields; never infer green.
+function safePublicationHandoffWriteback(row,receipt){
+ if(row.key!=='content-closed-loop'||!receipt)return null;
+ const parsed=parseResult(receipt.evidence?.state?.result);
+ const handoff=parsed?.handoffWriteback;
+ if(handoff?.contract!=='original-publication-obligation-recovery-v1')return null;
+ const counts=['planned','applied','conflicts','errors'];
+ if(!counts.every(k=>Number.isSafeInteger(handoff[k])&&handoff[k]>=0&&handoff[k]<=100)
+    ||handoff.applied>handoff.planned
+    ||handoff.applied+handoff.conflicts+handoff.errors>handoff.planned)return null;
+ return Object.freeze({contract:handoff.contract,
+  planned:handoff.planned,applied:handoff.applied,
+  conflicts:handoff.conflicts,errors:handoff.errors});
+}
 const denied=reason=>Object.freeze({contract:DIAGNOSTIC_CONTRACT,status:'UNAVAILABLE',reason,
   source:RECEIPTS,observedAt:null,cases:[],allGreen:false});
 export function projectOriginalGuardDiagnostics(assurance,receipts,{observedAt=new Date().toISOString()}={}){
@@ -146,6 +161,7 @@ export function projectOriginalGuardDiagnostics(assurance,receipts,{observedAt=n
    guardReceiptAt:receipt?.observed_at||null,
    reasons:codes.map(code=>Object.freeze({code,nextAction:CODES[code]})),
    publicationRecovery:safePublicationRecovery(row,receipt),
+   publicationHandoffWriteback:safePublicationHandoffWriteback(row,receipt),
    missingStages:[...row.missingStages],source:receipt?RECEIPTS:null,
    verifiedOutcome:false});
  });
