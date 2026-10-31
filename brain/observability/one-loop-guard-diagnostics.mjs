@@ -23,7 +23,11 @@ const CODES=Object.freeze({
  CONTENT_LOOP_GUARD_FAILED:'Controleer de oorspronkelijke publicatie- en providerreadback per kanaal.',
  FULL_CYCLE_SOURCE_UNHEALTHY:'Herstel de ontbrekende provider- of productie-readback binnen de originele Proof-lane.',
  ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE:'Bekijk oorspronkelijke guardreceipt; onderliggend veilig bewijs ontbreekt.',
- OUTREACH_ACTION_READBACK_DUE:'Verifieer bestaande outreach-actie en providerontvangst; geen verzending zonder duplicate-gate.',
+ OUTREACH_ACTION_READBACK_DUE:'Laat de bestaande outreach-eigenaar de ontbrekende echte actie en providerontvangst aantonen; geen verzending zonder duplicate-gate.',
+ CONTENT_PUBLICATION_STAGE_EVIDENCE_DUE:'Laat de originele Content Closed Loop-eigenaar ontbrekende besluit-, publicatie-, providerreadback-, meet-, uitkomst- en leerbewijzen herstellen; behoud kanaal- en autorisatiegates.',
+ DATA_SPINE_STAGE_EVIDENCE_DUE:'Laat de oorspronkelijke Data Spine-watchdog ontbrekende bron-, actie-, guard- en uitkomstreceipts herstellen en op de volgende natuurlijke run bevestigen.',
+ ORIGINAL_LOOP_STAGE_EVIDENCE_DUE:'Herstel de ontbrekende oorspronkelijke stage-receipts binnen de luseigenaar en bevestig onafhankelijke bron-/uitkomstbewijzen; geen extra job of fictief groen.',
+ ORIGINAL_AMBER_EVIDENCE_DUE:'Oranje bewijstekort zonder ontbrekende stage-namen: controleer oorspronkelijke guard en providerstatus bij deze lus, niet de outreach-uitvoerder.',
  PUBLICATION_PROOF_OVERDUE:'Dagpublicatie mist providerbewijs na geplande tijd; herstel onmiddellijk via originele kanaaleigenaar en controleer de volgende natuurlijke uitvoering.',
  DISTINCT_VERIFIED_STORY_REQUIRED:'Selecteer inhoudelijk nieuw, bronbevestigd LinkedIn-verhaal; nooit de duplicate-beveiliging uitschakelen.',
  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Laat originele Mira-producer definitief video-/frame- en identiteitsbewijs valideren (minimaal 0,940).',
@@ -39,9 +43,22 @@ function parseResult(value){
  if(typeof value!=='string'||value.length>65536)return null;
  try{const obj=JSON.parse(value);return obj&&typeof obj==='object'&&!Array.isArray(obj)?obj:null;}catch{return null;}
 }
+// AMBER is an incomplete stage chain, not necessarily an outreach incident.
+// Derive the accountable owner exclusively from the original 15-loop key and
+// original missingStages; never copy one lane's remediation to another lane.
+function missingStageAction(row){
+ const missing=Array.isArray(row?.missingStages)?row.missingStages:[];
+ if(!missing.length)return 'ORIGINAL_AMBER_EVIDENCE_DUE';
+ if(row.key==='autonomous-outreach' &&
+    (missing.includes('action')||missing.includes('readback')))return 'OUTREACH_ACTION_READBACK_DUE';
+ if(row.key==='content-closed-loop')return 'CONTENT_PUBLICATION_STAGE_EVIDENCE_DUE';
+ if(row.key==='data-spine-watchdog')return 'DATA_SPINE_STAGE_EVIDENCE_DUE';
+ return 'ORIGINAL_LOOP_STAGE_EVIDENCE_DUE';
+}
 function collectGuardCodes(row,receipt){
  if(row.status==='GREEN')return [];
- if(!receipt||receipt.evidence?.pass===undefined)return row.status==='AMBER'?['OUTREACH_ACTION_READBACK_DUE']:['ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE'];
+ if(row.status==='AMBER')return [missingStageAction(row)];
+ if(!receipt||receipt.evidence?.pass===undefined)return ['ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE'];
  const e=receipt.evidence||{},codes=[];
  const add=c=>{if(CODES[c]&&!codes.includes(c))codes.push(c);};
  if(row.key==='content-closed-loop'){
@@ -78,7 +95,7 @@ function collectGuardCodes(row,receipt){
  }else if(row.key==='full-cycle-production-proof'){
   if(e.proof?.healthy===false)add('FULL_CYCLE_SOURCE_UNHEALTHY');
  }
- if(!codes.length)add(row.status==='AMBER'?'OUTREACH_ACTION_READBACK_DUE':'ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE');
+ if(!codes.length)add('ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE');
  return codes.slice(0,MAX_REASONS);
 }
 const CHANNEL_LABELS=Object.freeze({

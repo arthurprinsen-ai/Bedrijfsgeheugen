@@ -139,7 +139,7 @@ function oneLoopAssuranceView(assurance){
       'Stadia en guard-status actueel':'Uitvoerings- of externe bewijscontrole ontbreekt';
     const caseInfo=byKey.get(row.key);
     const remediation=caseInfo&&row.status!=='GREEN'?
-      arr(caseInfo.reasons).map(x=>'<div><b>'+esc(x.code)+'</b><small>Vervolgactie: '+esc(x.nextAction)+'</small></div>').join(''):'';
+      arr(caseInfo.reasons).map(x=>'<div><b>'+esc(x.code)+'</b><small>Herstel via oorspronkelijke luseigenaar: '+esc(x.nextAction)+'</small></div>').join(''):'';
     return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small>${remediation}</div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
   }).join('');
   return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="READBACK_COMPLETE" data-overall-status="${esc(status)}">
