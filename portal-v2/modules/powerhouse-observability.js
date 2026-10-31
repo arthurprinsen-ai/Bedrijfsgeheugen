@@ -123,7 +123,8 @@ function oneLoopAssuranceView(assurance){
     '<p class="poc-note">De bestaande kanaalagent hervat dezelfde verplichting. Bij een onzekere verzending eerst provider-readback, dan pas een idempotente herstelpoging; geen dubbele e-mails of posts en nooit groen zonder bewijs.</p>'+
     publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'" data-publication-phase="'+esc(item.phase)+'">'+
       '<div><b>'+esc(item.label)+'</b><small>'+esc(item.nextAction)+
-      ' · Gepland: '+esc(fmtTime(item.scheduledFor))+'</small></div>'+
+      ' · Gepland: '+esc(fmtTime(item.scheduledFor))+'</small>'+
+      (item.owner?'<small>Verantwoordelijke herstelagent: '+esc(item.owner)+'</small>':'')+'</div>'+
       '<span class="poc-badge bad">'+(item.phase==='EARLY_RECOVERY'?'Herstel vóór deadline':'Herstel nodig')+'</span></article>').join('')+'</div>':'';
   const diagnosticState=diagnosis?'Bronoorzaken gecontroleerd':
     'Guard-oorzaken nog niet onafhankelijk teruggelezen; raadpleeg de originele receipts.';
