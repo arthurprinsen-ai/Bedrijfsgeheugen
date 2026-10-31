@@ -27,3 +27,12 @@ test('mere Brain documentation never triggers an unnecessary Netlify deployment'
   assert.equal(scope.deploymentRequired,false,path);
  }
 });
+
+test('specific existing Mira publisher skill owns unique-source before media',async()=>{
+ const src=await readFile(new URL('../.agents/skills/instagram-composio-publisher/SKILL.md',import.meta.url),'utf8');
+ assert.match(src,/powerhouse-mira-problem-radar-v1/);
+ assert.match(src,/powerhouse_select_instagram_daily_winner_v1/);
+ assert.match(src,/MIRA_UNIQUE_SOURCE_WINNER_REQUIRED/);
+ assert.match(src,/90-day source reuse/);
+ assert.match(src,/3-day topic reuse/);
+});
