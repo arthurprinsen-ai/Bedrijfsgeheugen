@@ -17,3 +17,13 @@
 - **Recovery:** same canonical shared read-only classifier converts only valid `Date` objects to ISO 8601, leaves string handling intact, and rejects invalid date objects; no SQL change, no second sender, no threshold relaxation.
 - **Prevention regression:** native Date fixture, true per-channel root cause, grace period, and invalid-date fail-closed in `tests/brain-daily-publication-no-silent-gap-20261031.test.mjs`. Same original ONE BRAIN learning and self-improvement skill updated.
 - **Current proof:** this change awaits protected Required/BRAIN/CodeQL, protected merge and exact source runtime redeploy followed by the next original natural run. Neither this source candidate nor RED constitutes publication provider-ID proof; original daily obligations remain separately unfulfilled.
+
+
+## 2026-10-31 — production blocker provider credit, original ONE BRAIN
+
+- **Source:** production `powerhouse_channel_decisions.delivery_evidence.artifact_generation_failure`, original 08:50 UTC; `brain_ai_governance_registry` for original primary/fallback.
+- **Observed:** blog, LinkedIn personal, LinkedIn company cannot generate artifacts because approved OpenAI API returns 429 `insufficient_quota`; five attempts with canonical cooldown; fallback Composio/Groq explicitly `SUSPENDED`. Four public daily obligations still have no external ID.
+- **Fingerprinted/observed in original ONE BRAIN:** `powerhouse|content-generation|approved-openai-quota-and-governed-fallback-suspended|20261031-v1`.
+- **Correction:** existing read-only classifier and original guard/portal add sanitized `CONTENT_GENERATION_BILLING_ACTION_REQUIRED`, accountable real authorized human provider billing/approved fallback. This is not a provider-side-effect and does not attempt to buy credits or bypass model governance.
+- **Regression:** `tests/brain-daily-publication-no-silent-gap-20261031.test.mjs`, code and existing SkillOps contract. No additional cron, sender, model exception, or account leak.
+- **Pending:** protected merge, original runtime exact readback, real next natural run after authorized provider recovery and provider post receipts.
