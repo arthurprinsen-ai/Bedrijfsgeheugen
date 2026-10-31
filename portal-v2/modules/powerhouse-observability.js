@@ -120,6 +120,16 @@ function oneLoopAssuranceView(assurance){
   const toneStatus={RED:'bad',AMBER:'warn',GREEN:'good'}[status]||'bad';
   const diagnosis=source.guardDiagnostics?.status==='READBACK_COMPLETE'?source.guardDiagnostics:null;
   const byKey=new Map(arr(diagnosis?.cases).map(c=>[c.key,c]));
+  const publicationRecovery=arr(byKey.get('content-closed-loop')?.publicationRecovery);
+  // Read-only original ONE BRAIN receipts: never infer publication from CI success.
+  const publicationPanel=publicationRecovery.length?
+    '<div data-publication-recovery="RECOVERY_DUE" role="alert" class="poc-panel">'+
+    '<h4>Publicatie gemist · herstel vereist</h4>'+
+    '<p class="poc-note">Automatische herstelplicht bij de bestaande kanaalagent. Geen tweede verzender en geen groene status zonder extern publicatiebewijs.</p>'+
+    publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'">'+
+      '<div><b>'+esc(item.label)+'</b><small>'+esc(item.nextAction)+
+      ' · Gepland: '+esc(fmtTime(item.scheduledFor))+'</small></div>'+
+      '<span class="poc-badge bad">Herstel nodig</span></article>').join('')+'</div>':'';
   const diagnosticState=diagnosis?'Bronoorzaken gecontroleerd':
     'Guard-oorzaken nog niet onafhankelijk teruggelezen; raadpleeg de originele receipts.';
   const list=arr(source.loops).map(row=>{
@@ -136,7 +146,7 @@ function oneLoopAssuranceView(assurance){
     <div class="poc-panelhead"><h4>ONE BRAIN + Powerhouse + Heartbeat · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
     <p class="poc-note">Eén bestaande uitvoeringsarchitectuur; dit is uitsluitend onafhankelijke broncontrole van de 15 bestaande lussen, géén tweede executor. Een succesvolle job is geen bewezen klantresultaat. Laatste controle: ${esc(fmtTime(source.observedAt))}.</p>
     <div class="poc-kpis compact">${kpi('Lussen',counts.total,'bestaande canonieke inventaris')}${kpi('Groen',counts.green,'bron-gates voldoen')}${kpi('Oranje',counts.amber,'nog ontbrekend bewijs')}${kpi('Rood',counts.red,'guard of outcome faalt')}</div>
-    <p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
+    ${publicationPanel}<p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
     <p class="poc-note">Eén overkoepelende status wordt ROOD zodra één originele lus rood is. Publicatie, OAuth-toestemming, omzet en agentleereffect worden nooit kunstmatig afgetekend.</p>
   </section>`;
 }
