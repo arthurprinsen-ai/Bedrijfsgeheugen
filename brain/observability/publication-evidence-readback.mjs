@@ -58,16 +58,30 @@ export function summarizePublicationEvidence(rows,{count,date,observedAt}={}){
       typeof row.status!=='string'||!row.status.trim())
       return unknown('PUBLICATION_ROW_OR_TENANT_INVALID');
     seen.add(row.channel);
+    const idRecorded=typeof row.external_id==='string'&&row.external_id.trim().length>0;
+    const liveRecorded=Boolean(row.live_proven_at)&&row.status==='LIVE_PROVEN';
+    // A successful cron, GitHub job, approved draft or content_ready artifact never
+    // establishes delivery. An existing provider ACK forbids republishing even when
+    // the independent provider readback has not completed.
+    const deliveryProofState=liveRecorded?'REGISTRY_LIVE_PROOF':
+      idRecorded?'PROVIDER_ACK_RECORDED':'NOT_DELIVERED_OR_UNPROVEN';
     channels.push({channel:row.channel,registryStatus:row.status,
-      providerIdRecorded:typeof row.external_id==='string'&&row.external_id.trim().length>0,
-      internalLiveProofRecorded:Boolean(row.live_proven_at),
+      providerIdRecorded:idRecorded,
+      internalLiveProofRecorded:liveRecorded,
+      deliveryProofState,
+      requiresRecovery:deliveryProofState==='NOT_DELIVERED_OR_UNPROVEN',
       recoveryCode:codeFor(row)});
   }
   if(seen.size!==EXPECTED.length)return unknown('PUBLICATION_CHANNEL_MISSING');
   const order=new Map(EXPECTED.map((x,i)=>[x,i]));
   channels.sort((a,b)=>order.get(a.channel)-order.get(b.channel));
+  const liveProvenCount=channels.filter(row=>row.deliveryProofState==='REGISTRY_LIVE_PROOF').length;
+  const providerAckCount=channels.filter(row=>row.deliveryProofState==='PROVIDER_ACK_RECORDED').length;
+  const notDeliveredCount=channels.filter(row=>row.deliveryProofState==='NOT_DELIVERED_OR_UNPROVEN').length;
   return {status:'REGISTRY_READBACK_COMPLETE',source:'public.content_publication_obligations',
     tenant:'canonical',date,observedAt,channels,
+    publicationSummary:{expectedChannels:EXPECTED.length,liveProvenCount,providerAckCount,
+      notDeliveredCount,allLiveProven:liveProvenCount===EXPECTED.length},
     caveat:'Database status and stored provider-ID are not independent direct provider readback; never republish an existing provider side effect.'};
 }
 
@@ -123,4 +137,47 @@ export async function loadPersonalSourceSupply({baseUrl,key,observedAt=new Date(
       freshEligibleSourceCount:count,
       caveat:'A fresh external public-life source is not proof of a unique drafted personal story or a LinkedIn provider-side publication.'};
   }catch{return unknown('PERSONAL_SOURCE_READ_FAILED');}
+}
+
+// The fifth outbound lane is a separate, EXISTING canonical decision; do not
+// fabricate an email obligation or infer sending from an active Gmail connector.
+export function summarizeNewsletterDecision(rows,{count,date,observedAt}={}){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date))||!Number.isFinite(Date.parse(observedAt)))
+    return unknown('NEWSLETTER_OBSERVATION_INVALID');
+  if(!Array.isArray(rows)||!Number.isSafeInteger(count)||count!==rows.length||rows.length>1)
+    return unknown('NEWSLETTER_DECISION_READBACK_INCOMPLETE');
+  if(rows.length===0)return {status:'NO_CANONICAL_DECISION',date,observedAt,
+    channel:'email_newsletter',deliveryProofState:'NOT_DELIVERED_OR_UNPROVEN',
+    recoveryCode:'EMAIL_CANONICAL_DECISION_REQUIRED'};
+  const row=rows[0];
+  if(row?.run_date!==date||row?.channel!=='email_newsletter'||
+     !['publish','hold','skip'].includes(row.decision)||typeof row.state!=='string')
+    return unknown('NEWSLETTER_DECISION_IDENTITY_INVALID');
+  const providerAck=typeof row.delivery_ref==='string'&&row.delivery_ref.trim().length>0;
+  return {status:'REGISTRY_READBACK_COMPLETE',date,observedAt,channel:'email_newsletter',
+    decision:row.decision,state:row.state,providerIdRecorded:providerAck,
+    deliveryProofState:providerAck?'PROVIDER_ACK_RECORDED':'NOT_DELIVERED_OR_UNPROVEN',
+    recoveryCode:providerAck?'EMAIL_PROVIDER_ACK_VERIFY_READBACK_NO_RESEND':
+      row.decision==='hold'?'EMAIL_AUTHORIZED_EXECUTOR_AND_CONSENT_REQUIRED':
+      'EMAIL_CANONICAL_DELIVERY_PROOF_REQUIRED',
+    caveat:'A newsletter channel decision is not a provider-delivered email. Never send without an authorized executor and eligible consented recipients.'};
+}
+
+export async function loadNewsletterDecision({baseUrl,key,observedAt=new Date().toISOString(),fetchImpl=globalThis.fetch}={}){
+  if(!baseUrl||!key)return unknown('NEWSLETTER_CONFIG_MISSING');
+  const date=dateAmsterdam(observedAt);
+  const url=new URL(String(baseUrl).replace(/\/$/,'')+'/rest/v1/powerhouse_channel_decisions');
+  url.searchParams.set('select','run_date,channel,decision,state,delivery_ref');
+  url.searchParams.set('run_date','eq.'+date);
+  url.searchParams.set('channel','eq.email_newsletter');
+  url.searchParams.set('limit','2');
+  try{
+    const response=await fetchImpl(url.toString(),{method:'GET',
+      headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json',prefer:'count=exact'},
+      signal:AbortSignal.timeout(5000)});
+    if(!response.ok)return unknown('NEWSLETTER_HTTP_'+response.status);
+    const match=/\/(\d+)$/.exec(String(response.headers?.get('content-range')||''));
+    const rows=await response.json();
+    return summarizeNewsletterDecision(rows,{count:match?Number(match[1]):null,date,observedAt});
+  }catch{return unknown('NEWSLETTER_READ_FAILED');}
 }
