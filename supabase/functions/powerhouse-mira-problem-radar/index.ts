@@ -4,6 +4,7 @@ import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-fr
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource } from '../_shared/personal-observational-source-routing.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
+import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -134,11 +135,46 @@ Deno.serve(async(req:Request)=>{
   }
  }
  const mat=await db.rpc('powerhouse_materialize_mira_problem_recommendation_v1',{p_date:runDate});
+ const supply=classifyOriginalMiraSourceResult({runDate,materialized:mat.data,error:mat.error});
  if(mat.error)errors.push('mira_materialize:'+mat.error.message);
+ // An explicit original selector rejection is a REAL supply failure, not a
+ // healthy provider/cron result. Log it in the EXISTING ONE BRAIN failure
+ // register with an idempotent day+reason fingerprint; no new worker/cron.
+ if(supply.code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED'){
+   const occurrenceId='mira-radar:source-supply:'+runDate+':'+supply.reason;
+   const hash=await crypto.subtle.digest('SHA-256',
+     new TextEncoder().encode(occurrenceId+'|'+supply.code));
+   const payloadSha=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
+   const observed=await db.rpc('brain_observe_failure',{
+     p_occurrence_id:occurrenceId,
+     p_fingerprint:'powerhouse|mira|no-new-unique-source-backed-daily-winner|'+runDate.replaceAll('-','')+'-v1',
+     p_payload_sha256:payloadSha,
+     p_evidence:{
+       run_date:runDate,
+       canonical_owner:'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1',
+       materializer_state:supply.reason,
+       problem:'No new eligible independent source-backed Mira winner',
+       preventive_action:'Use original dated source search and immutable 90-day source/3-day topic dedupe before media; no original gate bypass.',
+       independent_publication_proven:false,
+       no_second_scheduler:true
+     }
+   });
+   if(observed.error)errors.push('original_brain_source_shortage_writeback_failed');
+ }
  // Original personal source reservation RPC, same single daily radar execution.
  // This is source->recommendation only: no post dispatch or uniqueness bypass.
  const personalRotation=await db.rpc('powerhouse_ensure_personal_source_rotation_v2',{p_date:runDate});
  if(personalRotation.error)errors.push('personal_source_rotation:'+personalRotation.error.message);
- return json({ok:errors.length===0,runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
-   materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors});
+ return json({
+   ok:errors.length===0&&supply.ok,
+   state:supply.ok?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   sourceRecovery:supply.ok?null:{
+     contract:supply.contract,status:'RECOVERY_DUE',
+     reason:supply.reason,code:supply.code,
+     owner:'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1',
+     sendsAuthorized:false
+   },
+   runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
+   materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors
+ });
 });
