@@ -16,8 +16,8 @@ test('original SQL sync never resets already-owned next_action while reconciling
  assert.match(conflict,/set experiment_id=excluded\.experiment_id,\s+content_kind=excluded\.content_kind,/);
  assert.match(conflict,/where \(content_publication_obligations\.experiment_id,\s+content_publication_obligations\.content_kind\)\s+is distinct from\s+\(excluded\.experiment_id,excluded\.content_kind\)/);
  assert.match(conflict,/get diagnostics v_count=row_count/);
- assert.match(conflict,/end;\\$function\\$;/);
- assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\\.sync_content_publication_obligations\\(date,date\\)\\s+FROM PUBLIC, anon, authenticated;/);
+ assert.match(conflict,/end;\$function\$;/);
+ assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\.sync_content_publication_obligations\(date,date\)\s+FROM PUBLIC, anon, authenticated;/);
 });
 test('the same original insertion still establishes four genuine obligations without new provider side effects',async()=>{
  const sql=await source();
