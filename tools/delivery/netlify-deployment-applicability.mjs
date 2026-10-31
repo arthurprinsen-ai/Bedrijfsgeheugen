@@ -54,6 +54,9 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   'brain/observability/publication-evidence-readback.mjs',
   'brain/observability/failure-coverage-projection.mjs',
   'brain/observability/cycle-evidence-coverage.mjs',
+  // Imported by both authenticated Netlify Powerhouse one-loop endpoints.
+  // If this changes, the old deployment still serves stale agent/portal reasons.
+  'brain/observability/one-loop-guard-diagnostics.mjs',
 ]));
 
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
