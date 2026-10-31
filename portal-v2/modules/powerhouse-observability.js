@@ -125,7 +125,7 @@ function oneLoopAssuranceView(assurance){
   const anyMissedPublication=publicationRecovery.some(item=>item.phase==='MISSED_DEADLINE');
   const publicationPanel=publicationRecovery.length?
     '<div data-publication-recovery="RECOVERY_DUE" role="alert" class="poc-panel">'+
-    '<h4>'+(anyMissedPublication?'Publicatie gemist · herstel vereist':'Publicatie in gevaar · herstel gestart')+'</h4>'+
+    '<h4>'+(anyMissedPublication?'Publicatie gemist · herstel vereist':'Publicatie in gevaar · herstel vereist')+'</h4>'+
     '<p class="poc-note">De bestaande kanaalagent hervat dezelfde verplichting. Bij een onzekere verzending eerst provider-readback, dan pas een idempotente herstelpoging; geen dubbele e-mails of posts en nooit groen zonder bewijs.</p>'+
     publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'" data-publication-phase="'+esc(item.phase)+'">'+
       '<div><b>'+esc(item.label)+'</b><small>'+esc(item.nextAction)+
