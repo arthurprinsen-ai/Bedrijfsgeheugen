@@ -112,7 +112,11 @@ function safePublicationRecovery(row,receipt){
    .slice(0,5).map(x=>Object.freeze({
     channel:x.channel,label:CHANNEL_LABELS[x.channel],code:x.code,
     nextAction:CODES[x.code],scheduledFor:Number.isFinite(Date.parse(x.scheduledFor||''))?
-      new Date(x.scheduledFor).toISOString():null
+      new Date(x.scheduledFor).toISOString():null,
+    phase:['EARLY_RECOVERY','MISSED_DEADLINE'].includes(x.phase)?x.phase:'MISSED_DEADLINE',
+    // Only expose canonical action codes, not raw provider failures or payloads.
+    repairHandoff:typeof x.repairHandoff==='string'&&/^[A-Z_]{8,90}$/.test(x.repairHandoff)
+      ?x.repairHandoff:null
    }));
 }
 const denied=reason=>Object.freeze({contract:DIAGNOSTIC_CONTRACT,status:'UNAVAILABLE',reason,
