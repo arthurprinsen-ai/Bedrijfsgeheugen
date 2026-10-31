@@ -88,3 +88,29 @@ test('original runtime and portal must consume one recovery classification witho
  assert.match(skill,/PUBLICATION_NO_SILENT_GAP_V1/);
  assert.match(agent,/PUBLICATION_NO_SILENT_GAP_V1/);
 });
+
+
+// Production regression: npm:postgres parses timestamptz into a native Date.
+// The first live 31 October run classified every original scheduled decision
+// as PUBLICATION_SCHEDULE_MISSING even though SQL contained real timestamps.
+test('real Postgres Date object preserves publication deadline and root cause',()=>{
+ const withDriverDates=decisions.map(d=>({...d,scheduled_for:new Date(d.scheduled_for)}));
+ const result=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T08:45:00Z',
+  obligations,decisions:withDriverDates,isTerminal:proof});
+ assert.equal(result.status,'RECOVERY_DUE');
+ assert.equal(result.overdue.length,5);
+ assert.ok(result.overdue.every(x=>x.code!=='PUBLICATION_SCHEDULE_MISSING'));
+ assert.equal(result.overdue.find(x=>x.channel==='linkedin_personal').scheduledFor,'2026-10-31T07:00:00.000Z');
+ assert.equal(result.overdue.find(x=>x.channel==='blog').code,'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED');
+ assert.equal(result.overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ assert.equal(result.overdue.find(x=>x.channel==='email_newsletter').code,'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED');
+ // A valid future date must not be marked overdue before its due/grace time.
+ const fresh=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T07:05:00Z',
+  obligations:[obligations.find(x=>x.channel==='blog')],
+  decisions:[withDriverDates.find(x=>x.channel==='blog')],isTerminal:proof});
+ assert.equal(fresh.pending.some(x=>x.channel==='blog'),true);
+ const invalid=assessDailyPublicationRecovery({runDate:date,now:'2026-10-31T08:45:00Z',
+  obligations,decisions:withDriverDates.map(x=>({...x,scheduled_for:new Date('invalid')})),
+  isTerminal:proof});
+ assert.ok(invalid.overdue.every(x=>x.code==='PUBLICATION_SCHEDULE_MISSING'));
+});

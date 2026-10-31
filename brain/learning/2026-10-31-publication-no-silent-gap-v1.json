@@ -24,7 +24,7 @@
     "Exact provider ID/readback or fail-closed blocked state; log failed next natural run and check owner escalation"
   ],
   "regression": "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
-  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "release_status": "INITIAL_RELEASE_MERGED_AND_DEPLOYED__DATE_RUNTIME_FIX_PENDING",
   "verification_required": "exact-head protected Required/BRAIN/CodeQL -> squash merge -> source-to-Edge/Netlify parity -> original natural run -> independently verified public post IDs / URL or actionable blocked outcome",
   "no_fabricated_success": true,
   "compiler": {
@@ -43,7 +43,24 @@
     ]
   },
   "test_evidence": {
-    "observed": "Required run 41185099413 correctly rejected missing machine compiler failure class; same incident learning repaired without bypass.",
+    "observed": "Required run 41185099413 correctly rejected missing machine compiler failure class; same incident learning repaired without bypass. Production follow-up on same-day original natural run found typed Postgres timestamptz Date mismatch; new targeted historical and canary replay added.",
     "pending": "Exact current-head Required/CodeQL and actual original production next-natural-run provider publication proof."
+  },
+  "production_observation": {
+    "observed_at_utc": "2026-10-31T08:46:21Z",
+    "original_merge_sha": "873ce9f8271ab277ad4e49a3a11480917acf520b",
+    "original_supabase_edge_version": 464,
+    "exact_edge_source_readback": true,
+    "exact_netlify_main_sha_verified": true,
+    "original_natural_run_http": 409,
+    "original_natural_run_loop_state": "RED",
+    "original_natural_run_recovery_state": "RECOVERY_DUE",
+    "independent_external_publication_proof_count": 0,
+    "observed_defect": "All scheduled channels incorrectly show PUBLICATION_SCHEDULE_MISSING although original powerhouse_channel_decisions.scheduled_for contains verified timestamptz.",
+    "root_cause": "The canonical npm:postgres driver parses PostgreSQL timestamptz to a native JavaScript Date object; read-only pure classifier str() accepts string only and silently classified Date as absent.",
+    "repair_candidate": "Normalize valid Date to ISO string, preserve string timestamps, reject invalid Date and unsafe arbitrary objects; no SQL DML, no new scheduler, same one original runtime owner.",
+    "prevention_regression": "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs -> production native Date fixture and per-channel true cause",
+    "next_proof": "Exact-head protected checks and Edge source parity after merge; original next natural run must report actual due time and actionable channel reason while provider publication remains independently unproven.",
+    "claim_status": "NOT_FULLY_RECOVERED"
   }
 }
