@@ -1,6 +1,7 @@
 import postgres from 'npm:postgres@3.4.7';
 import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
 import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
+import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
@@ -60,7 +61,8 @@ const clean = (v: unknown) => String(v ?? '').trim();
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const localDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const OPERATIONAL_CHANNELS = ['linkedin_personal','linkedin_company','instagram','blog'];
-const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED','SKIPPED']);
+// SKIPPED is not proof that the daily promised publication was delivered.
+const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED']);
 const LOOP_LEASE_MS = 240_000;
 const CHILD_TIMEOUTS: Record<string, number> = {
   'powerhouse-instagram-media-router': 10_000,
@@ -450,11 +452,22 @@ Deno.serve(async (req) => {
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
-      db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at').eq('run_date', runDate),
+      db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at,scheduled_for').eq('run_date', runDate),
     ]);
     if (obligationsError) throw new Error('OBLIGATIONS_READ_FAILED');
     if (decisionsError) throw new Error('DECISIONS_READ_FAILED');
 
+    // Existing same-date writer observes the missing handoff instead of reporting
+    // a technically successful HTTP run as a successful external publication.
+    // This read-only classification never grants a second publish capability.
+    const recovery = assessDailyPublicationRecovery({
+      runDate, now:new Date().toISOString(), obligations:obligations || [],
+      decisions:decisions || [], isTerminal:obligationTerminal
+    });
+    stepResults.push({name:'publication-proof-deadline',
+      ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
+      degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
+      error:recovery.overdue.length?'PUBLICATION_PROOF_OVERDUE':null});
     const outcomeVerified = (obligations || []).filter((o: any) => obligationTerminal(o)).length;
     const providerTruthVerified = (obligations || []).filter((o: any) => o.evidence?.provider_truth_verified === true).length;
     const blocked = (obligations || []).filter((o: any) => ['BLOCKED','FAILED'].includes(clean(o.status)) && !providerSideEffectTerminal(o)).length;
@@ -468,7 +481,8 @@ Deno.serve(async (req) => {
     const reconciliationDegraded = stepResults.some((step:any) =>
       (step.name === 'reconcile_pre' || step.name === 'reconcile_post') && step.ok !== true);
     // Keep dispatch alive; never misrepresent incomplete readback as GREEN.
-    const loopState = blocked > 0 ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
+    const loopState = blocked > 0 || recovery.overdue.length > 0 || recovery.status==='UNVERIFIED'
+      ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
       const status=clean(o.status),channel=clean(o.channel),evidence=o.evidence||{};
       if(channel==='linkedin_company'&&['DISPATCHED','PUBLISHED'].includes(status)){
@@ -513,6 +527,7 @@ Deno.serve(async (req) => {
       reconciliationDegraded,
       blocked,
       hardBoundaries,
+      recovery,
       obligations: obligationSummary,
       decisions: decisionSummary,
       steps: stepResults.map((s:any)=>({

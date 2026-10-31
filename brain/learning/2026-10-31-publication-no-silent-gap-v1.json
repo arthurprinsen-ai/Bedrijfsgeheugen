@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|publication|daily-multi-channel-no-provider-proof|20261031-v1",
+  "incident_date": "2026-10-31",
+  "maturity": "OBSERVED",
+  "owner": "existing powerhouse-content-loop / per-channel original publisher",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "symptom": "Original daily publishing obligations remained PLANNED or GENERATED with no external provider IDs while cron/CI reported success or an AMBER loop.",
+  "observed_evidence": [
+    "2026-10-31 08:25 UTC: four original daily obligations PLANNED, no provider ID/live proof",
+    "GitHub daily blog workflow 41172685143 reported success but logs said NO_ACTION:NO_APPROVED_BLOG_ARTIFACT and NO_MERGED_DAILY_BLOG",
+    "2026-10-30 both LinkedIn daily obligations FAILED legitimate global story-family duplicate gate; blog GENERATED without final approval; Mira lacked final acceptable media",
+    "Original hourly executor active; manual request #17289 was 202 ALREADY_RUNNING under exclusive lease; this is lease safety not publication success",
+    "2026-10-31 newsletter held at original NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR hard boundary"
+  ],
+  "root_cause": "Operational health tracked cron/loop completion, while the user's actual daily per-channel external publication obligation was not escalated in the original loop when the scheduled deadline passed; missing content/approval/provider proof could remain AMBER and GitHub workflow SUCCESS with no publish.",
+  "proposed_fix": "Read-only due-time classifier in the existing original content-loop, RED on missed proof (30-minute bounded grace) or hard boundary, exactly one original recovery owner/action per lane, permit only provider-authorized idempotent lane; surface sanitized original guard receipt in existing admin portal, with AGENTS/skill contract and deterministic regressions.",
+  "preventive_controls": [
+    "Never treat GitHub SUCCESS / HTTP200 / SKIPPED / GENERATED / APPROVED / lease ALREADY_RUNNING as external publication",
+    "Keep immutable duplicate history, no alternate publisher, no duplicate cron, no duplicate email sender",
+    "LinkedIn retry only after truly distinct verified story and explicit no-possible-side-effect check",
+    "Mira face score >=0.940 and specific situation/cause/consequence/pointe",
+    "Blog original approval -> protected merge -> Netlify -> exact published URL",
+    "Newsletter only original authorized sender and lawful permissioned recipients",
+    "Exact provider ID/readback or fail-closed blocked state; log failed next natural run and check owner escalation"
+  ],
+  "regression": "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "verification_required": "exact-head protected Required/BRAIN/CodeQL -> squash merge -> source-to-Edge/Netlify parity -> original natural run -> independently verified public post IDs / URL or actionable blocked outcome",
+  "no_fabricated_success": true,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Required run 41185099413 correctly rejected missing machine compiler failure class; same incident learning repaired without bypass.",
+    "pending": "Exact current-head Required/CodeQL and actual original production next-natural-run provider publication proof."
+  }
+}

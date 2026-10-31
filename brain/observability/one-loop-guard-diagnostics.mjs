@@ -23,7 +23,15 @@ const CODES=Object.freeze({
  CONTENT_LOOP_GUARD_FAILED:'Controleer de oorspronkelijke publicatie- en providerreadback per kanaal.',
  FULL_CYCLE_SOURCE_UNHEALTHY:'Herstel de ontbrekende provider- of productie-readback binnen de originele Proof-lane.',
  ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE:'Bekijk oorspronkelijke guardreceipt; onderliggend veilig bewijs ontbreekt.',
- OUTREACH_ACTION_READBACK_DUE:'Verifieer bestaande outreach-actie en providerontvangst; geen verzending zonder duplicate-gate.'
+ OUTREACH_ACTION_READBACK_DUE:'Verifieer bestaande outreach-actie en providerontvangst; geen verzending zonder duplicate-gate.',
+ PUBLICATION_PROOF_OVERDUE:'Dagpublicatie mist providerbewijs na geplande tijd; herstel onmiddellijk via originele kanaaleigenaar en controleer de volgende natuurlijke uitvoering.',
+ DISTINCT_VERIFIED_STORY_REQUIRED:'Selecteer inhoudelijk nieuw, bronbevestigd LinkedIn-verhaal; nooit de duplicate-beveiliging uitschakelen.',
+ MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Laat originele Mira-producer definitief video-/frame- en identiteitsbewijs valideren (minimaal 0,940).',
+ BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel originele bloggoedkeuring, protected merge, Netlify en exact publiek artikelbewijs.',
+ EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Herstel canonieke e-mailbevoegdheid en ontvangeropt-in; verzend nooit zonder toestemming.',
+ EXACT_PROVIDER_PUBLICATION_PROOF_MISSING:'Controleer exact provider-ID en oorspronkelijke idempotente verzending; vermijd dubbele side effects.',
+ CHANNEL_CAPABILITY_PROOF_REQUIRED:'Verifieer providerautorisatie in originele connector; benodigde menselijke OAuth-toestemming niet omzeilen.',
+ PUBLICATION_SCHEDULE_MISSING:'Laat de originele planner de ontbrekende expliciete dagdeadline herstellen.'
 });
 const limit=x=>Number.isFinite(Number(x))?Math.max(0,Math.floor(Number(x))):null;
 function parseResult(value){
@@ -33,11 +41,16 @@ function parseResult(value){
 function collectGuardCodes(row,receipt){
  if(row.status==='GREEN')return [];
  if(!receipt||receipt.evidence?.pass===undefined)return row.status==='AMBER'?['OUTREACH_ACTION_READBACK_DUE']:['ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE'];
- if(row.status==='AMBER')return ['OUTREACH_ACTION_READBACK_DUE'];
  const e=receipt.evidence||{},codes=[];
  const add=c=>{if(CODES[c]&&!codes.includes(c))codes.push(c);};
  if(row.key==='content-closed-loop'){
   const state=e.state||{},result=parseResult(state.result);
+  if(Array.isArray(result?.recovery?.overdue)&&result.recovery.overdue.length){
+   add('PUBLICATION_PROOF_OVERDUE');
+   for(const problem of result.recovery.overdue){
+    if(typeof problem?.code==='string'&&CODES[problem.code])add(problem.code);
+   }
+  }
   for(const boundary of result?.hardBoundaries||[]){
    if(typeof boundary?.reason==='string'&&CODES[boundary.reason])add(boundary.reason);
   }
@@ -64,8 +77,24 @@ function collectGuardCodes(row,receipt){
  }else if(row.key==='full-cycle-production-proof'){
   if(e.proof?.healthy===false)add('FULL_CYCLE_SOURCE_UNHEALTHY');
  }
- if(!codes.length)add('ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE');
+ if(!codes.length)add(row.status==='AMBER'?'OUTREACH_ACTION_READBACK_DUE':'ORIGINAL_GUARD_FAILED_REASON_UNAVAILABLE');
  return codes.slice(0,MAX_REASONS);
+}
+const CHANNEL_LABELS=Object.freeze({
+ linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',
+ instagram:'Instagram / Mira',blog:'Blog',email_newsletter:'E-mail'
+});
+function safePublicationRecovery(row,receipt){
+ if(row.key!=='content-closed-loop'||!receipt||row.status==='GREEN')return [];
+ const parsed=parseResult(receipt.evidence?.state?.result);
+ if(parsed?.recovery?.contract!=='one-brain-publication-no-silent-gap-v1')return [];
+ return (Array.isArray(parsed.recovery.overdue)?parsed.recovery.overdue:[])
+   .filter(x=>typeof x?.channel==='string'&&CHANNEL_LABELS[x.channel]&&CODES[x.code])
+   .slice(0,5).map(x=>Object.freeze({
+    channel:x.channel,label:CHANNEL_LABELS[x.channel],code:x.code,
+    nextAction:CODES[x.code],scheduledFor:Number.isFinite(Date.parse(x.scheduledFor||''))?
+      new Date(x.scheduledFor).toISOString():null
+   }));
 }
 const denied=reason=>Object.freeze({contract:DIAGNOSTIC_CONTRACT,status:'UNAVAILABLE',reason,
   source:RECEIPTS,observedAt:null,cases:[],allGreen:false});
@@ -90,6 +119,7 @@ export function projectOriginalGuardDiagnostics(assurance,receipts,{observedAt=n
   return Object.freeze({key:row.key,status:row.status,guardEvidence,
    guardReceiptAt:receipt?.observed_at||null,
    reasons:codes.map(code=>Object.freeze({code,nextAction:CODES[code]})),
+   publicationRecovery:safePublicationRecovery(row,receipt),
    missingStages:[...row.missingStages],source:receipt?RECEIPTS:null,
    verifiedOutcome:false});
  });

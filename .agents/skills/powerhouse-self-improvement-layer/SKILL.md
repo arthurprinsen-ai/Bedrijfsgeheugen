@@ -5,6 +5,17 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## PUBLICATION_NO_SILENT_GAP_V1 — 31 October 2026 (mandatory publisher recovery skill)
+
+**Trigger:** every original, natural Powerhouse publication/Heartbeat agent run, and every missing same-day LinkedIn-personal, LinkedIn-company, Instagram-Mira, blog or authorized-email delivery proof. Reuse the existing original content-loop and exclusive lease; never schedule a second watchdog or introduce an alternative sender.
+
+**Detect:** read today's original `content_publication_obligations`, `powerhouse_channel_decisions.scheduled_for`, original provider create/ACK/readback and exact blog public URL; distinguish a scheduled/queued task from external delivery. The canonical pure classifier `assessDailyPublicationRecovery` in `supabase/functions/_shared/daily-publication-recovery.mjs` marks an unmet channel `RECOVERY_DUE` if its due time is older than 30 minutes, on an explicit block/failure, or if the decision/schedule is missing. An HTTP 200, GitHub Actions success with `NO_ACTION:NO_APPROVED_BLOG_ARTIFACT`, GENERATED, APPROVED, SKIPPED, or active lease are **not** publication evidence. An earlier verified provider ACK forbids a blind retry even if a later readback is 401/403.
+
+**Diagnose and recover with existing owner:** if LinkedIn reuses a story family, require a genuinely different first-party/date-verifiable source before publisher eligibility. Mira must supply independently validated final media and face-frame match >=0.940, with a concrete situation, causal link and clear pointe; never bypass identity. Blog must go through original editorial approval, protected Required/BRAIN/CodeQL, main→Netlify→exact article. E-mail must have authorized canonical sender and consented, eligible recipients, including suppression/cooldowns. Recover provider/OAuth automatically only when permissions permit; explicit human OAuth/approval stays `ACTION_REQUIRED` with accountable owner. Never construct a replacement provider ID or send from an alternate account.
+
+**Close:** retain `RED/RECOVERY_DUE` until exact original channel provider/public readback is proven. Persist root cause, error fingerprint, action, owner, test, linked deployment, next natural-run application and outcome in original ONE BRAIN, Portal V2 and human documentation. Repeat incidents increment the original fingerprint; add a regression test before claiming prevention. No shadow CRM, sender, scheduler, paid preview, invented result or compromised unique-publication gate. Regression: `tests/brain-daily-publication-no-silent-gap-20261031.test.mjs`; parent P0 #4198. Fix remains *candidate*, not LIVE, until protected PR merges, Supabase Edge runtime matches main and a new real provider readback appears.
+
+
 ## Predictive public-market source priority and honest proof — 30 October 2026
 
 - **Fingerprint:** `predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1`; parent #4198, protected PR #5169, deployed original Edge `powerhouse-predictive-engine` v569.
