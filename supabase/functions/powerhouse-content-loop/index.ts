@@ -66,7 +66,10 @@ const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED']);
 const LOOP_LEASE_MS = 240_000;
 const CHILD_TIMEOUTS: Record<string, number> = {
   'powerhouse-instagram-media-router': 10_000,
-  'powerhouse-composio-linkedin-setup': 8_000,
+  // Original provider preflight completed HTTP 200 in 21,182 ms (31 Oct
+  // 2026); the previous 8 s abort invented CHILD_CALL_FAILED. This is an
+  // observation-only authorization check, not a publisher or OAuth bypass.
+  'powerhouse-composio-linkedin-setup': 30_000,
   'powerhouse-social-publisher:audit': 12_000,
   'powerhouse-content-orchestrator': 110_000,
   'powerhouse-social-publisher': 25_000,
