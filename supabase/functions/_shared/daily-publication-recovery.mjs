@@ -14,6 +14,11 @@ function reasonFor(channel,obligation,decision){
   const error=str(obligation?.last_error);
   const boundary=str(decision?.delivery_evidence?.capability_reason);
   if(channel==='email_newsletter')return 'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED';
+  // The original content generator records a precise classified provider
+  // failure before any publication side effect. A 429 billing refusal must
+  // not masquerade as a failed social transport or prompt blind retries.
+  if(decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING')
+    return 'CONTENT_GENERATION_BILLING_ACTION_REQUIRED';
   if(error.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED'))return 'DISTINCT_VERIFIED_STORY_REQUIRED';
   if(channel==='instagram')return 'MIRA_FINAL_MEDIA_PROOF_REQUIRED';
   if(channel==='blog')return 'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED';
@@ -22,6 +27,7 @@ function reasonFor(channel,obligation,decision){
 }
 const REMEDIATION=Object.freeze({
   EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Controleer uitsluitend oorspronkelijke bevoegdheid, ontvanger-opt-in en suppressie; nooit een nieuwe of ongevraagde verzender.',
+  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Oorspronkelijke AI-tekstgenerator heeft geen providertegoed; vraag bevoegde accountbeheerder om herstel of gebruik pas een opnieuw goedgekeurde en bewezen beschikbare bestaande fallback. Niet automatisch betalen, route wisselen of extra sends proberen.',
   DISTINCT_VERIFIED_STORY_REQUIRED:'Laat oorspronkelijke bronagent een wezenlijk nieuw geverifieerd verhaal vinden; behoud onveranderlijke duplicate-gate en provider-ID.',
   MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Maak/controleer nieuwe Mira-media in de originele router met frame-identiteit >= 0,940, inhoudskwaliteit en exact definitief mediabewijs.',
   BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel oorspronkelijke redactionele goedkeuring, protected PR, Required/CodeQL/BRAIN, merge, Netlify en exact publiek artikelbewijs.',
@@ -64,7 +70,8 @@ export function assessDailyPublicationRecovery({
       channel:entry.channel, owner:entry.owner, code,
       action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
-      requiresAuthorization:entry.channel==='email_newsletter'
+      requiresAuthorization:code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
+        || entry.channel==='email_newsletter'
         ||str(decision?.delivery_evidence?.capability_state)==='BLOCKED_HARD_BOUNDARY'
     };
     if(isExpired||isFailed||isMissingSchedule)overdue.push(item);
