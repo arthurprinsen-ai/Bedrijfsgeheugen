@@ -2,6 +2,7 @@ import postgres from 'npm:postgres@3.4.7';
 import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
 import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
 import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
+import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
@@ -467,6 +468,42 @@ Deno.serve(async (req) => {
       runDate, now:new Date().toISOString(), obligations:obligations || [],
       decisions:decisions || [], isTerminal:obligationTerminal
     });
+    // Same canonical exclusive writer: keep the original obligation's
+    // operator-facing next_action consistent with the ONE BRAIN recovery.
+    // CAS prevents clobbering provider ACKs, newer editorial decisions or a
+    // concurrent publisher. This never retries or dispatches a publication.
+    const handoffPlan=planOriginalPublicationHandoffs(recovery,obligations||[]);
+    const handoffWriteback={contract:'original-publication-obligation-recovery-v1',
+      planned:handoffPlan.updates.length,applied:0,conflicts:0,errors:0};
+    if(!handoffPlan.ok) {
+      handoffWriteback.errors++;
+      stepResults.push({name:'publication-handoff-writeback',ok:false,degraded:true,
+        error:'RECOVERY_SOURCE_UNVERIFIED'});
+    } else {
+      for(const handoff of handoffPlan.updates){
+        const update=await db.from('content_publication_obligations')
+          .update({next_action:handoff.nextAction,updated_at:new Date().toISOString()})
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel',handoff.channel).eq('next_action',handoff.previous)
+          .in('status',['PLANNED','BLOCKED','FAILED']).eq('external_id',null)
+          .select('channel,next_action,status,external_id');
+        if(update.error){
+          handoffWriteback.errors++;
+          console.error('PUBLICATION_HANDOFF_WRITEBACK_FAILED',handoff.channel);
+        }else if(update.data?.length===1&&update.data[0].next_action===handoff.nextAction){
+          handoffWriteback.applied++;
+          const local=(obligations||[]).find((o:any)=>o.channel===handoff.channel);
+          if(local)local.next_action=handoff.nextAction;
+        }else{
+          // A newer writer may have advanced the original obligation:
+          // preserve its provider truth, never overwrite blindly.
+          handoffWriteback.conflicts++;
+        }
+      }
+      stepResults.push({name:'publication-handoff-writeback',
+        ok:handoffWriteback.errors===0,degraded:handoffWriteback.errors>0,
+        error:handoffWriteback.errors?'ORIGINAL_OBLIGATION_HANDOFF_WRITE_FAILED':null});
+    }
     stepResults.push({name:'publication-proof-deadline',
       ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
       degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
@@ -531,6 +568,7 @@ Deno.serve(async (req) => {
       blocked,
       hardBoundaries,
       recovery,
+      handoffWriteback,
       obligations: obligationSummary,
       decisions: decisionSummary,
       steps: stepResults.map((s:any)=>({
