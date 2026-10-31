@@ -52,7 +52,8 @@ export function assessDailyPublicationRecovery({
     const isExpired=isScheduled && observed>=scheduleMs+graceMs;
     const isFailed=['FAILED','BLOCKED'].includes(str(obligation?.status))
       ||str(decision?.state)==='blocked';
-    const isMissingSchedule=Boolean(decision)&&!isScheduled;
+    // Missing decision is itself a recovery obligation: never silently skip a lane.
+    const isMissingSchedule=!isScheduled;
     const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision);
     const item={
       channel:entry.channel, owner:entry.owner, code,
