@@ -58,6 +58,45 @@ export function powerhouseIntegrationMarkup(snapshot){
     '</section>';
 }
 
+// Admin-only view of exact original source status. Never infer proof from
+// GENERATED, workflow success, a URL string, or an unapproved CMS draft.
+export function publicationDeliveryMarkup(delivery){
+  if(!delivery||delivery.contract!=='powerhouse-original-publication-delivery-truth-v1')
+    return '<section class="cp-publication" role="status"><h3>Dagpublicaties</h3><p>Geen actuele bronwaarneming. Publicaties niet bewezen.</p></section>';
+  const cards=(Array.isArray(delivery.channels)?delivery.channels:[]).map(item=>{
+    const state=String(item.proofState||'PROOF_MISSING');
+    const proven=state==='LIVE_PROVEN';
+    const heading={linkedin_personal:'LinkedIn persoonlijk',linkedin_company:'LinkedIn bedrijf',blog:'Blog',instagram:'Instagram'}[item.channel]||item.channel;
+    const badge={
+      LIVE_PROVEN:'Live onafhankelijk bewezen',
+      PROVIDER_ACK_ONLY:'Providerverzending bevestigd · readback beperkt',
+      CMS_APPROVAL_REQUIRED:'Wacht op redactionele goedkeuring',
+      APPROVED_DELIVERY_PENDING:'Goedgekeurd · publicatiebewijs ontbreekt',
+      ORIGINAL_STORY_RECOVERY_DUE:'Nieuw inhoudelijk verhaal vereist',
+      MIRA_MEDIA_PROOF_REQUIRED:'Mira-mediabewijs ontbreekt'
+    }[state]||'Publicatiebewijs ontbreekt';
+    const url=String(item.publicUrl||'');
+    const safe=/^https:\/\/(?:www\.linkedin\.com|www\.bedrijfsgeheugen\.nl)\//i.test(url);
+    const link=safe&&item.providerAcknowledged===true
+      ?`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Bekijk bewezen providerverwijzing</a>`:'';
+    return `<article class="cp-publication-card" data-state="${proven?'ok':'bad'}">
+      <h4>${esc(heading)}</h4><strong>${esc(badge)}</strong>
+      <p><b>Bronstatus:</b> ${esc(item.sourceStatus||'NOT_OBSERVED')}</p>
+      <p><b>Eigenaar:</b> ${esc(item.originalOwner||'—')}</p>
+      <p><b>Volgende actie:</b> ${esc(item.nextAction||'—')}</p>
+      ${item.sourceError?`<p><b>Fout:</b> ${esc(item.sourceError)}</p>`:''}
+      ${link}
+    </article>`;
+  }).join('');
+  return `<section class="cp-publication" aria-label="Dagelijkse provider- en CMS-publicatiebewijzen">
+    <h3>Dagpublicaties · ${esc(delivery.runDate||'datum onbekend')}</h3>
+    <p><b>${num(delivery.providerAcknowledged)} van ${num(delivery.expected)} verzendbewijzen</b>
+      · ${num(delivery.independentlyProven)} onafhankelijk live bewezen.
+      CMS-goedkeuring, providerverzending en openbare readback zijn aparte stappen.</p>
+    <div class="cp-publication-grid">${cards||'<p>Geen geldige kanalen gevonden; geen succesbewijs.</p>'}</div>
+  </section>`;
+}
+
 export function controlPlaneCockpitMarkup(data={}){
   const obligations=Array.isArray(data.obligations)?data.obligations:[];
   const metrics=data.metrics||{};
@@ -84,6 +123,7 @@ export function controlPlaneCockpitMarkup(data={}){
       <article><small>Mediaan naar terminal</small><b>${sec(metrics.median_time_to_terminal_seconds)}</b><span>P90 ${sec(metrics.p90_time_to_terminal_seconds)}</span></article>
     </div>
     ${unverifiedFulfilled?`<p class="cp-proof-warning" role="status">${num(unverifiedFulfilled)} getoonde obligations claimen FULFILLED zonder geverifieerde uitkomst. Geen productiesucces bewezen.</p>`:''}
+    ${publicationDeliveryMarkup(data.publicationDelivery)}
     ${powerhouseIntegrationMarkup(data.systemIntegration)}
     <div class="cp-obligations">${rows||'<p class="cp-empty">Nog geen obligations in de canonical cockpit.</p>'}</div>
   </section>`;
@@ -92,7 +132,7 @@ export function controlPlaneCockpitMarkup(data={}){
 function ensureStyles(doc){
   if(!doc?.head||doc.getElementById('bg-control-plane-cockpit-style'))return;
   const style=doc.createElement('style');style.id='bg-control-plane-cockpit-style';
-  style.textContent=`.cp-integration{padding:16px;margin:14px 0 18px;border:1px solid #b5c6da;border-radius:14px;background:#f7fafc;color:#182842}.cp-integration h3{margin:0 0 8px}.cp-integration p{line-height:1.5}.cp-integration-scroll{max-width:100%;overflow:auto}.cp-integration table{width:100%;border-collapse:collapse}.cp-integration th,.cp-integration td{padding:9px;text-align:left;border-bottom:1px solid #dce4ef;font-size:13px;vertical-align:top}.cp-integration details{margin-top:14px}.cp-integration summary{cursor:pointer;font-weight:700}.cp-integration li{overflow-wrap:anywhere}.cp-proof-warning{padding:12px 14px;margin:0 0 14px;border:1px solid #f0b4ae;border-radius:10px;color:#8b1e18;background:#fff5f3;font-weight:600}.cp-admin-cockpit{margin:28px 0;padding:20px;border:1px solid #d9e2ef;border-radius:18px;background:#fff}.cp-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.cp-head h2{margin:2px 0 4px}.cp-head p{margin:0;color:#5c6675}.cp-head>span{font-size:11px;color:#7b8492}.cp-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.cp-metrics article{padding:12px;border-radius:12px;background:#f6f8fb}.cp-metrics small,.cp-metrics span{display:block;color:#697386}.cp-metrics b{display:block;font-size:20px;margin:3px 0}.cp-obligations{display:grid;gap:10px}.cp-obligation{padding:14px;border:1px solid #e0e6ef;border-left:4px solid #6b7280;border-radius:12px}.cp-obligation[data-state="ok"]{border-left-color:#27845a}.cp-obligation[data-state="bad"]{border-left-color:#b42318}.cp-obligation[data-state="active"]{border-left-color:#2f6fdd}.cp-obligation-head{display:flex;justify-content:space-between;gap:12px}.cp-obligation-head h4{margin:2px 0 8px}.cp-obligation-head small{color:#6c7685}.cp-obligation-head>span{font-size:12px;font-weight:700}.cp-obligation dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}.cp-obligation dl>div{background:#f8fafc;padding:8px;border-radius:8px}.cp-obligation dt{font-size:11px;color:#727c8a}.cp-obligation dd{margin:3px 0 0;font-size:13px}.cp-obligation footer{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#697386}@media(max-width:900px){.cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-obligation dl{grid-template-columns:1fr}.cp-head{display:block}.cp-head>span{display:block;margin-top:8px}}`;
+  style.textContent=`.cp-publication{border:1px solid #d0dae8;border-radius:14px;padding:14px;margin:12px 0 18px;background:#fbfcff}.cp-publication h3{margin:0 0 8px}.cp-publication-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.cp-publication-card{padding:12px;border:1px solid #dae1eb;border-left:4px solid #b42318;border-radius:10px;background:white}.cp-publication-card[data-state=ok]{border-left-color:#27845a}.cp-publication-card h4{margin:0 0 6px}.cp-publication-card strong{display:block}.cp-publication-card p{margin:7px 0;overflow-wrap:anywhere}.cp-publication-card a{overflow-wrap:anywhere}@media(max-width:900px){.cp-publication-grid{grid-template-columns:1fr}}.cp-integration{padding:16px;margin:14px 0 18px;border:1px solid #b5c6da;border-radius:14px;background:#f7fafc;color:#182842}.cp-integration h3{margin:0 0 8px}.cp-integration p{line-height:1.5}.cp-integration-scroll{max-width:100%;overflow:auto}.cp-integration table{width:100%;border-collapse:collapse}.cp-integration th,.cp-integration td{padding:9px;text-align:left;border-bottom:1px solid #dce4ef;font-size:13px;vertical-align:top}.cp-integration details{margin-top:14px}.cp-integration summary{cursor:pointer;font-weight:700}.cp-integration li{overflow-wrap:anywhere}.cp-proof-warning{padding:12px 14px;margin:0 0 14px;border:1px solid #f0b4ae;border-radius:10px;color:#8b1e18;background:#fff5f3;font-weight:600}.cp-admin-cockpit{margin:28px 0;padding:20px;border:1px solid #d9e2ef;border-radius:18px;background:#fff}.cp-head{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.cp-head h2{margin:2px 0 4px}.cp-head p{margin:0;color:#5c6675}.cp-head>span{font-size:11px;color:#7b8492}.cp-metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.cp-metrics article{padding:12px;border-radius:12px;background:#f6f8fb}.cp-metrics small,.cp-metrics span{display:block;color:#697386}.cp-metrics b{display:block;font-size:20px;margin:3px 0}.cp-obligations{display:grid;gap:10px}.cp-obligation{padding:14px;border:1px solid #e0e6ef;border-left:4px solid #6b7280;border-radius:12px}.cp-obligation[data-state="ok"]{border-left-color:#27845a}.cp-obligation[data-state="bad"]{border-left-color:#b42318}.cp-obligation[data-state="active"]{border-left-color:#2f6fdd}.cp-obligation-head{display:flex;justify-content:space-between;gap:12px}.cp-obligation-head h4{margin:2px 0 8px}.cp-obligation-head small{color:#6c7685}.cp-obligation-head>span{font-size:12px;font-weight:700}.cp-obligation dl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}.cp-obligation dl>div{background:#f8fafc;padding:8px;border-radius:8px}.cp-obligation dt{font-size:11px;color:#727c8a}.cp-obligation dd{margin:3px 0 0;font-size:13px}.cp-obligation footer{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#697386}@media(max-width:900px){.cp-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cp-obligation dl{grid-template-columns:1fr}.cp-head{display:block}.cp-head>span{display:block;margin-top:8px}}`;
   doc.head.appendChild(style);
 }
 
