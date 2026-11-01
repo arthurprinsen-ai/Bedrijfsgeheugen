@@ -35,5 +35,28 @@
   "verified_paid_orders": null,
   "confidence": "impact_unverified",
   "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
-  "legal_safety": "no second scheduler, no bypass of OAuth, identity, CMS, global dedupe or user consent"
+  "legal_safety": "no second scheduler, no bypass of OAuth, identity, CMS, global dedupe or user consent",
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "maturity": "VALIDATED",
+  "candidateOnly": true,
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-editorial-contract-v1.test.mjs",
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+      "tests/brain-social-cro-portal-evidence-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "1 Nov user screenshot and original Supabase personal PUBLISHED ID; no verified view or lead uplift",
+    "pending": "protected Required/BRAIN/CodeQL, exact runtime production parity, next-original provider post + independent readback, comparable measured commercial effect"
+  },
+  "release_status": "SOURCE_CANDIDATE_NOT_LIVE"
 }
