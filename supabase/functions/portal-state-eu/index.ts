@@ -3,6 +3,7 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 import { boundedReads } from './bounded-reads.js';
+import { summarizeDailyPublicationTruth } from './publication-delivery-read-model.js';
 import {finiteEvidence,sumKnownEvidence,maxKnownEvidence,entrepreneurSnapshotFreshness as entrepreneurSnapshotFreshness_raw} from './entrepreneur-snapshot-truth.js';
 const entrepreneurSnapshotFreshness:(...args:any[])=>any=entrepreneurSnapshotFreshness_raw;
 
@@ -312,10 +313,25 @@ Deno.serve(async(req:Request)=>{
       .select('*')
       .maybeSingle();
     if(metricsError)return json({error:'CONTROL_PLANE_METRICS_READ_FAILED'},500);
+    // Read-only original daily publication authority. Never use a successful
+    // GitHub run as CMS approval or external publication proof.
+    const publicationDate=new Intl.DateTimeFormat('en-CA',{
+      timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'
+    }).format(new Date());
+    const {data:publicationRows,error:publicationError}=await client
+      .from('content_publication_obligations')
+      .select('channel,status,approved_at,external_id,live_proven_at,last_error,canonical_url')
+      .eq('tenant_id','canonical')
+      .eq('publication_date',publicationDate)
+      .in('channel',['linkedin_personal','linkedin_company','blog','instagram'])
+      .limit(4);
+    if(publicationError)return json({error:'ORIGINAL_PUBLICATION_PROOF_READ_FAILED'},503);
+    const publicationDelivery=summarizeDailyPublicationTruth(publicationRows,publicationDate);
     return json({
       contract:'powerhouse-control-plane-admin-cockpit-v1',
       obligations:Array.isArray(obligations)?obligations:[],
       metrics:metrics||{},
+      publicationDelivery,
       generatedAt:new Date().toISOString()
     });
   }
