@@ -3,12 +3,13 @@ import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recove
 import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
 import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
 import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
+import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
 const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations"]);
-const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1","brain_observe_failure"]);
 const DB_JSON_COLUMNS=new Set(['bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload','content_publication_obligations.evidence','content_publication_obligations.metrics','powerhouse_channel_decisions.delivery_evidence','powerhouse_channel_decisions.learning_evidence','powerhouse_content_artifacts.generation_evidence','powerhouse_content_recommendations.evidence','powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence','powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest','powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage','powerhouse_sales_actions.evidence']);
 const DB_ARRAY_CASTS=new Map([['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],['powerhouse_instagram_media_jobs_v1.allowed_providers','text[]'],['brain_records.predecessor_ids','text[]'],['brain_records.evidence_ids','text[]'],['brain_ai_governance_registry.data_categories','text[]'],['brain_ai_governance_registry.prohibited_data_categories','text[]'],['brain_ai_governance_registry.approval_evidence_ids','text[]'],['brain_ai_governance_registry.evidence_ids','text[]'],['brain_ai_governance_registry.subprocessors','text[]'],['brain_ai_governance_registry.provider_evidence_urls','text[]']]);
 const DB_DEFAULT_CONFLICT=new Map([['powerhouse_channel_decisions','run_date,channel'],['brain_records','tenant_id,record_id'],['content_publication_obligations','tenant_id,publication_date,channel'],['powerhouse_content_artifacts','run_date,channel'],['powerhouse_daily_runs','run_date'],['powerhouse_instagram_daily_winners_v1','run_date'],['bg_campaign_links','key'],['powerhouse_instagram_media_jobs_v1','tenant_id,publication_date,channel'],['powerhouse_media_proof_evidence_v1','fingerprint']]);
@@ -508,6 +509,36 @@ Deno.serve(async (req) => {
       ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
       degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
       error:recovery.overdue.length?'PUBLICATION_PROOF_OVERDUE':null});
+    // Same ORIGINAL exclusive content-loop writer: register typed recurring
+    // incidents inside existing ONE BRAIN. Never generate/publish from here.
+    // A logged failure remains NOT_PROVEN until regression and provider proof.
+    const learningPlan=planOriginalIncidentLearning(recovery,runDate);
+    const incidentLearning={
+      contract:'original-publication-incident-learning-v1',
+      planned:learningPlan.observations.length,observed:0,errors:0,
+      proof_status:'NOT_PROVEN',new_executor:false
+    };
+    if(!learningPlan.ok){incidentLearning.errors++;}
+    else for(const incident of learningPlan.observations){
+      try{
+        const encoded=new TextEncoder().encode(JSON.stringify(incident.evidence));
+        const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',encoded)))
+          .map(b=>b.toString(16).padStart(2,'0')).join('');
+        const observation=await db.rpc('brain_observe_failure',{
+          p_occurrence_id:incident.occurrenceId,
+          p_fingerprint:incident.fingerprint,
+          p_payload_sha256:hash,
+          p_evidence:incident.evidence
+        });
+        if(observation.error||!observation.data)incidentLearning.errors++;
+        else incidentLearning.observed++;
+      }catch{
+        incidentLearning.errors++;
+      }
+    }
+    stepResults.push({name:'incident-learning-one-brain',
+      ok:incidentLearning.errors===0,degraded:incidentLearning.errors>0,
+      error:incidentLearning.errors?'ORIGINAL_BRAIN_INCIDENT_OBSERVATION_FAILED':null});
     const outcomeVerified = (obligations || []).filter((o: any) => obligationTerminal(o)).length;
     const providerTruthVerified = (obligations || []).filter((o: any) => o.evidence?.provider_truth_verified === true).length;
     const blocked = (obligations || []).filter((o: any) => ['BLOCKED','FAILED'].includes(clean(o.status)) && !providerSideEffectTerminal(o)).length;
@@ -522,6 +553,7 @@ Deno.serve(async (req) => {
       (step.name === 'reconcile_pre' || step.name === 'reconcile_post') && step.ok !== true);
     // Keep dispatch alive; never misrepresent incomplete readback as GREEN.
     const loopState = blocked > 0 || recovery.overdue.length > 0 || recovery.status==='UNVERIFIED'
+      || incidentLearning.errors > 0
       ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
       const status=clean(o.status),channel=clean(o.channel),evidence=o.evidence||{};
@@ -569,6 +601,7 @@ Deno.serve(async (req) => {
       hardBoundaries,
       recovery,
       handoffWriteback,
+      incidentLearning,
       obligations: obligationSummary,
       decisions: decisionSummary,
       steps: stepResults.map((s:any)=>({
