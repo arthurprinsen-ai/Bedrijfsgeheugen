@@ -74,6 +74,32 @@ async function runPrebuiltReuse() {
 async function runFullBuild({cacheOnlyPatch=''}={}) {
   const started=Date.now();
   const timings=[];
+  // Preserve the original provider build failure *phase* even if Netlify only
+  // exposes a generic build exit code in its deploy metadata.
+  async function recordPhaseFailure({name,script,status,error}) {
+    const failure={
+      contract:'NETLIFY_BUILD_PHASE_FAILURE_V1',
+      phase:name,
+      script,
+      exit_code:Number.isInteger(status)?status:null,
+      spawn_error_code:typeof error?.code==='string'?error.code.replace(/[^A-Z0-9_]/gi,'').slice(0,48):null,
+      completed:false,
+      context:String(process.env.CONTEXT||'').slice(0,40),
+      observed_at:new Date().toISOString(),
+      phases:timings,
+    };
+    // Never log environment variables, connector tokens, command output, or PII.
+    console.error('NETLIFY_BUILD_PHASE_FAILURE',JSON.stringify(failure));
+    const profilePath=String(process.env.NETLIFY_BUILD_PROFILE_PATH||'').trim();
+    if(profilePath){
+      try{
+        await mkdir(path.dirname(profilePath),{recursive:true});
+        await writeFile(profilePath,`${JSON.stringify(failure,null,2)}\\n`);
+      }catch(writeError){
+        console.error('NETLIFY_BUILD_FAILURE_PROFILE_WRITE_ERROR',String(writeError?.code||'unknown').slice(0,48));
+      }
+    }
+  }
   for(const [name,script,...args] of phases) {
     const phaseStarted=Date.now();
     const effectiveArgs = cacheOnlyPatch && name==='localized-routes' ? [...args,'--prepare-cache='+cacheOnlyPatch] : args;
@@ -84,8 +110,11 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
     });
     const elapsed_ms=Date.now()-phaseStarted;
     timings.push({name,script,args,elapsed_ms,status:result.status});
-    if(result.error) throw result.error;
-    if(result.status!==0) throw new Error(`NETLIFY_BUILD_PHASE_FAILED:${name}:${result.status}`);
+    if(result.error || result.status!==0){
+      await recordPhaseFailure({name,script,status:result.status,error:result.error});
+      if(result.error) throw result.error;
+      throw new Error(`NETLIFY_BUILD_PHASE_FAILED:${name}:${result.status}`);
+    }
     if(cacheOnlyPatch && name==='localized-routes'){
       console.log('NETLIFY_I18N_CACHE_PREPARED',JSON.stringify({
         patch:cacheOnlyPatch, phaseCount:timings.length,
