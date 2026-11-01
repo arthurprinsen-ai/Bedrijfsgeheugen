@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "powerhouse|customer-value|activity-without-verified-customer-business-impact|20261101-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "parentIssue": 4198,
+  "owner": "original Portal V2 and Powerhouse customer value owner",
+  "rootCause": "Activity, execution and business value were visible but trusted paid order, customer benefit, verified baseline and causal lift evidence remain missing; no customer result can be inferred from event totals.",
+  "observation": {
+    "salesOutcomeRows": 8036,
+    "notExecuted": 7491,
+    "executionCompleted": 488,
+    "sent": 20,
+    "positiveRevenueOutcomeRows": 0,
+    "businessValueRowsMissingResourceEvidence": 10772,
+    "verifiedValueEvaluations": 0
+  },
+  "intervention": "Read-only original Executive Cockpit improvement briefing consumes only canonical healthy tenant projection, links action, metric, baseline, expectation, independent outcome, learning and next decision; no parallel authority.",
+  "prevention": [
+    "Never call not_executed, execution_completed, sent, pageviews or provider ACK paid orders.",
+    "No realized effect without exact action linkage, healthy evidence, valid amount/unit/metric/baseline/period.",
+    "No learned claim without independent learning refs and next decision.",
+    "Unknown business value is not €0 and not green; do not assert causal uplift without controlled evidence.",
+    "External/financial actions always keep original approval, consent, dedupe and provider gates."
+  ],
+  "tests": [
+    "tests/brain-customer-value-briefing-20261101.test.mjs"
+  ],
+  "release": {
+    "stage": "SOURCE_CANDIDATE",
+    "requiredCi": false,
+    "codeql": false,
+    "protectedMain": false,
+    "netlifyReadback": false,
+    "independentCustomerBenefitProven": false
+  }
+}
