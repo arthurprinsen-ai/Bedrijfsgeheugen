@@ -60,7 +60,8 @@ test('admin UI visibly distinguishes approval, 1/4 provider send and absent inde
 test('portal escapes original potentially malicious source errors and does not show unacknowledged link',()=>{
  const injected=rows.map(x=>x.channel==='blog'?{...x,last_error:'<script>alert(1)</script>',canonical_url:'https://evil.example/hack'}:x);
  const html=publicationDeliveryMarkup(summarizeDailyPublicationTruth(injected,date));
- assert.doesNotMatch(html,/<script>/);
+ assert.doesNotMatch(html,/<script>/i);
+ assert.doesNotMatch(html,/<ScRiPt>/i);
  assert.match(html,/&lt;script&gt;/);
  assert.doesNotMatch(html,/evil\.example/);
 });
