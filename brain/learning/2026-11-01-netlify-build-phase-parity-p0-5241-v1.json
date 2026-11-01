@@ -42,5 +42,13 @@
     "Production release.json and relevant functional browser proof succeed",
     "Original #5241 and parent issue retain immutable evidence"
   ],
-  "production_proven": false
+  "production_proven": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-production-phase-proof-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-production-phase-proof-20261101.test.mjs"
+    ]
+  }
 }
