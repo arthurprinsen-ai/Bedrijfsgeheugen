@@ -35,5 +35,26 @@
     "protectedMain": false,
     "netlifyReadback": false,
     "independentCustomerBenefitProven": false
+  },
+  "compiler": {
+    "failure_class": "CUSTOMER_VALUE_PROOF_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-customer-value-briefing-20261101.test.mjs"
+    ]
+  },
+  "promotion": {
+    "required": [
+      "original protected Required + Portal + CodeQL",
+      "exact production Netlify SHA + tenant A/B readback",
+      "real independently verified customer economic outcome",
+      "original Heartbeat/Brain next natural run result"
+    ],
+    "stage": "SOURCE_CANDIDATE"
   }
 }
