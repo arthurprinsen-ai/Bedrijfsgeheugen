@@ -1,0 +1,48 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "powerhouse|portal|unapproved-blog-missing-from-control-plane-day-truth|20261101-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original portal-state-eu control_plane_cockpit / portal-v2/control-plane-cockpit.js / ONE BRAIN",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "The authenticated original portal control plane projected generic historical obligations/metrics but omitted daily canonical publication status and distinct blog approval. A successful hourly GitHub run could be misread as a live blog when original export was NO_ACTION:NO_APPROVED_BLOG_ARTIFACT. Provider acknowledgement and independent GET failure were not separately presented.",
+  "observed": {
+    "runDate": "2026-11-01",
+    "expected": 4,
+    "providerAcknowledged": 1,
+    "independentlyProven": 0,
+    "blog": {
+      "status": "GENERATED",
+      "approved_at": null,
+      "external_id": null
+    },
+    "linkedinPersonal": {
+      "providerId": "urn:li:share:7522660274441670656",
+      "readbackStatus": "FORBIDDEN"
+    },
+    "linkedinCompany": "FAILED/COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "instagram": "BLOCKED/MIRA_FINAL_MEDIA_PROOF_REQUIRED"
+  },
+  "prevention_rule": "Original read-only control-plane admin page must display current Netherlands date from canonical content_publication_obligations and distinguish blog editorial approval, provider create acknowledgement, and independent public proof, with per-channel original owner/next action. No green on workflow-only success, missing external ID or unverified readback, no authorized CMS status overwritten.",
+  "fix_candidate": "protected original portal-state-eu read-only model + existing portal-v2 admin cockpit rendering; no new executor/publisher/site",
+  "compiler": {
+    "failure_class": "FALSE_PUBLICATION_SUCCESS_UI_RISK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-publication-truth-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-control-plane-publication-truth-20261101.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "original provider proof 20:37 UTC, source blog awaiting approval, original GitHub run 41346328443",
+    "pending": "Required/CodeQL/Preview, Supabase portal-state-eu exact readback, Netlify original admin UI live readback, 7 natural runs"
+  },
+  "release_status": "CANDIDATE_NOT_PROVEN",
+  "human_documentation": "docs/changes/2026-11-01-p0-portal-publication-approval-truth.md"
+}
