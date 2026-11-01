@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {assessOfficialBlogDateTruth} from '../supabase/functions/_shared/blog-official-date-truth.mjs';
 
 const source=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
 const snippet=source.match(/function blogReaderReadyViolations\(artifact:any\):string\[\]\{([\s\S]*?)\n\}\n\nconst PERSONAL_STEERING_STORY/);
 assert.ok(snippet,'the actual generator must expose a deterministic reader-ready verdict');
 const executable='function blogReaderReadyViolations(artifact){'+snippet[1].replace('const errors:string[]=[];','const errors=[];')+'\n}\nblogReaderReadyViolations;';
-const validate=vm.runInNewContext(executable,{});
+const validate=vm.runInNewContext(executable,{assessOfficialBlogDateTruth});
 
 test('blog reader-ready rule accepts a complete public article',()=>{
   const body=['## Context',...Array(9).fill('Signalen moeten tot besluiten en controleerbare acties leiden.'),'## Aanpak',...Array(9).fill('Verbind feiten met processen, een eigenaar en een meetpunt.'),'## Controle',...Array(9).fill('Controleer of de actie uitgevoerd is en het doel is bereikt.')].join('\n');
@@ -27,7 +28,7 @@ test('blog gate blocks editor-only instructions and does not fake signoff',()=>{
 
 test('OpenAI blog reader-ready gating precedes canonical artifact writes',()=>{
   assert.match(source,/pending\.channel==='blog' \? BLOG_READER_READY_PROMPT/);
-  assert.match(source,/blogReaderReadyViolations\(\{\.\.\.artifact,body:bodyText\}\)/);
+  assert.match(source,/blogReaderReadyViolations\(\{\.\.\.artifact,body:bodyText,run_date:runDate\}\)/);
   assert.match(source,/BLOG_READER_READY_CONTRACT_FAILED/);
   assert.match(source,/editorial_rejection_codes:violations/);
   const gate=source.indexOf("if(pending.channel==='blog'){");
