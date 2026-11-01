@@ -56,5 +56,16 @@
       "original Heartbeat/Brain next natural run result"
     ],
     "stage": "SOURCE_CANDIDATE"
+  },
+  "root_cause": "Activity, execution and business value were visible but trusted paid order, customer benefit, verified baseline and causal lift evidence remain missing; no customer result can be inferred from event totals.",
+  "evidence": {
+    "live_database": "2026-11-01 original read-only source tables",
+    "source_tables": [
+      "public.powerhouse_sales_outcomes",
+      "public.powerhouse_business_value_intelligence_v1",
+      "public.brain_value_evaluations"
+    ],
+    "regression": "tests/brain-customer-value-briefing-20261101.test.mjs",
+    "production_outcome_verified": false
   }
 }
