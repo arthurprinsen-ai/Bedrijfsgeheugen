@@ -1,15 +1,15 @@
-// Reuse the existing Mira radar's eight search slots; rotate approved PH-P topic families
+// P0 #5232: 1-Nov source probe 18176 yielded 5 DataForSEO NEWS_NO_RESULTS from six\n// business queries. Shorten these six high-specificity Dutch news searches,\n// preserving their exact twelve canonical PH-P families, independent provider\n// publication date, originality checks and original 8-call fixed daily budget.\n// Reuse the existing Mira radar's eight search slots; rotate approved PH-P topic families
 // across business dates to avoid harvesting the same press release indefinitely.
 // Topic families remain selected from the approved canonical portal problem catalog.
 export const MIRA_SOURCE_TOPIC_QUERIES = Object.freeze([
   {topic:'offertes-zonder-opvolging',query:'mkb offertes opvolgen'},
   {topic:'directie-bottleneck',query:'mkb directeur besluit bottleneck'},
-  {topic:'kennisoverdracht',query:'mkb kennisoverdracht personeel vertrek'},
-  {topic:'excel-chaos',query:'mkb excel spreadsheets'},
-  {topic:'dubbele-invoer',query:'mkb dubbele invoer CRM ERP'},
-  {topic:'projectmarge',query:'mkb projectmarge meerwerk'},
-  {topic:'groei-zonder-winst',query:'mkb groei omzet winst marge'},
-  {topic:'capaciteitsplanning',query:'mkb personeelstekort planning'},
+  {topic:'kennisoverdracht',query:'mkb kennisoverdracht'},
+  {topic:'excel-chaos',query:'mkb excel'},
+  {topic:'dubbele-invoer',query:'mkb dubbele invoer'},
+  {topic:'projectmarge',query:'mkb meerwerk'},
+  {topic:'groei-zonder-winst',query:'mkb omzet marge'},
+  {topic:'capaciteitsplanning',query:'mkb personeelstekort'},
   {topic:'debiteuren',query:'mkb onbetaalde facturen debiteuren'},
   {topic:'late-facturering',query:'mkb facturering te laat'},
   {topic:'klantafhankelijkheid',query:'mkb klantafhankelijkheid'},
