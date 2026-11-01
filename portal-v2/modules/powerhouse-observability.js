@@ -99,7 +99,24 @@ function deliveryView(events,observability){
   const providerEvidence=observability.releaseEvidence;
   const status=deriveReleaseStatus(providerEvidence||{});
   const label={passed:'Geslaagd',failed:'Mislukt',pending:'In afwachting',unknown:'Onbekend',not_required:'Niet vereist'};
-  const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
+  // Read-only ORIGINAL GitHub incident; an up-to-date website release does not
+  // close an older provider-build root cause or prove paid customer outcomes.
+  const issue=providerEvidence?.originalReleaseIncident||{};
+  const verifiedIssue=issue.contract==='original-netlify-release-incident-readback-v1'&&
+    issue.status==='READBACK_COMPLETE'&&issue.incidentId===5241&&
+    ['OPEN','CLOSED'].includes(issue.issueState)&&
+    issue.issueUrl==='https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241';
+  const issueLabel=!verifiedIssue?'Incidentbron niet geverifieerd':
+    !issue.productionCurrent?'Productiebron nog niet exact bevestigd':
+    issue.issueState==='OPEN'?'Website live · bouwfoutonderzoek open':'GitHub-incident gesloten · oorzaakbewijs afzonderlijk';
+  const issueTone=!verifiedIssue||!issue.productionCurrent?'bad':issue.issueState==='OPEN'?'warn':'good';
+  const issueMarkup=`<div class="poc-panel" data-original-netlify-incident data-evidence-status="${verifiedIssue?'READBACK_COMPLETE':'UNVERIFIED'}" data-production-current="${esc(String(issue.productionCurrent===true))}">
+    <div class="poc-panelhead"><h4>Incident #5241 · Netlify-bouwfout</h4><span class="poc-badge ${issueTone}">${esc(issueLabel)}</span></div>
+    <p class="poc-note">Websitepublicatie, incidentafhandeling en bewezen bronoorzaak zijn afzonderlijke controles. ${esc(verifiedIssue?issue.nextAction:'De oorspronkelijke GitHub-incidentbron is momenteel niet onafhankelijk teruggelezen.')}</p>
+    <p class="poc-note">Laatste GitHub-controle: ${esc(verifiedIssue?fmtTime(issue.issueUpdatedAt):'Onbekend')}. Herstel gebeurt alleen via de bestaande ONE BRAIN-, release- en Heartbeat-keten.</p>
+    <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241" target="_blank" rel="noopener noreferrer">Origineel incident en leerbewijs bekijken</a>
+  </div>`;
+  const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p>${issueMarkup}</section>`;
   return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
 function oneLoopAssuranceView(assurance){
