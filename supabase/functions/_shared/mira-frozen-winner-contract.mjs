@@ -54,6 +54,42 @@ const APPROVED_SOURCE_LED=Object.freeze({
  * approve, publish, or mutate a video; the original full verifier still owns
  * exact native MP4, three-frame face >= 0.940, continuity and provider proof.
  */
+/**
+ * P0 #5232: admit only the first READ-ONLY provider-format preflight for one
+ * genuine, immutable, dated PH-P library daily winner. No generation, credits,
+ * identity PASS, media approval or Instagram publication rights are conferred.
+ * An already rejected candidate takes a separate existing recovery route.
+ */
+export function eligibleInitialFrozenLibraryMediaGeneration({resolved,job,ob,input,postType}={}){
+ const manifest=job?.asset_manifest||{},proposal=input||{};
+ const winner=String(resolved?.winner_recommendation_id||'');
+ const problem=resolved?.problem||{};
+ const fresh=job?.status==='WAITING_ASSET'
+  &&Number(job?.attempts)===0
+  &&Boolean(String(job?.id||''))
+  &&job?.provider_connection_state==='READY'
+  &&job?.selected_provider==='openart'
+  &&job?.required_provider==='openart'
+  &&manifest.policy?.required_provider==='openart'
+  &&String(manifest.openart_project_id||'')==='rUF5anXD47gVokckYjf9'
+  &&!String(manifest.openart_history_id||'')
+  &&!String(manifest.asset_url||'')
+  &&!job?.last_error
+  &&job?.republish_forbidden!==true
+  &&manifest.automatic_generation_budget_exhausted!==true
+  &&!ob?.external_id&&!ob?.live_proven_at
+  &&!['PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED'].includes(String(ob?.status||''))
+  &&ob?.evidence?.republish_forbidden!==true;
+ return resolved?.kind==='approved_frozen_library_mapping'
+  &&postType==='reel'&&fresh
+  &&Boolean(winner)&&Boolean(String(problem.scene||''))
+  &&String(manifest.recommendation_id||'')===winner
+  &&String(manifest.daily_winner_recommendation_id||'')===winner
+  &&String(proposal.scene||'')===String(problem.scene||'')
+  &&String(proposal.canonical_problem_id||'')===String(problem.id||'')
+  &&String(proposal.recommendation_id||'')===winner;
+}
+
 export function eligibleFrozenLibraryMediaGeneration({resolved,job,ob,input,postType}={}){
  const manifest=job?.asset_manifest||{};
  const error=String(job?.last_error||'');

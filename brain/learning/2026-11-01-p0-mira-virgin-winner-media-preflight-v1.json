@@ -1,0 +1,42 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "powerhouse|mira|virgin-frozen-library-media-generation-preflight-denied|20261101-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-instagram-media-router / exact frozen Mira PH-P producer",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "After original Mira source/selection repair, the initial PH-P008 frozen winner and OpenArt job WAITING_ASSET with attempts=0 had no route through the original router generation_preflight, because existing eligibleFrozenLibraryMediaGeneration allowed only previously rejected provider history recovery. Original protected HTTP request 18186 returned 422 MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED.",
+  "observed_evidence": {
+    "original_source_probe": 18182,
+    "original_media_preflight": 18184,
+    "original_generation_preflight": 18186,
+    "status_code": 422,
+    "provider_generation_started": false,
+    "meta_post_started": false,
+    "job": "bb38e7e9-28eb-4a4d-ac2a-64c280bb2df5"
+  },
+  "prevention_rule": "Allow virgin frozen library winner to request only the original READ-ONLY model/format pre-spend gate when provider OpenArt READY, pinned canonical project, immutable matching PH-P scene and recommendation, zero prior attempts/media/history and zero external provider effect. Never confuse preflight with permission for automatic spend, skipped video face>=0.940, motion, native video proof, Meta side effect, newsletter consent, or green channel health.",
+  "fix_candidate": "original mira-frozen-winner-contract.mjs, original powerhouse-instagram-media-router/index.ts and original frozen-library preflight test",
+  "compiler": {
+    "failure_class": "MEDIA_FIRST_GENERATION_AUTHORITY",
+    "scope": "RUNTIME",
+    "machine_enforceable": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-frozen-library-producer-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-frozen-library-producer-preflight-20261029.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observation": "original HTTP 422 at pg_net #18186 with exact new frozen winner; no generator output yet",
+    "regression": "new admission and 19 negative cases; original recovery gate remains separate",
+    "pending": "protected Required/BRAIN/CodeQL, original Edge readback, model-format preflight, real media & independent face/temporal/Meta provider proof"
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-01-p0-mira-virgin-winner-media-preflight.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-01-p0-mira-virgin-winner-media-preflight.md"
+}
