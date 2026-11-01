@@ -5,6 +5,10 @@ description: Canonical Powerhouse Instagram publishing and recovery skill. Use f
 
 # Instagram Composio Publisher
 
+## P0 #5232 — original Mira source NEWS recall without false-green
+
+Original same-owner source probe #18176 (1 Nov 2026) produced five new personal sources, zero new business Mira sources and five empty DataForSEO News tasks. HTTP200 is not success; JSON reported SOURCE_RECOVERY_DUE. Canonical original radar's six PH-P entrepreneur query slots are shortened for high recall within the **same eight** paid/provider-search slots. After protected deployment, run original radar once for the missing date with existing scheduler auth and read JSON state, then original one-winner selector. Do not create hand-written source evidence, date, approval, second publisher or additional daily cron. Enforce original PH-P scene library, publisher date, 90-day source / 3-day topic uniqueness, face >=0.940, exact final-media identity and official provider-ID readback. Escalate lack of source through existing ONE BRAIN #5232 and continue original executor. Human source runbook: `docs/changes/2026-11-01-p0-mira-source-news-recall-repair.md`.
+
 Fingerprint: `instagram-composio-primary-v1`.
 
 ## Trigger
