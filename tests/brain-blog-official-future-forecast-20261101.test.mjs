@@ -19,6 +19,40 @@ test('actual unsent 1 Nov future CPNL 6 Oct draft is rejected before publication
  assert.equal(v.actual_closed_on,'2026-10-06');
  assert.equal(v.published_approval_allowed,false);
 });
+test('real 13:12 regenerated blog: date BEFORE opengaat is still false',()=>{
+ const v=assessOfficialBlogDateTruth({
+  title:'Hoe u uw recyclingproject klaarstoomt voor de Circular Plastics NL-subsidie: een praktische roadmap voor ondernemers',
+  body:'Onze forecast verwacht dat de Circular Plastics NL-subsidie op 6 oktober 2026 opengaat met een budget van €40 miljoen. Dat maakt dit een concreet moment om te beslissen of u wilt meedoen.',
+  cta:'Ga nu direct aan de slag met een aanvraag.',
+  runDate:'2026-11-01'
+ });
+ assert.equal(v.ok,false);
+ assert.equal(v.code,'BLOG_OFFICIAL_SUBSIDY_DEADLINE_INVERTED');
+});
+test('real original Postgres run_date is a Date object and still applies the factual gate',()=>{
+ const v=assessOfficialBlogDateTruth({
+  ...futureDraft, title:'MKB en Circular Plastics NL',
+  body:'Onze forecast verwacht dat de Circular Plastics NL-subsidie op 6 oktober 2026 opengaat.',
+  runDate:new Date('2026-11-01T00:00:00Z')
+ });
+ assert.equal(v.code,'BLOG_OFFICIAL_SUBSIDY_DEADLINE_INVERTED');
+});
+test('truthful closed-date sentence does not exempt a separate false future-opening sentence',()=>{
+ const v=assessOfficialBlogDateTruth({
+  title:'Lessen uit de Circular Plastics NL ronde',
+  body:'Circular Plastics NL 2026 sloot op 6 oktober 2026. Onze forecast verwacht dat Circular Plastics NL op 6 oktober 2026 opengaat.',
+  cta:'Volg RVO voor nieuwe officiële openstellingen.',runDate:'2026-11-01'
+ });
+ assert.equal(v.ok,false);
+});
+test('historical CPNL opening and closing in a single sentence remain allowed',()=>{
+ const v=assessOfficialBlogDateTruth({
+  title:'Terugblik Circular Plastics NL 2026',
+  body:'Circular Plastics NL opende in april 2026 en sloot op 6 oktober 2026. De aanvraagperiode is voorbij.',
+  cta:'Controleer de officiële RVO-status.',runDate:'2026-11-01'
+ });
+ assert.equal(v.ok,true);
+});
 test('future 6 Oct forecast is rejected even with neutral title',()=>{
  const v=assessOfficialBlogDateTruth({...futureDraft,title:'MKB en circular plastics in Nederland'});
  assert.equal(v.ok,false);
@@ -54,6 +88,7 @@ test('the existing original blog producer feeds this validation into original re
  const queue=await readFile(new URL('../supabase/functions/powerhouse-blog-queue/index.ts',import.meta.url),'utf8');
  const exportGate=await readFile(new URL('../supabase/functions/powerhouse-blog-export/index.ts',import.meta.url),'utf8');
  assert.match(s,/assessOfficialBlogDateTruth/);
+ assert.match(s,/typeof artifact\\?\\.run_date\\?\\.toISOString==='function'/);
  assert.match(s,/blogReaderReadyViolations\(\{\.\.\.artifact,body:bodyText,run_date:runDate\}\)/);
  assert.match(s,/reopenRejectedBlog\(db,runDate,blogReaderReadyViolations,blogQualityReview\)/);
  assert.match(s,/persistRepairedBlog\(db,runDate,blogRepairClaim,artifactPayload,decisionPayload\)/);
