@@ -31,9 +31,19 @@ function reasonFor(channel,obligation,decision){
   // The original content generator records a precise classified provider
   // failure before any publication side effect. A 429 billing refusal must
   // not masquerade as a failed social transport or prompt blind retries.
-  if(decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING')
+  // A new review or source collision outranks an OLD provider quota error.
+  // A previous 429 can stay in JSON after the approved model has regenerated.
+  const current=decision?.delivery_evidence||{};
+  const currentError=str(current.error);
+  if(error.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
+    ||currentError.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
+    ||(channel==='linkedin_company'
+      &&Array.isArray(current.violations)
+      &&current.violations.some(v=>v?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT')))
+    return 'DISTINCT_VERIFIED_STORY_REQUIRED';
+  if(decision?.state==='decided'
+    &&current.artifact_generation_failure?.classification==='PROVIDER_BILLING')
     return 'CONTENT_GENERATION_BILLING_ACTION_REQUIRED';
-  if(error.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED'))return 'DISTINCT_VERIFIED_STORY_REQUIRED';
   if(channel==='instagram')return str(decision?.delivery_evidence?.daily_winner_recommendation_id)
     ? 'MIRA_FINAL_MEDIA_PROOF_REQUIRED' : 'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED';
   if(channel==='blog')return 'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED';
@@ -80,7 +90,8 @@ export function assessDailyPublicationRecovery({
     // An explicit failed AI generation is actionable immediately, even when the
     // planned publication time has not passed. Waiting for due+30m loses the
     // chance to restore the approved provider and regenerate good content.
-    const providerGenerationFailed=decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING';
+    const providerGenerationFailed=decision?.state==='decided'
+      &&decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING';
     const isFailed=['FAILED','BLOCKED'].includes(str(obligation?.status))
       ||str(decision?.state)==='blocked'||providerGenerationFailed;
     // Missing decision is itself a recovery obligation: never silently skip a lane.
