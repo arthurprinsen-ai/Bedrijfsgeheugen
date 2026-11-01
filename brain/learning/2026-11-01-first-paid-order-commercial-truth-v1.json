@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-01",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|commercial|no-paid-customer-funnel-source-offer-proof|20261101-v1",
+  "obligation_id": "first-paid-order-commercial-truth-20261101-v1",
+  "failure_class": "COMMERCIAL_OUTCOME_NOT_PROVEN",
+  "scope": "COMMERCIAL",
+  "owner": "existing Growth & Revenue OS, canonical ONE BRAIN/Heartbeat and original channel/CMS owners",
+  "root_cause": "Commercial opportunity scoring chiefly routes to comments and internal research rather than verified buyer conversations. Internal research expiration was mixed with external send performance; a prepared email with recipient approval still lacks relevant company-source proof; public pages disagree on Frisse Blik conversation versus paid scan. An isolated completed checkout intent without provider-session/payment proof is not independently realized revenue.",
+  "evidence": {
+    "observed_on": "2026-11-01",
+    "provenance": "read-only source-backed production SQL on existing project adhjwmvyoixzjtmiroln; publicly retrieved /prijzen and /hoe-het-werkt; GitHub Required admission run 41307184886",
+    "opportunity_records": 938,
+    "command_center_recommended_linkedin_comment": 768,
+    "command_center_recommended_internal_research": 170,
+    "expired_sales_actions": 8631,
+    "expired_internal_research": 7425,
+    "external_expired_actions": 1206,
+    "prepared_source_blocked_email_actions": 3,
+    "checkout_intents": {
+      "created": 2,
+      "expired": 2,
+      "completed": 1,
+      "completed_with_provider_session": 0
+    },
+    "subscription_provider_status": "single trial/canceled",
+    "email_learning_projection": {
+      "sent": 27,
+      "replies": 2,
+      "positive_replies": 0,
+      "meetings": 0,
+      "proposals": 0,
+      "orders": 0,
+      "revenue_eur": 0
+    },
+    "verified_payment": false,
+    "verified_first_customer": false
+  },
+  "fix": "Within existing acquisition skill and one owner, prioritize a verifiable early-customer funnel and current fixed-price entry offer. Correct stale price narrative, distinguish research from customer deliveries, and prevent any order or customer claim absent independent payment proof. This release does not itself send messages or update CMS production.",
+  "prevention_rule": "Never classify an expired internal research action as an expired sales contact or a completed checkout intent as paid revenue; never bypass source/identity/consent/suppression, never infer contact/reply/meeting/order from a done research action. Each next-best-action must report evidence and commercially meaningful next step; price copy must agree with canonical live pricing page.",
+  "regression_contract": "Tests reject stale paid scan €2.900, assert correct 2026-11-01 fixed-price tiers, distinguish internal research and enforce no order without independent provider proof. Protected Required/CodeQL and post-merge exact-main/runtime readback are mandatory.",
+  "compiler": {
+    "failure_class": "COMMERCIAL_OUTCOME_NOT_PROVEN",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-paid-order-acquisition-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-first-paid-order-acquisition-20261101.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-first-paid-order-acquisition-20261101.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected full Required + CodeQL including semantic learning closure",
+    "exact protected main merge and portal/CMS owner readback",
+    "original provider-confirmed eligible outbound and recipient verification",
+    "independent qualified meeting and proposal evidence",
+    "actual payment provider/order readback before marking first paid customer"
+  ]
+}
