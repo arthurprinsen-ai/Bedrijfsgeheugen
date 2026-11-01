@@ -30,10 +30,14 @@ const BLOG_READER_READY_PROMPT="Schrijf uitsluitend definitieve, voor bezoekers 
 function blogReaderReadyViolations(artifact:any):string[]{
   const title=String(artifact?.title||'').trim(),body=String(artifact?.body||'').trim(),cta=String(artifact?.cta||'').trim();
   const errors:string[]=[];
-  const officialDate=assessOfficialBlogDateTruth({
-    title,body,cta,runDate:String(artifact?.run_date||'')
-  });
-  if(!officialDate.ok)errors.push(officialDate.code);
+  // Date validation is required for every CPNL claim; unrelated topics
+  // have no official CPNL date obligation and keep their reader-ready gate.
+  if(/circular[\s\W]*plastics[\s\W]*nl/i.test([title,body,cta].join('\n'))){
+    const officialDate=assessOfficialBlogDateTruth({
+      title,body,cta,runDate:String(artifact?.run_date||'')
+    });
+    if(!officialDate.ok)errors.push(officialDate.code);
+  }
   if(body.length<1600)errors.push('BODY_TOO_SHORT');
   if(/Verifieer publicatie.voorwaarde|Publiceer alleen als er geen dominante canonical owner|verified_qualified_cta_progression|Schrijf één hoofdpage|Voorpublicatie: canonical owner check|SEO.verantwoordelijke\s*\/\s*marketinglead/i.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
   if(/publiceer alleen als|wanneer (?:te )?publiceren|kanaal-?gates?|channel gates?|canonical owner|forecast.?score|\bCPC\b|DataForSEO|first.mover|intent.?gap|verified_qualified|contentmanager|zoekvolume van/i.test(body))errors.push('INTERNAL_PUBLISHING_LANGUAGE');
