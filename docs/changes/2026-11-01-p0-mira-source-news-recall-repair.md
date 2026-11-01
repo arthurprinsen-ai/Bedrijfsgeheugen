@@ -1,0 +1,16 @@
+# P0 #5232 — Mira source news recall, same original eight-search budget
+
+**Date:** 2026-11-01. **Status:** protected code candidate; no claim of live deployment, eligible source or real Instagram provider ID. **Canonical incident:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232
+
+## Original production evidence
+An **original** protected scheduler-token call to original `powerhouse-mira-problem-radar` at 2026-11-01 ~10:22 UTC, pg_net HTTP request **18176**, invoked with `runDate=2026-11-01` and returned HTTP **200**, but JSON **`ok=false, state=SOURCE_RECOVERY_DUE, reason=NO_FRESH_PUBLIC_PROBLEM_SIGNAL`**. The same original call returned `stored=5, eligible=4, personalStored=5, personalEligible=4` and `providers.dataforseo_no_results=5`; all five stored sources support the personal lane and **zero** new source-backed Mira business winners were materialized. This is a true source-supply failure, not a video or provider-auth failure. Before probe: 323 source rows, 89 eligible, only 12 independently dated eligible, and exactly two mapped to approved PH-P scenes; both exhausted by immutable 90-day source reuse and 3-day topic reuse.
+
+## Narrow corrective change
+Original source owner: `supabase/functions/powerhouse-mira-problem-radar/index.ts`. Preserve **six existing business + two existing personal** source slots, same `selectCanonicalRadarSourceQueries` and 8-search external budget, same Tavily topic NEWS/DataForSEO News providers, same 45-day original-date check, PH-P### approved library scene, `eligible>=0.72`, 90-day source and 3-day topic no-duplicate checks. In ORIGINAL imported helper `supabase/functions/_shared/mira-source-query-rotation.mjs`, shorten the **six business topic searches selected for Nov 1** from overconstrained multi-term keywords to short Dutch topical phrases so legitimate, independently dated news has a chance to surface. Do not loosen any provider freshness gates, compute fake dates, materialize historical sources or handcraft approved evidence.
+
+## Acceptance and independent result
+- Protected Required/BRAIN/CodeQL and regression checks in `tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs`; source branch must merge with original protected writer.
+- Deploy the one **original** `powerhouse-mira-problem-radar` Edge function with exact protected helper and all other function files/auth unchanged. Independently read back ACTIVE version and exact helper source parity before calling it live.
+- Rerun the **original** source-radar on the current missed date at most once after deploy under the original scheduler auth; record `stored/eligible/personalStored/dataforseo_no_results` and actual materializer result; HTTP 200 alone is not source success.
+- Success requires original `powerhouse_select_instagram_daily_winner_v1` to freeze one previously unused, dated PH-P source, then original media creation and independent Mira face identity >=0.940 and exact final video proof, original Instagram provider write and provider-ID readback. Continue normal 7-day non-duplicate natural-run assurance. No false GREEN.
+- No second cron/scheduler, publisher, hand-written source, follower-reach or identity bypass. Other LinkedIn/blog OPENAI_API 429 and email authorization remain separate HUMAN/production blockers.

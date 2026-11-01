@@ -95,6 +95,23 @@ test('radar uses a fixed eight-call budget but rotates multiple approved entrepr
  assert.match(radar,/directeur\.\*besluit/);
  assert.match(radar,/facturering\.\*te laat/);
  assert.match(radar,/klantafhankelijk/);
- assert.match(radar,/evaluateMiraPublicationFreshness\(/);
+ assert.ok(radar.includes('evaluateMiraPublicationFreshness('));
  assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+});
+
+test('P0 5232: original six Mira news slots use short high-recall queries while all provenance gates remain intact',()=>{
+ const selected=selectMiraSourceQueries('2026-11-01').slice(0,6);
+ assert.deepEqual(selected,[
+  'mkb kennisoverdracht', 'mkb excel', 'mkb dubbele invoer',
+  'mkb meerwerk','mkb omzet marge','mkb personeelstekort'
+ ]);
+ assert.ok(selected.every(q=>q.split(' ').length<=3));
+ assert.equal(selected.length,6);
+ const tomorrow=selectMiraSourceQueries('2026-11-02');
+ assert.equal(tomorrow.length,8);
+ assert.ok(new Set(tomorrow).size===8);
+ assert.ok(radar.includes('evaluateMiraPublicationFreshness('));
+ assert.match(radar,/source_publication_date_evidence/);
+ assert.ok(radar.includes('const portalProblemId=portalIds[problemTopic]'));
+ assert.match(radar,/source_contract_collision_skipped/);
 });
