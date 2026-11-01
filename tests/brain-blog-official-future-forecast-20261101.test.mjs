@@ -88,7 +88,7 @@ test('the existing original blog producer feeds this validation into original re
  const queue=await readFile(new URL('../supabase/functions/powerhouse-blog-queue/index.ts',import.meta.url),'utf8');
  const exportGate=await readFile(new URL('../supabase/functions/powerhouse-blog-export/index.ts',import.meta.url),'utf8');
  assert.match(s,/assessOfficialBlogDateTruth/);
- assert.match(s,/typeof artifact\\?\\.run_date\\?\\.toISOString==='function'/);
+ assert.ok(s.includes("typeof artifact?.run_date?.toISOString==='function'"));
  assert.match(s,/blogReaderReadyViolations\(\{\.\.\.artifact,body:bodyText,run_date:runDate\}\)/);
  assert.match(s,/reopenRejectedBlog\(db,runDate,blogReaderReadyViolations,blogQualityReview\)/);
  assert.match(s,/persistRepairedBlog\(db,runDate,blogRepairClaim,artifactPayload,decisionPayload\)/);
