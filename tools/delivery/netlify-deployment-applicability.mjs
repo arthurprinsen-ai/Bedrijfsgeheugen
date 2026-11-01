@@ -12,6 +12,12 @@ export const NETLIFY_GOVERNANCE_PREFIXES = Object.freeze([
   'tools/ci/',
 ]);
 
+// Build command changes are executable Netlify production code, NOT governance.
+// They must execute full production-parity CI even when under tools/ci/.
+export const NETLIFY_BUILD_RUNTIME_EXACT = Object.freeze(new Set([
+  'tools/ci/netlify-build-entry.mjs',
+]));
+
 export const NETLIFY_GOVERNANCE_EXACT = Object.freeze(new Set([
   'AGENTS.md',
   'config/delivery-prevention-rules.json',
@@ -92,8 +98,10 @@ export function deriveNetlifyDeploymentApplicability({
 }={}) {
   const changed=unique(changedPaths);
   const runtimeChangedPaths=changed.filter(path =>
-    !NETLIFY_GOVERNANCE_EXACT.has(path) &&
-    !NETLIFY_GOVERNANCE_PREFIXES.some(prefix => path.startsWith(prefix))
+    NETLIFY_BUILD_RUNTIME_EXACT.has(path) || (
+      !NETLIFY_GOVERNANCE_EXACT.has(path) &&
+      !NETLIFY_GOVERNANCE_PREFIXES.some(prefix => path.startsWith(prefix))
+    )
   );
 
   if(skipDeployment){
@@ -120,6 +128,7 @@ export function deriveNetlifyDeploymentApplicability({
   const portalRequired=requiredSuites.portal === true;
   const browserRequired=forceBrowser || websiteRequired || portalRequired;
   const netlifyRuntimeRequired=runtimeChangedPaths.some(path =>
+    NETLIFY_BUILD_RUNTIME_EXACT.has(path) ||
     NETLIFY_RUNTIME_EXACT.has(path) || NETLIFY_RUNTIME_PREFIXES.some(prefix => path.startsWith(prefix))
   );
   const deploymentRequired=forceDeployment || websiteRequired || portalRequired || netlifyRuntimeRequired;
