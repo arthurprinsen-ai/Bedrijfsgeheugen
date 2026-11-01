@@ -10,6 +10,8 @@
 - `scan_inzendingen`: 58 totaal, 56 unverified en 2 demo. `commercial_leads` en `offerte_inzendingen`: beide leeg; `offertes` leeg.
 - Laatste 30 dagen `growth_events`: page_view 31.113 waarvan is_robot=true 23.592; overige pageviews 7.521 (niet noodzakelijk uniek / geverifieerd mens). `primary_cta_click` 15; `scan_completed` 47. Zet ontbrekende GA4-validatie niet stilzwijgend om in bewezen menselijk bezoek.
 
+- `powerhouse_revenue_command_center_snapshot_v1` (laatste refresh 2026-11-01 11:55 UTC): 938 rijen, **768 aanbevolen LinkedIn-comments** en **170 interne research**; **0 directe meeting/offerte/e-mail als aanbevolen kanaal**. CTA: 775 keer `ask_one_contextual_question` en 163 keer `gather_more_evidence`; 519 missen bewijs en 168 hebben een identiteitsconflict. Dit is de harde routebreuk: het command center stopt grotendeels vóór een bewezen verkoopgesprek. De opdracht is niet veiligheidscontroles omzeilen, maar in de bestaande decision owner een geldige route vanaf provider-bevestigde interesse/reply naar afspraak, aanbod, offerte en betaalbewijs afdwingen; ontbrekend autoriteit/bewijs blijft onderzoek of stop.
+
 ## Concrete uitvoeringsblokkade
 Drie nieuwe, human-approved `autonomous_email` acties van 1 november staan `prepared`, `provider_attempted=false`, `reason=SOURCE_SPECIFIC_EVIDENCE_REQUIRED` en missen `human_readable_context` en `source_trigger_relevance` (bij één ook `specific_source_context`). Relevante research-routes zijn gecreëerd met dezelfde `relationship-research:outreach-source:<original-action-id>` lineage; twee onderzoekstaken zijn `done`, één `waiting`.
 
