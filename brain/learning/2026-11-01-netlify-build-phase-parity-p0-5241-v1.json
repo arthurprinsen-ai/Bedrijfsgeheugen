@@ -1,0 +1,46 @@
+{
+  "fingerprint": "netlify|production|build-exit2-parity-misclassification|20261101-v1",
+  "obligation_id": "netlify-build-parity-phase-proof-p0-5241-20261101",
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_PHASE_EVIDENCE_MISSING",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "CANDIDATE_NOT_LIVE",
+  "occurred_at": "2026-11-01T20:04:09Z",
+  "incident": "#5241",
+  "parent_issue": "#4198",
+  "symptoms": "Protected main was not Netlify production; canonical same-lineage fallback reached Netlify but build failed with provider exit code 2. Existing deploy read API did not include the individual failing phase.",
+  "root_cause_split": {
+    "proven": "Netlify exact main release eedc3f8... not LIVE; provider deploy 6ae79adf... state=error build exit 2. Current main tree had no successful Required prebuilt artifact and fallback had to perform full build. tools/ci/netlify-build-entry.mjs was covered by generic tools/ci/ governance exclusion in deriveNetlifyDeploymentApplicability; editing this executable build engine could skip mandatory full pre-merge build parity.",
+    "unproven": "Exact Netlify build phase that produced exit code 2 cannot be reconstructed from provider metadata; do not classify as i18n, npm, secrets, compilation, resource, or auth without phase log."
+  },
+  "evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41344419120",
+    "github_run_conclusion": "failure",
+    "source_sha": "eedc3f8b380cd1e0c986cc0d0ea98854a48813e8",
+    "previous_production_sha": "3822f80f34ff75458cba98e66d2c47a7a345d840",
+    "provider_deploy_id": "6ae79adf878b85f1eb84e757",
+    "provider_build_id": "6ae79add878b85f1eb84e755",
+    "provider_error": "Failed during stage 'building site': Build script returned non-zero exit code: 2",
+    "required_prebuilt": "artifact-missing:82afe4b2dc083818c61b683865a40cec0c6097a0",
+    "provider_auth": "authorized Netlify OIDC fallback passed",
+    "publication": false
+  },
+  "remediation": "Classify the canonical build entry path as Netlify-runtime despite tools/ci governance prefix and force full production parity on that path. Emit phase-specific, secret-free NETLIFY_BUILD_PHASE_FAILURE with exit code, phase and optional profile on any canonical transform failure. Let original Required workflow reproduce phase and enforce a built artifact; do not alter I18N safety flags, release issuer, sender, parallel work or Netlify authorization.",
+  "tests": [
+    "tests/brain-netlify-production-phase-proof-20261101.test.mjs"
+  ],
+  "prevention_rule": "Any change to executable Netlify build entry must be gated by actual exact production build parity. Failure must record specific phase, canonical run SHA, provider ID and no secret data. A failed deploy never becomes LIVE by source merge, preview or a fresh retry.",
+  "acceptance": [
+    "Original Required parity job actually runs and succeeds or reveals the blocked phase",
+    "Fix only source-backed phase defect in same protected branch",
+    "Protected merge with mandatory gates",
+    "Original production source snapshot successfully promotes provider READY and exact current main",
+    "Production release.json and relevant functional browser proof succeed",
+    "Original #5241 and parent issue retain immutable evidence"
+  ],
+  "production_proven": false
+}
