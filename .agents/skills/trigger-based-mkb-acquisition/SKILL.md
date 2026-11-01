@@ -33,7 +33,7 @@ Gebruik deze skill bij leadgeneratie, markt-/bedrijfssignalering, commerciële o
 - AI/data/digitaliseringsinitiatief
 
 ## Funnel
-`external data -> trigger -> problem hypothesis -> relevant content/outreach -> Frisse Blik -> benchmark/conversation -> paid scan (€2.900) -> implementation -> portal/SaaS -> measurable outcome -> case/referral`.
+`external data -> verified trigger -> problem hypothesis -> relevant content/outreach -> gratis Frisse Blik (30 min) -> gekwalificeerd gesprek -> betaald instapaanbod (Directie & AI Workshop €1.950 of Bedrijfsgeheugen Scan €2.950, conform actuele prijzenpagina) -> implementatie -> portal/SaaS -> onafhankelijk geverifieerde order/omzet -> gerealiseerde uitkomst -> learning/referral`.
 
 ## Partner-first waar voordelig
 Beoordeel accountants, M&A, PE/investeerders, banken, gemeenten, brancheverenigingen, ERP/AFAS-partners, MSP/IT-partners en bedrijfsadviseurs als leverage-route.
@@ -101,3 +101,25 @@ Runtime authority:
 - dezelfde bestaande `powerhouse-commercial-learning-v1` scheduler via `powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)`
 
 Een gewone connectie of warme relatie blijft géén kooptrigger. Kansrijke relaties krijgen eerst interne `research_enrichment`; een activation review ontstaat alleen bij bestaande opportunity-/waarde-evidence. Ongevraagde externe outreach blijft human-authorized. Geen scraping, platform-bypass, parallel CRM, tweede scheduler of vendor lock-in.
+
+
+## First verified paid customer — P0, 1 november 2026
+
+Deze prioriteit is een **extra beslisregel binnen de bestaande Growth & Revenue OS / ONE BRAIN / Heartbeat**, géén tweede CRM, afzender, scheduler of researchagent. Tot de eerste onafhankelijk bewezen betaalde order is gerealiseerd, rangschik de bestaande `powerhouse_opportunities` en `powerhouse_sales_actions` op **echt onderbouwde conversiekans**, beslissersfit en geldige contactautoriteit. Grote aantallen interne researchtaken of voorspelde opbrengst zijn geen salesoutput.
+
+### Productiebaseline en bewijsgrenzen
+- Productiecontrole 2026-11-01: 938 opportunityrecords (718 open opportunity, 219 open signal, 1 deferred signal); 10.772 verkoopacties waarvan 8.631 expired, maar 7.425 daarvan `research_enrichment` intern. Nooit 80% verlopen als 80% mislukte uitgaande berichten rapporteren.
+- Externe kanalen (zonder internal/internal_research): 1.206 verlopen, 821 skipped, 38 done en 161 suggested/prepared/waiting. `done` is geen providerbewezen contact.
+- Drie bestaande `autonomous_email` acties hebben `prepared` plus `SOURCE_SPECIFIC_EVIDENCE_REQUIRED`; zij zijn *niet verzonden*. De oorspronkelijke relatie-onderzoekstaken staan bij twee acties `done`, bij één `waiting`; een onderzoekstaak `done` bewijst geen geschikte bron of een verkoopuitkomst. De originele composer en provider-acceptatie moeten opnieuw onafhankelijk slagen; nooit autorisatie of broncontext verzinnen.
+- E-mailstatistiek op dezelfde datum: 27 sent, 2 replies, 0 positive replies, 0 meetings, 0 proposals, 0 orders, €0 realized; checkout: 5 intents (2 expired, 2 created, 1 completed), maar slechts één `trial` subscription met `canceled` status. Een checkout-intent `completed` is geen actieve betaalde subscription of bank/provider-bewezen betaling.
+- Markeer de sales-keten ROOD/UNVERIFIED zolang `qualified meeting -> accepted proposal -> payment provider proof` ontbreekt. `scan_completed` of `page_view` is geen identificeerbare/benaderbare lead; `is_robot=true` uitsluiten uit menselijk verkeer. GA4-stale niet door lokale events vervangen alsof dit dezelfde bron is.
+
+### Werkvolgorde van de bestaande agents
+1. **Eén instapaanbod testen, geen product-sprawl:** prioriteit op een concrete operationele pijn bij Nederlandse MKB-directie/MT; bied waar passend de **Directie & AI Workshop €1.950** aan. Gratis Frisse Blik (30 minuten) is een diagnosegesprek, geen betaalde scan. Alternatief alleen bij passende scope: Bedrijfsgeheugen Scan €2.950. De prijzenpagina `https://www.bedrijfsgeheugen.nl/prijzen` is de bron voor actuele prijzen; oude blogs met 'Frisse Blik €2.900' of 'scan €2.900' vormen **CRO copy drift**, niet het actuele aanbod. Maak voor correctie een bestaande CMS/website-content kandidaat onder de eigenaar; geen stille live prijswijziging.
+2. Neem uit de **bestaande** warme/trigger-geschikte relaties maximaal 30 reviewkandidaten voor een 14-daagse validatie, maar verstuur uitsluitend wat door consent, suppression, cooldown, identiteit, recente bedrijfsbron, nuttige boodschap, daglimieten, dedupe en provider-capability komt. '30 benaderen' is een doel voor *geschikt geselecteerde* contacten, geen volumequota of override van veiligheid.
+3. Vraag om één kleine concrete vervolgstap per bericht; vermijd generieke AI-pitches, ongevraagde productdemo's en claims over eigen klantresultaten die niet bestaan. Maak geen onwaarachtige urgentie. Leg antwoord, bezwaren en geen-reactie in dezelfde originele action/outcome lineage vast.
+4. Sluit een kans niet bij `research done`, `message prepared`, `email sent` of `scan completed`. Gebruik verificatie per fase: provider-ID en readback voor verzonden bericht; reply-ID voor reactie; kalenderbevestiging/ontvangerreactie voor afspraak; eigen echt verstuurde offerte voor voorstel; daadwerkelijke payment/provider-verificatie voor order en gerealiseerde omzet.
+5. Meet wekelijks op **verschillende noemers**: eligible contacts -> provider-proven sends -> verified replies -> qualified meetings -> proposals -> independently paid orders. Geef per fase aantallen, cohort/tijdvenster, ontbrekend bewijs, uitvaloorzaak, voorgestelde hypothese en volgende veilige actie. Zorg dat de portal gebruikers `UNKNOWN` toont waar data ontbreekt, nooit nul of groen als placeholder.
+6. Oorzaak & leren: echte prospect-afwijzing, ontbrekende bron, verdachte bronmatch, pricing drift, no reply, checkout drop-off en betaalbewijs ontbreken krijgen fingerprint/owner/herstelbewijs/regressietest/preventie in dezelfde Brain/Heartbeat/incidentlijn. Alleen observed outcome bepaalt of een experiment 'wint'.
+
+Deze activiteit maakt **geen belofte** dat binnen 14 dagen een order binnenkomt. Het is een falsifieerbare validatie: bij 0 afspraken met aantoonbaar geldige benaderingen moet de propositie, doelgroep, bewijs- of contactmethode veranderen in plaats van opnieuw agentcapaciteit toe te voegen.
