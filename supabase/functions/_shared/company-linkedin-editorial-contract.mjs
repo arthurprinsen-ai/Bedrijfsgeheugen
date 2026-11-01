@@ -49,10 +49,10 @@ export function companyEditorialViolations(text, {recentPosts=[]}={}) {
   if(reportHeadings>=2)fail('COMPANY_INTERNAL_MEMO_STRUCTURE');
   // The company page must not broadcast internal execution counters as
   // a public customer story (independent of the historical duplicate gate).
-  if(/^\\s*(?:ik wil dat ai niet alleen|wij willen dat ai niet alleen|ons systeem heeft vandaag)/iu.test(t))
+  if(/^\s*(?:ik wil dat ai niet alleen|wij willen dat ai niet alleen|ons systeem heeft vandaag)/iu.test(t))
     fail('COMPANY_GENERIC_AI_HOOK');
-  if(/\\b(?:assurance[- ]controle|amber (?:signalen|loops)|actieve loops|gemeten pagina.s|bron[- ]verversing|acties klaargezet)\\b/iu.test(t)||
-      (t.match(/\\b\\d+(?:[.,]\\d+)?\\s+(?:bronnen|pagina.s|modellen|acties|signalen|loops)\\b/giu)||[]).length>=2)
+  if(/\b(?:assurance[- ]controle|amber (?:signalen|loops)|actieve loops|gemeten pagina.s|bron[- ]verversing|acties klaargezet)\b/iu.test(t)||
+      (t.match(/\b\d+(?:[.,]\d+)?\s+(?:bronnen|pagina.s|modellen|acties|signalen|loops)\b/giu)||[]).length>=2)
     fail('COMPANY_INTERNAL_METRICS_REPORT');
   if(/\b(?:compliance.exposure|bi.refresh(?:es)?|lineage|readback|runtime|pipeline|deliverable|stakeholder.matrix|vendor.lock.in|cloud.agents|gekalibreerde prioriteitenlijst|pilot.dossier)\b/i.test(t))fail('COMPANY_TECHNICAL_JARGON');
   if(/\b(?:signaal\s*[→>-]\s*context|context\s*[→>-]\s*gevolg|resultaat\s*[→>-]\s*leren)\b/i.test(t))fail('COMPANY_INTERNAL_PROCESS_FORMULA');
