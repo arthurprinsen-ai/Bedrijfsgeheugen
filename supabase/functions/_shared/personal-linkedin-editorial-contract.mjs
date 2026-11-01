@@ -28,12 +28,12 @@ export function personalEditorialViolations(value, evidence={}) {
   // Neither the original source metadata nor a truthful counter makes this a
   // relevant founder story for buyers. Reject BEFORE final artifact approval.
   const opening=text.slice(0,190);
-  if(/^\\s*(?:ik wil dat ai niet alleen|ik wil dat (?:ai|kunstmatige intelligentie) (?:meer|beter)|mijn doel is om ai)/iu.test(opening))
+  if(/^\s*(?:ik wil dat ai niet alleen|ik wil dat (?:ai|kunstmatige intelligentie) (?:meer|beter)|mijn doel is om ai)/iu.test(opening))
     fail('PERSONAL_EDITORIAL_GENERIC_AI_HOOK','Begin bij een herkenbaar menselijk of ondernemersprobleem, niet bij een generieke AI-missie.');
-  if(/\\b(?:assurance[- ]controle|amber (?:signalen|loops)|rode (?:en|of) amber signalen|actieve loops|goedkeurde ai[- ]modellen|acties klaargezet|gemeten pagina.s|bron[- ]verversing)\\b/iu.test(text)||
-     (text.match(/\\b\\d+(?:[.,]\\d+)?\\s+(?:bronnen|pagina.s|modellen|acties|signalen|loops)\\b/giu)||[]).length>=2)
+  if(/\b(?:assurance[- ]controle|amber (?:signalen|loops)|rode (?:en|of) amber signalen|actieve loops|goedkeurde ai[- ]modellen|acties klaargezet|gemeten pagina.s|bron[- ]verversing)\b/iu.test(text)||
+     (text.match(/\b\d+(?:[.,]\d+)?\s+(?:bronnen|pagina.s|modellen|acties|signalen|loops)\b/giu)||[]).length>=2)
     fail('PERSONAL_EDITORIAL_INTERNAL_METRICS_REPORT','Vertaal interne operationele tellers naar een concrete klant- of ondernemerssituatie; geen statusdump.');
-  if(builder && !/\\b(?:klant(?:en)?|ondernemer(?:s)?|bedrijf|bedrijven|omzet|offert(?:e|es)|factur(?:en|atie)|kosten|verlies|tijd|planning|risico|marge|werkdruk|medewerker(?:s)?)\\b/iu.test(text.slice(0,270)))
+  if(builder && !/\b(?:klant(?:en)?|ondernemer(?:s)?|bedrijf|bedrijven|omzet|offert(?:e|es)|factur(?:en|atie)|kosten|verlies|tijd|planning|risico|marge|werkdruk|medewerker(?:s)?)\b/iu.test(text.slice(0,270)))
     fail('PERSONAL_EDITORIAL_BUYER_RELEVANT_OPENING','Maak het praktische probleem voor een ondernemer zichtbaar in de eerste regels.');
   if(/\b(?:blog (?:stond|staat) live|e-?mail (?:werd|is) (?:verstuurd|verzonden)|informatie ging uit|verzonden,? bewezen|acties zijn uitgegaan)\b/iu.test(text))
     fail('PERSONAL_EDITORIAL_DELIVERY_REPORT','Interne verzending en publicatiestatus zijn geen persoonlijk verhaal.');
