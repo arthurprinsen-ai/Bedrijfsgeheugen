@@ -1,4 +1,5 @@
 import {strategicAdvisorMarkup} from './strategic-advisor.js';
+import {customerValueBriefingMarkup} from './customer-value-briefing.js';
 import {outcomeFeedbackMarkup} from './outcome-feedback.js';
 import {buildExecutiveProjection} from './executive-projection.js';
 import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js';
@@ -68,6 +69,7 @@ export function executiveCockpitMarkup(model){
  if(!model.available)return `<section class="os-executive os-executive-unavailable" data-os-status="unavailable">
   <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role||'Directie')}</small><h2>Wat moet ik vandaag weten, beslissen en doen?</h2><p class="os-subtitle">De cockpit blijft de startpagina. Cijfers en adviezen verschijnen pas zodra ze tenant-scoped en bewezen zijn.</p></div><span>Data wordt geladen</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
+  ${customerValueBriefingMarkup(model)}
   ${strategicAdvisorMarkup(model)}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>Belangrijkste afwijkingen</strong><span>Nog geen bewezen aandachtspunten beschikbaar.</span></article>
@@ -83,6 +85,7 @@ export function executiveCockpitMarkup(model){
  return `<section class="os-executive" data-os-status="live">
   <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role)}</small><h2>Waar moet de directie vandaag op sturen?</h2><p class="os-subtitle">Dagelijkse ondernemingssturing: weten → beslissen → doen → meten → leren. Alle inzichten en acties komen uit hetzelfde Bedrijfsgeheugen.</p></div><span>${model.evidence_health.healthy}/${model.evidence_health.total} bronnen gezond</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
+  ${customerValueBriefingMarkup(model)}
   ${strategicAdvisorMarkup(model)}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>${attention[0]?.title?esc(attention[0].title):'Geen urgente afwijking'}</strong><span>${attention[0]?esc(attention[0].explanation||attention[0].summary||attention[0].reason||''):'Geen bewezen aandachtspunt dat nu actie vraagt.'}</span></article>
