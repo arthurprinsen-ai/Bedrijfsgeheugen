@@ -51,3 +51,14 @@ test('Existing owner-only portal contract remains and missing social evidence ne
  assert.match(ui,/Social CRO/);
  assert.match(ui,/socialFunnel/);
 });
+
+test('Portal exposes publication quality improvement as pending impact, not as verified views or sales',()=>{
+ const p=projectOtherData({readStates:{}});
+ assert.equal(p.editorialQuality.status,'PER_POST_IMPACT_UNVERIFIED');
+ assert.equal(p.editorialQuality.actualPostQualityMeasured,false);
+ assert.equal(p.editorialQuality.customerOrdersIndependentlyAttributed,false);
+ assert.match(p.editorialQuality.personalPolicy,/editorial-v4/);
+ const ui=readFileSync('portal-v2/modules/andere-data.js','utf8');
+ assert.match(ui,/data-social-editorial-quality/);
+ assert.match(ui,/LinkedIn · kwaliteit vóór bereik/);
+});

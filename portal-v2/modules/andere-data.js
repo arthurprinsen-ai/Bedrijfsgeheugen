@@ -33,6 +33,7 @@ function render(container,data){
   const website=data?.website;
   const weekly=data?.websiteWeeklyGrowth||null;
   const social=data?.socialFunnel||null;
+  const editorialQuality=data?.editorialQuality||null;
   const growth=data?.growthDirection||null;
   const commercialFunnel=data?.commercialGrowthFunnel||null;
   const providerRepair=data?.ga4PredictiveRepair||null;
@@ -278,6 +279,17 @@ function render(container,data){
     '</tbody></table></div>'+
     '<p class="od-foot">Portaalroute-events bevatten mogelijk beheerders en previews: dit zijn geen geverifieerde betalende klanten of unieke bezoekers. De kaart toont geen persoonsgegevens, verzendt niets en kan de oorspronkelijke vijftien Heartbeat-lussen niet groen maken. Ontbrekende, verouderde of niet-toegestane bronnen blijven UNVERIFIED.</p></section>';
 
+  const editorialQualityCard='<section class="od-card" data-social-editorial-quality>'+
+    '<h3>LinkedIn · kwaliteit vóór bereik</h3>'+
+    '<p>Publiceer geen technische voortgangsrapporten als ondernemersverhaal. Een herkenbare zakelijke situatie, oorzaak en gevolg, een waarheidsgetrouwe praktische les en een originele opening gaan vóór interne Powerhouse-cijfers.</p>'+
+    '<p>Kwaliteitsresultaat van échte posts: '+badge(editorialQuality?.status||'UNVERIFIED')+
+    ' · Social CRO-bron: '+badge(social?.status||'UNVERIFIED')+'</p>'+
+    '<div class="od-grid">'+
+    field('Persoonlijke redactie',esc(editorialQuality?.personalPolicy||'Nog niet uit productie bewezen'))+
+    field('Bedrijfspagina-redactie',esc(editorialQuality?.companyPolicy||'Nog niet uit productie bewezen'))+
+    field('Onafhankelijk gemeten postkwaliteit',editorialQuality?.actualPostQualityMeasured?'Bewijs beschikbaar':'Nog niet bewezen')+
+    field('Aantoonbare impact op aanvragen/orders',editorialQuality?.customerOrdersIndependentlyAttributed?'Onafhankelijk geattribueerd':'Nog niet bewezen')+'</div>'+
+    '<p class="od-foot">Regressie tegen generieke AI-openingen en interne statuscijfers; na publicatie afzonderlijk provider-ID, leeftijdsgelijke views/reacties, website- en leadbron, betaling en volgende natuurlijke leerbeslissing controleren. Een code-release of extra view is geen bewezen commerciële winst. Incident: '+esc(editorialQuality?.incident||'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439')+'.</p></section>';
   container.innerHTML='<section class="cro-od" aria-labelledby="croOtherDataTitle">'+
     '<style>'+css+'</style>'+
     '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
@@ -287,6 +299,7 @@ function render(container,data){
     '<div class="od-grid">'+cardData+'</div>'+
     weeklyCard+
     commercialFunnelCard+
+    editorialQualityCard+
     providerRepairCard+
     recoveryAuditCard+
     compoundCard+
