@@ -268,3 +268,14 @@ Iedere bestaande Netlify-, Powerhouse-, Portal-, CRO- en SkillOps-agent moet exa
 
 Borg de natuurlijke productiecheck en volgende regressies via bestaande `brain_failure_registry` / `brain_promote_failure` met CAS, originele GitHub-release, menselijke development ledger en huidige Portal V2. Testcontract `tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs`. Geen tweede writer, OAuth-omzeiling, betalingen, duplicate posts of wijziging van bestaande 15 bronguards.
 
+
+## Canonical build-engine classification and phase proof — P0 #5241 (1 November 2026)
+
+Fingerprint: `netlify|production|build-exit2-parity-misclassification|20261101-v1`.
+
+- `tools/ci/netlify-build-entry.mjs` is **executable production code** even though other `tools/ci/` scripts are governance. It MUST force the existing Required `netlify_build_parity` build, not a documentation-only acceptance.
+- When the original source-to-Netlify deployment fails after authorized transport, separate genuine build failure from OAuth/proxy failure. Do not retry an unchanged source merely because the broad provider exit code is 2.
+- Capture the exact first `NETLIFY_BUILD_PHASE_FAILURE` phase and exit code, the protected source SHA, provider build/deploy ID and failed run; no secrets, recipient information, or guessed cause. The same canonical build engine must stay fail-closed and use `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`.
+- Correct the observed source-phase failure under the original protected PR, rerun real parity plus regression, then only the original Production Source Snapshot may promote main; require independently verified `ready`, deploy ID, `release.json` and browser readback before LIVE. Do not create a parallel publisher or scheduler.
+
+Regression: `tests/brain-netlify-production-phase-proof-20261101.test.mjs`. Learning: `brain/learning/2026-11-01-netlify-build-phase-parity-p0-5241-v1.json`.

@@ -13,7 +13,10 @@ const fn=source.slice(fnStart,fnEnd+3)
   .replace(/const errors:string\[\]=\[\]/,'const errors=[]');
 const promptMatch=source.match(/const BLOG_READER_READY_PROMPT="((?:[^"\\]|\\.)*)";/);
 assert.ok(promptMatch,'BLOG_READER_READY_PROMPT not found');
-const ctx={String,RegExp,Array};
+// Isolated VM tests the *reader-facing brief* policy. The official-date gate is
+// independently verified in its own date-truth tests and must remain enforced
+// by the real orchestrator; provide only a test-scope dependency here.
+const ctx={String,RegExp,Array,assessOfficialBlogDateTruth:()=>({ok:true,code:null})};
 vm.createContext(ctx);
 vm.runInContext(fn+';this.check=blogReaderReadyViolations;',ctx);
 
