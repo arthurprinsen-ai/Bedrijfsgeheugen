@@ -5,3 +5,6 @@ Root cause: customer economic uplift/paid revenue and original delivery records 
 Correction: candidate original Portal V2 Customer Value Briefing, reusing original authenticated Executive Projection / Next Best Action / outcome proof. Fallback is explicit EVIDENCE_DUE; no standalone brain, worker, data, sales sender or system.
 Proof boundary: six isolated candidate tests previously passed; GitHub exact-head CI, protected merge, Netlify readback and independently verified tenant value remain pending. No LIVE_PROVEN or customer ROI claim.
 Prevent recurrence: regression rejects execution-as-revenue, wrong action/tenant projection, stale evidence, metric/baseline/horizon omission, learning without independent refs. Parent issue stays open.
+
+## PR gate recovery (2026-11-01)
+Original PR #5247 first Required hygiene failed closed before tests: `PR_MACHINE_METADATA_INVALID:CANDIDATE_TYPE_INVALID,BASE_SHA_INVALID,BASE_SHA_MISSING`; no product test was run or certified. Root cause was missing immutable Base-SHA and unsupported candidate type in PR metadata. Corrected the original PR body to `Candidate-Type: implementation` and exact immutable Base-SHA `a7e1d9cbdf19a2008882e6210764d27284e5d821`. This append-only entry triggers new exact-head CI; never mark the failed run green or bypass hygiene.
