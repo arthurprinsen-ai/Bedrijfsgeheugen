@@ -39,12 +39,12 @@ test('P0 #5241 original admin API and Powerhouse delivery portal display the sam
   const portal=readFileSync(new URL('../portal-v2/modules/powerhouse-observability.js',import.meta.url),'utf8');
   assert.match(api,/isPowerhouseAdmin\(user/);
   assert.match(api,/summarizeOriginalNetlifyIncident\(/);
-  assert.match(api,/api\.github\.com\/repos\/arthurprinsen-ai\/Bedrijfsgeheugen\/issues\/5241/);
+  assert.ok(api.includes("read('https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241')"));
   assert.match(api,/originalReleaseIncident:/);
   assert.match(portal,/data-original-netlify-incident/);
   assert.match(portal,/data-evidence-status/);
   assert.match(portal,/issue\.productionCurrent/);
   assert.match(portal,/issue\.issueState==='OPEN'/);
-  assert.match(portal,/href="https:\/\/github\.com\/arthurprinsen-ai\/Bedrijfsgeheugen\/issues\/5241"/);
+  assert.ok(portal.includes('href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241"'));
   assert.doesNotMatch(api,/insert into.*incident/i);
 });
