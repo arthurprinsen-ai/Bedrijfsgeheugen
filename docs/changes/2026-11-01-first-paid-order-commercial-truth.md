@@ -12,6 +12,8 @@
 
 - `powerhouse_revenue_command_center_snapshot_v1` (laatste refresh 2026-11-01 11:55 UTC): 938 rijen, **768 aanbevolen LinkedIn-comments** en **170 interne research**; **0 directe meeting/offerte/e-mail als aanbevolen kanaal**. CTA: 775 keer `ask_one_contextual_question` en 163 keer `gather_more_evidence`; 519 missen bewijs en 168 hebben een identiteitsconflict. Dit is de harde routebreuk: het command center stopt grotendeels vóór een bewezen verkoopgesprek. De opdracht is niet veiligheidscontroles omzeilen, maar in de bestaande decision owner een geldige route vanaf provider-bevestigde interesse/reply naar afspraak, aanbod, offerte en betaalbewijs afdwingen; ontbrekend autoriteit/bewijs blijft onderzoek of stop.
 
+- Aanvullende shortlistcontrole: 419/938 rijen hebben geen gemarkeerde identity-conflict en geen expliciet ontbrekend bewijs (NULL `missing_evidence` als geen gemarkeerd bewijsgebrek geïnterpreteerd, **niet als bewijs dat consent, koopintentie of contactautoriteit aanwezig is**). In dezelfde projectie hebben 0 rijen `buying_window_score >= 0.7` binnen deze subset, en 0 rijen `prediction_meeting > 0.3`. Vergroot contactvolume dus niet vanuit voorspellingsscores; onderzoek echte prospectproblemen en valideer relevante warme leads.
+
 ## Concrete uitvoeringsblokkade
 Drie nieuwe, human-approved `autonomous_email` acties van 1 november staan `prepared`, `provider_attempted=false`, `reason=SOURCE_SPECIFIC_EVIDENCE_REQUIRED` en missen `human_readable_context` en `source_trigger_relevance` (bij één ook `specific_source_context`). Relevante research-routes zijn gecreëerd met dezelfde `relationship-research:outreach-source:<original-action-id>` lineage; twee onderzoekstaken zijn `done`, één `waiting`.
 
