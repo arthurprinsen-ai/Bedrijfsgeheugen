@@ -50,5 +50,6 @@
     "canary": [
       "tests/brain-netlify-production-phase-proof-20261101.test.mjs"
     ]
-  }
+  },
+  "root_cause": "The canonical Netlify build entry was incorrectly omitted from Netlify-impact premerge parity by the generic tools/ci governance prefix. This is a source-proven guard gap; the separate Netlify provider build exit 2 still lacks a phase-specific log and its immediate cause is not yet proven."
 }
