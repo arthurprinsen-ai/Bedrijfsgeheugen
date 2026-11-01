@@ -1,0 +1,18 @@
+# P0 #5232 — approved content generator credit recovery (no blind two-hour outage retry)
+
+**State:** SOURCE-CODE CANDIDATE ONLY, actual production repair and external publication not yet proven. **Parent:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232.
+
+## Original proof — 1 November 2026
+The original Powerhouse channel decisions for LinkedIn personal, LinkedIn company and blog each recorded **six** original `HTTP 429 insufficient_quota` generation failures in the same daily production lane, last observed ~09:39 UTC. The approved OpenAI `gpt-5-mini` use-case is ACTIVE but the provider returns no remaining API credits. The only code-supported Composio/Groq fallback is approved but SUSPENDED; no automatically authorized model/credit switch exists. The original Daily Publisher now has legitimate Supabase-read access, but the public content obligations remain PLANNED and provider IDs blank. Separately, Mira lacks a dated, independent, unreused source-backed day winner; newsletter remains NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR.
+
+## The narrow fix
+In the ORIGINAL `supabase/functions/_shared/content-generation-fairness.mjs`, each unchanged provider-billing failure uses the same recorded `generation_retry_after` and existing channel fairness selector. Original failure retry delays grow **2h -> 4h -> 8h -> 12h max**. After a bounded delay the original agent can naturally retry, allowing legitimate billing restoration to recover without adding cron, new writer or insecure status mutation. The code also classifies `requires_authorization` and an explicit approved-provider/fallback restoration action. Nonbilling editorial retry retains 20 minutes; independently ready lanes are never suppressed merely because one channel is cooling down. The cooldown only addresses repeated futile calls; it does NOT fix missing API credit, guarantee immediate publication after funding, or authorize an alternate model.
+
+## Independent proof and permanent prevention
+- Regression in `tests/brain-content-generation-fairness.test.mjs`: real 429 error, six-failed-attempt case, capped retry, preserved provider side-effect=false, no starvation of another channel, 20-minute nonbilling rule.
+- Original related Brain incident: `powerhouse|content-generation|approved-openai-quota-and-governed-fallback-suspended|20261031-v1`, append-only recurrence from 2026-11-01. Parent publication failure: `powerhouse|publication|multi-channel-missed-output-after-preflight|v1`. Keep CRITICAL/OPEN until actual channel delivery.
+- Existing agents/skills use the original Brain/Heartbeat/Portal and one exclusive writer; only original owner may change provider governance or billable account. Never auto-pay, toggle a SUSPENDED use case, misrepresent a provider ACK, reuse failed media, bypass email consent or queue a second publisher.
+- Protected admission + Required/BRAIN/CodeQL, original Edge production deploy and source parity, actual fresh generator output, public provider IDs and seven daily successful natural executions are mandatory before declaring PROVEN/GREEN. The source-code candidate's merge alone does not prove original deployed Edge has the updated shared module.
+
+## Manual authorized boundary
+The OpenAI API billing administrator must replenish/enable credits (if desired) or the governance owner must independently approve and verify an ACTIVE existing fallback supported by the original orchestrator. Do not change model/lifecycle purely on the user's generic request. After authorized restoration, permit existing bounded retry; observe and register real generator, editorial/identity checks, original publisher delivery and independent provider readback. Email and Mira require their separately recorded fixes.
