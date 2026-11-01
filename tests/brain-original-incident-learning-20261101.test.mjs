@@ -45,7 +45,7 @@ test('original learning planner maps typed overdue errors to durable, safe, repr
  assert.doesNotMatch(JSON.stringify(a),/DO_NOT_EXPOSE_SECRET/);
  assert.ok(a.observations.every(o=>o.evidence.required_outputs.includes('automated_regression_proof')));
 });
-test('no new learning writer/scheduler, and no GREEN on missing proof',()=>{
+test('no new learning writer/scheduler, and no GREEN on missing proof',async()=>{
  const plan=planOriginalIncidentLearning({contract:'wrong',status:'RECOVERY_DUE',overdue:[]},runDate);
  assert.equal(plan.ok,false);
  const s=await readFile(new URL('../supabase/functions/powerhouse-content-loop/index.ts',import.meta.url),'utf8');
