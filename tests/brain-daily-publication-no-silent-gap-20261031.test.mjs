@@ -83,7 +83,9 @@ test('original runtime and portal must consume one recovery classification witho
  assert.match(loop,/assessDailyPublicationRecovery/);
  assert.match(loop,/recovery\.overdue\.length > 0/);
  assert.doesNotMatch(loop,/const TERMINAL_GREEN = new Set\(\[[^\]]*SKIPPED/);
- assert.match(loop,/recovery,\s*obligations: obligationSummary/);
+ assert.match(loop,/\brecovery\b\s*,/); // original recovery result is included, regardless of added same-lane writeback metrics
+ assert.match(loop,/\bhandoffWriteback\b\s*,/); // original source-leased handoff remains visible
+ assert.match(loop,/obligations:\s*obligationSummary/); // canonical obligations still projected
  assert.match(portal,/data-publication-recovery="RECOVERY_DUE"/);
  assert.match(skill,/PUBLICATION_NO_SILENT_GAP_V1/);
  assert.match(agent,/PUBLICATION_NO_SILENT_GAP_V1/);
