@@ -11,6 +11,7 @@ import deliveryPolicy from '../../config/brain-delivery-system.json' with { type
 import { loadFailureCoverage } from '../../brain/observability/failure-coverage-projection.mjs';
 import { loadCycleEvidenceCoverage } from '../../brain/observability/cycle-evidence-coverage.mjs';
 import { loadPublicationEvidence, loadPersonalSourceSupply } from '../../brain/observability/publication-evidence-readback.mjs';
+import { summarizeOriginalNetlifyIncident } from '../../brain/observability/original-netlify-incident-readback.mjs';
 
 // Verifiable admin-only runtime version: required when imported publication readback changes.
 export const PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5';
@@ -77,9 +78,11 @@ async function releaseProviderEvidence(){
       return await result.json();
     }catch{return null;}
   };
-  const [main,manifest]=await Promise.all([
+  const [main,manifest,originalIncident]=await Promise.all([
     read('https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/main'),
-    read('https://www.bedrijfsgeheugen.nl/release.json')
+    read('https://www.bedrijfsgeheugen.nl/release.json'),
+    // Existing public GitHub incident; no parallel incident database, no writes.
+    read('https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241')
   ]);
   const head=/^[a-f0-9]{40}$/.test(main?.object?.sha||'')?main.object.sha:null;
   const validManifest=manifest?.contract==='BRAIN-DELIVERY-v2'&&manifest?.context==='production'&&
@@ -114,6 +117,9 @@ async function releaseProviderEvidence(){
     deployment:{required,reason,state:required===true&&matches?'success':required===true?'pending':'unknown'},
     production:{checked:Boolean(validManifest),fresh:Boolean(validManifest&&Date.now()-Date.parse(manifest.generated_at)>=0&&Date.now()-Date.parse(manifest.generated_at)<31536000000),matchesExpectedRelease:matches},
     providerIdentity:{githubHeadSha:head,netlifyPublishedSha:published,netlifyDeployId:deployId},
+    originalReleaseIncident:summarizeOriginalNetlifyIncident({
+      issue:originalIncident,githubHeadSha:head,publishedSha:published,manifestVerified:validManifest
+    }),
     evidenceStatus:head&&published&&checks?'PROVIDER_IDENTITIES_AND_CHECKS_READ':'PROVIDER_READBACK_INCOMPLETE'
   };
   if(head&&published&&checks){releaseEvidenceCache=evidence;releaseEvidenceCacheAt=Date.now();}
