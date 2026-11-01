@@ -34,7 +34,7 @@ function blogReaderReadyViolations(artifact:any):string[]{
   // have no official CPNL date obligation and keep their reader-ready gate.
   if(/circular[\s\W]*plastics[\s\W]*nl/i.test([title,body,cta].join('\n'))){
     const officialDate=assessOfficialBlogDateTruth({
-      title,body,cta,runDate:String(artifact?.run_date||'')
+      title,body,cta,runDate:typeof artifact?.run_date==='string'?artifact.run_date:typeof artifact?.run_date?.toISOString==='function'?artifact.run_date.toISOString().slice(0,10):''
     });
     if(!officialDate.ok)errors.push(officialDate.code);
   }
