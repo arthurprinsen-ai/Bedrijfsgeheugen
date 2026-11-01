@@ -41,3 +41,10 @@ test('a genuinely different operational theme is not blocked by the offer-family
  assert.ok(!companyEditorialViolations(different,{recentPosts:[prior]})
    .some(x=>x.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'));
 });
+
+test('internal product diagnostics are not a customer-facing company story',()=>{
+ const internal='Ons systeem heeft vandaag 273 gemeten pagina’s en 30 bronnen gevolgd, 280 acties klaargezet en 22 uitgevoerd. De assurance-controle toonde 4 rode en 3 amber signalen in actieve loops. We willen dat ondernemers betere beslissingen nemen. Door de informatie beter te organiseren en acties te volgen, helpen we klanten tijd te besparen en krijgen ze inzicht in het proces. Niemand heeft nog bewezen dat een van deze interne getallen tot omzet leidt. Daarom moeten we onze aanpak bijsturen voordat we opnieuw tijd en geld besteden. De bedrijfsleiding kan vervolgens beoordelen welke werkzaamheden de hoogste prioriteit krijgen en waar werkdruk afneemt.';
+ const rejected=companyEditorialViolations(internal).map(x=>x.code);
+ assert.ok(rejected.includes('COMPANY_GENERIC_AI_HOOK'),rejected.join(','));
+ assert.ok(rejected.includes('COMPANY_INTERNAL_METRICS_REPORT'),rejected.join(','));
+});

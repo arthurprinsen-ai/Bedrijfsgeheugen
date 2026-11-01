@@ -458,6 +458,18 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       experimentProof:{status:experimentProofOk?'LIVE':readStates.experimentProof||'UNAVAILABLE',records:experimentProofOk?experimentProof.length:null}
     },
     quality:{flags,botFiltering:'UNKNOWN_IN_THIS_PROJECTION',deliveryAcknowledgement:'UNVERIFIED',message:'Website-events zijn observaties, geen onafhankelijk bevestigde leads, klanten of betaalde orders. Onbekend is nooit nul.'},
+    // Read-only editorial quality contract. A code policy is not proof that
+    // a particular provider post met it or gained views, leads or paid orders.
+    editorialQuality:{
+      status:'PER_POST_IMPACT_UNVERIFIED',
+      personalPolicy:'personal-linkedin-founder-editorial-v4',
+      companyPolicy:'linkedin-company-entrepreneur-value-v2',
+      incident:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439',
+      prevent:['GENERIC_AI_HOOK','INTERNAL_METRICS_REPORT','SOURCELESS_BUYER_CLAIM','RECYCLED_STORY'],
+      actualPostQualityMeasured:false,
+      impactWithComparableProviderEvidence:false,
+      customerOrdersIndependentlyAttributed:false
+    },
     website:totals,
     websiteWeeklyGrowth,
     behavior:behaviorData,
