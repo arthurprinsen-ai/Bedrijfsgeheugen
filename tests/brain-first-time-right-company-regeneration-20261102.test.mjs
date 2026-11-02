@@ -11,8 +11,8 @@ const decision=()=>({channel:'linkedin_company',decision:'publish',state:'blocke
 const obligation=()=>({channel:'linkedin_company',status:'BLOCKED',external_id:null,evidence:{}});
 const sources=()=>[{recommendation_id:old,target_channel:'cross-channel',status:'suggested',priority:100,evidence:{}},
  {recommendation_id:fresh,target_channel:'linkedin_company',status:'suggested',priority:99,
- evidence:{source_backed:true,source_url:'https://www.cbs.nl/nl-nl/longread/example',
- source_observed_at:'2026-10-28T05:51:11Z'}}];
+ evidence:{source_backed:true,source_kind:'current_external_mkb_signal',source_url:'https://www.cbs.nl/nl-nl/2026/44/example',
+ source_observed_at:'2026-10-28T05:51:11Z',source_published_at:'2026-10-27T05:51:11Z'}}];
 test('exact 422 in original unsent company lane rotates away from rejected recommendation',()=>{
  const r=planRejectedCompanyRegeneration({decision:decision(),obligation:obligation(),recommendations:sources(),now:day});
  assert.equal(r.eligible,true);assert.equal(r.selectedAlternativeRecommendationId,fresh);
@@ -47,6 +47,10 @@ test('only exact review 422 rejection with another observed source can reopen',(
  assert.equal(check(noReview,obligation(),sources()).eligible,false);
  const stale=sources();stale[1].evidence.source_observed_at='2026-09-01T12:00:00Z';
  assert.equal(check(decision(),obligation(),stale).eligible,false);
+ const historic=sources();historic[1].evidence.source_published_at='2024-06-28T00:00:00Z';
+ assert.equal(check(decision(),obligation(),historic).eligible,false);
+ const undated=sources();delete undated[1].evidence.source_published_at;
+ assert.equal(check(decision(),obligation(),undated).eligible,false);
  const unsourced=sources();delete unsourced[1].evidence.source_backed;
  assert.equal(check(decision(),obligation(),unsourced).eligible,false);
  const noURL=sources();noURL[1].evidence.source_url='http://unsafe';
