@@ -1,6 +1,6 @@
 const evidenceId=evidence=>evidence?.executionId||evidence?.testExecutionId||evidence?.runtimeExecutionId||evidence?.id||null;
 const passed=evidence=>Boolean(evidence&&(evidence.ok===true||evidence.status==='TEST_PASSED')&&evidenceId(evidence)&&evidence.proofLevel==='PROVIDER_VERIFIED');
-const executed=evidence=>Boolean(evidence&&(evidence.ok===true||evidence.status==='SUCCESS'||evidence.status==='COMPLETED')&&evidenceId(evidence));
+const executed=evidence=>Boolean(evidence&&(evidence.ok===true||evidence.status==='SUCCESS'||evidence.status==='COMPLETED')&&evidenceId(evidence)&&evidence.proofLevel==='PROVIDER_VERIFIED');
 const result=(label,tone,canActivate,reason)=>Object.freeze({label,tone,canActivate,reason});
 
 export function toHumanStatus(runtime={}){
