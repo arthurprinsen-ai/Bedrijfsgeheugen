@@ -54,8 +54,8 @@ test('branch candidates are materialized, and deletion gives a contextual primar
   assert.match(sweep, /if \.protected == false then "false" else "true" end/);
 });
 test('open PR provider pagination is separated from JSON normalization', () => {
-  assert.match(lease, /pulls\?state=open&per_page=100" > \.artifacts\/open-prs-pages\.json/);
-  assert.match(lease, /jq 'add' \.artifacts\/open-prs-pages\.json > \.artifacts\/open-prs-after\.json/);
+  assert.match(workflow, /pulls\?state=open&per_page=100" > \.artifacts\/open-prs-pages\.json/);
+  assert.match(workflow, /jq 'add' \.artifacts\/open-prs-pages\.json > \.artifacts\/open-prs-after\.json/);
 });
 test('legacy terminal decision is explicitly blocked, not reported success from a small sample', () => {
   assert.match(lease, /BOUNDED_CLOSED_PR_SAMPLE_NOT_GLOBAL_LINEAGE_PROOF/);
