@@ -15,12 +15,14 @@ const recent=[
  ['20261029101159','linkedin_personal_observational_source_freshness_20261029']
 ];
 
-test('lock contains exactly 774 independently provider-recorded applied identities, including latest four',()=>{
+test('lock contains exact latest provider-recorded identities and preserves the 29 October baseline',()=>{
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,774);
- assert.equal(applied.size,774,'no duplicate applied versions');
- assert.match(lock.captured_at,/2026-10-29/);
- for(const [version,name] of recent)assert.equal(applied.get(version),name);
+ assert.equal(lock.source,'supabase_migration_history');
+ assert.ok(lock.applied.length>=790,'never silently lose 790 production-applied identities verified on 2 November');
+ assert.equal(lock.applied.length,names.length,'entire executable migration inventory must match provider history');
+ assert.equal(applied.size,lock.applied.length,'no duplicate applied version');
+ assert.ok(Number.isFinite(Date.parse(lock.captured_at)) && Date.parse(lock.captured_at)>=Date.parse('2026-11-02T08:25:10.883Z'),'production provider observation must advance monotonically');
+ for(const [version,name] of recent)assert.equal(applied.get(version),name,'independently verified historical baseline must remain');
 });
 
 test('every actually applied migration remains executable source with exact registered version and name',()=>{
