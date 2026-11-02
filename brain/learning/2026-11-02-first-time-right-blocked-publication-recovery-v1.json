@@ -46,5 +46,17 @@
       "tests/brain-original-incident-learning-20261101.test.mjs"
     ]
   },
-  "humanDocs": "docs/changes/2026-11-02-p0-first-time-right-blocked-company-regeneration.md"
+  "humanDocs": "docs/changes/2026-11-02-p0-first-time-right-blocked-company-regeneration.md",
+  "evidence": {
+    "source": "original Supabase content_publication_obligations + powerhouse_channel_decisions, 2026-11-02",
+    "status": "BLOCKED",
+    "prepublish_review_http": 422,
+    "prepublish_review_code": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "external_provider_id": null,
+    "independent_provider_readback_verified": false,
+    "original_incident_observed": true,
+    "original_incident_fingerprint": "powerhouse|publication|blocked-editorial-no-automatic-source-rotation|20261102-v1",
+    "protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5305",
+    "verified_production_fix": false
+  }
 }
