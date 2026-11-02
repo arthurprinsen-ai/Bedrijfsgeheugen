@@ -8,9 +8,9 @@ const map=readFileSync(new URL('../platform/system-map/canonical-system-map.mjs'
 test('original generator owns advice with unchanged hard publication gates',()=>{
  assert.match(orchestrator,/buildEditorialCouncilBrief\(/);
  assert.match(orchestrator,/editorial_council:editorialCouncil/);
- assert.match(orchestrator,/const editorialSystem = \(pending\.channel/);
-  assert.match(orchestrator,/const buyerFirstGuide =/);
-  assert.match(orchestrator,/\+ ' '\+editorialCouncil\.instruction/);
+ assert.match(orchestrator,/let editorialSystem = \(pending\.channel/);
+  assert.match(orchestrator,/editorialSystem \+= ' VERPLICHTE BUYER-FIRST REDACTIE/);
+  assert.match(orchestrator,/editorialSystem \+= ' '\+editorialCouncil\.instruction/);
   assert.equal((orchestrator.match(/callAI\(apiKey,gov\.model_id,editorialSystem,artifactInput/g)||[]).length,2);
  assert.match(orchestrator,/email_newsletter: \{ executable: false/);
  assert.match(orchestrator,/companyEditorialViolations\(bodyText/);
