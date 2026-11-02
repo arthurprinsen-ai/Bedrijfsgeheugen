@@ -29,7 +29,12 @@
     "original_trigger_replay": "scan AFTER INSERT only; offer AFTER INSERT OR UPDATE OF getekend only",
     "production_release_proven": false,
     "customer_outcome_proven": false,
-    "paid_order_proven": false
+    "paid_order_proven": false,
+    "immutable_acl_version": "20261102075243",
+    "preview_first_version_stale_source": true,
+    "preview_old_acl_proacl_null_observed": true,
+    "preview_old_acl_browser_execute_true_observed": true,
+    "provider_acl_finalizer_verified": false
   },
   "prevention": [
     "Only canonical tenant identity verified + non-null organisatie_id may create original lead/proposal outcomes.",
@@ -37,7 +42,8 @@
     "Signed quotes and nominal totals cannot be paid orders or realized revenue without exact independently confirmed payment receipt.",
     "No historical backfill or demo/unverified promotion by this source change.",
     "Keep original RLS, security definer search path, private source identity, and no new agent, scheduler, writer or datastore.",
-    "Only mark LIVE after protected tests, original migration application, SQL trigger readback and new natural-run outcome validation; business-value proof remains separate."
+    "Only mark LIVE after protected tests, original migration application, SQL trigger readback and new natural-run outcome validation; business-value proof remains separate.",
+    "Applied migration versions are immutable; a later source edit requires a new migration version and independent provider ACL readback, not a rewritten version or false-green."
   ],
   "correction": "Update original intern.trg_scan_uitkomst and intern.trg_offerte_uitkomst in source migration so verified identity transition is heard; source signatures are treated as proposal status, not revenue. Reuse original bg_uitkomst_eenmalig; never invent provider revenue.",
   "evaluation": {
@@ -55,6 +61,8 @@
     "codeql_passed": false,
     "protected_merge": false,
     "supabase_migration_applied": false,
-    "trigger_readback_verified": false
+    "trigger_readback_verified": false,
+    "privileged_trigger_acl_verified": false,
+    "acl_finalizer_version": "20261102075243"
   }
 }
