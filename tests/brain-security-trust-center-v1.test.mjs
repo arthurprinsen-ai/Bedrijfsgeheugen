@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
+import {securityTone,securityOverallPosture,safeSecurityEvidenceUrl,summarizeSecurityPlatforms} from '../portal-v2/modules/security-trust-workspace.js';
 const read=p=>readFile(p,'utf8');
 
 test('security trust center is first-class and uses full href URLs',async()=>{
@@ -135,4 +136,14 @@ test('Portal is one product across technical source paths',async()=>{
  assert.doesNotMatch(map,/portal:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
  assert.doesNotMatch(map,/productionUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
  assert.match(map,/technicalReadbackUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
+});
+
+test('security learning replay: negated status, untrusted evidence link and incomplete platform can never be green',()=>{
+ for(const value of ['NOT_VERIFIED','UNKNOWN','EVIDENCE_PARTIAL','STALE','EXPIRED'])assert.notEqual(securityTone(value),'ok',value);
+ for(const value of ['javascript:alert(1)','http://example.org','/not-absolute','https://user:pw@example.org'])assert.equal(safeSecurityEvidenceUrl(value),null,value);
+ assert.equal(summarizeSecurityPlatforms([]).every(p=>p.status==='EVIDENCE_PARTIAL'),true);
+ assert.equal(securityOverallPosture({postureStatus:'VERIFIED_NO_OPEN_FINDINGS'},[]),'EVIDENCE_PARTIAL');
+ assert.equal(securityOverallPosture({postureStatus:'ACTION_REQUIRED'},[]),'ACTION_REQUIRED');
+ const failure=[{provider_key:'NETLIFY',control_key:'ARCHIVE_PREVIEW_ACCESS',status:'FAIL',evidence_available:true}];
+ assert.equal(summarizeSecurityPlatforms(failure).find(p=>p.provider==='NETLIFY').status,'ACTION_REQUIRED');
 });
