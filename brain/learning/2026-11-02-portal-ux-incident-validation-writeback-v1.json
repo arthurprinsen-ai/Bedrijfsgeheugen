@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "parent_issue": 4547,
+  "obligation_id": "portal-ux-original-brain-incident-validation-writeback-20261102-v1",
+  "fingerprint": "portal|living-interface|newer-source-deployed-status-falls-through-allowlist|20261102-v1",
+  "failure_class": "POSTMERGE_BRAIN_MATURITY_WRITEBACK_DEBT",
+  "root_cause": "The original provider source/contract fix was protected merged, regressed and deployed, but registry-level root_cause, regression_ref and prevention_rule remained NULL and maturity remained OBSERVED; independent admin browser readback has not been obtained.",
+  "fix": "Canonical version-checked brain_promote_failure verified the original source/regression incident at maturity VALIDATED v2, retaining original evidence. Original Portal V2 skill now mandates evidence-led two-stage maturity updates, explicit readback and no false terminal status.",
+  "tests": [
+    "tests/brain-portal-ux-incident-maturity-lifecycle-20261102.test.mjs",
+    "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+  ],
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547#issuecomment-6580746007",
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5313",
+    "release_sha": "d6bc2d9f9f2cec38b47c480c406495b0dccf07f5",
+    "netlify_deploy": "6ae8a7815bd4f6fcd2757d0c",
+    "postmerge_run": "41468808818",
+    "state": "VALIDATED_NOT_ADMIN_PROVEN"
+  },
+  "validation": {
+    "maturity": "VALIDATED",
+    "version": 2,
+    "occurrence_count": 1,
+    "authenticated_admin_browser_readback": "EVIDENCE_DUE"
+  },
+  "prevention_rules": [
+    "Use the original version-checked brain_promote_failure RPC for verified source/regression closure while preserving existing evidence, never silently leave validated fixes as unresolved source debt.",
+    "Never classify actual authenticated portal rendering or customer results as PROVEN using only protected CI, code deployment or historical browser tests.",
+    "FAILURE_VERSION_CONFLICT requires re-read and human-safe original owner reconciliation; no direct unsafe registry UPDATE."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-ux-incident-maturity-lifecycle-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-ux-incident-maturity-lifecycle-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-ux-incident-maturity-lifecycle-20261102.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "POSTMERGE_BRAIN_MATURITY_WRITEBACK_DEBT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "owner": "original Portal V2 UX and ONE BRAIN incident owner",
+  "terminal_rule": "Source, skill and test release may be validated after protected merge; full proof needs actual admin session readback and next natural skill application."
+}
