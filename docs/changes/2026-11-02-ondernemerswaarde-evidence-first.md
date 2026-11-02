@@ -24,3 +24,14 @@ De publieke eerste indruk maakte niet snel genoeg duidelijk hoe een ondernemer w
 
 ## Niet opgelost binnen deze wijziging
 Aanmelden/betalen/proefperiode vereist een afzonderlijke echte E2E-test met provider-readback, zodat een prototype-/demovermelding niet verward wordt met actieve authenticatie. Geen betaalde order of productie-release wordt uit deze PR afgeleid.
+
+
+## Live productie-main integratie en oorspronkelijke ONE BRAIN-fouten
+Op 2 november is de aparte, reeds goedgekeurde Portal V2 klantwaardebriefing #5247 daadwerkelijk in main-commit `285dab223d18eb9ec26d649f99a4b0279b98527e` gepubliceerd (Netlify READY). PR #5248 komt hier **aanvullend** bovenop: drie acties/bron-/outcome-kaarten in de oorspronkelijke `entrepreneur-home`, geen duplicaat van de oorspronkelijke Executive Cockpit briefing en geen overschrijving daarvan.
+
+Oorspronkelijke `public.brain_observe_failure` registreerde op 2 november drie unieke, idempotente real-world source failures met maturity `OBSERVED`: 
+- `powerhouse|delivery|pr5248-missing-machine-admission-metadata|20261102-v1`, protected run 41402742631.
+- `powerhouse|learning|pr5248-invalid-historical-test-path|20261102-v1`, protected run 41402955306.
+- `powerhouse|system-map|pr5248-explanation-inventory-hash-drift|20261102-v1`, protected run 41403060983.
+
+Alle drie hebben de oorspronkelijke bronrun, oorzaak, fix, eigenaar en preventieregel als gecanoniseerde evidence; geen `PROVEN` of groen zonder regression + consequent geslaagde protected CI/natuurlijke volgende-run/productie-readback. De **bestaande** root `AGENTS.md`, company-intelligence en self-improvement skills zijn rechtstreeks bijgewerkt. De oorspronkelijke dagelijkse executor, klanttenant-ACL, CMS-redactie, GDPR, factuur-/betalingstoestemming en bron-meetregels blijven intact. 
