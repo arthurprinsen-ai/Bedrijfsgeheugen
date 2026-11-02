@@ -57,8 +57,8 @@ test('the original owner-only Portal separates historical failure, latest failed
  assert.match(ui,/Eerste vastgelegde BRAIN-fouten/);
  assert.match(ui,/Laatste vastgelegde mislukte BRAIN-run/);
  assert.match(ui,/Geregistreerde latere BRAIN-herstelproef/);
- assert.match(ui,/brainBackend\.softwareRecovery\?\.failedTests===0/);
- assert.match(ui,/brainBackend\.softwareRecovery\?\.originalRunUrl/);
+ assert.match(ui,/brainBackend\?\.softwareRecovery\?\.failedTests===0/);
+ assert.match(ui,/brainBackend\?\.softwareRecovery\?\.originalRunUrl/);
  assert.match(ui,/rel="noopener noreferrer"/);
  assert.match(ui,/esc\(brainBackend\.latestGitHubEvidenceUrl\)/);
  assert.match(ui,/geen onafhankelijke terminalafsluiting/);
