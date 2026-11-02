@@ -35,6 +35,7 @@ function render(container,data){
   const social=data?.socialFunnel||null;
   const editorialQuality=data?.editorialQuality||null;
   const terminalBrain=data?.terminalBrainRecovery||null;
+  const brainBackend=data?.brainBackendRun||null;
   const growth=data?.growthDirection||null;
   const commercialFunnel=data?.commercialGrowthFunnel||null;
   const providerRepair=data?.ga4PredictiveRepair||null;
@@ -280,6 +281,17 @@ function render(container,data){
     '</tbody></table></div>'+
     '<p class="od-foot">Portaalroute-events bevatten mogelijk beheerders en previews: dit zijn geen geverifieerde betalende klanten of unieke bezoekers. De kaart toont geen persoonsgegevens, verzendt niets en kan de oorspronkelijke vijftien Heartbeat-lussen niet groen maken. Ontbrekende, verouderde of niet-toegestane bronnen blijven UNVERIFIED.</p></section>';
 
+  const originalBackendCard='<section class="od-card" data-brain-original-backend-evidence>'+
+    '<h3>ONE BRAIN · volledige backendtest</h3>'+
+    '<p>Required en CodeQL zijn niet hetzelfde als de afzonderlijke BRAIN-backendverificatie. Een mislukte backendtest houdt de eindafsluiting open.</p>'+
+    '<p>Uitkomst: '+badge(brainBackend?.status||'SOURCE_UNVERIFIED')+
+      ' · Bron: '+badge(brainBackend?.sourceState||'UNAVAILABLE')+'</p>'+
+    '<div class="od-grid">'+
+      field('Geconstateerde mislukte tests',brainBackend?.failingTests==null?'Onbekend':esc(brainBackend.failingTests))+
+      field('Betrokken testbestanden',brainBackend?.affectedFiles==null?'Onbekend':esc(brainBackend.affectedFiles))+
+      field('Onafhankelijk groen herstel',brainBackend?.verifiedPassed?'Bewezen':'Nog niet bewezen')+
+      field('Nieuwe betaalde opdrachten',brainBackend?.ordersIndependentlyProven?'Onafhankelijk bewezen':'Niet bewezen')+'</div>'+
+    '<p class="od-foot">Oorspronkelijke BRAIN-backendrun: <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918" target="_blank" rel="noopener noreferrer">fouten en testbewijs</a>. De volgende herstelactie blijft bij de oorspronkelijke agents en in dezelfde ONE BRAIN/Heartbeat-keten. Geen omzeilde test, tweede executor of verzonnen omzet.</p></section>';
   const terminalBrainCard='<section class="od-card" data-original-brain-terminal-incident>'+
     '<h3>ONE BRAIN · herstel van publicatie- en releasecontrole</h3>'+
     '<p>De oorspronkelijke afsluitcontrole moet dezelfde gemergede commit via BRAIN, Required, CodeQL en providerbewijs afsluiten. Een geslaagde merge zonder onafhankelijke BRAIN-uitkomst is geen volledig herstel.</p>'+
@@ -317,6 +329,7 @@ function render(container,data){
     commercialFunnelCard+
     editorialQualityCard+
     terminalBrainCard+
+    originalBackendCard+
     providerRepairCard+
     recoveryAuditCard+
     compoundCard+
