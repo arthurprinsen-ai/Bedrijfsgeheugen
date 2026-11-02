@@ -2,8 +2,13 @@ import {planCrossDomainChange} from '../regulatory/cross-domain-change-impact.mj
 import {connectorConfigurationForImpact,isConnectorConfigurationChanged,pendingConnectorImpactReview} from '../regulatory/connector-change-impact-gate.mjs';
 import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 import {normalizeConnectorDataUse,connectorDataUseActivationGuard} from '../connectors/connector-data-use-policy.mjs';
+import {buildConnectorTrustReport} from '../connectors/connector-trust-report.mjs';
 import {normalizeConnectorRouting,connectorPortalSources,CONNECTOR_PORTAL_PAGES} from '../../assets/js/koppelingen/portal-routing.js';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
+const SAFE_PROVIDER_ERROR_CODES=new Set(['ETIMEDOUT','ECONNRESET','EAI_AGAIN','408','429','502','503','504','UNAUTHORIZED','FORBIDDEN','ADAPTER_NOT_CONFIGURED','DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED','DOCUMENT_EXTRACTION_SAFE_TEST_FAILED','DOCUMENT_EXTRACTION_INVALID_RESPONSE','SAFE_TEST_SAMPLE_REQUIRED','UNSUPPORTED_TRANSFORMATION','LOOKUP_NOT_FOUND','LOOKUP_AMBIGUOUS']);
+const safeProviderErrorCode=error=>{const code=String(error?.code||'').toUpperCase();return SAFE_PROVIDER_ERROR_CODES.has(code)?code:'CONNECTOR_TEST_FAILED';};
+const safeProviderFailedStage=error=>['source','extractor','validation','target','runtime'].includes(error?.failedStage)?error.failedStage:'runtime';
+
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 function tenantFromUser(user){return user?.tenantId||user?.app_metadata?.tenantId||user?.app_metadata?.tenant_id||null;}
 function clean(value){if(Array.isArray(value))return value.map(clean);if(!value||typeof value!=='object')return value;return Object.fromEntries(Object.entries(value).filter(([key])=>!SECRET_KEY.test(key)).map(([key,val])=>[key,clean(val)]));}
@@ -48,6 +53,12 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     return json(clean({...decided,replayObligation}));
   }
   if(normalized.method==='GET'&&!id){if(typeof store?.list!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.list(tenantId)));}
+  if(normalized.method==='GET'&&id&&action==='trust'&&!subaction){
+    if(typeof store?.get!=='function'||typeof store?.listExecutions!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
+    const connector=await store.get(tenantId,id);
+    if(!connector)return json({error:'NOT_FOUND'},404);
+    return json(buildConnectorTrustReport(connector,{executions:await store.listExecutions(tenantId,id)}));
+  }
   if(normalized.method==='GET'&&id&&action==='executions'){if(typeof store?.listExecutions!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.listExecutions(tenantId,id)));}
   if(normalized.method==='GET'&&id&&!action){if(typeof store?.get!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const record=await store.get(tenantId,id);return record?json(clean(record)):json({error:'NOT_FOUND'},404);}
   if(normalized.method==='POST'&&!id){
@@ -83,7 +94,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
     if(typeof sovereignty?.assertConnectorAllowed==='function'){
       try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
-        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
+        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED'},409);
         throw error;
       }
     }
@@ -92,19 +103,20 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
       result=await engine.runTest({tenantId,connector,input:body.sample,user});
     }catch(error){
       const classification=typeof engine?.classifyError==='function'?engine.classifyError(error):{retryable:false,maxAttempts:0,recoveryRequired:true,class:'runtime'};
-      const failedStage=String(error?.failedStage||'runtime');
-      const evidenceId=String(error?.executionId||`failure-${Date.now()}`);
+      const failedStage=safeProviderFailedStage(error);
+      const publicCode=safeProviderErrorCode(error);
+      const evidenceId=`failure-${Date.now()}`;
       const fingerprint=recoveryFingerprint(id,failedStage,classification?.class||'runtime');
       const failureEvidence={evidenceId,failedStage,classification:{class:classification?.class||'runtime',retryable:Boolean(classification?.retryable),maxAttempts:Number(classification?.maxAttempts)||0},recoveryRequired:true};
       let persistedFailure=null;
-      if(typeof store.saveExecution==='function')persistedFailure=await store.saveExecution(tenantId,{connectorId:id,connectorVersion:connector.version,status:'TEST_FAILED',dedupeKey:null,evidence:failureEvidence,error:{code:error?.code||'CONNECTOR_TEST_FAILED',class:classification?.class||'runtime'},completedAt:new Date().toISOString()});
+      if(typeof store.saveExecution==='function')persistedFailure=await store.saveExecution(tenantId,{connectorId:id,connectorVersion:connector.version,status:'TEST_FAILED',dedupeKey:null,evidence:failureEvidence,error:{code:publicCode,class:classification?.class||'runtime'},completedAt:new Date().toISOString()});
       const recoveryObligation={
-        status:'open',reason:error?.code||'CONNECTOR_TEST_FAILED',failedStage,evidenceId:persistedFailure?.id||evidenceId,fingerprint,openedAt:new Date().toISOString(),owner:user.id,
+        status:'open',reason:publicCode,failedStage,evidenceId:persistedFailure?.id||evidenceId,fingerprint,openedAt:new Date().toISOString(),owner:user.id,
         retry:{allowed:Boolean(classification?.retryable),maxAttempts:Number(classification?.maxAttempts)||0},
         writeback:{status:'queued',route:'BG168→BG166',fingerprint,maxAttempts:1}
       };
       if(typeof store.saveDraft==='function')await store.saveDraft(tenantId,{...connector,id,runtime:{...(connector.runtime||{}),recoveryObligation}});
-      return json({error:error?.code||'CONNECTOR_TEST_FAILED',message:String(error?.message||error),classification:clean(classification),failedStage,evidenceId:persistedFailure?.id||evidenceId,recoveryRequired:true,recoveryObligation:clean(recoveryObligation)},422);
+      return json({error:publicCode,message:'De koppelingstest kon niet worden afgerond. Bekijk de veilige herstelstappen.',classification:clean(classification),failedStage,evidenceId:persistedFailure?.id||evidenceId,recoveryRequired:true,recoveryObligation:clean(recoveryObligation)},422);
     }
     let persisted=null;
     if(typeof store.saveExecution==='function')persisted=await store.saveExecution(tenantId,{connectorId:id,connectorVersion:connector.version,status:result.status,dedupeKey:result.dedupeKey,evidence:result.evidence,error:result.error||null,completedAt:result.completedAt});
@@ -124,7 +136,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     const review=pendingConnectorImpactReview(connector);
     if(typeof sovereignty?.assertConnectorAllowed==='function'){
       try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
-        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
+        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED'},409);
         throw error;
       }
     }
