@@ -23,7 +23,7 @@ for(const path of files){
 test('original editorial skill links upstream source, original incident and release-quality proof',()=>{
  const skill=load('.agents/skills/powerhouse-cms-editorial/SKILL.md');
  assert.match(skill,/powerhouse\|blog\|codex-action-ubuntu26-dbus-sandbox\|20261102-v1/);
- assert.match(skill,/github.com\/openai\/codex-action\/issues\/188/);
+ assert.ok(skill.includes('https://github.com/openai/codex-action/issues/188'));
  assert.match(skill,/ubuntu-24\.04/);
  assert.match(skill,/no.*extra executor/i);
 });
