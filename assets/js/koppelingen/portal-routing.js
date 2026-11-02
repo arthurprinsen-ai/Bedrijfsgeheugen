@@ -28,7 +28,7 @@ export function normalizeConnectorRouting(routing,documentSchema,dataUse){
 export function connectorPortalSources(connectors,pageId){
  if(!PAGE_SET.has(pageId))return [];
  return (Array.isArray(connectors)?connectors:[])
-  .filter(c=>c?.dataUse?.mode!=='CONNECTION_ONLY'&&Array.isArray(c?.routing?.portalPages)&&c.routing.portalPages.includes(pageId))
+  .filter(c=>(c?.dataUse?.mode==='PORTAL_AI'||(c?.dataUse?.mode==='PORTAL_INSIGHTS'&&pageId!=='brain-verwerking'))&&Array.isArray(c?.routing?.portalPages)&&c.routing.portalPages.includes(pageId))
   .map(c=>Object.freeze({
     id:String(c.id||''),
     label:String(c.name||'Koppeling').slice(0,100),
