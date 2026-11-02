@@ -1,3 +1,10 @@
+---
+name: portal-living-interface
+description: Canonical Portal V2 visual design, chart accessibility, safe fields, entrepreneur experience and learning.
+---
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
 # Portal Living Business Interface — original V2 only
 Version: 2026-11-02-v1. Owner: original Portal V2 UX and single protected release owner. Parent: #4547.
 
