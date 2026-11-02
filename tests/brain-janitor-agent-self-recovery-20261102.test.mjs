@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {mergedSuccessorIsProven,verifyMergedSuccessor,classifyCurrentJanitor,writeBrainOccurrence,FINGERPRINT}
+import {mergedSuccessorIsProven,verifyMergedSuccessor,classifyCurrentJanitor,writeBrainOccurrence,assertNativeJanitorIdentity,FINGERPRINT}
  from '../tools/delivery/janitor-incident-agent.mjs';
 
 const predecessor=2225, obligation='seo-clean-url-bedrijf-overdraagbaar-maken-v1';
@@ -105,4 +105,28 @@ test('no privileged credentials or failed independent readback cannot be disguis
    SUPABASE_SERVICE_ROLE_KEY:'test-key-only'},report,
    fetchImpl:async(_url,opts)=>opts.method==='POST'
      ?{ok:true,status:200}:{ok:true,status:200,json:async()=>[]}}),/BRAIN_RPC_READBACK_MISMATCH/);
+});
+
+test('historical 11-digit GitHub Actions run identifier is accepted independently of PR number limits',()=>{
+ const env={GITHUB_REPOSITORY:'arthurprinsen-ai/Bedrijfsgeheugen',GITHUB_RUN_ID:'41508842023'};
+ const identity=assertNativeJanitorIdentity(env);
+ assert.equal(identity.run_id,41508842023);
+ const report=classifyCurrentJanitor({cleanupOutcome:'success',readbackOutcome:'success',
+   runId:env.GITHUB_RUN_ID,mainSha:'896b4fc4db428c3aeaf13e6f9f02e083eefbee16'});
+ assert.equal(report.run_id,41508842023);
+ assert.equal(report.status,'JANITOR_STEPS_VERIFIED_SAME_RUN');
+ assert.equal(report.independent_runtime_repair_proven,true);
+ assert.equal(report.global_green,false);
+});
+test('invalid GitHub native run IDs fail closed without changing PR validation',()=>{
+ for(const runId of ['0','-1','NaN','9007199254740992','not-an-id']){
+   assert.throws(()=>assertNativeJanitorIdentity({GITHUB_REPOSITORY:'arthurprinsen-ai/Bedrijfsgeheugen',
+     GITHUB_RUN_ID:runId}),/RUN_IDENTITY_INVALID/);
+ }
+ assert.throws(()=>assertNativeJanitorIdentity({GITHUB_REPOSITORY:'malicious repo',
+   GITHUB_RUN_ID:'41508842023'}),/RUN_IDENTITY_INVALID/);
+ const v=mergedSuccessorIsProven({number:41508842023,state:'closed',merged:true,
+   merged_at:'2026-09-19T12:09:26Z',body:'Obligation-ID: seo-clean-url-bedrijf-overdraagbaar-maken-v1\nSupersedes: 2225'},
+   {predecessor:2225,obligation:'seo-clean-url-bedrijf-overdraagbaar-maken-v1'});
+ assert.equal(v,false,'run ID must never be a valid PR successor number');
 });
