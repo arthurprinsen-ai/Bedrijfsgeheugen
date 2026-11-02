@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|brain|portal-latest-failed-vs-software-pass-label-oracle-stale|20261102-v1",
+  "obligation_id": "original-brain-admin-portal-three-measurement-oracle-20261102-v1",
+  "parent_issue": 4439,
+  "related_pr": 5282,
+  "compiler": {
+    "failure_class": "TEST_ORACLE_SOURCE_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "owner": "Original ONE BRAIN backend test and owner-only Portal source owner",
+  "root_cause": "Original postmerge full BRAIN run 41433667027 backend job 125238718390 failed exactly one outdated Portal text assertion; #5282 correctly renders distinct historical failures, latest failed run, and later validated zero-failure software recovery, but the older test expected an obsolete combined label.",
+  "prevention_rule": "Synchronize exact original backend test wording with real source semantics and verify all three labels, admin-only gate, escaped fully qualified GitHub URL, fail-closed software-zero proof, retained historical events, and noncommercial/terminal negative guards. Never disable tests, forge proof, write database outside original CAS owner or claim natural recurrence prevention from one run.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "release_sha": "295c12ab94303af30b9b9fc30207d15ecf88db1e",
+    "run_id": 41433667027,
+    "backend_job_id": 125238718390,
+    "tests_total": 5400,
+    "tests_passed": 5397,
+    "tests_failed": 1,
+    "tests_skipped": 2,
+    "failed_test_index": 3050,
+    "original_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41433667027",
+    "new_portal_runtime_code_modified": false,
+    "independent_commercial_value_proven": false,
+    "natural_no_recurrence_proven": false,
+    "status": "CANDIDATE_NOT_MERGED"
+  }
+}

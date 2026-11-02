@@ -5,6 +5,12 @@ description: Use whenever CodeQL or another post-merge security workflow is queu
 
 # Powerhouse Post-Merge CodeQL
 
+## 2026-11-02 — original triple-measurement Portal label oracle must follow actual source
+
+- Original protected Portal #5282 merged as `295c12ab94303af30b9b9fc30207d15ecf88db1e`; original postmerge BRAIN `41433667027`, backend job `125238718390`, failed exactly one stale assertion: 5,400 tests, 5,397 passed, 1 failed, 2 skipped. The old contract expected `Laatste vastgelegde BRAIN-hertest`, whereas the original Portal correctly distinguishes historical first failed tests, latest failed BRAIN run and later provider-recorded zero-failure **software** recovery.
+- Every label or measurement change to the owner-only Portal must reconcile the original read-model test in the same protected owner lineage; require **all three** source-backed labels, secure admin gate, escaped absolute HTTPS GitHub run hrefs, fail-closed missing proof, historical red retention, no false independent terminal, ROI or paid orders. Keep the newer zero-fail run separate from the latest *failed* run; never silence, delete or weaken a regression test to get GREEN.
+- Fingerprint `powerhouse|brain|portal-latest-failed-vs-software-pass-label-oracle-stale|20261102-v1`, original P0 #4439; historical/shadow/canary `tests/brain-portal-latest-original-backend-observation-20261102.test.mjs`. Require exact-head Required, CodeQL, complete Unified BRAIN and terminal, protected release, exact Netlify readback, tenant-authenticated Portal verification and later natural no-recurrence proof. Do not create a second writer, scheduler, data source, publisher or manual production override.
+
 ## 2026-11-02 — keep recovered 0-failure BRAIN software truth visible, without false business green
 
 - Original protected ONE BRAIN backend run `41430758451`, job `125229059857`, independently reported 5,392 total, 5,390 passed, 0 failed, 2 skipped. Original protected main `79d99ce9d03068dae3c909707d00dde1933f9d78` reached Netlify provider READY deploy `6ae8689d8166870bb317e761`; original `public.brain_failure_registry.evidence.software_recovery_20261102` already records this separate software milestone.
