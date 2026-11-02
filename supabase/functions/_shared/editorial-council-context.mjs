@@ -5,6 +5,8 @@ export const EDITORIAL_RESEARCH_REVIEWED_AT='2026-11-02';
 const SOURCE_NOTES=Object.freeze({
   linkedin:'https://news.linkedin.com/2026/ImprovingTheFeed',
   linkedin_authenticity:'https://news.linkedin.com/2026/how-linkedin-is-tackling-ai-slop',
+  instagram_best_practices:'https://about.fb.com/news/2024/10/best-practices-education-hub-creators-instagram/',
+  instagram_originality:'https://about.fb.com/news/2026/01/2026-ai-drives-performance/',
   google_people_first:'https://developers.google.com/search/docs/fundamentals/creating-helpful-content',
   google_search_essentials:'https://developers.google.com/search/docs/essentials',
   email_testing:'https://mailchimp.com/help/about-ab-tests/',
