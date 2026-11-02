@@ -10,3 +10,5 @@ Closure: protected checks + original production readback + first new original po
 B2B e-mail: original powerhouse-commercial-message-composer consumes source-reviewed email_outreach brief; existing preflight/quality/sender control unchanged, no new mailing permission.
 
 - 2026-11-02 08:11 UTC — original BRAIN verification-only run #41410920609: 33/5343 failed on stale PR epoch, including explicit immutable editorialSystem TDZ contract. Preterminal CAS sync requires branch/head and exact main epoch. Original PR stays same; no second writer, no production effect.
+
+- 2 Nov 2026 — original BRAIN #41412248657 fails 33/5366, two source-local failures caused by renamed final prompt variable. Correct in same PR: complete immutable `editorialSystem` and enforce two matching calls; keep Required/CodeQL/BRAIN and protected promotion required.
