@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildEditorialCouncilBrief,EDITORIAL_COUNCIL_POLICY} from '../supabase/functions/_shared/editorial-council-context.mjs';
 const orchestrator=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
+const composer=readFileSync(new URL('../supabase/functions/powerhouse-commercial-message-composer/index.ts',import.meta.url),'utf8');
 const map=readFileSync(new URL('../platform/system-map/canonical-system-map.mjs',import.meta.url),'utf8');
 test('original generator owns advice with unchanged hard publication gates',()=>{
  assert.match(orchestrator,/buildEditorialCouncilBrief\(/);
@@ -14,7 +15,7 @@ test('original generator owns advice with unchanged hard publication gates',()=>
  assert.match(map,/evidenceLedEditorialCouncilV1/);
 });
 test('five canonical channels have distinct reader jobs, measured business objective',()=>{
- for(const channel of ['linkedin_personal','linkedin_company','instagram_company','blog','email_newsletter']){
+ for(const channel of ['linkedin_personal','linkedin_company','instagram_company','blog','email_newsletter','email_outreach']){
    const council=buildEditorialCouncilBrief({channel});
    assert.equal(council.contract,EDITORIAL_COUNCIL_POLICY);
    assert.ok(council.reader_job.length>20);
@@ -40,5 +41,9 @@ test('creative tests remain hypotheses and marketing newsletter stays unapproved
  const blog=buildEditorialCouncilBrief({channel:'blog',measuredNextPostTest:{state:'ELIGIBLE_BOUNDED_NEXT_POST_TEST'}});
  assert.equal(blog.evidence_state,'PROVIDER_BOUNDED_HYPOTHESIS');
  assert.match(buildEditorialCouncilBrief({channel:'email_newsletter'}).editorial,/NIET geautoriseerd/);
+ assert.match(buildEditorialCouncilBrief({channel:'email_outreach'}).editorial,/GEEN verzendautorisatie/);
+ assert.match(composer,/buildEditorialCouncilBrief\(\{channel:'email_outreach',commercialFeedback\}\)/);
+ assert.match(composer,/composerSourcePreflight/);
+ assert.match(composer,/quality\(action/);
  assert.match(buildEditorialCouncilBrief({channel:'instagram_company'}).editorial,/identiteit/);
 });
