@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-security-agent-netlify-runtime-parity-20261102-v1",
+  "fingerprint": "security|agent-roster|netlify-import-deployment-gap|20261102-v1",
+  "compiler": {
+    "failure_class": "SECURITY_RUNTIME_RELEASE_FALSE_NOT_REQUIRED",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original shared Netlify deployment applicability classified platform/agents/agent-team.mjs as backend only and omitted it from its explicit imported Netlify runtime list. Yet original Netlify function bundles import createDefaultAgentRegistry and DEFAULT_AGENT_TEAM. PR #5317 merged with successful Required and CodeQL but production Netlify remained on an earlier commit; previous READY deploy does not attest newer agent code.",
+  "fix": "Extend existing central Netlify runtime classification and original production truth contract for platform/agents/agent-team.mjs, require authenticated production proof for the imported source, update the original Security Agent task/skill and add regression for false NOT_REQUIRED, old READY SHA and docs-only no-deploy. This candidate does not claim published production source until independent Netlify provider readback.",
+  "tests": [
+    "tests/brain-security-agent-netlify-runtime-parity-20261102.test.mjs",
+    "tests/brain-production-readback-terminal-authority-v1.test.mjs",
+    "tests/brain-netlify-observability-release-parity-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-agent-netlify-runtime-parity-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-agent-netlify-runtime-parity-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-agent-netlify-runtime-parity-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Every source module imported by a Netlify production function must be explicitly classified as Netlify runtime, including the canonical agent registry.",
+    "Never interpret an older READY deploy as proof that a newer security agent source is live; require an exact-commit Netlify readback plus authenticated portal/backend proof.",
+    "Preserve governance-only no-deploy for plain documentation and learning to avoid spurious releases.",
+    "Keep the original ONE BRAIN Security Agent, release writer, protected Required, CodeQL, full BRAIN and Netlify provider readback; do not create an alternate scheduler or deploy shortcut.",
+    "The two open archive access and anonymous privileged RPC warnings are separate original incidents and remain FAIL/WARN until independently fixed."
+  ],
+  "owner": "existing ONE BRAIN Security Agent and protected release integration writer",
+  "proof_state": "CANDIDATE_PENDING_ORIGINAL_NETLIFY_PROVIDER_READBACK"
+}

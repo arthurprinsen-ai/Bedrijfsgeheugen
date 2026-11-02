@@ -109,3 +109,12 @@ Fingerprint: `powerhouse|security|provider-fix-not-proven|20261102-v1`.
 - Original private failures are append-only occurrences with the same fingerprints. Promotion from `OBSERVED` to `VALIDATED` requires independent root-cause evidence; `PROVEN` requires an actual original fix and negative regression. Never upgrade maturity or publish secrets, affected private site URLs or full privileged SQL bodies to public PRs, previews, documents or customer views.
 - The canonical `security_management_observation_v1` read model supplies the same authenticated Security Trust Center. For customer communication show consequence, accountable action, checked-at and limitations, not technical exploit details. Evidence coverage is not a safety percentage. No second scheduled agent, parallel publisher, direct production DDL or false-green override.
 - Regression: `tests/brain-security-provider-remediation-v1.test.mjs` and `tests/portal-private-trust-surfaces-v1.test.mjs`.
+
+## Imported-agent Netlify deployment parity (2026-11-02)
+Fingerprint: `security|agent-roster|netlify-import-deployment-gap|20261102-v1`.
+
+- The canonical `platform/agents/agent-team.mjs` is imported into active Netlify functions (`_cost-projection-store.mjs` and `_powerhouse-compound-improvement-proof.mjs`). Changes to this module must be classified as Netlify runtime, even when their delivery lane is backend. Never treat an agent task change as governance-only without proving its import graph.
+- Both the original `deriveNetlifyDeploymentApplicability` and the immutable production truth contract must identify this exact source. A runtime change requires Netlify build parity, actual production deploy, exact source SHA and authenticated two-tenant API proof. `READY` for an older deployment is not a live release.
+- Other docs/skills/learning-only modifications remain governance-only; do not force new deployments for them. The original Netlify git deployment remains the only publisher; do not create a parallel build hook, deploy executor or bypass.
+- After discovering a historical false `NOT_REQUIRED` decision, require a protected successor release containing the exact imported runtime module and repeat the original Netlify provider readback; leave the source-drift incident open until proven.
+- Regression: `tests/brain-security-agent-netlify-runtime-parity-20261102.test.mjs`; also retain `tests/brain-production-readback-terminal-authority-v1.test.mjs`.

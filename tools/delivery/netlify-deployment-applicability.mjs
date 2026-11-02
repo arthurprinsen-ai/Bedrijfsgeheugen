@@ -55,6 +55,9 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   'platform/brain/verified-ai-runtime.mjs',
   'platform/brain/production-ai.mjs',
   'platform/policy/customer-ai-deployment.mjs',
+  // Imported by Netlify _cost-projection-store and _powerhouse-compound-improvement-proof.
+  // A change to the canonical agent roster affects live server code, not only governance.
+  'platform/agents/agent-team.mjs',
   // Server-bundled by netlify/functions/powerhouse-observability.mjs.
   // It changes the authenticated portal API even though it lives under brain/.
   'brain/observability/publication-evidence-readback.mjs',
@@ -80,6 +83,7 @@ export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
     path === 'netlify/functions/portal-authenticated-production-proof.mjs' ||
     path === 'netlify/functions/portal-ondernemersdata.mjs' ||
     path === 'netlify/functions/_portal-supabase-store.mjs' ||
+    path === 'platform/agents/agent-team.mjs' ||
     path === 'brain/observability/publication-evidence-readback.mjs' ||
     path === 'brain/observability/one-loop-guard-diagnostics.mjs' ||
     path === 'brain/observability/one-loop-assurance-readback.mjs' ||
