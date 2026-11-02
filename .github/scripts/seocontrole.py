@@ -280,7 +280,7 @@ def schrijf_seo_status_als_gewijzigd(status, pad='seo-status.json'):
         nieuw_inhoud = {k: v for k, v in status.items() if k != 'bijgewerkt'}
         if vorig_inhoud == nieuw_inhoud and re.fullmatch(r'\d{4}-\d{2}-\d{2}', vorig['bijgewerkt']):
             status['bijgewerkt'] = vorig['bijgewerkt']
-    nieuw = json.dumps(status, ensure_ascii=False, indent=1) + '\\n'
+    nieuw = json.dumps(status, ensure_ascii=False, indent=1) + '\n'
     try:
         with io.open(pad, 'r', encoding='utf-8') as bron:
             if bron.read() == nieuw:
