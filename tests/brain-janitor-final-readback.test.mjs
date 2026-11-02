@@ -2,9 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const source=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
-const start=source.indexOf('      - name: Read back applied cleanup');
-const end=source.indexOf('      - name: Reconcile provider-owned GitHub Actions zero-job ghosts',start);
+// This step has a stable YAML id before its display name. Never slice an
+// empty section: readback assertions must inspect the real original source.
+const anchor='      - id: janitor_cleanup_readback\n';
+const nextAnchor='      - name: Reconcile provider-owned GitHub Actions zero-job ghosts';
+assert.equal(source.split(anchor).length-1,1,'exactly one original cleanup readback step');
+assert.equal(source.split(nextAnchor).length-1,1,'exactly one original post-readback ghost reconcile');
+const start=source.indexOf(anchor);
+const end=source.indexOf(nextAnchor,start+anchor.length);
+assert.ok(start>=0 && end>start,'original readback must precede the next distinct step');
 const step=source.slice(start,end);
+assert.match(step,/^      - id: janitor_cleanup_readback\n        name: Read back applied cleanup\n/m);
 test('independently reads current GitHub PR state after all cleanup phases',()=>{
   assert.match(step,/current="\$\(gh api/);
   assert.match(step,/expected=closed/);
