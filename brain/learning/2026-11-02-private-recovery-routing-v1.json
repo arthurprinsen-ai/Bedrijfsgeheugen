@@ -1,0 +1,68 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-11-02",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "contract": "ORIGINAL_PRIVATE_OUTCOME_ECONOMICS_OWNER_ROUTING_V1",
+  "original_fingerprints": [
+    "powerhouse|revenue-flywheel|forecast-calibration-evidence-due|20261029-v1",
+    "powerhouse|full-cycle|publication-predictive-proof-gaps|20261029-v1",
+    "powerhouse|economics|completed-actions-missing-observed-cost-evidence|20261029-v1"
+  ],
+  "root_cause": "The public market calibrator's green cron response has no authorization or positive evidence to resolve 2947 overdue person/company forecasts. Same-key runtime observer events can spoof a source-unbound advisory classifier. Seven completed outbound actions have immutable provider receipts but lack observed resource-cost evidence.",
+  "correction": "Bind advisory classification to exact source+event_type+subject_key and route original independent private/outcome/economics aggregates to existing owners, with explicit fail-closed source consistency checks; never mutate outcomes or claim green.",
+  "prevention": "No paid revenue, actual events, human minutes, zero costs or provider receipts invented; no public AI for private predictions; no second scheduler/publisher; no private data in debug outputs; independent live readback required.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-runtime-evidence-debt-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "original Supabase provider and GitHub main",
+    "observed_at": "2026-11-02",
+    "private_person_due": 2286,
+    "private_company_due": 661,
+    "out_of_public_scope_due": 2947,
+    "public_scope_due": 0,
+    "positive_outcome_candidates": 0,
+    "missing_economics": 7,
+    "missing_economics_salesrobot_linkedin_dm": 5,
+    "missing_economics_email_followup": 2,
+    "source_bound_agent_candidate_only": true,
+    "production_agent_application_proven": false,
+    "runtime_errors": 2
+  },
+  "owner": "existing ONE BRAIN, Powerhouse private-outcome, economics and Heartbeat agents",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "sources": [
+    "public.powerhouse_runtime_events",
+    "public.powerhouse_one_brain_runtime_health_v1",
+    "public.revenue_learning_obligations",
+    "public.powerhouse_forecast_resolution_candidates_v3",
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_action_economics"
+  ],
+  "code_helper": "brain/observability/runtime-evidence-debt-classification.mjs",
+  "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+  "agent_instruction": "AGENTS.md",
+  "human_doc": "docs/changes/2026-11-02-private-recovery-routing.md",
+  "development_ledger": "docs/development-ledger-events/2026-11-02-private-recovery-routing.md",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "test_evidence": {
+    "observed": "2026-11-02 original Required #41517482860 first retry rejected new learning JSON with LEARNING_FAILURE_CLASS_REQUIRED; two original runtime event producers and private due counts independently verified, regression candidates added to canonical brain test path. Original Required #41517851007 then rejected semantic_learning because unique learning fingerprint was absent; preserved the original three incident fingerprints separately and added machine-readable learning identity.",
+    "pending": "Corrected exact-head Required/CodeQL/BRAIN, protected merge and actual original agent readback remain required."
+  },
+  "fingerprint": "powerhouse|private-outcome-economics|source-bound-owner-routing-learning|20261102-v1"
+}
