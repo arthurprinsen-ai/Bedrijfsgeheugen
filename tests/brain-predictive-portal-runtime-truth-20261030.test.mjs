@@ -46,12 +46,29 @@ test('server-to-server coverage keeps private incident evidence out of portal',a
         {maturity:'OBSERVED',root_cause:'recorded',regression_ref:'test',prevention_rule:'recorded',last_seen_at:'2026-10-30T07:02:15Z'}
       ]};
     }
-    assert.ok(url.includes('fingerprint=eq.'));
-    return {ok:true,json:async()=>[observed]};
+    if(calls===2){
+      assert.ok(url.includes('fingerprint=eq.'));
+      return {ok:true,json:async()=>[observed]};
+    }
+    // Original ONE BRAIN portal now has a third server-only, allowlisted
+    // website-incident read. Reject any wider/raw tenant read in this mock.
+    assert.equal(calls,3);
+    assert.ok(url.includes('fingerprint=in.('));
+    assert.ok(url.includes('&limit=3'));
+    assert.ok(!url.includes('DO_NOT_LEAK'));
+    return {ok:true,json:async()=>[
+      {fingerprint:'powerhouse|website|checkout-status-dom-null-after-benefit-fix|20261102-v1',maturity:'OBSERVED',evidence:{private_person_key:'DO_NOT_LEAK'}},
+      {fingerprint:'powerhouse|website|page-seo-date-only-pr-handoff-churn|20261102-v1',maturity:'OBSERVED',evidence:{private_person_key:'DO_NOT_LEAK'}},
+      {fingerprint:'powerhouse|website|paginacontrole-github-actions-pr-create-denied|20261102-v1',maturity:'OBSERVED',evidence:{private_person_key:'DO_NOT_LEAK'}}
+    ]};
   };
   const result=await loadFailureCoverage({baseUrl:'https://example.supabase.co/',key:'redacted-test-key',fetchImpl:fakeFetch});
-  assert.equal(calls,2);
+  assert.equal(calls,3);
   assert.equal(result.status,'READBACK_COMPLETE');
+  assert.equal(result.websiteRecovery.status,'READBACK_COMPLETE');
+  assert.equal(result.websiteRecovery.checkout,'RECOVERY_EVIDENCE_PENDING');
+  assert.equal(result.websiteRecovery.seoDate,'RECOVERY_EVIDENCE_PENDING');
+  assert.equal(result.websiteRecovery.prHandoff,'OPEN_AUTHORIZATION');
   assert.equal(result.totals.patterns,1);
   assert.equal(result.predictiveRecovery.status,'TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING');
   assert.ok(!JSON.stringify(result).includes('DO_NOT_LEAK'));
