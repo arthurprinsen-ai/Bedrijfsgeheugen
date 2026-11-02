@@ -7,3 +7,6 @@
 - **Regression:** `tests/brain-security-entrepreneur-compass-v1.test.mjs`; plus de originele private trust boundary-tests.
 - **Preventie:** geen false-green, geen veiligheidspercentage of onbewezen certificering, geen openbare interne technische details, geen tweede scheduler.
 - **Proof:** bronbeveiliging en portaalproductie alleen LIVE_BEWEZEN na beschermde gates en onafhankelijke bronreadback.
+
+- **Serverbeperking:** `netlify/functions/_security-trust-customer-projection.mjs` en geauthenticeerde `security-trust.mjs` beperken niet-admin payloads server-side; geen UI-only redactie.
+- **Aanvullende regresstest:** `tests/brain-security-customer-projection-v1.test.mjs` toetst op afwezige interne details, overeind gebleven bronmomenten en behoud van de oorspronkelijke admin-grens.
