@@ -213,6 +213,40 @@ function overview(events,observability){
   <section class="poc-panel"><div class="poc-panelhead"><h4>Dagelijkse activiteit</h4><span>${s.events} events · ${s.sources} bronnen · ${s.layers} lagen</span></div>${timeline(events.slice(0,80))}</section>`;
 }
 
+/** Only the admin-approved summary of the ORIGINAL ONE BRAIN observed-state record.
+ * Server drops raw evidence, fingerprints, customer and tenant data.
+ */
+function portalUxProofCard(proof,releaseEvidence){
+ const source=proof?.status==='READBACK_COMPLETE';
+ const published=releaseEvidence?.providerIdentity?.netlifyPublishedSha||'';
+ const releaseMatches=source && published && proof.productionSha===published &&
+   proof.release==='LIVE_SOURCE_AND_BROWSER_PROVEN'&&proof.browser==='PASS_15_SKIPPED_1';
+ const status=releaseMatches?'LIVE_SOURCE_AND_BROWSER_VERIFIED':source?'PRODUCTION_SOURCE_RECHECK_DUE':'UNVERIFIED';
+ const readiness=source?proof.acceptance||{}:{};
+ const checks=[
+  ['WCAG 2.2 AA onafhankelijk',readiness.wcag],
+  ['Ondernemerstaken en SUS',readiness.usability],
+  ['Twee echte klanttenants',readiness.tenants],
+  ['Internationale ontwerpbeoordeling',readiness.award]
+ ];
+ const label=value=>value==='VERIFIED'?'Onafhankelijk geverifieerd':
+   value==='ASSESSED'?'Beoordeeld':value==='NOT_ASSESSED'?'Niet beoordeeld':'Bewijs ontbreekt';
+ const indicators=checks.map(([name,value])=>'<article class="poc-component"><b>'+esc(name)+'</b>'+
+  '<span class="poc-badge '+(value==='VERIFIED'||value==='ASSESSED'?'good':'warn')+'">'+esc(label(value))+'</span></article>').join('');
+ return '<section class="poc-panel" data-portal-ux-proof data-evidence-status="'+esc(status)+'">'+
+  '<div class="poc-panelhead"><h4>Ondernemersportaal · gebruikskwaliteit</h4>'+
+  '<span class="poc-badge '+(releaseMatches?'good':'warn')+'">'+
+  esc(releaseMatches?'Technische release bronbevestigd':'Broncontrole of bewijs open')+'</span></div>'+
+  '<p class="poc-note">Dit is de samenvatting van de bestaande ONE BRAIN-productiewaarneming, alleen zichtbaar na beheerdersautorisatie. Een goedgekeurde release bewijst geen toegankelijkheid, gebruiksgemak of ondernemersresultaat.</p>'+
+  '<p class="poc-note">Publicatiebron: '+esc(source?proof.productionSha.slice(0,12):'onbekend')+
+  ' · bronwaarneming: '+esc(source?fmtTime(proof.observedAt):'niet beschikbaar')+
+  ' · geldig tot: '+esc(source?fmtTime(proof.validUntil):'niet vastgesteld')+
+  '. Beveiligingsherstel: '+esc(source?proof.securityDiagnostic:'onbekend')+'.</p>'+
+  '<div class="poc-grid2">'+indicators+'</div>'+
+  '<p class="poc-note">Alleen een actuele bronvergelijking met de echte gepubliceerde SHA kan de technische release bevestigen. Bewijs voor WCAG, 8+ ondernemerstrajecten, twee-tenanttoegang en prestaties wordt afzonderlijk onderzocht.</p>'+
+  '<a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547" target="_blank" rel="noopener noreferrer">Ontwerpdoelen, incidenten en onafhankelijk bewijs</a></section>';
+}
+
 function systemMapView(systemMap,events,observability={}){
   if(!systemMap)return empty('De canonieke System Map ontbreekt in de beveiligde runtimeprojectie.');
   const snapshot=systemMap.providerSnapshot||{};
@@ -300,6 +334,7 @@ function systemMapView(systemMap,events,observability={}){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  ${portalUxProofCard(systemMap.portalUxReleaseProof||{},observability.releaseEvidence)}
   <section class="poc-panel" data-original-site-recovery data-evidence-status="${esc(siteVerified?'READBACK_COMPLETE':'UNVERIFIED')}">
     <div class="poc-panelhead"><h4>Website &amp; SEO · bewijs en herstel</h4><span class="poc-badge ${siteAllGreen?'good':'warn'}">${siteAllGreen?'Alle controles bewezen':'Herstelpunten open of onzeker'}</span></div>
     <p class="poc-note">Alleen gecontroleerde incidentstatussen uit het bestaande Supabase ONE BRAIN-register voor beheerders. Een live technische release is geen bewijs van een automatische volgende uitvoering of nieuwe omzet.</p>
