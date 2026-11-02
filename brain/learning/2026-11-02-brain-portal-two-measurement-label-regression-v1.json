@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|brain|portal-two-measurement-stale-text-contract|20261102-v1",
+  "obligation_id": "powerhouse-original-brain-portal-two-measurement-test-contract-20261102-v1",
+  "parent_issue": 4439,
+  "compiler": {
+    "failure_class": "STALE_ASSERTION_AFTER_SAFE_UI_CHANGE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "owner": "Original ONE BRAIN backend and owner-only Portal source-contract test owner",
+  "root_cause": "New protected Portal evidence PR #5282 correctly separates latest failed BRAIN run from later registered 0-failure software recovery, while original historical regression #3050 still required old conflating label 'Laatste vastgelegde BRAIN-hertest'. Exact postmerge backend run 41433667027 failed 1 of 5400 tests.",
+  "prevention_rule": "Whenever owner-only incident copy changes, preserve exact distinct labels for original failed baseline and separate software recovery, a safe escaped absolute HTTPS provider URL for each, owner-only authorization, and explicit no-independent-terminal/no-business-outcome language. Update original source-locked test in the SAME release; never delete or skip the test or blur software/business proof. Require protected Required, CodeQL, original full postmerge BRAIN and actual production readback before PROVEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_merge_sha": "295c12ab94303af30b9b9fc30207d15ecf88db1e",
+    "failed_run_id": 41433667027,
+    "failed_backend_job_id": 125238718390,
+    "total": 5400,
+    "passed": 5397,
+    "failed": 1,
+    "skipped": 2,
+    "failed_test_index": 3050,
+    "actual_ui_source": "portal-v2/modules/andere-data.js",
+    "runtime_code_changed": false,
+    "prior_software_suite_zero_proven": true,
+    "recurrence_free": false,
+    "customer_order_proven": false,
+    "status": "CANDIDATE_NOT_MERGED"
+  }
+}
