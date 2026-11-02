@@ -204,12 +204,18 @@ jobs:
           actions_page="$(page_for_cycle 32)"
           branches_page="$(page_for_cycle 70)"
           echo "JANITOR_BOUNDED_CURSOR:actions_page=$actions_page:branches_page=$branches_page:run=$JANITOR_RUN_NUMBER"
-          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs-after.json
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs-pages.json
+          jq 'add' .artifacts/open-prs-pages.json > .artifacts/open-prs-after.json
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
 
           # Active TERMINAL_DELIVERY lease may not remain closed without merge.
-          jq -c '.[] | select((.merged_at == null) and ((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY")))' .artifacts/closed-prs-recent.json | while read -r closed_pr; do
+          jq -c '.[] | select((.merged_at == null) and ((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY")))' .artifacts/closed-prs-recent.json > .artifacts/terminal-lease-candidates.ndjson
+          # A closed-PR 100-record sample is positive-only evidence; its absence is NEVER
+          # complete proof that no older merged successor exists (cf. #2225 -> #2353).
+          # Materialize producer output before consuming so an API error cannot mask itself
+          # as an upstream jq SIGPIPE under pipefail.
+          while IFS= read -r closed_pr; do
             pr="$(jq -r '.number' <<<"$closed_pr")"
             body="$(jq -r '.body // ""' <<<"$closed_pr")"
             obligation="$(printf '%s\n' "$body" | sed -n 's/^Obligation-ID:[[:space:]]*//p' | head -n1)"
@@ -236,8 +242,11 @@ jobs:
                 current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
                 [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
                 [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
-                gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
-                jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+                # No destructive reopen on incomplete closed-PR history. Existing canonical
+                # delivery owner must resolve the exact obligation from full lineage and
+                # head-branch readback before any separate authorized mutation.
+                echo "::warning::JANITOR_TERMINAL_LEASE_HISTORY_UNPROVEN:pr=${pr}:obligation=${obligation}"
+                jq -cn --arg type TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"BOUNDED_CLOSED_PR_SAMPLE_NOT_GLOBAL_LINEAGE_PROOF",requires_owner_readback:true,reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
               fi
             elif [ "$successor_count" -eq 1 ]; then
               successor="$(jq -r --arg obligation "$obligation" '[.[] |
@@ -252,11 +261,12 @@ jobs:
               echo "::error::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"
               exit 78
             fi
-          done
+          done < .artifacts/terminal-lease-candidates.ndjson
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' > ".artifacts/janitor-action-runs-${status}.ndjson"
+            while read -r run_json; do
               run_id="$(jq -r '.id' <<<"$run_json")"
               branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
               run_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
@@ -340,11 +350,12 @@ jobs:
                 fi
               fi
               jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg mode "$cancel_mode" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,mode:$mode}' >> .artifacts/janitor-runtime-actions.ndjson
-            done
+            done < ".artifacts/janitor-action-runs-${status}.ndjson"
           done
 
           # Delete only unprotected non-main refs with no open PR and zero commits ahead of main.
-          gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=50&page=${branches_page}" --jq '.[].name' | while IFS= read -r branch; do
+          gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=50&page=${branches_page}" --jq '.[].name' > .artifacts/janitor-branch-candidates.txt
+          while IFS= read -r branch; do
             [ -n "$branch" ] || continue
             [ "$branch" != main ] || continue
             # Release/archive refs are deliberate history; never janitor-owned.
@@ -371,9 +382,12 @@ jobs:
             # Re-read branch immediately before deletion: exact-head drift makes deletion fail closed.
             latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
             [ "$latest_sha" = "$head_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${head_sha}:${latest_sha}"; exit 78; }
-            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+            if ! gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null; then
+                echo "::error::JANITOR_BRANCH_DELETE_API_REJECTED:branch=${branch}:ref=${encoded_branch}"
+                exit 78
+              fi
             jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason "$reason" '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
-          done
+          done < .artifacts/janitor-branch-candidates.txt
 
           # PR-driven sweep of squash-merged debris. The branch walk above reaches one page per run;
           # this walks 5 pages x 100 closed PRs per run (stable created-asc order, 12-run cycle) and
@@ -399,7 +413,10 @@ jobs:
               [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || { sweep_moved=$((sweep_moved + 1)); continue; }
               latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
               [ "$latest_sha" = "$pr_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${pr_sha}:${latest_sha}"; exit 78; }
-              gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+              if ! gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null; then
+                echo "::error::JANITOR_BRANCH_DELETE_API_REJECTED:branch=${branch}:ref=${encoded_branch}"
+                exit 78
+              fi
               jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$pr_sha" --arg reason SQUASH_MERGED_EXACT_HEAD_SWEEP '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
               sweep_deleted=$((sweep_deleted + 1))
             done < .artifacts/sweep-candidates.tsv
