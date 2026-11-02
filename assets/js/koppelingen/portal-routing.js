@@ -22,6 +22,7 @@ export function normalizeConnectorRouting(routing,documentSchema,dataUse){
  if(fields.some(id=>typeof id!=='string'||!FIELD.test(id))||new Set(fields).size!==fields.length)fail();
  const available=new Set((documentSchema?.fields||[]).map(field=>typeof field==='string'?field:field?.key).filter(Boolean));
  if(fields.some(field=>!available.has(field)))fail();
+ if(pages.includes('brain-verwerking')&&dataUse?.mode!=='PORTAL_AI')fail();
  if(dataUse?.mode==='CONNECTION_ONLY'&&pages.length)fail();
  return Object.freeze({portalPages:Object.freeze([...pages]),selectedFields:Object.freeze([...fields])});
 }
