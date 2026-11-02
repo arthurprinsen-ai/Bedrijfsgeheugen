@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  evidenceLedEditorialCouncilV1:Object.freeze({
+    fingerprint:'powerhouse|content|editorial-specialists-not-unified-with-evidence-application|20261102-v1',
+    contract:'one-brain-commercial-editorial-council-v1',
+    owner:'original powerhouse-content-orchestrator + existing publisher/CMS + ONE BRAIN/Heartbeat',
+    advice:'supabase/functions/_shared/editorial-council-context.mjs',
+    generator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+    existingB2BEmailComposer:'supabase/functions/powerhouse-commercial-message-composer/index.ts',
+    learningAuthority:'social_learnings + revenue_learnings + social_learning_applications',
+    measurementAuthority:'social_metric_snapshots + existing CTA/lead/payment lineage',
+    existingAdminCockpit:'netlify/functions/powerhouse-cro-other-data.mjs',
+    existingPortal:'portal-v2/modules/andere-data.js',
+    skill:'.agents/skills/powerhouse-social-cro-funnel/SKILL.md',
+    regression:'tests/brain-editorial-council-one-loop-20261102.test.mjs',
+    brain:'brain/learning/2026-11-02-editorial-council-source-and-application-gap-v1.json',
+    humanDoc:'docs/changes/2026-11-02-evidence-led-editorial-council-v1.md',
+    reviewedResearchDate:'2026-11-02',
+    noExtraWriter:true,noExtraScheduler:true,noAutomaticEmailAuthorization:true,
+    observedLiftVerified:false,nextNaturalLearningApplicationVerified:false,exactProductionVerified:false
+  }),
   entrepreneurActionImpactFeedbackV1:Object.freeze({
     fingerprint:'portal|entrepreneur-experience|prediction-action-outcome-feedback|20261030-v1',
     owner:'existing Portal V2 UX + Company Intelligence OS + ONE BRAIN/Heartbeat',

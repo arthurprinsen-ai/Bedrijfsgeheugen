@@ -64,7 +64,8 @@ test('only original admin-only Netlify route reads canonical 15-loop view, no ne
  const portal=readFileSync('portal-v2/modules/andere-data.js','utf8');
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/allowedTenant='canonical'/);
- assert.match(api,/loadOneLoopAssurance\(\{baseUrl:base,key\}\)/);
+ assert.match(api,/loadOneLoopAssuranceWithDiagnostics\(\{baseUrl:base,key\}\)/);
+ assert.match(api,/import \{loadOneLoopAssuranceWithDiagnostics\} from '\.\.\/\.\.\/brain\/observability\/one-loop-guard-diagnostics\.mjs'/);
  assert.match(api,/ORIGINAL_15_LOOP_ASSURANCE_UNVERIFIED/);
  assert.match(portal,/Powerhouse · één canonieke lus \(15 controleketens\)/);
  assert.match(portal,/Growth-event afgeleverd aan ONE BRAIN/);
