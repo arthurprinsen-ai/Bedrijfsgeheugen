@@ -35,5 +35,31 @@
     "commercial_result_verified": false
   },
   "owner": "original powerhouse-content-orchestrator / ONE BRAIN / Heartbeat",
-  "human_documentation": "docs/changes/2026-11-02-editorial-buyerfirst-postmerge-recovery.md"
+  "human_documentation": "docs/changes/2026-11-02-editorial-buyerfirst-postmerge-recovery.md",
+  "observed_on": "2026-11-02",
+  "schema": "brain-learning-observation-v1",
+  "source_type": "canonical_original_brain_full_suite_and_protected_main_source_code",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs",
+      "tests/brain-editorial-council-one-loop-20261102.test.mjs",
+      "tests/brain-content-artifact-incomplete-retry.test.mjs",
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Full original BRAIN run #41414751648, exact head 77b552fe7fa392a76cc376731523596f1f6c4410, 27 of 5371 failed; original buyer-first append assertion RED before bounded correction.",
+    "pending": "Protected Required, original full BRAIN and CodeQL exact new head, original Supabase Git Integration source parity and natural provider/learning outcome evidence."
+  },
+  "release_status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "measured_views": null,
+  "verified_paid_orders": null
 }

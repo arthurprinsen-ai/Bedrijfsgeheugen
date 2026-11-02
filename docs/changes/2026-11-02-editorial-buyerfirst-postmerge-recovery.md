@@ -14,3 +14,7 @@ Change the NEW council test to assert the explicit original append form and pres
 
 ## Truth and closeout gates
 Require original Required + CodeQL on exact new head, original complete BRAIN success, protected squash, actual original Supabase Git Integration production source byte-parity, first new original post/provider/CMS readback, first measured learning-to-application proof and later recurrence check. The root incident remains VALIDATED, proven_fix NULL and the portal must show non-green source evidence until then; producer source being live is not proof of paid orders. Other 26 backend failures remain with their original source owners/issue #4439.
+
+
+## Original admission evidence (2 November 2026)
+First exact-head Required run [#41416021212](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41416021212) rejected the NEW learning packet at the canonical compiler: `LEARNING_CANONICALIZATION_FAILED: LEARNING_FAILURE_CLASS_REQUIRED`. The source code was not accepted or deployed. Correction adds original machine metadata (`compiler.failure_class=CONTENT_QUALITY`, `scope=SOCIAL`, machine-enforceability, safety sensitivity, repeat count) plus original historical regression and observed/pending evidence fields. No bypass or waived test, same six-file PR #5267 and exact-head Required restart necessary.

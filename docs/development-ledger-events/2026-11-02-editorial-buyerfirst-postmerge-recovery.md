@@ -4,3 +4,5 @@
 - Bounded correction: original orchestrator mutable final editorialSystem; original buyer-first += once; append expert council +=; both original callAI sites unchanged. Strengthen new council test; retain old independent regression.
 - Prevent recurrence: original source-contract TDZ+buyer-first+two-call assertions and full exact-head BRAIN, unchanged provider/CMS/lead evidence gates.
 - Status: CANDIDATE_NOT_LIVE, NO_COMMERCIAL_OUTCOME_PROOF; no direct Edge deployment, no alternative writer or scheduler.
+
+- 2026-11-02 — Required #41416021212 FAIL admission `LEARNING_FAILURE_CLASS_REQUIRED`; same PR #5267 corrects learning JSON canonical compiler metadata and historical replay evidence, retains all original source/regressions. Re-run exact-head Required, CodeQL and original full BRAIN; no production approval implied.
