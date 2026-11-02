@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
 const migration=await readFile(new URL('../supabase/migrations/20261102074013_verified_tenant_intake_and_quoted_value_payment_truth.sql',import.meta.url),'utf8');
+const aclFinalizer=await readFile(new URL('../supabase/migrations/20261102075243_verified_intake_privileged_trigger_acl_finalizer.sql',import.meta.url),'utf8');
 const original=await readFile(new URL('../supabase/migrations/20260911100916_bg_salescyclus_herkomst_en_uitkomsten.sql',import.meta.url),'utf8');
 
 test('original historical risk: source trigger did not replay conversion on verified tenant claim',()=>{
@@ -52,4 +53,11 @@ test('historical signed demo quotes are not admissible customer revenue evidence
  assert.equal(verified({identity:'unverified',organisation:null}),false);
  assert.equal(verified({identity:'verified',organisation:'tenant-1'}),true);
  assert.match(migration,/No historical backfill/);
+});
+
+test('a separately versioned immutable ACL finalizer repairs an already-applied first preview migration',()=>{
+ assert.match(aclFinalizer,/REVOKE ALL ON FUNCTION intern\.trg_scan_uitkomst\(\) FROM PUBLIC, anon, authenticated/);
+ assert.match(aclFinalizer,/REVOKE ALL ON FUNCTION intern\.trg_offerte_uitkomst\(\) FROM PUBLIC, anon, authenticated/);
+ assert.doesNotMatch(aclFinalizer,/CREATE OR REPLACE FUNCTION|CREATE TRIGGER|\bGRANT\b|\bUPDATE\b|\bDELETE\b/i);
+ assert.match(aclFinalizer,/BEGIN;[\s\S]*COMMIT;/);
 });
