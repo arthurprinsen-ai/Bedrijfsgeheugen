@@ -80,3 +80,9 @@ Fingerprint: `powerhouse|security|cross-platform-evidence|20261102`.
 - A database snapshot's previous `PASS` or `VERIFIED` is not permanent proof. The Portal must independently check **every** required provider observation has parseable `observed_at <= current UTC time < expires_at` before showing a positive platform status.
 - Require source snapshot `generatedAt` to be parseable, nonfuture and at most 24h old for overall green. Invalid/missing/expired timestamp, evidence flag or required control = `EVIDENCE_PARTIAL`; current explicit FAIL remains `ACTION_REQUIRED`.
 - Regression: `tests/portal-private-trust-surfaces-v1.test.mjs` and canonical `tests/brain-security-trust-center-v1.test.mjs`. Refresh through original ONE BRAIN/Heartbeat and prove via protected production readback; no second scheduler or customer-side source of truth.
+
+## Security migration history must remain provider-identical
+
+- When any security-related Supabase migration is proven applied in the provider, `supabase/migration-history.lock.json` must contain its **exact version and name**, with every prior provider-verified identity intact. Use original Supabase migration history and executable Git sources as two independent witnesses; never invent missing provider rows.
+- A post-merge BRAIN failure in migration history is an original ONE BRAIN incident and terminal release blocker, even when Netlify deploy is READY. Do not hide, skip, bypass or weaken any CI assertion; repair the original source lock under the sole protected writer, and rerun exact-head gates.
+- Before changing a migration lock, diff **all** provider identities against the existing lock, accept only verified append-only changes, source-close with dedicated `brain-` regression and historical/shadow/canary learning, then require original provider and terminal readback. Never reapply an already-applied database migration merely to make a ledger test green.
