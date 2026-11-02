@@ -61,7 +61,8 @@
     "repeat_count": 1
   },
   "test_evidence": {
-    "observed": "2026-11-02 original Required #41517482860 first retry rejected new learning JSON with LEARNING_FAILURE_CLASS_REQUIRED; two original runtime event producers and private due counts independently verified, regression candidates added to canonical brain test path.",
+    "observed": "2026-11-02 original Required #41517482860 first retry rejected new learning JSON with LEARNING_FAILURE_CLASS_REQUIRED; two original runtime event producers and private due counts independently verified, regression candidates added to canonical brain test path. Original Required #41517851007 then rejected semantic_learning because unique learning fingerprint was absent; preserved the original three incident fingerprints separately and added machine-readable learning identity.",
     "pending": "Corrected exact-head Required/CodeQL/BRAIN, protected merge and actual original agent readback remain required."
-  }
+  },
+  "fingerprint": "powerhouse|private-outcome-economics|source-bound-owner-routing-learning|20261102-v1"
 }
