@@ -5,6 +5,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     owner:'original powerhouse-content-orchestrator + existing publisher/CMS + ONE BRAIN/Heartbeat',
     advice:'supabase/functions/_shared/editorial-council-context.mjs',
     generator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+    existingB2BEmailComposer:'supabase/functions/powerhouse-commercial-message-composer/index.ts',
     learningAuthority:'social_learnings + revenue_learnings + social_learning_applications',
     measurementAuthority:'social_metric_snapshots + existing CTA/lead/payment lineage',
     existingAdminCockpit:'netlify/functions/powerhouse-cro-other-data.mjs',
