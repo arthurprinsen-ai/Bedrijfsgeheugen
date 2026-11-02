@@ -127,9 +127,23 @@ test('provider errors and oversized responses fail closed',async()=>{
 test('panel is embedded in existing cockpit and can never claim green',()=>{
   const html=controlPlaneCockpitMarkup({systemIntegration:projection()});
   assert.match(html,/powerhouse-integration-health/);
+  assert.match(html,/Bronnen LIVE: <strong>7 \/ 7<\/strong>/);
   assert.match(html,/NIET BEWEZEN/);
   assert.match(html,/Heartbeat/);
   assert.match(html,/bron-omzet/);
+});
+
+test('admin portal reports partial live-source coverage and never paints missing terminal evidence green',()=>{
+ const incomplete=projectPowerhouseIntegrationReadback({
+  datasets:{...datasets,terminal:[]},readStates:{...states,terminal:'UNAVAILABLE'},
+  at:'2026-11-02T08:00:00Z'
+ });
+ const html=powerhouseIntegrationMarkup(incomplete);
+ assert.match(html,/Bronnen LIVE: <strong>6 \/ 7<\/strong>/);
+ assert.match(html,/Broncontrole: PARTIAL/);
+ assert.match(html,/NIET BEWEZEN/);
+ assert.match(html,/SOURCE_UNAVAILABLE:terminal/);
+ assert.doesNotMatch(html,/Volledige uitvoeringsketen: <strong>BEWEZEN<\/strong>/);
 });
 test('untrusted text is escaped before reaching dashboard HTML',()=>{
   const p=projection();
