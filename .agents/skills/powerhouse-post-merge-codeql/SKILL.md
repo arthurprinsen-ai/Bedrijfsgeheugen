@@ -5,6 +5,11 @@ description: Use whenever CodeQL or another post-merge security workflow is queu
 
 # Powerhouse Post-Merge CodeQL
 
+## 2026-11-02 — regression label drift after dual historical/software recovery Portal card
+- Original BRAIN backend run 41433667027, job 125238718390: 5,400 tests / 5,397 passed / **1 failed** / 2 skipped. Exact failure `tests/brain-portal-latest-original-backend-observation-20261102.test.mjs` expected the removed single label `Laatste vastgelegde BRAIN-hertest` after original owner-only `Andere data` now separately renders `Laatste vastgelegde mislukte BRAIN-run` AND `Geregistreerde latere BRAIN-herstelproef`. The historical failure must remain and newer positive software proof must be distinct, fully source-validated and fail closed.
+- Fix the source-backed test contract with both independent visible labels, original admin-only API, escaped absolute proof URL, verifiedPass=false, no fake paid order and negative recurrence. Never reintroduce ambiguous wording, hide old failures, skip tests, change runtime production truth, or make customer KPI GREEN from successful unit tests. Original ONE BRAIN learning + human ledger + exact-head Required/CodeQL/BRAIN/protected merge + independent postmerge no-recurrence required. Fingerprint: `powerhouse|brain|dual-observation-ui-label-fixture-drift|20261102-v1`. Incident owner: original admin Portal evidence source and BRAIN backend verifier.
+
+
 ## 2026-11-02 — keep recovered 0-failure BRAIN software truth visible, without false business green
 
 - Original protected ONE BRAIN backend run `41430758451`, job `125229059857`, independently reported 5,392 total, 5,390 passed, 0 failed, 2 skipped. Original protected main `79d99ce9d03068dae3c909707d00dde1933f9d78` reached Netlify provider READY deploy `6ae8689d8166870bb317e761`; original `public.brain_failure_registry.evidence.software_recovery_20261102` already records this separate software milestone.
