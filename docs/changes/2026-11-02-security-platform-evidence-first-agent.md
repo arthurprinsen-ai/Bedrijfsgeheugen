@@ -8,7 +8,7 @@ Deze wijziging versterkt de bestaande `agent-security` en het bestaande beveilig
 - Statusweergave is fail-closed: `NOT_VERIFIED`, `STALE` en `EVIDENCE_PARTIAL` worden nooit groen.
 - Externe links uit security-evidence accepteren uitsluitend absolute HTTPS-URL's zonder credentials.
 - De bestaande Security Agent heeft concrete controleverplichtingen en een gezamenlijk incident/leren-contract. De oorspronkelijke release-writer, beveiligde PR-controles en Heartbeat blijven eigenaar.
-- Gericht regressietestcontract staat in `tests/security-platform-posture-regression-20261102.test.mjs`.
+- Gericht regressietestcontract staat in `tests/portal-private-trust-surfaces-v1.test.mjs`.
 
 ## Beveiliging en privacy
 Provider-specifieke bevindingen, kwetsbare assets, uitvoeringsdetails, incident-ID's en ruwe scanresultaten blijven in het bestaande private register. GitHub-pr, tests en openbare documentatie bevatten geen credentials of interne bronobservaties.
