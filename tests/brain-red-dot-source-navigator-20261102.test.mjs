@@ -18,13 +18,13 @@ test('configuration, activation, and permission cannot prove imported customer K
  assert.match(sourceNavigatorExplanation('understand',m),/fictieve cijfers/i);
 });
 
-test('missing tenant readback must not become zero or green, or expose credentials',()=>{
+test('missing tenant readback must not become zero or green, or expose credentials',async()=>{
  const missing=sourceNavigatorSnapshot(null,{available:false});
  assert.equal(missing.configured,null);
  assert.equal(missing.activated,null);
  assert.equal(missing.actualRecordsVerified,false);
  assert.match(sourceNavigatorExplanation('choose',missing),/niet bevestigen/);
- assert.equal(mountAwardSourceNavigator(null),null);
+ assert.equal(await mountAwardSourceNavigator(null),null);
 });
 
 test('the only UI integration uses original Portal V2 connector route with accessible inspection',()=>{
