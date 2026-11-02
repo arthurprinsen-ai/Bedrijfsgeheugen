@@ -353,7 +353,7 @@ export function projectAcquisitionCtaSource(events,{status='UNAVAILABLE',at=new 
    consentIndependentlyVerified:false,providerAttributionVerified:false,paidOrderAttributionVerified:false};
 }
 
-export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],learningReadiness=[],revenueFlywheel=[],runtimeHealth=[],socialApplications=[],revenueApplications=[],ga4Batches=[],ga4Coverage=[],calibrationHealth=[],predictionControl=[],failureRegistry=[],terminalBrainIncident=[],readStates={},at=new Date().toISOString()}={}){
+export function projectOtherData({daily=[],experiments=[],policies=[],conversionProof=[],experimentProof=[],behavior=[],brainProof=[],socialPosts=[],socialSnapshots=[],oneLoopAssurance=undefined,outreachActions=[],outreachResearch=[],growthDaily=[],emailReplies=[],acquisitionEvents=[],learningReadiness=[],revenueFlywheel=[],runtimeHealth=[],socialApplications=[],revenueApplications=[],ga4Batches=[],ga4Coverage=[],calibrationHealth=[],predictionControl=[],failureRegistry=[],terminalBrainIncident=[],brainBackendFailures=[],readStates={},at=new Date().toISOString()}={}){
   const dailyOk=readStates.daily==='LIVE';
   const experimentsOk=readStates.experiments==='LIVE';
   const behaviorOk=readStates.behavior==='LIVE';
@@ -480,6 +480,26 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
         customerOrdersAttributed:false,
         issue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439',
         originalFailedWorkflow:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41350194932'
+      };
+    })(),
+    brainBackendRun:(()=>{
+      const row=readStates.brainBackendFailures==='LIVE'&&brainBackendFailures.length===1
+        ? brainBackendFailures[0]:null;
+      const evidence=row?.evidence && typeof row.evidence==='object' ? row.evidence:{};
+      const tests=Number(evidence.failed_tests),files=Number(evidence.affected_test_files);
+      return {
+        status:row?'BRAIN_BACKEND_FAILED':'SOURCE_UNVERIFIED',
+        source:'original public.brain_failure_registry',
+        sourceState:readStates.brainBackendFailures||'UNAVAILABLE',
+        fingerprint:'powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1',
+        maturity:row?safeText(row.maturity,35):'UNKNOWN',
+        failingTests:row&&Number.isInteger(tests)&&tests>0?tests:null,
+        affectedFiles:row&&Number.isInteger(files)&&files>0?files:null,
+        failedOriginalRun:row&&evidence.brain_run===41406918918?
+          'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918':null,
+        verifiedPassed:false,
+        noSecondExecutor:true,
+        ordersIndependentlyProven:false
       };
     })(),
     editorialQuality:{
@@ -613,13 +633,18 @@ export default async function handler(request){
     // out of a generic most-recent-20 registry window. Owner-only endpoint.
     select(base,key,'brain_failure_registry',
       'select=fingerprint,maturity,root_cause,proven_fix,regression_ref,occurrence_count,last_seen_at&fingerprint=eq.'+
-      encodeURIComponent('powerhouse|terminal|exact-head-unified-brain-run-missing|20261029-v1')+'&limit=2')
+      encodeURIComponent('powerhouse|terminal|exact-head-unified-brain-run-missing|20261029-v1')+'&limit=2'),
+    // Independently observed failures of the ORIGINAL exact-head BRAIN lane.
+    // Owner-only server read; never treat a self-reported registry row as success.
+    select(base,key,'brain_failure_registry',
+      'select=fingerprint,maturity,occurrence_count,last_seen_at,evidence&fingerprint=eq.'+
+      encodeURIComponent('powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1')+'&limit=2')
   ];
   const responses=await Promise.allSettled([...queries,loadOneLoopAssuranceWithDiagnostics({baseUrl:base,key})]);
   const assuranceResult=responses[queries.length];
   const oneLoopAssurance=assuranceResult?.status==='fulfilled'?assuranceResult.value:{status:'UNVERIFIED',reason:'ORIGINAL_15_LOOP_READ_FAILED'};
-  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000,1,1,1,200,200,30,1,2,1,1,20,1];
-  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents','learningReadiness','revenueFlywheel','runtimeHealth','socialApplications','revenueApplications','ga4Batches','ga4Coverage','calibrationHealth','predictionControl','ga4Health','failureRegistry','terminalBrainIncident'],readStates={},datasets=[];
+  const limits=[2000,150,50,1,150,5000,1,200,300,1200,2400,300,300,180,150,1000,1,1,1,200,200,30,1,2,1,1,20,1,1];
+  const stateNames=['daily','experiments','policies','conversionProof','experimentProof','behavior','brainProof','personalSocialPosts','brandSocialPosts','personalSocialSnapshots','brandSocialSnapshots','outreachActions','outreachResearch','growthDaily','emailReplies','acquisitionEvents','learningReadiness','revenueFlywheel','runtimeHealth','socialApplications','revenueApplications','ga4Batches','ga4Coverage','calibrationHealth','predictionControl','ga4Health','failureRegistry','terminalBrainIncident','brainBackendFailures'],readStates={},datasets=[];
   for(let i=0;i<stateNames.length;i++){
     const answer=responses[i];
     const rows=answer.status==='fulfilled'?answer.value:[];
@@ -634,7 +659,7 @@ export default async function handler(request){
     socialPosts:[...datasets[7],...datasets[8]],socialSnapshots:[...datasets[9],...datasets[10]],
     oneLoopAssurance,outreachActions:datasets[11],outreachResearch:datasets[12],
     growthDaily:datasets[13],emailReplies:datasets[14],acquisitionEvents:datasets[15],
-    learningReadiness:datasets[16],revenueFlywheel:datasets[17],runtimeHealth:datasets[18],failureRegistry:datasets[26],terminalBrainIncident:datasets[27],
+    learningReadiness:datasets[16],revenueFlywheel:datasets[17],runtimeHealth:datasets[18],failureRegistry:datasets[26],terminalBrainIncident:datasets[27],brainBackendFailures:datasets[28],
     socialApplications:datasets[19],revenueApplications:datasets[20],
     ga4Batches:datasets[21],ga4Coverage:datasets[22],calibrationHealth:datasets[23],predictionControl:datasets[24],
     ga4Health:datasets[25],readStates});
