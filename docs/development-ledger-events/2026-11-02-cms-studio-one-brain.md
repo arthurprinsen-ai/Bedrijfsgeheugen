@@ -17,3 +17,6 @@ Source grammar and regression tests before PR; protected Required/CodeQL/BRAIN, 
 
 ## Recurrence and learning
 Occurrence is an OBSERVED UX deficiency until a real nontechnical editor completes a versioned edit and readback in production. On any save, quality, preview or authorization failure, preserve original incident lineage, classify cause, restore safely, add deterministic regression, verify against next natural run and only then promote a rule. Avoid second schedulers, CMSs, publishers, duplicated data stores or arbitrary auto-publication of old drafts.
+
+## Protected admission incident (same obligation)
+The first Required attempt rejected unsupported PR metadata Candidate-Type: feature. Corrected to the repository's supported implementation type without lowering admission. The second attempt admitted hygiene but correctly rejected a new tests/cms-studio-20261102.test.mjs entry under learning.evaluation.historical_replay: that strict canonicalization contract accepts only tests/brain-*.test.mjs. Corrected the learning record to replay existing tests/brain-cms-powerhouse-one-loop-20261030.test.mjs and kept the new CMS Studio test as its explicit future regression. Old failed attempts stay immutable evidence; require fresh exact-head protected checks, not a false GREEN.
