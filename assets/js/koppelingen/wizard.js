@@ -64,6 +64,7 @@ export function toConnectorDefinition(state){
   })));
   return Object.freeze({
     templateId:template.id,
+    name:template.title,
     source:Object.freeze({type:template.source.type,connectionId:answers.connection||null,filters:template.filters||{}}),
     documentSchema:Object.freeze({type:template.documentType||'custom',fields}),
     mappings,
