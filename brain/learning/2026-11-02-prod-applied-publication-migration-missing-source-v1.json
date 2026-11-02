@@ -27,7 +27,9 @@
     "production_migration_20261102074013_applied": false,
     "production_migration_20261102075243_applied": false,
     "provider_history_edited": false,
-    "production_paid_eur": 0
+    "production_paid_eur": 0,
+    "original_pr_first_admission_failed": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+    "original_required_run": 41410913989
   },
   "correction": "Restore the exact already-applied 20261031135451 migration SQL body as its own historical source file under the canonical supabase/migrations directory, preserving every byte of the original provider ledger; no new SQL semantics. Retain protected main / official Supabase deployment integration, preview migration replay, tenant safety checks and original publisher owner, no force recreation or manual migration-history insert/delete.",
   "prevention": [
@@ -35,10 +37,17 @@
     "A legitimately already applied production migration missing from Git must be restored byte-for-byte from the provider ledger, never fabricated or skipped, and must keep its original migration version.",
     "Do not delete or change production migration history or bypass Supabase Preview as a workaround.",
     "Any source merge is NOT a Supabase production deployment until both new migration identities and actual trigger/function ACLs are independently read back from production.",
-    "Do not alter the original publisher next_action ownership, status, consent, recipients, provider receipt or dedupe in this restoration."
+    "Do not alter the original publisher next_action ownership, status, consent, recipients, provider receipt or dedupe in this restoration.",
+    "For security-sensitive schema/migration incidents, machine learning must specify historical_replay, shadow, and canary regression paths; never relabel security_sensitive=false to obtain admission. Passing static canary fixture does not prove live provider deployment."
   ],
   "evaluation": {
     "historical_replay": [
+      "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
+    ],
+    "canary": [
       "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
     ]
   },
