@@ -1,0 +1,74 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "version": "v1",
+  "observed_at": "2026-11-02",
+  "fingerprint": "supabase|revenue-learning|migration-history-lock-stale-after-production-20261029",
+  "parent_issues": [
+    4198,
+    4439
+  ],
+  "maturity": "SOURCE_CANDIDATE",
+  "original_owner": "original Supabase native GitOps / ONE BRAIN backend / Powerhouse delivery",
+  "compiler": {
+    "failure_class": "ORIGINAL_NATIVE_MIGRATION_LEDGER_VS_SOURCE_LOCK_DRIFT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "Original provider-backed migration history lock captured 2026-10-29 listed 784 records and a historical brain test hardcoded 774. After legitimate protected-native Supabase release, official production provider records and actual repository migrations both contained precisely 790 version/name pairs. Source lock was not refreshed by original post-release workflow; BRAIN postmerge #41412246916 failed 32 tests including three lock assertions, while the real database fix was live.",
+  "cause_classification": "source-lock freshness / historical test literal drift; independent of 29 other BRAIN source failures",
+  "observations": {
+    "original_live_production_project": "adhjwmvyoixzjtmiroln",
+    "observed_provider_migration_count": 790,
+    "observed_git_migration_count": 790,
+    "missing_provider_ids": 0,
+    "missing_repository_ids": 0,
+    "duplicate_version_ids": 0,
+    "previous_lock_count": 784,
+    "old_historical_test_expected_count": 774,
+    "last_historical_provider_version": "20261102075243",
+    "historical_mirror_version": "20261031135451",
+    "brain_run": 41412246916,
+    "brain_failed_tests": 32,
+    "brain_passed_tests": 5330,
+    "real_paid_orders_proven": false,
+    "realized_revenue_eur": 0,
+    "no_manual_migration_apply": true,
+    "source_test_improvements_candidate": true
+  },
+  "action": "Refresh original migration-history.lock.json exclusively from complete official production provider version/name readback after exact bi-directional Git file parity. Replace historical literal 774 with repeatable source-lock parity and preserve at least 790 independently observed identities. Add regression and update same owner skill, human runbook, developer ledger.",
+  "prevention": [
+    "When original native provider adds production migrations, original same writer must reconcile full official migration version/name set against all executable local source before refreshing the canonical snapshot.",
+    "Never invent, delete or manually apply migration history; if source/provider mismatch exists fail closed and restore official byte-for-byte source.",
+    "Historical tests may assert pinned critical versions and >=observed baseline but not freeze an old total as permanent current production count.",
+    "Whole BRAIN 32 failures and customer paid revenue must remain separate EVIDENCE_DUE gates even if migration parity and targeted replay pass.",
+    "No new scheduler, writer, login, fake provider proof, permission bypass, or customer data/backfill."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+  ],
+  "provider_evidence": {
+    "production_migrations_applied": true,
+    "protected_main_source_sha": "63ab2db777fbb48bfbcf1a503c1b573ba7c32c8c",
+    "bidirectional_identity_parity": true,
+    "real_money_observed": false
+  },
+  "release": {
+    "required_success": false,
+    "codeql_success": false,
+    "protected_merge": false,
+    "original_netlify_release_required": false,
+    "live_source_lock_proven": false,
+    "full_brain_green": false,
+    "ongoing_recurrence_absence_proven": false
+  }
+}
