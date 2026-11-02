@@ -21,7 +21,7 @@ test('lock contains exact latest provider-recorded identities and preserves the 
  assert.ok(lock.applied.length>=790,'never silently lose 790 production-applied identities verified on 2 November');
  assert.equal(lock.applied.length,names.length,'entire executable migration inventory must match provider history');
  assert.equal(applied.size,lock.applied.length,'no duplicate applied version');
- assert.match(lock.captured_at,/^2026-11-02T/,'snapshot must disclose provider observation date');
+ assert.ok(Number.isFinite(Date.parse(lock.captured_at)) && Date.parse(lock.captured_at)>=Date.parse('2026-11-02T08:25:10.883Z'),'production provider observation must advance monotonically');
  for(const [version,name] of recent)assert.equal(applied.get(version),name,'independently verified historical baseline must remain');
 });
 
