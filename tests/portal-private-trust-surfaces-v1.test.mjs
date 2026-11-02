@@ -54,7 +54,7 @@ test('customer labels and system map express private sovereignty and security su
 });
 
 // Security platform fail-closed regression: co-located with canonical Portal trust delivery owner.
-import {securityTone,safeSecurityEvidenceUrl,summarizeSecurityPlatforms,securityOverallPosture} from '../portal-v2/modules/security-trust-workspace.js';
+
 
 test('security statuses never produce false-green from negated or ambiguous evidence',()=>{
  for(const state of ['NOT_VERIFIED','UNVERIFIED','EVIDENCE_PARTIAL','UNKNOWN','STALE','EXPIRED','PENDING','NOT_VERIFIED_PASS',''])assert.notEqual(securityTone(state),'ok',state);
