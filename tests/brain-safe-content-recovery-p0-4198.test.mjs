@@ -6,7 +6,12 @@ test('restore blocked source-backed content through canonical orchestrator, neve
  assert.match(source,/retryableContentBlock/);
  assert.match(source,/reason\.startsWith\('GLOBAL_POST_DUPLICATE_BLOCKED:'/);
  assert.match(source,/reason === 'SOURCE_DEADLINE_EXPIRED'/);
- assert.match(source,/\|\| retryableContentBlock \|\| retryableHeldPersonalDuplicate\)/);
+ // Fresh company-source rotation is allowed only in the original loop after
+ // the strict pre-provider helper proves the authority remains unconsumed.
+ assert.match(source,/\|\| retryableContentBlock \|\| retryableHeldPersonalDuplicate \|\| retryableCompanyEditorialBlock\)/);
+ assert.match(source,/planRejectedCompanyRegeneration\(/);
+ assert.match(source,/consumedCapability:consumed/);
+ assert.match(source,/const consumed=Boolean\(capabilitySource\.data\?\.consumed_at&&!capabilitySource\.data\?\.revoked_at\)/);
  assert.match(source,/invoke\(url, expected, 'powerhouse-content-orchestrator', \{ runDate \}\)/);
 });
 test('no ambiguous provider side effects or duplicate publications permitted',()=>{
