@@ -38,7 +38,7 @@ test('original System Map writer synchronizes canonical app entry and remains de
   for(const d of directories)mkdirSync(join(root,d),{recursive:true});
   for(const f of surfaces)put(root,f,'export const same=true;\n');
   put(root,'portal-v2/app.js','export const version=1;\n');
-  put(root,'portal-v2/index.html','<html><script type="module" src="./app.js?bg_explain='+'0'.repeat(64)+'"></script><link href="./styles.css" rel="stylesheet"></html>\n');
+  put(root,'portal-v2/index.html','<html><script type="module" src="./app.js?bg_explain='+'0'.repeat(64)+'"></script><link href="https://www.bedrijfsgeheugen.nl/styles.css" rel="stylesheet"></html>\n');
   put(root,'platform/system-map/canonical-system-map.mjs',mapSource);
   const first=execute(root,true);
   assert.equal(first.status,0,first.stderr);
@@ -47,7 +47,7 @@ test('original System Map writer synchronizes canonical app entry and remains de
   assert.match(first.stdout,/PORTAL_EXPLANATION_ENTRY_STAMPED/);
   assert.ok(hashOf(map1));
   assert.equal(entryHash(html1),hashOf(map1));
-  assert.match(html1,/href="\.\/styles\.css"/,'unrelated asset remains unchanged');
+  assert.match(html1,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/styles\.css"/,'unrelated asset remains unchanged');
   const repeat=execute(root,true);
   assert.equal(repeat.status,0,repeat.stderr);
   assert.equal(read(root,'platform/system-map/canonical-system-map.mjs'),map1);
