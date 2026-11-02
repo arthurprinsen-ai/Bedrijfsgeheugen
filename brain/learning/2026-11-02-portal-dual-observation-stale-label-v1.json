@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|brain|portal-two-measurement-stale-label-test-oracle|20261102-v1",
+  "obligation_id": "original-brain-portal-dual-observation-copy-contract-20261102-v1",
+  "parent_issue": 4439,
+  "related_original_prs": [
+    5255,
+    5264,
+    5282
+  ],
+  "compiler": {
+    "failure_class": "STALE_TEST_ORACLE_AFTER_SAFER_UI_COPY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "owner": "Existing original ONE BRAIN admin-only Portal read model and original post-merge CodeQL SkillOps owner",
+  "root_cause": "Original exact-head #5282 backend job 125238718390 (GitHub run 41433667027) reported 5400 tests / 5397 pass / 1 fail / 2 skip. Old tests/brain-portal-latest-original-backend-observation-20261102.test.mjs asserted the outdated singular Dutch label 'Laatste vastgelegde BRAIN-hertest' after the approved Portal now intentionally exposes two disambiguated measurements: 'Laatste vastgelegde mislukte BRAIN-run' and 'Geregistreerde latere BRAIN-herstelproef'. Independent source and previously green #5282 software proof test already validate owner-only gating and safe absolute links.",
+  "prevention_rule": "When the original Portal changes an observation label from one ambiguous measurement into two explicit historical failed vs later software-pass observations, update both the original historical observation test and the newer software recovery test atomically; never drop owner-only/admin check, escaped absolute HTTPS links, negative forged zero-proof, no-business-outcome and no-terminal bypass assertions. Run exact changed-source regression and full original BRAIN after protected CI/CodeQL and verify independent Netlify provider exact SHA and authorized Portal UI. A software-zero run is historical source proof, never a permanent promise; new full-run failures remain RED.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_run_id": 41433667027,
+    "backend_job_id": 125238718390,
+    "original_candidate_sha": "ace7e4b37b23517c8f3ad55fb4696d93f28bc562",
+    "original_main_sha": "295c12ab94303af30b9b9fc30207d15ecf88db1e",
+    "verified_tests": 5400,
+    "verified_passed": 5397,
+    "verified_failed": 1,
+    "verified_skipped": 2,
+    "historical_zero_run_id": 41430758451,
+    "historical_zero_failed": 0,
+    "source_test_changed": true,
+    "source_UI_unchanged": true,
+    "provider_deploy_verified_for_repair": false,
+    "natural_no_recurrence_proven": false,
+    "commercial_outcome_verified": false,
+    "status": "SOURCE_CANDIDATE_NOT_MERGED"
+  }
+}
