@@ -839,3 +839,14 @@ CI Calibration remains read-only and has no repository mutation authority. The A
 - Downward/defensive tuning remains metric-derived and bounded to the existing tuning allowlist.
 - Calibration observations remain non-persistent signals.
 - Every persistent tuning change still requires the existing protected optimizer PR and all Required/security/exact-SHA/production gates.
+
+
+## Janitor HTTP 422: bounded history is never negative lineage proof (2026-11-02)
+
+Fingerprint: `github|janitor-terminal-lease|bounded-successor-history|http422-sigpipe|20261101-v1`. Canonical incident: #5320.
+
+- A snapshot of the 100 most recently updated **closed** PRs can prove a merged successor only when that successor is present. Its absence cannot prove no older successor exists. Historical replay: closed PR #2225, merged superseding #2353 outside the snapshot.
+- In existing repository Janitor, when a closed `TERMINAL_DELIVERY` PR has no active successor and the bounded closed sample lacks a merged successor, record `TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN`; do not `PATCH state=open`. The canonical delivery owner alone resolves full lineage and exact ref, lease and branch evidence before considering a new authorized action.
+- Materialize `jq` and `gh api --jq` producer output before a fallible `while` consumer under `set -euo pipefail`. For mutation failures include operation/ref/PR identity and sanitized provider status/body; never treat a secondary SIGPIPE as the primary defect.
+- Preserve independent branches, queues, protection and required checks. Mark portaal run-local janitor `PARTIAL_FAILURE` until native repair-run and actual readback; do not collapse 133 sampled supervisor drift observations into 133 resolved defects or global green.
+- Mandatory replay: `tests/brain-janitor-terminal-lease-422-20261101.test.mjs`. End-to-end only after protected exact-head merge and next existing Janitor job + readback; no parallel cron.
