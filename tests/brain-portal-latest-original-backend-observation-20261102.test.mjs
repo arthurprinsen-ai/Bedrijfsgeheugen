@@ -49,13 +49,17 @@ test('invalid source claims never fabricate a run, success or missing-baseline z
  assert.equal(unavailable.failingTests,null);
 });
 
-test('the original owner-only Portal renders two measurements and safe absolute GitHub href',()=>{
+test('the original owner-only Portal separates historical failure, latest failed run and later recovery with safe GitHub href',()=>{
  const api=readFileSync('netlify/functions/powerhouse-cro-other-data.mjs','utf8');
  const ui=readFileSync('portal-v2/modules/andere-data.js','utf8');
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/latest_original_brain_run/);
  assert.match(ui,/Eerste vastgelegde BRAIN-fouten/);
- assert.match(ui,/Laatste vastgelegde BRAIN-hertest/);
+ assert.match(ui,/Laatste vastgelegde mislukte BRAIN-run/);
+ assert.match(ui,/Geregistreerde latere BRAIN-herstelproef/);
+ assert.match(ui,/brainBackend\.softwareRecovery\?\.failedTests===0/);
+ assert.match(ui,/brainBackend\.softwareRecovery\?\.originalRunUrl/);
+ assert.match(ui,/rel="noopener noreferrer"/);
  assert.match(ui,/esc\(brainBackend\.latestGitHubEvidenceUrl\)/);
  assert.match(ui,/geen onafhankelijke terminalafsluiting/);
 });

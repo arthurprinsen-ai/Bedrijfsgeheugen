@@ -1,0 +1,32 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-02",
+  "fingerprint": "powerhouse|brain|portal-postmerge-historical-label-stale-assertion|20261102-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "parentIssue": 4439,
+  "previousPullRequest": 5282,
+  "failedRunId": 41433667027,
+  "failedJobId": 125238718390,
+  "tests": {
+    "total": 5400,
+    "passed": 5397,
+    "failed": 1,
+    "skipped": 2,
+    "failedIndex": 3050
+  },
+  "rootCause": "Original BRAIN test expected superseded last-retest caption although Portal distinguishes last failing run and later software recovery.",
+  "fix": "Require both current distinct labels and owner-only/auth, historical baseline, escaped full GitHub URL and fail-closed software-recovery guards in original regression.",
+  "preventionRule": "When original Portal evidence labels are semantically split, update assertions atomically within the original protected owner source, preserving both historical and newer proof, and replay whole BRAIN on exact head and postmerge main; no fabricated customer green.",
+  "originalSkill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+  "guardrails": [
+    "single original writer",
+    "no new scheduler or publisher",
+    "no auth/RLS weakening",
+    "no disabled tests",
+    "no commercial outcome inference",
+    "historical failures immutable"
+  ],
+  "evidenceRef": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41433667027",
+  "requiredFutureProof": "Protected Required, CodeQL, full BRAIN 0 failures and later natural replay"
+}
