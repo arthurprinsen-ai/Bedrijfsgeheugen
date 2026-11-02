@@ -72,7 +72,7 @@ const checkoutForm=document.getElementById('form'),checkoutSubmit=document.getEl
 function ensureCheckoutStatus(){
  let el=document.getElementById('status');
  if(!el&&checkoutForm&&checkoutSubmit){
-  el=document.createElement('div');el.id='status';el.className='status';
+  el=document.createElement('div');el.setAttribute('id','status');el.className='status';
   el.setAttribute('role','status');el.setAttribute('aria-live','polite');
   checkoutForm.appendChild(el);checkoutForm.setAttribute('data-bg-checkout-status-recovered','true');
  }
