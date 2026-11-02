@@ -13,3 +13,6 @@ The original allowlisted server read did not recognize these exact legitimate pr
 - Preserve existing fail-closed treatment of unsupported/expired observations, customer privacy, no-store, noindex and protected delivery.
 - Live-operator acceptance still needs real authenticated admin browser readback, WCAG independent audit, two live customer tenants, real entrepreneur task study and p75 metrics; not claimed.
 - Regression is extended in `tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs`; original agent skill is updated. This candidate has no production claim until provider deploy readback.
+
+## Exact-head System Map source-hash sync
+Original protected preflight job 125350776726 correctly blocked the initial candidate: deterministic generator emitted contentHash `2ad1284c3e87758ed5c58ddf0e77034d5f6f4663fbf0300952dbf901d73ac5d0` after the actual Portal V2 UI change while existing canonical System Map and original `portal-v2/index.html` still retained `282af921d28f2414889f356d44729ebd023d637b9c88919321b981998a9cda86`. Integrated only the two exact generator differences, never bypassed or weakened gate. Next protected Required, browser, CodeQL and Netlify readback are still mandatory. This historical failure remains visible.
