@@ -1,4 +1,19 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  connectorTrustEvidenceV1:Object.freeze({
+    fingerprint:'portal|connectors|upstream-secret-leak-and-no-tenant-trust-evidence|20261102-v1',
+    obligation:'portal-connector-trust-gates-20261102-v1',
+    owner:'original Portal V2 + connector engine + ONE BRAIN/Heartbeat',
+    tenantApi:'platform/api/portal-connectors-handler.mjs',
+    trustProjection:'platform/connectors/connector-trust-report.mjs',
+    customerView:'assets/js/koppelingen/view.js',
+    learning:'brain/learning/2026-11-02-connector-trust-evidence-v1.json',
+    regression:'tests/brain-connection-studio-multipage-recovery-20261102.test.mjs',
+    skill:'.agents/skills/portal-living-interface/SKILL.md',
+    noParallelStore:true,noSecondWriter:true,
+    providerReadbackVerified:false,liveRecordIngestVerified:false,
+    independentSecurityAuditVerified:false
+  }),
+
   aiConnectionStudioMultiRouteV1:Object.freeze({
     fingerprint:'portal|connection-studio|single-destination-and-sample-vs-ingestion-gap|20261102-v1',
     obligation:'portal-connection-studio-multiroute-recovery-20261102-v1',

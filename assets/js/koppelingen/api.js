@@ -28,5 +28,6 @@ export const createConnectorApi=({fetchFn=globalThis.fetch}={})=>Object.freeze({
     return jsonRequest(`/api/connectors/${encodeURIComponent(id)}/activate`,{method:'POST',body:{testExecutionId},fetchFn});
   },
   pause:(id,reason)=>jsonRequest(`/api/connectors/${encodeURIComponent(id)}/pause`,{method:'POST',body:{reason},fetchFn}),
+  trust:id=>jsonRequest(`/api/connectors/${encodeURIComponent(id)}/trust`,{fetchFn}),
   executions:id=>jsonRequest(`/api/connectors/${encodeURIComponent(id)}/executions`,{fetchFn})
 });
