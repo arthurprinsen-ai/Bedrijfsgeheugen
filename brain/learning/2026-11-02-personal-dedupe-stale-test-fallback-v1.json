@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|brain|stale-personal-duplicate-test-fallback|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Two historical personal LinkedIn backend tests required the unsafe legacy eligiblePersonal[0] fallback. Original protected orchestrator intentionally excludes previously rejected recommendation ids and selects only a fresh story family, returning null when no independent fresh source survives. Old fallback would republish near-duplicate rejected personal posts; fixture drift, not publisher regression.",
+  "prevention_rule": "The original ONE BRAIN personal publication source must never fall back to stale or rejected eligiblePersonal[0]; prefer an independently verified fresh story-family source, otherwise block this original publication obligation and keep the canonical executor active. Assert negative stale fallback and positive source ordering in original targeted tests, with original sender approval, CMS/identity, duplicate control, provider receipt and exact SHA checks. Never weaken publisher to pass obsolete test.",
+  "owner": "Original ONE BRAIN editorial delivery quality and sender/personal dedupe regression owner",
+  "evidence": {
+    "original_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41414521650",
+    "backend_job_id": 125175284475,
+    "original_test_count": 5367,
+    "original_passing": 5339,
+    "original_failing": 26,
+    "affected_tests": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs",
+      "tests/brain-personal-story-family-rotation-20261027.test.mjs"
+    ],
+    "protected_prior_runtime_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5175",
+    "current_source": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "verified_source_contract": "original rejected recommendation IDs excluded; eligiblePersonal.find(!isStalePersonalSource) || null",
+    "publisher_config_changed": false,
+    "original_provider_posts": "UNPROVEN",
+    "other_original_brain_errors": "OPEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs",
+      "tests/brain-personal-story-family-rotation-20261027.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs",
+      "tests/brain-personal-story-family-rotation-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs",
+      "tests/brain-personal-story-family-rotation-20261027.test.mjs"
+    ]
+  },
+  "fix": "Replace only the stale literal fallback assertions in two existing original backend test files with strict fresh-selection and rejected-fallback prohibitions. Leave original publisher, quality gates, CMS, OAuth, UI and DB unchanged. Update ONE BRAIN incident and original social recovery agent skill with human docs and append-only ledger; demand exact original postmerge BRAIN and provider readback.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}
