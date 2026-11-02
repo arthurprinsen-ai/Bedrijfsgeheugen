@@ -16,7 +16,6 @@
   "owner": "original CMS admin + portal-state-eu publication writer; existing ONE BRAIN/Heartbeat/CRO ownership unchanged",
   "evaluation": {
     "historical_replay": [
-      "tests/cms-studio-20261102.test.mjs",
       "tests/brain-cms-powerhouse-one-loop-20261030.test.mjs"
     ],
     "future_acceptance": [
@@ -24,6 +23,9 @@
       "exact-head merge and Netlify deploy",
       "authenticated browser draft-save/version/readback",
       "following real user editorial completion and incident recurrence checks"
+    ],
+    "future_new_regression": [
+      "tests/cms-studio-20261102.test.mjs"
     ]
   },
   "evidence": {
