@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {outboundDeliveryGap} from '../supabase/functions/_shared/outreach-composer-hold.mjs';
 
 const sender=readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
 const map=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
@@ -36,8 +37,10 @@ test('side effect ID is checkpointed before readback and outcome before done',()
 });
 
 test('the existing zero-send warning and suppression gate remain intact',()=>{
- assert.match(sender,/NO_ELIGIBLE_PREPARED_EMAIL/);
- assert.match(sender,/NO_PROVIDER_CONFIRMED_EMAIL/);
+  assert.match(sender,/outboundDeliveryGap\(\{selected:\(acts\|\|\[\]\)\.length,sent,results:out\}\)/);
+  assert.equal(outboundDeliveryGap({selected:0,sent:0,results:[]}), 'NO_ELIGIBLE_PREPARED_EMAIL');
+  assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'held'}]}), 'NO_PROVIDER_CONFIRMED_EMAIL');
+  assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'unverified'}]}), 'PROVIDER_READBACK_UNVERIFIED');
  assert.match(sender,/status:sent===0\|\|out\.some/);
  assert.match(sender,/CONTACT_SUPPRESSED/);
  assert.match(sender,/HUMAN_MESSAGE_QUALITY_NOT_PROVEN/);
