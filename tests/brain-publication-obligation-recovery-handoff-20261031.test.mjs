@@ -84,7 +84,7 @@ test('same original content loop performs CAS-only metadata writeback; no provid
  assert.match(loop,/\.eq\('channel',handoff\.channel\)\.eq\('next_action',handoff\.previous\)/);
  assert.match(loop,/\.in\('status',\['PLANNED','BLOCKED','FAILED'\]\)\.eq\('external_id',null\)/);
  assert.match(loop,/\.select\('channel,next_action,status,external_id'\)/);
- assert.match(loop,/handoffWriteback,\s*obligations:/);
+ assert.match(loop,/handoffWriteback,\s*incidentLearning,\s*obligations:/); // Original Brain incident-learning is now also returned; publication obligations stay present.
  assert.match(loop,/const LOOP_LEASE_MS = 240_000/);
  assert.match(guard,/owner:typeof x\.owner==='string'/);
  assert.match(portal,/Verantwoordelijke herstelagent/);
