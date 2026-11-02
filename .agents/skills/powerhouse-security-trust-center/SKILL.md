@@ -69,3 +69,9 @@ Fingerprint: `powerhouse|security|cross-platform-evidence|20261102`.
 - Releases must remain behind the existing exclusive-writer protected PR path, Required/CodeQL/BRAIN and independent production readback. Security may **veto** a release but may never bypass the release process.
 - Auditor alerts and configuration reports must be injected into the *existing* scheduled agent run/Heartbeat; this roster/skill alone does not prove autonomous execution. Report `NOT_WIRED` until the provider poller has a verified scheduled invocation.
 - Provider-specific vulnerabilities, affected resources and remediation attempts belong exclusively in the existing private incident register and tenant-scoped trust snapshots, never in this publicly readable repository. Do not claim an audit resolved without a new provider readback.
+
+## Writer-control function search-path regression (2026-11-02)
+- Exclusive PostgreSQL writer leases are security-critical. Preserve `SECURITY INVOKER`, schema-qualified table reads/writes, current service-role-only grants and current single-writer enforcement.
+- Source-own search-path hardening via `20261102141045_writer_control_fixed_search_path_v1.sql`, not ad hoc production DDL. Pin `pg_catalog, writer_control`; abort on function identity or invoker contract drift; verify three function configs with `pg_proc` after application.
+- Canonical negative test: `tests/brain-security-trust-center-v1.test.mjs`. Record provider advisor readback, applied migration identity and real lease smoke tests before resolving the original security warning. Unknown or unapplied remains OPEN.
+- A separate token-gated external RPC review is not silently resolved by this change and requires source-callpath and auth readback before adjusting grants.
