@@ -79,7 +79,7 @@ function renderSovereignty(root,data,security,scope,state={},saveStatus='idle',a
 const PLATFORM_SECURITY_REQUIREMENTS=[
  {provider:'GITHUB',label:'GitHub',checks:['CODEQL','BRANCH_PROTECTION','SECRET_SCANNING']},
  {provider:'SUPABASE',label:'Supabase',checks:['DATABASE_ADVISOR','RLS','PRIVILEGED_FUNCTIONS']},
- {provider:'NETLIFY',label:'Netlify',checks:['PREVIEW_ACCESS','SECRET_SCAN','DEPLOY_PROVENANCE']},
+ {provider:'NETLIFY',label:'Netlify',checks:['PREVIEW_ACCESS','ARCHIVE_PREVIEW_ACCESS','SECRET_SCAN','DEPLOY_PROVENANCE']},
  {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT']}
 ];
 const upper=v=>String(v??'').trim().toUpperCase();
