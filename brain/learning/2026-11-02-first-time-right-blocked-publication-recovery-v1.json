@@ -28,5 +28,23 @@
   "release_state": "PROTECTED_PR_CANDIDATE_NOT_LIVE",
   "proven_fix": null,
   "proof_state": "NOT_PROVEN",
-  "customer_outcome": "UNKNOWN"
+  "customer_outcome": "UNKNOWN",
+  "schema": "brain-learning-observation-v1",
+  "failure_class": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+  "compiler": {
+    "failure_class": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-time-right-company-regeneration-20261102.test.mjs"
+    ],
+    "additional_regression_tests": [
+      "tests/brain-original-incident-learning-20261101.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-p0-first-time-right-blocked-company-regeneration.md"
 }
