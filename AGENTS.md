@@ -1,3 +1,7 @@
+## P0 2026-11-02 — Netlify publicatiebewijs v5, geen regressie naar v2
+
+Het originele `/api/powerhouse-observability` is afgeschermd en gebruikt `social-publication-proof-v5`. De oudere release-parity-test van 2026-10-29 eist ten onrechte v2, terwijl dedicated publicatiediagnostiek al v5 test. Het juiste herstel is een exacte source-contract-testcorrectie, nooit de runtime, adminrechten, providerontvangsten of tenantisolatie verlagen. Behoud originele ontwikkel-incident `powerhouse|brain|netlify-observability-v2-v5-test-drift|20261102-v1`, test historisch/shadow/canary en bewijs postmerge, exact productiedeploy en ingelogde portaalweergave. Geen verzonnen publicaties.
+
 ## P0 2026-11-02 — Janitor JSON Actions-parse en TSV merged-branch-sweep zijn gescheiden
 
 De oorspronkelijke `powerhouse-repository-janitor.yml` heeft een veilige JSON-gebaseerde stale-Actions-run-verwerking en een afzonderlijke, gecontroleerde twee-koloms TSV-sweep voor gemergede branchrefs. Een globale testban op `@tsv` is verouderd en mag niet leiden tot het aanpassen of omzeilen van veilige oorspronkelijke workflowbranches. Scope tests tot exacte run-lus; behoud nooit vervalsbare status, head SHA, cron of originele writer. Incident `powerhouse|brain|janitor-tsv-fixture-global-scope-drift|20261102-v1` met menselijke documentatie, originele BRAIN-resultaten en replay/shadow/canary borging; nooit PROVEN zonder terminal.
