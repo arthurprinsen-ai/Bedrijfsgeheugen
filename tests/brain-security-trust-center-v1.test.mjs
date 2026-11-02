@@ -147,3 +147,14 @@ test('security learning replay: negated status, untrusted evidence link and inco
  const failure=[{provider_key:'NETLIFY',control_key:'ARCHIVE_PREVIEW_ACCESS',status:'FAIL',evidence_available:true}];
  assert.equal(summarizeSecurityPlatforms(failure).find(p=>p.provider==='NETLIFY').status,'ACTION_REQUIRED');
 });
+
+test('writer-control functions have immutable invoker search paths without weakening leases',async()=>{
+ const sql=await read('supabase/migrations/20261102141045_writer_control_fixed_search_path_v1.sql');
+ for(const fn of ['acquire(text,text,text,text,text,integer)','verify(text,text,bigint,text,text,text)','release(text,text,bigint)']){
+  assert.ok(sql.includes('writer_control.'+fn),fn);
+ }
+ assert.match(sql,/set search_path = pg_catalog, writer_control/i);
+ assert.match(sql,/and not prosecdef/i);
+ assert.match(sql,/WRITER_CONTROL_FIXED_SEARCH_PATH_READBACK_FAILED/);
+ assert.doesNotMatch(sql,/\b(?:drop\s+function|create\s+or\s+replace\s+function|grant\s+execute|disable\s+row\s+level\s+security)\b/i);
+});
