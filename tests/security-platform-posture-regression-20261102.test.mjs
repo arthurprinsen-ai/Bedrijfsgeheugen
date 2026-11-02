@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {securityTone,safeSecurityEvidenceUrl,summarizeSecurityPlatforms} from '../portal-v2/modules/security-trust-workspace.js';
+import {securityTone,safeSecurityEvidenceUrl,summarizeSecurityPlatforms,securityOverallPosture} from '../portal-v2/modules/security-trust-workspace.js';
 
 test('security statuses never produce false-green from negated or ambiguous evidence',()=>{
  for(const state of ['NOT_VERIFIED','UNVERIFIED','EVIDENCE_PARTIAL','UNKNOWN','STALE','EXPIRED','PENDING','NOT_VERIFIED_PASS',''])assert.notEqual(securityTone(state),'ok',state);
@@ -33,4 +33,11 @@ test('portal only displays metadata and remains under authenticated trust shell'
  assert.match(source,/security_trust_get|\/api\/security-trust/);
  assert.match(source,/stateClient\.authHeaders/);
  assert.doesNotMatch(source,/JSON\.stringify\(o\.evidence\)/);
+});
+
+test('global security hero cannot be green when platform provider observation is missing',()=>{
+ assert.equal(securityOverallPosture({postureStatus:'VERIFIED_NO_OPEN_FINDINGS'},[]),'EVIDENCE_PARTIAL');
+ assert.equal(securityOverallPosture({postureStatus:'ACTION_REQUIRED'},[]),'ACTION_REQUIRED');
+ const risk=[{provider_key:'SUPABASE',control_key:'DATABASE_ADVISOR',status:'FAIL',evidence_available:true}];
+ assert.equal(securityOverallPosture({postureStatus:'VERIFIED_NO_OPEN_FINDINGS'},risk),'ACTION_REQUIRED');
 });
