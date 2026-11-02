@@ -34,6 +34,9 @@ test('future original incident observer may use stable latest_original_brain_run
 test('invalid source claims never fabricate a run, success or missing-baseline zero',()=>{
  for(const malformed of [{run_id:'javascript:alert(1)',fail:0,terminal_status:'FAILED_BRAIN'},
    {run_id:41409216287,fail:-5,terminal_status:'FAILED_BRAIN'},
+   {run_id:41409216287,fail:null,terminal_status:'FAILED_BRAIN'},
+   {run_id:41409216287,fail:'',terminal_status:'FAILED_BRAIN'},
+   {run_id:41409216287,terminal_status:'FAILED_BRAIN'},
    {run_id:41409216287,fail:0,terminal_status:'SUCCESS'}]){
   const result=p({...source,evidence:{...source.evidence,second_full_brain_run:malformed}});
   assert.equal(result.failingTests,34);
