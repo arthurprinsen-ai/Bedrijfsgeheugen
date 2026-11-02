@@ -7,8 +7,10 @@ const read=path=>readFileSync(path,'utf8');
 test('the real growth-swarm incident skill no longer remains in stale loop debt',()=>{
   const policy=JSON.parse(read('brain/policies/powerhouse-incident-register-and-self-fix-v1.json'));
   const marker=policy.skill_protocol.marker;
-  assert.ok(read('.agents/skills/powerhouse-growth-swarm/SKILL.md').includes(marker));
-  assert.ok(!policy.loop_debt_baseline.includes('powerhouse-growth-swarm'));
+  for(const skill of ['powerhouse-growth-swarm','powerhouse-netlify-production-truth','powerhouse-self-improvement-layer']){
+    assert.ok(read('.agents/skills/'+skill+'/SKILL.md').includes(marker),skill+' really has original incident protocol');
+    assert.ok(!policy.loop_debt_baseline.includes(skill),skill+' must not remain false debt');
+  }
   assert.equal(new Set(policy.loop_debt_baseline).size,policy.loop_debt_baseline.length);
 });
 
