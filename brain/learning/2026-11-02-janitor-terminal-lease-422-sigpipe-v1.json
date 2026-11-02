@@ -86,11 +86,11 @@
       "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
     ],
     "invariants": [
-      "latest-100 closed PR history cannot establish missing merged successor",
-      "closed PR #2225 superseded by merged #2353 is not reopened",
-      "provider 422 must remain primary error; no secondary SIGPIPE masking",
-      "retain stale Actions cancellation checks and protected branch guards",
-      "no global green or resolved drift until independently proven"
+      "bounded closed-pr sample cannot prove missing merged successor",
+      "HTTP 422 must preserve primary operation/ref evidence, not only jq SIGPIPE",
+      "no blind reopen of PR #2225",
+      "existing required security/protected checks remain unchanged",
+      "repair live only after native janitor readback"
     ]
   }
 }
