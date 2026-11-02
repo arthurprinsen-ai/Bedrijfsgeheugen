@@ -16,3 +16,6 @@ De Netlify-archieftestomgeving heeft nog geen onafhankelijk bewezen bezoekersbev
 
 ## Verificatie
 Dedicated replay: `tests/brain-security-entrepreneur-compass-v1.test.mjs`. Bestaande regressies: `tests/portal-private-trust-surfaces-v1.test.mjs` en `tests/brain-security-trust-center-v1.test.mjs`. Vereist: alle bestaande Required, CodeQL, BRAIN, browser/UI en beschermde releasechecks. Uitrol uitsluitend na originele onafhankelijke provider- en pagina-readback.
+
+## Server-side toegangsgrens
+De bestaande geauthenticeerde Netlify trust endpoint blijft ongewijzigd in route, user- en tenantcontrole maar geeft voor gewone klanten via `_security-trust-customer-projection.mjs` alléén expliciet toegelaten velden terug. Dit voorkomt dat interne technische details via Developer Tools alsnog beschikbaar zijn nadat ze visueel zijn verborgen. Voor admins blijft de oorspronkelijke bronweergave intact. Test: `tests/brain-security-customer-projection-v1.test.mjs`. Geen publieke endpoint, nieuwe secret, rechtenverruiming of extra cron.
