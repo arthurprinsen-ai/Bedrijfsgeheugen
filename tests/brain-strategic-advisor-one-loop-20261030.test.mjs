@@ -57,7 +57,7 @@ test('independent verified outcome must have a matching nonempty action ID',()=>
   {action_id:'a-12',status:'PROVIDER_VERIFIED',evidence_health:{status:'healthy'},source_refs:['x']},
   {action_id:'other',status:'OUTCOME_VERIFIED',evidence_health:{status:'healthy'},source_refs:['y']},
   {action_id:'a-12',status:'OUTCOME_VERIFIED',evidence_health:{status:'stale'},source_refs:['z']},
-  {action_id:'a-12',status:'OUTCOME_VERIFIED',evidence_health:{status:'healthy'},source_refs:['receipt:1']}
+  {action_id:'a-12',status:'OUTCOME_VERIFIED',evidence_health:{status:'healthy'},source_refs:['receipt:1'],realized:{amount:8,unit:'HOURS',metric_id:'process-hours',baseline_id:'baseline:1',period_id:'2026-10'}}
  ];
  assert.equal(strategicAdviceItems(m)[0].verifiedOutcomes,1);
  assert.equal(strategicAdviceItems(model([action({id:null})]))[0].verifiedOutcomes,0);
