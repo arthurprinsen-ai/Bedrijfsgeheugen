@@ -40,6 +40,11 @@ test('closed terminal lease candidate producer cannot break pipe into an early-f
   assert.doesNotMatch(lease, /closed-prs-recent\.json \| while/);
   assert.doesNotMatch(lease, /gh api -X PATCH/);
 });
+test('stale Actions JSON stream is materialized before a fallible cancellation loop', () => {
+  assert.match(workflow, /janitor-action-runs-\\\$\\{status\\}\\.ndjson/);
+  assert.match(workflow, /done < "\\.artifacts\\/janitor-action-runs-/);
+  assert.doesNotMatch(workflow, /@json' \\| while read -r run_json/);
+});
 test('branch candidates are materialized, and deletion gives a contextual primary error', () => {
   assert.match(sweep, /--jq '\.\[\]\.name' > \.artifacts\/janitor-branch-candidates\.txt/);
   assert.match(sweep, /done < \.artifacts\/janitor-branch-candidates\.txt/);

@@ -265,7 +265,8 @@ jobs:
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' > ".artifacts/janitor-action-runs-${status}.ndjson"
+            while read -r run_json; do
               run_id="$(jq -r '.id' <<<"$run_json")"
               branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
               run_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
@@ -349,7 +350,7 @@ jobs:
                 fi
               fi
               jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg mode "$cancel_mode" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,mode:$mode}' >> .artifacts/janitor-runtime-actions.ndjson
-            done
+            done < ".artifacts/janitor-action-runs-${status}.ndjson"
           done
 
           # Delete only unprotected non-main refs with no open PR and zero commits ahead of main.
