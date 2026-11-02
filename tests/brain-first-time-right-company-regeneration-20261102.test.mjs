@@ -32,7 +32,8 @@ test('provider-side-effect, authority or prior ACK excludes any regeneration',()
  ];
  for(const item of cases){
   const d=decision(),o=obligation();
-  Object.assign(d,item.d||{});Object.assign(d.delivery_evidence,item.d?.delivery_evidence||{});
+  const {delivery_evidence:override,...otherDecision}=item.d||{};
+  Object.assign(d,otherDecision);Object.assign(d.delivery_evidence,override||{});
   Object.assign(o,item.o||{});
   const r=planRejectedCompanyRegeneration({decision:d,obligation:o,recommendations:sources(),now:day,consumedCapability:item.consumedCapability});
   assert.equal(r.eligible,false,JSON.stringify(item));
