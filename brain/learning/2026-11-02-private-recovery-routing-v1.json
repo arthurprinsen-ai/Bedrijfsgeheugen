@@ -52,5 +52,16 @@
   "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
   "agent_instruction": "AGENTS.md",
   "human_doc": "docs/changes/2026-11-02-private-recovery-routing.md",
-  "development_ledger": "docs/development-ledger-events/2026-11-02-private-recovery-routing.md"
+  "development_ledger": "docs/development-ledger-events/2026-11-02-private-recovery-routing.md",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "test_evidence": {
+    "observed": "2026-11-02 original Required #41517482860 first retry rejected new learning JSON with LEARNING_FAILURE_CLASS_REQUIRED; two original runtime event producers and private due counts independently verified, regression candidates added to canonical brain test path.",
+    "pending": "Corrected exact-head Required/CodeQL/BRAIN, protected merge and actual original agent readback remain required."
+  }
 }
