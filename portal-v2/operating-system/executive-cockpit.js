@@ -101,6 +101,7 @@ export function executiveCockpitMarkup(model){
     <p>Beheer website- en portaalteksten met begrijpelijke velden, een veilig conceptvoorbeeld en de bestaande serverkwaliteitscontrole. Content blijft concept tot bevoegde goedkeuring en onafhankelijke publieke controle. GA4, CTA, leads, betaalde orders en leereffecten blijven aparte, brongebonden metingen.</p>
     <a href="https://www.bedrijfsgeheugen.nl/cms.html" rel="noopener">Open visuele CMS Studio en publicatiebeheer →</a>
     <small>Alleen bevoegde beheerders mogen publiceren. Een CMS-publicatie is geen bewezen conversiestijging.</small>
+    <p><strong>Vertrouwen en kwaliteit:</strong> klantteksten worden gecontroleerd op interne technische informatie, conceptinstructies, overdreven garanties en claims zonder bron. De eindredactie beoordeelt feiten, privacy en relevantie; het effect op klantvertrouwen is niet automatisch bewezen.</p>
   </section>
   <section class="os-health"><h3>Data & bewijs</h3><p>${model.evidence_health.stale} verouderd · ${model.evidence_health.low_confidence} lage confidence · ${model.evidence_health.unavailable} onvolledig</p></section>
   <nav class="os-module-tabs" aria-label="Powerhouse modules">${tabs}</nav><div class="os-module-detail" aria-live="polite"></div>
