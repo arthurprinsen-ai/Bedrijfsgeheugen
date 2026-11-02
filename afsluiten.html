@@ -68,18 +68,29 @@ if(LANG==='en'){document.documentElement.lang='en';document.title=t(document.tit
 function setCheckoutBenefit(id,text){if(!['sources','freshness','automation'].includes(id))throw Error('CHECKOUT_BENEFIT_ID_INVALID');let el=document.getElementById(id);if(!el){let list=document.querySelector('.card.plan ul');if(!list){const card=document.querySelector('.card.plan');if(!card)throw Error('CHECKOUT_PLAN_CARD_MISSING');list=document.createElement('ul');card.appendChild(list)}el=document.createElement('li');el.id=id;list.appendChild(el);list.setAttribute('data-bg-checkout-recovered','true')}el.textContent=t(text)}
 function setTrialLink(text,href){let box=document.getElementById('trialSwitch');if(!box){const form=document.getElementById('form');if(!form)return;box=document.createElement('p');box.id='trialSwitch';box.className='small muted';form.appendChild(box)}const a=document.createElement('a');a.textContent=text;a.setAttribute('href',href);box.replaceChildren(a)}if(q.get('success')==='1'){if(q.get('trial')==='1'){document.getElementById('checkoutResultTitle').textContent=t('Je proefperiode van 30 dagen is gestart.')}document.getElementById('success').hidden=false;document.getElementById('checkout').hidden=true}else{const code=plans[q.get('plan')]?q.get('plan'):'starter',billing=q.get('billing')==='yearly'?'yearly':'monthly',p=plans[code];document.getElementById('plan').value=code;document.getElementById('billingCycle').value=billing;document.getElementById('planName').textContent=p.name;document.getElementById('price').textContent=money(p[billing]);document.getElementById('period').textContent=t(billing==='yearly'?'/ jaar':'/ maand');document.getElementById('paymentTerms').textContent=t(billing==='yearly'?'Ik ga akkoord met de voorwaarden en jaarlijkse betaling.':'Ik ga akkoord met de voorwaarden en maandelijkse betaling.');document.getElementById('billingNote').textContent=t(billing==='yearly'?'Excl. btw. Je betaalt nu {p} en daarna elk jaar automatisch, opzegbaar vóór de verlengdatum (tien maanden betalen, twaalf krijgen). ':'Excl. btw. Je betaalt nu {p} en daarna elke maand automatisch, per maand opzegbaar. ').replace('{p}',money(billing==='yearly'?p.yearly:p.monthly))+t('Beveiligd betalen via Mollie (iDEAL, creditcard of SEPA-incasso).');const trial=q.get('trial')==='1';document.getElementById('mode').value=trial?'trial':'';if(trial){document.getElementById('paymentTerms').textContent=t('Ik ga akkoord met de voorwaarden. Na 30 dagen kies ik zelf of ik betaal; zonder betaling stopt de toegang.');document.getElementById('submit').textContent=t('Start 30 dagen gratis →');document.getElementById('period').textContent=t('/ maand na de proefperiode');document.getElementById('billingNote').textContent=t('Excl. btw. Geen betaalmethode nodig. Na 30 dagen kies je zelf of je doorgaat; zonder betaling stopt de toegang en wordt er niets afgeschreven.');setTrialLink(t('Liever direct betalen?'),'?plan='+encodeURIComponent(code)+'&billing='+encodeURIComponent(billing)+langQuery())}else{setTrialLink(t('Eerst 30 dagen gratis proberen'),'?plan='+encodeURIComponent(code)+'&billing='+encodeURIComponent(billing)+'&trial=1'+langQuery())}setCheckoutBenefit('sources',p.sources);setCheckoutBenefit('freshness',p.freshness);setCheckoutBenefit('automation',p.automation)}
 let checkoutReady=false;
-const checkoutForm=document.getElementById('form'),checkoutSubmit=document.getElementById('submit'),checkoutStatus=document.getElementById('status');
+const checkoutForm=document.getElementById('form'),checkoutSubmit=document.getElementById('submit');
+function ensureCheckoutStatus(){
+ let el=document.getElementById('status');
+ if(!el&&checkoutForm&&checkoutSubmit){
+  el=document.createElement('div');el.id='status';el.className='status';
+  el.setAttribute('role','status');el.setAttribute('aria-live','polite');
+  checkoutForm.appendChild(el);checkoutForm.setAttribute('data-bg-checkout-status-recovered','true');
+ }
+ return el;
+}
 function setCheckoutReady(ready){
- checkoutReady=ready===true;
+ const status=ensureCheckoutStatus();
+ checkoutReady=ready===true&&!!checkoutForm&&!!checkoutSubmit&&!!status;
  if(!checkoutForm||!checkoutSubmit)return;
  checkoutForm.querySelectorAll('input').forEach(field=>{field.disabled=!checkoutReady});
  checkoutSubmit.disabled=!checkoutReady;
+ if(!status)return;
  if(!checkoutReady){
-  checkoutStatus.style.display='block';
-  checkoutStatus.textContent=t('Online betalen is op dit moment niet beschikbaar. Neem contact met ons op.');
+  status.style.display='block';
+  status.textContent=t('Online betalen is op dit moment niet beschikbaar. Neem contact met ons op.');
  }else{
-  checkoutStatus.style.display='none';
-  checkoutStatus.textContent='';
+  status.style.display='none';
+  status.textContent='';
  }
 }
 if(q.get('success')!=='1'){
