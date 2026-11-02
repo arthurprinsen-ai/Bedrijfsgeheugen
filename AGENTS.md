@@ -1,3 +1,7 @@
+## P0 2026-11-02 — Janitor JSON Actions-parse en TSV merged-branch-sweep zijn gescheiden
+
+De oorspronkelijke `powerhouse-repository-janitor.yml` heeft een veilige JSON-gebaseerde stale-Actions-run-verwerking en een afzonderlijke, gecontroleerde twee-koloms TSV-sweep voor gemergede branchrefs. Een globale testban op `@tsv` is verouderd en mag niet leiden tot het aanpassen of omzeilen van veilige oorspronkelijke workflowbranches. Scope tests tot exacte run-lus; behoud nooit vervalsbare status, head SHA, cron of originele writer. Incident `powerhouse|brain|janitor-tsv-fixture-global-scope-drift|20261102-v1` met menselijke documentatie, originele BRAIN-resultaten en replay/shadow/canary borging; nooit PROVEN zonder terminal.
+
 ## P0 2026-11-02 — databaseuitval in telemetrie is HTTP 503, nooit een aangenomen 202
 
 Oorspronkelijke `bg-interactie` geeft bij PostgREST-storing `503`, `degraded:true`, `opgeslagen:0`, `bevestigd:0` en een onafhankelijke degradatieheader terug, met een begrensde timeout/circuit-breaker. Twee-honderd-twee zou ongeopslagen events ten onrechte accepteren. Historische BRAIN-testveroudering moet alleen de veilige fixture repareren en het canonieke echte providercontract bewaken. Fingerprint `powerhouse|brain|telemetry-503-vs-stale-202-test|20261102-v1`; geen runtime- of privilegeswijziging, geen fake metingen, geen overgeslagen test. Exacte originele backendrun, veilige merge en terminal plus latere providerreadback vereist voor PROVEN.
