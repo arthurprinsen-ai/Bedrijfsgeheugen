@@ -1,0 +1,71 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "version": "v1",
+  "date": "2026-11-02",
+  "maturity": "SOURCE_CANDIDATE",
+  "fingerprint": "powerhouse|brain|one-loop-cro-endpoint-word-boundary-false-negative|20261102-v1",
+  "original_owner": "original ONE BRAIN test-contract owner / original Netlify Production Truth",
+  "parent_issue": 4439,
+  "related_issue": 4918,
+  "compiler": {
+    "failure_class": "TEST_ORACLE_FALSE_NEGATIVE",
+    "scope": "BACKEND_TEST",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "An assertion used /\\b\\/api\\/powerhouse-cro-other-data\\b/; Markdown backtick and slash are both non-word characters so the leading \\b wrongly rejects the already correctly documented real endpoint.",
+  "correction": "Keep the original documentation and runtime unchanged. Match a literal exact CRO route with a safe non-word/line-start prefix and a strict segment terminator. Reject attacker-like prefixed or extended route strings.",
+  "prevention_rule": "Run positive exact-path and negative prefixed/suffixed route fixtures; never loosen independent authentication, tenant boundaries, downstream provider proof, or grant GREEN from string matching.",
+  "regression_ref": "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs"
+    ]
+  },
+  "source_evidence": {
+    "original_unified_brain_run": 41422715260,
+    "original_backend_job": 125202175531,
+    "failed_test_index": 2486,
+    "original_total_tests": 5377,
+    "original_failed_tests": 23,
+    "independent_historical_provider_receipt_run": 41030754918,
+    "verified_provider_receipt_for_this_change": false
+  },
+  "human_documentation": "docs/changes/2026-11-02-one-loop-endpoint-regex-test-contract.md",
+  "development_ledger": "docs/development-ledger-events/2026-11-02-one-loop-endpoint-regex-test-contract.md",
+  "existing_agent_skill": ".agents/skills/powerhouse-netlify-production-truth/SKILL.md",
+  "scope_limitations": [
+    "no runtime or auth change",
+    "no second executor or scheduler",
+    "no new portaal writer",
+    "no unapproved publication",
+    "no false GREEN",
+    "no source receipt mutation"
+  ],
+  "proven_fix": null,
+  "test_evidence": [
+    "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs"
+  ],
+  "evidence": {
+    "original_failing_run_id": 41422715260,
+    "original_backend_job_id": 125202175531,
+    "original_test_index": 2486,
+    "source_contract": "already authentic Markdown /api/powerhouse-cro-other-data path with unproven separate 2-tenant CRO authentication",
+    "positive_and_negative_node_oracle": "5 fixture checks pass locally",
+    "required_gate_failure": {
+      "run_id": 41424726309,
+      "job_id": 125208456000,
+      "failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning",
+      "root_cause": "source_evidence is not a canonical semantic evidence field",
+      "repair": "add canonical test_evidence and evidence fields instead of lowering closure guard"
+    },
+    "status": "PENDING_EXACT_HEAD_CI"
+  }
+}
