@@ -122,7 +122,7 @@ export function securityOverallPosture(summary,observations,generatedAt,nowMs=Da
 const SAFETY_AREAS=Object.freeze([
  {id:'toegang',title:'Toegang & identiteit',meaning:'Wie kan de omgeving en jouw gegevens benaderen?',checks:[['NETLIFY','PREVIEW_ACCESS'],['NETLIFY','TEAM_MFA'],['WEBSITE','AUTHORIZATION']]},
  {id:'gegevens',title:'Gegevens & privacy',meaning:'Wordt toegang tot opgeslagen gegevens beperkt?',checks:[['SUPABASE','RLS'],['SUPABASE','PRIVILEGED_FUNCTIONS']]},
- {id:'code',title:'Code & updates',meaning:'Worden wijzigingen en kwetsbaarheden gecontroleerd?',checks:[['GITHUB','CODEQL'],['GITHUB','BRANCH_PROTECTION'],['WEBSITE','DEPENDENCY_AUDIT']]},
+ {id:'code',title:'Code & updates',meaning:'Worden wijzigingen en kwetsbaarheden gecontroleerd?',checks:[['GITHUB','CODEQL'],['GITHUB','BRANCH_PROTECTION'],['GITHUB','SECRET_SCANNING'],['WEBSITE','DEPENDENCY_AUDIT']]},
  {id:'website',title:'Website & verbinding',meaning:'Worden verkeer en productiereleases beveiligd?',checks:[['WEBSITE','HTTPS_HEADERS'],['NETLIFY','DEPLOY_PROVENANCE']]},
  {id:'leveranciers',title:'Leveranciers & omgevingen',meaning:'Worden databronnen en tijdelijke omgevingen gecontroleerd?',checks:[['SUPABASE','DATABASE_ADVISOR'],['NETLIFY','SECRET_SCAN'],['NETLIFY','ARCHIVE_PREVIEW_ACCESS']]}
 ]);
