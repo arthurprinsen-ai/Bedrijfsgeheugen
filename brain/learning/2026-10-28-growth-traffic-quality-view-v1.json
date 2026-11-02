@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "data|growth|traffic-quality-view|20261028-v1",
+  "fingerprint": "data|growth|bot-traffic-counted-as-human-visits|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "GROWTH_METRICS_COUNT_BOT_TRAFFIC_AS_HUMAN",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "growth_events.is_robot flags only part of the automated traffic. Since 25 Oct, 707 attribution roots were unflagged yet only 3 to 4 showed any human action; 93 roots with 8 or more views accounted for 1,836 views. Funnel and page metrics built on is_robot alone overstate human visits roughly a hundredfold against GA4 (about 19 sessions in 14 days).",
+  "observed_evidence": {
+    "source": "public.growth_events 2026-10-25 to 2026-10-28, GA4 via Windsor",
+    "roots_since_2026_10_25": 1183,
+    "verified_human_roots": 3,
+    "probable_bot_roots": 24,
+    "robot_flagged_roots": 555,
+    "unverified_roots": 601,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Two read-only views classify each attribution root and summarise per day. Reports and agents should use verified_human for conversion rates and treat unverified as unknown.",
+  "prevention_rule": "Funnel and page performance must be computed on verified human traffic, never on raw page views or is_robot alone.",
+  "tests": [
+    "tests/brain-growth-traffic-quality-view-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-traffic-quality-view-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-traffic-quality-view-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-traffic-quality-view-v1.test.mjs"
+    ],
+    "invariants": [
+      "views are read-only",
+      "invoker security",
+      "no access for anon or authenticated",
+      "no personal data columns",
+      "four classes defined"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}
