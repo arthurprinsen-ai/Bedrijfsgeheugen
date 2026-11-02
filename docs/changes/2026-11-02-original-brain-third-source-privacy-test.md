@@ -1,0 +1,5 @@
+# Original ONE BRAIN privacy test regression — 2 November 2026
+
+The original merged PR #5298 extended its existing server-side incident summary with a third, bounded and allowlisted website-incident read. The full original BRAIN job 125296963109 failed test 3515 because the preexisting mock still expected two reads (observed three). The corrective test now checks the exact third request, a three-row mock containing a privacy sentinel, and the redaction of that sentinel from the returned summary. No production read, allowlist, permissions, scheduling, or editorial authority changes.
+
+Source: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41451145109. ONE BRAIN: powerhouse|brain|portal-failure-coverage-third-allowlisted-read-unreflected-in-test|20261102-v1. Owner: existing ONE BRAIN failure-coverage privacy test. The source fix remains a protected candidate until Required, complete BRAIN, CodeQL, merge and terminal success. Authenticated live portal readback and business outcomes are separately unproven.
