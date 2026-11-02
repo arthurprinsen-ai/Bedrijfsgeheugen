@@ -1,0 +1,69 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "fingerprint": "github|janitor-agent|self-observation-positive-successor-proof|20261102-v1",
+  "obligation_id": "github|janitor-agent|self-observation-positive-successor-proof|20261102-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "status": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "failure_class": "GITHUB_JANITOR_AGENT_ABSENT_RUN_FAILURE_INCIDENT_AND_BOUNDED_SUCCESSOR_POSITIVE_PROOF",
+  "root_cause": "Original Janitor could fail cleanup while later telemetry and artifact upload succeeded, without guaranteed same-run agent/incident observer. Its bounded recent closed PR snapshot could not find an older merged successor and therefore deferred an otherwise provable closed terminal lease; initial incident run 41342975119 HTTP422 and secondary jq SIGPIPE.",
+  "direct_cause_confidence": "ORIGINAL_GITHUB_422_EXACT_ENDPOINT_UNPROVEN",
+  "prevention_rule": "One original hourly Janitor must observe own cleanup/readback outcomes, persist typed evidence and idempotently report failures to original issue, and verify old merged successors only with positive GitHub Search plus exact direct PR readback. Never infer no successor from a search miss, do blind PATCH state=open, or claim global green from artifact upload.",
+  "owner": "existing-powerhouse-github-delivery-janitor",
+  "evidence": {
+    "historical_run": 41342975119,
+    "historical_job": 124956777904,
+    "source_commit": "eedc3f8b380cd1e0c986cc0d0ea98854a48813e8",
+    "incident_number": 5320,
+    "historical_artifact": 13098203266,
+    "predecessor_pr": 2225,
+    "proven_merged_successor_pr": 2353,
+    "latest_original_commit": "88b53ef8d5d0257bfadc09fe6141bba6e3198708",
+    "observed_initial_failure": "HTTP 422 followed by jq Broken pipe",
+    "janitor_runtime_fix_verified": false,
+    "old_supervisor_drift_observations_unresolved": 133
+  },
+  "fix": "Within existing hourly Janitor: add positive-only successor verifier, structured same-run incident observer on if:always, GitHub issue dedupe/readback and immutable artifact evidence; no new cron, actor, paid resource, Supabase credentials, or protected-bypass.",
+  "tests": [
+    "tests/brain-janitor-agent-self-recovery-20261102.test.mjs",
+    "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "GITHUB_JANITOR_AGENT_ABSENT_RUN_FAILURE_INCIDENT_AND_BOUNDED_SUCCESSOR_POSITIVE_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+    ],
+    "invariants": [
+      "positive search requires direct PR readback and Supersedes number",
+      "search miss and 403 never trigger PR reopen",
+      "any failed native cleanup step produces failure artifact and original issue writeback",
+      "success only same-run, not global green",
+      "exact head Required, CodeQL, protected merge, next natural Janitor run and independent portal readback needed"
+    ]
+  },
+  "portal_projection": {
+    "source": "original_github_and_brain_failure_registry",
+    "now": "CODE_CANDIDATE",
+    "after_protected_merge": "RELEASED_VERIFY_NATIVE_RUN",
+    "after_native_success": "COMPONENT_RUNTIME_VERIFIED_ONLY",
+    "global_green_allowed": false
+  },
+  "terminal_rule": "Protected exact-head Required + CodeQL + BRAIN; protected merge to current main; next existing scheduled Janitor run must produce verified predecessor/successor event, cleanup/readback success, original issue evidence; independent portal projection/readback. Never mark unrelated drift green."
+}

@@ -187,7 +187,8 @@ jobs:
             gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=closed >/dev/null
             printf 'closed_pr=%s reason=%s successor=%s\n' "$pr" "$reason" "${successor:-none}"
           done
-      - name: Reconcile stale Actions and merged branch debris
+      - id: janitor_cleanup_reconcile
+        name: Reconcile stale Actions and merged branch debris
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -242,11 +243,17 @@ jobs:
                 current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
                 [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
                 [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
-                # No destructive reopen on incomplete closed-PR history. Existing canonical
-                # delivery owner must resolve the exact obligation from full lineage and
-                # head-branch readback before any separate authorized mutation.
-                echo "::warning::JANITOR_TERMINAL_LEASE_HISTORY_UNPROVEN:pr=${pr}:obligation=${obligation}"
-                jq -cn --arg type TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"BOUNDED_CLOSED_PR_SAMPLE_NOT_GLOBAL_LINEAGE_PROOF",requires_owner_readback:true,reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
+                # One existing agent verifies an OLDER merged successor via positive GitHub
+                # search plus direct PR readback. Search absence is never negative proof.
+                lineage="$(node tools/delivery/janitor-incident-agent.mjs --verify-successor "$pr" "$obligation")"
+                if [ "$(jq -r '.status' <<<"$lineage")" = PROVEN_MERGED_SUCCESSOR ]; then
+                  merged_pr="$(jq -r '.successor_number' <<<"$lineage")"
+                  jq -cn --arg type TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR --argjson pr "$pr" --argjson successor "$merged_pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation,evidence:"GITHUB_SEARCH_POSITIVE_PLUS_DIRECT_MERGED_PR_READBACK",reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
+                else
+                  why="$(jq -r '.status' <<<"$lineage")"
+                  echo "::warning::JANITOR_TERMINAL_LEASE_HISTORY_UNPROVEN:pr=${pr}:obligation=${obligation}:source=${why}"
+                  jq -cn --arg type TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN --argjson pr "$pr" --arg obligation "$obligation" --arg reason "$why" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:$reason,cause:"BOUNDED_CLOSED_PR_SAMPLE_NOT_GLOBAL_LINEAGE_PROOF",requires_owner_readback:true,reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
+                fi
               fi
             elif [ "$successor_count" -eq 1 ]; then
               successor="$(jq -r --arg obligation "$obligation" '[.[] |
@@ -426,7 +433,8 @@ jobs:
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
-      - name: Read back applied cleanup
+      - id: janitor_cleanup_readback
+        name: Read back applied cleanup
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -492,6 +500,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUESTED_MODE: ${{ github.event.inputs.mode }}
         run: node tools/delivery/daily-learning-liveness-recovery.mjs
+      - name: Agent observation and incident writeback on the same original Janitor
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Isolated to this evidence step; original restricted RPC, no direct table writes.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BG_PORTAL_EU_SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL }}
+          BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY }}
+          JANITOR_CLEANUP_OUTCOME: ${{ steps.janitor_cleanup_reconcile.outcome }}
+          JANITOR_READBACK_OUTCOME: ${{ steps.janitor_cleanup_readback.outcome }}
+        run: node tools/delivery/janitor-incident-agent.mjs --observe
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -500,6 +520,7 @@ jobs:
           path: |
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
+            .artifacts/janitor-agent-incident.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
             .artifacts/powerhouse-ci-agent-priorities.json
