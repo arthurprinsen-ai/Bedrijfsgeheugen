@@ -1,4 +1,19 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  connectorTrustEvidenceV1:Object.freeze({
+    fingerprint:'portal|connectors|upstream-secret-leak-and-no-tenant-trust-evidence|20261102-v1',
+    obligation:'portal-connector-trust-gates-20261102-v1',
+    owner:'original Portal V2 + connector engine + ONE BRAIN/Heartbeat',
+    tenantApi:'platform/api/portal-connectors-handler.mjs',
+    trustProjection:'platform/connectors/connector-trust-report.mjs',
+    customerView:'assets/js/koppelingen/view.js',
+    learning:'brain/learning/2026-11-02-connector-trust-evidence-v1.json',
+    regression:'tests/brain-connection-studio-multipage-recovery-20261102.test.mjs',
+    skill:'.agents/skills/portal-living-interface/SKILL.md',
+    noParallelStore:true,noSecondWriter:true,
+    providerReadbackVerified:false,liveRecordIngestVerified:false,
+    independentSecurityAuditVerified:false
+  }),
+
   aiConnectionStudioMultiRouteV1:Object.freeze({
     fingerprint:'portal|connection-studio|single-destination-and-sample-vs-ingestion-gap|20261102-v1',
     obligation:'portal-connection-studio-multiroute-recovery-20261102-v1',
@@ -252,7 +267,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'8390c75d7a2f4336eb316df733d55b2e9b76b952b1146e1533f5f396be120d67',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'3e5ffdefb01ccdedc58d28d20a6c0b7bb8edc0275dbde0af13ab30b5f029a130',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
