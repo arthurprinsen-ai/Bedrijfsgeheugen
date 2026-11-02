@@ -1,0 +1,55 @@
+{
+  "id": "security-migration-lock-791-20261102-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "supabase|security|applied-writer-control-migration-absent-source-lock|20261102-v1",
+  "compiler": {
+    "failure_class": "MIGRATION_HISTORY_DRIFT",
+    "scope": "SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "The approved security migration 20261102141045 writer_control_fixed_search_path_v1 was applied provider-side, but the committed append-only Supabase migration-history.lock.json still had 790 rows ending at 20261102075243. The canonical post-merge BRAIN backend run #41460310537 failed five migration ledger/source parity tests while the Portal lane and Netlify deployment were successful.",
+  "prevention": {
+    "rule": "Every provider-applied security migration must have identical version and name in the original Git executable migration sources AND the provider-verified append-only migration lock. Re-read the original provider migrations, detect exact missing identities without inventing rows, and source-close via a protected PR with full BRAIN and delivery gate proof.",
+    "no_parallel_writer": true,
+    "forbidden": [
+      "replaying already-applied migration",
+      "changing historical migration versions",
+      "suppressing or skipping failing BRAIN gates",
+      "recording terminal green before exact provider proof"
+    ],
+    "regression": "tests/brain-security-migration-lock-provider-readback-20261102.test.mjs"
+  },
+  "evidence": {
+    "provider_readback": {
+      "row_count": 791,
+      "added": {
+        "version": "20261102141045",
+        "name": "writer_control_fixed_search_path_v1"
+      },
+      "historical_prefix_matches": true
+    },
+    "github": {
+      "failed_run": 41460310537,
+      "reported_failures": 5,
+      "canonical_release_pr": 5307
+    },
+    "tests": [
+      "tests/brain-security-migration-lock-provider-readback-20261102.test.mjs"
+    ],
+    "outcome": "SOURCE_LOCK_FIX_CANDIDATE_ONLY",
+    "production_readback": "NOT_PROVEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-migration-lock-provider-readback-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-migration-lock-provider-readback-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-migration-lock-provider-readback-20261102.test.mjs"
+    ]
+  }
+}
