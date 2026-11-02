@@ -50,6 +50,24 @@ if(next!==original){
   }
 }else console.log('PORTAL_EXPLANATION_SOURCE_CURRENT',contentHash);
 
+
+const entryPattern=/(<script\\b[^>]*\\bsrc=)(['"])(\\.\\/app\\.js)(?:\\?bg_explain=[a-f0-9]{64})?\\2/g;
+if(entryHtml===null)throw new Error('PORTAL_APP_ENTRY_HTML_MISSING');
+const entryMatches=[...entryHtml.matchAll(entryPattern)];
+if(entryMatches.length!==1)throw new Error('PORTAL_APP_ENTRY_CONTRACT_INVALID:'+entryMatches.length);
+const expectedEntry=entryHtml.replace(entryPattern,(_match,prefix,quote,url)=>prefix+quote+url+'?bg_explain='+contentHash+quote);
+if(expectedEntry!==entryHtml){
+  if(!write){
+    console.error('PORTAL_EXPLANATION_ENTRY_VERSION_DRIFT: canonical System Map digest '+contentHash+' differs from current portal app entry');
+    process.exitCode=1;
+  }else{
+    // Same deterministic source digest and authorizing --write as the System Map.
+    // Never create a second cache/version authority or rewrite other page assets.
+    await fs.writeFile(path.join(root,'portal-v2/index.html'),expectedEntry);
+    console.log('PORTAL_EXPLANATION_ENTRY_STAMPED',contentHash);
+  }
+}
+
 if(write && process.argv.includes('--stamp-assets')){
   const version=url=>url+(url.includes('?')?'&':'?')+'bg_explain='+contentHash;
   for(const file of assets.filter(p=>p.endsWith('.js'))){
