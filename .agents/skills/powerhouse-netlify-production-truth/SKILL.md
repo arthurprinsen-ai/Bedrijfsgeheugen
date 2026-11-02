@@ -279,3 +279,15 @@ Fingerprint: `netlify|production|build-exit2-parity-misclassification|20261101-v
 - Correct the observed source-phase failure under the original protected PR, rerun real parity plus regression, then only the original Production Source Snapshot may promote main; require independently verified `ready`, deploy ID, `release.json` and browser readback before LIVE. Do not create a parallel publisher or scheduler.
 
 Regression: `tests/brain-netlify-production-phase-proof-20261101.test.mjs`. Learning: `brain/learning/2026-11-01-netlify-build-phase-parity-p0-5241-v1.json`.
+
+## Original incident status stays separate from proven production — P0 #5241 (1 November 2026)
+
+Fingerprint: `powerhouse|portal|netlify-live-versus-unresolved-build-incident|20261101-v1`.
+
+- The existing **admin-authenticated** Powerhouse delivery page must read the original GitHub incident #5241 through the original `/api/powerhouse-observability` service and display its open/closed state separately from the exact-current Netlify release.
+- Even with a matching GitHub main SHA, provider `ready`, full pricing/browser proof and successful prebuilt promotion, the earlier full-build provider `exit 2` remains diagnostic debt until the first failed phase, source repair, historical replay and regression are independently evidenced. An incident cannot disappear because a later release succeeds.
+- When GitHub is unavailable, issue identity/state is unexpected, or release evidence is incomplete: label **unverified**, not resolved. Do not infer third-party sends, lead conversions or orders from release success.
+- Retain one incident ID, one release owner, canonical Brain learning and Heartbeat visibility. No new incident registry, schedule, fail-open provider probe, token or duplicate deployment authority.
+- Regression: `tests/brain-original-netlify-incident-portal-20261101.test.mjs`; learning: `brain/learning/2026-11-01-netlify-release-incident-portal-truth-v1.json`.
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1

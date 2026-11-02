@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|linkedin|buyer-first-editorial-root-agent-policy-omitted|20261101-v1",
+  "compiler": {
+    "failure_class": "AGENT_POLICY_PROPAGATION_GAP",
+    "policy": "one-brain-original-agent-continuity-v1"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-buyer-first-root-agent-invariant-20261101.test.mjs"
+    ]
+  },
+  "root_cause": "Follow-on propagation gap: protected #5243 amended the authoritative source editor, content generator, social-CRO skill, portal and Notion personal editorial skills, but left the general AGENTS.md onboarding instructions without the buyer-first screenshot-specific prevention contract.",
+  "prevention_rule": "Retain original buyer-first LinkedIn voice and deterministic personal v4/company v2 veto across all original agent workflows through the root AGENTS rule; ensure original prepublish and provider proof, not claims about organic engagement. Future drift must fail existing regression.",
+  "evidence": {
+    "original_screenshot": "LinkedIn personal post 2026-11-01, original stored external id urn:li:share:7522660274441670656",
+    "original_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5243",
+    "production_main_sha": "10ddeb3f8282168e3ff98835ef02948bc7bec675",
+    "supabase_edge_versions": {
+      "generator": 509,
+      "reviewer": 463,
+      "publisher": 728
+    },
+    "netlify_prod_deploy": "6ae7a4ad7bccaf96a14b6297",
+    "new_regression": "tests/brain-buyer-first-root-agent-invariant-20261101.test.mjs",
+    "target_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5246",
+    "new_pr_evidence_status": "REQUIRES_PROTECTED_CI_AND_MERGE",
+    "independent_reach_and_order_effect": "UNKNOWN",
+    "next_natural_publisher_run": "NOT_VERIFIED",
+    "no_parallel_executor": true
+  },
+  "owner": "original Powerhouse ONE BRAIN agent-SkillOps owner",
+  "status": "INTEGRATION_CANDIDATE_NOT_PRODUCTION_PROOF",
+  "observation_replay": {
+    "observation": "Personal LinkedIn 1 Nov started with generic AI hook and internal metrics; v3 passed it.",
+    "source_post_external_id": "urn:li:share:7522660274441670656",
+    "corrected_original_editorial_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5243",
+    "added_gap": "General onboarding AGENTS.md did not yet contain source-specific buyer relevance rule."
+  }
+}
