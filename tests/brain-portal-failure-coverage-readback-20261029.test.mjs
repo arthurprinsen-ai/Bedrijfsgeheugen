@@ -33,9 +33,9 @@ test('read-only server provider readback supplies exact content-range and aggreg
  assert.equal(calls.length,2,'one aggregate and one allowlisted incident readback only');
  assert.equal(calls[0].opts.method,'GET');
  assert.equal(calls[0].opts.headers.prefer,'count=exact');
- assert.match(calls[0].url,/\\/brain_failure_registry\\?select=maturity,root_cause,regression_ref,prevention_rule,last_seen_at&limit=1000$/);
+ assert.match(calls[0].url,/\/brain_failure_registry\?select=maturity,root_cause,regression_ref,prevention_rule,last_seen_at&limit=1000$/);
  assert.equal(calls[1].opts.method,'GET');
- assert.match(calls[1].url,/\\/brain_failure_registry\\?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq\\.predictive%7Cpublic-market%7Cunfiltered-top80-crowds-out-valid-source-types%7C20261030-v1&limit=1$/);
+ assert.match(calls[1].url,/\/brain_failure_registry\?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq\.predictive%7Cpublic-market%7Cunfiltered-top80-crowds-out-valid-source-types%7C20261030-v1&limit=1$/);
  assert.equal(calls[1].opts.headers.prefer,undefined,'second read must not claim an unrelated global count');
  assert.equal(res.predictiveRecovery.status,'UNVERIFIED','a nonmatching fixture may not become proven recovery');
  assert.doesNotMatch(JSON.stringify(res),/example-key|private-identifier|internal text/);
