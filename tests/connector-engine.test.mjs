@@ -92,7 +92,8 @@ test('ISO expiry and arbitrary tenant field survive generic extraction and mappi
 
 test('activation evaluator refuses incomplete evidence and accepts complete test evidence only',()=>{
   assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x'}),{eligible:false,reason:'TEST_EVIDENCE_INCOMPLETE'});
-  assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}),{eligible:true,reason:'ELIGIBLE'});
+  assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}),{eligible:false,reason:'EXTERNAL_PROVIDER_PROOF_REQUIRED'});
+  assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x',proofLevel:'PROVIDER_VERIFIED',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}),{eligible:true,reason:'ELIGIBLE'});
 });
 
 test('connector error classification allows one controlled retry only for transient transport failures',()=>{
