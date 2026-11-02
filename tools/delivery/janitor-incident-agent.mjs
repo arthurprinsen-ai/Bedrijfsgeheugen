@@ -9,6 +9,14 @@ export const INCIDENT_NUMBER=5320;
 const SHA=/^[0-9a-f]{40}$/i;
 const repoOk=x=>/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(x||'');
 const numberOk=x=>Number.isSafeInteger(Number(x))&&Number(x)>0&&Number(x)<1_000_000_000;
+const runIdOk=x=>Number.isSafeInteger(Number(x))&&Number(x)>0;
+// Provider namespaces differ: GitHub Actions run IDs exceed 1,000,000,000.
+// PR-number constraints must NEVER be reused for run IDs.
+export function assertNativeJanitorIdentity(env={}){
+ if(!repoOk(env.GITHUB_REPOSITORY)||!runIdOk(env.GITHUB_RUN_ID))
+   throw Error('RUN_IDENTITY_INVALID');
+ return {repository:env.GITHUB_REPOSITORY,run_id:Number(env.GITHUB_RUN_ID)};
+}
 const clean=x=>String(x??'').replace(/[\x00-\x1f]/g,' ').slice(0,180);
 const metadata=(text,key)=>String(text||'').split(/\r?\n/).find(line=>line.startsWith(key+': '))?.slice(key.length+2).trim()||null;
 export function mergedSuccessorIsProven(pr,{predecessor,obligation}={}){
@@ -55,7 +63,7 @@ export function classifyCurrentJanitor({cleanupOutcome,readbackOutcome,actions=[
    cleanup==='success'&&readback==='success'?'JANITOR_STEPS_VERIFIED_SAME_RUN':
    cleanup==='skipped'&&readback==='skipped'?'DRY_RUN_NO_MUTATION':'INCOMPLETE_PROOF';
  return {schema:'janitor-incident-agent-v1',fingerprint:FINGERPRINT,observed_at:new Date().toISOString(),
-   run_id:numberOk(runId)?Number(runId):null,main_sha:SHA.test(mainSha||'')?mainSha:null,
+   run_id:runIdOk(runId)?Number(runId):null,main_sha:SHA.test(mainSha||'')?mainSha:null,
    cleanup_outcome:cleanup,readback_outcome:readback,failed_steps:failed,
    verified_merged_successors:verified,deferred_history:deferred,status,
    global_green:false,independent_runtime_repair_proven:status==='JANITOR_STEPS_VERIFIED_SAME_RUN',
@@ -110,7 +118,7 @@ export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetc
    fingerprint:FINGERPRINT,payload_sha256:hash};
 }
 async function observe(env=process.env,provider=api){
- if(!repoOk(env.GITHUB_REPOSITORY)||!numberOk(env.GITHUB_RUN_ID))throw Error('RUN_IDENTITY_INVALID');
+ assertNativeJanitorIdentity(env);
  await mkdir('.artifacts',{recursive:true});
  let actions=[];
  try{let data=JSON.parse(await readFile('.artifacts/janitor-runtime-actions.json','utf8'));
