@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|portal|seven-source-system-map-integrity-closure|20261102-v1",
+  "compiler": {
+    "failure_class": "SOURCE_CONTRACT_TEST_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original protected Portal UI required seven read-only authority sources while historic test fixtures assumed five. Splitting the Portal JSX coverage change from canonical system-map digest/HTML cache-key regeneration produced SCOPE_CONTAMINATED or SYSTEM_MAP_INTEGRITY_FAIL; initial integration PR #5279 lacked a changed machine-readable ONE BRAIN learning record, causing admission INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:brain_learning in Required run 41430448671.",
+  "owner": "Original Portal System Map generation integration owner; existing seven-source admin-read-model test owner PR #5264 retains its learning and agent-skill obligations",
+  "failure_evidence": {
+    "original_brain_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41421421023",
+    "failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430448671",
+    "original_ownership_pr": 5264,
+    "integration_pr": 5279,
+    "source_coverage_status": "UNVERIFIED_UNTIL_PROTECTED_PROVIDER_READBACK"
+  },
+  "correction": "Bundle the actual seven-source admin-only Portal coverage UI, exact deterministic System Map explanationInventory digest and sole versioned portal-v2 app.js entrypoint in one authorized source scope. Enforce their integrity in a dedicated executable regression, maintain a changed canonical ONE BRAIN learning record and human ledger, and preserve the original seven-view backend/read-only test and skill improvements under PR #5264.",
+  "prevention_rule": "Never separate a Portal source change from generated System Map hash and asset version. Require a machine-readable original ONE BRAIN learning record for every integration bundle. Execute historical replay, shadow and canary regression at exact head; enforce protected Required+CodeQL, one writer lease, generated System Map parity, exact deployed Netlify SHA, authenticated private readback and no-recurrence followup. Do not fabricate seven-source health, paid orders, execution proof, OAuth grants or test green. Do not add parallel schedulers, store or publisher.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-seven-source-system-map-integration-20261102.test.mjs",
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs",
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-seven-source-system-map-integration-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-seven-source-system-map-integration-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "status": "CANDIDATE_UNVERIFIED",
+    "public_visitor_verified": false,
+    "admin_access_readback_verified": false,
+    "production_deployment_verified": false,
+    "independent_customer_orders_verified": false,
+    "original_test_failures_closed": false
+  }
+}
