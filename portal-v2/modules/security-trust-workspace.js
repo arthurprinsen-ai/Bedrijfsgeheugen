@@ -1,12 +1,28 @@
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const arr=v=>Array.isArray(v)?v:[];
-const tone=v=>{const s=String(v||'').toUpperCase();return /VERIFIED|PASS|CURRENT|HEALTHY|SATISFIED/.test(s)?'ok':/FAIL|CRITICAL|ACTION_REQUIRED|BLOCK/.test(s)?'bad':'warn'};
+// Fail closed: a negated status such as NOT_VERIFIED must never render green.
+export const securityTone=v=>{
+ const s=String(v??'').trim().toUpperCase();
+ if(/^(?:FAIL(?:ED)?|CRITICAL|HIGH|ERROR|ACTION_REQUIRED|BLOCK(?:ED)?|COMPROMISED|VULNERABLE|UNSAFE|REVOKED)(?:_|$)/.test(s))return 'bad';
+ if(/^(?:NOT[_ -]?VERIFIED|UNVERIFIED|UNKNOWN|STALE|EXPIRED|EVIDENCE_PARTIAL|PARTIAL|PENDING|WARN(?:ING)?|MEDIUM|LOW|UNPROVEN)(?:_|$)/.test(s))return 'warn';
+ if(/^(?:VERIFIED|PASS(?:ED)?|CURRENT|HEALTHY|SATISFIED|SECURE)(?:_|$)/.test(s))return 'ok';
+ return 'warn';
+};
+const tone=securityTone;
 const roleList=user=>arr(user?.roles||user?.appMetadata?.roles||user?.app_metadata?.roles).map(v=>String(v).toLowerCase());
 const isInternal=user=>roleList(user).some(r=>['admin','owner','powerhouse-admin','powerhouse_admin'].includes(r));
 async function readJson(response){const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body?.error||('HTTP_'+response.status));return body;}
 function providerName(p){return p?.name||p?.displayName||p?.providerKey||'Provider';}
 function status(v){return '<span class="trust-status '+tone(v)+'">'+esc(v||'UNKNOWN')+'</span>';}
-function evidenceLinks(urls=[]){return arr(urls).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Officiële bron ↗</a>').join('');}
+// Evidence URLs are provider data, not executable HTML. Only absolute HTTPS links are allowed.
+export function safeSecurityEvidenceUrl(value){
+ try{
+  const url=new URL(String(value??''));
+  if(url.protocol!=='https:'||!url.hostname||url.username||url.password)return null;
+  return url.href;
+ }catch{return null;}
+}
+function evidenceLinks(urls=[]){return arr(urls).map(safeSecurityEvidenceUrl).filter(Boolean).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Officiële bron ↗</a>').join('');}
 
 function renderModelContext(data,state,saveStatus,activation){
  const prefs=state?.portal?.aiModelPreferences||{},runtime=state?.portal?.runtime||{};
@@ -59,6 +75,33 @@ function renderSovereignty(root,data,security,scope,state={},saveStatus='idle',a
  };
  root.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{answer.textContent=answers[b.dataset.answer]||'';answer.classList.add('open')}));
 }
+
+const PLATFORM_SECURITY_REQUIREMENTS=[
+ {provider:'GITHUB',label:'GitHub',checks:['CODEQL','BRANCH_PROTECTION','SECRET_SCANNING']},
+ {provider:'SUPABASE',label:'Supabase',checks:['DATABASE_ADVISOR','RLS','PRIVILEGED_FUNCTIONS']},
+ {provider:'NETLIFY',label:'Netlify',checks:['PREVIEW_ACCESS','SECRET_SCAN','DEPLOY_PROVENANCE']},
+ {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT']}
+];
+const upper=v=>String(v??'').trim().toUpperCase();
+export function summarizeSecurityPlatforms(observations=[]){
+ return PLATFORM_SECURITY_REQUIREMENTS.map(platform=>{
+  const controls=arr(observations).filter(o=>upper(o.provider_key||o.providerKey)===platform.provider);
+  const rows=platform.checks.map(key=>controls.find(o=>upper(o.control_key||o.controlKey)===key));
+  const complete=rows.every(Boolean);
+  const allGood=complete&&rows.every(o=>securityTone(o.status)==='ok'&&Boolean(o.evidence_available??o.evidenceAvailable));
+  const risk=rows.some(o=>o&&securityTone(o.status)==='bad');
+  return { ...platform, total:platform.checks.length, observed:rows.filter(Boolean).length,
+   status:risk?'ACTION_REQUIRED':allGood?'VERIFIED':'EVIDENCE_PARTIAL',
+   latest:rows.filter(Boolean).map(o=>o.observed_at||o.observedAt).filter(Boolean).sort().at(-1)||null};
+ });
+}
+function renderSecurityPlatforms(observations){
+ const platforms=summarizeSecurityPlatforms(observations);
+ return '<section class="trust-section" data-security-platforms><header><h3>Beveiliging van de infrastructuur</h3><p>GitHub, Supabase, Netlify, website en portaal. Status groen uitsluitend wanneer álle verplichte controles actueel en onafhankelijk onderbouwd zijn. Ontbrekend bewijs is nooit groen.</p></header><div class="trust-grid">'+
+ platforms.map(p=>'<article data-security-platform="'+esc(p.provider)+'"><small>'+esc(p.label)+'</small><strong>'+esc(p.status==='VERIFIED'?'Geverifieerd':p.status==='ACTION_REQUIRED'?'Actie nodig':'Niet volledig bewezen')+'</strong>'+status(p.status)+'<span>'+p.observed+' van '+p.total+' controles met bronobservatie · laatste bronmoment: '+esc(p.latest||'onbekend')+'</span></article>').join('')+
+ '</div></section>';
+}
+
 function renderSecurity(root,security,sovereignty,scope){
  const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{};
  root.innerHTML=`<section class="trust-workspace">
@@ -69,6 +112,7 @@ function renderSecurity(root,security,sovereignty,scope){
    <article><small>Evidence-dekking</small><strong>${esc(summary.evidenceCoverage??0)}%</strong><span>Geen false-green bij stale/unknown</span></article>
    <article><small>Database</small><strong>${esc(db.highRiskCount??0)} high-risk</strong><span>${esc(db.rlsNoPolicy??0)} RLS zonder policy-classificatie</span></article>
   </div>
+  ${renderSecurityPlatforms(observations)}
   <section class="trust-section"><header><h3>Open security findings</h3><p>Automatisch afgeleid uit runtime-, database- en managementplane-evidence.</p></header>
    <div class="trust-findings">${findings.map(f=>`<article><div>${status(f.severity)}</div><div><b>${esc(f.title||f.key)}</b><p>${esc(f.detail||f.reason||'Geen detail')}</p></div></article>`).join('')||'<p>Geen open findings in deze snapshot.</p>'}</div>
   </section>
