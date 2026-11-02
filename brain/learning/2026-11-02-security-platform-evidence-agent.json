@@ -1,0 +1,49 @@
+{
+  "id": "powerhouse-security-platform-evidence-20261102-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "powerhouse|security|platform-monitoring-false-green-and-incomplete-closure|20261102-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN_SECURITY_CONTROL_AND_PROOF_GAP",
+    "scope": "SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "An incomplete management-plane snapshot and status-substring matching could imply that security had been verified without all independent GitHub, Supabase, Netlify, and Website controls. The first protected candidate also omitted mandatory release metadata; a novel test path was not delivery-classified; then the material integration closure required append-only ledger and machine learning.",
+  "prevention": {
+    "controls": [
+      "Treat missing, stale, negated, expired and unverified security observations as not green.",
+      "Every platform requires all named controls with source readback and nonempty evidence, expiring on a bounded timescale.",
+      "Use absolute HTTPS-only href validation for provider-supplied evidence.",
+      "Use existing agent-security, ONE BRAIN, Heartbeat and exclusive protected writer; no second scheduler or customer-data truth store.",
+      "Always preflight obligation metadata and keep tests under a classified existing delivery owner.",
+      "Material code changes require a Brain learning object, append-only development event and human-facing change note.",
+      "Do not claim production deployment or autonomous external source polling until independently verified."
+    ],
+    "regression_contract": "tests/portal-private-trust-surfaces-v1.test.mjs"
+  },
+  "evidence": {
+    "tests": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ],
+    "workflow_denials": [
+      "41453992813:metadata_missing_then_unclassified_test",
+      "41454606430:material_integration_bundle_missing"
+    ],
+    "source": "provider security advisor and existing private Security Trust observation register",
+    "outcome": "PR_CANDIDATE_ONLY_NOT_PRODUCTION",
+    "portal": "https://www.bedrijfsgeheugen.nl/portaal?page=trust-center"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ],
+    "production_readback": "NOT_YET_PROVEN"
+  }
+}
