@@ -24,6 +24,7 @@
   },
   "evidence": {
     "tests": [
+      "tests/brain-security-trust-center-v1.test.mjs",
       "tests/portal-private-trust-surfaces-v1.test.mjs"
     ],
     "workflow_denials": [
@@ -36,13 +37,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-private-trust-surfaces-v1.test.mjs"
+      "tests/brain-security-trust-center-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-private-trust-surfaces-v1.test.mjs"
+      "tests/brain-security-trust-center-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-private-trust-surfaces-v1.test.mjs"
+      "tests/brain-security-trust-center-v1.test.mjs"
     ],
     "production_readback": "NOT_YET_PROVEN"
   }
