@@ -14,3 +14,6 @@ Make the existing entrepreneur portal compelling, legible and effortless. Priori
 
 ## Learning loop
 Issue #4547 is the canonical parent. Each defect: record route, control, viewport, source/tenant, expected/observed, impact, root cause, corrective change, regression test, owner, independent readback, recurrence-prevention check and measured entrepreneur outcome. Keep failed acceptance EVIDENCE_DUE and reflect it in existing portal/ONE BRAIN under the original integration, never invent an external log.
+
+## Delivery preflight learning
+Before opening a PR, use the canonical supported Candidate-Type `implementation` for feature work; `feature` is rejected. Required admission must fail closed. Do not retry stale head workflow checks or change approved policy to silence the error.

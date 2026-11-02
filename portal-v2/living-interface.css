@@ -1,7 +1,7 @@
 /* Living Business Interface — opt-in layer over the existing canonical Portal V2. */
 :root.portal-living{--li-ink:#142239;--li-subtle:#536580;--li-line:#dce6ef;--li-blue:#2359d7;--li-teal:#007b75;--li-surface:#fff;--li-radius:20px;--li-focus:#175ac9;--li-ease:cubic-bezier(.2,.8,.2,1);color-scheme:light}
 .portal-living .pvmodule,.portal-living .v2visual{position:relative;min-width:0;border:1px solid var(--li-line);border-radius:var(--li-radius);background:var(--li-surface);box-shadow:0 12px 36px rgba(15,37,68,.055),0 1px 1px rgba(15,37,68,.035)}
-.portal-living .v2visual{padding:clamp(14px,1.8vw,22px);isolation:isolate;overflow:visible}
+.portal-living .v2visual{padding:clamp(14px,1.8vw,22px);isolation:isolate;overflow:visible;max-height:none!important}
 .portal-living .v2visual::before{content:"";position:absolute;inset:0 auto auto 22px;width:min(84px,25%);height:3px;border-radius:0 0 6px 6px;background:linear-gradient(90deg,#2359d7,#00a99a);pointer-events:none}
 .portal-living .v2visual figcaption{font-size:clamp(1rem,1.3vw,1.16rem);line-height:1.3;font-weight:800;letter-spacing:-.025em;color:var(--li-ink);margin-bottom:12px}
 .portal-living .v2visual svg{overflow:visible}
