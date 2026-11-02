@@ -1,4 +1,22 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  aiConnectionStudioMultiRouteV1:Object.freeze({
+    fingerprint:'portal|connection-studio|single-destination-and-sample-vs-ingestion-gap|20261102-v1',
+    obligation:'portal-connection-studio-multiroute-recovery-20261102-v1',
+    owner:'original Portal V2 + connector engine + ONE BRAIN/Heartbeat',
+    existingStudio:'assets/js/koppelingen/view.js',
+    routingAuthority:'assets/js/koppelingen/portal-routing.js',
+    recovery:'assets/js/koppelingen/recovery.js',
+    tenantApi:'platform/api/portal-connectors-handler.mjs',
+    portalProjection:'portal-v2/connected-data-sources.js',
+    existingShell:'portal-v2/page-shell.js',
+    learning:'brain/learning/2026-11-02-connection-studio-multiroute-recovery-v1.json',
+    skill:'.agents/skills/portal-living-interface/SKILL.md',
+    humanDoc:'docs/changes/2026-11-02-connection-studio-multiroute-recovery.md',
+    regression:'tests/brain-connection-studio-multipage-recovery-20261102.test.mjs',
+    noNewWriter:true,noNewStore:true,
+    dataPayloadStorageVerified:false,independentProviderIngestVerified:false,
+    customerBusinessOutcomesVerified:false
+  }),
   aiConnectSovereigntyProofV1:Object.freeze({
     fingerprint:'portal|connectors|sample-dry-run-mistaken-for-live-verification|20261102-v1',
     obligation:'portal-ai-connect-sovereignty-proof-20261102-v1',
