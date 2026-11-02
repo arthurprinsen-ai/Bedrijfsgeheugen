@@ -101,3 +101,15 @@ test('connector error classification allows one controlled retry only for transi
   assert.deepEqual(classifyConnectorError({code:'UNAUTHORIZED'}),{retryable:false,maxAttempts:0,recoveryRequired:true,class:'auth'});
   assert.deepEqual(classifyConnectorError({code:'LOOKUP_AMBIGUOUS'}),{retryable:false,maxAttempts:0,recoveryRequired:true,class:'validation'});
 });
+
+test('server-side source plus destination proof is required for a provider-verified activation',async()=>{
+  const adapters=baseAdapters({hash:'verified-h1'});
+  adapters.source.read=async()=>({content:'provider data',hash:'verified-h1',verification:'PROVIDER_VERIFIED'});
+  adapters.target.safeTest=async()=>({ok:true,reference:'sandbox-readback-1',verification:'PROVIDER_VERIFIED'});
+  const connector=draft();
+  const result=await runConnectorTest({connector,input:{},adapters});
+  assert.equal(result.status,'TEST_PASSED');
+  assert.equal(result.evidence.proofLevel,'PROVIDER_VERIFIED');
+  assert.deepEqual(evaluateActivationEvidence(connector,result.evidence),{eligible:true,reason:'ELIGIBLE'});
+  // This is an adapter contract unit test, not evidence of a real third-party provider connection.
+});
