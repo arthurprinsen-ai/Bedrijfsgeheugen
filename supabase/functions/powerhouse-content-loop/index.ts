@@ -4,6 +4,7 @@ import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-d
 import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
 import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
 import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
+import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
@@ -350,6 +351,47 @@ Deno.serve(async (req) => {
             && reason === 'PERSONAL_SOURCE_UNVERIFIED'
             && hasVerifiedPersonalBuilderEvidence(evidence.identity_gate_evidence)));
     });
+    // A semantic 422 blocks the ORIGINAL company writer before any LinkedIn
+    // create call. Rotate ONLY when an actual fresh source-backed alternative
+    // exists and the original company authority is provably unconsumed.
+    // A missing alternative stays blocked; an ambiguous provider side effect
+    // is reconciliation-only and MUST NOT be regenerated.
+    let retryableCompanyEditorialBlock=false;
+    const rejectedCompany=(initialDecisions||[]).find((d:any)=>
+      clean(d.channel)==='linkedin_company'&&clean(d.state)==='blocked'&&
+      Number(d.delivery_evidence?.review_status)===422&&
+      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'));
+    if(rejectedCompany){
+      const [obligationSource,recommendationSource,capabilitySource]=await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,external_id,evidence,published_at,live_proven_at')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_company').maybeSingle(),
+        db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,priority,status,target_channel,evidence')
+          .eq('run_date',runDate)
+          .in('target_channel',['linkedin_company','cross-channel']).limit(50),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle()
+      ]);
+      if(obligationSource.error||recommendationSource.error||capabilitySource.error){
+        stepResults.push({name:'company-editorial-recovery-source',ok:false,degraded:true,
+          error:'COMPANY_REGENERATION_SOURCE_READ_FAILED'});
+      }else{
+        const consumed=Boolean(capabilitySource.data?.consumed_at&&!capabilitySource.data?.revoked_at);
+        const regeneration=planRejectedCompanyRegeneration({
+          decision:rejectedCompany,obligation:obligationSource.data,
+          recommendations:recommendationSource.data||[],consumedCapability:consumed,
+          now:new Date().toISOString()
+        });
+        retryableCompanyEditorialBlock=regeneration.eligible;
+        stepResults.push({name:'company-editorial-recovery-source',ok:true,
+          skipped:!regeneration.eligible,degraded:!regeneration.eligible,
+          reason:regeneration.reason,
+          replacement_id:regeneration.selectedAlternativeRecommendationId});
+      }
+    }
     // The normal duplicate classifier only sees "decision=publish"; however the
     // canonical reconciler can turn a pre-provider duplicate into "hold/blocked"
     // while the ORIGINAL obligation correctly retains the duplicate refusal.
@@ -381,7 +423,7 @@ Deno.serve(async (req) => {
     }
     let bootstrapStillInFlight = false;
     // A completed bootstrap is one of the normal bounded generation rounds.
-    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableCompanyEditorialBlock) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
