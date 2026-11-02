@@ -3136,8 +3136,32 @@
     {
       "name": "bg_cro_validate_event_types_v1",
       "version": "20261029185000"
+    },
+    {
+      "name": "p0_4215_auto_research_contact_approval_economics_proof",
+      "version": "20261030072000"
+    },
+    {
+      "name": "ga4_source_owner_reconciliation_v1",
+      "version": "20261030165000"
+    },
+    {
+      "name": "publication_sync_preserve_recovery_handoff_v1",
+      "version": "20261031133000"
+    },
+    {
+      "name": "publication_sync_preserve_recovery_handoff_v1",
+      "version": "20261031135451"
+    },
+    {
+      "name": "verified_tenant_intake_and_quoted_value_payment_truth",
+      "version": "20261102074013"
+    },
+    {
+      "name": "verified_intake_privileged_trigger_acl_finalizer",
+      "version": "20261102075243"
     }
   ],
-  "captured_at": "2026-10-29T21:10:36.738Z",
+  "captured_at": "2026-11-02T08:25:10.883Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
