@@ -3,6 +3,8 @@ import {createWizardState,applyAnswer,nextQuestion,toConnectorDefinition,PHASES}
 import {askConnectorGuide} from './ai-guide.js';
 import {createConnectorApi} from './api.js';
 import {toHumanStatus,activationEvidenceId} from './status.js';
+import {CONNECTOR_PORTAL_PAGES} from './portal-routing.js';
+import {connectorRecoveryAdvice} from './recovery.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const STEP_LABELS={source:'Bron',selection:'Selectie',information:'Informatie',target:'Doel',schedule:'Planning',test:'Test'};
@@ -10,7 +12,8 @@ const EVIDENCE_LABELS={source:'Bron gelezen',extractor:'Informatie herkend',vali
 
 export const WIZARD_CSS=`.bg-kw{margin-top:1.2rem;border-top:1px solid var(--lijn,#ddd);padding-top:1.2rem}.bg-kw button,.bg-kw textarea,.bg-kw select,.bg-kw summary{min-height:44px}.bg-kw__head{display:flex;gap:1rem;justify-content:space-between;align-items:flex-start}.bg-kw__head h2{margin:.15rem 0 .45rem}.bg-kw__eyebrow{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--grijs,#666)}.bg-kw__help{flex:0 0 44px;width:44px;height:44px;border:1px solid var(--lijn,#ddd);border-radius:50%;background:#fff;font-weight:700;font-size:1rem;font-family:inherit;cursor:pointer}.bg-kw__helptext{margin:.75rem 0;padding:.8rem;border-left:3px solid var(--blauw,#2742d6);background:var(--papier,#fbfaf7)}.bg-kw__progress{list-style:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.35rem;margin:1rem 0}.bg-kw__progress li{font-size:.72rem;color:var(--grijs,#666);display:flex;gap:.35rem;align-items:center;min-width:0}.bg-kw__progress li span{display:grid;place-items:center;width:24px;height:24px;border:1px solid var(--lijn,#ddd);border-radius:50%;background:#fff;flex:0 0 24px}.bg-kw__progress li[aria-current=step]{color:var(--inkt,#14171a);font-weight:700}.bg-kw__progress li[aria-current=step] span{background:var(--inkt,#14171a);color:#fff}.bg-kw__routes{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin:1rem 0}.bg-kw__route{min-height:96px;text-align:left;border:1px solid var(--lijn,#ddd);background:#fff;border-radius:8px;padding:.85rem;cursor:pointer}.bg-kw__route strong,.bg-kw__route span{display:block}.bg-kw__route span{font-size:.8rem;color:var(--grijs,#666);margin-top:.25rem}.bg-kw__route--primary{border-color:var(--inkt,#14171a)}.bg-kw__workspace{display:grid;gap:.65rem}.bg-kw__intent span{display:block;font-weight:700;margin-bottom:.35rem}.bg-kw textarea{width:100%;padding:.7rem;border:1px solid var(--lijn,#ddd);border-radius:6px;font:inherit;resize:vertical}.bg-kw__message{min-height:1.5em;font-size:.86rem;color:var(--grijs,#666)}.bg-kw__templates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem;margin:.8rem 0}.bg-kw__template{border:1px solid var(--lijn,#ddd);border-radius:6px;background:#fff;padding:.75rem;text-align:left;cursor:pointer}.bg-kw__template strong,.bg-kw__template span{display:block}.bg-kw__template span{font-size:.78rem;color:var(--grijs,#666);margin-top:.2rem}.bg-kw__question{padding:.85rem;background:var(--papier,#fbfaf7);border-radius:6px}.bg-kw__question label{display:block;font-weight:700;margin-bottom:.4rem}.bg-kw__question select{width:100%}.bg-kw__evidence{margin-top:1rem}.bg-kw__evidence-card{padding:.9rem;border:1px solid var(--lijn,#ddd);border-radius:8px;background:#fff}.bg-kw__evidence-flow{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem;margin:.7rem 0 0}.bg-kw__evidence-flow li{display:flex;gap:.4rem;align-items:flex-start;padding:.55rem;background:var(--papier,#fbfaf7);border-radius:6px;min-width:0}.bg-kw__evidence-flow li>span{font-weight:800}.bg-kw__evidence-flow strong,.bg-kw__evidence-flow small{display:block}.bg-kw__evidence-flow small{font-size:.65rem;color:var(--grijs,#666);overflow-wrap:anywhere}.bg-kw__execution{font-size:.72rem;color:var(--grijs,#666);margin-top:.55rem;overflow-wrap:anywhere}.bg-kw__evidence-empty{font-size:.8rem;color:var(--grijs,#666)}.bg-kw__activation{margin-top:1rem}.bg-kw__activation p{font-size:.8rem;color:var(--grijs,#666);margin-top:.35rem}.bg-kw__advanced{margin-top:1rem}.bg-kw__advanced pre{white-space:pre-wrap;word-break:break-word;font-size:.72rem;margin-top:.5rem}.bg-kw button:focus-visible,.bg-kw textarea:focus-visible,.bg-kw select:focus-visible,.bg-kw summary:focus-visible{outline:3px solid var(--geel,#ffe86b);outline-offset:2px}@media(max-width:700px){.bg-kw__routes,.bg-kw__templates,.bg-kw__evidence-flow{grid-template-columns:1fr}.bg-kw__progress{grid-template-columns:repeat(3,1fr);row-gap:.55rem}.bg-kw__progress li{font-size:.68rem}.bg-kw__route{min-height:76px}.bg-kw__head{align-items:flex-start}.bg-kw__activation .knop,.bg-kw__question .knop,.bg-kw__question select{width:100%}}`;
 export const DATA_USE_CSS=`.bg-kw__privacy{margin:1.2rem 0;padding:1rem;border:1px solid #cad4df;border-radius:18px;background:linear-gradient(130deg,#f4f8fc,#fff);min-width:0}.bg-kw__privacy legend{font-weight:800;padding:0 .3rem}.bg-kw__privacy>p{font-size:.88rem;max-width:58ch}.bg-kw__privacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}.bg-kw__privacy-grid label{display:flex;gap:.6rem;align-items:flex-start;padding:1rem;border:1px solid #cbd5df;border-radius:14px;background:#fff;cursor:pointer}.bg-kw__privacy-grid label:has(input:checked){border:2px solid #2742d6;background:#f2f5ff}.bg-kw__privacy-grid input{accent-color:#2742d6;min-width:20px;min-height:20px;margin-top:2px}.bg-kw__privacy-grid strong,.bg-kw__privacy-grid small{display:block}.bg-kw__privacy-grid small{font-size:.78rem;color:#4b5563;margin-top:.3rem}.bg-kw__sovereignty{margin-top:.8rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font-size:.81rem}.bg-kw__sovereignty a{font-weight:700;text-underline-offset:3px}.bg-kw__sovereignty-status{border-radius:999px;background:#ecf0f4;padding:.3rem .6rem}.bg-kw__privacy-note{font-size:.78rem;color:#4b5563}@media(max-width:750px){.bg-kw__privacy-grid{grid-template-columns:1fr}.bg-kw__privacy{padding:.8rem}}`;
-export const wizardStyles=()=>WIZARD_CSS+DATA_USE_CSS;
+export const ROUTING_CSS=`.bg-kw__routing{border:1px solid #cad4df;border-radius:16px;padding:1rem;margin:.8rem 0;background:#fff}.bg-kw__routing legend{font-weight:800}.bg-kw__routechoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem}.bg-kw__routechoices label{display:flex;align-items:flex-start;gap:.55rem;border:1px solid #d8e0e9;border-radius:12px;padding:.7rem;cursor:pointer}.bg-kw__routechoices input{min-width:20px;min-height:20px;accent-color:#2742d6}.bg-kw__routechoices label:has(input:checked){background:#f1f5ff;border-color:#2742d6}.bg-kw__routechoices small{display:block;color:#4b5563}.bg-kw__routing[hidden]{display:none}.bg-kw__repair{padding:.9rem;border:1px solid #dfbb80;border-radius:12px;background:#fffaf0;margin-top:1rem}.bg-kw__repair h3{margin:0 0 .3rem}.bg-kw__repair p{margin:.35rem 0}@media(max-width:700px){.bg-kw__routechoices{grid-template-columns:1fr}}`;
+export const wizardStyles=()=>WIZARD_CSS+DATA_USE_CSS+ROUTING_CSS;
 
 export function renderEvidenceFlow(result={}){
   const stages=Array.isArray(result.stages)?result.stages:[];
@@ -54,6 +57,8 @@ export function renderWizardShell(){
        <div class="bg-kw__sovereignty"><span data-bg-sovereignty-status class="bg-kw__sovereignty-status" role="status">Databeleid controleren…</span><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=data-ai-passport">Bekijk opslag, verwerking en AI-modelkeuze ↗</a></div>
        <p class="bg-kw__privacy-note">Toestemming voor AI-advies is geen toestemming voor modeltraining. Documentextractie en externe systemen hebben eigen gegevensstromen; controleer hun locaties en verwerkers vóór activatie. Een aangevraagd beleid is nog geen geverifieerde AI-infrastructuur.</p>
      </fieldset>
+     <fieldset class="bg-kw__routing" data-bg-fields hidden><legend>Welke gegevens wil je gebruiken?</legend><p>Kies één of meer gegevensvelden. Alleen deze velden worden meegenomen in de doelmapping.</p><div class="bg-kw__routechoices" data-bg-fieldchoices></div></fieldset>
+     <fieldset class="bg-kw__routing" data-bg-pages hidden><legend>Op welke pagina's wil je deze gegevens zien?</legend><p>Je kunt meerdere bestemmingen kiezen. Dit is een verzoek om gegevens te gebruiken; echte waarden verschijnen pas na geverifieerde opslag.</p><div class="bg-kw__routechoices" data-bg-pagechoices></div></fieldset>
      <div data-bg-template-list hidden></div>
     <div data-bg-question hidden></div>
     <div class="bg-kw__evidence" data-bg-evidence aria-live="polite"><p class="bg-kw__evidence-empty">Nog geen testbewijs.</p></div>
@@ -118,11 +123,27 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     draft=null;lastTest=null;activate.disabled=true;activateReason.textContent=reason;
     evidenceBox.innerHTML='<p class="bg-kw__evidence-empty">Nog geen geldig testbewijs voor deze versie.</p>';
   };
+  const renderRouting=()=>{
+    const fieldsRoot=root.querySelector('[data-bg-fields]');
+    const pagesRoot=root.querySelector('[data-bg-pages]');
+    fieldsRoot.hidden=!state;
+    pagesRoot.hidden=!state||dataUseMode==='CONNECTION_ONLY';
+    if(!state)return;
+    const selected=new Set(state.answers.selectedFields||[]);
+    const pages=new Set(state.answers.portalPages||[]);
+    fieldsRoot.querySelector('[data-bg-fieldchoices]').innerHTML=(state.template.fields||[]).map(field=>{
+      const key=typeof field==='string'?field:field.key;
+      return `<label><input type="checkbox" data-bg-field="${esc(key)}" ${selected.has(key)?'checked':''}><span><strong>${esc(key)}</strong></span></label>`;
+    }).join('');
+    pagesRoot.querySelector('[data-bg-pagechoices]').innerHTML=CONNECTOR_PORTAL_PAGES.map(page=>
+      `<label><input type="checkbox" data-bg-page="${esc(page.id)}" ${pages.has(page.id)?'checked':''}><span><strong>${esc(page.label)}</strong><small>${esc(page.hint)}</small></span></label>`).join('');
+  };
   const chooseTemplate=template=>{
     invalidateEvidence('Eerst deze gekozen koppeling veilig testen.');
     state=applyAnswer(createWizardState(template),'dataUseMode',dataUseMode);
     definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
     renderQuestion(root,state);
+    renderRouting();
     say(`${template.title} gekozen. Alleen ontbrekende keuzes worden nog gevraagd.`);
   };
 
@@ -163,7 +184,20 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
         state=applyAnswer(state,'dataUseMode',dataUseMode);
         definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
       }
+      renderRouting();
       say(dataUseMode==='CONNECTION_ONLY'?'Alleen koppelen gekozen. Datahub-activatie vereist eerst je uitdrukkelijke keuze voor portaalgebruik.':'Jouw datagebruik wordt uitsluitend voor deze koppeling vastgelegd.');
+      return;
+    }
+    if(state&&(event.target?.dataset?.bgField||event.target?.dataset?.bgPage)){
+      const isField=Boolean(event.target?.dataset?.bgField);
+      const key=isField?'selectedFields':'portalPages';
+      const prop=isField?'bgField':'bgPage';
+      const values=new Set(state.answers[key]||[]);
+      if(event.target.checked)values.add(event.target.dataset[prop]);else values.delete(event.target.dataset[prop]);
+      invalidateEvidence('Je gegevenskeuze is gewijzigd. Een nieuwe veilige test is nodig.');
+      state=applyAnswer(state,key,[...values]);
+      definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+      renderRouting();
       return;
     }
     const key=event.target?.dataset?.bgAnswer;if(!key||!state)return;
@@ -177,18 +211,32 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     if(answerKey&&state){invalidateEvidence();state=applyAnswer(state,answerKey,true);definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);renderQuestion(root,state);return;}
     if(event.target?.matches('[data-bg-safe-test]')&&state){
       try{
+        if(!state.answers.selectedFields?.length){say('Kies minimaal één gegevensveld.');return;}
+        if(dataUseMode!=='CONNECTION_ONLY'&&!state.answers.portalPages?.length){say('Kies minimaal één portaalpagina voor de gekozen toestemming.');return;}
         if(!draft)draft=await api.createDraft(toConnectorDefinition(state));
         const id=draft.id||draft.connectorId;
         if(!id)throw Object.assign(new Error('Draft zonder id'),{code:'DRAFT_ID_MISSING'});
         say('Veilige test uitvoeren…');
-        lastTest=await api.safeTest(id,sampleFor(state.template));
+        const sample=sampleFor(state.template);
+        try{lastTest=await api.safeTest(id,sample);}
+        catch(firstError){
+          const advice=connectorRecoveryAdvice(firstError);
+          if(!advice.canRetry)throw firstError;
+          say('Tijdelijke verbindingsfout; één veilige test opnieuw proberen.');
+          lastTest=await api.safeTest(id,sample); // sample test only, never a production write
+        }
         evidenceBox.innerHTML=renderEvidenceFlow(lastTest);
         const evidence=lastTest?.evidence||{};
         const status=toHumanStatus({state:lastTest?.status==='TEST_PASSED'?'ready':'error',lastSafeTest:{ok:lastTest?.status==='TEST_PASSED',executionId:evidence.testExecutionId||evidence.runtimeExecutionId||lastTest?.executionId,proofLevel:evidence.proofLevel}});
         say(status.reason);
         activate.disabled=!status.canActivate;
         activateReason.textContent=status.canActivate?'Test geslaagd. Je kunt deze exacte geteste versie nu activeren.':status.reason;
-      }catch(error){say(error?.message||'Veilige test mislukt.');activate.disabled=true;evidenceBox.innerHTML=renderEvidenceFlow(error?.details||{});}
+      }catch(error){
+        const guide=connectorRecoveryAdvice(error);
+        say(guide.message);
+        activate.disabled=true;
+        evidenceBox.innerHTML=`<section class="bg-kw__repair" role="alert"><h3>${esc(guide.heading)}</h3><p>${esc(guide.message)}</p><p><strong>Volgende stap:</strong> ${esc(guide.action)}</p><p>De koppeling blijft veilig uit totdat de test slaagt. Een open fout blijft in het bestaande herstelregister staan.</p></section>`;
+      }
     }
   });
   activate.addEventListener('click',async()=>{
