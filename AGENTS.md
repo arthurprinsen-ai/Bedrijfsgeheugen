@@ -1,3 +1,7 @@
+## P0 2026-11-02 — Netlify publicatiebewijs v5, geen regressie naar v2
+
+Het originele `/api/powerhouse-observability` is afgeschermd en gebruikt `social-publication-proof-v5`. De oudere release-parity-test van 2026-10-29 eist ten onrechte v2, terwijl dedicated publicatiediagnostiek al v5 test. Het juiste herstel is een exacte source-contract-testcorrectie, nooit de runtime, adminrechten, providerontvangsten of tenantisolatie verlagen. Behoud originele ontwikkel-incident `powerhouse|brain|netlify-observability-v2-v5-test-drift|20261102-v1`, test historisch/shadow/canary en bewijs postmerge, exact productiedeploy en ingelogde portaalweergave. Geen verzonnen publicaties.
+
 ## P0 2026-11-02 — stale personal LinkedIn fallback is forbidden even when old tests demand it
 
 Canonical personal-story selection in the original `powerhouse-content-orchestrator` excludes original rejected source IDs, then chooses only a not-stale family, else `null`; never restore `eligiblePersonal[0]` because it may republish a paraphrase of an already rejected LinkedIn personal post. Two original backend fixtures wrongly assert the unsafe fallback. Repair tests only, strengthen positive fresh-selection and negative fallback assertions, leave source/publisher/OAuth/identity/CMS approval/provider-gate untouched. Incident `powerhouse|brain|stale-personal-duplicate-test-fallback|20261102-v1` requires historical, shadow and canary tests plus original postmerge full BRAIN/terminal and independent provider readback. No second scheduler, invented send receipt or false green.
