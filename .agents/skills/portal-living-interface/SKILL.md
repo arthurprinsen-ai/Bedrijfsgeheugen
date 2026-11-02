@@ -27,3 +27,6 @@ Before opening a PR, use the canonical supported Candidate-Type `implementation`
 
 ## CodeQL security-gate learning
 Never use naive case-sensitive forbidden-tag regex assertions as proof of HTML escaping. Supply adversarial mixed-case markup input, assert canonical entity-encoded output, and require a fresh exact-head CodeQL result. Two high test-filter findings on original #5297 are not waived or marked green by correcting test code alone.
+
+## Live UX and Netlify browser gate recurrence — 2026-11-02
+The V1 design foundation is source+browser verified live in PR #5297, Netlify deploy `6ae89037cf6564e024183391`, SHA `75c4500a4e90afa1f001f748d7081a75e09aa803` (15 pass, 1 intentional skip). That does NOT prove full WCAG 2.2 AA, authenticated two-tenant outcomes, usability targets or award readiness. For an intermittent Netlify HTTP 403 challenge during a production browser test, reuse the original bounded browser-gate skill and canonical ONE BRAIN incident family `powerhouse|portal-v2|first-browser-readback-403-then-pass|20261030-v1`; never bypass security, never call a challenged response a product PASS, and require independent exact-SHA successful browser readback.
