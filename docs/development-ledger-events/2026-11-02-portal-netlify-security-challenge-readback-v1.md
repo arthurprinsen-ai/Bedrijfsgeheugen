@@ -14,3 +14,6 @@ Original existing browser and portal skills, ONE BRAIN machine learning record a
 
 ## Outcome
 V1 technical source + browser proof already LIVE; this is a candidate reliability/observability improvement. Original 403 recurrence is not declared prevented forever; only classification and safe recovery procedure can be regression-guarded. Real-user WCAG 2.2 AA, 8+ entrepreneur tasks/SUS, two-tenant journeys, 320–1440px and 200% zoom coverage, p75 web vitals and award-worthiness remain EVIDENCE_DUE. Keep issue #4547 open.
+
+## Protected admission contract recovery (same PR #5303)
+Original Required hygiene attempt `41456184469` correctly stopped with `unclassified delivery path: tests/integration/portal-readback-security-challenge.mjs`. This helper was outside the existing canonical Portal V2 test namespace; do not widen delivery classification or exempt the guard. Moved the identical pure classifier (no security/behavior change) to `tests/integration/portal-v2-readback-security-challenge.mjs`, which already belongs to the original Portal V2 lane, and rewired its Playwright and BRAIN regressions. Keep old failure evidence and require exact-HEAD protected CI proof.

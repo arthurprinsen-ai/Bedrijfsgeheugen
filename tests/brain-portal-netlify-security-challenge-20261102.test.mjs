@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
-import {classifyPortalBrowserReadback,PORTAL_BROWSER_SECURITY_CHALLENGE_VERSION} from './integration/portal-readback-security-challenge.mjs';
+import {classifyPortalBrowserReadback,PORTAL_BROWSER_SECURITY_CHALLENGE_VERSION} from './integration/portal-v2-readback-security-challenge.mjs';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const read=path=>readFileSync(resolve(root,path),'utf8');
 const netlifyHtml='<h1>www.bedrijfsgeheugen.nl</h1><p>We are verifying your connection. This will only take a few seconds...</p><p>Security by <a href="https://www.netlify.com/security/">Netlify</a></p>';

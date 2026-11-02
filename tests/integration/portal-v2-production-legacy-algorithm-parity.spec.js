@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { classifyPortalBrowserReadback } from './portal-readback-security-challenge.mjs';
+import { classifyPortalBrowserReadback } from './portal-v2-readback-security-challenge.mjs';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 
