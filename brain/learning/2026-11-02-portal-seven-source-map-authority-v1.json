@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|portal|seven-source-map-scope-and-integrity-conflict|20261102-v1",
+  "compiler": {
+    "failure_class": "SYSTEM_MAP_GENERATED_SOURCE_DRIFT",
+    "scope": "PORTAL_INTEGRATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "root_cause": "Original admin-only seven-source Portal PR #5264 legitimately changes the Portal control-plane coverage UI. Deterministic System Map source inventory hashes Portal JavaScript and therefore requires the new digest. Carrying regenerated map/index in its original targeted readback scope causes SCOPE_CONTAMINATED; omitting them causes SYSTEM_MAP_INTEGRITY_FAIL. Protected gates correctly reject both uncoordinated releases.",
+  "prevention_rule": "Route every modified Portal JS/CSS through an authorized System Map integration candidate with same-commit deterministic generated map and canonical portal HTML bg_explain, keeping original seven-readonly-view fixture, agent/skills and learning under its source owner. Before merge require independent historical/shadow/canary test replay, Required/CodeQL, original BRAIN, protected writer/merge and exact Netlify/browser provider readback. Never disable a test, modify production directly, create parallel scheduler/publisher or claim a customer outcome without independent real evidence.",
+  "owner": "Original Portal System Map generator / original seven-source owner #5264 / ONE BRAIN protected release",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs",
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs",
+      "tests/brain-strategic-advisor-one-loop-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs",
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs",
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "parent_issue": 4439,
+    "source_owner_pr": 5264,
+    "source_candidate": "b9a43fce2ee19f2f1dda7ecbe51959db974612c0",
+    "preflight_fail_scope_run": 41429058792,
+    "preflight_fail_system_map_run": 41429624672,
+    "prior_23_fail_backend_run": 41421421023,
+    "latest_4_fail_backend_run": 41428302145,
+    "portal_content_hash": "3a8bf045d359016e71d85f1ca559206bbcc354068597e908d40e2ce68f0865fd",
+    "status": "CANDIDATE_NOT_RELEASED",
+    "productionVerified": false,
+    "no_recurring_failure_proven": false,
+    "verified_business_revenue": false
+  }
+}
