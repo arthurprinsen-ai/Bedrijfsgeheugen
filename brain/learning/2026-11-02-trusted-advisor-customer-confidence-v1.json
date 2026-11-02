@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-02",
+  "obligation_id": "trusted-advisor-externals-all-surfaces-20261102-v1",
+  "fingerprint": "powerhouse|trust|customer-facing-editorial-proof-gap|20261102-v1",
+  "status": "SOURCE_CANDIDATE",
+  "failure_class": "CROSS_CHANNEL_CUSTOMER_CONFIDENCE_AND_EVIDENCE_GAP",
+  "original_owners": [
+    "ONE BRAIN editorial council",
+    "CMS content quality",
+    "original social publishers",
+    "original commercial email composer",
+    "Powerhouse owner-only portal"
+  ],
+  "observed": {
+    "fact": "Cross-channel editorial guidance existed in editorial council but lacked a single executable CMS copy-level trust rule, a customer-facing dashboard explanation, and a consistent proof-status distinction.",
+    "existing_controls": [
+      "original company/personal LinkedIn hard editorial contracts",
+      "CMS quality and human review",
+      "channel provider and consent checks"
+    ],
+    "evidence": [
+      "supabase/functions/_shared/editorial-council-context.mjs",
+      "assets/cms-quality-gate.mjs",
+      "portal-v2/operating-system/executive-cockpit.js"
+    ],
+    "published_customer_harm": "NOT_ESTABLISHED",
+    "live_customer_trust_metric": "UNKNOWN",
+    "real_revenue_uplift": "UNKNOWN"
+  },
+  "root_cause": "Brand promise, channel editorial policy and CMS content validation were separately specified; high-confidence public-copy defects and proof limitations did not share a versioned CMS guard and visible owner portal explanation.",
+  "intervention": "Pure deterministic trust assessment integrated into the ORIGINAL CMS quality gate, advisory brief carried through original council, existing owner-only executive cockpit explanation, agents and skills policy, no new writer or scheduler.",
+  "prevention_rule": "All original CMS text, link, meta and HTML customer copy must be checked for high-confidence leaks, template instructions, false guarantees and quantified claims without references; links are not independently verified outcome proof. Existing human approval, channel prepublish and provider readback remain mandatory.",
+  "regressions": [
+    "tests/brain-trusted-advisor-cross-channel-20261102.test.mjs",
+    "tests/cms-studio-20261102.test.mjs",
+    "tests/brain-editorial-council-one-loop-20261102.test.mjs"
+  ],
+  "independent_verification_due": [
+    "node tests on exact feature head",
+    "GitHub protected Required and CodeQL exact SHA",
+    "BRAIN backend full run",
+    "protected merge and exact Netlify production SHA/browser check",
+    "original Supabase Edge deployed source/readback where required",
+    "live original CMS approval sequence with authenticated editor",
+    "24h/48h/7d real complaint/lead/order outcome evaluation"
+  ],
+  "telemetry_boundary": "Cannot infer trust uplift, publication, revenue, customer satisfaction or zero future errors from passing code tests.",
+  "state": "EVIDENCE_DUE"
+}
