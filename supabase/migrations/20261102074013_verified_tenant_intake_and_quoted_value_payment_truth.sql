@@ -33,6 +33,9 @@ BEGIN
 END;
 $$;
 
+-- The trigger functions are private; browser roles must never EXECUTE privileged logic directly.
+REVOKE ALL ON FUNCTION intern.trg_scan_uitkomst() FROM PUBLIC, anon, authenticated;
+
 DROP TRIGGER IF EXISTS bg_scan_uitkomst ON public.scan_inzendingen;
 CREATE TRIGGER bg_scan_uitkomst
 AFTER INSERT OR UPDATE OF tenant_identity_status, organisatie_id
@@ -65,6 +68,8 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
+REVOKE ALL ON FUNCTION intern.trg_offerte_uitkomst() FROM PUBLIC, anon, authenticated;
 
 DROP TRIGGER IF EXISTS bg_offerte_uitkomst ON public.offerte_inzendingen;
 CREATE TRIGGER bg_offerte_uitkomst
