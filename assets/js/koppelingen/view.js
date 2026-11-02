@@ -136,7 +136,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
       return `<label><input type="checkbox" data-bg-field="${esc(key)}" ${selected.has(key)?'checked':''}><span><strong>${esc(key)}</strong></span></label>`;
     }).join('');
     pagesRoot.querySelector('[data-bg-pagechoices]').innerHTML=CONNECTOR_PORTAL_PAGES.map(page=>
-      `<label><input type="checkbox" data-bg-page="${esc(page.id)}" ${pages.has(page.id)?'checked':''}><span><strong>${esc(page.label)}</strong><small>${esc(page.hint)}</small></span></label>`).join('');
+      `<label><input type="checkbox" data-bg-page="${esc(page.id)}" ${pages.has(page.id)&&!(page.id==='brain-verwerking'&&dataUseMode!=='PORTAL_AI')?'checked':''} ${page.id==='brain-verwerking'&&dataUseMode!=='PORTAL_AI'?'disabled':''}><span><strong>${esc(page.label)}</strong><small>${esc(page.hint)}${page.id==='brain-verwerking'&&dataUseMode!=='PORTAL_AI'?' — vraagt AI-toestemming':''}</small></span></label>`).join('');
   };
   const chooseTemplate=template=>{
     invalidateEvidence('Eerst deze gekozen koppeling veilig testen.');
