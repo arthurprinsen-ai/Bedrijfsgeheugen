@@ -49,12 +49,14 @@
     "historical_replay": [
       "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs",
       "tests/brain-cro-production-migration-lock-20261029.test.mjs"
     ]
   },
   "tests": [
-    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
   ],
   "provider_evidence": {
     "production_migrations_applied": true,
@@ -69,6 +71,16 @@
     "original_netlify_release_required": false,
     "live_source_lock_proven": false,
     "full_brain_green": false,
-    "ongoing_recurrence_absence_proven": false
+    "ongoing_recurrence_absence_proven": false,
+    "ci_preflight_history": [
+      {
+        "run_id": 41413491808,
+        "state": "BLOCKED",
+        "cause": "LEARNING_EVALUATION_TEST_PATH_INVALID: non-brain supplemental migration test placed in historical_replay; keep non-brain as supporting tests only",
+        "root_cause": "canonical historical_replay requires tests/brain- prefix",
+        "prevention": "only original tests/brain- prefixed replay paths in evaluation.historical_replay; other tests referenced as extra regression tests",
+        "resolved_in_source": true
+      }
+    ]
   }
 }
