@@ -92,3 +92,58 @@ test('v1 production copy upgrades without stacking or leaving the outdated hero-
   assert.equal((updated.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
   assert.equal(applyDailySteeringPositioning(updated,'nl'),updated);
 });
+
+
+test('business-owner value appears before technical detail in both languages with explicit evidence boundaries',()=>{
+  const nl=applyDailySteeringPositioning(homepage,'nl');
+  assert.match(nl,/data-bg-business-value-first="v1"/);
+  assert.match(nl,/Wat levert een betere beslissing jouw bedrijf op/);
+  assert.match(nl,/Een kans is nog geen extra order/);
+  assert.match(nl,/een besparingsschatting is nog geen besparing/i);
+  assert.match(nl,/voorbeeldgegevens/);
+  assert.match(nl,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/);
+  assert.ok(nl.indexOf('data-bg-business-value-first="v1"')>nl.indexOf('<h1>'),'business value follows the original first-screen H1');
+  assert.equal((nl.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+  assert.equal(applyDailySteeringPositioning(nl,'nl'),nl,'repeated builds must not stack duplicate sections');
+  const en=applyDailySteeringPositioning('<main><h1>Original</h1><p class="lead">Original lead</p></main>','en');
+  assert.match(en,/What does a better decision deliver/);
+  assert.match(en,/Estimated savings are not realised savings/);
+  assert.equal(applyDailySteeringPositioning(en,'en'),en);
+});
+
+
+test('value-first homepage keeps the original cookie choices and tablet main heading visible',()=>{
+ const nl=applyDailySteeringPositioning(homepage,'nl');
+ assert.match(nl,/@media\(min-width:620px\) and \(max-width:900px\)/);
+ assert.match(nl,/html body #bgCookie\{width:min\(320px,calc\(100vw - 2rem\)\)/);
+ assert.match(nl,/right:1rem;margin:0/);
+ assert.doesNotMatch(nl,/#bgCookie\s*\{[^}]*display:none!important/);
+ assert.match(nl,/id="bgCookieDeny"/);
+ assert.match(nl,/id="bgCookieAccept"/);
+ assert.equal(applyDailySteeringPositioning(nl,'nl'),nl);
+ const en=applyDailySteeringPositioning('<main><h1>Original</h1><p class="lead">Original lead</p></main>','en');
+ assert.match(en,/@media\(min-width:620px\) and \(max-width:900px\)/);
+});
+
+
+test('business-value section respects hero-first visual safety for phone tablet and desktop',()=>{
+ const fixture='<html><main><section class="hero"><h1>FIRST SCREEN HERO</h1><p class="hero-sub">An original, first-screen business introduction.</p></section><section data-section="ai-ecosysteem"><h2>Existing details</h2></section></main></html>';
+ for(const locale of ['nl','en']){
+   const result=applyDailySteeringPositioning(fixture,locale);
+   const position=result.indexOf('data-bg-business-value-first="v1"');
+   assert.ok(position>result.indexOf('FIRST SCREEN HERO'),'the first-screen H1 must remain visible before the secondary value block');
+   assert.ok(position>result.indexOf('</section>'),'value block follows the complete first hero section');
+   assert.equal((result.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+   assert.equal(applyDailySteeringPositioning(result,locale),result,'no duplicated product section on repeat build');
+ }
+});
+
+
+test('value-first placement follows actual nested DIV hero after predictive content',()=>{
+  const markup='<main><section aria-labelledby="bg-predictive-heading"><h2 id="bg-predictive-heading">Details</h2></section><div class="wrap hero"><div><h1>Original entrepreneur headline</h1><div class="actions"><a href="/product">Original CTA</a></div></div><aside>Original hero aside</aside></div><section id="next">Next</section></main>';
+  const output=applyDailySteeringPositioning(markup,'nl');
+  assert.ok(output.indexOf('data-bg-business-value-first="v1"')>output.indexOf('Original hero aside'));
+  assert.ok(output.indexOf('data-bg-business-value-first="v1"')<output.indexOf('id="next"'));
+  assert.equal((output.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+  assert.equal(applyDailySteeringPositioning(output,'nl'),output);
+});
