@@ -48,7 +48,7 @@ test('only exact review 422 rejection with another observed source can reopen',(
  assert.equal(check(decision(),obligation(),stale).eligible,false);
  const unsourced=sources();delete unsourced[1].evidence.source_backed;
  assert.equal(check(decision(),obligation(),unsourced).eligible,false);
- const noURL=sources();unsourced[1].evidence.source_url='http://unsafe';
+ const noURL=sources();noURL[1].evidence.source_url='http://unsafe';
  assert.equal(check(decision(),obligation(),noURL).eligible,false);
  const noAlternative=sources().slice(0,1);
  assert.equal(check(decision(),obligation(),noAlternative).reason,'NO_NEW_VERIFIED_SOURCE');
