@@ -13,8 +13,8 @@ function result(overrides={}){
  return {id:'o-1',title:'Doorlooptijd gedaald',status:'OUTCOME_VERIFIED',
   evidence_health:{status:'healthy',confidence:.9},source_refs:['receipt:1'],
   learning_verified:true,learning_evidence_refs:['learning:1'],
-  action_id:'action:1',realized:{amount:4,unit:'HOURS',metric_id:'lead-time-hours',baseline_id:'baseline:2026-10',period_id:'2026-10'},
   learning_summary:'Wachtstappen samenvoegen',next_decision_id:'decision:2',
+  action_id:'action:1',realized:{amount:12,unit:'HOURS',metric_id:'process-hours',baseline_id:'baseline:1',period_id:'2026-10'},
   ...overrides};
 }
 test('historical replay: no tenant evidence is never reported as realized or learned',()=>{

@@ -59,7 +59,7 @@ test('commercial CTA and form events have exactly one canonical growth producer 
  assert.match(js,/getElementById\('bg-growth-measurement'\)/);
  assert.match(js,/type==='primary_cta_click'\|\|type==='form_start'\|\|type==='form_submit_intent'/);
  assert.match(js,/el\.closest\('main'\)/);
- assert.match(js,/meetGroei\('money_link_click',el\)/); // Include clicked-element attribution in canonical producer
+ assert.match(js,/meetGroei\('money_link_click',el\)/);
  assert.match(js,/!toestemming\(\)/);
 });
 
