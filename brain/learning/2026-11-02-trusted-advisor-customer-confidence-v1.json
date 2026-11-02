@@ -45,5 +45,25 @@
     "24h/48h/7d real complaint/lead/order outcome evaluation"
   ],
   "telemetry_boundary": "Cannot infer trust uplift, publication, revenue, customer satisfaction or zero future errors from passing code tests.",
-  "state": "EVIDENCE_DUE"
+  "state": "EVIDENCE_DUE",
+  "schema": "brain-learning-observation-v1",
+  "compiler": {
+    "failure_class": "CROSS_CHANNEL_CUSTOMER_CONFIDENCE",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-cross-channel-20261102.test.mjs",
+      "tests/cms-studio-20261102.test.mjs",
+      "tests/brain-editorial-council-one-loop-20261102.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-trusted-advisor-one-brain-quality.md",
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false
 }
