@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|brain|janitor-tsv-fixture-global-scope-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Historical original Janitor source-regression required no @tsv anywhere in powerhouse-repository-janitor.yml, although the original stale queued/in_progress Actions run loop safely uses @json and the separate merged branch cleanup intentionally consumes bounded branch+SHA sweep-candidates.tsv. Global negative fixture conflates unrelated source-owner operations; changing working secure runtime to placate it would risk new Janitor bugs.",
+  "prevention_rule": "Scope safety tests to exact source section: stale Actions run ID/SHA/status/time parsing must use JSON only and never @tsv, while independent bounded merged-branch reference sweep may use its intended 2-column TSV with SHA and open-PR checks. Preserve queue TTL, current-head protection, writer authority, cancellation proof and branch safety; never globally ban distinct safe serialization.",
+  "owner": "Original ONE BRAIN repository Janitor source and CI safety-contract owner",
+  "evidence": {
+    "original_full_brain": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41416918147",
+    "backend_job_id": 125183392982,
+    "total_tests": 5377,
+    "passed": 5347,
+    "failed": 28,
+    "affected_test": "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs",
+    "source": ".github/workflows/powerhouse-repository-janitor.yml",
+    "verified_branch_cleanup_source": "sweep-candidates.tsv separate from for status in queued in_progress JSON loop",
+    "original_janitor_workflow_modified": false,
+    "provider_actions": "NOT_EXECUTED",
+    "terminal_green": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs"
+    ]
+  },
+  "fix": "Change only stale original test: demand exactly one queued/in-progress Actions loop, JSON per-run parsing within exact independent source region, no @tsv in same run region, and preserve explicit separate branch-sweep TSV; existing original AGENTS + continuity skill, learning JSON, human change and append-only ledger; no repository Janitor runtime changes.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}

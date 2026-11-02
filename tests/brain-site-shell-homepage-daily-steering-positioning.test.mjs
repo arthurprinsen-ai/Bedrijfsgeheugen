@@ -92,3 +92,101 @@ test('v1 production copy upgrades without stacking or leaving the outdated hero-
   assert.equal((updated.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
   assert.equal(applyDailySteeringPositioning(updated,'nl'),updated);
 });
+
+
+test('business-owner value appears before technical detail in both languages with explicit evidence boundaries',()=>{
+  const nl=applyDailySteeringPositioning(homepage,'nl');
+  assert.match(nl,/data-bg-business-value-first="v1"/);
+  assert.match(nl,/Wat levert een betere beslissing jouw bedrijf op/);
+  assert.match(nl,/Een kans is nog geen extra order/);
+  assert.match(nl,/een besparingsschatting is nog geen besparing/i);
+  assert.match(nl,/voorbeeldgegevens/);
+  assert.match(nl,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/);
+  assert.ok(nl.indexOf('data-bg-business-value-first="v1"')>nl.indexOf('<h1>'),'business value follows the original first-screen H1');
+  assert.equal((nl.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+  assert.equal(applyDailySteeringPositioning(nl,'nl'),nl,'repeated builds must not stack duplicate sections');
+  const en=applyDailySteeringPositioning('<main><h1>Original</h1><p class="lead">Original lead</p></main>','en');
+  assert.match(en,/What does a better decision deliver/);
+  assert.match(en,/Estimated savings are not realised savings/);
+  assert.equal(applyDailySteeringPositioning(en,'en'),en);
+});
+
+
+test('value-first homepage keeps the original cookie choices and tablet main heading visible',()=>{
+ const nl=applyDailySteeringPositioning(homepage,'nl');
+ assert.match(nl,/@media\(min-width:620px\) and \(max-width:900px\)/);
+ assert.match(nl,/html body #bgCookie\{width:min\(320px,calc\(100vw - 2rem\)\)/);
+ assert.match(nl,/right:1rem;margin:0/);
+ assert.doesNotMatch(nl,/#bgCookie\s*\{[^}]*display:none!important/);
+ assert.match(nl,/id="bgCookieDeny"/);
+ assert.match(nl,/id="bgCookieAccept"/);
+ assert.equal(applyDailySteeringPositioning(nl,'nl'),nl);
+ const en=applyDailySteeringPositioning('<main><h1>Original</h1><p class="lead">Original lead</p></main>','en');
+ assert.match(en,/@media\(min-width:620px\) and \(max-width:900px\)/);
+});
+
+
+test('business-value section respects hero-first visual safety for phone tablet and desktop',()=>{
+ const fixture='<html><main><section class="hero"><h1>FIRST SCREEN HERO</h1><p class="hero-sub">An original, first-screen business introduction.</p></section><section data-section="ai-ecosysteem"><h2>Existing details</h2></section></main></html>';
+ for(const locale of ['nl','en']){
+   const result=applyDailySteeringPositioning(fixture,locale);
+   const position=result.indexOf('data-bg-business-value-first="v1"');
+   assert.ok(position>result.indexOf('FIRST SCREEN HERO'),'the first-screen H1 must remain visible before the secondary value block');
+   assert.ok(position>result.indexOf('</section>'),'value block follows the complete first hero section');
+   assert.equal((result.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+   assert.equal(applyDailySteeringPositioning(result,locale),result,'no duplicated product section on repeat build');
+ }
+});
+
+
+test('value-first placement follows actual nested DIV hero after predictive content',()=>{
+  const markup='<main><section aria-labelledby="bg-predictive-heading"><h2 id="bg-predictive-heading">Details</h2></section><div class="wrap hero"><div><h1>Original entrepreneur headline</h1><div class="actions"><a href="/product">Original CTA</a></div></div><aside>Original hero aside</aside></div><section id="next">Next</section></main>';
+  const output=applyDailySteeringPositioning(markup,'nl');
+  assert.ok(output.indexOf('data-bg-business-value-first="v1"')>output.indexOf('Original hero aside'));
+  assert.ok(output.indexOf('data-bg-business-value-first="v1"')<output.indexOf('id="next"'));
+  assert.equal((output.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+  assert.equal(applyDailySteeringPositioning(output,'nl'),output);
+});
+
+
+test('the production H1 is visible before technical predictive detail after the safe reorder',()=>{
+ const output=applyDailySteeringPositioning(homepage,'nl');
+ const h1=output.indexOf('data-bg-daily-steering-title="v2"');
+ const value=output.indexOf('data-bg-business-value-first="v1"');
+ const predictive=output.indexOf('aria-labelledby="bg-predictive-heading"');
+ assert.ok(h1>0&&value>h1&&predictive>value,'existing hero must precede value and predictions');
+ const firstChild=/<main\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\bhero\b[^"']*["']/i;
+ assert.match(output,firstChild,'the first main block is the original visible hero');
+ assert.equal(applyDailySteeringPositioning(output,'nl'),output);
+});
+
+test('real homepage technical section cannot push original owner hero below the fold',()=>{
+  const first='<main><section class="wrap" aria-labelledby="bg-predictive-heading"><h2 id="bg-predictive-heading">Predictive models</h2><p>Predictions need verified data.</p><div><span>Evidence</span></div></section>';
+  const hero='<div class="wrap hero"><div><h1>Original business headline</h1><p class="lead">Original context</p><div class="inner"><a href="/product">Product</a></div></div><aside>Original hero proof</aside></div>';
+  const input=first+hero+'<section id="more"><h2>Further details</h2></section></main>';
+  const result=applyDailySteeringPositioning(input,'nl');
+  assert.ok(result.indexOf('<div class="wrap hero">')<result.indexOf('bg-predictive-heading'),'real hero must precede secondary technical panel');
+  assert.ok(result.indexOf('data-bg-business-value-first="v1"')<result.indexOf('bg-predictive-heading'),'business value shown before explanatory technology');
+  assert.match(result,/Predictions need verified data/,'uncertainty disclaimer preserved');
+  assert.match(result,/Original hero proof/);
+  assert.equal(applyDailySteeringPositioning(result,'nl'),result);
+});
+
+
+test('generated V18 video-hero shade never becomes the owner-value injection point',()=>{
+ const fixture='<main data-bg-component="main"><div class="page active" id="view-home"><section aria-label="Bedrijfsgeheugen introductie" class="hero-video hero-inspiration" data-bg-component="hero"><video aria-hidden="true"></video><div class="hero-video-shade"></div><div class="wrap hero-video-content"><div class="hero-copy"><h1>Original business-owner promise</h1><p class="hero-sub">Original outcomes and evidence</p></div></div></section><section id="after-video"><h2>Further content</h2></section></div></main>';
+ const html=applyDailySteeringPositioning(fixture,'nl');
+ const h1=html.indexOf('data-bg-daily-steering-title="v2"');
+ const heroClose=html.indexOf('</section>',h1);
+ const insertion=html.indexOf('data-bg-business-value-first="v1"');
+ const next=html.indexOf('id="after-video"');
+ assert.ok(h1>0&&heroClose>h1&&insertion>heroClose&&next>insertion,'V18 original H1 and complete hero must precede new section');
+ assert.ok(html.includes('<div class="hero-video-shade"></div>'),'video overlay preserved');
+ assert.equal((html.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+ assert.equal(applyDailySteeringPositioning(html,'nl'),html,'V18-shaped build remains idempotent');
+});
+
+test('homepage reordering rejects comment-based pre-hero markup instead of partial sanitization',()=>{
+ const html='<main><section aria-labelledby="bg-predictive-heading"><h2 id="bg-predictive-heading">Evidence</h2></section><!-- nested <!-- unsupported --><div class="wrap hero"><h1>Primary entrepreneur proposition</h1><p class="lead">Real source context</p></div></main>';
+ assert.throws(()=>applyDailySteeringPositioning(html,'nl'),/VALUE_FIRST_PRE_HERO_COMMENT_UNSUPPORTED/);
+});
