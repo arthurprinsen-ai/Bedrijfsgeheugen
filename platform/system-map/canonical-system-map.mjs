@@ -1,4 +1,23 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  evidenceLedEditorialCouncilV1:Object.freeze({
+    fingerprint:'powerhouse|content|editorial-specialists-not-unified-with-evidence-application|20261102-v1',
+    contract:'one-brain-commercial-editorial-council-v1',
+    owner:'original powerhouse-content-orchestrator + existing publisher/CMS + ONE BRAIN/Heartbeat',
+    advice:'supabase/functions/_shared/editorial-council-context.mjs',
+    generator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+    existingB2BEmailComposer:'supabase/functions/powerhouse-commercial-message-composer/index.ts',
+    learningAuthority:'social_learnings + revenue_learnings + social_learning_applications',
+    measurementAuthority:'social_metric_snapshots + existing CTA/lead/payment lineage',
+    existingAdminCockpit:'netlify/functions/powerhouse-cro-other-data.mjs',
+    existingPortal:'portal-v2/modules/andere-data.js',
+    skill:'.agents/skills/powerhouse-social-cro-funnel/SKILL.md',
+    regression:'tests/brain-editorial-council-one-loop-20261102.test.mjs',
+    brain:'brain/learning/2026-11-02-editorial-council-source-and-application-gap-v1.json',
+    humanDoc:'docs/changes/2026-11-02-evidence-led-editorial-council-v1.md',
+    reviewedResearchDate:'2026-11-02',
+    noExtraWriter:true,noExtraScheduler:true,noAutomaticEmailAuthorization:true,
+    observedLiftVerified:false,nextNaturalLearningApplicationVerified:false,exactProductionVerified:false
+  }),
   entrepreneurActionImpactFeedbackV1:Object.freeze({
     fingerprint:'portal|entrepreneur-experience|prediction-action-outcome-feedback|20261030-v1',
     owner:'existing Portal V2 UX + Company Intelligence OS + ONE BRAIN/Heartbeat',
@@ -198,7 +217,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'dfe5ffe883ecf680dc6d5625a0ac6071b090adf7f0860543e93b14a6ac9ebb72',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'7607aa364c78ac5d0e8704f7dd0b457257e8033f2c9580b879597b737cd1f60a',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',

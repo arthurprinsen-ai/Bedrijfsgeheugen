@@ -234,6 +234,9 @@ function systemMapView(systemMap,events,observability={}){
     UNVERIFIED:'Geen volledige onafhankelijke incidentreadback. Niet als opgelost weergeven.'
   }[predictiveCode]||'Herstelstatus onbekend; geen succesclaim zonder bronreadback.';
 
+  const commercialIntake=observability.commercialIntakeProof||{};
+  const commercialSourceLive=commercialIntake.status==='SOURCE_LIVE_CUSTOMER_OUTCOME_PENDING'&&commercialIntake.sourceLive===true;
+  const commercialStatus=commercialSourceLive?'BRONCORRECTIE LIVE · KLANTRESULTAAT OPEN':'BRONBEWIJS ONBEKEND';
   const agentCoverage=observability.agentCycleCoverage||{};
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
   const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
@@ -293,6 +296,17 @@ function systemMapView(systemMap,events,observability={}){
     </div>
     <p class="poc-note" data-predictive-source-proof data-evidence-status="${esc(predictiveCode)}"><b>Voorspellingsagent · publieke bronselectie:</b> ${esc(predictiveText)} Status uit het bestaande ONE BRAIN-foutregister; de portaalweergave voert geen predictie- of publicatieactie uit.</p>
     <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
+  </section>
+  <section class="poc-panel" data-commercial-intake-proof data-evidence-status="${esc(commercialIntake.status||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Echte leads, offertes en betalingen · bronbewijs</h4><span class="poc-badge ${commercialSourceLive?'warn':'bad'}">${esc(commercialStatus)}</span></div>
+    <p class="poc-note">De bestaande ONE BRAIN-bronregel onderscheidt een ingevulde scan, geverifieerde bedrijfsidentiteit, offerteakkoord en daadwerkelijk betaalde order. Dit is een beveiligde statuskaart; zij voert geen claim, betaling, klantmutatie of commerciële verzending uit.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Scan → geverifieerde klant',commercialSourceLive?'Bronherstel live':'—',commercialSourceLive?'Nieuwe echte claim nog afzonderlijk aantonen':'Geen onafhankelijk productiebewijs')}
+      ${kpi('Offerte ≠ betaling',commercialSourceLive?'Afgedwongen':'—',commercialSourceLive?'Ondertekend is voorstel; omzet uitsluitend na betaalbewijs':'Status onbekend')}
+      ${kpi('Nieuwe echte klantclaim',commercialSourceLive?(commercialIntake.authorizedClaimProven===true?'Geregistreerd':'Niet bewezen'):'—','Alleen geautoriseerde tenantcontext')}
+      ${kpi('Betaalde order',commercialIntake.paymentProven===true?'Afzonderlijk bewijs aanwezig':'Niet bewezen','Geen omzetclaim op basis van ondertekening')}
+    </div>
+    <p class="poc-note">Bron: ${esc(commercialIntake.source||'oorspronkelijke ONE BRAIN-readback ontbreekt')}. Uitgelezen: ${esc(fmtTime(commercialIntake.observedAt))}. Status ${esc(commercialIntake.status||'UNVERIFIED')}. Dit bevestigt geen nieuwe omzet, causale ROI, volgende natuurlijke run of definitieve preventie. <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198" target="_blank" rel="noopener noreferrer">Oorspronkelijk commercieel incident #4198</a> blijft leidend.</p>
   </section>
   <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">
     <div class="poc-panelhead"><h4>Besluitcyclus-events · echte herkomst en agentmeetdekking (24 uur)</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>

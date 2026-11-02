@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "fingerprint": "powerhouse|portal|commercial-source-live-without-customer-proof-visibility|20261102-v1",
+  "parent_issue": 4198,
+  "observed_at": "2026-11-02",
+  "maturity": "OBSERVED",
+  "candidate_only": true,
+  "compiler": {
+    "failure_class": "CUSTOMER_OUTCOME_SOURCE_PROOF_NOT_VISIBLE_IN_ADMIN_PORTAL",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original Powerhouse system-map admin portal showed aggregate ONE BRAIN failure counts and one predictive recovery but not exact commercial tenant verification and paid-order source repair. Verified native production migrations and private trigger ACLs could not be distinguished visually from an independently paid customer result.",
+  "observed_evidence": {
+    "source_project": "adhjwmvyoixzjtmiroln",
+    "protected_source_pr": 5252,
+    "source_main_sha": "3621657751881f50240f9dd4a787a76530c7d369",
+    "provider_migrations": [
+      "20261031135451",
+      "20261102074013",
+      "20261102075243"
+    ],
+    "provider_trigger_readback_confirmed": true,
+    "browser_direct_execute_revoked": true,
+    "original_commercial_incident_maturity": "VALIDATED",
+    "original_migration_incident_maturity": "VALIDATED",
+    "verified_real_scans": 0,
+    "verified_real_offers": 0,
+    "paid_revenue_eur": 0,
+    "source_code_candidate_live": false,
+    "authenticated_admin_portal_readback_proven": false,
+    "customer_effect_proven": false
+  },
+  "fix": "Add read-only exact two-incident summary on existing admin-gated /api/powerhouse-observability and original system-map module; no new state, scheduler, service, auth or writer. Only provider-backed source/ACL evidence may show source live; paid order remains unproven.",
+  "prevention": [
+    "Admin server checks original user identity, admin authorization and tenant before service-role readback; no sensitive data or raw records in browser.",
+    "Require exact two validated original incident fingerprints and correct provider migration, ACL and trigger predicates.",
+    "Fail closed on unavailable/missing/stale/duplicate/unvalidated registry data.",
+    "Never equate signed quote, trial, provider ACK or source deploy with paid order, ROI or next natural run.",
+    "Use unchanged original ONE BRAIN, Heartbeat, Powerhouse and protected Netlify release ownership."
+  ],
+  "tests": [
+    "tests/brain-commercial-intake-original-portal-proof-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-intake-original-portal-proof-20261102.test.mjs"
+    ],
+    "shadow": "No secrets/PII leave original authenticated server; compare pure projection to original incident readback",
+    "canary": "Exact protected main Netlify commit + admin readback, followed by first real authorized tenant claim"
+  },
+  "owner": "original Portal V2 observability / Growth & Revenue OS / Company Intelligence ONE BRAIN",
+  "release": {
+    "state": "SOURCE_CANDIDATE_NOT_LIVE",
+    "protected_required_proven": false,
+    "codeql_proven": false,
+    "netlify_exact_sha_proven": false,
+    "authenticated_admin_e2e_proven": false,
+    "paid_customer_proven": false,
+    "recurrence_absence_proven": false
+  }
+}
