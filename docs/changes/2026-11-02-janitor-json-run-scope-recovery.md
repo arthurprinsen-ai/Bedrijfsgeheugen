@@ -1,0 +1,10 @@
+# 2 november 2026 — Janitor JSON-runverwerking en veilige TSV-brancheopruiming gescheiden
+
+## Feitelijke discrepantie
+De originele volledige BRAIN-run [41416918147](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41416918147) bevat nog 28 mislukte tests van 5.377. `tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs` heeft een test `stale-run loop uses JSON rows instead of tab-delimited shell parsing`. De test eiste `@json` en `while read -r run_json`, maar verbood tegelijk `@tsv` overal in `.github/workflows/powerhouse-repository-janitor.yml`. De oorspronkelijke actuele Actions-loop verwerkt run-ID, branch, SHA, status en datum al juist als afzonderlijke JSON-records. Verderop heeft een apart, begrensd gemergedebranch-opruimproces bewust `sweep-candidates.tsv` voor twee velden (branchnaam en SHA), met eigen veiligheidschecks. De globale test ziet dit onterecht als gevaarlijke verwerking van Actions-runs.
+
+## Begrensde correctie
+Wijzig niet de bestaande oorspronkelijke Janitor, GitHub-token, jobs, database of cron. Controleer in de **test** dat er exact één `for status in queued in_progress; do`-sectie bestaat, dat de JSON-parse in die sectie aanwezig is, dat dezelfde sectie nergens `@tsv` gebruikt en dat de aparte branch-sweep expliciet bestaat. Een bestaande aparte test beschermt nog steeds queue-governor tegen het annuleren van main, geldige actuele PR-commits en TTL-inbreuk. Geen verhullend `skip`, geen wegvallen van preventie en geen autorisatie-uitbreiding.
+
+## Leereffect en release
+Fingerprint `powerhouse|brain|janitor-tsv-fixture-global-scope-drift|20261102-v1` in één origineel ONE BRAIN-incident, bestaande Continuity Agent Skill, centrale AGENTS, menselijke herstelhandleiding en append-only ledger. Verificatie: bestaande gerichte tests, historische replay plus shadow en canary, beveiligde Required/CodeQL, beschermd merge, gehele originele exact-head BRAIN en terminal plus latere regressiecontrole. Houd de andere BRAIN-fouten en commerciële provideruitkomsten open tot aantoonbaar onafhankelijk bewijs.
