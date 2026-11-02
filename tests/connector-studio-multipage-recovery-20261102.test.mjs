@@ -6,6 +6,7 @@ import {createWizardState,applyAnswer,toConnectorDefinition} from '../assets/js/
 import {findTemplate} from '../assets/js/koppelingen/templates.js';
 import {renderWizardShell} from '../assets/js/koppelingen/view.js';
 import {handlePortalConnectorsRequest} from '../platform/api/portal-connectors-handler.mjs';
+import {connectorDataUseActivationGuard} from '../platform/connectors/connector-data-use-policy.mjs';
 
 const schema={fields:[{key:'bedrag'},{key:'leverancier'}]};
 const consent={mode:'PORTAL_INSIGHTS'};
@@ -88,4 +89,13 @@ test('API refuses forged cross-page/field destinations before persistence',async
  assert.equal(response.status,422);
  assert.deepEqual(await response.json(),{error:'INVALID_CONNECTOR_ROUTING'});
  assert.equal(saveCount,0);
+});
+
+test('new connector cannot activate portal routing with no selected page or field',()=>{
+ const base={target:{type:'datahub'},dataUse:{mode:'PORTAL_INSIGHTS'}};
+ assert.deepEqual(connectorDataUseActivationGuard({...base,routing:{portalPages:[],selectedFields:['bedrag']}}),{allowed:false,reason:'PORTAL_DESTINATION_REQUIRED'});
+ assert.deepEqual(connectorDataUseActivationGuard({...base,routing:{portalPages:['cijfers-maatstaven'],selectedFields:[]}}),{allowed:false,reason:'PORTAL_FIELDS_REQUIRED'});
+ assert.equal(connectorDataUseActivationGuard({...base,routing:{portalPages:['cijfers-maatstaven'],selectedFields:['bedrag']}}).allowed,true);
+ assert.throws(()=>normalizeConnectorRouting({portalPages:['brain-verwerking'],selectedFields:['bedrag']},schema,consent),{code:'INVALID_CONNECTOR_ROUTING'});
+ assert.equal(normalizeConnectorRouting({portalPages:['brain-verwerking'],selectedFields:['bedrag']},schema,{mode:'PORTAL_AI'}).portalPages[0],'brain-verwerking');
 });
