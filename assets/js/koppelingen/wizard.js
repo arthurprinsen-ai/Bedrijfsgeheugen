@@ -20,6 +20,7 @@ export function createWizardState(template=null){
     phase:'source',
     answers:Object.freeze({
       target:template.targets?.length===1?template.targets[0]:null,
+      dataUseMode:'CONNECTION_ONLY',
       schedule:template.defaultSchedule||null
     })
   });
@@ -66,6 +67,7 @@ export function toConnectorDefinition(state){
     reviewPolicy:Object.freeze({requiredBelowConfidence:DEFAULT_CONFIDENCE}),
     target:Object.freeze({type:target}),
     schedule:answers.schedule||template.defaultSchedule||'handmatig',
+    dataUse:Object.freeze({mode:['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'].includes(answers.dataUseMode)?answers.dataUseMode:'CONNECTION_ONLY',modelRoute:'TENANT_POLICY',trainingUse:'PROHIBITED'}),
     fallback:template.fallback||'review',
     activation:'test-required'
   });
