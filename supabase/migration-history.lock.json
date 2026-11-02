@@ -3160,8 +3160,12 @@
     {
       "name": "verified_intake_privileged_trigger_acl_finalizer",
       "version": "20261102075243"
+    },
+    {
+      "version": "20261102141045",
+      "name": "writer_control_fixed_search_path_v1"
     }
   ],
-  "captured_at": "2026-11-02T08:25:10.883Z",
+  "captured_at": "2026-11-02T14:22:29.459Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
