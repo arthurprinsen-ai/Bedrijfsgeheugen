@@ -13,21 +13,25 @@
     "security_sensitive": true
   },
   "root_cause": "The original protected Security Trust Center primarily displayed raw security status labels, provider names, coverage percentages and technical findings. This is difficult for entrepreneurs to interpret and can leak internal diagnostic detail in a customer view even when authentication is enforced. This is a design/security communication risk, not evidence of exploitation.",
-  "fix": "Reuse the canonical authenticated tenant-scoped Security Trust Center and source observations to render a customer-oriented Dutch Veiligheidskompas with explicit current source validity, five evidence domains, plain-language risk, owner/customer actions and source expiry. Restrict detailed technical findings, internal management metadata and database risk counts to the existing admin view. No new scheduler, database, provider permission or public endpoint.",
+  "fix": "Reuse the canonical authenticated tenant-scoped Security Trust Center and source observations to render a customer-oriented Dutch Veiligheidskompas with explicit current source validity, five evidence domains, plain-language risk, owner/customer actions and source expiry. Restrict detailed technical findings, internal management metadata and database risk counts to the existing admin view. No new scheduler, database, provider permission or public endpoint. An independent server-side allowlisted customer response projection enforces data minimization before the browser fetch returns.",
   "tests": [
     "tests/brain-security-entrepreneur-compass-v1.test.mjs",
     "tests/portal-private-trust-surfaces-v1.test.mjs",
-    "tests/brain-security-trust-center-v1.test.mjs"
+    "tests/brain-security-trust-center-v1.test.mjs",
+    "tests/brain-security-customer-projection-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-security-entrepreneur-compass-v1.test.mjs"
+      "tests/brain-security-entrepreneur-compass-v1.test.mjs",
+      "tests/brain-security-customer-projection-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-security-entrepreneur-compass-v1.test.mjs"
+      "tests/brain-security-entrepreneur-compass-v1.test.mjs",
+      "tests/brain-security-customer-projection-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-security-entrepreneur-compass-v1.test.mjs"
+      "tests/brain-security-entrepreneur-compass-v1.test.mjs",
+      "tests/brain-security-customer-projection-v1.test.mjs"
     ]
   },
   "prevention_rules": [
@@ -40,7 +44,8 @@
     "No independent publisher, webhook, scheduler or duplicate Security Agent; reuse Heartbeat and exclusive release writer.",
     "A successful code merge alone is not production verification; require protected CI, CodeQL, full Brain and original Netlify exact SHA or a source-verified deployment applicability proof.",
     "UX reassurance never hides existing Netlify archived-preview access FAIL or Supabase anon-definer WARN.",
-    "A full-green fixture must include the union of canonical platform security requirements, including GitHub secret scanning; never weaken the original platform security verifier to satisfy a partial customer-UX test."
+    "A full-green fixture must include the union of canonical platform security requirements, including GitHub secret scanning; never weaken the original platform security verifier to satisfy a partial customer-UX test.",
+    "Client-side hiding is not an authorization boundary: the original Netlify trust endpoint must allowlist the fields returned to a non-admin after user/tenant checks and preserve the canonical admin boundary."
   ],
   "owner": "existing ONE BRAIN Security Agent + Portal UX owner under exclusive writer",
   "proof_state": "CANDIDATE_UNTIL_PROTECTED_GATES_AND_INDEPENDENT_PRODUCTION_READBACK",
