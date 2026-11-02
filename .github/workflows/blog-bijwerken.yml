@@ -39,7 +39,9 @@ concurrency:
 
 jobs:
   bijwerken:
-    runs-on: ubuntu-latest
+    # Codex drop-sudo on ubuntu-26.04 rejects root-owned D-Bus socket ACL (original Weekblog 41451022810).
+    # Keep privilege revocation and permission-profile intact: pin the supported 24.04 runner.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
