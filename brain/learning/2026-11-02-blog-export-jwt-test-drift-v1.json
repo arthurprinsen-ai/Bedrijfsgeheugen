@@ -33,10 +33,23 @@
     },
     "source_security_contract": "supabase/config.toml; supabase/functions/powerhouse-blog-export/index.ts; tests/brain-powerhouse-blog-export-security-contract.test.mjs",
     "external_publication_effect": "NOT_CLAIMED",
-    "other_backend_failures": "OPEN"
+    "other_backend_failures": "OPEN",
+    "admission_failure_reproduced": {
+      "run_id": 41411528313,
+      "reason": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+      "correction": "add explicit shadow and canary tests for security-sensitive learning; retain original historical replay and source safeguards"
+    }
   },
   "evaluation": {
     "historical_replay": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "canary": [
       "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
       "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
     ]
