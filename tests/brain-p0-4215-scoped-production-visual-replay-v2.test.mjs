@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const workflow=readFileSync(new URL('../.github/workflows/portal-v2-production-dom-readback.yml',import.meta.url),'utf8');
 const visual=readFileSync(new URL('../tests/integration/portal-v2-production-visual-regression.spec.js',import.meta.url),'utf8');
+const scope=readFileSync(new URL('../tools/ci/portal-backend-only-production-sha-override.mjs',import.meta.url),'utf8');
 
 test('manual source PR and published SHA are separate explicit inputs and never grant access outside main',()=>{
  assert.match(workflow,/approved_pr_number:[\s\S]*?required: true[\s\S]*?production_sha:/);
@@ -12,9 +13,16 @@ test('manual source PR and published SHA are separate explicit inputs and never 
  assert.match(workflow,/if \[ "\$EVENT_NAME" != "workflow_dispatch" \] \|\| \[ "\$GITHUB_REF" != "refs\/heads\/main" \]/);
  assert.match(workflow,/\[\[ "\$PORTAL_EXPECTED_SHA" =~ \^\[a-f0-9\]\{40\}\$ \]\]/);
  assert.match(workflow,/git merge-base --is-ancestor "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
- assert.match(workflow,/git diff --name-only "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
- assert.match(workflow,/\.github\/workflows\/\*\|tests\/\*\|docs\/\*\|brain\/learning\/\*\|tools\/ci\/\*/);
- assert.match(workflow,/Runtime source changed after selected production SHA: \$file/);
+ assert.match(workflow,/node tools\/ci\/portal-backend-only-production-sha-override\.mjs --verify/);
+ // The previous governance allowlist now lives in the exact-source helper,
+ // and only the existing Netlify backend-only classifier may admit newer DB
+ // evidence. The main-only and git ancestry checks above remain mandatory.
+ assert.match(scope,/execFileSync\('git',\['diff','--name-only','-z',published,main\]/);
+ assert.match(scope,/\.github\/workflows\//);
+ assert.match(scope,/PORTAL_PUBLISHED_SOURCE_DRIFT_BLOCKED/);
+ assert.match(scope,/PORTAL_PUBLISHED_BACKEND_NETLIFY_IMPACT_UNVERIFIED/);
+ assert.match(scope,/deploymentRequired!==false/);
+ assert.match(scope,/portalRequired!==false/);
 });
 
 test('selected approved PR must have been merged into actual provider-published commit',()=>{
