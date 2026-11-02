@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-02",
+  "schema": "brain-learning-observation-v1",
+  "obligation_id": "original-brain-third-read-privacy-contract-20261102-v1",
+  "fingerprint": "powerhouse|brain|portal-failure-coverage-third-allowlisted-read-unreflected-in-test|20261102-v1",
+  "status": "SOURCE_CANDIDATE",
+  "state": "EVIDENCE_DUE",
+  "failure_class": "ORIGINAL_BRAIN_PRIVACY_TEST_THIRD_PROVIDER_READ_CONTRACT",
+  "original_owners": [
+    "original ONE BRAIN failure-coverage backend",
+    "existing green-assurance skill"
+  ],
+  "observed": {
+    "original_pr": 5298,
+    "original_brain_run": 41451145109,
+    "failed_test": 3515,
+    "actual_calls": 3,
+    "old_mock_calls": 2
+  },
+  "root_cause": "The original secure server-side website incident projection added a third strictly allowlisted read; its previous predictive privacy test still modeled only two provider calls.",
+  "intervention": "Update only original regression mock: three bounded separate reads, exactly three allowlisted website incident rows with private-data sentinel, fail if private evidence appears in result.",
+  "prevention_rule": "All additional original server reads must be represented in canonical privacy regression, with bounded URLs, fixed allowlist, no raw evidence and no false green. Never skip original BRAIN.",
+  "regressions": [
+    "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+  ],
+  "independent_verification_due": [
+    "Required",
+    "CodeQL",
+    "full BRAIN",
+    "original terminal and production readback"
+  ],
+  "compiler": {
+    "failure_class": "ORIGINAL_BRAIN_PRIVACY_TEST_THIRD_PROVIDER_READ_CONTRACT",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-original-brain-third-source-privacy-test.md",
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false
+}
