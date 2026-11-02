@@ -9,6 +9,7 @@ import { loadRuntimeEvidence } from './runtime-evidence.js';
 import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
+import { mountConnectedDataSources } from './connected-data-sources.js';
 import { getCapabilityContract } from './capability-contracts.js';
 import { mountWorkspace } from './workspace-shell.js';
 import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
@@ -385,6 +386,11 @@ export function openPortalPage(pageId){
   mountContextualForesight(native,{pageId,state:portalStateSnapshot(),openPage:openPortalPage}).catch(()=>null);
   mountTrustedAdvisorAssurance(root.querySelector('.pvbody'),{pageId,state:portalStateSnapshot(),openPage:openPortalPage});
   mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
+  // Same authenticated customer and original connector authority; metadata only until
+  // the original ingestion store independently proves actual business records.
+  if(pageId!=='koppelingen'&&portalContext.stateClient?.currentUser?.()&&native?.append){
+    void mountConnectedDataSources(native,{pageId});
+  }
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
 }
