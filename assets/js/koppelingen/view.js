@@ -122,7 +122,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const evidenceBox=root.querySelector('[data-bg-evidence]');
   const activate=root.querySelector('[data-bg-activate]');
   const activateReason=root.querySelector('[data-bg-activate-reason]');
-  let state=null,draft=null,lastTest=null,dataUseMode='CONNECTION_ONLY';
+  let state=null,draft=null,lastTest=null,draftDirty=false,dataUseMode='CONNECTION_ONLY';
 
   const say=text=>{message.textContent=text||'';};
   const savedList=root.querySelector('[data-bg-saved-list]');
@@ -142,8 +142,9 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
       savedList.append(list);
     }catch{savedList.textContent='Opgeslagen koppelingen zijn tijdelijk niet beschikbaar.';}
   };
-  const invalidateEvidence=(reason='Deze koppeling is gewijzigd. Voer opnieuw een veilige test uit.')=>{
-    draft=null;lastTest=null;activate.disabled=true;activateReason.textContent=reason;
+  const invalidateEvidence=(reason='Deze koppeling is gewijzigd. Voer opnieuw een veilige test uit.',keepDraft=false)=>{
+    if(keepDraft){draftDirty=Boolean(draft);}else{draft=null;draftDirty=false;}
+    lastTest=null;activate.disabled=true;activateReason.textContent=reason;
     evidenceBox.innerHTML='<p class="bg-kw__evidence-empty">Nog geen geldig testbewijs voor deze versie.</p>';
   };
   const renderRouting=()=>{
@@ -177,14 +178,15 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     try{
       if(draft){draft=await api.saveDraft(draft.id||draft.connectorId,definition);}
       else draft=await api.createDraft(definition);
+      draftDirty=false;
       lastTest=null;activate.disabled=true;activateReason.textContent='Concept opgeslagen. Voer een nieuwe veilige test uit voordat je activeert.';
       say('Concept opgeslagen. Je kunt nu een volgend systeem toevoegen.');
       await refreshSaved();
     }catch(error){const guide=connectorRecoveryAdvice(error);say(guide.message+' '+guide.action);}
   });
   root.querySelector('[data-bg-new-connector]').addEventListener('click',()=>{
-    if(state&&!draft){say('Bewaar deze keuze eerst als concept om gegevensverlies te voorkomen.');return;}
-    state=null;draft=null;lastTest=null;
+    if(state&&(!draft||draftDirty)){say('Bewaar deze keuze eerst als concept om gegevensverlies te voorkomen.');return;}
+    state=null;draft=null;lastTest=null;draftDirty=false;
     invalidateEvidence('Kies een nieuwe bron en test iedere koppeling apart.');
     root.querySelector('[data-bg-template-list]').hidden=false;
     root.querySelector('[data-bg-template-list]').innerHTML=templateListHtml();
@@ -227,7 +229,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     if(event.target?.name==='bgDataUseMode'){
       dataUseMode=event.target.value;
       if(state){
-        invalidateEvidence('Het toegestane datagebruik is gewijzigd. Een nieuwe test en nieuwe toestemming zijn nodig.');
+        invalidateEvidence('Het toegestane datagebruik is gewijzigd. Een nieuwe test en nieuwe toestemming zijn nodig.',true);
         state=applyAnswer(state,'dataUseMode',dataUseMode);
         definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
       }
@@ -241,26 +243,27 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
       const prop=isField?'bgField':'bgPage';
       const values=new Set(state.answers[key]||[]);
       if(event.target.checked)values.add(event.target.dataset[prop]);else values.delete(event.target.dataset[prop]);
-      invalidateEvidence('Je gegevenskeuze is gewijzigd. Een nieuwe veilige test is nodig.');
+      invalidateEvidence('Je gegevenskeuze is gewijzigd. Een nieuwe veilige test is nodig.',true);
       state=applyAnswer(state,key,[...values]);
       definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
       renderRouting();
       return;
     }
     const key=event.target?.dataset?.bgAnswer;if(!key||!state)return;
-    invalidateEvidence();
+    invalidateEvidence(undefined,true);
     state=applyAnswer(state,key,event.target.value);
     definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
     renderQuestion(root,state);
   });
   root.addEventListener('click',async event=>{
     const answerKey=event.target?.dataset?.bgAnswerButton;
-    if(answerKey&&state){invalidateEvidence();state=applyAnswer(state,answerKey,true);definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);renderQuestion(root,state);return;}
+    if(answerKey&&state){invalidateEvidence(undefined,true);state=applyAnswer(state,answerKey,true);definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);renderQuestion(root,state);return;}
     if(event.target?.matches('[data-bg-safe-test]')&&state){
       try{
         if(!state.answers.selectedFields?.length){say('Kies minimaal één gegevensveld.');return;}
         if(dataUseMode!=='CONNECTION_ONLY'&&!state.answers.portalPages?.length){say('Kies minimaal één portaalpagina voor de gekozen toestemming.');return;}
-        if(!draft)draft=await api.createDraft(toConnectorDefinition(state));
+        if(draftDirty&&draft){draft=await api.saveDraft(draft.id||draft.connectorId,toConnectorDefinition(state));draftDirty=false;}
+        if(!draft){draft=await api.createDraft(toConnectorDefinition(state));draftDirty=false;}
         const id=draft.id||draft.connectorId;
         if(!id)throw Object.assign(new Error('Draft zonder id'),{code:'DRAFT_ID_MISSING'});
         say('Veilige test uitvoeren…');
@@ -291,7 +294,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     const id=draft.id||draft.connectorId;
     const testExecutionId=activationEvidenceId({lastSafeTest:{ok:lastTest.status==='TEST_PASSED',executionId:lastTest?.evidence?.testExecutionId||lastTest?.evidence?.runtimeExecutionId||lastTest?.executionId,proofLevel:lastTest?.evidence?.proofLevel}});
     if(!testExecutionId)return;
-    try{await api.activate(id,testExecutionId);activate.disabled=true;activateReason.textContent='Geactiveerd op basis van de vastgelegde veilige test.';say('Koppeling geactiveerd.');}
+    try{await api.activate(id,testExecutionId);void refreshSaved();activate.disabled=true;activateReason.textContent='Geactiveerd op basis van de vastgelegde veilige test.';say('Koppeling geactiveerd.');}
     catch(error){say(error?.message||'Activeren is geblokkeerd omdat de test-evidence niet geldig is.');}
   });
   // Only show observed tenant policy, never presume the selected route is actually live.
