@@ -1,4 +1,21 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  aiConnectSovereigntyProofV1:Object.freeze({
+    fingerprint:'portal|connectors|sample-dry-run-mistaken-for-live-verification|20261102-v1',
+    obligation:'portal-ai-connect-sovereignty-proof-20261102-v1',
+    owner:'existing Portal V2 + connector engine + ONE BRAIN/Heartbeat + data sovereignty',
+    userSurface:'assets/js/koppelingen/view.js',
+    serverAuthority:'platform/api/portal-connectors-handler.mjs',
+    dataUsePolicy:'platform/connectors/connector-data-use-policy.mjs',
+    executionTruth:'platform/connectors/connector-engine.mjs',
+    sovereigntyPolicy:'netlify/functions/data-sovereignty.mjs',
+    existingPassport:'portal-next/data-sovereignty-panel.js',
+    regression:'tests/connector-ai-sovereignty-consent-20261102.test.mjs',
+    learning:'brain/learning/2026-11-02-ai-connect-sovereignty-proof-v1.json',
+    skill:'.agents/skills/portal-living-interface/SKILL.md',
+    humanDoc:'docs/changes/2026-11-02-ai-connect-sovereignty-proof.md',
+    noSecondWriter:true,noSecondScheduler:true,
+    sampleIsNotProviderProof:true,providerVerifiedLive:false
+  }),
   evidenceLedEditorialCouncilV1:Object.freeze({
     fingerprint:'powerhouse|content|editorial-specialists-not-unified-with-evidence-application|20261102-v1',
     contract:'one-brain-commercial-editorial-council-v1',
