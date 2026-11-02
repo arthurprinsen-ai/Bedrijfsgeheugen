@@ -16,7 +16,13 @@ test('existing hourly jobs serialize branch reconciliation before cleanup and Sy
   assert.match(workflow,/group: powerhouse-repository-janitor/);
   assert.match(workflow,/cancel-in-progress: false/);
   const janitor=workflow.split('  janitor:\n')[1].split('  branch_reconciler:\n')[0];
-  const reconciler=workflow.split('  branch_reconciler:\n')[1];
+  // Reconciler is an independent prerequisite job. The newer bounded
+  // archive sweep has needs: janitor and must not be included in this block.
+  const reconciler=workflow.split('  branch_reconciler:\n')[1]?.split('  branch_archive_sweep:\n')[0];
+  const archive=workflow.split('  branch_archive_sweep:\n')[1];
+  assert.ok(reconciler && archive, 'both original source jobs must exist');
+  assert.match(archive,/^    needs: janitor$/m);
+  assert.match(archive,/^    timeout-minutes: 20$/m);
   assert.match(janitor,/^    needs: branch_reconciler$/m);
   assert.ok(janitor.includes('if: $'+'{{ always() && !cancelled() }}'));
   assert.doesNotMatch(reconciler,/^    needs:/m);
