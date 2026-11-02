@@ -12,3 +12,8 @@ Tests: `tests/connector-ai-sovereignty-consent-20261102.test.mjs`, `tests/connec
 Proof: **SOURCE_CANDIDATE** only; protected exact-head Required/CodeQL/full BRAIN, merge, Netlify published SHA and authenticated two-tenant provider readback outstanding. UX/accessibility performance and actual cross-provider onboarding remain **EVIDENCE_DUE**. A full data-location route is **UNKNOWN** until every involved provider has documented processing/transfer/subprocessor proof. The original incident stays open to post-release independent rechecks.
 
 Prevention: never conflate a sample or status-only green with a real connector; no silent storage/AI consent; preserve the original protected release and single-brain writeback authority.
+
+## Protected Required gate observation (2026-11-02 18:56 UTC)
+Original PR #5322 at SHA `ab8ed6669e815d62d404f3ae83b87ad87688ccde`, Required run `41505158548` did **not** pass. Admission metadata was `ADMITTED`, but canonical learning evaluator rejected the candidate with `LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/connector-reference-flow.test.mjs`. This is a real policy-contract error in this candidate learning record; ordinary connector tests cannot be direct historical/shadow/canary entry points. The original gate was not changed or skipped.
+
+Structural correction: `tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs` now imports and executes the original connector consent, engine, reference flow, status, wizard and backend handler suites; the original learning evaluation points to the valid BRAIN entry point in all required modes. Exact-head Required, full BRAIN, CodeQL, protected merge and Netlify readback remain unproven pending independent runs.
