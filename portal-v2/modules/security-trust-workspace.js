@@ -148,7 +148,7 @@ export function buildSafetyCompass(summary={},observations=[],generatedAt=null,f
   coverage:Number.isFinite(coverage)&&coverage>=0&&coverage<=100?coverage:null,
   observedAt:fresh?generatedAt:null};
 }
-const safetyLabel=value=>value==='ACTION_REQUIRED'?'Aandacht nodig':value==='VERIFIED'?'Actueel bevestigd':'Nog niet volledig bewezen';
+const safetyLabel=value=>value==='ACTION_REQUIRED'?'Aandacht nodig':(value==='VERIFIED'||value==='VERIFIED_NO_OPEN_FINDINGS')?'Actueel bevestigd':'Nog niet volledig bewezen';
 const safeDate=value=>{
  const d=new Date(String(value??''));return Number.isFinite(d.getTime())
   ?new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Amsterdam'}).format(d)+' (NL)'
@@ -181,17 +181,21 @@ function renderSecurityPlatforms(observations){
  '</div></section>';
 }
 
+function renderSecurityAdminMetrics(summary,findings,db,overallPosture){
+ return '<div class="trust-grid" data-safety-technical-summary>'+
+  '<article><small>Security posture</small><strong>'+esc(overallPosture)+'</strong>'+status(overallPosture)+'</article>'+
+  '<article><small>Open findings</small><strong>'+findings.length+'</strong><span>High risk: '+esc(summary.highRiskFindingCount??0)+'</span></article>'+
+  '<article><small>Evidence-dekking</small><strong>'+esc(summary.evidenceCoverage??0)+'%</strong><span>Bewijsdekking is geen veiligheidspercentage</span></article>'+
+  '<article><small>Database</small><strong>'+esc(db.highRiskCount??0)+' high-risk</strong><span>'+esc(db.rlsNoPolicy??0)+' RLS zonder policy-classificatie</span></article>'+
+  '</div>';
+}
+
 function renderSecurity(root,security,sovereignty,scope,adminView=false){
  const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{},overallPosture=securityOverallPosture(summary,observations,security?.generatedAt);
  root.innerHTML=`<section class="trust-workspace">
   <div class="trust-hero"><div><span class="trust-kicker">Veiligheid · vertrouwd en verifieerbaar</span><h2>Security Trust Center</h2><p>Een helder overzicht van de veiligheid van jouw bedrijfsgegevens, met bewijs, open punten en wat we eraan doen.</p></div><div class="trust-scope"><small>Weergave</small><strong>${scope}</strong><span>Ruwe security-evidence blijft server-only</span></div></div>
   ${renderSafetyCompass(summary,observations,security?.generatedAt,findings)}
-  <div class="trust-grid" data-safety-technical-summary>
-   <article><small>Security posture</small><strong>${esc(overallPosture)}</strong>${status(overallPosture)}</article>
-   <article><small>Open findings</small><strong>${findings.length}</strong><span>High risk: ${esc(summary.highRiskFindingCount??0)}</span></article>
-   <article><small>Evidence-dekking</small><strong>${esc(summary.evidenceCoverage??0)}%</strong><span>Geen false-green bij stale/unknown</span></article>
-   <article><small>Database</small><strong>${esc(db.highRiskCount??0)} high-risk</strong><span>${esc(db.rlsNoPolicy??0)} RLS zonder policy-classificatie</span></article>
-  </div>
+  ${adminView?renderSecurityAdminMetrics(summary,findings,db,overallPosture):''}
   ${renderSecurityPlatforms(observations)}
   ${adminView?'<section class="trust-section" data-safety-admin-findings><header><h3>Beheer: volledige risicoregistratie</h3>':'<section class="trust-section" data-safety-customer-findings><header><h3>Open punten en opvolging</h3>'}<p>Automatisch afgeleid uit runtime-, database- en managementplane-evidence.</p></header>
    <div class="trust-findings">${adminView?(findings.map(f=>`<article><div>${status(f.severity)}</div><div><b>${esc(f.title||f.key)}</b><p>${esc(f.detail||f.reason||'Geen detail')}</p></div></article>`).join('')||'<p>Geen open punten in deze snapshot; dit is geen garantie.</p>'):(findings.length?'<p>Er staan '+findings.length+' aandachtspunten open. Om misbruik te voorkomen tonen we hier geen technische kwetsbaarheidsdetails. De opvolging blijft zichtbaar in de bewijsstatus.</p>':'<p>In deze snapshot zijn geen open punten geregistreerd. Dat sluit onbekende risico’s niet uit.</p>')}</div>
