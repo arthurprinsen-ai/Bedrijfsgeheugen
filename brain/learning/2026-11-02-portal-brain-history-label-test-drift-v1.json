@@ -1,0 +1,30 @@
+{
+  "fingerprint": "powerhouse|brain|portal-historical-backend-label-stale-after-zero-projection|20261102-v1",
+  "compiler": {
+    "failure_class": "SOURCE_CONTRACT_TEST_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Protected PR #5282 updated original owner-only Portal UI to differentiate 'Laatste vastgelegde mislukte BRAIN-run' from 'Geregistreerde latere BRAIN-herstelproef', but a previously existing original historical backend test continued requiring old ambiguous label 'Laatste vastgelegde BRAIN-hertest'. Unified BRAIN delivery run 41433667027 revealed exact isolated test #3050 failing in file tests/brain-portal-latest-original-backend-observation-20261102.test.mjs.",
+  "prevention_rule": "When original source-owner Portal labels evolve, search dependent original tests and require positive assertions on BOTH historical failing evidence and later software zero proof, escaped absolute GitHub URL, false independent terminal and false revenue explicitly guarded. No weakening ACL, no hiding historic red, no spoofing zero or bypass CI. Full original BRAIN backend must pass on exact protected merged main; subsequent natural run required for genuine no-recurrence.",
+  "owner": "Original ONE BRAIN backend regression and existing owner-only Portal evidence view",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_postmerge_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41433667027",
+    "original_backend_job": 125238718390,
+    "protected_main_sha": "295c12ab94303af30b9b9fc30207d15ecf88db1e",
+    "failed_tests": 1,
+    "test_number": 3050,
+    "previous_original_green_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41432939678",
+    "candidate_status": "UNVERIFIED",
+    "natural_no_recurrence_proven": false,
+    "independent_business_outcome_proven": false
+  }
+}
