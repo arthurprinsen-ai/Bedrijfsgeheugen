@@ -1,5 +1,5 @@
 const evidenceId=evidence=>evidence?.executionId||evidence?.testExecutionId||evidence?.runtimeExecutionId||evidence?.id||null;
-const passed=evidence=>Boolean(evidence&&(evidence.ok===true||evidence.status==='TEST_PASSED')&&evidenceId(evidence));
+const passed=evidence=>Boolean(evidence&&(evidence.ok===true||evidence.status==='TEST_PASSED')&&evidenceId(evidence)&&evidence.proofLevel==='PROVIDER_VERIFIED');
 const executed=evidence=>Boolean(evidence&&(evidence.ok===true||evidence.status==='SUCCESS'||evidence.status==='COMPLETED')&&evidenceId(evidence));
 const result=(label,tone,canActivate,reason)=>Object.freeze({label,tone,canActivate,reason});
 
@@ -24,7 +24,8 @@ export function toHumanStatus(runtime={}){
   }
   if(state==='ready'){
     if(passed(safeTest))return result('Test geslaagd','success',true,'Een succesvolle safe-test met execution evidence is vastgelegd.');
-    return result('Klaar om te testen','info',false,'Voer eerst een veilige test uit en bewaar de execution evidence.');
+    if(safeTest?.proofLevel==='SAMPLE_ONLY')return result('Voorbeeldtest geslaagd','warning',false,'De stappen werkten met testgegevens, maar echte bron- en doelverificatie ontbreken. Activeren is geblokkeerd.');
+    return result('Klaar om te testen','info',false,'Voer eerst een veilige test uit en bewaar geverifieerde externe execution evidence.');
   }
   if(state==='configured'||state==='native-provider'||state==='native-safe-test'){
     return result('Klaar om te testen','info',false,'De verbinding is beschikbaar; een succesvolle safe-test is nog verplicht.');
