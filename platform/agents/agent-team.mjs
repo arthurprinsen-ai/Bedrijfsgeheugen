@@ -34,9 +34,11 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     tasks:['audit-security-controls','classify-security-gap','apply-safe-hardening','verify-least-privilege',
       'reconcile-github-branch-codeql-and-secret-scanning','reconcile-supabase-rls-rpc-and-advisors',
       'reconcile-netlify-preview-protection-and-secret-scan','verify-website-headers-auth-and-dependencies',
-      'publish-expiring-security-evidence-to-canonical-trust-center','reopen-regressed-security-incident'],
+      'publish-expiring-security-evidence-to-canonical-trust-center','reopen-regressed-security-incident',
+      'explain-tenant-security-evidence-in-entrepreneur-safety-compass','restrict-technical-security-findings-to-admin-view'],
     playbooks:['least-privilege-hardening','security-regression-response','secret-exposure-containment',
-      'provider-readback-before-green','same-brain-incident-closed-loop','exclusive-writer-protected-release'],
+      'provider-readback-before-green','same-brain-incident-closed-loop','exclusive-writer-protected-release',
+      'plain-language-security-confidence-without-safety-score','admin-only-sensitive-security-detail'],
     learningContracts:[...sharedLearning,'security.v1','reliability.v1','delivery.v1'],
   }),
   Object.freeze({
