@@ -15,9 +15,7 @@
     "skipped": 2,
     "failedIndex": 3050
   },
-  "rootCause": "Original BRAIN test expected superseded last-retest caption although Portal distinguishes last failing run and later software recovery.",
   "fix": "Require both current distinct labels and owner-only/auth, historical baseline, escaped full GitHub URL and fail-closed software-recovery guards in original regression.",
-  "preventionRule": "When original Portal evidence labels are semantically split, update assertions atomically within the original protected owner source, preserving both historical and newer proof, and replay whole BRAIN on exact head and postmerge main; no fabricated customer green.",
   "originalSkill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
   "guardrails": [
     "single original writer",
@@ -40,5 +38,20 @@
     "historical_replay": [
       "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
     ]
+  },
+  "root_cause": "Original BRAIN test expected superseded last-retest caption although Portal distinguishes last failing run and later software recovery.",
+  "prevention_rule": "When original Portal evidence labels are semantically split, update assertions atomically within the original protected owner source, preserving both historical and newer proof, and replay whole BRAIN on exact head and postmerge main; no fabricated customer green.",
+  "evidence": {
+    "original_test_run": 41433667027,
+    "original_failed_job": 125238718390,
+    "tests_total": 5400,
+    "tests_passed": 5397,
+    "tests_failed": 1,
+    "tests_skipped": 2,
+    "source_label_failure": "test #3050",
+    "original_immutable_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41433667027",
+    "netlify_already_published_sha": "295c12ab94303af30b9b9fc30207d15ecf88db1e",
+    "candidate_only": true,
+    "commercial_impact_verified": false
   }
 }
