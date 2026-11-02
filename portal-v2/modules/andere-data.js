@@ -284,11 +284,15 @@ function render(container,data){
   const originalBackendCard='<section class="od-card" data-brain-original-backend-evidence>'+
     '<h3>ONE BRAIN · volledige backendtest</h3>'+
     '<p>Required en CodeQL zijn niet hetzelfde als de afzonderlijke BRAIN-backendverificatie. Een mislukte backendtest houdt de eindafsluiting open.</p>'+
-    '<p>Uitkomst: '+badge(brainBackend?.status||'SOURCE_UNVERIFIED')+
+    '<p>Historisch incident: '+badge(brainBackend?.status||'SOURCE_UNVERIFIED')+
+      ' · Herstelproef: '+badge(brainBackend?.softwareRecovery?.status||'SOFTWARE_RECOVERY_SOURCE_UNVERIFIED')+
       ' · Bron: '+badge(brainBackend?.sourceState||'UNAVAILABLE')+'</p>'+
     '<div class="od-grid">'+
       field('Eerste vastgelegde BRAIN-fouten',brainBackend?.historicalFailingTests==null?'Onbekend':esc(brainBackend.historicalFailingTests))+
-      field('Laatste vastgelegde BRAIN-hertest',brainBackend?.failingTests==null?'Onbekend':esc(brainBackend.failingTests))+
+      field('Laatste vastgelegde mislukte BRAIN-run',brainBackend?.failingTests==null?'Onbekend':esc(brainBackend.failingTests))+
+      field('Geregistreerde latere BRAIN-herstelproef',brainBackend?.softwareRecovery?.failedTests===0
+        ?'0 mislukt · '+esc(brainBackend.softwareRecovery.passedTests)+' geslaagd · '+esc(brainBackend.softwareRecovery.skippedTests)+' overgeslagen'
+        :'Geen geldige herstelregistratie')+
       field('Betrokken testbestanden (eerste run)',brainBackend?.affectedFiles==null?'Onbekend':esc(brainBackend.affectedFiles))+
       field('Onafhankelijk groen herstel',brainBackend?.verifiedPassed?'Bewezen':'Nog niet bewezen')+
       field('Nieuwe betaalde opdrachten',brainBackend?.ordersIndependentlyProven?'Onafhankelijk bewezen':'Niet bewezen')+'</div>'+
@@ -296,7 +300,11 @@ function render(container,data){
     (brainBackend?.latestGitHubEvidenceUrl
       ?'<a href="'+esc(brainBackend.latestGitHubEvidenceUrl)+'" target="_blank" rel="noopener noreferrer">originele GitHub-run</a>'
       :'niet beschikbaar')+
-    '. Een registerobservatie is geen onafhankelijke terminalafsluiting. Geen omzeilde test, tweede executor of verzonnen omzet.</p></section>';
+    '. Herstelproef (software, niet commerciële uitkomst): '+
+    (brainBackend?.softwareRecovery?.originalRunUrl
+      ?'<a href="'+esc(brainBackend.softwareRecovery.originalRunUrl)+'" target="_blank" rel="noopener noreferrer">5.392 BRAIN-tests · 0 mislukt (GitHub)</a>'
+      :'onbewezen')+
+    '. De historische rode tests blijven bewaard. Een registerobservatie is geen onafhankelijke terminalafsluiting en bewijst geen natuurlijke herhaling, klantwaarde of omzet. Geen omzeilde test of tweede executor.</p></section>';
   const terminalBrainCard='<section class="od-card" data-original-brain-terminal-incident>'+
     '<h3>ONE BRAIN · herstel van publicatie- en releasecontrole</h3>'+
     '<p>De oorspronkelijke afsluitcontrole moet dezelfde gemergede commit via BRAIN, Required, CodeQL en providerbewijs afsluiten. Een geslaagde merge zonder onafhankelijke BRAIN-uitkomst is geen volledig herstel.</p>'+

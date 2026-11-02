@@ -499,6 +499,42 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
         &&Number.isSafeInteger(latestFailures)&&latestFailures>=0
         &&latestRaw.terminal_status==='FAILED_BRAIN';
       const currentFailures=validLatest?latestFailures:historicalTests;
+      // The original registry records a later, real protected GitHub/Netlify
+      // software recovery. Treat it as a historically RECORDED pass, not as an
+      // independently verified live terminal, natural learning or paid order.
+      // Pin this one original provider observation: arbitrary JSON may not
+      // assert success or make missing values silently coerce into zero.
+      const recovered=evidence.software_recovery_20261102;
+      const recordedPass=Boolean(row&&recovered
+        &&recovered.status==='SOFTWARE_BACKEND_0_FAILURES_VALIDATED'
+        &&recovered.full_software_test_status==='PASS'
+        &&recovered.original_full_test_run===41430758451
+        &&recovered.original_backend_job===125229059857
+        &&recovered.protected_main_sha==='79d99ce9d03068dae3c909707d00dde1933f9d78'
+        &&recovered.netlify_production_deploy_id==='6ae8689d8166870bb317e761'
+        &&recovered.netlify_exact_sha_ready===true
+        &&Number.isSafeInteger(recovered.full_backend_total)&&recovered.full_backend_total===5392
+        &&Number.isSafeInteger(recovered.full_backend_passed)&&recovered.full_backend_passed===5390
+        &&typeof recovered.full_backend_failed==='number'&&recovered.full_backend_failed===0
+        &&Number.isSafeInteger(recovered.full_backend_skipped)&&recovered.full_backend_skipped===2
+        &&recovered.full_backend_passed+recovered.full_backend_failed+recovered.full_backend_skipped===recovered.full_backend_total
+        &&recovered.actual_business_outcome_proven===false
+        &&recovered.natural_no_recurrence_proven===false);
+      const softwareRecovery=recordedPass?{
+        status:'ORIGINAL_SOFTWARE_PASS_RECORDED',
+        totalTests:5392,passedTests:5390,failedTests:0,skippedTests:2,
+        originalRunId:41430758451,
+        originalRunUrl:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430758451',
+        originalProtectedMain:'79d99ce9d03068dae3c909707d00dde1933f9d78',
+        independentlyVerifiedInThisPortal:false,
+        noRecurrenceProven:false,commercialOutcomeProven:false
+      }:{
+        status:'SOFTWARE_RECOVERY_SOURCE_UNVERIFIED',totalTests:null,
+        passedTests:null,failedTests:null,skippedTests:null,originalRunId:null,
+        originalRunUrl:null,originalProtectedMain:null,
+        independentlyVerifiedInThisPortal:false,
+        noRecurrenceProven:false,commercialOutcomeProven:false
+      };
       return {
         status:row?'BRAIN_BACKEND_FAILED':'SOURCE_UNVERIFIED',
         source:'original public.brain_failure_registry',
@@ -514,6 +550,7 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
         failedOriginalRun:row&&evidence.brain_run===41406918918?
           'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918':null,
         verifiedPassed:false,
+        softwareRecovery,
         noSecondExecutor:true,
         ordersIndependentlyProven:false
       };
