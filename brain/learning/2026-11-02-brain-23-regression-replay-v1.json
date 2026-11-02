@@ -65,5 +65,24 @@
     "release_proven": false
   },
   "owner": "original ONE BRAIN backend lane",
-  "next_action": "Exact-head Required and full original Unified BRAIN, independent prod evidence; remaining failures stay open"
+  "next_action": "Exact-head Required and full original Unified BRAIN, independent prod evidence; remaining failures stay open",
+  "fingerprint": "powerhouse|brain|postmerge-backend-suite-23-regressions|20261102-v1",
+  "compiler": {
+    "failure_class": "CONTRACT_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs",
+      "tests/brain-cro-other-data.test.mjs",
+      "tests/brain-mira-dataforseo-no-results-20261029.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs",
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs",
+      "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs"
+    ]
+  }
 }
