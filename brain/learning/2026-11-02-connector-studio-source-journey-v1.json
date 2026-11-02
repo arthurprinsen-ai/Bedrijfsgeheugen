@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-connection-studio-multiroute-recovery-20261102-v1",
+  "fingerprint": "portal|connector-studio|opaque-progress-and-absent-source-journey|20261102-v1",
+  "compiler": {
+    "failure_class": "PORTAL_CONNECTOR_UX_PROVENANCE_AND_STATE_AMBIGUITY",
+    "scope": "PORTAL_CONNECTORS",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The portal showed technical connector metadata without a legible source-to-insight journey, accessible search and clear differentiation between connector setup and real verified data. No actual external provider ingest exists in the current runtime.",
+  "fix": "Add a distinctive progressive source-journey UX within original Portal V2 and wizard, strict metadata-only proof contract, textContent-only DOM, consent-aware status, no fake numbers, original BRAIN regression/skill.",
+  "tests": [
+    "tests/connector-studio-source-journey-20261102.test.mjs",
+    "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/connector-studio-source-journey-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Never interpret configuration state, sample test or UI progress as persisted external customer data.",
+    "Never display currency/turnover, customer KPI, sync success or AI interpretation without tenant-scoped original provider receipt, stored real record, readback, freshness and customer consent.",
+    "Every editable connector choice must explain the scope and page, with accessible keyboard/mobile UI and clear actionable next step.",
+    "Keep original ONE BRAIN and connector owners; protected production source release and independent browser readback only."
+  ],
+  "owner": "existing Portal V2 living interface + canonical connectors + ONE BRAIN/Heartbeat",
+  "proof_state": "SOURCE_CANDIDATE_NOT_REAL_PROVIDER_INGESTION_PROOF"
+}

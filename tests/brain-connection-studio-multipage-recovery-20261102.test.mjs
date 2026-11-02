@@ -7,3 +7,4 @@ import './connector-reference-flow.test.mjs';
 import './connector-koppelingen-status.test.mjs';
 import './connector-runtime-handler.test.mjs';
 import './connector-recovery-loop.test.mjs';
+import './connector-studio-source-journey-20261102.test.mjs';
