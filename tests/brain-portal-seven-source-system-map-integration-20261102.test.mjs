@@ -19,7 +19,7 @@ test('seven-source original owner-only Portal panel is evidence-limited, never f
  assert.match(source,/source\[name\]==='LIVE'/);
  assert.match(source,/Bronnen LIVE:/);
  assert.match(source,/Volledige uitvoeringsketen: <strong>NIET BEWEZEN<\/strong>/);
- assert.match(source,/data-proof=\\"END_TO_END_UNPROVEN\\"/);
+ assert.match(source,/data-proof="END_TO_END_UNPROVEN"/);
  assert.doesNotMatch(source,/Volledige uitvoeringsketen: <strong>BEWEZEN<\/strong>/);
 });
 
