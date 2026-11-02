@@ -28,8 +28,8 @@ function generate() {
   if (!existsSync(mapPath) || !existsSync(portalEntryPath)) fail('generator did not produce System Map and portal entry');
   const mapSource=readFileSync(mapPath,'utf8');
   const entrySource=readFileSync(portalEntryPath,'utf8');
-  const hash=mapSource.match(/explanationInventory:Object\\.freeze\\(\\{contract:'portal-explanation-autosync-v1',contentHash:'([a-f0-9]{64})'/)?.[1];
-  const entry=entrySource.match(/\\.\\/app\\.js\\?bg_explain=([a-f0-9]{64})/)?.[1];
+  const hash=mapSource.match(/explanationInventory:Object\.freeze\(\{contract:'portal-explanation-autosync-v1',contentHash:'([a-f0-9]{64})'/)?.[1];
+  const entry=entrySource.match(/\.\/app\.js\?bg_explain=([a-f0-9]{64})/)?.[1];
   if (!hash || !entry || hash!==entry) fail('canonical System Map digest differs from immutable Portal entry app.js version');
   return {map:createHash('sha256').update(mapSource).digest('hex'),entry:createHash('sha256').update(entrySource).digest('hex')};
 }
