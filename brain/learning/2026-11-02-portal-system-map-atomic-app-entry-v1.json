@@ -13,7 +13,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs",
-      "tests/delivery-system-map-merge-integrity.test.mjs"
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs"
     ],
     "shadow": [
       "tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs"
