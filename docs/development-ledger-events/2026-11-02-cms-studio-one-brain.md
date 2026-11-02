@@ -26,3 +26,6 @@ The exact-head Required run for PR #5254 rejected the candidate with `CHAT_LEARN
 
 ## Exact-head protected checks and current-main synchronization
 Required run 41410822731 and CodeQL run 41410822580 completed SUCCESS for former exact source head 0b19ce90fbf3b46a6abec61c682cef707ab1e439. Independent browser and Netlify build CI jobs were included in this Required success. Subsequent non-forced main-sync candidate c016148919b887b198c26379a736873ed440fa22 also preserves main 3621657751881f50240f9dd4a787a76530c7d369 (verified revenue repair). Passing tests on the former head do NOT prove the newly integrated exact head. Re-execute original protected Required/CodeQL against the new head; do not merge or claim production until they pass, then verify exact production deploy and authenticated CMS browser/public readback.
+
+## Protected source integration — latest Portal BRAIN observation
+After main advanced via original PR #5255, reconciled its immutable original BRAIN observations, AGENTS instructions and System Map with the CMS Studio candidate without dropping any source changes. Current merge parent `0a5e8923d038154d281936335e8954bef1534562`. This integration does not itself prove production publication; exact new-head Required/CodeQL and Netlify readback must be repeated.
