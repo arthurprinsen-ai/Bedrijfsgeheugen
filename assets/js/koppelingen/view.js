@@ -51,7 +51,7 @@ export function renderWizardShell(){
          <label><input type="radio" name="bgDataUseMode" value="PORTAL_INSIGHTS"><span><strong>Ook in mijn portaal</strong><small>Gebruik geselecteerde gegevens voor mijn eigen inzichten.</small></span></label>
          <label><input type="radio" name="bgDataUseMode" value="PORTAL_AI"><span><strong>Ook AI-advies</strong><small>AI mag geselecteerde data analyseren, uitsluitend volgens mijn model- en locatiebeleid.</small></span></label>
        </div>
-       <div class="bg-kw__sovereignty"><span data-bg-sovereignty-status class="bg-kw__sovereignty-status" role="status">Databeleid controleren…</span><a href="https://www.bedrijfsgeheugen.nl/portal-next/compliance.html">Bekijk opslag, verwerking en AI-modelkeuze ↗</a></div>
+       <div class="bg-kw__sovereignty"><span data-bg-sovereignty-status class="bg-kw__sovereignty-status" role="status">Databeleid controleren…</span><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=data-ai-passport">Bekijk opslag, verwerking en AI-modelkeuze ↗</a></div>
        <p class="bg-kw__privacy-note">Toestemming voor AI-advies is geen toestemming voor modeltraining. Documentextractie en externe systemen hebben eigen gegevensstromen; controleer hun locaties en verwerkers vóór activatie. Een aangevraagd beleid is nog geen geverifieerde AI-infrastructuur.</p>
      </fieldset>
      <div data-bg-template-list hidden></div>
