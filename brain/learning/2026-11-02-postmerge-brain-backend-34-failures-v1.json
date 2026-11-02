@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs",
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs",
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Full original postmerge Unified BRAIN backend validation exposed 34 failing test assertions across 30 files despite Required and CodeQL success. Multiple independent source-contract discrepancies; no proven common root. Two independently inspected causes: incident-protocol debt incorrectly still contains already compliant growth swarm, and portal app.js immutable cache key differs from current system-map digest.",
+  "prevention_rule": "The original ONE BRAIN terminal must continue refusing success when original exact candidate backend tests fail; preserve distinct original source owner for each failure. Fix reproducible wrong source contracts, not test guards, and independently replay exact BRAIN lane before PROVEN. Portal displays observed failures and counts as unresolved, not as independently verified test success. No extra schedulers or publisher and no fake business KPIs.",
+  "owner": "Original ONE BRAIN backend verifier and existing source owners",
+  "evidence": {
+    "github_original_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918",
+    "github_original_terminal_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406888278",
+    "candidate_sha": "83664e8ea95c39181483359f915f46d963a987cb",
+    "main_merge_sha": "642125ca618762b2258e56231d20a269bc23d26d",
+    "backend_failures": 34,
+    "affected_test_files": 30,
+    "required": "SUCCESS",
+    "codeql": "SUCCESS",
+    "portal_brain_lane": "SUCCESS",
+    "automation_brain_lane": "SUCCESS",
+    "targeted_repairs": [
+      "shrink incident baseline by one independently compliant skill",
+      "bind portal app.js cache URL to current generated system-map hash"
+    ],
+    "unfixed_test_failures": "MULTIPLE_INDEPENDENT_SOURCE_CONTRACTS_REMAIN",
+    "test_regression": "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs",
+    "status": "CANDIDATE_NOT_RELEASED_OR_PROVEN",
+    "no_parallel_executor": true
+  }
+}
