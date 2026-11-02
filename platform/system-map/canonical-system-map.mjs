@@ -1,4 +1,22 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
+  aiConnectionStudioMultiRouteV1:Object.freeze({
+    fingerprint:'portal|connection-studio|single-destination-and-sample-vs-ingestion-gap|20261102-v1',
+    obligation:'portal-connection-studio-multiroute-recovery-20261102-v1',
+    owner:'original Portal V2 + connector engine + ONE BRAIN/Heartbeat',
+    existingStudio:'assets/js/koppelingen/view.js',
+    routingAuthority:'assets/js/koppelingen/portal-routing.js',
+    recovery:'assets/js/koppelingen/recovery.js',
+    tenantApi:'platform/api/portal-connectors-handler.mjs',
+    portalProjection:'portal-v2/connected-data-sources.js',
+    existingShell:'portal-v2/page-shell.js',
+    learning:'brain/learning/2026-11-02-connection-studio-multiroute-recovery-v1.json',
+    skill:'.agents/skills/portal-living-interface/SKILL.md',
+    humanDoc:'docs/changes/2026-11-02-connection-studio-multiroute-recovery.md',
+    regression:'tests/brain-connection-studio-multipage-recovery-20261102.test.mjs',
+    noNewWriter:true,noNewStore:true,
+    dataPayloadStorageVerified:false,independentProviderIngestVerified:false,
+    customerBusinessOutcomesVerified:false
+  }),
   aiConnectSovereigntyProofV1:Object.freeze({
     fingerprint:'portal|connectors|sample-dry-run-mistaken-for-live-verification|20261102-v1',
     obligation:'portal-ai-connect-sovereignty-proof-20261102-v1',
@@ -234,7 +252,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   portalLearningOutcomeProof:Object.freeze({source:'brain/operating-loop/living-memory.mjs',proof:'tenant-matched-verified-outcome-and-evidence',unknown:'REVIEW_REQUIRED',storedRecordsModified:false,productionVerified:false}),
   brainOperatingLoopNetlifyImport:Object.freeze({source:'brain/operating-loop/',consumer:'netlify/functions/brain-operating-loop.mjs',deploymentRequired:true,productionVerified:false}),
   brainRuntimeAuthenticatedReleaseProof:Object.freeze({fingerprint:'delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1',source:'.github/workflows/production-release-readback.yml',trigger:'Netlify-imported Brain runtime',reuseExistingPortalProof:true,failClosed:true,productionVerified:false}),
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'948d8c931657eeb5ec8fa3dbfb9946731ffa60d52d3c33c95e41a6e498e971c2',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'636ceec08abdb66b25a092f9417eccba431957cb4087fce83f84c2110033d73d',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',

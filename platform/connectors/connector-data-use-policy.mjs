@@ -22,5 +22,13 @@ export function connectorDataUseActivationGuard(connector){
   // A Datahub target means using data in the customer portal; never assume consent.
   if(connector?.target?.type==='datahub'&&policy.mode==='CONNECTION_ONLY')
     return Object.freeze({allowed:false,reason:'PORTAL_DATA_USE_NOT_AUTHORIZED'});
+  // Legacy connectors without routing retain their previous contract. All new studio
+  // definitions must select actual fields and pages before activating portal processing.
+  if(connector?.routing&&policy.mode!=='CONNECTION_ONLY'){
+    if(!Array.isArray(connector.routing.portalPages)||!connector.routing.portalPages.length)
+      return Object.freeze({allowed:false,reason:'PORTAL_DESTINATION_REQUIRED'});
+    if(!Array.isArray(connector.routing.selectedFields)||!connector.routing.selectedFields.length)
+      return Object.freeze({allowed:false,reason:'PORTAL_FIELDS_REQUIRED'});
+  }
   return Object.freeze({allowed:true,reason:'ALLOWED',policy});
 }
