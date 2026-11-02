@@ -1,6 +1,7 @@
 import {planCrossDomainChange} from '../regulatory/cross-domain-change-impact.mjs';
 import {connectorConfigurationForImpact,isConnectorConfigurationChanged,pendingConnectorImpactReview} from '../regulatory/connector-change-impact-gate.mjs';
 import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
+import {normalizeConnectorDataUse,connectorDataUseActivationGuard} from '../connectors/connector-data-use-policy.mjs';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 function tenantFromUser(user){return user?.tenantId||user?.app_metadata?.tenantId||user?.app_metadata?.tenant_id||null;}
@@ -44,13 +45,17 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='GET'&&id&&!action){if(typeof store?.get!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const record=await store.get(tenantId,id);return record?json(clean(record)):json({error:'NOT_FOUND'},404);}
   if(normalized.method==='POST'&&!id){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
-    const body=clean(await requestBody(request,normalized));
+    let body=clean(await requestBody(request,normalized));
+    try{body={...body,dataUse:normalizeConnectorDataUse(body.dataUse)};}
+    catch{return json({error:'INVALID_CONNECTOR_DATA_USE'},422);}
     const impact=planCrossDomainChange({tenantId,changeId:`connector-create:${body.id||'new'}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,before:null,after:connectorConfigurationForImpact(body),evidenceIds:[]});
     return json(clean(await store.saveDraft(tenantId,{...body,state:'Draft',version:1,runtime:{...untrustedRuntime(body.runtime),changeImpact:impact}})),201);
   }
   if(normalized.method==='PUT'&&id&&action==='draft'){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
-    const body=clean(await requestBody(request,normalized));
+    let body=clean(await requestBody(request,normalized));
+    try{body={...body,dataUse:normalizeConnectorDataUse(body.dataUse)};}
+    catch{return json({error:'INVALID_CONNECTOR_DATA_USE'},422);}
     const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);
     const changed=isConnectorConfigurationChanged(before,body);
     const impact=changed?planCrossDomainChange({
@@ -118,6 +123,8 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     const execution=await store.getExecution(tenantId,id,testExecutionId);if(!execution)return json({error:'TEST_EVIDENCE_NOT_FOUND'},409);
     if(execution.status!=='TEST_PASSED')return json({error:'TEST_EVIDENCE_NOT_PASSED'},409);
     if(executionVersion(execution)!==Number(connector.version))return json({error:'TEST_EVIDENCE_VERSION_MISMATCH'},409);
+    const dataUse=connectorDataUseActivationGuard(connector);
+    if(!dataUse.allowed)return json({error:dataUse.reason},409);
     const persistedEvidence={...executionEvidence(execution),testExecutionId:execution.id||testExecutionId};
     const eligibility=typeof engine?.activationEligibility==='function'?engine.activationEligibility(connector,persistedEvidence):{eligible:false,reason:'TEST_EVIDENCE_REQUIRED'};
     if(!eligibility.eligible)return json({error:eligibility.reason},409);
