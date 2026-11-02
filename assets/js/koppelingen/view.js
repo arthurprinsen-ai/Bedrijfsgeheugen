@@ -186,7 +186,8 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   });
   root.querySelector('[data-bg-new-connector]').addEventListener('click',()=>{
     if(state&&(!draft||draftDirty)){say('Bewaar deze keuze eerst als concept om gegevensverlies te voorkomen.');return;}
-    state=null;draft=null;lastTest=null;draftDirty=false;
+    state=null;draft=null;lastTest=null;draftDirty=false;dataUseMode='CONNECTION_ONLY';
+    const noExtraUse=root.querySelector('input[name="bgDataUseMode"][value="CONNECTION_ONLY"]');if(noExtraUse)noExtraUse.checked=true;
     invalidateEvidence('Kies een nieuwe bron en test iedere koppeling apart.');
     root.querySelector('[data-bg-template-list]').hidden=false;
     root.querySelector('[data-bg-template-list]').innerHTML=templateListHtml();
