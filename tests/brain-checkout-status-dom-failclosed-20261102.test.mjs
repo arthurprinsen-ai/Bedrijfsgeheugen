@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
+import {assertCheckoutContract} from '../tools/site-shell/checkout-build-integrity.mjs';
 
 const html=readFileSync('afsluiten.html','utf8');
 const code=html.match(/<script data-bg-page-runtime="saas-checkout">([\s\S]*?)<\/script>/)?.[1]||'';
@@ -64,4 +65,10 @@ test('existing status is preserved and original provider-specific readiness + pa
  assert.match(html,/id="status" class="status" role="status" aria-live="polite"/);
  const pageCheck=readFileSync('.github/scripts/paginacontrole.py','utf8');
  assert.match(pageCheck,/pagina\.on\('pageerror'/);
+});
+
+test('same checkout source passes canonical HTML id integrity without script false duplicate',()=>{
+ assert.equal([...html.matchAll(/\bid=["']status["']/g)].length,1);
+ assert.equal(assertCheckoutContract(html,'source'),true);
+ assert.match(code,/el\.setAttribute\('id','status'\)/);
 });
