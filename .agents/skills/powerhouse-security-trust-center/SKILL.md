@@ -75,3 +75,8 @@ Fingerprint: `powerhouse|security|cross-platform-evidence|20261102`.
 - Source-own search-path hardening via `20261102141045_writer_control_fixed_search_path_v1.sql`, not ad hoc production DDL. Pin `pg_catalog, writer_control`; abort on function identity or invoker contract drift; verify three function configs with `pg_proc` after application.
 - Canonical negative test: `tests/brain-security-trust-center-v1.test.mjs`. Record provider advisor readback, applied migration identity and real lease smoke tests before resolving the original security warning. Unknown or unapplied remains OPEN.
 - A separate token-gated external RPC review is not silently resolved by this change and requires source-callpath and auth readback before adjusting grants.
+
+## Expired cached positive evidence must never render green — 2026-11-02
+- A database snapshot's previous `PASS` or `VERIFIED` is not permanent proof. The Portal must independently check **every** required provider observation has parseable `observed_at <= current UTC time < expires_at` before showing a positive platform status.
+- Require source snapshot `generatedAt` to be parseable, nonfuture and at most 24h old for overall green. Invalid/missing/expired timestamp, evidence flag or required control = `EVIDENCE_PARTIAL`; current explicit FAIL remains `ACTION_REQUIRED`.
+- Regression: `tests/portal-private-trust-surfaces-v1.test.mjs` and canonical `tests/brain-security-trust-center-v1.test.mjs`. Refresh through original ONE BRAIN/Heartbeat and prove via protected production readback; no second scheduler or customer-side source of truth.

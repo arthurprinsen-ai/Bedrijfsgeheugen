@@ -158,3 +158,15 @@ test('writer-control functions have immutable invoker search paths without weake
  assert.match(sql,/WRITER_CONTROL_FIXED_SEARCH_PATH_READBACK_FAILED/);
  assert.doesNotMatch(sql,/\b(?:drop\s+function|create\s+or\s+replace\s+function|grant\s+execute|disable\s+row\s+level\s+security)\b/i);
 });
+
+test('security proof freshness is independently checked when cached provider snapshots age',async()=>{
+ const {isCurrentSecurityObservation,isFreshSecuritySnapshot}=await import('../portal-v2/modules/security-trust-workspace.js');
+ const t=Date.parse('2026-11-02T14:00:00Z');
+ const row={observed_at:'2026-11-02T13:00:00Z',expires_at:'2026-11-02T13:59:59Z'};
+ assert.equal(isCurrentSecurityObservation(row,t),false);
+ assert.equal(isFreshSecuritySnapshot('2026-10-31T14:00:00Z',t),false);
+ const script=await read('portal-v2/modules/security-trust-workspace.js');
+ assert.match(script,/isCurrentSecurityObservation\(o,nowMs\)/);
+ assert.match(script,/isFreshSecuritySnapshot\(generatedAt,nowMs\)/);
+ assert.match(script,/security\?\.generatedAt/);
+});
