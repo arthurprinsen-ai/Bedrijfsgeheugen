@@ -1,0 +1,19 @@
+# 2026-11-02 — Redactieraad als onderdeel van ONE BRAIN, Powerhouse en Heartbeat
+
+## Echt geconstateerde bronstatus
+De originele architectuur is gekoppeld (32/32 lagen en 18/18 kernjobs), maar 2026-11-02 07:20 UTC had zij 2 runtimefouten, content_loop_state BLOCKED, architecture_state AMBER en learning_state EVIDENCE_DUE_GAPS. Social learnings: 12 PROVEN; toepassingen: 1; toepassingen PROVEN: 0. Dit bewijst niet dat de bestaande redactie al autonoom iedere post verbetert.
+
+## Wijziging in de oorspronkelijke eigenaar
+De originele powerhouse-content-orchestrator ontvangt voortaan via _shared/editorial-council-context.mjs één expliciete adviesbrief met een hoofdredacteur, doelgroepstrateeg, LinkedIn-/Instagram-specialist, SEO-specialist, e-mail-/lifecycle-expert, factchecker en CRO-/omzetanalist. Dit zijn geen autonome schrijvers: de bestaande generator en publisher blijven de enige uitvoerende eigenaren. Koppeling: editorial_council in het bestaande artifactInput en editorialSystem, zonder extra toolprovider, scheduler, database, e-mailzender of contentherpublicatie.
+
+## Per kanaal
+LinkedIn persoonlijk: eigen geverifieerde oprichterservaring en één herkenbare zakelijke beslissing; geen technische status of commerciële CTA. LinkedIn bedrijf: één concreet ondernemersprobleem en meetbaar relevant vervolg, ander bronverhaal dan persoonlijk. Instagram: Mira en exacte goedgekeurde scène/video plus herkenbare caption; eigen media/identiteitscontrole blijft verplicht. Blog: actuele primaire bron, zoekintentie en bruikbaar mensen-eerst antwoord met één CTA; originele CMS-toestemming blijft. E-mail nieuwsbrief: segment, onderwerp/preheader, consent/afmelden en één CTA; géén verzending, want originele generator meldt NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR.
+
+## Onderzoeksbasis, bekeken 2 november 2026
+LinkedIn: https://news.linkedin.com/2026/ImprovingTheFeed en https://news.linkedin.com/2026/how-linkedin-is-tackling-ai-slop. Google Search: https://developers.google.com/search/docs/fundamentals/creating-helpful-content en https://developers.google.com/search/docs/essentials. E-mailtesten en toestemming: https://mailchimp.com/help/about-ab-tests/ en https://mailchimp.com/help/about-compliance-for-email-marketing/. Alle externe adviezen zijn hypothesen, geen bewezen uplift. Instagram-data of algoritme-indicatoren ontbreken wanneer de Meta-bron geen expliciete, verifieerbare meting levert.
+
+## Leren, meten, implementeren
+De originele social_metric_snapshots, social_learnings, revenue_learnings, social_learning_applications en commercieel CTA/lead/orderbewijs blijven de waarheid. Per originele post: uniek verhaal, rol/persona, creatieve hypothese, provider-ID, 24/48 uur en 7 dagen vergelijkbare metingen, kwalificatie, toestemming, lead en onafhankelijk betaald resultaat. Slechts één variabele veranderen per experiment; ontbrekende waarneming is UNKNOWN. Een geverifieerde learning mag als kandidaat de volgende natuurlijke publicatie sturen, maar toepassing is pas bewezen na een echte learning_id → application_id → post_id en provider-/outcome-readback. Deze code claimt geen actuele omzetverbetering.
+
+## Release en governance
+Het platform/system-map/canonical-system-map.mjs bevat een verwijzing naar deze oorspronkelijke redactie in de bestaande ONE BRAIN/Heartbeat-bewijskaart. Het portaal krijgt hiermee een traceerbare bronlijn voor de bestaande geauthenticeerde Content/CRO-weergave, geen onbewezen nieuwe groene tegel. Protected CI en exact main merge, originele Supabase Edge runtime parity, Netlify/portal-readback en volgende natuurlijke uitvoeringsronde moeten nog worden geverifieerd. Tests: node --test tests/brain-editorial-council-one-loop-20261102.test.mjs. Incidentfingerprint: powerhouse|content|editorial-specialists-not-unified-with-evidence-application|20261102-v1. Geen tweede scheduler of writer, CMS/OAuth/identiteit/duplicaten/consent ongewijzigd.
