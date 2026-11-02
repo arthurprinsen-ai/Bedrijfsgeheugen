@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {outboundDeliveryGap} from '../supabase/functions/_shared/outreach-composer-hold.mjs';
 
 const sql=readFileSync('supabase/migrations/20261008121500_commercial_eligible_after_pressure_v1.sql','utf8');
 const sender=readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
@@ -48,8 +49,10 @@ test('regression: 20 cooling leads cannot starve lower-ranked eligible prospects
 
 test('Gmail zero-output cannot masquerade as a successful commercial delivery',()=>{
   assert.match(sender,/status:sent===0\|\|out\.some\(x=>x\.status==='error'\)\|\|out\.some\(x=>x\.status!=='sent'\)\?'waarschuwing':'ok'/);
-  assert.match(sender,/NO_ELIGIBLE_PREPARED_EMAIL/);
-  assert.match(sender,/NO_PROVIDER_CONFIRMED_EMAIL/);
+  assert.match(sender,/outboundDeliveryGap\(\{selected:\(acts\|\|\[\]\)\.length,sent,results:out\}\)/);
+  assert.equal(outboundDeliveryGap({selected:0,sent:0,results:[]}), 'NO_ELIGIBLE_PREPARED_EMAIL');
+  assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'held'}]}), 'NO_PROVIDER_CONFIRMED_EMAIL');
+  assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'unverified'}]}), 'PROVIDER_READBACK_UNVERIFIED');
   assert.match(sender,/external_outreach_executed:sent>0/);
   assert.match(sender,/const sent=out\.filter\(x=>x\.status==='sent'\)\.length/);
   assert.match(sender,/provider_ack_verified:true/);
