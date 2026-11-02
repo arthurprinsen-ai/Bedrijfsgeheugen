@@ -49,5 +49,23 @@
     "no false GREEN",
     "no source receipt mutation"
   ],
-  "proven_fix": null
+  "proven_fix": null,
+  "test_evidence": [
+    "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs"
+  ],
+  "evidence": {
+    "original_failing_run_id": 41422715260,
+    "original_backend_job_id": 125202175531,
+    "original_test_index": 2486,
+    "source_contract": "already authentic Markdown /api/powerhouse-cro-other-data path with unproven separate 2-tenant CRO authentication",
+    "positive_and_negative_node_oracle": "5 fixture checks pass locally",
+    "required_gate_failure": {
+      "run_id": 41424726309,
+      "job_id": 125208456000,
+      "failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning",
+      "root_cause": "source_evidence is not a canonical semantic evidence field",
+      "repair": "add canonical test_evidence and evidence fields instead of lowering closure guard"
+    },
+    "status": "PENDING_EXACT_HEAD_CI"
+  }
 }
