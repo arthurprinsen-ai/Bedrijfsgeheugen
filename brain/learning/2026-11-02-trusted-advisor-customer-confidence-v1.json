@@ -57,8 +57,10 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-trusted-advisor-cross-channel-20261102.test.mjs",
-      "tests/cms-studio-20261102.test.mjs",
       "tests/brain-editorial-council-one-loop-20261102.test.mjs"
+    ],
+    "additional_regression_tests": [
+      "tests/cms-studio-20261102.test.mjs"
     ]
   },
   "humanDocs": "docs/changes/2026-11-02-trusted-advisor-one-brain-quality.md",
