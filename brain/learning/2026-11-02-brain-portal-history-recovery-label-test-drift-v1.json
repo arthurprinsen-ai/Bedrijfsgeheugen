@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|brain|portal-history-recovery-label-test-drift|20261102-v1",
+  "obligation_id": "original-brain-postmerge-history-label-test-recovery-20261102-v1",
+  "parent_issue": 4439,
+  "status": "SOURCE_CANDIDATE",
+  "owner": "original ONE BRAIN backend test-contract / admin-only Portal read-model owner",
+  "compiler": {
+    "failure_class": "TEST_ORACLE_STALE_UI_LITERAL",
+    "scope": "BACKEND_TEST",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Full postmerge BRAIN 41433667027 passed 5397 of 5400 tests, with 1 failed and 2 skipped; one older assertion demands 'Laatste vastgelegde BRAIN-hertest' after owner Portal separated last failed run from later zero-failure software recovery and terminal proof.",
+  "correction": "Replace obsolete one-string assertion with assertions for distinct data-bound last failed run, later recorded software recovery, and independent-terminal indicator, preserving UI/runtime/access unchanged.",
+  "prevention_rule": "Check source-backed semantic UI bindings for all historical, recovered-software and terminal states; never regress to a stale literal or fabricate future customer/business proof. Exact protected + natural run + product readback required.",
+  "evidence": {
+    "failed_run": 41433667027,
+    "failed_backend_job": 125238718390,
+    "failed_test_index": 3050,
+    "failed_tests": 1,
+    "passed_tests": 5397,
+    "skipped_tests": 2,
+    "production_runtime_changed": false,
+    "all_green": false,
+    "original_zero_failure_run": 41430758451,
+    "zero_failure_run_total": 5392,
+    "zero_failure_passed": 5390,
+    "zero_failure_failed": 0,
+    "zero_failure_skipped": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ]
+  }
+}
