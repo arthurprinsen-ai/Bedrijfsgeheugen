@@ -23,7 +23,7 @@ const CHANNELS=Object.freeze({
   linkedin_company:Object.freeze({
     audience:'directeur, ondernemer, commercieel manager of operations-leider',
     reader_job:'één concreet probleem dat verlies, risico, werkdruk of gemiste omzet veroorzaakt',
-    editorial:'Maak de eerste regels concreet; breng zakelijke oorzaak/gevolg, een bruikbare les en één relevante meetbare vervolgstap. Geen interne dashboards, kopie van personal of fictieve klantcase. Tracking alleen langs bestaande gecontroleerde route.',
+    editorial:'Maak de eerste regels concreet; breng zakelijke oorzaak/gevolg, een bruikbare les en één relevante meetbare vervolgstap. Geen interne dashboards, kopie van personal of fictieve klantcase. Tracking alleen langs bestaande gecontroleerde route. SOURCE NOVELTY BEFORE GENERATION: het herhaalde familieverhaal verloren of niet-opgevolgde offertes is afgekeurd met COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT. Selecteer eerst een aantoonbaar ANDER ondernemersprobleem uit een eigen nieuwe gedateerde, controleerbare bron; zonder nieuw feitelijk bronanker: HOLD en brononderzoek, geen parafrase van offertes en geen verzonnen klantcasus. De bestaande companyEditorialViolations plus globale deduplicatie blijven beslissend.',
     experiment:'Test één opening, format of CTA per keer; carrousel/video alleen met werkelijk goedgekeurd asset.',
     success:['provider_verified_impressions_if_available','substantive_comments','reposts','attributed_cta','consented_qualified_leads','independently_paid_orders']
   }),
