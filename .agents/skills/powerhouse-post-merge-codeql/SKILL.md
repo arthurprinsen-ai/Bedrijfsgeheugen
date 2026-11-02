@@ -5,6 +5,12 @@ description: Use whenever CodeQL or another post-merge security workflow is queu
 
 # Powerhouse Post-Merge CodeQL
 
+## Original Portal seven-source readback regression — 2 November 2026
+
+- Original full BRAIN run `41413309140` identifies two related regressions in `tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs`: historic fixture listed five source views but original `powerhouse-existing-integration-read-model.mjs` already reads **seven** authenticated read-only views (health, capabilities, layers, experiments, revenue, loops and terminal). A fixture lacking loops/terminal is legitimately `PARTIAL`, never `READABLE`.
+- Never delete the extra original loop-integrity and terminal-health readbacks, or fake their return rows to satisfy a five-view fixture. Tighten test to seven scoped views, verify each real GET and role-only/same-origin boundary, and explicitly inject missing sixth or seventh provider data; display `x/7` observed source coverage and preserve `END_TO_END_UNPROVEN` even when all seven source reads succeed.
+- Fingerprint `powerhouse|brain|portal-seven-source-fixture-stale|20261102-v1`; parent #4439. Original ONE BRAIN learning, human change/ledger, protected Required/CodeQL and full original exact-head BRAIN/terminal verification required. Netlify exact deployed commit and logged-in private portal readback required to claim live UI. This neither proves a paid order nor authorizes a second writer or scheduler.
+
 Fingerprint: `delivery|post-merge-codeql|single-flight-terminality|v1`.
 
 A post-merge CodeQL status is internal execution state, never a user handoff.
