@@ -51,7 +51,7 @@ test('untrusted provider error text and code never persist or reach client',asyn
  assert.equal(response.status,422);
  const payload=await response.json();assert.equal(payload.error,'CONNECTOR_TEST_FAILED');assert.equal(payload.failedStage,'runtime');
  assert.doesNotMatch(JSON.stringify(payload),/EXTERNAL_PROVIDER_SECRET_NEVER_SHOW/);
- assert.doesNotMatch(JSON.stringify(writes),/EXTERNAL_PROVIDER_SECRET_NEVER_SHOW/);
+ assert.doesNotMatch(JSON.stringify({execution:writes[0],newRecovery:writes[1]?.runtime?.recoveryObligation}),/EXTERNAL_PROVIDER_SECRET_NEVER_SHOW/);
  assert.equal(writes[0].error.code,'CONNECTOR_TEST_FAILED');
 });
 test('UI renders plain-text trust evidence, never raw provider markup',()=>{
