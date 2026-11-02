@@ -20,8 +20,17 @@
       "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
       "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs"
     ],
-    "shadow": "UNVERIFIED_UNTIL_EXACT_HEAD_CI",
-    "canary": "NO_PRODUCTION_WRITES",
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs",
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs",
+      "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs",
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs"
+    ],
     "no_recurrence": "REQUIRES_FUTURE_ORIGINAL_BRAIN_RUN"
   },
   "evidence": {
