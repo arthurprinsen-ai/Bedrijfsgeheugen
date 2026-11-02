@@ -13,7 +13,7 @@ test('canonical CMS studio is attached to original authenticated CMS, not anothe
   assert.match(html,/src="\/assets\/cms-studio\.mjs"/);
   assert.match(studio,/import \{ cmsQuality, cmsSafeUrl \} from '\.\/cms-quality-gate\.mjs'/);
   assert.doesNotMatch(studio,/\bfetch\s*\(|\bsetInterval\s*\(|\bsetTimeout\s*\(|\/api\/cms-public|supabase\.co/);
-  assert.match(studio,/originale CMS-workflow/);
+  assert.match(studio,/originele CMS-workflow/);
   assert.match(admin,/hasAdminRole\(user\)/);
   assert.match(admin,/CMS_VERSION_CONFLICT/);
   assert.match(admin,/CMS_QUALITY_GATE_BLOCKED/);
