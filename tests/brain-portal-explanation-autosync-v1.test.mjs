@@ -10,6 +10,8 @@ test('inventory check catches addition, deletion and source changes; refresh is 
   try{
     for(const dir of ['platform/system-map','.agents/skills','platform/agents','netlify/functions','supabase/functions','.github/workflows','portal-v2'])await fs.mkdir(path.join(root,dir),{recursive:true});
     await fs.copyFile('platform/system-map/canonical-system-map.mjs',path.join(root,'platform/system-map/canonical-system-map.mjs'));
+    await fs.writeFile(path.join(root,'portal-v2/index.html'),'<script type="module" src="./app.js"></script>');
+    await fs.writeFile(path.join(root,'portal-v2/app.js'),'// fixture');
     for(const file of ['portal-v2/modules/powerhouse-observability.js','portal-v2/page-registry.js','portal-v2/page-shell.js','portal-v2/page-metrics.js','portal-v2/page-visuals.js','portal-v2/doorwerking.js','portal-v2/legacy-parity-engine.js','portal-v2/runtime-evidence.js','netlify/functions/powerhouse-observability.mjs']){await fs.mkdir(path.dirname(path.join(root,file)),{recursive:true});await fs.writeFile(path.join(root,file),'// fixture');}
     const run=(mode)=>execFileSync(process.execPath,[script,mode,'--root='+root],{encoding:'utf8',stdio:'pipe'});
     assert.throws(()=>run('--check'),/Command failed/);
