@@ -25,7 +25,7 @@ export function strategicAdviceItems(model={}){
    const kind=String(impact.kind||'').toLowerCase(),unit=String(impact.unit||'').toUpperCase(),amount=number(impact.amount);
    const supported=valueKinds.has(kind)&&valueUnits.has(unit)&&amount!==null;
    const matchingOutcomes=outcomes.filter(outcome=>
-     Boolean(action.id)&&verifiedCustomerOutcome(outcome)&&String(outcome.action_id||outcome.source_action_id)===String(action.id)));
+     Boolean(action.id)&&verifiedCustomerOutcome(outcome)&&String(outcome.action_id||outcome.source_action_id)===String(action.id));
    const diagnosis=text(problem?.title,action.problem_statement,action.explanation,action.summary);
    const rationale=text(action.reason,action.why_now,action.explanation,action.summary);
    const approval=Boolean(action.requires_approval||action.approval_required||action.decision_required);
