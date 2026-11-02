@@ -1,10 +1,18 @@
 import { test, expect } from '@playwright/test';
+import { classifyPortalBrowserReadback } from './portal-readback-security-challenge.mjs';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 
 async function openAnalysis(page,pageId){
  const response=await page.goto(`${BASE_URL}/portal-v2/?page=${encodeURIComponent(pageId)}&bg_algorithm_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
  expect(response,`${pageId} response`).not.toBeNull();
+ // Preserve the HTTP gate. Diagnose a provider challenge without accepting 403 as success.
+ if(response.status()===403){
+  const classification=classifyPortalBrowserReadback({status:403,html:await page.content()});
+  if(classification==='NETLIFY_SECURITY_CHALLENGE'){
+   throw new Error(`NETLIFY_SECURITY_CHALLENGE_READBACK_BLOCKED:${pageId}:HTTP403; preserve Netlify security and obtain a fresh exact-deploy authorized browser proof`);
+  }
+ }
  expect(response.status(),`${pageId} status`).toBeLessThan(400);
  const workspaceSelector=`[data-functional-workspace="${pageId}"]`;
  const workspace=page.locator(workspaceSelector);
