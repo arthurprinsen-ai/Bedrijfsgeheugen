@@ -20,7 +20,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/connector-studio-source-journey-20261102.test.mjs"
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
     ],
     "shadow": [
       "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
