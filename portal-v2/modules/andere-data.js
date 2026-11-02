@@ -34,6 +34,8 @@ function render(container,data){
   const weekly=data?.websiteWeeklyGrowth||null;
   const social=data?.socialFunnel||null;
   const editorialQuality=data?.editorialQuality||null;
+  const terminalBrain=data?.terminalBrainRecovery||null;
+  const brainBackend=data?.brainBackendRun||null;
   const growth=data?.growthDirection||null;
   const commercialFunnel=data?.commercialGrowthFunnel||null;
   const providerRepair=data?.ga4PredictiveRepair||null;
@@ -279,6 +281,37 @@ function render(container,data){
     '</tbody></table></div>'+
     '<p class="od-foot">Portaalroute-events bevatten mogelijk beheerders en previews: dit zijn geen geverifieerde betalende klanten of unieke bezoekers. De kaart toont geen persoonsgegevens, verzendt niets en kan de oorspronkelijke vijftien Heartbeat-lussen niet groen maken. Ontbrekende, verouderde of niet-toegestane bronnen blijven UNVERIFIED.</p></section>';
 
+  const originalBackendCard='<section class="od-card" data-brain-original-backend-evidence>'+
+    '<h3>ONE BRAIN · volledige backendtest</h3>'+
+    '<p>Required en CodeQL zijn niet hetzelfde als de afzonderlijke BRAIN-backendverificatie. Een mislukte backendtest houdt de eindafsluiting open.</p>'+
+    '<p>Uitkomst: '+badge(brainBackend?.status||'SOURCE_UNVERIFIED')+
+      ' · Bron: '+badge(brainBackend?.sourceState||'UNAVAILABLE')+'</p>'+
+    '<div class="od-grid">'+
+      field('Eerste vastgelegde BRAIN-fouten',brainBackend?.historicalFailingTests==null?'Onbekend':esc(brainBackend.historicalFailingTests))+
+      field('Laatste vastgelegde BRAIN-hertest',brainBackend?.failingTests==null?'Onbekend':esc(brainBackend.failingTests))+
+      field('Betrokken testbestanden (eerste run)',brainBackend?.affectedFiles==null?'Onbekend':esc(brainBackend.affectedFiles))+
+      field('Onafhankelijk groen herstel',brainBackend?.verifiedPassed?'Bewezen':'Nog niet bewezen')+
+      field('Nieuwe betaalde opdrachten',brainBackend?.ordersIndependentlyProven?'Onafhankelijk bewezen':'Niet bewezen')+'</div>'+
+    '<p class="od-foot">Eerste bron: <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918" target="_blank" rel="noopener noreferrer">fouten en testbewijs</a>. Laatste geregistreerde hertest: '+
+    (brainBackend?.latestGitHubEvidenceUrl
+      ?'<a href="'+esc(brainBackend.latestGitHubEvidenceUrl)+'" target="_blank" rel="noopener noreferrer">originele GitHub-run</a>'
+      :'niet beschikbaar')+
+    '. Een registerobservatie is geen onafhankelijke terminalafsluiting. Geen omzeilde test, tweede executor of verzonnen omzet.</p></section>';
+  const terminalBrainCard='<section class="od-card" data-original-brain-terminal-incident>'+
+    '<h3>ONE BRAIN · herstel van publicatie- en releasecontrole</h3>'+
+    '<p>De oorspronkelijke afsluitcontrole moet dezelfde gemergede commit via BRAIN, Required, CodeQL en providerbewijs afsluiten. Een geslaagde merge zonder onafhankelijke BRAIN-uitkomst is geen volledig herstel.</p>'+
+    '<p>Status: '+badge(terminalBrain?.status||'SOURCE_UNVERIFIED')+
+      ' · Bron: '+badge(terminalBrain?.sourceState||'UNAVAILABLE')+'</p>'+
+    '<div class="od-grid">'+
+      field('ONE BRAIN-leerstatus',esc(terminalBrain?.maturity||'UNKNOWN'))+
+      field('Waargenomen incidenten',terminalBrain?.occurrenceCount===null||terminalBrain?.occurrenceCount===undefined?'Onbekend':esc(terminalBrain.occurrenceCount))+
+      field('Onafhankelijk geslaagde eindcontrole',terminalBrain?.terminalWorkflowIndependentlyVerified?'Gecontroleerd':'Nog niet bewezen')+
+      field('Effect op betaalde klanten',terminalBrain?.customerOrdersAttributed?'Onafhankelijk bewezen':'Nog niet bewezen')+
+    '</div>'+
+    '<p class="od-foot">Oorzaak: '+esc(terminalBrain?.rootCause||'Originele incidentbron niet beschikbaar')+
+    '. De bestaande BRAIN-verificatie moet exact dezelfde PR-commit controleren; geen tweede scheduler of verzender. '+
+    '<a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439" target="_blank" rel="noopener noreferrer">Incident en herstel</a> · '+
+    '<a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41350194932" target="_blank" rel="noopener noreferrer">Oorspronkelijke mislukte controle</a>.</p></section>';
   const editorialQualityCard='<section class="od-card" data-social-editorial-quality>'+
     '<h3>LinkedIn · kwaliteit vóór bereik</h3>'+
     '<p>Publiceer geen technische voortgangsrapporten als ondernemersverhaal. Een herkenbare zakelijke situatie, oorzaak en gevolg, een waarheidsgetrouwe praktische les en een originele opening gaan vóór interne Powerhouse-cijfers.</p>'+
@@ -300,6 +333,8 @@ function render(container,data){
     weeklyCard+
     commercialFunnelCard+
     editorialQualityCard+
+    terminalBrainCard+
+    originalBackendCard+
     providerRepairCard+
     recoveryAuditCard+
     compoundCard+

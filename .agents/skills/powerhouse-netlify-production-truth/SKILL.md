@@ -291,3 +291,7 @@ Fingerprint: `powerhouse|portal|netlify-live-versus-unresolved-build-incident|20
 - Regression: `tests/brain-original-netlify-incident-portal-20261101.test.mjs`; learning: `brain/learning/2026-11-01-netlify-release-incident-portal-truth-v1.json`.
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+## Original Portal System Map cache coherence — 2026-11-02
+
+`portal-v2/index.html` must reference `./app.js?bg_explain=<current original generated explanationInventory.contentHash>`. Otherwise a browser can serve stale JS for the new owner-only ONE BRAIN incident card despite Netlify production READY. Do not hardcode a historic digest or bypass protected System Map generation. Reject incorrect release until `tests/brain-portal-control-plane-bootstrap-20261029.test.mjs` and `tests/brain-postmerge-backend-incident-triage-20261102.test.mjs` pass. Provider deployment identity, authenticated UI readback and original commercial outcomes are separate evidence gates.

@@ -8,3 +8,5 @@ Status: SOURCE CANDIDATE. No official publication, live deploy, views or paid or
 Closure: protected checks + original production readback + first new original post + age comparable provider metrics + explicit learning application + independent lead/order evidence + recurrence check.
 
 B2B e-mail: original powerhouse-commercial-message-composer consumes source-reviewed email_outreach brief; existing preflight/quality/sender control unchanged, no new mailing permission.
+
+- 2026-11-02 08:11 UTC — original BRAIN verification-only run #41410920609: 33/5343 failed on stale PR epoch, including explicit immutable editorialSystem TDZ contract. Preterminal CAS sync requires branch/head and exact main epoch. Original PR stays same; no second writer, no production effect.

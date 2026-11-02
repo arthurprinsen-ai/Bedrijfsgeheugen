@@ -1,6 +1,6 @@
 import {strategicAdvisorMarkup} from './strategic-advisor.js';
 import {customerValueBriefingMarkup} from './customer-value-briefing.js';
-import {outcomeFeedbackMarkup} from './outcome-feedback.js';
+import {outcomeFeedbackMarkup,verifiedCustomerOutcome} from './outcome-feedback.js';
 import {buildExecutiveProjection} from './executive-projection.js';
 import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js';
 import {ensureOperatingSystemStyles} from './styles.js';
@@ -11,12 +11,7 @@ const pct=value=>value==null?'—':`${Math.round(value)}%`;
 
 // The final two steps of the existing daily cockpit consume only canonical,
 // tenant-scoped outcome envelopes. A projection is not proof of realization.
-const provenOutcome=item=>{
- const terminal=String(item?.verification_status||item?.status||'').toUpperCase();
- return ['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(terminal)
-  && item?.evidence_health?.status==='healthy'
-  && Array.isArray(item?.source_refs)&&item.source_refs.length>0;
-};
+const provenOutcome=verifiedCustomerOutcome;
 function dailyFeedbackCards(model={}){
  const outcomes=Array.isArray(model.outcomes)?model.outcomes:[];
  const outcome=outcomes.find(provenOutcome);

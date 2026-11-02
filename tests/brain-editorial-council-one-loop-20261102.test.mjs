@@ -8,7 +8,10 @@ const map=readFileSync(new URL('../platform/system-map/canonical-system-map.mjs'
 test('original generator owns advice with unchanged hard publication gates',()=>{
  assert.match(orchestrator,/buildEditorialCouncilBrief\(/);
  assert.match(orchestrator,/editorial_council:editorialCouncil/);
- assert.match(orchestrator,/editorialSystem \+= ' '\+editorialCouncil\.instruction/);
+ assert.match(orchestrator,/const editorialSystem = \(pending\.channel/);
+  assert.match(orchestrator,/let editorialPrompt = editorialSystem/);
+  assert.match(orchestrator,/editorialPrompt \+= ' '\+editorialCouncil\.instruction/);
+  assert.match(orchestrator,/callAI\(apiKey,gov\.model_id,editorialPrompt,artifactInput/);
  assert.match(orchestrator,/email_newsletter: \{ executable: false/);
  assert.match(orchestrator,/companyEditorialViolations\(bodyText/);
  assert.match(orchestrator,/personalEditorialViolations\(bodyText/);
