@@ -9,6 +9,9 @@ De originele powerhouse-content-orchestrator ontvangt voortaan via _shared/edito
 ## Per kanaal
 LinkedIn persoonlijk: eigen geverifieerde oprichterservaring en één herkenbare zakelijke beslissing; geen technische status of commerciële CTA. LinkedIn bedrijf: één concreet ondernemersprobleem en meetbaar relevant vervolg, ander bronverhaal dan persoonlijk. Instagram: Mira en exacte goedgekeurde scène/video plus herkenbare caption; eigen media/identiteitscontrole blijft verplicht. Blog: actuele primaire bron, zoekintentie en bruikbaar mensen-eerst antwoord met één CTA; originele CMS-toestemming blijft. E-mail nieuwsbrief: segment, onderwerp/preheader, consent/afmelden en één CTA; géén verzending, want originele generator meldt NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR.
 
+## Aparte e-mailroute
+De bestaande `powerhouse-commercial-message-composer` behoudt zijn B2B-voorcontrole, sales-play, kwaliteitsvalidator en externe verzendautoriteit, maar ontvangt bij echte e-mailchannels een `email_outreach`-redactiebrief uit dezelfde gedeelde pure functie. Eén-op-één zakelijke outreach is geen `email_newsletter`; dit creëert geen nieuwsbriefzender en is geen bewijs van toestemming of verzending.
+
 ## Onderzoeksbasis, bekeken 2 november 2026
 LinkedIn: https://news.linkedin.com/2026/ImprovingTheFeed en https://news.linkedin.com/2026/how-linkedin-is-tackling-ai-slop. Google Search: https://developers.google.com/search/docs/fundamentals/creating-helpful-content en https://developers.google.com/search/docs/essentials. E-mailtesten en toestemming: https://mailchimp.com/help/about-ab-tests/ en https://mailchimp.com/help/about-compliance-for-email-marketing/. Alle externe adviezen zijn hypothesen, geen bewezen uplift. Instagram-data of algoritme-indicatoren ontbreken wanneer de Meta-bron geen expliciete, verifieerbare meting levert.
 
