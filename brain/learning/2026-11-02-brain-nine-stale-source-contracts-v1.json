@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse|brain|stale-source-contract-regressions|20261102-v1",
+  "compiler": {
+    "failure_class": "SOURCE_CONTRACT_TEST_DRIFT",
+    "scope": "ORIGINAL_UNIFIED_BRAIN_BACKEND",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "owner": "Original ONE BRAIN backend verifier; existing radar, blog, CRO, Portal and Supabase source owners retain production authority",
+  "root_cause": "Original BRAIN run 41421421023 reported 23 backend test failures. Nine assertions across seven test files still expected retired implementation syntax, omitted authenticated source-health fields, incomplete synthetic outcome proof, or a legacy GitHub blog writer that is deliberately disabled. The canonical production/source contracts were checked before these fixture assertions were updated.",
+  "prevention_rule": "Before pinning a source-shape assertion, inspect exact protected main code and original authority. Tests must assert equivalent or stronger safety invariants: pinned action SHA, 8-call radar channel separation, supply-healthy source status, retained CTA event producer, metric/baseline/period/action/outcome verification, one shared strategic adviser, and read-only legacy blog watcher. NEVER delete failing tests, stub provider evidence, set green while CI fails, bypass required checks, or reintroduce a second writer. Re-run full BRAIN at exact candidate and current protected main; only provider readback plus no-recurrence can mark proven.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-cro-other-data.test.mjs",
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs",
+      "tests/brain-strategic-advisor-one-loop-20261030.test.mjs",
+      "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs"
+    ],
+    "shadow": "UNVERIFIED_UNTIL_EXACT_HEAD_CI",
+    "canary": "NO_PRODUCTION_WRITES",
+    "no_recurrence": "REQUIRES_FUTURE_ORIGINAL_BRAIN_RUN"
+  },
+  "evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41421421023",
+    "observed_failures": 23,
+    "matched_cases": [
+      475,
+      1098,
+      1184,
+      1185,
+      1186,
+      1202,
+      3342,
+      4011,
+      4499
+    ],
+    "original_candidate_sha": "6c636e4fcef4b148d955b3eaa985001a3b496920",
+    "status": "CANDIDATE_UNVERIFIED",
+    "remaining_failures_unknown": true,
+    "underlying_other_failures_unresolved": true,
+    "provider_post_delivery_proven": false,
+    "real_customer_revenue_proven": false
+  }
+}
