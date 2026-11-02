@@ -15,7 +15,7 @@ test('configured without evidence is only ready to test',()=>{
 });
 
 test('activation requires successful safe-test evidence with an id',()=>{
-  const s=toHumanStatus({state:'ready',lastSafeTest:{ok:true,executionId:'ex-1'}});
+  const s=toHumanStatus({state:'ready',lastSafeTest:{ok:true,executionId:'ex-1',proofLevel:'PROVIDER_VERIFIED'}});
   assert.equal(s.label,'Test geslaagd');
   assert.equal(s.canActivate,true);
   const missingId=toHumanStatus({state:'ready',lastSafeTest:{ok:true}});
