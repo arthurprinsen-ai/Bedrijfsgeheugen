@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-security-external-cron-least-privilege-cutover-20261102-v1",
+  "fingerprint": "supabase-security|external-cron-reconcile|anon-definer-rpc-advisor-warn|v1",
+  "compiler": {
+    "failure_class": "SECURITY_PRIVILEGED_RPC_EXPOSURE",
+    "scope": "SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "A historic external cron recovery function intentionally grants anonymous EXECUTE alongside a token check. Security advisor recognizes a browser-executable privileged RPC. The repository and inspected current Netlify/scheduled-job sources contain no known client, but an unregistered legacy external caller cannot yet be ruled out.",
+  "fix": "Prepare a guarded source-controlled ACL migration that preserves the original function and private credential check while allowing only service_role; do not apply until original external consumer and rollback are explicitly attested. Post-cutover negative anonymous tests, positive service_role caller and independent advisor and original cron proof are mandatory.",
+  "tests": [
+    "tests/brain-security-external-cron-service-role-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-external-cron-service-role-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-external-cron-service-role-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-external-cron-service-role-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Never treat a valid secret token as permission to keep a SECURITY DEFINER RPC callable with anon.",
+    "Identify and migrate the original external caller to service_role before revoking anon, preserving the existing recovery executor and cron cadence.",
+    "Never apply DDL directly or fake Supabase migration history; use protected source and original provider migration authority.",
+    "Require explicit no-anon real ACL readback, original authorized caller smoke test and Supabase advisor zero warning before promoting PROVEN.",
+    "A disabled, skipped or failed recovery scheduler cannot be interpreted as a successful security fix.",
+    "Open Netlify archive access remains a separate original FAIL that is not affected by this migration."
+  ],
+  "owner": "existing ONE BRAIN Security Agent and canonical Supabase release writer",
+  "proof_state": "AWAITING_ORIGINAL_CALLER_ATTESTATION_AND_PROTECTED_PROVIDER_APPLY"
+}
