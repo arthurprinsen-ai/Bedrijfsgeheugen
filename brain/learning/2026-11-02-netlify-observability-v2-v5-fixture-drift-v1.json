@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|brain|netlify-observability-v2-v5-test-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original release-parity test retained an old social-publication-proof-v2 literal while the authenticated Netlify production source and three dedicated original publication-diagnostics regressions were already at v5. Reverting runtime to v2 would invalidate newer private provider/tenant status controls; historical test expectation is stale.",
+  "prevention_rule": "Authenticated Netlify observation source's PUBLICATION_EVIDENCE_CONTRACT must agree exactly with current social portal diagnostics and remain tenant/admin gated; old isolated version literals must not force runtime downgrade or bypass original live provider readback. Require original full BRAIN, production exact-deploy identity and owner-only UI readback before green.",
+  "owner": "Original ONE BRAIN Netlify observability and social delivery truth source owner",
+  "evidence": {
+    "observed_full_brain": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41416918147",
+    "backend_job_id": 125183392982,
+    "total_tests": 5377,
+    "passed_tests": 5347,
+    "failed_tests": 28,
+    "affected_test": "tests/brain-netlify-observability-release-parity-20261029.test.mjs",
+    "actual_source": "netlify/functions/powerhouse-observability.mjs",
+    "contract": "social-publication-proof-v5",
+    "independent_existing_regression": "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs",
+    "admin_only": true,
+    "source_runtime_changed": false,
+    "production_exact_readback": "NOT_YET_VERIFIED",
+    "paid_business_outcome": "NOT_CLAIMED"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-observability-release-parity-20261029.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-observability-release-parity-20261029.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-observability-release-parity-20261029.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ]
+  },
+  "fix": "Update only old original release-parity test to verify exact v5, include consistency with existing diagnostics security test and explicit absence of v2; AGENTS, existing social-recovery skill, ONE BRAIN learning and human change/ledger. No endpoint, auth, public scope, provider id, scheduled writer, CMS, order or revenue change.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}
