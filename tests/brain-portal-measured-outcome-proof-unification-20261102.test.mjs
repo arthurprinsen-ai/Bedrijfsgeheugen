@@ -27,7 +27,7 @@ test('an independently verified label without a measured business metric stays u
  assert.equal(verifiedCustomerOutcome(fake),false);
  assert.equal(outcomeFeedbackRows([fake])[0].verified,false);
  const feedback=outcomeFeedbackMarkup([fake]);
- assert.match(feedback,/Gemeten effect nog niet bewezen/);
+ assert.match(feedback,/Resultaat nog niet bewezen/);
  assert.doesNotMatch(feedback,/data-outcome-verified="true"/);
  const daily=executiveCockpitMarkup(model([fake]));
  assert.match(daily,/Uitkomst nog niet bewezen/);
@@ -68,7 +68,7 @@ test('genuine measured evidence and learning proof are visible in one coherent c
  assert.equal(verifiedCustomerOutcome(item),true);
  assert.equal(strategicAdviceItems(model([item]))[0].verifiedOutcomes,1);
  const html=executiveCockpitMarkup(model([item]));
- assert.match(html,/Gemeten effect onafhankelijk bevestigd/);
+ assert.match(html,/Resultaat onafhankelijk bevestigd/);
  assert.match(html,/Verkort de verwerkingstijd/);
  assert.match(html,/Geverifieerde leerstap|Volgende beslissing:/);
 });
