@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-02",
+  "obligation_id": "original-terminal-provider-active-receipt-drift-20261102-v1",
+  "fingerprint": "powerhouse|delivery|terminal-stale-provider-receipts-after-authorized-redeploy|20261102-v1",
+  "schema": "brain-learning-observation-v1",
+  "status": "SOURCE_CANDIDATE",
+  "state": "EVIDENCE_DUE",
+  "failure_class": "TERMINAL_PROVIDER_READBACK_STALE_AFTER_CONCURRENT_AUTHORIZED_DEPLOY",
+  "original_owners": [
+    "Obligation Terminal Closure",
+    "Supabase Edge Production Authority",
+    "ONE BRAIN delivery incident registry"
+  ],
+  "observed": {
+    "source": "Original terminal run 41446530809 attempt 1",
+    "error": "SUPABASE_PROVIDER_LIVE_MISMATCH:portal-state-eu",
+    "expected_provider_version": 593,
+    "active_provider_version": 594,
+    "drift_functions": 8,
+    "approved_source_sha": "805eb418edc36bb8c9cace3595a96109cb03060e",
+    "independent_active_source_files_matched": 20,
+    "provider_released_after_candidate": true
+  },
+  "root_cause": "Release authority wrote immutable function readback metadata, but authorized concurrent main-triggered deploys advanced eight live Edge versions before terminal began its separate provider GET. The safe strict check refused stale metadata, without distinguishing a newer same-source deployment from unauthorized source change.",
+  "intervention": "Keep fail-closed exact provider metadata gate; emit precise current and expected version hint, require independent source equality to exact protected main before reconciling only affected original merged PR receipts, then rerun original terminal workflow. No bypass and no second writer.",
+  "prevention_rule": "Original terminal verification must reject all provider version/hash drift and report changed function and expected/actual ACTIVE version; never auto-accept. Reconcile only after byte-for-byte independent source parity on the exact protected main and repeat the exact terminal check; preserve historical failure.",
+  "independently_observed_recovery": {
+    "origin": "PR #5295 exact merged original",
+    "terminal_run": 41446530809,
+    "attempt1": "FAILURE",
+    "attempt2": "SUCCESS",
+    "source_files_compared": 20,
+    "functions_reconciled": 8,
+    "technical_repair_verified": true,
+    "customer_social_outcomes_proven": false
+  },
+  "regressions": [
+    "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs",
+    "tests/brain-terminal-supabase-provider-readback.test.mjs"
+  ],
+  "independent_verification_due": [
+    "protected Required/CodeQL of prevention source candidate",
+    "original full BRAIN current-head",
+    "protected merge and push pipeline",
+    "later natural terminal run with no repeated stale receipt / authorized resume"
+  ],
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false,
+  "compiler": {
+    "failure_class": "TERMINAL_PROVIDER_READBACK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs"
+    ],
+    "additional_regression_tests": [
+      "tests/brain-terminal-supabase-provider-readback.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-terminal-provider-receipt-drift.md",
+  "telemetry_boundary": "Terminal release proof and future prevention are distinct; neither proves external social publication or revenue."
+}
