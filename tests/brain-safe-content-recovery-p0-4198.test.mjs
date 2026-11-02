@@ -10,7 +10,8 @@ test('restore blocked source-backed content through canonical orchestrator, neve
  // the strict pre-provider helper proves the authority remains unconsumed.
  assert.match(source,/\|\| retryableContentBlock \|\| retryableHeldPersonalDuplicate \|\| retryableCompanyEditorialBlock\)/);
  assert.match(source,/planRejectedCompanyRegeneration\(/);
- assert.match(source,/consumedCapability:false/);
+ assert.match(source,/consumedCapability:consumed/);
+ assert.match(source,/const consumed=Boolean\(capabilitySource\.data\?\.consumed_at&&!capabilitySource\.data\?\.revoked_at\)/);
  assert.match(source,/invoke\(url, expected, 'powerhouse-content-orchestrator', \{ runDate \}\)/);
 });
 test('no ambiguous provider side effects or duplicate publications permitted',()=>{
