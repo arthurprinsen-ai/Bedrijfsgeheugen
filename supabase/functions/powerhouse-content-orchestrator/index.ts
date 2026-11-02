@@ -11,6 +11,7 @@ const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
 import {buildEditorialCouncilBrief} from '../_shared/editorial-council-context.mjs';
+import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
 import {selectMeasuredNextPostTest as selectMeasuredNextPostTest_raw,proposeBoundedCreativeExploration as proposeBoundedCreativeExploration_raw} from '../_shared/measured-next-post-challenger.mjs';
 const proposeBoundedCreativeExploration:(...args:any[])=>any=proposeBoundedCreativeExploration_raw;
 const selectMeasuredNextPostTest:(...args:any[])=>any=selectMeasuredNextPostTest_raw;
@@ -656,8 +657,16 @@ Deno.serve(async (req) => {
     for (const channel of (channelScope ? [] : CHANNELS)) {
       const previous:any = existingByChannel.get(channel);
       const currentObligation=obligations.find((item:any)=>clean(item.channel)===(channel==='instagram_company'?'instagram':channel))||null;
-      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels,currentObligation)) continue;
-      const recoverableDuplicate=recoverableUniquenessDenial(previous)
+      // Only an exact pre-provider 422 can reopen this original company claim.
+      // A different, fresh, source-backed recommendation must already exist;
+      // known rejected sources cannot be replayed in different wording.
+      const companyRegeneration=channel==='linkedin_company'
+        ?planRejectedCompanyRegeneration({decision:previous,obligation:currentObligation,
+          recommendations:recs.filter((r:any)=>recommendationEligible(r,'linkedin_company')),
+          consumedCapability:consumedCapabilityChannels.has(channel),now:new Date().toISOString()})
+        :null;
+      if (!companyRegeneration?.eligible && shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels,currentObligation)) continue;
+      const recoverableDuplicate=Boolean(companyRegeneration?.eligible)||recoverableUniquenessDenial(previous)
         || recoverableObligationUniquenessDenial(previous,currentObligation,consumedCapabilityChannels.has(channel));
       const priorRejected=Array.isArray(previous?.delivery_evidence?.rejected_recommendation_ids)
         ? previous.delivery_evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
@@ -670,7 +679,10 @@ Deno.serve(async (req) => {
             clean(currentObligation?.evidence?.personal_source_recommendation_id),
             clean(currentObligation?.evidence?.fallback_recommendation_id)].filter(Boolean))]
         : [];
-      const decision:any = plannedDecision(channel,recs,personalSource,instagramProof,
+      const regenerationCandidates=companyRegeneration?.eligible
+        ?recs.filter((r:any)=>clean(r.recommendation_id)===companyRegeneration.selectedAlternativeRecommendationId)
+        :recs;
+      const decision:any = plannedDecision(channel,regenerationCandidates,personalSource,instagramProof,
         channel==='linkedin_company'||channel==='linkedin_personal'?rejectedRecommendationIds:[]);
       const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
         && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
@@ -685,7 +697,14 @@ Deno.serve(async (req) => {
         personal_source_recommendation_id:channel==='linkedin_personal'?personalSource?.recommendation_id||null:null,
         rejected_recommendation_ids:channel==='linkedin_company'||channel==='linkedin_personal' ? rejectedRecommendationIds : [],
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
-        stale_delivery_ref:false,recovery_from_provider_missing:stale };
+        stale_delivery_ref:false,recovery_from_provider_missing:stale,
+        company_blocked_regeneration:companyRegeneration?.eligible ? {
+          contract:companyRegeneration.contract,
+          rejection_code:companyRegeneration.failureCode,
+          rejected_recommendation_ids:rejectedRecommendationIds,
+          selected_alternative_recommendation_id:companyRegeneration.selectedAlternativeRecommendationId,
+          editor_reapproval_required:true,provider_publication_proven:false
+        }:null };
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
         confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:amsterdamScheduledFor(runDate,Number(hour)),delivery_ref:stale?null:previous?.delivery_ref||null,
         delivery_evidence:evidence,source_recommendation_ids:recs.map((r:any)=>r.recommendation_id),updated_at:new Date().toISOString() });

@@ -109,6 +109,12 @@ export function assessDailyPublicationRecovery({
       // any retry; content regeneration is a new qualified artifact, not a
       // duplicate of an already-delivered post or email.
       repairHandoff:REPAIR_HANDOFF[code],
+      // Immutable hash identifies distinct rejected revisions without storing
+      // public-facing draft copy or personal data in incident evidence.
+      rejectedCopySha256:/^[a-f0-9]{64}$/.test(str(decision?.delivery_evidence?.reviewed_text_hash))
+        ?str(decision.delivery_evidence.reviewed_text_hash):null,
+      rejectedRecommendationId:/^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(str(decision?.delivery_evidence?.fallback_recommendation_id))
+        ?str(decision.delivery_evidence.fallback_recommendation_id):null,
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
       requiresAuthorization:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED' ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
         || entry.channel==='email_newsletter'
