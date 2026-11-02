@@ -219,9 +219,15 @@ function overview(events,observability){
 function portalUxProofCard(proof,releaseEvidence){
  const source=proof?.status==='READBACK_COMPLETE';
  const published=releaseEvidence?.providerIdentity?.netlifyPublishedSha||'';
- const releaseMatches=source && published && proof.productionSha===published &&
+ const sourceMatches=source && published && proof.productionSha===published;
+ // A historical UX test does not prove that the NEW admin status card was
+ // rendered by an authenticated administrator. The registered state explicitly
+ // distinguishes source deployment from outstanding protected UI readback.
+ const adminReadbackDue=proof.release==='SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE';
+ const releaseMatches=sourceMatches && !adminReadbackDue &&
    proof.release==='LIVE_SOURCE_AND_BROWSER_PROVEN'&&proof.browser==='PASS_15_SKIPPED_1';
- const status=releaseMatches?'LIVE_SOURCE_AND_BROWSER_VERIFIED':source?'PRODUCTION_SOURCE_RECHECK_DUE':'UNVERIFIED';
+ const status=sourceMatches&&adminReadbackDue?'SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE':
+   releaseMatches?'LIVE_SOURCE_AND_BROWSER_VERIFIED':source?'PRODUCTION_SOURCE_RECHECK_DUE':'UNVERIFIED';
  const readiness=source?proof.acceptance||{}:{};
  const checks=[
   ['WCAG 2.2 AA onafhankelijk',readiness.wcag],
@@ -236,7 +242,8 @@ function portalUxProofCard(proof,releaseEvidence){
  return '<section class="poc-panel" data-portal-ux-proof data-evidence-status="'+esc(status)+'">'+
   '<div class="poc-panelhead"><h4>Ondernemersportaal · gebruikskwaliteit</h4>'+
   '<span class="poc-badge '+(releaseMatches?'good':'warn')+'">'+
-  esc(releaseMatches?'Technische release bronbevestigd':'Broncontrole of bewijs open')+'</span></div>'+
+  esc(releaseMatches?'Technische UX-release met eerdere browsercontrole bevestigd':
+    sourceMatches&&adminReadbackDue?'Productiebron bevestigd · beveiligde beheercontrole open':'Broncontrole of bewijs open')+'</span></div>'+
   '<p class="poc-note">Dit is de samenvatting van de bestaande ONE BRAIN-productiewaarneming, alleen zichtbaar na beheerdersautorisatie. Een goedgekeurde release bewijst geen toegankelijkheid, gebruiksgemak of ondernemersresultaat.</p>'+
   '<p class="poc-note">Publicatiebron: '+esc(source?proof.productionSha.slice(0,12):'onbekend')+
   ' · bronwaarneming: '+esc(source?fmtTime(proof.observedAt):'niet beschikbaar')+

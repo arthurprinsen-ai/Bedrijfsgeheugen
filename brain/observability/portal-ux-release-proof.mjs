@@ -27,10 +27,10 @@ export function summarizePortalUxReleaseProof(rows,{now=new Date()}={}){
   status:'READBACK_COMPLETE',evidenceStatus:'REGISTERED_NOT_INDEPENDENTLY_DEPLOY_VERIFIED',
   observedAt:new Date(observed).toISOString(),validUntil:new Date(until).toISOString(),
   productionSha,originalSha,deployId:originalDeploy,
-  release:safeStatus(state.release,['LIVE_SOURCE_AND_BROWSER_PROVEN']),
+  release:safeStatus(state.release,['LIVE_SOURCE_AND_BROWSER_PROVEN','SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE']),
   browser:safeStatus(state.original_ux_browser_result,['PASS_15_SKIPPED_1']),
   securityDiagnostic:safeStatus(state.security_diagnostic_status,[
-   'MERGED_POSTMERGE_BACKEND_AND_PORTAL_PASS_NOT_YET_PUBLISHED','PUBLISHED_SOURCE_AND_BROWSER_VERIFIED'
+   'MERGED_POSTMERGE_BACKEND_AND_PORTAL_PASS_NOT_YET_PUBLISHED','PUBLISHED_SOURCE_AND_BROWSER_VERIFIED','PUBLISHED_SOURCE_VERIFIED_BROWSER_READBACK_DUE'
   ]),
   acceptance:{
    wcag:safeStatus(state.wcag_22_aa_independent_audit,['EVIDENCE_DUE','VERIFIED']),

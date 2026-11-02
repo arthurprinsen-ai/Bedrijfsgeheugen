@@ -63,3 +63,36 @@ test('only the original admin + tenant gate can call observation loader, and car
  assert.ok(!client.includes('private_person_key'));
  assert.match(read('.agents/skills/portal-living-interface/SKILL.md'),/Operator UX evidence/);
 });
+
+test('latest real ONE BRAIN UX observation keeps live source distinct from missing authenticated admin readback',()=>{
+ const observedState={...state,
+  production_sha:'e9afb69de49732ebd6398b6f96d03a2876bde015',
+  netlify_deploy:'6ae8a0213e2f4b45722cd769',
+  release:'SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE',
+  security_diagnostic_status:'PUBLISHED_SOURCE_VERIFIED_BROWSER_READBACK_DUE'
+ };
+ const observation={...rows[0],
+  observed_at:'2026-11-02T14:54:19.195Z',
+  valid_until:'2026-11-03T14:54:19.195Z',
+  artifact_version:observedState.production_sha,observed_state:observedState
+ };
+ const summary=summarizePortalUxReleaseProof([observation],{now:new Date('2026-11-02T15:02:00Z')});
+ assert.equal(summary.status,'READBACK_COMPLETE');
+ assert.equal(summary.release,'SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE');
+ assert.equal(summary.securityDiagnostic,'PUBLISHED_SOURCE_VERIFIED_BROWSER_READBACK_DUE');
+ assert.equal(summary.acceptance.tenants,'EVIDENCE_DUE');
+ assert.equal(summary.browser,'PASS_15_SKIPPED_1');
+ const unsupported=summarizePortalUxReleaseProof([{...observation,observed_state:{...observedState,release:'UNVERIFIED_CLAIM'}}],{now:new Date('2026-11-02T15:02:00Z')});
+ assert.equal(unsupported.release,'EVIDENCE_DUE');
+ assert.ok(!JSON.stringify(summary).includes('DO_NOT_LEAK'));
+});
+test('original admin card retains explicit source-verified versus authenticated-readback-due status',()=>{
+ const client=read('portal-v2/modules/powerhouse-observability.js');
+ const server=read('brain/observability/portal-ux-release-proof.mjs');
+ assert.match(client,/sourceMatches&&adminReadbackDue\?'SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE'/);
+ assert.match(client,/Productiebron bevestigd · beveiligde beheercontrole open/);
+ assert.match(client,/proof\.productionSha===published/);
+ assert.match(server,/PUBLISHED_SOURCE_VERIFIED_BROWSER_READBACK_DUE/);
+ assert.match(client,/PRODUCTION_SOURCE_RECHECK_DUE/);
+ assert.doesNotMatch(client,/adminReadbackDue\?'LIVE_SOURCE_AND_BROWSER_VERIFIED'/);
+});
