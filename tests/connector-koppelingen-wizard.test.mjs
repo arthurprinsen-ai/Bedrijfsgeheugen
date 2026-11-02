@@ -31,6 +31,7 @@ test('generated definition matches the connector engine contract',()=>{
   assert.ok(definition.mappings.every(mapping=>mapping.sourceField===mapping.targetField&&mapping.transformation.type==='none'));
   assert.equal(definition.reviewPolicy.requiredBelowConfidence,0.8);
   assert.equal(definition.activation,'test-required');
+  assert.deepEqual(definition.dataUse,{mode:'CONNECTION_ONLY',modelRoute:'TENANT_POLICY',trainingUse:'PROHIBITED'});
   assert.equal('credentials' in definition,false);
 });
 
