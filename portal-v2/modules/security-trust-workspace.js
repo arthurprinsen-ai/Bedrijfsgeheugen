@@ -95,6 +95,13 @@ export function summarizeSecurityPlatforms(observations=[]){
    latest:rows.filter(Boolean).map(o=>o.observed_at||o.observedAt).filter(Boolean).sort().at(-1)||null};
  });
 }
+export function securityOverallPosture(summary,observations){
+ const source=String(summary?.postureStatus||'EVIDENCE_PARTIAL').toUpperCase();
+ const platform=summarizeSecurityPlatforms(observations);
+ if(source==='ACTION_REQUIRED'||platform.some(item=>item.status==='ACTION_REQUIRED'))return 'ACTION_REQUIRED';
+ if(source==='VERIFIED_NO_OPEN_FINDINGS'&&platform.every(item=>item.status==='VERIFIED'))return 'VERIFIED_NO_OPEN_FINDINGS';
+ return 'EVIDENCE_PARTIAL';
+}
 function renderSecurityPlatforms(observations){
  const platforms=summarizeSecurityPlatforms(observations);
  return '<section class="trust-section" data-security-platforms><header><h3>Beveiliging van de infrastructuur</h3><p>GitHub, Supabase, Netlify, website en portaal. Status groen uitsluitend wanneer álle verplichte controles actueel en onafhankelijk onderbouwd zijn. Ontbrekend bewijs is nooit groen.</p></header><div class="trust-grid">'+
@@ -103,11 +110,11 @@ function renderSecurityPlatforms(observations){
 }
 
 function renderSecurity(root,security,sovereignty,scope){
- const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{};
+ const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{},overallPosture=securityOverallPosture(summary,observations);
  root.innerHTML=`<section class="trust-workspace">
   <div class="trust-hero"><div><span class="trust-kicker">Alleen ingelogde klantomgeving</span><h2>Security Trust Center</h2><p>Hoe veilig is je data, wie kan erbij, welke controls zijn aantoonbaar en welke punten staan nog open?</p></div><div class="trust-scope"><small>Weergave</small><strong>${scope}</strong><span>Ruwe security-evidence blijft server-only</span></div></div>
   <div class="trust-grid">
-   <article><small>Security posture</small><strong>${esc(summary.postureStatus||'EVIDENCE_PARTIAL')}</strong>${status(summary.postureStatus)}</article>
+   <article><small>Security posture</small><strong>${esc(overallPosture)}</strong>${status(overallPosture)}</article>
    <article><small>Open findings</small><strong>${findings.length}</strong><span>High risk: ${esc(summary.highRiskFindingCount??0)}</span></article>
    <article><small>Evidence-dekking</small><strong>${esc(summary.evidenceCoverage??0)}%</strong><span>Geen false-green bij stale/unknown</span></article>
    <article><small>Database</small><strong>${esc(db.highRiskCount??0)} high-risk</strong><span>${esc(db.rlsNoPolicy??0)} RLS zonder policy-classificatie</span></article>
