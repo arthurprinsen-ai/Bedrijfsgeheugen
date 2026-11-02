@@ -19,5 +19,5 @@ test('canonical radar counts empty responses but does not synthesize a source or
   assert.match(radar,/taskCode!==20000\) throw new Error\('DATAFORSEO_'/);
   assert.match(radar,/evaluateMiraPublicationFreshness\(/);
   assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
-  assert.match(radar,/selectMiraSourceQueries\(runDate\)/);
+  assert.match(radar,/selectCanonicalRadarSourceQueries\(runDate\)/); // Original shared 6+2 provider budget
 });

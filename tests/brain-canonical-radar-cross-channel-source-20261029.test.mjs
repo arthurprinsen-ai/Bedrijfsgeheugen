@@ -39,7 +39,7 @@ test('personal source collection cannot claim personal lived experience nor rela
  assert.match(radar,/observational_personal_theme_verified:Boolean\(personalTopic\)/);
  assert.match(radar,/first_person_claims_present:false/);
  assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
- assert.match(radar,/return json\(\{ok:errors\.length===0,runDate,stored,eligible,personalStored,personalEligible/);
+ assert.match(radar,/return json\(\{\s*ok:errors\.length===0&&supply\.ok,[\s\S]*?runDate,stored,eligible,personalStored,personalEligible/); // Source-supply failure must fail closed
 });
 test('existing source-to-recommendation materializer is called within original radar only',()=>{
  assert.match(radar,/db\.rpc\('powerhouse_ensure_personal_source_rotation_v2',\{p_date:runDate\}\)/);

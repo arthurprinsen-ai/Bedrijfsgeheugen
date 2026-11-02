@@ -2,44 +2,34 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
+// The legacy GitHub watchdog is a read-only verifier; semantic publication
+// closure belongs to the EXISTING canonical Supabase/Powerhouse publisher.
+// Do not reintroduce the retired GitHub PR/ledger writer.
 const source=fs.readFileSync('.github/workflows/daily-blog-live-watchdog.yml','utf8');
-const material=source.split('      - name: Materialize live proof into ledger')[1]?.split('      - name: Commit proof candidate only')[0];
-const commit=source.split('      - name: Commit proof candidate only')[1]?.split('      - name: Open proof PR and dispatch BRAIN shadow')[0];
-const pull=source.split('      - name: Open proof PR and dispatch BRAIN shadow')[1];
 
 test('live blog proof remains authoritative, exact and fail closed',()=>{
-  assert.ok(material && commit && pull,'canonical workflow steps must remain present');
-  assert.match(source,/node tools\/content-growth\/live-readback\.mjs/);
-  assert.match(source,/LIVE_BLOG_NOT_LIVE|DAILY_BLOG_NOT_LIVE/);
-  assert.match(material,/ledger\.days\[date\]=\{\.\.\.current,state:'live'/);
-  assert.match(material,/const proof=JSON\.parse\(fs\.readFileSync\('\/tmp\/daily-live-proof\.json'/);
+  assert.match(source,/name: Exact production live-readback/);
+  assert.match(source,/node tools\/content-growth\/live-readback\.mjs "\$url" "\$CONTENT_ID" "\$SLUG"/);
+  assert.match(source,/https:\/\/www\.bedrijfsgeheugen\.nl\/blog\/\$SLUG\//);
+  assert.match(source,/DAILY_BLOG_NOT_LIVE/);
+  assert.match(source,/exit 1/);
+  assert.match(source,/steps\.proof\.outputs\.ok == 'true'/);
 });
 
-test('one material write creates all mandatory semantic closure artifacts',()=>{
-  assert.match(material,/brain\/learning\//);
-  assert.match(material,/docs\/development-ledger-events\//);
-  assert.match(material,/docs\/changes\//);
-  assert.match(material,/fingerprint:/);
-  assert.match(material,/root_causes:/);
-  assert.match(material,/prevention:/);
-  assert.match(material,/evidence:/);
-  assert.match(material,/evaluation:\{historical_replay:/);
-  assert.match(material,/compiler:\{failure_class:/);
-  assert.match(commit,/files=\("data\/content-publication-ledger\.json"/);
-  assert.match(commit,/git add -- "\$\{files\[@\]\}"/);
-  assert.match(commit,/changedFiles:files,allowedFiles:files/);
+test('only original publisher writes semantic closure: watchdog cannot fork Brain or ledger',()=>{
+  assert.match(source,/name: Reconcile proof in canonical publisher only/);
+  assert.match(source,/PROOF_WRITER:EXISTING_CANONICAL_POWERHOUSE_BLOG/);
+  assert.match(source,/LEGACY_BLOG_WATCHDOG_READ_ONLY/);
+  assert.match(source,/permissions:\s*\n\s*contents: read/);
+  assert.doesNotMatch(source,/git (?:push|commit|add)\b|gh pr (?:create|merge)\b/);
+  assert.doesNotMatch(source,/materialize live proof into ledger/i);
 });
 
-test('protected writer deduplicates one date and enforces exact machine metadata',()=>{
-  assert.match(commit,/EXISTING_DAILY_PROOF_CANDIDATE/);
-  assert.match(commit,/gh pr list --state open/);
-  assert.match(pull,/Obligation-ID: daily-blog:%s:immutable-live-proof/);
-  assert.match(pull,/Delivery-Lane: website/);
-  assert.match(pull,/Candidate-Type: recovery/);
-  assert.match(pull,/Base-SHA: %s/);
-  assert.match(pull,/Change-Scope: %s/);
-  assert.match(pull,/Scope-Budget: 4/);
-  assert.match(pull,/repo-writer-candidate-shadow\.yml/);
-  assert.match(pull,/gh pr merge "\$number" --auto --squash/);
-  assert.doesNotMatch(source,/git push origin HEAD:main/);
+test('read-only watchdog deduplicates by exact business day and cannot authorize publication',()=>{
+  assert.match(source,/BUSINESS_TIME_ZONE: Europe\/Amsterdam/);
+  assert.match(source,/businessDate\(new Date\(\),'Europe\/Amsterdam'\)/);
+  assert.match(source,/steps\.record\.outputs\.run == 'true'/);
+  assert.match(source,/Stop when ledger already records live proof/);
+  assert.match(source,/assert-live-ledger\.mjs/);
+  assert.doesNotMatch(source,/git push origin HEAD:main|supabase functions deploy|powerhouse-content-orchestrator\/invoke/);
 });
