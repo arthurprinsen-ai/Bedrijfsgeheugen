@@ -20,7 +20,9 @@ test('canonical orchestrator only reopens pre-provider duplicates, not any ambig
   assert.match(orchestrator,/function recoverableUniquenessDenial/);
   for(const g of ["clean(row.state)!=='blocked'","clean(row.delivery_ref)","authority.issued===true","authority.consumed===false","evidence.provider_create_success!==true","evidence.provider_publication_ack_verified!==true","evidence.provider_truth_verified!==true","evidence.possible_provider_side_effect!==true"])assert.ok(orchestrator.includes(g),g);
   assert.match(orchestrator,/if\(recoverableUniquenessDenial\(row\)\) return false/);
-  assert.match(orchestrator,/const recoverableDuplicate=recoverableUniquenessDenial\(previous\)/);
+  assert.match(orchestrator,/const recoverableDuplicate=Boolean\(companyRegeneration\?\.eligible\)\|\|recoverableUniquenessDenial\(previous\)/);
+  assert.match(orchestrator,/if \(!companyRegeneration\?\.eligible && shouldPreserveExisting\(previous,channel,personalSource,consumedCapabilityChannels,currentObligation\)\) continue;/);
+  assert.match(orchestrator,/recoverableObligationUniquenessDenial\(previous,currentObligation,consumedCapabilityChannels\.has\(channel\)\)/);
   assert.match(orchestrator,/const stale = personalNoGapReopen \|\| recoverableDuplicate/);
 });
 test('supervisor safely resumes single existing orchestrator and never skips full provider controls',()=>{
