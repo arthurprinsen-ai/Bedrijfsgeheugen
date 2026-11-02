@@ -28,5 +28,15 @@ test('cache isolation covers both existing Janitor jobs without lowering permiss
     assert.match(source,new RegExp('^  '+value+': write$','m'));
   }
   assert.equal((source.match(/^  janitor:$/gm)||[]).length,1);
-  assert.deepEqual([...source.split('\njobs:\n')[1].matchAll(/^  ([a-zA-Z_-]+):$/gm)].map(match=>match[1]),['janitor','branch_reconciler']);
+  // Separate bounded archive sweep was added after the original Janitor/branch reconciler.
+  // Do not delete production housekeeping to satisfy an obsolete two-job test.
+  assert.deepEqual([...source.split('\njobs:\n')[1].matchAll(/^  ([a-zA-Z_-]+):$/gm)].map(match=>match[1]),
+    ['janitor','branch_reconciler','branch_archive_sweep']);
+  const archive=source.split('  branch_archive_sweep:\n')[1];
+  assert.ok(archive, 'exactly one bounded original archive sweep must remain');
+  assert.match(archive,/^    needs: janitor$/m);
+  assert.match(archive,/^    timeout-minutes: 20$/m);
+  assert.match(archive,/SWEEP_BUDGET_SECONDS: '900'/);
+  assert.match(archive,/tools\/ci\/branch-archive-sweep\.mjs --apply --cap 150/);
+  assert.doesNotMatch(archive,/uses:\\s*actions\\/cache(?:\\/|@)/i,'archive cleanup must not install Actions cache');
 });
