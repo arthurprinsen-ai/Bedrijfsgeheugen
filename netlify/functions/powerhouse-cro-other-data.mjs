@@ -494,6 +494,8 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       const runId=Number(latestRaw?.run_id);
       const latestFailures=Number(latestRaw?.fail);
       const validLatest=row&&latestRaw&&Number.isSafeInteger(runId)&&runId>0
+        // UNKNOWN/null must never coerce into 0 failed tests.
+        &&typeof latestRaw.fail==='number'&&Number.isSafeInteger(latestRaw.fail)&&latestRaw.fail>=0
         &&Number.isSafeInteger(latestFailures)&&latestFailures>=0
         &&latestRaw.terminal_status==='FAILED_BRAIN';
       const currentFailures=validLatest?latestFailures:historicalTests;
