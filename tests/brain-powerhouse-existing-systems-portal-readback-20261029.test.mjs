@@ -6,7 +6,7 @@ import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
 
-const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE'};
+const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE'};
 const datasets={
   health:[{observed_at:'2026-10-29T16:20:00Z',architecture_state:'AMBER',
     learning_state:'EVIDENCE_DUE_GAPS',content_loop_state:'BLOCKED',
@@ -18,7 +18,12 @@ const datasets={
     wiring_state:'WIRED',evidence_state:'NO_EVIDENCE_YET'}],
   experiments:[{readiness_state:'LATENT_WAITING_FOR_ELIGIBLE_ACTION',assignments:0,holdout_assignments:0}],
   revenue:[{scored_prospects:24361,next_best_actions:918,
-    attribution_touches:17619,realized_revenue_eur:0,attributed_revenue_eur:0}]
+    attribution_touches:17619,realized_revenue_eur:0,attributed_revenue_eur:0}],
+  loops:[{observed_at:'2026-10-29T16:20:00Z',total_loops:15,green_loops:8,
+    amber_loops:1,red_loops:6,fully_evidenced_loops:8,overall_status:'RED'}],
+  terminal:[{observed_at:'2026-10-29T16:20:00Z',nonterminal_obligations:4,
+    blocked_obligations:3,escalated_reconciliation_jobs:1,
+    control_plane_healthy:false,stale_green_truths:0}]
 };
 const projection=()=>projectPowerhouseIntegrationReadback({datasets,readStates:states,at:'2026-10-29T17:00:00Z'});
 
@@ -52,13 +57,15 @@ test('structurally green health does not certify agents, business or revenue',()
   assert.equal(p.integrationState,'END_TO_END_UNPROVEN');
   assert.ok(p.gapCodes.includes('INDEPENDENT_BUSINESS_OUTCOME_VERIFICATION_REQUIRED'));
 });
-test('read-only REST readback uses original five authority views and never leaks key',async()=>{
+test('read-only REST readback uses all seven original authority views and never leaks key',async()=>{
   const mapping={
     powerhouse_one_brain_runtime_health_v1:datasets.health,
     powerhouse_one_brain_capability_inventory_v1:datasets.capabilities,
     powerhouse_one_brain_intelligence_inventory_v1:datasets.layers,
     powerhouse_autonomous_experiment_readiness_v1:datasets.experiments,
-    powerhouse_revenue_event_spine_health_v1:datasets.revenue
+    powerhouse_revenue_event_spine_health_v1:datasets.revenue,
+    powerhouse_loop_integrity_health_v1:datasets.loops,
+    powerhouse_terminal_control_plane_health_v1:datasets.terminal
   };
   const seen=[];
   const mock=async (url,options)=>{
@@ -70,10 +77,42 @@ test('read-only REST readback uses original five authority views and never leaks
     return {ok:true,json:async()=>mapping[key]};
   };
   const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'secret',fetchImpl:mock});
-  assert.equal(seen.length,5);
+  assert.equal(seen.length,7,'all seven actual authority views must be checked');
+  assert.deepEqual(new Set(seen),new Set(Object.keys(mapping)),
+    'provider reads must not escape the original seven-view allowlist');
   assert.equal(p.sourceState,'READABLE');
+  assert.equal(p.loopAssurance.red,6);
+  assert.equal(p.terminalControl.blocked,3);
+  assert.ok(p.gapCodes.includes('LOOP_ASSURANCE_NOT_GREEN'));
+  assert.ok(p.gapCodes.includes('TERMINAL_CONTROL_PLANE_UNHEALTHY'));
   assert.equal(p.integrationState,'END_TO_END_UNPROVEN');
   assert.doesNotMatch(JSON.stringify(p),/secret/);
+});
+
+test('missing sixth or seventh provider view cannot create a false readable or green integration',async()=>{
+ const tables=['powerhouse_loop_integrity_health_v1','powerhouse_terminal_control_plane_health_v1'];
+ for(const missing of tables){
+  const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'private-key',
+   fetchImpl:async url=>{
+    if(new URL(url).pathname.endsWith('/'+missing))return {ok:false,status:503};
+    const name=new URL(url).pathname.split('/').at(-1);
+    const map={
+      powerhouse_one_brain_runtime_health_v1:datasets.health,
+      powerhouse_one_brain_capability_inventory_v1:datasets.capabilities,
+      powerhouse_one_brain_intelligence_inventory_v1:datasets.layers,
+      powerhouse_autonomous_experiment_readiness_v1:datasets.experiments,
+      powerhouse_revenue_event_spine_health_v1:datasets.revenue,
+      powerhouse_loop_integrity_health_v1:datasets.loops,
+      powerhouse_terminal_control_plane_health_v1:datasets.terminal
+    };
+    return {ok:true,json:async()=>map[name]||[]};
+   }});
+  assert.equal(p.sourceState,'PARTIAL');
+  assert.equal(p.integrationState,'END_TO_END_UNPROVEN');
+  assert.equal(p.sourceReadStates[missing===tables[0]?'loops':'terminal'],'UNAVAILABLE');
+  assert.ok(p.gapCodes.includes('SOURCE_UNAVAILABLE:'+(missing===tables[0]?'loops':'terminal')));
+  assert.doesNotMatch(JSON.stringify(p),/private-key/);
+ }
 });
 test('provider errors and oversized responses fail closed',async()=>{
   const broken=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',
