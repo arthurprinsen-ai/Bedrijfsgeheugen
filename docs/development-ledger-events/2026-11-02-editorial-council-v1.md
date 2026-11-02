@@ -12,3 +12,5 @@ B2B e-mail: original powerhouse-commercial-message-composer consumes source-revi
 - 2026-11-02 08:11 UTC — original BRAIN verification-only run #41410920609: 33/5343 failed on stale PR epoch, including explicit immutable editorialSystem TDZ contract. Preterminal CAS sync requires branch/head and exact main epoch. Original PR stays same; no second writer, no production effect.
 
 - 2 Nov 2026 — original BRAIN #41412248657 fails 33/5366, two source-local failures caused by renamed final prompt variable. Correct in same PR: complete immutable `editorialSystem` and enforce two matching calls; keep Required/CodeQL/BRAIN and protected promotion required.
+
+- 2026-11-02 08:36 UTC — source-owned editorial PR #5251 exact-head BRAIN read-only #41413615611 failed 31/5368 (5335 pass, 2 skipped); immutable original AI-call regressions pass. Protected main now includes #5260/#5259 independent non-overlapping fixes. Continue same PR, exact-head CAS/main-epoch and original full BRAIN; no auto GREEN or direct Edge deploy.
