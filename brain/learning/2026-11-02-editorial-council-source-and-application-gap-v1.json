@@ -5,7 +5,7 @@
   "source_type": "original_supabase_runtime_and_canonical_generator_code",
   "observation": "2 Nov 2026 07:21 UTC: 12 social_learnings PROVEN, one social_learning_application, no PROVEN application. Architecture AMBER, content loop BLOCKED, two runtime errors. Existing channel quality policies were distributed, not unified as a source-reviewed editorial expert brief.",
   "root_cause": "Original canonical generator had no transparent five-channel, source-reviewed editorial council even though it already loads bounded learning context. Missing proof of next-natural learning application cannot be inferred from existence of 12 PROVEN learnings.",
-  "owner": "existing powerhouse-content-orchestrator + reviewer + content-loop + social-learning-evaluate + bg-social-metrics-sync + SEO Order Engine + ONE BRAIN/Heartbeat",
+  "owner": "existing powerhouse-content-orchestrator + reviewer + content-loop + social-learning-evaluate + bg-social-metrics-sync + SEO Order Engine + ONE BRAIN/Heartbeat + original commercial-message-composer",
   "prevention": "Original generator receives per-channel expert advisory brief; one source-grounded problem, human consequence, one-variable hypothesis, independent outcome; never let external benchmarks become invented PROVEN learning or override original gates.",
   "regression": [
     "tests/brain-editorial-council-one-loop-20261102.test.mjs"
@@ -14,7 +14,8 @@
     "supabase/functions/_shared/editorial-council-context.mjs",
     "supabase/functions/powerhouse-content-orchestrator/index.ts",
     "platform/system-map/canonical-system-map.mjs",
-    ".agents/skills/powerhouse-social-cro-funnel/SKILL.md"
+    ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts"
   ],
   "research_sources": [
     "https://news.linkedin.com/2026/ImprovingTheFeed",
