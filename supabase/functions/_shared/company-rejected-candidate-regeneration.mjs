@@ -1,3 +1,4 @@
+import {classifyCurrentSource} from './content-source-freshness.mjs';
 // Bounded source rotation for the ORIGINAL company editorial owner after a
 // deterministic pre-provider 422. No second publisher or approval authority.
 export const COMPANY_REGENERATION_CONTRACT='original-company-first-time-right-recovery-v1';
@@ -13,6 +14,8 @@ const validSource=(row,nowMs)=>{
    &&parsed.protocol==='https:'&&!parsed.username&&!parsed.password
    &&Number.isFinite(observed)&&observed<=nowMs
    &&nowMs-observed<=14*86400000
+   // A recently crawled historic article is NOT a new market signal.
+   &&classifyCurrentSource(row,{now:new Date(nowMs)}).ok===true
    &&['suggested','accepted'].includes(clean(row?.status))
    &&['linkedin_company','cross-channel'].includes(clean(row?.target_channel));
 };
