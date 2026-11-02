@@ -1,0 +1,9 @@
+# Checkout DOM herstel — geen schijnbaar groen
+
+**2 november 2026.** De oorspronkelijke `Pagina- en SEO-controle` (GitHub Actions [41430693011](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430693011)) onderzocht 89 publieke pagina's. Één blokkerende browserfout op `/afsluiten`: `Cannot set properties of null (setting 'textContent')`, in de ingebouwde checkout op regel 3332, kolom 2603. De JSON-LD/SEO-waarschuwingen zijn afzonderlijk: 0 hoog, 90 midden, 18 laag. **Niet hetzelfde als één JS-failure.**
+
+**Oorzaak, voor zover onafhankelijk bewezen:** een optionele lijstregel uit de drie checkout pakketvoordelen was ten tijde van de scriptschrijfactie niet aanwezig in de uiteindelijke DOM. De exacte buildertransformatie die de node wegnam is nog niet gereproduceerd; we doen geen ongefundeerde claim. De originele betaalformulier- en providerverificatiecontracten zijn aanwezig.
+
+**Herstel in de bestaande checkout:** alleen de drie allowlisted pakketvoordelen `sources`, `freshness` en `automation` worden als echte `li` hersteld binnen de oorspronkelijke pakkettenkaart als ze ontbreken. Geen duplicatie bij herhaalde oproep. Ontbrekende hoofdkaart en onbekende IDs geven een echte fout. Geen veiligheids-, betalings-, tenant- of consentpoort wordt versoepeld; geen extra executor of publisher.
+
+**Regressie:** nieuwe pure DOM-herstelsimulatie inclusief negatief pad; bestaande checkout-build-contract- en Engelse vertaaltests; oorspronkelijke volledige BRAIN, Required, CodeQL en vervolgens de werkelijke pagina-browsercontrole op volledige gegenereerde site. Bewaar oorspronkelijke incidentstatus OPEN totdat exact-gecontroleerde productieversie geen JavaScript-fout meer produceert en een volgende onafhankelijke controle herhaling uitsluit. Zonder providerbewijs geen betaalde order.
