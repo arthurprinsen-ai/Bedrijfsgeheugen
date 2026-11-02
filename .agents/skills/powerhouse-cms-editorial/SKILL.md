@@ -47,3 +47,9 @@ Website Studio; Portal Studio; asset rights/library; AI editorial roles; Publish
 
 ## Test and proof
 Run node --check assets/cms-studio.mjs; node --test tests/cms-studio-20261102.test.mjs; original CMS/Powerhouse/Brain regressions; protected Required/CodeQL/BRAIN. Verify exact production release SHA, actual authenticated editor save and independent live published version. Only then promote production status beyond CANDIDATE. Commercial improvement additionally requires like-for-like source-measured results and independently proven actual orders.
+
+## Trusted Advisor — customer-facing publication protection (2026-11-02)
+- Enforce original `assets/trusted-advisor-quality.mjs` within `assets/cms-quality-gate.mjs`, server-side through existing `/api/cms-admin`, not a substitute for actual human content approval. Public customer copy must not include internal CI/PR/release artifacts, reviewer notes, template placeholders, hype/guarantees or quantified outcome claims without source references.
+- A `source_refs` field is a pointer for editorial factchecking, not independently verified truth; verified provider receipts and revenue remain separate. Reject `BLOCKED` content, request evidence for `REVIEW_WITH_WARNINGS`, and never grant publishing rights by a copy score.
+- In the original executive cockpit/portal, present the scope of prevention in clear Dutch. Do not describe a preventive code rule as measured trust, customer satisfaction, conversion, or guaranteed future protection.
+- Register `powerhouse|trust|customer-facing-editorial-proof-gap|20261102-v1` through original ONE BRAIN incident lineage with a real source occurrence and independent recheck. Repeated findings must update the same fingerprint and original learning; no automatic shadow send.

@@ -1,3 +1,4 @@
+import {assessTrustedAdvisorCopy} from './trusted-advisor-quality.mjs';
 // Canonical CMS content-quality contract. Pure: no writes, no schedulers, no invented provider proof.
 // The original Supabase cms_content_items + cms_content_revisions are the only content authority.
 const STR=x=>typeof x==='string'?x.trim():'';
@@ -64,6 +65,15 @@ export function cmsQuality(item={}){
   }
   if(type==='toggle')add(errors,typeof c.hidden!=='boolean','TOGGLE_HIDDEN_BOOLEAN_REQUIRED');
   if(type==='structured')add(errors,!Object.keys(c).length,'STRUCTURED_CONTENT_EMPTY');
+ }
+ // Original CMS server and editor share this gate; no parallel approval or publisher.
+ if(c&&['text','link','meta','html'].includes(type)){
+  const copy=type==='text'?s('text'):type==='link'?s('text'):type==='meta'?s('content'):s('html').replace(/<[^>]*>/g,' ');
+  if(copy){
+   const trust=assessTrustedAdvisorCopy(copy,{channel:scope,sourceRefs:c.source_refs});
+   errors.push(...trust.errors);
+   warnings.push(...trust.warnings);
+  }
  }
  const distinct=xs=>Object.freeze([...new Set(xs)]);
  const blocking=distinct(errors),advisory=distinct(warnings);
