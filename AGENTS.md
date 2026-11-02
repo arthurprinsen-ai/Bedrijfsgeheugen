@@ -1,3 +1,7 @@
+## P0 2026-11-02 — Janitor-inventaris moet drie originele jobs onderscheiden
+
+De bestaande GitHub-workflow `powerhouse-repository-janitor.yml` bevat `janitor`, `branch_reconciler` en een zelfstandige `branch_archive_sweep`. Historische cache-isolatietest met hard-coded twee jobs is verouderd. Bewaak alle drie: beide originele jobs zonder Actions-cache, derde sweep afhankelijk van Janitor, 20 minuten, gecapte 900-seconden/sweep-cap 150 en geen Actions-cache. Nooit workflow/permissions herschrijven om oude test te behagen of terminal vals groen verklaren. ONE BRAIN incident `powerhouse|brain|janitor-third-job-test-inventory-drift|20261102-v1`, bewijsbron en regressietests in dezelfde keten.
+
 ## P0 2026-11-02 — Janitor JSON Actions-parse en TSV merged-branch-sweep zijn gescheiden
 
 De oorspronkelijke `powerhouse-repository-janitor.yml` heeft een veilige JSON-gebaseerde stale-Actions-run-verwerking en een afzonderlijke, gecontroleerde twee-koloms TSV-sweep voor gemergede branchrefs. Een globale testban op `@tsv` is verouderd en mag niet leiden tot het aanpassen of omzeilen van veilige oorspronkelijke workflowbranches. Scope tests tot exacte run-lus; behoud nooit vervalsbare status, head SHA, cron of originele writer. Incident `powerhouse|brain|janitor-tsv-fixture-global-scope-drift|20261102-v1` met menselijke documentatie, originele BRAIN-resultaten en replay/shadow/canary borging; nooit PROVEN zonder terminal.
