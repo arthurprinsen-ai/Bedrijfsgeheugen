@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse|content|editorial-specialists-not-unified-with-evidence-application|20261102-v1",
+  "observed_on": "2026-11-02",
+  "schema": "brain-learning-observation-v1",
+  "source_type": "original_supabase_runtime_and_canonical_generator_code",
+  "observation": "2 Nov 2026 07:21 UTC: 12 social_learnings PROVEN, one social_learning_application, no PROVEN application. Architecture AMBER, content loop BLOCKED, two runtime errors. Existing channel quality policies were distributed, not unified as a source-reviewed editorial expert brief.",
+  "root_cause": "Original canonical generator had no transparent five-channel, source-reviewed editorial council even though it already loads bounded learning context. Missing proof of next-natural learning application cannot be inferred from existence of 12 PROVEN learnings.",
+  "owner": "existing powerhouse-content-orchestrator + reviewer + content-loop + social-learning-evaluate + bg-social-metrics-sync + SEO Order Engine + ONE BRAIN/Heartbeat",
+  "prevention": "Original generator receives per-channel expert advisory brief; one source-grounded problem, human consequence, one-variable hypothesis, independent outcome; never let external benchmarks become invented PROVEN learning or override original gates.",
+  "regression": [
+    "tests/brain-editorial-council-one-loop-20261102.test.mjs"
+  ],
+  "source_change": [
+    "supabase/functions/_shared/editorial-council-context.mjs",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "platform/system-map/canonical-system-map.mjs",
+    ".agents/skills/powerhouse-social-cro-funnel/SKILL.md"
+  ],
+  "research_sources": [
+    "https://news.linkedin.com/2026/ImprovingTheFeed",
+    "https://news.linkedin.com/2026/how-linkedin-is-tackling-ai-slop",
+    "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+    "https://developers.google.com/search/docs/essentials",
+    "https://mailchimp.com/help/about-ab-tests/",
+    "https://mailchimp.com/help/about-compliance-for-email-marketing/"
+  ],
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "release_status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "measured_views": null,
+  "verified_paid_orders": null,
+  "proof_to_obtain": [
+    "protected CI Required/BRAIN/CodeQL",
+    "exact main merge",
+    "original Supabase runtime parity",
+    "new canonical artifact with editorial_council metadata",
+    "original provider or CMS readback",
+    "comparable provider metrics",
+    "learning_id to next-natural application_id verified",
+    "independently attributed paid orders or UNKNOWN"
+  ]
+}
