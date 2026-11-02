@@ -1,0 +1,32 @@
+{
+  "contract": "one-brain-original-incident-learning-v1",
+  "status": "OBSERVED",
+  "date": "2026-11-02",
+  "fingerprint": "powerhouse|publication|blocked-editorial-no-automatic-source-rotation|20261102-v1",
+  "parent_issues": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439"
+  ],
+  "owner": "original powerhouse-content-loop / original powerhouse-content-orchestrator",
+  "observed": {
+    "channel": "linkedin_company",
+    "status": "BLOCKED",
+    "review_status": 422,
+    "reason": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "provider_id": null,
+    "independent_external_readback": false
+  },
+  "root_cause": "Original original content-loop and orchestrator do not rebootstrap semantic 422 company content even if a genuinely new source becomes available. Prior advisory prompt alone could not recover the same original obligation.",
+  "prevention_rules": [
+    "Register every failed candidate in original ONE BRAIN with source/rejected text SHA and owner",
+    "Regenerate only if exact pre-provider 422 plus distinct independently verifiable source with bounded attempts, original editor and publisher",
+    "Never republish or regenerate on possible external side effect/consumed capability/readback-only error",
+    "No automatic billing, OAuth consent, newsletter authorization or blog CMS approval, no identity gate weakening",
+    "Measure first-pass acceptance and repeated failures; require independent provider readback and later natural-run proof"
+  ],
+  "regression": "tests/brain-first-time-right-company-regeneration-20261102.test.mjs",
+  "release_state": "PROTECTED_PR_CANDIDATE_NOT_LIVE",
+  "proven_fix": null,
+  "proof_state": "NOT_PROVEN",
+  "customer_outcome": "UNKNOWN"
+}
