@@ -1,3 +1,4 @@
+import {verifiedCustomerOutcome} from './outcome-feedback.js';
 // Board-level strategic decisions, projected from the existing authenticated
 // Executive Cockpit. Pure rendering: no new decisions, business facts or writes.
 const escapeHTML = x => String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -24,8 +25,7 @@ export function strategicAdviceItems(model={}){
    const kind=String(impact.kind||'').toLowerCase(),unit=String(impact.unit||'').toUpperCase(),amount=number(impact.amount);
    const supported=valueKinds.has(kind)&&valueUnits.has(unit)&&amount!==null;
    const matchingOutcomes=outcomes.filter(outcome=>
-     Boolean(action.id)&&trusted(outcome)&&Boolean(outcome.action_id||outcome.source_action_id)&&String(outcome.action_id||outcome.source_action_id)===String(action.id)&&
-     ['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(String(outcome.verification_status||outcome.status||'').toUpperCase()));
+     Boolean(action.id)&&verifiedCustomerOutcome(outcome)&&String(outcome.action_id||outcome.source_action_id)===String(action.id)));
    const diagnosis=text(problem?.title,action.problem_statement,action.explanation,action.summary);
    const rationale=text(action.reason,action.why_now,action.explanation,action.summary);
    const approval=Boolean(action.requires_approval||action.approval_required||action.decision_required);
