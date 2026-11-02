@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "parent_issue": 4547,
+  "obligation_id": "portal-v2-observation-status-source-readback-20261102-v1",
+  "fingerprint": "portal|living-interface|newer-source-deployed-status-falls-through-allowlist|20261102-v1",
+  "failure_class": "OBSERVATION_STATUS_ENUM_DRIFT",
+  "root_cause": "Latest immutable production observation correctly used SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE and PUBLISHED_SOURCE_VERIFIED_BROWSER_READBACK_DUE, but the original server allowlist only recognized historical LIVE_SOURCE_AND_BROWSER_PROVEN and the client conflated an earlier browser run with a fresh authenticated administrator card readback.",
+  "observed_proof": {
+    "supabase_observation_id": "portal-v2-living-interface-20261102-1451-e9afb69-source-deploy-admin-readback-due",
+    "production_sha": "e9afb69de49732ebd6398b6f96d03a2876bde015",
+    "published_deploy_id": "6ae8a0213e2f4b45722cd769",
+    "postmerge_recovery_prs": [
+      5311,
+      5312
+    ],
+    "admin_browser_readback": "EVIDENCE_DUE"
+  },
+  "fix": "Server allowlists exact newest provider-source-deployed statuses; client separately compares provider published SHA, and renders pending authenticated admin readback amber, not generic unknown or false green.",
+  "tests": [
+    "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+  ],
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+    "readback_source": "public.brain_observed_states",
+    "recovery_claim": "CANDIDATE_NOT_YET_MERGED_OR_AUTHENTICATED_BROWSER_VERIFIED"
+  },
+  "prevention_rules": [
+    "Before accepting new immutable observed-state status, enumerate exact supported values in the same original server allowlist and UI reducer; fail closed for unknown strings.",
+    "Historical browser PASS and a deployed SHA never certify a new authenticated administrator view or 2-tenant proof.",
+    "Regression uses the actual most recent provider observation fields plus unknown/adversarial status replay.",
+    "Keep incident register and source/current provider timelines independent, no secret or raw incident payload in client."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "OBSERVATION_STATUS_ENUM_DRIFT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "owner": "original Portal V2 and ONE BRAIN production status owner",
+  "terminal_rule": "Do not claim complete success before protected exact-head merge, Netlify published SHA, authenticated original admin browser readback and fresh contract tests."
+}
