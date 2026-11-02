@@ -9,7 +9,7 @@ test('every company/blog/Instagram editorial path initializes the verified learn
   // The source now intentionally uses a mutable editorial prompt because
   // the buyer-first policy is appended before the artifact-ai call.
   // Protect declaration ordering and exactly one original variable owner.
-  const editorialDeclarations=[...source.matchAll(/\\blet editorialSystem = \\(pending\\.channel==='linkedin_personal'/g)];
+  const editorialDeclarations=[...source.matchAll(/\blet editorialSystem = \(pending\.channel==='linkedin_personal'/g)];
   assert.equal(editorialDeclarations.length,1,'one mutable original editorial prompt');
   const read=editorialDeclarations[0].index;
   const buyerFirstAppend=source.indexOf("editorialSystem += ' VERPLICHTE BUYER-FIRST REDACTIE:");
