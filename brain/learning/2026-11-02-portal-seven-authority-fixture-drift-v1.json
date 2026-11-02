@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|brain|portal-seven-authority-source-fixture-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original Portal/Powerhouse readback regression still provided five LIVE source fixtures and expected five REST reads, but the canonical private server-side source adapter now requires seven exact authority views, including loops and terminal. This correctly classified the five-only fixture as PARTIAL; existing test was stale. Independent Supabase production catalog confirms all seven exist with anon and authenticated SELECT denied.",
+  "prevention_rule": "All seven original admin-only authority views are required for READABLE; one unavailable or denied source remains PARTIAL. Original test must provide bounded synthetic fixtures for all seven and verify all seven private GETs, plus negative missing-view guard and END_TO_END_UNPROVEN even when all source reads succeed. Never grant browser SELECT or fabricate revenue.",
+  "owner": "Original ONE BRAIN Portal V2 source read-model and backend regression owner",
+  "evidence": {
+    "original_BRAIN_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41413309140",
+    "backend_job_id": 125171470101,
+    "observed_total_tests": 5365,
+    "observed_failed_tests": 31,
+    "affected_test": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+    "canonical_read_model": "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "provider_project_id": "adhjwmvyoixzjtmiroln",
+    "provider_views": [
+      "powerhouse_one_brain_runtime_health_v1",
+      "powerhouse_one_brain_capability_inventory_v1",
+      "powerhouse_one_brain_intelligence_inventory_v1",
+      "powerhouse_autonomous_experiment_readiness_v1",
+      "powerhouse_revenue_event_spine_health_v1",
+      "powerhouse_loop_integrity_health_v1",
+      "powerhouse_terminal_control_plane_health_v1"
+    ],
+    "provider_privilege_readback": "each view SELECT denied to anon and authenticated",
+    "commercial_outcome_proven": false,
+    "authenticated_browser_readback_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ]
+  },
+  "fix": "Update original test mock to reflect all seven existing private source views, assert private seven-view REST call inventory and missing loop view remains PARTIAL; update AGENTS, original Netlify truth skill and human docs; no runtime, SQL, auth, sending or status change.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}
