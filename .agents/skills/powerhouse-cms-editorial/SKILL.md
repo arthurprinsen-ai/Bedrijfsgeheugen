@@ -1,0 +1,46 @@
+---
+name: powerhouse-cms-editorial
+description: Use for every Bedrijfsgeheugen CMS, visual-editing, website/portal copy, editorial review, content publication approval, content experiments and learning task.
+---
+
+# Powerhouse CMS Editorial Studio — one canonical content authority
+
+Fingerprint: cms|editorial|technical-json-only-authoring-blocks-nontechnical-operators|20261102-v1.
+Original issue family: CMS → Powerhouse → ONE BRAIN → Heartbeat, original admin API and protected releases.
+Current candidate: docs/changes/2026-11-02-cms-studio-one-brain.md.
+
+## Strict authorities
+- CMS content source: original public.cms_content_items + public.cms_content_revisions in Supabase.
+- Authenticated admin: original /api/cms-admin through Netlify Identity administrator role.
+- Published-only projection: original /api/cms-public, server-side version and source authority.
+- Original content producers: approved Powerhouse generators and editorial reviewers.
+- Channel side effects: ORIGINAL LinkedIn/Instagram/blog/email producers; never direct publication from CMS Studio.
+- Evidence: original growth attribution, actual provider IDs, original Heartbeat, one incident register and ONE BRAIN.
+- Portal: exact tenant-scoped measured state; existing CMS operations link; never fabricate funnel progress.
+
+## Required routine
+1. Identify the concrete entrepreneur or customer problem and desired business outcome, not internal dashboard jargon.
+2. Inspect versioned CMS source plus previously validated content knowledge, rights, locale and primary-source freshness.
+3. Produce a useful draft in clear Dutch or English, with one situation, consequence and actionable point. Respect each channel-specific editorial contract.
+4. Edit in semantic controls with explicit alternate image text, accessible link labels, safe URLs and no arbitrary active HTML.
+5. Save through the original admin API; maintain original revision and unsaved-state protection.
+6. Apply original server-side quality gates; obtain actual human/editorial authorization. A form warning or AI quality rating cannot approve content.
+7. Publish through the single original authorized writer; independently read back the version on the appropriate surface. Software release success is NOT content publication.
+8. Measure with existing consent-aware attribution and time windows. Unknown outcomes stay UNKNOWN/EVIDENCE_DUE, never zero or claimed growth.
+9. Register every incident by fingerprint with original owner, root cause, safe correction, regression, later independent recheck and evidence-based promotion.
+10. Feed only proven learning to ONE BRAIN; change future decisions through existing agents, skills and original Heartbeat, avoiding second planners and schedulers.
+
+## Full capability roadmap, always label incomplete
+Website Studio; Portal Studio; asset rights/library; AI editorial roles; Publishing Center; SEO/AI search; CRO experiments; Campaign Studio; Content Intelligence; Governance and Learning. The addition of a menu label is not a working capability. For each module require runtime readback, source data lineage, owner, authorization and an end-to-end acceptance test.
+
+## Failure prevention rules
+- NO bypass of original admin, exact revision, safe URL, source-provenance, content uniqueness, provider OAuth, Instagram face score 0.940, consent, CMS/blog approval, or protected GitHub/CodeQL/Netlify release.
+- NO claim that content was published merely because it was saved, previewed, built, merged or deployed.
+- NO duplicate social publisher, cron, scheduler, outbound mailbox sender, write database, billing action or fake commercial outcome.
+- NO uncontrolled tenant information in publicly visible content.
+- NO using cached/stale GA4 or expired external source as a current result.
+- NO arbitrary selector/content editing outside the originating website/portal controls.
+- Human-facing CMS and Portal must show evidence-due states visibly and explain the next authorized action.
+
+## Test and proof
+Run node --check assets/cms-studio.mjs; node --test tests/cms-studio-20261102.test.mjs; original CMS/Powerhouse/Brain regressions; protected Required/CodeQL/BRAIN. Verify exact production release SHA, actual authenticated editor save and independent live published version. Only then promote production status beyond CANDIDATE. Commercial improvement additionally requires like-for-like source-measured results and independently proven actual orders.
