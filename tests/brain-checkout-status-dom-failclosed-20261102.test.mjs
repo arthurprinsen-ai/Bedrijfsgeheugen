@@ -18,7 +18,7 @@ function fixture({withForm=true,withSubmit=true,withStatus=false}={}){
  if(withForm)entries.set('form',form);
  if(withSubmit)entries.set('submit',submit);
  if(withStatus)entries.set('status',{id:'status',style:{},textContent:'',setAttribute(){}});
- const document={getElementById:id=>entries.get(id)||null,createElement:tag=>{const el={tag,id:'',className:'',style:{},textContent:'',attrs:{},setAttribute(k,v){this.attrs[k]=v}};created.push(el);return el}};
+ const document={getElementById:id=>entries.get(id)||null,createElement:tag=>{const el={tag,id:'',className:'',style:{},textContent:'',attrs:{},setAttribute(k,v){this.attrs[k]=v;if(k==='id')this.id=v}};created.push(el);return el}};
  const context={document,t:s=>s};
  vm.runInNewContext('let checkoutReady=false;\n'+helper,context);
  const run=expr=>vm.runInNewContext(expr,context);
