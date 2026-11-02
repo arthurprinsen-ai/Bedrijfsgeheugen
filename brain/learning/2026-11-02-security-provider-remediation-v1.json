@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-security-provider-remediation-closure-20261102-v1",
+  "fingerprint": "powerhouse|security|provider-fix-not-proven|20261102-v1",
+  "compiler": {
+    "failure_class": "SECURITY_PROVIDER_REMEDIATION_INCOMPLETE",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing provider evidence can show a failed configuration mutation or an intentionally anonymous-callable privileged RPC while the deployment itself is healthy. These are distinct unresolved controls: a ready deploy and a token-checking function body alone do not establish closure.",
+  "fix": "Expand the existing Security Agent roster and same-lineage skill with bounded denial handling, owner escalation for unsupported provider control-plane actions, source-consumer tracing before any privileged permission change and independent negative-access/provider-advisor proof. Continue original Heartbeat, protected writer and private incident observation channel. This policy amendment is not a claim that either provider vulnerability was fixed.",
+  "tests": [
+    "tests/brain-security-provider-remediation-v1.test.mjs",
+    "tests/portal-private-trust-surfaces-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-provider-remediation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-provider-remediation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-provider-remediation-v1.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "A 4xx/unsupported provider mutation may not be interpreted as a successful access-control setting change or indefinitely retried.",
+    "Escalate an inaccessible provider control to the original owner and retain FAIL until both protected-setting readback and anonymous-denial proof succeed.",
+    "Investigate all privileged RPC callers and credential rotation before any revoke or change of backend execution rights.",
+    "A database advisor WARN persists until the original provider independently reports remediation and existing authorized calls still work.",
+    "Keep security incidents and source evidence private, deduplicated and expiring; plain-language customer trust status must not expose diagnostics.",
+    "Every release and changed skill needs original Required/CodeQL/full BRAIN gates and exact main and production readback; no parallel agent or bypass."
+  ],
+  "owner": "existing ONE BRAIN Security Agent under exclusive writer",
+  "proof_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_ORIGINAL_PROVIDER_READBACK"
+}
