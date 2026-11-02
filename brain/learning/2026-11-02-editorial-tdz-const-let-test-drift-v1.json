@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|brain|editorial-tdz-const-let-test-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original BRAIN test asserted exact obsolete const editorialSystem declaration, while protected content-orchestrator legitimately uses let editorialSystem to append buyer-first editorial policy before stage artifact-ai. Verified brand learning guide still initializes earlier and has one declaration. Test assertion was stale relative to actual safe source contract.",
+  "prevention_rule": "Canonical editorial test must assert single mutable prompt declaration, brand-learning guide before use, buyer-first policy appended before provider generation, and existing tenant-specific PROVEN-learning gates, without reverting current editor source, omitting buyer-first quality, relaxing identity checks or allowing invented revenue.",
+  "owner": "Original ONE BRAIN editorial source and original full-backend test owner",
+  "evidence": {
+    "original_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41411665780",
+    "backend_job_id": 125166140278,
+    "total": 5362,
+    "passed": 5328,
+    "failed": 32,
+    "test": "tests/brain-brand-learning-editorial-tdz-v1.test.mjs",
+    "actual_code": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "source_declaration": "let editorialSystem",
+    "initialization_before_ai": true,
+    "source_mutation_before_ai": true,
+    "protected_migration_or_oauth_modified": false,
+    "publication_provider_proof": "NOT_CLAIMED"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs"
+    ]
+  },
+  "fix": "Correct narrowly stale test to assert the actual mutable editorial declaration and preserve all original timing and buyer-first protections; update original AGENTS, social CRO skill, ONE BRAIN learning and human changelog without runtime or side-effect changes.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}
