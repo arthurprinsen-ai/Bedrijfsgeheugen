@@ -16,9 +16,9 @@ const known=[
 test('canonical original production provider ledger and executable Git migrations are exact identity peers',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.match(lock.captured_at,/^2026-11-02T\d\d:/);
- assert.equal(lock.applied.length,790,'complete original provider history observed at release');
- assert.equal(files.length,790,'exact same release source manifest and no extra SQL');
+ assert.ok(Number.isFinite(Date.parse(lock.captured_at)) && Date.parse(lock.captured_at)>=Date.parse('2026-11-02T08:25:10.883Z'),'provider snapshot may advance but cannot predate verified 790');
+ assert.ok(lock.applied.length>=790,'never lose the original 790 production provider migration identities');
+ assert.equal(files.length,lock.applied.length,'exact current provider-backed migration count equals source');
  assert.deepEqual(new Map(lock.applied.map(x=>[x.version,x.name])),new Map(local.map(x=>[x.version,x.name])));
  assert.equal(new Set(files.map(x=>x.slice(0,14))).size,files.length,'no duplicate migration versions');
 });
