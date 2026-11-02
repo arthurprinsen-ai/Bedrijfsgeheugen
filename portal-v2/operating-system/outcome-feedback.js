@@ -81,7 +81,7 @@ export function outcomeFeedbackMarkup(items=[]){
  const intro='<div class="os-outcome-intro"><div><small>Van advies naar resultaat</small><h3>Wat heeft een actie écht opgeleverd?</h3></div><p>Verwachting is geen opbrengst. Een resultaat verschijnt pas na onafhankelijk controleerbaar bewijs.</p></div>';
  if(!rows.length)return '<section class="os-outcome-feedback" data-outcome-feedback="empty" aria-label="Effect van acties">'+intro+'<p class="os-outcome-empty">Nog geen acties met meetbare uitkomst. Zodra er betrouwbare gegevens zijn, zie je hier verwachting, resultaat en wat we leren.</p></section>';
  const cards=rows.map(row=>{
-  const output=row.verified?'Gemeten effect onafhankelijk bevestigd':'Gemeten effect nog niet bewezen';
+  const output=row.verified?'Resultaat onafhankelijk bevestigd':'Resultaat nog niet bewezen';
   const evidence=row.verified
    ?'<p><strong>Bronnen:</strong> '+row.refs.map(escapeHtml).join(' · ')+'</p>'+(row.measuredAt?'<p><strong>Gemeten:</strong> '+escapeHtml(row.measuredAt)+'</p>':'')
    :'<p>Een status, verzonden bericht of providerbevestiging is geen meetbaar bedrijfsresultaat. Controleer actie-ID, waarde, eenheid, KPI, nulmeting, meetperiode en onafhankelijke bron.</p>';
