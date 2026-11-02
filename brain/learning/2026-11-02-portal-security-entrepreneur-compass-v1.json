@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-portal-security-entrepreneur-verified-safety-compass-20261102-v1",
+  "fingerprint": "portal|security-trust|technical-only-ux-and-sensitive-detail-projection|20261102-v1",
+  "compiler": {
+    "failure_class": "SECURITY_CUSTOMER_TRUST_PRESENTATION_RISK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original protected Security Trust Center primarily displayed raw security status labels, provider names, coverage percentages and technical findings. This is difficult for entrepreneurs to interpret and can leak internal diagnostic detail in a customer view even when authentication is enforced. This is a design/security communication risk, not evidence of exploitation.",
+  "fix": "Reuse the canonical authenticated tenant-scoped Security Trust Center and source observations to render a customer-oriented Dutch Veiligheidskompas with explicit current source validity, five evidence domains, plain-language risk, owner/customer actions and source expiry. Restrict detailed technical findings, internal management metadata and database risk counts to the existing admin view. No new scheduler, database, provider permission or public endpoint.",
+  "tests": [
+    "tests/brain-security-entrepreneur-compass-v1.test.mjs",
+    "tests/portal-private-trust-surfaces-v1.test.mjs",
+    "tests/brain-security-trust-center-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-entrepreneur-compass-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-entrepreneur-compass-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-entrepreneur-compass-v1.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Never render a percentage of evidence coverage as a safety score or breach probability.",
+    "Never present unknown, expired, missing or negated source evidence as green; treat an explicit failure as an attention point.",
+    "Show simple impact-oriented questions and the accountable follow-up for the customer; no false 100% safe or proprietary certification.",
+    "Technical control keys, internal findings and privilege metadata are admin-only; always keep tenant and auth enforcement on the original server read model.",
+    "Only HTTPS absolute href URLs, never javascript, data, relative or credential-bearing evidence links.",
+    "Each customer trust claim requires actual source, observed_at, expires_at and independent provider readback; link progress to the original Brain incident.",
+    "No independent publisher, webhook, scheduler or duplicate Security Agent; reuse Heartbeat and exclusive release writer.",
+    "A successful code merge alone is not production verification; require protected CI, CodeQL, full Brain and original Netlify exact SHA or a source-verified deployment applicability proof.",
+    "UX reassurance never hides existing Netlify archived-preview access FAIL or Supabase anon-definer WARN."
+  ],
+  "owner": "existing ONE BRAIN Security Agent + Portal UX owner under exclusive writer",
+  "proof_state": "CANDIDATE_UNTIL_PROTECTED_GATES_AND_INDEPENDENT_PRODUCTION_READBACK"
+}
