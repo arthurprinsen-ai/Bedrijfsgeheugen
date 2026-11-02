@@ -17,7 +17,12 @@ test('append-only human release record names the immutable independent provider 
   assert.match(source,/PROVEN/);
   assert.match(source,/RED/);
  }
- assert.match(change,/\b\/api\/powerhouse-cro-other-data\b/);
+ const exactCroPath=/(?:^|[^A-Za-z0-9_])\/api\/powerhouse-cro-other-data(?=$|[^A-Za-z0-9_/-])/;
+ assert.match(change,exactCroPath,'only the exact independently gated CRO endpoint counts');
+ assert.match('`/api/powerhouse-cro-other-data`',exactCroPath);
+ assert.doesNotMatch('prefix/api/powerhouse-cro-other-data',exactCroPath);
+ assert.doesNotMatch('`/api/powerhouse-cro-other-data-fake`',exactCroPath);
+ assert.doesNotMatch('`/api/powerhouse-cro-other-data/private`',exactCroPath);
  assert.match(change,/nog geen afzonderlijk geauthenticeerde twee-tenant-E2E-proef/);
  assert.match(ledger,/Nog open:/);
 });
