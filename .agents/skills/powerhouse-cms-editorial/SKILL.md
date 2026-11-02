@@ -5,6 +5,9 @@ description: Use for every Bedrijfsgeheugen CMS, visual-editing, website/portal 
 
 # Powerhouse CMS Editorial Studio — one canonical content authority
 
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+Every content error, rejected publication, near miss, approval mismatch, source defect or broken measurement must be registered in the existing ONE BRAIN incident registry, deduplicated by fingerprint, repaired within authorized boundaries, regression tested, independently read back, and revisited on subsequent natural executions. Never claim PROVEN before a production provider/browser readback.
+
 Fingerprint: cms|editorial|technical-json-only-authoring-blocks-nontechnical-operators|20261102-v1.
 Original issue family: CMS → Powerhouse → ONE BRAIN → Heartbeat, original admin API and protected releases.
 Current candidate: docs/changes/2026-11-02-cms-studio-one-brain.md.
