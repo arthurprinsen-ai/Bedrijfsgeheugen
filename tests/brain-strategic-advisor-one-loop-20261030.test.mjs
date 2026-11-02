@@ -75,7 +75,9 @@ test('executive cockpit and decision page reuse one visible strategic adviser',a
  assert.match(html,/data-strategy-status="evidence-backed"/);
  const code=await readFile(new URL('../portal-v2/operating-system/operating-system-ui.js',import.meta.url),'utf8');
  assert.match(code,/strategicAdvisorMarkup\(buildExecutiveProjection\(state/);
- assert.match(code,/data-os-page/);
+ assert.match(code,/pageId==='next-best-actions'\?renderDecisions\(state\)/);
+ const cockpit=await readFile(new URL('../portal-v2/operating-system/executive-cockpit.js',import.meta.url),'utf8');
+ assert.match(cockpit,/data-os-page/);
  const adviser=await readFile(new URL('../portal-v2/operating-system/strategic-advisor.js',import.meta.url),'utf8');
  assert.doesNotMatch(adviser,/fetch\s*\(|localStorage|sessionStorage|setInterval\s*\(|supabase\.from/);
 });

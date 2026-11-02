@@ -1,45 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import {readFileSync} from 'node:fs';
 
-const source=fs.readFileSync('.github/workflows/daily-blog-live-watchdog.yml','utf8');
-const material=source.split('      - name: Materialize live proof into ledger')[1]?.split('      - name: Commit proof candidate only')[0];
-const commit=source.split('      - name: Commit proof candidate only')[1]?.split('      - name: Open proof PR and dispatch BRAIN shadow')[0];
-const pull=source.split('      - name: Open proof PR and dispatch BRAIN shadow')[1];
+// Original owner: protected Supabase Powerhouse blog publisher.
+// This legacy GitHub watchdog is deliberately READ-ONLY, never a second proof writer.
+const source=readFileSync('.github/workflows/daily-blog-live-watchdog.yml','utf8');
 
-test('live blog proof remains authoritative, exact and fail closed',()=>{
-  assert.ok(material && commit && pull,'canonical workflow steps must remain present');
-  assert.match(source,/node tools\/content-growth\/live-readback\.mjs/);
-  assert.match(source,/LIVE_BLOG_NOT_LIVE|DAILY_BLOG_NOT_LIVE/);
-  assert.match(material,/ledger\.days\[date\]=\{\.\.\.current,state:'live'/);
-  assert.match(material,/const proof=JSON\.parse\(fs\.readFileSync\('\/tmp\/daily-live-proof\.json'/);
+test('live blog readback uses exact business date, independent HTML and fail-closed evidence',()=>{
+  assert.match(source,/BUSINESS_TIME_ZONE: Europe\/Amsterdam/);
+  assert.match(source,/businessDate\(new Date\(\),'Europe\/Amsterdam'\)/);
+  assert.match(source,/NO_ACTION_LEGACY_LEDGER_DATE_MISSING/);
+  assert.match(source,/CANONICAL_POWERHOUSE_OWNS_DATE/);
+  assert.match(source,/node tools\/content-growth\/live-readback\.mjs "\$url" "\$CONTENT_ID" "\$SLUG"/);
+  assert.match(source,/DAILY_BLOG_NOT_LIVE/);
+  assert.match(source,/if: steps\.record\.outputs\.run == 'true'/);
 });
 
-test('one material write creates all mandatory semantic closure artifacts',()=>{
-  assert.match(material,/brain\/learning\//);
-  assert.match(material,/docs\/development-ledger-events\//);
-  assert.match(material,/docs\/changes\//);
-  assert.match(material,/fingerprint:/);
-  assert.match(material,/root_causes:/);
-  assert.match(material,/prevention:/);
-  assert.match(material,/evidence:/);
-  assert.match(material,/evaluation:\{historical_replay:/);
-  assert.match(material,/compiler:\{failure_class:/);
-  assert.match(commit,/files=\("data\/content-publication-ledger\.json"/);
-  assert.match(commit,/git add -- "\$\{files\[@\]\}"/);
-  assert.match(commit,/changedFiles:files,allowedFiles:files/);
+test('semantic closure belongs to original publisher, not a synthetic GitHub proof write',()=>{
+  assert.match(source,/PROOF_WRITER:EXISTING_CANONICAL_POWERHOUSE_BLOG/);
+  assert.match(source,/LEGACY_BLOG_WATCHDOG_READ_ONLY/);
+  assert.match(source,/if: steps\.record\.outputs\.run == 'true' && steps\.proof\.outputs\.ok == 'true'/);
+  assert.doesNotMatch(source,/ledger\.days\[date\]\s*=/);
+  assert.doesNotMatch(source,/Materialize live proof into ledger|Commit proof candidate only/);
 });
 
-test('protected writer deduplicates one date and enforces exact machine metadata',()=>{
-  assert.match(commit,/EXISTING_DAILY_PROOF_CANDIDATE/);
-  assert.match(commit,/gh pr list --state open/);
-  assert.match(pull,/Obligation-ID: daily-blog:%s:immutable-live-proof/);
-  assert.match(pull,/Delivery-Lane: website/);
-  assert.match(pull,/Candidate-Type: recovery/);
-  assert.match(pull,/Base-SHA: %s/);
-  assert.match(pull,/Change-Scope: %s/);
-  assert.match(pull,/Scope-Budget: 4/);
-  assert.match(pull,/repo-writer-candidate-shadow\.yml/);
-  assert.match(pull,/gh pr merge "\$number" --auto --squash/);
-  assert.doesNotMatch(source,/git push origin HEAD:main/);
+test('read-only watcher cannot claim protected writer authority or create duplicate publication',()=>{
+  assert.match(source,/^permissions:\n  contents: read\n/m);
+  assert.match(source,/name: Stop when ledger already records live proof/);
+  assert.match(source,/node tools\/content-growth\/assert-live-ledger\.mjs/);
+  for(const forbidden of ['gh pr create','gh pr merge','git add','git commit','git push','writeFileSync','createWriterCandidate']){
+    assert.equal(source.includes(forbidden),false,forbidden+' cannot appear in read-only watchdog');
+  }
+  assert.doesNotMatch(source,/^\s+(?:pull-requests|actions): write\s*$/m);
 });
