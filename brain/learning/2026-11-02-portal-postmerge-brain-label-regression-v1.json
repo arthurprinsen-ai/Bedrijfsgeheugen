@@ -28,5 +28,17 @@
     "historical failures immutable"
   ],
   "evidenceRef": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41433667027",
-  "requiredFutureProof": "Protected Required, CodeQL, full BRAIN 0 failures and later natural replay"
+  "requiredFutureProof": "Protected Required, CodeQL, full BRAIN 0 failures and later natural replay",
+  "compiler": {
+    "failure_class": "ASSERTION_MISMATCH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ]
+  }
 }
