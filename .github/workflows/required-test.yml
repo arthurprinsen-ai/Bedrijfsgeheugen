@@ -430,6 +430,7 @@ jobs:
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/cms-website-portal-v1.test.mjs
+          tests/cms-studio-20261102.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs
           tests/eu-ai-act-audit-report.test.mjs

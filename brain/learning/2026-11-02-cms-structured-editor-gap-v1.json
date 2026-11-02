@@ -1,0 +1,45 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-02",
+  "fingerprint": "cms|editorial|technical-json-only-authoring-blocks-nontechnical-operators|20261102-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "compiler": {
+    "failure_class": "CMS_STRUCTURED_AUTHORING_UX_GAP",
+    "scope": "CMS_WEBSITE_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original CMS editor exposes raw JSON and CSS selectors for ordinary editorial changes, causing unnecessary technical work and risk of editing mistakes. No accessible task-oriented authoring layer was available.",
+  "prevention": "Progressive enhancement of the ORIGINAL authenticated CMS form with semantic fields, preservation of JSON keys, unsaved-change protection, original server-side content QA, same-origin draft-only preview and no new publication authority.",
+  "owner": "original CMS admin + portal-state-eu publication writer; existing ONE BRAIN/Heartbeat/CRO ownership unchanged",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cms-powerhouse-one-loop-20261030.test.mjs"
+    ],
+    "future_acceptance": [
+      "protected Required/CodeQL/BRAIN",
+      "exact-head merge and Netlify deploy",
+      "authenticated browser draft-save/version/readback",
+      "following real user editorial completion and incident recurrence checks"
+    ],
+    "future_new_regression": [
+      "tests/cms-studio-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "GitHub original cms.html + assets/cms-admin.js + original CMS quality gate",
+    "baseline_original_bootstrap_drafts_last_observed": "2026-10-30",
+    "baseline_published": 0,
+    "live_approval_verified": false,
+    "commerce_outcomes_verified": false,
+    "source_candidate_only": true
+  },
+  "proven_fix": null,
+  "production_readback": {
+    "verified": false
+  },
+  "human_documentation": "docs/changes/2026-11-02-cms-studio-one-brain.md",
+  "regression_ref": "tests/cms-studio-20261102.test.mjs"
+}
