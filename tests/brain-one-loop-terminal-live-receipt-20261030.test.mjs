@@ -17,7 +17,7 @@ test('append-only human release record names the immutable independent provider 
   assert.match(source,/PROVEN/);
   assert.match(source,/RED/);
  }
- assert.match(change,/\b\/api\/powerhouse-cro-other-data\b/);
+ assert.ok(change.includes('`/api/powerhouse-cro-other-data`'),'the real separate authenticated CRO path must remain documented');
  assert.match(change,/nog geen afzonderlijk geauthenticeerde twee-tenant-E2E-proef/);
  assert.match(ledger,/Nog open:/);
 });
