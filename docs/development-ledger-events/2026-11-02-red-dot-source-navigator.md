@@ -1,0 +1,7 @@
+# Incident / design learning: Red Dot source navigator (2026-11-02)
+
+Fingerprint: `portal|red-dot|connector-journey-was-a-configuration-form-not-a-decision-experience|20261102-v1`
+Original owner: Portal V2 living UX #4547; canonical connector owner #4215; supporting Powerhouse Company Intelligence OS.
+Observed: existing wizard maps data but does not explain source → permission → independent proof → decision as one intelligible experience. Root cause: technical setup-first navigation and no dedicated guidance on the difference between connector configuration and confirmed external ingestion. Risk: poor user understanding / misleading green perception.
+Correction: new tenant-scoped metadata-only decision guide in existing Portal V2, no new parallel runtime. Action: read-only source counts + interactive stages, explicit unknown, accessible buttons and one-click existing wizard. Regression `tests/brain-red-dot-source-navigator-20261102.test.mjs`. Prevention: never infer live KPI, real source receipt, AI outcome or EU-only provenance from configuration; include authenticated browser/a11y and user comprehension tests. Artifacts: `portal-v2/red-dot-source-navigator.js`, `portal-v2/connected-data-sources.css`, `platform` remains unchanged until canonical connector/Brain owner proves actual ingestion.
+Independent production proof: EVIDENCE_DUE until protected exact-source release, DOM and real tenant readback. Award-readiness: EVIDENCE_DUE; no award claim, no synthetic success.

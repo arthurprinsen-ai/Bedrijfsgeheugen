@@ -10,6 +10,7 @@ import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeR
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
 import { mountConnectedDataSources } from './connected-data-sources.js';
+import { mountAwardSourceNavigator } from './red-dot-source-navigator.js';
 import { getCapabilityContract } from './capability-contracts.js';
 import { mountWorkspace } from './workspace-shell.js';
 import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
@@ -351,7 +352,7 @@ export function openPortalPage(pageId){
   else if(pageId==='ondernemerscockpit'){native.innerHTML='';mountOwnerOperatingSystem(native,{state:portalStateSnapshot(),stateClient:portalContext.stateClient});}
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
-  else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
+  else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);void mountAwardSourceNavigator(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
   else if(pageId==='andere-data'){native.innerHTML='';mountOtherData(native);}
   else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
