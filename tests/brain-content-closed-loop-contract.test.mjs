@@ -54,7 +54,11 @@ test('orchestrator exposes unsupported channel obligations as machine-readable h
 test('orchestrator preserves content_ready until executor consumes artifact', () => {
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(orchestrator, /COVERED_STATES\s*=\s*new Set\(\[[^\]]*'content_ready'/);
-  assert.match(orchestrator, /if \(shouldPreserveExisting\(previous,channel,personalSource,consumedCapabilityChannels,currentObligation\)\) continue;/);
+  // Original preserve boundary remains enforced; the only bypass is a separately
+  // validated, non-ambiguous company regeneration after a pre-provider rejection.
+  assert.match(orchestrator, /if \(!companyRegeneration\?\.eligible && shouldPreserveExisting\(previous,channel,personalSource,consumedCapabilityChannels,currentObligation\)\) continue;/);
+  assert.match(orchestrator, /planRejectedCompanyRegeneration\(/);
+  assert.match(orchestrator, /consumedCapability:consumedCapabilityChannels\.has\(channel\)/);
 });
 
 test('database has one canonical reconciliation loop and guards invoke it before recovery', () => {
