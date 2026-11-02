@@ -92,3 +92,21 @@ test('v1 production copy upgrades without stacking or leaving the outdated hero-
   assert.equal((updated.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
   assert.equal(applyDailySteeringPositioning(updated,'nl'),updated);
 });
+
+
+test('business-owner value appears before technical detail in both languages with explicit evidence boundaries',()=>{
+  const nl=applyDailySteeringPositioning(homepage,'nl');
+  assert.match(nl,/data-bg-business-value-first="v1"/);
+  assert.match(nl,/Wat levert een betere beslissing jouw bedrijf op/);
+  assert.match(nl,/Een kans is nog geen extra order/);
+  assert.match(nl,/een besparingsschatting is nog geen besparing/i);
+  assert.match(nl,/voorbeeldgegevens/);
+  assert.match(nl,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/);
+  assert.ok(nl.indexOf('data-bg-business-value-first="v1"')<nl.indexOf('bg-predictive-heading'),'value-first precedes technical exposition');
+  assert.equal((nl.match(/data-bg-business-value-first="v1"/g)||[]).length,1);
+  assert.equal(applyDailySteeringPositioning(nl,'nl'),nl,'repeated builds must not stack duplicate sections');
+  const en=applyDailySteeringPositioning('<main><h1>Original</h1><p class="lead">Original lead</p></main>','en');
+  assert.match(en,/What does a better decision deliver/);
+  assert.match(en,/Estimated savings are not realised savings/);
+  assert.equal(applyDailySteeringPositioning(en,'en'),en);
+});
