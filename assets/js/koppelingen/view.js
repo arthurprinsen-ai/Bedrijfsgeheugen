@@ -36,6 +36,12 @@ export function renderWizardShell(){
     </div>
     <div id="bg-kw-help" class="bg-kw__helptext" data-bg-helptext hidden>Een koppeling haalt informatie uit een bron, controleert wat nodig is en zet die veilig op de juiste plek. Activeren kan pas nadat een echte veilige test is geslaagd.</div>
     <ol class="bg-kw__progress" aria-label="Stappen">${PHASES.map((phase,index)=>`<li data-phase="${phase}"${index===0?' aria-current="step"':''}><span>${index+1}</span>${STEP_LABELS[phase]}</li>`).join('')}</ol>
+    <div class="bg-kw__journey" aria-label="Zo werkt een gegevenskoppeling">
+      <h3>Van één systeem naar begrijpelijk inzicht</h3>
+      <p>Geen technisch schema nodig. Jij bepaalt wat binnenkomt, waar het te zien is en of AI er iets mee mag doen.</p>
+      <ol><li><strong>01 · Kies</strong>Welk systeem wil je verbinden?</li><li><strong>02 · Bepaal</strong>Welke velden en pagina’s mogen meedoen?</li><li><strong>03 · Controleer</strong>Test de echte bron en opslag veilig.</li><li><strong>04 · Begrijp</strong>Bekijk bevestigde waarden, herkomst en acties.</li></ol>
+      <p data-bg-journey-readout aria-live="polite">Begin met één systeem. Niets wordt automatisch met AI gedeeld.</p>
+    </div>
     <div class="bg-kw__routes" data-bg-routes>
       <button type="button" class="bg-kw__route bg-kw__route--primary" data-bg-route="ai"><strong>Vertel wat je wilt koppelen</strong><span>Omschrijf het in gewone taal.</span></button>
       <button type="button" class="bg-kw__route" data-bg-route="template"><strong>Kies een voorbeeld</strong><span>Start met een veilige, herkenbare standaard.</span></button>
@@ -152,7 +158,11 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     const pagesRoot=root.querySelector('[data-bg-pages]');
     fieldsRoot.hidden=!state;
     pagesRoot.hidden=!state||dataUseMode==='CONNECTION_ONLY';
-    if(!state)return;
+    const readout=root.querySelector('[data-bg-journey-readout]');
+    if(!state){if(readout)readout.textContent='Begin met één systeem. Niets wordt automatisch met AI gedeeld.';return;}
+    if(readout){const fields=state.answers.selectedFields||[],pages=state.answers.portalPages||[];
+      readout.textContent=fields.length+' veld(en) gekozen · '+(dataUseMode==='CONNECTION_ONLY'?'alleen koppelen, geen portaal- of AI-gebruik':pages.length+' portaalbestemming(en) · '+(dataUseMode==='PORTAL_AI'?'AI-gebruik aangevraagd, nog niet geactiveerd':'geen AI-gebruik'))+'. Echte gegevens blijven onbevestigd tot bron- en opslagbewijs beschikbaar is.';
+    }
     const selected=new Set(state.answers.selectedFields||[]);
     const pages=new Set(state.answers.portalPages||[]);
     fieldsRoot.querySelector('[data-bg-fieldchoices]').innerHTML=(state.template.fields||[]).map(field=>{
