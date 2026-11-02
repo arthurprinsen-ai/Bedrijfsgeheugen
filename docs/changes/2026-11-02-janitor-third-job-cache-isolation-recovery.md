@@ -11,3 +11,7 @@ Wijzig uitsluitend de bestaande BRAIN-testfixture `tests/brain-janitor-cache-tok
 
 ## Bewijsplicht
 Nieuwe gerichte test, beschermde Required, CodeQL, oorspronkelijke volledige exact-head BRAIN en terminal, onafhankelijke GitHub readback op echte latere Janitor-run en geen herhaling. Open P0 #4439 blijft rood zolang overige tests falen; geen betaalde order of productieklant claim.
+
+
+### Additional bounded branch-synchronization assertion
+The independently failed `tests/brain-autonomous-branch-sync-4914.test.mjs` used `workflow.split('  branch_reconciler:\n')[1]` as an unbounded suffix, then `doesNotMatch(reconciler,/^    needs:/m)`. The appended legitimate `branch_archive_sweep` contains `needs: janitor`, thus false-positive. Now bound the `reconciler` block to the next `branch_archive_sweep` heading, verify no `needs` within its own block, and separately require the archive `needs:janitor` and `timeout-minutes:20`. This is test-only; no source workflow change.
