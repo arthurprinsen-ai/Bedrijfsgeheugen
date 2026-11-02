@@ -24,3 +24,6 @@ Issue #4547 is the canonical parent. Each defect: record route, control, viewpor
 
 ## Delivery preflight learning
 Before opening a PR, use the canonical supported Candidate-Type `implementation` for feature work; `feature` is rejected. Required admission must fail closed. Do not retry stale head workflow checks or change approved policy to silence the error.
+
+## CodeQL security-gate learning
+Never use naive case-sensitive forbidden-tag regex assertions as proof of HTML escaping. Supply adversarial mixed-case markup input, assert canonical entity-encoded output, and require a fresh exact-head CodeQL result. Two high test-filter findings on original #5297 are not waived or marked green by correcting test code alone.

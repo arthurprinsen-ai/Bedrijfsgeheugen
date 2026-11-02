@@ -25,13 +25,13 @@ test('the canonical Portal V2 alone receives five accessible data tables',()=>{
  const graphs=[
   radar([{label:'Proces A',value:2},{label:'Proces B',value:3},{label:'Proces C',value:4}]),
   curve([{label:'Maand 1',value:5.25},{label:'Maand 2',value:8}]),
-  benchmarkBars([{label:'Waarde',value:5,benchmark:6}]),
+  benchmarkBars([{label:'<script>Waarde</script>',value:5,benchmark:6}]),
   gantt([{title:'Actie',start:2,duration:3,progress:10}]),
   leakage([{label:'Tijd',value:4}])
  ];
  for(const chart of graphs){assert.match(chart,/<details class="bg-li-dataset">/);assert.match(chart,/<th scope="row">/);}
  assert.match(graphs[1],/5,25/);
- assert.doesNotMatch(graphs[2],/<script>/);
+ assert.match(graphs[2],/&lt;script&gt;Waarde&lt;\/script&gt;/);
 });
 test('semantic mandatory inputs provide error recovery and no new false save state',()=>{
  const markup=fieldMarkup({id:'bedrag',label:'Bedrag',type:'number',required:true,help:'Controleer de bron'},'');

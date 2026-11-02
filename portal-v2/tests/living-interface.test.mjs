@@ -41,7 +41,7 @@ test('five canonical chart families expose same actual values as accessible tabl
 });
 test('chart table text is escaped, missing metrics never fabricated as 0',()=>{
  const html=benchmarkBars([{label:'<script>alert(1)</script>',value:null,benchmark:undefined}]);
- assert.doesNotMatch(html,/<script>/);
+ assert.match(html,/&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
  assert.match(html,/Niet beschikbaar/);
  assert.equal(curve([],{}),'');
 });
