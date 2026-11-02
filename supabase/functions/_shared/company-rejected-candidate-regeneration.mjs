@@ -45,7 +45,7 @@ export function planRejectedCompanyRegeneration({
  const timestamp=Date.parse(now);
  const safe=hasExactRejection&&unsent&&Number.isFinite(timestamp)
    &&Array.isArray(recommendations)&&Number.isInteger(maxCandidates)
-   &&maxCandidates>0&&excluded.length<=maxCandidates;
+   &&maxCandidates>0&&excluded.length<maxCandidates;
  const alternative=safe?recommendations
    .filter(r=>validSource(r,timestamp)
      &&!excluded.includes(clean(r?.recommendation_id)))
