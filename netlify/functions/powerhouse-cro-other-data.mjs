@@ -486,15 +486,31 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       const row=readStates.brainBackendFailures==='LIVE'&&brainBackendFailures.length===1
         ? brainBackendFailures[0]:null;
       const evidence=row?.evidence && typeof row.evidence==='object' ? row.evidence:{};
-      const tests=Number(evidence.failed_tests),files=Number(evidence.affected_test_files);
+      const historicalTests=Number(evidence.failed_tests);
+      const files=Number(evidence.affected_test_files);
+      // Prefer the original agent's explicitly witnessed latest BRAIN run.
+      // A self-reported registry entry is NOT an independent terminal success.
+      const latestRaw=evidence.latest_original_brain_run||evidence.second_full_brain_run||null;
+      const runId=Number(latestRaw?.run_id);
+      const latestFailures=Number(latestRaw?.fail);
+      const validLatest=row&&latestRaw&&Number.isSafeInteger(runId)&&runId>0
+        // UNKNOWN/null must never coerce into 0 failed tests.
+        &&typeof latestRaw.fail==='number'&&Number.isSafeInteger(latestRaw.fail)&&latestRaw.fail>=0
+        &&Number.isSafeInteger(latestFailures)&&latestFailures>=0
+        &&latestRaw.terminal_status==='FAILED_BRAIN';
+      const currentFailures=validLatest?latestFailures:historicalTests;
       return {
         status:row?'BRAIN_BACKEND_FAILED':'SOURCE_UNVERIFIED',
         source:'original public.brain_failure_registry',
         sourceState:readStates.brainBackendFailures||'UNAVAILABLE',
         fingerprint:'powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1',
         maturity:row?safeText(row.maturity,35):'UNKNOWN',
-        failingTests:row&&Number.isInteger(tests)&&tests>0?tests:null,
+        failingTests:row&&Number.isInteger(currentFailures)&&currentFailures>=0?currentFailures:null,
+        historicalFailingTests:row&&Number.isInteger(historicalTests)&&historicalTests>0?historicalTests:null,
         affectedFiles:row&&Number.isInteger(files)&&files>0?files:null,
+        latestRunId:validLatest?runId:null,
+        latestGitHubEvidenceUrl:validLatest?'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/'+runId:null,
+        latestMeasurementKind:validLatest?'REGISTERED_ORIGINAL_GITHUB_RUN':'HISTORICAL_BASELINE_ONLY',
         failedOriginalRun:row&&evidence.brain_run===41406918918?
           'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918':null,
         verifiedPassed:false,
