@@ -287,11 +287,16 @@ function render(container,data){
     '<p>Uitkomst: '+badge(brainBackend?.status||'SOURCE_UNVERIFIED')+
       ' · Bron: '+badge(brainBackend?.sourceState||'UNAVAILABLE')+'</p>'+
     '<div class="od-grid">'+
-      field('Geconstateerde mislukte tests',brainBackend?.failingTests==null?'Onbekend':esc(brainBackend.failingTests))+
-      field('Betrokken testbestanden',brainBackend?.affectedFiles==null?'Onbekend':esc(brainBackend.affectedFiles))+
+      field('Eerste vastgelegde BRAIN-fouten',brainBackend?.historicalFailingTests==null?'Onbekend':esc(brainBackend.historicalFailingTests))+
+      field('Laatste vastgelegde BRAIN-hertest',brainBackend?.failingTests==null?'Onbekend':esc(brainBackend.failingTests))+
+      field('Betrokken testbestanden (eerste run)',brainBackend?.affectedFiles==null?'Onbekend':esc(brainBackend.affectedFiles))+
       field('Onafhankelijk groen herstel',brainBackend?.verifiedPassed?'Bewezen':'Nog niet bewezen')+
       field('Nieuwe betaalde opdrachten',brainBackend?.ordersIndependentlyProven?'Onafhankelijk bewezen':'Niet bewezen')+'</div>'+
-    '<p class="od-foot">Oorspronkelijke BRAIN-backendrun: <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918" target="_blank" rel="noopener noreferrer">fouten en testbewijs</a>. De volgende herstelactie blijft bij de oorspronkelijke agents en in dezelfde ONE BRAIN/Heartbeat-keten. Geen omzeilde test, tweede executor of verzonnen omzet.</p></section>';
+    '<p class="od-foot">Eerste bron: <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918" target="_blank" rel="noopener noreferrer">fouten en testbewijs</a>. Laatste geregistreerde hertest: '+
+    (brainBackend?.latestGitHubEvidenceUrl
+      ?'<a href="'+esc(brainBackend.latestGitHubEvidenceUrl)+'" target="_blank" rel="noopener noreferrer">originele GitHub-run</a>'
+      :'niet beschikbaar')+
+    '. Een registerobservatie is geen onafhankelijke terminalafsluiting. Geen omzeilde test, tweede executor of verzonnen omzet.</p></section>';
   const terminalBrainCard='<section class="od-card" data-original-brain-terminal-incident>'+
     '<h3>ONE BRAIN · herstel van publicatie- en releasecontrole</h3>'+
     '<p>De oorspronkelijke afsluitcontrole moet dezelfde gemergede commit via BRAIN, Required, CodeQL en providerbewijs afsluiten. Een geslaagde merge zonder onafhankelijke BRAIN-uitkomst is geen volledig herstel.</p>'+
