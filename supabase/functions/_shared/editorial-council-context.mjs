@@ -39,6 +39,13 @@ const CHANNELS=Object.freeze({
     experiment:'Test na GSC/GA4-bronreadback één zoekintentiecluster, titel of CTA; geen cannibalisatie van bestaande canonical pagina.',
     success:['gsc_nonbrand_impressions','gsc_clicks','qualified_search_sessions','verified_cta','consented_qualified_leads','independently_paid_orders']
   }),
+  email_outreach:Object.freeze({
+    audience:'individuele zakelijke contactpersoon met aantoonbare concrete, relevante en rechtmatig gebruikte context',
+    reader_job:'in een paar zinnen één echte, passende observatie en een waardevolle kleine vervolgstap begrijpen',
+    editorial:'Schrijf een persoonlijke, relevante zakelijke e-mail met specifiek bronanker, helder onderwerp, menselijke context en maximaal één natuurlijke vraag. Respecteer bestaande rechtmatigheid, toestemming waar vereist, afmelden waar van toepassing, suppressions en broncontrole. Geen ongefundeerde aannames over het bedrijf, nep-urgentie, bulktoon of generieke opdringerige follow-up. Deze redactie verleent GEEN verzendautorisatie.',
+    experiment:'Varieer één onderdeel (feitelijke opening, onderwerp of micro-CTA) alleen binnen de bestaande gecontroleerde outreach-owner.',
+    success:['provider_verified_sent','positive_replies','verified_meetings','qualified_leads','independently_paid_orders','negative_replies_or_unsubscribes']
+  }),
   email_newsletter:Object.freeze({
     audience:'bestaande contacten met aantoonbare geldige toestemming en toepasselijk doel',
     reader_job:'één relevante en tijdige aanleiding, nuttig inzicht en eenvoudige vervolgstap',
