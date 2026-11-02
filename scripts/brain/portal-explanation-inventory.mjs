@@ -51,7 +51,7 @@ if(next!==original){
 }else console.log('PORTAL_EXPLANATION_SOURCE_CURRENT',contentHash);
 
 
-const entryPattern=/(<script\\b[^>]*\\bsrc=)(['"])(\\.\\/app\\.js)(?:\\?bg_explain=[a-f0-9]{64})?\\2/g;
+const entryPattern=/(<script\b[^>]*\bsrc=)(['"])(\.\/app\.js)(?:\?bg_explain=[a-f0-9]{64})?\2/g;
 if(entryHtml===null)throw new Error('PORTAL_APP_ENTRY_HTML_MISSING');
 const entryMatches=[...entryHtml.matchAll(entryPattern)];
 if(entryMatches.length!==1)throw new Error('PORTAL_APP_ENTRY_CONTRACT_INVALID:'+entryMatches.length);
