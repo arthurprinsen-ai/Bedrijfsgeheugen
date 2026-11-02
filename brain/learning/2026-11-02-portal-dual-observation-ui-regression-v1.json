@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|brain|dual-observation-ui-label-fixture-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "CI_SOURCE_CONTRACT_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "owner": "Original ONE BRAIN backend verifier and existing admin-only Portal CRO evidence read-model owner",
+  "root_cause": "Full original BRAIN post-merge run 41433667027 backend job 125238718390: 5400 tests, 5397 passed, 1 failed, 2 skipped. A legacy textual source assertion in tests/brain-portal-latest-original-backend-observation-20261102.test.mjs still required 'Laatste vastgelegde BRAIN-hertest', despite the protected legitimate Portal owner change #5282 replacing the ambiguous label with both 'Laatste vastgelegde mislukte BRAIN-run' and 'Geregistreerde latere BRAIN-herstelproef'. No runtime/ACL/transaction failure; the regression fixture drifted from stronger actual source truth.",
+  "prevention_rule": "Before pinning a human UI literal, inspect exact current original Portal owner source and verify both historical-red and newer validated software-recovery cards independently. Keep original admin-only source, safe absolute escaped href, verifiedPassed=false when terminal not independently proven, ordersIndependentlyProven=false, full test-sum parity, and source failure on forged record. Never remove the BRAIN test, relax security, rewrite immutable historical incident, color commercial loops GREEN, fake a provider ID, or introduce a second writer. Run this regression and source tests in original full BRAIN on exact candidate and protected main; require Required/CodeQL and Netlify authenticated readback, then verify no recurrence on later natural run.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41433667027",
+    "original_failed_job_id": 125238718390,
+    "original_test_count": 5400,
+    "original_passed": 5397,
+    "original_failed": 1,
+    "original_skipped": 2,
+    "failed_case_id": 3050,
+    "correction_kind": "SOURCE_BACKED_TEST_FIXTURE",
+    "original_portal_release_pr": 5282,
+    "original_main_sha": "295c12ab94303af30b9b9fc30207d15ecf88db1e",
+    "post_fix_ci": "PENDING",
+    "production_provider_proven": false,
+    "commercial_outcome_proven": false,
+    "natural_no_recurrence_proven": false,
+    "no_second_writer": true
+  }
+}
