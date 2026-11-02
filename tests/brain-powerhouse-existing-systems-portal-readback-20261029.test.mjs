@@ -6,7 +6,7 @@ import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
 
-const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE'};
+const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE'};
 const datasets={
   health:[{observed_at:'2026-10-29T16:20:00Z',architecture_state:'AMBER',
     learning_state:'EVIDENCE_DUE_GAPS',content_loop_state:'BLOCKED',
@@ -18,7 +18,10 @@ const datasets={
     wiring_state:'WIRED',evidence_state:'NO_EVIDENCE_YET'}],
   experiments:[{readiness_state:'LATENT_WAITING_FOR_ELIGIBLE_ACTION',assignments:0,holdout_assignments:0}],
   revenue:[{scored_prospects:24361,next_best_actions:918,
-    attribution_touches:17619,realized_revenue_eur:0,attributed_revenue_eur:0}]
+    attribution_touches:17619,realized_revenue_eur:0,attributed_revenue_eur:0}],
+  // Synthetic fixtures only, never production or achieved business outcomes.
+  loops:[{observed_at:'2026-10-29T16:20:00Z',total_loops:15,green_loops:8,amber_loops:1,red_loops:6,fully_evidenced_loops:0,overall_status:'AMBER'}],
+  terminal:[{observed_at:'2026-10-29T16:20:00Z',nonterminal_obligations:4,blocked_obligations:2,escalated_reconciliation_jobs:1,control_plane_healthy:false,stale_green_truths:0}]
 };
 const projection=()=>projectPowerhouseIntegrationReadback({datasets,readStates:states,at:'2026-10-29T17:00:00Z'});
 
@@ -37,6 +40,18 @@ test('runtime problems, content and missing causal holdout remain visible',()=>{
   assert.ok(p.gapCodes.includes('CONTENT_LOOP_NOT_VERIFIED'));
   assert.ok(p.gapCodes.includes('CAUSAL_HOLDOUT_NOT_OBSERVED'));
 });
+test('new loop and terminal authority views are required, never optional fake green',()=>{
+  const partial=projectPowerhouseIntegrationReadback({datasets,readStates:{...states,loops:'UNAVAILABLE'},at:'2026-10-29T17:00:00Z'});
+  assert.equal(partial.sourceState,'PARTIAL');
+  assert.ok(partial.gapCodes.includes('SOURCE_UNAVAILABLE:loops'));
+  assert.equal(partial.integrationState,'END_TO_END_UNPROVEN');
+  const complete=projection();
+  assert.equal(complete.sourceState,'READABLE');
+  assert.equal(complete.integrationState,'END_TO_END_UNPROVEN');
+  assert.equal(complete.loopAssurance.red,6);
+  assert.equal(complete.terminalControl.healthy,false);
+});
+
 test('source absence is unknown instead of a fabricated zero or green status',()=>{
   const p=projectPowerhouseIntegrationReadback();
   assert.equal(p.sourceState,'PARTIAL');
@@ -58,7 +73,9 @@ test('read-only REST readback uses original five authority views and never leaks
     powerhouse_one_brain_capability_inventory_v1:datasets.capabilities,
     powerhouse_one_brain_intelligence_inventory_v1:datasets.layers,
     powerhouse_autonomous_experiment_readiness_v1:datasets.experiments,
-    powerhouse_revenue_event_spine_health_v1:datasets.revenue
+    powerhouse_revenue_event_spine_health_v1:datasets.revenue,
+    powerhouse_loop_integrity_health_v1:datasets.loops,
+    powerhouse_terminal_control_plane_health_v1:datasets.terminal
   };
   const seen=[];
   const mock=async (url,options)=>{
@@ -70,7 +87,7 @@ test('read-only REST readback uses original five authority views and never leaks
     return {ok:true,json:async()=>mapping[key]};
   };
   const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'secret',fetchImpl:mock});
-  assert.equal(seen.length,5);
+  assert.deepEqual(seen.sort(),Object.keys(mapping).sort(), 'all seven original private authority views must be queried');
   assert.equal(p.sourceState,'READABLE');
   assert.equal(p.integrationState,'END_TO_END_UNPROVEN');
   assert.doesNotMatch(JSON.stringify(p),/secret/);
