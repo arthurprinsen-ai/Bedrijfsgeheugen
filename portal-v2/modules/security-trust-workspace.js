@@ -83,21 +83,33 @@ const PLATFORM_SECURITY_REQUIREMENTS=[
  {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT']}
 ];
 const upper=v=>String(v??'').trim().toUpperCase();
-export function summarizeSecurityPlatforms(observations=[]){
+// Security evidence must be bounded, independently observed and unexpired.
+// Missing timestamps, very long validity, clock skew or missing proof fail closed.
+export function securityEvidenceCurrent(o,nowMs=Date.now()){
+ if(!o||securityTone(o.status)!=='ok'||!(o.evidence_available??o.evidenceAvailable))return false;
+ const observed=Date.parse(String(o.observed_at??o.observedAt??''));
+ const expires=Date.parse(String(o.expires_at??o.expiresAt??''));
+ const day=24*60*60*1000;
+ return Number.isFinite(observed)&&Number.isFinite(expires)&&
+  observed<=nowMs+5*60*1000&&observed>=nowMs-day&&
+  expires>nowMs&&expires>observed&&expires-observed<=day;
+}
+export function summarizeSecurityPlatforms(observations=[],nowMs=Date.now()){
  return PLATFORM_SECURITY_REQUIREMENTS.map(platform=>{
   const controls=arr(observations).filter(o=>upper(o.provider_key||o.providerKey)===platform.provider);
   const rows=platform.checks.map(key=>controls.find(o=>upper(o.control_key||o.controlKey)===key));
   const complete=rows.every(Boolean);
-  const allGood=complete&&rows.every(o=>securityTone(o.status)==='ok'&&Boolean(o.evidence_available??o.evidenceAvailable));
+  const allGood=complete&&rows.every(o=>securityEvidenceCurrent(o,nowMs));
   const risk=rows.some(o=>o&&securityTone(o.status)==='bad');
   return { ...platform, total:platform.checks.length, observed:rows.filter(Boolean).length,
    status:risk?'ACTION_REQUIRED':allGood?'VERIFIED':'EVIDENCE_PARTIAL',
+   current:rows.filter(o=>securityEvidenceCurrent(o,nowMs)).length,
    latest:rows.filter(Boolean).map(o=>o.observed_at||o.observedAt).filter(Boolean).sort().at(-1)||null};
  });
 }
-export function securityOverallPosture(summary,observations){
+export function securityOverallPosture(summary,observations,nowMs=Date.now()){
  const source=String(summary?.postureStatus||'EVIDENCE_PARTIAL').toUpperCase();
- const platform=summarizeSecurityPlatforms(observations);
+ const platform=summarizeSecurityPlatforms(observations,nowMs);
  if(source==='ACTION_REQUIRED'||platform.some(item=>item.status==='ACTION_REQUIRED'))return 'ACTION_REQUIRED';
  if(source==='VERIFIED_NO_OPEN_FINDINGS'&&platform.every(item=>item.status==='VERIFIED'))return 'VERIFIED_NO_OPEN_FINDINGS';
  return 'EVIDENCE_PARTIAL';
@@ -105,7 +117,7 @@ export function securityOverallPosture(summary,observations){
 function renderSecurityPlatforms(observations){
  const platforms=summarizeSecurityPlatforms(observations);
  return '<section class="trust-section" data-security-platforms><header><h3>Beveiliging van de infrastructuur</h3><p>GitHub, Supabase, Netlify, website en portaal. Status groen uitsluitend wanneer álle verplichte controles actueel en onafhankelijk onderbouwd zijn. Ontbrekend bewijs is nooit groen.</p></header><div class="trust-grid">'+
- platforms.map(p=>'<article data-security-platform="'+esc(p.provider)+'"><small>'+esc(p.label)+'</small><strong>'+esc(p.status==='VERIFIED'?'Geverifieerd':p.status==='ACTION_REQUIRED'?'Actie nodig':'Niet volledig bewezen')+'</strong>'+status(p.status)+'<span>'+p.observed+' van '+p.total+' controles met bronobservatie · laatste bronmoment: '+esc(p.latest||'onbekend')+'</span></article>').join('')+
+ platforms.map(p=>'<article data-security-platform="'+esc(p.provider)+'"><small>'+esc(p.label)+'</small><strong>'+esc(p.status==='VERIFIED'?'Geverifieerd':p.status==='ACTION_REQUIRED'?'Actie nodig':'Niet volledig bewezen')+'</strong>'+status(p.status)+'<span>'+p.current+' van '+p.total+' controles actueel en bewezen · laatste bronmoment: '+esc(p.latest||'onbekend')+'</span></article>').join('')+
  '</div></section>';
 }
 
