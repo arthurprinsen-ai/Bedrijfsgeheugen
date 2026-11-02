@@ -62,3 +62,9 @@ Bestaande veilige schrijver: `public.brain_promote_failure(p_fingerprint,p_expec
 - Leg bij iedere afkeur of regressie oorzaak, exact screenshot/fingerprint, bron, eigenaar, herstel, test, CI-SHA, runtime-versie, herhaling op volgende natuurlijke run en learning_application in bestaande ONE BRAIN/Heartbeat/portaal vast. GREEN uitsluitend na originele protected code-deploy + herhaalde uitvoeringscontrole + onafhankelijk effectbewijs. Geen tweede scheduler, geen parallelle agentwriter.
 
 **Regressie:** `tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs`, `tests/brain-linkedin-company-editorial-contract-v1.test.mjs`, `tests/brain-social-cro-portal-evidence-v1.test.mjs`. Menselijke instructie: `docs/changes/2026-11-01-linkedin-buyer-first-incident.md`.
+
+## Original BRAIN editorial TDZ regression — 2 November 2026
+
+- Source observation: full original BRAIN run #41411665780 contained 32 failures of 5,362 tests; `brain-brand-learning-editorial-tdz-v1.test.mjs` expected obsolete `const editorialSystem` while the real canonical orchestrator intentionally declares `let editorialSystem` and appends buyer-first redaction policy before `stage = 'artifact-ai'`.
+- Maintain the ordering invariant: only PROVEN tenant-scoped brand learnings may be selected; `verifiedBrandLearningGuide` initializes before the single editorial prompt; buyer-first quality policy appends before AI generation; no false personal experience, unverified percentages or exposure of operational status. Update the narrowly stale test, not runtime editorial policy or publisher.
+- Fingerprint `powerhouse|brain|editorial-tdz-const-let-test-drift|20261102-v1`. Original ONE BRAIN #4439 stays red until targeted regressions, protected Required/CodeQL, independent full original BRAIN and terminal closure prove the remaining failures. Record each observed source/version and next corrective action; no parallel writer, scheduler or external publication.
