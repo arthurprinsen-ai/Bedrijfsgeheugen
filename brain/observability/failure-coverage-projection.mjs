@@ -104,7 +104,7 @@ export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetc
     if(aggregate.status!=='READBACK_COMPLETE')return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCOMPLETE_REGISTRY_READBACK'}};
 
     let predictiveRecovery={status:'UNVERIFIED',reason:'INCIDENT_READBACK_FAILED'};
-    const incidentUrl=String(baseUrl).replace(/\\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq.'+encodeURIComponent(PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)+'&limit=1';
+    const incidentUrl=String(baseUrl).replace(/\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq.'+encodeURIComponent(PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)+'&limit=1';
     try{
       const evidenceResponse=await fetchImpl(incidentUrl,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json'},signal:AbortSignal.timeout(5000)});
       if(!evidenceResponse.ok)predictiveRecovery={status:'UNVERIFIED',reason:'INCIDENT_READBACK_HTTP_'+evidenceResponse.status};
@@ -114,7 +114,7 @@ export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetc
       }
     }catch{}
     let websiteRecovery={status:'UNVERIFIED',checkout:'UNVERIFIED',seoDate:'UNVERIFIED',prHandoff:'UNVERIFIED'};
-    const siteUrl=String(baseUrl).replace(/\\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence&fingerprint=in.('+Object.values(ORIGINAL_SITE_INCIDENTS).map(encodeURIComponent).join(',')+')&limit=3';
+    const siteUrl=String(baseUrl).replace(/\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence&fingerprint=in.('+Object.values(ORIGINAL_SITE_INCIDENTS).map(encodeURIComponent).join(',')+')&limit=3';
     try{
       const source=await fetchImpl(siteUrl,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json'},signal:AbortSignal.timeout(5000)});
       if(source.ok)websiteRecovery=summarizeOriginalSiteRecovery(await source.json());
