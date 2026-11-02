@@ -53,7 +53,10 @@ export function classifyConnectorError(error={}){
 
 export function evaluateActivationEvidence(connector,evidence){
   const complete=Boolean(evidence&&evidence.configVersion===connector?.version&&evidence.testExecutionId&&evidence.sourceReadSuccess===true&&evidence.extractionResult?.ok===true&&evidence.validationResult?.ok===true&&evidence.targetSafeTestResult?.ok===true);
-  return complete?{eligible:true,reason:'ELIGIBLE'}:{eligible:false,reason:'TEST_EVIDENCE_INCOMPLETE'};
+  if(!complete)return {eligible:false,reason:'TEST_EVIDENCE_INCOMPLETE'};
+  // A dry run against a sample, local stub or unidentified provider cannot activate a live data flow.
+  if(evidence.proofLevel!=='PROVIDER_VERIFIED')return {eligible:false,reason:'EXTERNAL_PROVIDER_PROOF_REQUIRED'};
+  return {eligible:true,reason:'ELIGIBLE'};
 }
 
 export async function runConnectorTest({connector,input,adapters,seenDedupeKeys=new Set(),executionId=`test-${Date.now()}`}={}){
@@ -96,6 +99,7 @@ export async function runConnectorTest({connector,input,adapters,seenDedupeKeys=
   }
   const safeResult=await atStage('target',executionId,()=>requireAdapter(adapters,'target').safeTest(proposedPayload,{connector,input,source,extraction}));
   stages.push(stage(executionId,'target',safeResult?.ok===true,{reference:safeResult?.reference||safeResult?.targetRef||null}));
-  const evidence={configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,extractionResult:{ok:true,documentType:extraction?.type||null},validationResult:{ok:true},targetSafeTestResult:{ok:safeResult?.ok===true,reference:safeResult?.reference||safeResult?.targetRef||null}};
+  const proofLevel=source?.verification==='PROVIDER_VERIFIED'&&safeResult?.verification==='PROVIDER_VERIFIED'&&extraction?.mode!=='safe-test-sample'?'PROVIDER_VERIFIED':'SAMPLE_ONLY';
+  const evidence={configVersion:connector?.version,testExecutionId:executionId,sourceReadSuccess:true,proofLevel,extractionResult:{ok:true,documentType:extraction?.type||null},validationResult:{ok:true},targetSafeTestResult:{ok:safeResult?.ok===true,reference:safeResult?.reference||safeResult?.targetRef||null}};
   return {status:safeResult?.ok===true?'TEST_PASSED':'TEST_FAILED',executionId,stages,reviewReasons:[],proposedPayload,dedupeKey,startedAt,completedAt:now(),extraction,evidence};
 }
