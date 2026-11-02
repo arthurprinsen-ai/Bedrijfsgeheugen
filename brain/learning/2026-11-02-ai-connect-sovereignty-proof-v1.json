@@ -23,13 +23,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/connector-reference-flow.test.mjs"
+      "tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs"
     ],
     "shadow": [
-      "tests/connector-ai-sovereignty-consent-20261102.test.mjs"
+      "tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs"
     ],
     "canary": [
-      "tests/connector-koppelingen-status.test.mjs"
+      "tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs"
     ]
   },
   "prevention_rules": [
@@ -37,7 +37,8 @@
     "Connected data usage requires tenant-specific, per-connector permission; default CONNECTION_ONLY, deny training and ungoverned AI model routes.",
     "Always disclose actual storage/processing/model regions from provider receipts, never infer from the Supabase primary region or a requested deployment profile.",
     "Provider authentication and actual source-to-destination execution require independent signed-off evidence and current protected release readback.",
-    "Remain within the original Portal V2, connector, data sovereignty, ONE BRAIN, Heartbeat and protected release owners; no parallel executor or direct production change."
+    "Remain within the original Portal V2, connector, data sovereignty, ONE BRAIN, Heartbeat and protected release owners; no parallel executor or direct production change.",
+    "Learning canonicalization requires a real tests/brain-*.test.mjs evaluation entry point; import and execute the full original connector suites rather than weakening the CI gate."
   ],
   "owner": "original Portal V2 UX + connector engine + ONE BRAIN/Heartbeat + protected release writer",
   "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_NOT_PROVIDER_VERIFIED"
