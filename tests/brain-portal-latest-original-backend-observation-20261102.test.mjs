@@ -55,7 +55,10 @@ test('the original owner-only Portal renders two measurements and safe absolute 
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/latest_original_brain_run/);
  assert.match(ui,/Eerste vastgelegde BRAIN-fouten/);
- assert.match(ui,/Laatste vastgelegde BRAIN-hertest/);
+ assert.match(ui,/Laatste vastgelegde mislukte BRAIN-run/);
+ assert.match(ui,/Geregistreerde latere BRAIN-herstelproef/);
+ assert.match(ui,/esc\(brainBackend\.softwareRecovery\.originalRunUrl\)/);
+ assert.match(ui,/natuurlijke herhaling, klantwaarde of omzet/);
  assert.match(ui,/esc\(brainBackend\.latestGitHubEvidenceUrl\)/);
  assert.match(ui,/geen onafhankelijke terminalafsluiting/);
 });
