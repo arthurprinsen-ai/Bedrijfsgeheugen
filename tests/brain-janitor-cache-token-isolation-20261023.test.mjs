@@ -38,5 +38,5 @@ test('cache isolation covers both existing Janitor jobs without lowering permiss
   assert.match(archive,/^    timeout-minutes: 20$/m);
   assert.match(archive,/SWEEP_BUDGET_SECONDS: '900'/);
   assert.match(archive,/tools\/ci\/branch-archive-sweep\.mjs --apply --cap 150/);
-  assert.doesNotMatch(archive,/uses:\\s*actions\\/cache(?:\\/|@)/i,'archive cleanup must not install Actions cache');
+  assert.doesNotMatch(archive,/uses:\s*actions\/cache(?:\/|@)/i,'archive cleanup must not install Actions cache');
 });
