@@ -1,0 +1,53 @@
+{
+  "id": "powerhouse-postmerge-content-guard-contracts-20261102-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_UNVERIFIED",
+  "fingerprint": "brain|postmerge|content-guard-regex-contract-3-failures|20261102-v1",
+  "compiler": {
+    "failure_class": "STALE_SOURCE_PATTERN_ORACLE_AFTER_SAFE_COMPANY_REGENERATION",
+    "scope": "BRAIN_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "After protected content recovery PR #5305 added an independently gated company source-regeneration branch, three historical BRAIN tests still required exact pre-change source-code expressions. Original guarded content preservation, bounded pre-provider retries, provider-side-effect exclusions and the single canonical orchestrator remain in place. Original post-merge BRAIN run 41462543890 reported 3 failures after the original 791-migration lock was corrected.",
+  "prevention": {
+    "rule": "Preserve exact positive/negative original provider authority invariants while broadening a static source-contract only to the new explicitly guarded company regeneration branch. Never remove the no-side-effect or consumed-authority checks or mute a failing test. Keep publisher and existing scheduler untouched; no extra writer.",
+    "regression_contract": "tests/brain-content-closed-loop-contract.test.mjs; tests/brain-safe-content-recovery-p0-4198.test.mjs; tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs",
+    "no_parallel_executor": true,
+    "original_writer": "ONE BRAIN protected integration"
+  },
+  "evidence": {
+    "original_run_id": "41462543890",
+    "failed_test_ids": [
+      951,
+      4140,
+      4418
+    ],
+    "tests": [
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs",
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "source_owner": "existing content-orchestrator / content-loop",
+    "claim": "source oracle alignment only; not proof of live publications",
+    "outcome": "PR_CANDIDATE_ONLY",
+    "production_readback": "NOT_YET_PROVEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs",
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs",
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs",
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ]
+  }
+}
