@@ -45,5 +45,14 @@
     "comparable provider metrics",
     "learning_id to next-natural application_id verified",
     "independently attributed paid orders or UNKNOWN"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-editorial-council-one-loop-20261102.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "2 Nov 2026 canonical source and social application readback; observed gap, not verified uplift",
+    "pending": "protected historical replay, original runtime source parity and independently measured next natural application"
+  }
 }
