@@ -74,5 +74,23 @@
     "on_proven_readback": "THIS_FIX_VERIFIED_ONLY",
     "global_green_allowed": false
   },
-  "terminal_rule": "Required+CodeQL+applicable gates exact-head green; protected merge; new canonical Janitor execution + independent readback; existing drift tracked separately."
+  "terminal_rule": "Required+CodeQL+applicable gates exact-head green; protected merge; new canonical Janitor execution + independent readback; existing drift tracked separately.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+    ],
+    "invariants": [
+      "latest-100 closed PR history cannot establish missing merged successor",
+      "closed PR #2225 superseded by merged #2353 is not reopened",
+      "provider 422 must remain primary error; no secondary SIGPIPE masking",
+      "retain stale Actions cancellation checks and protected branch guards",
+      "no global green or resolved drift until independently proven"
+    ]
+  }
 }
