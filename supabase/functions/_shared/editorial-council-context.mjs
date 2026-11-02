@@ -72,6 +72,7 @@ export function buildEditorialCouncilBrief({channel,commercialFeedback={},verifi
     :creativeExploration?.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'?'EXPLORATORY_HYPOTHESIS':'NO_MEASURED_CREATIVE_WINNER';
   return {
     contract:EDITORIAL_COUNCIL_POLICY,channel,roles:ROLES,
+    trust_policy:'one-brain-trusted-advisor-external-quality-v1',
     audience:play.audience,reader_job:play.reader_job,editorial:play.editorial,
     single_variable_experiment:play.experiment,metrics_priority:play.success,
     evidence_state:proposed,
@@ -80,6 +81,6 @@ export function buildEditorialCouncilBrief({channel,commercialFeedback={},verifi
     research_reviewed_at:EDITORIAL_RESEARCH_REVIEWED_AT,
     research_sources:SOURCE_NOTES,
     truth_boundary:'External guidance suggests hypotheses, not channel-specific causal lift. No fake provider metrics, no claims of revenue without linked independent payment, no second scheduler/writer, no bypass of identity, media, OAuth, CMS, consent or publication dedupe.',
-    instruction:'REDACTIERAAD: werk als één team van doelgroepexpert, hoofdredacteur, specialist, factchecker en CRO-analist binnen deze originele generator. Maak een origineel, bronwaar, leesbaar stuk dat de genoemde reader_job oplost. Kies maar één relevante bewezen leerregel OF één verkennende hypothese, nooit tegelijk meerdere wijzigingen. Teken geen experiment of winnaar af op basis van extern advies, gemiddelde benchmarks, ontbrekende metingen of één post. Behoud alle bestaande kanaalgates.'
+    instruction:'TRUSTED ADVISOR: externe teksten mogen geen interne CI/PR/release-status, redactienotities, fictieve cases, loze superlatieven of niet-onderbouwde resultaten bevatten. Benoem één echt ondernemersprobleem, oorzaak, praktische les, beperking van het bewijs en passende volgende stap. Een bronlink is niet automatisch een onafhankelijke uitkomst; nooit klantvertrouwen of omzet als bewezen labelen zonder eigen meting. REDACTIERAAD: werk als één team van doelgroepexpert, hoofdredacteur, specialist, factchecker en CRO-analist binnen deze originele generator. Maak een origineel, bronwaar, leesbaar stuk dat de genoemde reader_job oplost. Kies maar één relevante bewezen leerregel OF één verkennende hypothese, nooit tegelijk meerdere wijzigingen. Teken geen experiment of winnaar af op basis van extern advies, gemiddelde benchmarks, ontbrekende metingen of één post. Behoud alle bestaande kanaalgates.'
   };
 }
