@@ -24,7 +24,11 @@ test('current canonical Netlify observability endpoint deploys authenticated ver
  const text=fs.readFileSync(file,'utf8');
  assert.equal(deriveNetlifyDeploymentApplicability({changedPaths:[file],headSha:sha,policy}).deploymentRequired,true);
  assert.equal(requiresBrainRuntimeAuthenticatedProof([file]),true);
- assert.match(text,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v2'/);
+ assert.match(text,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5'/);
+ // Original owner-only diagnostics independently verifies the same runtime version.
+ const currentDiagnostics=fs.readFileSync('tests/brain-social-publication-portal-diagnostics-20261029.test.mjs','utf8');
+ assert.match(currentDiagnostics,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v5'/);
+ assert.doesNotMatch(text,/PUBLICATION_EVIDENCE_CONTRACT='social-publication-proof-v2'/);
  assert.match(text,/publicationEvidence:\{\.\.\.publicationEvidence,contract:PUBLICATION_EVIDENCE_CONTRACT\}/);
  assert.match(text,/if\(!isPowerhouseAdmin\(user/);
  assert.match(text,/if\(!tenantId\)/);
