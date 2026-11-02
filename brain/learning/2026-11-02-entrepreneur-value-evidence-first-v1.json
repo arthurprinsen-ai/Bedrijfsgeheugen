@@ -1,0 +1,32 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-02",
+  "fingerprint": "website|portal|entrepreneur-value-buried-behind-technical-copy|20261102-v1",
+  "compiler": {
+    "failure_class": "VALUE_FIRST_TRUST_AND_EVIDENCE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Technische architectuur stond voor de ondernemersvraag; in een publieke portaalomgeving moeten voorbeeldcijfers expliciet onderscheiden blijven van klantgebonden resultaten.",
+  "prevention": "Publiceer ondernemerswaarde voor productarchitectuur; toon alleen geauthenticeerde brongebonden prioriteit, expliciet gemarkeerde zelfgerapporteerde nulmetingen en onafhankelijk geverifieerde uitkomsten. Test NL/EN, idempotentie, auth en no-data.",
+  "evidence": {
+    "source": "original GitHub website positioning and Portal V2 entrepreneur-home",
+    "observed_at": "2026-11-02",
+    "candidate_pr": 5248,
+    "verified_live": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"
+    ],
+    "portal_component_test": "portal-v2/tests/entrepreneur-home.test.mjs"
+  },
+  "status": "OBSERVED",
+  "humanDocs": "docs/changes/2026-11-02-ondernemerswaarde-evidence-first.md",
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false
+}

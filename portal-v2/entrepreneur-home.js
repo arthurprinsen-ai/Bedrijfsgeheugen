@@ -87,6 +87,55 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       add(host,'p','eh-truth','Een scanresultaat, cijfer of aanbeveling verschijnt uitsluitend voor de eigen ingelogde organisatie.');
       return;
     }
+    // One read-only projection of the existing authenticated server snapshot.
+    // Missing evidence stays missing; sample KPIs and estimated euro benefits never appear here.
+    const journey=buildEntrepreneurJourneyModel(customerState||{},{
+      authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt,
+      tenantRuntime:loggedIn&&customerState?getTenantRuntime():null
+    });
+    const attention=add(host,'section','eh-attention');
+    attention.dataset.entrepreneurAttention='v1';
+    attention.setAttribute('aria-label','Drie zaken die voor jouw bedrijf tellen');
+    add(attention,'h3','','Waar geef je nu aandacht aan?');
+    add(attention,'p','eh-muted','Jouw volgende keuze, de kwaliteit van je gegevens en wat al onafhankelijk onderbouwd is.');
+    const attentionGrid=add(attention,'div','eh-attention-grid');
+    const nextCard=add(attentionGrid,'article','eh-attention-card');
+    add(nextCard,'span','eh-attention-kicker','1 · Jouw volgende stap');
+    add(nextCard,'strong','',model.next.title);
+    add(nextCard,'p','',model.next.explanation);
+    add(nextCard,'small','eh-attention-evidence',model.next.kind==='verified-proposal'
+      ?'Onderbouwd voorstel · '+model.next.evidenceCount+' bronverwijzingen · nog niet uitgevoerd'
+      :'Begeleidingsstap · nog geen bewezen rendement');
+    if(model.next.page){
+      const action=add(nextCard,'button','eh-text-action','Bekijk je vervolgstap →');
+      action.type='button';action.dataset.entrepreneurPage=model.next.page;
+    }
+    const sourceCard=add(attentionGrid,'article','eh-attention-card');
+    add(sourceCard,'span','eh-attention-kicker','2 · Bronkwaliteit');
+    add(sourceCard,'strong','',model.scan.verified
+      ?(model.scan.score===null?'Geverifieerde nulmeting gekoppeld':'Nulmeting '+model.scan.score+'/100')
+      :'Nog geen bevestigde nulmeting');
+    add(sourceCard,'p','',model.scan.verified
+      ?'Deze scan is gebaseerd op eigen antwoorden; dit is geen geauditeerde financiële prestatie.'
+      :'Koppel je scan en bedrijfsgegevens om aanbevelingen op je eigen situatie te baseren.');
+    add(sourceCard,'small','eh-attention-evidence',model.intelligence.ready
+      ?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar'
+      :'Geen actuele, klantgebonden Powerhouse-projectie bewezen');
+    const scanAction=add(sourceCard,'button','eh-text-action','Bekijk jouw nulmetingen →');
+    scanAction.type='button';scanAction.dataset.entrepreneurScan='true';
+    const proofCard=add(attentionGrid,'article','eh-attention-card');
+    add(proofCard,'span','eh-attention-kicker','3 · Gemeten resultaat');
+    const outcomes=journey.autopilot?.outcomes;
+    add(proofCard,'strong','',Number.isInteger(outcomes)&&outcomes>0
+      ?outcomes+' brongeverifieerde uitkomst(en)'
+      :'Nog geen bewezen resultaat');
+    add(proofCard,'p','',Number.isInteger(outcomes)&&outcomes>0
+      ?'Bekijk de bron en het meetmoment per uitkomst. Dit aantal zegt nog niets over het netto financiële effect.'
+      :'Een voorgestelde of uitgevoerde actie telt niet als resultaat zonder onafhankelijk controleerbaar bewijs.');
+    add(proofCard,'small','eh-attention-evidence','Voorbeeldcijfers en voorspellingen tellen nooit mee');
+    const evidenceAction=add(proofCard,'button','eh-text-action','Controleer uitkomsten en bewijs →');
+    evidenceAction.type='button';evidenceAction.dataset.entrepreneurPage='outcomes-evidence';
+
     const chooser=add(host,'div','eh-goals');
     add(chooser,'h3','','Wat wil jij met je bedrijf bereiken?');
     add(chooser,'p','eh-muted','Kies jouw belangrijkste doel. Je kunt later veranderen; andere vastgelegde doelen blijven bewaard.');
@@ -127,10 +176,6 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     }else add(next,'p','eh-small','Begin door hierboven een doel te kiezen.');
     // Existing Brain/Powerhouse cockpit and scenario navigator are projections of
     // this same authenticated snapshot, not separate onboarding databases.
-    const journey=buildEntrepreneurJourneyModel(customerState||{},{
-      authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt,
-      tenantRuntime:loggedIn&&customerState?getTenantRuntime():null
-    });
     renderEntrepreneurJourney(host,journey);
     const footer=add(host,'div','eh-foot');
     add(footer,'span','','1 · Kies je doel');
