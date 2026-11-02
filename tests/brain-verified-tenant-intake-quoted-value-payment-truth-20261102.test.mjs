@@ -39,6 +39,8 @@ test('only existing original canonical outcome authority may write; no extra sch
  assert.match(migration,/CREATE OR REPLACE FUNCTION intern\.trg_offerte_uitkomst/);
  assert.equal((migration.match(/intern\.bg_uitkomst_eenmalig\(/g)||[]).length,2);
  assert.equal((migration.match(/SECURITY DEFINER SET search_path = ''/g)||[]).length,2);
+ assert.match(migration,/REVOKE ALL ON FUNCTION intern\.trg_scan_uitkomst\(\) FROM PUBLIC, anon, authenticated/);
+ assert.match(migration,/REVOKE ALL ON FUNCTION intern\.trg_offerte_uitkomst\(\) FROM PUBLIC, anon, authenticated/);
  assert.doesNotMatch(migration,/create table|create extension|\bgrant\b|\bcreate policy\b|\bcron\.|\bhttp_post\b|\bservice_role\b/i);
  assert.doesNotMatch(migration,/update\s+public\.(scan_inzendingen|offerte_inzendingen|growth_outcomes)/i);
  assert.match(migration,/BEGIN;[\s\S]*COMMIT;/);
