@@ -223,6 +223,22 @@ function systemMapView(systemMap,events,observability={}){
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
   const failureCoverage=systemMap.failureCoverage||{};
   const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
+  const siteRecovery=failureCoverage.websiteRecovery||{};
+  const siteVerified=siteRecovery.status==='READBACK_COMPLETE';
+  const siteStates=[
+    ['Checkout · browser en betaling','checkout',{SOFTWARE_LIVE_VERIFIED:'Technische checkout live en onafhankelijk getest; een betaalde klant is hiermee niet aangetoond.',RECOVERY_EVIDENCE_PENDING:'Technisch herstel niet onafhankelijk bevestigd.'}],
+    ['SEO · ongewijzigde inhoud','seoDate',{SOURCE_AND_NATURAL_VERIFIED:'Bronfix live; ook volgende natuurlijke run aangetoond.',SOURCE_LIVE_NATURAL_PENDING:'Bronfix live; volgende natuurlijke run nog niet bewezen.',RECOVERY_EVIDENCE_PENDING:'Bronherstel niet onafhankelijk bevestigd.'}],
+    ['SEO · automatische goedkeuring','prHandoff',{NATURAL_HANDOFF_VERIFIED:'Oorspronkelijke PR-overdracht bij echte wijziging bewezen.',OPEN_AUTHORIZATION:'GitHub Actions kan nog niet autonoom een PR openen; originele bevoegde route en herhalingsbewijs noodzakelijk.'}]
+  ];
+  const siteStateStatus=key=>siteVerified?String(siteRecovery[key]||'UNVERIFIED'):'UNVERIFIED';
+  const siteStateRows=siteStates.map(([label,key,words])=>{
+    const status=siteStateStatus(key),good=status==='SOFTWARE_LIVE_VERIFIED'||status==='SOURCE_AND_NATURAL_VERIFIED'||status==='NATURAL_HANDOFF_VERIFIED';
+    return `<article class="poc-component" data-original-site-incident="${esc(key)}" data-evidence-status="${esc(status)}"><b>${esc(label)}</b><span class="poc-badge ${good?'good':'warn'}">${esc(status)}</span><p class="poc-note">${esc(words[status]||'Onafhankelijke actuele broncontrole ontbreekt; niet als groen weergeven.')}</p></article>`;
+  }).join('');
+  const siteAllGreen=siteVerified&&siteStateStatus('checkout')==='SOFTWARE_LIVE_VERIFIED'
+    &&siteStateStatus('seoDate')==='SOURCE_AND_NATURAL_VERIFIED'
+    &&siteStateStatus('prHandoff')==='NATURAL_HANDOFF_VERIFIED';
+
   const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
   const predictiveProof=failureCoverage.predictiveRecovery||{};
   const predictiveCode=String(predictiveProof.status||'UNVERIFIED');
@@ -284,6 +300,12 @@ function systemMapView(systemMap,events,observability={}){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  <section class="poc-panel" data-original-site-recovery data-evidence-status="${esc(siteVerified?'READBACK_COMPLETE':'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Website &amp; SEO · bewijs en herstel</h4><span class="poc-badge ${siteAllGreen?'good':'warn'}">${siteAllGreen?'Alle controles bewezen':'Herstelpunten open of onzeker'}</span></div>
+    <p class="poc-note">Alleen gecontroleerde incidentstatussen uit het bestaande Supabase ONE BRAIN-register voor beheerders. Een live technische release is geen bewijs van een automatische volgende uitvoering of nieuwe omzet.</p>
+    ${siteStateRows}
+    <p class="poc-note"><a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439" target="_blank" rel="noopener noreferrer">Oorspronkelijke incidentlijn en bewijs</a>. Deze kaart voert zelf geen publicaties, betalingen of nieuwe agents uit.</p>
+  </section>
   <section class="poc-panel" data-brain-failure-coverage data-evidence-status="${esc(failureCoverage.status||'UNAVAILABLE')}">
     <div class="poc-panelhead"><h4>Fouten, oorzaken en preventie · ONE BRAIN</h4><span class="poc-badge ${failureTotals?'warn':'bad'}">${failureTotals?'Open kwaliteitspunten':'UNVERIFIED'}</span></div>
     <p class="poc-note">Alleen aantallen uit het bestaande Supabase-foutregister. Geen klantgegevens of ruwe incidentteksten. Ontbrekende readback blijft onbekend, nooit nul.</p>
