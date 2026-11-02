@@ -97,7 +97,7 @@ export async function mountAwardSourceNavigator(container,{fetchFn=globalThis.fe
  footer.append(action,examples,passport);
  section.append(footer);
 
- const caveat=say(el('p','bg-award-nav__caveat'),'Dit overzicht toont connectorinstellingen, geen facturen, omzet of andere geïmporteerde klantgegevens. Een award of toegankelijkheidscertificering is niet geclaimd.');
+ const caveat=say(el('p','bg-award-nav__caveat'),'Dit overzicht toont instellingen, geen geïmporteerde facturen, omzet of andere klantgegevens. Echte cijfers verschijnen alleen na controle van bron, toestemming en opslag.');
  section.append(caveat);
  container.prepend(section);
  let snapshot=sourceNavigatorSnapshot(null,{available:false});
