@@ -17,3 +17,6 @@ V1 technical source + browser proof already LIVE; this is a candidate reliabilit
 
 ## Protected admission contract recovery (same PR #5303)
 Original Required hygiene attempt `41456184469` correctly stopped with `unclassified delivery path: tests/integration/portal-readback-security-challenge.mjs`. This helper was outside the existing canonical Portal V2 test namespace; do not widen delivery classification or exempt the guard. Moved the identical pure classifier (no security/behavior change) to `tests/integration/portal-v2-readback-security-challenge.mjs`, which already belongs to the original Portal V2 lane, and rewired its Playwright and BRAIN regressions. Keep old failure evidence and require exact-HEAD protected CI proof.
+
+## Protected semantic-learning admission recovery
+Required #41456541132 admitted the exact head but material writeback rejected `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning`. The new machine learning JSON had `observed_evidence` and `regression`, while the unchanged semantic guard correctly requires explicit `tests` or `evidence` as machine-readable keys. Added both with independently verifiable GitHub run and exact immutable Netlify deploy references; no gate, classifier, WAF or test threshold was weakened. The first failed run remains historical evidence. New protected exact-head run must validate this candidate.

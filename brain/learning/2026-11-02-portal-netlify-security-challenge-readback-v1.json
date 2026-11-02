@@ -48,5 +48,15 @@
   },
   "owner": "original Portal V2 browser release assurance and existing Netlify Security Agent",
   "regression": "tests/brain-portal-netlify-security-challenge-20261102.test.mjs",
-  "terminal_rule": "Provider readback must remain exact-deploy+SHA; this classification is diagnostics, not a bypass or actual end-user experience proof."
+  "terminal_rule": "Provider readback must remain exact-deploy+SHA; this classification is diagnostics, not a bypass or actual end-user experience proof.",
+  "tests": [
+    "tests/brain-portal-netlify-security-challenge-20261102.test.mjs"
+  ],
+  "evidence": {
+    "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41453415237",
+    "original_failure_artifact": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41453415237/artifacts/13146451551",
+    "subsequent_success_job": 125306153752,
+    "production_deploy": "6ae89037cf6564e024183391",
+    "human_ledger": "docs/development-ledger-events/2026-11-02-portal-netlify-security-challenge-readback-v1.md"
+  }
 }
