@@ -59,6 +59,12 @@ export function renderWizardShell(){
      </fieldset>
      <fieldset class="bg-kw__routing" data-bg-fields hidden><legend>Welke gegevens wil je gebruiken?</legend><p>Kies één of meer gegevensvelden. Alleen deze velden worden meegenomen in de doelmapping.</p><div class="bg-kw__routechoices" data-bg-fieldchoices></div></fieldset>
      <fieldset class="bg-kw__routing" data-bg-pages hidden><legend>Op welke pagina's wil je deze gegevens zien?</legend><p>Je kunt meerdere bestemmingen kiezen. Dit is een verzoek om gegevens te gebruiken; echte waarden verschijnen pas na geverifieerde opslag.</p><div class="bg-kw__routechoices" data-bg-pagechoices></div></fieldset>
+     <div class="bg-kw__routing" data-bg-saved-area>
+       <strong>Meerdere systemen koppelen</strong>
+       <p>Bewaar iedere verbinding afzonderlijk, voeg daarna de volgende toe. Elke koppeling houdt zijn eigen toestemming, tests en status.</p>
+       <div class="bg-kw__routes"><button type="button" data-bg-save-draft class="knop">Bewaar deze koppeling als concept</button><button type="button" data-bg-new-connector class="knop licht">Voeg nog een koppeling toe</button></div>
+       <div data-bg-saved-list aria-live="polite"></div>
+     </div>
      <div data-bg-template-list hidden></div>
     <div data-bg-question hidden></div>
     <div class="bg-kw__evidence" data-bg-evidence aria-live="polite"><p class="bg-kw__evidence-empty">Nog geen testbewijs.</p></div>
@@ -119,6 +125,23 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   let state=null,draft=null,lastTest=null,dataUseMode='CONNECTION_ONLY';
 
   const say=text=>{message.textContent=text||'';};
+  const savedList=root.querySelector('[data-bg-saved-list]');
+  const refreshSaved=async()=>{
+    try{
+      const items=await api.list();
+      if(!Array.isArray(items))throw new Error('INVALID_LIST');
+      savedList.replaceChildren();
+      const label=document.createElement('p');label.textContent=items.length?`${items.length} opgeslagen koppeling(en). Kies 'Voeg nog een koppeling toe' voor een nieuw systeem.`:'Nog geen opgeslagen koppelingen.';
+      savedList.append(label);
+      const list=document.createElement('ul');
+      for(const item of items.slice(0,30)){
+        const li=document.createElement('li');
+        li.textContent=`${String(item.name||item.templateId||'Koppeling').slice(0,80)} · ${item.state==='Active'?'Configuratie actief, live gegevens apart te bewijzen':item.state==='Paused'?'Gepauzeerd':'Concept'}`;
+        list.append(li);
+      }
+      savedList.append(list);
+    }catch{savedList.textContent='Opgeslagen koppelingen zijn tijdelijk niet beschikbaar.';}
+  };
   const invalidateEvidence=(reason='Deze koppeling is gewijzigd. Voer opnieuw een veilige test uit.')=>{
     draft=null;lastTest=null;activate.disabled=true;activateReason.textContent=reason;
     evidenceBox.innerHTML='<p class="bg-kw__evidence-empty">Nog geen geldig testbewijs voor deze versie.</p>';
@@ -147,6 +170,30 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     say(`${template.title} gekozen. Alleen ontbrekende keuzes worden nog gevraagd.`);
   };
 
+  root.querySelector('[data-bg-save-draft]').addEventListener('click',async()=>{
+    if(!state){say('Kies eerst een systeem of maak een AI-voorstel.');return;}
+    const definition=toConnectorDefinition(state);
+    if(!definition.mappings.length){say('Selecteer minimaal één gegevensveld.');return;}
+    try{
+      if(draft){draft=await api.saveDraft(draft.id||draft.connectorId,definition);}
+      else draft=await api.createDraft(definition);
+      lastTest=null;activate.disabled=true;activateReason.textContent='Concept opgeslagen. Voer een nieuwe veilige test uit voordat je activeert.';
+      say('Concept opgeslagen. Je kunt nu een volgend systeem toevoegen.');
+      await refreshSaved();
+    }catch(error){const guide=connectorRecoveryAdvice(error);say(guide.message+' '+guide.action);}
+  });
+  root.querySelector('[data-bg-new-connector]').addEventListener('click',()=>{
+    if(state&&!draft){say('Bewaar deze keuze eerst als concept om gegevensverlies te voorkomen.');return;}
+    state=null;draft=null;lastTest=null;
+    invalidateEvidence('Kies een nieuwe bron en test iedere koppeling apart.');
+    root.querySelector('[data-bg-template-list]').hidden=false;
+    root.querySelector('[data-bg-template-list]').innerHTML=templateListHtml();
+    root.querySelectorAll('[data-template-id]').forEach(item=>item.addEventListener('click',()=>chooseTemplate(findTemplate(item.dataset.templateId))));
+    renderRouting();
+    definitionOut.textContent='Nog geen nieuwe koppeling geselecteerd.';
+    say('Kies een volgend systeem. Bestaande concepten blijven bewaard.');
+  });
+  void refreshSaved();
   root.querySelector('[data-bg-help]').addEventListener('click',event=>{
     const text=root.querySelector('[data-bg-helptext]');
     text.hidden=!text.hidden;
