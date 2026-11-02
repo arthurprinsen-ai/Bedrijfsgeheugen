@@ -34,6 +34,9 @@ export function powerhouseIntegrationMarkup(snapshot){
     experiments=snapshot?.experiments||null, commercial=snapshot?.commercial||null,
     loops=snapshot?.loopAssurance||null, terminal=snapshot?.terminalControl||null;
   const sourceState=snapshot?.sourceState||'UNAVAILABLE';
+  const sourceNames=Object.keys(source);
+  const liveSources=sourceNames.filter(name=>source[name]==='LIVE').length;
+  const sourceCoverage=sourceNames.length ? liveSources+' / '+sourceNames.length : 'ONBEKEND';
   const gaps=Array.isArray(snapshot?.gapCodes)?snapshot.gapCodes:[];
   const rows=[
     ['Powerhouse / Brain',a?esc(a.state||'UNKNOWN'):'GEEN BRON',a?'Lagen '+knownNum(a.wiredLayers)+' / '+knownNum(a.totalLayers)+' · leerstatus '+esc(a.learningState||'UNKNOWN'):'Geen actuele runtime-readback'],
@@ -49,7 +52,7 @@ export function powerhouseIntegrationMarkup(snapshot){
   return '<section class="cp-integration" data-bg-component="powerhouse-integration-health" data-proof="END_TO_END_UNPROVEN">'+
     '<h3>Powerhouse · gezamenlijke systeemstatus</h3>'+
     '<p>Één brongevoed overzicht van Brain, Heartbeat, de 15 integriteitslussen, terminale bewijsplichten, Growth en experimenten. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
-    '<p><strong>Broncontrole: '+esc(sourceState)+'</strong> · Volledige uitvoeringsketen: <strong>NIET BEWEZEN</strong> · Gecontroleerd: '+esc(snapshot?.observedAt||'onbekend')+'</p>'+
+    '<p><strong>Broncontrole: '+esc(sourceState)+'</strong> · Bronnen LIVE: <strong>'+esc(sourceCoverage)+'</strong> · Volledige uitvoeringsketen: <strong>NIET BEWEZEN</strong> · Gecontroleerd: '+esc(snapshot?.observedAt||'onbekend')+'</p>'+
     '<div class="cp-integration-scroll"><table><thead><tr><th>Onderdeel</th><th>Bronstatus</th><th>Meetstand</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<details><summary>Ontbrekend bewijs en bronstatussen ('+knownNum(gaps.length)+')</summary>'+
     '<ul>'+messages+'</ul>'+
