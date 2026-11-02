@@ -92,5 +92,6 @@
       "existing required security/protected checks remain unchanged",
       "repair live only after native janitor readback"
     ]
-  }
+  },
+  "root_cause": "Design defect confirmed: the Janitor treats absence of a merged successor in a bounded 100-record closed-PR sample as global absence, even though #2353 was a merged exact-obligation successor of #2225 outside that window. The historical HTTP 422 endpoint is not logged; rejected PATCH reopening is the leading hypothesis, and the jq broken pipe is secondary to consumer termination under pipefail."
 }
