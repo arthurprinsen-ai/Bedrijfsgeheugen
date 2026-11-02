@@ -30,6 +30,7 @@
     "tests/repo-writeback-safety.test.mjs"
   ],
   "independent_verification_due": [
+    "canonical learning gate runs historical replay, shadow and canary on original safe Codex runner contract",
     "protected exact-head Required and CodeQL",
     "original BRAIN",
     "protected merge, checkout and production release evidence",
@@ -53,6 +54,12 @@
     "additional_regression_tests": [
       "tests/brain-native-openai-blog-provider-20261019.test.mjs",
       "tests/repo-writeback-safety.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
     ]
   },
   "humanDocs": "docs/changes/2026-11-02-weekblog-codex-ubuntu-2604-sandbox.md",
