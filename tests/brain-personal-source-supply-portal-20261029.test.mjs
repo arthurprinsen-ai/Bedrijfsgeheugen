@@ -37,7 +37,8 @@ test('missing count and provider read failures fail closed',async()=>{
 test('portal source card is admin-only and separate from original 4 publication obligations',()=>{
  assert.match(api,/if\(!isPowerhouseAdmin\(user/);
  assert.match(api,/if\(!tenantId\)/);
- assert.match(api,/personalSourceSupply,commercialIntakeProof,publicationEvidence:/); // Verify all three admin-only sources survive current read model.
+ assert.match(api,/agentCycleCoverage,personalSourceSupply,commercialIntakeProof,publicationEvidence:\{\.\.\.publicationEvidence,contract:PUBLICATION_EVIDENCE_CONTRACT\}/);
+ assert.match(api,/if\(!isPowerhouseAdmin\(user/);
  assert.match(portal,/observability\.personalSourceSupply/);
  assert.match(portal,/LinkedIn persoonlijk · verse bronaanvoer/);
  assert.match(portal,/een bron is geen verhaal, post of provider-ID/);

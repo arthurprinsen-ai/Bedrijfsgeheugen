@@ -17,7 +17,7 @@ test('append-only human release record names the immutable independent provider 
   assert.match(source,/PROVEN/);
   assert.match(source,/RED/);
  }
- assert.match(change,/\/api\/powerhouse-cro-other-data\b/); // Slash is a non-word char; the old leading word-boundary silently rejected an actual protected API route.
+ assert.ok(change.includes('`/api/powerhouse-cro-other-data`'),'the real separate authenticated CRO path must remain documented');
  assert.match(change,/nog geen afzonderlijk geauthenticeerde twee-tenant-E2E-proef/);
  assert.match(ledger,/Nog open:/);
 });

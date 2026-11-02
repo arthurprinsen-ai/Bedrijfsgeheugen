@@ -19,5 +19,9 @@ test('canonical radar counts empty responses but does not synthesize a source or
   assert.match(radar,/taskCode!==20000\) throw new Error\('DATAFORSEO_'/);
   assert.match(radar,/evaluateMiraPublicationFreshness\(/);
   assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
-  assert.match(radar,/selectCanonicalRadarSourceQueries\(runDate\)/); // Original shared 6+2 provider budget
+  assert.match(radar,/selectCanonicalRadarSourceQueries\(runDate\)/);
+  const routing=readFileSync('supabase/functions/_shared/personal-observational-source-routing.mjs','utf8');
+  assert.match(routing,/selectMiraSourceQueries\(runDate\)/);
+  assert.match(routing,/RADAR_TOTAL_EXTERNAL_QUERIES=8/);
+  assert.match(routing,/RADAR_PERSONAL_EXTERNAL_QUERIES=2/);
 });
