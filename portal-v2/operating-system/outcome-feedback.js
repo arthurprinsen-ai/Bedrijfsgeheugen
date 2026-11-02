@@ -1,18 +1,39 @@
 // Read-only entrepreneur feedback, derived solely from the existing executive
 // projection. No independent outcome store, telemetry, executor or analytics.
 const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const finite=value=>value===null||value===undefined||value===''||typeof value==='boolean'?null:(Number.isFinite(Number(value))?Number(value):null);
+const finite=value=>value===null||value===undefined||(value===''||(typeof value==='string'&&value.trim()==='')||typeof value==='boolean')?null:(Number.isFinite(Number(value))?Number(value):null);
 const first=(...values)=>values.find(value=>value!==undefined&&value!==null&&value!=='');
 const allowedStatuses=new Set(['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED']);
 const supportedUnits=new Set(['EUR','PERCENT','HOURS','COUNT']);
 const formatter=new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2});
+
+// ONE BRAIN canonical customer-impact proof gate, shared by all original
+// executive/strategic/feedback projections. A verified provider receipt or
+// a terminal label without an actual metric is not a measured company outcome.
+export function verifiedCustomerOutcome(item={}){
+ if(!item||typeof item!=='object')return false;
+ const status=String(first(item.verification_status,item.status,'')).trim().toUpperCase();
+ const refs=Array.isArray(item.source_refs)?item.source_refs.filter(ref=>typeof ref==='string'&&ref.trim()):[];
+ const actual=item.realized||{};
+ const amount=finite(first(actual.amount,item.realized_amount,item.realizedEffect,item.realized_effect,item.measured_effect));
+ const unit=String(first(actual.unit,item.realized_unit,item.unit,'')).trim().toUpperCase();
+ const action=first(item.action_id,item.source_action_id);
+ const metric=first(actual.metric_id,item.realized_metric_id,item.metric_id);
+ const baseline=first(actual.baseline_id,item.realized_baseline_id,item.baseline_id);
+ const period=first(actual.period_id,item.realized_period_id,item.measurement_period);
+ const defined=value=>value!==null&&value!==undefined&&typeof value!=='boolean'&&String(value).trim()!=='';
+ return allowedStatuses.has(status)&&item.evidence_health?.status==='healthy'&&refs.length>0
+  &&amount!==null&&supportedUnits.has(unit)
+  &&[action,metric,baseline,period].every(defined);
+}
+
 
 export function outcomeFeedbackRows(items=[]){
  if(!Array.isArray(items))return Object.freeze([]);
  return Object.freeze(items.map(item=>{
   const status=String(first(item?.verification_status,item?.status,'')).toUpperCase();
   const refs=Array.isArray(item?.source_refs)?item.source_refs.filter(ref=>typeof ref==='string'&&ref.trim()):[];
-  const verified=allowedStatuses.has(status)&&item?.evidence_health?.status==='healthy'&&refs.length>0;
+  const verified=verifiedCustomerOutcome(item);
   const expected=finite(first(item?.expected?.amount,item?.expected_amount,item?.expectedEffect,item?.expected_effect));
   const recorded=finite(first(item?.realized?.amount,item?.realized_amount,item?.realizedEffect,item?.realized_effect,item?.measured_effect));
   const expectedUnit=String(first(item?.expected?.unit,item?.expected_unit,item?.unit,'')).toUpperCase();
@@ -60,10 +81,10 @@ export function outcomeFeedbackMarkup(items=[]){
  const intro='<div class="os-outcome-intro"><div><small>Van advies naar resultaat</small><h3>Wat heeft een actie écht opgeleverd?</h3></div><p>Verwachting is geen opbrengst. Een resultaat verschijnt pas na onafhankelijk controleerbaar bewijs.</p></div>';
  if(!rows.length)return '<section class="os-outcome-feedback" data-outcome-feedback="empty" aria-label="Effect van acties">'+intro+'<p class="os-outcome-empty">Nog geen acties met meetbare uitkomst. Zodra er betrouwbare gegevens zijn, zie je hier verwachting, resultaat en wat we leren.</p></section>';
  const cards=rows.map(row=>{
-  const output=row.verified?'Resultaat onafhankelijk bevestigd':'Resultaat nog niet bewezen';
+  const output=row.verified?'Gemeten effect onafhankelijk bevestigd':'Gemeten effect nog niet bewezen';
   const evidence=row.verified
    ?'<p><strong>Bronnen:</strong> '+row.refs.map(escapeHtml).join(' · ')+'</p>'+(row.measuredAt?'<p><strong>Gemeten:</strong> '+escapeHtml(row.measuredAt)+'</p>':'')
-   :'<p>De actie of providerbevestiging is geen bewijs van bedrijfsimpact. De oorspronkelijke uitkomst blijft in onderzoek.</p>';
+   :'<p>Een status, verzonden bericht of providerbevestiging is geen meetbaar bedrijfsresultaat. Controleer actie-ID, waarde, eenheid, KPI, nulmeting, meetperiode en onafhankelijke bron.</p>';
   const learn=row.learned
    ?'<p class="os-outcome-next"><strong>Powerhouse leerde:</strong> '+escapeHtml(row.learningSummary)+' · Volgende beslissing: '+escapeHtml(row.nextDecision)+'</p>'
    :'<p class="os-outcome-next">Leereffect nog niet geverifieerd. ONE BRAIN mag een onbewezen uitkomst niet als succes gebruiken.</p>';
@@ -75,7 +96,7 @@ export function outcomeFeedbackMarkup(items=[]){
    +(row.actionId?'<p class="os-outcome-action">Gekoppelde actie: '+escapeHtml(row.actionId)+'</p>':'')
    +'<dl class="os-outcome-compare"><div><dt>Vooraf verwacht</dt><dd>'+escapeHtml(valueLabel(row.expected,row.expectedUnit))+'</dd></div>'
    +'<div><dt>Werkelijk gerealiseerd</dt><dd>'+escapeHtml(valueLabel(row.realized,row.actualUnit))+'</dd></div>'+compare+'</dl>'
-   +learn+'<details><summary>Hoe weten we dit?</summary>'+evidence+'</details><button type="button" class="os-outcome-more" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs →</button></article>';
+   +'<p class="os-outcome-scope">Geverifieerd meeteffect is niet automatisch door Powerhouse veroorzaakte winst, omzet of een betaalde order.</p>' +learn+'<details><summary>Hoe weten we dit?</summary>'+evidence+'</details><button type="button" class="os-outcome-more" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs →</button></article>';
  }).join('');
  return '<section class="os-outcome-feedback" data-outcome-feedback="results" aria-label="Effect van acties">'+intro+'<div class="os-outcome-cards">'+cards+'</div></section>';
 }
