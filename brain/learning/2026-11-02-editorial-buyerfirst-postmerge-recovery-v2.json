@@ -57,9 +57,25 @@
   },
   "test_evidence": {
     "observed": "Full original BRAIN run #41414751648, exact head 77b552fe7fa392a76cc376731523596f1f6c4410, 27 of 5371 failed; original buyer-first append assertion RED before bounded correction.",
-    "pending": "Protected Required, original full BRAIN and CodeQL exact new head, original Supabase Git Integration source parity and natural provider/learning outcome evidence."
+    "pending": "Protected exact-head Required + original full BRAIN success, CodeQL, native merge, original Supabase Git Integration source parity and genuine provider post + recurrence evidence",
+    "latest_original_full_brain": {
+      "run_id": 41416749639,
+      "head_sha": "51918e5bc67f0493f32b88e447f55be76324fe69",
+      "tests": 5377,
+      "passed": 5346,
+      "failed": 29,
+      "skipped": 2,
+      "original_buyer_first_test": "PASSED",
+      "remaining_invariant": "FULL_BRAIN_FAILED"
+    }
   },
   "release_status": "SOURCE_CANDIDATE_NOT_LIVE",
   "measured_views": null,
-  "verified_paid_orders": null
+  "verified_paid_orders": null,
+  "reconciliation": {
+    "protected_main_epoch": "9c314f70b791e46c1c69123692650ab8a82a8882",
+    "main_changes": "Independent original personal dedupe original source/test fixes, no changed-file path overlap",
+    "preserve_original_source_gate": true,
+    "release_status": "CANDIDATE_NOT_PROVEN"
+  }
 }

@@ -23,9 +23,10 @@ test('staleness is by event type, not by event id',()=>{
  assert.ok(!isStalePersonalSource(base(),new Set(['other'])));
  assert.deepEqual(personalSourceEventTypes(base()),['loop_assurance_refresh','source_health_evaluated']);
 });
-test('orchestrator prefers a fresh source, falls back to previous choice, guard untouched',()=>{
+test('orchestrator prefers a fresh verified source and blocks when all story families are stale',()=>{
  const src=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
  assert.match(src,/isStalePersonalSource\(s,recentPersonalTypes\)/);
- assert.match(src,/\|\| eligiblePersonal\[0\] \|\| null/);
+ assert.match(src,/const personalSource = eligiblePersonal\.find\(\(s:any\)=>!isStalePersonalSource\(s,recentPersonalTypes\)\)\s*\|\| null;/);
+ assert.doesNotMatch(src,/eligiblePersonal\s*\[\s*0\s*\]/,'no stale story-family fallback after duplicate rejection');
  assert.match(src,/\.in\('status',\['PUBLISHED','LIVE_PROVEN'\]\)/);
 });

@@ -6,3 +6,5 @@
 - Status: CANDIDATE_NOT_LIVE, NO_COMMERCIAL_OUTCOME_PROOF; no direct Edge deployment, no alternative writer or scheduler.
 
 - 2026-11-02 — Required #41416021212 FAIL admission `LEARNING_FAILURE_CLASS_REQUIRED`; same PR #5267 corrects learning JSON canonical compiler metadata and historical replay evidence, retains all original source/regressions. Re-run exact-head Required, CodeQL and original full BRAIN; no production approval implied.
+
+- 2026-11-02 — BRAIN verification-only #41416749639: original buyer-first test PASSED; original full backend 5,346 pass/29 fail/2 skipped of 5,377. Reconcile independent #5268 personal duplicate tests from main via no-overlap, no-force CAS on same PR #5267; remain not live or fully green.
