@@ -7,3 +7,5 @@
 - Bounded repair: idempotent status display only when original form and submit exist; original payment provider readiness/receipt strictly retained.
 - Test: tests/brain-checkout-status-dom-failclosed-20261102.test.mjs, historical/shadow/canary; original Page/SEO 89-page readback and production exact SHA required.
 - Owner: original checkout/SEO ONE BRAIN producer; outcome PENDING protected merge and natural recurrence check.
+
+- First exact-head admission #41437433401, hygiene job #125250643921 correctly FAILED during original historical replay: `Identifier 'checkoutReady' has already been declared` in the new VM test fixture. Cause: the original candidate repeated top-level lexical declaration in each `vm.runInNewContext` invocation while reusing one sandbox. Fix on the same original PR #5293: initialize test-only lexical scope exactly once, then evaluate repeated setCheckoutReady calls within that same context. No production runtime or payment logic change, no test bypass, next exact-head Required/CodeQL and full original BRAIN required.
