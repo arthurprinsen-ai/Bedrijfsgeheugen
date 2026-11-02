@@ -73,7 +73,7 @@ export function toConnectorDefinition(state){
     dataUse:Object.freeze({mode:['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'].includes(answers.dataUseMode)?answers.dataUseMode:'CONNECTION_ONLY',modelRoute:'TENANT_POLICY',trainingUse:'PROHIBITED'}),
     routing:Object.freeze({
       selectedFields:Object.freeze([...selected].filter(key=>fields.some(field=>field.key===key))),
-      portalPages:Object.freeze(answers.dataUseMode==='CONNECTION_ONLY'?[]:[...new Set(Array.isArray(answers.portalPages)?answers.portalPages:[])])
+      portalPages:Object.freeze(answers.dataUseMode==='CONNECTION_ONLY'?[]:[...new Set(Array.isArray(answers.portalPages)?answers.portalPages:[])].filter(page=>page!=='brain-verwerking'||answers.dataUseMode==='PORTAL_AI'))
     }),
     fallback:template.fallback||'review',
     activation:'test-required'
