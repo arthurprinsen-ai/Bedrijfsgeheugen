@@ -5,6 +5,12 @@ description: Use whenever CodeQL or another post-merge security workflow is queu
 
 # Powerhouse Post-Merge CodeQL
 
+## 2026-11-02 — keep recovered 0-failure BRAIN software truth visible, without false business green
+
+- Original protected ONE BRAIN backend run `41430758451`, job `125229059857`, independently reported 5,392 total, 5,390 passed, 0 failed, 2 skipped. Original protected main `79d99ce9d03068dae3c909707d00dde1933f9d78` reached Netlify provider READY deploy `6ae8689d8166870bb317e761`; original `public.brain_failure_registry.evidence.software_recovery_20261102` already records this separate software milestone.
+- The original owner-only Portal `Andere data` must show this as `ORIGINAL_SOFTWARE_PASS_RECORDED` next to historical 34/32/23 failed test runs, not overwrite or suppress the older incident. The admin API must fail closed if any pinned run/job/SHA/deploy, 5392=5390+0+2, or negative commercial/no-recurrence field differs. Do not derive independent terminal pass, software production effect, real buyer orders, content sends or future no-recurrence from a registry row alone.
+- Preserve one ONE BRAIN/Powerhouse/Heartbeat lineage, its existing admin access and the existing Portal API; no second scheduler, writes, provider receipts or synthetic revenue. Regression: `tests/brain-portal-zero-software-proof-20261102.test.mjs`; learning fingerprint `powerhouse|brain|software-pass-portal-observation-parity|20261102-v1`. Complete Required/CodeQL/full BRAIN, protected merge, Netlify exact production SHA and authenticated owner portal readback before claiming the UI change live. Natural subsequent run must independently prove no recurrence.
+
 ## Original Portal seven-source readback regression — 2 November 2026
 
 - Original full BRAIN run `41413309140` identifies two related regressions in `tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs`: historic fixture listed five source views but original `powerhouse-existing-integration-read-model.mjs` already reads **seven** authenticated read-only views (health, capabilities, layers, experiments, revenue, loops and terminal). A fixture lacking loops/terminal is legitimately `PARTIAL`, never `READABLE`.
