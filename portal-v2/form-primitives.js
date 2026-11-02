@@ -24,7 +24,7 @@ export function fieldMarkup(field={},value=''){
  const canonicalPath=esc(field.path||'');
  // A declared schema path is not proof of a tenant commit or Brain consumer ACK.
  const mappingProof=canonicalPath?'DECLARATION_ONLY':'UNMAPPED';
- const common=`id="${id}" data-field-id="${id}" data-field-path="${canonicalPath}" data-field-lineage="${mappingProof}" data-field-type="${esc(type)}" style="min-height:44px"`;
+ const common=`id="${id}" data-field-id="${id}" data-field-path="${canonicalPath}" data-field-lineage="${mappingProof}" data-field-type="${esc(type)}" aria-describedby="${id}-error${field.help?' '+id+'-help':''}"${field.required?' required aria-required="true"':''} style="min-height:44px"`;
  let control='';
  if(type==='textarea')control=`<textarea ${common} rows="4">${esc(value)}</textarea>`;
  else if(type==='select')control=`<select ${common}>${optionMarkup(field.options,value)}</select>`;
@@ -40,7 +40,7 @@ export function fieldMarkup(field={},value=''){
   const min=field.min!=null?` min="${esc(field.min)}"`:'';const max=field.max!=null?` max="${esc(field.max)}"`:'';
   control=`<input ${common} type="${inputType}" value="${esc(value)}"${step}${min}${max}>`;
  }
- return `<label class="v2field" data-field-wrap="${id}"><span class="v2fieldlabel">${label}${field.required?' <i>*</i>':''}</span>${control}${field.help?`<small>${esc(field.help)}</small>`:''}<span class="v2fielderror" data-field-error hidden></span></label>`;
+ return `<label class="v2field" data-field-wrap="${id}"><span class="v2fieldlabel">${label}${field.required?' <i>*</i>':''}</span>${control}${field.help?`<small id="${id}-help">${esc(field.help)}</small>`:''}<span id="${id}-error" class="v2fielderror" role="status" data-field-error hidden></span></label>`;
 }
 
 export function bindFields(root,schema,{getValue=()=>undefined,onChange=()=>{}}={}){
@@ -48,7 +48,18 @@ export function bindFields(root,schema,{getValue=()=>undefined,onChange=()=>{}}=
  const listeners=[];
  for(const field of schema||[]){
   const node=root.querySelector(`[data-field-id="${CSS.escape(field.id)}"]`);if(!node)continue;
-  const handler=()=>{const raw=node.multiple?[...node.selectedOptions].map(option=>option.value):node.value;onChange(field,normalizeFieldValue(field,raw),node);};
+  const handler=()=>{
+   const raw=node.multiple?[...node.selectedOptions].map(option=>option.value):node.value;
+   const error=node.closest('[data-field-wrap]')?.querySelector('[data-field-error]');
+   const valid=typeof node.checkValidity!=='function'||node.checkValidity();
+   if(error){
+    error.hidden=valid;
+    error.textContent=valid?'':node.validity?.valueMissing?'Vul dit veld in.':node.validity?.rangeUnderflow?'De waarde is lager dan toegestaan.':node.validity?.rangeOverflow?'De waarde is hoger dan toegestaan.':'Controleer de ingevoerde waarde.';
+   }
+   if(!valid){node.setAttribute('aria-invalid','true');return;}
+   node.removeAttribute('aria-invalid');
+   onChange(field,normalizeFieldValue(field,raw),node);
+  };
   node.addEventListener('input',handler);node.addEventListener('change',handler);listeners.push(()=>{node.removeEventListener('input',handler);node.removeEventListener('change',handler)});
  }
  return()=>listeners.forEach(fn=>fn());
