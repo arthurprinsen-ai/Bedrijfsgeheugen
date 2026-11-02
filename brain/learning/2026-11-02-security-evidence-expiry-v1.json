@@ -1,0 +1,37 @@
+{
+  "id": "powerhouse-security-provider-expiry-20261102-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "powerhouse|security|portal-provider-observation-without-expiration-false-green|20261102-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN_SECURITY_EVIDENCE_EXPIRY",
+    "scope": "SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Provider-observation UI accepted a PASS/VERIFIED row with evidence_available even if observed_at or expires_at was absent, expired, future-dated, or validity was unbounded. The database snapshot only changed expired non-null dates to STALE, so missing expiry could remain falsely verified.",
+  "prevention": {
+    "rule": "Every provider control requires independent source evidence, observed_at, non-null expires_at, observed time not older than 24h, observed time no more than 5m in the future, expires_at not later than 24h after observation, and expires_at in the future; only then can the portal mark that control verified.",
+    "regression_contract": "tests/brain-security-evidence-expiry-20261102.test.mjs",
+    "no_parallel_scheduler": true,
+    "writer": "original exclusive protected ONE BRAIN writer only"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-security-evidence-expiry-20261102.test.mjs"
+    ],
+    "outcome": "PR_CANDIDATE_UNVERIFIED",
+    "production_readback": "NOT_PROVEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-evidence-expiry-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-evidence-expiry-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-evidence-expiry-20261102.test.mjs"
+    ]
+  }
+}
