@@ -5,6 +5,10 @@ description: Use for every Bedrijfsgeheugen/Powerhouse Netlify production delive
 
 # Powerhouse Netlify Production Truth
 
+## P0 2026-11-02 — atomic System Map and immutable Portal app entry
+
+Original incident #4439 / BRAIN #41428302145: a generated `platform/system-map/canonical-system-map.mjs` digest and the immutable `portal-v2/index.html` `./app.js?bg_explain=` cache key diverged and caused backend tests #2917/#3162 to fail repeatedly. Every authorized source/inventory/Portal change MUST run the existing `node scripts/brain/portal-explanation-inventory.mjs --write` in the same protected source candidate. Its one canonical digest must update **both** tracked Map and Portal app entry deterministically; do not hand-write old hashes or emit a second cache-busting authority. The original `tools/delivery/assert-system-map-integrity.mjs` MUST compare both tracked paths after twice regenerating and fail closed on drift; verify current protected main, Required/BRAIN/CodeQL, exact Netlify deployed SHA and a real browser readback before setting live/green. Regression: `tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs` checks unchanged repeat, changed-source restamp and no-write fail-closed. Never bypass login/tenant boundaries, no fake sales/customer outcome, no additional release agent/scheduler, no assertion removal.
+
 Fingerprint: `netlify-auth-recovery-exact-sha-provider-proof-20260925-v1`.
 
 ## Mandatory production truth model
