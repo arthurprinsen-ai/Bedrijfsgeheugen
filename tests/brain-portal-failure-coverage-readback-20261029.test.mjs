@@ -53,7 +53,13 @@ test('admin-only portal endpoint includes incident aggregate; UI separates obser
  const ui=fs.readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/loadFailureCoverage\(/);
- assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage\}/);
+ assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage,portalUxReleaseProof\}/);
+ // The added UX proof is an allowlisted admin-side observation; the existing
+ // all-incident aggregate must remain present, separate and privacy-gated.
+ assert.match(api,/loadPortalUxReleaseProof\(/);
+ assert.match(api,/isPowerhouseAdmin\(user/);
+ assert.match(api,/resolveIdentityTenant\(user\)/);
+ assert.match(ui,/data-portal-ux-proof/);
  assert.match(ui,/data-brain-failure-coverage/);
  for(const name of ['observedMissingCause','observedMissingRegression','observedMissingPrevention','READBACK_COMPLETE','data-original-site-recovery','OPEN_AUTHORIZATION']) assert.ok(ui.includes(name));
 });
