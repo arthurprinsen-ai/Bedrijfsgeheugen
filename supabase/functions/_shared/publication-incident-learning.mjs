@@ -22,12 +22,24 @@ export function planOriginalIncidentLearning(recovery,runDate){
     ||incident?.status!=='REQUIRES_RECOVERY')continue;
   observed.add(channel);
   const fingerprint='powerhouse|publication-recovery|'+channel+'|'+code.toLowerCase()+'|v1';
+  const rejectedHash=/^[a-f0-9]{64}$/.test(clean(incident.rejectedCopySha256))
+    ?clean(incident.rejectedCopySha256):null;
+  const rejectedSourceId=/^[a-f0-9-]{36}$/i.test(clean(incident.rejectedRecommendationId))
+    ?clean(incident.rejectedRecommendationId):null;
   // No raw post text, personal identities, tokens, key or provider secrets.
   // Repeating the same daily failure is an idempotent occurrence; a new day
   // or new typed failure becomes a distinct original ONE BRAIN observation.
   const evidence={
    contract:INCIDENT_LEARNING_CONTRACT,run_date:runDate,channel,
    failure_code:code,owner_agent:owner,original_repair_handoff:handoff,
+   rejected_copy_sha256:rejectedHash,rejected_recommendation_id:rejectedSourceId,
+   first_time_right_prevention:{
+    never_retry_rejected_same_candidate:true,
+    require_new_verified_source_before_regeneration:code==='DISTINCT_VERIFIED_STORY_REQUIRED',
+    original_owner_only:true,max_distinct_candidates:3,
+    no_duplicate_provider_side_effect:true,
+    independent_quality_and_external_proof_required:true
+   },
    classification:'INCIDENT_OPEN',proof_state:'NOT_PROVEN',
    occurrence_source:'original-powerhouse-content-loop',
    requires_human_authorization:incident.requiresAuthorization===true,
@@ -45,7 +57,8 @@ export function planOriginalIncidentLearning(recovery,runDate){
   };
   observations.push(Object.freeze({
    channel,code,owner,fingerprint,
-   occurrenceId:'publication-recovery:'+runDate+':'+channel+':'+code,
+   occurrenceId:'publication-recovery:'+runDate+':'+channel+':'+code
+     +(rejectedHash?':rejected-copy:'+rejectedHash.slice(0,16):''),
    evidence:Object.freeze(evidence)
   }));
  }
