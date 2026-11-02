@@ -24,6 +24,51 @@ export function summarizeFailureCoverage(rows, expectedTotal, observedAt = new D
 // Only a bounded, whitelisted incident summary leaves the admin-only server.
 // Raw incident evidence, source IDs, and forecast content stay in Supabase.
 const PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT='predictive|public-market|unfiltered-top80-crowds-out-valid-source-types|20261030-v1';
+
+const ORIGINAL_SITE_INCIDENTS=Object.freeze({
+ checkout:'powerhouse|website|checkout-status-dom-null-after-benefit-fix|20261102-v1',
+ seoDate:'powerhouse|website|page-seo-date-only-pr-handoff-churn|20261102-v1',
+ prHandoff:'powerhouse|website|paginacontrole-github-actions-pr-create-denied|20261102-v1'
+});
+// Exact source IDs are used by the authenticated server only. Never send raw
+// incident evidence, provider IDs, actor identities or customer records to UI.
+export function summarizeOriginalSiteRecovery(rows){
+ const unknown={status:'UNVERIFIED',checkout:'UNVERIFIED',seoDate:'UNVERIFIED',prHandoff:'UNVERIFIED'};
+ if(!Array.isArray(rows)||rows.length!==3)return unknown;
+ const byKey={};
+ for(const row of rows){
+   if(!row||!Object.values(ORIGINAL_SITE_INCIDENTS).includes(row.fingerprint)||byKey[row.fingerprint])return unknown;
+   byKey[row.fingerprint]=row;
+ }
+ if(Object.keys(byKey).length!==3)return unknown;
+ const checkout=byKey[ORIGINAL_SITE_INCIDENTS.checkout];
+ const seo=byKey[ORIGINAL_SITE_INCIDENTS.seoDate];
+ const handoff=byKey[ORIGINAL_SITE_INCIDENTS.prHandoff];
+ const proof=row=>row?.evidence&&typeof row.evidence==='object'&&!Array.isArray(row.evidence)?row.evidence:{};
+ const c=proof(checkout),s=proof(seo),h=proof(handoff);
+ const checkoutProven=checkout.maturity==='PROVEN'
+   &&/^[a-f0-9]{40}$/.test(String(c.merge_commit||''))
+   &&String(c.netlify_deploy||'').length>10
+   &&Number(c.production_readback_run)>0
+   &&Number(c.page_browser_pages)>=89
+   &&c.page_browser_js_errors===0;
+ const seoProven=seo.maturity==='PROVEN'
+   &&/^[a-f0-9]{40}$/.test(String(s.protected_commit||''))
+   &&String(s.native_netlify_deploy||'').length>10
+   &&Number(s.production_release_readback_run)>0
+   &&s.live_readback_success===true;
+ const handoffProven=handoff.maturity==='PROVEN'
+   &&h.github_actions_create_pr_authorization_fixed===true
+   &&h.original_natural_handoff_proven===true;
+ return {
+   status:'READBACK_COMPLETE',
+   checkout:checkoutProven?'SOFTWARE_LIVE_VERIFIED':'RECOVERY_EVIDENCE_PENDING',
+   seoDate:seoProven?(s.next_natural_recurrence_confirmed===true?'SOURCE_AND_NATURAL_VERIFIED':'SOURCE_LIVE_NATURAL_PENDING'):'RECOVERY_EVIDENCE_PENDING',
+   prHandoff:handoffProven?'NATURAL_HANDOFF_VERIFIED':'OPEN_AUTHORIZATION',
+   noClaimOfPaidOrders:true
+ };
+}
+
 export function summarizePredictiveSourceRecovery(row){
   if(!row||row.fingerprint!==PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)
     return {status:'UNVERIFIED',reason:'PREDICTIVE_INCIDENT_NOT_RETURNED'};
@@ -57,15 +102,24 @@ export async function loadFailureCoverage({baseUrl,key,fetchImpl=globalThis.fetc
     const match=/\/(\d+)$/.exec(contentRange);
     const aggregate=summarizeFailureCoverage(await response.json(),match?Number(match[1]):null);
     if(aggregate.status!=='READBACK_COMPLETE')return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCOMPLETE_REGISTRY_READBACK'}};
+
+    let predictiveRecovery={status:'UNVERIFIED',reason:'INCIDENT_READBACK_FAILED'};
     const incidentUrl=String(baseUrl).replace(/\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence,last_seen_at&fingerprint=eq.'+encodeURIComponent(PREDICTIVE_PUBLIC_SOURCE_FINGERPRINT)+'&limit=1';
     try{
       const evidenceResponse=await fetchImpl(incidentUrl,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json'},signal:AbortSignal.timeout(5000)});
-      if(!evidenceResponse.ok)return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCIDENT_READBACK_HTTP_'+evidenceResponse.status}};
-      const rows=await evidenceResponse.json();
-      return {...aggregate,predictiveRecovery:summarizePredictiveSourceRecovery(Array.isArray(rows)&&rows.length===1?rows[0]:null)};
-    }catch{
-      return {...aggregate,predictiveRecovery:{status:'UNVERIFIED',reason:'INCIDENT_READBACK_FAILED'}};
-    }
+      if(!evidenceResponse.ok)predictiveRecovery={status:'UNVERIFIED',reason:'INCIDENT_READBACK_HTTP_'+evidenceResponse.status};
+      else {
+        const rows=await evidenceResponse.json();
+        predictiveRecovery=summarizePredictiveSourceRecovery(Array.isArray(rows)&&rows.length===1?rows[0]:null);
+      }
+    }catch{}
+    let websiteRecovery={status:'UNVERIFIED',checkout:'UNVERIFIED',seoDate:'UNVERIFIED',prHandoff:'UNVERIFIED'};
+    const siteUrl=String(baseUrl).replace(/\/$/,'')+'/rest/v1/brain_failure_registry?select=fingerprint,maturity,evidence&fingerprint=in.('+Object.values(ORIGINAL_SITE_INCIDENTS).map(encodeURIComponent).join(',')+')&limit=3';
+    try{
+      const source=await fetchImpl(siteUrl,{method:'GET',headers:{apikey:key,authorization:'Bearer '+key,accept:'application/json'},signal:AbortSignal.timeout(5000)});
+      if(source.ok)websiteRecovery=summarizeOriginalSiteRecovery(await source.json());
+    }catch{}
+    return {...aggregate,predictiveRecovery,websiteRecovery};
   } catch {
     return {status:'UNAVAILABLE',reason:'FAILURE_COVERAGE_READ_FAILED'};
   }
