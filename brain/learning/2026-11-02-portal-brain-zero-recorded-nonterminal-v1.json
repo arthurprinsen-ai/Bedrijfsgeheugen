@@ -1,0 +1,30 @@
+{
+  "fingerprint": "powerhouse|portal|brain-zero-not-shown-after-backend-recovery|20261102-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Original owner-only Portal brainBackendRun adapter hardcoded BRAIN_BACKEND_FAILED even when original CAS-protected ONE BRAIN failure registry independently carried a newer software full backend 0-fail run; UI continued showing historic errors.",
+  "prevention_rule": "Preserve independent provider readback boundary. Display internally consistent original registry run 0 as RECORDED_NONTERMINAL, not independently green; check total=passed+skipped, exact source main and deploy IDs, newer failure precedence, historical baseline preserved, no false paid orders. Actual independent GitHub/Netlify verification and subsequent natural no-recurrence required for PROVEN.",
+  "owner": "Original ONE BRAIN Portal other-data read-only projection and Netlify production truth",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-postmerge-backend-incident-triage-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430758451",
+    "backend_job": 125229059857,
+    "full_tests": 5392,
+    "failed": 0,
+    "original_main_sha": "79d99ce9d03068dae3c909707d00dde1933f9d78",
+    "proposed_status": "CANDIDATE_UNVERIFIED",
+    "actual_customer_outcomes_proven": false
+  }
+}

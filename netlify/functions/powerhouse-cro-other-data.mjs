@@ -488,19 +488,38 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
       const evidence=row?.evidence && typeof row.evidence==='object' ? row.evidence:{};
       const historicalTests=Number(evidence.failed_tests);
       const files=Number(evidence.affected_test_files);
-      // Prefer the original agent's explicitly witnessed latest BRAIN run.
-      // A self-reported registry entry is NOT an independent terminal success.
+      // Existing original source may report a FAILED BRAIN run. A registry
+      // observation alone is NEVER a new independent GitHub-provider check.
       const latestRaw=evidence.latest_original_brain_run||evidence.second_full_brain_run||null;
       const runId=Number(latestRaw?.run_id);
       const latestFailures=Number(latestRaw?.fail);
       const validLatest=row&&latestRaw&&Number.isSafeInteger(runId)&&runId>0
-        // UNKNOWN/null must never coerce into 0 failed tests.
         &&typeof latestRaw.fail==='number'&&Number.isSafeInteger(latestRaw.fail)&&latestRaw.fail>=0
         &&Number.isSafeInteger(latestFailures)&&latestFailures>=0
         &&latestRaw.terminal_status==='FAILED_BRAIN';
-      const currentFailures=validLatest?latestFailures:historicalTests;
+      // The ORIGINAL failure registry now carries a separately provider-read
+      // full-suite 0-failure observation. Display it as RECORDED, not PROVEN:
+      // this read-only projection does not independently contact GitHub.
+      const recovery=evidence.software_recovery_20261102||null;
+      const recoveredRun=Number(recovery?.original_full_test_run);
+      const recoveredTotal=Number(recovery?.full_backend_total);
+      const recoveredPass=Number(recovery?.full_backend_passed);
+      const recoveredSkip=Number(recovery?.full_backend_skipped);
+      const originalZeroRecorded=Boolean(row&&recovery
+        &&row.maturity!=='OBSERVED'
+        &&recovery.status==='SOFTWARE_BACKEND_0_FAILURES_VALIDATED'
+        &&typeof recovery.full_backend_failed==='number'&&recovery.full_backend_failed===0
+        &&[recoveredRun,recoveredTotal,recoveredPass,recoveredSkip].every(Number.isSafeInteger)
+        &&recoveredRun>0&&recoveredTotal>0&&recoveredPass>=0&&recoveredSkip>=0
+        &&recoveredPass+recoveredSkip===recoveredTotal
+        &&(!validLatest||recoveredRun>runId)
+        &&/^[a-f0-9]{40}$/.test(String(recovery.protected_main_sha||''))
+        &&recovery.netlify_exact_sha_ready===true
+        &&/^[a-f0-9]{24}$/.test(String(recovery.netlify_production_deploy_id||'')));
+      const currentFailures=originalZeroRecorded?0:(validLatest?latestFailures:historicalTests);
+      const chosenRun=originalZeroRecorded?recoveredRun:(validLatest?runId:null);
       return {
-        status:row?'BRAIN_BACKEND_FAILED':'SOURCE_UNVERIFIED',
+        status:originalZeroRecorded?'BRAIN_BACKEND_ZERO_RECORDED_NONTERMINAL':row?'BRAIN_BACKEND_FAILED':'SOURCE_UNVERIFIED',
         source:'original public.brain_failure_registry',
         sourceState:readStates.brainBackendFailures||'UNAVAILABLE',
         fingerprint:'powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1',
@@ -508,12 +527,14 @@ export function projectOtherData({daily=[],experiments=[],policies=[],conversion
         failingTests:row&&Number.isInteger(currentFailures)&&currentFailures>=0?currentFailures:null,
         historicalFailingTests:row&&Number.isInteger(historicalTests)&&historicalTests>0?historicalTests:null,
         affectedFiles:row&&Number.isInteger(files)&&files>0?files:null,
-        latestRunId:validLatest?runId:null,
-        latestGitHubEvidenceUrl:validLatest?'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/'+runId:null,
-        latestMeasurementKind:validLatest?'REGISTERED_ORIGINAL_GITHUB_RUN':'HISTORICAL_BASELINE_ONLY',
+        latestRunId:chosenRun,
+        latestGitHubEvidenceUrl:chosenRun?'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/'+chosenRun:null,
+        latestMeasurementKind:originalZeroRecorded?'REGISTERED_ZERO_REQUIRES_PROVIDER_RECHECK':validLatest?'REGISTERED_ORIGINAL_GITHUB_RUN':'HISTORICAL_BASELINE_ONLY',
         failedOriginalRun:row&&evidence.brain_run===41406918918?
           'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41406918918':null,
         verifiedPassed:false,
+        originalZeroRecorded,
+        naturalNoRecurrenceProven:false,
         noSecondExecutor:true,
         ordersIndependentlyProven:false
       };

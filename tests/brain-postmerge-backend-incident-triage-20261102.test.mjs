@@ -52,3 +52,42 @@ test('original owner-only Portal shows observed BRAIN failure but never claims B
   const stale=projectOtherData({readStates:{brainBackendFailures:'TRUNCATED'},brainBackendFailures:[{},{}]});
   assert.equal(stale.brainBackendRun.status,'SOURCE_UNVERIFIED');
 });
+
+test('original register can show last recorded 0 BRAIN failures without claiming provider or revenue proof',()=>{
+  const fingerprint='powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1';
+  const base={fingerprint,maturity:'VALIDATED',evidence:{
+    failed_tests:34,affected_test_files:30,brain_run:41406918918,
+    software_recovery_20261102:{
+      status:'SOFTWARE_BACKEND_0_FAILURES_VALIDATED',
+      original_full_test_run:41430758451,
+      full_backend_total:5392,full_backend_passed:5390,
+      full_backend_failed:0,full_backend_skipped:2,
+      protected_main_sha:'79d99ce9d03068dae3c909707d00dde1933f9d78',
+      netlify_exact_sha_ready:true,
+      netlify_production_deploy_id:'6ae8689d8166870bb317e761'
+    }
+  }};
+  const read=entry=>projectOtherData({brainBackendFailures:[entry],readStates:{brainBackendFailures:'LIVE'}}).brainBackendRun;
+  const observed=read(base);
+  assert.equal(observed.status,'BRAIN_BACKEND_ZERO_RECORDED_NONTERMINAL');
+  assert.equal(observed.failingTests,0);
+  assert.equal(observed.historicalFailingTests,34);
+  assert.equal(observed.latestRunId,41430758451);
+  assert.equal(observed.latestGitHubEvidenceUrl,'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430758451');
+  assert.equal(observed.verifiedPassed,false);
+  assert.equal(observed.ordersIndependentlyProven,false);
+  assert.equal(observed.naturalNoRecurrenceProven,false);
+  assert.equal(observed.noSecondExecutor,true);
+  for(const invalid of [
+    {...base,evidence:{...base.evidence,software_recovery_20261102:{...base.evidence.software_recovery_20261102,full_backend_failed:null}}},
+    {...base,evidence:{...base.evidence,software_recovery_20261102:{...base.evidence.software_recovery_20261102,full_backend_passed:5370}}},
+    {...base,evidence:{...base.evidence,software_recovery_20261102:{...base.evidence.software_recovery_20261102,netlify_exact_sha_ready:false}}},
+    {...base,evidence:{...base.evidence,software_recovery_20261102:{...base.evidence.software_recovery_20261102,protected_main_sha:'not-a-commit'}}},
+    {...base,maturity:'OBSERVED'},
+    {...base,evidence:{...base.evidence,latest_original_brain_run:{run_id:41439999999,fail:2,terminal_status:'FAILED_BRAIN'}}}
+  ]){
+    const projection=read(invalid);
+    assert.notEqual(projection.status,'BRAIN_BACKEND_ZERO_RECORDED_NONTERMINAL');
+    assert.equal(projection.verifiedPassed,false);
+  }
+});
