@@ -28,7 +28,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='GET'&&id==='readiness'&&!action){if(!engine?.readiness)return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);return json(clean(engine.readiness));}
   if(normalized.method==='GET'&&id==='page-sources'&&!action){
     if(typeof store?.list!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
-    const pageId=new URL(request?.url||'https://portal.local/api/connectors/page-sources','https://portal.local').searchParams.get('page')||'';
+    const pageId=new URL(request?.url||request?.path||'https://portal.local/api/connectors/page-sources','https://portal.local').searchParams.get('page')||'';
     if(!CONNECTOR_PORTAL_PAGES.some(page=>page.id===pageId))return json({error:'INVALID_PORTAL_PAGE'},422);
     return json({pageId,items:connectorPortalSources(await store.list(tenantId),pageId),truth:'CONNECTOR_METADATA_ONLY_NO_LIVE_DATA'});
   }
@@ -53,20 +53,20 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='POST'&&!id){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     let body=clean(await requestBody(request,normalized));
-    try{
-      const dataUse=normalizeConnectorDataUse(body.dataUse);
-      body={...body,dataUse,routing:normalizeConnectorRouting(body.routing,body.documentSchema,dataUse)};
-    }catch{return json({error:'INVALID_CONNECTOR_ROUTING_OR_DATA_USE'},422);}
+    try{body={...body,dataUse:normalizeConnectorDataUse(body.dataUse)};}
+    catch{return json({error:'INVALID_CONNECTOR_DATA_USE'},422);}
+    try{body={...body,routing:normalizeConnectorRouting(body.routing,body.documentSchema,body.dataUse)};}
+    catch{return json({error:'INVALID_CONNECTOR_ROUTING'},422);}
     const impact=planCrossDomainChange({tenantId,changeId:`connector-create:${body.id||'new'}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,before:null,after:connectorConfigurationForImpact(body),evidenceIds:[]});
     return json(clean(await store.saveDraft(tenantId,{...body,state:'Draft',version:1,runtime:{...untrustedRuntime(body.runtime),changeImpact:impact}})),201);
   }
   if(normalized.method==='PUT'&&id&&action==='draft'){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     let body=clean(await requestBody(request,normalized));
-    try{
-      const dataUse=normalizeConnectorDataUse(body.dataUse);
-      body={...body,dataUse,routing:normalizeConnectorRouting(body.routing,body.documentSchema,dataUse)};
-    }catch{return json({error:'INVALID_CONNECTOR_ROUTING_OR_DATA_USE'},422);}
+    try{body={...body,dataUse:normalizeConnectorDataUse(body.dataUse)};}
+    catch{return json({error:'INVALID_CONNECTOR_DATA_USE'},422);}
+    try{body={...body,routing:normalizeConnectorRouting(body.routing,body.documentSchema,body.dataUse)};}
+    catch{return json({error:'INVALID_CONNECTOR_ROUTING'},422);}
     const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);
     const changed=isConnectorConfigurationChanged(before,body);
     const impact=changed?planCrossDomainChange({
