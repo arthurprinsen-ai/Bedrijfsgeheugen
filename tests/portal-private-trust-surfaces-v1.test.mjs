@@ -73,8 +73,14 @@ test('platform posture requires every independently observed control with actual
  for(const row of blank){assert.equal(row.status,'EVIDENCE_PARTIAL');assert.equal(row.observed,0);}
  const github=[{provider_key:'GITHUB',control_key:'CODEQL',status:'VERIFIED',evidence_available:true}];
  assert.equal(summarizeSecurityPlatforms(github)[0].status,'EVIDENCE_PARTIAL');
- const githubFull=['CODEQL','BRANCH_PROTECTION','SECRET_SCANNING'].map(control_key=>({provider_key:'GITHUB',control_key,status:'VERIFIED',evidence_available:true}));
+ const now=new Date();
+ const githubFull=['CODEQL','BRANCH_PROTECTION','SECRET_SCANNING'].map(control_key=>({
+  provider_key:'GITHUB',control_key,status:'VERIFIED',evidence_available:true,
+  observed_at:new Date(now.getTime()-60_000).toISOString(),
+  expires_at:new Date(now.getTime()+60*60_000).toISOString()
+ }));
  assert.equal(summarizeSecurityPlatforms(githubFull)[0].status,'VERIFIED');
+ assert.equal(summarizeSecurityPlatforms(githubFull.map(x=>({...x,expires_at:null})))[0].status,'EVIDENCE_PARTIAL');
  assert.equal(summarizeSecurityPlatforms(githubFull.map(x=>x.control_key==='CODEQL'?{...x,status:'NOT_VERIFIED'}:x))[0].status,'EVIDENCE_PARTIAL');
  assert.equal(summarizeSecurityPlatforms(githubFull.map(x=>x.control_key==='SECRET_SCANNING'?{...x,evidence_available:false}:x))[0].status,'EVIDENCE_PARTIAL');
  assert.equal(summarizeSecurityPlatforms(githubFull.map(x=>x.control_key==='CODEQL'?{...x,status:'ACTION_REQUIRED'}:x))[0].status,'ACTION_REQUIRED');
