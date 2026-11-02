@@ -83,34 +83,50 @@ const PLATFORM_SECURITY_REQUIREMENTS=[
  {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT']}
 ];
 const upper=v=>String(v??'').trim().toUpperCase();
-export function summarizeSecurityPlatforms(observations=[]){
+// A cached PASS/VERIFIED is not security evidence after its original expiry.
+// Evaluate time at rendering as well as at database snapshot generation.
+export function isCurrentSecurityObservation(observation,nowMs=Date.now()){
+ if(!observation||!Number.isFinite(nowMs))return false;
+ const observed=Date.parse(String(observation.observed_at??observation.observedAt??''));
+ const expiry=Date.parse(String(observation.expires_at??observation.expiresAt??''));
+ return Number.isFinite(observed)&&Number.isFinite(expiry)&&observed<=nowMs&&expiry>nowMs&&expiry>observed;
+}
+export function isFreshSecuritySnapshot(generatedAt,nowMs=Date.now()){
+ const generated=Date.parse(String(generatedAt??''));
+ return Number.isFinite(generated)&&Number.isFinite(nowMs)&&generated<=nowMs
+  && nowMs-generated<=24*60*60*1000;
+}
+export function summarizeSecurityPlatforms(observations=[],nowMs=Date.now()){
  return PLATFORM_SECURITY_REQUIREMENTS.map(platform=>{
   const controls=arr(observations).filter(o=>upper(o.provider_key||o.providerKey)===platform.provider);
   const rows=platform.checks.map(key=>controls.find(o=>upper(o.control_key||o.controlKey)===key));
   const complete=rows.every(Boolean);
-  const allGood=complete&&rows.every(o=>securityTone(o.status)==='ok'&&Boolean(o.evidence_available??o.evidenceAvailable));
+  const current=rows.filter(o=>o&&isCurrentSecurityObservation(o,nowMs));
+  const allGood=complete&&rows.every(o=>securityTone(o.status)==='ok'
+   &&Boolean(o.evidence_available??o.evidenceAvailable)&&isCurrentSecurityObservation(o,nowMs));
   const risk=rows.some(o=>o&&securityTone(o.status)==='bad');
-  return { ...platform, total:platform.checks.length, observed:rows.filter(Boolean).length,
+  return { ...platform, total:platform.checks.length, observed:current.length,
    status:risk?'ACTION_REQUIRED':allGood?'VERIFIED':'EVIDENCE_PARTIAL',
    latest:rows.filter(Boolean).map(o=>o.observed_at||o.observedAt).filter(Boolean).sort().at(-1)||null};
  });
 }
-export function securityOverallPosture(summary,observations){
+export function securityOverallPosture(summary,observations,generatedAt,nowMs=Date.now()){
  const source=String(summary?.postureStatus||'EVIDENCE_PARTIAL').toUpperCase();
- const platform=summarizeSecurityPlatforms(observations);
+ const platform=summarizeSecurityPlatforms(observations,nowMs);
  if(source==='ACTION_REQUIRED'||platform.some(item=>item.status==='ACTION_REQUIRED'))return 'ACTION_REQUIRED';
+ if(!isFreshSecuritySnapshot(generatedAt,nowMs))return 'EVIDENCE_PARTIAL';
  if(source==='VERIFIED_NO_OPEN_FINDINGS'&&platform.every(item=>item.status==='VERIFIED'))return 'VERIFIED_NO_OPEN_FINDINGS';
  return 'EVIDENCE_PARTIAL';
 }
 function renderSecurityPlatforms(observations){
  const platforms=summarizeSecurityPlatforms(observations);
  return '<section class="trust-section" data-security-platforms><header><h3>Beveiliging van de infrastructuur</h3><p>GitHub, Supabase, Netlify, website en portaal. Status groen uitsluitend wanneer álle verplichte controles actueel en onafhankelijk onderbouwd zijn. Ontbrekend bewijs is nooit groen.</p></header><div class="trust-grid">'+
- platforms.map(p=>'<article data-security-platform="'+esc(p.provider)+'"><small>'+esc(p.label)+'</small><strong>'+esc(p.status==='VERIFIED'?'Geverifieerd':p.status==='ACTION_REQUIRED'?'Actie nodig':'Niet volledig bewezen')+'</strong>'+status(p.status)+'<span>'+p.observed+' van '+p.total+' controles met bronobservatie · laatste bronmoment: '+esc(p.latest||'onbekend')+'</span></article>').join('')+
+ platforms.map(p=>'<article data-security-platform="'+esc(p.provider)+'"><small>'+esc(p.label)+'</small><strong>'+esc(p.status==='VERIFIED'?'Geverifieerd':p.status==='ACTION_REQUIRED'?'Actie nodig':'Niet volledig bewezen')+'</strong>'+status(p.status)+'<span>'+p.observed+' van '+p.total+' actuele controles met bronbewijs · laatste bronmoment: '+esc(p.latest||'onbekend')+'</span></article>').join('')+
  '</div></section>';
 }
 
 function renderSecurity(root,security,sovereignty,scope){
- const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{},overallPosture=securityOverallPosture(summary,observations);
+ const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{},overallPosture=securityOverallPosture(summary,observations,security?.generatedAt);
  root.innerHTML=`<section class="trust-workspace">
   <div class="trust-hero"><div><span class="trust-kicker">Alleen ingelogde klantomgeving</span><h2>Security Trust Center</h2><p>Hoe veilig is je data, wie kan erbij, welke controls zijn aantoonbaar en welke punten staan nog open?</p></div><div class="trust-scope"><small>Weergave</small><strong>${scope}</strong><span>Ruwe security-evidence blijft server-only</span></div></div>
   <div class="trust-grid">
