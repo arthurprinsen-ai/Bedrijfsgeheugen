@@ -1,0 +1,55 @@
+{
+  "id": "original-native-supabase-provider-791-security-lock-reconcile-20261102-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_NOT_YET_TERMINAL",
+  "fingerprint": "supabase|revenue-learning|migration-history-lock-stale-after-production-20261029",
+  "parent_obligation": "original-native-supabase-provider-790-lock-and-brain-replay-20261102-v1",
+  "compiler": {
+    "failure_class": "MIGRATION_PROVIDER_LOCK_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "A protected security migration was applied to the original Supabase provider after the prior exact 790-record lock was captured. The repository gained 20261102141045_writer_control_fixed_search_path_v1.sql without refreshing the original native provider migration-history lock. The next full BRAIN delivery run for PR #5307 correctly failed 5 migration-identity tests, preventing terminal closure despite passing Required/CodeQL and a live Netlify deploy.",
+  "prevention": {
+    "policy": "After any applied migration, the existing exclusive GitOps writer must read all provider version/name pairs, compare with all original executable Git SQL and the original provider lock, and source-close the lock without altering already-applied SQL or weakening the expected parity tests. Keep the original incident open until zero failed BRAIN tests and exact independent provider/deployment readback.",
+    "original_failure_count": 5,
+    "primary_regression": "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+    "secondary_regressions": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_observed_at_utc": "2026-11-02T14:26:44.154Z",
+    "provider_count": 791,
+    "previous_lock_count": 790,
+    "provider_identity_append": {
+      "version": "20261102141045",
+      "name": "writer_control_fixed_search_path_v1"
+    },
+    "first_790_unchanged": true,
+    "duplicate_version_count": 0,
+    "no_sql_replay": true,
+    "underlying_provider_security_advisor_mutable_search_path_warnings": 0,
+    "original_brain_failure_run_id": 41460310537,
+    "original_terminal_failure_run_id": 41460262803,
+    "tested_candidate_result": "NOT_YET_RUN",
+    "production_rollback": "not_applicable_to_existing_applied_db_migration",
+    "no_new_scheduler": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+    ]
+  }
+}
