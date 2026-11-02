@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-02",
+  "obligation_id": "original-company-editorial-novelty-before-generation-20261102-v1",
+  "fingerprint": "powerhouse|publication-recovery|linkedin_company|distinct_verified_story_required|v1",
+  "status": "SOURCE_CANDIDATE",
+  "state": "EVIDENCE_DUE",
+  "schema": "brain-learning-observation-v1",
+  "failure_class": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+  "original_owners": [
+    "existing ONE BRAIN editorial council",
+    "powerhouse-content-orchestrator",
+    "powerhouse-social-publisher"
+  ],
+  "observed": {
+    "source": "public.content_publication_obligations canonical/2026-11-02/linkedin_company",
+    "status": "BLOCKED",
+    "last_error": "PRE_PUBLISH_GATE_BLOCKED",
+    "violation": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "review_status": 422,
+    "external_id": null,
+    "updated_at": "2026-11-02T08:09:25.786Z",
+    "provider_publication_proven": false
+  },
+  "root_cause": "The original editor can still choose a source concept from the recently used lost/unfollowed-offer operational story family, then learns the collision only after generating it. A downstream 422 correctly prevents a duplicate; this candidate adds an upstream editorial instruction, not a hard source selector.",
+  "intervention": "Attach explicit source novelty before company content generation to the existing editorial council and the existing social CRO agent skill. If no independently evidenced distinct topic, leave BLOCKED. Preserve original hard reviewer, global dedupe and publisher authority.",
+  "prevention_rule": "Before attempting a new company LinkedIn text, choose one dated independently verifiable and distinct entrepreneur problem; never recycle lost-offer follow-up as paraphrase. Human/source factual verification, original 422, provider ID and readback remain hard gates.",
+  "regressions": [
+    "tests/brain-company-pre-generation-source-novelty-20261102.test.mjs",
+    "tests/brain-linkedin-company-editorial-contract-v1.test.mjs"
+  ],
+  "independent_verification_due": [
+    "exact-head protected Required+CodeQL",
+    "full original BRAIN",
+    "protected merge",
+    "original Supabase Edge function source and next natural company generation",
+    "original publisher-ID and independent company readback",
+    "later recurrence/outcome trend"
+  ],
+  "production_readback": {
+    "verified": false
+  },
+  "business_outcomes": {
+    "company_post_proven": false,
+    "qualified_leads_proven": false,
+    "paid_orders_proven": false
+  },
+  "compiler": {
+    "failure_class": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-pre-generation-source-novelty-20261102.test.mjs"
+    ],
+    "additional_regression_tests": [
+      "tests/brain-linkedin-company-editorial-contract-v1.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-company-pre-generation-novelty.md",
+  "telemetry_boundary": "SOURCE_CANDIDATE only. A prompt-level editorial repair cannot prove new factual source, execution, provider delivery, measured leads or prevention of every future recurrence."
+}
