@@ -5,6 +5,12 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+## BRAIN backend regression: NEVER disable blog export JWT to match stale test (2 November 2026)
+
+- Original full BRAIN exact-head run 41409216287 failed 32 tests, including `tests/brain-daily-blog-edge-config-registration-v1.test.mjs`. Its outdated combined test expected both blog functions to have `verify_jwt=false`.
+- Independent original production Supabase Edge listing confirms `powerhouse-blog-export` version 297 is ACTIVE with `verify_jwt=true`; `powerhouse-blog-queue` version 301 is ACTIVE with `verify_jwt=false` and its existing `x-powerhouse-token` validation. Original repository config and exporter handler agree: export needs BOTH provider JWT and the service-role bearer and explicit approved blog obligation. Never flip the export platform JWT gate to green a test.
+- Source-owner recovery: correct the obsolete test contract with strict per-function JWT expectations, preserve original registration/entrypoint/rejection guards, and rerun the same original targeted test and full exact-head BRAIN backend. A passing targeted test is NOT proof all other failures are resolved, nor proof any blog was published. Fingerprint `powerhouse|brain|blog-export-jwt-test-drift|20261102-v1`; original incident `powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1` stays OPEN until independent terminal success. Log next natural run / provider/portal proof without new publisher, scheduler or migration changes.
+
 ## Canonical blog subsidy date-fact and approval error prevention (30 October 2026)
 
 - **Proven incident:** generated 29/30 October CPNL articles falsely predicted that Circular Plastics NL would open on 6 October 2026, although the primary RVO authority states **21 April to 6 October 2026 17:00**, and the scheme is now temporarily CLOSED. Do not publish stale forecast statements or misrepresent historical dates as future open calls. Root fingerprint `blog|factual-freshness|cpnl-deadline-inverted|20261030-v1`.
