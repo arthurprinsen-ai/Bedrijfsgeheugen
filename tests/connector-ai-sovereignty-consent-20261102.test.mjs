@@ -25,7 +25,7 @@ test('wizard exposes three user choices without AI training opt-in or regional c
   const markup=renderWizardShell();
   for(const mode of ['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'])assert.match(markup,new RegExp('value="'+mode+'"'));
   assert.match(markup,/name="bgDataUseMode" value="CONNECTION_ONLY" checked/);
-  assert.match(markup,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\/compliance\.html/);
+  assert.match(markup,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/\?page=data-ai-passport"/);
   assert.match(wizardStyles(),/bg-kw__privacy-grid/);
   let state=createWizardState(findTemplate('outlook-pdf-facturen'));
   state=applyAnswer(state,'dataUseMode','PORTAL_AI');
