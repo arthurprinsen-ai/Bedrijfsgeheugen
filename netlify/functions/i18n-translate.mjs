@@ -28,7 +28,7 @@ export default async (request) => {
     if(!tenantId)return Response.json({error:'forbidden'},{status:403});
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return Response.json({error:'translation_unavailable'},{status:503});
   const requestId=crypto.randomUUID();
   try {

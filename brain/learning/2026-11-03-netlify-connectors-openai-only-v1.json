@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|netlify-connectors|original-anthropic-provider-openai-only-owner|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-netlify-connectors-agent",
+  "failure_class": "AI_PROVIDER_ONLY_OPENAI_POLICY_DRIFT",
+  "root_cause": "Original tenant-scoped connector AI guide and authenticated document extraction safe-test still used Anthropic and Netlify Anthropic secret despite owner OpenAI-only model inference mandate.",
+  "fix": "The original governed connector guide now uses OpenAI gpt-5-mini Chat Completions JSON-mode, and original extraction safe-test uses OpenAI required structured tool arguments. The existing request-scoped data sovereignty, secretless reply sanitization, private safe-test token gate and payload caps stay intact; Netlify OpenAI key in production Functions secret is independently installed. Model and token usage show OpenAI.",
+  "prevention_rule": "All future native connector AI inference must exclusively use owner-approved OpenAI API with source/tenant/data gates, no alternate AI provider fallback. Never treat a safe-test result as active integration or expose credentials.",
+  "tests": [
+    "tests/connector-production-readiness.test.mjs",
+    "tests/brain-netlify-connectors-openai-only-20261103.test.mjs",
+    "tests/connector-ai-guide.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-connectors-openai-only-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-connectors-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-connectors-openai-only-20261103.test.mjs"
+    ],
+    "invariants": [
+      "OpenAI-only model",
+      "safe-test token",
+      "payload <= 200 kB",
+      "no cross-tenant",
+      "no activation without real safe test",
+      "no secret leaks",
+      "original model audit"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "AI_PROVIDER_ONLY_OPENAI_POLICY_DRIFT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected exact-head CI, original Netlify READY exact merge, owner AI governance per source and real authorized connector safe-test; no false green from code only."
+}
