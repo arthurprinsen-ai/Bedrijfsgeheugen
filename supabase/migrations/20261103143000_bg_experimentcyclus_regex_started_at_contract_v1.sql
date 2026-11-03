@@ -31,3 +31,7 @@ begin
   raise exception 'ONBEKENDE_ACTIE';
 end $function$
 
+-- Preserve existing original production ACLs: direct browser roles cannot execute privileged CRO poort.
+-- Independent production readback 2026-11-03: anon=false, authenticated=false, service_role=true.
+REVOKE EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) TO service_role;
