@@ -4,7 +4,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BRON = 'bg-bedrijfsprofiel';
-const USE_CASE = 'supabase-bg-kansenradar-v1';
+const USE_CASE = 'supabase-bg-bedrijfsprofiel-v1';
 const MAX_BEDRIJVEN = 12, MIN_ZEKERHEID = 0.7, HERCONTROLE_DAGEN = 90, TIJDBUDGET_MS = 120000;
 const STOP = ['bv', 'nv', 'holding', 'groep', 'group', 'nederland', 'the', 'and', 'van', 'het', 'een'];
 const GEEN_SITE_LABELS = new Set(['instagram', 'facebook', 'tiktok', 'twitter', 'youtube', 'pinterest', 'reddit', 'linkedin', 'indeed', 'glassdoor', 'werkzoeken', 'nationalevacaturebank', 'oozo', 'drimble', 'opencorporates', 'companyinfo', 'graydon', 'telefoonboek', 'detelefoongids', 'bedrijvenpagina', 'kvk', 'wikipedia', 'google', 'bing']);
