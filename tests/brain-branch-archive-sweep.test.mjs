@@ -168,3 +168,17 @@ test('inventory rate limit writes typed original action/report before failing th
   assert.match(cli,/process\.exitCode = 78/);
   assert.doesNotMatch(cli,/\|\|\s*echo/);
 });
+
+
+test('missing comparison readback cannot be parsed as zero ahead and delete unique work',()=>{
+  const src=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
+  assert.match(src,/const rawAhead = cmp === null \? '' : cmp\.trim\(\)/);
+  assert.match(src,/aheadBy = \/\\d\+\$\/\.test\(rawAhead\) \? Number\(rawAhead\) : undefined/);
+  for (const raw of ['', 'null', 'UNPROVEN', '403', '  ']){
+    const ahead = /^\d+$/.test(raw.trim()) ? Number(raw.trim()) : undefined;
+    if(raw.trim()==='' || raw==='UNPROVEN'||raw==='null')assert.equal(ahead,undefined);
+  }
+  const unknown=decide({kind:'UNIQUE_OR_CONTAINED',minAgeDays:0},{aheadBy:undefined,ageDays:100});
+  assert.equal(unknown.action,'SKIP');
+  assert.equal(unknown.reason,'AHEAD_UNPROVEN');
+});
