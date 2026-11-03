@@ -45,5 +45,19 @@
       "tests/brain-supabase-original-production-version-parity-20261103.test.mjs"
     ],
     "rollout_guard": "No actual provider write in simulated tests; exact source/ACL parity and later official original provider deployment remain independent."
+  },
+  "evidence": {
+    "source": "official original Supabase schema_migrations versions and GitHub main filename set difference",
+    "remote_version_count": 794,
+    "github_file_count": 794,
+    "missing_version_identifiers": [
+      "20261103141902",
+      "20261103142201"
+    ],
+    "original_provider_fail_check_id": 126048556477,
+    "original_merge_sha": "fded9060847ee6c392c6ae62f1550755089f9c12",
+    "regression_test": "tests/brain-supabase-original-production-version-parity-20261103.test.mjs",
+    "production_deployment": "NOT_VERIFIED",
+    "result_boundary": "source mirror is not provider production deploy"
   }
 }
