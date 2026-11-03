@@ -35,5 +35,30 @@
     "no decrease in Mira 0.940",
     "no forged provider IDs",
     "no manual override of runtime truth"
-  ]
+  ],
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "PREVENTIVE_READ_GATE_DB_TABLE_REJECTED",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "invariants": [
+      "read-only source adapter",
+      "original exclusive writer",
+      "no provider side effect",
+      "no false green",
+      "unmodified existing cron #140"
+    ]
+  }
 }
