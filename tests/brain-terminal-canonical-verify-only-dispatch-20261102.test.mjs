@@ -68,3 +68,39 @@ test('admin Portal shows original BRAIN incident from source without fabricating
   assert.equal(unavailable.terminalBrainRecovery.status,'SOURCE_UNVERIFIED');
   assert.equal(unavailable.terminalBrainRecovery.occurrenceCount,null);
 });
+
+
+test('verification-only dispatch never cancels an active original BRAIN run',()=>{
+  assert.match(brain,/group: unified-brain-delivery-/);
+  assert.match(brain,/cancel-in-progress: \$\{\{ inputs\.verification_only != true \}\}/);
+  assert.doesNotMatch(brain,/cancel-in-progress: true/);
+  const shouldCancel = verificationOnly => verificationOnly !== true;
+  assert.equal(shouldCancel(true), false);
+  assert.equal(shouldCancel(false), true);
+});
+
+test('terminal reuses even main-indexed BRAIN run for exact PR/head, not PR head_sha-index',()=>{
+  const terminalStep=terminal.split('name: Ensure original exact-head read-only BRAIN verification exists')[1]
+    ?.split('name: Verify exact-head critical delivery gates before terminal claim')[0];
+  assert.ok(terminalStep);
+  assert.match(terminalStep,/for guard_check in 1 2; do/);
+  assert.match(terminalStep,/BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED/);
+  assert.match(terminalStep,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
+  assert.match(terminalStep,/\.display_title==\$title/);
+  assert.match(terminalStep,/BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED/);
+  assert.doesNotMatch(terminalStep,/runs\?head_sha=\$\{HEAD_SHA\}/);
+  const candidate='b6c2964d85aaaac7f037fd004463ed5d8d5525b5';
+  const main='1fe623fa373e04b8f545442c7a80b93cba0ea039';
+  const expectedTitle='BRAIN delivery PR #5329 '+candidate;
+  const existing=[
+    {id:41527548036,head_sha:main,head_branch:'main',event:'workflow_dispatch',
+      display_title:expectedTitle,status:'in_progress'},
+    {id:41527987774,head_sha:main,head_branch:'main',event:'workflow_dispatch',
+      display_title:'BRAIN delivery PR #5330 '+candidate,status:'queued'}
+  ];
+  const eligible=existing.filter(run=>run.head_branch==='main' &&
+    run.event==='workflow_dispatch' && run.display_title===expectedTitle);
+  assert.deepEqual(eligible.map(run=>run.id),[41527548036]);
+  assert.notEqual(eligible[0].head_sha,candidate,'main run SHA differs from candidate head');
+  assert.equal(eligible[0].status,'in_progress');
+});
