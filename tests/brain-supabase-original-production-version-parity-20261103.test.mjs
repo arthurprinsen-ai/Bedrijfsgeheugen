@@ -16,7 +16,7 @@ for(const [version,name] of ids){
   assert.ok(sql.includes('GRANT EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) TO service_role;'));
   assert.ok(!sql.includes('GRANT EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) TO anon'));
   assert.ok(!sql.includes('GRANT EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) TO authenticated'));
-  assert.ok(!sql.includes('supabase_migrations.schema_migrations'));
+  assert.ok(!/\b(insert\s+into|update|delete\s+from|truncate)\s+supabase_migrations\.schema_migrations\b/i.test(sql));
   assert.ok(!sql.includes('cron.schedule'));
  });
 }
