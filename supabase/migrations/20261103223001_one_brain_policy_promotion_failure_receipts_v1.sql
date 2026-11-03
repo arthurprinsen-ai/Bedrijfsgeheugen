@@ -151,3 +151,15 @@ exception
     );
 end
 $function$;
+
+-- Explicitly retain original provider-observed service-role-only ACLs on
+-- both existing SECURITY DEFINER functions (no permission expansion).
+REVOKE EXECUTE ON FUNCTION public.powerhouse_one_brain_reconcile_v1(timestamptz)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_one_brain_reconcile_v1(timestamptz)
+  TO service_role;
+
+REVOKE EXECUTE ON FUNCTION public.powerhouse_runtime_mux_task_v1(text,text,integer)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_runtime_mux_task_v1(text,text,integer)
+  TO service_role;
