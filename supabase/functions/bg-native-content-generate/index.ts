@@ -1,4 +1,7 @@
 // BG Native Content Generator — approved OpenAI gpt-5-mini, governed source repair 2026-11-03
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// Original bg_bewijs RED receipts remain canonical; keep source owner diagnosis,
+// guarded retry, exact regression and provider outcome before any GREEN claim.
 // Leest kandidaten uit de CENTRAAL-mediakalender (Genereren aan, geen kanaalteksten, niet geblokkeerd, geen testmodus)
 // en schrijft kanaalteksten terug als CONCEPT. Publiceert nooit.
 // v6: classificeert elke post (Hook type, CTA type). v7: waarheidspoort. v8: inhaakposts en Prioriteit Hoog eerst; body.page_id.
