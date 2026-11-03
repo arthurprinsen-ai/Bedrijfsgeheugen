@@ -298,7 +298,7 @@ export async function observeArchive(env=process.env,provider=api,fetchImpl=glob
  try{artifact=JSON.parse(await readFile('.artifacts/branch-archive-sweep.json','utf8'));}catch{}
  try{
   const log=await readFile('.artifacts/branch-archive-actions.ndjson','utf8');
-  rateLimited=log.slice(0,512000).split('\\n').some(line=>{
+  rateLimited=log.slice(0,512000).split('\n').some(line=>{
    try{const event=JSON.parse(line);return event?.reason==='PROVIDER_RATE_LIMIT_EXCEEDED'&&
     event?.type==='BRANCH_ARCHIVE_PARTIAL_FAILURE';}catch{return false;}
   });
