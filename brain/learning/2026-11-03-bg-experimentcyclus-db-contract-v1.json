@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "REAL_PRODUCTION_RECOVERY_VERIFIED",
+  "fingerprint": "powerhouse|bg-experimentcyclus|invalid-regex-plus-missing-started-at|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_class": "POSTGRES_EXPERIMENT_PROPOSAL_CONTRACT_BROKEN",
+  "owner": "original-bg-experimentcyclus-cro-agent",
+  "evidence": {
+    "edge_version": 9,
+    "exact_source_blob": "db1f36dfc93290a40477b3a6a8be69d9063fc435",
+    "edge_request_failed_regex": 19981,
+    "edge_request_failed_notnull": 19985,
+    "edge_request_success": 19987,
+    "experiment_id": "bgx-20261103-d3a13c",
+    "experiment_status": "PLANNED",
+    "pg_errors": [
+      "2201B",
+      "23502"
+    ],
+    "migration_status": "APPLIED_PRODUCTION",
+    "openai_governance_provider": "OpenAI",
+    "openai_model": "gpt-5-mini",
+    "original_cron_jobid": 23
+  },
+  "root_cause": "Original SQL poort used PostgreSQL regex repetition {0,299}, which exceeds the engine's maximum 255, then failed NOT NULL started_at during experiment insert.",
+  "fix": "Replace regex repetition with bounded POSIX character class plus char_length <=300; explicitly supply started_at for PLANNED insert; maintain original permissions, 150 visitor threshold and human approval.",
+  "prevention_rule": "CRO agent must test regex quantifiers, current NOT NULL schema and exact original one-shot OpenAI-to-PLANNED side effect before marking the source contract healthy.",
+  "tests": [
+    "tests/brain-experimentcyclus-db-contract-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experimentcyclus-db-contract-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-experimentcyclus-db-contract-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experimentcyclus-db-contract-20261103.test.mjs"
+    ],
+    "invariants": [
+      "Postgres regex bound <=255",
+      "page still <=300",
+      "no missing started_at",
+      "original cron only",
+      "no auto-publish of PLANNED experiment",
+      "no fake ROI"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "POSTGRES_EXPERIMENT_PROPOSAL_CONTRACT_BROKEN",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "terminal_rule": "Only original provider model receipt, repaired SQL, protected GitHub source and PLANNED insert prove technical repair; experiment implementation and measured uplift remain separate."
+}
