@@ -13,7 +13,11 @@ export function classifyKansenradarSource(candidate) {
   if (!['http:','https:'].includes(parsed.protocol) || !parsed.hostname) {
     return {accepted:false,reason:'SOURCE_URL_INVALID',url};
   }
-  if (MULTI_STORY_PATH.test(decodeURIComponent(parsed.pathname))) {
+  let pathname = parsed.pathname;
+  try { pathname = decodeURIComponent(pathname); } catch {
+    return {accepted:false,reason:'SOURCE_URL_INVALID',url};
+  }
+  if (MULTI_STORY_PATH.test(pathname)) {
     return {accepted:false,reason:'MULTI_STORY_HEADLINE_HOOK_UNBOUND',url};
   }
   // Passing means one known hazardous class excluded; source-to-hook must
