@@ -27,7 +27,7 @@ function dbWith(rows=[]){
     async maybeSingle(){return {data:{id:job.id},error:null};}
    };
    return chain;
- }}}};
+ }}};
 }
 test('original ONE BRAIN rejection restores only original media job to WAITING_PROOF',async()=>{
  const {db,calls}=dbWith([proof]);
