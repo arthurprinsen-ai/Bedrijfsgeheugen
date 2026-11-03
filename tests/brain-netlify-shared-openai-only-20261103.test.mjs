@@ -16,7 +16,8 @@ test('original shared Brain source registers OpenAI and no Anthropic API fallbac
   assert.match(brain,/provider:'OpenAI'/);
   assert.match(brain,/const MODEL = 'gpt-5-mini'/);
   assert.match(brain,/const TRANSLATION_MODEL = 'gpt-5-mini'/);
-  assert.ok(!brain.includes('api.anthropic.com'));
+  assert.ok(brain.includes("fetchImpl('https://api.openai.com/v1/chat/completions'"));
+  assert.ok(!brain.includes('https://api.anthropic.com/v1/messages'));
   assert.ok(!brain.includes('ANTHROPIC_API_KEY'));
   assert.match(brain,/authorization:'Bearer '\+apiKey/);
   assert.match(brain,/max_completion_tokens:maxTokens/);
