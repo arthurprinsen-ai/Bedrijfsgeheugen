@@ -10,6 +10,7 @@
 //    v4: ontdubbeld — zelfde onderwerp + zelfde deadline = één herinnering (meerdere sites over dezelfde regeling).
 // Nooit versturen of publiceren: alles komt als concept bij Arthur. Sleutels: Vault. Bewijs: public.bg_bewijs.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { classifyKansenradarSource, KANSENRADAR_SOURCE_GATE_CONTRACT } from '../_shared/kansenradar-source-coherence-gate.mjs';
 
 const BRON = 'bg-kansenradar';
 const USE_CASE = 'supabase-bg-kansenradar-v1';
@@ -93,8 +94,26 @@ Deno.serve(async (req: Request) => {
     const ow = new Map((onderwerpen || []).map((o: any) => [o.onderwerp, o]));
     let q = db.from('bg_externe_signalen').select('url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,vertrouwen,gebruikt_post_notion_id,gebruikt_dm_op,deadline,deadline_post_notion_id').eq('toegestaan', true).gte('gepubliceerd_op', new Date(Date.now() - 5 * 86400000).toISOString()).order('vertrouwen', { ascending: false }).limit(8);
     q = body?.alleen_dm ? q.is('gebruikt_dm_op', null) : body?.alleen_deadline ? q.is('deadline_post_notion_id', null) : q.is('gebruikt_post_notion_id', null);
-    const { data: kand } = await q;
-    if (!kand?.length) { await bewijs(true, { kansen: 0, reden: 'GEEN_VERSE_SIGNALEN' }); return json({ ok: true, kansen: 0, reden: 'GEEN_VERSE_SIGNALEN' }); }
+    const { data: sourceRows } = await q;
+    // Conservative source-provenance gate BEFORE OpenAI inference, creating
+    // Notion calendar drafts, or making LinkedIn-DM recommendations.
+    // A mixed-news URL cannot be used as if one unrelated article title and
+    // one subsection from its news roundup were the same single-source claim.
+    const sourceClassifications = (sourceRows || []).map((item: any) => ({ item, gate: classifyKansenradarSource(item) }));
+    const sourceRejected = sourceClassifications.filter((entry: any) => !entry.gate.accepted);
+    const kand = sourceClassifications.filter((entry: any) => entry.gate.accepted).map((entry: any) => entry.item);
+    if (sourceRejected.length) {
+      await bewijs(false, {
+        error: 'KANSENRADAR_SINGLE_STORY_SOURCE_REQUIRED',
+        source_gate_contract: KANSENRADAR_SOURCE_GATE_CONTRACT,
+        rejected: sourceRejected.map((entry: any) => ({ url: entry.gate.url, reason: entry.gate.reason }))
+      }, 'VALIDATION');
+    }
+    if (!kand.length) {
+      if (sourceRejected.length) return json({ ok: true, kansen: 0, reden: 'GEEN_BRONCONSISTENTE_SIGNALEN', rejected_sources: sourceRejected.length });
+      await bewijs(true, { kansen: 0, reden: 'GEEN_VERSE_SIGNALEN' });
+      return json({ ok: true, kansen: 0, reden: 'GEEN_VERSE_SIGNALEN' });
+    }
 
     const seg = ['Directeur / eigenaar', 'Recruitment & HR', 'Advies & consultancy', 'IT & data', 'Investeerder', 'Overdracht & M&A', 'Accountant & fiscaal', 'Marketing & sales'];
     const toetsSchema = { type: 'object', properties: { oordelen: { type: 'array', items: { type: 'object', properties: { url: { type: 'string' }, echt_nieuws: { type: 'boolean', description: 'Waar als het een actueel bericht, besluit, regeling, onderzoek of marktontwikkeling is. Onwaar voor productpagina, leveranciersblog, lijstje, bedrijfsprofiel of evergreen uitleg.' }, relevant: { type: 'boolean', description: 'Waar als een Nederlandse mkb-directeur (3-250 medewerkers) hier deze week iets mee moet of wil' }, segmenten: { type: 'array', items: { type: 'string' } }, haak: { type: 'string', description: 'Eén zin: het feit uit de bron waarop je inhaakt, zonder iets toe te voegen' }, urgentie: { type: 'number', description: '0-1: hoe tijdgebonden (deadline, nieuwe regel, net verschenen)' }, deadline: { type: 'string', description: 'Einddatum van een regeling, aanvraagtermijn of wettelijke verplichting als YYYY-MM-DD, alleen als die letterlijk in de bron staat. Anders leeg.' } }, required: ['url', 'echt_nieuws', 'relevant', 'segmenten', 'haak', 'urgentie', 'deadline'] } } }, required: ['oordelen'] };
