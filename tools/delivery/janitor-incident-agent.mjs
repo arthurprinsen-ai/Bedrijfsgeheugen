@@ -130,7 +130,7 @@ const api=args=>execFileSync('gh',['api',...args],{
 });
 // Existing original Janitor/Brain incident writer is reused by both native jobs;
 // no parallel registry or scheduler is introduced.
-export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha,rateLimited=false}={}){
+export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha,rateLimited=false,permissionDenied=false}={}){
  const runOk=runIdOk(runId),mainOk=SHA.test(mainSha||'');
  const count=artifact?.counts,fields=['seen','skipped','deleted','archived','drift','failed'];
  const bounded=artifact?.status==='BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP';
@@ -161,7 +161,8 @@ export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha,rateL
   archive_counts:reportOk?Object.fromEntries(fields.map(k=>[k,count[k]])):null,
   archive_status:reportOk?artifact.status:'MISSING_OR_INVALID',
   scan_scope_full:reportOk?artifact.scan_scope_full===true:false,
-  archive_reason:rateLimited?'PROVIDER_RATE_LIMIT_EXCEEDED':'UNKNOWN_OR_OTHER',
+  archive_reason:rateLimited?'PROVIDER_RATE_LIMIT_EXCEEDED':
+   reportOk&&providerFailure&&permissionDenied?'PROVIDER_PERMISSION_DENIED':'UNKNOWN_OR_OTHER',
   incident_number:rateLimited?ARCHIVE_RATE_INCIDENT_NUMBER:ARCHIVE_INCIDENT_NUMBER,
   owner:'existing-powerhouse-github-delivery-janitor',global_green:false,
   safe_to_delete_unarchived_unique_branch:false,
@@ -288,23 +289,38 @@ export async function settleIncidentWritebacks({brainWrite,issueWrite}={}){
  return {brain:brainReceipt,issue:issueReceipt,failures,
   verified:failures.length===0};
 }
+// Only same-run, same-source structured action evidence may classify a 403 as permission denial.
+// Unknown/missing events remain UNKNOWN_OR_OTHER rather than inventing a provider root cause.
+export function classifyArchiveProviderActions(log,{runId,mainSha}={}){
+ const signals={rateLimited:false,permissionDenied:false};
+ if(!runIdOk(runId)||!SHA.test(mainSha||''))return signals;
+ for(const line of String(log||'').slice(0,512000).split('\n')){
+  let event;
+  try{event=JSON.parse(line);}catch{continue;}
+  if(event?.type!=='BRANCH_ARCHIVE_PARTIAL_FAILURE'||
+   Number(event.run_id)!==Number(runId)||event.source_sha!==mainSha||
+   event.branch_deleted!==false)continue;
+  if(event.reason==='PROVIDER_RATE_LIMIT_EXCEEDED')signals.rateLimited=true;
+  if(event.reason==='PROVIDER_PERMISSION_DENIED'&&
+   event.action==='CREATE_ARCHIVE_TAG'&&Number(event.provider_http_status)===403)
+   signals.permissionDenied=true;
+ }
+ return signals;
+}
 // Same original hourly workflow, separate existing branch_archive_sweep job.
 // A failure is independently written to original issue #5333 and the
 // canonical Brain RPC, with an idempotent run/attempt marker and readback.
 export async function observeArchive(env=process.env,provider=api,fetchImpl=globalThis.fetch){
  assertNativeJanitorIdentity(env);
  await mkdir('.artifacts',{recursive:true});
- let artifact=null,rateLimited=false;
+ let artifact=null,signals={rateLimited:false,permissionDenied:false};
  try{artifact=JSON.parse(await readFile('.artifacts/branch-archive-sweep.json','utf8'));}catch{}
  try{
   const log=await readFile('.artifacts/branch-archive-actions.ndjson','utf8');
-  rateLimited=log.slice(0,512000).split('\n').some(line=>{
-   try{const event=JSON.parse(line);return event?.reason==='PROVIDER_RATE_LIMIT_EXCEEDED'&&
-    event?.type==='BRANCH_ARCHIVE_PARTIAL_FAILURE';}catch{return false;}
-  });
+  signals=classifyArchiveProviderActions(log,{runId:env.GITHUB_RUN_ID,mainSha:env.GITHUB_SHA});
  }catch{} // Report still independently evaluated if original action log is missing.
  const report=classifyNativeArchive({sweepOutcome:env.JANITOR_ARCHIVE_SWEEP_OUTCOME,
-  artifact,rateLimited,runId:env.GITHUB_RUN_ID,mainSha:env.GITHUB_SHA});
+  artifact,...signals,runId:env.GITHUB_RUN_ID,mainSha:env.GITHUB_SHA});
  report.source_url='https://github.com/'+env.GITHUB_REPOSITORY+'/actions/runs/'+env.GITHUB_RUN_ID;
  report.incident_url='https://github.com/'+env.GITHUB_REPOSITORY+'/issues/'+report.incident_number;
  const output='.artifacts/janitor-archive-observer.json';
