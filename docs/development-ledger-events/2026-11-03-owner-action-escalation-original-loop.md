@@ -1,0 +1,11 @@
+# Append-only development ledger — owner authorization escalation 2026-11-03
+
+- Parent original incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232.
+- Original ONE BRAIN incident category: `powerhouse|human-gate|recurrent-authorization-no-actionable-owner-notification|20261103-v1`.
+- Source: original `public.brain_records` LinkedIn Composio setup record at 2026-11-03 10:54 UTC showed `ACTIVE`, `company_oauth_fresh_verified=true`. Original daily publication remained blocked for a DISTINCT duplicate event, not OAuth consent; historical 403 may not trigger a duplicate reauthorization request.
+- Missing behavior: same original content-loop detected recovery but had no typed human-only next action suitable for owner messaging. Existing original Powerhouse tasks were still enabled; no new scheduler may be created.
+- Change: original `powerhouse-content-loop` persists a pure `ownerActionEscalation` next to existing `incidentLearning`; imported `owner-action-escalation.mjs` classifies same-source human consent/billing only, suppresses current verified OAuth, rejects invalid/expired links, never claims the message sent. Original daily monitoring automation instructions updated in place to send owner actionable ChatGPT task notice; optional original existing Gmail message only with actual provider message ID, max 1/fingerprint/24h.
+- Source ownership: original ONE BRAIN/Heartbeat/content-loop exclusive writer, no other sender, cron, OAuth grants, token mutation, duplicate-gate bypass, spend or artificial GREEN.
+- Tests: `tests/brain-owner-action-escalation-original-loop-20261103.test.mjs` historical/shadow/canary cover verified OAuth suppression, current unauthorized permission, source duplicate and URI/expiry, no phantom e-mail receipt.
+- Protection: exact-head GitHub Required/CodeQL/BRAIN, merge, original Supabase Edge deployment, independent source/result readback, next natural monitoring-task message and Gmail provider ID where used. Code-only admission is NOT runtime message delivery.
+- First PR hygiene #41624229471 failed `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger`; this append-only artifact repairs the missing required category. Do not claim tests, runtime deploy, notice delivered or error closed until genuinely verified.
