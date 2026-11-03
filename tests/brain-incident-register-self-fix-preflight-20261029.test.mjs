@@ -282,3 +282,17 @@ test('original agent preflight keeps failure backlog fail closed and does not ex
   assert.equal('obligations' in backlog,false);
   assert.doesNotMatch(JSON.stringify(backlog),/customer-sensitive/);
 });
+
+
+test('agent policy cannot downgrade canonical backlog RCA and regression ownership',()=>{
+  const root=fixtureRoot({});
+  for(const tamper of [
+    p=>{delete p.failure_backlog_assurance_v1;},
+    p=>{p.failure_backlog_assurance_v1.status='DISABLED';},
+    p=>{p.failure_backlog_assurance_v1.entrypoint='parallel/triage.js';},
+    p=>{p.failure_backlog_assurance_v1.forbidden=[];}
+  ]){
+    const p=policy(); tamper(p);
+    assert.throws(()=>evaluateIncidentSelfFix({rootDir:root,policy:p}),/INCIDENT_BACKLOG_ASSURANCE_POLICY_DRIFT/);
+  }
+});
