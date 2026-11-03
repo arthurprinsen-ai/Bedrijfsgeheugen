@@ -33,8 +33,11 @@ permissions:
 concurrency:
   # Native PR and recovery dispatch for the same PR are one logical flight.
   group: unified-brain-delivery-${{ inputs.pr_number || github.event.pull_request.number || github.ref_name }}
-  # Single-flight is PR-scoped; exact candidate identity remains enforced in admission and BG169.
-  cancel-in-progress: true
+  # Read-only verification_only dispatches must NEVER cancel an already running original
+  # PR/head delivery flight. New source PR updates may still replace stale PR runs.
+  # A redundant verify-only dispatch queues behind the active run; the canonical
+  # terminal's main-indexed guard must avoid dispatching it in the first place.
+  cancel-in-progress: ${{ inputs.verification_only != true }}
 
 jobs:
   candidate-identity:
