@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
 import { reconcileIncidentObligations } from '../../brain/observability/incident-obligation-assurance.mjs';
+import { auditFailureBacklog } from '../../brain/observability/failure-backlog-assurance-v1.mjs';
 import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection, buildSkillSourceManifest, selectSkillSourceManifest } from './powerhouse-skill-projection.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
@@ -151,6 +152,14 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
   if (protocol.new_skills_must_carry_marker !== true) throw new Error('incident self-fix must require the marker on new skills');
   if (!Array.isArray(policy.reserved_for_owner) || policy.reserved_for_owner.length === 0) throw new Error('incident self-fix reserved owner decisions are missing');
   if (!Array.isArray(policy.loop_debt_baseline)) throw new Error('incident self-fix loop debt baseline is missing');
+  const backlog = policy.failure_backlog_assurance_v1;
+  if (backlog?.status !== 'ACTIVE_READ_ONLY_CONTRACT'
+    || backlog?.entrypoint !== 'brain/observability/failure-backlog-assurance-v1.mjs'
+    || backlog?.authority !== 'public.brain_failure_registry'
+    || backlog?.if_missing_data !== 'SOURCE_COVERAGE_UNVERIFIED_NOT_GREEN'
+    || !Array.isArray(backlog.required_closure) || backlog.required_closure.length < 7
+    || !Array.isArray(backlog.forbidden) || backlog.forbidden.length < 6)
+    throw new Error('INCIDENT_BACKLOG_ASSURANCE_POLICY_DRIFT');
   const audit = policy.incident_reporting_audit;
   if (audit?.required !== true || audit?.version !== 'ONE_BRAIN_INCIDENT_REPORTING_ASSURANCE-v1'
     || audit?.entrypoint !== 'brain/observability/incident-obligation-assurance.mjs'
@@ -388,7 +397,12 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     universalIngress,
     incident_self_fix: {
       ...incidentSelfFix,
-      reporting_audit: reconcileIncidentObligations(executionContext.incidentEvidence || {})
+      reporting_audit: reconcileIncidentObligations(executionContext.incidentEvidence || {}),
+      failure_backlog_audit: (() => {
+        const {obligations, ...summary} = auditFailureBacklog(executionContext.failureRegistryEvidence || {});
+        // Internal raw fingerprints never leave the preflight report.
+        return {...summary, actionable_count: Array.isArray(obligations) ? obligations.length : 0};
+      })()
     },
     skill_projection: {
       status: 'READY',
