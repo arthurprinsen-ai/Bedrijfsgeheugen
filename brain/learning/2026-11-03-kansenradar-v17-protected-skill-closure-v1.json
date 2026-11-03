@@ -1,0 +1,69 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "TECHNICAL_OPENAI_PATH_VALIDATED__SKILL_PROTECTED_RELEASE_PENDING",
+  "fingerprint": "bg-kansenradar|openai|OPENAI_OUTPUT_CONTRACT_FAILED|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_prs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5355",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5357",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5363"
+  ],
+  "owner": "original-one-brain-kansenradar-source-and-editorial-owner",
+  "root_cause": "Original JSON-mode wrapper violated oordelen/berichten root schema, and earlier agent skill retained outdated Anthropic-approval instructions even after authorized OpenAI switch. Initial skill-only PR lacked canonical closure artifacts and failed protected CI admission, independent from model execution.",
+  "fix": "Existing approved OpenAI gpt-5-mini named-tool schema validated on original v17 real source request 19948, HTTP200 assessed one item. Updated original skill documents verified provider contract, authentic source gate and next natural cron proof. Single candidate adds Brain learning, append-only ledger and human documentation without relaxing protected checks.",
+  "prevention_rule": "All material agent skill corrections require one immutable PR base, canonical Delivery-Lane docs + Candidate-Type docs metadata, exactly scoped Brain learning, ledger, human documentation, and protected Required/full BRAIN/CodeQL validation. Every Edge runtime validation must distinguish no-source success from actual inference. Keep exclusive writer, original cron 18 and no outbound side effects.",
+  "regression_contract": "OpenAI required named tool, parsed JSON tool arguments/root oordelen or berichten, approved governance, real source-title-hook coherence, 401 unknown scheduler, no duplicate executor and natural cron provider readback before claiming full terminal closure.",
+  "tests": [
+    "tests/brain-original-native-generator-radar-provider-20261103.test.mjs",
+    "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs",
+    "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs",
+      "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
+    ],
+    "canary": [
+      "production native request 19948; next natural cron 18 readback remains due"
+    ],
+    "invariants": [
+      "OpenAI-only original use case",
+      "never infer model-call GREEN from GEEN_VERSE_SIGNALEN",
+      "no unauthorized draft/publication/DM",
+      "exact protected source and provider version"
+    ]
+  },
+  "evidence": {
+    "production_provider": "Supabase adhjwmvyoixzjtmiroln bg-kansenradar",
+    "v17_verified_sha256": "4732981cf2fbb75057e4dc05a660a5c82676ce70f7b2beb1791a19687dc5f907",
+    "v18_source_parity_sha256": "1f44d0f5d431665b2da5aade38f5e92b37a11a1c279b97df2ca25a455c07cdb5",
+    "source_request": 19947,
+    "source_http": 200,
+    "source_found": 13,
+    "source_allowed": 3,
+    "model_path_request": 19948,
+    "model_path_http": 200,
+    "evaluated": 1,
+    "answer": "NIETS_DOOR_DE_TOETS",
+    "original_delivery_evidence_at": "2026-11-03T13:08:57.348387Z",
+    "natural_cron_verified": false,
+    "skill_merge_verified": false,
+    "canonical_obligation": "b9d851ef-88ec-406f-9a3f-38608f3ddf48"
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "OPENAI_OUTPUT_CONTRACT_FAILED_AND_INTEGRATION_CLOSURE_MISSING",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-resource-sustainability/SKILL.md"
+  ],
+  "terminal_rule": "Do not claim PR merged, skill live or next natural cron verified until protected exact-head controls, authorized writer, merge, main readback and original cron receipts prove the specific phase."
+}
