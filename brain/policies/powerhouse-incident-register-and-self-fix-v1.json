@@ -81,7 +81,7 @@
     "entrypoint": "scripts/brain/chat-learning-preflight.mjs",
     "visible_in_packet": "incident_self_fix",
     "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
-    "not_covered_yet": "Runtime source coverage is not universal. This revision adds a native Janitor silent-event observer; all other agent emitters, event-producer liveness and authenticated tenant portal coverage remain unproven until independently instrumented and read back. Do not claim estate-wide green.",
+    "not_covered_yet": "Native Janitor incident observer is integrated; mandatory agent preflight also checks supplied provider/Brain receipts and recovery proof. Other runtime owners, cross-source completeness, authorized event ingress and tenant-safe portal readback remain unproven; never assert estate-wide green.",
     "native_observer_truth_guard": {
       "fingerprint": "github|janitor|silent-debt-observer-missing-report|20261103-v1",
       "authority": "EXISTING_ONE_BRAIN_JANITOR_AND_BRAIN_FAILURE_REGISTRY_ONLY",
@@ -119,7 +119,7 @@
       "current_status": "PENDING_PROTECTED_MERGE_AND_NATIVE_PRODUCTION_READBACK"
     }
   },
-  "revision": 4,
+  "revision": 5,
   "continuous_lean_loop": {
     "required": true,
     "scope": [
@@ -303,5 +303,38 @@
       "deployment_gate": "Policy validation in preflight is necessary but insufficient. Runtime event emission, writeback, portal projection, authenticated tenant tests and independent production readback must be separately proven before claiming enforcement.",
       "observed_gap": "Production 2026-10-29: 1587 canonical cycle events in 24h; 0 with agent_id, 0 with skill_version, 0 with before/after metric pair. Scope includes SQL-generated events; no retroactive agent attribution."
     }
+  },
+  "incident_reporting_audit": {
+    "required": true,
+    "version": "ONE_BRAIN_INCIDENT_REPORTING_ASSURANCE-v1",
+    "entrypoint": "brain/observability/incident-obligation-assurance.mjs",
+    "input": "independent_provider_observations_plus_original_registry_receipts_and_repair_readback",
+    "scope": "every observed provider failure/incident/near miss in authorized original agents",
+    "rules": [
+      "NO_SILENT_FAILURE:PROVIDER_EVENT_MUST_HAVE_CANONICAL_RECEIPT",
+      "UNREPORTED_PROVIDER_FAILURE_IS_AN_INCIDENT",
+      "NO_FALSE_ZERO_WHEN_SOURCE_READBACK_INCOMPLETE",
+      "DEDUP_PROVIDER_EVENT_ID_AND_FINGERPRINT",
+      "PROVIDER_CONFLICT_FAIL_CLOSED",
+      "SAFE_EXISTING_OWNER_REPAIR_OR_EXPLICIT_AUTHORIZATION_ESCALATION",
+      "NO_FIXED_WITHOUT_REGRESSION_AND_INDEPENDENT_PROVIDER_READBACK",
+      "RECURS_AFTER_FIX_REOPEN_SAME_FINGERPRINT",
+      "NO_PARALLEL_SCHEDULER_OR_REGISTRY",
+      "PORTAL_ONLY_VERIFIED_SOURCE_WITH_UNCERTAINTY"
+    ],
+    "source_coverage_without_provided_evidence": "NOT_ATTESTED_NOT_GREEN",
+    "runtime_limitation": "This agent preflight can audit supplied evidence but cannot prove all external agents emit events. Original runtime owners must integrate their source observation and canonical Brain RPC receipt and prove next natural run.",
+    "required_closure": [
+      "provider_event_id",
+      "fingerprint",
+      "original_brain_occurrence_readback",
+      "existing_owner",
+      "recovery_attempt",
+      "regression",
+      "independent_provider_readback",
+      "release_sha",
+      "skill_version",
+      "recurrence_guard"
+    ]
   }
 }
