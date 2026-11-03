@@ -20,16 +20,33 @@ const VERZONNEN = /\b(ik sprak|sprak ik|een (?:klant|ondernemer|accountant|direc
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const dag = (t: number) => new Date(t).toISOString().slice(0, 10);
 
-async function claude(key: string, model: string, system: string, user: string, name: string, schema: any) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model, max_tokens: 3000, system, messages: [{ role: 'user', content: user }], tools: [{ name, description: name, input_schema: schema }], tool_choice: { type: 'tool', name } }) });
-  const b: any = await r.json().catch(() => ({}));
-  if (!r.ok) {
-    const remoteMessage = String(b?.error?.message || '').slice(0, 160);
-    if (/credit balance is too low|insufficient.?credits|billing.?exhausted/i.test(remoteMessage))
-      throw new Error('AI_PROVIDER_CREDITS_EXHAUSTED: ' + remoteMessage);
-    throw new Error(`AI_${r.status}: ${remoteMessage}`);
-  }
-  return (b.content || []).find((c: any) => c.type === 'tool_use')?.input;
+async function openai(key: string, model: string, system: string, user: string, name: string, schema: any) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'authorization': `Bearer ${key}`, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model, max_completion_tokens: 5500,
+      messages: [
+        { role: 'system', content: system + '\\nAntwoord uitsluitend met een JSON-object met het gevraagde veld ' + name + '. Geen feiten buiten de aangeleverde bronnen.' },
+        { role: 'user', content: user }
+      ],
+      response_format: { type: 'json_object' }
+    }),
+    signal: AbortSignal.timeout(60000)
+  });
+  const body: any = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(`OPENAI_${response.status}: ${String(body?.error?.message || '').slice(0, 160)}`);
+  const message = body?.choices?.[0]?.message;
+  if (message?.refusal) throw new Error('OPENAI_REFUSAL');
+  let parsed: any;
+  try { parsed = JSON.parse(String(message?.content || '')); } catch { throw new Error('OPENAI_OUTPUT_NOT_JSON'); }
+  const fields = Array.isArray(schema?.required) ? schema.required : [];
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)
+    || fields.some((field: string) => !(field in parsed))
+    || (name === 'toets' && !Array.isArray(parsed.oordelen))
+    || (name === 'dm' && !Array.isArray(parsed.berichten)))
+      throw new Error('OPENAI_OUTPUT_CONTRACT_FAILED');
+  return parsed;
 }
 
 Deno.serve(async (req: Request) => {
@@ -41,29 +58,12 @@ Deno.serve(async (req: Request) => {
   const fail = async (s: number, b: Record<string, unknown>, k: string) => { await bewijs(false, b, k); return json({ ok: false, ...b }, s); };
 
   const { data: gov } = await db.from('brain_ai_governance_registry').select('model_id,lifecycle_status,approved,provider').eq('tenant_id', 'canonical').eq('use_case_id', USE_CASE).maybeSingle();
-  if (!gov || gov.lifecycle_status !== 'ACTIVE' || gov.approved !== true || gov.provider !== 'Anthropic') return fail(403, { error: 'AI_USE_CASE_NOT_APPROVED' }, 'POLICY');
-  // Provider billing is a real external authorization/credits boundary, not a reason to
-  // silently switch model providers, spend money or falsify a successful result.
-  // Inspect the ORIGINAL Brain delivery ledger before another authorized provider attempt;
-  // keep existing daily cron active and allow its next natural run to retry.
-  const creditWindowStart = new Date(Date.now() - 20 * 3600_000).toISOString();
-  const { data: priorCredit, error: creditReadError } = await db.from('brain_delivery_evidence')
-    .select('created_at,evidence')
-    .eq('component_id', BRON).eq('status', 'RED')
-    .gte('created_at', creditWindowStart)
-    .order('created_at', { ascending: false }).limit(1);
-  if (creditReadError) return json({ ok: false, error: 'AI_PROVIDER_BILLING_READBACK_UNAVAILABLE', recovery: 'ORIGINAL_OWNER_SOURCE_READBACK' }, 503);
-  const last = priorCredit?.[0];
-  const recordedError = String(last?.evidence?.error || '');
-  if (/credit balance is too low|insufficient.?credits|billing.?exhausted/i.test(recordedError)) {
-    const retryAt = new Date(Date.parse(last.created_at) + 20 * 3600_000).toISOString();
-    // Do not create a duplicate RED proof for an unchanged external billing blocker.
-    return json({ ok: false, error: 'AI_PROVIDER_CREDITS_EXHAUSTED',
-      status: 'WAITING_AUTHORIZED_BILLING_OR_ORIGINAL_PROVIDER_RECOVERY',
-      retry_after: retryAt, existing_source_receipt_at: last.created_at }, 503);
-  }
-    const model = gov.model_id; const ak = Deno.env.get('ANTHROPIC_API_KEY') || await geheim('ANTHROPIC_API_KEY'); const notion = Deno.env.get('NOTION_TOKEN') || await geheim('Notion');
-  if (!ak || !notion) return fail(503, { error: 'CONFIG_UNAVAILABLE', missing: { anthropic: !ak, notion: !notion } }, 'AUTH');
+  if (!gov || gov.lifecycle_status !== 'ACTIVE' || gov.approved !== true || gov.provider !== 'OpenAI') return fail(403, { error: 'AI_USE_CASE_NOT_APPROVED' }, 'POLICY');
+  // Source-backed OpenAI-only owner directive. No Anthropic fallback or credit-side effects.
+  const model = gov.model_id;
+  const ak = Deno.env.get('OPENAI_API_KEY') || await geheim('OPENAI_API_KEY');
+  const notion = Deno.env.get('NOTION_TOKEN') || await geheim('Notion');
+  if (!ak || !notion) return fail(503, { error: 'CONFIG_UNAVAILABLE', missing: { openai: !ak, notion: !notion } }, 'AUTH');
   const nh = { authorization: `Bearer ${notion}`, 'notion-version': NV, 'content-type': 'application/json' };
   let body: any = {}; try { body = await req.json(); } catch { /* leeg */ }
 
@@ -86,7 +86,7 @@ Deno.serve(async (req: Request) => {
 
     const seg = ['Directeur / eigenaar', 'Recruitment & HR', 'Advies & consultancy', 'IT & data', 'Investeerder', 'Overdracht & M&A', 'Accountant & fiscaal', 'Marketing & sales'];
     const toetsSchema = { type: 'object', properties: { oordelen: { type: 'array', items: { type: 'object', properties: { url: { type: 'string' }, echt_nieuws: { type: 'boolean', description: 'Waar als het een actueel bericht, besluit, regeling, onderzoek of marktontwikkeling is. Onwaar voor productpagina, leveranciersblog, lijstje, bedrijfsprofiel of evergreen uitleg.' }, relevant: { type: 'boolean', description: 'Waar als een Nederlandse mkb-directeur (3-250 medewerkers) hier deze week iets mee moet of wil' }, segmenten: { type: 'array', items: { type: 'string' } }, haak: { type: 'string', description: 'Eén zin: het feit uit de bron waarop je inhaakt, zonder iets toe te voegen' }, urgentie: { type: 'number', description: '0-1: hoe tijdgebonden (deadline, nieuwe regel, net verschenen)' }, deadline: { type: 'string', description: 'Einddatum van een regeling, aanvraagtermijn of wettelijke verplichting als YYYY-MM-DD, alleen als die letterlijk in de bron staat. Anders leeg.' } }, required: ['url', 'echt_nieuws', 'relevant', 'segmenten', 'haak', 'urgentie', 'deadline'] } } }, required: ['oordelen'] };
-    const toets = await claude(ak, model, `Je bent de kansenradar van Bedrijfsgeheugen (digitalisering, kennisborging en AI voor het Nederlandse mkb). Vandaag is ${dag(Date.now())}. Beoordeel streng en eerlijk. Gebruik alleen wat in de bron staat.`, `Beoordeel deze signalen. Kies segmenten uitsluitend uit: ${seg.join(', ')}.\n\n${JSON.stringify(kand.map(k => ({ url: k.url, onderwerp: k.onderwerp, titel: k.titel, bron: k.domein, datum: k.gepubliceerd_op, samenvatting: String(k.samenvatting || '').slice(0, 900) })))}`, 'toets', toetsSchema);
+    const toets = await openai(ak, model, `Je bent de kansenradar van Bedrijfsgeheugen (digitalisering, kennisborging en AI voor het Nederlandse mkb). Vandaag is ${dag(Date.now())}. Beoordeel streng en eerlijk. Gebruik alleen wat in de bron staat.`, `Beoordeel deze signalen. Kies segmenten uitsluitend uit: ${seg.join(', ')}.\n\n${JSON.stringify(kand.map(k => ({ url: k.url, onderwerp: k.onderwerp, titel: k.titel, bron: k.domein, datum: k.gepubliceerd_op, samenvatting: String(k.samenvatting || '').slice(0, 900) })))}`, 'toets', toetsSchema);
     const oordelen: any[] = toets?.oordelen || [];
     const goed = kand.map(k => ({ ...k, o: oordelen.find(o => o.url === k.url) })).filter(k => k.o?.echt_nieuws && k.o?.relevant).sort((a, b) => (b.vertrouwen * 0.6 + b.o.urgentie * 0.4) - (a.vertrouwen * 0.6 + a.o.urgentie * 0.4));
     for (const k of kand) { const o = oordelen.find(x => x.url === k.url); if (o && !(o.echt_nieuws && o.relevant)) await db.from('bg_externe_signalen').update({ toegestaan: false, ruis_reden: o.echt_nieuws ? 'niet relevant (kansenradar)' : 'geen nieuws (kansenradar)' }).eq('url', k.url); }
@@ -121,7 +121,7 @@ Deno.serve(async (req: Request) => {
     let dms = 0; const gekozenNamen: string[] = [];
     if (body?.dm !== false && segmenten.length && !top.gebruikt_dm_op) {
       const dmSchema = { type: 'object', properties: { berichten: { type: 'array', items: { type: 'object', properties: { segment: { type: 'string' }, tekst: { type: 'string', description: 'LinkedIn-DM, 40-75 woorden, begint letterlijk met "Hoi {voornaam},", noemt het nieuws met de bron, eindigt met één concrete vraag over hun eigen situatie. Geen link, geen verkooppraat, geen verzonnen ervaringen. Per segment een eigen invalshoek.' } }, required: ['segment', 'tekst'] } } }, required: ['berichten'] };
-      const dm = await claude(ak, model, 'Je schrijft namens Arthur Prinsen (Bedrijfsgeheugen) korte, menselijke LinkedIn-berichten aan eerstegraads connecties in Nederland. Kort, kalm, niet-verdedigend, warm maar met gezag. Nooit verzinnen dat je iemand sprak of iets zag bij een klant.', `Nieuws: ${top.titel} (${top.domein}, ${datum}).\nHaak: ${o.haak}\nSchrijf één bericht per segment, elk met een eigen invalshoek voor dat segment: ${segmenten.join(', ')}.`, 'dm', dmSchema);
+      const dm = await openai(ak, model, 'Je schrijft namens Arthur Prinsen (Bedrijfsgeheugen) korte, menselijke LinkedIn-berichten aan eerstegraads connecties in Nederland. Kort, kalm, niet-verdedigend, warm maar met gezag. Nooit verzinnen dat je iemand sprak of iets zag bij een klant.', `Nieuws: ${top.titel} (${top.domein}, ${datum}).\nHaak: ${o.haak}\nSchrijf één bericht per segment, elk met een eigen invalshoek voor dat segment: ${segmenten.join(', ')}.`, 'dm', dmSchema);
       const perSeg = new Map<string, string>((dm?.berichten || []).filter((b: any) => b?.tekst && b.tekst.includes('{voornaam}') && !VERZONNEN.test(b.tekst) && !/https?:\/\//.test(b.tekst)).map((b: any) => [b.segment, b.tekst]));
       const { data: con, error: ce } = await db.rpc('bg_inhaak_kandidaten', { p_segmenten: [...perSeg.keys()], p_limiet: 60 });
       if (ce) throw new Error('KANDIDATEN: ' + ce.message);
@@ -139,6 +139,6 @@ Deno.serve(async (req: Request) => {
     await bewijs(true, res);
     return json(res);
   } catch (e: any) {
-    return fail(500, { error: String(e?.message || e).slice(0, 300) }, /AI_40[13]|AI_PROVIDER_CREDITS_EXHAUSTED|NOTION_POST_40[134]/.test(String(e?.message)) ? 'AUTH' : 'VALIDATION');
+    return fail(500, { error: String(e?.message || e).slice(0, 300) }, /OPENAI_40[13]|NOTION_POST_40[134]/.test(String(e?.message)) ? 'AUTH' : 'VALIDATION');
   }
 });

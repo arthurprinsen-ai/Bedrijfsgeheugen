@@ -30,33 +30,33 @@ test('source does not invent approval, force provider spend or publish',()=>{
   assert.doesNotMatch(generator,/social_publish|post_to_linkedin|send_email/);
   assert.match(generator,/const candidate =|let candidate: any = null/);
 });
-test('radar preserves exact existing Anthropic approval and rejects unsafe cross-provider fallback',()=>{
-  assert.match(radar,/gov\.provider !== 'Anthropic'/);
+test('radar uses only the owner-approved OpenAI provider and no Anthropic billing fallback',()=>{
+  assert.match(radar,/gov\.provider !== 'OpenAI'/);
   assert.match(radar,/const USE_CASE = 'supabase-bg-kansenradar-v1'/);
   assert.match(radar,/gov\.approved !== true/);
   const providerCall = radar.match(/\bfetch\('([^']+)'/);
   assert.ok(providerCall, 'native radar provider call must exist');
   const providerEndpoint = new URL(providerCall[1]);
-  assert.equal(providerEndpoint.origin, 'https://api.anthropic.com');
-  assert.equal(providerEndpoint.pathname, '/v1/messages');
+  assert.equal(providerEndpoint.origin, 'https://api.openai.com');
+  assert.equal(providerEndpoint.pathname, '/v1/chat/completions');
+  assert.ok(!radar.includes('ANTHROPIC_API_KEY'));
+  assert.match(radar,/await geheim\('OPENAI_API_KEY'\)/);
 });
-test('radar refuses to repeat known insufficient-credit calls, preserves natural daily retry',()=>{
-  assert.match(radar,/\.from\('brain_delivery_evidence'\)/);
-  assert.match(radar,/\.eq\('component_id', BRON\)\.eq\('status', 'RED'\)/);
-  assert.match(radar,/creditWindowStart/);
-  assert.match(radar,/AI_PROVIDER_CREDITS_EXHAUSTED/);
-  assert.match(radar,/WAITING_AUTHORIZED_BILLING_OR_ORIGINAL_PROVIDER_RECOVERY/);
-  assert.match(radar,/existing_source_receipt_at/);
-  assert.match(radar,/AI_40\[13\]\|AI_PROVIDER_CREDITS_EXHAUSTED\|NOTION_POST_40\[134\]/);
-  assert.ok(!radar.includes('cron.schedule'));
-  assert.ok(!radar.includes('OPENAI_API_KEY'));
+test('radar does not inherit stale Anthropic credit receipt guard after OpenAI switch',()=>{
+  assert.match(radar,/response_format: \{ type: 'json_object' \}/);
+  assert.match(radar,/max_completion_tokens: 5500/);
+  assert.match(radar,/OPENAI_OUTPUT_CONTRACT_FAILED/);
+  assert.match(radar,/OPENAI_REFUSAL/);
+  assert.ok(!radar.includes('creditWindowStart'));
+  assert.ok(!radar.includes('AI_PROVIDER_CREDITS_EXHAUSTED'));
 });
-test('radar never considers billing denial as green, and does not mark a source used',()=>{
-  const failure=radar.indexOf("if (/credit balance is too low|insufficient.?credits|billing.?exhausted/i.test(recordedError))");
-  const firstMutation=radar.indexOf("const nieuwItem = async");
-  assert.ok(failure > 0 && firstMutation > failure);
-  assert.match(radar,/return json\(\{ ok: false, error: 'AI_PROVIDER_CREDITS_EXHAUSTED'/);
-  assert.match(radar,/if \(creditReadError\) return json\(\{ ok: false/);
+test('OpenAI radar remains draft-only, original owner and failure evidence retained',()=>{
+  assert.match(radar,/INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1/);
+  assert.match(radar,/db\.rpc\('bg_bewijs'/);
+  assert.match(radar,/status: 'suggested'/);
+  assert.match(radar,/const fail = async/);
+  assert.match(radar,/gov\.approved !== true/);
+  assert.match(radar,/gov\.lifecycle_status !== 'ACTIVE'/);
 });
 
 test('both original Edge owners enforce ONE BRAIN incident instrumentation marker',()=>{

@@ -1,0 +1,99 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|provider-selection|openai-only-original-owner-directive|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "failure_class": "CROSS_PROVIDER_RUNTIME_AND_GOVERNANCE_DRIFT",
+  "owner_authorization": {
+    "decision": "OWNER_DIRECTIVE_20261103_ALL_AI_INFERENCE_VIA_OPENAI",
+    "scope": "All active canonical Bedrijfsgeheugen AI inference workflows; retain external non-AI sources and connectors",
+    "scope_boundary": "No unsupported provider use or unlocked spending, keep historical suspended entries as immutable evidence",
+    "direct_owner_command": "Alles moet via OpenAI gaan"
+  },
+  "ownership": {
+    "agent": "original-one-brain-provider-governance-and-kansenradar-owner",
+    "exclusive_writer_required": true,
+    "original_cron_kept": true
+  },
+  "evidence": {
+    "source": "2026-11-03 production brain_ai_governance_registry and GitHub main direct source audit",
+    "active_provider_debt": [
+      {
+        "use_case": "supabase-bg-kansenradar-v1",
+        "current_provider": "Anthropic",
+        "proposed_provider": "OpenAI",
+        "model": "gpt-5-mini"
+      },
+      {
+        "use_case": "supabase-bg-experimentcyclus-v1",
+        "current_provider": "Anthropic",
+        "proposed_provider": "OpenAI"
+      },
+      {
+        "use_case": "netlify-vraagbalk",
+        "current_provider": "Anthropic",
+        "proposed_provider": "OpenAI"
+      },
+      {
+        "use_case": "netlify-document-extractor",
+        "current_provider": "Anthropic",
+        "proposed_provider": "OpenAI"
+      },
+      {
+        "use_case": "netlify-koppelingen-ai",
+        "current_provider": "Anthropic",
+        "proposed_provider": "OpenAI"
+      }
+    ],
+    "other_original_direct_uses": [
+      "supabase/functions/bg-bedrijfsnieuws/index.ts",
+      "supabase/functions/bg-bedrijfsprofiel/index.ts",
+      "supabase/functions/bg-opdrachtenradar/index.ts",
+      "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
+      "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+      "netlify/functions/_brain-ai.mjs",
+      "netlify/functions/_connector-ai.mjs",
+      "netlify/functions/i18n-translate.mjs",
+      "tools/regelgeving-bijwerken.py"
+    ]
+  },
+  "root_cause": "Canonical AI registry and runtime provider were historically configured per use case, yielding production Anthropic account-credit failures and mixed provider behavior. The owner now explicitly requires OpenAI only; migrating runtime alone while leaving governance Anthropic causes fail-closed blocks, and changing governance without runtime does likewise.",
+  "fix": "Migrate original radar to OpenAI gpt-5-mini with JSON-mode + task-contract checks; remove Anthropic credit-circuit specific guard, keep source and draft/never-send gates. Change original specific governance row with evidence and exact provider + data-transfer metadata at controlled handover, not speculative synthetic approval. Each remaining functional owner then converts its own provider calls within exclusive writer and independent exact provider readback.",
+  "prevention_rule": "Before any original AI model call match canonical approved ACTIVE use-case and the single authorized provider OpenAI. Reject API calls to Anthropic/Composio Groq/other model providers unless owner's provider policy changes in an explicitly documented versioned decision. Avoid launching parallel agents, never bypass test/CodeQL, never mark provider live on merge only; measure actual source outcomes.",
+  "tests": [
+    "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "invariants": [
+      "OpenAI only",
+      "preserve original source provenance and DMs draft only",
+      "no new scheduler",
+      "no mass production registry switch before provider source release",
+      "no status green absent actual provider result",
+      "exact approval evidence",
+      "subsequent provider readback after deployment"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN_SUPABASE_EDGE",
+    "failure_class": "CROSS_PROVIDER_RUNTIME_AND_GOVERNANCE_DRIFT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected Required/CodeQL/Full BRAIN + System Map exact head; original governance CAS transfer and provider source deployment; readback; true natural AI result. Historical Anthropic use cases require further source migrations and must remain an honest open backlog."
+}
