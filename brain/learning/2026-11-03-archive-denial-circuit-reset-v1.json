@@ -31,7 +31,18 @@
     "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
   ],
   "evaluation": {
-    "historical_replay": "deny-success-existing-tag-deny-success-existing-tag-deny => exactly 3 allowed denied attempts",
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs",
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs",
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-branch-archive-sweep.test.mjs",
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
     "protected_head_required": true,
     "codeql_required": true,
     "original_postmerge_run_required": true,
@@ -47,5 +58,13 @@
     "Distinct drift sampling in #4914",
     "Authorized incident rendering in portal #4547"
   ],
-  "global_green_allowed": false
+  "global_green_allowed": false,
+  "failure_class": "ARCHIVE_TAG_CREATE_403_CIRCUIT_RESET_AFTER_EXISTING_TAG_READBACK",
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "ARCHIVE_TAG_CREATE_403_CIRCUIT_RESET_AFTER_EXISTING_TAG_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
 }
