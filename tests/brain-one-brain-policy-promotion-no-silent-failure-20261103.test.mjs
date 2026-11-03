@@ -28,7 +28,11 @@ test('existing scheduler task visibly fails if original policy work failed',()=>
 test('no new executor, cron, consent override or external action was introduced',()=>{
   assert.doesNotMatch(sql,/cron\.schedule\s*\(/i);
   assert.doesNotMatch(sql,/cron\.unschedule\s*\(/i);
-  assert.doesNotMatch(sql,/grant\s+execute|revoke\s+execute/i);
+  assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\.powerhouse_one_brain_reconcile_v1\(timestamptz\)[\s\S]*?FROM PUBLIC, anon, authenticated;/i);
+  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_one_brain_reconcile_v1\(timestamptz\)[\s\S]*?TO service_role;/i);
+  assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\.powerhouse_runtime_mux_task_v1\(text,text,integer\)[\s\S]*?FROM PUBLIC, anon, authenticated;/i);
+  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_runtime_mux_task_v1\(text,text,integer\)[\s\S]*?TO service_role;/i);
+  assert.doesNotMatch(sql,/GRANT EXECUTE[^;]*TO\s+(?:PUBLIC|anon|authenticated)/i);
   assert.doesNotMatch(sql,/http_post|pg_net|linkedin.*send|instagram.*publish/i);
   assert.match(sql,/SECURITY DEFINER/);
 });
