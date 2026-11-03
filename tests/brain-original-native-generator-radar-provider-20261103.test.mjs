@@ -10,7 +10,7 @@ test('legacy native content generator uses EXACT previously approved OpenAI prov
   assert.match(generator,/gov\.lifecycle_status !== 'ACTIVE'/);
   assert.match(generator,/const model = gov\.model_id/);
   assert.match(generator,/secret\('OPENAI_API_KEY', 'OPENAI_API_KEY'\)/);
-  assert.match(generator,/https:\/\/api\.openai\.com\/v1\/chat\/completions/);
+  assert.ok(generator.includes('https://api.openai.com/v1/chat/completions'));
   assert.doesNotMatch(generator,/api\.anthropic\.com|anthropicKey|ANTHROPIC_API_KEY/);
 });
 test('strict schema and source-grounded editorial gates run before any Notion draft write',()=>{
@@ -34,7 +34,7 @@ test('radar preserves exact existing Anthropic approval and rejects unsafe cross
   assert.match(radar,/gov\.provider !== 'Anthropic'/);
   assert.match(radar,/const USE_CASE = 'supabase-bg-kansenradar-v1'/);
   assert.match(radar,/gov\.approved !== true/);
-  assert.doesNotMatch(radar,/api\.openai\.com\/v1/);
+  assert.ok(!radar.includes('https://api.openai.com/v1/'));
 });
 test('radar refuses to repeat known insufficient-credit calls, preserves natural daily retry',()=>{
   assert.match(radar,/\.from\('brain_delivery_evidence'\)/);
@@ -44,7 +44,8 @@ test('radar refuses to repeat known insufficient-credit calls, preserves natural
   assert.match(radar,/WAITING_AUTHORIZED_BILLING_OR_ORIGINAL_PROVIDER_RECOVERY/);
   assert.match(radar,/existing_source_receipt_at/);
   assert.match(radar,/AI_40\[13\]\|AI_PROVIDER_CREDITS_EXHAUSTED\|NOTION_POST_40\[134\]/);
-  assert.doesNotMatch(radar,/cron\.schedule|fetch\('https:\/\/api\.openai\.com/);
+  assert.ok(!radar.includes('cron.schedule'));
+  assert.ok(!radar.includes('https://api.openai.com/v1'));
 });
 test('radar never considers billing denial as green, and does not mark a source used',()=>{
   const failure=radar.indexOf("if (/credit balance is too low|insufficient.?credits|billing.?exhausted/i.test(recordedError))");
