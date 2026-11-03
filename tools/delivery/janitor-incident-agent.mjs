@@ -282,7 +282,7 @@ export async function observeArchive(env=process.env,provider=api,fetchImpl=glob
     report.source_url;
    const written=JSON.parse(provider(['-X','POST','repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
     '/comments','-f','body='+body]));
-   if(!numberOk(written.id)||!String(written.body||'').includes(marker))
+   if(!runIdOk(written.id)||!String(written.body||'').includes(marker))
     throw Error('ARCHIVE_ISSUE_WRITEBACK_UNVERIFIED');
    const check=JSON.parse(provider(['repos/'+repo+'/issues/comments/'+written.id]));
    if(check.id!==written.id||!String(check.body||'').includes(marker))
