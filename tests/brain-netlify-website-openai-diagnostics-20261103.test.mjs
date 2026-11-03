@@ -9,6 +9,9 @@ test('original website AI failures are classified without payload or credentials
   assert.match(site,/OPENAI_EMPTY_RESPONSE/);
   assert.match(site,/OPENAI_REFUSAL/);
   assert.doesNotMatch(site,/console\.error\(error\)|console\.error\(detail\)|console\.error\(vraag\)/);
-  assert.match(site,/return Response\.json\(\{ fout:'De zoekfunctie is even niet bereikbaar\.' \}, \{ status:502 \}\)/);
+  assert.match(site,/X-BG-Recovery-Class/);
+  assert.match(site,/'Cache-Control':'no-store'/);
+  assert.match(site,/X-BG-Recovery-Class': known/);
+  assert.match(site,/status:502/);
   assert.match(site,/process\.env\.OPENAI_API_KEY/);
 });
