@@ -9,6 +9,8 @@ export const INCIDENT_NUMBER=5320;
 export const HISTORY_DEBT_FINGERPRINT='github|janitor|history-deferral-without-incident-readback|20261103-v1';
 export const EVIDENCE_MISSING_FINGERPRINT='github|janitor|native-cleanup-artifact-missing|20261103-v1';
 export const ARCHIVE_INCIDENT_NUMBER=5333;
+export const ARCHIVE_RATE_INCIDENT_NUMBER=5341;
+export const ARCHIVE_RATE_FINGERPRINT='github|janitor-archive-sweep|installation-rate-limit-uncaught-after-tag403|20261103-v1';
 export const ARCHIVE_PROVIDER_FINGERPRINT='github|janitor-archive-sweep|tag-ref-create-403-masked-as-success|20261102-v1';
 export const ARCHIVE_EVIDENCE_FINGERPRINT='github|janitor-archive-sweep|missing-runtime-incident-proof|20261103-v1';
 export const ARCHIVE_STEP_FINGERPRINT='github|janitor-archive-sweep|native-step-failure-separate-from-permission|20261103-v1';
@@ -128,31 +130,46 @@ const api=args=>execFileSync('gh',['api',...args],{
 });
 // Existing original Janitor/Brain incident writer is reused by both native jobs;
 // no parallel registry or scheduler is introduced.
-export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha}={}){
+export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha,rateLimited=false}={}){
  const runOk=runIdOk(runId),mainOk=SHA.test(mainSha||'');
  const count=artifact?.counts,fields=['seen','skipped','deleted','archived','drift','failed'];
+ const bounded=artifact?.status==='BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP';
+ const boundedOk=!bounded||(artifact.scan_scope_full===false&&
+  Number.isSafeInteger(artifact.branch_inventory_total)&&
+  Number.isSafeInteger(artifact.branch_window_size)&&
+  artifact.branch_inventory_total>artifact.branch_window_size&&
+  artifact.branch_window_size>=0);
  const reportOk=runOk&&mainOk&&artifact?.schema==='janitor-branch-archive-sweep-v2'&&
-  artifact.applied===true&&['COMPLETE','PARTIAL_FAILURE'].includes(artifact.status)&&
+  artifact.applied===true&&['COMPLETE','PARTIAL_FAILURE','BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP'].includes(artifact.status)&&
+  boundedOk&&
   Number(artifact.source_run_id)===Number(runId)&&artifact.source_sha===mainSha&&
   count&&fields.every(key=>Number.isSafeInteger(count[key])&&count[key]>=0);
  const providerFailure=reportOk&&(count.failed>0||artifact.status==='PARTIAL_FAILURE');
  const badStep=sweepOutcome!=='success';
  const status=!reportOk?'INCIDENT_OPEN_ARCHIVE_EVIDENCE_MISSING':
+  rateLimited?'INCIDENT_OPEN_ARCHIVE_RATE_LIMIT_FAILURE':
   providerFailure?'INCIDENT_OPEN_ARCHIVE_PROVIDER_FAILURE':
-  badStep?'INCIDENT_OPEN_ARCHIVE_STEP_FAILURE':'JANITOR_ARCHIVE_STEPS_VERIFIED_SAME_RUN';
+  badStep?'INCIDENT_OPEN_ARCHIVE_STEP_FAILURE':
+  bounded?'JANITOR_ARCHIVE_BOUNDED_WINDOW_VERIFIED_SAME_RUN':
+  'JANITOR_ARCHIVE_STEPS_VERIFIED_SAME_RUN';
  return {schema:'janitor-archive-incident-observer-v1',status,run_id:runOk?Number(runId):null,
   main_sha:mainOk?mainSha:null,cleanup_outcome:sweepOutcome||'unknown',
   readback_outcome:reportOk?'PROVIDER_ARTIFACT_READ':'UNVERIFIED',
-  failed_steps:badStep?['archive']:[],report_required:status!=='JANITOR_ARCHIVE_STEPS_VERIFIED_SAME_RUN',
+  failed_steps:badStep?['archive']:[],report_required:status.startsWith('INCIDENT_OPEN_'),
   observer_scope:'branch_archive_sweep',signal_kind:status.replace('INCIDENT_OPEN_',''),
   evidence_available:!!reportOk,
   archive_counts:reportOk?Object.fromEntries(fields.map(k=>[k,count[k]])):null,
   archive_status:reportOk?artifact.status:'MISSING_OR_INVALID',
+  scan_scope_full:reportOk?artifact.scan_scope_full===true:false,
+  archive_reason:rateLimited?'PROVIDER_RATE_LIMIT_EXCEEDED':'UNKNOWN_OR_OTHER',
+  incident_number:rateLimited?ARCHIVE_RATE_INCIDENT_NUMBER:ARCHIVE_INCIDENT_NUMBER,
   owner:'existing-powerhouse-github-delivery-janitor',global_green:false,
   safe_to_delete_unarchived_unique_branch:false,
   next_action:!reportOk?'RECOVER_ORIGINAL_ARCHIVE_EVIDENCE':
+    rateLimited?'EXCLUSIVE_OWNER_GITHUB_INSTALLATION_QUOTA_RECOVERY':
     providerFailure?'EXCLUSIVE_OWNER_PROVIDER_PERMISSION_OR_TAG_READBACK_RECOVERY':
-    badStep?'EXCLUSIVE_OWNER_ORIGINAL_JOB_FAILURE_DIAGNOSIS':'INDEPENDENT_NATIVE_AND_BRAIN_READBACK'};
+    badStep?'EXCLUSIVE_OWNER_ORIGINAL_JOB_FAILURE_DIAGNOSIS':
+    bounded?'CONTINUE_ORIGINAL_HOURLY_BOUNDED_ARCHIVE_WINDOW':'INDEPENDENT_NATIVE_AND_BRAIN_READBACK'};
 }
 export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetch}={}){
  if(!report?.report_required&&!report?.failed_steps?.length)return {status:'NO_FAILURE_TO_RECORD'};
@@ -171,6 +188,7 @@ export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetc
  const kind=archive?report.signal_kind:report.failed_steps?.length?'STEP_FAILURE':
    report.status==='INCIDENT_OPEN_EVIDENCE_MISSING'?'EVIDENCE_MISSING':'HISTORY_UNPROVEN';
  const fingerprint=archive?(kind==='ARCHIVE_EVIDENCE_MISSING'?ARCHIVE_EVIDENCE_FINGERPRINT:
+   kind==='ARCHIVE_RATE_LIMIT_FAILURE'?ARCHIVE_RATE_FINGERPRINT:
    kind==='ARCHIVE_STEP_FAILURE'?ARCHIVE_STEP_FINGERPRINT:ARCHIVE_PROVIDER_FINGERPRINT):
    kind==='STEP_FAILURE'?FINGERPRINT:
    kind==='EVIDENCE_MISSING'?EVIDENCE_MISSING_FINGERPRINT:HISTORY_DEBT_FINGERPRINT;
@@ -186,6 +204,8 @@ export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetc
    observer_scope:report.observer_scope||'janitor',
    archive_status:archive?report.archive_status:null,
    archive_counts:archive?report.archive_counts:null,
+   archive_reason:archive?report.archive_reason:null,
+   archive_scan_scope_full:archive?report.scan_scope_full:null,
    root_cause:'UNVERIFIED_REQUIRE_ORIGINAL_JOB_LOG_AND_COMPLETE_SOURCE_HISTORY',owner:report.owner,
    safe_repair:'EXCLUSIVE_EXISTING_JANITOR_OWNER_PROTECTED_RELEASE',
    regression:archive?'tests/brain-janitor-archive-incident-readback-20261103.test.mjs':
@@ -274,21 +294,28 @@ export async function settleIncidentWritebacks({brainWrite,issueWrite}={}){
 export async function observeArchive(env=process.env,provider=api,fetchImpl=globalThis.fetch){
  assertNativeJanitorIdentity(env);
  await mkdir('.artifacts',{recursive:true});
- let artifact=null;
+ let artifact=null,rateLimited=false;
  try{artifact=JSON.parse(await readFile('.artifacts/branch-archive-sweep.json','utf8'));}catch{}
+ try{
+  const log=await readFile('.artifacts/branch-archive-actions.ndjson','utf8');
+  rateLimited=log.slice(0,512000).split('\\n').some(line=>{
+   try{const event=JSON.parse(line);return event?.reason==='PROVIDER_RATE_LIMIT_EXCEEDED'&&
+    event?.type==='BRANCH_ARCHIVE_PARTIAL_FAILURE';}catch{return false;}
+  });
+ }catch{} // Report still independently evaluated if original action log is missing.
  const report=classifyNativeArchive({sweepOutcome:env.JANITOR_ARCHIVE_SWEEP_OUTCOME,
-  artifact,runId:env.GITHUB_RUN_ID,mainSha:env.GITHUB_SHA});
+  artifact,rateLimited,runId:env.GITHUB_RUN_ID,mainSha:env.GITHUB_SHA});
  report.source_url='https://github.com/'+env.GITHUB_REPOSITORY+'/actions/runs/'+env.GITHUB_RUN_ID;
- report.incident_url='https://github.com/'+env.GITHUB_REPOSITORY+'/issues/'+ARCHIVE_INCIDENT_NUMBER;
+ report.incident_url='https://github.com/'+env.GITHUB_REPOSITORY+'/issues/'+report.incident_number;
  const output='.artifacts/janitor-archive-observer.json';
  await writeFile(output,JSON.stringify(report,null,2)+'\n');
  if(report.report_required){
   const issueWrite=async()=>{
    const repo=env.GITHUB_REPOSITORY,attempt=env.GITHUB_RUN_ATTEMPT||'1';
    const marker='<!-- janitor-archive-observer:'+env.GITHUB_RUN_ID+':'+attempt+':'+report.status+' -->';
-   const issue=JSON.parse(provider(['repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER]));
+   const issue=JSON.parse(provider(['repos/'+repo+'/issues/'+report.incident_number]));
    const page=Math.max(1,Math.ceil(Math.max(1,Number(issue.comments)||1)/100));
-   const comments=JSON.parse(provider(['repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
+   const comments=JSON.parse(provider(['repos/'+repo+'/issues/'+report.incident_number+
     '/comments?per_page=100&page='+page]));
    if(!Array.isArray(comments))throw Error('ARCHIVE_INCIDENT_READBACK_UNAVAILABLE');
    if(!comments.some(x=>String(x?.body||'').includes(marker))){
@@ -298,7 +325,7 @@ export async function observeArchive(env=process.env,provider=api,fetchImpl=glob
      ', failed count '+(report.archive_counts?.failed??'UNKNOWN')+
      '. Actual provider failure/authorization must be diagnosed by original owner. No unarchived unique branch deletion; no fake green. '+
      report.source_url;
-    const written=JSON.parse(provider(['-X','POST','repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
+    const written=JSON.parse(provider(['-X','POST','repos/'+repo+'/issues/'+report.incident_number+
      '/comments','-f','body='+body]));
     if(!runIdOk(written.id)||!String(written.body||'').includes(marker))
      throw Error('ARCHIVE_ISSUE_WRITEBACK_UNVERIFIED');
