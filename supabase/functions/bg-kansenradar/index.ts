@@ -27,10 +27,12 @@ async function openai(key: string, model: string, system: string, user: string, 
     body: JSON.stringify({
       model, max_completion_tokens: 5500,
       messages: [
-        { role: 'system', content: system + '\\nAntwoord uitsluitend met een JSON-object met het gevraagde veld ' + name + '. Geen feiten buiten de aangeleverde bronnen.' },
+        { role: 'system', content: system + '\\nLever alleen de velden uit het originele function-schema. Geen wrapper met de functienaam; geen feiten buiten de bron.' },
         { role: 'user', content: user }
       ],
-      response_format: { type: 'json_object' }
+      tools: [{ type: 'function', function: { name, description: name, parameters: schema } }],
+      tool_choice: { type: 'function', function: { name } },
+      parallel_tool_calls: false
     }),
     signal: AbortSignal.timeout(60000)
   });
@@ -39,7 +41,9 @@ async function openai(key: string, model: string, system: string, user: string, 
   const message = body?.choices?.[0]?.message;
   if (message?.refusal) throw new Error('OPENAI_REFUSAL');
   let parsed: any;
-  try { parsed = JSON.parse(String(message?.content || '')); } catch { throw new Error('OPENAI_OUTPUT_NOT_JSON'); }
+  const args = (message?.tool_calls || []).find((call: any) => call?.type === 'function' && call?.function?.name === name)?.function?.arguments;
+  if (typeof args !== 'string' || !args.length) throw new Error('OPENAI_TOOL_RESULT_MISSING');
+  try { parsed = JSON.parse(args); } catch { throw new Error('OPENAI_OUTPUT_NOT_JSON'); }
   const fields = Array.isArray(schema?.required) ? schema.required : [];
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)
     || fields.some((field: string) => !(field in parsed))
