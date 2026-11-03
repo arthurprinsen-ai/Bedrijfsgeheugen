@@ -253,6 +253,21 @@ async function observe(env=process.env,provider=api){
  }
  console.log('JANITOR_AGENT:'+report.status+':'+report.run_id);
 }
+// Independent best-effort channels: a GitHub installation rate limit must not
+// prevent the original ONE BRAIN incident observation (and vice versa).
+export async function settleIncidentWritebacks({brainWrite,issueWrite}={}){
+ const results=await Promise.allSettled([brainWrite(),issueWrite()]);
+ const [brain,issue]=results;
+ const brainReceipt=brain.status==='fulfilled'?brain.value:
+  {verified:false,status:'BRAIN_WRITE_FAILED',reason:clean(brain.reason?.message)};
+ const issueReceipt=issue.status==='fulfilled'?issue.value:null;
+ const failures=[];
+ if(brainReceipt?.verified!==true)failures.push('BRAIN_'+clean(brainReceipt?.status||'UNVERIFIED'));
+ if(issueReceipt!=='PROVIDER_READBACK_CONFIRMED')
+  failures.push('ISSUE_'+(issue.status==='rejected'?clean(issue.reason?.message):'READBACK_UNVERIFIED'));
+ return {brain:brainReceipt,issue:issueReceipt,failures,
+  verified:failures.length===0};
+}
 // Same original hourly workflow, separate existing branch_archive_sweep job.
 // A failure is independently written to original issue #5333 and the
 // canonical Brain RPC, with an idempotent run/attempt marker and readback.
@@ -268,34 +283,42 @@ export async function observeArchive(env=process.env,provider=api,fetchImpl=glob
  const output='.artifacts/janitor-archive-observer.json';
  await writeFile(output,JSON.stringify(report,null,2)+'\n');
  if(report.report_required){
-  const repo=env.GITHUB_REPOSITORY,attempt=env.GITHUB_RUN_ATTEMPT||'1';
-  const marker='<!-- janitor-archive-observer:'+env.GITHUB_RUN_ID+':'+attempt+':'+report.status+' -->';
-  const issue=JSON.parse(provider(['repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER]));
-  const page=Math.max(1,Math.ceil(Math.max(1,Number(issue.comments)||1)/100));
-  const comments=JSON.parse(provider(['repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
-   '/comments?per_page=100&page='+page]));
-  if(!Array.isArray(comments))throw Error('ARCHIVE_INCIDENT_READBACK_UNAVAILABLE');
-  if(!comments.some(x=>String(x?.body||'').includes(marker))){
-   const body=marker+'\nNative Janitor archive observer **INCIDENT_OPEN**: run '+
-    clean(env.GITHUB_RUN_ID)+' attempt '+clean(attempt)+' SHA '+clean(env.GITHUB_SHA)+
-    ', source status '+clean(report.status)+', original step '+clean(report.cleanup_outcome)+
-    ', failed count '+(report.archive_counts?.failed??'UNKNOWN')+
-    '. Actual provider failure/authorization must be diagnosed by original owner. No unarchived unique branch deletion; no fake green. '+
-    report.source_url;
-   const written=JSON.parse(provider(['-X','POST','repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
-    '/comments','-f','body='+body]));
-   if(!runIdOk(written.id)||!String(written.body||'').includes(marker))
-    throw Error('ARCHIVE_ISSUE_WRITEBACK_UNVERIFIED');
-   const check=JSON.parse(provider(['repos/'+repo+'/issues/comments/'+written.id]));
-   if(check.id!==written.id||!String(check.body||'').includes(marker))
-    throw Error('ARCHIVE_ISSUE_READBACK_MISMATCH');
-  }
-  report.issue_writeback='PROVIDER_READBACK_CONFIRMED';
-  const brain=await writeBrainOccurrence({env,report,fetchImpl});
-  report.brain_writeback=brain;
-  report.reporting_readback_verified=brain.verified===true;
+  const issueWrite=async()=>{
+   const repo=env.GITHUB_REPOSITORY,attempt=env.GITHUB_RUN_ATTEMPT||'1';
+   const marker='<!-- janitor-archive-observer:'+env.GITHUB_RUN_ID+':'+attempt+':'+report.status+' -->';
+   const issue=JSON.parse(provider(['repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER]));
+   const page=Math.max(1,Math.ceil(Math.max(1,Number(issue.comments)||1)/100));
+   const comments=JSON.parse(provider(['repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
+    '/comments?per_page=100&page='+page]));
+   if(!Array.isArray(comments))throw Error('ARCHIVE_INCIDENT_READBACK_UNAVAILABLE');
+   if(!comments.some(x=>String(x?.body||'').includes(marker))){
+    const body=marker+'\nNative Janitor archive observer **INCIDENT_OPEN**: run '+
+     clean(env.GITHUB_RUN_ID)+' attempt '+clean(attempt)+' SHA '+clean(env.GITHUB_SHA)+
+     ', source status '+clean(report.status)+', original step '+clean(report.cleanup_outcome)+
+     ', failed count '+(report.archive_counts?.failed??'UNKNOWN')+
+     '. Actual provider failure/authorization must be diagnosed by original owner. No unarchived unique branch deletion; no fake green. '+
+     report.source_url;
+    const written=JSON.parse(provider(['-X','POST','repos/'+repo+'/issues/'+ARCHIVE_INCIDENT_NUMBER+
+     '/comments','-f','body='+body]));
+    if(!runIdOk(written.id)||!String(written.body||'').includes(marker))
+     throw Error('ARCHIVE_ISSUE_WRITEBACK_UNVERIFIED');
+    const check=JSON.parse(provider(['repos/'+repo+'/issues/comments/'+written.id]));
+    if(check.id!==written.id||!String(check.body||'').includes(marker))
+     throw Error('ARCHIVE_ISSUE_READBACK_MISMATCH');
+   }
+   return 'PROVIDER_READBACK_CONFIRMED';
+  };
+  const settled=await settleIncidentWritebacks({
+   brainWrite:()=>writeBrainOccurrence({env,report,fetchImpl}),issueWrite
+  });
+  report.brain_writeback=settled.brain;
+  report.issue_writeback=settled.issue;
+  report.reporting_failure_codes=settled.failures;
+  report.reporting_readback_verified=settled.verified;
   await writeFile(output,JSON.stringify(report,null,2)+'\n');
-  if(brain.verified!==true)throw Error('ARCHIVE_BRAIN_INCIDENT_WRITEBACK_UNVERIFIED:'+brain.status);
+  if(!settled.verified)
+   throw Error('ARCHIVE_BRAIN_INCIDENT_WRITEBACK_UNVERIFIED_OR_ISSUE_READBACK_FAILED:'+
+    settled.failures.join('|'));
  }
  console.log('JANITOR_ARCHIVE_OBSERVER:'+report.status+':'+report.run_id);
  return report;
