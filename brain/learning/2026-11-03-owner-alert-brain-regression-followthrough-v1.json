@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|brain|owner-alert-skill-debt-and-cas-projection-regression|20261103-v1",
+  "obligation_id": "powerhouse-owner-alert-brain-regression-followthrough-20261103-v1",
+  "status": "CANDIDATE_RECHECK_REQUIRED",
+  "owner": "existing ONE BRAIN verification owner / original heartbeat content loop",
+  "failure_class": "POST_MERGE_BRAIN_TEST_CONTRACT_DRIFT",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "POST_MERGE_BRAIN_TEST_CONTRACT_DRIFT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "GitHub BRAIN verification-only run 41625326450 at merged PR #5350 failed two legitimate stale-contract assertions: historical loop_debt_baseline still included powerhouse-linkedin-company-growth after the skill acquired the required incident marker; original CAS readback test insisted on an exact adjacent sequence without newly persisted ownerActionEscalation, although CAS safety remained unchanged.",
+  "fix": "Remove the newly compliant skill from historical debt baseline (debt shrinks). Update original CAS-only metadata writeback regression to demand new ownerActionEscalation next to incidentLearning, without changing the original CAS filter, fields, provider authorization or delivery gates.",
+  "prevention_rule": "A newly marker-compliant agent skill must be removed from debt baseline in the same protected lineage. Whenever the original read-only owner-action field joins content-loop readback, assert that the field exists while preserving CAS-only metadata, no provider/status mutation and no new parallel sender.",
+  "evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41625326450",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5350",
+    "failure_count": 2,
+    "notification_gmail_sent_message_id": "1a1a11dc12d6e1cf",
+    "notification_sent_at": "2026-11-03T11:14:04Z",
+    "notification_receipt_scope": "Gmail SENT provider evidence, not yet canonical brain notification ledger"
+  },
+  "tests": [
+    "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs",
+    "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs",
+    "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs",
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "invariants": [
+      "no historical skill listed as debt when marker present",
+      "strict original CAS update and no provider bypass",
+      "owner action projection and no claim of email without Gmail ID",
+      "exact-head Required/BRAIN/CodeQL before proven"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-linkedin-company-growth"
+  ],
+  "terminal_rule": "Exact-head native Required, full BRAIN and CodeQL, exclusive writer/protected merge and independently verified next natural task run; do not mark publication or notification automation universally green from test alone."
+}
