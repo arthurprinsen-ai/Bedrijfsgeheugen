@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
- classifyNativeArchive,writeBrainOccurrence,settleIncidentWritebacks,
+ classifyNativeArchive,classifyArchiveProviderActions,writeBrainOccurrence,settleIncidentWritebacks,
  ARCHIVE_PROVIDER_FINGERPRINT,ARCHIVE_EVIDENCE_FINGERPRINT,ARCHIVE_STEP_FINGERPRINT,ARCHIVE_RATE_FINGERPRINT
 } from '../tools/delivery/janitor-incident-agent.mjs';
 
@@ -12,8 +12,8 @@ const valid={
  source_run_id:String(runId),source_sha:mainSha,
  counts:{seen:747,skipped:747,deleted:0,archived:0,drift:0,failed:0}
 };
-const classify=(sweepOutcome='success',artifact=valid,rateLimited=false)=>classifyNativeArchive({
- sweepOutcome,artifact,rateLimited,runId,mainSha
+const classify=(sweepOutcome='success',artifact=valid,rateLimited=false,permissionDenied=false)=>classifyNativeArchive({
+ sweepOutcome,artifact,rateLimited,permissionDenied,runId,mainSha
 });
 
 test('successful original job plus complete evidence is only scoped readback',()=>{
@@ -51,6 +51,28 @@ test('native GitHub installation quota is routed to separate issue #5341 and sem
  assert.equal(missingProof.value.fingerprint,ARCHIVE_RATE_FINGERPRINT);
  assert.equal(missingProof.posted.p_evidence.native_artifact_available,false);
 });
+test('same-run native tag HTTP403 is a typed ONE BRAIN permission denial, never an unknown cause',async()=>{
+ const artifact={...valid,status:'PARTIAL_FAILURE',counts:{...valid.counts,failed:3}};
+ const exact={type:'BRANCH_ARCHIVE_PARTIAL_FAILURE',reason:'PROVIDER_PERMISSION_DENIED',
+  provider_http_status:403,action:'CREATE_ARCHIVE_TAG',run_id:runId,source_sha:mainSha,branch_deleted:false};
+ const forged={...exact,source_sha:'f'.repeat(40)};
+ const malformed={...exact,provider_http_status:401};
+ const signals=classifyArchiveProviderActions([JSON.stringify(forged),JSON.stringify(malformed),
+  JSON.stringify(exact),'malformed'].join('\n'),{runId,mainSha});
+ assert.deepEqual(signals,{rateLimited:false,permissionDenied:true});
+ const report=classify('failure',artifact,false,signals.permissionDenied);
+ assert.equal(report.status,'INCIDENT_OPEN_ARCHIVE_PROVIDER_FAILURE');
+ assert.equal(report.archive_reason,'PROVIDER_PERMISSION_DENIED');
+ assert.equal(report.incident_number,5333);
+ const {value,posted}=await record(report);
+ assert.equal(value.verified,true);
+ assert.equal(posted.p_evidence.archive_reason,'PROVIDER_PERMISSION_DENIED');
+ assert.equal(classify('failure',artifact).archive_reason,'UNKNOWN_OR_OTHER');
+ assert.equal(classify('failure',null,false,true).archive_reason,'UNKNOWN_OR_OTHER');
+ assert.deepEqual(classifyArchiveProviderActions(JSON.stringify(exact),
+  {runId:runId+1,mainSha}),{rateLimited:false,permissionDenied:false});
+});
+
 test('three native archive HTTP403 errors remain typed incidents even if GitHub step says success',()=>{
  const artifact={...valid,status:'PARTIAL_FAILURE',
   counts:{...valid.counts,seen:747,skipped:744,failed:3}};
