@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "obligation_id": "powerhouse-owner-escalation-current-authorization-without-spam-20261103-v1",
+  "fingerprint": "powerhouse|human-gate|recurrent-authorization-no-actionable-owner-notification|20261103-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "owner": "original-one-brain-heartbeat-content-loop-and-existing-daily-monitoring-automations",
+  "failure_class": "MISSING_OR_STALE_HUMAN_AUTHORIZATION_ESCALATION",
+  "root_cause": "Original channel recovery detects human OAuth and email authorization, yet the canonical content-closed-loop readback did not expose a typed current-owner-only escalation; historical 403s could be mistaken for a new reauth need after source recovered. Existing task result lacked a proven no-spam notification contract.",
+  "fix": "Original content-closed-loop computes and persists a pure owner-action plan from same-source recovery+provider current state; two original enabled daily Powerhouse automations are updated in place to send actionable ChatGPT task messages and, if available, existing authorized Gmail owner-only notifications with native receipts. No extra scheduler or publisher.",
+  "prevention_rule": "Human-only boundaries require a recent corroborated original source record, current negative authorization, one original owner action and unexpired verified URL; suppress stale LinkedIn failures after fresh verified auth; one alert/fingerprint per 24h and no claim of sent email absent provider ID. Safe recoverable failures remain agent-owned.",
+  "tests": [
+    "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no stale reauth after ACTIVE + fresh verification",
+      "no email receipt forged",
+      "no duplicate publication or extra cron",
+      "no request for owner on agent-recoverable editorial/duplicate failure",
+      "no expired or arbitrary link"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-linkedin-company-growth"
+  ],
+  "evidence": {
+    "canonical_auth_proof": "public.brain_records linkedin-composio-setup-current-state-v1 ACTIVE fresh_verified true observed 2026-11-03 10:54 UTC",
+    "live_delivery": "UNVERIFIED",
+    "original_daily_publish_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+    "existing_tasks": [
+      "6ad0c72564048191950b24c8b2d947c2",
+      "6ad5b66790548191ad87ca89c4fd00ab"
+    ]
+  },
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL merge, Supabase original Edge deployment readback, actual future owner alert in original task and optional Gmail native message id, later normal run verifies no stale reminder."
+}
