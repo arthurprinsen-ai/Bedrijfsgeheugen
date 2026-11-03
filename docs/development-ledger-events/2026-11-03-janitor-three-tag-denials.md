@@ -1,0 +1,9 @@
+# Delivery ledger · Nov 3, 2026 · original Janitor tag-denial circuit
+
+- **Problem / owner:** Existing ONE BRAIN / Powerhouse Repository Janitor. In original run #41599769122, the source had six refused tag-create calls despite a three-strike safety circuit. GitHub branch_archive_sweep job FAILED, source artifact present; no false green.
+- **Root cause / boundary:** Counter reset after successful existing archive tag readback. This allowed extra denied writes and unnecessary installation API traffic. GitHub's actual `POST /git/refs` HTTP403 is **not** caused by this counter issue and remains an independently open provider-auth incident.
+- **Evidence:** Original GitHub issue #5333 automated comment #6598485601 and direct Supabase `brain_failure_occurrences` occurrence `github-actions:janitor-archive:run:41599769122:attempt:1:signal:archive_provider_failure`; job #125797041084 contains six exact typed HTTP403 source events. Original reference commit `c58a4d5290938b0ea7b911aa5ff5aaf6e32e6f6c`.
+- **Action:** Replace consecutive-reset budget with immutable in-run cumulative permission-denial count; keep original hard stop, append typed source counts; update existing Brain tests, agentskill, Brain learning and this human ledger. Preserve native exclusive writer and branch protection.
+- **Verification:** Native protected Required + CodeQL + full Brain on exact candidate HEAD, independently verified merge, native original postmerge Janitor run, original BRAIN/GitHub readback and portal readback if portal status changed. Any missing proof means NOT LIVE for the changed logic.
+- **Preventive rule:** `NO_TAG_CREATE_403_CIRCUIT_RESET_WITHIN_RUN_NO_FOURTH_DENIED_POST`. No token scope bypass, new scheduler, loss of unique work, or false all-green.
+- **Open debts:** #5333 tag creation authorization, #4655 four orphaned zero-job GitHub runs, #4914 unresolved drift sampling, #4547 tenant-safe portal evidence visibility; keep individual owners and status.

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { indexPullRequests, classifyBranch, decide, archiveTagName, archiveProviderFailure } from '../tools/ci/branch-archive-sweep.mjs';
+import { indexPullRequests, classifyBranch, decide, archiveTagName, archiveProviderFailure, nextArchiveTagDenialCount } from '../tools/ci/branch-archive-sweep.mjs';
 
 const repo = 'acme/home';
 const pr = (over) => ({ state: 'closed', merged_at: null, head: { ref: 'b', sha: 's1', repo: { full_name: 'acme/home' } }, ...over });
@@ -41,6 +41,26 @@ test('archive tag never overwrites a different sha', () => {
   assert.equal(archiveTagName('feat/x', 'abcdef1234', 'ffffff'), 'archive/feat/x-abcdef1');
 });
 
+test('native archive circuit counts three total denied creates despite valid existing-tag readbacks between', () => {
+  const denied = archiveProviderFailure({stderr:'gh: Resource not accessible by integration (HTTP 403)'},{phase:'CREATE_ARCHIVE_TAG'});
+  assert.equal(denied.action,'CREATE_ARCHIVE_TAG');
+  let n=nextArchiveTagDenialCount(0,denied);
+  assert.equal(n,1);
+  n=nextArchiveTagDenialCount(n,{action:'VERIFY_ARCHIVE_TAG_READBACK',provider_http_status:200,reason:'PROVIDER_OK'});
+  assert.equal(n,1,'a successfully read existing tag must never reset the denial budget');
+  n=nextArchiveTagDenialCount(n,denied);
+  n=nextArchiveTagDenialCount(n,{action:'DELETE_VERIFIED_BRANCH',provider_http_status:200,reason:'PROVIDER_OK'});
+  n=nextArchiveTagDenialCount(n,denied);
+  assert.equal(n,3,'third denied create closes the circuit for this original run');
+  assert.equal(nextArchiveTagDenialCount(n,{action:'READ_BRANCH_COMMIT',provider_http_status:403,reason:'PROVIDER_PERMISSION_DENIED'}),3,'read HTTP403 is a separately classified error');
+  assert.throws(()=>nextArchiveTagDenialCount(-1,denied),/INVALID_ARCHIVE_DENIAL_COUNT/);
+  const src=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
+  assert.doesNotMatch(src,/consecutiveArchiveFailures/);
+  assert.match(src,/archiveTagDenials = nextArchiveTagDenialCount\(archiveTagDenials, incident\)/);
+  assert.match(src,/archive_tag_denials: archiveTagDenials/);
+  assert.match(src,/archive_circuit_open: archiveTagDenials >= 3/);
+});
+
 test('janitor runs the sweep with a cap and only against its own repository', () => {
   const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
   assert.match(wf, /node tools\/ci\/branch-archive-sweep\.mjs --apply --cap 150/);
@@ -52,7 +72,7 @@ test('janitor runs the sweep with a cap and only against its own repository', ()
 test('sweep has a time budget, a circuit breaker and a hard timeout in the janitor', () => {
   const src = readFileSync('tools/ci/branch-archive-sweep.mjs', 'utf8');
   assert.match(src, /SWEEP_BUDGET_SECONDS/);
-  assert.match(src, /consecutiveArchiveFailures >= 3/);
+  assert.match(src, /archiveTagDenials >= 3/);
   const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
   assert.match(wf, /branch_archive_sweep:[\s\S]*timeout-minutes: 20[\s\S]*timeout 1000 node tools\/ci\/branch-archive-sweep\.mjs/);
 });
@@ -88,7 +108,7 @@ test('original archive job fails on partial error and always preserves independe
   const job = wf.split('  branch_archive_sweep:\n')[1];
   assert.ok(job);
   assert.match(src,/if \(outcome\.failed > 0\) process\.exitCode = 78/);
-  assert.match(src,/consecutiveArchiveFailures >= 3/);
+  assert.match(src,/archiveTagDenials >= 3/);
   assert.match(src,/phase = 'CREATE_ARCHIVE_TAG'/);
   assert.match(src,/phase = 'VERIFY_ARCHIVE_TAG_READBACK'/);
   assert.match(src,/if \(readback !== branch\.sha\) throw/);
@@ -139,7 +159,7 @@ test('archive permission circuit breaker stops further GitHub provider reads',()
   const src=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
   const loop=src.split('for (const branch of selectedBranches) {')[1];
   assert.ok(loop);
-  const breaker=loop.indexOf('if (consecutiveArchiveFailures >= 3)');
+  const breaker=loop.indexOf('if (archiveTagDenials >= 3)');
   const getCommit=loop.indexOf("const commit = JSON.parse(gh(");
   assert.ok(breaker >=0 && getCommit > breaker,'circuit breaker before any commit API call');
   assert.match(loop,/JANITOR_ARCHIVE_CIRCUIT_BREAKER_OPEN:3_PROVIDER_TAG_DENIALS/);
