@@ -226,3 +226,12 @@ entrypoint = "./functions/bg-externe-signalen/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-interactie/index.ts"
+
+# Existing daily Kansenradar: release-manifest parity with deployed v12.
+# Provider verify_jwt=false is preserved; the original cron now sends a
+# scheduler token that the Edge source verifies BEFORE service-role operations.
+# No public invocation, second scheduler, new provider or OAuth bypass.
+[functions.bg-kansenradar]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-kansenradar/index.ts"

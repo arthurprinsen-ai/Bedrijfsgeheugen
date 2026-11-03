@@ -57,6 +57,14 @@ Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') return json({ error: 'POST_ONLY' }, 405);
   const url = Deno.env.get('SUPABASE_URL')!; const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  // Exact original scheduler-token boundary, BEFORE privileged DB operations,
+  // AI quota consumption, external Notion or other provider side effects.
+  // Supabase provider verify_jwt=false is not permission for anonymous callers.
+  const schedulerSecret = String((await db.rpc('bg_geheim', { p_naam: 'powerhouse_daily_scheduler_token' })).data || '').trim();
+  const callerToken = (req.headers.get('x-powerhouse-token') || '').trim();
+  if (!schedulerSecret || callerToken.length < 16 || callerToken !== schedulerSecret) {
+    return json({ ok: false, error: 'UNAUTHORIZED' }, 401);
+  }
   const bewijs = (groen: boolean, detail: unknown, klasse: string | null = null) => db.rpc('bg_bewijs', { p_bron: BRON, p_groen: groen, p_detail: detail, p_foutklasse: klasse }).then(() => {}, () => {});
   const geheim = async (n: string) => (((await db.rpc('bg_geheim', { p_naam: n })).data as string) || '').trim();
   const fail = async (s: number, b: Record<string, unknown>, k: string) => { await bewijs(false, b, k); return json({ ok: false, ...b }, s); };
