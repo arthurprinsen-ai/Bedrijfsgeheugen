@@ -53,5 +53,15 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "terminal_rule": "Require protected Required/CodeQL/BRAIN, original Netlify production deploy, live request log showing exact source failure taxonomy, owner RCA, provider successful response and no recurring incident."
+  "terminal_rule": "Require protected Required/CodeQL/BRAIN, original Netlify production deploy, live request log showing exact source failure taxonomy, owner RCA, provider successful response and no recurring incident.",
+  "verification_update_20261103": {
+    "first_diagnostic_live_deploy_sha": "fab18c74e6bdbe9ae4ce214572332ae90353494e",
+    "original_netlify_request_id": "01M6GVCPN7WD51G0JMDHCZHSJP",
+    "http_status": 502,
+    "netlify_function_invoked": true,
+    "netlify_observability_logs_returned": 0,
+    "provider_cause_status": "UNCLASSIFIED",
+    "reason": "Original Netlify per-request observability does not expose server console logs in connected API; allowlisted error category needs independent response header readback.",
+    "next_safe_fix": "Add X-BG-Recovery-Class header with only allowlisted machine class to original generic 502; repeat original public question; keep safe response body, no prompt/secret/PII."
+  }
 }
