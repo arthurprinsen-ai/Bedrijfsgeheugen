@@ -80,6 +80,16 @@ export function archiveProviderFailure(error, { phase, branch, sha, runId, runAt
   };
 }
 
+// Count *all* native 403 tag-create denials in this ORIGINAL run, not merely a
+// consecutive streak. Existing tags read back successfully must not reset the
+// denied-write budget and permit another round of doomed GitHub API writes.
+export function nextArchiveTagDenialCount(previous, event) {
+  if (!Number.isSafeInteger(previous) || previous < 0) throw new TypeError('INVALID_ARCHIVE_DENIAL_COUNT');
+  return event?.action === 'CREATE_ARCHIVE_TAG' &&
+    event?.provider_http_status === 403 && event?.reason === 'PROVIDER_PERMISSION_DENIED'
+    ? previous + 1 : previous;
+}
+
 function gh(args, { input, allow404 = false } = {}) {
   try {
     return execFileSync('gh', args, { encoding: 'utf8', input, maxBuffer: 256 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -123,11 +133,11 @@ export function main(argv = process.argv.slice(2), env = process.env) {
   const counts = { seen: 0, skipped: 0, deleted: 0, archived: 0, drift: 0, failed: 0 };
   const now = Date.now();
   const deadline = now + (Number(env.SWEEP_BUDGET_SECONDS) || 360) * 1000;
-  let consecutiveArchiveFailures = 0;
+  let archiveTagDenials = 0;
   for (const branch of selectedBranches) {
     // A third denied archive tag is an open original provider incident.
     // STOP all further provider reads, not only further tag writes.
-    if (consecutiveArchiveFailures >= 3) {
+    if (archiveTagDenials >= 3) {
       console.error('::error::JANITOR_ARCHIVE_CIRCUIT_BREAKER_OPEN:3_PROVIDER_TAG_DENIALS');
       break;
     }
@@ -172,7 +182,6 @@ export function main(argv = process.argv.slice(2), env = process.env) {
         const readback = gh(['api', `repos/${repo}/git/ref/tags/${tag}`, '--jq', '.object.sha']).trim();
         if (readback !== branch.sha) throw new Error(`ARCHIVE_READBACK_MISMATCH:${tag}`);
         counts.archived += 1;
-        consecutiveArchiveFailures = 0;
       }
       phase = 'DELETE_VERIFIED_BRANCH';
       gh(['api', '-X', 'DELETE', `repos/${repo}/git/refs/heads/${enc}`]);
@@ -182,13 +191,17 @@ export function main(argv = process.argv.slice(2), env = process.env) {
       }
     } catch (error) {
       counts.failed += 1;
-      if (verdict?.action === 'ARCHIVE_THEN_DELETE') consecutiveArchiveFailures += 1;
       const incident = archiveProviderFailure(error, {
         phase, branch: branch.name, sha: branch.sha,
         runId: env.GITHUB_RUN_ID, runAttempt: env.GITHUB_RUN_ATTEMPT, sourceSha: env.GITHUB_SHA
       });
       if (actionsFile) appendFileSync(actionsFile, JSON.stringify(incident) + '\n');
       console.error('::error::JANITOR_ARCHIVE_SWEEP_PARTIAL_FAILURE:' + JSON.stringify(incident));
+      archiveTagDenials = nextArchiveTagDenialCount(archiveTagDenials, incident);
+      if (archiveTagDenials >= 3) {
+        console.error('::error::JANITOR_ARCHIVE_CIRCUIT_BREAKER_OPEN:3_PROVIDER_TAG_DENIALS');
+        break;
+      }
       if (incident.reason === 'PROVIDER_RATE_LIMIT_EXCEEDED') break;
     }
   }
@@ -197,12 +210,13 @@ export function main(argv = process.argv.slice(2), env = process.env) {
     status: counts.failed > 0 ? 'PARTIAL_FAILURE' : selectedBranches.length < branches.length ? 'BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP' : 'COMPLETE',
     incident_fingerprint: 'github|janitor-archive-sweep|tag-ref-create-403-masked-as-success|20261102-v1',
     source_run_id: env.GITHUB_RUN_ID || null, source_sha: env.GITHUB_SHA || null,
-    applied: apply, counts, branch_inventory_total: branches.length,
+    applied: apply, counts, archive_tag_denials: archiveTagDenials,
+    archive_circuit_open: archiveTagDenials >= 3, branch_inventory_total: branches.length,
     branch_window_start: windowStart, branch_window_size: selectedBranches.length,
     scan_scope_full: selectedBranches.length === branches.length,
     false_green_forbidden: true
   }, null, 2) + '\n');
-  console.log(`JANITOR_ARCHIVE_SWEEP:apply=${apply}:cap=${cap}:seen=${counts.seen}:skipped=${counts.skipped}:archived=${counts.archived}:deleted=${counts.deleted}:drift=${counts.drift}:failed=${counts.failed}:inventory=${branches.length}:window_start=${windowStart}:window_size=${selectedBranches.length}`);
+  console.log(`JANITOR_ARCHIVE_SWEEP:apply=${apply}:cap=${cap}:seen=${counts.seen}:skipped=${counts.skipped}:archived=${counts.archived}:deleted=${counts.deleted}:drift=${counts.drift}:failed=${counts.failed}:inventory=${branches.length}:window_start=${windowStart}:window_size=${selectedBranches.length}:tag_denials=${archiveTagDenials}:circuit_open=${archiveTagDenials >= 3}`);
   return counts;
 }
 
