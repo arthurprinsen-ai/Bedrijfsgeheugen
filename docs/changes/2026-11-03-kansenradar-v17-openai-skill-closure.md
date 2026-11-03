@@ -1,0 +1,15 @@
+# 3 november 2026 — Kansenradar OpenAI v17/v18 productie en agent-skill vrijgave
+
+## Probleem en oorzaak
+De oorspronkelijke Kansenradar gaf op request `19898` HTTP 500: `OPENAI_OUTPUT_CONTRACT_FAILED`. De onjuiste JSON-wrapper was onverenigbaar met de oorspronkelijke `oordelen`/`berichten` contracten. PR #5355 forceerde de geautoriseerde OpenAI named-tool response en de bestaande bronfilter en tokenbeveiliging bleven behouden. Een bestaande agent-skill bevatte daarna nog een gedateerde instructie om Anthropic goedgekeurd te houden. Dat is geen actuele uitvoeringsconfiguratie en mag niet als beleidsrichtlijn blijven bestaan.
+
+## Werkelijk gecontroleerd
+De bestaande productiebroncollector leverde bij request `19947` HTTP 200: 13 echte items, 3 toegestaan, één vers bruikbaar. De oorspronkelijke beveiligde Kansenradar-aanroep `19948` evalueerde daadwerkelijk één bron op `bg-kansenradar` v17, HTTP 200, `NIETS_DOOR_DE_TOETS`. `post=false, dm=false, deadline=false`: geen externe publicatie of DM door deze controle. Een negatieve inhoudelijke beoordeling is een geldige OpenAI-verwerking, geen commerciële conversie. De originele `brain_delivery_evidence` op 2026-11-03 13:08:57 UTC registreerde dit. Later is provider v18 ACTIVE aangetroffen: volledige bron is onafhankelijk byte-identiek aan GitHub `main`. De vorige modelaanroep bewijst niet automatisch een nieuwe modelaanroep op v18.
+
+## Borgen van agents/skills
+De bestaande skill `.agents/skills/powerhouse-resource-sustainability/SKILL.md` krijgt de geautoriseerde OpenAI-only-instructie en expliciete poorten voor echte bronvaliditeit, inputcoverage, modelrespons, originele cron- en Edge-bewijzen. Hetzelfde PR #5363 bevat leerrecord, ledger en documentatie. De eerste Required-run is historisch FAILED wegens ontbrekende/ongeldige PR-metadata. Na metadatherstel heeft de tweede run opnieuw terecht geweigerd wegens ontbrekende `brain_learning`, `activity_ledger` en `human_documentation`. Deze PR vult de echte closure aan; geen checks worden overgeslagen.
+
+## Onafhankelijke vrijgave
+Voor skill-LIVE is vereist: één geldige oorspronkelijke writer, exact-head Required + BRAIN + CodeQL + System Map waar toepasselijk, beschermde merge en readback van de nieuwe skill op `main`. Voor volledige autonome Kansenradarherhaling blijft de bestaande cron `#18` actief, volgende geplande uitvoering 4 november 2026 om 06:00 UTC. Controleer via oorspronkelijke `cron.job_run_details`, `bg_functie_aanroep`, `net._http_response`, `brain_delivery_evidence` en broncoherentie. Bij geen geschikte nieuwe bron: `INPUT_COVERAGE_DUE`, geen onterechte model- of commerciële GREEN. Geen parallelle executor, tweede scheduler, extra kosten, verzonnen bronnen of automatische verzending.
+
+Centrale oorspronkelijke registratie: [ONE BRAIN issue #4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198). [Oorspronkelijke schemafix PR #5355](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5355) en [Skill-borging PR #5363](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5363).
