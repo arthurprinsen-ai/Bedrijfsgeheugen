@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|experimentcyclus|original-anthropic-only-edge-v8|20261103-v1",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_class": "PROVIDER_MISMATCH_OPENAI_OWNER_DIRECTIVE",
+  "owner": "original-bg-experimentcyclus-owner",
+  "root_cause": "Original active Supabase Edge Function bg-experimentcyclus v8 is not committed under original GitHub source path and still uses Anthropic endpoint/key with AI use case supabase-bg-experimentcyclus-v1. The owner has directed all AI inference via OpenAI.",
+  "evidence": {
+    "source": "Supabase original get_edge_function",
+    "slug": "bg-experimentcyclus",
+    "version": 8,
+    "sha256": "950b7ce0ce75b127ca89d01df959ad4347b418b7168e99d553212dfd5c0faa20",
+    "weekly_original_cron_job": 23,
+    "original_weekly_cron_active": true,
+    "vault_openai_key_present": true,
+    "original_registered_provider": "Anthropic",
+    "original_active_or_planned_experiments": 62
+  },
+  "fix": "Restore original v8 source into GitHub and replace only model inference with canonical governed OpenAI gpt-5-mini; forced named proposal tool and original schema guard. Retain SQL evaluators, source-data aggregation, minimum 150 visitors, at most one pending experiment, human approval and original weekly cron.",
+  "prevention_rule": "All active original AI use-cases must be versioned in canonical source and model calls must fail closed unless canonical ACTIVE approved OpenAI, valid source + schema and no unapproved external send; no global GREEN absent original weekly provider readback. Unauthenticated legacy cron/Edge access is separate security debt, not silently concealed.",
+  "tests": [
+    "tests/brain-original-experimentcyclus-openai-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-experimentcyclus-openai-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-experimentcyclus-openai-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-experimentcyclus-openai-20261103.test.mjs"
+    ],
+    "invariants": [
+      "original owner cron id23 unchanged",
+      "no concurrent campaign",
+      "minimum traffic 150",
+      "original AI use-case approval",
+      "only source-derived page paths",
+      "forced OpenAI proposal schema",
+      "draft proposal only",
+      "human activation",
+      "real provider readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PROVIDER_MISMATCH_OPENAI_OWNER_DIRECTIVE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected exact-head Required, CodeQL, BRAIN, original writer lease and System Map; govern specific provider OpenAI only after merge, deploy original Edge version only if source unchanged, independent provider source/real natural AI observation, preserve cron and no false GREEN."
+}
