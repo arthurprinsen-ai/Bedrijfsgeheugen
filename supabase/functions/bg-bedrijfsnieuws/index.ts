@@ -1,4 +1,6 @@
 // BG Bedrijfsnieuws — v3, 10 sept 2026. Zakelijk nieuws over bedrijven van connecties als aanleiding voor een gesprek.
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// Canonical bg_bewijs and governed OpenAI model, original source-only draft contract.
 // v2: bedrijfsnaam opgeschoond, venster 60 dagen, 15 bedrijven per dag.
 // v3: eigen datumfilter (Tavily respecteert 'days' niet altijd); per bericht de reden van afwijzen en de DM vastgelegd;
 //     body.alleen = [bedrijfsnamen] om gericht te toetsen.
@@ -23,9 +25,9 @@ Deno.serve(async (req: Request) => {
   const fail = async (s: number, b: Record<string, unknown>, k: string) => { await bewijs(false, b, k); return json({ ok: false, ...b }, s); };
 
   const { data: gov } = await db.from('brain_ai_governance_registry').select('model_id,lifecycle_status,approved,provider').eq('tenant_id', 'canonical').eq('use_case_id', USE_CASE).maybeSingle();
-  if (!gov || gov.lifecycle_status !== 'ACTIVE' || gov.approved !== true || gov.provider !== 'Anthropic') return fail(403, { error: 'AI_USE_CASE_NOT_APPROVED' }, 'POLICY');
-  const tavily = await geheim('TAVILY_API_KEY'); const ak = await geheim('ANTHROPIC_API_KEY');
-  if (!tavily || !ak) return fail(503, { error: 'CONFIG_UNAVAILABLE', missing: { tavily: !tavily, anthropic: !ak } }, 'AUTH');
+  if (!gov || gov.lifecycle_status !== 'ACTIVE' || gov.approved !== true || gov.provider !== 'OpenAI') return fail(403, { error: 'AI_USE_CASE_NOT_APPROVED' }, 'POLICY');
+  const tavily = await geheim('TAVILY_API_KEY'); const ak = await geheim('OPENAI_API_KEY');
+  if (!tavily || !ak) return fail(503, { error: 'CONFIG_UNAVAILABLE', missing: { tavily: !tavily, openai: !ak } }, 'AUTH');
   let body: any = {}; try { body = await req.json(); } catch { /* leeg */ }
 
   try {
@@ -57,10 +59,32 @@ Deno.serve(async (req: Request) => {
     if (!gevonden.length) { const r = { ok: true, bedrijven: bedrijven.length, nieuws: 0, te_oud: teOud, dms: 0 }; await bewijs(true, r); return json(r); }
 
     const schema = { type: 'object', properties: { oordelen: { type: 'array', items: { type: 'object', properties: { url: { type: 'string' }, over_dit_bedrijf: { type: 'boolean', description: 'Waar alleen als het bericht aantoonbaar over precies dit bedrijf gaat, niet over een naamgenoot' }, soort: { type: 'string', enum: ['groei', 'overname of fusie', 'nieuwe vestiging', 'nieuwe dienst of product', 'personeel of vacatures', 'directiewisseling', 'prijs of erkenning', 'samenwerking', 'overig', 'persoonlijk'] }, haak: { type: 'string', description: 'Eén zin met het feit uit het bericht' }, zekerheid: { type: 'number' }, dm: { type: 'string', description: 'LinkedIn-DM van 35-65 woorden. Begint letterlijk met "Hoi {voornaam}," (de placeholder {voornaam} laten staan). Felicitatie of reactie op het nieuws met het concrete feit, dan één open vraag over hoe ze kennis en processen meenemen in die verandering. Geen link, geen verkooppraat, geen verzonnen ervaringen. Leeg als soort persoonlijk of overig is.' } }, required: ['url', 'over_dit_bedrijf', 'soort', 'haak', 'zekerheid', 'dm'] } } }, required: ['oordelen'] };
-    const ai = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': ak, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: gov.model_id, max_tokens: 3500, system: 'Je beoordeelt zakelijk nieuws over bedrijven voor Arthur Prinsen (Bedrijfsgeheugen: kennisborging, processen en AI voor het Nederlandse mkb). Wees streng op naamgenoten: bij twijfel over_dit_bedrijf = false en zekerheid laag. Nieuws over het privéleven van personen: soort persoonlijk, geen DM. Gebruik alleen feiten uit het bericht. Schrijf de DM in het Nederlands.', messages: [{ role: 'user', content: JSON.stringify(gevonden.map(g => ({ url: g.url, bedrijf: g.bedrijf, titel: g.titel, bron: g.domein, datum: g.gepubliceerd_op, inhoud: g.inhoud }))) }], tools: [{ name: 'oordeel', description: 'oordeel', input_schema: schema }], tool_choice: { type: 'tool', name: 'oordeel' } }) });
+    // Original canonical use case already approved for OpenAI gpt-5-mini.
+    const ai = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${ak}`, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: gov.model_id, max_completion_tokens: 5500,
+        messages: [
+          { role: 'system', content: 'Beoordeel zakelijk nieuws over bedrijven: naamgenoten en privéberichten afwijzen. Gebruik uitsluitend bronfeiten. Schrijf alleen veilige Nederlandse DM-concepten, nooit verzonnen ervaringen, geen verkoopclaims.' },
+          { role: 'user', content: JSON.stringify(gevonden.map(g => ({ url: g.url, bedrijf: g.bedrijf, titel: g.titel, bron: g.domein, datum: g.gepubliceerd_op, inhoud: g.inhoud }))) }
+        ],
+        tools: [{ type: 'function', function: { name: 'oordeel', description: 'Brongebonden nieuwsoordeel en veilig concept', parameters: schema } }],
+        tool_choice: { type: 'function', function: { name: 'oordeel' } },
+        parallel_tool_calls: false
+      }),
+      signal: AbortSignal.timeout(60000)
+    });
     const aiBody: any = await ai.json().catch(() => ({}));
-    if (!ai.ok) return fail(502, { error: `AI_${ai.status}` }, ai.status === 401 ? 'AUTH' : 'REMOTE');
-    const oordelen: any[] = (aiBody.content || []).find((c: any) => c.type === 'tool_use')?.input?.oordelen || [];
+    if (!ai.ok) return fail(502, { error: `OPENAI_${ai.status}` }, ai.status === 401 ? 'AUTH' : 'REMOTE');
+    const message = aiBody?.choices?.[0]?.message;
+    if (message?.refusal) return fail(502, { error: 'OPENAI_REFUSAL' }, 'VALIDATION');
+    const rawArguments = (message?.tool_calls || []).find((call: any) => call?.type === 'function' && call?.function?.name === 'oordeel')?.function?.arguments;
+    if (typeof rawArguments !== 'string') return fail(502, { error: 'OPENAI_TOOL_RESULT_MISSING' }, 'VALIDATION');
+    let parsed: any;
+    try { parsed = JSON.parse(rawArguments); } catch { return fail(502, { error: 'OPENAI_OUTPUT_NOT_JSON' }, 'VALIDATION'); }
+    if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.oordelen)) return fail(502, { error: 'OPENAI_OUTPUT_CONTRACT_FAILED' }, 'VALIDATION');
+    const oordelen: any[] = parsed.oordelen;
 
     let dms = 0; const klaar: string[] = []; const perBedrijf = new Set<string>();
     for (const g of gevonden) {
