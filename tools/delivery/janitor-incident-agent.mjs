@@ -6,6 +6,8 @@ import {createHash} from 'node:crypto';
 // Canonical existing Janitor owner: read-only lineage verification and same-run incident evidence.
 export const FINGERPRINT='github|janitor-terminal-lease|bounded-successor-history|http422-sigpipe|20261101-v1';
 export const INCIDENT_NUMBER=5320;
+export const HISTORY_DEBT_FINGERPRINT='github|janitor|history-deferral-without-incident-readback|20261103-v1';
+export const EVIDENCE_MISSING_FINGERPRINT='github|janitor|native-cleanup-artifact-missing|20261103-v1';
 const SHA=/^[0-9a-f]{40}$/i;
 const repoOk=x=>/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(x||'');
 const numberOk=x=>Number.isSafeInteger(Number(x))&&Number(x)>0&&Number(x)<1_000_000_000;
@@ -86,7 +88,7 @@ export async function verifyMergedSuccessor({repo,predecessor,obligation,search,
    predecessor_number:Number(predecessor),safe_to_reopen:false,
    reason:'SEARCH_OR_DIRECT_PR_READ_FAILED'};}
 }
-export function classifyCurrentJanitor({cleanupOutcome,readbackOutcome,actions=[],runId,mainSha}={}){
+export function classifyCurrentJanitor({cleanupOutcome,readbackOutcome,actions=[],runId,mainSha,evidenceAvailable=true}={}){
  const allowed=['success','failure','skipped','cancelled'];
  const cleanup=allowed.includes(cleanupOutcome)?cleanupOutcome:'unknown';
  const readback=allowed.includes(readbackOutcome)?readbackOutcome:'unknown';
@@ -96,16 +98,23 @@ export function classifyCurrentJanitor({cleanupOutcome,readbackOutcome,actions=[
      evidence:x.evidence||'BOUNDED_POSITIVE'}));
  const deferred=actions.filter(x=>x?.type==='TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN')
    .map(x=>({pr_number:x.pr_number,reason:x.reason||'HISTORY_UNPROVEN'}));
+ const missingArtifact=cleanup==='success'&&readback==='success'&&evidenceAvailable!==true;
  const status=failed.length?'INCIDENT_OPEN_STEP_FAILURE':
+   missingArtifact?'INCIDENT_OPEN_EVIDENCE_MISSING':
+   deferred.length?'INCIDENT_OPEN_HISTORY_UNPROVEN':
    cleanup==='success'&&readback==='success'?'JANITOR_STEPS_VERIFIED_SAME_RUN':
    cleanup==='skipped'&&readback==='skipped'?'DRY_RUN_NO_MUTATION':'INCOMPLETE_PROOF';
+ const reportRequired=failed.length>0||missingArtifact||deferred.length>0;
  return {schema:'janitor-incident-agent-v1',fingerprint:FINGERPRINT,observed_at:new Date().toISOString(),
    run_id:runIdOk(runId)?Number(runId):null,main_sha:SHA.test(mainSha||'')?mainSha:null,
    cleanup_outcome:cleanup,readback_outcome:readback,failed_steps:failed,
    verified_merged_successors:verified,deferred_history:deferred,status,
+   evidence_available:evidenceAvailable===true,report_required:reportRequired,
+   reporting_readback_verified:false,
    global_green:false,independent_runtime_repair_proven:status==='JANITOR_STEPS_VERIFIED_SAME_RUN',
    owner:'existing-powerhouse-github-delivery-janitor',
    next_action:failed.length?'EXISTING_OWNER_ROOT_CAUSE_AND_PROTECTED_REPAIR':
+     missingArtifact?'REBUILD_MISSING_NATIVE_ACTION_ARTIFACT_AND_OBSERVER_READBACK':
      deferred.length?'FULL_LINEAGE_OWNER_RECONCILIATION':
      status==='JANITOR_STEPS_VERIFIED_SAME_RUN'?'INDEPENDENT_PORTAL_AND_MAIN_READBACK':
        'WAIT_FOR_NEXT_ELIGIBLE_NATIVE_RUN'};
@@ -114,7 +123,7 @@ const api=args=>execFileSync('gh',['api',...args],{
   encoding:'utf8',timeout:15000,maxBuffer:3_000_000,stdio:['ignore','pipe','pipe']
 });
 export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetch}={}){
- if(!report?.failed_steps?.length)return {status:'NO_FAILURE_TO_RECORD'};
+ if(!report?.report_required&&!report?.failed_steps?.length)return {status:'NO_FAILURE_TO_RECORD'};
  const url=String(env?.BG_PORTAL_EU_SUPABASE_URL||env?.SUPABASE_URL||'').trim().replace(/\/$/,'');
  const key=String(env?.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY||env?.SUPABASE_SERVICE_ROLE_KEY||'').trim();
  if(!url||!key)return {status:'BRAIN_RPC_AUTHORITY_UNAVAILABLE',verified:false};
@@ -126,21 +135,29 @@ export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetc
    return {status:'BRAIN_RPC_URL_UNTRUSTED',verified:false};
  }
  const attempt=String(env.GITHUB_RUN_ATTEMPT||'1');
- const occurrenceId='github-actions:janitor:run:'+report.run_id+':attempt:'+attempt+':failed:'+report.failed_steps.join('-');
+ const kind=report.failed_steps?.length?'STEP_FAILURE':
+   report.status==='INCIDENT_OPEN_EVIDENCE_MISSING'?'EVIDENCE_MISSING':'HISTORY_UNPROVEN';
+ const fingerprint=kind==='STEP_FAILURE'?FINGERPRINT:
+   kind==='EVIDENCE_MISSING'?EVIDENCE_MISSING_FINGERPRINT:HISTORY_DEBT_FINGERPRINT;
+ const occurrenceId='github-actions:janitor:run:'+report.run_id+':attempt:'+attempt+
+   ':signal:'+kind.toLowerCase()+(kind==='STEP_FAILURE'?':'+report.failed_steps.join('-'):'');
  const evidence={source:'GITHUB_NATIVE_JANITOR_AGENT',source_url:report.source_url,
    incident_url:report.incident_url,run_id:report.run_id,run_attempt:attempt,
    main_sha:report.main_sha,cleanup_outcome:report.cleanup_outcome,
    readback_outcome:report.readback_outcome,failed_steps:report.failed_steps,
-   root_cause:'UNVERIFIED_REQUIRE_ORIGINAL_JOB_LOG',owner:report.owner,
+   signal_kind:kind,history_deferred_count:report.deferred_history?.length||0,
+   history_deferred_prs:(report.deferred_history||[]).map(x=>x.pr_number).slice(0,100),
+   native_artifact_available:report.evidence_available===true,
+   root_cause:'UNVERIFIED_REQUIRE_ORIGINAL_JOB_LOG_AND_COMPLETE_SOURCE_HISTORY',owner:report.owner,
    safe_repair:'EXCLUSIVE_EXISTING_JANITOR_OWNER_PROTECTED_RELEASE',
    regression:'tests/brain-janitor-agent-self-recovery-20261102.test.mjs',
-   prevention_rule:'NO_BLIND_REOPEN_AND_NO_FALSE_GREEN',
-   status:'INCIDENT_OPEN_STEP_FAILURE'};
+   prevention_rule:'NO_BLIND_REOPEN_AND_NO_FALSE_GREEN_NO_UNREPORTED_OPEN_DEBT',
+   status:report.status};
  const hash=createHash('sha256').update(JSON.stringify(evidence)).digest('hex');
  const headers={apikey:key,authorization:'Bearer '+key,'content-type':'application/json'};
  const observed=await fetchImpl(endpoint.origin+'/rest/v1/rpc/brain_observe_failure',{
    method:'POST',headers,body:JSON.stringify({p_occurrence_id:occurrenceId,
-     p_fingerprint:FINGERPRINT,p_payload_sha256:hash,p_evidence:evidence}),
+     p_fingerprint:fingerprint,p_payload_sha256:hash,p_evidence:evidence}),
    signal:AbortSignal.timeout(10000)});
  if(!observed.ok)throw Error('BRAIN_RPC_FAILURE_HTTP_'+observed.status);
  const read=await fetchImpl(endpoint.origin+'/rest/v1/brain_failure_occurrences?select=occurrence_id,fingerprint,payload_sha256&occurrence_id=eq.'+encodeURIComponent(occurrenceId),{
@@ -148,27 +165,28 @@ export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetc
  if(!read.ok)throw Error('BRAIN_RPC_READBACK_HTTP_'+read.status);
  const rows=await read.json();
  if(!Array.isArray(rows)||rows.length!==1||rows[0].occurrence_id!==occurrenceId||
-   rows[0].fingerprint!==FINGERPRINT||rows[0].payload_sha256!==hash){
+   rows[0].fingerprint!==fingerprint||rows[0].payload_sha256!==hash){
    throw Error('BRAIN_RPC_READBACK_MISMATCH');
  }
  return {status:'BRAIN_OCCURRENCE_READBACK_CONFIRMED',verified:true,occurrence_id:occurrenceId,
-   fingerprint:FINGERPRINT,payload_sha256:hash};
+   fingerprint,payload_sha256:hash};
 }
 async function observe(env=process.env,provider=api){
  assertNativeJanitorIdentity(env);
  await mkdir('.artifacts',{recursive:true});
- let actions=[];
- try{let data=JSON.parse(await readFile('.artifacts/janitor-runtime-actions.json','utf8'));
-   if(Array.isArray(data))actions=data;}catch{}
+ let actions=[],evidenceAvailable=false;
+ try{const data=JSON.parse(await readFile('.artifacts/janitor-runtime-actions.json','utf8'));
+   if(Array.isArray(data)){actions=data;evidenceAvailable=true;}}
+ catch{} // Missing/broken source is an INCIDENT, not a silently empty-success array.
  const report=classifyCurrentJanitor({cleanupOutcome:env.JANITOR_CLEANUP_OUTCOME,
    readbackOutcome:env.JANITOR_READBACK_OUTCOME,actions,runId:env.GITHUB_RUN_ID,
-   mainSha:env.GITHUB_SHA});
+   mainSha:env.GITHUB_SHA,evidenceAvailable});
  report.source_url='https://github.com/'+env.GITHUB_REPOSITORY+'/actions/runs/'+env.GITHUB_RUN_ID;
  report.incident_url='https://github.com/'+env.GITHUB_REPOSITORY+'/issues/'+INCIDENT_NUMBER;
  await writeFile('.artifacts/janitor-agent-incident.json',JSON.stringify(report,null,2)+'\n');
- if(report.failed_steps.length){
+ if(report.report_required){
    const repo=env.GITHUB_REPOSITORY;
-   const marker='<!-- janitor-agent-run:'+env.GITHUB_RUN_ID+':'+(env.GITHUB_RUN_ATTEMPT||1)+' -->';
+   const marker='<!-- janitor-agent-run:'+env.GITHUB_RUN_ID+':'+(env.GITHUB_RUN_ATTEMPT||1)+':'+report.status+' -->';
    const issue=JSON.parse(provider(['repos/'+repo+'/issues/'+INCIDENT_NUMBER]));
    const page=Math.max(1,Math.ceil(Math.max(1,Number(issue.comments)||1)/100));
    const comments=JSON.parse(provider(['repos/'+repo+'/issues/'+INCIDENT_NUMBER+'/comments?per_page=100&page='+page]));
@@ -176,8 +194,11 @@ async function observe(env=process.env,provider=api){
    if(!comments.some(x=>String(x?.body||'').includes(marker))){
      const body=marker+'\nAutonomous Janitor observer: **INCIDENT_OPEN**. Run '+
        env.GITHUB_RUN_ID+' attempt '+clean(env.GITHUB_RUN_ATTEMPT||'1')+
-       ', exact SHA '+clean(env.GITHUB_SHA)+', failed steps: '+report.failed_steps.join(', ')+
-       '. Direct error signature/HTTP endpoint not independently proven by step result; inspect job logs. '+
+       ', exact SHA '+clean(env.GITHUB_SHA)+', observer: '+clean(report.status)+
+       ', failed steps: '+(report.failed_steps.join(', ')||'none')+
+       ', unproven history count: '+report.deferred_history.length+
+       ', native evidence available: '+report.evidence_available+
+       '. Direct provider error and actual root cause must be independently read back. '+
        'Owner: original Powerhouse GitHub delivery/Janitor. Same-lineage protected repair, no blind retries. '+
        report.source_url;
      provider(['-X','POST','repos/'+repo+'/issues/'+INCIDENT_NUMBER+'/comments','-f','body='+body]);
@@ -187,6 +208,7 @@ async function observe(env=process.env,provider=api){
    report.issue_writeback='PROVIDER_READBACK_CONFIRMED';
    const brain=await writeBrainOccurrence({env,report});
    report.brain_writeback=brain;
+   report.reporting_readback_verified=brain.verified===true&&report.issue_writeback==='PROVIDER_READBACK_CONFIRMED';
    await writeFile('.artifacts/janitor-agent-incident.json',JSON.stringify(report,null,2)+'\n');
    if(brain.verified!==true)throw Error('BRAIN_INCIDENT_WRITEBACK_UNVERIFIED:'+brain.status);
  }
