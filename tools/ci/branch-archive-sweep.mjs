@@ -205,6 +205,33 @@ export function main(argv = process.argv.slice(2), env = process.env) {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
-  const outcome = main();
-  if (outcome.failed > 0) process.exitCode = 78;
+  try {
+    const outcome = main();
+    if (outcome.failed > 0) process.exitCode = 78;
+  } catch (error) {
+    // Covers inventory pagination and argument/provider failures before per-branch try.
+    // A nonzero process exit without a typed native action is forbidden.
+    const incident = archiveProviderFailure(error, {
+      phase: 'READ_INITIAL_INVENTORY_OR_SWEEP_SETUP',
+      runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT,
+      sourceSha: process.env.GITHUB_SHA
+    });
+    const actionsIndex = process.argv.indexOf('--actions');
+    const reportIndex = process.argv.indexOf('--report');
+    const actionsFile = actionsIndex >= 0 ? process.argv[actionsIndex + 1] : null;
+    const reportFile = reportIndex >= 0 ? process.argv[reportIndex + 1] : null;
+    if (actionsFile) {
+      mkdirSync(dirname(actionsFile), { recursive: true });
+      appendFileSync(actionsFile, JSON.stringify(incident) + '\\n');
+    }
+    if (reportFile) {
+      mkdirSync(dirname(reportFile), { recursive: true });
+      writeFileSync(reportFile, JSON.stringify({schema:'janitor-branch-archive-sweep-v2',
+        status:'PARTIAL_FAILURE', phase:'READ_INITIAL_INVENTORY_OR_SWEEP_SETUP',
+        incident_fingerprint:incident.fingerprint, provider_http_status:incident.provider_http_status,
+        source_run_id:process.env.GITHUB_RUN_ID||null, false_green_forbidden:true},null,2)+'\\n');
+    }
+    console.error('::error::JANITOR_ARCHIVE_SWEEP_PARTIAL_FAILURE:' + JSON.stringify(incident));
+    process.exitCode = 78;
+  }
 }
