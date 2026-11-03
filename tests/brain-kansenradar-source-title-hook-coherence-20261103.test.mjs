@@ -16,8 +16,8 @@ test('mixed-news original incident cannot become a source-backed editorial hook'
 test('single-topic article candidates still permitted; classifier does not call external provider',()=>{
  const u='https://www.example.org/nieuws/ondernemers-krijgen-meer-cybersecurity-eisen';
  assert.deepEqual(classifyKansenradarSource({url:u}),{accepted:true,reason:'SINGLE_STORY_URL_PATTERN_ACCEPTED',url:u});
- assert.equal(classifyKansenradarSource({url:'https://www.example.org/nieuwsupdate?x=a'}).accepted,true,
-  'gate is conservative and based on roundup pathname, not all potential hints');
+ assert.equal(classifyKansenradarSource({url:'https://www.example.org/nieuwsupdate?x=a'}).accepted,false,
+  'bare roundup pathname is also a multi-story source, regardless of query');
 });
 test('invalid URLs fail closed instead of throwing',()=>{
  for(const u of ['',undefined,{},'not-a-url','javascript:alert(1)','https://example.com/%GG']) {
