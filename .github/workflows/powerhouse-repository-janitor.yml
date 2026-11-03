@@ -570,6 +570,7 @@ jobs:
         with:
           node-version: '22'
       - name: Remove stale branches whose work stays recoverable
+        id: janitor_archive_sweep
         env:
           GH_TOKEN: ${{ github.token }}
           SWEEP_BUDGET_SECONDS: '900'
@@ -580,6 +581,16 @@ jobs:
           timeout 1000 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 \
             --actions .artifacts/branch-archive-actions.ndjson \
             --report .artifacts/branch-archive-sweep.json
+      - name: Record archive failure in original incident and ONE BRAIN
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BG_PORTAL_EU_SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL }}
+          BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY }}
+          JANITOR_ARCHIVE_SWEEP_OUTCOME: ${{ steps.janitor_archive_sweep.outcome }}
+        run: node tools/delivery/janitor-incident-agent.mjs --observe-archive
       - name: Upload original branch archive provider evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -588,4 +599,5 @@ jobs:
           path: |
             .artifacts/branch-archive-actions.ndjson
             .artifacts/branch-archive-sweep.json
-          if-no-files-found: warn
+            .artifacts/janitor-archive-observer.json
+          if-no-files-found: error
