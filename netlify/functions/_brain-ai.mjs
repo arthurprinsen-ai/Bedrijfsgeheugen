@@ -49,7 +49,7 @@ async function openai({ authorized, apiKey, system, maxTokens, renderUser, prove
     method:'POST',
     headers:{ 'content-type':'application/json', authorization:'Bearer '+apiKey },
     body:JSON.stringify({
-      model, max_completion_tokens:maxTokens,
+      model, reasoning_effort:'low', max_completion_tokens:maxTokens,
       messages:[{ role:'system', content:system }, { role:'user', content:renderUser(authorized.context) }]
     }),
   });
@@ -61,7 +61,13 @@ async function openai({ authorized, apiKey, system, maxTokens, renderUser, prove
   const data = await response.json();
   if (data.choices?.[0]?.message?.refusal) throw new Error('OPENAI_REFUSAL');
   const text = String(data.choices?.[0]?.message?.content ?? '').trim();
-  if (!text) throw new Error('OPENAI_EMPTY_RESPONSE');
+  if (!text) {
+    // GPT-5 Mini uses invisible reasoning tokens from the same completion budget.
+    // A finish_reason=length with no visible text is an exhausted budget, NOT a valid answer.
+    // Never expose provider payload or customer question in logs/headers.
+    if (data.choices?.[0]?.finish_reason === 'length') throw new Error('OPENAI_OUTPUT_BUDGET_EXHAUSTED');
+    throw new Error('OPENAI_EMPTY_RESPONSE');
+  }
   return { type:'Observation', text, provenance, confidence:0.7, containsRestrictedData:false, containsUnexpectedPII:false, providerUsage:data.usage ?? null };
 }
 
@@ -86,7 +92,7 @@ export async function runWebsiteAnswer({ question, fragments, apiKey, system, fe
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'PUBLIC', requesterId:'public-visitor', aiUseCaseId:'AI-WEBSITE-QA', purpose:'website-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Public', context:{ question, fragments } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','fragments'], pseudonymizeFields:[] },
-    invokeModel:authorized => openai({ authorized, apiKey, system, maxTokens:600, fetchImpl, provenance:{ source:'website-index', providerModelId:MODEL_ID }, renderUser:ctx => `FRAGMENTEN VAN DE SITE:\n\n${ctx.fragments}\n\n---\n\nVRAAG VAN DE BEZOEKER:\n${ctx.question}` }),
+    invokeModel:authorized => openai({ authorized, apiKey, system, maxTokens:2200, fetchImpl, provenance:{ source:'website-index', providerModelId:MODEL_ID }, renderUser:ctx => `FRAGMENTEN VAN DE SITE:\n\n${ctx.fragments}\n\n---\n\nVRAAG VAN DE BEZOEKER:\n${ctx.question}` }),
   });
   return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ ...(usageContext ?? {}), tenantId:'PUBLIC', activityType:'website_qa' } });
 }
@@ -96,7 +102,7 @@ export async function runPortalAnswer({ question, projectContext, tenantId, apiK
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'REQUEST_SCOPED', requesterId:'portal-requester', aiUseCaseId:'AI-PORTAL-QA', purpose:'portal-project-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Confidential', context:{ question, projectContext } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','projectContext'], pseudonymizeFields:[] },
-    invokeModel:authorized => openai({ authorized, apiKey, system, maxTokens:500, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
+    invokeModel:authorized => openai({ authorized, apiKey, system, maxTokens:2200, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
   });
   return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore, usageContext:{ ...(usageContext ?? {}), activityType:'portal_qa' } });
 }

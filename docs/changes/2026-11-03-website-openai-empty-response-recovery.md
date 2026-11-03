@@ -1,0 +1,7 @@
+# 2026-11-03 — original website OpenAI no-text 502 correction
+
+The original live website API public canary POST `https://www.bedrijfsgeheugen.nl/api/vraag` through original pg_net request **19999** returned HTTP 502 and safe `X-BG-Recovery-Class: OPENAI_EMPTY_RESPONSE`. This is new, independent evidence after the previously merged original diagnostics in PR #5365 and deployed Netlify commit 47bdcda4e0f63924b8bef4d84a7f75a3f7ca1510. Earlier provider 400 was a distinct historical result and is not reclassified without evidence.
+
+Root mechanism likely original GPT-5-mini completion-token budget 600 (or portal 500): reasoning tokens use the same budget and may consume it without visible text. New original shared governed Netlify function uses `reasoning_effort:low`, 2200 budget for website and portal, unchanged translation cap, and separates a true `finish_reason:length` from a generic empty response. No fallback, new provider, scheduler, publisher or bypass; original OpenAI API key, model, source-only search, tenant confidentiality and token-usage proof stay intact.
+
+Before claiming live success: protected Required/BRAIN/CodeQL + deploy commit_ref exact main SHA, one original harmless public question returning a nonempty supported answer and, if not, safe error class only without raw prompts, secrets, provider body. Further source remediation may be necessary. No unverified green claims.

@@ -69,7 +69,7 @@ export default async (request) => {
     // Only machine-safe failure taxonomy is logged; never questions, context, responses or credentials.
     const detail = String(error?.message || '');
     const known = detail.match(/OPENAI_PROVIDER_ERROR_(400|401|403|404|408|409|422|429|500|502|503|504)/)?.[0]
-      || ['OPENAI_EMPTY_RESPONSE','OPENAI_REFUSAL','AI use case governance denied','AI provider/model is not registered'].find(code=>detail.includes(code))
+      || ['OPENAI_EMPTY_RESPONSE','OPENAI_OUTPUT_BUDGET_EXHAUSTED','OPENAI_REFUSAL','AI use case governance denied','AI provider/model is not registered'].find(code=>detail.includes(code))
       || 'ORIGINAL_WEBSITE_QA_UNCLASSIFIED';
     console.error(JSON.stringify({ event:'ORIGINAL_WEBSITE_AI_FAILURE', failure_class:known, provider:'OpenAI' }));
     return Response.json({ fout:'De zoekfunctie is even niet bereikbaar.' }, { status:502, headers: { 'Cache-Control':'no-store', 'X-BG-Recovery-Class': known } });
