@@ -6,12 +6,12 @@ import {normalizeProviderTokenUsage} from '../../platform/cost/ai-token-usage.mj
 import {createAiUsageStore} from './_ai-usage-store.mjs';
 import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
 
-const MODEL_ID='ANTHROPIC-SONNET';
-const MODEL='claude-sonnet-5';
+const MODEL_ID='OPENAI-GPT-5-MINI-CONNECTOR';
+const MODEL='gpt-5-mini';
 const PURPOSE='connector-configuration-guidance';
 
 const providerRegistry=createProviderRegistry([{
-  id:MODEL_ID,provider:'Anthropic',model:MODEL,status:'Approved',
+  id:MODEL_ID,provider:'OpenAI',model:MODEL,status:'Approved',
   allowedDataClasses:['Confidential'],allowedPurposes:[PURPOSE],
   trainingAllowed:false,persistentProviderMemory:false
 }]);
@@ -43,8 +43,8 @@ const parseJson=text=>{
   return parsed;
 };
 
-export async function proposeConnectorConfiguration({intent,currentState,userId,tenantId,apiKey=process.env.ANTHROPIC_API_KEY,fetchImpl=fetch,usageStore,requestId=crypto.randomUUID()}={}){
-  if(!apiKey)throw new Error('Anthropic API key missing');
+export async function proposeConnectorConfiguration({intent,currentState,userId,tenantId,apiKey=process.env.OPENAI_API_KEY,fetchImpl=fetch,usageStore,requestId=crypto.randomUUID()}={}){
+  if(!apiKey)throw new Error('OpenAI API key missing');
   if(!tenantId)throw Object.assign(new Error('DATA_SOVEREIGNTY_TENANT_REQUIRED'),{code:'DATA_SOVEREIGNTY_TENANT_REQUIRED'});
   await createDataSovereigntyClient().assertAiAllowed(tenantId);
   const result=await runGovernedProductionAI({
@@ -52,19 +52,28 @@ export async function proposeConnectorConfiguration({intent,currentState,userId,
     policies,providerRegistry,aiUseCases,
     contextPolicy:{allowedFields:['intent','currentState','userId'],pseudonymizeFields:['userId']},
     invokeModel:async authorized=>{
-      const response=await fetchImpl('https://api.anthropic.com/v1/messages',{
-        method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-        body:JSON.stringify({model:MODEL,max_tokens:700,system:SYSTEM,messages:[{role:'user',content:`WENS:\n${authorized.context.intent}\n\nHUIDIGE CONFIGURATIE:\n${JSON.stringify(authorized.context.currentState||{})}`}]})
+      const response=await fetchImpl('https://api.openai.com/v1/chat/completions',{
+        method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+apiKey},
+        body:JSON.stringify({
+          model:MODEL,max_completion_tokens:2600,
+          messages:[
+            {role:'system',content:SYSTEM},
+            {role:'user',content:`WENS:\\n${authorized.context.intent}\\n\\nHUIDIGE CONFIGURATIE:\\n${JSON.stringify(authorized.context.currentState||{})}`}
+          ],
+          response_format:{type:'json_object'}
+        })
       });
-      if(!response.ok)throw new Error(`Connector guide provider error ${response.status}`);
+      if(!response.ok)throw new Error(`OPENAI_CONNECTOR_GUIDE_${response.status}`);
       const data=await response.json();
-      const text=(data.content||[]).filter(block=>block.type==='text').map(block=>block.text).join('\n').trim();
+      if(data?.choices?.[0]?.message?.refusal)throw new Error('OPENAI_REFUSAL');
+      const text=String(data?.choices?.[0]?.message?.content||'').trim();
+      if(!text)throw new Error('OPENAI_CONNECTOR_GUIDE_EMPTY');
       return {type:'Observation',text,provenance:{source:'connector-guide',providerModelId:MODEL_ID},confidence:.7,containsRestrictedData:false,containsUnexpectedPII:false,providerUsage:data.usage??null};
     }
   });
   const proposal=parseJson(result.text);
   if(result.providerUsage){
-    const usage=normalizeProviderTokenUsage({provider:'Anthropic',providerModelId:MODEL_ID,componentKey:'agent:connector-guide',requestId,usage:result.providerUsage,at:new Date().toISOString()});
+    const usage=normalizeProviderTokenUsage({provider:'OpenAI',providerModelId:MODEL_ID,componentKey:'agent:connector-guide',requestId,usage:result.providerUsage,at:new Date().toISOString()});
     try{await (usageStore??createAiUsageStore()).record(usage);}catch{}
   }
   return proposal;
