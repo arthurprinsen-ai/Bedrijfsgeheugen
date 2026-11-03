@@ -572,5 +572,18 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SWEEP_BUDGET_SECONDS: '900'
         run: |
-          # See tools/ci/branch-archive-sweep.mjs: PR head ref or archive/ tag keeps the work recoverable.
-          timeout 1000 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 || echo "::warning::JANITOR_ARCHIVE_SWEEP_INCOMPLETE"
+          set -euo pipefail
+          mkdir -p .artifacts
+          # A provider 403 is a failed archive, NOT a completed sweep. No bypass, no unique-work deletion.
+          timeout 1000 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 \
+            --actions .artifacts/branch-archive-actions.ndjson \
+            --report .artifacts/branch-archive-sweep.json
+      - name: Upload original branch archive provider evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-branch-archive-evidence-${{ github.run_id }}
+          path: |
+            .artifacts/branch-archive-actions.ndjson
+            .artifacts/branch-archive-sweep.json
+          if-no-files-found: warn
