@@ -81,9 +81,45 @@
     "entrypoint": "scripts/brain/chat-learning-preflight.mjs",
     "visible_in_packet": "incident_self_fix",
     "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
-    "not_covered_yet": "Preflight now checks supplied original runtime/provider error observations against original registry receipts and independent recovery proof; a missing source audit returns SOURCE_COVERAGE_UNVERIFIED. Universal external runtime-source capture, automatic writeback for all agents and authenticated portal readback still require original owner integrations and provider proof. No full-green claim."
+    "not_covered_yet": "Native Janitor incident observer is integrated; mandatory agent preflight also checks supplied provider/Brain receipts and recovery proof. Other runtime owners, cross-source completeness, authorized event ingress and tenant-safe portal readback remain unproven; never assert estate-wide green.",
+    "native_observer_truth_guard": {
+      "fingerprint": "github|janitor|silent-debt-observer-missing-report|20261103-v1",
+      "authority": "EXISTING_ONE_BRAIN_JANITOR_AND_BRAIN_FAILURE_REGISTRY_ONLY",
+      "scope": "original_powerhouse_repository_janitor_currently_instrumented; other agents require separate source coverage evidence",
+      "incidents_to_detect": [
+        "NATIVE_STEP_FAILURE",
+        "DEFERRED_TERMINAL_PR_SUCCESSOR_HISTORY",
+        "MISSING_OR_MALFORMED_NATIVE_ACTION_ARTIFACT",
+        "INCIDENT_OBSERVER_FAILURE",
+        "BRAIN_WRITEBACK_OR_READBACK_FAILURE"
+      ],
+      "required_report_fields": [
+        "source_run_id",
+        "source_sha",
+        "source_step_or_signal",
+        "fingerprint",
+        "occurrence_id",
+        "owner",
+        "root_cause_or_unknown",
+        "safe_next_action",
+        "regression_ref",
+        "provider_and_Brain_readback"
+      ],
+      "report_evidence_required_before_green": true,
+      "observed_native_step_success_does_not_clear_unreported_debt": true,
+      "incident_writeback_failure_causes_original_job_failure": true,
+      "store": "public.brain_failure_registry + public.brain_failure_occurrences",
+      "report_channel": "original GitHub issue #5320 plus existing admin-only ONE BRAIN portal projection",
+      "recurrence": "same semantic fingerprint with distinct idempotent source run attempt; never duplicate or silently reset",
+      "recovery": "safe bounded same-owner repair + protected checks + native source/readback + next-run recurrence test",
+      "zero_tolerance_reporting_target": "100% of instrumented eligible events; absence of proof must remain open rather than be counted as success",
+      "scope_limit": "This upgrade does not establish 100% all-product/agent coverage or guarantee no future bugs; independently audit uncovered emitters and source freshness.",
+      "canonical_source": "tools/delivery/janitor-incident-agent.mjs",
+      "regression": "tests/brain-janitor-no-silent-incident-20261103.test.mjs",
+      "current_status": "PENDING_PROTECTED_MERGE_AND_NATIVE_PRODUCTION_READBACK"
+    }
   },
-  "revision": 3,
+  "revision": 5,
   "continuous_lean_loop": {
     "required": true,
     "scope": [
