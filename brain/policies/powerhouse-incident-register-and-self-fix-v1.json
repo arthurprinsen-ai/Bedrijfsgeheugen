@@ -405,5 +405,15 @@
       "social-recovery-runner",
       "supabase-migration-repair-bridge"
     ]
+  },
+  "failure_backlog_assurance_v1": {
+    "status": "ACTIVE_READ_ONLY_CONTRACT",
+    "entrypoint": "brain/observability/failure-backlog-assurance-v1.mjs",
+    "authority": "public.brain_failure_registry",
+    "required_original_agent_data": ["exact Supabase count", "complete bounded registry rows", "provider-backed readback timestamp"],
+    "if_missing_data": "SOURCE_COVERAGE_UNVERIFIED_NOT_GREEN",
+    "due_priority": "original fingerprint owner; recent repeated source errors ahead of historical one-offs",
+    "required_closure": ["source-diagnostic root cause", "tested prevention", "executed regression", "exact protected release", "independent provider effect", "next natural run", "later recurrence audit"],
+    "forbidden": ["invent cause", "replace missing with placeholders", "promote maturity to clear dashboard", "duplicate scheduler, registry or writer", "retry external provider without idempotency or authorization", "mark completed after documented references alone"]
   }
 }
