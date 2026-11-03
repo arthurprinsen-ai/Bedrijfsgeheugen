@@ -10,11 +10,11 @@ DECLARE
   v_previously_authorized text := $prior$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := jsonb_build_object('content-type','application/json','x-powerhouse-token',public.bg_geheim('powerhouse_daily_scheduler_token')), timeout_milliseconds := 150000);$prior$;
   v_authorized text := $new$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := jsonb_build_object('content-type','application/json','x-powerhouse-token', credential.token), timeout_milliseconds := 150000) from (select public.bg_geheim('powerhouse_daily_scheduler_token') as token) as credential where length(coalesce(credential.token,'')) >= 16;$new$;
 BEGIN
-  IF (SELECT count(*) FROM cron.job WHERE jobname='bg-kansenradar-dagelijks') <> 1 THEN
+  IF (SELECT count(*) FROM cron.job WHERE jobname = 'bg-kansenradar-dagelijks') <> 1 THEN
     RAISE EXCEPTION 'BG_KANSENRADAR_ORIGINAL_CRON_CARDINALITY_NOT_ONE';
   END IF;
   SELECT jobid,command INTO v_id,v_current
-    FROM cron.job WHERE jobname='bg-kansenradar-dagelijks' AND active=true;
+    FROM cron.job WHERE jobname = 'bg-kansenradar-dagelijks' AND active=true;
   IF v_id IS NULL THEN
     RAISE EXCEPTION 'BG_KANSENRADAR_ORIGINAL_CRON_NOT_ACTIVE';
   END IF;
