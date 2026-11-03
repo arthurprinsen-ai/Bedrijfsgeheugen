@@ -105,10 +105,10 @@ test('original archive step is always observed before artifact upload and cannot
  assert.match(job,/janitor-archive-observer\.json/);
  assert.match(job,/if-no-files-found: error/);
  const archiveWorker=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
- assert.match(archiveWorker,/if \\(consecutiveArchiveFailures >= 3\\) \\{/);
+ assert.match(archiveWorker,/if \(consecutiveArchiveFailures >= 3\) \{/);
  assert.match(archiveWorker,/JANITOR_ARCHIVE_CIRCUIT_OPEN/);
- assert.match(archiveWorker,/counts\\.unprocessed = branches\\.length - counts\\.seen/);
- assert.match(archiveWorker,/if \\(outcome\\.failed > 0\\) process\\.exitCode = 78/);
+ assert.match(archiveWorker,/counts\.unprocessed = branches\.length - counts\.seen/);
+ assert.match(archiveWorker,/if \(outcome\.failed > 0\) process\.exitCode = 78/);
  assert.doesNotMatch(job,/\|\|.*echo.*JANITOR_ARCHIVE_SWEEP_INCOMPLETE/);
  const source=readFileSync('tools/delivery/janitor-incident-agent.mjs','utf8');
  assert.match(source,/runIdOk\(written\.id\)/,'GitHub comment IDs may exceed one billion');
