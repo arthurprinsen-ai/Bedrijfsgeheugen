@@ -25,7 +25,6 @@
     "source_tag_permission_verified": false
   },
   "fix": "Maintain a monotonic per-run budget of native CREATE_ARCHIVE_TAG HTTP403 permission denials independent of intervening successful exact-SHA tag readbacks; terminate all further provider API calls at three; record total and circuit-open flag in existing native source artifact.",
-  "preventive_rule": "NO_TAG_CREATE_403_CIRCUIT_RESET_WITHIN_RUN_NO_FOURTH_DENIED_POST. Keep the original archive job red on denied writes, keep exact unique branches untouched until a provider-authorized matching tag exists, and retain original GitHub incident + ONE BRAIN dual reporting/readback without duplication.",
   "tests": [
     "tests/brain-branch-archive-sweep.test.mjs",
     "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
@@ -66,5 +65,6 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": true
-  }
+  },
+  "prevention_rule": "NO_TAG_CREATE_403_CIRCUIT_RESET_WITHIN_RUN_NO_FOURTH_DENIED_POST. Keep the original archive job red on denied writes, keep exact unique branches untouched until a provider-authorized matching tag exists, and retain original GitHub incident + ONE BRAIN dual reporting/readback without duplication."
 }
