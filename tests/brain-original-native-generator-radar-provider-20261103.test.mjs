@@ -43,7 +43,9 @@ test('radar uses only the owner-approved OpenAI provider and no Anthropic billin
   assert.match(radar,/await geheim\('OPENAI_API_KEY'\)/);
 });
 test('radar does not inherit stale Anthropic credit receipt guard after OpenAI switch',()=>{
-  assert.match(radar,/response_format: \{ type: 'json_object' \}/);
+  assert.ok(radar.includes('tool_choice:'));
+  assert.ok(radar.includes('parallel_tool_calls: false'));
+  assert.ok(radar.includes('OPENAI_TOOL_RESULT_MISSING'));
   assert.match(radar,/max_completion_tokens: 5500/);
   assert.match(radar,/OPENAI_OUTPUT_CONTRACT_FAILED/);
   assert.match(radar,/OPENAI_REFUSAL/);
