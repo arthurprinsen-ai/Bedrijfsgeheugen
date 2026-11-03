@@ -127,3 +127,109 @@ export function assessDailyPublicationRecovery({
     status:overdue.length?'RECOVERY_DUE':pending.length?'PENDING_PROOF':'PROVIDER_PROOF_COMPLETE',
     overdue,pending,graceMinutes:Math.round(graceMs/60000)};
 }
+
+
+// Pre-flight readiness runs inside the ORIGINAL hourly content-loop before any
+// channel deadline is missed. Advisory only: no duplicate publisher, new
+// schedule, approval, provider access token, or social side-effect.
+export const PREVENTIVE_PUBLICATION_CONTRACT='one-brain-social-preflight-before-deadline-v1';
+const PREVENTIVE_CHANNELS=['linkedin_personal','linkedin_company','instagram','blog'];
+const PREVENTIVE_OWNER=Object.freeze({
+ linkedin_personal:'powerhouse-content-orchestrator / powerhouse-social-publisher',
+ linkedin_company:'powerhouse-content-orchestrator / powerhouse-social-publisher',
+ instagram:'powerhouse-instagram-media-router / original Mira producer',
+ blog:'powerhouse-content-orchestrator / original protected blog publisher'
+});
+const PREVENTIVE_ACTION=Object.freeze({
+ DECISION_NOT_READY:'Original source agent must create a new dated decision and verified buyer-relevant content before the due time; never invent a source.',
+ PUBLICATION_SCHEDULE_MISSING:'Repair the original exact daily channel schedule before any provider create.',
+ DISTINCT_VERIFIED_STORY_REQUIRED:'Original editor selects a substantially new verified story family before publication; do not disable the global duplicate gate.',
+ SOURCE_EDITORIAL_REVISION_REQUIRED:'Original editor repairs genuine contract failures with bounded source-backed revisions; no invented personal facts or AI status dump.',
+ BLOG_EDITORIAL_APPROVAL_REQUIRED:'Original blog writer corrects reader-ready copy, checks primary-date claims and obtains genuine editorial release before protected GitHub/Netlify publishing.',
+ MIRA_PRODUCER_CLAIM_REQUIRED:'Original Mira producer must claim the frozen daily media job BEFORE paid generation; preserve exact OpenArt ID and source. A format preflight is not a claim.',
+ MIRA_FAILED_MEDIA_REPLACEMENT_REQUIRED:'Original Mira producer must use a genuinely different approved video; never replay rejected history or relax 0.940 three-frame identity.',
+ MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Original router must verify native MP4, start/middle/end face at least 0.940, temporal proof and exact media SHA before publisher delivery.',
+ ORIGINAL_PROVIDER_CONSENT_REQUIRED:'Only the authorized owner can grant genuinely missing provider rights using the original verified, unexpired action URL; never bypass consent.',
+ VERIFIED_ARTIFACT_NOT_READY:'Original channel editor must finish fresh sourced content and original quality proof before its scheduled slot.'
+});
+const PREVENTIVE_WINDOW_MS=12*60*60*1000;
+export function assessPreventivePublicationReadiness({
+ runDate, now=new Date().toISOString(), obligations=[], decisions=[], mediaJobs=[],
+ isTerminal=()=>false, leadMs=PREVENTIVE_WINDOW_MS
+}={}){
+ const observed=Date.parse(now);
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(str(runDate))||!Number.isFinite(observed)
+    ||!Array.isArray(obligations)||!Array.isArray(decisions)||!Array.isArray(mediaJobs)
+    ||typeof isTerminal!=='function'||!Number.isFinite(leadMs)||leadMs<0)
+   return {contract:PREVENTIVE_PUBLICATION_CONTRACT,status:'UNVERIFIED',atRisk:[],ready:[],reason:'SOURCE_UNVERIFIED'};
+ const byOb=new Map(obligations.map(x=>[str(x?.channel),x]));
+ const byDec=new Map(decisions.map(x=>[str(x?.channel),x]));
+ const media=mediaJobs.find(x=>str(x?.channel)==='instagram')||mediaJobs[0]||null;
+ const atRisk=[],ready=[];
+ for(const channel of PREVENTIVE_CHANNELS){
+   const ob=byOb.get(channel);
+   const dec=byDec.get(channel==='instagram'?'instagram_company':channel);
+   if(ob&&isTerminal(ob)){ready.push({channel,proof:'ORIGINAL_TERMINAL_PROVIDER_READBACK'});continue;}
+   const raw=dec?.scheduled_for;
+   const scheduledFor=raw instanceof Date&&Number.isFinite(raw.getTime())?raw.toISOString():str(raw);
+   const due=scheduledFor?Date.parse(scheduledFor):NaN;
+   const validDue=Number.isFinite(due);
+   const remainingMs=validDue?due-observed:null;
+   const earlyWindow=!validDue||(remainingMs!==null&&remainingMs<=leadMs);
+   if(!earlyWindow)continue;
+   const error=str(ob?.last_error);
+   const ed=dec?.delivery_evidence||{};
+   const state=str(dec?.state);
+   const capability=str(ed.capability_state);
+   const mediaStatus=str(media?.status);
+   let code=null;
+   if(!dec||!validDue)code=dec?'PUBLICATION_SCHEDULE_MISSING':'DECISION_NOT_READY';
+   else if(channel==='linkedin_personal'||channel==='linkedin_company'){
+     if(error.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
+       ||str(ed.error).startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
+       ||Array.isArray(ed.violations)&&ed.violations.some(x=>x?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'))
+       code='DISTINCT_VERIFIED_STORY_REQUIRED';
+     else if(ed.artifact_generation_failure||str(ed.error).startsWith('PERSONAL_EDITORIAL_CONTRACT_FAILED'))
+       code='SOURCE_EDITORIAL_REVISION_REQUIRED';
+     else if(['decided','blocked'].includes(state)||['BLOCKED','FAILED'].includes(str(ob?.status)))
+       code='VERIFIED_ARTIFACT_NOT_READY';
+   }else if(channel==='instagram'){
+     if(['WAITING_PROOF'].includes(mediaStatus)
+        ||str(media?.last_error).includes('MIRA_FACE')
+        ||str(media?.last_error).includes('MIRA_CONTINUOUS')
+        ||str(media?.last_error).includes('MIRA_NATIVE'))
+       code='MIRA_FAILED_MEDIA_REPLACEMENT_REQUIRED';
+     else if(mediaStatus==='WAITING_ASSET'&&!str(media?.asset_manifest?.openart_history_id))
+       code='MIRA_PRODUCER_CLAIM_REQUIRED';
+     else if(!(mediaStatus==='PROOF_VERIFIED'
+       &&media?.proof_manifest?.identity_gate_result==='PASS'
+       &&media?.proof_manifest?.exact_final_media_proven===true))
+       code='MIRA_FINAL_MEDIA_PROOF_REQUIRED';
+   }else if(channel==='blog'){
+     if(!ob?.approved_at)code='BLOG_EDITORIAL_APPROVAL_REQUIRED';
+     else if(['decided','blocked'].includes(state)||str(ob.status)==='GENERATED')
+       code='VERIFIED_ARTIFACT_NOT_READY';
+   }
+   // Provider permission is the final diagnostic only if no more precise
+   // source/media/editorial gate exists. Human consent cannot be fabricated.
+   if(!code&&capability==='BLOCKED_HARD_BOUNDARY')
+     code='ORIGINAL_PROVIDER_CONSENT_REQUIRED';
+   if(!code){ready.push({channel,proof:'PRECONDITIONS_NO_KNOWN_FAILURE_NOT_PROVIDER_ACK'});continue;}
+   const humanOnly=code==='ORIGINAL_PROVIDER_CONSENT_REQUIRED'
+     ||code==='BLOG_EDITORIAL_APPROVAL_REQUIRED';
+   atRisk.push({
+     channel,owner:PREVENTIVE_OWNER[channel],code,
+     action:PREVENTIVE_ACTION[code],
+     scheduledFor:validDue?new Date(due).toISOString():null,
+     minutesToDeadline:remainingMs===null?null:Math.floor(remainingMs/60000),
+     phase:remainingMs!==null&&remainingMs<0?'PAST_DUE':'BEFORE_DUE',
+     requiresAuthorization:humanOnly,
+     // No fake blocker, provider receipt, new scheduling or account link.
+     nextStep:'ORIGINAL_CHANNEL_OWNER_SELF_REPAIR',
+     scope:'READ_ONLY_EXISTING_CONTENT_LOOP'
+   });
+ }
+ return {contract:PREVENTIVE_PUBLICATION_CONTRACT,
+   status:atRisk.length?'PREVENTIVE_ACTION_REQUIRED':'NO_PREVENTIVE_RISK_DETECTED',
+   atRisk,ready,lookaheadHours:Math.round(leadMs/3600000)};
+}
