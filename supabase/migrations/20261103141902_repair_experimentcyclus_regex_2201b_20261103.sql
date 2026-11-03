@@ -1,0 +1,39 @@
+-- Source version/name mirrored from original production supabase_migrations.schema_migrations.
+-- Existing provider version 20261103141902 was ALREADY APPLIED; never fake a new version.
+-- Original recorded statement omitted PL/pgSQL/dollar-quote statement terminators;
+-- executable representation normalizes only terminators and reasserts observed ACL.
+CREATE OR REPLACE FUNCTION public.bg_experimentcyclus_poort(p_actie text, p_voorstel jsonb DEFAULT NULL::jsonb)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare v_id text; v_pagina text; v_meetpunt text;
+begin
+  if p_actie = 'beoordelen' then return intern.bg_experimenten_beoordelen();
+  elsif p_actie = 'data' then return jsonb_build_object('meet', intern.bg_meetcijfers(30), 'cyclus', intern.bg_salescyclus_cijfers(30));
+  elsif p_actie = 'voorstellen' then
+    v_pagina := p_voorstel->>'pagina'; v_meetpunt := p_voorstel->>'meetpunt';
+    if coalesce(p_voorstel->>'hypothese', '') = '' or (v_pagina !~ '^/[^?#[:space:]]*$' or char_length(v_pagina) > 300)
+       or v_meetpunt !~ '^(klik:.{2,60}|klik_doel:.{2,80}|scroll:(25|50|75|90|100)|formulier|lead|gesprek|offerte|order)$'
+       or coalesce(p_voorstel->>'onderdeel', '') not in ('site', 'seo', 'content', 'dm') then
+      raise exception 'ONGELDIG_VOORSTEL';
+    end if;
+    v_id := 'bgx-' || to_char(now(), 'YYYYMMDD') || '-' || substr(md5(v_pagina || v_meetpunt || now()::text), 1, 6);
+    insert into public.social_experiments (tenant_id, experiment_id, hypothesis, primary_metric, comparison_scope, status, created_at, updated_at,
+      onderdeel, pagina, controle, variant, meetpunt, min_steekproef, looptijd_dagen, onderbouwing, voorgesteld_door)
+    values ('bedrijfsgeheugen', v_id, left(p_voorstel->>'hypothese', 400), v_meetpunt,
+      jsonb_build_object('methode', 'zelfde pagina vóór vs tijdens', 'pagina', v_pagina), 'PLANNED', now(), now(),
+      p_voorstel->>'onderdeel', v_pagina, left(p_voorstel->>'controle', 300), left(p_voorstel->>'variant', 400), v_meetpunt,
+      greatest(20, least(coalesce((p_voorstel->>'min_steekproef')::int, 50), 500)), greatest(7, least(coalesce((p_voorstel->>'looptijd_dagen')::int, 21), 60)),
+      left(p_voorstel->>'onderbouwing', 800), 'bg-experimentcyclus');
+    return jsonb_build_object('experiment_id', v_id);
+  end if;
+  raise exception 'ONBEKENDE_ACTIE';
+end;
+$function$;
+
+-- Retain independently verified native production privileges:
+-- anon=false; authenticated=false; service_role=true on 2026-11-03.
+REVOKE EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.bg_experimentcyclus_poort(text,jsonb) TO service_role;

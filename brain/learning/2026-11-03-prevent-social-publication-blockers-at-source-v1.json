@@ -1,0 +1,66 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "PROTECTED_CANDIDATE_PENDING_PRODUCTION",
+  "fingerprint": "powerhouse|content-loop|late-social-editorial-media-permission-preflight|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-content-loop",
+  "failure_class": "LATE_PUBLICATION_PREREQUISITE_DETECTION",
+  "evidence": {
+    "original_measured_at_utc": "2026-11-03T16:00:01Z",
+    "original_active_blockers": 23,
+    "original_active_crons": 65,
+    "daily_publication_channels_20261103": {
+      "linkedin_company": "LIVE_PROVEN",
+      "linkedin_personal": "BLOCKED_DUPLICATE_STORY",
+      "instagram": "BLOCKED_FACE_IDENTITY_0_900",
+      "blog": "GENERATED_UNAPPROVED"
+    },
+    "mira_original_failure": "0.900<0.940",
+    "blog_approval_at": "NULL",
+    "linkedin_original_duplicate": "previous-day story family",
+    "original_cron_job_id": 140,
+    "original_cron_schedule": "27 * * * *",
+    "no_second_scheduler": true
+  },
+  "root_cause": "The original loop detects hard failures and missed publication deadlines, but reader-ready blog signoff, producer ownership before media spend and distinct authenticated source families are not separately surfaced as actionable readiness risks in the earlier window. Channel generation and dispatch can be attempted before a stable all-channel qualified editorial/media plan exists.",
+  "fix": "Extend the ORIGINAL read-only publication recovery classifier with a deterministic 12-hour pre-deadline readiness assessment on the same original channel decisions and provider obligations, including exact original media job and independent proof. The existing hourly ONE BRAIN loop emits prevention risks with source owner and human-only gates; no additional publisher, scheduler, consent override or invented provider result.",
+  "prevention_rule": "Twelve hours before scheduled send, each original owner must check novelty, editorial completion, exact approved media/lease, service rights and terminal provider proof. Work to resolution before slot; preserve externally imposed safety blocks and owner consent; fail closed when source evidence unavailable.",
+  "tests": [
+    "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs",
+    "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
+    "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "invariants": [
+      "read-only owner preflight",
+      "real provider-ID/URL is terminal",
+      "never bypass global uniqueness",
+      "Mira 0.940 unchanged",
+      "blog human editorial evidence never fabricated",
+      "no provider side effects",
+      "same original hourly scheduler"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "LATE_PUBLICATION_PREREQUISITE_DETECTION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 3
+  },
+  "skill_targets": [
+    "powerhouse-social-recovery-cooperation"
+  ],
+  "terminal_rule": "First prove exact-head protected Required/BRAIN/CodeQL and original Supabase Edge same source on new version; then next original hourly tick must store preventive in original ONE BRAIN brain_records. An early risk signal does NOT make a missing LinkedIn/Instagram/blog post live."
+}

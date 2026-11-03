@@ -1,7 +1,7 @@
 import postgres from 'npm:postgres@3.4.7';
 import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
 import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
-import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
+import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../_shared/daily-publication-recovery.mjs';
 import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
 import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
 import {planOwnerActionEscalations} from '../_shared/owner-action-escalation.mjs';
@@ -10,7 +10,7 @@ import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candi
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
-const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations"]);
+const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations","powerhouse_instagram_media_jobs_v1"]);
 const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1","brain_observe_failure"]);
 const DB_JSON_COLUMNS=new Set(['bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload','content_publication_obligations.evidence','content_publication_obligations.metrics','powerhouse_channel_decisions.delivery_evidence','powerhouse_channel_decisions.learning_evidence','powerhouse_content_artifacts.generation_evidence','powerhouse_content_recommendations.evidence','powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence','powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest','powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage','powerhouse_sales_actions.evidence']);
 const DB_ARRAY_CASTS=new Map([['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],['powerhouse_instagram_media_jobs_v1.allowed_providers','text[]'],['brain_records.predecessor_ids','text[]'],['brain_records.evidence_ids','text[]'],['brain_ai_governance_registry.data_categories','text[]'],['brain_ai_governance_registry.prohibited_data_categories','text[]'],['brain_ai_governance_registry.approval_evidence_ids','text[]'],['brain_ai_governance_registry.evidence_ids','text[]'],['brain_ai_governance_registry.subprocessors','text[]'],['brain_ai_governance_registry.provider_evidence_urls','text[]']]);
@@ -52,7 +52,7 @@ class DirectQuery{
  limit(value:number){this.limitValue=Number(value);return this;} maybeSingle(){this.singleMode='maybe';return this.execute();} single(){this.singleMode='single';return this.execute();} then(resolve:any,reject:any){return this.execute().then(resolve,reject);}
  where(values:any[]){const parts:string[]=[];for(const f of this.filters){const col=dbIdent(f.column);if(f.kind==='eq')parts.push(f.value===null?col+' is null':col+' = '+scalarParam(f.value,values));else if(f.kind==='in'){if(!f.values.length){parts.push('false');continue;}parts.push(col+' in ('+f.values.map((v:any)=>scalarParam(v,values)).join(',')+')');}else if(f.kind==='not'&&f.operator==='is'&&f.value===null)parts.push(col+' is not null');else throw new Error('DB_FILTER_REJECTED');}return parts.length?' where '+parts.join(' and '):'';}
  selectList(raw:string){if(raw.trim()==='*')return '*';return raw.split(',').map(x=>dbIdent(x.trim())).join(',');}
- async execute(){try{const values:any[]=[];let q='';if(this.op==='select'){q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);if(this.orders.length)q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');if(Number.isFinite(this.limitValue as number))q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));}
+ async execute(){try{if(this.table==='powerhouse_instagram_media_jobs_v1'&&this.op!=='select')throw new Error('DB_READ_ONLY_TABLE_REJECTED:'+this.table);const values:any[]=[];let q='';if(this.op==='select'){q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);if(this.orders.length)q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');if(Number.isFinite(this.limitValue as number))q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));}
  else if(this.op==='insert'){const items=Array.isArray(this.payload)?this.payload:[this.payload];if(!items.length||!items[0])throw new Error('DB_EMPTY_INSERT');const cols=Object.keys(items[0]);q='insert into public.'+dbIdent(this.table)+' ('+cols.map(dbIdent).join(',')+') values '+items.map((item:any)=>'('+cols.map(c=>valueExpr(this.table,c,item[c],values)).join(',')+')').join(',');if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='update'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPDATE');q='update public.'+dbIdent(this.table)+' set '+entries.map(([k,v])=>dbIdent(k)+' = '+valueExpr(this.table,k,v,values)).join(',')+this.where(values);if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='upsert'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPSERT');const cols=entries.map(([k])=>dbIdent(k));const vals=entries.map(([k,v])=>valueExpr(this.table,k,v,values));q='insert into public.'+dbIdent(this.table)+' ('+cols.join(',')+') values ('+vals.join(',')+')';const conflict=this.conflict.split(',').map(x=>x.trim()).filter(Boolean);if(!conflict.length)throw new Error('DB_UPSERT_CONFLICT_REQUIRED');q+=' on conflict ('+conflict.map(dbIdent).join(',')+') ';if(this.ignoreDuplicates)q+='do nothing';else{const set=new Set(conflict);const ups=entries.map(([k])=>k).filter(k=>!set.has(k));q+=ups.length?'do update set '+ups.map(k=>dbIdent(k)+' = excluded.'+dbIdent(k)).join(','):'do nothing';}if(this.returning)q+=' returning '+this.selectList(this.returning);}
@@ -498,12 +498,24 @@ Deno.serve(async (req) => {
       stepResults.push({ name:'reconcile_post', ok:true });
     }
 
-    const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
+    const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }, { data: mediaJobs, error: mediaJobsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at,scheduled_for').eq('run_date', runDate),
+      db.from('powerhouse_instagram_media_jobs_v1').select('channel,status,last_error,asset_manifest,proof_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram'),
     ]);
     if (obligationsError) throw new Error('OBLIGATIONS_READ_FAILED');
     if (decisionsError) throw new Error('DECISIONS_READ_FAILED');
+    // The existing content-loop reads original Mira producer ownership and media
+    // evidence before a deadline without granting a new dispatch capability.
+    const preventive = mediaJobsError
+      ? {contract:'one-brain-social-preflight-before-deadline-v1',status:'UNVERIFIED',atRisk:[],ready:[],reason:'ORIGINAL_MEDIA_JOB_READ_FAILED'}
+      : assessPreventivePublicationReadiness({runDate,now:new Date().toISOString(),
+          obligations:obligations||[],decisions:decisions||[],mediaJobs:mediaJobs||[],isTerminal:obligationTerminal});
+    stepResults.push({name:'original-social-preventive-readiness',
+      ok:preventive.status==='NO_PREVENTIVE_RISK_DETECTED',
+      degraded:preventive.status!=='NO_PREVENTIVE_RISK_DETECTED',
+      error:preventive.status==='UNVERIFIED'?'ORIGINAL_PREVENTIVE_SOURCE_UNVERIFIED':null,
+      risk_count:preventive.atRisk.length});
 
     // Existing same-date writer observes the missing handoff instead of reporting
     // a technically successful HTTP run as a successful external publication.
@@ -657,6 +669,7 @@ Deno.serve(async (req) => {
       blocked,
       hardBoundaries,
       recovery,
+      preventive,
       handoffWriteback,
       incidentLearning,
       ownerActionEscalation,
