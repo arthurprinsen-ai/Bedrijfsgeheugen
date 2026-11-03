@@ -84,8 +84,8 @@ test('website AI forwards verified business attribution while pinning public ten
     ok:true,
     async json() {
       return {
-        content:[{ type:'text', text:'Antwoord uit bron' }],
-        usage:{ input_tokens:4, output_tokens:2 },
+        choices:[{message:{content:'Antwoord uit bron'}}],
+        usage:{ prompt_tokens:4, completion_tokens:2 },
       };
     },
   });
@@ -135,8 +135,8 @@ test('portal AI keeps verified tenant/business lineage while pinning portal acti
     ok:true,
     async json() {
       return {
-        content:[{ type:'text', text:'Portaalantwoord' }],
-        usage:{ input_tokens:3, output_tokens:2 },
+        choices:[{message:{content:'Portaalantwoord'}}],
+        usage:{ prompt_tokens:3, completion_tokens:2 },
       };
     },
   });
