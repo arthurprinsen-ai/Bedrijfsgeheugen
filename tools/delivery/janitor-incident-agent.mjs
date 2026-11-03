@@ -11,6 +11,7 @@ export const EVIDENCE_MISSING_FINGERPRINT='github|janitor|native-cleanup-artifac
 export const ARCHIVE_INCIDENT_NUMBER=5333;
 export const ARCHIVE_PROVIDER_FINGERPRINT='github|janitor-archive-sweep|tag-ref-create-403-masked-as-success|20261102-v1';
 export const ARCHIVE_EVIDENCE_FINGERPRINT='github|janitor-archive-sweep|missing-runtime-incident-proof|20261103-v1';
+export const ARCHIVE_STEP_FINGERPRINT='github|janitor-archive-sweep|native-step-failure-separate-from-permission|20261103-v1';
 const SHA=/^[0-9a-f]{40}$/i;
 const repoOk=x=>/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i.test(x||'');
 const numberOk=x=>Number.isSafeInteger(Number(x))&&Number(x)>0&&Number(x)<1_000_000_000;
@@ -169,7 +170,8 @@ export async function writeBrainOccurrence({env,report,fetchImpl=globalThis.fetc
  const archive=report.observer_scope==='branch_archive_sweep';
  const kind=archive?report.signal_kind:report.failed_steps?.length?'STEP_FAILURE':
    report.status==='INCIDENT_OPEN_EVIDENCE_MISSING'?'EVIDENCE_MISSING':'HISTORY_UNPROVEN';
- const fingerprint=archive?(kind==='ARCHIVE_EVIDENCE_MISSING'?ARCHIVE_EVIDENCE_FINGERPRINT:ARCHIVE_PROVIDER_FINGERPRINT):
+ const fingerprint=archive?(kind==='ARCHIVE_EVIDENCE_MISSING'?ARCHIVE_EVIDENCE_FINGERPRINT:
+   kind==='ARCHIVE_STEP_FAILURE'?ARCHIVE_STEP_FINGERPRINT:ARCHIVE_PROVIDER_FINGERPRINT):
    kind==='STEP_FAILURE'?FINGERPRINT:
    kind==='EVIDENCE_MISSING'?EVIDENCE_MISSING_FINGERPRINT:HISTORY_DEBT_FINGERPRINT;
  const occurrenceId='github-actions:'+(archive?'janitor-archive':'janitor')+':run:'+report.run_id+':attempt:'+attempt+
