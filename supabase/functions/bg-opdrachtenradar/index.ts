@@ -1,13 +1,13 @@
 // Opdrachtenradar — nachtelijke producer, v1, 18 september 2026
 // Zoekt freelance-/interimopdrachten in data, AI en BI in Nederland via Tavily,
-// laat nieuwe treffers beoordelen door Claude en schrijft relevante opdrachten naar public.bg_opdrachten.
-// Sleutels uitsluitend via Vault (public.bg_geheim): TAVILY_API_KEY, ANTHROPIC_API_KEY, powerhouse_daily_scheduler_token;
+// laat nieuwe treffers beoordelen door OpenAI en schrijft relevante opdrachten naar public.bg_opdrachten.
+// Sleutels uitsluitend via Vault (public.bg_geheim): TAVILY_API_KEY, OPENAI_API_KEY, powerhouse_daily_scheduler_token;
 // optioneel ADZUNA_APP_ID, ADZUNA_APP_KEY en JOOBLE_API_KEY voor vacature-API's.
 // Bewijs: powerhouse_record_source_observation_v1 (bron 'opdrachtenradar') en public.bg_gezondheid.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT = 'bg-opdrachtenradar-v1';
-const MODEL = 'claude-haiku-4-5-20251001';
+const MODEL = 'gpt-5-mini';
 const MAX_KANDIDATEN = 200;
 const DOMEINEN_PER_GROEP = 7;
 const BATCH = 10;
@@ -75,7 +75,7 @@ Cv van de consultant:
 Resultaten:
 ${deel.map((d, i) => `[${i}] ${d.titel}\nURL: ${d.url}\n${d.tekst}`).join('\n\n')}
 
-Antwoord met alleen een JSON-array, één object per resultaat:
+Vul de voorgeschreven OpenAI-functie 'beoordeel' met veld 'beoordelingen' (een array met exact één object per resultaat):
 [{"i":0,"relevant":true,"titel":"korte functietitel","organisatie":"","bemiddelaar":"","locatie":"","werkvorm":"op locatie|hybride|remote|onbekend","uren":"","tarief":"","start":"","duur":"","sluitdatum":"YYYY-MM-DD of leeg","samenvatting":"twee zinnen","match":75,"waarom":"één zin"}]
 match is een geheel getal van 0 tot 100: 100 = past volledig bij het cv, 50 = deels, 0 = past niet. Gebruik null als er geen cv is.
 Voor niet-relevante resultaten volstaat {"i":n,"relevant":false}. Verzin geen gegevens: laat onbekende velden leeg.`;
@@ -96,8 +96,8 @@ Deno.serve(async (req: Request) => {
     db.from('bg_gezondheid').insert({ gemeten_op: nu, onderdeel: 'opdrachtenradar', soort: 'external-opportunity-intelligence', status, detail, gegevens }).then(() => {}, () => {});
 
   try {
-    const [tavily, anthropic] = await Promise.all([geheim('TAVILY_API_KEY'), geheim('ANTHROPIC_API_KEY')]);
-    if (!tavily || !anthropic) throw new Error(`CONFIG_UNAVAILABLE:${!tavily ? 'TAVILY_API_KEY ' : ''}${!anthropic ? 'ANTHROPIC_API_KEY' : ''}`.trim());
+    const [tavily, openaiKey] = await Promise.all([geheim('TAVILY_API_KEY'), geheim('OPENAI_API_KEY')]);
+    if (!tavily || !openaiKey) throw new Error(`CONFIG_UNAVAILABLE:${!tavily ? 'TAVILY_API_KEY ' : ''}${!openaiKey ? 'OPENAI_API_KEY' : ''}`.trim());
 
     const { data: profiel } = await db.from('bg_opdrachten_profiel').select('cv,extra_domeinen').eq('id', 'arthur').maybeSingle();
     const cv = clean(profiel?.cv).slice(0, 3500);
@@ -178,17 +178,55 @@ Deno.serve(async (req: Request) => {
     const beoordeelFouten: string[] = [];
     let relevant = 0, genegeerd = 0;
     await inGroepen(batches, 4, async deel => {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
+      const schema = {
+        type: 'object',
+        properties: {
+          beoordelingen: { type: 'array', items: { type: 'object',
+            properties: {
+              i: { type: 'integer' }, relevant: { type: 'boolean' },
+              titel: { type: 'string' }, organisatie: { type: 'string' },
+              bemiddelaar: { type: 'string' }, locatie: { type: 'string' },
+              werkvorm: { type: 'string' }, uren: { type: 'string' },
+              tarief: { type: 'string' }, start: { type: 'string' },
+              duur: { type: 'string' }, sluitdatum: { type: 'string' },
+              samenvatting: { type: 'string' }, match: { type: ['integer', 'null'] },
+              waarom: { type: 'string' },
+            }, required: ['i', 'relevant']
+          } }
+        }, required: ['beoordelingen']
+      };
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
-        headers: { 'x-api-key': anthropic, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: MODEL, max_tokens: 4000, messages: [{ role: 'user', content: prompt(deel, cv) }] }),
+        headers: { authorization: `Bearer ${openaiKey}`, 'content-type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL, max_completion_tokens: 6000,
+          messages: [
+            { role: 'system', content: 'Beoordeel uitsluitend de aangeleverde opdrachtbronnen. Geen verzonnen of onbewezen details. Gebruik de verplichte functie.' },
+            { role: 'user', content: prompt(deel, cv) }
+          ],
+          tools: [{ type: 'function', function: { name: 'beoordeel', description: 'Brongebonden freelance-opdrachtbeoordeling', parameters: schema } }],
+          tool_choice: { type: 'function', function: { name: 'beoordeel' } },
+          parallel_tool_calls: false
+        }),
+        signal: AbortSignal.timeout(90000)
       });
       const b: any = await r.json().catch(() => ({}));
-      if (!r.ok) { beoordeelFouten.push(`${r.status} ${clean(b?.error?.message).slice(0, 80)}`); return; }
-      const tekst = ((b.content || []) as any[]).filter(c => c.type === 'text').map(c => c.text).join('');
-      const s = tekst.indexOf('['), e = tekst.lastIndexOf(']');
+      if (!r.ok) { beoordeelFouten.push(`OPENAI_${r.status}`); return; }
+      const message = b?.choices?.[0]?.message;
+      if (message?.refusal) { beoordeelFouten.push('OPENAI_REFUSAL'); return; }
+      const args = (message?.tool_calls || []).find((c: any) => c?.type === 'function' && c?.function?.name === 'beoordeel')?.function?.arguments;
       let uit: any[] = [];
-      try { uit = JSON.parse(tekst.slice(s, e + 1)); } catch { beoordeelFouten.push('INVALID_JSON'); return; }
+      try {
+        const parsed = JSON.parse(String(args || ''));
+        if (!Array.isArray(parsed?.beoordelingen)) throw new Error('WRONG_SCHEMA');
+        uit = parsed.beoordelingen;
+      } catch { beoordeelFouten.push('OPENAI_OUTPUT_SCHEMA_INVALID'); return; }
+      const seen = new Set<number>();
+      if (uit.length !== deel.length || uit.some((o: any) => !Number.isSafeInteger(o?.i)
+          || o.i < 0 || o.i >= deel.length || typeof o?.relevant !== 'boolean'
+          || seen.has(o.i) || (seen.add(o.i), false))) {
+        beoordeelFouten.push('OPENAI_OUTPUT_ITEMS_INVALID'); return;
+      }
       const rijen: Record<string, unknown>[] = [], weg: Record<string, unknown>[] = [];
       for (const o of uit) {
         const k = deel[Number(o?.i)]; if (!k) continue;
