@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "supabase|main|applied-provider-versions-missing-in-git-directory|20261103-v1",
+  "maturity": "OBSERVED",
+  "owner": "existing Supabase Git main migration authority",
+  "source": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "merge_sha": "fded9060847ee6c392c6ae62f1550755089f9c12",
+    "provider_check_id": 126048556477,
+    "production_migration_count": 794,
+    "repo_version_count": 794,
+    "missing_from_repo": [
+      "20261103141902",
+      "20261103142201"
+    ],
+    "pending_in_prod": [
+      "20261103143000",
+      "20261103223001"
+    ]
+  },
+  "cause": "Production migration history contains two applied version identities absent from current main; Git integration aborts before newly merged migrations.",
+  "change": "Source-only historical identity reconciliation from original applied SQL plus executable terminators and same production service-only ACL; no DB history write or new scheduler.",
+  "prevention": "Prior to protected Supabase main deploy, compare BOTH provider and local version sets. A nonempty provider-minus-repo set is a HIGH source blocker; original owner must create native original history parity PR, validate exact semantic replay and ACL, then provider readback.",
+  "regression": "tests/brain-supabase-original-production-version-parity-20261103.test.mjs",
+  "production_status": "NOT_YET_APPLIED",
+  "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5373",
+  "closure": "Original Git-main provider check passes, both pending versions applied, original function definitions present with existing ACL, next natural original scheduler verifies typed receipt."
+}
