@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "PROTECTED_CANDIDATE_PENDING_RUNTIME_VERIFICATION",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-content-loop",
+  "fingerprint": "content-loop|preventive-media-job|direct-db-table-rejected|20261103-v1",
+  "failure_class": "PREVENTIVE_READ_GATE_DB_TABLE_REJECTED",
+  "root_cause": "PR #5375 added original read-only powerhouse_instagram_media_jobs_v1 preflight source, but did not include this table in the original DirectQuery DIRECT_TABLES allowlist. The post-dispatch preflight construction throws DB_TABLE_REJECTED, and original content-loop records CONTENT_LOOP_INTERNAL_ERROR HTTP 500.",
+  "evidence": {
+    "edge_version": 567,
+    "first_error_at": "2026-11-03T16:14:35Z",
+    "repeat_error_at": "2026-11-03T16:19:39Z",
+    "source_error": "DB_TABLE_REJECTED:powerhouse_instagram_media_jobs_v1",
+    "original_cron_job": 140,
+    "original_cron_schedule": "27 * * * *",
+    "active_blockers_observed": 24,
+    "channels_live_proven": 1,
+    "channels_total": 4
+  },
+  "fix": "Add only original Mira media job table to direct DB adapter allowed tables and enforce read-only select operation in adapter. Preserve original connected PostgreSQL pooler, scheduler, auth, publish owner and idempotency.",
+  "prevention_rule": "Every new original DirectQuery table read must match an explicit allowlist entry, and production branch tests must assert adapter eligibility, read-only guard, failure branch and unchanged ownership. Do not classify successful cron request as successful Edge execution or verified provider publishing.",
+  "regression_ref": "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs",
+  "release_requirements": [
+    "protected exact-head Required/BRAIN/CodeQL",
+    "merge and original Supabase Edge deploy",
+    "verify new version and source SHA",
+    "natural job #140 execution plus real result.preventive readback",
+    "separate 4-channel independent provider readback"
+  ],
+  "safety": [
+    "no second scheduler",
+    "no consent bypass",
+    "no decrease in Mira 0.940",
+    "no forged provider IDs",
+    "no manual override of runtime truth"
+  ],
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "PREVENTIVE_READ_GATE_DB_TABLE_REJECTED",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "invariants": [
+      "read-only source adapter",
+      "original exclusive writer",
+      "no provider side effect",
+      "no false green",
+      "unmodified existing cron #140"
+    ]
+  }
+}
