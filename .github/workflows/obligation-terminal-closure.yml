@@ -126,6 +126,13 @@ jobs:
             }
             selected="$(jq -c --arg title "$expected_title" '[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last' <<<"$list")"
             prior_id="$(jq -r '.id // empty' <<<"$selected")"
+            # The REST result is bounded to 100. Do not treat a full page without
+            # an exact match as proof of absence; a prior main-indexed flight may
+            # exist beyond this window. Defer rather than creating a duplicate.
+            seen_count="$(jq -r '.workflow_runs | length' <<<"$list")"
+            if [ "$seen_count" -ge 100 ] && [ -z "$prior_id" ]; then
+              echo "::error::BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN"; exit 78
+            fi
             if [ -n "$prior_id" ]; then
               prior_status="$(jq -r '.status // "unknown"' <<<"$selected")"
               echo "BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED:pr=${PR_NUMBER}:head=${HEAD_SHA}:run=${prior_id}:status=${prior_status}"
