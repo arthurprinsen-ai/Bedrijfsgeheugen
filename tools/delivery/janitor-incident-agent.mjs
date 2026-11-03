@@ -25,6 +25,44 @@ export function mergedSuccessorIsProven(pr,{predecessor,obligation}={}){
  metadata(pr.body,'Obligation-ID')===obligation&&
  metadata(pr.body,'Supersedes')?.replace(/^#/,'')===String(Number(predecessor));
 }
+// Positive-only transitive proof. A final merged PR may supersede several retired
+// candidates. Every edge must be read directly from GitHub with exact obligation
+// and a strictly decreasing PR number; a search miss NEVER authorizes a reopen.
+export async function traceMergedSuccessor({seed,predecessor,obligation,readPr}={}){
+ const target=Number(predecessor),visited=new Set(),chain=[];
+ let current=seed;
+ for(let depth=0;depth<32;depth++){
+   const id=Number(current?.number);
+   if(!numberOk(id)||id<=target||visited.has(id)||
+      metadata(current?.body,'Obligation-ID')!==obligation)return null;
+   if(depth===0){
+     if(current.state!=='closed'||current.merged!==true||
+       typeof current.merged_at!=='string'||!current.merged_at)return null;
+   }else{
+     // Open intermediates are admissible ONLY when explicitly retired; never
+     // interpret one as an active writer or permission to close/reopen it.
+     const retired=/^RETIRED\b/i.test(current.title||'')||
+       metadata(current.body,'Retirement-State')==='RETIRED_DO_NOT_MERGE';
+     if(current.state!=='closed'&&
+       !(current.state==='open'&&current.merged===false&&retired))return null;
+   }
+   visited.add(id);chain.push(id);
+   const parentRaw=metadata(current.body,'Supersedes');
+   if(!/^#?[1-9][0-9]*$/.test(parentRaw||''))return null;
+   const parent=Number(parentRaw.replace(/^#/,''));
+   if(!numberOk(parent)||parent>=id||visited.has(parent))return null;
+   if(parent===target)return {
+     status:'PROVEN_MERGED_SUCCESSOR',proven:true,safe_to_reopen:false,
+     predecessor_number:target,successor_number:chain[0],
+     successor_merged_at:seed.merged_at,chain:[...chain,target],
+     evidence:chain.length===1?'GITHUB_SEARCH_POSITIVE_PLUS_DIRECT_MERGED_PR_READBACK':
+       'GITHUB_SEARCH_POSITIVE_PLUS_TRANSITIVE_DIRECT_PR_READBACK'};
+   const next=await readPr(parent);
+   if(Number(next?.number)!==parent)return null;
+   current=next;
+ }
+ return null; // Too long, cyclic, missing, or ambiguous lineage: fail closed.
+}
 export async function verifyMergedSuccessor({repo,predecessor,obligation,search,readPr}={}){
  if(!repoOk(repo)||!numberOk(predecessor)||!/^[-a-z0-9_|:.]{5,180}$/i.test(obligation||''))
    return {status:'INVALID_INPUT_FAIL_CLOSED',proven:false,safe_to_reopen:false};
@@ -32,15 +70,14 @@ export async function verifyMergedSuccessor({repo,predecessor,obligation,search,
    const query='repo:'+repo+' is:pr is:merged "'+obligation+'"';
    const candidates=await search(query);
    if(!Array.isArray(candidates?.items))throw Error('SEARCH_RESULT_INVALID');
-   // Only a positive direct PR readback is authoritative; absence in search proves nothing.
+   // Search is a candidate locator, not proof. The authoritative evidence is
+   // the merged tip plus EVERY explicit Supersedes edge read from GitHub.
    const ids=[...new Set(candidates.items.map(x=>Number(x.number)).filter(numberOk))].slice(0,20);
    for(const id of ids){
      const pr=await readPr(id);
-     if(mergedSuccessorIsProven(pr,{predecessor,obligation}))return {
-       status:'PROVEN_MERGED_SUCCESSOR',proven:true,safe_to_reopen:false,
-       predecessor_number:Number(predecessor),successor_number:id,
-       successor_merged_at:pr.merged_at,
-       evidence:'GITHUB_SEARCH_POSITIVE_PLUS_DIRECT_MERGED_PR_READBACK'};
+     if(Number(pr?.number)!==id)continue;
+     const proof=await traceMergedSuccessor({seed:pr,predecessor,obligation,readPr});
+     if(proof)return proof;
    }
    return {status:'HISTORY_UNPROVEN_DEFER',proven:false,safe_to_reopen:false,
      predecessor_number:Number(predecessor),searched_candidates:ids.length,
