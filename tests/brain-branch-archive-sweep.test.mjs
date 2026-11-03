@@ -173,7 +173,7 @@ test('inventory rate limit writes typed original action/report before failing th
 test('missing comparison readback cannot be parsed as zero ahead and delete unique work',()=>{
   const src=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
   assert.match(src,/const rawAhead = cmp === null \? '' : cmp\.trim\(\)/);
-  assert.match(src,/aheadBy = \/\\d\+\$\/\.test\(rawAhead\) \? Number\(rawAhead\) : undefined/);
+  assert.ok(src.includes('aheadBy = /^\\d+$/.test(rawAhead) ? Number(rawAhead) : undefined;'));
   for (const raw of ['', 'null', 'UNPROVEN', '403', '  ']){
     const ahead = /^\d+$/.test(raw.trim()) ? Number(raw.trim()) : undefined;
     if(raw.trim()==='' || raw==='UNPROVEN'||raw==='null')assert.equal(ahead,undefined);
