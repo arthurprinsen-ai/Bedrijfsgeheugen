@@ -8,7 +8,7 @@ const route=readFileSync(new URL('../netlify/functions/vraag.mjs',import.meta.ur
 const start=source.indexOf('async function openai({');
 const end=source.indexOf('async function attachTokenUsage(',start);
 assert.ok(start>=0&&end>start,'original OpenAI inference helper must exist');
-const openai=new Function('fetch',source.slice(start,end)+'\nreturn openai;')(globalThis.fetch);
+const openai=new Function('fetch','MODEL',source.slice(start,end)+'\nreturn openai;')(globalThis.fetch,'gpt-5-mini');
 const argumentsFor=fetchImpl=>({
   authorized:{context:{question:'Wat doet Bedrijfsgeheugen?',fragments:'Bedrijfsgeheugen ondersteunt ondernemers met data en AI.'}},
   apiKey:'test-only',
