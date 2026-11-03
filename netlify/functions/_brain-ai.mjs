@@ -68,7 +68,7 @@ async function openai({ authorized, apiKey, system, maxTokens, renderUser, prove
 async function attachTokenUsage(result, { requestId, componentKey, usageStore, usageContext, at = new Date().toISOString() }) {
   const { providerUsage, ...safeResult } = result;
   if (!providerUsage) return Object.freeze({ ...safeResult, tokenUsage:null, tokenMetering:'UNAVAILABLE', canonicalTokenMetering:'UNAVAILABLE' });
-  const tokenUsage = normalizeProviderTokenUsage({ provider:'OpenAI', providerModelId:MODEL_ID, componentKey, requestId, usage:providerUsage, at });
+  const tokenUsage = normalizeProviderTokenUsage({ provider:'OpenAI', providerModelId:safeResult?.provenance?.providerModelId ?? MODEL_ID, componentKey, requestId, usage:providerUsage, at });
   try {
     const metering=await (usageStore ?? createAiUsageStore()).record(tokenUsage, usageContext);
     return Object.freeze({
