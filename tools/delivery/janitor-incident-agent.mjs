@@ -146,8 +146,8 @@ export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha,rateL
   count&&fields.every(key=>Number.isSafeInteger(count[key])&&count[key]>=0);
  const providerFailure=reportOk&&(count.failed>0||artifact.status==='PARTIAL_FAILURE');
  const badStep=sweepOutcome!=='success';
- const status=!reportOk?'INCIDENT_OPEN_ARCHIVE_EVIDENCE_MISSING':
-  rateLimited?'INCIDENT_OPEN_ARCHIVE_RATE_LIMIT_FAILURE':
+ const status=rateLimited?'INCIDENT_OPEN_ARCHIVE_RATE_LIMIT_FAILURE':
+  !reportOk?'INCIDENT_OPEN_ARCHIVE_EVIDENCE_MISSING':
   providerFailure?'INCIDENT_OPEN_ARCHIVE_PROVIDER_FAILURE':
   badStep?'INCIDENT_OPEN_ARCHIVE_STEP_FAILURE':
   bounded?'JANITOR_ARCHIVE_BOUNDED_WINDOW_VERIFIED_SAME_RUN':
@@ -165,8 +165,8 @@ export function classifyNativeArchive({sweepOutcome,artifact,runId,mainSha,rateL
   incident_number:rateLimited?ARCHIVE_RATE_INCIDENT_NUMBER:ARCHIVE_INCIDENT_NUMBER,
   owner:'existing-powerhouse-github-delivery-janitor',global_green:false,
   safe_to_delete_unarchived_unique_branch:false,
-  next_action:!reportOk?'RECOVER_ORIGINAL_ARCHIVE_EVIDENCE':
-    rateLimited?'EXCLUSIVE_OWNER_GITHUB_INSTALLATION_QUOTA_RECOVERY':
+  next_action:rateLimited?'EXCLUSIVE_OWNER_GITHUB_INSTALLATION_QUOTA_RECOVERY_AND_EVIDENCE_RECOVERY':
+    !reportOk?'RECOVER_ORIGINAL_ARCHIVE_EVIDENCE':
     providerFailure?'EXCLUSIVE_OWNER_PROVIDER_PERMISSION_OR_TAG_READBACK_RECOVERY':
     badStep?'EXCLUSIVE_OWNER_ORIGINAL_JOB_FAILURE_DIAGNOSIS':
     bounded?'CONTINUE_ORIGINAL_HOURLY_BOUNDED_ARCHIVE_WINDOW':'INDEPENDENT_NATIVE_AND_BRAIN_READBACK'};
