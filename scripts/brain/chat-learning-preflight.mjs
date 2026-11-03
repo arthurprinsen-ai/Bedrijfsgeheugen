@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
 import { reconcileIncidentObligations } from '../../brain/observability/incident-obligation-assurance.mjs';
+import { auditFailureBacklog } from '../../brain/observability/failure-backlog-assurance-v1.mjs';
 import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection, buildSkillSourceManifest, selectSkillSourceManifest } from './powerhouse-skill-projection.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
@@ -388,7 +389,12 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     universalIngress,
     incident_self_fix: {
       ...incidentSelfFix,
-      reporting_audit: reconcileIncidentObligations(executionContext.incidentEvidence || {})
+      reporting_audit: reconcileIncidentObligations(executionContext.incidentEvidence || {}),
+      failure_backlog_audit: (() => {
+        const {obligations, ...summary} = auditFailureBacklog(executionContext.failureRegistryEvidence || {});
+        // Internal raw fingerprints never leave the preflight report.
+        return {...summary, actionable_count: Array.isArray(obligations) ? obligations.length : 0};
+      })()
     },
     skill_projection: {
       status: 'READY',
