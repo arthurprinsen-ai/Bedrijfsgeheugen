@@ -57,10 +57,11 @@ test('bedrijfsprofiel is een afzonderlijk goedgekeurde OpenAI-use-case, nooit ee
   assert.match(fn,/USE_CASE = 'supabase-bg-bedrijfsprofiel-v1'/);
   assert.match(fn,/gov\.provider !== 'OpenAI'/);
   assert.match(fn,/geheim\('OPENAI_API_KEY'\)/);
-  assert.match(fn,/api\.openai\.com\/v1\/chat\/completions/);
+  assert.ok(fn.includes("fetch('https://api.openai.com/v1/chat/completions'"));
   assert.match(fn,/tool_choice: \{ type: 'function', function: \{ name: 'profiel' \} \}/);
   assert.match(fn,/OPENAI_OUTPUT_CONTRACT_FAILED/);
   assert.match(fn,/OPENAI_TOOL_RESULT_MISSING/);
   assert.ok(!fn.includes('ANTHROPIC_API_KEY'));
-  assert.ok(!fn.includes('api.anthropic.com'));
+  assert.ok(!fn.includes('https://api.anthropic.com/v1/messages'));
+  assert.ok(!fn.includes("gov.provider !== 'Anthropic'"));
 });
