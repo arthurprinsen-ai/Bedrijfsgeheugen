@@ -52,3 +52,15 @@ test('een Tavily-fout stopt de run zichtbaar en wordt niet als afwijzing opgesla
   assert.ok(fn.includes('TAVILY_'));
   assert.ok(fn.includes("'REMOTE' : 'VALIDATION'"));
 });
+
+test('bedrijfsprofiel is een afzonderlijk goedgekeurde OpenAI-use-case, nooit een Anthropic- of Kansenradar-fallback',()=>{
+  assert.match(fn,/USE_CASE = 'supabase-bg-bedrijfsprofiel-v1'/);
+  assert.match(fn,/gov\.provider !== 'OpenAI'/);
+  assert.match(fn,/geheim\('OPENAI_API_KEY'\)/);
+  assert.match(fn,/api\.openai\.com\/v1\/chat\/completions/);
+  assert.match(fn,/tool_choice: \{ type: 'function', function: \{ name: 'profiel' \} \}/);
+  assert.match(fn,/OPENAI_OUTPUT_CONTRACT_FAILED/);
+  assert.match(fn,/OPENAI_TOOL_RESULT_MISSING/);
+  assert.ok(!fn.includes('ANTHROPIC_API_KEY'));
+  assert.ok(!fn.includes('api.anthropic.com'));
+});
