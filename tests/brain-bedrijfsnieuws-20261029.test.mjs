@@ -44,7 +44,11 @@ test('owner mandated OpenAI only for original news scoring',()=>{
   assert.ok(fn.includes("gov.provider !== 'OpenAI'"));
   assert.ok(fn.includes("geheim('OPENAI_API_KEY')"));
   assert.ok(!fn.includes('ANTHROPIC_API_KEY'));
-  assert.ok(!fn.includes('api.anthropic.com'));
+  const match = fn.match(/const ai = await fetch\('([^']+)'/);
+  assert.ok(match);
+  const endpoint = new URL(match[1]);
+  assert.equal(endpoint.origin, 'https://api.openai.com');
+  assert.equal(endpoint.pathname, '/v1/chat/completions');
   assert.ok(fn.includes('INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1'));
 });
 test('OpenAI returns mandatory original function arguments and never invents valid output',()=>{
