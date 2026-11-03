@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
  classifyNativeArchive,writeBrainOccurrence,settleIncidentWritebacks,
- ARCHIVE_PROVIDER_FINGERPRINT,ARCHIVE_EVIDENCE_FINGERPRINT,ARCHIVE_STEP_FINGERPRINT
+ ARCHIVE_PROVIDER_FINGERPRINT,ARCHIVE_EVIDENCE_FINGERPRINT,ARCHIVE_STEP_FINGERPRINT,ARCHIVE_RATE_FINGERPRINT
 } from '../tools/delivery/janitor-incident-agent.mjs';
 
 const runId=41595648620,mainSha='019016ddc50bcbfe354001a704ad1e9159c1e4c6';
@@ -12,8 +12,8 @@ const valid={
  source_run_id:String(runId),source_sha:mainSha,
  counts:{seen:747,skipped:747,deleted:0,archived:0,drift:0,failed:0}
 };
-const classify=(sweepOutcome='success',artifact=valid)=>classifyNativeArchive({
- sweepOutcome,artifact,runId,mainSha
+const classify=(sweepOutcome='success',artifact=valid,rateLimited=false)=>classifyNativeArchive({
+ sweepOutcome,artifact,rateLimited,runId,mainSha
 });
 
 test('successful original job plus complete evidence is only scoped readback',()=>{
@@ -21,6 +21,28 @@ test('successful original job plus complete evidence is only scoped readback',()
  assert.equal(r.status,'JANITOR_ARCHIVE_STEPS_VERIFIED_SAME_RUN');
  assert.equal(r.report_required,false);assert.equal(r.global_green,false);
  assert.equal(r.safe_to_delete_unarchived_unique_branch,false);
+});
+test('current canonical bounded 60-branch window is verified partial scope, not a missing artifact',()=>{
+ const bounded={...valid,status:'BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP',
+  scan_scope_full:false,branch_inventory_total:747,branch_window_size:60,
+  counts:{...valid.counts,seen:60,skipped:60}};
+ const r=classify('success',bounded);
+ assert.equal(r.status,'JANITOR_ARCHIVE_BOUNDED_WINDOW_VERIFIED_SAME_RUN');
+ assert.equal(r.report_required,false);assert.equal(r.scan_scope_full,false);
+ assert.equal(r.global_green,false);
+ assert.equal(r.next_action,'CONTINUE_ORIGINAL_HOURLY_BOUNDED_ARCHIVE_WINDOW');
+ const malformed=classify('success',{...bounded,scan_scope_full:true});
+ assert.equal(malformed.status,'INCIDENT_OPEN_ARCHIVE_EVIDENCE_MISSING');
+});
+test('native GitHub installation quota is routed to separate issue #5341 and semantic Brain fingerprint',async()=>{
+ const artifact={...valid,status:'PARTIAL_FAILURE',counts:{...valid.counts,failed:1}};
+ const report=classify('failure',artifact,true);
+ assert.equal(report.status,'INCIDENT_OPEN_ARCHIVE_RATE_LIMIT_FAILURE');
+ assert.equal(report.incident_number,5341);
+ const {value,posted}=await record(report);
+ assert.equal(value.verified,true);
+ assert.equal(value.fingerprint,ARCHIVE_RATE_FINGERPRINT);
+ assert.equal(posted.p_evidence.archive_reason,'PROVIDER_RATE_LIMIT_EXCEEDED');
 });
 test('three native archive HTTP403 errors remain typed incidents even if GitHub step says success',()=>{
  const artifact={...valid,status:'PARTIAL_FAILURE',
@@ -50,7 +72,7 @@ const record=async report=>{
  const env={GITHUB_RUN_ATTEMPT:'1',SUPABASE_URL:'https://fixture.supabase.co',
   SUPABASE_SERVICE_ROLE_KEY:'only-a-local-test-secret'};
  report.source_url='https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/'+runId;
- report.incident_url='https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333';
+ report.incident_url='https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/'+report.incident_number;
  let posted=null;const calls=[];
  const fetchImpl=async(url,opts)=>{
   calls.push({url,method:opts.method});
@@ -127,8 +149,9 @@ test('original archive step is always observed before artifact upload and cannot
  assert.match(job,/if-no-files-found: error/);
  const archiveWorker=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
  assert.match(archiveWorker,/if \(consecutiveArchiveFailures >= 3\) \{/);
- assert.match(archiveWorker,/JANITOR_ARCHIVE_CIRCUIT_OPEN/);
- assert.match(archiveWorker,/counts\.unprocessed = branches\.length - counts\.seen/);
+ assert.match(archiveWorker,/JANITOR_ARCHIVE_CIRCUIT_BREAKER_OPEN/);
+ assert.match(archiveWorker,/BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP/);
+ assert.match(archiveWorker,/branch_window_size: selectedBranches\.length/);
  assert.match(archiveWorker,/if \(outcome\.failed > 0\) process\.exitCode = 78/);
  assert.doesNotMatch(job,/\|\|.*echo.*JANITOR_ARCHIVE_SWEEP_INCOMPLETE/);
  const source=readFileSync('tools/delivery/janitor-incident-agent.mjs','utf8');
