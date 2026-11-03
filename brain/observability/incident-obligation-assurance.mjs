@@ -35,7 +35,17 @@ export function reconcileIncidentObligations({
   if (!Array.isArray(observations) || !Array.isArray(receipts) || !Array.isArray(recoveries)) return result;
   result.audited_events = observations.length;
   const byKey = new Map();
-  const byProviderId = new Map(); // A single native source event cannot have competing incident identities.
+  const providerFingerprints = new Map();
+  // Pre-scan prevents a favorable first record from being counted as proven
+  // before a later observation reveals the SAME event has another fingerprint.
+  for (const entry of observations) {
+    const id = safe(entry?.provider_event_id);
+    const fingerprint = safe(entry?.fingerprint);
+    if (!id || !fingerprint) continue;
+    if (!providerFingerprints.has(id)) providerFingerprints.set(id,new Set());
+    providerFingerprints.get(id).add(fingerprint);
+  }
+  const conflictingEventsReported = new Set();
   const receiptsById = new Map();
   const repairsById = new Map();
   for (const entry of receipts) {
@@ -63,16 +73,17 @@ export function reconcileIncidentObligations({
       result.obligations.push({status:'PROVIDER_EVENT_IDENTITY_INVALID', next_action:'EXISTING_OWNER_REOBSERVE_AND_REGISTER', provider_event_id:id});
       continue;
     }
-    const priorFingerprint = byProviderId.get(id);
-    if (priorFingerprint && priorFingerprint !== fingerprint) {
-      result.provider_conflicts++;
-      result.obligations.push({
-        status:'PROVIDER_EVENT_FINGERPRINT_CONFLICT', provider_event_id:id, fingerprint,
-        next_action:'EXISTING_OWNER_RECONCILE_ORIGINAL_EVENT_ID'
-      });
-      continue; // Never acknowledge both competing identities as separately repaired.
+    if ((providerFingerprints.get(id)?.size || 0) > 1) {
+      if (!conflictingEventsReported.has(id)) {
+        conflictingEventsReported.add(id);
+        result.provider_conflicts++;
+        result.obligations.push({
+          status:'PROVIDER_EVENT_FINGERPRINT_CONFLICT', provider_event_id:id, fingerprint,
+          next_action:'EXISTING_OWNER_RECONCILE_ORIGINAL_EVENT_ID'
+        });
+      }
+      continue; // No competing fingerprint for this event may contribute to proven counts.
     }
-    byProviderId.set(id,fingerprint);
     const identity = id + '|' + fingerprint;
     if (byKey.has(identity)) {
       const previous = byKey.get(identity);
