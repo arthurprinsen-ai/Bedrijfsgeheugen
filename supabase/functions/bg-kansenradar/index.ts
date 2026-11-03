@@ -1,4 +1,7 @@
 // BG Kansenradar — v4, 10 sept 2026. Als eerste inspringen op wat er buiten gebeurt.
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// Original bg_bewijs RED receipts remain canonical; keep source owner diagnosis,
+// guarded retry, exact regression and provider outcome before any GREEN claim.
 // 1. Kandidaten: externe signalen (Tavily) die toegestaan zijn, max 5 dagen oud, nog niet gebruikt.
 // 2. Claude (use case supabase-bg-kansenradar-v1) toetst: echt nieuws? relevant? segmenten? haak? urgentie? deadline?
 // 3. Beste signaal -> inhaakpost in de mediakalender (publicatie morgen). De generator schrijft (06:10 UTC).
