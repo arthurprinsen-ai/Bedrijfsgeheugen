@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
- classifyNativeArchive,writeBrainOccurrence,
+ classifyNativeArchive,writeBrainOccurrence,settleIncidentWritebacks,
  ARCHIVE_PROVIDER_FINGERPRINT,ARCHIVE_EVIDENCE_FINGERPRINT,ARCHIVE_STEP_FINGERPRINT
 } from '../tools/delivery/janitor-incident-agent.mjs';
 
@@ -93,6 +93,27 @@ test('failed Brain persistence/readback and absent secrets are never marked succ
  const missing=await writeBrainOccurrence({env:{},report});
  assert.equal(missing.verified,false);
  assert.equal(missing.status,'BRAIN_RPC_AUTHORITY_UNAVAILABLE');
+});
+test('GitHub installation API rate limit cannot suppress canonical Brain observation',async()=>{
+ let brainCalls=0,issueCalls=0;
+ const x=await settleIncidentWritebacks({
+  brainWrite:async()=>{brainCalls++;return {verified:true,status:'BRAIN_OCCURRENCE_READBACK_CONFIRMED'};},
+  issueWrite:async()=>{issueCalls++;throw Error('GitHub installation API rate limit exceeded');}
+ });
+ assert.equal(brainCalls,1);assert.equal(issueCalls,1);
+ assert.equal(x.brain.verified,true);assert.equal(x.verified,false);
+ assert.match(x.failures.join(','),/ISSUE_GitHub installation API rate limit exceeded/);
+});
+test('Brain RPC 503 does not suppress original GitHub issue incident',async()=>{
+ let brainCalls=0,issueCalls=0;
+ const x=await settleIncidentWritebacks({
+  brainWrite:async()=>{brainCalls++;throw Error('BRAIN_RPC_FAILURE_HTTP_503');},
+  issueWrite:async()=>{issueCalls++;return 'PROVIDER_READBACK_CONFIRMED';}
+ });
+ assert.equal(brainCalls,1);assert.equal(issueCalls,1);
+ assert.equal(x.issue,'PROVIDER_READBACK_CONFIRMED');
+ assert.equal(x.brain.verified,false);assert.equal(x.verified,false);
+ assert.match(x.failures.join(','),/BRAIN_BRAIN_WRITE_FAILED/);
 });
 test('original archive step is always observed before artifact upload and cannot mask errors',()=>{
  const workflow=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
