@@ -29,7 +29,8 @@ begin
     return jsonb_build_object('experiment_id', v_id);
   end if;
   raise exception 'ONBEKENDE_ACTIE';
-end $function$
+end;
+$function$;
 
 -- Preserve existing original production ACLs: direct browser roles cannot execute privileged CRO poort.
 -- Independent production readback 2026-11-03: anon=false, authenticated=false, service_role=true.

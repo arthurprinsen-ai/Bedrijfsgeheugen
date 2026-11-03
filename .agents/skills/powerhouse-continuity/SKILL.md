@@ -3,6 +3,12 @@ name: powerhouse-continuity
 description: Use when materially operating, changing, debugging, recovering, documenting, or handing off Bedrijfsgeheugen Powerhouse work across chats, agents, workflows, repositories, providers, or interrupted execution.
 ---
 
+## 3 november 2026 — originele ONE BRAIN-promotie: geen stille uitzonderingen
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Het oorspronkelijke `public.powerhouse_one_brain_reconcile_v1` mag experiment-policy fouten nooit met `EXCEPTION WHEN OTHERS THEN NULL` verbergen. De originele ONE BRAIN-eigenaar registreert per echte fout een idempotente `brain_observe_failure` occurrence met SQLSTATE en gehashte policy-identiteit (geen geheime payload, geen persoonlijke gegevens) en laat onafhankelijke andere policies doorgaan. Het bestaande runtime-mux taakresultaat `one-brain-reconcile` moet `ok=false` zijn als policy-promotiefouten zijn opgetreden of de oorspronkelijke return-receipt ontbreekt. Een ingestelde cron of succesvolle andere policy bewijst geen 100% autonoom herstel.
+
+Deze regel is bronkandidaat, niet productie-groen. Bewijsroute: `tests/brain-one-brain-policy-promotion-no-silent-failure-20261103.test.mjs` → originele Required/BRAIN/CodeQL/Supabase Preview → beschermde merge → exact productiefunctie-readback en echte natuurlijke cron #171 UTC :13/:43 met `task_results` → oorspronkelijke ONE BRAIN-incidentleerregel en portaalstatus. Geen tweede scheduler, niet eigenmachtig bestanden/branches verwijderen, geen gesimuleerde publicaties of omzet. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198 .
+
 # Powerhouse Continuity
 
 ## 30 oktober 2026 — social CRO lineage, bronnen en eindbewijs
