@@ -1,7 +1,7 @@
 import postgres from 'npm:postgres@3.4.7';
 import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
 import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
-import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
+import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../_shared/daily-publication-recovery.mjs';
 import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
 import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
 import {planOwnerActionEscalations} from '../_shared/owner-action-escalation.mjs';
@@ -498,12 +498,24 @@ Deno.serve(async (req) => {
       stepResults.push({ name:'reconcile_post', ok:true });
     }
 
-    const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
+    const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }, { data: mediaJobs, error: mediaJobsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at,scheduled_for').eq('run_date', runDate),
+      db.from('powerhouse_instagram_media_jobs_v1').select('channel,status,last_error,asset_manifest,proof_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram'),
     ]);
     if (obligationsError) throw new Error('OBLIGATIONS_READ_FAILED');
     if (decisionsError) throw new Error('DECISIONS_READ_FAILED');
+    // The existing content-loop reads original Mira producer ownership and media
+    // evidence before a deadline without granting a new dispatch capability.
+    const preventive = mediaJobsError
+      ? {contract:'one-brain-social-preflight-before-deadline-v1',status:'UNVERIFIED',atRisk:[],ready:[],reason:'ORIGINAL_MEDIA_JOB_READ_FAILED'}
+      : assessPreventivePublicationReadiness({runDate,now:new Date().toISOString(),
+          obligations:obligations||[],decisions:decisions||[],mediaJobs:mediaJobs||[],isTerminal:obligationTerminal});
+    stepResults.push({name:'original-social-preventive-readiness',
+      ok:preventive.status==='NO_PREVENTIVE_RISK_DETECTED',
+      degraded:preventive.status!=='NO_PREVENTIVE_RISK_DETECTED',
+      error:preventive.status==='UNVERIFIED'?'ORIGINAL_PREVENTIVE_SOURCE_UNVERIFIED':null,
+      risk_count:preventive.atRisk.length});
 
     // Existing same-date writer observes the missing handoff instead of reporting
     // a technically successful HTTP run as a successful external publication.
@@ -657,6 +669,7 @@ Deno.serve(async (req) => {
       blocked,
       hardBoundaries,
       recovery,
+      preventive,
       handoffWriteback,
       incidentLearning,
       ownerActionEscalation,
