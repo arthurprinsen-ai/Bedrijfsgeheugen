@@ -227,3 +227,39 @@ test('policy cannot silently disable reporting receipt, independent proof or sin
     assert.throws(()=>evaluateIncidentSelfFix({rootDir:root,policy:p}),/INCIDENT_REPORTING_ASSURANCE_POLICY_DRIFT/);
   }
 });
+
+test('provider event IDs cannot be assigned multiple competing incident fingerprints',()=>{
+  const second={...observed,fingerprint:'github|runtime|different-incident|v1'};
+  const x=reconcileIncidentObligations(auditable({
+    observations:[observed,second],
+    receipts:[receipt,{...receipt,fingerprint:second.fingerprint}],
+    recoveries:[recovery,{...recovery,fingerprint:second.fingerprint}]
+  }));
+  assert.equal(x.status,'INCIDENT_IDENTITY_CONFLICT');
+  assert.equal(x.provider_conflicts,1);
+  assert.equal(x.registered,1);
+  assert.equal(x.proven_recovered,1);
+  assert.ok(x.obligations.some(e=>e.status==='PROVIDER_EVENT_FINGERPRINT_CONFLICT'));
+  assert.equal(x.global_green,false);
+});
+
+test('multiple candidate recovery receipts never silently choose a favorable proof',()=>{
+  const x=reconcileIncidentObligations(auditable({
+    recoveries:[recovery,{...recovery,status:'FAILED',regression_passed:false}]
+  }));
+  assert.equal(x.status,'INCIDENT_IDENTITY_CONFLICT');
+  assert.equal(x.provider_conflicts,1);
+  assert.equal(x.proven_recovered,0);
+  assert.ok(x.obligations.some(e=>e.status==='RECOVERY_RECEIPT_CONFLICT'));
+  assert.equal(x.global_green,false);
+});
+
+test('identity conflict must outrank an otherwise complete source scan',()=>{
+  const conflict=reconcileIncidentObligations(auditable({
+    observations:[observed,{...observed,fingerprint:'github|runtime|other|v2'}],
+    sourceReadbackComplete:true,
+    registryReadbackComplete:true
+  }));
+  assert.equal(conflict.status,'INCIDENT_IDENTITY_CONFLICT');
+  assert.equal(conflict.global_green,false);
+});
