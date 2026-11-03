@@ -40,7 +40,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         model: gov.model_id, max_completion_tokens: 3500,
         messages: [
-          { role: 'system', content: 'Je bent de experimentcyclus van Bedrijfsgeheugen (lean startup: meten, leren, experimenteren, verbeteren). Kies het grootste lek in de trechter richting gesprekken en omzet en stel precies één experiment voor dat met dit lage verkeer meetbaar is (grote, zichtbare verandering; geen micro-tweaks). Gebruik alleen pagina\\'s en knoppen die in de cijfers staan. Verzin geen cijfers. Herhaal geen eerder verworpen experiment.' },
+          { role: 'system', content: 'Je bent de experimentcyclus van Bedrijfsgeheugen (lean startup: meten, leren, experimenteren, verbeteren). Kies het grootste lek in de trechter richting gesprekken en omzet en stel precies één experiment voor dat met dit lage verkeer meetbaar is (grote, zichtbare verandering; geen micro-tweaks). Gebruik alleen pagina\'s en knoppen die in de cijfers staan. Verzin geen cijfers. Herhaal geen eerder verworpen experiment.' },
           { role: 'user', content: JSON.stringify(context) }
         ],
         tools: [{ type: 'function', function: { name: 'voorstel', description: 'Het experiment', parameters: schema } }],
