@@ -980,10 +980,6 @@ Deno.serve(async (req) => {
         // Editorial revisions need the same bounded truncation recovery as the
         // initial structured artifact. No retry for rejected prose, identity,
         // schema, authorization or provider HTTP errors.
-        const revisionInput={
-          ...artifactInput,rejected_draft:bodyText,
-          editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
-        };
         const revision=await retryIncompleteEditorialDraft(
           (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'),
           2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,

@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "EMERGENCY_RECOVERY_CANDIDATE_MERGE_AND_SOURCE_PARITY_PENDING",
+  "fingerprint": "original-personal-orchestrator|edge-boot|duplicate-revisioninput|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-content-orchestrator-editorial-agent",
+  "failure_class": "RUNTIME_SYNTAX_DUPLICATE_BINDING",
+  "root_cause": "PR #5378 unintentionally inserted const revisionInput into the personal editorial rewrite block but retained the preexisting const revisionInput in that same lexical block. Production Edge v601 boot failed on SyntaxError Identifier 'revisionInput' has already been declared, returning HTTP503 from the original LinkedIn personal orchestrator at 2026-11-03T20:47:29Z. Required/BRAIN and native preview did not detect runtime boot failure; provider preview itself had a separate SQLSTATE 57P01 database termination.",
+  "evidence": {
+    "original_edge_slug": "powerhouse-content-orchestrator",
+    "bad_production_version": 601,
+    "bad_deployment_sha": "b9b907cf936b3238c4208c0da113059acd10211a3d55cb3cce2bc90fae8882cc",
+    "failed_request_id": 20183,
+    "post_orchestrator_http_status": 503,
+    "worker_log": "Uncaught SyntaxError: Identifier 'revisionInput' has already been declared",
+    "original_utc": "2026-11-03T20:47:29Z",
+    "daily_channels_proven": 1,
+    "total": 4,
+    "active_blockers_at_observation": 23
+  },
+  "fix": "Remove ONLY the original now-shadowing duplicate three-line revisionInput binding, retain compact source-locked version and unchanged real editorial, duplicate, auth, lease, provider-readback gates.",
+  "prevention_rule": "Every Edge source change that introduces a lexical local const must have an exact-binding regression before deploy. Boot-stage 503 is NOT successful deployment even when provider marks Edge ACTIVE. Require actual original Edge execution and ONE BRAIN/providerrun readback before PROVEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-openai-compact-revision-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-openai-compact-revision-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-openai-compact-revision-20261103.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "RUNTIME_SYNTAX_DUPLICATE_BINDING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "release_requirements": [
+    "exact protected Required/BRAIN/CodeQL",
+    "native Supabase preview or explicit separately logged provider infrastructure incident",
+    "protected merge",
+    "original full 20-file Edge function code/source parity",
+    "real original Edge boot HTTP request not 503",
+    "original provider outcome only LIVE_PROVEN with real LinkedIn ID and independent readback"
+  ],
+  "safety": [
+    "no second scheduler",
+    "no direct main bypass",
+    "no downgraded owner/source approval",
+    "no duplicate publish",
+    "no fake green"
+  ]
+}
