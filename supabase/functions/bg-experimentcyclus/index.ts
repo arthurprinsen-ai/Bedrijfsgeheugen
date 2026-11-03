@@ -1,4 +1,7 @@
 // bg-experimentcyclus — de weekcyclus van meten, leren en experimenteren (11 sept 2026).
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// Canonical bg_bewijs RED/GREEN receipts, source owner RCA, regression and independent provider evidence are mandatory.
+// A valid OpenAI proposal remains a draft; never promote model output without original source and human decision.
 // 1. Beoordeel lopende experimenten (advies behouden/verwerpen/verlengen, twee-proportietoets) via intern.bg_experimenten_beoordelen.
 // 2. Loopt er niets en staat er niets klaar: stel één concept-experiment voor met OpenAI (use case supabase-bg-experimentcyclus-v1),
 //    op basis van samengevoegde cijfers (pagina, knop, scroll, formulier, trechter) en eerdere lessen.
