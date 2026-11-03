@@ -1,0 +1,11 @@
+# 2026-11-02 — ONE BRAIN private portal seven-source completeness
+- **Original incident:** `powerhouse|brain|portal-seven-source-fixture-stale|20261102-v1`; parent #4439; status `CANDIDATE_NOT_PROVEN`.
+- **Measured BRAIN baseline:** exact run `41413309140`, 5365 tests, 5332 passed, 31 failed, including 2 assertions in `tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs`.
+- **Root cause:** historic test only knew five original views; current canonical implementation correctly counts required loop and terminal health among seven. Five successful source reads cannot mean a readable complete integration.
+- **Safety-preserving correction:** add loops/terminal mock data and independent 503-negative tests; assert seven bounded original GETs, admin-only role check, no service-key leak, `PARTIAL` on missing; existing Portal shows live-source `x/7` without fake E2E or revenue.
+- **Agent/skill:** update original `.agents/skills/powerhouse-post-merge-codeql/SKILL.md` and `AGENTS.md`, original ONE BRAIN learning JSON and this append-only human record.
+- **Pending gates:** protected Required, CodeQL, System Map integrity, original full BRAIN, protected merge, Netlify published exact commit and authenticated private Portal readback. This source PR does not prove paid orders or remove other failures. Do not add another execution lane.
+
+
+## 2026-11-02 original preflight scope reconciliation
+Protected Required #41428817508 identified generated System Map content hash `960ba751a6720ba9b02fd7e86a44317034c648800ad330abf3d922c6a80eef70` from exact integrated seven-source Portal state. Generator and System Map integrity subsequently passed at #41429058792, but PR metadata still described seven files, causing `SCOPE_CONTAMINATED` when original generated `platform/system-map/canonical-system-map.mjs` and `portal-v2/index.html` were appended. Actual resolution: extend original candidate Change-Scope to the two generated files and Scope-Budget 9; do not disable hygiene, drop the hashes or claim a green test. Re-run original preflight, full security gates and full BRAIN on exact head. On later protected main reconciliation, regenerate source digest again, retain all seven authenticated views and no unsupported live/paid outcome assertion.

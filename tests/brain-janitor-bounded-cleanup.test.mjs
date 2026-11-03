@@ -2,9 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const src=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
-const start=src.indexOf('      - name: Reconcile stale Actions and merged branch debris');
-const end=src.indexOf('      - name: Read back applied cleanup',start);
+// The canonical workflow identifies the protected cleanup step by stable id;
+// the displayed name is metadata on the NEXT line. Fail on missing/duplicate IDs.
+const anchor='      - id: janitor_cleanup_reconcile\n';
+const nextAnchor='      - id: janitor_cleanup_readback\n';
+assert.equal(src.split(anchor).length-1,1,'exactly one original Janitor cleanup step');
+assert.equal(src.split(nextAnchor).length-1,1,'exactly one original Janitor readback step');
+const start=src.indexOf(anchor);
+const end=src.indexOf(nextAnchor,start+anchor.length);
+assert.ok(start>=0 && end>start,'original cleanup/readback steps must exist in the correct order');
 const step=src.slice(start,end);
+assert.match(step,/^      - id: janitor_cleanup_reconcile\n        name: Reconcile stale Actions and merged branch debris\n/m);
 test('full janitor job has a hard 15-minute deadline',()=>{
   assert.match(src,/\n  janitor:\n(?:    [^\n]*\n)*?    timeout-minutes: 15\n/);
 });

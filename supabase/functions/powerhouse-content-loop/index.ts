@@ -1,12 +1,16 @@
 import postgres from 'npm:postgres@3.4.7';
 import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
 import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
+import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
+import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
+import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
+import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
 const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations"]);
-const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1","brain_observe_failure"]);
 const DB_JSON_COLUMNS=new Set(['bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload','content_publication_obligations.evidence','content_publication_obligations.metrics','powerhouse_channel_decisions.delivery_evidence','powerhouse_channel_decisions.learning_evidence','powerhouse_content_artifacts.generation_evidence','powerhouse_content_recommendations.evidence','powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence','powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest','powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage','powerhouse_sales_actions.evidence']);
 const DB_ARRAY_CASTS=new Map([['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],['powerhouse_instagram_media_jobs_v1.allowed_providers','text[]'],['brain_records.predecessor_ids','text[]'],['brain_records.evidence_ids','text[]'],['brain_ai_governance_registry.data_categories','text[]'],['brain_ai_governance_registry.prohibited_data_categories','text[]'],['brain_ai_governance_registry.approval_evidence_ids','text[]'],['brain_ai_governance_registry.evidence_ids','text[]'],['brain_ai_governance_registry.subprocessors','text[]'],['brain_ai_governance_registry.provider_evidence_urls','text[]']]);
 const DB_DEFAULT_CONFLICT=new Map([['powerhouse_channel_decisions','run_date,channel'],['brain_records','tenant_id,record_id'],['content_publication_obligations','tenant_id,publication_date,channel'],['powerhouse_content_artifacts','run_date,channel'],['powerhouse_daily_runs','run_date'],['powerhouse_instagram_daily_winners_v1','run_date'],['bg_campaign_links','key'],['powerhouse_instagram_media_jobs_v1','tenant_id,publication_date,channel'],['powerhouse_media_proof_evidence_v1','fingerprint']]);
@@ -60,11 +64,15 @@ const clean = (v: unknown) => String(v ?? '').trim();
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const localDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const OPERATIONAL_CHANNELS = ['linkedin_personal','linkedin_company','instagram','blog'];
-const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED','SKIPPED']);
+// SKIPPED is not proof that the daily promised publication was delivered.
+const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED']);
 const LOOP_LEASE_MS = 240_000;
 const CHILD_TIMEOUTS: Record<string, number> = {
   'powerhouse-instagram-media-router': 10_000,
-  'powerhouse-composio-linkedin-setup': 8_000,
+  // Original provider preflight completed HTTP 200 in 21,182 ms (31 Oct
+  // 2026); the previous 8 s abort invented CHILD_CALL_FAILED. This is an
+  // observation-only authorization check, not a publisher or OAuth bypass.
+  'powerhouse-composio-linkedin-setup': 30_000,
   'powerhouse-social-publisher:audit': 12_000,
   'powerhouse-content-orchestrator': 110_000,
   'powerhouse-social-publisher': 25_000,
@@ -343,6 +351,47 @@ Deno.serve(async (req) => {
             && reason === 'PERSONAL_SOURCE_UNVERIFIED'
             && hasVerifiedPersonalBuilderEvidence(evidence.identity_gate_evidence)));
     });
+    // A semantic 422 blocks the ORIGINAL company writer before any LinkedIn
+    // create call. Rotate ONLY when an actual fresh source-backed alternative
+    // exists and the original company authority is provably unconsumed.
+    // A missing alternative stays blocked; an ambiguous provider side effect
+    // is reconciliation-only and MUST NOT be regenerated.
+    let retryableCompanyEditorialBlock=false;
+    const rejectedCompany=(initialDecisions||[]).find((d:any)=>
+      clean(d.channel)==='linkedin_company'&&clean(d.state)==='blocked'&&
+      Number(d.delivery_evidence?.review_status)===422&&
+      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'));
+    if(rejectedCompany){
+      const [obligationSource,recommendationSource,capabilitySource]=await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,external_id,evidence,published_at,live_proven_at')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_company').maybeSingle(),
+        db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,priority,status,target_channel,evidence')
+          .eq('run_date',runDate)
+          .in('target_channel',['linkedin_company','cross-channel']).limit(50),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle()
+      ]);
+      if(obligationSource.error||recommendationSource.error||capabilitySource.error){
+        stepResults.push({name:'company-editorial-recovery-source',ok:false,degraded:true,
+          error:'COMPANY_REGENERATION_SOURCE_READ_FAILED'});
+      }else{
+        const consumed=Boolean(capabilitySource.data?.consumed_at&&!capabilitySource.data?.revoked_at);
+        const regeneration=planRejectedCompanyRegeneration({
+          decision:rejectedCompany,obligation:obligationSource.data,
+          recommendations:recommendationSource.data||[],consumedCapability:consumed,
+          now:new Date().toISOString()
+        });
+        retryableCompanyEditorialBlock=regeneration.eligible;
+        stepResults.push({name:'company-editorial-recovery-source',ok:true,
+          skipped:!regeneration.eligible,degraded:!regeneration.eligible,
+          reason:regeneration.reason,
+          replacement_id:regeneration.selectedAlternativeRecommendationId});
+      }
+    }
     // The normal duplicate classifier only sees "decision=publish"; however the
     // canonical reconciler can turn a pre-provider duplicate into "hold/blocked"
     // while the ORIGINAL obligation correctly retains the duplicate refusal.
@@ -374,7 +423,7 @@ Deno.serve(async (req) => {
     }
     let bootstrapStillInFlight = false;
     // A completed bootstrap is one of the normal bounded generation rounds.
-    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableCompanyEditorialBlock) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
@@ -450,11 +499,88 @@ Deno.serve(async (req) => {
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
-      db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at').eq('run_date', runDate),
+      db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at,scheduled_for').eq('run_date', runDate),
     ]);
     if (obligationsError) throw new Error('OBLIGATIONS_READ_FAILED');
     if (decisionsError) throw new Error('DECISIONS_READ_FAILED');
 
+    // Existing same-date writer observes the missing handoff instead of reporting
+    // a technically successful HTTP run as a successful external publication.
+    // This read-only classification never grants a second publish capability.
+    const recovery = assessDailyPublicationRecovery({
+      runDate, now:new Date().toISOString(), obligations:obligations || [],
+      decisions:decisions || [], isTerminal:obligationTerminal
+    });
+    // Same canonical exclusive writer: keep the original obligation's
+    // operator-facing next_action consistent with the ONE BRAIN recovery.
+    // CAS prevents clobbering provider ACKs, newer editorial decisions or a
+    // concurrent publisher. This never retries or dispatches a publication.
+    const handoffPlan=planOriginalPublicationHandoffs(recovery,obligations||[]);
+    const handoffWriteback={contract:'original-publication-obligation-recovery-v1',
+      planned:handoffPlan.updates.length,applied:0,conflicts:0,errors:0};
+    if(!handoffPlan.ok) {
+      handoffWriteback.errors++;
+      stepResults.push({name:'publication-handoff-writeback',ok:false,degraded:true,
+        error:'RECOVERY_SOURCE_UNVERIFIED'});
+    } else {
+      for(const handoff of handoffPlan.updates){
+        const update=await db.from('content_publication_obligations')
+          .update({next_action:handoff.nextAction,updated_at:new Date().toISOString()})
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel',handoff.channel).eq('next_action',handoff.previous)
+          .in('status',['PLANNED','BLOCKED','FAILED']).eq('external_id',null)
+          .select('channel,next_action,status,external_id');
+        if(update.error){
+          handoffWriteback.errors++;
+          console.error('PUBLICATION_HANDOFF_WRITEBACK_FAILED',handoff.channel);
+        }else if(update.data?.length===1&&update.data[0].next_action===handoff.nextAction){
+          handoffWriteback.applied++;
+          const local=(obligations||[]).find((o:any)=>o.channel===handoff.channel);
+          if(local)local.next_action=handoff.nextAction;
+        }else{
+          // A newer writer may have advanced the original obligation:
+          // preserve its provider truth, never overwrite blindly.
+          handoffWriteback.conflicts++;
+        }
+      }
+      stepResults.push({name:'publication-handoff-writeback',
+        ok:handoffWriteback.errors===0,degraded:handoffWriteback.errors>0,
+        error:handoffWriteback.errors?'ORIGINAL_OBLIGATION_HANDOFF_WRITE_FAILED':null});
+    }
+    stepResults.push({name:'publication-proof-deadline',
+      ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
+      degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
+      error:recovery.overdue.length?'PUBLICATION_PROOF_OVERDUE':null});
+    // Same ORIGINAL exclusive content-loop writer: register typed recurring
+    // incidents inside existing ONE BRAIN. Never generate/publish from here.
+    // A logged failure remains NOT_PROVEN until regression and provider proof.
+    const learningPlan=planOriginalIncidentLearning(recovery,runDate);
+    const incidentLearning={
+      contract:'original-publication-incident-learning-v1',
+      planned:learningPlan.observations.length,observed:0,errors:0,
+      proof_status:'NOT_PROVEN',new_executor:false
+    };
+    if(!learningPlan.ok){incidentLearning.errors++;}
+    else for(const incident of learningPlan.observations){
+      try{
+        const encoded=new TextEncoder().encode(JSON.stringify(incident.evidence));
+        const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',encoded)))
+          .map(b=>b.toString(16).padStart(2,'0')).join('');
+        const observation=await db.rpc('brain_observe_failure',{
+          p_occurrence_id:incident.occurrenceId,
+          p_fingerprint:incident.fingerprint,
+          p_payload_sha256:hash,
+          p_evidence:incident.evidence
+        });
+        if(observation.error||!observation.data)incidentLearning.errors++;
+        else incidentLearning.observed++;
+      }catch{
+        incidentLearning.errors++;
+      }
+    }
+    stepResults.push({name:'incident-learning-one-brain',
+      ok:incidentLearning.errors===0,degraded:incidentLearning.errors>0,
+      error:incidentLearning.errors?'ORIGINAL_BRAIN_INCIDENT_OBSERVATION_FAILED':null});
     const outcomeVerified = (obligations || []).filter((o: any) => obligationTerminal(o)).length;
     const providerTruthVerified = (obligations || []).filter((o: any) => o.evidence?.provider_truth_verified === true).length;
     const blocked = (obligations || []).filter((o: any) => ['BLOCKED','FAILED'].includes(clean(o.status)) && !providerSideEffectTerminal(o)).length;
@@ -468,7 +594,9 @@ Deno.serve(async (req) => {
     const reconciliationDegraded = stepResults.some((step:any) =>
       (step.name === 'reconcile_pre' || step.name === 'reconcile_post') && step.ok !== true);
     // Keep dispatch alive; never misrepresent incomplete readback as GREEN.
-    const loopState = blocked > 0 ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
+    const loopState = blocked > 0 || recovery.overdue.length > 0 || recovery.status==='UNVERIFIED'
+      || incidentLearning.errors > 0
+      ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
       const status=clean(o.status),channel=clean(o.channel),evidence=o.evidence||{};
       if(channel==='linkedin_company'&&['DISPATCHED','PUBLISHED'].includes(status)){
@@ -513,6 +641,9 @@ Deno.serve(async (req) => {
       reconciliationDegraded,
       blocked,
       hardBoundaries,
+      recovery,
+      handoffWriteback,
+      incidentLearning,
       obligations: obligationSummary,
       decisions: decisionSummary,
       steps: stepResults.map((s:any)=>({

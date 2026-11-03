@@ -1,0 +1,42 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "blog|factual-freshness|cpnl-forecast-open-after-actual-close|20261101-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-content-orchestrator and powerhouse-blog-queue/export",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "Existing official RVO CPNL date policy recognized 'opent ... 6 oktober' but not original gpt-5-mini blog phrase 'wordt voorspeld open te gaan rond 6 oktober 2026'; original generator blogReaderReadyViolations missed official date as a whole. Generated 1 Nov draft was content_ready/GENERATED despite actual RVO application period ending on 6 Oct 2026.",
+  "observed_evidence": {
+    "runDate": "2026-11-01",
+    "original_blog_headline": "Zo maak je je plastic-recyclingproject subsidie-klaar vóór de Circular Plastics NL-aanvraag",
+    "actual_blog_copy_excerpt": "wordt voorspeld open te gaan rond 6 oktober 2026",
+    "official_authority": "https://www.rvo.nl/subsidies-financiering/cpnl",
+    "official_open_date": "2026-04-21",
+    "official_close_date": "2026-10-06",
+    "actual_publication_provider_id": null,
+    "blog_status": "GENERATED"
+  },
+  "prevention_rule": "The original approved blog orchestrator's reader-ready contract applies the SAME authoritative source-date gate before publishing/queue/export, including conditional forecasts of historical dates and misleading 'subsidie-klaar vóór de CPNL-aanvraag' future title after RVO close. An unsent rejected draft is reopened once by the original blog-quality repair claim and corrected by approved model under original recommendation and CAS; rejection/further cooldown if correction still fails. No duplicate scheduler or writer.",
+  "fix_candidate": "Original blog-official-date-truth + original content-orchestrator importer and reader-validation/revision, existing blog queue/export unchanged",
+  "compiler": {
+    "failure_class": "FACTUAL_DATE_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-official-future-forecast-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-official-future-forecast-20261101.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "historical": "Actual 1 Nov blog draft sentence and title",
+    "pending": "protected Required/CodeQL, runtime source parity on original orchestrator+blog queue/export, original blog re-generation, protected CMS approval/Netlify public article readback and 7 natural runs"
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-01-p0-blog-closed-subsidy-future-forecast-auto-repair.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-01-p0-blog-closed-subsidy-future-forecast.md"
+}

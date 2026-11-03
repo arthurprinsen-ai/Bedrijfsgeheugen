@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|outreach|composer-source-preflight-held-but-dispatcher-loses-exact-cause|20261030-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse-autonomous-outreach + original powerhouse-commercial-message-composer; original ONE BRAIN + Heartbeat",
+  "root_cause": "Original composer returned SOURCE_SPECIFIC_EVIDENCE_REQUIRED because an action with an approved recipient had only a LinkedIn profile URL, no public source context, source_trigger_relevance=false, human_readable_context=false. Original dispatcher treated composer.ok=true as sufficient handoff and repeatedly reported generic HUMAN_MESSAGE_QUALITY_NOT_PROVEN. That obscured remediation for 1 held action and 0 provider-confirmed sends, though safe fail-closed prevented sending.",
+  "evidence": {
+    "at_utc": "2026-10-30T09:07:07Z",
+    "prepared_actions": 1,
+    "action_specific_source_context": false,
+    "human_readable_context": false,
+    "source_trigger_relevance": false,
+    "public_source_research_30d": 0,
+    "quality_records": 0,
+    "real_sends_last_14d": 0,
+    "original_daily_dispatch_cron_id": 114,
+    "original_hourly_assurance_cron_id": 129,
+    "original_action_is_approved": true,
+    "provider_outcome_verified": false,
+    "provider_attempted_for_held_action": false,
+    "source": "Supabase production autonomous-outreach health, original composer preflight source, sales-action aggregate and research source readback"
+  },
+  "fix": "Original sender consumes exact action-correlated SOURCE_SPECIFIC_EVIDENCE_REQUIRED composer result, sanitizes missing fields to allowlist, persists identical original PREPARED action execution_gate owner/missing/research-next-action, and returns specific delivery_gap in original health channel. It does not send, retry, mint provider ID, add scheduler, relax consent or quality gates.",
+  "prevention_rule": "Do not reduce message quality/source relevance/suppression/recipient authority thresholds to green. Distinguish verified executed/readback from merely active cron or prepared action. A composer refusal with missing concrete source evidence must survive into original action and original ONE BRAIN/Heartbeat status with owner and allowlisted missing fields, never become generic send failure or PUBLISHED.",
+  "regression_contract": "Replay the real source gap, ambiguous composer result, provider uncertainty, positive independently verified send and native dry-run read-only conditions.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outreach-composer-source-handoff-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outreach-composer-source-handoff-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-outreach-composer-source-handoff-20261030.test.mjs",
+    "tests/brain-powerhouse-autonomous-outreach-v1.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head Required + BRAIN + CodeQL",
+    "protected main merge",
+    "original Supabase Edge source deploy with shared helper",
+    "next natural hourly or daily dispatch returns SOURCE_SPECIFIC_EVIDENCE_REQUIRED, and writes exact original action",
+    "independent Supabase readback from action and bg_gezondheid",
+    "real public company-specific source, source relevance and text quality pass",
+    "real Gmail message/thread ID, SENT label and recipient-matching readback before action/readback GREEN"
+  ]
+}

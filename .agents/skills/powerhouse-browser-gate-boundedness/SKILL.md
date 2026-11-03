@@ -55,3 +55,12 @@ Regression: `tests/brain-standalone-visibility-boundedness-v1.test.mjs` must ass
 When the same route inventory is verified across phone, tablet and desktop, do not spend the global budget sequentially by viewport. Run independent viewport sweeps in bounded parallel batches, while keeping route-level concurrency and the global fail-closed budget.
 
 The concurrency product (viewport workers × route workers) must remain explicit and bounded. Do not remove semantic assertions or enlarge timeouts merely to make the gate green.
+
+## Provider security challenge and proof (original Portal V2)
+Fingerprint: `powerhouse|portal-v2|first-browser-readback-403-then-pass|20261030-v1`.
+A real 2026-11-02 production DOM sweep returned HTTP 403 on `waarde-financiering` and showed Netlify's “We are verifying your connection” challenge (original job 125303998860; run 41453415237). The same protected workflow's next attempt, job 125306153752, passed 15 checks with 1 intentional skip, pinned to live SHA `75c4500a4e90afa1f001f748d7081a75e09aa803`. Original WAF/Identity/SSO protections were not altered; the provider's specific risk heuristic remains unknown.
+- Identify this as `NETLIFY_SECURITY_CHALLENGE_READBACK_BLOCKED` **only** when HTTP 403 and real Netlify challenge body coincide. For any other 4xx/5xx, keep normal fail-closed HTTP error.
+- Preserve failed attempt, challenge identifier, original provider URL, actual deployed commit, owner, and subsequent exact-SHA authorized readback. A later pass is new evidence, not a rewrite of the earlier failed attempt.
+- Use only the existing protected, bounded browser workflow for a retest; no firewall bypass, fake cookies, JS challenge solver, security exception, skipped assertion or parallel scheduler. If the original authorized retest is blocked again, preserve OPEN/BLOCKED_EXTERNAL and investigate Netlify security with the existing Security Agent.
+- Do not claim this provider behavior will never recur. Independently prove each future production release, authenticated two-tenant journeys and real user experience.
+- Canonical regression `tests/brain-portal-netlify-security-challenge-20261102.test.mjs`, deterministic classifier `tests/integration/portal-v2-readback-security-challenge.mjs`; original Brain incident fingerprint above.

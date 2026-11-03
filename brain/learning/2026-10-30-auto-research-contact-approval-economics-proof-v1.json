@@ -1,0 +1,37 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "economics|internal-autoresearch|contact-approved-but-autonomous-proof-excluded|20261030-v1",
+  "compiler": {
+    "failure_class": "CONTACT_APPROVAL_CONFLATED_WITH_HUMAN_LABOR_ECONOMICS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 17,
+    "security_sensitive": false
+  },
+  "root_cause": "Original command-center materializer copies human_approved from contact_extra into research_enrichment action evidence. Independent original relationship research executor completes internal evidence-only research with vendor_used=false and no external side effects, but original economics backfill excludes any row with human_approved=true, confusing contact approval with human research work. 17 completed eligible source-run receipts were observed but not booked, plus 7 unrelated outbound action gaps remain.",
+  "prevention": "Keep original server-only economics backfill and 50-row bound. For contact-approved actions, require exact unique original same-action independent relationship_public_research_evidence event, same timestamp, same contract/source, vendor=false, evidence_only=true and external side effects=false before recording 0 human research minutes. Provider/external costs always UNOBSERVED with null monetary fields; retain original no-approval branch, dedupe and single original scheduler. No outbound-send effects or backdated approval.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-auto-research-contact-approval-economics-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-auto-research-contact-approval-economics-proof.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Supabase production canonical powerhouse_sales_actions JOIN powerhouse_runtime_events 2026-10-30 ~07:20 UTC; protected code candidate",
+    "observed_missing_research_economics": 17,
+    "independent_auto_receipts": 17,
+    "human_approved_true_rows": 17,
+    "independent_external_side_effects_false": 17,
+    "original_authority_only": true,
+    "measured_provider_cost_eur": false,
+    "original_mux_natural_run_verified_after_patch": false,
+    "customer_revenue_outcome_verified": false,
+    "no_new_scheduler": true,
+    "application_state": "CODE_CANDIDATE_NOT_PRODUCTION_PROVEN"
+  }
+}

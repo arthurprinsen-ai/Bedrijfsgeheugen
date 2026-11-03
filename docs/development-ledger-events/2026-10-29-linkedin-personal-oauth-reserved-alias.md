@@ -1,0 +1,11 @@
+# Ontwikkelregistratie: LinkedIn persoonlijke OAuth-alias gereserveerd
+
+- **Datum:** 29 oktober 2026, 22:13–22:17 Europe/Amsterdam.
+- **Trigger:** oorspronkelijke beveiligde Powerhouse→Composio-koppeling, originele Supabase Edge-functie v484 ACTIVE, request `pg_net #16109`. HTTP 503, upstream 400: `Alias "bedrijfsgeheugen-personal-canonical" is already in use by another connection for this entity`.
+- **Oorzaak:** een eerdere, mogelijk verlopen OAuth-verbindingskandidaat houdt de oorspronkelijke alias bezet. Dit is een ander incident dan `unauthorized_scope_error`; de vier toegestane LinkedIn-scopes zijn al actief in de bron.
+- **Eigenaar:** oorspronkelijke `powerhouse-composio-linkedin-setup` `create_personal_link` met `bedrijfsgeheugen-owner`. De bestaande personal publisher, dagelijkse executor, company publisher en Composio-workspace veranderen niet.
+- **Herstel:** herken alléén exact de alias-gereserveerdmelding; één begrensde retry met cryptografisch unieke tijdelijke alias; behoud `openid/profile/email/w_member_social` en exact dezelfde autorisatieconfiguratie. Geen account verwijderen, geen tweede scheduler of publisher, geen fallback met Make/Buffer.
+- **Tests en borging:** dezelfde oorspronkelijke agent-skill, bestaande scope- en aliasregressietests, nieuwe BRAIN-learning `linkedin|personal|canonical-oauth-reserved-alias-after-expiry|20261029-v1`, menselijke incidentdocumentatie en deze activiteitregistratie worden samen beschermd gemerged.
+- **Productieacceptatie:** Required/Brain/CodeQL groen op exacte commit, beschermde merge, exacte Supabase Edge-bronreadback, eenmaal originele OAuth-link HTTP 200 met vier scopes en `alias_collision_recovered=true`, echte LinkedIn owner consent en vervolgens geauthenticeerde identiteitscontrole. Eénmalige URL niet in repo/Brain/Notion/portaal opslaan.
+- **Bewijsstatus:** vandaag bestaat al persoonlijke LinkedIn-provider-side-effect `urn:li:share:7521667096859201536`, status `PUBLISHED`. Externe readback wordt door LinkedIn geweigerd, dus niet `LIVE_PROVEN`; duplicaatblokkade blijft, geen herpublicatie. De bedrijfs-LinkedInpost is al LIVE_PROVEN.
+- **Terugdraaien:** alleen nieuwe beschermde PR/revert en bewijs voor veilige toestand; geen handmatig wijzigen van oude connected accounts of bewijsvelden.

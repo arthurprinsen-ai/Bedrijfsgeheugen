@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-connection-studio-multiroute-recovery-20261102-v1",
+  "fingerprint": "portal|connection-studio|single-destination-and-sample-vs-ingestion-gap|20261102-v1",
+  "compiler": {
+    "failure_class": "CONNECTOR_ROUTING_CONSENT_AND_PROOF_GAP",
+    "scope": "PORTAL_CONNECTORS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original AI connector wizard had one template at a time, default all-field mapping and no page-specific destinations. The original connector datahub target only dry-tests payload mapping and cannot prove any tenant-specific source record was ingested into the customer Brain, Powerhouse or Portal.",
+  "fix": "Reuse original connector definitions and tenant-scoped API for multi-field, multi-page choices; preserve each connector as a separate server-side draft; implement bounded safe-test recovery advice; show non-sensitive connector provenance on opted-in pages without fabricating business records. No unauthorized AI processing or new ingestion writer.",
+  "tests": [
+    "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs",
+    "tests/connector-studio-multipage-recovery-20261102.test.mjs",
+    "tests/connector-ai-sovereignty-consent-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "One customer connector can target multiple approved Portal V2 pages and select explicit source fields; browser-submitted arbitrary routes and field names are denied server-side.",
+    "Sovereignty/tenant isolation is mandatory; CONNECTION_ONLY has no portal outputs and the Brain destination requires PORTAL_AI permission.",
+    "No safe-test sample, configuration, provider readiness or draft becomes customer KPI, order, Brain memory, Powerhouse action or true live ingestion without independently authenticated source receipt, target persistence and consent evidence.",
+    "Recover transient, idempotent safe-test errors with at most one retry; do not self-grant provider OAuth, access, paid entitlements or cross-border transfer.",
+    "Reuse original connector store, ONE BRAIN incident, Heartbeat, original Portal V2 route and protected release writer; prohibit parallel scheduler, store or fake green."
+  ],
+  "owner": "existing Portal V2 UX + canonical connector owner + ONE BRAIN/Heartbeat + Security/data-sovereignty",
+  "proof_state": "CANDIDATE_NOT_LIVE_REAL_RECORD_INGESTION_UNPROVEN"
+}

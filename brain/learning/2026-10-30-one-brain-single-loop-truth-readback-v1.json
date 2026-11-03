@@ -1,0 +1,42 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|partial-loop-visibility-versus-canonical-15-loop-source|20261030-v1",
+  "compiler": {
+    "failure_class": "ONE_BRAIN_ORIGINAL_LOOP_STATUS_NOT_PROJECTED_IN_ADMIN_PORTAL",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A protected source/portal deployment and 32/32 wiring were shown independently of 15 canonical runtime loop guards; without a complete current per-loop source projection an operator could mistake healthy integration for 15 independently proven commercial, learning and publication outcomes.",
+  "prevention": "Use only existing Supabase public.powerhouse_loop_assurance_state_v1 via an existing Netlify admin/tenant authorization gate and a read-only bounded projection; require exact 15 distinct fresh source rows and preserve original guard failures. Derive single overall RED if any canonical loop RED, AMBER if none red and at least one amber, otherwise GREEN, while missing/stale/conflicting evidence is UNVERIFIED. Never write statuses or create second publisher, scheduler, Agent Fabric, store or external side effect. Existing owners must still repair and independently prove every runtime/provider outcome.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-loop-assurance-readback-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-loop-assurance-readback-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_at": "2026-10-30T07:05:58.979027Z",
+    "canonical_view": "public.powerhouse_loop_assurance_state_v1",
+    "loops_total": 15,
+    "loops_green": 9,
+    "loops_amber": 1,
+    "loops_red": 5,
+    "layers_wired": "32/32",
+    "core_jobs_active": "18/18",
+    "guard_failures_not_closed": true,
+    "content_loop_2026_10_30": "BLOCKED",
+    "owner_consent_unverified": true,
+    "production_deployment_proven": false,
+    "portal_browser_auth_proven": false,
+    "independent_natural_agent_application_verified": false,
+    "no_new_scheduler": true,
+    "no_second_writer": true
+  }
+}

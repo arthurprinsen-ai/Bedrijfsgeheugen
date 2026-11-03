@@ -1,0 +1,37 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "mira|reel|canonical-winner-producer-admission-format-mismatch|20261029-v1",
+  "compiler": {
+    "failure_class": "FROZEN_LIBRARY_PRODUCER_PRESPEND_AUTHORITY_MISMATCH",
+    "scope": "INSTAGRAM_MIRA",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Daily frozen approved PH-P006 mapping was correctly source-locked yet original generation_preflight admitted only approved_source_led winners, so the owner producer received HTTP 422 even before vendor format validation.",
+  "prevention": "Original router also admits the frozen-library PH-P scene only with exact winner+problem+scene, previous real proof rejection, same media project, unsent unique claim and original budget. Only the original master ID is eligible. Format preflight is NOT publication proof; native 1080x1920 mute, three-frame face >=0.940, temporal continuity and independent Meta readback stay mandatory.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-frozen-library-producer-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-frozen-library-producer-preflight-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_request_id": 16098,
+    "status": 422,
+    "original_rejected_video": "i6e9teMFpPH7YwZG4PMS",
+    "rejected_face": 0.9,
+    "minimum_face": 0.94,
+    "secondary_unapproved_video": "dZlZknlaWFJ3JEXZhggv",
+    "secondary_issue": "element2video with audio and scene drift; NOT submitted",
+    "new_provider_side_effect": false,
+    "no_second_scheduler": true,
+    "no_quality_gate_relaxation": true,
+    "release_proven": false
+  }
+}

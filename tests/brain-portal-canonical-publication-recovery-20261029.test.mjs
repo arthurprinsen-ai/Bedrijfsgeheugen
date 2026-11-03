@@ -73,7 +73,7 @@ test('API and portal are existing admin-only surfaces, no second publisher or sc
  assert.match(api,/isPowerhouseAdmin\(user/);
  assert.match(api,/resolveIdentityTenant\(user\)/);
  assert.match(api,/loadPublicationEvidence\(/);
- assert.match(api,/publicationEvidence\}/);
+ assert.match(api,/publicationEvidence:\{\.\.\.publicationEvidence,contract:PUBLICATION_EVIDENCE_CONTRACT\}/);
  assert.match(ui,/data-publication-evidence/);
  assert.match(ui,/REGISTRY_READBACK_COMPLETE/);
  assert.match(ui,/onafhankelijk providerbewijs/);

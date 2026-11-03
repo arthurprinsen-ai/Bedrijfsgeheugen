@@ -1,0 +1,41 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|portal|personal-provider-created-readback-403-ambiguous|20261029-v1",
+  "compiler": {
+    "failure_class": "PORTAL_PROVIDER_POST_READBACK_PERMISSION_DENIED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original canonical content obligation has PUBLISHED and genuine LinkedIn provider share URN, with live_proven_at=NULL and independent readback explicitly Forbidden 403, but the original portal summary used a generic provider-create-verification-pending recovery code. Operator could not distinguish the closed read-permission limitation from missing post.",
+  "prevention": "Keep existing provider side-effect precedence over OAuth errors. Read only the safe scalar evidence.readback_error on the admin-only server and classify a PUBLISHED personal LinkedIn post with existing external_id plus permission denial as LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST. Render human-readable Dutch guidance within the existing admin-only portal; no exposure of raw errors, connected account IDs, provider URNs, redirect URLs or tokens. NEVER republish, retry an unavailable r_member_social OAuth scope, or imply LIVE_PROVEN. Leave original one-publisher and daily executor intact.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "canonical Supabase public.content_publication_obligations 2026-10-29 linkedin_personal",
+    "provider_create_id_present": true,
+    "provider_create_urn": "urn:li:share:7521667096859201536",
+    "status": "PUBLISHED",
+    "live_proven_at": null,
+    "readback_error_class": "PERMISSION_DENIED_403",
+    "production_alias_recovery_edge_version": 487,
+    "source_scope_fix_pr": 5159,
+    "alias_collision_fix_pr": 5163,
+    "protected_portal_pr_pending": true,
+    "real_provider_independent_readback_success": false,
+    "owner_oauth_reconsent_verified": false,
+    "republish_forbidden": true,
+    "new_scheduler": false,
+    "contains_private_auth_url": false
+  }
+}

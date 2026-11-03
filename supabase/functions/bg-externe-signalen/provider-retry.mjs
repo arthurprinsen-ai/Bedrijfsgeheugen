@@ -1,8 +1,10 @@
 // Canonical bg-externe-signalen provider resilience. No additional scheduler or API.
 //
-// DataForSEO documents transient HTTP 5xx and internal/task processing errors.
+// DataForSEO documents transient HTTP 5xx and task errors. Its 40101 internal
+// search-engine failure may be billed AFTER provider retries: never immediately
+// repeat this paid task. Only 40102 is a real no-results observation.
 // Billing, authentication and rate-limit errors must never be retried here.
-const RETRYABLE_TASK_CODES=new Set([40101,40103,50000,50001,50301,50302,50303,50304,50401,50402]);
+const RETRYABLE_TASK_CODES=new Set([40103,50000,50001,50301,50302,50303,50304,50401,50402]);
 
 export function isTransientDataforseoStatus(httpStatus,apiStatus,taskStatus){
   const http=Number(httpStatus);
@@ -53,4 +55,39 @@ export function sourceBatchEvidenceVerdict(results){
   if(!Array.isArray(results))throw new TypeError('SOURCE_BATCH_RESULTS_REQUIRED');
   const complete=results.length>0&&results.every(item=>item?.ok===true);
   return {green:complete,errorClass:complete?null:'REMOTE'};
+}
+
+/** One in-flight Tavily probe and bounded per-isolate plan/rate cooldown.
+ * No extra schedule, DB writer, customer data, provider account or quota bypass.
+ */
+export function createTavilyQuotaGate({now=()=>Date.now(),planCooldownMs=900000,rateCooldownMs=60000}={}){
+  let blockedUntil=0,blockedStatus=null,pendingProbe=null;
+  const errorCode=err=>{
+    const status=Number(err?.http_status??err?.status);
+    if(status===432||status===429)return status;
+    const match=/HTTP_(432|429)\b/.exec(String(err?.message||''));
+    return match?Number(match[1]):null;
+  };
+  const blocked=()=>Object.assign(new Error(blockedStatus===432?'HTTP_432:TAVILY_PLAN_LIMIT_COOLDOWN':'HTTP_429:TAVILY_RATE_LIMIT_COOLDOWN'),{http_status:blockedStatus,retryable:false});
+  async function run(operation){
+    if(typeof operation!=='function')throw new TypeError('TAVILY_OPERATION_REQUIRED');
+    if(now()<blockedUntil)throw blocked();
+    if(pendingProbe){
+      await pendingProbe.catch(()=>{});
+      if(now()<blockedUntil)throw blocked();
+      return operation();
+    }
+    const first=Promise.resolve().then(operation).catch(err=>{
+      const status=errorCode(err);
+      if(status===432||status===429){
+        blockedStatus=status;
+        blockedUntil=now()+(status===432?planCooldownMs:rateCooldownMs);
+      }
+      throw err;
+    });
+    pendingProbe=first;
+    try{return await first;}
+    finally{if(pendingProbe===first)pendingProbe=null;}
+  }
+  return Object.freeze({run,snapshot:()=>Object.freeze({blocked:now()<blockedUntil,reason:now()<blockedUntil?(blockedStatus===432?'UPSTREAM_PLAN_LIMIT':'UPSTREAM_RATE_LIMIT'):null})});
 }

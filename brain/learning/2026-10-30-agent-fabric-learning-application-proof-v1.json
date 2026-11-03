@@ -1,0 +1,35 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|agent-fabric|learning-suggestion-counted-as-applied|20261030-v1",
+  "compiler": {
+    "failure_class": "LEARNING_SUGGESTION_MISCLASSIFIED_AS_APPLICATION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original Agent Fabric suggestLearning called learningMemory.markReused and emitted LEARNING_REUSED on read-only lookup of a verified lesson. A suggestion could inflate reuseCount and falsely imply natural-agent adoption without execution, producer run ID, verified independent provider outcome or source revision.",
+  "prevention": "Keep learning retrieval read-only with LEARNING_SUGGESTED. Apply only via admitted original Agent Fabric run, exact tenant/fingerprint/action/revision/side-effect reference and independently checked canonical original production verifier. Missing verifier remains application unproven. Preserve durable ONE BRAIN writer and provider/deduplication safety gates; no invented post readback or human OAuth consent.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-learning-application-proof-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-agent-learning-application-proof-20261030.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Original platform/agents/agent-fabric.mjs suggestLearning implementation on protected main 53db5a1b2fa4dabd8082e7498a5b3a3e88fb8b4b",
+    "original_mark_reused_on_lookup": true,
+    "live_production_application_verified": false,
+    "skill_approval_not_equal_provider_outcome": true,
+    "original_linkedin_post_republish_forbidden": true,
+    "post_live_proven": false,
+    "owner_personal_oauth_fresh_grant_proven": false,
+    "no_new_scheduler": true,
+    "requires_protected_merge_and_actual_natural_run": true
+  }
+}

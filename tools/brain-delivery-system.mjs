@@ -9,6 +9,8 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'tools/growth-intelligence/cro-experiment-cycle.mjs': 'automation',
+  'tools/growth-intelligence/cro-experiment-cycle.test.mjs': 'automation',
   // Exactly this security-critical root dotfile is reviewed in the protected backend lane.
   '.gitignore': 'backend',
   'scripts/ai-model-freshness-watch.mjs': 'automation',

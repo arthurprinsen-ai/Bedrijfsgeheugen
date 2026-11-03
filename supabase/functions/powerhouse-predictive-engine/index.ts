@@ -66,7 +66,23 @@ Deno.serve(async(req:Request)=>{
         ingested+=batch.length;
       }
     }
-    const {data:signals}=await db.from('powerhouse_predictive_signals').select('signal_id,signal_key,observed_at,source_type,source_ref,entity_scope,entity_key,topic_key,signal_type,direction,strength,novelty,lead_time_days,evidence').gte('observed_at',new Date(Date.now()-21*86400000).toISOString()).order('strength',{ascending:false}).limit(80);
+    // Apply the public-evidence boundary BEFORE top-N ranking: high-strength
+    // relationship signals must never crowd real market news/search demand out.
+    // Reserve both source types independently so a large news backlog also
+    // cannot starve search-demand evidence (or vice versa).
+    const signalColumns='signal_id,signal_key,observed_at,source_type,source_ref,entity_scope,entity_key,topic_key,signal_type,direction,strength,novelty,lead_time_days,evidence';
+    const since=new Date(Date.now()-21*86400000).toISOString();
+    const [newsSelection,demandSelection]=await Promise.all([
+      db.from('powerhouse_predictive_signals').select(signalColumns)
+        .gte('observed_at',since).eq('entity_scope','market').eq('source_type','external_news')
+        .order('strength',{ascending:false}).limit(24),
+      db.from('powerhouse_predictive_signals').select(signalColumns)
+        .gte('observed_at',since).eq('entity_scope','market').eq('source_type','search_demand')
+        .order('strength',{ascending:false}).limit(16)
+    ]);
+    if(newsSelection.error)throw newsSelection.error;
+    if(demandSelection.error)throw demandSelection.error;
+    const signals=[...(newsSelection.data||[]),...(demandSelection.data||[])];
     if(!signals?.length){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:'NO_EVIDENCE_NO_FORECAST',gegevens:{contract:'predictive-first-mover-intelligence-v1'}});return json({ok:true,signals:0,forecasts:0,reason:'NO_EVIDENCE'});}
 
     const tool={name:'forecast_plan',description:'Evidence-bound predictive market forecasts',input_schema:{type:'object',additionalProperties:false,properties:{forecasts:{type:'array',maxItems:4,items:{type:'object',additionalProperties:false,properties:{topic_key:{type:'string'},scope:{type:'string',enum:['segment','market','technology','regulation','behavior']},scope_key:{type:'string'},predicted_event:{type:'string'},predicted_problem:{type:'string'},predicted_question:{type:'string'},predicted_search_intent:{type:'string'},predicted_buying_trigger:{type:'string'},probability:{type:'number',minimum:0,maximum:1},confidence:{type:'number',minimum:0,maximum:1},expected_lead_days:{type:'integer',minimum:1,maximum:180},signal_acceleration:{type:'number',minimum:0,maximum:1},market_saturation:{type:'number',minimum:0,maximum:1},whitespace_score:{type:'number',minimum:0,maximum:1},strategic_fit:{type:'number',minimum:0,maximum:1},revenue_potential:{type:'number',minimum:0,maximum:1},prediction_mode:{type:'string',enum:['anticipatory','category_creation','reactive']},evidence_keys:{type:'array',minItems:2,maxItems:8,items:{type:'string'}},rationale:{type:'string'}},required:['topic_key','scope','scope_key','predicted_event','predicted_problem','predicted_question','predicted_search_intent','predicted_buying_trigger','probability','confidence','expected_lead_days','signal_acceleration','market_saturation','whitespace_score','strategic_fit','revenue_potential','prediction_mode','evidence_keys','rationale']}}},required:['forecasts']}};

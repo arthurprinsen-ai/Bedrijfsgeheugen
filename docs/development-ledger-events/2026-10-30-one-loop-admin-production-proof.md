@@ -1,0 +1,9 @@
+# Developer Ledger — original one-loop admin proof, 30 October 2026
+
+- Existing owner: Netlify Production Truth / Portal Reliability, issue #4918, original deploySucceeded route. No second executor, cron, publisher or business result writer.
+- Historical protected source PR #5172 merged to main `91923c762ea91470c453b11f0198712de50a5dc4`. Original Netlify production deploy `6ae45124c1fff5d31946433b` READY exact commit. Generic portal 2-tenant proof PROVEN; bounded production browser retry passed 15, skipped 1, failed 0. Specific admin-only one-loop GET remained separately UNVERIFIED.
+- Actual 15-loop source (read at ~08:20 UTC): 8 GREEN, 3 AMBER, 4 RED. Architecture 32/32, 18/18 jobs, two runtime evidence-debt flags. Do not conflate route quality with original outcome proof.
+- Root cause: original deploySucceeded function only tests `portal-ondernemersdata`, not newly deployed `powerhouse-one-loop-assurance`.
+- Candidate source change: extend same `platform/api/portal-authenticated-production-proof-core.mjs` with temporary signed admin app_metadata only for synthetic a, normal synthetic b, 200/15-loop readback, 403 nonadmin, 401 anonymous; nested independent `one_loop_assurance_proof`. Same cleanup in finally. Generic proof must never be misreported as new route proof; no tokens/rows logged.
+- Test: `tests/portal-authenticated-production-proof.test.mjs` extends positive path and independent provider-failure path. Skill `.agents/skills/powerhouse-netlify-production-truth/SKILL.md`, original `AGENTS.md`, human doc and ONE BRAIN observed learning.
+- Acceptance: protected exact-head checks, merge, exact main-to-Netlify READBACK, production deploySucceeded function receipt with authentic authorized/denied HTTP statuses, then existing Brain/natural-agent observation. Preserve original customer/forecast/publication obligations open. Source candidate is not production LIVE until provider proof says so.

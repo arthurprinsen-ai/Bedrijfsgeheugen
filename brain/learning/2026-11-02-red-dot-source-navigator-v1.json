@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-red-dot-entrepreneur-trust-journey-20261102-v1",
+  "fingerprint": "portal|red-dot|connector-journey-was-a-configuration-form-not-a-decision-experience|20261102-v1",
+  "compiler": {
+    "failure_class": "PORTAL_UX_SOURCE_TRUTH_GAP",
+    "scope": "PORTAL_CONNECTORS",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The original connector wizard supports mapping and permissions but does not give entrepreneurs a coherent, guided route from software source and scoped consent to verified actual data and decision value. That undermines comprehension and risks mistaking saved configuration for real ingestion.",
+  "fix": "Build an independent read-only, accessible editorial/source-journey guide *within original Portal V2*, driven only by tenant-authenticated /api/connectors metadata and no alternate store or scheduler. Explain missing proof and link into original wizard; preserve Unknown as Unknown.",
+  "tests": [
+    "tests/brain-red-dot-source-navigator-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-red-dot-source-navigator-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-red-dot-source-navigator-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-red-dot-source-navigator-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Do not equate an activated connector definition or sample test with verified source-to-target business records and KPI values.",
+    "Never show invented revenue, AI decisions, EU-only proof, design-award win or user-success metrics.",
+    "Use original tenant-authenticated connector authority and existing protected Portal V2 Shell, original wizard, ONE BRAIN and Powerhouse.",
+    "Inspect every critical journey on keyboard, screenreader, 320px mobile, zoom and reduced motion, and test understanding with real entrepreneurs before award claims."
+  ],
+  "owner": "original Portal V2 Living Interface + canonical connector owner + Powerhouse Company Intelligence OS + ONE BRAIN",
+  "proof_state": "CANDIDATE_NOT_LIVE_2027_AWARD_NOT_VERIFIED"
+}

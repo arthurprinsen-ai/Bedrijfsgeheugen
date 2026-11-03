@@ -21,7 +21,7 @@ const valid = [
 
 test('Notion personal voice accepts authentic plain-text founder chapter without product pitch',()=>{
   assert.deepEqual(codes(valid),[]);
-  assert.equal(PERSONAL_EDITORIAL_POLICY,'personal-linkedin-founder-editorial-v3');
+  assert.equal(PERSONAL_EDITORIAL_POLICY,'personal-linkedin-founder-editorial-v4');
 });
 
 test('historical screenshot rejects raw Markdown, system status and invented statistic',()=>{
@@ -71,4 +71,15 @@ test('publisher refuses invalid personal copy before day authority, reserve, or 
   assert.match(publisher,/final_copy_approved:art\.generation_evidence\?\.final_copy_approved===true/);
   assert.match(publisher,/editorial_policy_version:clean\(art\.generation_evidence\?\.editorial_policy_version\)/);
   assert.match(publisher,/reserveGlobalUniquePublication\(db,runDate,row.channel/);
+});
+
+test('2026-11-01 LinkedIn screenshot: internal diagnostics and weak AI hook fail closed',()=>{
+ const screenshot='Ik wil dat AI niet alleen signalen geeft, maar echte stappen helpt zetten. Vandaag zagen we dat onze systemen 273 gemeten pagina’s en 30 bronnen volgen en 2 AI-modellen hebben. Toch werden 280 acties klaargezet, maar slechts 22 uitgevoerd. De assurance-controle toonde 4 rode en 3 amber signalen in actieve loops. Het probleem is dat ondernemers niet weten welke werkzaamheden vandaag resultaat leveren. Ik geloof dat bedrijven kunnen anticiperen als de data actueel zijn en iedereen weet wie het probleem moet oplossen. Ik wil verder bouwen aan een proces waarin we het effect kunnen volgen en beslissingen controleren zonder onterechte aannames. Wat zouden jullie anders doen?';
+ const failures=codes(screenshot);
+ assert.ok(failures.includes('PERSONAL_EDITORIAL_GENERIC_AI_HOOK'),failures.join(','));
+ assert.ok(failures.includes('PERSONAL_EDITORIAL_INTERNAL_METRICS_REPORT'),failures.join(','));
+});
+test('a relatable verified founder opening is not rejected as a technical report',()=>{
+ const newOpening=valid.replace('Vandaag merkte ik bij het bouwen van Bedrijfsgeheugen opnieuw waarom ik hier ooit aan begon.','Vandaag kwam ik terug op een vraag die ondernemers mij stellen: welke klant wacht te lang op een antwoord?');
+ assert.ok(!codes(newOpening).some(x=>x==='PERSONAL_EDITORIAL_INTERNAL_METRICS_REPORT'||x==='PERSONAL_EDITORIAL_GENERIC_AI_HOOK'||x==='PERSONAL_EDITORIAL_BUYER_RELEVANT_OPENING'));
 });

@@ -6,6 +6,7 @@ export const AGENT_FABRIC_COMMANDS = Object.freeze({
   INTAKE_OPPORTUNITY:'INTAKE_OPPORTUNITY',
   TRANSITION_WORK:'TRANSITION_WORK',
   RECORD_LEARNING:'RECORD_LEARNING',
+  APPLY_LEARNING:'APPLY_LEARNING',
 });
 
 export const AGENT_FABRIC_QUERIES = Object.freeze({
@@ -98,6 +99,10 @@ export function createAgentFabricGateway({ fabric, rootDir = process.cwd(), enti
       }
       case AGENT_FABRIC_COMMANDS.RECORD_LEARNING:
         return fabric.recordLearning(payload);
+      case AGENT_FABRIC_COMMANDS.APPLY_LEARNING:
+        requireMethod(fabric, 'applyLearning');
+        if (payload.runId !== runtime.runId) throw new Error('LEARNING_APPLICATION_RUNTIME_ID_MISMATCH');
+        return fabric.applyLearning(payload);
       default:
         throw unsupported('command', request.type);
     }

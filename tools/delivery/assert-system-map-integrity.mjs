@@ -9,6 +9,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
 const command = process.env.SYSTEM_MAP_GENERATE_COMMAND;
 const mapPath = process.env.SYSTEM_MAP_PATH;
+const portalEntryPath = 'portal-v2/index.html';
 function fail(message) { console.error('SYSTEM_MAP_INTEGRITY_FAIL:', message); process.exit(1); }
 if (!command || !mapPath) fail('SYSTEM_MAP_GENERATE_COMMAND and SYSTEM_MAP_PATH must be configured');
 if (!/^[a-zA-Z0-9_./ -]+$/.test(command) || command.includes('  ') || command.startsWith('-')) fail('generator command must be a literal vetted executable and arguments');
@@ -19,22 +20,29 @@ const expected = process.env.EXPECTED_INTEGRATION_SHA;
 if (expected && sha !== expected) fail('checked-out SHA differs from exact integration SHA');
 try { execFileSync('git', ['ls-files','--error-unmatch','--',mapPath],{stdio:'ignore'}); }
 catch { fail('generated System Map is not tracked'); }
+try { execFileSync('git', ['ls-files','--error-unmatch','--',portalEntryPath],{stdio:'ignore'}); }
+catch { fail('canonical Portal app entry is not tracked'); }
 function generate() {
   try { execFileSync(args[0],args.slice(1),{stdio:'inherit',timeout:120000}); }
   catch(e) { fail('generator exited unsuccessfully: '+String(e.message)); }
-  if (!existsSync(mapPath)) fail('generator did not produce System Map');
-  return createHash('sha256').update(readFileSync(mapPath)).digest('hex');
+  if (!existsSync(mapPath) || !existsSync(portalEntryPath)) fail('generator did not produce System Map and portal entry');
+  const mapSource=readFileSync(mapPath,'utf8');
+  const entrySource=readFileSync(portalEntryPath,'utf8');
+  const hash=mapSource.match(/explanationInventory:Object\.freeze\(\{contract:'portal-explanation-autosync-v1',contentHash:'([a-f0-9]{64})'/)?.[1];
+  const entry=entrySource.match(/\.\/app\.js\?bg_explain=([a-f0-9]{64})/)?.[1];
+  if (!hash || !entry || hash!==entry) fail('canonical System Map digest differs from immutable Portal entry app.js version');
+  return {map:createHash('sha256').update(mapSource).digest('hex'),entry:createHash('sha256').update(entrySource).digest('hex')};
 }
 const first=generate(), second=generate();
-if(first!==second) fail('nondeterministic generator output');
+if(first.map!==second.map || first.entry!==second.entry) fail('nondeterministic generator output');
 let changed;
-try { changed=execFileSync('git',['diff','--exit-code','--',mapPath],{stdio:'pipe'}).length>0; }
+try { changed=execFileSync('git',['diff','--exit-code','--',mapPath,portalEntryPath],{stdio:'pipe'}).length>0; }
 catch(e){ if(e.status===1) changed=true; else fail('git diff failed'); }
 if(changed) {
   try {
-    const patch = execFileSync('git',['diff','--unified=1','--',mapPath],{encoding:'utf8',maxBuffer:1024*1024});
+    const patch = execFileSync('git',['diff','--unified=1','--',mapPath,portalEntryPath],{encoding:'utf8',maxBuffer:1024*1024});
     console.error('SYSTEM_MAP_GENERATED_DIFF_BEGIN\\n'+patch.slice(0,20000)+'\\nSYSTEM_MAP_GENERATED_DIFF_END');
   } catch (e) { console.error('SYSTEM_MAP_DIFF_UNAVAILABLE',String(e.message)); }
   fail('regenerated System Map differs from integrated tracked version; commit the generated changes in the authorized integration candidate before retrying');
 }
-console.log(JSON.stringify({status:'SYSTEM_MAP_INTEGRITY_PROVEN',head_sha:sha,map_path:mapPath,sha256:second}));
+console.log(JSON.stringify({status:'SYSTEM_MAP_INTEGRITY_PROVEN',head_sha:sha,map_path:mapPath,portal_entry_path:portalEntryPath,sha256:second.map,portal_entry_sha256:second.entry}));

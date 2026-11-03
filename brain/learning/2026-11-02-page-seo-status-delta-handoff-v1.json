@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse|website|page-seo-date-only-pr-handoff-churn|20261102-v1",
+  "obligation_id": "original-paginacontrole-verified-candidate-handoff-20261102-v1",
+  "parent_issue": 4439,
+  "source_pr": 5294,
+  "compiler": {
+    "failure_class": "SEO_STATUS_DATE_ONLY_CANDIDATE_WITH_NATIVE_PR_CREATE_DENIED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 4
+  },
+  "owner": "Original ONE BRAIN Page/SEO writer and protected release control plane",
+  "root_cause": "Original paginacontrole.py regenerated seo-status.json bijgewerkt as date.today every run, even if canonical keyword owner/pillar payload unchanged. On GitHub Actions, GITHUB_TOKEN cannot create pull requests in repository settings, so this produced repeated candidate branches, blocked PR handoffs and a failed workflow despite 89/89 clean browser pages. Native PR creation permission is independently denied and is NOT fixed by this scoped no-op correction.",
+  "prevention_rule": "Preserve last semantic SEO content-update date when keyword and pillar content is unchanged; do not rewrite seo-status.json byte-for-byte or create candidate for a clock-only delta. Still generate a candidate for changed substantive keywords or pillars. Keep native branch/PR scope, duplicate gate, protected Required/CodeQL, writer lease, original scheduler, and fail-closed rejection of unauthorized GitHub Actions PR creation. A separately approved least-privileged canonical writer handoff must be implemented and independently proven for genuine future SEO deltas; never broaden GITHUB_TOKEN privileges or claim this has been solved.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-page-seo-status-delta-handoff-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-page-seo-status-delta-handoff-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-page-seo-status-delta-handoff-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_source_workflow": 41439896307,
+    "failed_handoff_job": 125258911400,
+    "original_native_error": "GraphQL: GitHub Actions is not permitted to create or approve pull requests",
+    "original_candidate_branch": "writer/paginacontrole/32f1dc3d678d31a4",
+    "source_sha": "615d41e804dabbae490c9c6c5a14bf70a76edd7b",
+    "authorized_handoff_pr": 5294,
+    "seo_browser_pages": 89,
+    "seo_browser_js_errors": 0,
+    "seo_backlog": {
+      "high": 0,
+      "medium": 90,
+      "low": 18
+    },
+    "recovery_substantive_change_release_pending": true,
+    "permanent_pr_permission_fix_verified": false,
+    "paid_orders_verified": false
+  },
+  "tests": [
+    "tests/brain-page-seo-status-delta-handoff-20261102.test.mjs"
+  ]
+}

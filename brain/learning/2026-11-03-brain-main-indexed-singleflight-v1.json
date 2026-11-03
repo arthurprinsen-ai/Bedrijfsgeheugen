@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|brain-verification|main-indexed-run-missed-by-pr-head-filter|duplicate-cancel|20261102-v1",
+  "obligation_id": "github|brain-verification|main-indexed-run-missed-by-pr-head-filter|duplicate-cancel|20261102-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5332",
+  "status": "PATCH_CANDIDATE_NOT_DEPLOYED",
+  "failure_class": "DUPLICATE_BRAIN_VERIFICATION_CANCELLED_ORIGINAL_FLIGHT",
+  "ownership": {
+    "agent": "existing-original-github-terminal-brain-delivery",
+    "exclusive_writer_required": true
+  },
+  "evidence": {
+    "candidate_pr": 5329,
+    "head_sha": "b6c2964d85aaaac7f037fd004463ed5d8d5525b5",
+    "original_run": 41527548036,
+    "duplicate_run": 41527826859,
+    "provider_run_head_sha": "1fe623fa373e04b8f545442c7a80b93cba0ea039",
+    "trigger": "workflow_dispatch on main",
+    "outcome": "original_run_cancelled_by_duplicate",
+    "customer_security_incident": false
+  },
+  "root_cause": "External verifier incorrectly queried workflow_dispatch with candidate head_sha even though GitHub indexes it under protected main SHA; duplicate dispatch landed in PR-scoped cancel-in-progress:true and cancelled the existing original verification.",
+  "fix": "Original terminal must match exact candidate PR and head in display_title from main-indexed workflow_dispatch runs, read provider status twice, fail closed when provider read unavailable, reuse prior active flight. Verification-only workflow concurrency must never cancel in-progress existing PR flight; native source-updating PR delivery cancellation remains intact. External agents must use the original terminal, never ad-hoc duplicate dispatch.",
+  "prevention_rule": "Before any BRAIN verification_only dispatch, inspect all relevant active native workflow runs by original workflow ID on protected main, match exact PR+candidate SHA in run display title/inputs, reread status, and OBSERVE rather than DISPATCH when one exists. A redundant verify-only run cannot cancel an existing original run.",
+  "tests": [
+    "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "DUPLICATE_BRAIN_VERIFICATION_CANCELLED_ORIGINAL_FLIGHT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "invariants": [
+      "main-indexed workflow_dispatch not indexed by candidate SHA",
+      "verification-only cannot cancel original active run",
+      "original source-updating PR cancellation semantics remain",
+      "exact-title original run reuse",
+      "no second scheduler or bypass"
+    ]
+  },
+  "portal_projection": {
+    "status": "INCIDENT_OPEN_PENDING_PROTECTED_RELEASE",
+    "full_green_allowed": false,
+    "required": "new single original BRAIN verification result, protected merge, fresh main readback"
+  },
+  "terminal_rule": "Native Required + CodeQL + full BRAIN success exact head, protected merge and original terminal readback before resolving #5332."
+}

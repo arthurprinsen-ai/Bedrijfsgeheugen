@@ -187,7 +187,8 @@ jobs:
             gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=closed >/dev/null
             printf 'closed_pr=%s reason=%s successor=%s\n' "$pr" "$reason" "${successor:-none}"
           done
-      - name: Reconcile stale Actions and merged branch debris
+      - id: janitor_cleanup_reconcile
+        name: Reconcile stale Actions and merged branch debris
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -204,12 +205,18 @@ jobs:
           actions_page="$(page_for_cycle 32)"
           branches_page="$(page_for_cycle 70)"
           echo "JANITOR_BOUNDED_CURSOR:actions_page=$actions_page:branches_page=$branches_page:run=$JANITOR_RUN_NUMBER"
-          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs-after.json
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs-pages.json
+          jq 'add' .artifacts/open-prs-pages.json > .artifacts/open-prs-after.json
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
 
           # Active TERMINAL_DELIVERY lease may not remain closed without merge.
-          jq -c '.[] | select((.merged_at == null) and ((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY")))' .artifacts/closed-prs-recent.json | while read -r closed_pr; do
+          jq -c '.[] | select((.merged_at == null) and ((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY")))' .artifacts/closed-prs-recent.json > .artifacts/terminal-lease-candidates.ndjson
+          # A closed-PR 100-record sample is positive-only evidence; its absence is NEVER
+          # complete proof that no older merged successor exists (cf. #2225 -> #2353).
+          # Materialize producer output before consuming so an API error cannot mask itself
+          # as an upstream jq SIGPIPE under pipefail.
+          while IFS= read -r closed_pr; do
             pr="$(jq -r '.number' <<<"$closed_pr")"
             body="$(jq -r '.body // ""' <<<"$closed_pr")"
             obligation="$(printf '%s\n' "$body" | sed -n 's/^Obligation-ID:[[:space:]]*//p' | head -n1)"
@@ -236,8 +243,19 @@ jobs:
                 current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
                 [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
                 [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
-                gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
-                jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+                # One existing agent verifies an OLDER merged successor via positive GitHub
+                # search plus direct PR readback. Search absence is never negative proof.
+                lineage="$(node tools/delivery/janitor-incident-agent.mjs --verify-successor "$pr" "$obligation")"
+                if [ "$(jq -r '.status' <<<"$lineage")" = PROVEN_MERGED_SUCCESSOR ]; then
+                  merged_pr="$(jq -r '.successor_number' <<<"$lineage")"
+                  proof_evidence="$(jq -r '.evidence' <<<"$lineage")"
+                  proof_chain="$(jq -c '.chain // []' <<<"$lineage")"
+                  jq -cn --arg type TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR --argjson pr "$pr" --argjson successor "$merged_pr" --arg obligation "$obligation" --arg evidence "$proof_evidence" --argjson chain "$proof_chain" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation,evidence:$evidence,chain:$chain,reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
+                else
+                  why="$(jq -r '.status' <<<"$lineage")"
+                  echo "::warning::JANITOR_TERMINAL_LEASE_HISTORY_UNPROVEN:pr=${pr}:obligation=${obligation}:source=${why}"
+                  jq -cn --arg type TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN --argjson pr "$pr" --arg obligation "$obligation" --arg reason "$why" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:$reason,cause:"BOUNDED_CLOSED_PR_SAMPLE_NOT_GLOBAL_LINEAGE_PROOF",requires_owner_readback:true,reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
+                fi
               fi
             elif [ "$successor_count" -eq 1 ]; then
               successor="$(jq -r --arg obligation "$obligation" '[.[] |
@@ -252,11 +270,12 @@ jobs:
               echo "::error::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"
               exit 78
             fi
-          done
+          done < .artifacts/terminal-lease-candidates.ndjson
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
+            gh api "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=30&page=${actions_page}" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' > ".artifacts/janitor-action-runs-${status}.ndjson"
+            while read -r run_json; do
               run_id="$(jq -r '.id' <<<"$run_json")"
               branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
               run_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
@@ -340,11 +359,12 @@ jobs:
                 fi
               fi
               jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg mode "$cancel_mode" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,mode:$mode}' >> .artifacts/janitor-runtime-actions.ndjson
-            done
+            done < ".artifacts/janitor-action-runs-${status}.ndjson"
           done
 
           # Delete only unprotected non-main refs with no open PR and zero commits ahead of main.
-          gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=50&page=${branches_page}" --jq '.[].name' | while IFS= read -r branch; do
+          gh api "repos/${GITHUB_REPOSITORY}/branches?per_page=50&page=${branches_page}" --jq '.[].name' > .artifacts/janitor-branch-candidates.txt
+          while IFS= read -r branch; do
             [ -n "$branch" ] || continue
             [ "$branch" != main ] || continue
             # Release/archive refs are deliberate history; never janitor-owned.
@@ -371,9 +391,12 @@ jobs:
             # Re-read branch immediately before deletion: exact-head drift makes deletion fail closed.
             latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
             [ "$latest_sha" = "$head_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${head_sha}:${latest_sha}"; exit 78; }
-            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+            if ! gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null; then
+                echo "::error::JANITOR_BRANCH_DELETE_API_REJECTED:branch=${branch}:ref=${encoded_branch}"
+                exit 78
+              fi
             jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason "$reason" '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
-          done
+          done < .artifacts/janitor-branch-candidates.txt
 
           # PR-driven sweep of squash-merged debris. The branch walk above reaches one page per run;
           # this walks 5 pages x 100 closed PRs per run (stable created-asc order, 12-run cycle) and
@@ -399,19 +422,21 @@ jobs:
               [ "$(jq -r '.commit.sha' <<<"$branch_json")" = "$pr_sha" ] || { sweep_moved=$((sweep_moved + 1)); continue; }
               latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
               [ "$latest_sha" = "$pr_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${pr_sha}:${latest_sha}"; exit 78; }
-              gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+              if ! gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null; then
+                echo "::error::JANITOR_BRANCH_DELETE_API_REJECTED:branch=${branch}:ref=${encoded_branch}"
+                exit 78
+              fi
               jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$pr_sha" --arg reason SQUASH_MERGED_EXACT_HEAD_SWEEP '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
               sweep_deleted=$((sweep_deleted + 1))
             done < .artifacts/sweep-candidates.tsv
           done
           echo "JANITOR_SQUASH_SWEEP:start_page=${sweep_start}:seen=${sweep_seen}:open=${sweep_open}:missing=${sweep_missing}:protected=${sweep_protected}:moved=${sweep_moved}:deleted=${sweep_deleted}"
 
-          # Stale branches whose work stays recoverable (PR head ref or archive/ tag); see tools/ci/branch-archive-sweep.mjs.
-          node tools/ci/branch-archive-sweep.mjs --apply --cap 150 --actions .artifacts/janitor-runtime-actions.ndjson
 
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
-      - name: Read back applied cleanup
+      - id: janitor_cleanup_readback
+        name: Read back applied cleanup
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -477,6 +502,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUESTED_MODE: ${{ github.event.inputs.mode }}
         run: node tools/delivery/daily-learning-liveness-recovery.mjs
+      - name: Agent observation and incident writeback on the same original Janitor
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Isolated to this evidence step; original restricted RPC, no direct table writes.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BG_PORTAL_EU_SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL }}
+          BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY }}
+          JANITOR_CLEANUP_OUTCOME: ${{ steps.janitor_cleanup_reconcile.outcome }}
+          JANITOR_READBACK_OUTCOME: ${{ steps.janitor_cleanup_readback.outcome }}
+        run: node tools/delivery/janitor-incident-agent.mjs --observe
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -485,6 +522,7 @@ jobs:
           path: |
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
+            .artifacts/janitor-agent-incident.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
             .artifacts/powerhouse-ci-agent-priorities.json
@@ -517,3 +555,37 @@ jobs:
             core.summary.addCodeBlock(JSON.stringify(report, null, 2), 'json');
             await core.summary.write();
             if (report.blocked.length || report.pending.length) core.setFailed('Unresolved branch reconciliation');
+
+  branch_archive_sweep:
+    # Own job and time budget so a slow sweep can never cut the Janitor's readback and writeback steps.
+    needs: janitor
+    if: ${{ always() && !cancelled() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')) }}
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Remove stale branches whose work stays recoverable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SWEEP_BUDGET_SECONDS: '900'
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          # A provider 403 is a failed archive, NOT a completed sweep. No bypass, no unique-work deletion.
+          timeout 1000 node tools/ci/branch-archive-sweep.mjs --apply --cap 150 \
+            --actions .artifacts/branch-archive-actions.ndjson \
+            --report .artifacts/branch-archive-sweep.json
+      - name: Upload original branch archive provider evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-branch-archive-evidence-${{ github.run_id }}
+          path: |
+            .artifacts/branch-archive-actions.ndjson
+            .artifacts/branch-archive-sweep.json
+          if-no-files-found: warn

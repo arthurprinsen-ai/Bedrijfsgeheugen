@@ -1,4 +1,5 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { classifyPowerhouseTone as tone } from './powerhouse-status-tone.mjs';
 import { deriveReleaseStatus } from '../../tools/netlify/release-status.mjs';
 import { ensureIdentityWidget } from '../portal-state.js';
 import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
@@ -19,13 +20,6 @@ function withinPeriod(event,period){
   const days=PERIODS[period]??7;if(!days)return true;
   const at=timeMs(event.occurredAt);if(!at)return true;
   return at>=Date.now()-days*86400000;
-}
-function tone(status,severity){
-  const s=lower(status),v=lower(severity);
-  if(v.includes('critical')||v.includes('error')||s.includes('fail')||s.includes('block')||s.includes('drift'))return'bad';
-  if(v.includes('warn')||s.includes('pending')||s.includes('stale')||s.includes('open')||s.includes('queue'))return'warn';
-  if(s.includes('success')||s.includes('green')||s.includes('verified')||s.includes('live')||s.includes('proven')||s.includes('fulfilled'))return'good';
-  return'neutral';
 }
 function isError(event){return tone(event.status,event.severity)==='bad'||lower(event.category).includes('error')||lower(event.rawType).includes('error')}
 function isKnowledge(event){const s=[event.category,event.layer,event.rawType,event.title].map(lower).join(' ');return /learning|document|ledger|memory|knowledge|writeback/.test(s)}
@@ -96,7 +90,7 @@ function knowledgeView(events){
 }
 function skillsView(events){
   const skills=events.filter(isSkill);
-  return `<section class="poc-panel"><h4>Skill projection & wijzigingen</h4>${skills.length?timeline(skills):empty('Geen expliciete skill-events in de gekozen periode. Skill-projectie blijft alleen groen met runtime-evidence.')}</section>`;
+  return `<section class="poc-panel"><h4>Skill projection & wijzigingen</h4><p class="poc-note">Een gevonden of voorgestelde leerregel is nog niet toegepast. Een agent mag leren pas als uitgevoerd tonen na een eigen natuurlijke run, exacte skill-/bronversie, toegepaste beslissing én onafhankelijke productie- of providercontrole. Ontbreekt dat bewijs, dan blijft de toepassing onbewezen.</p>${skills.length?timeline(skills):empty('Geen expliciete skill-events in de gekozen periode. Skill-projectie blijft alleen groen met runtime-evidence.')}</section>`;
 }
 function deliveryView(events,observability){
   const delivery=events.filter(isDelivery);
@@ -105,9 +99,82 @@ function deliveryView(events,observability){
   const providerEvidence=observability.releaseEvidence;
   const status=deriveReleaseStatus(providerEvidence||{});
   const label={passed:'Geslaagd',failed:'Mislukt',pending:'In afwachting',unknown:'Onbekend',not_required:'Niet vereist'};
-  const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p></section>`;
+  // Read-only ORIGINAL GitHub incident; an up-to-date website release does not
+  // close an older provider-build root cause or prove paid customer outcomes.
+  const issue=providerEvidence?.originalReleaseIncident||{};
+  const verifiedIssue=issue.contract==='original-netlify-release-incident-readback-v1'&&
+    issue.status==='READBACK_COMPLETE'&&issue.incidentId===5241&&
+    ['OPEN','CLOSED'].includes(issue.issueState)&&
+    issue.issueUrl==='https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241';
+  const issueLabel=!verifiedIssue?'Incidentbron niet geverifieerd':
+    !issue.productionCurrent?'Productiebron nog niet exact bevestigd':
+    issue.issueState==='OPEN'?'Website live · bouwfoutonderzoek open':'GitHub-incident gesloten · oorzaakbewijs afzonderlijk';
+  const issueTone=!verifiedIssue||!issue.productionCurrent?'bad':issue.issueState==='OPEN'?'warn':'good';
+  const issueMarkup=`<div class="poc-panel" data-original-netlify-incident data-evidence-status="${verifiedIssue?'READBACK_COMPLETE':'UNVERIFIED'}" data-production-current="${esc(String(issue.productionCurrent===true))}">
+    <div class="poc-panelhead"><h4>Incident #5241 · Netlify-bouwfout</h4><span class="poc-badge ${issueTone}">${esc(issueLabel)}</span></div>
+    <p class="poc-note">Websitepublicatie, incidentafhandeling en bewezen bronoorzaak zijn afzonderlijke controles. ${esc(verifiedIssue?issue.nextAction:'De oorspronkelijke GitHub-incidentbron is momenteel niet onafhankelijk teruggelezen.')}</p>
+    <p class="poc-note">Laatste GitHub-controle: ${esc(verifiedIssue?fmtTime(issue.issueUpdatedAt):'Onbekend')}. Herstel gebeurt alleen via de bestaande ONE BRAIN-, release- en Heartbeat-keten.</p>
+    <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241" target="_blank" rel="noopener noreferrer">Origineel incident en leerbewijs bekijken</a>
+  </div>`;
+  const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p>${issueMarkup}</section>`;
   return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
+function oneLoopAssuranceView(assurance){
+  const source=assurance||{},complete=source.status==='READBACK_COMPLETE' &&
+    source.contract==='one-brain-original-loop-assurance-readback-v1' &&
+    Number(source.counts?.total)===15 && arr(source.loops).length===15;
+  if(!complete){
+    return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="UNVERIFIED"><div class="poc-panelhead"><h4>ONE BRAIN · één organisme · 15 lussen</h4><span class="poc-badge bad">Niet geverifieerd</span></div><p class="poc-note">De onafhankelijke canonieke Supabase-assurance kon niet volledig en actueel worden gelezen. Niet nul of groen; geen extra scheduler. Oorzaak: ${esc(source.reason||'BRONBEWIJS_ONTBREEKT')}.</p></section>`;
+  }
+  const counts=source.counts,status=source.overallStatus||'UNVERIFIED';
+  const label={RED:'Rood · guards of bewijs blokkeren',AMBER:'Oranje · bewijs ontbreekt',GREEN:'Groen · bronbevestigd'};
+  const toneStatus={RED:'bad',AMBER:'warn',GREEN:'good'}[status]||'bad';
+  const diagnosis=source.guardDiagnostics?.status==='READBACK_COMPLETE'?source.guardDiagnostics:null;
+  const byKey=new Map(arr(diagnosis?.cases).map(c=>[c.key,c]));
+  const publicationRecovery=arr(byKey.get('content-closed-loop')?.publicationRecovery);
+  const publicationHandoff=byKey.get('content-closed-loop')?.publicationHandoffWriteback||null;
+  // This is ONLY the original ONE BRAIN guard readback, never a separate status
+  // projection. Even zero changes cannot prove posts/blog/email delivered.
+  const handoffTelemetry=publicationHandoff&&
+    publicationHandoff.contract==='original-publication-obligation-recovery-v1'
+    ?'<p class="poc-note" data-publication-handoff-writeback="'+esc(String(publicationHandoff.applied))+'">'+
+      'Herstelacties gesynchroniseerd: '+esc(publicationHandoff.applied)+' wijzigingen; '+
+      esc(publicationHandoff.conflicts)+' conflicten; '+esc(publicationHandoff.errors)+
+      ' fouten. Werkelijke publicatie vereist apart providerbewijs.</p>'
+    :'';
+  // Read-only original ONE BRAIN receipts: never infer publication from CI success.
+  const anyMissedPublication=publicationRecovery.some(item=>item.phase==='MISSED_DEADLINE');
+  const publicationPanel=publicationRecovery.length?
+    '<div data-publication-recovery="RECOVERY_DUE" role="alert" class="poc-panel">'+
+    '<h4>'+(anyMissedPublication?'Publicatie gemist · herstel vereist':'Publicatie in gevaar · herstel vereist')+'</h4>'+
+    '<p class="poc-note">De bestaande kanaalagent hervat dezelfde verplichting. Bij een onzekere verzending eerst provider-readback, dan pas een idempotente herstelpoging; geen dubbele e-mails of posts en nooit groen zonder bewijs.</p>'+
+    handoffTelemetry+
+    publicationRecovery.map(item=>'<article class="poc-component" data-publication-channel="'+esc(item.channel)+'" data-publication-phase="'+esc(item.phase)+'">'+
+      '<div><b>'+esc(item.label)+'</b><small>'+esc(item.nextAction)+
+      ' · Gepland: '+esc(fmtTime(item.scheduledFor))+'</small>'+
+      (item.owner?'<small>Verantwoordelijke herstelagent: '+esc(item.owner)+'</small>':'')+'</div>'+
+      '<span class="poc-badge bad">'+(item.phase==='EARLY_RECOVERY'?'Herstel vóór deadline':'Herstel nodig')+'</span></article>').join('')+'</div>':'';
+  const diagnosticState=diagnosis?'Bronoorzaken gecontroleerd':
+    'Guard-oorzaken nog niet onafhankelijk teruggelezen; raadpleeg de originele receipts.';
+  const list=arr(source.loops).map(row=>{
+    const t={RED:'bad',AMBER:'warn',GREEN:'good'}[row.status]||'bad';
+    const reason=row.guard==='FAILED'?'Originele guard faalt':row.missingStages?.length?
+      'Ontbrekende fasen: '+row.missingStages.join(', '):row.status==='GREEN'?
+      'Stadia en guard-status actueel':'Uitvoerings- of externe bewijscontrole ontbreekt';
+    const caseInfo=byKey.get(row.key);
+    const remediation=caseInfo&&row.status!=='GREEN'?
+      arr(caseInfo.reasons).map(x=>'<div><b>'+esc(x.code)+'</b><small>Herstel via oorspronkelijke luseigenaar: '+esc(x.nextAction)+'</small></div>').join(''):'';
+    return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small>${remediation}</div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
+  }).join('');
+  return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="READBACK_COMPLETE" data-overall-status="${esc(status)}">
+    <div class="poc-panelhead"><h4>ONE BRAIN + Powerhouse + Heartbeat · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
+    <p class="poc-note">Eén bestaande uitvoeringsarchitectuur; dit is uitsluitend onafhankelijke broncontrole van de 15 bestaande lussen, géén tweede executor. Een succesvolle job is geen bewezen klantresultaat. Laatste controle: ${esc(fmtTime(source.observedAt))}.</p>
+    <div class="poc-kpis compact">${kpi('Lussen',counts.total,'bestaande canonieke inventaris')}${kpi('Groen',counts.green,'bron-gates voldoen')}${kpi('Oranje',counts.amber,'nog ontbrekend bewijs')}${kpi('Rood',counts.red,'guard of outcome faalt')}</div>
+    ${publicationPanel}<p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
+    <p class="poc-note">Eén overkoepelende status wordt ROOD zodra één originele lus rood is. Publicatie, OAuth-toestemming, omzet en agentleereffect worden nooit kunstmatig afgetekend.</p>
+  </section>`;
+}
+
 function liveView(events,observability,refreshError=''){
   const now=Date.now();
   const groups=[
@@ -132,7 +199,7 @@ function liveView(events,observability,refreshError=''){
   const eventLine=e=>`<article class="poc-error"><div>${statusBadge(e)}<b>${esc(e.title||e.rawType||'Activiteit')}</b></div><p>${esc(e.detail||e.subjectId||'Geen nadere oorzaak of actie vastgelegd.')}</p><small>${esc(fmtTime(e.occurredAt))} · ${esc(e.actor||'Onbekend')} · ${esc(e.source||'Onbekend')}${e.referenceUrl?` · <a href="${esc(e.referenceUrl)}" target="_blank" rel="noopener noreferrer">Open bronbewijs ↗</a>`:''}</small></article>`;
   const time=observability.updatedAt||latest[0]?.occurredAt;
   const outdated=!timeMs(time)||now-timeMs(time)>7200000;
-  return `<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
+  return `${oneLoopAssuranceView(observability.oneLoopAssurance)}<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
   <div class="poc-grid3">${blocks}</div>
   <div class="poc-grid2"><section class="poc-panel"><h4>Blokkades en herstel</h4>${blockers.length?blockers.map(eventLine).join(''):empty('Geen blokkades geregistreerd in deze selectie; dit bewijst niet dat alle externe systemen probleemloos draaien.')}</section>
   <section class="poc-panel"><h4>Actuele werkstroom en bewijslinks</h4>${recent.length?recent.map(eventLine).join(''):empty('Geen actuele uitvoering in de canonieke projectie. Er worden geen werkzaamheden gesuggereerd.')}</section></div>`;
@@ -146,6 +213,47 @@ function overview(events,observability){
   <section class="poc-panel"><div class="poc-panelhead"><h4>Dagelijkse activiteit</h4><span>${s.events} events · ${s.sources} bronnen · ${s.layers} lagen</span></div>${timeline(events.slice(0,80))}</section>`;
 }
 
+/** Only the admin-approved summary of the ORIGINAL ONE BRAIN observed-state record.
+ * Server drops raw evidence, fingerprints, customer and tenant data.
+ */
+function portalUxProofCard(proof,releaseEvidence){
+ const source=proof?.status==='READBACK_COMPLETE';
+ const published=releaseEvidence?.providerIdentity?.netlifyPublishedSha||'';
+ const sourceMatches=source && published && proof.productionSha===published;
+ // A historical UX test does not prove that the NEW admin status card was
+ // rendered by an authenticated administrator. The registered state explicitly
+ // distinguishes source deployment from outstanding protected UI readback.
+ const adminReadbackDue=proof.release==='SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE';
+ const releaseMatches=sourceMatches && !adminReadbackDue &&
+   proof.release==='LIVE_SOURCE_AND_BROWSER_PROVEN'&&proof.browser==='PASS_15_SKIPPED_1';
+ const status=sourceMatches&&adminReadbackDue?'SOURCE_DEPLOYED_AUTHENTICATED_ADMIN_READBACK_DUE':
+   releaseMatches?'LIVE_SOURCE_AND_BROWSER_VERIFIED':source?'PRODUCTION_SOURCE_RECHECK_DUE':'UNVERIFIED';
+ const readiness=source?proof.acceptance||{}:{};
+ const checks=[
+  ['WCAG 2.2 AA onafhankelijk',readiness.wcag],
+  ['Ondernemerstaken en SUS',readiness.usability],
+  ['Twee echte klanttenants',readiness.tenants],
+  ['Internationale ontwerpbeoordeling',readiness.award]
+ ];
+ const label=value=>value==='VERIFIED'?'Onafhankelijk geverifieerd':
+   value==='ASSESSED'?'Beoordeeld':value==='NOT_ASSESSED'?'Niet beoordeeld':'Bewijs ontbreekt';
+ const indicators=checks.map(([name,value])=>'<article class="poc-component"><b>'+esc(name)+'</b>'+
+  '<span class="poc-badge '+(value==='VERIFIED'||value==='ASSESSED'?'good':'warn')+'">'+esc(label(value))+'</span></article>').join('');
+ return '<section class="poc-panel" data-portal-ux-proof data-evidence-status="'+esc(status)+'">'+
+  '<div class="poc-panelhead"><h4>Ondernemersportaal · gebruikskwaliteit</h4>'+
+  '<span class="poc-badge '+(releaseMatches?'good':'warn')+'">'+
+  esc(releaseMatches?'Technische UX-release met eerdere browsercontrole bevestigd':
+    sourceMatches&&adminReadbackDue?'Productiebron bevestigd · beveiligde beheercontrole open':'Broncontrole of bewijs open')+'</span></div>'+
+  '<p class="poc-note">Dit is de samenvatting van de bestaande ONE BRAIN-productiewaarneming, alleen zichtbaar na beheerdersautorisatie. Een goedgekeurde release bewijst geen toegankelijkheid, gebruiksgemak of ondernemersresultaat.</p>'+
+  '<p class="poc-note">Publicatiebron: '+esc(source?proof.productionSha.slice(0,12):'onbekend')+
+  ' · bronwaarneming: '+esc(source?fmtTime(proof.observedAt):'niet beschikbaar')+
+  ' · geldig tot: '+esc(source?fmtTime(proof.validUntil):'niet vastgesteld')+
+  '. Beveiligingsherstel: '+esc(source?proof.securityDiagnostic:'onbekend')+'.</p>'+
+  '<div class="poc-grid2">'+indicators+'</div>'+
+  '<p class="poc-note">Alleen een actuele bronvergelijking met de echte gepubliceerde SHA kan de technische release bevestigen. Bewijs voor WCAG, 8+ ondernemerstrajecten, twee-tenanttoegang en prestaties wordt afzonderlijk onderzocht.</p>'+
+  '<a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547" target="_blank" rel="noopener noreferrer">Ontwerpdoelen, incidenten en onafhankelijk bewijs</a></section>';
+}
+
 function systemMapView(systemMap,events,observability={}){
   if(!systemMap)return empty('De canonieke System Map ontbreekt in de beveiligde runtimeprojectie.');
   const snapshot=systemMap.providerSnapshot||{};
@@ -156,14 +264,67 @@ function systemMapView(systemMap,events,observability={}){
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
   const failureCoverage=systemMap.failureCoverage||{};
   const failureTotals=failureCoverage.status==='READBACK_COMPLETE'?failureCoverage.totals:null;
+  const siteRecovery=failureCoverage.websiteRecovery||{};
+  const siteVerified=siteRecovery.status==='READBACK_COMPLETE';
+  const siteStates=[
+    ['Checkout · browser en betaling','checkout',{SOFTWARE_LIVE_VERIFIED:'Technische checkout live en onafhankelijk getest; een betaalde klant is hiermee niet aangetoond.',RECOVERY_EVIDENCE_PENDING:'Technisch herstel niet onafhankelijk bevestigd.'}],
+    ['SEO · ongewijzigde inhoud','seoDate',{SOURCE_AND_NATURAL_VERIFIED:'Bronfix live; ook volgende natuurlijke run aangetoond.',SOURCE_LIVE_NATURAL_PENDING:'Bronfix live; volgende natuurlijke run nog niet bewezen.',RECOVERY_EVIDENCE_PENDING:'Bronherstel niet onafhankelijk bevestigd.'}],
+    ['SEO · automatische goedkeuring','prHandoff',{NATURAL_HANDOFF_VERIFIED:'Oorspronkelijke PR-overdracht bij echte wijziging bewezen.',OPEN_AUTHORIZATION:'GitHub Actions kan nog niet autonoom een PR openen; originele bevoegde route en herhalingsbewijs noodzakelijk.'}]
+  ];
+  const siteStateStatus=key=>siteVerified?String(siteRecovery[key]||'UNVERIFIED'):'UNVERIFIED';
+  const siteStateRows=siteStates.map(([label,key,words])=>{
+    const status=siteStateStatus(key),good=status==='SOFTWARE_LIVE_VERIFIED'||status==='SOURCE_AND_NATURAL_VERIFIED'||status==='NATURAL_HANDOFF_VERIFIED';
+    return `<article class="poc-component" data-original-site-incident="${esc(key)}" data-evidence-status="${esc(status)}"><b>${esc(label)}</b><span class="poc-badge ${good?'good':'warn'}">${esc(status)}</span><p class="poc-note">${esc(words[status]||'Onafhankelijke actuele broncontrole ontbreekt; niet als groen weergeven.')}</p></article>`;
+  }).join('');
+  const siteAllGreen=siteVerified&&siteStateStatus('checkout')==='SOFTWARE_LIVE_VERIFIED'
+    &&siteStateStatus('seoDate')==='SOURCE_AND_NATURAL_VERIFIED'
+    &&siteStateStatus('prHandoff')==='NATURAL_HANDOFF_VERIFIED';
+
   const failureMetric=key=>failureTotals&&Number.isSafeInteger(failureTotals[key])?String(failureTotals[key]):'—';
+  const predictiveProof=failureCoverage.predictiveRecovery||{};
+  const predictiveCode=String(predictiveProof.status||'UNVERIFIED');
+  const predictiveText={
+    TECHNICAL_RUNTIME_PROVEN_NATURAL_PENDING:'Technisch herstel in Supabase bewezen. Volgende natuurlijke agentrun en daadwerkelijke zakelijke uitkomst nog niet bewezen.',
+    NATURAL_RUNTIME_PROVEN_OUTCOME_PENDING:'Natuurlijke runtime bewezen; daadwerkelijke forecast-uitkomst nog niet bewezen.',
+    OUTCOME_EVIDENCE_PROVEN:'Forecast-uitkomst met afzonderlijk bewijs vastgelegd; dit bewijst geen algemene omzet- of publicatiedoelen.',
+    RECOVERY_EVIDENCE_PENDING:'Herstel bestaat als incident, maar ontbrekend productie- of runtimebewijs verhindert groen.',
+    UNVERIFIED:'Geen volledige onafhankelijke incidentreadback. Niet als opgelost weergeven.'
+  }[predictiveCode]||'Herstelstatus onbekend; geen succesclaim zonder bronreadback.';
+
+  const commercialIntake=observability.commercialIntakeProof||{};
+  const commercialSourceLive=commercialIntake.status==='SOURCE_LIVE_CUSTOMER_OUTCOME_PENDING'&&commercialIntake.sourceLive===true;
+  const commercialStatus=commercialSourceLive?'BRONCORRECTIE LIVE · KLANTRESULTAAT OPEN':'BRONBEWIJS ONBEKEND';
   const agentCoverage=observability.agentCycleCoverage||{};
   const agentTotals=agentCoverage.status==='READBACK_COMPLETE'?agentCoverage.totals:null;
   const agentMetric=key=>agentTotals&&Number.isSafeInteger(agentTotals[key])?String(agentTotals[key]):'—';
   const publication=observability.publicationEvidence||{};
+  const personalSourceSupply=observability.personalSourceSupply||{};
   const publicationComplete=publication.status==='REGISTRY_READBACK_COMPLETE';
   const publicationRows=publicationComplete?arr(publication.channels):[];
   const publicationLabels={linkedin_company:'LinkedIn bedrijf',linkedin_personal:'LinkedIn persoonlijk',instagram:'Instagram',blog:'Blog'};
+  const publicationRecoveryText=code=>{
+    if(code==='LINKEDIN_PERSONAL_PROVIDER_CREATED_READBACK_FORBIDDEN_NO_REPOST')
+      return 'Bericht aangemaakt; LinkedIn weigert de onafhankelijke uitleescontrole (403). Nooit opnieuw publiceren; alleen bestaand bericht verifiëren.';
+    if(code==='PERSONAL_SOURCE_FACT_UNVERIFIED_VALIDATE_BEFORE_DRAFT')
+      return 'Persoonlijke bron nog niet geverifieerd. Controleer concreet feit, herkomst, datum en nieuw verhaal vóór de bestaande goedkeurings- en publicatiestap; niet forceren of dubbel posten.';
+    if(code==='NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED')
+      return 'Bestaande verhaal-familie is al gebruikt. De originele contentagent moet een aantoonbaar ander feit met nieuwe bron en oorzaak/gevolg kiezen en opnieuw redactioneel, op identiteit en duplicaten toetsen. Geen oude tekst herschrijven of opnieuw plaatsen.';
+    if(code==='FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED')
+      return 'Nieuwe onafhankelijke bron ontbreekt of alle bekende gebeurtenissen zijn al gebruikt. De bestaande bronradar verzamelt op een volgende natuurlijke run andere gedateerde feiten; zonder bewijs blijft LinkedIn persoonlijk geblokkeerd, de overige kanalen lopen door.';
+    if(code==='NEW_FACT_VERIFIED_DISTINCT_STORY_REQUIRED')
+      return 'Dubbel verhaal afgekeurd. Laat de bestaande bronagent een aantoonbaar ander, gedateerd bronfeit met nieuwe gebeurtenis en eigen invalshoek controleren; herschrijven of opnieuw plaatsen van dezelfde verhaalfamilie is verboden. Laat de oorspronkelijke duplicaat- en publicatiepoorten opnieuw beslissen.';
+    if(code==='FRESH_INDEPENDENT_PERSONAL_SOURCE_REQUIRED')
+      return 'Geen voldoende nieuwe persoonlijke bron. Laat de bestaande bronradar een actuele onafhankelijke bron zoeken en factchecken vóór het maken van een nieuw concept. Geen verzonnen ervaringen of hergebruik van afgekeurde teksten.';
+    if(code==='MIRA_REJECTED_REQUIRES_NEW_APPROVED_MEDIA')
+      return 'Mira-beeld afgekeurd: verifieer herkenbare identiteit, mediaoverdracht en de geldende gezichtsdrempel in de bestaande producer; nooit een afgekeurde video publiceren.';
+    if(code==='MEDIA_IDENTITY_AND_PROVIDER_EVIDENCE_PENDING'||code==='CANONICAL_MEDIA_ASSET_REQUIRED')
+      return 'Instagram nog niet bewezen: controleer originele media, identiteit, overdracht en daarna provider-ID plus onafhankelijke readback. Geen publicatie zonder goedgekeurd beeld.';
+    if(code==='PROTECTED_PUBLICATION_AND_PUBLIC_URL_READBACK')
+      return 'Blog nog niet live bewezen: voer de bestaande beschermde websitepublicatie uit en controleer daarna de echte publieke artikel-URL. GENERATED of goedgekeurd is geen productiepublicatie.';
+    if(code==='LINKEDIN_PERSONAL_CANONICAL_OAUTH_CONSENT_REQUIRED')
+      return 'LinkedIn-eigenaarstoestemming vereist via de oorspronkelijke beveiligde OAuth-route. Niet omzeilen, geen alternatieve publisher en geen duplicaatpost.';
+    return code;
+  };
 
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
@@ -180,6 +341,13 @@ function systemMapView(systemMap,events,observability={}){
     ${kpi('Workflowbronbestanden',arr(inventories.githubWorkflows).length,'bronregistratie; geen uitvoeringsbewijs')}
     ${kpi('Netlify bronmodules',arr(inventories.netlifyFunctions).length,'inclusief helpers; geen deploybewijs')}
   </div>
+  ${portalUxProofCard(systemMap.portalUxReleaseProof||{},observability.releaseEvidence)}
+  <section class="poc-panel" data-original-site-recovery data-evidence-status="${esc(siteVerified?'READBACK_COMPLETE':'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Website &amp; SEO · bewijs en herstel</h4><span class="poc-badge ${siteAllGreen?'good':'warn'}">${siteAllGreen?'Alle controles bewezen':'Herstelpunten open of onzeker'}</span></div>
+    <p class="poc-note">Alleen gecontroleerde incidentstatussen uit het bestaande Supabase ONE BRAIN-register voor beheerders. Een live technische release is geen bewijs van een automatische volgende uitvoering of nieuwe omzet.</p>
+    ${siteStateRows}
+    <p class="poc-note"><a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439" target="_blank" rel="noopener noreferrer">Oorspronkelijke incidentlijn en bewijs</a>. Deze kaart voert zelf geen publicaties, betalingen of nieuwe agents uit.</p>
+  </section>
   <section class="poc-panel" data-brain-failure-coverage data-evidence-status="${esc(failureCoverage.status||'UNAVAILABLE')}">
     <div class="poc-panelhead"><h4>Fouten, oorzaken en preventie · ONE BRAIN</h4><span class="poc-badge ${failureTotals?'warn':'bad'}">${failureTotals?'Open kwaliteitspunten':'UNVERIFIED'}</span></div>
     <p class="poc-note">Alleen aantallen uit het bestaande Supabase-foutregister. Geen klantgegevens of ruwe incidentteksten. Ontbrekende readback blijft onbekend, nooit nul.</p>
@@ -190,7 +358,19 @@ function systemMapView(systemMap,events,observability={}){
       ${kpi('Regressietest ontbreekt',failureMetric('observedMissingRegression'),'preventie niet bewezen')}
       ${kpi('Preventieregel ontbreekt',failureMetric('observedMissingPrevention'),'learning nog open')}
     </div>
+    <p class="poc-note" data-predictive-source-proof data-evidence-status="${esc(predictiveCode)}"><b>Voorspellingsagent · publieke bronselectie:</b> ${esc(predictiveText)} Status uit het bestaande ONE BRAIN-foutregister; de portaalweergave voert geen predictie- of publicatieactie uit.</p>
     <p class="poc-note">Bronwaarneming: ${esc(fmtTime(failureCoverage.sourceLatestAt))}. Register gecontroleerd: ${esc(fmtTime(failureCoverage.observedAt))}. Zie <a href="https://app.notion.com/p/3c35856bf3cf4b89b838c6642d8f2fab" target="_blank" rel="noopener noreferrer">het bestaande incidentregister</a>. Dit overzicht sluit geen incident automatisch.</p>
+  </section>
+  <section class="poc-panel" data-commercial-intake-proof data-evidence-status="${esc(commercialIntake.status||'UNVERIFIED')}">
+    <div class="poc-panelhead"><h4>Echte leads, offertes en betalingen · bronbewijs</h4><span class="poc-badge ${commercialSourceLive?'warn':'bad'}">${esc(commercialStatus)}</span></div>
+    <p class="poc-note">De bestaande ONE BRAIN-bronregel onderscheidt een ingevulde scan, geverifieerde bedrijfsidentiteit, offerteakkoord en daadwerkelijk betaalde order. Dit is een beveiligde statuskaart; zij voert geen claim, betaling, klantmutatie of commerciële verzending uit.</p>
+    <div class="poc-kpis compact">
+      ${kpi('Scan → geverifieerde klant',commercialSourceLive?'Bronherstel live':'—',commercialSourceLive?'Nieuwe echte claim nog afzonderlijk aantonen':'Geen onafhankelijk productiebewijs')}
+      ${kpi('Offerte ≠ betaling',commercialSourceLive?'Afgedwongen':'—',commercialSourceLive?'Ondertekend is voorstel; omzet uitsluitend na betaalbewijs':'Status onbekend')}
+      ${kpi('Nieuwe echte klantclaim',commercialSourceLive?(commercialIntake.authorizedClaimProven===true?'Geregistreerd':'Niet bewezen'):'—','Alleen geautoriseerde tenantcontext')}
+      ${kpi('Betaalde order',commercialIntake.paymentProven===true?'Afzonderlijk bewijs aanwezig':'Niet bewezen','Geen omzetclaim op basis van ondertekening')}
+    </div>
+    <p class="poc-note">Bron: ${esc(commercialIntake.source||'oorspronkelijke ONE BRAIN-readback ontbreekt')}. Uitgelezen: ${esc(fmtTime(commercialIntake.observedAt))}. Status ${esc(commercialIntake.status||'UNVERIFIED')}. Dit bevestigt geen nieuwe omzet, causale ROI, volgende natuurlijke run of definitieve preventie. <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198" target="_blank" rel="noopener noreferrer">Oorspronkelijk commercieel incident #4198</a> blijft leidend.</p>
   </section>
   <section class="poc-panel" data-agent-cycle-coverage data-evidence-status="${esc(agentCoverage.status||'UNAVAILABLE')}">
     <div class="poc-panelhead"><h4>Besluitcyclus-events · echte herkomst en agentmeetdekking (24 uur)</h4><span class="poc-badge ${agentTotals&&agentTotals.events>0&&agentTotals.allFour===agentTotals.events?'good':'warn'}">${agentTotals?'Meetdekking, geen resultaatbewijs':'UNKNOWN · bron niet compleet'}</span></div>
@@ -216,8 +396,14 @@ function systemMapView(systemMap,events,observability={}){
       ${publicationRows.length?publicationRows.map(row=>kpi(
         publicationLabels[row.channel]||row.channel,
         esc(row.registryStatus),
-        (row.providerIdRecorded?'Provider-ID geregistreerd · ':'Geen provider-ID · ')+(row.internalLiveProofRecorded?'intern livebewijs · ':'onafhankelijk livebewijs vereist · ')+row.recoveryCode
+        (row.providerIdRecorded?'Provider-ID geregistreerd · ':'Geen provider-ID · ')+(row.internalLiveProofRecorded?'intern livebewijs · ':'onafhankelijk livebewijs vereist · ')+publicationRecoveryText(row.recoveryCode)
       )).join(''):kpi('Publicatiebewijs','—',esc(publication.reason||'De canonieke publicatiebron kon niet volledig worden gelezen'))}
+    </div>
+    <div class="poc-kpis compact">
+      ${kpi('LinkedIn persoonlijk · verse bronaanvoer',
+        personalSourceSupply.status==='FRESH_ELIGIBLE_SOURCES_PRESENT'?String(personalSourceSupply.freshEligibleSourceCount)+' actuele bronnen':
+        personalSourceSupply.status==='SOURCE_SUPPLY_REQUIRED'?'0 geschikte bronnen':'Niet geverifieerd',
+        'Bronselectie '+esc(personalSourceSupply.status||personalSourceSupply.reason||'UNVERIFIED')+' · een bron is geen verhaal, post of provider-ID')}
     </div>
     <p class="poc-note">Bronreadback ${esc(fmtTime(publication.observedAt))}. De herstelcode beschrijft de volgende veilige stap, niet een uitgevoerde actie. Bestaande executor, duplicate-gate, media-identiteit en protected release blijven verplicht.</p>
   </section>
@@ -318,7 +504,19 @@ async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   if(response.status===403)return {status:'forbidden',runtime:null};
   if(!response.ok)return {status:'error',runtime:null};
   const projection=await response.json();
-  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null,experimentChanges:projection.experimentChanges||null}};
+  let oneLoopAssurance={status:'UNVERIFIED',reason:'CANONICAL_ASSURANCE_READBACK_NOT_AVAILABLE'};
+  try {
+    const evidence=await fetchImpl('/api/powerhouse-one-loop-assurance',{
+      method:'GET',credentials:'same-origin',
+      headers:{accept:'application/json',authorization:`Bearer ${token}`}
+    });
+    if(evidence.ok)oneLoopAssurance=await evidence.json();
+    else oneLoopAssurance={status:'UNVERIFIED',reason:'CANONICAL_ASSURANCE_HTTP_'+evidence.status};
+  }catch{oneLoopAssurance={status:'UNVERIFIED',reason:'CANONICAL_ASSURANCE_READBACK_FAILED'};}
+  const mapped=mapRuntimeProjection(projection);
+  return {status:'ready',runtime:{...mapped,
+    observability:{...(mapped.observability||{}),oneLoopAssurance},
+    systemMap:projection.systemMap||null,experimentChanges:projection.experimentChanges||null}};
 }
 
 async function openAdminLogin(){

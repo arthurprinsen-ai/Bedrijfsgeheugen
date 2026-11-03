@@ -14,7 +14,9 @@ on:
         type: string
 
 permissions:
-  actions: read
+  # Only the original trusted terminal workflow may dispatch a read-only BRAIN
+  # verification for the exact merged candidate. No production writer grant.
+  actions: write
   contents: read
   id-token: write
   pull-requests: write
@@ -86,6 +88,65 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`obligation_id=${metadata.obligationId}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`delivery_lane=${metadata.deliveryLane}\n`);
           NODE
+
+      # One canonical original BRAIN verifier. Never substitute a descendant run,
+      # skip the gate, or spawn another scheduler. Workflow runs only on trusted
+      # protected main AFTER merge and dispatches verification_only=true.
+      - name: Ensure original exact-head read-only BRAIN verification exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] && [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]] && [[ "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 78
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          [ "$(jq -r '.merged' <<<"$pr")" = true ] || { echo "::error::BRAIN_DISPATCH_PR_NOT_MERGED"; exit 78; }
+          [ "$(jq -r '.base.ref' <<<"$pr")" = main ] || { echo "::error::BRAIN_DISPATCH_BASE_NOT_MAIN"; exit 78; }
+          [ "$(jq -r '.head.repo.full_name' <<<"$pr")" = "$GITHUB_REPOSITORY" ] || { echo "::error::BRAIN_DISPATCH_FOREIGN_REPO"; exit 78; }
+          [ "$(jq -r '.head.sha' <<<"$pr")" = "$HEAD_SHA" ] && [ "$(jq -r '.merge_commit_sha' <<<"$pr")" = "$MERGE_SHA" ] || {
+            echo "::error::BRAIN_DISPATCH_EXACT_IDENTITY_MISMATCH"; exit 78;
+          }
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor "$MERGE_SHA" origin/main || { echo "::error::BRAIN_DISPATCH_MERGE_NOT_ON_PROTECTED_MAIN"; exit 78; }
+          base_sha="$(jq -r '.base.sha' <<<"$pr")"
+          candidate_branch="$(jq -r '.head.ref' <<<"$pr")"
+          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]] || exit 78
+          # Exact display title and original workflow source are rechecked by
+          # require_workflow below; request at most once per PR+head identity.
+          expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
+          # workflow_dispatch is indexed under main SHA, NOT the PR head SHA.
+          # Double-check the original main-indexed provider flight before dispatch.
+          for guard_check in 1 2; do
+            # Use ALL native pages. A first 100-run page is never sufficient
+            # to prove absence when GitHub reports >100 historical runs.
+            if ! list="$(gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100")"; then
+              echo "::error::BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED"; exit 78
+            fi
+            if ! selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title")"; then
+              echo "::error::BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN"; exit 78
+            fi
+            status="$(jq -r '.status // "INVALID"' <<<"$selected")"
+            if [ "$status" = EXISTING_FLIGHT ]; then
+              prior_id="$(jq -r '.run_id' <<<"$selected")"
+              prior_status="$(jq -r '.run_status // "unknown"' <<<"$selected")"
+              echo "BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED:pr=${PR_NUMBER}:head=${HEAD_SHA}:run=${prior_id}:status=${prior_status}"
+              exit 0
+            fi
+            [ "$status" = NO_FLIGHT_PROVEN_FULL_HISTORY ] || {
+              echo "::error::BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN:status=${status}"; exit 78
+            }
+            [ "$guard_check" = 2 ] || sleep 2
+          done
+
+          jq -n --arg pr "$PR_NUMBER" --arg base "$base_sha" --arg head "$HEAD_SHA" --arg candidate_branch "$candidate_branch" \
+            '{ref:"main",inputs:{pr_number:$pr,base_sha:$base,head_sha:$head,candidate_branch:$candidate_branch,verification_only:"true"}}' \
+            > /tmp/brain-original-verify-only-dispatch.json
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/dispatches" \
+            --input /tmp/brain-original-verify-only-dispatch.json
+          echo "BRAIN_ORIGINAL_EXACT_HEAD_VERIFY_ONLY_DISPATCH_REQUESTED:pr=${PR_NUMBER}:head=${HEAD_SHA}"
 
       - name: Verify exact-head critical delivery gates before terminal claim
         env:
@@ -263,8 +324,17 @@ jobs:
           );
           for(const row of expected){
             const active=live.find(item=>item.function===row.function);
-            if(!active||active.version!==row.version||active.runtime_sha256!==row.runtime_sha256||active.state!=='ACTIVE')
+            if(!active||active.version!==row.version||active.runtime_sha256!==row.runtime_sha256||active.state!=='ACTIVE'){
+              // A later authorized re-deploy may supersede the original receipt
+              // even when source bytes still match. Never trust version drift
+              // automatically: require independent exact-current-main source
+              // parity, then update ONLY the affected original PR receipts and
+              // rerun this SAME provider check. Preserve this failed attempt.
+              console.error('TERMINAL_SOURCE_PARITY_RECHECK_REQUIRED:'+row.function+
+                ':expected_version='+row.version+':active_version='+(active?.version??'UNKNOWN')+
+                ':active_state='+(active?.state??'UNKNOWN'));
               throw new Error('SUPABASE_PROVIDER_LIVE_MISMATCH:'+row.function);
+            }
           }
           console.log('SUPABASE_PROVIDER_LIVE_METADATA_MATCH:'+expected.map(row=>row.function).join(','));
           NODE

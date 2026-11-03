@@ -1,0 +1,74 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v2",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|revenue-learning|migration-history-lock-stale-after-production-20261029",
+  "obligation_id": "CRO-PRODUCTION-MIGRATION-HISTORY-LOCK-20261029",
+  "failure_class": "METADATA_DRIFT",
+  "root_cause": "The original source lock lagged ten exact applied production migrations (main 774, original PR 779, production 784). Separately Supabase Preview returned SQLSTATE 23505 while inserting migration history versions already present in the preview (20261005142118,20261011111605). These SQL migration bodies have no schema_migrations inserts, so this is a provider preview replay/history inconsistency, not duplicate executable file versions.",
+  "observed_evidence": {
+    "verified_provider": "Supabase production supabase_migrations.schema_migrations",
+    "github_failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40919925385",
+    "merged_backend_sha": "3ce83006f53a22f3f3d5aa19d99a1b4aed024cfc",
+    "exact_applied_versions": [
+      "20261029122836",
+      "20261029125100",
+      "20261029125607",
+      "20261029174600",
+      "20261029174700",
+      "20261029180000",
+      "20261029181000",
+      "20261029182000",
+      "20261029183000",
+      "20261029185000"
+    ],
+    "backend_netlify_deploy": "6ae37fb06560c830c2117c32",
+    "human_proof": "docs/changes/2026-10-29-cro-production-migration-lock-reconciliation.md",
+    "no_credentials_or_customer_data": true,
+    "production_history_count": 784,
+    "preview_history_count": 779,
+    "main_lock_before_count": 774,
+    "pr_lock_before_count": 779,
+    "corrected_lock_count": 784,
+    "duplicate_preview_versions": [
+      "20261005142118",
+      "20261011111605"
+    ]
+  },
+  "fix": "Restore all ten real independently verified production name/version pairs in the same existing original PR #5146, retain original SQL, and enforce provider/manifest/source-lock parity before preview. Keep independent provider preview replay failed until vendor-supported resolution; no DML to migration history.",
+  "prevention_rule": "Preflight repository migration version+name set against exact production migration history and canonical source lock; block candidate before any preview spend when drift exists. A preview SQLSTATE 23505 for an already present version needs a provider-supported history reconciliation and exact provider recheck, never blind replay or bypass.",
+  "production_provider_history_verified": true,
+  "new_natural_website_conversion_proven": false,
+  "customer_revenue_proven": false,
+  "production_candidate_merged": false,
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "terminal_rule": "Only protected exact-head Required, BRAIN, CodeQL and a fresh Revenue Learning run on a merged main commit may close this CI failure. This does not prove paid orders or all CRO experiments.",
+  "preview_provider_execution_healthy": false,
+  "provider_preview_duplicate_issue_open": true,
+  "ci_admission_first_attempt": {
+    "run_id": 40955712525,
+    "job_id": 123735160004,
+    "state": "LEARNING_CANONICALIZATION_BLOCKED",
+    "exact_error": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/supabase-migration-history-integrity.test.mjs",
+    "root_cause": "General migration-history integrity test is real but does not satisfy mandatory Brain evaluation path naming contract /^tests\\/brain-.*\\.test\\.mjs$/; source/test presence alone is not canonicalization.",
+    "correction": "Keep tests/brain-cro-production-migration-lock-20261029.test.mjs as historical_replay; retain general test in learning.tests and in Required/Revenue Learning. Test naming contract before PR admission.",
+    "provider_preview_already_success": true,
+    "regression": "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+  }
+}

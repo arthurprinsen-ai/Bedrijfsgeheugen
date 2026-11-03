@@ -1,3 +1,4 @@
+import {researchSourceCandidate,researchRetryAt} from '../_shared/relationship-research-feedback.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -40,10 +41,10 @@ Deno.serve(async(req:Request)=>{
     const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions')
       .select('action_id,dedupe_key,person_key,company_key,company_name,person_name,role,priority,evidence')
       .eq('action_type','research_enrichment').eq('channel','internal').in('status',['suggested','prepared','waiting'])
-      .like('dedupe_key','relationship-research:%').order('priority',{ascending:false}).limit(10);
+      .like('dedupe_key','relationship-research:%').or('due_at.is.null,due_at.lte.'+observedAt).order('priority',{ascending:false}).limit(10);
     if(aErr) throw new Error('ACTIONS:'+aErr.message);
 
-    let researched=0,matched=0,events=0,noEvidence=0;
+    let researched=0,matched=0,events=0,noEvidence=0,sourceCandidatesReadback=0;
     const auth='Basic '+btoa(user+':'+pass);
 
     for(const action of actions||[]){
@@ -71,6 +72,26 @@ Deno.serve(async(req:Request)=>{
 
       if(best){
         matched++;
+        const candidate=researchSourceCandidate(action,best,observedAt);
+        // Bridge only safe candidate metadata into the ORIGINAL held email.
+        // Never set public_source_evidence, source_url, message_plan flags or Gmail send permission.
+        if(candidate){
+          const originId=candidate.original_outreach_action_id;
+          const {data:origin,error:originErr}=await db.from('powerhouse_sales_actions')
+            .select('action_id,person_key,company_key,status,evidence,updated_at')
+            .eq('action_id',originId).eq('person_key',action.person_key)
+            .eq('company_key',action.company_key).eq('status','prepared').maybeSingle();
+          if(originErr)throw new Error('ORIGINAL_OUTREACH_LOOKUP:'+originErr.message);
+          if(origin?.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED'){
+            const {data:saved,error:saveErr}=await db.from('powerhouse_sales_actions').update({
+              evidence:{...origin.evidence,relationship_source_candidate:candidate},
+              updated_at:observedAt
+            }).eq('action_id',originId).eq('status','prepared')
+              .eq('updated_at',origin.updated_at).select('action_id').maybeSingle();
+            if(saveErr)throw new Error('ORIGINAL_OUTREACH_SOURCE_CANDIDATE:'+saveErr.message);
+            if(saved)sourceCandidatesReadback++;
+          }
+        }
         const confidence=clamp(0.62+Math.max(0,10-Math.min(10,best.rank))*0.02);
         const dedupe='relationship-public-research:'+action.action_id+':'+best.trigger_type;
         const {error:eErr}=await db.from('powerhouse_runtime_events').upsert({
@@ -86,14 +107,20 @@ Deno.serve(async(req:Request)=>{
 
         const {error:uErr}=await db.from('powerhouse_sales_actions').update({
           status:'done',executed_at:observedAt,source_url:best.url,
-          evidence:{...(action.evidence||{}),public_research_execution:{contract:CONTRACT,trigger_type:best.trigger_type,headline:best.title,summary:best.summary,source_url:best.url,confidence,observed_at:observedAt,provider:'dataforseo-serp',vendor_used:false,evidence_only:true}}
+          evidence:{...(action.evidence||{}),relationship_source_candidate:candidate||null,public_research_execution:{contract:CONTRACT,trigger_type:best.trigger_type,headline:best.title,summary:best.summary,source_url:best.url,confidence,observed_at:observedAt,provider:'dataforseo-serp',vendor_used:false,evidence_only:true,original_outreach_writeback_scoped:true}}
         }).eq('action_id',action.action_id);
         if(uErr) throw new Error('ACTION_UPDATE:'+uErr.message);
       }else{
         noEvidence++;
+        const nextResearchAt=action?.evidence?.research_need==='source_specific_evidence'
+          ?researchRetryAt(observedAt,24):null;
         const {error:uErr}=await db.from('powerhouse_sales_actions').update({
-          status:'waiting',
-          evidence:{...(action.evidence||{}),public_research_execution:{contract:CONTRACT,no_current_trigger_evidence:true,researched_at:observedAt,provider:'dataforseo-serp',vendor_used:false,evidence_only:true}}
+          status:'waiting',...(nextResearchAt?{due_at:nextResearchAt}:{}),
+          evidence:{...(action.evidence||{}),public_research_execution:{
+            contract:CONTRACT,no_current_trigger_evidence:true,researched_at:observedAt,
+            next_research_at:nextResearchAt,reason:'NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH',
+            provider:'dataforseo-serp',vendor_used:false,evidence_only:true,
+            external_outreach_executed:false}}
         }).eq('action_id',action.action_id);
         if(uErr) throw new Error('ACTION_WAIT:'+uErr.message);
       }
@@ -106,9 +133,9 @@ Deno.serve(async(req:Request)=>{
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',
       status:'ok',detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}`,
-      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,vendor_enrichment:false,external_outreach_executed:false}
+      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,vendor_enrichment:false,external_outreach_executed:false}
     });
-    return json({ok:true,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
+    return json({ok:true,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     try { await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}); } catch { /* best-effort failure telemetry */ }

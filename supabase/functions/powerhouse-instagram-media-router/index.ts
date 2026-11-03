@@ -1,13 +1,13 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
-import {resolveMiraFrozenWinner as resolveMiraFrozenWinner_raw,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate as sourceLedAutoVerifyCandidate_raw,sourceLedRecoverableProofRetry as sourceLedRecoverableProofRetry_raw,eligibleSourceLedMediaReplacement} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner as resolveMiraFrozenWinner_raw,MIRA_SOURCE_LED_CAPTION_CONTRACT,sourceLedAutoVerifyCandidate as sourceLedAutoVerifyCandidate_raw,sourceLedRecoverableProofRetry as sourceLedRecoverableProofRetry_raw,eligibleSourceLedMediaReplacement,eligibleFrozenLibraryMediaGeneration,eligibleInitialFrozenLibraryMediaGeneration} from '../_shared/mira-frozen-winner-contract.mjs';
 const sourceLedRecoverableProofRetry:(...args:any[])=>any=sourceLedRecoverableProofRetry_raw;
 const sourceLedAutoVerifyCandidate:(...args:any[])=>any=sourceLedAutoVerifyCandidate_raw;
 const resolveMiraFrozenWinner:(...args:any[])=>any=resolveMiraFrozenWinner_raw;
 import {planMiraPreventiveRecovery,assessMiraProviderBeforeSpend} from '../_shared/mira-preventive-quality-recovery.mjs';
 import {MIRA_APPROVED_DERIVED_INPUT,validatePinnedMiraDerivedInput} from '../_shared/mira-approved-derived-video-input.mjs';
-import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection} from './preflight-write.mjs';
+import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection,reconcileHistoricalRejectedGeneratingJob} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -90,6 +90,20 @@ Deno.serve(async req=>{
  const expectedScene=sourceLed?winnerContract.scene:miraBusinessProblem.scene;
  const expectedProblemId=sourceLed?null:miraBusinessProblem.id;
 
+ // The original producer may still be marked GENERATING after its OpenArt
+ // history was independently rejected. Recover from immutable ONE BRAIN once,
+ // without buying/rechecking rejected bytes or creating a second publisher.
+ if(action==='preflight'&&['GENERATING','WAITING_ASSET','WAITING_PROVIDER_CONNECTION'].includes(clean(job?.status))&&!historical){
+   const restored=await reconcileHistoricalRejectedGeneratingJob(db,{job,ob});
+   if(restored.kind==='rejected')
+     return json({ok:true,ready:false,runDate,postType,status:'WAITING_PROOF',
+       last_error:restored.code,history:restored.historyId,
+       next_action:'Original producer must make one new approved candidate under the existing budget. No duplicate or lowered quality gate.'});
+   if(['unavailable','failed','partial'].includes(restored.kind))
+     return json({ok:false,error:'MIRA_REJECTED_HISTORY_RECOVERY_INCOMPLETE',detail:restored.kind},503);
+   if(restored.kind==='stale')return json({ok:true,ready:false,status:'STATE_CHANGED_RETRY',runDate},409);
+ }
+
  // The same original verifier wrote this exact SHA and master-face evidence.
  // Read-only; never trusts an unverified derivative supplied in caller JSON.
  async function checkDerivedProducerInput(derived:any){
@@ -109,12 +123,24 @@ Deno.serve(async req=>{
  // OpenArt generate_video request. Reject the observed Wan 2.7 config even
  // though OpenArt calls it '1080p': its real output was NOT native 9:16.
  if(action==='generation_preflight'){
-   if(postType!=='reel'||!sourceLed||clean(ob?.external_id)||ob?.live_proven_at||
+   // A quality-rejected PH-P library winner may request a format preflight
+   // ONLY when the frozen source, problem, exact scene, original rejected
+   // provider history, budget and unique unsent claim all match.
+   const frozenLibraryRecovery=eligibleFrozenLibraryMediaGeneration({
+     resolved:winnerContract,job,ob,input,postType
+   });
+   const initialFrozenLibrary=eligibleInitialFrozenLibraryMediaGeneration({
+     resolved:winnerContract,job,ob,input,postType
+   });
+   if(postType!=='reel'||(!sourceLed&&!frozenLibraryRecovery&&!initialFrozenLibrary)||
+      clean(ob?.external_id)||ob?.live_proven_at||
       clean(ob?.status)==='LIVE_PROVEN')
      return json({ok:false,error:'MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED'},422);
    const config=assessMiraProviderBeforeSpend({
      model:input.model,mode:input.mode,params:input.params,
-     masterReferenceId:clean(job?.asset_manifest?.openart_reference_id)
+     // Library winner rows predate the stored reference-id column. The exact
+     // immutable original master is pinned in source; caller cannot override it.
+     masterReferenceId:frozenLibraryRecovery?MIRA_MASTER_REFERENCE_ID:initialFrozenLibrary?MIRA_MASTER_REFERENCE_ID:clean(job?.asset_manifest?.openart_reference_id)
    });
    const derivedInput=input.derivedReference
      ?await checkDerivedProducerInput(input.derivedReference):null;
@@ -131,6 +157,10 @@ Deno.serve(async req=>{
 
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
+  const originalProducerRejectedHandoff=job?.status==='GENERATING'
+    &&clean(manifest.openart_history_id)===clean(job?.asset_manifest?.openart_history_id)
+    &&clean(manifest.openart_project_id)===clean(job?.asset_manifest?.openart_project_id)
+    &&!!clean(manifest.openart_history_id);
   // A real identity rejection permits a DIFFERENT source-matched candidate to
   // enter the exact same independent verifier. It never approves that candidate.
   // Editorial winner, source hash, frozen scene and master identity remain fixed.
@@ -192,7 +222,8 @@ Deno.serve(async req=>{
    if(fx.status===422&&fb?.error==='MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH'&&fb?.native_dimensions_verified===true){
      const diagnostic=await recordMediaProofRejection(db,{
        job,ob,code:'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',position:'native',
-       historyId:manifest.openart_history_id,width:fb.actual_width,height:fb.actual_height
+       historyId:manifest.openart_history_id,width:fb.actual_width,height:fb.actual_height,
+       allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u
      });
      if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_NATIVE_DIMENSION_DIAGNOSTIC_FAILED',diagnostic.code);
      return json({ok:false,error:'MIRA_NATIVE_VIDEO_DIMENSIONS_MISMATCH',
@@ -212,7 +243,8 @@ Deno.serve(async req=>{
      else {payload.imageBase64=frameBase64;payload.mediaMime=clean(f.mediaType||'image/jpeg');}
      const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',payload);
      if(!fv.body?.pass||!miraFaceProofValid(fv.body?.visual||{},'image')){
-     const diagnostic=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,historyId:manifest.openart_history_id,confidence:fv.body?.visual?.face_identity_confidence});
+     const diagnostic=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,historyId:manifest.openart_history_id,confidence:fv.body?.visual?.face_identity_confidence,
+       allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u});
      if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_REJECTION_DIAGNOSTIC_WRITE_FAILED',diagnostic.code);
      return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,detail:fv.body},422);
    }
@@ -228,7 +260,8 @@ Deno.serve(async req=>{
         &&Number.isFinite(Number(verdict.confidence))){
        const diagnostic=await recordMediaProofRejection(db,{
          job,ob,code:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',position:'temporal',
-         historyId:manifest.openart_history_id,confidence:verdict.confidence
+         historyId:manifest.openart_history_id,confidence:verdict.confidence,
+         allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u
        });
        if(diagnostic.kind==='failed'||diagnostic.kind==='partial')
          console.error('MIRA_TEMPORAL_REJECTION_DIAGNOSTIC_FAILED',diagnostic.code);

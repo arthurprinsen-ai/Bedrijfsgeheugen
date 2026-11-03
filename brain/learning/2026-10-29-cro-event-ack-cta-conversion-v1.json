@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|cro|cta-event-alias-mismatch|20261029",
+  "obligation_id": "SITE-CRO-EVENT-LEAD-ORDER-PROOF-20261029",
+  "failure_class": "CRO_EVENT_ALIAS_AGGREGATION_AND_UNVERIFIED_PROVIDER_ACK",
+  "root_cause": "Existing canonical growth RPC counted only legacy cta_click, selfscan_start and frisse_blik_click, although client emits primary_cta_click, secondary_cta_click and money_link_click. The Netlify replay and commercial outcome code accepted any successful HTTP response as a persisted RPC receipt.",
+  "observed_evidence": {
+    "source": "2026-10-29 read-only production Supabase examination and existing P0 issue #4446",
+    "events_total": 222770,
+    "events_7d": 12144,
+    "bot_flag_false_7d": 7786,
+    "commercial_leads": 0,
+    "experiment_assignments": 1,
+    "verified_paid_orders": 0,
+    "raw_customer_data_in_repository": false
+  },
+  "fix": "Update only the existing RPC aggregation and idempotent non-robot backfill; gate event/outcome persisted states on exact Supabase RPC receipt; add read-only permission-restricted experiment/lead/order evidence projections.",
+  "prevention_rule": "A 202 queue receipt or HTTP 200 is not Supabase persistence; a page form intent is not qualified lead; a generic sales outcome is not paid order. Promotion requires experimental controls, matured attribution and independent provider/readback.",
+  "production_proven": false,
+  "privacy_sensitive": false,
+  "compiler": {
+    "failure_class": "CRO_EVENT_ALIAS_AGGREGATION_AND_UNVERIFIED_PROVIDER_ACK",
+    "scope": "CRO_ANALYTICS_QUALITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-datahub-ack-cta-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-datahub-ack-cta-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-datahub-ack-cta-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-growth-datahub-ack-cta-20261029.test.mjs"
+  ],
+  "terminal_rule": "Do not claim live prior to protected exact-head CI, safe migration and GitHub main-to-Netlify-to-real consented browser-to-Supabase ID readback, experiment sample proof and verified commercial outcomes."
+}

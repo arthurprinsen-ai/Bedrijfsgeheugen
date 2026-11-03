@@ -1,0 +1,129 @@
+// Read-only deadline classification consumed inside the ORIGINAL Powerhouse content-loop.
+// This is not a second publisher, lease, scheduler, approval or source of truth.
+export const PUBLICATION_RECOVERY_CONTRACT='one-brain-publication-no-silent-gap-v1';
+const CHANNELS=Object.freeze([
+  {channel:'linkedin_personal',decision:'linkedin_personal',owner:'powerhouse-content-orchestrator / powerhouse-social-publisher'},
+  {channel:'linkedin_company',decision:'linkedin_company',owner:'powerhouse-content-orchestrator / powerhouse-social-publisher'},
+  {channel:'instagram',decision:'instagram_company',owner:'powerhouse-instagram-media-router / powerhouse-social-publisher'},
+  {channel:'blog',decision:'blog',owner:'powerhouse-blog-queue / protected daily GitHub blog writer'},
+  {channel:'email_newsletter',decision:'email_newsletter',owner:'canonical Powerhouse email / authorized recipient owner'}
+]);
+const GRACE_MS=30*60*1000;
+// Each retry remains inside the ORIGINAL channel owner's existing scheduled
+// execution. This classification never publishes, creates a scheduler, or
+// changes the provider's idempotency / permission boundaries.
+const REPAIR_HANDOFF=Object.freeze({
+  EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'VERIFY_SENDER_OPT_IN_AND_SUPPRESSION_THEN_RESUME',
+  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'RESTORE_APPROVED_GENERATION_CAPABILITY_THEN_REGENERATE',
+  DISTINCT_VERIFIED_STORY_REQUIRED:'DISCOVER_DIFFERENT_VERIFIED_SOURCE_THEN_REGENERATE',
+  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'REBUILD_AND_VERIFY_FINAL_MEDIA_THEN_RESUME',
+  MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'FIND_FRESH_DISTINCT_SOURCE_AND_FREEZE_WINNER',
+  BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'CORRECT_EDITORIAL_RELEASE_AND_READBACK',
+  CHANNEL_CAPABILITY_PROOF_REQUIRED:'RESTORE_ORIGINAL_PROVIDER_PERMISSION_THEN_RECONCILE',
+  EXACT_PROVIDER_PUBLICATION_PROOF_MISSING:'RECONCILE_EXTERNAL_SIDE_EFFECT_BEFORE_IDEMPOTENT_RETRY',
+  PUBLICATION_SCHEDULE_MISSING:'REPAIR_ORIGINAL_DAILY_DECISION_THEN_RESUME'
+});
+const str=x=>typeof x==='string'?x.trim():'';
+function reasonFor(channel,obligation,decision){
+  const error=str(obligation?.last_error);
+  const boundary=str(decision?.delivery_evidence?.capability_reason);
+  if(channel==='email_newsletter')return 'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED';
+  // The original content generator records a precise classified provider
+  // failure before any publication side effect. A 429 billing refusal must
+  // not masquerade as a failed social transport or prompt blind retries.
+  // A new review or source collision outranks an OLD provider quota error.
+  // A previous 429 can stay in JSON after the approved model has regenerated.
+  const current=decision?.delivery_evidence||{};
+  const currentError=str(current.error);
+  if(error.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
+    ||currentError.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
+    ||(channel==='linkedin_company'
+      &&Array.isArray(current.violations)
+      &&current.violations.some(v=>v?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT')))
+    return 'DISTINCT_VERIFIED_STORY_REQUIRED';
+  if(decision?.state==='decided'
+    &&current.artifact_generation_failure?.classification==='PROVIDER_BILLING')
+    return 'CONTENT_GENERATION_BILLING_ACTION_REQUIRED';
+  if(channel==='instagram')return str(decision?.delivery_evidence?.daily_winner_recommendation_id)
+    ? 'MIRA_FINAL_MEDIA_PROOF_REQUIRED' : 'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED';
+  if(channel==='blog')return 'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED';
+  if(boundary)return 'CHANNEL_CAPABILITY_PROOF_REQUIRED';
+  return 'EXACT_PROVIDER_PUBLICATION_PROOF_MISSING';
+}
+const REMEDIATION=Object.freeze({
+  EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Controleer uitsluitend oorspronkelijke bevoegdheid, ontvanger-opt-in en suppressie; nooit een nieuwe of ongevraagde verzender.',
+  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Oorspronkelijke AI-tekstgenerator heeft geen providertegoed; vraag bevoegde accountbeheerder om herstel of gebruik pas een opnieuw goedgekeurde en bewezen beschikbare bestaande fallback. Niet automatisch betalen, route wisselen of extra sends proberen.',
+  DISTINCT_VERIFIED_STORY_REQUIRED:'Laat oorspronkelijke bronagent een wezenlijk nieuw geverifieerd verhaal vinden; behoud onveranderlijke duplicate-gate en provider-ID.',
+  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Maak/controleer nieuwe Mira-media in de originele router met frame-identiteit >= 0,940, inhoudskwaliteit en exact definitief mediabewijs.',
+  MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'Laat de bestaande Mira-bronagent eerst een nieuw, gedateerd en onafhankelijk MKB-probleem vinden, bestaande onderwerp- en brondubbelingen uitsluiten en daarna exact één originele dagwinnaar vastleggen. Pas na die stap mag de mediarouter een nieuwe video voorbereiden.',
+  BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel oorspronkelijke redactionele goedkeuring, protected PR, Required/CodeQL/BRAIN, merge, Netlify en exact publiek artikelbewijs.',
+  CHANNEL_CAPABILITY_PROOF_REQUIRED:'Herstel de oorspronkelijke providerbevoegdheid veilig, vraag vereiste menselijke OAuth-consent; geen alternatieve account of publisher.',
+  EXACT_PROVIDER_PUBLICATION_PROOF_MISSING:'Herneem alleen de oorspronkelijke idempotente lane na controle op mogelijk extern effect; lees provider-ID terug, nooit blind opnieuw publiceren.',
+  PUBLICATION_SCHEDULE_MISSING:'Herstel de oorspronkelijke gedateerde kanaalbeslissing; verzin geen deadline en verzend niets op basis van een aanname.'
+});
+export function assessDailyPublicationRecovery({
+  runDate, now=new Date().toISOString(), obligations=[], decisions=[], isTerminal=()=>false, graceMs=GRACE_MS
+}={}){
+  const observed=Date.parse(now);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(str(runDate))||!Number.isFinite(observed)
+    ||!Array.isArray(obligations)||!Array.isArray(decisions)
+    ||typeof isTerminal!=='function'||!Number.isFinite(graceMs)||graceMs<0)
+    return {contract:PUBLICATION_RECOVERY_CONTRACT,status:'UNVERIFIED',overdue:[],pending:[],reason:'INPUT_UNVERIFIED'};
+  const byObligation=new Map(obligations.map(o=>[str(o?.channel),o]));
+  const byDecision=new Map(decisions.map(d=>[str(d?.channel),d]));
+  const overdue=[],pending=[];
+  for(const entry of CHANNELS){
+    const obligation=byObligation.get(entry.channel);
+    const decision=byDecision.get(entry.decision);
+    // A real provider acknowledgement/readback is authoritative; no resend
+    // merely because a later readback endpoint becomes unavailable.
+    if(obligation&&isTerminal(obligation))continue;
+    // The original Supabase postgres driver returns timestamptz as a Date
+    // object. Accept only a valid Date or a timestamp string; rejecting Date
+    // as "missing schedule" falsely hides the actual overdue publication.
+    const rawSchedule=decision?.scheduled_for;
+    const scheduledFor=rawSchedule instanceof Date && Number.isFinite(rawSchedule.getTime())
+      ? rawSchedule.toISOString() : str(rawSchedule);
+    const scheduleMs=Date.parse(scheduledFor);
+    const isScheduled=scheduledFor.length>0&&Number.isFinite(scheduleMs);
+    const isExpired=isScheduled && observed>=scheduleMs+graceMs;
+    // An explicit failed AI generation is actionable immediately, even when the
+    // planned publication time has not passed. Waiting for due+30m loses the
+    // chance to restore the approved provider and regenerate good content.
+    const providerGenerationFailed=decision?.state==='decided'
+      &&decision?.delivery_evidence?.artifact_generation_failure?.classification==='PROVIDER_BILLING';
+    const isFailed=['FAILED','BLOCKED'].includes(str(obligation?.status))
+      ||str(decision?.state)==='blocked'||providerGenerationFailed;
+    // Missing decision is itself a recovery obligation: never silently skip a lane.
+    const isMissingSchedule=!isScheduled;
+    const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision);
+    const item={
+      channel:entry.channel,
+      owner:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED'
+        ? 'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1'
+        : entry.owner, code,
+      action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
+      // Present deadline risk as risk, never falsely as a missed publication.
+      phase:isExpired?'MISSED_DEADLINE':isFailed||isMissingSchedule?'EARLY_RECOVERY':'PENDING',
+      // Original publisher MUST reconcile external provider side effects before
+      // any retry; content regeneration is a new qualified artifact, not a
+      // duplicate of an already-delivered post or email.
+      repairHandoff:REPAIR_HANDOFF[code],
+      // Immutable hash identifies distinct rejected revisions without storing
+      // public-facing draft copy or personal data in incident evidence.
+      rejectedCopySha256:/^[a-f0-9]{64}$/.test(str(decision?.delivery_evidence?.reviewed_text_hash))
+        ?str(decision.delivery_evidence.reviewed_text_hash):null,
+      rejectedRecommendationId:/^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(str(decision?.delivery_evidence?.fallback_recommendation_id))
+        ?str(decision.delivery_evidence.fallback_recommendation_id):null,
+      status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
+      requiresAuthorization:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED' ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
+        || entry.channel==='email_newsletter'
+        ||str(decision?.delivery_evidence?.capability_state)==='BLOCKED_HARD_BOUNDARY'
+    };
+    if(isExpired||isFailed||isMissingSchedule)overdue.push(item);
+    else pending.push(item);
+  }
+  return {contract:PUBLICATION_RECOVERY_CONTRACT,
+    status:overdue.length?'RECOVERY_DUE':pending.length?'PENDING_PROOF':'PROVIDER_PROOF_COMPLETE',
+    overdue,pending,graceMinutes:Math.round(graceMs/60000)};
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "ONE_BRAIN_LEARNING_v1",
+  "fingerprint": "powerhouse|cycle-events|missing-truthful-writer-provenance|20261029",
+  "obligation_id": "powerhouse-lean-agent-loop-20261029",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "observed_on": "2026-10-29",
+  "evidence": {
+    "source": "public.powerhouse_cycle_events, PostgreSQL schema introspection",
+    "sales_action_events_per_stage": 315,
+    "agent_id_coverage": 0,
+    "before_after_coverage": 0,
+    "notes": "Existing materializers know their SQL writer identity but cannot attest actual AI agent identity.",
+    "annotated_function_count": 5,
+    "annotated_callsite_count": 21,
+    "privileged_functions_excluded": [
+      "powerhouse_open_cycle_from_runtime_signal_v1",
+      "powerhouse_open_cycle_from_sales_action_v1"
+    ]
+  },
+  "root_cause": "Seven canonical PostgreSQL materializer functions do not include their own provable writer component identity in event payloads. Originating AI agent/skill identity is not available in historical source action evidence.",
+  "safe_fix": "Annotate 21 new event payloads in FIVE existing SECURITY INVOKER SQL materializers with provable writer_component, writer_contract_version, and agent_attribution UNKNOWN. Two privileged SECURITY DEFINER source-entry materializers are intentionally excluded pending separate authority review. No synthetic AI agent or outcome.",
+  "no_false_success": [
+    "do_not_invent_agent_id",
+    "do_not_invent_before_metric",
+    "do_not_invent_after_metric",
+    "never_rewrite_historical_events",
+    "no_new_writer_or_scheduler",
+    "revenue_zero_or_missing_is_not_paid_success"
+  ],
+  "regression_ref": "tests/brain-cycle-writer-provenance-20261029.test.mjs",
+  "next_step": "After protected migration, independently verify SQL function source and new events from existing schedules. Then instrument actor identity and actual baseline/outcomes in originating authorized agents before closing the candidate.",
+  "closure_gate": "independently verified agent_id/skill_version, before/after metric evidence, provider outcome and commercial revenue attribution; this migration alone does not close the gate",
+  "type": "POWERHOUSE_LEARNING",
+  "failure_class": "CANONICAL_SQL_WRITER_PROVENANCE_GAP",
+  "compiler": {
+    "failure_class": "CANONICAL_SQL_WRITER_PROVENANCE_GAP",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cycle-writer-provenance-20261029.test.mjs"
+  ],
+  "prevention_rule": "For every new canonical event the producer function must attest only its actual SQL writer identity, keep originating AI agent/skill and unobserved before-after metrics UNKNOWN, preserve sales execution truth and idempotency, and require independent production event readback before closing the incident. The two privileged source-entry functions must not be redefined in this migration without separate approved permission contract.",
+  "open_gaps": [
+    "PRIVILEGED_SOURCE_ENTRY_FUNCTION_REVIEW",
+    "ORIGINATING_AGENT_IDENTITY_NOT_ATTESTED",
+    "SKILL_VERSION_NOT_ATTESTED",
+    "INDEPENDENT_BEFORE_AFTER_OUTCOMES",
+    "PAID_REVENUE_PROOF"
+  ]
+}

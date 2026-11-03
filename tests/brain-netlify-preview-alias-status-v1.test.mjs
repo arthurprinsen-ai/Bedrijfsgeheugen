@@ -37,3 +37,25 @@ test('canary: both consumers of the Netlify status contract accept the same two 
     assert.match(wf, /\^\[a-f0-9\]\{24\}\$/, name + ' must require a 24-hex deploy id');
   }
 });
+
+// Fingerprint ci|netlify-preview-closed-pr-race|portal-v2-live-preview|20261029-v1
+// Auto-merge closes the PR within minutes; the workflow_run then starts after the merge, the numbered
+// alias no longer serves the PR head, and the wait loop ended red after 9 minutes.
+test('replay: a closed or merged PR ends the wait without failing and skips every later step', () => {
+  assert.match(livePreview, /pulls\/\$\{PR_NUMBER\}"[^\n]*jq -r '\.state'/);
+  assert.match(livePreview, /\[ "\$pr_state" != "open" \]/);
+  assert.match(livePreview, /echo "PREVIEW_PR_CLOSED=1" >> "\$GITHUB_ENV"/);
+  const stepsAfterWait = livePreview.split('Wait for exact Netlify preview SHA')[1].split('\n      - name: ').slice(1);
+  assert.ok(stepsAfterWait.length >= 10);
+  for (const step of stepsAfterWait) {
+    const name = step.split('\n')[0];
+    if (name === 'Upload visual evidence') continue;
+    assert.match(step, /\n {8}if: env\.PREVIEW_PR_CLOSED != '1'/, 'step must be skipped for a closed PR: ' + name);
+  }
+});
+
+test('shadow: an open PR still waits and still fails on a real provider failure or timeout', () => {
+  assert.match(livePreview, /Timed out waiting for immutable Netlify preview on exact head SHA"\n\s+exit 1/);
+  assert.match(livePreview, /Netlify preview failed for \$HEAD_SHA: \$state/);
+  assert.doesNotMatch(livePreview, /actions: write/);
+});

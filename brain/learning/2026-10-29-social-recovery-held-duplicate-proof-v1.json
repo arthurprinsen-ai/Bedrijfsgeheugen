@@ -1,0 +1,34 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "social-recovery-held-duplicate-closure-proof-20261029",
+  "fingerprint": "powerhouse|social-recovery|held-duplicate-silent-green|20261029-v1",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "RELIABILITY",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-recovery-held-provider-proof-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "The existing social-recovery-runner selects only publish decisions for preparation/terminal criteria. A held personal LinkedIn duplicate can disappear from its required channel set. OpenArt completion and media-job GENERATING mismatch is separately observed; exact OpenArt-to-media-router handoff root cause remains unconfirmed.",
+  "change": "Resume the existing bounded content loop for a proven no-side-effect held personal duplicate; require all due social obligations to carry a real external post ID, independently verified provider truth, and proven status before social recovery can report GREEN. Preserve the original media router and publisher ownership.",
+  "prevention": "Never infer social day completion from selected publish decisions only. A held/rejected personal duplicate remains due until a distinct source and independent provider proof exist. A completed OpenArt generation must hand off its exact existing asset through the canonical router; no blind respend, bypass or fabricated media evidence.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
+  ],
+  "regression_ref": "tests/brain-social-recovery-held-provider-proof-20261029.test.mjs",
+  "evidence": {
+    "private_brain_fingerprint": "mira|media|completed-openart-history-unreconciled-generating-job|20261029-v1",
+    "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+    "provider_history_proof": "OpenArt 2026-10-29 COMPLETED but exact media handoff not yet verified",
+    "personal_duplicate_proof": "Canonical obligation 2026-10-29 BLOCKED / STORY_FAMILY_DUPLICATE, no external ID",
+    "provider_post_proof": "None for personal/Instagram; company already LIVE_PROVEN and must not be reposted",
+    "production_verification": "PENDING_PROTECTED_MERGE_AND_READBACK"
+  }
+}

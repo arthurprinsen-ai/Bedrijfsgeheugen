@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|agent-incident|silent-failure-and-unverified-recovery|20261103-v1",
+  "obligation_id": "powerhouse|agent-incident|silent-failure-and-unverified-recovery|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "related_incidents": [
+    4681,
+    5333,
+    5332,
+    5320
+  ],
+  "status": "CANDIDATE_NOT_PROVEN_LIVE",
+  "root_cause": "Existing mandatory chat-learning preflight validates incident protocol text/skill marker but has no observed-provider-event to canonical Brain receipt and recovery readback reconciliation; errors can be unreported while preflight says READY. Effective runtime coverage is not proven.",
+  "fix": "Original preflight now evaluates optional independently observed provider event/Brain receipt/recovery evidence using one pure scoped incident-assurance module, exposes UNREPORTED_FAILURE_DETECTED, SAFE_RECOVERY_REQUIRED, RECOVERY_NOT_PROVEN, INCIDENT_IDENTITY_CONFLICT, SOURCE_COVERAGE_UNVERIFIED and independent verified status. No alternate issuer of incidents, scheduler or registry.",
+  "prevention_rule": "All original runtime owners must submit provider observations and genuine brain_observe_failure occurrence readbacks to ONE BRAIN before reporting completion. Any missing receipt, repeated error, unattempted safe repair, missing regression/provider readback, or incomplete observation scope fails closed and is a durable existing-owner obligation. Without independently observed provider coverage never claim global green.",
+  "evidence": {
+    "provider_cases": [
+      "GitHub Janitor tag-create 403 succeeded despite errors (#5333)",
+      "duplicate BRAIN dispatch canceled first run (#5332)",
+      "Supabase Brain occurrence duplicate/conflict (#4681)"
+    ],
+    "limits": "Preflight instrumented only when an agent supplies source observations and receipts; no universal runtime event feed or authenticated portal readback is proven yet. Do not claim all errors auto-heal."
+  },
+  "owner": "existing-one-brain-powerhouse-heartbeat-governance-owner",
+  "tests": [
+    "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "invariants": [
+      "missing incident receipt is open problem",
+      "no fake provider readback or released green",
+      "repeated fingerprint reopens",
+      "no provider identity collisions",
+      "no new writer or scheduler",
+      "preflight unknown coverage is not green"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "portal_projection": {
+    "status": "COVERAGE_UNVERIFIED_UNTIL_AUTHENTICATED_RUNTIME_SOURCE_AND_REGISTRY_READBACK",
+    "global_green": false
+  },
+  "terminal_rule": "Exact-head Required, CodeQL and full BRAIN, protected merge and native source/registry readback; actual external runtime adoption by each owner remains separately open until verified.",
+  "failure_class": "UNREPORTED_PROVIDER_FAILURE_AND_UNVERIFIED_AGENT_RECOVERY",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "UNREPORTED_PROVIDER_FAILURE_AND_UNVERIFIED_AGENT_RECOVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "ownership": {
+    "agent": "existing-one-brain-powerhouse-heartbeat-governance-owner",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  }
+}

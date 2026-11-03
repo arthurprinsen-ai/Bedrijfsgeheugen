@@ -1,0 +1,51 @@
+{
+  "fingerprint": "powerhouse|brain|janitor-third-job-test-inventory-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original BRAIN Janitor cache isolation test hardcoded exactly two job names but original protected janitor workflow already introduced a third independent branch_archive_sweep job. Existing first two privileged Janitor jobs have explicit cache-mode none and no actions/cache; third bounded job runs after janitor, with original 20m timeout, 900s budget, cap150 and no actions/cache. Old static count conflates safe extra branch reconciliation with violating cache security. A second old branch-reconciliation test also reads all text after branch_reconciler including the third archive sweep; its no-needs assertion incorrectly includes archive's legitimate needs:janitor.",
+  "prevention_rule": "The original Janitor security regression must assert its full three-job current inventory, retain explicit cache isolation on both privileged original jobs, and verify the independent archive sweep is bounded, after janitor, no actions/cache and not a new scheduler or unmanaged writer. Never drop a legitimate safe job or loosen GitHub Actions permissions merely to satisfy an obsolete exact-two test. Reconciler assertions must be bounded before the independent archive job and assert the separate archive's downstream needs:janitor and 20m budget, never strip the real dependency.",
+  "owner": "Original ONE BRAIN repository Janitor source/CI cache-token safety regression owner",
+  "evidence": {
+    "original_BRAIN_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41418160550",
+    "original_backend_job_id": 125187272147,
+    "total_tests": 5377,
+    "passed": 5348,
+    "failed": 27,
+    "affected_test": "tests/brain-janitor-cache-token-isolation-20261023.test.mjs",
+    "canonical_workflow": ".github/workflows/powerhouse-repository-janitor.yml",
+    "job_inventory": [
+      "janitor",
+      "branch_reconciler",
+      "branch_archive_sweep"
+    ],
+    "first_two_cache_mode_none": true,
+    "third_archive_sweep_after_janitor": true,
+    "third_timeout_minutes": 20,
+    "third_sweep_budget_seconds": 900,
+    "third_cap": 150,
+    "runtime_job_change": false,
+    "second_affected_test": "tests/brain-autonomous-branch-sync-4914.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-cache-token-isolation-20261023.test.mjs",
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-cache-token-isolation-20261023.test.mjs",
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-cache-token-isolation-20261023.test.mjs",
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
+    ]
+  },
+  "fix": "Update original regression fixture to assert three canonical jobs, archive sweep dependency, timeout, resource cap, no actions/cache while preserving original first-two cache-mode none and all Janitor permissions. Update original AGENTS, Continuity agent skill, machine ONE BRAIN learning and human docs/ledger; do not change runtime workflow. Repair the second original branch-sync test's section parser in the SAME Janitor source-owner PR, preserving both original job isolation and archive dependency.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}

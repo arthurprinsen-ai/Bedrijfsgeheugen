@@ -58,21 +58,17 @@
     "powerhouse-foresight-prediction-intelligence",
     "powerhouse-github-acceleration-stack",
     "powerhouse-green-assurance",
-    "powerhouse-growth-swarm",
     "powerhouse-linkedin-company-growth",
     "powerhouse-linkedin-sales-machine",
     "powerhouse-management-accounting-intelligence",
     "powerhouse-manual-sales-handoff",
     "powerhouse-need-discovery",
-    "powerhouse-netlify-production-truth",
     "powerhouse-persuasion-revenue",
     "powerhouse-post-merge-codeql",
     "powerhouse-relationship-external-intelligence",
     "powerhouse-relationship-revenue",
     "powerhouse-resource-sustainability",
-    "powerhouse-self-improvement-layer",
     "powerhouse-seo-conversion-orders",
-    "powerhouse-source-universe-impact-engine",
     "powerhouse-system-map-governance",
     "powerhouse-toolchain-authority",
     "release-check-reconciliation",
@@ -85,9 +81,45 @@
     "entrypoint": "scripts/brain/chat-learning-preflight.mjs",
     "visible_in_packet": "incident_self_fix",
     "blocks": "A skill that is not in loop_debt_baseline and lacks the marker fails the preflight. Baseline skills only show as loop debt.",
-    "not_covered_yet": "Make scenarios have no file in the repository to scan; their registration duty is policy only until a provider-side check exists. Edge functions are counted via edge_function_protocol; the marker is declared coverage, not behavioural proof."
+    "not_covered_yet": "Native Janitor incident observer is integrated; mandatory agent preflight also checks supplied provider/Brain receipts and recovery proof. Other runtime owners, cross-source completeness, authorized event ingress and tenant-safe portal readback remain unproven; never assert estate-wide green. Edge-function incident markers are inventory declarations, never behavioral provider evidence.",
+    "native_observer_truth_guard": {
+      "fingerprint": "github|janitor|silent-debt-observer-missing-report|20261103-v1",
+      "authority": "EXISTING_ONE_BRAIN_JANITOR_AND_BRAIN_FAILURE_REGISTRY_ONLY",
+      "scope": "original_powerhouse_repository_janitor_currently_instrumented; other agents require separate source coverage evidence",
+      "incidents_to_detect": [
+        "NATIVE_STEP_FAILURE",
+        "DEFERRED_TERMINAL_PR_SUCCESSOR_HISTORY",
+        "MISSING_OR_MALFORMED_NATIVE_ACTION_ARTIFACT",
+        "INCIDENT_OBSERVER_FAILURE",
+        "BRAIN_WRITEBACK_OR_READBACK_FAILURE"
+      ],
+      "required_report_fields": [
+        "source_run_id",
+        "source_sha",
+        "source_step_or_signal",
+        "fingerprint",
+        "occurrence_id",
+        "owner",
+        "root_cause_or_unknown",
+        "safe_next_action",
+        "regression_ref",
+        "provider_and_Brain_readback"
+      ],
+      "report_evidence_required_before_green": true,
+      "observed_native_step_success_does_not_clear_unreported_debt": true,
+      "incident_writeback_failure_causes_original_job_failure": true,
+      "store": "public.brain_failure_registry + public.brain_failure_occurrences",
+      "report_channel": "original GitHub issue #5320 plus existing admin-only ONE BRAIN portal projection",
+      "recurrence": "same semantic fingerprint with distinct idempotent source run attempt; never duplicate or silently reset",
+      "recovery": "safe bounded same-owner repair + protected checks + native source/readback + next-run recurrence test",
+      "zero_tolerance_reporting_target": "100% of instrumented eligible events; absence of proof must remain open rather than be counted as success",
+      "scope_limit": "This upgrade does not establish 100% all-product/agent coverage or guarantee no future bugs; independently audit uncovered emitters and source freshness.",
+      "canonical_source": "tools/delivery/janitor-incident-agent.mjs",
+      "regression": "tests/brain-janitor-no-silent-incident-20261103.test.mjs",
+      "current_status": "PENDING_PROTECTED_MERGE_AND_NATIVE_PRODUCTION_READBACK"
+    }
   },
-  "revision": 3,
+  "revision": 6,
   "continuous_lean_loop": {
     "required": true,
     "scope": [
@@ -163,7 +195,147 @@
       "NO_SECURITY_OR_RELEASE_BYPASS",
       "NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE"
     ],
-    "enforcement_limit": "The chat preflight validates this policy, not each external runtime agent's actual event writes. Runtime coverage, instrumentation, portal UI, autonomous application and outcome verification require separate code integration and production evidence."
+    "enforcement_limit": "The chat preflight validates this policy, not each external runtime agent's actual event writes. Runtime coverage, instrumentation, portal UI, autonomous application and outcome verification require separate code integration and production evidence.",
+    "runtime_evidence_contract_v1": {
+      "fingerprint": "powerhouse|agent-evidence-data-quality-documentation-growth|v1",
+      "required": true,
+      "authority": "EXISTING_ONE_BRAIN_POWERHOUSE_HEARTBEAT_EXCLUSIVE_WRITER",
+      "scope": [
+        "every_material_change",
+        "incident",
+        "error",
+        "decision",
+        "execution",
+        "experiment",
+        "documentation_change",
+        "data_source_change",
+        "recovery",
+        "business_outcome"
+      ],
+      "actor_kinds": [
+        "sql_process",
+        "agent",
+        "human",
+        "external_provider"
+      ],
+      "agent_provenance_required": [
+        "agent_id",
+        "skill_version",
+        "obligation_or_correlation_id",
+        "tenant_scope",
+        "source_and_freshness",
+        "event_time",
+        "evidence_ref"
+      ],
+      "stage_evidence_required": [
+        "decision_and_reason",
+        "baseline_or_unknown_reason",
+        "code_sha_or_provider_id_when_applicable",
+        "test_and_provider_or_production_readback",
+        "outcome_or_pending_reason",
+        "learning_fingerprint",
+        "next_action"
+      ],
+      "data_quality_states": [
+        "FRESH_VERIFIED",
+        "STALE",
+        "MISSING",
+        "INVALID",
+        "CONFLICT",
+        "UNVERIFIED"
+      ],
+      "data_gap_recovery": [
+        "detect_and_fingerprint",
+        "identify_owner_and_source_lineage",
+        "check_consent_privacy_rls_tenant_boundary",
+        "attempt_safe_refresh_or_reconciliation",
+        "create_deduplicated_instrumentation_obligation_if_missing",
+        "implement_minimal_measurement_via_existing_writer",
+        "prove_capture_source_freshness_and_tenant_safe_portal_readback",
+        "compare_against_baseline_and_log_result"
+      ],
+      "always_record": [
+        "material_action",
+        "change_or_release",
+        "incident_or_near_miss",
+        "root_cause_or_unknown",
+        "test_and_regression",
+        "actual_provider_or_production_status",
+        "metric_before_after_or_unknown",
+        "outcome_attribution_or_unproven",
+        "documentation_and_system_map_drift",
+        "skill_learning_and_owner_handoff"
+      ],
+      "human_documentation_and_portal": [
+        "plain_language_what_changed_and_why",
+        "affected_components_and_data_lineage",
+        "owner_and_rollback",
+        "what_is_verified_vs_unknown",
+        "change_to_business_outcome_link",
+        "portal_projection_readback_and_tenant_isolation"
+      ],
+      "improvement_priorities": [
+        "paid_orders_and_revenue",
+        "qualified_leads_and_meetings",
+        "visitor_to_customer_conversion",
+        "organic_search_and_ai_discovery",
+        "retention_and_customer_value",
+        "product_quality_security_cost_and_latency"
+      ],
+      "experiment_guardrails": [
+        "capture_comparable_baseline",
+        "define_hypothesis_and_guardrails",
+        "select_cohort_and_exposure",
+        "protect_consent_and_privacy",
+        "require_observed_outcome_not_vanity_metric",
+        "revert_on_negative_or_unverified_result",
+        "promote_reusable_learning_only_after_regression_and_readback"
+      ],
+      "invariant_guards": [
+        "NEVER_CONFLATE_SQL_EVENTS_WITH_AGENT_ACTIONS",
+        "UNKNOWN_IS_NOT_ZERO",
+        "NO_RETROACTIVE_FABRICATED_ATTRIBUTION",
+        "NO_PARALLEL_SCHEDULER_OR_LEARNING_STORE",
+        "NO_DUPLICATE_EXTERNAL_EFFECT",
+        "NO_UNAUTHORIZED_EXTERNAL_EGRESS",
+        "NO_UNVERIFIED_GREEN"
+      ],
+      "deployment_gate": "Policy validation in preflight is necessary but insufficient. Runtime event emission, writeback, portal projection, authenticated tenant tests and independent production readback must be separately proven before claiming enforcement.",
+      "observed_gap": "Production 2026-10-29: 1587 canonical cycle events in 24h; 0 with agent_id, 0 with skill_version, 0 with before/after metric pair. Scope includes SQL-generated events; no retroactive agent attribution."
+    }
+  },
+  "incident_reporting_audit": {
+    "required": true,
+    "version": "ONE_BRAIN_INCIDENT_REPORTING_ASSURANCE-v1",
+    "entrypoint": "brain/observability/incident-obligation-assurance.mjs",
+    "input": "independent_provider_observations_plus_original_registry_receipts_and_repair_readback",
+    "scope": "every observed provider failure/incident/near miss in authorized original agents",
+    "rules": [
+      "NO_SILENT_FAILURE:PROVIDER_EVENT_MUST_HAVE_CANONICAL_RECEIPT",
+      "UNREPORTED_PROVIDER_FAILURE_IS_AN_INCIDENT",
+      "NO_FALSE_ZERO_WHEN_SOURCE_READBACK_INCOMPLETE",
+      "DEDUP_PROVIDER_EVENT_ID_AND_FINGERPRINT",
+      "PROVIDER_CONFLICT_FAIL_CLOSED",
+      "SAFE_EXISTING_OWNER_REPAIR_OR_EXPLICIT_AUTHORIZATION_ESCALATION",
+      "NO_FIXED_WITHOUT_REGRESSION_AND_INDEPENDENT_PROVIDER_READBACK",
+      "RECURS_AFTER_FIX_REOPEN_SAME_FINGERPRINT",
+      "NO_PARALLEL_SCHEDULER_OR_REGISTRY",
+      "PORTAL_ONLY_VERIFIED_SOURCE_WITH_UNCERTAINTY"
+    ],
+    "source_coverage_without_provided_evidence": "NOT_ATTESTED_NOT_GREEN",
+    "runtime_limitation": "This agent preflight can audit supplied evidence but cannot prove all external agents emit events. Original runtime owners must integrate their source observation and canonical Brain RPC receipt and prove next natural run.",
+    "required_closure": [
+      "provider_event_id",
+      "fingerprint",
+      "original_brain_occurrence_readback",
+      "existing_owner",
+      "recovery_attempt",
+      "regression",
+      "independent_provider_readback",
+      "release_sha",
+      "skill_version",
+      "recurrence_guard"
+    ]
   },
   "edge_function_protocol": {
     "files_glob": "supabase/functions/*/index.ts",

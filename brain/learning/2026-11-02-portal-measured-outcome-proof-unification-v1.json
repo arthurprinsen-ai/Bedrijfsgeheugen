@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "fingerprint": "powerhouse|portal|terminal-outcome-without-metric-shown-as-value|20261102-v1",
+  "parent_fingerprint": "powerhouse|customer-value|activity-without-verified-customer-business-impact|20261101-v1",
+  "parent_issue": 4198,
+  "observed_at": "2026-11-02",
+  "maturity": "OBSERVED",
+  "candidate_only": true,
+  "compiler": {
+    "failure_class": "PORTAL_FALSE_MEASURED_OUTCOME",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original executive-cockpit, strategic-advisor and outcome-feedback each used a different terminal-status/healthy-refs check. A healthy terminal receipt could be labelled as realized and even learned without actual amount, unit, metric, baseline or measurement period. No production case of fabricated customer profit is asserted; this is a source-level reproducible false-positive risk.",
+  "risk": "Customer portal could promote provider evidence or status to measured business outcome; subsequent ONE BRAIN learning would be falsely convincing.",
+  "correction": "Share original pure verifiedCustomerOutcome across all three already authenticated Portal V2 screens. Require exact action ID, terminal outcome status, healthy independent refs, finite realized amount, supported unit, explicit metric, baseline and period; learning needs separate evidence and linked next decision; avoid causal/paid revenue conflation.",
+  "prevention": [
+    "All original consumer views call the same canonical pure measured outcome gate.",
+    "A free trial checkout completion, provider ACK or status-only outcome is not a paid order or realized business impact.",
+    "Zero may be observed effect if independently proved; blank, whitespace, missing unit or KPI never counts.",
+    "Even confirmed measured EUR impact is not automatically attributable profit or provider-paid revenue.",
+    "Fail closed without tenant-authorized evidence; no new publisher, payment, agent writer, schedule or self-declared green."
+  ],
+  "evidence": {
+    "source_paths": [
+      "portal-v2/operating-system/outcome-feedback.js",
+      "portal-v2/operating-system/executive-cockpit.js",
+      "portal-v2/operating-system/strategic-advisor.js",
+      "supabase/functions/_shared/mollie-server.ts"
+    ],
+    "production_paid_revenue_proven": false,
+    "source_defect_observed": true,
+    "production_customer_false_positive_observed": false,
+    "exact_merge_proven": false,
+    "netlify_proven": false,
+    "authenticated_tenant_readback_proven": false
+  },
+  "tests": [
+    "tests/brain-portal-measured-outcome-proof-unification-20261102.test.mjs",
+    "tests/brain-strategic-advisor-one-loop-20261030.test.mjs",
+    "tests/brain-entrepreneur-impact-feedback-20261030.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-measured-outcome-proof-unification-20261102.test.mjs"
+    ]
+  },
+  "owner": "original Portal V2 / ONE BRAIN / Powerhouse Company Intelligence agents",
+  "release": {
+    "state": "SOURCE_CANDIDATE",
+    "manual_approval_bypassed": false,
+    "protected_required_passed": false,
+    "codeql_passed": false,
+    "netlify_exact_sha_proven": false,
+    "customer_impact_proven": false
+  }
+}

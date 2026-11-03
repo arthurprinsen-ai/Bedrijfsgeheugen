@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-02",
+  "schema": "brain-learning-observation-v1",
+  "obligation_id": "original-portal-three-allowlisted-server-readback-test-recovery-20261102-v1",
+  "fingerprint": "powerhouse|portal|brain-failure-coverage-third-server-readback-test-drift|20261102-v1",
+  "failure_class": "PORTAL_AUTHENTICATED_COVERAGE_TEST_STALE_AFTER_THIRD_SOURCE",
+  "status": "SOURCE_CANDIDATE",
+  "state": "EVIDENCE_DUE",
+  "original_owners": [
+    "ONE BRAIN failure-coverage original server projection",
+    "Portal authenticated observability original owner",
+    "protected PR #5298 release-lineage tests"
+  ],
+  "observed": {
+    "original_pr": 5298,
+    "merged_sha": "9db4f32c4a25b05e9ce3bf3cca7ab64102dd66ca",
+    "brain_run_id": 41451145109,
+    "failed_job_id": 125296963109,
+    "failed_test": "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs",
+    "assertion": "Expected 2, actual 3",
+    "full_brain_failures": 1,
+    "privacy_violation_proven": false
+  },
+  "root_cause": "Original #5298 added the third authenticated allowlisted website incident read to existing server loadFailureCoverage. An older predictive source privacy replay mocked only aggregate + predictive reads and asserted exactly two requests. The original failure is a stale regression scenario, not proof that the additional source must be removed.",
+  "intervention": "Change only the exact original regression test and owner SkillOps; replay three server-only reads in original order, with exact allowlisted website source IDs and a private canary; assert website statuses stay truthful/non-green and raw evidence never leaves the server.",
+  "prevention_rule": "Any extension of the original server-side incident read model MUST update all source-order and private-data regression mocks atomically, without modifying actual source truth for a test green. Always verify each allowlisted source, no raw/private evidence in UI, no invented success; new sources require protected BRAIN full replay and later live original portal/admin readback.",
+  "regressions": [
+    "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs",
+    "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+  ],
+  "independent_verification_due": [
+    "protected exact-head Required/CodeQL",
+    "original full BRAIN on exact merged candidate",
+    "original portal readback, non-owner UI #5245 remains open",
+    "later natural source readback without provider-surface error"
+  ],
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false,
+  "compiler": {
+    "failure_class": "PORTAL_AUTHENTICATED_COVERAGE_TEST_STALE_AFTER_THIRD_SOURCE",
+    "scope": "PORTAL_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-portal-runtime-truth-20261030.test.mjs"
+    ],
+    "additional_regression_tests": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-portal-three-source-private-regression.md",
+  "telemetry_boundary": "A successful test harness proves only safe handling of mocked server responses. It does not prove actual customer/tenant status, production browser truth, paid orders or publication."
+}

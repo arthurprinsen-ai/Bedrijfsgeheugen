@@ -1,0 +1,9 @@
+# 2026-10-31 — Mira source materialization FALSE_GREEN repaired in original radar
+
+- Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Fingerprint: `powerhouse|mira|radar-materializer-no-source-false-success|20261031-v1`.
+- Original code and runtime evidence: `supabase/functions/powerhouse-mira-problem-radar/index.ts` calls original stored RPC; a structured `ok:false` source shortage is ignored because only `mat.error` enters the `errors` array. This allows HTTP200 and `ok:true` despite no eligible fresh source.
+- Independent 31 October sources: 311 Mira signals, only two with complete fresh/date/scene portal contract, both excluded by 90-day source/3-day topic duplicate gate; zero frozen day winner, original loop RED/RECOVERY_DUE.
+- One original owner: active existing radar cron 120; no schedule or provider account change.
+- Code: pure `supabase/functions/_shared/mira-radar-source-result.mjs` + original `supabase/functions/powerhouse-mira-problem-radar/index.ts`. Recoverable source shortage returns typed `SOURCE_RECOVERY_DUE`/MIRA_UNIQUE_SOURCE_WINNER_REQUIRED even when provider HTTP transport is 200; verified winner stage only if stored selector explicitly confirms. Original `brain_observe_failure` RPC records a deterministic day/state fingerprint.
+- Tests: `tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs`. Agent skills and human documentation updated. Existing private ONE BRAIN portal will continue showing the same original five-channel recovery obligations without a new portal/scheduler.
+- Candidate status: NOT MERGED / NOT LIVE; protected Required/BRAIN/CodeQL, original Edge source registration, next natural radar run and independent result proof remain mandatory. No new source, Reel or Meta provider delivery has been fabricated.

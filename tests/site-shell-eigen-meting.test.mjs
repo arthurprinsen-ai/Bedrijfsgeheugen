@@ -17,7 +17,7 @@ test('elke publieke pagina krijgt het meetscript, precies één keer', () => {
 test('het meetscript meet kliks, scrolldiepte, formulieren en tijd naar de eigen ontvanger', () => {
   assert.match(meting, /functions\/v1\/bg-interactie/);
   for (const g of ["gebeurtenis:'pagina'", "gebeurtenis:'klik'", "gebeurtenis:'scroll'", "gebeurtenis:'formulier_start'", "gebeurtenis:'formulier_verzonden'", "gebeurtenis:'tijd_op_pagina'"]) assert.ok(meting.includes(g), g);
-  assert.match(meting, /drempels=\[25,50,75,90,100\]/);
+  assert.match(meting, /drempels=\[10,25,50,75,90,100\]/, 'alle zes meetdrempels inclusief vroeg afhaken op 10% blijven actief');
 });
 
 test('privacyarm: geen cookies, geen ingevulde waarden, GA4 alleen na toestemming', () => {

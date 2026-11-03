@@ -1,0 +1,70 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|cro|seo-generated-cta-owner-route-parity-gap|20261030-v1",
+  "compiler": {
+    "failure_class": "PRIMARY_CTA_ROUTE_INSTRUMENTATION_GAP",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-generated-primary-cta-owner-gap-20261030.test.mjs"
+    ]
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_original_data": {
+    "as_of": "2026-10-30T13:19:44Z",
+    "page_event_records_without_bot_flag_7d": 4476,
+    "persisted_primary_cta_clicks_7d": 0,
+    "linked_qualified_leads_30d": 0,
+    "orders_with_recorded_provider_reference_30d": 0,
+    "original15LoopStatus": "variable; latest verified 8 green / 3 amber / 4 red; original Supabase remains authority",
+    "caution": "Zero persisted event count is NOT proof no visitor clicked; page-event records are not unique people. Real successful new CTA ingestion, voluntary buyer and paid outcome still unverified."
+  },
+  "root_cause": "On generated SEO/money pages assets/meting.js intentionally suppresses primary_cta_click when #bg-growth-measurement exists (exclusive writer). tools/seo-order-engine/measurement.mjs previously only recognized /zelfscan, /frisse-blik and /afsluiten as unmarked in-main same-origin fallback CTA links, although original global tracker recognizes /contact, /aanmelden and /prijzen. Relevant user CTA paths could therefore be omitted, while no other writer is authorized to cover the gap.",
+  "correction": "Extend only original SEO/CRO page event producer to recognize three other same-origin in-content contact, signup and pricing routes, preserving existing explicit CTA precedence, exact event type, stable source/attribution root and unchanged original single writer. Original Powerhouse owner-only funnel stage and Portal V2 explicitly show code coverage vs independent persisted CTA readback.",
+  "prevention": [
+    "One generated SEO page has one original CTA event writer, never both original trackers.",
+    "Exact route parity must be regression-tested on consented synthetic in-memory browser tests and non-consented/external/header click safety.",
+    "Do not claim code coverage as real stored event; producer 202 response is not original datahub persisted readback or paid order.",
+    "Never infer a paid order, customer identity or marketing uplift from a CTA click or static test.",
+    "Next natural original agent must validate true persisted provider/datahub event_id and independent lead and payment with original 15-loop guard still authoritative.",
+    "No new scheduler/CRM/provider/permission or duplicate post and original website privacy gates unchanged."
+  ],
+  "source_file": "tools/seo-order-engine/measurement.mjs",
+  "regression": "tests/brain-cro-generated-primary-cta-owner-gap-20261030.test.mjs",
+  "original_funnel": "netlify/functions/_powerhouse-commercial-growth-funnel.mjs",
+  "original_portal": "portal-v2/modules/andere-data.js",
+  "human_doc": "docs/changes/2026-10-30-generated-primary-cta-route-coverage-fix.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-generated-primary-cta-route-coverage-fix.md",
+  "delivery": {
+    "stage": "SOURCE_CANDIDATE",
+    "protected_main_verified": false,
+    "exact_prod_verified": false,
+    "persisted_new_cta_event_verified": false,
+    "paid_order_or_causal_uplift_verified": false
+  },
+  "evidence": {
+    "observed_original_sources": [
+      "assets/meting.js",
+      "tools/seo-order-engine/measurement.mjs",
+      "public.powerhouse_cro_conversion_evidence_v1"
+    ],
+    "historical_replay": "tests/brain-cro-generated-primary-cta-owner-gap-20261030.test.mjs",
+    "original_exclusive_writer_rule": "Global meter suppresses CTA when SEO inline #bg-growth-measurement exists",
+    "newly_covered_routes": [
+      "/contact",
+      "/aanmelden",
+      "/prijzen"
+    ],
+    "real_persisted_new_click_id": null,
+    "independently_paid_order": null,
+    "release_readback_verified": false,
+    "limits": "Code coverage and synthetic historical replay are not an actual visitor CTA nor proven lead/payment"
+  }
+}

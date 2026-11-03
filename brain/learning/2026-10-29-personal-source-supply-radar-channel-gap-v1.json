@@ -1,0 +1,55 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|personal|shared-radar-only-feeds-business-source-topics|20261029-v1",
+  "compiler": {
+    "failure_class": "SOURCE_SUPPLY_CONTRACT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Canonical eight-slot Mira public-source radar selects only 12 entrepreneur portal problems while personal LinkedIn observational source selector accepts only 9 distinct fresh daily-life topics. Both jobs can be green but no eligible personal source is ever supplied; 2026-10-29 had zero fully qualified personal-life signals and five duplicate-safe blocked attempts. Additionally the existing service-role-only powerhouse_ensure_personal_source_rotation_v2(date) had no caller in the production SQL/Edge execution graph, so fresh personal sources could not materialize a recommendation within the daily radar lineage.",
+  "prevention": "Use the existing single radar scheduler and eight total provider calls: six original business and two date-rotated personal-life query slots, in same signal table with mutually exclusive source contract. Keep source publication <=45d, score>=0.72, independent HTTPS/public text, unique source, no first-person claims, original dedupe/identity gates and Meta/Mira source isolation. Portal must show source counts separately from provider post status, fail closed on missing count. Do not mark outcome live until original provider ID and independent readback. Invoke the original source rotation once per radar run after ingestion; propagate any error; do not schedule or dispatch posts from the radar. Second-stage production regression: DataForSEO 40101/empty news task counts must be visible in original response. Keep personal queries <=3 terms and the same two personal slots within eight calls; do not mark successful HTTP as eligible personal-source proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-personal-source-supply-portal-20261029.test.mjs",
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-source-supply-portal-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "production Supabase source inventory and GitHub original radar code",
+    "estimated_personal_eligible_before": 0,
+    "existing_radar_job": 120,
+    "existing_content_job": 140,
+    "new_scheduler": false,
+    "additional_provider_calls_per_radar": 0,
+    "post_created": false,
+    "provider_id_present": false,
+    "release": "PENDING_PROTECTED_PR",
+    "user_safety": "public-safe, no source-content, private drafts, tokens or personal data",
+    "original_personal_rotation_rpc_no_caller": true,
+    "production_probe": {
+      "date": "2026-10-29",
+      "request_id": 16037,
+      "edge_version_before_query_revision": 514,
+      "http_status": 200,
+      "execution_ok": true,
+      "errors": [],
+      "business_sources_stored": 2,
+      "personal_sources_stored": 0,
+      "personal_sources_eligible": 0,
+      "dataforseo_news_no_results": 7,
+      "source_rotation_reason": "SOURCE_SUPPLY_REQUIRED",
+      "linkedInPersonalPostVerified": false,
+      "instagramPostVerified": false
+    },
+    "search_quality_secondary_root_cause": "Long personal-life Dutch news queries returned provider 40101/no results in 7 of 8 total searches; after wiring the source router into the single radar, upstream news recall remained empty. Change only personal query phrasing to short Dutch news keywords; do not relax verification."
+  }
+}

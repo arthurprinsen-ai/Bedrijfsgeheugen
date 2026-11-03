@@ -45,6 +45,14 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 48); do
+            # A closed or merged PR no longer has a served alias: waiting 9 minutes only ends red.
+            # Fingerprint ci|netlify-preview-closed-pr-race|portal-v2-live-preview|20261029-v1
+            pr_state=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" | jq -r '.state' || echo open)
+            if [ "$pr_state" != "open" ]; then
+              echo "::notice::PR #${PR_NUMBER} is $pr_state; nothing left to preview (main is covered by the production DOM readback)."
+              echo "PREVIEW_PR_CLOSED=1" >> "$GITHUB_ENV"
+              exit 0
+            fi
             json=$(curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status")
             state=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .state' | head -n1)
             target=$(printf '%s' "$json" | jq -r '.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview") | .target_url' | head -n1)
@@ -92,9 +100,11 @@ jobs:
           exit 1
 
       - name: Wait for the immutable preview to actually serve Portal V2
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: bash tools/ci/wait-for-url.sh "$PREVIEW_URL/portal-v2/app.js"
 
       - name: Verify exact Netlify V2 assets are served
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: |
           set -euo pipefail
           curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/" -o /tmp/portal-v2.html
@@ -122,6 +132,7 @@ jobs:
           grep -q 'calculateLegacyEquivalent' /tmp/portal-v2-parity-engine.js
 
       - name: Verify canonical Business OS redirect and input compatibility
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: |
           set -euo pipefail
           headers=$(mktemp)
@@ -136,15 +147,18 @@ jobs:
           grep -q 'readLegacyPortalBusinessInputs' /tmp/business-input-store.js
 
       - name: Install Playwright runtime
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: |
           PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
 
       - name: Verify exact demoAI mobile rewrite on immutable Netlify preview
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: |
           set -euo pipefail
           PREVIEW_URL="$PREVIEW_URL" npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
 
       - name: Verify approved deterministic browser parity on exact head
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/portal-v2-local.log 2>&1 &
@@ -163,17 +177,20 @@ jobs:
           PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-bcg-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
 
       - name: Verify production DOM suite on immutable PR deploy
+        if: env.PREVIEW_PR_CLOSED != '1'
         env:
           PRODUCTION_URL: ${{ env.PREVIEW_URL }}
         run: npx playwright test tests/integration/portal-v2-production-*.spec.js --workers=1
 
       - name: Capture approved production visual baseline on exact PR head
+        if: env.PREVIEW_PR_CLOSED != '1'
         env:
           PRODUCTION_URL: ${{ env.PREVIEW_URL }}
           VISUAL_CAPTURE_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
 
       - name: Upload approved exact-head visual baseline
+        if: env.PREVIEW_PR_CLOSED != '1'
         uses: actions/upload-artifact@v4
         with:
           name: visual-baseline-pr-${{ github.event.workflow_run.pull_requests[0].number }}-${{ github.event.workflow_run.pull_requests[0].head.sha }}
@@ -191,6 +208,7 @@ jobs:
           retention-days: 14
 
       - name: Report exact preview evidence
+        if: env.PREVIEW_PR_CLOSED != '1'
         run: |
           echo "Verified head SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}"
           echo "Verified immutable Netlify deploy: $NETLIFY_DEPLOY_ID"

@@ -22,6 +22,33 @@ def fetch(source):
             'contentType':content_type,'finalUrl':response.geturl()
         }
 
+def response_quality(source, result):
+    """A transport response is not automatically authoritative legislative content."""
+    from urllib.parse import urlsplit
+    status=int(result.get('status') or 0)
+    if status != 200:
+        return 'UNVERIFIED_HTTP_STATUS'
+    expected=urlsplit(source['url'])
+    actual=urlsplit(result.get('finalUrl') or '')
+    if actual.scheme != 'https' or actual.hostname != expected.hostname:
+        return 'UNVERIFIED_SOURCE_REDIRECT'
+    raw=result.get('raw') or b''
+    content_type=(result.get('contentType') or '').lower()
+    if not (content_type.startswith('text/html') or content_type.startswith('application/xhtml+xml')):
+        return 'UNVERIFIED_CONTENT_TYPE'
+    if len(raw) < 4096:
+        return 'UNVERIFIED_SHORT_RESPONSE'
+    sample=raw[:16384].decode('utf-8','replace').lower()
+    if any(marker in sample for marker in (
+        '<title>just a moment', 'checking your browser',
+        'access denied', 'captcha challenge', 'verify you are human',
+        'please enable javascript and cookies', 'automated requests',
+    )):
+        return 'UNVERIFIED_ACCESS_INTERSTITIAL'
+    if '<html' not in sample:
+        return 'UNVERIFIED_NOT_HTML_DOCUMENT'
+    return 'VERIFIED_HTTP_DOCUMENT'
+
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--config',default='config/regulatory-sources.json')
@@ -44,14 +71,30 @@ def main():
         sha=hashlib.sha256(result['stable']).hexdigest()
         raw_sha=hashlib.sha256(result['raw']).hexdigest()
         previous=old.get(source['id'],{})
-        changed=bool(previous.get('contentSha256') and previous.get('contentSha256')!=sha)
+        quality=response_quality(source,result)
+        verified=quality=='VERIFIED_HTTP_DOCUMENT'
+        changed=bool(verified and previous.get('contentSha256') and previous.get('contentSha256')!=sha)
         record={
           'id':source['id'],'framework':source['framework'],'authority':source['authority'],'jurisdiction':source['jurisdiction'],
           'url':source['url'],'finalUrl':result['finalUrl'],'checkedAt':now,'httpStatus':result['status'],
           'contentType':result['contentType'],'contentSha256':sha,'rawSha256':raw_sha,'bytes':len(result['raw']),
           'etag':result['etag'],'lastModified':result['lastModified'],'previousSha256':previous.get('contentSha256'),
-          'changed':changed,'firstObservation':not bool(previous.get('contentSha256'))
+          'changed':changed,'firstObservation':verified and not bool(previous.get('contentSha256')),
+          'sourceContentVerified':verified,'verification':quality,
+          'diagnosticResponseSha256':raw_sha
         }
+        # A 202/interstitial response may be real telemetry but never legislative change.
+        # Keep last canonical source projection untouched, quarantine the fresh diagnostic
+        # in check-only evidence and DO NOT write its raw bytes as official content.
+        if not verified:
+            record['contentSha256']=None
+            record['rawSha256']=None
+            record['changed']=False
+            record['firstObservation']=False
+            checks['sources'][source['id']]=record
+            if previous:
+                out['sources'][source['id']]=previous
+            continue
         checks['sources'][source['id']]=record
         first=record['firstObservation']
         if changed or first:

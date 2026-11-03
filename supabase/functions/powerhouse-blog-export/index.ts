@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
 
 const VERSION='v3-repository-native-export';
 const clean=(v:unknown)=>String(v??'').trim();
@@ -32,6 +33,11 @@ Deno.serve(async(req)=>{
   // Separate last-mile publication permission from model/SEO/quality decisions.
   if(!o?.approved_at || !['APPROVED','PUBLISHED','LIVE_PROVEN'].includes(clean(o.status))) return json({ok:false,error:'BLOG_PUBLIC_EXPORT_NOT_APPROVED',runDate},403);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
+  // Final independent factual gate: public approval does not override a
+  // demonstrably inverted OFFICIAL subsidy deadline. No source text leaked.
+  const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
+  if(!fact.ok)return json({ok:false,error:fact.code,runDate,source:fact.source||null,
+    requires_corrected_source:true},422);
 
   const generation=evidenceObject(a.generation_evidence);
   const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);

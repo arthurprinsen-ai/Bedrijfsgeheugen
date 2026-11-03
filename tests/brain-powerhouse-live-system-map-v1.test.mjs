@@ -55,7 +55,10 @@ test('admin observability endpoint projects System Map and portal keeps it acces
     readFile('portal-v2/modules/powerhouse-observability.js','utf8')
   ]);
   assert.match(api,/POWERHOUSE_SYSTEM_MAP/);
-  assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage\}/);
+  assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage,portalUxReleaseProof\}/);
+  assert.match(api,/loadPortalUxReleaseProof/);
+  assert.match(ui,/data-portal-ux-proof/);
+  assert.match(ui,/PRODUCTION_SOURCE_RECHECK_DUE/);
   assert.match(api,/loadSupabaseSystemMapInventory/);
   assert.match(api,/status:'UNAVAILABLE'/);
   assert.match(ui,/Systeemkaart/);

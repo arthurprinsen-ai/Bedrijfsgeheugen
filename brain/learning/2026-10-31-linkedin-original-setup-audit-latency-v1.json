@@ -1,0 +1,48 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|linkedin|setup-child-timeout-below-observed-provider-duration|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-content-loop / powerhouse-composio-linkedin-setup",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original Powerhouse content-loop cancelled the existing LinkedIn-setup/audit child after 8000ms; independently observed original Supabase function_edge_logs 2026-10-31T12:48:21.344Z show provider edge function completed HTTP200 in 21182ms, so watchdog falsely recorded CHILD_CALL_FAILED even with a successful child response.",
+  "observed_evidence": {
+    "observed_at_utc": "2026-10-31T12:48:21.344Z",
+    "original_supervisor_timeout_ms": 8000,
+    "original_child_execution_ms": 21182,
+    "original_child_http": 200,
+    "original_one_brain_parent": "content-closed-loop:2026-10-31",
+    "original_child_step_error": "CHILD_CALL_FAILED",
+    "original_child_timed_out": true,
+    "original_company_auth_status": "COMPANY_AUTH_REQUIRED",
+    "company_fresh_oauth_proof": "RESET_UNVERIFIED",
+    "external_publication_proven": false
+  },
+  "prevention_rule": "Bound only the existing original LinkedIn-setup preflight timeout to 30000ms using current AbortSignal.timeout inside 240000ms original exclusive lease. Never treat HTTP200 as OAuth or provider publish truth, and do not bypass COMPANY_AUTH_REQUIRED, original one-authority sender, duplicate/opt-in/identity/approval gates.",
+  "fix_candidate": "One-line actual latency-derived original child timeout increase in supabase/functions/powerhouse-content-loop/index.ts; retain all original invocation auth/lease/readback.",
+  "approval_boundaries": "No automatic OAuth consent, billing, alternate sender, duplicate publication, or green without exact provider ID and independent readback.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-original-setup-timeout-budget-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-original-setup-timeout-budget-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Supabase function_edge_logs show original successful 21.182s audit; ONE BRAIN same-date child timout false-negative; exact main source confirms 8s bound.",
+    "regression": "Static production invariant test asserts 30s bounded audit budget, original lease, scheduler-token authorization, same original content quality and provider ACK dedupe.",
+    "pending": "Protected Required/CodeQL/Backend, GitHub main merge, exact original Supabase Edge source parity, actual natural Powerhouse content-loop step readback; independent OAuth authorization and real post provider ID remain separate unproven boundaries."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-10-31-linkedin-setup-verified-latency-no-false-timeout.md",
+  "activity_ledger": "docs/development-ledger-events/2026-10-31-linkedin-setup-verified-latency-no-false-timeout.md"
+}

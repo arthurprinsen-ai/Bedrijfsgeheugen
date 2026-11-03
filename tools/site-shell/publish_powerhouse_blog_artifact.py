@@ -36,6 +36,16 @@ def fetch(date):
     except urllib.error.HTTPError as error:
         if error.code == 404:
             return None
+        if error.code == 403:
+            # The service-only exporter correctly rejects non-approved drafts.
+            # This expected pending editorial approval is NOT a token failure;
+            # never loop a traceback or bypass approval. Other 403 errors fail.
+            try:
+                reason = json.loads(error.read().decode('utf-8')).get('error')
+            except (ValueError, UnicodeDecodeError):
+                reason = None
+            if reason == 'BLOG_PUBLIC_EXPORT_NOT_APPROVED':
+                return None
         raise
     if not data.get("ok"):
         if data.get("error") == "NO_APPROVED_BLOG_ARTIFACT":

@@ -1,4 +1,5 @@
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
+import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
@@ -9,6 +10,8 @@ import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialV
 const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectVerifiedBrandLearnings} from '../_shared/verified-brand-content-learnings.mjs';
+import {buildEditorialCouncilBrief} from '../_shared/editorial-council-context.mjs';
+import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
 import {selectMeasuredNextPostTest as selectMeasuredNextPostTest_raw,proposeBoundedCreativeExploration as proposeBoundedCreativeExploration_raw} from '../_shared/measured-next-post-challenger.mjs';
 const proposeBoundedCreativeExploration:(...args:any[])=>any=proposeBoundedCreativeExploration_raw;
 const selectMeasuredNextPostTest:(...args:any[])=>any=selectMeasuredNextPostTest_raw;
@@ -29,6 +32,14 @@ const BLOG_READER_READY_PROMPT="Schrijf uitsluitend definitieve, voor bezoekers 
 function blogReaderReadyViolations(artifact:any):string[]{
   const title=String(artifact?.title||'').trim(),body=String(artifact?.body||'').trim(),cta=String(artifact?.cta||'').trim();
   const errors:string[]=[];
+  // Date validation is required for every CPNL claim; unrelated topics
+  // have no official CPNL date obligation and keep their reader-ready gate.
+  if(/circular[\s\W]*plastics[\s\W]*nl/i.test([title,body,cta].join('\n'))){
+    const officialDate=assessOfficialBlogDateTruth({
+      title,body,cta,runDate:typeof artifact?.run_date==='string'?artifact.run_date:typeof artifact?.run_date?.toISOString==='function'?artifact.run_date.toISOString().slice(0,10):''
+    });
+    if(!officialDate.ok)errors.push(officialDate.code);
+  }
   if(body.length<1600)errors.push('BODY_TOO_SHORT');
   if(/Verifieer publicatie.voorwaarde|Publiceer alleen als er geen dominante canonical owner|verified_qualified_cta_progression|Schrijf één hoofdpage|Voorpublicatie: canonical owner check|SEO.verantwoordelijke\s*\/\s*marketinglead/i.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
   if(/publiceer alleen als|wanneer (?:te )?publiceren|kanaal-?gates?|channel gates?|canonical owner|forecast.?score|\bCPC\b|DataForSEO|first.mover|intent.?gap|verified_qualified|contentmanager|zoekvolume van/i.test(body))errors.push('INTERNAL_PUBLISHING_LANGUAGE');
@@ -615,11 +626,14 @@ Deno.serve(async (req) => {
       : [];
     // Rotation by story family: a source whose event types were already used for a
     // personal story in the last 7 days is the same story, so prefer a fresh one.
-    // Never worse than before: if nothing is fresh the previous choice stays.
+    // A stale event family is never an acceptable fallback. Retrying it under
+    // another recommendation ID creates the same story and repeated denials.
+    // No independently fresh source: leave the original claim blocked and let
+    // other channels proceed. The provider uniqueness gate remains mandatory.
     const eligiblePersonal = recs.filter(validPersonalSource).filter((source:any)=>
       !personalRejectedSourceIds.includes(clean(source.recommendation_id)));
     const personalSource = eligiblePersonal.find((s:any)=>!isStalePersonalSource(s,recentPersonalTypes))
-      || eligiblePersonal[0] || null;
+      || null;
     const instagramObligation = obligations.find((o:any) => o.channel === 'instagram') || null;
     const instagramProof = {
       ...(instagramObligation?.evidence || {}),
@@ -643,8 +657,16 @@ Deno.serve(async (req) => {
     for (const channel of (channelScope ? [] : CHANNELS)) {
       const previous:any = existingByChannel.get(channel);
       const currentObligation=obligations.find((item:any)=>clean(item.channel)===(channel==='instagram_company'?'instagram':channel))||null;
-      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels,currentObligation)) continue;
-      const recoverableDuplicate=recoverableUniquenessDenial(previous)
+      // Only an exact pre-provider 422 can reopen this original company claim.
+      // A different, fresh, source-backed recommendation must already exist;
+      // known rejected sources cannot be replayed in different wording.
+      const companyRegeneration=channel==='linkedin_company'
+        ?planRejectedCompanyRegeneration({decision:previous,obligation:currentObligation,
+          recommendations:recs.filter((r:any)=>recommendationEligible(r,'linkedin_company')),
+          consumedCapability:consumedCapabilityChannels.has(channel),now:new Date().toISOString()})
+        :null;
+      if (!companyRegeneration?.eligible && shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels,currentObligation)) continue;
+      const recoverableDuplicate=Boolean(companyRegeneration?.eligible)||recoverableUniquenessDenial(previous)
         || recoverableObligationUniquenessDenial(previous,currentObligation,consumedCapabilityChannels.has(channel));
       const priorRejected=Array.isArray(previous?.delivery_evidence?.rejected_recommendation_ids)
         ? previous.delivery_evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
@@ -657,7 +679,10 @@ Deno.serve(async (req) => {
             clean(currentObligation?.evidence?.personal_source_recommendation_id),
             clean(currentObligation?.evidence?.fallback_recommendation_id)].filter(Boolean))]
         : [];
-      const decision:any = plannedDecision(channel,recs,personalSource,instagramProof,
+      const regenerationCandidates=companyRegeneration?.eligible
+        ?recs.filter((r:any)=>clean(r.recommendation_id)===companyRegeneration.selectedAlternativeRecommendationId)
+        :recs;
+      const decision:any = plannedDecision(channel,regenerationCandidates,personalSource,instagramProof,
         channel==='linkedin_company'||channel==='linkedin_personal'?rejectedRecommendationIds:[]);
       const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
         && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
@@ -672,7 +697,14 @@ Deno.serve(async (req) => {
         personal_source_recommendation_id:channel==='linkedin_personal'?personalSource?.recommendation_id||null:null,
         rejected_recommendation_ids:channel==='linkedin_company'||channel==='linkedin_personal' ? rejectedRecommendationIds : [],
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
-        stale_delivery_ref:false,recovery_from_provider_missing:stale };
+        stale_delivery_ref:false,recovery_from_provider_missing:stale,
+        company_blocked_regeneration:companyRegeneration?.eligible ? {
+          contract:companyRegeneration.contract,
+          rejection_code:companyRegeneration.failureCode,
+          rejected_recommendation_ids:rejectedRecommendationIds,
+          selected_alternative_recommendation_id:companyRegeneration.selectedAlternativeRecommendationId,
+          editor_reapproval_required:true,provider_publication_proven:false
+        }:null };
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
         confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:amsterdamScheduledFor(runDate,Number(hour)),delivery_ref:stale?null:previous?.delivery_ref||null,
         delivery_evidence:evidence,source_recommendation_ids:recs.map((r:any)=>r.recommendation_id),updated_at:new Date().toISOString() });
@@ -851,13 +883,20 @@ Deno.serve(async (req) => {
     const verifiedBrandLearningGuide = verifiedBrandLearnings.length
       ? ' Leer van de meegeleverde verified_brand_content_learnings als begrensde patronen. Gebruik hoogstens één relevant bewezen patroon voor opening, begrijpelijke pointe of nuttige CTA; behoud de actuele feitelijke aanbeveling. Geen percentages, garanties of nepklantresultaten uit historische engagementdata. Noem dit niet in de publieke tekst.'
       : '';
-    const editorialSystem = (pending.channel==='linkedin_personal'
+    const editorialCouncil=buildEditorialCouncilBrief({channel:pending.channel,commercialFeedback,verifiedBrandLearnings,measuredNextPostTest,creativeExploration});
+    let editorialSystem = (pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
       : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide + creativeExplorationGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide + creativeExplorationGuide) + ' ' + linkedinLoopGuide + ' ' + CONTENT_FEEDBACK_GUIDE + (pending.channel==='blog' && pending.delivery_evidence?.blog_quality_repair ? ' HERSTEL AFGEKEURDE BLOG: schrijf een volledig nieuw, concreet lezersartikel over het dagelijkse bedrijfsprobleem achter het onderwerp. Bij boekhouden gaat dit over openstaande facturen, bank/administratieverschillen of maandcontrole voor de ondernemer, niet SEO of publiceren. Geef uitvoerbare controlevragen zonder onbewezen productfuncties. Gebruik gewoon Nederlands voor ondernemer en boekhouder. Geen geforceerd zevenstappenschema, finance-jargon, vertaalfouten of beloofde financiële verbetering. Gebruik editorial_quality_review alleen als private afkeuringsgegevens en bronfeiten om de concrete problemen te corrigeren, nooit als publicatietekst of als toestemming om beleid te omzeilen. Schrijf geen specifieke Twinfield-bedieningshandeling zonder gecontroleerde officiële bron; bij onverklaarde verschillen eerst controleren en zo nodig de boekhouder laten beoordelen. Gebruik geen uitgeversrollen, canonical owner, CPC, forecast-score of interne meetnamen. Voor koppelingen kan de lezer terecht op de bestaande https://www.bedrijfsgeheugen.nl/twinfield-koppeling en claim geen nieuwe hoofdpagina. Houd onderwerp en bronwaarheid; herstel is geen bewijs van conversiewinst.' : '');
+    // Exact original buyer-first contract is appended before BOTH original AI calls.
+    if(pending.channel==='linkedin_personal'||pending.channel==='linkedin_company') {
+      editorialSystem += ' VERPLICHTE BUYER-FIRST REDACTIE: begin in de eerste 140 tekens bij een concreet herkenbaar menselijk of ondernemersprobleem, met echte spanning, kosten, gemiste kans, klantfrictie of beslissing. Vertel EEN brongebonden verhaal: situatie, oorzakelijk probleem, zakelijk gevolg, praktische les. Schrijf kort en natuurlijk Nederlands met luchtige alinea’s en een sterke begrijpelijke pointe. Noem interne tellers, modelcatalogi, actieve loops, rood/amber, assurance, source freshness of aantallen gegenereerde/uitgevoerde interne acties NOOIT in de post. Vertaal alleen een echt en relevant eerstehands feit naar klantbetekenis. Geen nepklant, niet-bestaande besparing, verzonnen ik-ervaring, ongedateerde statistiek, kunstmatige tegenstelling, engagementbait of quasi-virale claims. Geen herhaling van vorige postfamilies. LinkedIn persoonlijk is een authentiek oprichtersverhaal zonder commerciële CTA en blijft 130–200 woorden; bedrijfs-LI heeft een andere bron en invalshoek en eindigt met passend handelingsperspectief. Documentcarrousel is alleen toegestaan met een werkelijk goedgekeurd en kanaalgeschikt media-asset, nooit door de posttekst te suggereren dat een bestand bestaat.';
+    }
+    editorialSystem += ' '+editorialCouncil.instruction+' KANAALREDACTIE: '+editorialCouncil.editorial+' EXPERIMENT: '+editorialCouncil.single_variable_experiment;
+    // Original editor owns the brief; source guidance never overrides hard gates or issues a delivery claim.
     stage = 'artifact-ai';
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
     const artifactInput={channel:pending.channel,editorial_quality_review:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.quality_review||null:null,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+      editorial_council:editorialCouncil,commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
@@ -942,13 +981,13 @@ Deno.serve(async (req) => {
       if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     }
     if(pending.channel==='blog'){
-      let violations=blogReaderReadyViolations({...artifact,body:bodyText});
+      let violations=blogReaderReadyViolations({...artifact,body:bodyText,run_date:runDate});
       if(violations.length && generationProvider==='OpenAI' && apiKey){
         const revised=await callAI(apiKey,gov.model_id,
-          editorialSystem+' EINDREDACTIE HERZIEN: de vorige versie bevat geen lezersklare tekst ('+violations.join(', ')+'). Schrijf een geheel afgerond publiek artikel zonder uitgeversinstructies, met een duidelijke ondernemerstitel, ten minste drie ## koppen en een passende lezers-CTA. Gebruik uitsluitend de al gevalideerde recommendation-evidence. Maak geen onbewezen claims en geef geen technisch release- of SEO-werk aan de lezer.',
+          editorialSystem+' EINDREDACTIE HERZIEN: de vorige versie bevat geen lezersklare tekst ('+violations.join(', ')+'). Schrijf een geheel afgerond publiek artikel zonder uitgeversinstructies, met een duidelijke ondernemerstitel, ten minste drie ## koppen en een passende lezers-CTA. Gebruik uitsluitend de al gevalideerde recommendation-evidence. RVO bevestigt: Circular Plastics NL (CPNL) 2026 was alleen open van 21 april tot en met 6 oktober 2026. Op '+runDate+' mag je deze gesloten regeling niet presenteren als komende aanvraag of forecast-opening. Gebruik bij deze bestaande bron slechts correcte historische informatie en een actuele, aantoonbaar uitvoerbare volgende stap; anders moet de publicatie worden afgekeurd. Kies een feitelijke titel die een voorbije indienperiode niet als toekomst presenteert. Maak geen onbewezen claims en geef geen technisch release- of SEO-werk aan de lezer.',
           {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:violations},artifactTool,6500);
         const revisedBody=clean(revised?.body);
-        if(blogReaderReadyViolations({...revised,body:revisedBody}).length===0){
+        if(blogReaderReadyViolations({...revised,body:revisedBody,run_date:runDate}).length===0){
           artifact={...artifact,...revised,body:revisedBody};
           bodyText=revisedBody;
           violations=[];
@@ -963,7 +1002,7 @@ Deno.serve(async (req) => {
       if(editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
         const revision=await callAI(apiKey,gov.model_id,editorialSystem+
           ' HERSCHRIJF VOOR PUBLICATIE: afgekeurd op '+editorialViolations.map((v:any)=>v.code).join(', ')+
-          '. Maak één geheel nieuwe zakelijke LinkedIn-post van 100–135 woorden en maximaal 1.450 tekens: herkenbaar ondernemersprobleem, zakelijk gevolg, concreet eerste advies, begrijpelijke bedrijfswaarde. Geen rapportkoppen, technisch jargon of eerder onderwerp. Voeg tracking_url exact één keer toe. Geen verzonnen bewijs.',
+          '. Maak één geheel nieuwe zakelijke LinkedIn-post van 100–135 woorden en maximaal 1.450 tekens: de eerste 140 tekens tonen een herkenbare zakelijke frictie en concreet belang; daarna situatie, oorzaak, gevolg en bruikbaar advies. Geen rapportkoppen, internestatus-tellers, assurance, amber, actieve loops, modelcijfers, technisch jargon of eerder onderwerp. Voeg tracking_url exact één keer toe. Geen verzonnen bewijs.',
           {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:editorialViolations.map((v:any)=>v.code)},artifactTool,2400);
         let revised=compactLinkedInCommentary(clean(revision?.body));
         if(revised && companyTrackingUrl && !revised.includes(companyTrackingUrl)) revised+=`\n\n${companyTrackingUrl}`;
@@ -999,7 +1038,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraContext||{})},status:'content_ready',updated_at:new Date().toISOString()};
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText,run_date:runDate}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraContext||{})},status:'content_ready',updated_at:new Date().toISOString()};
     const decisionPayload={state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:pending.delivery_evidence?.daily_winner_score_version||null,

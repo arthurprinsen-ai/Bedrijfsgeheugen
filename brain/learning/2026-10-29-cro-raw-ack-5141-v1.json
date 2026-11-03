@@ -1,0 +1,84 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": 5141,
+  "obligation_id": "SITE-CRO-RAW-ACK-5141-20261029",
+  "fingerprint": "site|bg-interactie|dequeue-before-durable-ack|overflow-and-duplicate-cta|20261029",
+  "failure_class": "CRO_TELEMETRY_SILENT_LOSS",
+  "scope": "existing_one_brain_powerhouse_heartbeat",
+  "observed_evidence": {
+    "source": [
+      "assets/meting.js",
+      "supabase/functions/bg-interactie/index.ts",
+      "public.bg_interacties",
+      "PR #5140",
+      "PR #5144"
+    ],
+    "root_cause": "Fire-and-forget browser batch was removed before database ACK; ingest could return 202 ok:true after 0 stored rows; retries were not idempotent. Stacked candidate initially lacked canonical money-page growth writer guard, enabling duplicate CTA signals.",
+    "impact": "Partial raw website events and behavioral-exit coverage unknown. Bots cannot be qualified leads. No causal experiment or paid order inferred."
+  },
+  "remediation": {
+    "implementation_pr": 5144,
+    "dependency_pr": 5140,
+    "migration": [
+      "20261029180000_bg_cro_event_uid_v1.sql",
+      "20261029181000_bg_cro_behavior_daily_v1.sql"
+    ],
+    "implementation": "Unique event_uid; database ACK before browser dequeue; 503 for degraded ingest; 422 for invalid/without-consent details; fixed-size unacknowledged-first browser queue, local overflow diagnostic; preserve single commercial writer and only in-main CTA; scoped read-only consented non-bot aggregate in existing Andere data.",
+    "tests": [
+      "tests/cro-measurement-contract.test.mjs",
+      "tests/portal-cro-other-data.test.mjs",
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "privacy": "Do not store field values, free text, personal URL queries, replay, or unauthorised tenant data. Behavioral details only with permission.",
+    "limitations": [
+      "pagehide is best-effort, not complete capture",
+      "closed tab may lose pending sessionStorage events",
+      "local overflow count is not a server-confirmed event and must not be treated as full coverage",
+      "observed last section not true exit reason",
+      "form intent not qualified lead"
+    ],
+    "owner": "Existing website CRO / Powerhouse Recovery Writer; no additional scheduler or executor.",
+    "security_hotfix": {
+      "source": "CodeQL high alert on PR #5144 assets/meting.js eventId()",
+      "cause": "non-cryptographic Math.random UUID fallback in event deduplication",
+      "fix": "Web Crypto getRandomValues RFC4122 UUIDv4 fallback; no secure crypto => no event enqueued; diagnostic counter",
+      "regression": "tests/cro-measurement-contract.test.mjs",
+      "production_verified": false
+    }
+  },
+  "prevention_rules": [
+    "Never delete any unacknowledged raw batch: require exact count/UID receipt after successful storage; test 503 and duplicate retry.",
+    "Queue saturation may discard only NEW events, never pending unacknowledged events; record overflow as data-quality failure.",
+    "Reject invalid/mixed consent batches rather than partially filter or return ok:true.",
+    "Keep one canonical CTA event producer; generated money pages are owner; skip duplicate sitewide bridge.",
+    "Only count consented non-bot behavior with source freshness and human session denominators; missing data must remain unknown.",
+    "Never promote CRO WINNER, lead or revenue without independent provider/outcome proof.",
+    "Required/CodeQL/BRAIN/System Map, DB schema, Edge, Netlify exact main and browser 2-tenant + UID readback before live closure.",
+    "CodeQL high-severity insecure randomness: canonical event_uid must use Web Crypto randomUUID/getRandomValues; if unavailable fail closed and record local diagnostic, never Math.random fallback or false persisted ACK."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED; require persisted event_uid readback after Edge and Netlify release"
+    ],
+    "canary": [
+      "tests/brain-cro-other-data.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CRO_TELEMETRY_SILENT_LOSS",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "CANDIDATE until protected merge, actual production migrations/Edge rollout, Netlify/browser/auth verification and persisted non-bot UID readback. Do not mark GREEN on code or tests alone."
+}

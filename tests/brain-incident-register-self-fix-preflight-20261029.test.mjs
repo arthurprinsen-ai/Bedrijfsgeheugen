@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { compileChatLearningPreflight, evaluateIncidentSelfFix } from '../scripts/brain/chat-learning-preflight.mjs';
+import { reconcileIncidentObligations } from '../brain/observability/incident-obligation-assurance.mjs';
 
 const POLICY_PATH = 'brain/policies/powerhouse-incident-register-and-self-fix-v1.json';
 const policy = () => JSON.parse(fs.readFileSync(POLICY_PATH, 'utf8'));
@@ -15,6 +16,8 @@ function fixtureRoot(skills) {
     fs.mkdirSync(path.join(root, '.agents/skills', name), { recursive: true });
     fs.writeFileSync(path.join(root, '.agents/skills', name, 'SKILL.md'), body);
   }
+  fs.mkdirSync(path.join(root, 'brain/observability'), { recursive:true });
+  fs.writeFileSync(path.join(root, 'brain/observability/incident-obligation-assurance.mjs'), '// fixture auditor');
   return root;
 }
 
@@ -118,45 +121,109 @@ test('agent instructions link the existing enforceable Lean loop rather than a p
   assert.match(agents, /MEASURE → ANALYZE → HYPOTHESIZE → PRIORITIZE → IMPLEMENT → VERIFY → LEARN → REMEASURE/);
 });
 
-function edgeFixture(functions) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'incident-edge-'));
-  for (const [name, body] of Object.entries(functions)) {
-    fs.mkdirSync(path.join(root, 'supabase/functions', name), { recursive: true });
-    fs.writeFileSync(path.join(root, 'supabase/functions', name, 'index.ts'), body);
+
+const fingerprint='github|runtime|known-failure|v1';
+const observed={
+  provider_event_id:'github:run:41546047078:job:archive',
+  fingerprint, observed_at:'2026-11-03T06:00:00Z',
+  payload_sha256:'a'.repeat(64)
+};
+const receipt={
+  provider_event_id:observed.provider_event_id, fingerprint,
+  payload_sha256:observed.payload_sha256,
+  registered_at:'2026-11-03T06:00:01Z',
+  readback_confirmed:true
+};
+const recovery={
+  provider_event_id:observed.provider_event_id, fingerprint,
+  owner:'original-delivery-owner',obligation_id:'original-incident-obligation',
+  fix_attempted:true,status:'VERIFIED',verified_at:'2026-11-03T06:05:00Z',
+  regression_passed:true,independent_provider_readback:true,prevention_applied:true,
+  skill_version:'skill-v2',release_sha:'b'.repeat(40)
+};
+const auditable=extra=>({
+  observations:[observed],receipts:[receipt],recoveries:[recovery],
+  sourceReadbackComplete:true,registryReadbackComplete:true,...extra
+});
+
+test('a provider failure without a canonical Brain receipt becomes its own open incident',()=>{
+  const x=reconcileIncidentObligations(auditable({receipts:[]}));
+  assert.equal(x.status,'UNREPORTED_FAILURE_DETECTED');
+  assert.equal(x.missing_reports,1);
+  assert.equal(x.proven_recovered,0);
+  assert.equal(x.global_green,false);
+  assert.equal(x.obligations[0].next_action,'EXISTING_ONE_BRAIN_OWNER_ATOMIC_OBSERVE_AND_READBACK');
+});
+
+test('observed error must be safely recovered, not merely logged',()=>{
+  const x=reconcileIncidentObligations(auditable({recoveries:[]}));
+  assert.equal(x.status,'SAFE_RECOVERY_REQUIRED');
+  assert.equal(x.recovery_required,1);
+  const reserved=reconcileIncidentObligations(auditable({recoveries:[{
+    provider_event_id:observed.provider_event_id,fingerprint,authorization_required:true
+  }]}));
+  assert.equal(reserved.obligations[0].next_action,'EXISTING_OWNER_ESCALATE_PERMISSION_BOUNDARY');
+});
+
+test('false repair success without provider readback, skill and regression never closes',()=>{
+  for (const bad of [
+    {independent_provider_readback:false},
+    {regression_passed:false},
+    {prevention_applied:false},
+    {release_sha:null},
+    {skill_version:null}
+  ]) {
+    const x=reconcileIncidentObligations(auditable({recoveries:[{...recovery,...bad}]}));
+    assert.equal(x.status,'RECOVERY_NOT_PROVEN');
+    assert.equal(x.proven_recovered,0);
   }
-  return root;
-}
-
-test('edge functions: real repository exposes coverage and every function is marked or baseline debt', () => {
-  const packet = compileChatLearningPreflight();
-  const edge = packet.incident_self_fix.edge_functions;
-  assert.ok(edge.total > 0);
-  assert.equal(edge.with_protocol + edge.loop_debt.count, edge.total);
 });
 
-test('edge functions: a new function without the marker fails the preflight', () => {
-  const root = edgeFixture({ 'nieuwe-functie': 'export default () => {}\n' });
-  assert.throws(() => evaluateIncidentSelfFix({ rootDir: root, policy: policy() }), /INCIDENT_PROTOCOL_MISSING_ON_NEW_EDGE_FUNCTION:nieuwe-functie/);
+test('repeat after verified fix reopens same fingerprint without fabricating a new cause',()=>{
+  const recurrence={...observed,provider_event_id:'github:run:41546047079:job:archive',observed_at:'2026-11-03T07:00:00Z'};
+  const x=reconcileIncidentObligations(auditable({observations:[observed,recurrence],
+    receipts:[receipt,{...receipt,provider_event_id:recurrence.provider_event_id,registered_at:'2026-11-03T07:00:01Z'}]}));
+  assert.equal(x.recurring_failures,1);
+  assert.equal(x.global_green,false);
+  assert.ok(x.obligations.some(e=>e.status==='REGRESSION_RECURRED_AFTER_VERIFICATION'));
 });
 
-test('edge functions: a new function with the marker passes; a baseline function is visible debt', () => {
-  const p = policy();
-  const old = p.edge_function_protocol.loop_debt_baseline[0];
-  const root = edgeFixture({ 'nieuwe-functie': `// ${MARKER}\n`, [old]: 'export default () => {}\n' });
-  const result = evaluateIncidentSelfFix({ rootDir: root, policy: p });
-  assert.equal(result.edge_functions.with_protocol, 1);
-  assert.deepEqual(result.edge_functions.loop_debt.functions, [old]);
+test('provider duplicates dedupe but contradictory hashes fail closed',()=>{
+  const d=reconcileIncidentObligations(auditable({observations:[observed,{...observed}]}));
+  assert.equal(d.registered,1);
+  assert.equal(d.proven_recovered,1);
+  const conflict=reconcileIncidentObligations(auditable({observations:[observed,{...observed,payload_sha256:'c'.repeat(64)}]}));
+  assert.equal(conflict.status,'INCIDENT_IDENTITY_CONFLICT');
+  assert.equal(conflict.provider_conflicts,1);
 });
 
-test('edge functions: baseline lists only existing, unmarked functions and policy drift fails closed', () => {
-  const p = policy();
-  for (const name of p.edge_function_protocol.loop_debt_baseline) {
-    const file = path.join('supabase/functions', name, 'index.ts');
-    assert.ok(fs.existsSync(file), `edge baseline names a missing function: ${name}`);
-    assert.ok(!fs.readFileSync(file, 'utf8').includes(MARKER), `${name} has the marker; remove it from the edge baseline`);
-  }
-  for (const mutate of [q => { delete q.edge_function_protocol; }, q => { q.edge_function_protocol.new_functions_must_carry_marker = false; }, q => { q.edge_function_protocol.marker = 'x'; }]) {
-    const q = policy(); mutate(q);
-    assert.throws(() => evaluateIncidentSelfFix({ rootDir: edgeFixture({}), policy: q }), /INCIDENT_EDGE_PROTOCOL_POLICY_INVALID/);
+test('incomplete source audit and malformed provider events can never become green',()=>{
+  const missing=reconcileIncidentObligations(auditable({sourceReadbackComplete:false}));
+  assert.equal(missing.status,'SOURCE_COVERAGE_UNVERIFIED');
+  assert.equal(missing.global_green,false);
+  const absent=reconcileIncidentObligations({observations:[],receipts:[],recoveries:[]});
+  assert.equal(absent.status,'SOURCE_COVERAGE_UNVERIFIED');
+  const invalid=reconcileIncidentObligations(auditable({observations:[{...observed,provider_event_id:'bad value'}]}));
+  assert.equal(invalid.status,'INCIDENT_IDENTITY_CONFLICT');
+});
+
+test('mandatory agent preflight surfaces reporting audit without claiming global coverage',()=>{
+  const packet=compileChatLearningPreflight();
+  assert.equal(packet.incident_self_fix.incident_reporting_audit.required,true);
+  assert.equal(packet.incident_self_fix.reporting_audit.status,'SOURCE_COVERAGE_UNVERIFIED');
+  const explicit=compileChatLearningPreflight({executionContext:{incidentEvidence:auditable({receipts:[]})}});
+  assert.equal(explicit.incident_self_fix.reporting_audit.status,'UNREPORTED_FAILURE_DETECTED');
+});
+
+test('policy cannot silently disable reporting receipt, independent proof or single ownership',()=>{
+  const root=fixtureRoot({});
+  for(const tamper of [
+    p=>{delete p.incident_reporting_audit;},
+    p=>{p.incident_reporting_audit.required=false;},
+    p=>{p.incident_reporting_audit.entrypoint='other/observer.mjs';},
+    p=>{p.incident_reporting_audit.rules=[];}
+  ]){
+    const p=policy();tamper(p);
+    assert.throws(()=>evaluateIncidentSelfFix({rootDir:root,policy:p}),/INCIDENT_REPORTING_ASSURANCE_POLICY_DRIFT/);
   }
 });

@@ -34,7 +34,8 @@
     "docs/learning/",
     "docs/production-sql-history/",
     "docs/self-healing-agents.md",
-    "docs/superpowers/skills/"
+    "docs/superpowers/skills/",
+    "docs/cro/website-observability-experimentcontract-20261029.md"
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
@@ -322,7 +323,8 @@
         "tools/universal-failure-",
         "docs/delivery/sql/repository-writer-fenced-lease.sql",
         "tests/postgres-lease-replay.sh",
-        "tests/cost-dashboard-security.test.mjs"
+        "tests/cost-dashboard-security.test.mjs",
+        "tests/cro-measurement-contract.test.mjs"
       ],
       "requiredContracts": [
         "BG166",

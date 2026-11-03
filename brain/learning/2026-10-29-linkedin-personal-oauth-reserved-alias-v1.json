@@ -1,0 +1,45 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|personal|canonical-oauth-reserved-alias-after-expiry|20261029-v1",
+  "compiler": {
+    "failure_class": "COMPOSIO_OAUTH_ALIAS_ALREADY_IN_USE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "An expired or pending owner LinkedIn OAuth connected-account link retained the fixed Composio alias bedrijfsgeheugen-personal-canonical; subsequent original create_personal_link request #16109 failed with HTTP 503, upstream 400 alias already in use. Closed r_member_social scope had already been removed in original active v484.",
+  "prevention": "Original canonical create_personal_link only: on exact recognized 400 alias collision, bounded one retry with cryptographically unique pending alias and the same original stable owner ID, member-only openid/profile/email/w_member_social scopes, exact auth config, no delete or token transfer. Do not retry other errors. Return fresh candidate account ID and alias-collision flag but never persist the one-time redirect link in public records. Preserve original personal publisher, account identity preflight, provider create URN and no-repost invariant; independent readback still mandatory.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "canonical_edge_version_on_failure": 484,
+    "pg_net_request_id": 16109,
+    "http_status": 503,
+    "upstream_error": "COMPOSIO_LINKEDIN_SETUP_400 Alias already in use",
+    "desired_scopes": [
+      "openid",
+      "profile",
+      "email",
+      "w_member_social"
+    ],
+    "old_scope_removed": true,
+    "post_20261029_id": "urn:li:share:7521667096859201536",
+    "post_state": "PUBLISHED",
+    "independent_readback_available": false,
+    "publication_proven": false,
+    "republish_forbidden": true,
+    "owner_consent_completed_for_new_link": false,
+    "contains_private_link": false,
+    "new_scheduler": false
+  }
+}

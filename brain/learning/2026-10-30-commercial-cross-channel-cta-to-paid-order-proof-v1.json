@@ -1,0 +1,63 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|growth-funnel-observed-engagement-not-attributed-sales|20261030-v1",
+  "compiler": {
+    "failure_class": "CROSS_CHANNEL_COMMERCIAL_CONVERSION_PROOF_GAP",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-growth-funnel-closed-loop-20261030.test.mjs"
+    ]
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "source_baseline": {
+    "observed_at": "2026-10-30T12:52:57Z",
+    "canonical_runtime_layers": 32,
+    "required_jobs_active": 18,
+    "original15Loops": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "human_flagged_page_events_7d": 4464,
+    "persisted_cta_clicks_7d": 0,
+    "qualified_linked_leads_30d": 0,
+    "orders_with_provider_reference_30d": 0,
+    "revenue_flywheel_open_opportunities": 938,
+    "original_realized_eur": 0,
+    "note": "Page event record is not a unique human. Zero persisted CTA records is not proof of zero real user activity. Payment evidence from the provider remains unverified; actual global revenue outside this register is unknown."
+  },
+  "root_cause": "Existing original owner-only Portal V2 shows separate social post 48h, closed-week website, email reply and CRO revenue sources but lacks one 8-stage original funnel proof map with exact source owner, missing data guard and prioritized implementation for same canonical agents. Activity can be mistaken for paid orders or baseline-zero conversion.",
+  "correction": "Pure zero-side-effect, fail-closed ONE BRAIN revenue funnel projector reuses existing original Powerhouse growthDirection, socialFunnel, original conversionEvidence, compoundImprovement, readStates; renders one canonical admin-only stage/priority table in original Andere data portal. It never issues sends, changes schedulers or converts observed metrics into paid buyer claims.",
+  "prevention": [
+    "Fail closed if CRO source stale or missing; do not infer zero from missing.",
+    "Do not sum views/likes/replies/website events/leads and paid orders as one population or claim daily guaranteed growth.",
+    "Prioritize exact consented CTA producer→202→drain→persisted readback before running an unmeasured CTA variant.",
+    "Keep original LinkedIn/Instagram and email sender duplicate guard, age-matched provider-ID, privacy/consent and original customer identity proof.",
+    "Never count payment provider reference, forecast or internal action as independently paid revenue; require provider webhook/paid ID and tenant attribution.",
+    "Any strategy must be evaluated on real cohorts and actual source-backed customer outcome, naturally applied in next original agent run.",
+    "No extra writer, scheduler, AI/marketing side effect, payment or customer credential."
+  ],
+  "source": "netlify/functions/_powerhouse-commercial-growth-funnel.mjs",
+  "originalApi": "netlify/functions/powerhouse-cro-other-data.mjs",
+  "originalPortal": "portal-v2/modules/andere-data.js",
+  "tests": [
+    "tests/brain-commercial-growth-funnel-closed-loop-20261030.test.mjs"
+  ],
+  "humanDoc": "docs/changes/2026-10-30-original-one-brain-commercial-growth-funnel.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-original-one-brain-commercial-growth-funnel.md",
+  "delivery": {
+    "stage": "SOURCE_CANDIDATE",
+    "protectedMerge": false,
+    "exactProductionReadback": false,
+    "nextNaturalAgentImplementation": false,
+    "customerOrOrderUpliftVerified": false
+  }
+}

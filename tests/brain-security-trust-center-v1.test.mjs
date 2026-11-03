@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
+import {securityTone,securityOverallPosture,safeSecurityEvidenceUrl,summarizeSecurityPlatforms} from '../portal-v2/modules/security-trust-workspace.js';
 const read=p=>readFile(p,'utf8');
 
 test('security trust center is first-class and uses full href URLs',async()=>{
@@ -135,4 +136,37 @@ test('Portal is one product across technical source paths',async()=>{
  assert.doesNotMatch(map,/portal:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
  assert.doesNotMatch(map,/productionUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
  assert.match(map,/technicalReadbackUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
+});
+
+test('security learning replay: negated status, untrusted evidence link and incomplete platform can never be green',()=>{
+ for(const value of ['NOT_VERIFIED','UNKNOWN','EVIDENCE_PARTIAL','STALE','EXPIRED'])assert.notEqual(securityTone(value),'ok',value);
+ for(const value of ['javascript:alert(1)','http://example.org','/not-absolute','https://user:pw@example.org'])assert.equal(safeSecurityEvidenceUrl(value),null,value);
+ assert.equal(summarizeSecurityPlatforms([]).every(p=>p.status==='EVIDENCE_PARTIAL'),true);
+ assert.equal(securityOverallPosture({postureStatus:'VERIFIED_NO_OPEN_FINDINGS'},[]),'EVIDENCE_PARTIAL');
+ assert.equal(securityOverallPosture({postureStatus:'ACTION_REQUIRED'},[]),'ACTION_REQUIRED');
+ const failure=[{provider_key:'NETLIFY',control_key:'ARCHIVE_PREVIEW_ACCESS',status:'FAIL',evidence_available:true}];
+ assert.equal(summarizeSecurityPlatforms(failure).find(p=>p.provider==='NETLIFY').status,'ACTION_REQUIRED');
+});
+
+test('writer-control functions have immutable invoker search paths without weakening leases',async()=>{
+ const sql=await read('supabase/migrations/20261102141045_writer_control_fixed_search_path_v1.sql');
+ for(const fn of ['acquire(text,text,text,text,text,integer)','verify(text,text,bigint,text,text,text)','release(text,text,bigint)']){
+  assert.ok(sql.includes('writer_control.'+fn),fn);
+ }
+ assert.match(sql,/set search_path = pg_catalog, writer_control/i);
+ assert.match(sql,/and not prosecdef/i);
+ assert.match(sql,/WRITER_CONTROL_FIXED_SEARCH_PATH_READBACK_FAILED/);
+ assert.doesNotMatch(sql,/\b(?:drop\s+function|create\s+or\s+replace\s+function|grant\s+execute|disable\s+row\s+level\s+security)\b/i);
+});
+
+test('security proof freshness is independently checked when cached provider snapshots age',async()=>{
+ const {isCurrentSecurityObservation,isFreshSecuritySnapshot}=await import('../portal-v2/modules/security-trust-workspace.js');
+ const t=Date.parse('2026-11-02T14:00:00Z');
+ const row={observed_at:'2026-11-02T13:00:00Z',expires_at:'2026-11-02T13:59:59Z'};
+ assert.equal(isCurrentSecurityObservation(row,t),false);
+ assert.equal(isFreshSecuritySnapshot('2026-10-31T14:00:00Z',t),false);
+ const script=await read('portal-v2/modules/security-trust-workspace.js');
+ assert.match(script,/isCurrentSecurityObservation\(o,nowMs\)/);
+ assert.match(script,/isFreshSecuritySnapshot\(generatedAt,nowMs\)/);
+ assert.match(script,/security\?\.generatedAt/);
 });

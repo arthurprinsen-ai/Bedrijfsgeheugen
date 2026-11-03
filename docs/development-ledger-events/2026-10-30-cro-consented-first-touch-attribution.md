@@ -1,0 +1,8 @@
+# Development ledger — 2026-10-30 — consented marketing source to CTA one-root
+- Canonical scope: existing sitewide meting + SEO-order injected growth measurement, original Netlify durable event queue, existing Supabase growth_events/ONE BRAIN, owner-only Andere data.
+- Actual baseline: 4418 nonrobot-flagged page_view 7d, 0 persisted primary CTA, 0 linked qualified leads/paid orders 30d; separate sitewide interactions include 3 consenting nonbot clicks 3d, non-money, and 1632 bot clicks. No verified conversion denominator.
+- Code defect: original sitewide producer used source=website/without root; inline money-page used source=website, wrong referral meaning, different session root than Calendly/sitewide. Existing acquisition first touch was present but unused in durable CRO evidence.
+- Fix: only after analytics consent, approved coarse source+medium+campaign categories, shared existing tab UUID, no raw user/browser/referrer/UTM; mutually exclusive event writers retained. No new scheduler, publisher, CRM, universal event replay or access grant.
+- Portal: original admin-only other-data source adds PII-free 14d CTA-by-channel counts, statuses explicitly not paid revenue.
+- Source validity: 202 queue ack is not DB persisted or proof of CTA; future natural positive CTA + Supabase providerreadback required. Minimum mature experimental holdout and buyer payment readback needed before growth lift/paid order claim.
+- REGRESSION: tests/brain-cro-consented-first-touch-attribution-20261030.test.mjs; original other-data / SEO Order measurement tests; Brain replay/canary. Protected exact PR, main, Netlify and independent business metrics.

@@ -5,6 +5,14 @@ description: Canonical Powerhouse Instagram publishing and recovery skill. Use f
 
 # Instagram Composio Publisher
 
+## P0 #5232 — initial frozen Mira reel first-generation audit
+
+For a genuinely frozen new day winner with PH-P### approved scene, original OpenArt media job WAITING_ASSET/attempts=0 and no prior asset, call original router `generation_preflight` before the one bounded provider generation. This is separate from the existing previously-rejected video retry. Only the original pinned master, original OpenArt project, exact source, provider policy and no provider create allow preflight. Success is merely `FORMAT_CONTROLS_PROVEN_ONLY`; face 0.940, temporal motion, native 1080x1920 MP4 without audio and Meta official provider side effect/readback remain independent hard requirements. Never use duplicate history, manual media approval, second publisher or unapproved budget. Original request #18186 rejected 2026-11-01 PH-P008 virgin winner despite original media connection READY; correction is narrow first-stage admission, not granting publishing rights. Log to original ONE BRAIN #5232 and human runbook `docs/changes/2026-11-01-p0-mira-virgin-winner-media-preflight.md`.
+
+## P0 #5232 — original Mira source NEWS recall without false-green
+
+Original same-owner source probe #18176 (1 Nov 2026) produced five new personal sources, zero new business Mira sources and five empty DataForSEO News tasks. HTTP200 is not success; JSON reported SOURCE_RECOVERY_DUE. Canonical original radar's six PH-P entrepreneur query slots are shortened for high recall within the **same eight** paid/provider-search slots. After protected deployment, run original radar once for the missing date with existing scheduler auth and read JSON state, then original one-winner selector. Do not create hand-written source evidence, date, approval, second publisher or additional daily cron. Enforce original PH-P scene library, publisher date, 90-day source / 3-day topic uniqueness, face >=0.940, exact final-media identity and official provider-ID readback. Escalate lack of source through existing ONE BRAIN #5232 and continue original executor. Human source runbook: `docs/changes/2026-11-01-p0-mira-source-news-recall-repair.md`.
+
 Fingerprint: `instagram-composio-primary-v1`.
 
 ## Trigger
@@ -590,3 +598,17 @@ no Buffer/Make fallback and no duplicate posting.
 
 ## 2026-10-22 — Netlify Mira video-frame authorization must fail closed
 Fingerprint `powerhouse|instagram-frame-extractor-auth-oracle-fail-open|20261022-v1`: Original Supabase verifier checks the existing scheduler token BEFORE answering 400/INVALID_INPUT for the purposely blank POST. Treat only HTTP 400 JSON ok=false/error=INVALID_INPUT as proof of a valid caller. Deny 401/403/404/429/5xx/200, malformed JSON and network errors; never trust status!=401. Keep existing OpenArt video allowlist, strict master-face 0.94 and temporal proof. No new scheduler or sender.
+
+
+## 2026-10-31 — Source winner BEFORE Mira media: verified original radar owner
+
+**Incident:** `powerhouse|mira|no-new-unique-source-backed-daily-winner|20261031-v1`, original ONE BRAIN record OBSERVED. The REAL existing source collector is `powerhouse-mira-problem-radar-v1` (active canonical cron job 120, existing daily slot), and the REAL selector is `public.powerhouse_select_instagram_daily_winner_v1`. Do not invent a new Mira research agent or second cron. On 31 October, original source audit showed two otherwise valid dated PH-P### source/scene candidates; **both** violate prior 90-day source reuse and 3-day topic reuse. Original Instagram decision said `EXACT_FINAL_MEDIA_PROOF_REQUIRED` but no immutable same-day daily winner exists, so video production would be premature.
+
+Original Powerhouse classifier/Heartbeat/owner portal must first output `MIRA_UNIQUE_SOURCE_WINNER_REQUIRED` with accountable owner **`powerhouse-mira-problem-radar / powerhouse_select_instagram_daily_winner_v1`**, requiring a genuinely new independently dated MKB-human problem, source evidence and safe original frozen winner ID. This is an **autonomously actionable source discovery** task, not a fake human OAuth requirement. Only after a real immutable winner exists may the ORIGINAL media router produce a candidate under its provider credit limit and independently verify native Reel/identity >=0.940, exact source-scene-caption and real Meta readback. Prior 29 October video score 0.900 is permanently ineligible for replay. No fabricated source, topic reuse, bypass, alternate transport or second executor.
+
+**Netlify source parity:** the original secure `powerhouse-one-loop-assurance` and `powerhouse-cro-other-data` functions bundle `brain/observability/one-loop-guard-diagnostics.mjs`; a change to that source must trigger original Netlify deployment before claiming a new owner-visible portal diagnosis. Regression: `tests/brain-mira-source-and-netlify-guard-impact-20261031.test.mjs`. An approved source winner/asset is not a sent Reel until exact provider ID+permalink/readback.
+
+
+## Original nightly Mira radar materializer readback — 31 October 2026
+
+The canonical existing radar `powerhouse-mira-problem-radar-v1` (cron job 120) invokes `powerhouse_materialize_mira_problem_recommendation_v1`. Do not interpret the *transport* 200 or absent SQL error as an eligible new source: inspect the returned JSON `ok` AND `state`. A valid source winner is only `RECOMMENDATION_MATERIALIZED` or `WINNER_ALREADY_FROZEN` with `ok=true`. The typed source shortage `NO_FRESH_PUBLIC_PROBLEM_SIGNAL` (also missing lineage or unverified/stale publication date) is `SOURCE_RECOVERY_DUE`, `MIRA_UNIQUE_SOURCE_WINNER_REQUIRED`, owned by this exact radar and original frozen winner selector; never an Instagram media assignment or publish authorization. Original radar logs its daily source failure through existing `brain_observe_failure` with idempotent reason fingerprint and no second scheduling or duplicate provider calls. The original Heartbeat/Portal V2 remains RED until the next genuine, newly dated, nonduplicate source, verified final video >=0.940 and original Meta provider readback. Do not reuse rejected old source/media or spend extra generation credits. Historical regression: `tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs`.

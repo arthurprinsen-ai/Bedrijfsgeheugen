@@ -91,3 +91,21 @@ test('the English pricing page links to the English checkout', () => {
   assert.match(prijzen, /'&trial=1'\+L\(\)/);
   assert.match(prijzen, /lang=en/);
 });
+
+test('checkout recovers the trial switch if the production HTML normalizer removes its placeholder', () => {
+  const start = script.indexOf('function setTrialLink(text,href)');
+  const end = script.indexOf("if(q.get('success')", start);
+  assert.ok(start >= 0 && end > start, 'checkout switch implementation must exist');
+  const fn = script.slice(start, end);
+  const appended = [];
+  const form = {appendChild(node) { appended.push(node); }};
+  const document = {
+    getElementById(id) { return id === 'form' ? form : null; },
+    createElement(tag) { return {tag, children: [], setAttribute(k,v){this[k]=v;}, replaceChildren(...children){this.children=children;}}; }
+  };
+  vm.runInNewContext(fn + "setTrialLink('30 dagen gratis', '/afsluiten?trial=1')", {document});
+  assert.equal(appended.length, 1);
+  assert.equal(appended[0].id, 'trialSwitch');
+  assert.equal(appended[0].children[0].textContent, '30 dagen gratis');
+  assert.equal(appended[0].children[0].href, '/afsluiten?trial=1');
+});

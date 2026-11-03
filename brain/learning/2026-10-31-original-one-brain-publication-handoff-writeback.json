@@ -1,0 +1,56 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|publication|obligation-next-action-diverges-from-one-brain-recovery|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "existing powerhouse-content-loop, original channel agents, one original ONE BRAIN guard and private Portal V2",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original source content-loop derives precise per-channel recovery code, responsible owner and repair action in one ONE BRAIN receipt, but leaves original content_publication_obligations.next_action as vague old planning instruction even with persisted 429 and missing Mira winner. This splits operational views despite a technically healthy recurring cron.",
+  "observed_evidence": {
+    "readback_utc": "2026-10-31T13:11:01Z",
+    "publication_date": "2026-10-31",
+    "public_channels": [
+      "blog",
+      "instagram",
+      "linkedin_company",
+      "linkedin_personal"
+    ],
+    "all_original_publication_status": "PLANNED",
+    "external_provider_ids_proven": 0,
+    "original_brain_recovery_state": "RED/RECOVERY_DUE",
+    "original_brain_typed_recovery_count": 5,
+    "old_obligation_actions": [
+      "Selecteer exact één goedgekeurde due slug en lever via candidate PR → BG169 → live proof.",
+      "Genereer/publiceer via de bestaande kanaallane en koppel live bewijs plus metrics terug."
+    ],
+    "generator_provider_failure": "429 insufficient_quota",
+    "mira_new_source_winner": false
+  },
+  "prevention_rule": "In original content-loop after ordinary reconciliation and typed recovery assessment, CAS write sanitized fixed-text cause/owner into original next_action for public PLANNED/BLOCKED/FAILED obligations only if previous next_action matches and external_id is NULL. Never mutate status, provider truth, idempotency, approved/dispatch/delivered, OAuth, billing or email opt-in. Read back actual row and expose same source in original Brain and read-only portal.",
+  "fix_candidate": "Pure safe planner in existing original Edge bundle plus original loop same exclusive lease, original private ONE BRAIN guard owner projection, original portal card, specific regressions and canonical System Map.",
+  "approval_boundaries": "No new cron/agent fabric, second writer, email sender, alternate OpenAI fallback, direct post, OAuth consent, identity threshold relaxation, fake provider ID, status mutation or irreversible delivery.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Original Supabase 31 Oct 13:11 UTC 4 public obligations PLANNED with generic next_action, original ONE BRAIN 5 typed recoveries with owner and concrete action.",
+    "regression": "Unit pure planner; 4 public + email exclusion, idempotence, provider ACK/advanced state protection, source unverified fail closed, original CAS and private portal owner projection.",
+    "pending": "Protected Required/backend/portal/native Netlify/CodeQL and protected merge, original exact merged Supabase Edge bundle, native Netlify deploy, original ordinary loop and original obligation SQL readback; any actual social/blog/email still requires independent provider IDs and publication outcomes."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-10-31-original-one-brain-publication-handoff-writeback.md",
+  "activity_ledger": "docs/development-ledger-events/2026-10-31-original-one-brain-publication-handoff-writeback.md"
+}

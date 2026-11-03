@@ -1,0 +1,35 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "mira-preflight-rejected-history-monotonicity-20261029",
+  "fingerprint": "mira|media|rejected-proof-erased-by-readiness-preflight|20261029-v1",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs"
+    ]
+  },
+  "cause": "Readiness preflight erased immutable rejection because rejected history has no approved asset URL.",
+  "change": "Preflight zero-write fence on rejected WAITING_PROOF and CAS-recovery from existing immutable Brain occurrence for demoted original job.",
+  "prevention": "No duplicate candidate, re-verification cost, relaxed identity policy or alternative provider.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
+  ],
+  "regression_ref": "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs",
+  "evidence": {
+    "production_before": "same original Mira job demoted to WAITING_ASSET at 15:09 UTC; no Meta ID",
+    "provider_video_result": "start face 0.900 versus required 0.940",
+    "canonical_issue": 4439,
+    "production_verification": "NOT_LIVE"
+  }
+}

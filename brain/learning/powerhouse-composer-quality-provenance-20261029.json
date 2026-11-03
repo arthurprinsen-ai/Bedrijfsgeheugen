@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "obligation_id": "powerhouse-lean-agent-loop-runtime-coverage-20261029",
+  "fingerprint": "powerhouse|composer-quality-source-actor-evidence-gap|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "source": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+  "root_cause": "Canonical cycle events have no source-native actor/skill/before/after. Composer already measures qv.score but previously wrote no actor identity or prior-vs-new score provenance, and ignored Supabase quality-evidence upsert errors.",
+  "fix": "Attach source-owned message-composition agent_id, exact CONTRACT as skill_version, real prior recorded numeric score or null, computed current score, and exact authoritative message-quality evidence ref to existing powerhouse_sales_actions.evidence.commercial_intelligence.composer. Fail closed if quality table write fails. Do not assert delivery, customer outcome or revenue.",
+  "regression_tests": [
+    "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+  ],
+  "privacy": "No new PII, no token or raw customer payload in browser; action evidence remains in existing protected source.",
+  "risk": "This improves the producer's own evidence, but does not retroactively populate immutable cycle_events, prove other agent identities or write provider outcomes.",
+  "next": "Extend canonical stage-appropriate cycle event producers under protected DB migration and independently validate exact live source quality and customer outcome attribution.",
+  "extra_schedulers": 0,
+  "extra_writers": 0,
+  "compiler": {
+    "failure_class": "SOURCE_WRITER_EVIDENCE_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+    ]
+  },
+  "open_gaps": [
+    "CANONICAL_CYCLE_STAGE_WRITER_FORWARDING",
+    "OTHER_RUNTIME_AGENTS",
+    "SUPABASE_EDGE_PROVIDER_DEPLOY_AND_READBACK",
+    "CUSTOMER_CONVERSION_AND_PAID_REVENUE"
+  ],
+  "prevention_rule": "Composer source updates must fail closed if its authoritative quality-row upsert fails. Only the actual scoped composer writer may state its own actor/skill; before_score requires prior recorded numeric evidence, after_score derives from the current computation. Never infer provider send, lead, order or paid revenue, and do not rewrite canonical historical cycle events. For source-deficient actions skip the composer AI request *before* the persuasion/model call, without weakening pass thresholds or switching off the existing executor; retry normal processing only after the source is enriched.",
+  "test_evidence": [
+    "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs"
+  ],
+  "observed_evidence": {
+    "kind": "SUPABASE_READ_ONLY_AGGREGATE",
+    "window_days": 14,
+    "quality_evaluation_rows": 1021,
+    "distinct_source_actions": 22,
+    "quality_passed": 0,
+    "source_specific_evidence_failed": 1021,
+    "source_ref_runtime_matches": 15,
+    "with_runtime_headline_min_24": 11,
+    "paid_revenue_eur": "0",
+    "note": "Counts at observation time; original source text and customer identities not logged."
+  },
+  "additional_fix": "Use the same source-specific evidence quality gate before any expensive model generation, persisting no false success or fabricated source. If context absent, return SOURCE_SPECIFIC_EVIDENCE_REQUIRED with missing field names only. No repeated LLM call for an action until truthful source conditions are met."
+}

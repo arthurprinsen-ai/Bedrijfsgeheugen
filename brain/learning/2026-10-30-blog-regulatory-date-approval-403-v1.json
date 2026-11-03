@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE",
+  "fingerprint": "blog|factual-freshness|cpnl-deadline-inverted|20261030-v1",
+  "obligation_id": "BLOG-REGULATORY-DATE-AND-403-PENDING-APPROVAL-20261030",
+  "failure_class": "DATA_INTEGRITY",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The original source-led blog generator converted the official CPNL 6 October 2026 closing date into a forecast opening date in both 29 and 30 October 2026 drafts. The canonical Edge exporter independently refused these GENERATED drafts because approved_at was NULL, while GitHub renderer surfaced the legitimate HTTP 403 as repeated runtime failures rather than a pending editorial approval state.",
+  "evidence": {
+    "dates": [
+      "2026-10-29",
+      "2026-10-30"
+    ],
+    "provider_rvo_url": "https://www.rvo.nl/subsidies-financiering/cpnl",
+    "actual_open_date": "2026-04-21",
+    "actual_close_date": "2026-10-06",
+    "provider_budget_eur": 40000000,
+    "blog_obligations": "GENERATED, approved_at=NULL, no external_id",
+    "github_failed_runs": [
+      40954413989,
+      40982375638
+    ],
+    "blog_export_version_before_fix": 240,
+    "blog_queue_version_before_fix": 244,
+    "republish_forbidden": true,
+    "approved_or_live_proven": false,
+    "external_side_effect": false
+  },
+  "fix": "In the EXISTING original blog queue and service-only approved exporter, reject known official-date inversion before any public release; original GitHub renderer classifies exact authenticated exporter 403 BLOG_PUBLIC_EXPORT_NOT_APPROVED as a safe NO_ACTION, while every other auth failure remains fatal; no cron or approval change.",
+  "prevention_rule": "Every money/finance/subsidy date claim needs current primary-source verified effective dates at publication reference date. Original publisher cannot infer editorial approval from content_ready; correct or discard outdated content, then require actual approval and exact protected release/main/Netlify/browser readback. Do not invent guaranteed first-run success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "source_status": "CANDIDATE_NOT_RELEASED",
+  "production_runtime_proven": false,
+  "real_world_effect_proven": false,
+  "independent_next_natural_run_proven": false
+}

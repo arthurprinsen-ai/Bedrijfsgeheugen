@@ -1,0 +1,87 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "fingerprint": "portal|entrepreneur-experience|prediction-action-outcome-feedback|20261030-v1",
+  "compiler": {
+    "failure_class": "PORTAL_EXPECTED_VS_REALIZED_FEEDBACK_VISIBILITY_GAP",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "cause": "The daily entrepreneur cockpit showed measurement and learning as separate stages but did not present a directly comparable expectation, independently verified realization, evidence and downstream learning in one entrepreneur-readable interaction.",
+  "correction": "Add one read-only tenant-scoped outcome feedback projection in the existing Executive Cockpit, with evidence/verification, matching unit, metric, baseline, horizon, learning and next-decision gates; accessible mobile/keyboard disclosure.",
+  "prevention": [
+    "Never label provider delivery, proposed, completed or unverified action as realized business value.",
+    "Require actual source_refs, healthy evidence and explicit terminal verification before exposing measured actual.",
+    "Require matching metric, baseline, measurement period and unit before showing variance; a variance is not necessarily positive ROI.",
+    "Only show learned state with independent learning evidence and an explicit next decision.",
+    "Reuse original Portal V2 and Powerhouse/ONE BRAIN/Heartbeat authorities; no second database, scheduler, instrumentation or writer.",
+    "Only promote UX skill improvements after exact production readback and subsequently evaluated independent user/customer effect."
+  ],
+  "canonical_source": "portal-v2/operating-system/executive-projection.js",
+  "presentation": "portal-v2/operating-system/outcome-feedback.js",
+  "tests": [
+    "tests/brain-entrepreneur-impact-feedback-20261030.test.mjs"
+  ],
+  "human_document": "docs/changes/2026-10-30-entrepreneur-impact-feedback-ux-v1.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-entrepreneur-impact-feedback-v1.md",
+  "system_map": "platform/system-map/canonical-system-map.mjs",
+  "delivery": {
+    "stage": "SOURCE_CANDIDATE",
+    "protected_merge_verified": false,
+    "exact_production_verified": false,
+    "authenticated_tenant_readback_verified": false,
+    "independent_user_task_uplift_verified": false,
+    "verified_customer_business_outcome": false,
+    "skill_promoted": false
+  },
+  "evaluation": {
+    "pure_function_checks_passed": 10,
+    "github_required_checks": "QUEUED_AT_SNAPSHOT",
+    "historical_replay": [
+      "tests/brain-entrepreneur-impact-feedback-20261030.test.mjs"
+    ]
+  },
+  "strategyAdvisor": {
+    "fingerprint": "portal|strategic-advisor|consulting-grade-evidence-to-decision|20261030-v1",
+    "source": "portal-v2/operating-system/executive-projection.js",
+    "readOnlyRenderer": "portal-v2/operating-system/strategic-advisor.js",
+    "originalDecisionPage": "portal-v2/operating-system/operating-system-ui.js",
+    "onlyTenantScopedTrustedActions": true,
+    "guaranteedBusinessLift": false,
+    "expectedValuesAreNotRealized": true,
+    "realOutcomesMustLinkActionId": true,
+    "testedPureFunctionChecks": 6,
+    "regression": "tests/brain-strategic-advisor-one-loop-20261030.test.mjs",
+    "status": "CANDIDATE_AWAITING_REQUIRED_CI_AND_PRODUCTION_READBACK"
+  },
+  "incidents": [
+    {
+      "fingerprint": "delivery|hygiene|pr5211-missing-candidate-metadata|20261030-v1",
+      "registry": "public.brain_failure_registry",
+      "maturity": "OBSERVED",
+      "run_id": 41105463495,
+      "root_cause": "Missing four canonical machine-readable metadata fields in original PR body; fixed in body, protected admission still requires fresh pass.",
+      "prevention": "Require literal metadata fields in PR creation; protect Required/CodeQL, no bypass.",
+      "cas_promotion": "REJECTED_FAILURE_VERSION_CONFLICT"
+    }
+  ],
+  "commercialBaseline": {
+    "observed_date": "2026-10-30",
+    "time_window_days": 7,
+    "source": "original public.growth_events + growth_outcomes + powerhouse_one_brain_runtime_health_v1",
+    "growth_events_nonrobot": 9202,
+    "persisted_primary_cta_events": 0,
+    "growth_outcomes": 0,
+    "original_runtime_errors": 3,
+    "original_layers": "32/32",
+    "original_jobs": "18/18",
+    "architecture": "AMBER",
+    "meaning": "Measurement gap and unresolved outcome proof. No claim of zero actual clicks, visitors or customer orders.",
+    "requires": "original measurement producer→receiver→persisted ID readback and independent paid order verification",
+    "no_new_collector": true
+  }
+}

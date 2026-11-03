@@ -165,13 +165,18 @@ jobs:
         env:
           CACHEBUST: bg_preview_ready
         run: bash tools/ci/wait-for-url.sh "${PORTAL_READBACK_URL}/portal-v2/"
+      - name: Pin canonical production browser host to exact immutable release identity
+        run: |
+          set -euo pipefail
+          node tools/ci/portal-canonical-browser-release-fence.mjs --verify
+          echo "PORTAL_BROWSER_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
       - name: Read back Portal V2 DOM, standalone routing and CSRD assets
         env:
-          PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
+          PRODUCTION_URL: ${{ env.PORTAL_BROWSER_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-production-*.spec.js --workers=1
       - name: Read back hydrated mobile demoAI shell
         env:
-          PREVIEW_URL: ${{ env.PORTAL_READBACK_URL }}
+          PREVIEW_URL: ${{ env.PORTAL_BROWSER_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
       - name: Capture exact-head PR visual baseline
         if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
@@ -217,6 +222,18 @@ jobs:
             echo "Waiting for successful exact-head PR readback ${pr_head_sha} (attempt ${attempt}/60)"
             sleep 4
           done
+          # A successful workflow_run can have NO screenshot artifact (for example,
+          # a skipped visual lane). Do not treat run success as screenshot evidence.
+          # Fall through to the EXISTING exact-PR-HEAD screenshot capture if absent.
+          if [ -n "$run_id" ]; then
+            artifact_name="visual-baseline-pr-${pr_number}-${pr_head_sha}"
+            artifacts="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100")"
+            artifact_id="$(jq -r --arg expected "$artifact_name" '[.artifacts[] | select(.name == $expected and .expired == false)] | first | .id // empty' <<<"$artifacts")"
+            if [ -z "$artifact_id" ]; then
+              echo "::notice::Successful exact-head PR readback ${run_id} has no unexpired ${artifact_name}; requiring verified approved-source browser screenshot instead."
+              run_id=""
+            fi
+          fi
           mkdir -p artifacts/visual-baseline-pr
           if [ -n "$run_id" ]; then
             gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
@@ -323,10 +340,13 @@ jobs:
       - name: Visual regression against approved PR baseline
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
-          PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
+          PRODUCTION_URL: ${{ env.PORTAL_BROWSER_READBACK_URL }}
           VISUAL_BASELINE: artifacts/visual-baseline-pr/portal-v2-canvassen.png
           VISUAL_ACTUAL_PATH: artifacts/visual-production/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+      - name: Reverify canonical browser release after browser/visual readbacks
+        if: success()
+        run: node tools/ci/portal-canonical-browser-release-fence.mjs --verify
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4

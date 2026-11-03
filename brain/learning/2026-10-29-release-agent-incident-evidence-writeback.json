@@ -1,0 +1,44 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "release-agent-incident-evidence-writeback-20261029",
+  "fingerprint": "powerhouse|release-agent-incident-evidence|20261029",
+  "status": "CANDIDATE_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-agent-incident-evidence-writeback-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Independent Oct 29 release incidents proved that metadata escaping, missing canonical learning test contracts, website-only tenant-proof skip and missing Supabase Edge config can each leave recovery unresolved or falsely inferred green across agents.",
+  "change": "Extend existing AGENTS.md and powerhouse-continuity skill with read-before-write fingerprints, durable Brain registry occurrence+promotion receipts, evidence separation, bounded recovery and exact provider readback; no new authority or scheduler.",
+  "prevention": "Next agent must discover these fingerprints first; use protected current SHA and one canonical writer; log every real failure via brain_observe_failure and read back registry; do not promote above OBSERVED without proof. Enforce policy/inheritance with a tests/brain- regression.",
+  "evidence": {
+    "production_verified": false,
+    "provider_auth_proof": false,
+    "live": false,
+    "registry_writeback_verified": true,
+    "registry_fingerprints": 4,
+    "github_main_observed": "ba27370e923e27d911ed48476a4e90657fbb988a",
+    "related_issues": [
+      4215,
+      4577,
+      5118
+    ],
+    "related_prs": [
+      5123,
+      5125,
+      5126,
+      5127,
+      5129
+    ],
+    "security_boundary": "no secrets or customer payloads in public learning",
+    "proof_limits": "Static source and DB registry receipts do not establish portal production, checkout user flows or customer business outcomes"
+  }
+}

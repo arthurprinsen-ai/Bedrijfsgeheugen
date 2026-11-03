@@ -48,7 +48,8 @@ test('wizard definition safely flows Outlook PDF sample through extraction to Da
   assert.equal(result.evidence.extractionResult.ok,true);
   assert.equal(result.evidence.validationResult.ok,true);
   assert.equal(result.evidence.targetSafeTestResult.ok,true);
-  assert.deepEqual(runtime.activationEligibility(connector,result.evidence),{eligible:true,reason:'ELIGIBLE'});
+  assert.equal(result.evidence.proofLevel,'SAMPLE_ONLY');
+  assert.deepEqual(runtime.activationEligibility(connector,result.evidence),{eligible:false,reason:'EXTERNAL_PROVIDER_PROOF_REQUIRED'});
 });
 
 test('real document bytes stay fail-closed without a configured extractor provider',async()=>{
