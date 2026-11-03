@@ -117,13 +117,22 @@ jobs:
           # Exact display title and original workflow source are rechecked by
           # require_workflow below; request at most once per PR+head identity.
           expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
-          list="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100")"
-          selected="$(jq -c --arg title "$expected_title" '[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last' <<<"$list")"
-          prior_id="$(jq -r '.id // empty' <<<"$selected")"
-          if [ -n "$prior_id" ]; then
-            echo "BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED:pr=${PR_NUMBER}:head=${HEAD_SHA}:run=${prior_id}"
-            exit 0
-          fi
+          # workflow_dispatch is indexed under main SHA, NOT the PR head SHA.
+          # Double-check the original main-indexed provider flight before dispatch.
+          for guard_check in 1 2; do
+            list="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100")"
+            jq -e '.workflow_runs | type=="array"' <<<"$list" >/dev/null || {
+              echo "::error::BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED"; exit 78;
+            }
+            selected="$(jq -c --arg title "$expected_title" '[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last' <<<"$list")"
+            prior_id="$(jq -r '.id // empty' <<<"$selected")"
+            if [ -n "$prior_id" ]; then
+              prior_status="$(jq -r '.status // "unknown"' <<<"$selected")"
+              echo "BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED:pr=${PR_NUMBER}:head=${HEAD_SHA}:run=${prior_id}:status=${prior_status}"
+              exit 0
+            fi
+            [ "$guard_check" = 2 ] || sleep 2
+          done
           jq -n --arg pr "$PR_NUMBER" --arg base "$base_sha" --arg head "$HEAD_SHA" --arg candidate_branch "$candidate_branch" \
             '{ref:"main",inputs:{pr_number:$pr,base_sha:$base,head_sha:$head,candidate_branch:$candidate_branch,verification_only:"true"}}' \
             > /tmp/brain-original-verify-only-dispatch.json
