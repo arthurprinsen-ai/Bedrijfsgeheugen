@@ -4,3 +4,4 @@
 - One original code candidate safely classifies provider errors in application logs without secrets, prompts, input, customer data or provider error details. Retains visitor-facing 502.
 - Historical replay tests/brain-netlify-website-openai-diagnostics-20261103.test.mjs; source RCA, live deployment and positive response NOT YET PROVEN.
 - Existing ONE BRAIN owner/skill and incident #4198, no second writer.
+- Original second live request 01M6GVCPN7WD51G0JMDHCZHSJP returned 502 after protected logger deploy, and connector-native Netlify request logs still reported zero application log lines. Class remains unknown; minimal original response header X-BG-Recovery-Class proposed on the same generic 502, with no customer-visible change. No GREEN.
