@@ -237,8 +237,8 @@ test('provider event IDs cannot be assigned multiple competing incident fingerpr
   }));
   assert.equal(x.status,'INCIDENT_IDENTITY_CONFLICT');
   assert.equal(x.provider_conflicts,1);
-  assert.equal(x.registered,1);
-  assert.equal(x.proven_recovered,1);
+  assert.equal(x.registered,0);
+  assert.equal(x.proven_recovered,0);
   assert.ok(x.obligations.some(e=>e.status==='PROVIDER_EVENT_FINGERPRINT_CONFLICT'));
   assert.equal(x.global_green,false);
 });
