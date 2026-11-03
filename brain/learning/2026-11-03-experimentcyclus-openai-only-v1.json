@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|bg-experimentcyclus|openai-only-missing-source|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-experimentcyclus-agent",
+  "root_cause": "Original weekly Supabase Edge function v8 was live using Anthropic but missing from version-controlled GitHub function sources; central active governance also approved Anthropic. This creates deployment and provider evidence drift.",
+  "fix": "Restore original Edge source under supabase/functions/bg-experimentcyclus/index.ts, change AI call to OpenAI gpt-5-mini forced named proposal tool; retain weekly cron and visitor/experiment count gating. Switch existing canonical AI governance to OpenAI only at protected handover after merge.",
+  "prevention_rule": "Original scheduled AI code must have exact GitHub-source parity and owner-approved OpenAI use-case; fail closed on malformed proposed experiments or unverified page names and never mark a nominal 200 from no new experiments as model inference proof.",
+  "tests": [
+    "tests/brain-experimentcyclus-openai-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experimentcyclus-openai-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-experimentcyclus-openai-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experimentcyclus-openai-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no new cron",
+      "existing visit threshold",
+      "original approval",
+      "matched model provider",
+      "same page used as source",
+      "no invented ROI",
+      "independent provider readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PROVIDER_RUNTIME_AND_SOURCE_DRIFT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Original protected merge, governance CAS update, source deploy exact SHA and next safe natural event readback; keep original failure status if no actual AI inference possible."
+}
