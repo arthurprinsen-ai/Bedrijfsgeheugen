@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "obligation_id": "powerhouse-owner-action-postmerge-legacy-contract-regressions-20261103-v1",
+  "fingerprint": "powerhouse|brain|owner-action-escalation-postmerge-legacy-contract-tests|20261103-v1",
+  "status": "SOURCE_CANDIDATE_NOT_PROVEN_LIVE",
+  "owner": "original-one-brain-heartbeat-governance-owner",
+  "failure_class": "OLD_STATIC_TEST_AND_STALE_INCIDENT_SKILL_DEBT",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "OLD_STATIC_TEST_AND_STALE_INCIDENT_SKILL_DEBT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original source contract static test hard-coded adjacency of incidentLearning and obligations, rejecting the new side-effect-free ownerActionEscalation field; original loop_debt_baseline still listed a skill now instrumented with required incident protocol marker.",
+  "fix": "Preserve exactly the original CAS and provider safety assertions and require the new ownerActionEscalation result field as part of layout contract; shrink original incident skill baseline only for the now-compliant LinkedIn skill.",
+  "prevention_rule": "Any original source layout extension must update the corresponding exact invariant without removing its CAS safety assertions. When a previously debt-classified skill gains incident marker, remove it from original debt baseline in same protected change; do not mask remaining debt.",
+  "tests": [
+    "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs",
+    "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs",
+    "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-owner-action-escalation-original-loop-20261103.test.mjs"
+    ],
+    "invariants": [
+      "CAS unchanged",
+      "no publication status bypass",
+      "baseline shrinks only after skill marker",
+      "owner alert never counts as sent from pure classifier"
+    ]
+  },
+  "evidence": {
+    "native_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41625326450",
+    "failed_indexes": [
+      1886,
+      3894
+    ],
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5350",
+    "provider_status": "Supabase Edge v551 active",
+    "notification_provider": "Gmail",
+    "notification_message_id": "1a1a11dc12d6e1cf",
+    "original_owner_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232"
+  },
+  "terminal_rule": "Original Required + BRAIN + CodeQL on final SHA, protected merge, independent main/source readback, subsequent BRAIN run with zero listed tests failing. No false all-system green."
+}
