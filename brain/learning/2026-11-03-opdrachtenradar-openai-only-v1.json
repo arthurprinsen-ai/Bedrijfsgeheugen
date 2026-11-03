@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|opdrachtenradar|active-anthropic-direct-provider-after-openai-only-directive|20261103-v1",
+  "status": "SOURCE_CANDIDATE_NOT_YET_LIVE",
+  "failure_class": "NON_OPENAI_DIRECT_INFERENCE",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-bg-opdrachtenradar-agent",
+  "source_evidence": {
+    "supabase_function": "bg-opdrachtenradar",
+    "observed_version": 695,
+    "source_sha256": "9faddc4d8effcfdb47226115ea2b082fc95974672f7529a73a8e7791926e5e0f",
+    "observed_provider": "Anthropic",
+    "original_github_source": "supabase/functions/bg-opdrachtenradar/index.ts"
+  },
+  "root_cause": "Original live nightly producer and protected source still called Anthropic/Claude Haiku and loaded ANTHROPIC_API_KEY, violating explicit 2026-11-03 OpenAI-only owner directive.",
+  "fix": "Change only original source's model inference to OpenAI gpt-5-mini using an exact forced named function tool for each batch and validate every original candidate index/relevant type and uniqueness before any database write. Preserve original scheduler-token, source fetch budget and original heartbeat, no automatic external publication.",
+  "prevention_rule": "Original jobs that perform AI inference must use approved OpenAI only, fail closed on provider/response, log real outcome and never make provider-success/green claims from a model name change or build.",
+  "tests": [
+    "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+    ],
+    "invariants": [
+      "original single nightly cron",
+      "Tavily and job APIs remain external data sources",
+      "same source candidate identifiers",
+      "no invented matches",
+      "no automatic LinkedIn sends",
+      "no leaked CV/token",
+      "true source outcomes",
+      "protected exact-head CI",
+      "original Supabase provider source parity"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN_SUPABASE_EDGE",
+    "failure_class": "NON_OPENAI_DIRECT_INFERENCE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected PR and exact merged SHA, original active edge source hash parity, next real authorized producer with genuine source and valid model receipt; retain honest failed state until then."
+}
