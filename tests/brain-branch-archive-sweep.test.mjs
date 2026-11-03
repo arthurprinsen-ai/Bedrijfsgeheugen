@@ -97,7 +97,11 @@ test('original archive job fails on partial error and always preserves independe
   assert.match(job,/--report \.artifacts\/branch-archive-sweep\.json/);
   assert.doesNotMatch(job,/\|\|\s*echo.*JANITOR_ARCHIVE_SWEEP_INCOMPLETE/);
   assert.match(job,/- name: Upload original branch archive provider evidence\s+if: always\(\)/);
-  assert.match(job,/if-no-files-found: warn/);
+  // A missing incident evidence artifact is a genuine reporting defect, never a warning.
+  assert.match(job,/if-no-files-found: error/);
+  assert.match(job,/- name: Record archive failure in original incident and ONE BRAIN/);
+  assert.match(job,/if: always\(\)/);
+  assert.match(job,/node tools\/delivery\/janitor-incident-agent\.mjs --observe-archive/);
 });
 
 
