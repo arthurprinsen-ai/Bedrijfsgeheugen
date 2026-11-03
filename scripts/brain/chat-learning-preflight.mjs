@@ -152,6 +152,14 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
   if (protocol.new_skills_must_carry_marker !== true) throw new Error('incident self-fix must require the marker on new skills');
   if (!Array.isArray(policy.reserved_for_owner) || policy.reserved_for_owner.length === 0) throw new Error('incident self-fix reserved owner decisions are missing');
   if (!Array.isArray(policy.loop_debt_baseline)) throw new Error('incident self-fix loop debt baseline is missing');
+  const backlog = policy.failure_backlog_assurance_v1;
+  if (backlog?.status !== 'ACTIVE_READ_ONLY_CONTRACT'
+    || backlog?.entrypoint !== 'brain/observability/failure-backlog-assurance-v1.mjs'
+    || backlog?.authority !== 'public.brain_failure_registry'
+    || backlog?.if_missing_data !== 'SOURCE_COVERAGE_UNVERIFIED_NOT_GREEN'
+    || !Array.isArray(backlog.required_closure) || backlog.required_closure.length < 7
+    || !Array.isArray(backlog.forbidden) || backlog.forbidden.length < 6)
+    throw new Error('INCIDENT_BACKLOG_ASSURANCE_POLICY_DRIFT');
   const audit = policy.incident_reporting_audit;
   if (audit?.required !== true || audit?.version !== 'ONE_BRAIN_INCIDENT_REPORTING_ASSURANCE-v1'
     || audit?.entrypoint !== 'brain/observability/incident-obligation-assurance.mjs'
