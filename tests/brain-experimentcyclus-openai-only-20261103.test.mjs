@@ -36,3 +36,11 @@ test('experimental traffic gates and human decision stay enforced',()=>{
   assert.ok(source.includes("bg_bewijs"));
   assert.ok(!source.includes("send_dm("));
 });
+
+test('original experiment endpoint never exposes database or provider exception text',()=>{
+  assert.ok(source.includes('EXPERIMENT_CYCLE_SOURCE_FAILURE'));
+  assert.ok(source.includes('ORIGINAL_OWNER_DIAGNOSIS_DUE'));
+  assert.ok(!source.includes('String(e?.message'));
+  assert.ok(!source.includes('json({error:e'));
+  assert.ok(source.includes('await bewijs(false'));
+});
