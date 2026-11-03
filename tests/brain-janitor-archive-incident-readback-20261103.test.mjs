@@ -43,6 +43,13 @@ test('native GitHub installation quota is routed to separate issue #5341 and sem
  assert.equal(value.verified,true);
  assert.equal(value.fingerprint,ARCHIVE_RATE_FINGERPRINT);
  assert.equal(posted.p_evidence.archive_reason,'PROVIDER_RATE_LIMIT_EXCEEDED');
+ const incomplete=classify('failure',null,true);
+ assert.equal(incomplete.status,'INCIDENT_OPEN_ARCHIVE_RATE_LIMIT_FAILURE');
+ assert.equal(incomplete.evidence_available,false);
+ assert.equal(incomplete.incident_number,5341);
+ const missingProof=await record(incomplete);
+ assert.equal(missingProof.value.fingerprint,ARCHIVE_RATE_FINGERPRINT);
+ assert.equal(missingProof.posted.p_evidence.native_artifact_available,false);
 });
 test('three native archive HTTP403 errors remain typed incidents even if GitHub step says success',()=>{
  const artifact={...valid,status:'PARTIAL_FAILURE',
