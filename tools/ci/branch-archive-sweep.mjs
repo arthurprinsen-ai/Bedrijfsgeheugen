@@ -107,12 +107,24 @@ export function main(argv = process.argv.slice(2), env = process.env) {
   if (actionsFile) writeFileSync(actionsFile, '');
   const prsByHead = indexPullRequests(pages(repo, 'pulls', ['-f', 'state=all']), repo);
   const branches = pages(repo, 'branches', []).map((b) => ({ name: b.name, sha: b.commit.sha, protected: b.protected === true }));
-  const counts = { seen: 0, skipped: 0, deleted: 0, archived: 0, drift: 0, failed: 0 };
+  const counts = { seen: 0, skipped: 0, deleted: 0, archived: 0, drift: 0, failed: 0, unprocessed: 0 };
   const now = Date.now();
   const deadline = now + (Number(env.SWEEP_BUDGET_SECONDS) || 360) * 1000;
   let consecutiveArchiveFailures = 0;
   for (const branch of branches) {
-    if (counts.deleted >= cap || Date.now() > deadline) break;
+    // After three failed archive-tag writes, stop ALL expensive GitHub calls.
+    // Continuing non-archive scans used the installation quota and caused CI-wide 403s.
+    // This is a fail-closed budget stop: outstanding branches remain untouched.
+    if (counts.deleted >= cap || Date.now() > deadline) {
+      counts.unprocessed = branches.length - counts.seen;
+      break;
+    }
+    if (consecutiveArchiveFailures >= 3) {
+      counts.unprocessed = branches.length - counts.seen;
+      console.error('::error::JANITOR_ARCHIVE_CIRCUIT_OPEN:failed=' + counts.failed +
+        ':unprocessed=' + counts.unprocessed + ':owner=existing-powerhouse-github-delivery-janitor');
+      break;
+    }
     counts.seen += 1;
     const cls = classifyBranch(branch, prsByHead);
     if (cls.skip) { counts.skipped += 1; continue; }
@@ -175,7 +187,7 @@ export function main(argv = process.argv.slice(2), env = process.env) {
     source_run_id: env.GITHUB_RUN_ID || null, source_sha: env.GITHUB_SHA || null,
     applied: apply, counts, false_green_forbidden: true
   }, null, 2) + '\n');
-  console.log(`JANITOR_ARCHIVE_SWEEP:apply=${apply}:cap=${cap}:seen=${counts.seen}:skipped=${counts.skipped}:archived=${counts.archived}:deleted=${counts.deleted}:drift=${counts.drift}:failed=${counts.failed}`);
+  console.log(`JANITOR_ARCHIVE_SWEEP:apply=${apply}:cap=${cap}:seen=${counts.seen}:skipped=${counts.skipped}:archived=${counts.archived}:deleted=${counts.deleted}:drift=${counts.drift}:failed=${counts.failed}:unprocessed=${counts.unprocessed}`);
   return counts;
 }
 
