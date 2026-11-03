@@ -5,10 +5,8 @@ DO $kansenradar_original$
 DECLARE
   v_id bigint;
   v_current text;
-  v_expected text := $old$
-select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := '{"content-type":"application/json"}'::jsonb, timeout_milliseconds := 150000);$old$;
-  v_authorized text := $new$
-select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := jsonb_build_object('content-type','application/json','x-powerhouse-token',public.bg_geheim('powerhouse_daily_scheduler_token')), timeout_milliseconds := 150000);$new$;
+  v_expected text := $old$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := '{"content-type":"application/json"}'::jsonb, timeout_milliseconds := 150000);$old$;
+  v_authorized text := $new$select net.http_post(url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-kansenradar', body := '{}'::jsonb, headers := jsonb_build_object('content-type','application/json','x-powerhouse-token',public.bg_geheim('powerhouse_daily_scheduler_token')), timeout_milliseconds := 150000);$new$;
 BEGIN
   IF (SELECT count(*) FROM cron.job WHERE jobname = 'bg-kansenradar-dagelijks') <> 1 THEN
     RAISE EXCEPTION 'BG_KANSENRADAR_ORIGINAL_CRON_CARDINALITY_NOT_ONE';
