@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "obligation_id": "powerhouse-bg-kansenradar-existing-cron-provider-auth-and-manifest-20261103-v1",
+  "fingerprint": "powerhouse|supabase|bg-kansenradar-missing-manifest-and-unauthenticated-service-role|20261103-v1",
+  "status": "CANDIDATE_NOT_PROVEN_LIVE",
+  "owner": "original-one-brain-supabase-edge-production-authority-and-kansenradar-cron-owner",
+  "failure_class": "EDGE_DEPLOY_AUTH_MANIFEST_DRIFT",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "EDGE_DEPLOY_AUTH_MANIFEST_DRIFT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Native Supabase Edge Production Authority rejected bg-kansenradar because source exists and live Edge v12 ACTIVE but there is no [functions.bg-kansenradar] manifest entry. Original pg_cron job #18 called verify_jwt=false service-role Edge without any scheduler-token header, while the Edge handler did not validate caller authorization.",
+  "fix": "Declare only existing function in canonical manifest with already deployed verify_jwt=false, insert original scheduler-token verification before governance/AI/Notion side effects, and update existing job #18 in place using exact old-command CAS comparison, source-backed runtime Vault lookup and independent readback. Do not create a new cron/executor.",
+  "prevention_rule": "For any existing verify_jwt=false Edge function with privileged side effects, native manifest must declare its exact active provider auth mode, original caller must prove an internal scope token, and source must validate the token before privileged work. Release authority gate remains fail closed; cron job cardinality must equal one. Quota/billing errors are tracked independently and require real provider success before GREEN.",
+  "tests": [
+    "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+    ],
+    "invariants": [
+      "one original cron id with same name/schedule",
+      "token resolved server-side from existing protected vault",
+      "401 for unknown or absent caller token",
+      "original release gate sees manifest",
+      "source-guard deployed independently",
+      "Anthropic credits not falsely repaired"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-source-universe-impact-engine"
+  ],
+  "evidence": {
+    "native_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41628384628",
+    "error": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-kansenradar",
+    "production_provider_source_version_at_observation": 12,
+    "original_cron_jobid": 18,
+    "original_cron_command_updated_and_read_back": true,
+    "runtime_auth_source_deployed": false,
+    "anthropic_credits_fixed": false
+  },
+  "terminal_rule": "Exact-head Required, CodeQL, BRAIN, protected merge, original Supabase git-integrated production Edge deploy/readback, authorized and unauthorized request tests without provider expenses, next natural job and provider acceptance; never claim total Powerhouse GREEN from a manifest fix."
+}
