@@ -43,6 +43,7 @@ test('radar refuses to repeat known insufficient-credit calls, preserves natural
   assert.match(radar,/AI_PROVIDER_CREDITS_EXHAUSTED/);
   assert.match(radar,/WAITING_AUTHORIZED_BILLING_OR_ORIGINAL_PROVIDER_RECOVERY/);
   assert.match(radar,/existing_source_receipt_at/);
+  assert.match(radar,/AI_40\[13\]\|AI_PROVIDER_CREDITS_EXHAUSTED\|NOTION_POST_40\[134\]/);
   assert.doesNotMatch(radar,/cron\.schedule|fetch\('https:\/\/api\.openai\.com/);
 });
 test('radar never considers billing denial as green, and does not mark a source used',()=>{
