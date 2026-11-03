@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|janitor-archive-observer|tag-permission-403-reason-lost|20261103-v1",
+  "obligation_id": "github|janitor-archive-observer|tag-permission-403-reason-lost|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "owner": "existing-powerhouse-github-delivery-janitor",
+  "severity": "P1_OPERATIONAL_INTEGRITY",
+  "failure_class": "INCIDENT_PROVIDER_REASON_PROJECTION_LOST",
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "INCIDENT_PROVIDER_REASON_PROJECTION_LOST",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original observeArchive only recognized PROVIDER_RATE_LIMIT_EXCEEDED from the native NDJSON action evidence; all exact tag-create HTTP403 PROVIDER_PERMISSION_DENIED actions were flattened to UNKNOWN_OR_OTHER when written to ONE BRAIN.",
+  "evidence": {
+    "run_id": 41603524034,
+    "job_id": 125809319702,
+    "head_sha": "029c75ec42653d78648bd82fbcb6b4723c6d35f9",
+    "incident_observation": "github-actions:janitor-archive:run:41603524034:attempt:1:signal:archive_provider_failure",
+    "observed_brain_archive_reason": "UNKNOWN_OR_OTHER",
+    "observed_native_reason": "PROVIDER_PERMISSION_DENIED",
+    "denial_count": 3,
+    "original_artifact_id": 13215618506
+  },
+  "fix": "Classify only validated same-run same-SHA typed archive NDJSON actions as PROVIDER_PERMISSION_DENIED. Keep UNKNOWN_OR_OTHER when action proof is missing, stale or mismatched; preserve rate-limit split and fail-closed reporting.",
+  "prevention_rule": "ONE_BRAIN_ARCHIVE_REASON_MUST_MATCH_VERIFIED_SOURCE_ACTION_OR_REMAIN_UNKNOWN; reject stale/forged run SHA; never map provider permission 403 to success or misclassify it as a quota issue. Preserve original exclusive Janitor writer, log and two independent readbacks.",
+  "tests": [
+    "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "postmerge_native_run_required": true
+  },
+  "live_boundary": {
+    "current_provider_tag_create_permission": "OPEN_HTTP403",
+    "ghost_zero_job_records": "OPEN_GITHUB_PROVIDER",
+    "portal_projection": "UNVERIFIED",
+    "global_green_allowed": false
+  }
+}
