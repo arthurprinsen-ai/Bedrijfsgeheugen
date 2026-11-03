@@ -4,6 +4,7 @@ import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-d
 import {assessDailyPublicationRecovery} from '../_shared/daily-publication-recovery.mjs';
 import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
 import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
+import {planOwnerActionEscalations} from '../_shared/owner-action-escalation.mjs';
 import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
 
 
@@ -581,6 +582,20 @@ Deno.serve(async (req) => {
     stepResults.push({name:'incident-learning-one-brain',
       ok:incidentLearning.errors===0,degraded:incidentLearning.errors>0,
       error:incidentLearning.errors?'ORIGINAL_BRAIN_INCIDENT_OBSERVATION_FAILED':null});
+    // Human authorization is reserved for the owner. The existing ONE BRAIN
+    // publisher persists an explicit action plan for the ORIGINAL scheduled
+    // monitoring agents; it does not send or claim delivery of an alert.
+    const linkedinSetup=stepResults.find((step:any)=>
+      step.name==='powerhouse-composio-linkedin-setup'&&step.body);
+    const ownerActionEscalation=planOwnerActionEscalations({
+      runDate,now:new Date().toISOString(),recovery,
+      obligations:obligations||[],decisions:decisions||[],
+      linkedinPreflight:linkedinSetup?.body||null
+    });
+    stepResults.push({name:'owner-action-escalation-source',ok:ownerActionEscalation.status!=='UNVERIFIED',
+      degraded:ownerActionEscalation.status==='UNVERIFIED',
+      error:ownerActionEscalation.status==='UNVERIFIED'?'OWNER_ACTION_CLASSIFIER_SOURCE_UNVERIFIED':null});
+
     const outcomeVerified = (obligations || []).filter((o: any) => obligationTerminal(o)).length;
     const providerTruthVerified = (obligations || []).filter((o: any) => o.evidence?.provider_truth_verified === true).length;
     const blocked = (obligations || []).filter((o: any) => ['BLOCKED','FAILED'].includes(clean(o.status)) && !providerSideEffectTerminal(o)).length;
@@ -644,6 +659,7 @@ Deno.serve(async (req) => {
       recovery,
       handoffWriteback,
       incidentLearning,
+      ownerActionEscalation,
       obligations: obligationSummary,
       decisions: decisionSummary,
       steps: stepResults.map((s:any)=>({
