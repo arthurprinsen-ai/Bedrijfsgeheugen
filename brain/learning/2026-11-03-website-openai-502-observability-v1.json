@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|site-openai-qa|live-502-reason-unobserved|20261103-v1",
+  "status": "SOURCE_CANDIDATE_NOT_MERGED",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_class": "SITE_OPENAI_RUNTIME_502_UNCLASSIFIED",
+  "root_cause": "Exact root cause unproven: original production Netlify route swallowed all provider exceptions and emitted generic 502, so the original agent could not tell if model output, billing, authorization or governance was responsible.",
+  "evidence": {
+    "site": "https://www.bedrijfsgeheugen.nl/api/vraag",
+    "request_id": "01M6GTF340SR8RZ9V8DSKDY5XH",
+    "method": "POST",
+    "status": 502,
+    "provider": "OpenAI",
+    "runtime_commit": "874c364b2141166156996f17bc317622b54cd578",
+    "netlify_secret_scope": "OPENAI_API_KEY secret, functions, production",
+    "actual_error_class": "UNAVAILABLE_UNTIL_SOURCE_DIAGNOSTIC_DEPLOY"
+  },
+  "owner": "original-website-brain-provider-agent",
+  "fix": "Log strict machine-safe allowlist classification, not raw error or question, while preserving original user-facing 502 and privacy guarantees. Then reproduce and independently read Netlify request logs before implementing semantic fix.",
+  "prevention_rule": "Each original provider failure must expose only a redacted root failure class in original controlled telemetry. No HTTP 200 or GREEN without provider output proof; no original data/secret logging or parallel executor.",
+  "tests": [
+    "tests/brain-netlify-website-openai-diagnostics-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-website-openai-diagnostics-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-website-openai-diagnostics-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-website-openai-diagnostics-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no prompt/secret log",
+      "consumer error stays generic",
+      "source only",
+      "OpenAI only",
+      "exact protected merge",
+      "Netlify exact source readback",
+      "repeat live request evidence"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "SITE_OPENAI_RUNTIME_502_UNCLASSIFIED",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Require protected Required/CodeQL/BRAIN, original Netlify production deploy, live request log showing exact source failure taxonomy, owner RCA, provider successful response and no recurring incident."
+}
