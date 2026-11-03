@@ -10,7 +10,8 @@
 // branches whose newest commit is younger than the minimum age, or any branch whose head moved.
 // Only the repository named by GITHUB_REPOSITORY is addressed.
 import { execFileSync } from 'node:child_process';
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export const PROTECTED_PREFIXES = ['archive/', 'release/', 'hotfix/'];
@@ -57,6 +58,25 @@ export function archiveTagName(branch, sha, existingTagSha) {
   return existingTagSha && existingTagSha !== sha ? `${base}-${sha.slice(0, 7)}` : base;
 }
 
+// Archive failures are incident evidence, not success; never discard unique work.
+export function archiveProviderFailure(error, { phase, branch, sha, runId, runAttempt, sourceSha } = {}) {
+  const raw = [error?.stderr, error?.stdout, error?.message].map(x => String(x || '')).join(' ');
+  const httpStatus = Number(raw.match(/(?:HTTP\s+|["']status["']\s*:\s*["']?)([45]\d\d)/i)?.[1] || 0);
+  return {
+    type: 'BRANCH_ARCHIVE_PARTIAL_FAILURE',
+    fingerprint: 'github|janitor-archive-sweep|tag-ref-create-403-masked-as-success|20261102-v1',
+    incident_number: 5333, status: 'PARTIAL_FAILURE',
+    provider_http_status: httpStatus || null,
+    reason: httpStatus === 403 ? 'PROVIDER_PERMISSION_DENIED' : httpStatus ? 'PROVIDER_HTTP_ERROR' : 'PROVIDER_OR_READBACK_ERROR',
+    action: phase || 'UNKNOWN', branch: branch || null, head_sha: sha || null,
+    run_id: runId && /^\d+$/.test(String(runId)) ? Number(runId) : null,
+    run_attempt: runAttempt && /^\d+$/.test(String(runAttempt)) ? Number(runAttempt) : null,
+    source_sha: /^[a-f0-9]{40}$/i.test(sourceSha || '') ? sourceSha : null,
+    branch_deleted: false, archive_verified: false,
+    retry: 'OWNER_PERMISSION_REVIEW_NO_BLIND_RETRY'
+  };
+}
+
 function gh(args, { input, allow404 = false } = {}) {
   try {
     return execFileSync('gh', args, { encoding: 'utf8', input, maxBuffer: 256 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -82,6 +102,9 @@ export function main(argv = process.argv.slice(2), env = process.env) {
   const apply = argv.includes('--apply');
   const cap = Number(argv[argv.indexOf('--cap') + 1]) || 150;
   const actionsFile = argv.includes('--actions') ? argv[argv.indexOf('--actions') + 1] : null;
+  const reportFile = argv.includes('--report') ? argv[argv.indexOf('--report') + 1] : null;
+  for (const file of [actionsFile, reportFile].filter(Boolean)) mkdirSync(dirname(file), { recursive: true });
+  if (actionsFile) writeFileSync(actionsFile, '');
   const prsByHead = indexPullRequests(pages(repo, 'pulls', ['-f', 'state=all']), repo);
   const branches = pages(repo, 'branches', []).map((b) => ({ name: b.name, sha: b.commit.sha, protected: b.protected === true }));
   const counts = { seen: 0, skipped: 0, deleted: 0, archived: 0, drift: 0, failed: 0 };
@@ -109,21 +132,26 @@ export function main(argv = process.argv.slice(2), env = process.env) {
     // Circuit breaker: if archive tags cannot be written, never fall back to deleting unique work.
     if (verdict.action === 'ARCHIVE_THEN_DELETE' && consecutiveArchiveFailures >= 3) { counts.skipped += 1; continue; }
     if (!apply) { console.log(`DRY ${verdict.action} ${branch.name} ${verdict.reason}`); counts.deleted += 1; continue; }
+    let phase = 'VERIFY_EXACT_BRANCH_HEAD';
     try {
       const head = gh(['api', `repos/${repo}/git/ref/heads/${enc}`, '--jq', '.object.sha'], { allow404: true });
       if (!head || head.trim() !== branch.sha) { counts.drift += 1; continue; }
       let tag = null;
       if (verdict.action === 'ARCHIVE_THEN_DELETE') {
+        phase = 'READ_EXISTING_ARCHIVE_TAG';
         const existing = gh(['api', `repos/${repo}/git/ref/tags/archive/${enc.replace(/%2F/g, '/')}`, '--jq', '.object.sha'], { allow404: true });
         tag = archiveTagName(branch.name, branch.sha, existing && existing.trim());
         if (!existing || existing.trim() !== branch.sha) {
+          phase = 'CREATE_ARCHIVE_TAG';
           gh(['api', '-X', 'POST', `repos/${repo}/git/refs`, '-f', `ref=refs/tags/${tag}`, '-f', `sha=${branch.sha}`]);
         }
+        phase = 'VERIFY_ARCHIVE_TAG_READBACK';
         const readback = gh(['api', `repos/${repo}/git/ref/tags/${tag}`, '--jq', '.object.sha']).trim();
         if (readback !== branch.sha) throw new Error(`ARCHIVE_READBACK_MISMATCH:${tag}`);
         counts.archived += 1;
         consecutiveArchiveFailures = 0;
       }
+      phase = 'DELETE_VERIFIED_BRANCH';
       gh(['api', '-X', 'DELETE', `repos/${repo}/git/refs/heads/${enc}`]);
       counts.deleted += 1;
       if (actionsFile) {
@@ -132,12 +160,26 @@ export function main(argv = process.argv.slice(2), env = process.env) {
     } catch (error) {
       counts.failed += 1;
       if (verdict.action === 'ARCHIVE_THEN_DELETE') consecutiveArchiveFailures += 1;
-      const detail = `${String(error.stdout || '').trim()} ${String(error.stderr || '').trim()}`.replace(/\s+/g, ' ').slice(0, 300) || String(error.message).split('\n')[0];
-      console.log(`::warning::JANITOR_ARCHIVE_SWEEP_FAILED:${branch.name}:${detail}`);
+      const incident = archiveProviderFailure(error, {
+        phase, branch: branch.name, sha: branch.sha,
+        runId: env.GITHUB_RUN_ID, runAttempt: env.GITHUB_RUN_ATTEMPT, sourceSha: env.GITHUB_SHA
+      });
+      if (actionsFile) appendFileSync(actionsFile, JSON.stringify(incident) + '\n');
+      console.error('::error::JANITOR_ARCHIVE_SWEEP_PARTIAL_FAILURE:' + JSON.stringify(incident));
     }
   }
+  if (reportFile) writeFileSync(reportFile, JSON.stringify({
+    schema: 'janitor-branch-archive-sweep-v2',
+    status: counts.failed > 0 ? 'PARTIAL_FAILURE' : 'COMPLETE',
+    incident_fingerprint: 'github|janitor-archive-sweep|tag-ref-create-403-masked-as-success|20261102-v1',
+    source_run_id: env.GITHUB_RUN_ID || null, source_sha: env.GITHUB_SHA || null,
+    applied: apply, counts, false_green_forbidden: true
+  }, null, 2) + '\n');
   console.log(`JANITOR_ARCHIVE_SWEEP:apply=${apply}:cap=${cap}:seen=${counts.seen}:skipped=${counts.skipped}:archived=${counts.archived}:deleted=${counts.deleted}:drift=${counts.drift}:failed=${counts.failed}`);
   return counts;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] || '').href) main();
+if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
+  const outcome = main();
+  if (outcome.failed > 0) process.exitCode = 78;
+}
