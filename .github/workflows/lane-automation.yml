@@ -31,6 +31,7 @@ jobs:
             tests/brain-delivery-system.test.mjs \
             tests/brain-janitor-terminal-lease-422-20261101.test.mjs \
             tests/brain-janitor-agent-self-recovery-20261102.test.mjs \
+            tests/brain-janitor-no-silent-incident-20261103.test.mjs \
             tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs \
             tests/agent-skill-execution-evidence.test.mjs \
             tests/required-check-reconciliation.test.mjs \
