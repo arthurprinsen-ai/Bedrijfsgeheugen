@@ -53,5 +53,18 @@
     "status": "COVERAGE_UNVERIFIED_UNTIL_AUTHENTICATED_RUNTIME_SOURCE_AND_REGISTRY_READBACK",
     "global_green": false
   },
-  "terminal_rule": "Exact-head Required, CodeQL and full BRAIN, protected merge and native source/registry readback; actual external runtime adoption by each owner remains separately open until verified."
+  "terminal_rule": "Exact-head Required, CodeQL and full BRAIN, protected merge and native source/registry readback; actual external runtime adoption by each owner remains separately open until verified.",
+  "failure_class": "UNREPORTED_PROVIDER_FAILURE_AND_UNVERIFIED_AGENT_RECOVERY",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "UNREPORTED_PROVIDER_FAILURE_AND_UNVERIFIED_AGENT_RECOVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "ownership": {
+    "agent": "existing-one-brain-powerhouse-heartbeat-governance-owner",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  }
 }
