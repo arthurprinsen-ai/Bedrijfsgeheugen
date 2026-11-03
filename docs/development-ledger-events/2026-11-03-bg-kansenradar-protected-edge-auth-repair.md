@@ -1,7 +1,0 @@
-# Immutable development ledger — Kansenradar provider parity and secret-bearing cron
-
-2026-11-03 original release provider run 41628384628 failed exact `SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-kansenradar`. Original `bg-kansenradar` provider ACTIVE v12 `verify_jwt=false`; original `pg_cron` #18 active `0 6 * * *`, no scheduler credential in command. This was both production release drift and unauthenticated service-role privileged entrypoint; source errors and billing separate.
-
-Original owner bounded changes: existing `supabase/config.toml`; `supabase/functions/bg-kansenradar/index.ts`; original `supabase/migrations/20261103124000_bg_kansenradar_original_cron_authorization.sql`; one regression suite, one BRAIN learning, one source-universe skill, human-readable changelog and this append-only ledger event. Original cron #18 was in-place CAS-altered ONLY after exact old-command match and security secret availability; SQL readback showed exactly one active job, same endpoint/schedule, new `x-powerhouse-token` and runtime vault lookup. No new scheduler or provider model. New protected Edge code NOT yet deployed at this log stage; may only claim merge/live based on independent provider source readback.
-
-The Kansenradar `brein-status|bg-kansenradar|VEROUDERD` historical record has latest source-backed credit depletion; it MUST remain open until genuine Anthropic billing recovery, natural-run original provider successful result, actual Notion outcome and independent BRAIN readback. Do not invent a working billing URL.
