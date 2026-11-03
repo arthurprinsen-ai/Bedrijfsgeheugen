@@ -69,7 +69,10 @@ Deno.serve(async (req: Request) => {
     const r = { ok: true, beoordeeld, voorstel: { id: res.experiment_id, hypothese: v.hypothese, pagina: v.pagina, meetpunt: v.meetpunt } };
     await bewijs(true, r);
     return json(r);
-  } catch (e: any) {
-    const r = { ok: false, error: String(e?.message || e).slice(0, 240) }; await bewijs(false, r, 'VALIDATION'); return json(r, 500);
+  } catch (_error: unknown) {
+    // Do not disclose provider/DB exception details to callers. Keep canonical source owner recovery due.
+    const result = { ok: false, error: 'EXPERIMENT_CYCLE_SOURCE_FAILURE', recovery: 'ORIGINAL_OWNER_DIAGNOSIS_DUE' };
+    await bewijs(false, { ...result, provider: 'OpenAI', incident_protocol: 'agents-skills-register-and-self-fix-v1' }, 'VALIDATION');
+    return json(result, 500);
   }
 });
