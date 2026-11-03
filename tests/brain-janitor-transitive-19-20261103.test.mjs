@@ -33,8 +33,8 @@ const snapshot=row=>{
    number:n,state:open?'open':'closed',merged:tip,
    merged_at:tip?'2026-10-06T17:00:00Z':null,
    title:open?'RETIRED — superseded by canonical successor':'Historical candidate',
-   body:'Obligation-ID: '+row.ob+'\\nSupersedes: '+(row.chain[index+1]??'none')+
-    '\\nWriter-Lease-State: TERMINAL_DELIVERY'
+   body:'Obligation-ID: '+row.ob+'\nSupersedes: '+(row.chain[index+1]??'none')+
+    '\nWriter-Lease-State: TERMINAL_DELIVERY'
   });
  });
  return items;
@@ -69,7 +69,7 @@ test('direct historic #2225/#2353 successor remains supported without extra read
  const proof=await verifyMergedSuccessor({repo,predecessor:2225,obligation:ob,
   search:async()=>({items:[{number:2353}]}),
   readPr:async()=>({number:2353,state:'closed',merged:true,
-   merged_at:'2026-09-19T12:09:26Z',body:'Obligation-ID: '+ob+'\\nSupersedes: 2225'})});
+   merged_at:'2026-09-19T12:09:26Z',body:'Obligation-ID: '+ob+'\nSupersedes: 2225'})});
  assert.equal(proof.status,'PROVEN_MERGED_SUCCESSOR');
  assert.equal(proof.evidence,'GITHUB_SEARCH_POSITIVE_PLUS_DIRECT_MERGED_PR_READBACK');
  assert.deepEqual(proof.chain,[2353,2225]);
@@ -77,11 +77,11 @@ test('direct historic #2225/#2353 successor remains supported without extra read
 test('missing/misleading/unauthorized transitive links always defer, never reopen',async()=>{
  const row=cases[0],records=snapshot(row),base=records.get(3970);
  for(const bad of [
-  {...base,body:'Obligation-ID: wrong\\nSupersedes: 3963'},
+  {...base,body:'Obligation-ID: wrong\nSupersedes: 3963'},
   {...base,title:'Not retired',state:'open'},
-  {...base,body:'Obligation-ID: '+row.ob+'\\nSupersedes: 3964'},
-  {...base,body:'Obligation-ID: '+row.ob+'\\nSupersedes: 3981'},
-  {...base,body:'Obligation-ID: '+row.ob+'\\nSupersedes: none'},
+  {...base,body:'Obligation-ID: '+row.ob+'\nSupersedes: 3964'},
+  {...base,body:'Obligation-ID: '+row.ob+'\nSupersedes: 3981'},
+  {...base,body:'Obligation-ID: '+row.ob+'\nSupersedes: none'},
   {...base,number:8888}
  ]){
   const v=await verifyMergedSuccessor({repo,predecessor:3951,obligation:row.ob,
@@ -101,8 +101,8 @@ test('missing/misleading/unauthorized transitive links always defer, never reope
 });
 test('native workflow preserves proof chain and forbids reopening deferred PRs',()=>{
  const workflow=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
- assert.match(workflow,/proof_chain=.*\\.chain/);
- assert.match(workflow,/chain:\\$chain,reopened:false/);
+ assert.match(workflow,/proof_chain=.*\.chain/);
+ assert.match(workflow,/chain:\$chain,reopened:false/);
  assert.match(workflow,/TERMINAL_LEASE_REOPEN_DEFERRED_HISTORY_UNPROVEN/);
- assert.doesNotMatch(workflow,/gh api -X PATCH [^\\n]+-f state=open/);
+ assert.doesNotMatch(workflow,/gh api -X PATCH [^\n]+-f state=open/);
 });
