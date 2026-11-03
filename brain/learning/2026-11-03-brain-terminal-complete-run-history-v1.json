@@ -1,0 +1,79 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|brain-terminal|first-100-run-bounded-history-blocks-exact-verification|20261103-v1",
+  "obligation_id": "github|brain-terminal|first-100-run-bounded-history-blocks-exact-verification|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5338",
+  "parent_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5332",
+  "status": "PATCH_CANDIDATE_NOT_DEPLOYED",
+  "failure_class": "ORIGINAL_TERMINAL_BRAIN_INCOMPLETE_HISTORY_FALSE_NEGATIVE",
+  "ownership": {
+    "agent": "existing-original-github-terminal-brain-delivery",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  },
+  "evidence": {
+    "failed_terminal_runs": [
+      41593213494,
+      41593829735
+    ],
+    "affected_merged_prs": [
+      5336,
+      5334
+    ],
+    "failed_step": "Ensure original exact-head read-only BRAIN verification exists",
+    "source_error": "BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN",
+    "exit_code": 78,
+    "provider_history_count_at_observation": 343,
+    "source_window_per_page": 100,
+    "protected_merges_retain_validity": true,
+    "original_BRAIN_dispatch_proven": false
+  },
+  "root_cause": "Original singleflight guard correctly rejected absence inferred from a bounded first page but never paginated native workflow_dispatch history (343+ runs), creating permanent terminal starvation for valid newly merged PRs.",
+  "fix": "Use existing original terminal workflow with gh api --paginate --slurp to fetch all native workflow pages; pure read-only Node selector validates complete total_count, unique run IDs, exact title PR/head, event and main branch, then performs two full native reads before authorized one-flight dispatch. Reject provider failures or partial/duplicate/malformed pages. Preserve no-cancel verification-only concurrency and original protection gates.",
+  "prevention_rule": "Never infer absence of an exact original BRAIN run from a truncated first-page GitHub Actions collection, even if zero matches. Full pagination, total_count equality, distinct positive provider IDs and exact candidate identity must be proven twice, then dispatch at most once through the existing terminal owner.",
+  "tests": [
+    "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "ORIGINAL_TERMINAL_BRAIN_INCOMPLETE_HISTORY_FALSE_NEGATIVE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "invariants": [
+      "343-run history including exact candidate on page 3 is discovered",
+      "100-row first page when total >100 never authorizes dispatch",
+      "partial pages or duplicated provider IDs block",
+      "complete absent history only permits original one-flight dispatch",
+      "read-only verification does not cancel active runs",
+      "normal Required/CodeQL/BRAIN gates unchanged"
+    ]
+  },
+  "portal_projection": {
+    "status": "TERMINAL_VERIFICATION_BLOCKED",
+    "global_green_allowed": false,
+    "affected_prs": [
+      5334,
+      5336
+    ],
+    "customer_impact": "NO_PROVEN_CUSTOMER_IMPACT",
+    "next_action": "PROTECTED_MERGE_AND_ORIGINAL_TERMINAL_REPLAY_AND_EXACT_HEAD_READBACK"
+  },
+  "terminal_rule": "Do not close until Required, CodeQL, full exact BRAIN, protected merge and both #5334/#5336 original terminal completion provider readback; neither 403 archive nor four provider ghosts are resolved by this code."
+}
