@@ -149,7 +149,9 @@ export function main(argv = process.argv.slice(2), env = process.env) {
       if (cls.kind === 'UNIQUE_OR_CONTAINED') {
         phase = 'READ_BRANCH_COMPARISON';
         const cmp = gh(['api', `repos/${repo}/compare/main...${enc}`, '--jq', '.ahead_by'], { allow404: true });
-        aheadBy = cmp === null ? undefined : Number(cmp.trim());
+        const rawAhead = cmp === null ? '' : cmp.trim();
+        // Empty or nonnumeric compare evidence is UNKNOWN, never "zero ahead".
+        aheadBy = /^\d+$/.test(rawAhead) ? Number(rawAhead) : undefined;
       }
       verdict = decide(cls, { aheadBy, ageDays });
       if (verdict.action === 'SKIP') { counts.skipped += 1; continue; }
