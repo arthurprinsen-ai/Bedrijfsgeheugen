@@ -26,5 +26,24 @@
   "regression": "tests/brain-supabase-original-production-version-parity-20261103.test.mjs",
   "production_status": "NOT_YET_APPLIED",
   "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5373",
-  "closure": "Original Git-main provider check passes, both pending versions applied, original function definitions present with existing ACL, next natural original scheduler verifies typed receipt."
+  "closure": "Original Git-main provider check passes, both pending versions applied, original function definitions present with existing ACL, next natural original scheduler verifies typed receipt.",
+  "compiler": {
+    "failure_class": "MAIN_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-original-production-version-parity-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-original-production-version-parity-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-original-production-version-parity-20261103.test.mjs"
+    ],
+    "rollout_guard": "No actual provider write in simulated tests; exact source/ACL parity and later official original provider deployment remain independent."
+  }
 }
