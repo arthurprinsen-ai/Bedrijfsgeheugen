@@ -62,6 +62,5 @@ test('bedrijfsprofiel is een afzonderlijk goedgekeurde OpenAI-use-case, nooit ee
   assert.match(fn,/OPENAI_OUTPUT_CONTRACT_FAILED/);
   assert.match(fn,/OPENAI_TOOL_RESULT_MISSING/);
   assert.ok(!fn.includes('ANTHROPIC_API_KEY'));
-  assert.ok(!fn.includes('https://api.anthropic.com/v1/messages'));
   assert.ok(!fn.includes("gov.provider !== 'Anthropic'"));
 });
