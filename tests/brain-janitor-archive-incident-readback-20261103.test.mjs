@@ -155,7 +155,10 @@ test('original archive step is always observed before artifact upload and cannot
  assert.match(job,/janitor-archive-observer\.json/);
  assert.match(job,/if-no-files-found: error/);
  const archiveWorker=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
- assert.match(archiveWorker,/if \(consecutiveArchiveFailures >= 3\) \{/);
+ assert.match(archiveWorker,/if \(archiveTagDenials >= 3\) \{/);
+ assert.match(archiveWorker,/archiveTagDenials = nextArchiveTagDenialCount\(archiveTagDenials, incident\)/);
+ assert.doesNotMatch(archiveWorker,/consecutiveArchiveFailures/);
+ assert.match(archiveWorker,/archive_tag_denials: archiveTagDenials/);
  assert.match(archiveWorker,/JANITOR_ARCHIVE_CIRCUIT_BREAKER_OPEN/);
  assert.match(archiveWorker,/BOUNDED_WINDOW_VERIFIED_NOT_FULL_SWEEP/);
  assert.match(archiveWorker,/branch_window_size: selectedBranches\.length/);
