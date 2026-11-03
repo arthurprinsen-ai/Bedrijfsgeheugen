@@ -50,7 +50,14 @@
       "no unauthorized model switching",
       "real credit denial cannot become green",
       "original cron stays enabled"
-    ]
+    ],
+    "shadow": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "replay_proof_gate": "NODE_TEST_EXACT_HEAD_CI_REQUIRED_NO_FAKE_GREEN"
   },
   "release_requirements": [
     "protected Required/BRAIN/CodeQL on exact SHA",
