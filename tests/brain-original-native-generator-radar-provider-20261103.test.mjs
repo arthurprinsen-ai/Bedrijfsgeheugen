@@ -34,7 +34,11 @@ test('radar preserves exact existing Anthropic approval and rejects unsafe cross
   assert.match(radar,/gov\.provider !== 'Anthropic'/);
   assert.match(radar,/const USE_CASE = 'supabase-bg-kansenradar-v1'/);
   assert.match(radar,/gov\.approved !== true/);
-  assert.ok(!radar.includes('api.openai.com'));
+  const providerCall = radar.match(/\\bfetch\\('([^']+)'/);
+  assert.ok(providerCall, 'native radar provider call must exist');
+  const providerEndpoint = new URL(providerCall[1]);
+  assert.equal(providerEndpoint.origin, 'https://api.anthropic.com');
+  assert.equal(providerEndpoint.pathname, '/v1/messages');
 });
 test('radar refuses to repeat known insufficient-credit calls, preserves natural daily retry',()=>{
   assert.match(radar,/\.from\('brain_delivery_evidence'\)/);
