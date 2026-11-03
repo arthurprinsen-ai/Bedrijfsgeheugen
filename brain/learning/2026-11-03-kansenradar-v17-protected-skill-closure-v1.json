@@ -29,7 +29,7 @@
       "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
     ],
     "canary": [
-      "production native request 19948; next natural cron 18 readback remains due"
+      "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs"
     ],
     "invariants": [
       "OpenAI-only original use case",
