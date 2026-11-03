@@ -43,5 +43,12 @@
       "6ad5b66790548191ad87ca89c4fd00ab"
     ]
   },
-  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL merge, Supabase original Edge deployment readback, actual future owner alert in original task and optional Gmail native message id, later normal run verifies no stale reminder."
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL merge, Supabase original Edge deployment readback, actual future owner alert in original task and optional Gmail native message id, later normal run verifies no stale reminder.",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "MISSING_OR_STALE_HUMAN_AUTHORIZATION_ESCALATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
 }
