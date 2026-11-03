@@ -1,0 +1,94 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|janitor-terminal-lease|transitive-merged-successor-proof|19-deferrals|20261103-v1",
+  "obligation_id": "github|janitor-terminal-lease|transitive-merged-successor-proof|19-deferrals|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "status": "PROTECTED_CANDIDATE_PENDING_EXACT_HEAD_AND_NATIVE_READBACK",
+  "failure_class": "HISTORY_UNPROVEN_DEFER_FOR_TRANSITIVE_RETIRED_PR_LINEAGES",
+  "ownership": {
+    "agent": "existing-powerhouse-github-delivery-janitor",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  },
+  "root_cause": "Original positive-only merged search proves only immediate Supersedes relation; 19 legacy terminal leases require 2..8 exact edge reads to reach the merged canonical successor. Some intermediate PRs are OPEN but explicitly RETIRED.",
+  "evidence": {
+    "github_native_run": 41546047078,
+    "artifact_id": 13188164749,
+    "history_unproven_deferrals": 19,
+    "predecessor_prs": [
+      3963,
+      3951,
+      3958,
+      3978,
+      3962,
+      3971,
+      3968,
+      3953,
+      3928,
+      3934,
+      3930,
+      3938,
+      3942,
+      3940,
+      3937,
+      3959,
+      3995,
+      3992,
+      3948
+    ],
+    "merged_final_prs": [
+      3981,
+      3994,
+      3980,
+      3947,
+      3974,
+      4007,
+      3952
+    ],
+    "expected_groups": 7,
+    "note": "Full historical chain metadata read against GitHub REST; does not substitute for native postmerge runtime or proof that every historical code delta survived."
+  },
+  "repair": "Within the original Janitor observer, locate merged PR by positive GitHub search; read each Supersedes edge directly, require exact Obligation-ID and monotonic PR numbers, allow OPEN intermediate only if explicitly RETIRED, emit whole proof chain and keep safe_to_reopen=false.",
+  "prevention_rule": "Never infer no successor from a finite indexed search; a merged tip plus each authoritative, exact-obligation transitive Supersedes edge is required. Any missing/mismatched/unretired-open edge, GitHub error or cycle stays deferred, never auto-reopened.",
+  "tests": [
+    "tests/brain-janitor-transitive-19-20261103.test.mjs",
+    "tests/brain-janitor-agent-self-recovery-20261102.test.mjs",
+    "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-transitive-19-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-transitive-19-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-transitive-19-20261103.test.mjs"
+    ],
+    "invariants": [
+      "zero unsafe reopen on absent/malformed lineage",
+      "exact merged tip and direct GitHub readback for every edge",
+      "OPEN intermediate permitted only if explicitly RETIRED",
+      "old direct #2225 -> #2353 remains proven",
+      "19 static replay fixtures pass",
+      "exact native postmerge Janitor evidence and portal/Brain owner readback before closure"
+    ]
+  },
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "HISTORY_UNPROVEN_DEFER_FOR_TRANSITIVE_RETIRED_PR_LINEAGES",
+    "machine_enforceable": true,
+    "repeat_count": 19,
+    "security_sensitive": true
+  },
+  "portal_projection": {
+    "candidate": "NOT_LIVE",
+    "native_deferred_history_current": 19,
+    "target_after_proven_native_run": 0,
+    "global_green_allowed": false,
+    "unrelated_archive_403_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333"
+  },
+  "terminal_rule": "Only protected Required+CodeQL+BRAIN, same original Janitor on merged main, artifact list proves 0 eligible HISTORY_UNPROVEN_DEFER, independent ONE BRAIN/portal readback may close this debt."
+}
