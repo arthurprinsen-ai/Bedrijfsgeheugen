@@ -248,7 +248,9 @@ jobs:
                 lineage="$(node tools/delivery/janitor-incident-agent.mjs --verify-successor "$pr" "$obligation")"
                 if [ "$(jq -r '.status' <<<"$lineage")" = PROVEN_MERGED_SUCCESSOR ]; then
                   merged_pr="$(jq -r '.successor_number' <<<"$lineage")"
-                  jq -cn --arg type TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR --argjson pr "$pr" --argjson successor "$merged_pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation,evidence:"GITHUB_SEARCH_POSITIVE_PLUS_DIRECT_MERGED_PR_READBACK",reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
+                  proof_evidence="$(jq -r '.evidence' <<<"$lineage")"
+                  proof_chain="$(jq -c '.chain // []' <<<"$lineage")"
+                  jq -cn --arg type TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR --argjson pr "$pr" --argjson successor "$merged_pr" --arg obligation "$obligation" --arg evidence "$proof_evidence" --argjson chain "$proof_chain" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation,evidence:$evidence,chain:$chain,reopened:false}' >> .artifacts/janitor-runtime-actions.ndjson
                 else
                   why="$(jq -r '.status' <<<"$lineage")"
                   echo "::warning::JANITOR_TERMINAL_LEASE_HISTORY_UNPROVEN:pr=${pr}:obligation=${obligation}:source=${why}"
