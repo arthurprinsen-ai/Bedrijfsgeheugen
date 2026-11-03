@@ -139,6 +139,6 @@ Deno.serve(async (req: Request) => {
     await bewijs(true, res);
     return json(res);
   } catch (e: any) {
-    return fail(500, { error: String(e?.message || e).slice(0, 300) }, /AI_40[13]|NOTION_POST_40[134]/.test(String(e?.message)) ? 'AUTH' : 'VALIDATION');
+    return fail(500, { error: String(e?.message || e).slice(0, 300) }, /AI_40[13]|AI_PROVIDER_CREDITS_EXHAUSTED|NOTION_POST_40[134]/.test(String(e?.message)) ? 'AUTH' : 'VALIDATION');
   }
 });
