@@ -61,7 +61,7 @@ export function archiveTagName(branch, sha, existingTagSha) {
 // Archive failures are incident evidence, not success; never discard unique work.
 export function archiveProviderFailure(error, { phase, branch, sha, runId, runAttempt, sourceSha } = {}) {
   const raw = [error?.stderr, error?.stdout, error?.message].map(x => String(x || '')).join(' ');
-  const httpStatus = Number(raw.match(/(?:HTTP\\s+|["']status["']\\s*:\\s*["']?)([45]\\d\\d)/i)?.[1] || 0);
+  const httpStatus = Number(raw.match(/(?:HTTP\s+|["']status["']\s*:\s*["']?)([45]\d\d)/i)?.[1] || 0);
   const rateLimited = /(?:API|secondary|installation) rate limit|rate limit exceeded|abuse detection|too many requests/i.test(raw);
   return {
     type: 'BRANCH_ARCHIVE_PARTIAL_FAILURE',
