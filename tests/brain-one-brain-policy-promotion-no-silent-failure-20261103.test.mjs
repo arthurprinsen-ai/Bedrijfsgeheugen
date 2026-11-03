@@ -36,3 +36,10 @@ test('no new executor, cron, consent override or external action was introduced'
   assert.doesNotMatch(sql,/http_post|pg_net|linkedin.*send|instagram.*publish/i);
   assert.match(sql,/SECURITY DEFINER/);
 });
+
+test('original un-applied CRO migration ends function before REVOKE',()=>{
+  const original=readFileSync(new URL('../supabase/migrations/20261103143000_bg_experimentcyclus_regex_started_at_contract_v1.sql',import.meta.url),'utf8');
+  assert.match(original,/end;\s*\$function\$;\s*-- Preserve existing original production ACLs:/);
+  assert.match(original,/REVOKE EXECUTE ON FUNCTION public\.bg_experimentcyclus_poort\(text,jsonb\) FROM PUBLIC, anon, authenticated;/);
+  assert.match(original,/GRANT EXECUTE ON FUNCTION public\.bg_experimentcyclus_poort\(text,jsonb\) TO service_role;/);
+});
