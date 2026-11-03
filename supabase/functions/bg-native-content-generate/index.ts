@@ -135,7 +135,7 @@ Deno.serve(async (req: Request) => {
         model,
         max_completion_tokens: 6500,
         messages: [
-          { role: 'system', content: system + '\\nGeef uitsluitend een valide JSON-object met alle verplichte velden.' },
+          { role: 'system', content: system + '\nGeef uitsluitend een valide JSON-object met alle verplichte velden.' },
           { role: 'user', content: user + feedback }
         ],
         response_format: { type: 'json_schema', json_schema: { name: 'bg_content', strict: true, schema: SCHEMA } }
