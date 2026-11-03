@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "SOURCE_REPAIR_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|bg-kansenradar|openai-json-schema-wrapper-contract-failed|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_class": "OPENAI_OUTPUT_CONTRACT_FAILED",
+  "owner": "original-kansenradar-agent",
+  "evidence": {
+    "source": "Supabase original net._http_response",
+    "request_id": 19898,
+    "http_status": 500,
+    "error": "OPENAI_OUTPUT_CONTRACT_FAILED"
+  },
+  "root_cause": "Initial OpenAI JSON-mode instruction requested a name wrapper, but original Kansenradar expects root arrays oordelen/berichten. JSON validity alone does not prove expected task schema.",
+  "fix": "Force original named OpenAI function tool call and parse function arguments; retain required-field validation and exact original source/never-send constraints.",
+  "prevention_rule": "All original OpenAI adapters must use verified task schema contracts and reject malformed or missing provider outputs; no GREEN without actual provider effect and independent source readback.",
+  "tests": [
+    "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no unapproved provider",
+      "original schema task root fields",
+      "JSON parse failure remains RED",
+      "no new scheduler or sender",
+      "protected exact head",
+      "independent provider result"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "OPENAI_OUTPUT_CONTRACT_FAILED",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected Required/CodeQL/full BRAIN and exact source provider readback then real successful Kansenradar request and safe natural recurrence."
+}
