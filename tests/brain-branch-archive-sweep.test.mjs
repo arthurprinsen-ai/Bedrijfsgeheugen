@@ -155,3 +155,16 @@ test('all branch provider reads are in typed failure catch, not thrown unreporte
   assert.match(loop,/if \(actionsFile\) appendFileSync\(actionsFile, JSON\.stringify\(incident\)/);
   assert.match(src,/if \(outcome\.failed > 0\) process\.exitCode = 78/);
 });
+
+
+test('inventory rate limit writes typed original action/report before failing the job',()=>{
+  const src=readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
+  const cli=src.split("if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {")[1];
+  assert.ok(cli);
+  assert.match(cli,/catch \(error\)/);
+  assert.match(cli,/READ_INITIAL_INVENTORY_OR_SWEEP_SETUP/);
+  assert.match(cli,/appendFileSync\(actionsFile, JSON\.stringify\(incident\)/);
+  assert.match(cli,/writeFileSync\(reportFile, JSON\.stringify\(/);
+  assert.match(cli,/process\.exitCode = 78/);
+  assert.doesNotMatch(cli,/\|\|\s*echo/);
+});
