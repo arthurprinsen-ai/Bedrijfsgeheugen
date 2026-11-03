@@ -169,22 +169,26 @@ async function reconcileVerifiedSalesRobotReceipts(db:any){
 
 async function generateComment(apiKey:string,model:string,action:any){
   const evidence=action.evidence||{};
-  const response=await fetch('https://api.anthropic.com/v1/messages',{
+  const response=await fetch('https://api.openai.com/v1/chat/completions',{
     method:'POST',
-    headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},
+    headers:{authorization:'Bearer '+apiKey,'content-type':'application/json'},
     body:JSON.stringify({
-      model,max_tokens:400,temperature:0.2,
-      system:'Je schrijft een inhoudelijke LinkedIn-reactie namens Arthur Prinsen. Reageer uitsluitend op de aangeleverde postcontext. Voeg één concrete observatie, nuance of nuttige vraag toe. Geen verkooptekst, geen Bedrijfsgeheugen-pitch, geen afspraak-CTA, geen overdreven compliment, geen verzonnen feit, geen emoji-spam. Nederlands tenzij de postcontext duidelijk Engelstalig is. Maximaal 450 tekens.',
-      messages:[{role:'user',content:JSON.stringify({
-        person_name:action.person_name,company_name:action.company_name,role:action.role,
-        headline:evidence.headline,summary:evidence.summary,trigger_type:evidence.trigger_type,source_url:action.source_url
-      })}]
+      model,max_completion_tokens:900,
+      messages:[
+        {role:'system',content:'Je schrijft een inhoudelijke LinkedIn-reactie namens Arthur Prinsen. Reageer uitsluitend op de aangeleverde postcontext. Voeg één concrete observatie, nuance of nuttige vraag toe. Geen verkooptekst, geen Bedrijfsgeheugen-pitch, geen afspraak-CTA, geen overdreven compliment, geen verzonnen feit, geen emoji-spam. Nederlands tenzij de postcontext duidelijk Engelstalig is. Maximaal 450 tekens.'},
+        {role:'user',content:JSON.stringify({
+          person_name:action.person_name,company_name:action.company_name,role:action.role,
+          headline:evidence.headline,summary:evidence.summary,trigger_type:evidence.trigger_type,source_url:action.source_url
+        })}
+      ]
     }),
-    signal:AbortSignal.timeout(30000)
+    signal:AbortSignal.timeout(60000)
   });
   const body:any=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('COMMENT_AI_'+response.status+':'+clean(body?.error?.message).slice(0,180));
-  const text=clean((body?.content||[]).find((x:any)=>x.type==='text')?.text);
+  if(!response.ok)throw new Error('OPENAI_COMMENT_'+response.status+':'+clean(body?.error?.message).slice(0,180));
+  const choice=body?.choices?.[0]?.message;
+  if(choice?.refusal)throw new Error('OPENAI_COMMENT_REFUSAL');
+  const text=clean(choice?.content);
   if(!text||text.length>500)throw new Error('COMMENT_AI_OUTPUT_INVALID');
   if(/bedrijfsgeheugen|bel(l)?en|afspraak|demo|scan|offerte/i.test(text))throw new Error('COMMENT_AI_SALES_PITCH_BLOCKED');
   return text;
@@ -276,12 +280,12 @@ Deno.serve(async(req:Request)=>{
 
 
 
-    const aiKey=await secret(db,'ANTHROPIC_API_KEY');
-    if(!aiKey)throw new Error('ANTHROPIC_API_KEY_MISSING');
+    const aiKey=await secret(db,'OPENAI_API_KEY');
+    if(!aiKey)throw new Error('OPENAI_API_KEY_MISSING');
     const {data:gov,error:govError}=await db.from('brain_ai_governance_registry')
       .select('model_id,provider,approved,lifecycle_status')
       .eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle();
-    if(govError||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='Anthropic')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    if(govError||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='OpenAI')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
     const model=clean(gov.model_id);
     const generated:any[]=[];
 
@@ -289,7 +293,7 @@ Deno.serve(async(req:Request)=>{
       try{
         const comment=await generateComment(aiKey,model,action);
         const evidence={...(action.evidence||{}),comment_generation:{
-          contract:CONTRACT,provider:'Anthropic',model,generated_at:now,
+          contract:CONTRACT,provider:'OpenAI',model,generated_at:now,
           no_sales_pitch_verified:true,max_chars:500,source_url:action.source_url
         }};
         const {error:uErr}=await db.from('powerhouse_sales_actions')
