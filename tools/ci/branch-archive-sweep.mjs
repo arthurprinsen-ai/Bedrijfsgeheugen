@@ -222,14 +222,14 @@ if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
     const reportFile = reportIndex >= 0 ? process.argv[reportIndex + 1] : null;
     if (actionsFile) {
       mkdirSync(dirname(actionsFile), { recursive: true });
-      appendFileSync(actionsFile, JSON.stringify(incident) + '\\n');
+      appendFileSync(actionsFile, JSON.stringify(incident) + '\n');
     }
     if (reportFile) {
       mkdirSync(dirname(reportFile), { recursive: true });
       writeFileSync(reportFile, JSON.stringify({schema:'janitor-branch-archive-sweep-v2',
         status:'PARTIAL_FAILURE', phase:'READ_INITIAL_INVENTORY_OR_SWEEP_SETUP',
         incident_fingerprint:incident.fingerprint, provider_http_status:incident.provider_http_status,
-        source_run_id:process.env.GITHUB_RUN_ID||null, false_green_forbidden:true},null,2)+'\\n');
+        source_run_id:process.env.GITHUB_RUN_ID||null, false_green_forbidden:true},null,2)+'\n');
     }
     console.error('::error::JANITOR_ARCHIVE_SWEEP_PARTIAL_FAILURE:' + JSON.stringify(incident));
     process.exitCode = 78;
