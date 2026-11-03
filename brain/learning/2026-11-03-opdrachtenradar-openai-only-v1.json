@@ -18,17 +18,18 @@
   "fix": "Change only original source's model inference to OpenAI gpt-5-mini using an exact forced named function tool for each batch and validate every original candidate index/relevant type and uniqueness before any database write. Preserve original scheduler-token, source fetch budget and original heartbeat, no automatic external publication.",
   "prevention_rule": "Original jobs that perform AI inference must use approved OpenAI only, fail closed on provider/response, log real outcome and never make provider-success/green claims from a model name change or build.",
   "tests": [
+    "tests/brain-opdrachtenradar-openai-only-20261103.test.mjs",
     "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+      "tests/brain-opdrachtenradar-openai-only-20261103.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+      "tests/brain-opdrachtenradar-openai-only-20261103.test.mjs"
     ],
     "canary": [
-      "tests/supabase-bg-opdrachtenradar-v1.test.mjs"
+      "tests/brain-opdrachtenradar-openai-only-20261103.test.mjs"
     ],
     "invariants": [
       "original single nightly cron",
