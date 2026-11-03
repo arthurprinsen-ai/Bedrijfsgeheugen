@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|one-brain|silent-policy-promotion-failure|20261103-v1",
+  "status": "SOURCE_CANDIDATE_NOT_YET_LIVE",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN policy promotion and original runtime mux",
+  "source_evidence": {
+    "function": "public.powerhouse_one_brain_reconcile_v1",
+    "fault": "EXCEPTION WHEN OTHERS THEN NULL in original experiment promotion loop",
+    "scheduler": "canonical runtime scheduler #171, one-brain-reconcile at UTC :13 and :43",
+    "provider_truth": "present production procedure hides per-policy failure from mux task"
+  },
+  "root_cause": "Exception is swallowed in the original policy loop; original mux helper EXECUTE ignores function output and returns ok=true when SQL did not throw.",
+  "fix": "In the same original function capture sanitized SQLSTATE and SHA-256 of policy key, idempotently write canonical brain_observe_failure, count errors and preserve independent policy processing. On original one-brain-reconcile mux task read the typed result and return ok=false when errors or absent receipt; all unrelated mux tasks unchanged.",
+  "prevention_rule": "Never write EXCEPTION WHEN OTHERS THEN NULL in an existing agent/Brain critical cycle; no completed/green task when a typed execution receipt has errors. Preserve independent work and record issue, owner, cause, regression and provider evidence.",
+  "tests": [
+    "tests/brain-one-brain-policy-promotion-no-silent-failure-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-brain-policy-promotion-no-silent-failure-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-one-brain-policy-promotion-no-silent-failure-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-brain-policy-promotion-no-silent-failure-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no duplicate scheduler",
+      "no new external publisher",
+      "no privilege expansion",
+      "existing Brain registry",
+      "sanitized error evidence",
+      "original failure of registry is visible as failed mux task",
+      "exact-head protected checks then production provider parity"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN_RUNTIME",
+    "failure_class": "SILENT_EXCEPTION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Only full protected Required/BRAIN/CodeQL and Supabase provider preview, merge, original production pg_get_functiondef hash/readback and natural :13/:43 scheduler task outcome can close. No global GREEN from source proposal."
+}
