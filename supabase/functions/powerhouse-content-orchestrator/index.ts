@@ -214,12 +214,13 @@ class AIProviderIncompleteOutputError extends Error {
     this.name='AIProviderIncompleteOutputError';
   }
 }
-async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200) {
+async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200, reasoningEffort?: 'low') {
   const schema = { type:'object', properties:tool.input_schema.properties, required:tool.input_schema.required, additionalProperties:false };
   const response = await fetch('https://api.openai.com/v1/responses', {
     method:'POST',
     headers:{authorization:'Bearer '+key,'content-type':'application/json'},
     body:JSON.stringify({model,instructions:system,input:JSON.stringify(user),max_output_tokens:maxTokens,
+      ...(reasoningEffort?{reasoning:{effort:reasoningEffort}}:{}),
       text:{format:{type:'json_schema',name:tool.name,schema,strict:true}}}),
     signal:AbortSignal.timeout(90_000),
   });
@@ -916,12 +917,12 @@ Deno.serve(async (req) => {
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
       const initialBudget=pending.channel==='blog'?4800:1800;
       try {
-        artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,initialBudget);
+        artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,initialBudget,pending.channel==='linkedin_personal'?'low':undefined);
       } catch(firstError) {
         if(!(firstError instanceof AIProviderIncompleteOutputError))throw firstError;
         const retryBudget=largerArtifactTokenBudget(initialBudget);
         console.warn('ORCHESTRATOR_ARTIFACT_OUTPUT_BOUNDED_RETRY',pending.channel,gov.model_id,initialBudget,retryBudget);
-        artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,retryBudget);
+        artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,retryBudget,pending.channel==='linkedin_personal'?'low':undefined);
       }
     } catch(error) {
       if(!composioFallbackEligible(error))throw error;
@@ -954,13 +955,28 @@ Deno.serve(async (req) => {
       // One source-grounded editorial rewrite is allowed before final rejection.
       // This is not a publication bypass: all existing hard gates run again.
       if (editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
-        const correctionPrompt = editorialSystem
-          + ' HERZIEN: de vorige versie werd door het vaste redactiecontract afgekeurd ('
-          + editorialViolations.map((item:any)=>item.code).join(', ')
-          + '). Schrijf opnieuw, als op zichzelf staande LinkedIn-tekst, tussen 150 en 175 woorden. '
-          + 'Geen interne technische termen, geen statusrapport, geen verkooppraatje, geen fictieve ervaringen. '
-          + 'Gebruik uitsluitend de geverifieerde persoonlijke bron. Eindig bij een oprichtersverhaal met één open vraag. '
-          + 'Controleer zelf de woordlengte en brontrouw voordat je de definitieve body teruggeeft.';
+        // The original full editorialSystem is several independent channel, experiment and
+        // governance instructions; repeating it during repair kept producing contradictory prose.
+        // This bounded retry is not an alternate publisher or quality-policy override.
+        const correctionPrompt = 'Je bent eindredacteur voor een authentieke Nederlandstalige LinkedIn-post van een ondernemer. '
+          + 'Antwoord uitsluitend via het verplichte JSON-artifact met exact dezelfde velden. Schrijf de body '
+          + 'met 150 tot 175 normale Nederlandse woorden, precies vier natuurlijke alinea’s. '
+          + 'De eerste 140 tekens bevatten een herkenbaar, feitelijk ondernemersprobleem. '
+          + 'Gebruik IK of MIJN binnen de eerste 260 tekens, vertel één eigen, controleerbaar bouwmoment '
+          + 'uit verified_personal_source, daarna oorzaak, zakelijk gevolg en menselijke les. '
+          + 'Alleen feiten uit de geverifieerde bron; verzin nooit klanten, acties, geldbedragen, successen of emoties. '
+          + 'Gebruik geen internestatuscijfers, technische architectuurtermen, opsommingen, kopjes, links, emoji of sales-CTA. '
+          + 'Eindig met exact één oprechte open vraag met vraagteken. '
+          + 'De vorige afgekeurde tekst is alleen foutcontext, geen feitelijke bron. '
+          + 'Bij onvoldoende geverifieerde nieuwe feiten: verzin niets; de bestaande redactiecontrole wijst dan af. '
+          + 'Controleer de woordtelling voor afronden.';
+        const revisionInput={
+          channel:'linkedin_personal',
+          verified_personal_source:personalSource,
+          recommendation:recommendation ? {reason:recommendation.reason,topic_key:recommendation.topic_key,evidence:recommendation.evidence} : null,
+          rejected_draft:bodyText,
+          editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
+        };
         // Editorial revisions need the same bounded truncation recovery as the
         // initial structured artifact. No retry for rejected prose, identity,
         // schema, authorization or provider HTTP errors.
@@ -969,7 +985,7 @@ Deno.serve(async (req) => {
           editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
         };
         const revision=await retryIncompleteEditorialDraft(
-          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget),
+          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'),
           2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
           largerArtifactTokenBudget,
           (first:number,next:number)=>console.warn('PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY',gov.model_id,first,next)

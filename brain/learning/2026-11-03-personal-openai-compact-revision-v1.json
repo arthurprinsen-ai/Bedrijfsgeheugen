@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "PROTECTED_CANDIDATE_NEEDS_PROVIDER_EXECUTION",
+  "fingerprint": "personal-linkedin|gpt-5-mini|long-context-truncated-revision|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-content-orchestrator-editorial-agent",
+  "failure_class": "PERSONAL_EDITORIAL_LONG_CONTEXT_AND_TRUNCATED_REVISION",
+  "root_cause": "After deployed #5372 at original v600, real function_logs 20:06 and 20:29 UTC continued showing PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY gpt-5-mini 2400 4800; later genuine PERSONAL_EDITORIAL_CONTRACT_FAILED on WORD_COUNT/BUYER_RELEVANT_OPENING/AUTHENTIC_VOICE/ENTREPRENEUR_RELEVANCE. Original revision forwarded whole layered editorialSystem plus complete artifactInput, retaining competing instructions and excessive context; Responses API did not explicitly request low reasoning effort for this bounded content generation.",
+  "fix": "In same original OpenAI Responses adapter, optional reasoning_effort 'low' only for personal channel artifact and one bounded editorial revision. Replace repeated full multi-channel system with short source-only 150–175-word four-paragraph revision instruction; preserve genuine personalSource, source recommendation, original rejected draft and rejection code. Keep all original hard vetoes, authorized provider and duplicate controls.",
+  "evidence": {
+    "origin_function": "powerhouse-content-orchestrator",
+    "live_version_at_diagnosis": 600,
+    "logs": [
+      "2026-11-03T20:06:07Z PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY",
+      "2026-11-03T20:06:54Z PERSONAL_EDITORIAL_CONTRACT_FAILED:PERSONAL_EDITORIAL_WORD_COUNT",
+      "2026-11-03T20:29:01Z PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY",
+      "2026-11-03T20:29:52Z PERSONAL_EDITORIAL_CONTRACT_FAILED:WORD_COUNT,BUYER_RELEVANT_OPENING,AUTHENTIC_VOICE,ENTREPRENEUR_RELEVANCE"
+    ],
+    "result": "NOT_PUBLISHED; 1/4 LIVE_PROVEN"
+  },
+  "prevention_rule": "Original AI-native personal editor must use a short source-constrained repair prompt and explicit bounded low reasoning configuration; every revision passes unchanged strict editorial/verified-source/duplicate/provider-readback gates. No hallucination, no fake publication, no second owner or scheduler.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-openai-compact-revision-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-openai-compact-revision-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-openai-compact-revision-20261103.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "PERSONAL_EDITORIAL_LONG_CONTEXT_AND_TRUNCATED_REVISION",
+    "machine_enforceable": true,
+    "repeat_count": 21,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL + Supabase Preview + original v>600 Edge bundle source parity + actual new unique personal post with authorized provider ID/URL independent readback; continue original safe owner recovery if still rejected."
+}
