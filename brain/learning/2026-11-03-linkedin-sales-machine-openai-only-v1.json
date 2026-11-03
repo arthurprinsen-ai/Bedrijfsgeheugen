@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|linkedin-sales-machine|anthropic-comment-draft-gov-openai-conflict|20261103-v1",
+  "status": "SOURCE_CANDIDATE_NOT_YET_LIVE",
+  "failure_class": "ORIGINAL_PROVIDER_GOVERNANCE_RUNTIME_CONFLICT",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-linkedin-sales-machine-owner",
+  "evidence": {
+    "original_supabase": "powerhouse-linkedin-sales-machine",
+    "live_version": 27,
+    "original_provider": "Anthropic",
+    "original_source_matches_prod": true,
+    "governance_use_case": "supabase-bg-native-content-generate-v4",
+    "governance_approved_provider": "OpenAI"
+  },
+  "root_cause": "Original SalesRobot LinkedIn comment-draft code uses Anthropic API/key and requires Anthropic governance while its selected canonical use-case is already approved for OpenAI, so the generator fails closed instead of using authorized OpenAI.",
+  "fix": "Use only OpenAI Chat Completions gpt-5-mini via existing approved canonical model record and original Vault secret. Preserve exact source post context, no fabricated claims or sales pitch, original suggested-only action, SalesRobot provider-readback-before-delivery, and original scheduler token.",
+  "prevention_rule": "Prior to any model call match the actual original use-case provider to runtime endpoint, key and model. Fail-closed on refusal/invalid outputs; do not treat a generated draft as a sent LinkedIn DM or posted comment.",
+  "tests": [
+    "tests/brain-linkedin-sales-machine-openai-only-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-sales-machine-openai-only-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-sales-machine-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-sales-machine-openai-only-20261103.test.mjs"
+    ],
+    "invariants": [
+      "only OpenAI inference",
+      "no automatic send",
+      "x-powerhouse-token auth",
+      "SalesRobot readback remains independent",
+      "no content outside source",
+      "no personal credential leakage",
+      "original ONE BRAIN evidence",
+      "exact-head protected CI",
+      "original active Supabase version/source parity"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN_SUPABASE_EDGE",
+    "failure_class": "ORIGINAL_PROVIDER_GOVERNANCE_RUNTIME_CONFLICT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "terminal_rule": "Merge only exact Required/BRAIN/CodeQL and preserve original writer lease; deploy exact source, confirm original provider and subsequent valid comment draft; no external posting without authorized receipt."
+}
