@@ -35,4 +35,8 @@ test('canonical migration updates the same job and never creates new schedule or
   assert.doesNotMatch(migration,/cron\.(?:schedule|unschedule)\(/);
   assert.doesNotMatch(migration,/(?:Bearer|api[_-]?key)\s+[A-Za-z0-9_\-]{15,}/i);
   assert.match(migration,/IF v_current = v_authorized THEN\s*RETURN/);
+  assert.match(migration,/from \(select public\.bg_geheim\('powerhouse_daily_scheduler_token'\) as token\)/);
+  assert.match(migration,/where length\(coalesce\(credential\.token,''\)\) >= 16/);
+  assert.match(migration,/v_previously_authorized/);
+  assert.doesNotMatch(migration,/BG_KANSENRADAR_ORIGINAL_CRON_TOKEN_UNAVAILABLE/);
 });
