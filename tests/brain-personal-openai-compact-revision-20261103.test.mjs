@@ -37,7 +37,7 @@ test('unsent fake low-evidence editorial text stays rejected by real determinist
 });
 
 test('original personal Edge worker must have exactly one revisionInput binding (real 503 startup regression)',()=>{
- const declarations=[...source.matchAll(/\\bconst\\s+revisionInput\\s*=/g)].length;
+ const declarations=[...source.matchAll(/\bconst\s+revisionInput\s*=/g)].length;
  assert.equal(declarations,1,'DUPLICATE_PERSONAL_REVISION_INPUT_EDGE_BOOT_503');
  const revision=source.indexOf('const revisionInput={');
  const retry=source.indexOf('const revision=await retryIncompleteEditorialDraft(',revision);
