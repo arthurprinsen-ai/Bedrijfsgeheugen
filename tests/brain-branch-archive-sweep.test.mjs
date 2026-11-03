@@ -45,7 +45,8 @@ test('janitor runs the sweep with a cap and only against its own repository', ()
   const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
   assert.match(wf, /node tools\/ci\/branch-archive-sweep\.mjs --apply --cap 150/);
   const src = readFileSync('tools/ci/branch-archive-sweep.mjs', 'utf8');
-  assert.ok(!/--repo|-R /.test(src));
+  // Reject actual repository override flags; '--report' is evidence, not '--repo'.
+  assert.ok(!/--repo(?:\s|=)|-R\s/.test(src));
 });
 
 test('sweep has a time budget, a circuit breaker and a hard timeout in the janitor', () => {
