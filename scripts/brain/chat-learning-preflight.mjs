@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
+import { reconcileIncidentObligations } from '../../brain/observability/incident-obligation-assurance.mjs';
 import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection, buildSkillSourceManifest, selectSkillSourceManifest } from './powerhouse-skill-projection.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
@@ -150,6 +151,16 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
   if (protocol.new_skills_must_carry_marker !== true) throw new Error('incident self-fix must require the marker on new skills');
   if (!Array.isArray(policy.reserved_for_owner) || policy.reserved_for_owner.length === 0) throw new Error('incident self-fix reserved owner decisions are missing');
   if (!Array.isArray(policy.loop_debt_baseline)) throw new Error('incident self-fix loop debt baseline is missing');
+  const audit = policy.incident_reporting_audit;
+  if (audit?.required !== true || audit?.version !== 'ONE_BRAIN_INCIDENT_REPORTING_ASSURANCE-v1'
+    || audit?.entrypoint !== 'brain/observability/incident-obligation-assurance.mjs'
+    || audit?.source_coverage_without_provided_evidence !== 'NOT_ATTESTED_NOT_GREEN'
+    || !Array.isArray(audit.rules)
+    || !['NO_SILENT_FAILURE:PROVIDER_EVENT_MUST_HAVE_CANONICAL_RECEIPT','UNREPORTED_PROVIDER_FAILURE_IS_AN_INCIDENT','NO_FIXED_WITHOUT_REGRESSION_AND_INDEPENDENT_PROVIDER_READBACK','NO_PARALLEL_SCHEDULER_OR_REGISTRY'].every(value => audit.rules.includes(value)))
+    throw new Error('INCIDENT_REPORTING_ASSURANCE_POLICY_DRIFT');
+  const runtimePath = normalizeSourcePath(rootDir, audit.entrypoint);
+  if (!fs.existsSync(runtimePath.absolute)) throw new Error('INCIDENT_REPORTING_AUDITOR_MISSING');
+
   const lean = policy.continuous_lean_loop;
   const expectedStages = ['MEASURE','ANALYZE','HYPOTHESIZE','PRIORITIZE','IMPLEMENT','VERIFY','LEARN','REMEASURE'];
   if (!lean || lean.required !== true) throw new Error('LEAN_LOOP_POLICY_MISSING');
@@ -203,6 +214,7 @@ export function evaluateIncidentSelfFix({ rootDir, policy }) {
     failClosed: true,
     policySource: INCIDENT_SELF_FIX_POLICY_SOURCE,
     marker: protocol.marker,
+    incident_reporting_audit: Object.freeze({ required: true, entrypoint: audit.entrypoint, proof_required: [...audit.required_closure], source_coverage_without_provided_evidence: audit.source_coverage_without_provided_evidence }),
     lean_loop: Object.freeze({ required: true, stages: [...lean.stages], evidence_fields: [...lean.required_material_action_evidence], data_gap_rule: lean.data_gap_rule, runtime_evidence: Object.freeze({ fingerprint: runtime.fingerprint, authority: runtime.authority, provenance_fields: [...runtime.agent_provenance_required], data_quality_states: [...runtime.data_quality_states], production_enforcement: 'UNVERIFIED_UNTIL_RUNTIME_PROVIDER_READBACK' }), limits: lean.enforcement_limit }),
     reservedForOwner: [...policy.reserved_for_owner],
     skills_total: names.length,
@@ -357,7 +369,10 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     telemetry,
     universalCompletion,
     universalIngress,
-    incident_self_fix: incidentSelfFix,
+    incident_self_fix: {
+      ...incidentSelfFix,
+      reporting_audit: reconcileIncidentObligations(executionContext.incidentEvidence || {})
+    },
     skill_projection: {
       status: 'READY',
       fingerprint: skillProjectionIndex.fingerprint,
