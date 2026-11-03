@@ -6,10 +6,10 @@ import { normalizeProviderTokenUsage } from '../../platform/cost/ai-token-usage.
 import { createAiUsageStore } from './_ai-usage-store.mjs';
 import { createDataSovereigntyClient } from './_data-sovereignty-client.mjs';
 
-const MODEL_ID = 'ANTHROPIC-SONNET';
-const MODEL = 'claude-sonnet-5';
-const TRANSLATION_MODEL_ID = 'ANTHROPIC-HAIKU';
-const TRANSLATION_MODEL = 'claude-haiku-4-5-20251001';
+const MODEL_ID = 'OPENAI-GPT-5-MINI';
+const MODEL = 'gpt-5-mini';
+const TRANSLATION_MODEL_ID = 'OPENAI-GPT-5-MINI-TRANSLATION';
+const TRANSLATION_MODEL = 'gpt-5-mini';
 
 async function assertTenantAiAllowed(tenantId,sovereigntyClient=null){
   if(!tenantId)throw Object.assign(new Error('DATA_SOVEREIGNTY_TENANT_REQUIRED'),{code:'DATA_SOVEREIGNTY_TENANT_REQUIRED'});
@@ -18,12 +18,12 @@ async function assertTenantAiAllowed(tenantId,sovereigntyClient=null){
 
 const providerRegistry = createProviderRegistry([
   {
-    id:MODEL_ID, provider:'Anthropic', model:MODEL, status:'Approved',
+    id:MODEL_ID, provider:'OpenAI', model:MODEL, status:'Approved',
     allowedDataClasses:['Public','Confidential'], allowedPurposes:['website-answer','portal-project-answer'],
     trainingAllowed:false, persistentProviderMemory:false,
   },
   {
-    id:TRANSLATION_MODEL_ID, provider:'Anthropic', model:TRANSLATION_MODEL, status:'Approved',
+    id:TRANSLATION_MODEL_ID, provider:'OpenAI', model:TRANSLATION_MODEL, status:'Approved',
     allowedDataClasses:['Public','Confidential'], allowedPurposes:['ui-translation'],
     trainingAllowed:false, persistentProviderMemory:false,
   }
@@ -43,27 +43,32 @@ const policies = [
   { id:'PORTAL-UI-TRANSLATION', subjectId:'portal-requester', action:ACTIONS.AI_PROCESS, resourceType:'TranslationContext', purpose:'ui-translation', dataClass:'Confidential', tenantId:'REQUEST_SCOPED', decision:DECISIONS.ALLOW },
 ];
 
-async function anthropic({ authorized, apiKey, system, maxTokens, renderUser, provenance, model = MODEL, fetchImpl = fetch }) {
-  if (!apiKey) throw new Error('Anthropic API key missing');
-  const response = await fetchImpl('https://api.anthropic.com/v1/messages', {
+async function openai({ authorized, apiKey, system, maxTokens, renderUser, provenance, model = MODEL, fetchImpl = fetch }) {
+  if (!apiKey) throw new Error('OpenAI API key missing');
+  const response = await fetchImpl('https://api.openai.com/v1/chat/completions', {
     method:'POST',
-    headers:{ 'content-type':'application/json', 'x-api-key':apiKey, 'anthropic-version':'2023-06-01' },
-    body:JSON.stringify({ model, max_tokens:maxTokens, system, messages:[{ role:'user', content:renderUser(authorized.context) }] }),
+    headers:{ 'content-type':'application/json', authorization:'Bearer '+apiKey },
+    body:JSON.stringify({
+      model, max_completion_tokens:maxTokens,
+      messages:[{ role:'system', content:system }, { role:'user', content:renderUser(authorized.context) }]
+    }),
   });
   if (!response.ok) {
     let detail = '';
     try { const body = await response.json(); detail = [body.error?.type, body.error?.message].filter(Boolean).join(' - ').slice(0,200); } catch { detail = 'geen leesbare melding'; }
-    throw new Error(`${response.status} ${detail}`);
+    throw new Error('OPENAI_PROVIDER_ERROR_'+response.status+':'+detail);
   }
   const data = await response.json();
-  const text = (data.content || []).filter(block => block.type === 'text').map(block => block.text).join('\n').trim();
+  if (data.choices?.[0]?.message?.refusal) throw new Error('OPENAI_REFUSAL');
+  const text = String(data.choices?.[0]?.message?.content ?? '').trim();
+  if (!text) throw new Error('OPENAI_EMPTY_RESPONSE');
   return { type:'Observation', text, provenance, confidence:0.7, containsRestrictedData:false, containsUnexpectedPII:false, providerUsage:data.usage ?? null };
 }
 
 async function attachTokenUsage(result, { requestId, componentKey, usageStore, usageContext, at = new Date().toISOString() }) {
   const { providerUsage, ...safeResult } = result;
   if (!providerUsage) return Object.freeze({ ...safeResult, tokenUsage:null, tokenMetering:'UNAVAILABLE', canonicalTokenMetering:'UNAVAILABLE' });
-  const tokenUsage = normalizeProviderTokenUsage({ provider:'Anthropic', providerModelId:MODEL_ID, componentKey, requestId, usage:providerUsage, at });
+  const tokenUsage = normalizeProviderTokenUsage({ provider:'OpenAI', providerModelId:safeResult?.provenance?.providerModelId ?? MODEL_ID, componentKey, requestId, usage:providerUsage, at });
   try {
     const metering=await (usageStore ?? createAiUsageStore()).record(tokenUsage, usageContext);
     return Object.freeze({
@@ -81,7 +86,7 @@ export async function runWebsiteAnswer({ question, fragments, apiKey, system, fe
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'PUBLIC', requesterId:'public-visitor', aiUseCaseId:'AI-WEBSITE-QA', purpose:'website-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Public', context:{ question, fragments } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','fragments'], pseudonymizeFields:[] },
-    invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:600, fetchImpl, provenance:{ source:'website-index', providerModelId:MODEL_ID }, renderUser:ctx => `FRAGMENTEN VAN DE SITE:\n\n${ctx.fragments}\n\n---\n\nVRAAG VAN DE BEZOEKER:\n${ctx.question}` }),
+    invokeModel:authorized => openai({ authorized, apiKey, system, maxTokens:600, fetchImpl, provenance:{ source:'website-index', providerModelId:MODEL_ID }, renderUser:ctx => `FRAGMENTEN VAN DE SITE:\n\n${ctx.fragments}\n\n---\n\nVRAAG VAN DE BEZOEKER:\n${ctx.question}` }),
   });
   return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ ...(usageContext ?? {}), tenantId:'PUBLIC', activityType:'website_qa' } });
 }
@@ -91,7 +96,7 @@ export async function runPortalAnswer({ question, projectContext, tenantId, apiK
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'REQUEST_SCOPED', requesterId:'portal-requester', aiUseCaseId:'AI-PORTAL-QA', purpose:'portal-project-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Confidential', context:{ question, projectContext } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','projectContext'], pseudonymizeFields:[] },
-    invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:500, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
+    invokeModel:authorized => openai({ authorized, apiKey, system, maxTokens:500, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
   });
   return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore, usageContext:{ ...(usageContext ?? {}), activityType:'portal_qa' } });
 }
@@ -108,7 +113,7 @@ export async function runTranslation({ strings, source='nl', target='en', dataCl
     request:{ requestId, tenantId:policyTenantId, requesterId, aiUseCaseId, purpose:'ui-translation', resourceType:'TranslationContext', resourceId:requestId, providerModelId:TRANSLATION_MODEL_ID, dataClass, context:{ strings, source, target } },
     policies, providerRegistry, aiUseCases,
     contextPolicy:{ allowedFields:['strings','source','target'], pseudonymizeFields:[] },
-    invokeModel:authorized => anthropic({
+    invokeModel:authorized => openai({
       authorized, apiKey, system, maxTokens:2600, model:TRANSLATION_MODEL, fetchImpl,
       provenance:{ source:isPortal?'visible-portal-text':'public-site-text', providerModelId:TRANSLATION_MODEL_ID },
       renderUser:ctx => JSON.stringify({source:ctx.source,target:ctx.target,strings:ctx.strings})
