@@ -95,5 +95,15 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "terminal_rule": "Protected Required/CodeQL/Full BRAIN + System Map exact head; original governance CAS transfer and provider source deployment; readback; true natural AI result. Historical Anthropic use cases require further source migrations and must remain an honest open backlog."
+  "terminal_rule": "Protected Required/CodeQL/Full BRAIN + System Map exact head; original governance CAS transfer and provider source deployment; readback; true natural AI result. Historical Anthropic use cases require further source migrations and must remain an honest open backlog.",
+  "original_source_runtime_first_observation": {
+    "request_id": 19898,
+    "http_status": 500,
+    "error": "OPENAI_OUTPUT_CONTRACT_FAILED",
+    "verified_by": "original Supabase net._http_response, not inference",
+    "why": "JSON mode does not guarantee original Anthropic function parameter contract, and instruction misleadingly requested wrapper named after function (toets/dm); original expected root arrays oordelen/berichten.",
+    "source_fix": "OpenAI forced function tool_choice with exact original tool parameter schema and arguments-only JSON, no legacy Anthropic and no new sender or scheduler.",
+    "regression": "tests/brain-original-native-generator-radar-provider-20261103.test.mjs",
+    "source_repair_status": "CANDIDATE_NOT_LIVE_VERIFIED"
+  }
 }
