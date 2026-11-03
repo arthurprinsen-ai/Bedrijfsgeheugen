@@ -52,3 +52,10 @@ test('radar never considers billing denial as green, and does not mark a source 
   assert.match(radar,/return json\(\{ ok: false, error: 'AI_PROVIDER_CREDITS_EXHAUSTED'/);
   assert.match(radar,/if \(creditReadError\) return json\(\{ ok: false/);
 });
+
+test('both original Edge owners enforce ONE BRAIN incident instrumentation marker',()=>{
+  for(const source of [generator,radar]){
+    assert.match(source,/INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1/);
+    assert.match(source,/db\.rpc\('bg_bewijs'/);
+  }
+});
