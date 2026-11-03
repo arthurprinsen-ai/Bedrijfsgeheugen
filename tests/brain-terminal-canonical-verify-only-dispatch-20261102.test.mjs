@@ -85,6 +85,8 @@ test('terminal reuses even main-indexed BRAIN run for exact PR/head, not PR head
   assert.ok(terminalStep);
   assert.match(terminalStep,/for guard_check in 1 2; do/);
   assert.match(terminalStep,/BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED/);
+  assert.match(terminalStep,/BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN/);
+  assert.match(terminalStep,/\$seen_count.*-ge 100/);
   assert.match(terminalStep,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
   assert.match(terminalStep,/\.display_title==\$title/);
   assert.match(terminalStep,/BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED/);
