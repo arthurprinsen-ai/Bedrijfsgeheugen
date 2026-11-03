@@ -35,6 +35,7 @@ export function reconcileIncidentObligations({
   if (!Array.isArray(observations) || !Array.isArray(receipts) || !Array.isArray(recoveries)) return result;
   result.audited_events = observations.length;
   const byKey = new Map();
+  const byProviderId = new Map(); // A single native source event cannot have competing incident identities.
   const receiptsById = new Map();
   const repairsById = new Map();
   for (const entry of receipts) {
@@ -62,6 +63,16 @@ export function reconcileIncidentObligations({
       result.obligations.push({status:'PROVIDER_EVENT_IDENTITY_INVALID', next_action:'EXISTING_OWNER_REOBSERVE_AND_REGISTER', provider_event_id:id});
       continue;
     }
+    const priorFingerprint = byProviderId.get(id);
+    if (priorFingerprint && priorFingerprint !== fingerprint) {
+      result.provider_conflicts++;
+      result.obligations.push({
+        status:'PROVIDER_EVENT_FINGERPRINT_CONFLICT', provider_event_id:id, fingerprint,
+        next_action:'EXISTING_OWNER_RECONCILE_ORIGINAL_EVENT_ID'
+      });
+      continue; // Never acknowledge both competing identities as separately repaired.
+    }
+    byProviderId.set(id,fingerprint);
     const identity = id + '|' + fingerprint;
     if (byKey.has(identity)) {
       const previous = byKey.get(identity);
@@ -85,7 +96,16 @@ export function reconcileIncidentObligations({
     }
     result.registered++;
     const receipt = matches[0];
-    const recovery = (repairsById.get(id) || []).find(x => x.fingerprint === fingerprint);
+    const matchingRecoveries = (repairsById.get(id) || []).filter(x => x.fingerprint === fingerprint);
+    if (matchingRecoveries.length > 1) {
+      result.provider_conflicts++;
+      result.obligations.push({
+        status:'RECOVERY_RECEIPT_CONFLICT', provider_event_id:id, fingerprint,
+        next_action:'EXISTING_OWNER_VERIFY_SINGLE_CANONICAL_RECOVERY'
+      });
+      continue; // Avoid .find() silently selecting a favorable conflicting recovery.
+    }
+    const recovery = matchingRecoveries[0];
     if (!recovery || !safe(recovery.owner) || !safe(recovery.obligation_id) || recovery.fix_attempted !== true) {
       result.recovery_required++;
       result.obligations.push({provider_event_id:id,fingerprint,status:'RECOVERY_NOT_ATTEMPTED',
