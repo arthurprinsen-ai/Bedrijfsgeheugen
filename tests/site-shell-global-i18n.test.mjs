@@ -33,7 +33,7 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/batch\.length >= 20/);
   assert.match(runtime,/mountControl\(\)/);
   const brain = fs.readFileSync('netlify/functions/_brain-ai.mjs','utf8');
-  assert.match(brain,/claude-haiku-4-5-20251001/);
+  assert.match(brain,/OPENAI-GPT-5-MINI-TRANSLATION/);
   assert.match(brain,/maxTokens:2600/);
   assert.match(brain,/firstBracket/);
   assert.match(brain,/fenced/);
