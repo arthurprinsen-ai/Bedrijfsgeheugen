@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { indexPullRequests, classifyBranch, decide, archiveTagName } from '../tools/ci/branch-archive-sweep.mjs';
+import { indexPullRequests, classifyBranch, decide, archiveTagName, archiveProviderFailure } from '../tools/ci/branch-archive-sweep.mjs';
 
 const repo = 'acme/home';
 const pr = (over) => ({ state: 'closed', merged_at: null, head: { ref: 'b', sha: 's1', repo: { full_name: 'acme/home' } }, ...over });
@@ -54,4 +54,47 @@ test('sweep has a time budget, a circuit breaker and a hard timeout in the janit
   assert.match(src, /consecutiveArchiveFailures >= 3/);
   const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml', 'utf8');
   assert.match(wf, /branch_archive_sweep:[\s\S]*timeout-minutes: 20[\s\S]*timeout 1000 node tools\/ci\/branch-archive-sweep\.mjs/);
+});
+
+
+test('original Janitor preserves per-branch HTTP403 with exact action/run evidence', () => {
+  const error = { stderr: '{"message":"Resource not accessible by integration","status":"403"} gh: Resource not accessible by integration (HTTP 403)' };
+  const event = archiveProviderFailure(error, {
+    phase:'CREATE_ARCHIVE_TAG',branch:'automation/example',sha:'abc',
+    runId:'41546047078',runAttempt:'1',sourceSha:'c591882884f7fb4a1b4d0b679df08c0291bb66dc'
+  });
+  assert.equal(event.status, 'PARTIAL_FAILURE');
+  assert.equal(event.provider_http_status, 403);
+  assert.equal(event.reason, 'PROVIDER_PERMISSION_DENIED');
+  assert.equal(event.action, 'CREATE_ARCHIVE_TAG');
+  assert.equal(event.run_id, 41546047078);
+  assert.equal(event.branch_deleted, false);
+  assert.equal(event.archive_verified, false);
+  assert.equal(event.incident_number, 5333);
+  assert.equal('stderr' in event, false, 'provider body/token must never be uploaded');
+});
+
+test('unknown provider error cannot be promoted to success', () => {
+  const event = archiveProviderFailure(new Error('tag readback mismatch'), { phase:'VERIFY_ARCHIVE_TAG_READBACK' });
+  assert.equal(event.status, 'PARTIAL_FAILURE');
+  assert.equal(event.provider_http_status, null);
+  assert.equal(event.branch_deleted, false);
+});
+
+test('original archive job fails on partial error and always preserves independent provider evidence', () => {
+  const src = readFileSync('tools/ci/branch-archive-sweep.mjs','utf8');
+  const wf = readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
+  const job = wf.split('  branch_archive_sweep:\n')[1];
+  assert.ok(job);
+  assert.match(src,/if \(outcome\.failed > 0\) process\.exitCode = 78/);
+  assert.match(src,/consecutiveArchiveFailures >= 3/);
+  assert.match(src,/phase = 'CREATE_ARCHIVE_TAG'/);
+  assert.match(src,/phase = 'VERIFY_ARCHIVE_TAG_READBACK'/);
+  assert.match(src,/if \(readback !== branch\.sha\) throw/);
+  assert.match(job,/timeout 1000 node tools\/ci\/branch-archive-sweep\.mjs --apply --cap 150/);
+  assert.match(job,/--actions \.artifacts\/branch-archive-actions\.ndjson/);
+  assert.match(job,/--report \.artifacts\/branch-archive-sweep\.json/);
+  assert.doesNotMatch(job,/\|\|\s*echo.*JANITOR_ARCHIVE_SWEEP_INCOMPLETE/);
+  assert.match(job,/- name: Upload original branch archive provider evidence\s+if: always\(\)/);
+  assert.match(job,/if-no-files-found: warn/);
 });
