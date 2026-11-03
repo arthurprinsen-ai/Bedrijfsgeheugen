@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|bg-bedrijfsprofiel|anthropic-runtime-and-misbound-governance|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-bg-bedrijfsprofiel-owner",
+  "failure_class": "PROVIDER_RUNTIME_GOVERNANCE_MISMATCH",
+  "root_cause": "The original business profile producer still called Anthropic and checked the unrelated canonical Kansenradar AI use-case, which is already approved for OpenAI. This causes fail-closed errors and conflates distinct purposes/privacy scope.",
+  "fix": "Switch original profile source to OpenAI gpt-5-mini with forced named profile schema and fail-closed validation. Use a distinct canonical approved OpenAI 'supabase-bg-bedrijfsprofiel-v1' use-case with purpose and privacy scope reviewed before any deploy. Preserve Tavily source extraction, public business contact-only gate, no solo/private contacts, safe failure evidence and original scheduler.",
+  "prevention_rule": "Every AI workflow must check its own canonical original owner/use-case and authorized OpenAI provider/model before external source, inference or persistence; do not borrow unrelated Kansenradar consent and never fallback to Anthropic.",
+  "tests": [
+    "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "invariants": [
+      "distinct use-case",
+      "approved OpenAI only",
+      "no private individual contacts",
+      "source original company website",
+      "schema enforced",
+      "original schedule",
+      "no misleading green"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PROVIDER_RUNTIME_GOVERNANCE_MISMATCH",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL and original System Map, own OpenAI governance row and source deploy with source readback, natural original private-contact filtering result; no synthetic green."
+}
