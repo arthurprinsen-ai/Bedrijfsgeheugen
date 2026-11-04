@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE_PROVEN",
+  "fingerprint": "powerhouse|delivery|prebuild-not-enforced-in-native-admission|20261104-stage2-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN protected delivery admission owner",
+  "root_cause": "Protected Stage 1 PR #5392 installed a deterministic source checker but intentionally did not wire it into GitHub's required native admission to avoid importing mutable candidate code. Without Stage 2, old duplicate-const/SQL-quote failures can reach expensive CI and production.",
+  "prevention": "Execute the stage-1 checker only after original admission and from github.workflow_sha exact trusted commit, never from PR HEAD. Fail closed on unavailable trusted source, head mismatch, malformed JS/TS/SQL, symlinks, missing same-candidate regression; preserve publisher/consent/security gates and capture structured evidence.",
+  "actions": [
+    "protected stage2 workflow only on original hygiene job",
+    "run exact-head original Required, CodeQL, full BRAIN and specialist lanes",
+    "merge only if original exclusive writer lease and required protection pass",
+    "negative malformed and positive valid candidate probes against ORIGINAL protected workflow after merge",
+    "provider production readback and canonical evidence/skill completion"
+  ],
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-time-right-protected-admission-stage2-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-first-time-right-protected-admission-stage2-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-first-time-right-protected-admission-stage2-20261104.test.mjs"
+    ]
+  },
+  "closure": "Not LIVE_PROVEN until exact native trusted-main admission rejects a real malformed candidate, admits a valid candidate, passes required checks, and original protected main/provider readback independently proves the workflow. Do not bypass original BRAIN baseline failures.",
+  "evidence": {
+    "historical_stage1": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5392",
+    "source_regression": "tests/brain-first-time-right-protected-admission-stage2-20261104.test.mjs",
+    "negative_probe": "DUE_AFTER_PROTECTED_MERGE",
+    "positive_probe": "DUE_AFTER_PROTECTED_MERGE"
+  }
+}
