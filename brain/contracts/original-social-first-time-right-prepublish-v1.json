@@ -1,0 +1,68 @@
+{
+  "contract": "original-social-first-time-right-prepublish-v1",
+  "version": 1,
+  "owner": "original-powerhouse-content-loop",
+  "publisher": "original-powerhouse-social-publisher",
+  "scheduler": 140,
+  "preparation_mode": "prepare_only",
+  "final_mode": "publish_only",
+  "required_order": [
+    "verified_source",
+    "original_content",
+    "original_media",
+    "independent_early_review",
+    "original_provider_authorization",
+    "ready_for_final_recheck",
+    "independent_final_review",
+    "original_uniqueness_and_capability",
+    "single_provider_create",
+    "provider_readback",
+    "measure",
+    "learn"
+  ],
+  "requirements": {
+    "linkedin_personal": [
+      "original founder/observational source",
+      "independent editorial PASS",
+      "nonduplicate",
+      "valid exact provider authorization",
+      "3000 character limit"
+    ],
+    "linkedin_company": [
+      "verified dated business source",
+      "editorial PASS",
+      "unique business story",
+      "authorized organization",
+      "measured link"
+    ],
+    "instagram": [
+      "frozen single daily source",
+      "producer claim",
+      "1080x1920 native video",
+      "start,middle,end identity >=0.940",
+      "exact SHA media",
+      "caption/scene source agreement",
+      "original provider rights"
+    ],
+    "blog": [
+      "verified source dates",
+      "real editorial release",
+      "protected Required/BRAIN/CodeQL merge",
+      "exact Netlify live URL readback"
+    ]
+  },
+  "safety": [
+    "preparation never issues or consumes publication capability",
+    "preparation never calls provider create",
+    "nonready social channel skips provider send, other channels and source recovery continue",
+    "final mode revalidates all independent gates",
+    "ACK never causes resend",
+    "no bypass of consent, identity, uniqueness or protected branch",
+    "no new writer, cron or duplicate system"
+  ],
+  "status_contract": {
+    "prepared": "ready_for_final_recheck is not a provider post or a publication guarantee",
+    "blocked": "same original source owner repairs next hourly run",
+    "live": "independent exact provider ID readback only"
+  }
+}
