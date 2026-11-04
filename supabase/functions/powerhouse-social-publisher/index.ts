@@ -1286,6 +1286,22 @@ Deno.serve(async (req) => {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
       continue;
     }
+    if(!prepareOnly){
+      // All original caller paths obey the same prebuild contract. An early
+      // preflight is NOT final approval, but it must exist for THIS exact copy.
+      const evidence=row.delivery_evidence?.first_time_right_preflight||{};
+      const originalHash=await digest(clean(art.body));
+      const ageMs=Date.now()-Date.parse(clean(evidence.observed_at));
+      if(evidence.contract!=='original-social-first-time-right-prepare-v1'
+        ||evidence.status!=='READY_FOR_FINAL_RECHECK'
+        ||clean(evidence.text_sha256)!==originalHash
+        ||!Number.isFinite(ageMs)||ageMs<0||ageMs>12*60*60*1000){
+        results.push({channel:row.channel,status:'deferred_to_original_preparation',
+          reason:'EXACT_SOURCE_FIRST_PREFLIGHT_REQUIRED',
+          provider_create:false});
+        continue;
+      }
+    }
     const dispatchReady=linkedinDispatchReadiness(row.channel,row.scheduled_for);
     if(dispatchReady.status==='not_due'&&!prepareOnly){
       // Real side effects remain impossible before the scheduled time.
