@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {classifyActionsRun,observeNativeFailure,resolveBrainAuthority,scanNativeFailures}
+import {classifyActionsRun,observeNativeFailure,observeNativeFailureBatch,resolveBrainAuthority,scanNativeFailures}
  from '../tools/delivery/github-actions-failure-observer.mjs';
 const repo='arthurprinsen-ai/Bedrijfsgeheugen';
 const sha='0d47c8983be1e5add00cb48cb05a561632253a1a';
@@ -78,6 +78,35 @@ test('missing source/credentials or truncated pagination never claims full cover
    total_count:2000,workflow_runs:Array.from({length:100},(_,i)=>({...run,id:41792546872+i,conclusion:'success'}))
  }),observe:async()=> 'ALREADY_VERIFIED'}),
   /GITHUB_RUNS_WINDOW_OVERFLOW/);
+});
+test('batch existing receipts needs two reads, one canonical write for only missing rows',async()=>{
+ const first=classifyActionsRun(run),second=classifyActionsRun({...run,id:41792546874});
+ const authority=resolveBrainAuthority(env);
+ const stored=new Map([[first.occurrenceId,first]]);
+ const calls=[];
+ const fetchImpl=async(url,req)=>{
+  calls.push({url,method:req.method||'GET'});
+  if(req.method==='POST'){
+   const posted=JSON.parse(req.body);
+   assert.equal(posted.p_occurrence_id,second.occurrenceId);
+   stored.set(posted.p_occurrence_id,second);
+   return {ok:true,status:200};
+  }
+  return {ok:true,status:200,json:async()=>[...stored.values()].map(x=>({
+   occurrence_id:x.occurrenceId,fingerprint:x.fingerprint,payload_sha256:x.payloadSha256}))};
+ };
+ const result=await observeNativeFailureBatch([first,second],{authority,fetchImpl});
+ assert.deepEqual(result,{recorded:1,already_verified:1});
+ assert.equal(calls.filter(x=>x.method==='POST').length,1);
+ assert.equal(calls.filter(x=>x.method==='GET').length,2);
+ assert.ok(calls[0].url.includes('occurrence_id=in.('));
+});
+test('batch refuses contradictory source hashes and never marks them green',async()=>{
+ const item=classifyActionsRun(run),authority=resolveBrainAuthority(env);
+ await assert.rejects(()=>observeNativeFailureBatch([item],{authority,
+  fetchImpl:async()=>({ok:true,status:200,json:async()=>[{
+   occurrence_id:item.occurrenceId,fingerprint:item.fingerprint,payload_sha256:'wrong'}]})}),
+  /BRAIN_BATCH_READBACK_CONFLICT/);
 });
 test('same existing hourly Janitor hosts source observer without new cron, workflow or side effects',()=>{
  const w=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
