@@ -1,0 +1,73 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_PENDING_RUNTIME_VERIFICATION",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5403",
+  "owner": "original-powerhouse-content-loop",
+  "fingerprint": "powerhouse|social|ack-no-independent-readback|20261104-v1",
+  "failure_class": "ACK_MISCLASSIFIED_AS_INDEPENDENT_PROVIDER_READBACK",
+  "root_cause": "Original assessPreventivePublicationReadiness uses the same isTerminal callback for provider-side-effect idempotency and independently verified live proof. An original LinkedIn personal PUBLISHED state with provider ACK and real ID, provider_truth_verified=false, live_proven_at=NULL and independent GET Forbidden was therefore incorrectly placed in ready with proof ORIGINAL_TERMINAL_PROVIDER_READBACK. The original obligations projection also omitted approved_at and live_proven_at fields required by the classifier.",
+  "evidence": {
+    "observed_at": "2026-11-04T08:44:29Z",
+    "source": "existing public.content_publication_obligations and public.brain_records content-closed-loop:2026-11-04",
+    "original_cron_job": 140,
+    "original_edge_version": 583,
+    "personal_status": "PUBLISHED",
+    "personal_provider_ack": true,
+    "personal_provider_truth_verified": false,
+    "personal_live_proven_at": null,
+    "company_status": "LIVE_PROVEN",
+    "instagram_media_status": "WAITING_ASSET",
+    "blog_status": "GENERATED",
+    "blog_approved_at": null,
+    "one_brain_failure_occurrence_id": "social-preflight:2026-11-04:linkedin-personal-ack-only",
+    "one_brain_maturity": "OBSERVED",
+    "active_blockers_observed": 23,
+    "independently_live_proven": 1,
+    "expected_channels": 4
+  },
+  "fix": "Same-original-loop read-only preflight classifies provider ACK without independent readback as INDEPENDENT_PROVIDER_READBACK_REQUIRED/ORIGINAL_PROVIDER_RECONCILE_ONLY and reads original approved_at/live_proven_at. No second provider transport, no forged proof, no new scheduler, no approval bypass.",
+  "prevention_rule": "Separately assert idempotent provider ACK and independently verified LIVE_PROVEN; never emit ORIGINAL_TERMINAL_PROVIDER_READBACK for provider_truth_verified=false. Include real approval/proof columns in the original read model and test positive verified and negative ACK-only cases before release.",
+  "regression_ref": "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs",
+  "release_requirements": [
+    "protected exact-head Required/BRAIN/CodeQL",
+    "original owner/lease verification",
+    "protected merge and exact existing Supabase Edge bundle deploy",
+    "natural original cron #140 + result.preventive production readback",
+    "independent provider readback and real Mira/blog release before considering all four channels green"
+  ],
+  "safety": [
+    "original exclusive writer and cron #140 only",
+    "do not repost acknowledged LinkedIn personal publication",
+    "no OAuth/consent bypass or invented approval",
+    "preserve global duplicate and Mira >=0.940 identity gate",
+    "historical failed CI attempts remain evidence; no false-green incident closure"
+  ],
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "FALSE_GREEN",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "invariants": [
+      "independent readback distinct from sender ACK",
+      "original read-only preflight",
+      "no provider resends",
+      "no fabricated blog approval",
+      "unmodified original cron"
+    ]
+  }
+}
