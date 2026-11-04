@@ -186,8 +186,25 @@ jobs:
             }
           }
           while(Date.now()<deadline){
-            const response=await fetch(endpoint,{headers});
-            if(!response.ok) throw new Error(`GitHub status API ${response.status}`);
+            let response;
+            try{
+              response=await fetch(endpoint,{headers,signal:AbortSignal.timeout(8000)});
+            }catch(error){
+              // Transport-only failure: use the EXISTING exact checked-out
+              // candidate browser build. Never invent a successful provider status.
+              console.log(`GitHub status transport unavailable (${error?.name||'network'}); verifying exact candidate locally.`);
+              break;
+            }
+            if(!response.ok){
+              // Temporary GitHub status failures are not a website approval.
+              // They trigger the existing exact-local browser gate, not a green check.
+              if([429,500,502,503,504].includes(response.status)){
+                console.log(`GitHub status API ${response.status}; verifying exact candidate locally.`);
+                break;
+              }
+              // Auth, ownership or unexpected provider refusals remain hard failures.
+              throw new Error(`GitHub status API ${response.status}`);
+            }
             const body=await response.json();
             const status=(body.statuses||[]).find(item=>item.context==='netlify/bedrijfsgeheugen/deploy-preview');
             if(status?.state==='success'){
