@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "github|actions|native-hourly-one-brain-ingestion-coverage-gap|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing Powerhouse Repository Janitor and ONE BRAIN failure registry owner",
+  "failure_class": "GITHUB_ACTIONS_COMPLETED_FAILURES_NOT_UNIVERSALLY_OBSERVED",
+  "root_cause": "Existing original Janitor native observer reports only janitor-specific failures; a synthetic manual RPC test proved ONE BRAIN ingestion capability, not automatic broad GitHub workflow-run capture.",
+  "prevention_rule": "The original hourly Janitor scans completed GitHub Actions runs over an overlapping 48-hour window with full bounded pagination. Real failing run attempts are idempotently written through public.brain_observe_failure and independently read by exact occurrence_id/fingerprint/payload hash. Pagination, source, credential, write or readback failure must return explicit coverage failure, not GREEN. Never downgrade security failures or republish content.",
+  "fix": "Extend only the existing hourly Powerhouse Repository Janitor with a dedicated read-only GitHub Actions failure observation step and existing authorized ONE BRAIN RPC; preserve original scheduler, issue owner, permissions, protected gates and provider publication logic.",
+  "evidence": {
+    "baseline": "2026-11-04 original production has 23 ACTIVE brain_blockers and four publication obligations of which only LinkedIn company is LIVE_PROVEN",
+    "baseline_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5398",
+    "prior_canary_result": "MANUAL_SYNTHETIC_INGEST_ONLY_NOT_AUTOMATIC_FUTURE_COVERAGE",
+    "source_workflow": ".github/workflows/powerhouse-repository-janitor.yml",
+    "source_adapter": "tools/delivery/github-actions-failure-observer.mjs",
+    "target": "public.brain_failure_registry + public.brain_failure_occurrences",
+    "writer": "public.brain_observe_failure",
+    "known_limit": "Hourly 48-hour overlapping bounded scan is not an absolute guarantee for source outages exceeding its window; missing/truncated provider coverage is fail-closed."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-actions-failure-observer-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-github-actions-failure-observer-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-github-actions-failure-observer-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "GITHUB_ACTIONS_COMPLETED_FAILURES_NOT_UNIVERSALLY_OBSERVED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Native Required/CodeQL/full BRAIN success, exact-head protected merge, original hourly Janitor run, real failed GitHub workflow source read and matching canonical ONE BRAIN occurrence SHA/hash readback, admin portal report and no false green. The 23 open blockers and 3 unproven channels must be repaired independently.",
+  "evidence_scope": "CANDIDATE ONLY: unit replay cannot prove a future natural GitHub run was automatically ingested."
+}
