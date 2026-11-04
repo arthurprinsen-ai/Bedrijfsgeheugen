@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "RECOVERY_CANDIDATE_NEEDS_PROTECTED_MERGE_AND_PRODUCTION_SCHEMA_READBACK",
+  "fingerprint": "one-brain-reconciler|migration-body-unterminated|SQLSTATE42601|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN Supabase migration/parity owner",
+  "failure_class": "PLPGSQL_MIGRATION_STATEMENT_BOUNDARY_MISSING",
+  "root_cause": "The actual pg_get_functiondef() output for original powerhouse_reconcile_content_outcomes_v1(date) omitted the final SQL semicolon after $function$. Original PR #5382 added strict revocation of PUBLIC, anon, authenticated EXECUTE after that function, but failed to terminate the prior CREATE OR REPLACE FUNCTION SQL statement. Exact protected merge succeeded because PR-head native Supabase Preview was success before the latest ACL edit; independent postmerge main Supabase Preview found SQLSTATE 42601 syntax error near REVOKE and original production migration version 20261104052001 was not applied.",
+  "evidence": {
+    "original_PR": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5382",
+    "original_merge": "909c015ab929dca4d0b5091ad0e346628a306e82",
+    "original_migration": "supabase/migrations/20261104052001_original_personal_reconciler_nested_builder_proof_v1.sql",
+    "latest_provider_failure": "SQLSTATE 42601 near REVOKE on original merged main",
+    "live_schema_position": 0,
+    "security_acl_verified": "postgres and service_role only; anon and authenticated false",
+    "actual_20261104_live_proven": 0
+  },
+  "fix": "Correct SAME previously unapplied canonical migration file by inserting one terminator after $function$ and before existing explicit REVOKE/GRANT; do not create second version or change source conditions. Add lexical regression blocking repeat. Restore native provider preview exact-head and protected migration parity.",
+  "prevention_rule": "When deploying a pg_get_functiondef-derived migration, assert the CREATE FUNCTION is a complete SQL statement terminated by a semicolon before any subsequent REVOKE, GRANT or other DDL. Independently read live pg_proc definition and migration history; PR green does not imply postmerge production change.",
+  "tests": [
+    "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "invariants": [
+      "no new migration version",
+      "same original reconciler",
+      "no new writer or scheduler",
+      "EXECUTE only postgres/service_role",
+      "no fake provider proof",
+      "no altered identity gates"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "PLPGSQL_MIGRATION_STATEMENT_BOUNDARY_MISSING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected Required/CodeQL and native Supabase Preview, exact protected merge, production migration version 20261104052001 applied, real independent source proof readback; LinkedIn LIVE_PROVEN only on independent provider ID and URL."
+}

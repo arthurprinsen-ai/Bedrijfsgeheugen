@@ -47,3 +47,12 @@ test('strict nested builder proof accepts real source shape but rejects forged o
    assert.equal(verifiedNested({...valid,[k]:v}),false,k+' cannot bypass a publisher gate');
  }
 });
+
+test('original PostgreSQL CREATE FUNCTION must end before fail-closed EXECUTE grants',()=>{
+ const close=sql.lastIndexOf('$function$;');
+ const revoke=sql.lastIndexOf('REVOKE ALL ON FUNCTION public.powerhouse_reconcile_content_outcomes_v1');
+ const grant=sql.lastIndexOf('GRANT EXECUTE ON FUNCTION public.powerhouse_reconcile_content_outcomes_v1');
+ assert.ok(close>0&&revoke>close&&grant>revoke,'SQLSTATE 42601: function body must terminate before REVOKE');
+ assert.match(sql.slice(close,revoke),/^\$function\$;\s*-- Original production[\s\S]*$/);
+ assert.equal(sql.includes('end;\n$function$\n\n-- Original production'),false,'unterminated function denied');
+});
