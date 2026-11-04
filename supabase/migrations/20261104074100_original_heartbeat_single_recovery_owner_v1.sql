@@ -99,40 +99,9 @@ REVOKE EXECUTE ON FUNCTION public.powerhouse_runtime_mux_task_v1(text,text,integ
 GRANT EXECUTE ON FUNCTION public.powerhouse_runtime_mux_task_v1(text,text,integer) TO service_role;
 COMMENT ON FUNCTION public.powerhouse_runtime_mux_task_v1(text,text,integer) IS 'Existing #171 mux: unchanged watchdog/reconciliation ownership, typed original recovery source truth on terminal task without claiming provider outcomes.';
 
--- Decommission only the proven redundant native recovery cron, atomically after the original #171 mux is installed and source-checked.
--- Preview branches can omit prod cron metadata: in that case there is nothing to retire.
-DO $one_original_recovery_owner$
-DECLARE
-  v_job record;
-  v_n integer;
-BEGIN
-  SELECT count(*) INTO v_n FROM cron.job
-   WHERE active AND jobname='powerhouse-original-recovery-control-plane-v1';
-  IF v_n > 1 THEN
-    RAISE EXCEPTION 'ORIGINAL_RECOVERY_DUPLICATE_OWNER_CONFLICT: %',v_n;
-  END IF;
-  IF v_n = 1 THEN
-    SELECT * INTO v_job FROM cron.job
-     WHERE active AND jobname='powerhouse-original-recovery-control-plane-v1'
-     FOR UPDATE;
-    IF v_job.schedule <> '*/15 * * * *'
-       OR btrim(v_job.command) <> 'select public.powerhouse_recovery_control_plane_tick_v1();'
-    THEN
-      RAISE EXCEPTION 'ORIGINAL_RECOVERY_JOB_DRIFT_REQUIRES_OWNER_REVIEW';
-    END IF;
-    IF NOT EXISTS (
-      SELECT 1 FROM cron.job WHERE active
-        AND jobname='powerhouse-runtime-scheduler-mux-v1'
-        AND command LIKE '%powerhouse_runtime_scheduler_mux_v3%'
-    ) THEN
-      RAISE EXCEPTION 'ORIGINAL_171_SCHEDULER_MISSING_KEEP_184';
-    END IF;
-    IF has_function_privilege('anon','public.powerhouse_runtime_mux_task_v1(text,text,integer)','EXECUTE')
-       OR has_function_privilege('authenticated','public.powerhouse_runtime_mux_task_v1(text,text,integer)','EXECUTE')
-    THEN
-      RAISE EXCEPTION 'ORIGINAL_HEARTBEAT_PRIVILEGE_DRIFT_KEEP_184';
-    END IF;
-    PERFORM cron.unschedule(v_job.jobid);
-  END IF;
-END;
-$one_original_recovery_owner$;
+-- Native cron.job administration is intentionally OUTSIDE the schema migration role's permissions.
+-- Operational phase two, only after protected prod deploy and two natural #171 receipts:
+-- original authorized production owner verifies exact native #171 / #184 identity and service-only ACL,
+-- uses native postgres cron.unschedule for ONLY #184 with independent readback, and logs evidence in ONE BRAIN.
+-- Until phase two is independently proven, the source duplication incident remains ACTIVE.
+-- No additional scheduler, provider side effect, or public privilege change is created here.
