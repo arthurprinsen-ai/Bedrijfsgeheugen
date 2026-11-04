@@ -1,0 +1,20 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-04",
+  "version": "v1",
+  "status": "SOURCE_REPAIR_PENDING_PRODUCTION_PROOF",
+  "fingerprint": "netlify|native-git|production-release-identity-unavailable|20261104-v1",
+  "owner": "original production delivery owner",
+  "root_cause": "Production release stamping required Netlify COMMIT_REF and DEPLOY_ID; when COMMIT_REF is absent, native Git checkout HEAD was not considered even if valid. Netlify production build aborted with PRODUCTION_RELEASE_IDENTITY_UNAVAILABLE.",
+  "prevention_rule": "Resolve release SHA from verified checkout Git HEAD when COMMIT_REF absent; reject malformed provided SHA and supplied SHA vs checkout mismatch; preserve fail-closed production CONTEXT and DEPLOY_ID; verify published release.json against original main SHA before claiming live.",
+  "evaluation": {
+    "historical_replay": [
+      "tools/ci/netlify-build-entry.mjs"
+    ],
+    "shadow": [
+      "tools/ci/netlify-build-entry.mjs"
+    ],
+    "production_proof_required": true
+  },
+  "outcome": "PR candidate only; protected CI, merge, Netlify build and independent production readback outstanding."
+}
