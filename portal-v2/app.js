@@ -2,7 +2,7 @@ import { deriveFlowState, statusLabel } from './flow-state.js?bg_explain=80ad881
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountLegacyParity } from './legacy-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { DESKTOP_NAV_GROUPS } from './navigation-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bindPortalNavigation, navigatePortal } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bindPortalNavigation, navigatePortal, subscribePortalRoute } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { groupedHubPages, hubDefinition } from './hubs.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { createScanClaimBridge } from './scan-claim-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
@@ -176,19 +176,25 @@ function renderHubGroups(hubId='portal'){
 function mountCanonicalDesktopNavigation(){
  const nav=document.querySelector('.sidebar .nav');if(!nav)return;
  nav.innerHTML='';nav.classList.add('portal-single-navigation');nav.setAttribute('aria-label','Portaalnavigatie');
+ const activeTarget=new URLSearchParams(globalThis.location?.search||'').get('page')||'overzicht';
  for(const group of DESKTOP_NAV_GROUPS){
    const section=document.createElement('section');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
-   const heading=document.createElement('h2');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
+   const disclosure=document.createElement('details');disclosure.className='portal-nav-disclosure';
+   disclosure.open=group.pages.some(page=>page.target===activeTarget);
+   const heading=document.createElement('summary');heading.className='portal-single-nav-heading';
+   heading.textContent=group.label;disclosure.appendChild(heading);
    for(const page of group.pages){
      if(isProtectedTrustPage(page.target)&&!hasProtectedTrustAccess())continue;
      const button=document.createElement('button');button.type='button';
      button.dataset.navTarget=page.target;button.dataset.navGroup=group.id;button.dataset.navPage=page.id;
      button.innerHTML=`<span class="ico">${group.icon}</span><span>${page.label}</span>`;
-     section.appendChild(button);
+     if(page.target===activeTarget){button.classList.add('active');button.setAttribute('aria-current','page');}
+     disclosure.appendChild(button);
    }
-   nav.appendChild(section);
+   section.appendChild(disclosure);nav.appendChild(section);
  }
 }
+
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
  const definition=hubDefinition(hubId) || hubDefinition('portal');
@@ -369,6 +375,28 @@ document.querySelectorAll('[data-open-page]').forEach(control=>{
  });
 });
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
+const mobileDock=document.querySelector('.portal-mobile-dock');
+mobileDock?.addEventListener('click',event=>{
+ const button=event.target.closest('button');if(!button||!mobileDock.contains(button))return;
+ if(button.dataset.mobileTarget){navigatePortal(button.dataset.mobileTarget);return;}
+ if(button.dataset.mobileAction==='ask'){document.getElementById('portalAskAi')?.click();return;}
+ if(button.dataset.mobileAction==='more')navigatePortal('hub:portal');
+});
+subscribePortalRoute(({target})=>{
+ mobileDock?.querySelectorAll('[data-mobile-target]').forEach(button=>{
+   const active=button.dataset.mobileTarget===target;
+   button.classList.toggle('active',active);
+   if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
+ });
+ const active=document.querySelector('.portal-nav-disclosure [data-nav-target].active');
+ if(active)active.closest('.portal-nav-disclosure').open=true;
+});
+const initialMobileTarget=new URLSearchParams(globalThis.location?.search||'').get('page')||'overzicht';
+mobileDock?.querySelectorAll('[data-mobile-target]').forEach(button=>{
+ const active=button.dataset.mobileTarget===initialMobileTarget;
+ button.classList.toggle('active',active);
+ if(active)button.setAttribute('aria-current','page');
+});
 el('portalFullMenuToggle')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overzicht',{replace:true})});
