@@ -20,8 +20,7 @@
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ],
     "shadow": [
-      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
     ],
     "canary": [
       "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
@@ -35,7 +34,8 @@
     "current": [
       "2026-11-04T13:07:33.991Z original Supabase schema_migrations has 801 exact provider rows",
       "Full 801-row independent source comparison: 800 unchanged, 1 newly applied, none altered or missing",
-      "20261104090000:ga4_consent_limited_data_spine_truth_v1 is already in executable Git and was officially provider-applied"
+      "20261104090000:ga4_consent_limited_data_spine_truth_v1 is already in executable Git and was officially provider-applied",
+      "Run separate original general migration-history integrity suite tests/supabase-migration-history-integrity.test.mjs in the original BRAIN backend lane; canonical learning compiler historical/shadow/canary entries must reference tests/brain-* only."
     ]
   },
   "customer_outcome": "NOT_PROVEN",
