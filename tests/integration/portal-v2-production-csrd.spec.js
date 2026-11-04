@@ -19,7 +19,9 @@ test('production Portal V2 renders the canonical CSRD & Impact module', async ({
   await expect(csrdNav).toHaveCount(1);
   // Native desktop navigation is intentionally progressive: reveal the group
   // before verifying the real canonical target, not a hidden legacy shortcut.
-  const csrdGroup=page.locator('.portal-single-navigation details.portal-single-nav-group').filter({has:csrdNav});
+  // The descendant selector must be evaluated relative to each details
+  // candidate, not from the external navigation ancestor in the old filter.
+  const csrdGroup=page.locator('.portal-single-navigation details.portal-single-nav-group:has([data-nav-target="csrd-impact"])');
   await expect(csrdGroup).toHaveCount(1);
   await csrdGroup.locator('summary').click();
   await expect(csrdGroup).toHaveAttribute('open','');

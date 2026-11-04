@@ -16,7 +16,9 @@ test('V2 overview exposes legacy company-state and adoption surfaces',async({pag
   const more=page.locator('details[data-portal-overview-depth="v1"]');
   await expect(more).toHaveCount(1);
   await expect(more).not.toHaveAttribute('open','');
-  await more.locator('summary').click();
+  const overviewSummary=more.locator(':scope > summary');
+  await expect(overviewSummary, 'only the direct accessible company-details summary may be activated').toHaveCount(1);
+  await overviewSummary.click();
   await expect(more).toHaveAttribute('open','');
   const insights=more.locator('[data-legacy-overview-insights]');
   await expect(insights).toBeVisible({timeout:10_000});

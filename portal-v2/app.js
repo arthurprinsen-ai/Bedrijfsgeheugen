@@ -233,8 +233,15 @@ function mountMobilePrimaryNavigation(){
 function mountOverviewDepthDisclosure(){
  const main=document.querySelector('main.main');
  if(!main||main.querySelector('[data-portal-overview-depth]'))return;
- const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities'];
- const existing=sections.map(selector=>main.querySelector(':scope > '+selector)).filter(Boolean);
+ // Original render subscription can execute before this disclosure mounts.
+ // Include already-rendered canonical model/management panels, in their true
+ // document order, otherwise they remain invisible outside the disclosed body.
+ // Do NOT move the single entrepreneur-facing next action or identity shell.
+ const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities',
+  '[data-legacy-overview-insights]','.legacy-complete','[data-bedrijfslek-intelligence]',
+  '[data-business-journey-overview]','.dv-houder',
+  '.v2overviewcustomizer','.v2overviewcanvas'];
+ const existing=[...main.children].filter(node=>sections.some(selector=>node.matches(selector)));
  if(!existing.length)return;
  const details=document.createElement('details');
  details.className='portal-overview-depth';

@@ -34,7 +34,7 @@ test('Portal V2 is standalone and never routes into the legacy portal', async ({
     // cards. Hiding fictional static widgets must never break deep routing.
     const trigger = page.locator(`.sidebar .nav [data-nav-target="${pageId}"]`);
     await expect(trigger, `${pageId} must exist in canonical V2 navigation`).toHaveCount(1);
-    const group=page.locator('.sidebar .nav details.portal-single-nav-group').filter({has:trigger});
+    const group=page.locator(`.sidebar .nav details.portal-single-nav-group:has([data-nav-target="${pageId}"])`);
     await expect(group).toHaveCount(1);
     if(!await group.evaluate(node=>node.open))await group.locator('summary').click();
     await expect(trigger, `${pageId} accessible from expanded canonical V2 navigation`).toBeVisible();
