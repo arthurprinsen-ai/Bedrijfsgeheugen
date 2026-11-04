@@ -60,7 +60,7 @@ test('the original protected workflow consumes the helper and keeps the two requ
  const file=readFileSync('.github/workflows/powerhouse-delivery-hygiene.yml','utf8');
  assert.match(file,/classifyGitHubAdmissionReadError/);
  assert.match(file,/const transientApiFailure = error => classifyGitHubAdmissionReadError\(error\)\.retry_immediately/);
- assert.match(file,/failure_fingerprint: classifyGitHubAdmissionReadError\(error\)\.fingerprint/);
+ assert.match(file,/failure_fingerprint: firstTimeRightFailure\?\.fingerprint \|\| classifyGitHubAdmissionReadError\(error\)\.fingerprint/);
  assert.match(file,/provider_recovery: classifyGitHubAdmissionReadError\(error\)\.next_action/);
  assert.match(file,/const state = classifyGitHubAdmissionReadError\(error\)\.state/);
  assert.match(file,/Require canonical learning evidence at protected admission/);
