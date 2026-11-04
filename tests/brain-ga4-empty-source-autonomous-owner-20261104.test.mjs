@@ -6,10 +6,10 @@ const code=readFileSync(new URL('../supabase/functions/bg-analytics-sync-composi
 const testSection=code.slice(code.indexOf('// HTTP200 with zero returned rows'),code.indexOf("  const headers=['date'"));
 test('historical GA4 HTTP200 and zero provider rows never create a fake success receipt',()=>{
  assert.ok(testSection.includes('if(rows.length===0)'));
- assert.match(testSection,/status:'NO_SOURCE_DATA'/);
+ assert.match(testSection,/status:consentLimited\?'CONSENT_LIMITED':'NO_SOURCE_DATA'/);
  assert.match(testSection,/status:consentLimited\?'privacy_limited':'error',fout:reason/);
- assert.match(testSection,/await bewijs\(false,result,'EMPTY_SOURCE'\)/);
- assert.match(testSection,/return json\(result,503\)/);
+ assert.match(testSection,/await bewijs\(false,result,consentLimited\?'CONSENT_BOUNDARY':'EMPTY_SOURCE'\)/);
+ assert.match(testSection,/return json\(result,consentLimited\?200:503\)/);
  assert.ok(code.indexOf("if(rows.length===0)")<code.indexOf("  const headers=['date'"));
  assert.ok(testSection.includes('provider_report_rows:0'));
 });
@@ -44,12 +44,12 @@ test('the original scheduler and normal nonempty provider route are preserved, w
  assert.match(code,/const headers=\['date','pagePath','sessionCampaignName','sessions','activeUsers','eventCount'\]/);
  assert.match(code,/const status=unmatched>0\?'PARTIAL':'IMPORTED'/);
  assert.match(code,/const existing=|data:existing/);
- assert.match(code,/GA4_NO_SOURCE_ROWS/);
+ assert.match(code,/GA4_CONSENT_LIMITED_NO_SOURCE_ROWS/);
  assert.doesNotMatch(testSection,/\bbg-post-import\b/);
  assert.doesNotMatch(testSection,/status:'ok'/);
 });
 test('empty provider evidence is recorded separately and not silently accepted as a duplicate batch',()=>{
- assert.match(testSection,/writeRuntime\(db,`ga4-source-empty:\$\{day\}:\$\{sourceRoute\}`,'error',observation,'ga4_source_empty_observed'\)/);
+ assert.match(testSection,/writeRuntime\(db,`ga4-source-empty:\$\{day\}:\$\{sourceRoute\}`,consentLimited\?'observed':'error',observation,'ga4_source_empty_observed'\)/);
  assert.match(code,/eventType='ga4_failover_observed'/);
  assert.match(code,/event_type:eventType/);
  assert.match(testSection,/originalGa4EmptyRepair\(db,day,sourceRoute,observation\)/);
