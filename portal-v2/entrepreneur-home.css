@@ -96,3 +96,57 @@
 .eh-attention-card .eh-text-action{min-height:44px;align-self:start}
 @media(max-width:920px){.eh-attention-grid{grid-template-columns:1fr}}
 @media(max-width:500px){.eh-attention{padding:12px}.eh-attention-card{padding:14px}}
+
+
+/* UX 2026-11-04: progressive disclosure on the existing tenant-authorized route.
+   Never changes the source of truth or silently turns proposals into outcomes. */
+.entrepreneur-home{background:#f7f9fc;border-color:#e0e8ec;border-radius:28px;box-shadow:none;padding:clamp(18px,3vw,34px)}
+.eh-lead{margin-bottom:20px}
+.eh-eyebrow{color:#3b716c;letter-spacing:.08em}
+.eh-lead-copy{max-width:680px}
+.eh-title{font-size:clamp(1.55rem,3.1vw,2.55rem);line-height:1.12;letter-spacing:-.035em}
+.eh-intro{max-width:52ch;font-size:clamp(.92rem,1.6vw,1rem)}
+.eh-next.eh-focus{margin:0;background:linear-gradient(120deg,#122e39 0%,#1d4550 78%,#21555a 100%);border:1px solid #2c6263;border-radius:24px;box-shadow:0 17px 34px rgba(15,41,52,.13);padding:clamp(22px,4vw,36px)}
+.eh-focus .eh-next-label{color:#a3e6d4;font-size:.75rem;letter-spacing:.075em}
+.eh-focus h3{font-size:clamp(1.3rem,3vw,2rem);line-height:1.2;max-width:26ch;margin-top:12px}
+.eh-focus p:not(.eh-focus-footnote){font-size:clamp(.93rem,1.6vw,1.06rem);max-width:58ch}
+.eh-focus .eh-main-action{background:#b8f0d8;border-color:#b8f0d8;color:#143a38;border-radius:13px;padding:13px 19px;min-height:48px;font-size:1rem}
+.eh-focus .eh-main-action:hover{background:#d6ffe9}
+.eh-focus-footnote{max-width:64ch;margin:12px 0 0!important;color:#c5dedf!important;font-size:.8rem!important;line-height:1.45}
+.eh-advanced{margin-top:17px;background:#fff;border:1px solid #dae6ec;border-radius:18px;overflow:hidden}
+.eh-advanced-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;min-height:64px;padding:14px 21px;list-style:none;font-weight:800;color:#19374a}
+.eh-advanced-summary::-webkit-details-marker{display:none}
+.eh-advanced-summary span{font-size:.94rem}
+.eh-advanced-summary small{font-size:.8rem;font-weight:500;color:#526b79;text-align:right}
+.eh-advanced-summary:after{content:'+';font-size:1.25rem;line-height:1;color:#47726f;flex:none}
+.eh-advanced[open]>.eh-advanced-summary:after{content:'−'}
+.eh-advanced-summary:focus-visible{outline:3px solid #267e7b;outline-offset:-4px}
+.eh-advanced[open]>.eh-advanced-summary{border-bottom:1px solid #e4ecef;background:#f6faf9}
+.eh-advanced>.eh-attention,.eh-advanced>.eh-goals,.eh-advanced>.eh-cards,.eh-advanced>.eh-journey,.eh-advanced>.eh-foot{margin-left:20px;margin-right:20px}
+.eh-advanced>.eh-attention{border:0;background:transparent;padding:0;margin-top:21px}
+.eh-advanced>.eh-attention .eh-attention-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.eh-advanced>.eh-attention .eh-attention-card{border-radius:16px}
+.eh-advanced>.eh-foot{padding-bottom:23px}
+.eh-goals:not(.eh-advanced .eh-goals){margin-top:20px;padding:20px;border:1px solid #d9e7e7;border-radius:18px;background:#fff}
+.eh-goal{min-height:48px}
+@media(max-width:920px){.eh-advanced>.eh-attention .eh-attention-grid{grid-template-columns:1fr}}
+@media(max-width:760px){
+ .entrepreneur-home{margin:9px 0 16px;padding:17px;border-radius:22px}
+ .eh-lead{gap:9px;margin-bottom:15px}
+ .eh-title{font-size:clamp(1.55rem,7vw,2.2rem);margin-top:7px}
+ .eh-intro{font-size:.91rem;line-height:1.5}
+ .eh-status{font-size:.73rem}
+ .eh-next.eh-focus{padding:21px 18px;border-radius:19px}
+ .eh-focus h3{font-size:1.4rem}
+ .eh-focus .eh-main-action{display:block;width:100%;text-align:center}
+ .eh-advanced-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:16px;min-height:66px}
+ .eh-advanced-summary span{grid-column:1;align-self:end}
+ .eh-advanced-summary small{grid-column:1;text-align:left;font-size:.74rem;align-self:start}
+ .eh-advanced-summary:after{grid-column:2;grid-row:1/3}
+ .eh-advanced>.eh-attention,.eh-advanced>.eh-goals,.eh-advanced>.eh-cards,.eh-advanced>.eh-journey,.eh-advanced>.eh-foot{margin-left:12px;margin-right:12px}
+ .eh-advanced>.eh-attention .eh-attention-card{padding:15px}
+ .eh-goals:not(.eh-advanced .eh-goals){padding:16px}
+ .eh-goal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:390px){.eh-goal-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.eh-focus .eh-main-action{transition:none}}
