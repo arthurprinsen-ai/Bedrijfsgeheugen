@@ -77,28 +77,40 @@ export async function observeNativeFailure(item,{authority,fetchImpl=globalThis.
 export async function scanNativeFailures({env=process.env,api,now=new Date(),
  observe=observeNativeFailure,authority}={}){
  if(env.GITHUB_REPOSITORY!==REPO)throw Error('NATIVE_REPOSITORY_IDENTITY_MISMATCH');
- // Overlapping 48h snapshots ensure retry after outages, while canonical occurrence IDs
- // and hashes make replay harmless. Full pagination is mandatory: never silently truncate.
- const lower=new Date(now.getTime()-48*3600000).toISOString().slice(0,10);
+ // Overlapping 48h and 4-hour buckets handle GitHub's documented 1,000-result
+ // search limit. An incomplete bucket MUST fail closed rather than silently lose runs.
+ const earliest=now.getTime()-48*3600000;
  const failed=[];
- let complete=false,scanned=0,pages=0;
- for(let page=1;page<=20;page++){
-  const path='repos/'+REPO+'/actions/runs?status=completed&per_page=100&page='+page+
-    '&created=%3E%3D'+lower;
-  const response=await api(path);
-  if(!Array.isArray(response?.workflow_runs))throw Error('GITHUB_RUNS_SOURCE_UNAVAILABLE');
-  pages=page;scanned+=response.workflow_runs.length;
-  for(const run of response.workflow_runs){
-   const verdict=classifyActionsRun(run);
-   if(verdict.state==='SOURCE_RUN_INVALID')throw Error('GITHUB_RUN_SOURCE_IDENTITY_UNVERIFIED');
-   if(verdict.state==='NATIVE_FAILURE')failed.push(verdict);
+ let scanned=0,pages=0;
+ for(let slot=0;slot<12;slot++){
+  const endMs=now.getTime()-slot*4*3600000;
+  const startMs=endMs-4*3600000;
+  const range=encodeURIComponent(new Date(startMs).toISOString()+'..'+
+    new Date(endMs-1).toISOString());
+  let total=null,seen=0,complete=false;
+  for(let page=1;page<=10;page++){
+   const path='repos/'+REPO+'/actions/runs?status=completed&per_page=100&page='+page+
+     '&created='+range;
+   const response=await api(path);
+   const count=Number(response?.total_count);
+   if(!Array.isArray(response?.workflow_runs)||!Number.isSafeInteger(count)||count<0)
+    throw Error('GITHUB_RUNS_SOURCE_UNAVAILABLE');
+   if(count>1000)throw Error('GITHUB_RUNS_WINDOW_OVERFLOW');
+   if(total!==null&&total!==count)throw Error('GITHUB_RUNS_WINDOW_CHANGED_RETRY_REQUIRED');
+   total=count;pages++;seen+=response.workflow_runs.length;
+   scanned+=response.workflow_runs.length;
+   for(const run of response.workflow_runs){
+    const verdict=classifyActionsRun(run);
+    if(verdict.state==='SOURCE_RUN_INVALID')throw Error('GITHUB_RUN_SOURCE_IDENTITY_UNVERIFIED');
+    if(verdict.state==='NATIVE_FAILURE')failed.push(verdict);
+   }
+   if(response.workflow_runs.length<100){complete=true;break;}
   }
-  if(response.workflow_runs.length<100){complete=true;break;}
+  if(!complete||seen!==total)throw Error('GITHUB_RUNS_PAGINATION_INCOMPLETE');
  }
- if(!complete)throw Error('GITHUB_RUNS_PAGINATION_INCOMPLETE');
  const unique=new Map(failed.map(x=>[x.occurrenceId,x]));
  const result={schema:'github-actions-native-failure-observer-v1',
-  window_start_date:lower,pages,scanned,failures:unique.size,
+  window_start_date:new Date(earliest).toISOString(),windows:12,pages,scanned,failures:unique.size,
   recorded:0,already_verified:0,readback_complete:false,
   source:'original-hourly-janitor',global_green:false};
  const auth=authority||resolveBrainAuthority(env);
