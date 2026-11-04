@@ -16,13 +16,13 @@
   "prevention_rule": "Reuse one canonical router, preserve previous non-hub route for dismissal, trap Tab inside dialog, inert only the existing background while open, focus the real close control, restore the visible invoker on exit and verify exact published production; never claim WCAG or real entrepreneur usability from source tests alone.",
   "evaluation": {
     "historical_replay": [
-      "tests/integration/portal-v2-mobile-shell.spec.js"
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
     ],
     "shadow": [
-      "tests/integration/portal-v2-mobile-shell.spec.js"
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
     ],
     "canary": [
-      "tests/integration/portal-v2-mobile-shell.spec.js"
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
     ]
   },
   "evidence": {
@@ -30,7 +30,8 @@
       "Original mobile four-tab menu source portal-v2/app.js and original browser success https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41844746771"
     ],
     "current": [
-      "Focused source repair proposal; awaiting exact protected CI and actual production browser readback."
+      "Focused source repair proposal; awaiting exact protected CI and actual production browser readback.",
+      "Original admission #41860199927 discovered invalid Playwright path in canonical learning evaluation; changed to a real node:test brain- contract while preserving the independent hydrated Playwright runtime test."
     ]
   },
   "customer_outcome": "NOT_PROVEN",
