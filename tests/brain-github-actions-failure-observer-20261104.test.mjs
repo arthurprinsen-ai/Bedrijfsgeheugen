@@ -27,6 +27,7 @@ test('success, neutral and intentional cancellation are not falsely counted as e
  for(const conclusion of ['failure','timed_out','action_required','startup_failure','stale'])
   assert.equal(classifyActionsRun({...run,conclusion}).state,'NATIVE_FAILURE');
  assert.equal(classifyActionsRun({...run,head_sha:'bad'}).state,'SOURCE_RUN_INVALID');
+ assert.equal(classifyActionsRun({...run,conclusion:'cancelled',head_sha:null}).state,'NO_NATIVE_FAILURE');
 });
 test('native ONE BRAIN insert and independent exact row/hash readback are mandatory',async()=>{
  const x=classifyActionsRun(run);
