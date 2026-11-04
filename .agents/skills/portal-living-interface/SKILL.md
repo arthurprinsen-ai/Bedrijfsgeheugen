@@ -145,3 +145,9 @@ Original Portal Playwright run 41844746771 is independently green (15 passed, 1 
 - When any full-menu dialog opens, focus its visible close control, set `inert` on the original background and `aria-expanded` on the trigger, and keep Tab/Shift+Tab inside the dialog. On Escape, close button or backdrop, preserve the previous non-hub route and restore focus to the connected visible invoker. Explicit choice of a page continues through the original guarded `navigatePortal`.
 - Enforce genuine hydrated 390px Playwright focus, trap, menu closed and return-route behavior in `tests/integration/portal-v2-mobile-shell.spec.js`, then the original protected CI/CodeQL/BRAIN and exact Netlify release browser; source checks alone do not prove production.
 - Retain WCAG 2.2 AA, physical VoiceOver/TalkBack and unassisted first-time entrepreneur acceptance as separate evidence obligations; never call them green until measured. See `docs/changes/2026-11-04-portal-mobile-dialog-focus-route-closure.md`.
+
+
+### Productiebrowser leermoment: één routerinstantie en één overlay tegelijk
+- Original production mobile browser #41861441439 observed a false second-router test: `import('/portal-v2/router.js')` without the pinned import suffix creates a different ES module instance without original handlers. Browser tests must exercise already-bound canonical DOM actions rather than create a new router.
+- When opening the full menu from specialist `#portalView`, call the existing `closePortalPage()` to prevent two competing dialogs; dismissing restores the remembered source route and its guarded page view. Keep role/tenant safety and the original `navigatePortal` action authority.
+- Preserve actual 390px Playwright full-menu/ARIA/focus/route assertions; protected merge, exact published SHA and successful original readback are mandatory. Do not promote failure maturity on source-only pass.

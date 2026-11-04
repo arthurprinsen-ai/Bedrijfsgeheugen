@@ -23,3 +23,13 @@ Fingerprint: `portal|mobile-ux|dialog-loses-route-and-focus|20261104-v1`.
 
 ## Preventie
 Elke toekomstige `role=dialog aria-modal=true` in Portal V2 moet focus bij opening, cyclische keyboard-focus, inert achtergrond, veilige Escape-/backdrop-/sluitactie, bronroutebehoud en terugfocus bewijzen. Toekomstige mobiele navigatiewijzigingen hergebruiken deze regressie, geen tweede mobiele menustructuur.
+
+
+## Productiebrowser-replay: origineel testcontract en overlay-pariteit
+De oorspronkelijke protected PR #5422 is echt gemerged (`176315de3738a1f59479fb137eae932531d27ae6`) en Netlify deploy `6aeb53a0a8ed72ff08c447fd` is gepubliceerd. De bestaande productiebrowser `41861441439` liep de eerste mobiele focus/Tab/Escape-assertions door, maar de aanvullende terugroute-test faalde bij `#allPages` nog gesloten.
+
+Oorzaak 1 (test): een naakte `import('/portal-v2/router.js')` zonder de in `app.js` gebruikte query-pinning maakt in ES-modules **een tweede ongeïnitialiseerde routerinstantie**. Een URL-mutatie door die instantie betekent niet dat de oorspronkelijke app een dialoog opende. De test roept nu de werkelijke reeds door `app.js` gebonden nav-knoppen aan.
+
+Oorzaak 2 (UX): het openen van het volledige menu vanuit een specialistische pagina kan het onafhankelijke `#portalView`-paneel zichtbaar houden. De oorspronkelijke `openHub` sluit dat paneel eerst met de bestaande `closePortalPage()`, zonder de canonical URL, state of gebruikersrechten te verliezen. Bij ontslaan van het menu wordt dezelfde oorspronkelijke route opnieuw gerenderd.
+
+Regressie: de originele 390px productiebrowsertest controleert het werkelijke menu en dat de specialistische overlay `aria-hidden=true` is. De originele Brain-regressie verbiedt een losse router-import in de browserproef. Geen test skip, geen lagere WCAG-eis of tweede executor. **Nieuwe bronwijziging vereist eigen protected CI, gepubliceerde exacte Netlify SHA en originele volledige browseruitvoering.**

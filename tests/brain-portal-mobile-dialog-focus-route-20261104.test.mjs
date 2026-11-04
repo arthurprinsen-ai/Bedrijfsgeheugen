@@ -38,5 +38,10 @@ test('the original hydrated mobile Playwright is the independent runtime accepta
  assert.match(mobile,/press\('Shift\+Tab'\)/);
  assert.match(mobile,/press\('Escape'\)/);
  assert.match(mobile,/toHaveURL\(previousUrl\)/);
+ assert.match(mobile,/roadmap\.click\(\)/);
+ assert.match(mobile,/more\.click\(\)/);
+ assert.doesNotMatch(mobile,/import\('\/portal-v2\/router\.js'\)/);
+ const app=await read('portal-v2/app.js');
+ assert.match(app,/function openHub\(hubId\)\{[\s\S]*?closePortalPage\(\);/);
  assert.match(mobile,/toHaveAttribute\('aria-expanded','true'\)/);
 });
