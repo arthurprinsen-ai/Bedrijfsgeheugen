@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "STAGE2_PROTECTED_CANDIDATE",
+  "fingerprint": "powerhouse|delivery|trusted-main-first-time-right-admission-wiring|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN GitHub hygiene admission controller",
+  "failure_class": "FIRST_TIME_RIGHT_ADMISSION_NOT_WIRED",
+  "root_cause": "Protected Stage1 PR #5392 delivered a parser and original agent/skill rule but the existing GitHub admission did not yet invoke it before expensive CI. Its own admission cannot import new checker directly from an untrusted PR (self-bootstrapping), so a separate postmerge trusted-main wiring is required.",
+  "prevention_rule": "At original GitHub admission, fetch the independently read protected GitHub main SHA and git show the trusted checker from that SHA; reject every changed executable source syntax, migration dollar-quote mismatch, or missing regression before expensive CI. Capture fingerprint, path, owner, cause, remediation, prevention and terminal verification in same original admission artifact, preserving exclusive lease/provider authority.",
+  "evidence": {
+    "stage1_protected_merge": "17959aed661eeea0d44b6aa45f441be1e0ba68a4",
+    "stage1_PR": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5392",
+    "stage1_Required": "success",
+    "stage1_CodeQL": "success",
+    "source_contract": "tools/delivery/first-time-right-prebuild-gate.mjs",
+    "native_reusable_admission": ".github/workflows/powerhouse-delivery-hygiene.yml",
+    "real_prior_incident": "Supabase original Edge v601 worker boot 503, duplicate revisionInput; original invalid PL/pgSQL dollar-quote",
+    "stage2_requirement": "Protected merge then genuine failing and passing PR admission readback"
+  },
+  "fix": "Add exact trusted-main import, non-executing candidate source parse and machine incident artifact to existing native hygiene workflow. Leave existing Required call and all other delivery jobs unchanged; regression proves current native Required already calls original hygiene first. No second workflow, scheduler, publisher or privilege change.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-time-right-admission-wiring-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-first-time-right-admission-wiring-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-first-time-right-admission-wiring-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "FIRST_TIME_RIGHT_ADMISSION_NOT_WIRED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected Required/BRAIN/CodeQL, original merge, verify active trusted admission, one exact-head malformed PR rejected and valid PR admitted, original incident registry and provider outcome readback. Never claim unknown future bugs impossible or all unrelated Powerhouse green."
+}
