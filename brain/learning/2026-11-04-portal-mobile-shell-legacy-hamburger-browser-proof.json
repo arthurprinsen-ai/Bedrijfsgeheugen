@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-04",
+  "version": "v1",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "portal|ux|mobile-shell-legacy-hamburger-assertion|20261104-v1",
+  "owner": "existing Portal V2 original UX/QA and GitHub production browser readback",
+  "compiler": {
+    "failure_class": "PORTAL_DOM_READBACK",
+    "scope": "PRODUCTION_BROWSER",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "After the protected mobile-first navigation rollout, the separate original tests/integration/portal-v2-mobile-shell.spec.js continued to demand #portalFullMenuToggle visible at 390px, although source intentionally hides the duplicate hamburger and exposes the canonical four-tab bottom dock and More hub.",
+  "prevention_rule": "Before protected release, collect all original browser contracts that depend on changed visible navigation and update semantic user interactions, not merely static DOM checks. Mobile hydration must prove real four-tab dock, More control >=44px, original hub open/close, unchanged search geometry, no overflow and zero uncaught exceptions; no duplicate menu or test skip.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-mobile-shell-actual-menu-readback-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-mobile-shell-actual-menu-readback-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-mobile-shell-actual-menu-readback-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41839564792",
+      "Job 126607232193: original production DOM 15 PASS/1 SKIP, separately mobile-shell 1 FAIL on obsolete #portalFullMenuToggle"
+    ],
+    "current": [
+      "Original mobile Playwright test updated to use [data-mobile-primary-target=hub:portal] and original four-tab dock; no runtime or security changes; protected and independent production browser proof pending"
+    ]
+  },
+  "no_duplicate_executor": true,
+  "customer_outcome": "NOT_VERIFIED",
+  "independent_verification": "PENDING"
+}
