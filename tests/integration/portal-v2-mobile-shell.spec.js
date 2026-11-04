@@ -50,7 +50,7 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   // Dismissing More preserves the previous canonical content route.
   await page.evaluate(()=>{
     // Call the real delegated navigation handler already bound by app.js.
-    // A bare import('/portal-v2/router.js') is a different ES module than
+    // Importing a query-less router path would create a different module than
     // app.js's query-pinned router, and cannot open the real UI.
     const roadmap=document.querySelector('.sidebar .nav [data-nav-target="roadmap"]');
     if(!roadmap)throw new Error('CANONICAL_ROADMAP_TRIGGER_MISSING');
