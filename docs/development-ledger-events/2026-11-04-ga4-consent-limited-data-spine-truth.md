@@ -6,3 +6,7 @@
 - Eerste uitkomst na implementatie moet `CONSENT_LIMITED/STALE` zijn zolang de nieuwste echte v15-receipt <=8 uur geldig is; bij verlopen bewijs weer `RECOVERY_DUE/STALE`, nooit schijn-versheid.
 - Beveiliging: canonical service-role-only ACL, ongewijzigde 10-source scope, de bestaande echte interne datum en CAS-bronowner.
 - Live-afsluiting: exact-head Required/CodeQL/full BRAIN, beschermde merge, native Supabase migratie-applied+schema ACL, daadwerkelijke view-readback, natuurlijke originele #42 en Brain-learning receipt. Geen autonome factuur of betaalde branch zonder toestemming.
+
+## First Time Right admission negative (original Required run 41803279017)
+- De echte oorspronkelijke hygiene / admission job wees de eerste PR-body correct af met `PR_MACHINE_METADATA_INVALID:SUPERSEDES_INVALID`. Oorzaak: `Supersedes: none — ...` is ongeldig voor de streng geparseerde oorspronkelijke machine-header; #5400 is reeds gemerged en géén superseded kandidaat.
+- Binnen dezelfde originele PR #5404 is de pseudo-header verwijderd en vervangen door een gewone menselijke voorgangerverwijzing, zonder de machine-admission-gate af te zwakken. Deze append-only leerregistratie veroorzaakt een nieuwe exacte-head Required/CodeQL-controle. Geen productie-of-migratiewijziging uitgevoerd vóór bescherming.
