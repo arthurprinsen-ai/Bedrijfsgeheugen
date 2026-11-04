@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'portal-v2/**'
+      - 'tests/integration/portal-v2-production-*.spec.js'
+      - 'tests/integration/portal-v2-mobile-shell.spec.js'
+      - '.github/workflows/portal-v2-production-dom-readback.yml'
   workflow_dispatch:
     inputs:
       approved_pr_number:
@@ -55,6 +58,39 @@ jobs:
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${PRODUCTION_SHA_OVERRIDE:-$GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Pin already-published Netlify SHA only for exact evidence-only push
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          # A test-only or native-workflow change must be reproved against the
+          # genuinely published runtime, not a made-up unpublished main SHA.
+          # Runtime source changes are not eligible: they MUST wait for exact
+          # GITHUB_SHA deployment via the unmodified immutable release gate.
+          payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${PORTAL_ALIAS_URL}/release.json" || true)"
+          published_sha="$(node -e 'try {const r=JSON.parse(process.argv[1]);process.stdout.write(String(r.commit_ref||""));}catch{}' "$payload")"
+          if ! [[ "$published_sha" =~ ^[0-9a-f]{40}$ ]] || [ "$published_sha" = "$GITHUB_SHA" ]; then
+            echo "NO_EVIDENCE_ONLY_OVERRIDE:main_exact_or_published_sha_unavailable"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor "$published_sha" "$GITHUB_SHA"; then
+            echo "PUBLISHED_SHA_NOT_ANCESTOR:wait_for_exact_main:$GITHUB_SHA"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$published_sha" "$GITHUB_SHA")"
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            case "$file" in
+              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              *)
+                echo "RUNTIME_DRIFT_NOT_ELIGIBLE_FOR_PUBLISHED_SHA:$file"
+                exit 0
+                ;;
+            esac
+          done <<< "$changed"
+          echo "PORTAL_EXPECTED_SHA=$published_sha" >> "$GITHUB_ENV"
+          echo "PORTAL_PUBLISHED_CI_ONLY_VERIFIED=true" >> "$GITHUB_ENV"
+          echo "ORIGINAL_BROWSER_EVIDENCE_ONLY_PINNED:published=$published_sha:main=$GITHUB_SHA"
+
       - name: Verify published SHA override is strictly scoped to CI and evidence
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -64,8 +100,12 @@ jobs:
             echo "EXACT_MAIN_PRODUCTION_TARGET:$GITHUB_SHA"
             exit 0
           fi
-          if [ "$EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
-            echo "::error::Production SHA override requires main workflow_dispatch with valid commit SHA."
+          if { [ "$EVENT_NAME" != "workflow_dispatch" ] && [ "$EVENT_NAME" != "push" ]; } || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Published source SHA pin requires approved main workflow_dispatch or original evidence-only push."
+            exit 1
+          fi
+          if [ "$EVENT_NAME" = "push" ] && [ "${PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false}" != true ]; then
+            echo "::error::Published source SHA pin on push must be independently scoped against exact runtime history."
             exit 1
           fi
           if ! git merge-base --is-ancestor "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA"; then
@@ -76,7 +116,7 @@ jobs:
           while IFS= read -r file; do
             [ -n "$file" ] || continue
             case "$file" in
-              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|AGENTS.md|.agents/skills/*|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
               *)
                 echo "::error::Runtime source changed after selected production SHA: $file"
                 exit 1

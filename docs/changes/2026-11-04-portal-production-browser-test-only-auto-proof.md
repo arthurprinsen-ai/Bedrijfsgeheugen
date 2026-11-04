@@ -1,0 +1,15 @@
+# Original Portal production browser: close test-only missing-trigger gap
+
+## Source evidence
+- Original Portal test selector candidate [PR #5412](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5412) protected merged to `e92994d4d526cef37b000b80aeb6b26616fd2609`, exact-head Required #41834675351 and CodeQL #41834675108 PASS.
+- The last original independent browser run [#41832239828](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41832239828) on the previous release delivered 14 PASS/1 FAIL/1 SKIP, only due to `more.locator('summary')` matching 16 nested native summaries. PR #5412 corrected exactly that test to unique `:scope > summary`; the original workflow did not rerun because original `on.push.paths` only contained `portal-v2/**`. Therefore **no independent browser success proof exists for the test correction**, even though the source tests and protected merge pass.
+- Original Netlify production remains a previously published exact SHA; test-only and learning-only changes need browser verification of the actually deployed immutable runtime, not fake `main` release identity.
+
+## Single original-workflow fix
+1. Add existing production Playwright spec path `tests/integration/portal-v2-production-*.spec.js` and the original workflow YAML to its original `on.push.paths` event. No new workflow, scheduler, runner, deployment or publication writer.
+2. For a trusted protected-main `push` only, read the original canonical `https://www.bedrijfsgeheugen.nl/release.json` manifest and select the already-published SHA **only when that SHA is a protected-main ancestor and every intervening file is provably CI/documentation/source-evidence only**. This includes canonical `AGENTS.md`, `.agents/skills/*`, the migration history lock and prior readback-related test/ledger files; it does **not** include any Portal JS/CSS or Netlify runtime code. Check again in the original strict SHA verification step.
+3. Actual runtime edits are not eligible for published-SHA reuse; original workflow then demands an exact freshly deployed main SHA. The existing immutable Netlify deploy readback, canonical browser-release pin, original full Playwright, full role gates and approved visual baselines remain mandatory and unskipped.
+4. New static BRAIN regression verifies paths, both strict identical allowlists, immutable ancestry, original browser and no runtime bypass. Preserves previous original Production DOM failure fingerprint separately `portal|ux|production-dom-progressive-disclosure-parity|20261104-v1`; this failure is only closed by original independent 15/15 (with documented intentional skips) provider readback.
+
+## Acceptance / status
+This is a code candidate under the existing Portal delivery owner. Require original protected Required/CodeQL, original production browser workflow run automatically after this change, exact existing Netlify published SHA, no 403 waiver, original BRAIN/terminal independent checks. Do not mark true human task usability or customer value proven.
