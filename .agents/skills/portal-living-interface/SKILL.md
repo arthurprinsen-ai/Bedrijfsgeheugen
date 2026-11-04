@@ -159,3 +159,10 @@ Original Portal Playwright run 41844746771 is independently green (15 passed, 1 
 - Portal owner must preserve one canonical router, one visible modal, focus trap, source-route restoration, keyboard and inert behavior; every relevant change must run original mobile and production readback on exact published SHA.
 - Keep first-time entrepreneur, unassisted mobile usability, physical VoiceOver/TalkBack and WCAG 2.2 AA as separate OPEN evidence obligations until observed. Require five-second comprehension, one primary action, plain language, verified outcomes and mobile completion without guidance. Do not fabricate observations or mark these green based on CI.
 - Every failure: incident fingerprint, owner, source evidence, root cause, safe fix, regression, provider readback, and Brain/portal learning update. No parallel executor or weakened protection.
+
+
+### Agentuitvoering: oorspronkelijke Portal V2-owner
+- Bestaande Portal V2 UX/Engineering agent blijft exclusieve eigenaar. Geen nieuwe executor, scheduler of router.
+- Alleen groen bij beschermde merge, exacte Netlify productie-SHA en originele Chromium-readback. Gebruik 5-secondenbegrip, één primaire actie, duidelijke taal, bewezen resultaat en zelfstandig mobiel taakvoltooien als aparte menselijke acceptatiecriteria.
+- VoiceOver/TalkBack, WCAG 2.2 AA en echte ondernemersobservaties blijven OPEN totdat onafhankelijk getest; registreer succespercentage, taakduur en fouten zonder verzonnen metingen.
+- Elke afwijking: ONE BRAIN fingerprint, bewijs, oorzaak, eigenaar, veilige fix, regressie, productie-readback en preventieregel; leerregel naar bestaande skill en portaal.
