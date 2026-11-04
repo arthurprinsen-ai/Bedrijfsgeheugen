@@ -12,9 +12,11 @@ const clean=x=>String(x??'').replace(/[\x00-\x1f]/g,' ').slice(0,160);
 
 export function classifyActionsRun(run){
  if(!run||!id(run.id)||!id(run.workflow_id)||!id(run.run_attempt)||
-    !SHA.test(run.head_sha||'')||!['completed'].includes(run.status)||
-    typeof run.conclusion!=='string')return {state:'SOURCE_RUN_INVALID'};
+    run.status!=='completed'||typeof run.conclusion!=='string')
+    return {state:'SOURCE_RUN_INVALID'};
  if(!BAD.has(run.conclusion))return {state:'NO_NATIVE_FAILURE'};
+ // Terminal errors require an exact SHA; benign cancelled/neutral runs do not.
+ if(!SHA.test(run.head_sha||''))return {state:'SOURCE_RUN_INVALID'};
  const url='https://github.com/'+REPO+'/actions/runs/'+run.id;
  // The provider run+attempt is immutable; a rerun is a distinct occurrence.
  const fingerprint='github|actions|workflow-'+run.workflow_id+'|'+run.conclusion;
