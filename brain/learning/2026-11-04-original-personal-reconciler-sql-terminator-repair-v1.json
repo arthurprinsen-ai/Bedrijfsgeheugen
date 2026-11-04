@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "fingerprint": "powerhouse|supabase-preview|original-personal-reconciler-sql-missing-terminator|20261104-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_owner": "original-ONE-BRAIN-content-reconciler",
+  "origin": "Original protected PR #5382 merged as main 909c015ab929dca4d0b5091ad0e346628a306e82",
+  "status": "PATCH_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed_error": {
+    "provider": "native Supabase Preview of original PR #5381 after update to current main",
+    "sqlstate": "42601",
+    "stage": "REVOKE",
+    "source_version": "20261104052001",
+    "root_cause": "Missing semicolon on closing $function$ delimiter before existing service-only ACL"
+  },
+  "correction": "Source preserving one-character migration terminator correction on original merged version, no new migration version, permission, content, provider side-effect or scheduler changes.",
+  "prevention": "Exact original SQL parser/preview must pass; BRAIN source regression rejects function bodies missing semicolon before REVOKE; original owner re-evaluates exact SQL terminator and service-only privileges on protected PR and native production provider.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "SQL_FUNCTION_TERMINATOR_MISSING_BEFORE_ACL",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "terminal_rule": "Original source-owner lease, Required/BRAIN/CodeQL/native Supabase Preview, protected merge, actual production schema_migrations 20261104052001 and pg_get_functiondef+service-only ACL readback, original natural content loop and true provider publication proof separate. No fake GREEN.",
+  "parallel_scheduler_created": false
+}
