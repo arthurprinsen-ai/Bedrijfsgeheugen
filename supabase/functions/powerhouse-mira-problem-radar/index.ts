@@ -5,6 +5,7 @@ import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource } from '../_shared/personal-observational-source-routing.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
+import { isSpreadsheetBusinessContext } from '../_shared/mira-business-spreadsheet-context.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -14,7 +15,7 @@ const topic=(text:string)=>{
  if(/offerte|salesopvolging|follow.up|acquisitie.*opvolging/.test(t))return'offertes-zonder-opvolging';
  if(/eigenaar.*besluit|directeur.*goedkeur|directeur.*besluit|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
  if(/kennisoverdracht|kennisborg|sleutelmedewerker|sop|werkinstruct|afspraak.*hoofd/.test(t))return'kennisoverdracht';
- if(/excel|spreadsheet|verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
+ if(isSpreadsheetBusinessContext(t)||/verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
  if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
  if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
  if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
@@ -110,7 +111,7 @@ Deno.serve(async(req:Request)=>{
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    // Recognition is validated differently per lane: a real matched daily-life
    // source should not need entrepreneur vocabulary to reach the SAME 0.72 floor.
-   const personal=personalTopic?1:/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|excel|proces|klant)/.test(all)?1:0.6;
+   const personal=personalTopic?1:(/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|proces|klant)/.test(all)||isSpreadsheetBusinessContext(all))?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
    const evidence=clamp(Number(x.score)||0.5);
    const publication=evaluateMiraPublicationFreshness({providerPublishedAt:x.publishedAt,title,excerpt,observedAt:Date.now()});
