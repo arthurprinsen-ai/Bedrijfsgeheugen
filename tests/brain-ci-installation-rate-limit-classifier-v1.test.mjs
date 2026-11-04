@@ -62,7 +62,8 @@ test('the original protected workflow consumes the helper and keeps the two requ
  assert.match(file,/const transientApiFailure = error => classifyGitHubAdmissionReadError\(error\)\.retry_immediately/);
  assert.match(file,/failure_fingerprint: firstTimeRightFailure\?\.fingerprint \|\| classifyGitHubAdmissionReadError\(error\)\.fingerprint/);
  assert.match(file,/provider_recovery: classifyGitHubAdmissionReadError\(error\)\.next_action/);
- assert.match(file,/const state = classifyGitHubAdmissionReadError\(error\)\.state/);
+ assert.match(file,/const state = String\(error\?\.message \|\| ''\)\.startsWith\('FIRST_TIME_RIGHT_PREBUILD_BLOCKED:'\)/);
+ assert.match(file,/\? 'FIRST_TIME_RIGHT_PREBUILD_BLOCKED' : classifyGitHubAdmissionReadError\(error\)\.state/);
  assert.match(file,/Require canonical learning evidence at protected admission/);
  assert.match(file,/Enforce canonical integration closure at protected admission/);
  assert.doesNotMatch(file,/retry_immediately=true|sleep\(10000\)|sleep\(60000\)/);
