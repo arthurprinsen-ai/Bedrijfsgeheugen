@@ -124,3 +124,11 @@ test('source-first preparation executes before original external social delivery
  assert.ok(source.indexOf("status:'ready_for_final_recheck'") < source.indexOf('let instagramMetaConfig:MetaInstagramConfig'));
  assert.doesNotMatch(loop,/cron\.schedule\(/);
 });
+
+test('early preparation fails closed if original company OAuth fields are not proven',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(source,/company\.organization_capability_verified!==true/);
+ assert.match(source,/company\.organization_write_scope_authorized!==true/);
+ assert.match(source,/ORIGINAL_COMPANY_OAUTH_PREPARATION_UNVERIFIED/);
+ assert.match(source,/status:'repair_before_due'/);
+});
