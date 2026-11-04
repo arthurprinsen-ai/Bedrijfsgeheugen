@@ -10,3 +10,5 @@
 - Non-actions: no changes to published runtime, social publisher, OAuth, Supabase tables, protected checks, required gates or role access; no tests skipped.
 - Regression: same five original tests, original BRAIN backend/Portal/Automation full suite, protected release, production publisher exact SHA, original terminal readback.
 - Current lifecycle: CODE_CANDIDATE until exact HEAD and protected merge; BRAIN run/terminal failure remains OPEN independently.
+
+- Required #41806973651 admitted metadata but canonical learning historical replay failed on a **second** previously corrected skill: `powerhouse-delivery-self-optimization` has the mandatory incident marker but still appeared in `loop_debt_baseline`. A default-branch code search for the exact marker matched 15 skill documents; cross-check with the 32-item remaining baseline showed **only this one overlap**. Remove it from debt (new count 31), keeping mandatory protocol fail-closed. This is real debt reduction, not suppression of a failure. Original failure preserved in GitHub.
