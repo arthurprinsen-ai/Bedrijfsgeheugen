@@ -60,5 +60,24 @@
     "provider_impacts": "not verified until original external provider readback",
     "actual_revenue": "UNKNOWN"
   },
-  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL/native Supabase Preview + protected merge + original production migration applied + original native source/ACL function readback + TWO successful real natural #171 runs with source receipt. Close only this integration gap; keep all historical provider incidents and unrelated active blockers open."
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL/native Supabase Preview + protected merge + original production migration applied + original native source/ACL function readback + TWO successful real natural #171 runs with source receipt. Close only this integration gap; keep all historical provider incidents and unrelated active blockers open.",
+  "evidence": {
+    "original_prod_source": "2026-11-04 original Supabase production pg_get_functiondef and original powerhouse_ops.runtime_scheduler_run_evidence_v1 readback",
+    "existing_recovery_aggregate": {
+      "triage_completed": 307,
+      "explicitly_unresolved": 306,
+      "provider_resolution": "NOT_PROVEN_FROM_TRIAGE_RECORD"
+    },
+    "existing_original_scheduler": 171,
+    "original_mux_terminal_receipt_prechange": {
+      "task": "terminal-autonomous-reconcile",
+      "ok": true,
+      "recovery_review_truth": "MISSING"
+    },
+    "regression_tests": [
+      "tests/brain-original-heartbeat-native-recovery-proof-20261104.test.mjs"
+    ],
+    "external_provider_outcomes": "NOT_PROVEN",
+    "production_after_release": "PENDING_INDEPENDENT_POSTDEPLOY_READBACK"
+  }
 }
