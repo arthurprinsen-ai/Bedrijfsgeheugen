@@ -16,5 +16,12 @@
     ],
     "production_proof_required": true
   },
-  "outcome": "PR candidate only; protected CI, merge, Netlify build and independent production readback outstanding."
+  "outcome": "PR candidate only; protected CI, merge, Netlify build and independent production readback outstanding.",
+  "compiler": {
+    "failure_class": "PRODUCTION_RELEASE_IDENTITY_UNAVAILABLE",
+    "scope": "NETLIFY_NATIVE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 3
+  }
 }
