@@ -471,10 +471,35 @@ Deno.serve(async (req) => {
       stepResults.push({name:'targeted-generation',ok:false,degraded:true,reason:'BOOTSTRAP_MAY_STILL_BE_RUNNING'});
     }
 
-    // Existing provider publisher already supports exact channel selection.
-    // It is called separately for each social channel, in parallel with blog
-    // and engagement. Each call keeps its own auth, identity, media, uniqueness
-    // and provider-proof gates. No new sender or scheduler is introduced.
+    // First Time Right: prepare within the ORIGINAL publisher, BEFORE its
+    // external-create mode; independent editorial and provider-auth preflight
+    // can run up to 12h early. Source generation/router always ran above,
+    // so a fixable condition never disables the original daily executor.
+    const prepublishChannels=['linkedin_personal','linkedin_company','instagram_company'];
+    const prepublishResults=await Promise.all(prepublishChannels.map(async channel=>{
+      const response=await invoke(url,expected,'powerhouse-social-publisher',
+        {runDate,mode:'prepare_only',channels:[channel]});
+      const match=Array.isArray(response?.body?.results)
+        ?response.body.results.find((item:any)=>item?.channel===channel):null;
+      const prepared=response.ok===true
+        &&match?.status==='ready_for_final_recheck'
+        &&match?.contract==='original-social-first-time-right-prepare-v1'
+        &&match?.provider_create===false;
+      return {channel,prepared,
+        status:clean(match?.status)||'NO_CONTENT_READY',
+        error:prepared?null:clean(match?.reason)||clean(response?.error)||'PREPUBLISH_PREPARATION_NOT_COMPLETE',
+        http:response.http};
+    }));
+    const readiness=new Map(prepublishResults.map(x=>[x.channel,x]));
+    stepResults.push(...prepublishResults.map(item=>({
+      name:'original-first-time-right-prepublish:'+item.channel,
+      ok:item.prepared,degraded:!item.prepared,skipped:!item.prepared,
+      error:item.error,http:item.http
+    })));
+
+    // Existing provider publisher is called only for a channel that was
+    // pre-reviewed in THIS same original tick. It performs another independent
+    // review before any create; an ACK/reconciliation-only channel is not sent.
     const deliveryLanes=[
       ['linkedin_personal','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_personal']}],
       ['linkedin_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_company']}],
@@ -483,6 +508,16 @@ Deno.serve(async (req) => {
       ['linkedin_engagement','powerhouse-social-publisher',{runDate,mode:'cockpit_autopilot'}]
     ] as const;
     const dispatchResults=await Promise.all(deliveryLanes.map(async ([channel,name,payload])=>{
+      if(prepublishChannels.includes(channel)){
+        const readinessForChannel=readiness.get(channel);
+        if(readinessForChannel?.prepared!==true){
+          // NO external provider create. The original hourly runner keeps
+          // preparing the SAME bounded obligation; all other lanes proceed.
+          return {name:name+':'+channel,channel,ok:true,skipped:true,
+            degraded:true,error:'PREFLIGHT_NOT_READY_NO_SEND',
+            reason:readinessForChannel?.status||'PREPARATION_NOT_PROVEN'};
+        }
+      }
       const result=await invoke(url,expected,name,payload);
       return {...result,name:name+':'+channel,channel};
     }));
