@@ -1,0 +1,87 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "fingerprint": "powerhouse|heartbeat|duplicate-watchdog-and-reconciliation-schedulers-171-184|20261104-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN / Powerhouse recovery controller / Heartbeat runtime-mux coowner",
+  "status": "CANDIDATE_NEEDS_OWNER_PROTECTED_RELEASE",
+  "independent_production_baseline": {
+    "prod_migration": "20261104065001 original recovery control-plane native cron job",
+    "cron171": {
+      "active": true,
+      "schedule": "1-59/5,3-59/5,4-59/5 * * * *",
+      "tasks": [
+        "execution-resilience-watchdog",
+        "reconciliation-worker",
+        "terminal-autonomous-reconcile"
+      ],
+      "latest_tasks_ok": true
+    },
+    "cron184": {
+      "active": true,
+      "schedule": "*/15 * * * *",
+      "tasks": [
+        "execution-resilience-watchdog",
+        "reconciliation-worker",
+        "powerhouse_recovery_review_truth_v1"
+      ],
+      "natural_first_runid": 145511,
+      "status": "succeeded"
+    },
+    "queue_truth": {
+      "review_completed": 307,
+      "explicitly_unresolved": 306,
+      "provider_success_count": null
+    }
+  },
+  "root_cause": "The original #171 already runs the exact same watchdog and reconciliation worker each 5 min; the original #184 additionally re-invokes both every 15 min using a different advisory lock. Row claims are idempotent but work is redundant; terminal task receipts lacked provider/triage distinction.",
+  "hypothesis": "Original #171 terminal-autonomous-reconcile can carry the existing private aggregate proof, making #184 unnecessary and preserving watchdog/worker coverage.",
+  "mechanism": "Modify only original service-role-only runtime mux task to capture JSONB receipt for existing terminal task, validate original contract and attach recovery_review_truth without pretending provider outcome. Retire only native #184 exact named/command schedule after verifying canonical #171 and original recovery owner identity. Existing callable recovery controller remains available for manual diagnostic service proof; no new executor.",
+  "baseline_metric": {
+    "duplicate_active_cron_owners_for_watchdog_worker": 2,
+    "independent_provider_recovery_verifications": 0,
+    "original_unresolved_count": 306
+  },
+  "success_metric": {
+    "duplicate_active_cron_owners_for_watchdog_worker": 1,
+    "terminal_receipt_has_aggregate_truth": true,
+    "provider_recovery_claims_from_triage": 0,
+    "original_runtime_tasks_success_after_release": true
+  },
+  "experiment": {
+    "mode": "single_writer_guarded_canary",
+    "control": "compare original natural scheduler #171 receipts before and after, require 2 natural slots >=5 minutes apart",
+    "guardrails": [
+      "source-owner lease",
+      "current main parity",
+      "SQL preview",
+      "CodeQL",
+      "Required/BRAIN",
+      "exact cron #184 signature",
+      "never disable canonical #171",
+      "no provider replay",
+      "public ACL unchanged"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-single-recovery-scheduler-proof-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-single-recovery-scheduler-proof-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-single-recovery-scheduler-proof-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "RECOVERY_OWNER_EXECUTION_DUPLICATED",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "prevention": "New schedule registrations must check task overlap across existing scheduler, not just command/name uniqueness. If same worker already runs, prefer instrument existing path. Close only after native production cron/readback and two natural task receipts; separately retain 306 historical provider outcomes EVIDENCE_DUE.",
+  "terminal_rule": "Source migration 20261104073000 applied in original production; original #171 ACTIVE, #184 ABSENT, no other duplicate watchdog worker scheduler; public mux service-only; original natural #171 terminal receipts carry exact 306 source count and provider_proven false; skill, portal and Brain lesson updated, source incident CAS closure only with proof."
+}
