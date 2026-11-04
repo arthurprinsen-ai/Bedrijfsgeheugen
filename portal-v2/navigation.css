@@ -80,3 +80,27 @@
 
 /* Final responsive authority: hamburger only when the persistent sidebar is unavailable. */
 @media(max-width:1180px){.portal-hamburger{display:inline-flex!important}}
+
+
+/* UX focus V1: collapsible canonical sidebar, never a copied or reduced page registry. */
+.sidebar .nav details.portal-single-nav-group{display:block;padding:3px 0}
+.sidebar .nav details.portal-single-nav-group>summary{display:flex;align-items:center;justify-content:space-between;min-height:43px;padding:10px 12px;list-style:none;cursor:pointer;color:#344c59;letter-spacing:.012em;font-size:12px;font-weight:800;text-transform:none;border-radius:11px}
+.sidebar .nav details.portal-single-nav-group>summary::-webkit-details-marker{display:none}
+.sidebar .nav details.portal-single-nav-group>summary:after{content:'+';font-size:18px;font-weight:500;color:#68888b}
+.sidebar .nav details.portal-single-nav-group[open]>summary:after{content:'−'}
+.sidebar .nav details.portal-single-nav-group>summary:hover{background:#f1f7f7}
+.sidebar .nav details.portal-single-nav-group>summary:focus-visible{outline:3px solid #2a8785;outline-offset:-3px}
+.sidebar .nav details.portal-single-nav-group[open]>summary{color:#145957}
+.sidebar .nav details.portal-single-nav-group>button{margin:2px 0 2px 9px;width:calc(100% - 9px)}
+.portal-mobile-primary{display:none}
+@media(max-width:760px){
+ body:has(.portal-mobile-primary){padding-bottom:calc(84px + env(safe-area-inset-bottom))!important}
+ .portal-hamburger{display:none!important}
+ .portal-mobile-primary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;position:fixed;inset:auto 0 0;z-index:90;background:rgba(255,255,255,.97);border-top:1px solid #dbe7eb;box-shadow:0 -10px 28px rgba(16,40,51,.08);padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right));backdrop-filter:blur(16px)}
+ .portal-mobile-primary button{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;min-height:51px;min-width:0;border:0;border-radius:12px;background:transparent;color:#526773;font:600 11px/1.2 system-ui,sans-serif;cursor:pointer}
+ .portal-mobile-primary button.is-current{background:#e7f4f0;color:#176354;font-weight:800}
+ .portal-mobile-primary-icon{font-size:24px;line-height:1}
+ .portal-mobile-primary button:focus-visible{outline:3px solid #268f7f;outline-offset:1px}
+ body:has(.allpages.open) .portal-mobile-primary{visibility:hidden;pointer-events:none}
+}
+@media(prefers-reduced-motion:reduce){.portal-mobile-primary{backdrop-filter:none}}
