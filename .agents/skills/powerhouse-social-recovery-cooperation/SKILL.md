@@ -5,6 +5,15 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+## 4 november 2026 — ontbrekende SQL-terminator vóór afgeschermde ACL is geen herstel
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. De oorspronkelijke ONE BRAIN content-reconciler bewaakt iedere SQL-functiemigratie met een zelfstandig statement-einde: `end;\n$function$;` vóór `REVOKE` en `GRANT`. PR #5382 was bronmatig gemerged, maar de native Supabase Preview van de volgende PR #5381 ontdekte SQLSTATE 42601 omdat in de originele migratie `20261104052001` de puntkomma na `$function---
+name: powerhouse-social-recovery-cooperation
+description: Use for every stalled Powerhouse social/blog publication, provider proof gap, fresh-source shortfall or delivery regression that requires specialists to cooperate without splitting authority.
+---
+
+ ontbrak. Het gevolg is een echte productie-/preview-uitrolblokkade, nooit een verleende nieuwe providerautorisatie of succesvol gepubliceerde LinkedIn-post. Oorspronkelijke eigenaar maakt uitsluitend de minimale veilige bronreparatie, voegt de negatieve regressietest toe, behoudt service_role-only en gaat via oorspronkelijke Required/BRAIN/CodeQL/Supabase Preview/protected merge en productie-readback. Herhaal fout alleen als occurrence onder dezelfde fingerprint, meet effect via native migratieledger en originele publicatie-URL/ID; geen status-groen, tweede scheduler, writer of fallback. Bron: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
 ## BRAIN backend regression: NEVER disable blog export JWT to match stale test (2 November 2026)
 
 - Original full BRAIN exact-head run 41409216287 failed 32 tests, including `tests/brain-daily-blog-edge-config-registration-v1.test.mjs`. Its outdated combined test expected both blog functions to have `verify_jwt=false`.
