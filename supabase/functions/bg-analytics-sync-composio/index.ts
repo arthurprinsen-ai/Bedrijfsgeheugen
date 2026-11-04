@@ -37,7 +37,9 @@ async function originalGa4EmptyRepair(db:any,day:string,sourceRoute:string,repor
     identity.p_business_period=day;
     ({data:ob,error}=await db.rpc('brain_create_obligation',identity));
     if(error||!ob)throw new Error('GA4_RECURRENCE_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
-   }else{
+   }
+   // A day-scoped recurrence may itself already be terminal: never reopen it.
+   if(['FULFILLED','CANCELLED','BREACHED'].includes(ob.state)){
     return {obligation_id:ob.id,obligation_state:ob.state,obligation_version:ob.version,terminal_protected:true,cas_retries:attempt};
    }
   }
