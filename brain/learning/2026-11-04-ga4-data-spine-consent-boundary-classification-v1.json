@@ -32,5 +32,23 @@
     "next natural original #42 confirms update and age expiration fallback",
     "ONE BRAIN/skill/ledger readback; no provider data fabricated"
   ],
-  "source": "supabase/migrations/20261104090000_ga4_consent_limited_data_spine_truth_v1.sql"
+  "source": "supabase/migrations/20261104090000_ga4_consent_limited_data_spine_truth_v1.sql",
+  "evidence": {
+    "original_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5400",
+    "original_protected_merge_sha": "3f9ab2d13c21ee3ac8dd3822e10efac1a2c70fb8",
+    "live_edge_version": 15,
+    "original_runtime_request_id": 20617,
+    "native_ga4_sync_run_id": "ada3433d-8dfd-4be9-b21a-d08a21d28eca",
+    "provider_independent_sessions": 0,
+    "provider_independent_events": 0,
+    "consented_first_party_human_event_present": false,
+    "actual_ga4_freshness": "STALE",
+    "original_operational_state": "RECOVERY_DUE",
+    "tested_proposed_operational_state": "CONSENT_LIMITED",
+    "live_migration_state": "CANDIDATE_NOT_LIVE_PROVEN",
+    "tests": [
+      "tests/brain-ga4-consent-limited-data-spine-state-20261104.test.mjs"
+    ],
+    "source_data_not_fabricated": true
+  }
 }
