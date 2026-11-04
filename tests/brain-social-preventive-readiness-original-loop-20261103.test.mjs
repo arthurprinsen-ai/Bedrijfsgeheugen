@@ -132,3 +132,14 @@ test('early preparation fails closed if original company OAuth fields are not pr
  assert.match(source,/ORIGINAL_COMPANY_OAUTH_PREPARATION_UNVERIFIED/);
  assert.match(source,/status:'repair_before_due'/);
 });
+
+test('every original publisher entry requires this exact fresh source-first preparation before provider create',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(source,/if\(!prepareOnly\)\{/);
+ assert.match(source,/EXACT_SOURCE_FIRST_PREFLIGHT_REQUIRED/);
+ assert.match(source,/status:'deferred_to_original_preparation'/);
+ assert.match(source,/clean\(evidence\.text_sha256\)!==originalHash/);
+ assert.match(source,/ageMs>12\*60\*60\*1000/);
+ assert.ok(source.indexOf("status:'deferred_to_original_preparation'")<
+   source.indexOf("const dispatchReady=linkedinDispatchReadiness"));
+});
