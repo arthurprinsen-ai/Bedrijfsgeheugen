@@ -28,17 +28,32 @@ async function originalGa4EmptyRepair(db:any,day:string,sourceRoute:string,repor
  const identity={p_obligation_type:'MEASUREMENT_REPAIR',p_capability_id:'powerhouse-data-intake-learning-spine-v1',p_business_entity:'ga4-analytics',p_business_period:'ongoing',p_business_timezone:'Europe/Amsterdam',p_payload_sha256:await sha256('ga4-analytics|empty-success|stale-source|recovery-v1'),p_change_id:fingerprint,p_owner:owner};
  let {data:ob,error}=await db.rpc('brain_create_obligation',identity);
  if(error||!ob)throw new Error('GA4_CANONICAL_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
- if(['FULFILLED','CANCELLED','BREACHED'].includes(ob.state)){
-  identity.p_business_period=day;
-  ({data:ob,error}=await db.rpc('brain_create_obligation',identity));
-  if(error||!ob)throw new Error('GA4_RECURRENCE_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
+ // The original collector and Brain owner may race on the SAME canonical obligation.
+ // Retry only a proven CAS version conflict. Do not re-create, downgrade or replay any
+ // external GA4 observation; rebuild evidence from the latest canonical row every time.
+ for(let attempt=0;attempt<3;attempt++){
+  if(['FULFILLED','CANCELLED','BREACHED'].includes(ob.state)){
+   if(identity.p_business_period==='ongoing'){
+    identity.p_business_period=day;
+    ({data:ob,error}=await db.rpc('brain_create_obligation',identity));
+    if(error||!ob)throw new Error('GA4_RECURRENCE_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
+   }else{
+    return {obligation_id:ob.id,obligation_state:ob.state,obligation_version:ob.version,terminal_protected:true,cas_retries:attempt};
+   }
+  }
+  const historical=(ob.evidence&&typeof ob.evidence==='object'&&!Array.isArray(ob.evidence))?ob.evidence:{};
+  const evidence={...historical,status:'REPAIR_REQUIRED',latest_observation:report,fingerprint,owner,recovery_state:'PROVIDER_EMPTY_REQUIRES_ORIGINAL_OWNER',first_time_right:'NO_FAKE_OK',historical_zero_rows_not_traffic_proof:true,checkpoints:['independent GA4 provider totals and property readback','consent-aware site tag diagnostics','nonempty genuine source observation or independently confirmed no-data','protected regression, original runtime and Brain learning proof']};
+  const nextState=['RUNNING','BLOCKED'].includes(ob.state)?ob.state:'READY';
+  const {data:updated,error:transitionError}=await db.rpc('brain_transition_obligation',{p_obligation_id:ob.id,p_expected_version:ob.version,p_state:nextState,p_owner:owner,p_evidence:evidence});
+  if(!transitionError&&updated)return {obligation_id:updated.id,obligation_state:updated.state,obligation_version:updated.version,cas_retries:attempt};
+  const failure=String(transitionError?.message||'no updated obligation');
+  if(!failure.includes('STATE_VERSION_CONFLICT'))throw new Error('GA4_CANONICAL_REPAIR_CAS_FAILED:'+failure.slice(0,160));
+  if(attempt===2)throw new Error('GA4_CANONICAL_REPAIR_CAS_EXHAUSTED:STATE_VERSION_CONFLICT');
+  const {data:fresh,error:readError}=await db.from('brain_obligations').select('id,state,version,evidence,business_period').eq('id',ob.id).single();
+  if(readError||!fresh||fresh.id!==ob.id)throw new Error('GA4_CANONICAL_REPAIR_READBACK_FAILED:'+String(readError?.message||'canonical obligation missing or mismatched').slice(0,160));
+  ob=fresh;
  }
- const historical=(ob.evidence&&typeof ob.evidence==='object'&&!Array.isArray(ob.evidence))?ob.evidence:{};
- const evidence={...historical,status:'REPAIR_REQUIRED',latest_observation:report,fingerprint,owner,recovery_state:'PROVIDER_EMPTY_REQUIRES_ORIGINAL_OWNER',first_time_right:'NO_FAKE_OK',historical_zero_rows_not_traffic_proof:true,checkpoints:['independent GA4 provider totals and property readback','consent-aware site tag diagnostics','nonempty genuine source observation or independently confirmed no-data','protected regression, original runtime and Brain learning proof']};
- const nextState=['RUNNING','BLOCKED'].includes(ob.state)?ob.state:'READY';
- const {data:updated,error:transitionError}=await db.rpc('brain_transition_obligation',{p_obligation_id:ob.id,p_expected_version:ob.version,p_state:nextState,p_owner:owner,p_evidence:evidence});
- if(transitionError||!updated)throw new Error('GA4_CANONICAL_REPAIR_CAS_FAILED:'+String(transitionError?.message||'no updated obligation').slice(0,160));
- return {obligation_id:updated.id,obligation_state:updated.state,obligation_version:updated.version};
+ throw new Error('GA4_CANONICAL_REPAIR_CAS_EXHAUSTED:UNEXPECTED');
 }
 async function originalGa4AggregateProbe(sa:{client_email:string;private_key:string},property:string,day:string){
  const token=await accessToken(sa);
