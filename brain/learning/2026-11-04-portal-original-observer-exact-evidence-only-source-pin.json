@@ -9,12 +9,14 @@
     "failure_class": "PORTAL_DOM_READBACK",
     "scope": "CI_PRODUCTION_BROWSER",
     "machine_enforceable": true,
-    "security_sensitive": true
+    "security_sensitive": true,
+    "repeat_count": 2
   },
-  "root_cause": "The original production browser readback allows a published immutable Netlify SHA only when all commits after it are CI/docs/evidence; original GitHub Actions failure observer source in tools/delivery was the sole current diff not listed in either of two otherwise identical fail-closed allowlists.",
-  "prevention_rule": "Permit only the exact original tools/delivery/github-actions-failure-observer.mjs file in both independent source-only gates, never a wildcard; preserve ancestor, protected PR, immutable published SHA and original real browser checks.",
+  "root_cause": "The original production browser readback allows a published immutable Netlify SHA only when all commits after it are CI/docs/evidence; original GitHub Actions failure observer source in tools/delivery was the sole current diff not listed in either of two otherwise identical fail-closed allowlists. After the next protected social FTR merge, three additional Edge-only files remained outside both exact Netlify browser-evidence allowlists; none is imported by the Portal V2 JS or Netlify functions, yet they prevented readback from reaching Playwright.",
+  "prevention_rule": "Permit only the exact original tools/delivery/github-actions-failure-observer.mjs file in both independent source-only gates, never a wildcard; preserve ancestor, protected PR, immutable published SHA and original real browser checks. In the same two gates, permit exactly Supabase Edge-only _shared/editorial-council-context.mjs, powerhouse-content-loop/index.ts and powerhouse-social-publisher/index.ts after source comparison. Do not allow arbitrary Supabase functions, Portal JS/CSS, Netlify runtime, secrets or release authority.",
   "evaluation": {
     "historical_replay": [
+      "tests/brain-original-portal-browser-readback-test-only-trigger-20261104.test.mjs",
       "tests/brain-original-portal-browser-readback-test-only-trigger-20261104.test.mjs"
     ],
     "shadow": [
@@ -30,7 +32,8 @@
       "Published Netlify SHA 5f613a1802c9ece6d4023beef1c6a058caf9db22; original protected #5417 main e5006bc747d8e40441c1b2f14431c105d24a8a4a"
     ],
     "current": [
-      "GitHub diff from published SHA to main contains one unallowlisted original observer file; exact permit-only candidate in original workflow, not yet merged or proven on original provider."
+      "GitHub diff from published SHA to main contains one unallowlisted original observer file; exact permit-only candidate in original workflow, not yet merged or proven on original provider.",
+      "Published Netlify commit 5f613a1802c9ece6d4023beef1c6a058caf9db22 differs from protected current main 47d3b667c413d9624b6702936f6ff415bc3fe3fb by 3 explicitly identified Supabase-only editorial/social function sources; original scope guard modified to recognize only these exact paths, no wildcard."
     ]
   },
   "customer_outcome": "NOT_PROVEN",
