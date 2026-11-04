@@ -514,6 +514,16 @@ jobs:
           JANITOR_CLEANUP_OUTCOME: ${{ steps.janitor_cleanup_reconcile.outcome }}
           JANITOR_READBACK_OUTCOME: ${{ steps.janitor_cleanup_readback.outcome }}
         run: node tools/delivery/janitor-incident-agent.mjs --observe
+      - name: Observe failed GitHub Actions in canonical ONE BRAIN
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Same original incident authority; never export these keys to untrusted PR code.
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BG_PORTAL_EU_SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL }}
+          BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY }}
+        run: node tools/delivery/github-actions-failure-observer.mjs --observe
       - name: Upload janitor evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -523,6 +533,7 @@ jobs:
             .artifacts/powerhouse-repository-janitor.json
             .artifacts/janitor-runtime-actions.json
             .artifacts/janitor-agent-incident.json
+            .artifacts/github-actions-failure-observer.json
             .artifacts/github-actions-ghost-reconcile.json
             .artifacts/powerhouse-ci-throughput.json
             .artifacts/powerhouse-ci-agent-priorities.json
