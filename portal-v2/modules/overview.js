@@ -179,8 +179,10 @@ function renderDirectievragen(root,state){
   houder=doc.createElement('div');houder.className='dv-houder';
   const insights=doel.querySelector('[data-legacy-overview-insights]');
   const lower=doel.querySelector('.lower');
-  if(insights?.parentNode===doel)insights.after(houder);
-  else if(lower?.parentNode===doel)lower.after(houder);
+  // Original overview model may be inside a native disclosure now.
+  // Use the true parent, preserving one logical model and human-readable UI.
+  if(insights?.parentElement)insights.after(houder);
+  else if(lower?.parentElement)lower.after(houder);
   else doel.appendChild(houder);
  }
  houder.innerHTML=directievragenMarkup(state);
