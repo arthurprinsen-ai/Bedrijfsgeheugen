@@ -271,7 +271,7 @@ begin
     'missing_provider_fingerprint','PROVIDER_RECORD_MISSING'
   );
 end;
-$function$
+$function$;
 
 -- Original production pg_proc.proacl before this migration: {postgres=X/postgres,service_role=X/postgres}.
 -- Preserve fail-closed internal-only execution exactly; never grant browser roles.
