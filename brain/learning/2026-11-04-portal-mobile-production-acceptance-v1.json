@@ -19,5 +19,20 @@
     "unassisted first-time entrepreneur task testing",
     "physical VoiceOver/TalkBack",
     "WCAG 2.2 AA independent audit"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-mobile-production-acceptance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-mobile-production-acceptance-v1.test.mjs"
+    ]
+  }
 }
