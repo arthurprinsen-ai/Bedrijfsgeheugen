@@ -44,3 +44,12 @@ test('reusing protected original mux does not expose incident details or executi
  assert.doesNotMatch(sql,/(?:jsonb_agg|raw_payload|external_id|customer_email)/i);
  assert.match(sql,/end\s*\$function\$;/);
 });
+
+test('historical migration version 64400 remains in original source after provider applied it',()=>{
+ const historical=readFileSync(new URL('../supabase/migrations/20261104064400_original_heartbeat_recovery_review_receipt_v1.sql',import.meta.url),'utf8');
+ assert.match(historical,/CREATE OR REPLACE FUNCTION public\.powerhouse_runtime_mux_task_v1/);
+ assert.match(historical,/REVOKE EXECUTE ON FUNCTION public\.powerhouse_runtime_mux_task_v1/);
+ assert.match(historical,/GRANT EXECUTE ON FUNCTION public\.powerhouse_runtime_mux_task_v1\(text,text,integer\) TO service_role;/);
+ assert.doesNotMatch(historical,/cron\.(?:schedule|unschedule)/);
+ assert.match(sql,/TERMINAL_RECONCILER_SOURCE_RECEIPT_MISSING/);
+});
