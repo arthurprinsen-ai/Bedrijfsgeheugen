@@ -207,9 +207,11 @@ test('preflight does not treat an ACK-only known side effect as a fresh publishi
 test('every daily channel has machine-readable original owner and independent terminal acceptance',()=>{
  const p=JSON.parse(readFileSync('brain/contracts/original-social-first-time-right-prepublish-v1.json','utf8'));
  assert.equal(p.contract,'original-social-first-time-right-prepublish-v1');
- assert.equal(p.authority.scheduler,140);
- assert.equal(p.authority.new_schedulers,0);
- assert.equal(p.authority.new_publishers,0);
+ assert.equal(p.scheduler,140);
+ assert.equal(p.publisher,'original-powerhouse-social-publisher');
+ assert.ok(p.safety.includes('no new writer, cron or duplicate system'));
+ assert.ok(p.safety.includes('preparation never calls provider create'));
+ assert.ok(p.safety.includes('final mode revalidates all independent gates'));
  for(const channel of ['linkedin_personal','linkedin_company','instagram','blog']){
    assert.ok(p.channel_closure[channel]?.ready);
    assert.ok(p.channel_closure[channel]?.result);
