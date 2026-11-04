@@ -7,7 +7,7 @@ const testSection=code.slice(code.indexOf('// HTTP200 with zero returned rows'),
 test('historical GA4 HTTP200 and zero provider rows never create a fake success receipt',()=>{
  assert.ok(testSection.includes('if(rows.length===0)'));
  assert.match(testSection,/status:'NO_SOURCE_DATA'/);
- assert.match(testSection,/status:'error',fout:reason/);
+ assert.match(testSection,/status:consentLimited\?'privacy_limited':'error',fout:reason/);
  assert.match(testSection,/await bewijs\(false,result,'EMPTY_SOURCE'\)/);
  assert.match(testSection,/return json\(result,503\)/);
  assert.ok(code.indexOf("if(rows.length===0)")<code.indexOf("  const headers=['date'"));
@@ -54,4 +54,22 @@ test('empty provider evidence is recorded separately and not silently accepted a
  assert.match(code,/event_type:eventType/);
  assert.match(testSection,/originalGa4EmptyRepair\(db,day,sourceRoute,observation\)/);
  assert.ok(testSection.indexOf('originalGa4EmptyRepair')<testSection.indexOf('await bewijs(false,result'));
+});
+
+test('consent-limited GA4 is explicitly classified, without treating private first-party metrics as Google traffic',()=>{
+ assert.match(testSection,/consentedHumanEvidence===false && aggregate!==null && !totalsPositive/);
+ assert.match(testSection,/GA4_CONSENT_LIMITED_NO_SOURCE_ROWS/);
+ assert.match(testSection,/status:consentLimited\?'privacy_limited':'error'/);
+ assert.match(testSection,/source_data_available:false/);
+ assert.match(testSection,/NO_CONSENT_BYPASS_NO_FORCED_GA4_TRACKING/);
+ assert.match(testSection,/recommended_existing_source:'privacy-minimized bg_interacties for CRO only'/);
+ assert.match(testSection,/consentLimited\?200:503/);
+ assert.match(testSection,/\.eq\('toestemming',true\)\.eq\('is_robot',false\)/);
+});
+test('when consented native signals exist but GA4 is empty, original source repair remains non-successful',()=>{
+ assert.match(testSection,/GA4_ZERO_DESPITE_CONSENTED_SITE_EVENTS/);
+ assert.match(testSection,/GA4_DIMENSION_QUERY_EMPTY_WITH_NONZERO_TOTAL/);
+ assert.match(testSection,/GA4_EMPTY_SOURCE_INDEPENDENT_EVIDENCE_DUE/);
+ assert.match(testSection,/consent_evidence_error/);
+ assert.match(testSection,/await bewijs\(false,result,/);
 });
