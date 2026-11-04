@@ -65,3 +65,26 @@ test('phase 2: original browser must use scoped has() selectors, not nested ance
  assert.doesNotMatch(csrd,/filter\(\{has:csrdNav\}\)/);
  assert.doesNotMatch(standalone,/filter\(\{has:trigger\}\)/);
 });
+
+// Regression from original production Playwright 41829936431 (14 PASS, 1 FAIL,
+// 1 SKIP): cards were present and visible OUTSIDE the entrepreneur disclosure,
+// because the original overview customizer moved blocks to its own root canvas.
+// This is source/runtime protection, not a substitute for actual browser proof.
+test('original overview reorder canvas, all customer data cards and customizer stay under optional entrepreneur disclosure',async()=>{
+ const [app,reorder]=await Promise.all([
+  load('portal-v2/app.js'),load('portal-v2/modules/overview-reorder.js')
+ ]);
+ assert.match(app,/\.v2overviewcustomizer','\.v2overviewcanvas'/);
+ assert.match(app,/const existing=\[\.\.\.main\.children\]\.filter/);
+ assert.match(app,/for\(const section of existing\)body\.appendChild\(section\)/);
+ assert.match(reorder,/function overviewDetailHost\(main\)/);
+ assert.match(reorder,/\[data-portal-overview-depth="v1"\] \.portal-overview-depth-content/);
+ assert.match(reorder,/function createCustomizer\(doc,main\)\{\s*const host=overviewDetailHost\(main\)/);
+ assert.match(reorder,/function buildCanvas\(doc,main,nodes\)\{\s*const host=overviewDetailHost\(main\)/);
+ assert.match(reorder,/if\(toolbar\.parentElement!==host\)host\.prepend\(toolbar\)/);
+ assert.match(reorder,/if\(canvas\.parentElement!==host\)/);
+ assert.match(reorder,/nodes\.forEach\(node=>\{if\(node\.parentNode!==canvas\)canvas\.append\(node\)/);
+ assert.doesNotMatch(reorder,/main\.append\(canvas\)/);
+ assert.match(reorder,/domainState\.subscribe/);
+ assert.match(reorder,/domainState\.set\(orderPath\(mode\),order\)/);
+});

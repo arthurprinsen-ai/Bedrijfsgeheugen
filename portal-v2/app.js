@@ -239,7 +239,8 @@ function mountOverviewDepthDisclosure(){
  // Do NOT move the single entrepreneur-facing next action or identity shell.
  const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities',
   '[data-legacy-overview-insights]','.legacy-complete','[data-bedrijfslek-intelligence]',
-  '[data-business-journey-overview]','.dv-houder'];
+  '[data-business-journey-overview]','.dv-houder',
+  '.v2overviewcustomizer','.v2overviewcanvas'];
  const existing=[...main.children].filter(node=>sections.some(selector=>node.matches(selector)));
  if(!existing.length)return;
  const details=document.createElement('details');

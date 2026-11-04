@@ -48,27 +48,43 @@ function addControls(doc,node,block,index,total,mode,size){
     +(mode==='desktop'? `<button type="button" data-overview-size aria-label="Wijzig breedte van ${block.label}" title="Wissel halve/volle breedte">${size==='half'?'↔ Vol':'↔ Half'}</button>`:'');
 }
 
+// The native entrepreneur overview is intentionally decision-first. The original
+// draggable canvas remains the ONE canonical renderer for tenant-owned blocks,
+// but must live inside the same progressive-disclosure container as its data.
+// If the canvas was mounted before the disclosure, reparent the exact same nodes;
+// never clone the canvas, reset its state or create another layout authority.
+function overviewDetailHost(main){
+  return main.querySelector('[data-portal-overview-depth="v1"] .portal-overview-depth-content')||main;
+}
+
 function createCustomizer(doc,main){
-  let toolbar=main.querySelector(':scope > .v2overviewcustomizer');
-  if(toolbar)return toolbar;
+  const host=overviewDetailHost(main);
+  let toolbar=main.querySelector('.v2overviewcustomizer');
+  if(toolbar){
+    if(toolbar.parentElement!==host)host.prepend(toolbar);
+    return toolbar;
+  }
   toolbar=doc.createElement('section');
   toolbar.className='v2overviewcustomizer';
   toolbar.setAttribute('aria-label','Overzicht aanpassen');
   toolbar.innerHTML='<button type="button" data-overview-edit aria-pressed="false">⚙ Overzicht aanpassen</button><span data-overview-help>Versleep blokken of gebruik de pijlen. Jouw indeling wordt per apparaat onthouden.</span><button type="button" data-overview-reset>Standaard herstellen</button>';
-  const topbar=main.querySelector(':scope > .topbar');
-  (topbar||main.firstElementChild)?.after?.(toolbar);
-  if(!toolbar.parentNode)main.prepend(toolbar);
+  const topbar=host.querySelector(':scope > .topbar');
+  (topbar||host.firstElementChild)?.after?.(toolbar);
+  if(!toolbar.parentNode)host.prepend(toolbar);
   return toolbar;
 }
 
 function buildCanvas(doc,main,nodes){
-  let canvas=main.querySelector(':scope > .v2overviewcanvas');
+  const host=overviewDetailHost(main);
+  let canvas=main.querySelector('.v2overviewcanvas');
   if(!canvas){
     canvas=doc.createElement('div');
     canvas.className='v2overviewcanvas';
-    const toolbar=main.querySelector(':scope > .v2overviewcustomizer');
-    (toolbar||main.querySelector(':scope > .topbar'))?.after(canvas);
-    if(!canvas.parentNode)main.append(canvas);
+    const toolbar=host.querySelector(':scope > .v2overviewcustomizer');
+    (toolbar||host.querySelector(':scope > .topbar'))?.after(canvas);
+    if(!canvas.parentNode)host.append(canvas);
+  }else if(canvas.parentElement!==host){
+    host.append(canvas);
   }
   nodes.forEach(node=>{if(node.parentNode!==canvas)canvas.append(node);});
   return canvas;

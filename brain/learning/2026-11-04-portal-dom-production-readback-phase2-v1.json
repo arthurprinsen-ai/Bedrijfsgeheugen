@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-04",
-  "status": "CODE_CANDIDATE_NOT_LIVE",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
   "fingerprint": "portal|ux|production-dom-progressive-disclosure-parity|20261104-v1",
   "owner": "original Portal V2 UX/QA and protected release",
   "compiler": {
@@ -10,10 +10,10 @@
     "scope": "PRODUCTION_BROWSER",
     "machine_enforceable": true,
     "security_sensitive": true,
-    "repeat_count": 2
+    "repeat_count": 3
   },
-  "root_cause": "Pre-rendered tenant panels remained as main direct children when the optional details moved only old static dashboard widgets; Playwright has selectors were incorrectly ancestor-qualified despite relative candidate scoping; one independent static public asset GET returned 403 and must remain fail-closed.",
-  "prevention_rule": "Before hiding original dashboard in native details collect exact direct main children with approved model markers and relocate once in DOM order; future dynamically inserted director questions follow actual parent's anchor; test scoped native details:has selector and real 44px More and business cards. Bound independent Netlify security-challenge-only asset GET retries and never admit 403 as success.",
+  "root_cause": "The original Playwright artifact for protected PR #5410 confirms Stand van je bedrijf, CMMI and Adoptiecurve are present OUTSIDE native <details>. The original modules/overview-reorder.js creates one customizer and v2overviewcanvas under main and re-parents original company model cards into that separate canvas. This second DOM move defeats pre-render and insert-before fixes. The other three original browser failures have independently passed.",
+  "prevention_rule": "The one original tenant-bound overview reorder canvas and its customizer must be inside the entrepreneur's native optional detail host regardless of initialization order. Original app disclosure must move preexisting root canvas/customizer, and original reorder builder must create or reparent under the same host. Preserve existing layout, domainState, keyboard, native routed pages and security. Only original protected production Playwright 15/15 (or explicit skip owned by existing contract) can independently resolve the failing browser gate.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
@@ -29,15 +29,18 @@
     "historical": [
       "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41804876350",
       "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41810228066",
-      "Published SHA 2a4ae8001b6f070ff205e4f106b1f487e2221149 with 4 failed browser assertions"
+      "Published SHA 2a4ae8001b6f070ff205e4f106b1f487e2221149 with 4 failed browser assertions",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41829936431",
+      "GitHub Actions original job 126574192284 / artifact 13322052181: 14 PASS, 1 FAIL, 1 SKIP; CMMI cards exist outside opened native details on Netlify deploy 6aeb258165847c70cfac8e96"
     ],
     "current": [
-      "Correct original source + original Playwright interaction, original source SHA/Netlify/browser pending"
+      "Correct original source + original Playwright interaction, original source SHA/Netlify/browser pending",
+      "Third phase original canvas and customizer reparent into native detail host, both render orders, same domainState and drag-and-drop; original browser acceptance pending"
     ]
   },
   "skill_targets": [
     "portal-living-interface"
   ],
   "customer_outcome": "NOT_PROVEN",
-  "independent_verification": "PENDING_ORIGINAL_PRODUCTION_BROWSER_AND_HUMAN_USER"
+  "independent_verification": "PENDING_PROTECTED_RELEASE_AND_ORIGINAL_PRODUCTION_PLAYWRIGHT"
 }
