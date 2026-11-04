@@ -471,10 +471,64 @@ Deno.serve(async (req) => {
       stepResults.push({name:'targeted-generation',ok:false,degraded:true,reason:'BOOTSTRAP_MAY_STILL_BE_RUNNING'});
     }
 
-    // Existing provider publisher already supports exact channel selection.
-    // It is called separately for each social channel, in parallel with blog
-    // and engagement. Each call keeps its own auth, identity, media, uniqueness
-    // and provider-proof gates. No new sender or scheduler is introduced.
+    // First Time Right: prepare within the ORIGINAL publisher, BEFORE its
+    // external-create mode; independent editorial and provider-auth preflight
+    // can run up to 12h early. Source generation/router always ran above,
+    // so a fixable condition never disables the original daily executor.
+    const prepublishChannels=['linkedin_personal','linkedin_company','instagram_company'];
+    // A published/ACKed channel is a READBACK obligation, not another
+    // candidate for preparation or create. Do not report a successful,
+    // genuinely live-proven post as an early editorial risk on every hourly run.
+    const {data: existingBeforePublish,error: existingBeforePublishError}=
+      await db.from('content_publication_obligations')
+        .select('channel,status,external_id,live_proven_at,evidence')
+        .eq('tenant_id','canonical').eq('publication_date',runDate)
+        .in('channel',['linkedin_personal','linkedin_company','instagram']);
+    if(existingBeforePublishError) throw new Error('ORIGINAL_PREPUBLISH_SIDE_EFFECT_READ_FAILED');
+    const sideEffectByChannel=new Map((existingBeforePublish||[]).map((o:any)=>[clean(o.channel),o]));
+    const prepublishResults=await Promise.all(prepublishChannels.map(async channel=>{
+      const mapped=channel==='instagram_company'?'instagram':channel;
+      const existing:any=sideEffectByChannel.get(mapped)||null;
+      const evidence=existing?.evidence||{};
+      const possibleSideEffect=!!existing&&(!!clean(existing.external_id)
+        ||['PUBLISHED','DISPATCHED','LIVE_PROVEN'].includes(clean(existing.status))
+        ||evidence.provider_create_success===true
+        ||evidence.possible_provider_side_effect===true);
+      if(possibleSideEffect){
+        const live=clean(existing.status)==='LIVE_PROVEN'
+          &&!!existing.live_proven_at
+          &&evidence.provider_truth_verified===true;
+        return {channel,prepared:false,alreadyDispatched:true,
+          status:live?'ALREADY_LIVE_PROVEN':'PROVIDER_READBACK_PENDING',
+          error:live?null:'ORIGINAL_PROVIDER_RECONCILE_ONLY',
+          http:null};
+      }
+      const response=await invoke(url,expected,'powerhouse-social-publisher',
+        {runDate,mode:'prepare_only',channels:[channel]});
+      const match=Array.isArray(response?.body?.results)
+        ?response.body.results.find((item:any)=>item?.channel===channel):null;
+      const prepared=response.ok===true
+        &&match?.status==='ready_for_final_recheck'
+        &&match?.contract==='original-social-first-time-right-prepare-v1'
+        &&match?.provider_create===false;
+      return {channel,prepared,alreadyDispatched:false,
+        status:clean(match?.status)||'NO_CONTENT_READY',
+        error:prepared?null:clean(match?.reason)||clean(response?.error)||'PREPUBLISH_PREPARATION_NOT_COMPLETE',
+        http:response.http};
+    }));
+    const readiness=new Map(prepublishResults.map(x=>[x.channel,x]));
+    stepResults.push(...prepublishResults.map(item=>({
+      name:'original-first-time-right-prepublish:'+item.channel,
+      ok:item.prepared||item.alreadyDispatched===true,
+      degraded:!item.prepared&&item.status!=='ALREADY_LIVE_PROVEN',
+      skipped:!item.prepared,
+      error:item.error,http:item.http,
+      reason:item.status
+    })));
+
+    // Existing provider publisher is called only for a channel that was
+    // pre-reviewed in THIS same original tick. It performs another independent
+    // review before any create; an ACK/reconciliation-only channel is not sent.
     const deliveryLanes=[
       ['linkedin_personal','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_personal']}],
       ['linkedin_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_company']}],
@@ -483,6 +537,21 @@ Deno.serve(async (req) => {
       ['linkedin_engagement','powerhouse-social-publisher',{runDate,mode:'cockpit_autopilot'}]
     ] as const;
     const dispatchResults=await Promise.all(deliveryLanes.map(async ([channel,name,payload])=>{
+      if(prepublishChannels.includes(channel)){
+        const readinessForChannel=readiness.get(channel);
+        if(readinessForChannel?.prepared!==true){
+          // Never resend a provider-ACKed post, even if independent GET is
+          // forbidden. The earlier original audit_only reconciles exactly.
+          // Independently LIVE_PROVEN is a successful no-send terminal lane.
+          const alreadyLive=readinessForChannel?.status==='ALREADY_LIVE_PROVEN';
+          const alreadyPublished=readinessForChannel?.alreadyDispatched===true;
+          return {name:name+':'+channel,channel,ok:true,skipped:true,
+            degraded:!alreadyLive,
+            error:alreadyLive?null:alreadyPublished
+              ?'ORIGINAL_PROVIDER_READBACK_PENDING':'PREFLIGHT_NOT_READY_NO_SEND',
+            reason:readinessForChannel?.status||'PREPARATION_NOT_PROVEN'};
+        }
+      }
       const result=await invoke(url,expected,name,payload);
       return {...result,name:name+':'+channel,channel};
     }));
