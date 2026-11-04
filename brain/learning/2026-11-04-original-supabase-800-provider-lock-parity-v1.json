@@ -45,5 +45,19 @@
     "machine_enforceable": true,
     "repeat_count": 9,
     "security_sensitive": true
+  },
+  "evidence": {
+    "prod_project": "adhjwmvyoixzjtmiroln",
+    "prod_provider_migrations": 800,
+    "git_executable_migrations": 800,
+    "provider_git_mismatch_count": 0,
+    "previous_lock": 791,
+    "additional_provider_confirmed_records": 9,
+    "provider_observed_at": "2026-11-04T07:43:05.326605Z",
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5389",
+    "original_failed_close_obligation_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41792476549/job/126448816641",
+    "original_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5389",
+    "original_failed_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41792546872",
+    "native_source_only": true
   }
 }
