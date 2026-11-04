@@ -413,7 +413,15 @@ jobs:
           const evidenceFile='.artifacts/powerhouse-delivery-hygiene.json';
           const evidence=JSON.parse(await readFile(evidenceFile,'utf8'));
           const actualHead=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          if(actualHead!==process.env.EXPECTED_HEAD_SHA || evidence.admitted!==true){
+          // The original canonical PR admission record uses state/ok/candidateHeadSha.
+          // Only the original manual/merge-group fast paths use admitted/head_sha.
+          const canonicalPrAdmitted=evidence.state==='ADMITTED'
+            && evidence.ok===true
+            && evidence.candidateHeadSha===actualHead;
+          const diagnosticAdmitted=['MANUAL_DIAGNOSTIC','MERGE_GROUP_PREVALIDATED'].includes(evidence.state)
+            && evidence.admitted===true
+            && evidence.head_sha===actualHead;
+          if(actualHead!==process.env.EXPECTED_HEAD_SHA || (!canonicalPrAdmitted&&!diagnosticAdmitted)){
             throw new Error('FIRST_TIME_RIGHT_CANDIDATE_ADMISSION_UNPROVEN');
           }
           const {evaluateFirstTimeRightPrebuild,CONTRACT_VERSION}=
