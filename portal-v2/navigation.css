@@ -104,3 +104,25 @@
  body:has(.allpages.open) .portal-mobile-primary{visibility:hidden;pointer-events:none}
 }
 @media(prefers-reduced-motion:reduce){.portal-mobile-primary{backdrop-filter:none}}
+
+
+/* Preserve the canonical overview hierarchy while revealing technical depth on request. */
+.portal-overview-depth{margin:14px 0 30px;border:1px solid #dce9e9;border-radius:18px;background:#fff;overflow:clip}
+.portal-overview-depth[hidden]{display:none!important}
+.portal-overview-depth-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;padding:13px 18px;cursor:pointer;list-style:none;color:#23404a;font-size:14px;font-weight:750}
+.portal-overview-depth-trigger::-webkit-details-marker{display:none}
+.portal-overview-depth-trigger>small{font-weight:500;color:#526b77;text-align:right}
+.portal-overview-depth-trigger:after{content:'+';font-size:22px;line-height:1;font-weight:400;color:#286d68}
+.portal-overview-depth[open]>.portal-overview-depth-trigger:after{content:'−'}
+.portal-overview-depth-trigger:focus-visible{outline:3px solid #2a8785;outline-offset:-3px}
+.portal-overview-depth[open]>.portal-overview-depth-trigger{border-bottom:1px solid #dce9e9;background:#f4faf8}
+.portal-overview-depth-content{padding:16px;min-width:0;overflow-x:clip}
+.portal-overview-depth-content>.daily-steering,.portal-overview-depth-content>.dashboard{max-width:100%}
+@media(max-width:760px){
+ .portal-overview-depth{margin:12px 0 20px;border-radius:14px}
+ .portal-overview-depth-trigger{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:14px;min-height:62px}
+ .portal-overview-depth-trigger>span{grid-column:1;align-self:end}
+ .portal-overview-depth-trigger>small{grid-column:1;text-align:left;align-self:start;font-size:12px}
+ .portal-overview-depth-trigger:after{grid-column:2;grid-row:1/3}
+ .portal-overview-depth-content{padding:12px;max-width:100%}
+}
