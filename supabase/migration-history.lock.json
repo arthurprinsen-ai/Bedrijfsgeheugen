@@ -3200,8 +3200,12 @@
     {
       "version": "20261104074100",
       "name": "original_heartbeat_single_recovery_owner_v1"
+    },
+    {
+      "version": "20261104090000",
+      "name": "ga4_consent_limited_data_spine_truth_v1"
     }
   ],
-  "captured_at": "2026-11-04T07:43:05.326605Z",
+  "captured_at": "2026-11-04T13:07:33.991Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

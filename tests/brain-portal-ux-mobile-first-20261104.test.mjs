@@ -45,7 +45,11 @@ test('old five-stage and processor panels remain reachable but are collapsed beh
  assert.match(app,/function mountOverviewDepthDisclosure\(\)/);
  assert.match(app,/document\.createElement\('details'\)/);
  assert.match(app,/details\.dataset\.portalOverviewDepth='v1'/);
- assert.match(app,/\['\.daily-steering','\.kpis','\.dashboard','\.lower','\.activities'\]/);
+ assert.match(app,/const sections=\['\.daily-steering','\.kpis','\.dashboard','\.lower','\.activities',/);
+ assert.match(app,/\[\.\.\.main\.children\]\.filter\(node=>sections\.some\(selector=>node\.matches\(selector\)\)\)/);
+ for(const identifier of ['[data-legacy-overview-insights]','.legacy-complete','.v2overviewcanvas','.v2overviewcustomizer']){
+  assert.ok(app.includes(identifier),'preserve original company/adoption and reorder panels: '+identifier);
+ }
  assert.match(app,/for\(const section of existing\)body\.appendChild\(section\)/);
  assert.match(app,/mountOverviewDepthDisclosure\(\);/);
  assert.match(style,/\.portal-overview-depth\[hidden\]\{display:none!important\}/);
