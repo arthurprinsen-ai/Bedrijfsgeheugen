@@ -217,7 +217,8 @@ function mountMobilePrimaryNavigation(){
  document.body.appendChild(nav);
  const sync=({target})=>{
   nav.querySelectorAll('button').forEach(button=>{
-   const selected=button.dataset.mobilePrimaryTarget===target;
+   const selected=button.dataset.mobilePrimaryTarget===target
+    ||(button.dataset.mobilePrimaryTarget==='hub:portal'&&!['overzicht','actieve-acties','outcomes-evidence'].includes(target));
    button.classList.toggle('is-current',selected);
    if(selected)button.setAttribute('aria-current','page');
    else button.removeAttribute('aria-current');
