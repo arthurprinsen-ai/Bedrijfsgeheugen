@@ -9,6 +9,7 @@ test('original production browser may read the same exact immutable deploy after
  assert.ok(sourceFence,'original trusted exact-SHA fence must remain');
  assert.match(sourceFence,/git merge-base --is-ancestor "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
  assert.match(sourceFence,/AGENTS\.md\|\.agents\/skills\/\*/);
+ assert.match(sourceFence,/\.agents\/skills\/\*\|supabase\/migration-history\.lock\.json/);
  assert.match(sourceFence,/tests\/\*\|docs\/\*\|brain\/learning\/\*/);
  assert.match(sourceFence,/Source.*changed.*after.*selected.*production.*SHA|Runtime source changed after selected production SHA/);
  assert.match(sourceFence,/Production SHA override requires main workflow_dispatch/);
