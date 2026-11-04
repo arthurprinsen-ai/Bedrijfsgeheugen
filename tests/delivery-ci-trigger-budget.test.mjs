@@ -53,11 +53,15 @@ test('production snapshot reconciles governance changes without forcing deployme
   assert.match(readback, /deriveNetlifyDeploymentApplicability/);
 });
 
-test('portal production readback only auto-runs for deployable portal runtime changes', async () => {
+test('single original portal browser readback runs only for deployable runtime or its own evidence contract', async () => {
   const source = await workflow('portal-v2-production-dom-readback.yml');
   const triggerBlock = source.split(/\nconcurrency:/, 1)[0];
   assert.match(triggerBlock, /- 'portal-v2\/\*\*'/);
-  assert.doesNotMatch(triggerBlock, /tests\/integration\/portal-v2-/);
-  assert.doesNotMatch(triggerBlock, /\.github\/workflows\/portal-v2-production-dom-readback\.yml/);
+  assert.match(triggerBlock, /- 'tests\/integration\/portal-v2-production-\*\.spec\.js'/);
+  assert.match(triggerBlock, /- '\.github\/workflows\/portal-v2-production-dom-readback\.yml'/);
+  assert.doesNotMatch(triggerBlock, /- 'docs\/\*\*'/,'no generic docs fanout');
+  assert.doesNotMatch(triggerBlock, /- 'tests\/\*\*'/,'no generic tests fanout');
   assert.match(triggerBlock, /workflow_dispatch:/);
+  assert.match(source,/PORTAL_PUBLISHED_CI_ONLY_VERIFIED/);
+  assert.match(source,/RUNTIME_DRIFT_NOT_ELIGIBLE_FOR_PUBLISHED_SHA/);
 });
