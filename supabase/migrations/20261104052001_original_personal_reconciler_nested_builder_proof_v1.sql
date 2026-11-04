@@ -272,3 +272,8 @@ begin
   );
 end;
 $function$
+
+-- Original production pg_proc.proacl before this migration: {postgres=X/postgres,service_role=X/postgres}.
+-- Preserve fail-closed internal-only execution exactly; never grant browser roles.
+REVOKE ALL ON FUNCTION public.powerhouse_reconcile_content_outcomes_v1(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_reconcile_content_outcomes_v1(date) TO service_role;
