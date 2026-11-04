@@ -4,12 +4,15 @@ import {readFileSync} from 'node:fs';
 const workflow=readFileSync(new URL('../.github/workflows/portal-v2-production-dom-readback.yml',import.meta.url),'utf8');
 const visual=readFileSync(new URL('../tests/integration/portal-v2-production-visual-regression.spec.js',import.meta.url),'utf8');
 
-test('manual source PR and published SHA are separate explicit inputs and never grant access outside main',()=>{
+test('manual PR and CI-only published SHA remain distinct and both require protected main plus strict provider ancestry',()=>{
  assert.match(workflow,/approved_pr_number:[\s\S]*?required: true[\s\S]*?production_sha:/);
  assert.match(workflow,/fetch-depth: 0/);
  assert.match(workflow,/PRODUCTION_SHA_OVERRIDE: \$\{\{ inputs\.production_sha \|\| '' \}\}/);
  assert.match(workflow,/PORTAL_EXPECTED_SHA=\$\{PRODUCTION_SHA_OVERRIDE:-\$GITHUB_SHA\}/);
- assert.match(workflow,/if \[ "\$EVENT_NAME" != "workflow_dispatch" \] \|\| \[ "\$GITHUB_REF" != "refs\/heads\/main" \]/);
+ assert.match(workflow,/if \\{ \\[ "\\$EVENT_NAME" != "workflow_dispatch" \\] && \\[ "\\$EVENT_NAME" != "push" \\]; \\} \\|\\| \\[ "\\$GITHUB_REF" != "refs\\/heads\\/main" \\]/);
+ assert.match(workflow,/if \\[ "\\$EVENT_NAME" = "push" \\] && \\[ "\\$\\{PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false\\}" != true \\]/);
+ assert.match(workflow,/ORIGINAL_BROWSER_EVIDENCE_ONLY_PINNED:published=/);
+ assert.match(workflow,/RUNTIME_DRIFT_NOT_ELIGIBLE_FOR_PUBLISHED_SHA/);
  assert.match(workflow,/\[\[ "\$PORTAL_EXPECTED_SHA" =~ \^\[a-f0-9\]\{40\}\$ \]\]/);
  assert.match(workflow,/git merge-base --is-ancestor "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
  assert.match(workflow,/git diff --name-only "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
