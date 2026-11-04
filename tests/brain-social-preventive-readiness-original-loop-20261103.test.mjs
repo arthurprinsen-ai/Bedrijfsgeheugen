@@ -104,3 +104,76 @@ test('original loop reads real blog approval and independent live timestamps for
  const loop=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
  assert.match(loop,/\.select\('channel,status,external_id,evidence,last_error,next_action,approved_at,live_proven_at,updated_at'\)/);
 });
+
+test('source-first preparation executes before original external social delivery without another sender',()=>{
+ const loop=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.ok(loop.indexOf("mode:'prepare_only'")>=0);
+ assert.ok(loop.indexOf("mode:'prepare_only'")<loop.indexOf("mode:'publish_only'"));
+ assert.match(loop,/readinessForChannel\?\.prepared!==true/);
+ assert.match(loop,/PREFLIGHT_NOT_READY_NO_SEND/);
+ assert.match(source,/const prepareOnly = mode === 'prepare_only'/);
+ assert.match(source,/const publishOnly = mode === 'publish_only' \|\| prepareOnly/);
+ assert.match(source,/const authority_recovery=prepareOnly\s*\? \{skipped:true,reason:'PREPARE_ONLY_NO_AUTHORITY_MUTATION'\}/);
+ assert.match(source,/if\(prepareOnly\)/);
+ assert.match(source,/status:'READY_FOR_FINAL_RECHECK'/);
+ assert.match(source,/provider_create:false/);
+ assert.match(source,/final_review_at_due_required:true/);
+ assert.match(source,/if\(dispatchReady.status==='not_due'&&!prepareOnly\)/);
+ assert.match(source,/if\(prepareOnly&&dispatchReady.status==='not_due'\)/);
+ assert.ok(source.indexOf("status:'ready_for_final_recheck'") < source.indexOf('let instagramMetaConfig:MetaInstagramConfig'));
+ assert.doesNotMatch(loop,/cron\.schedule\(/);
+});
+
+test('early preparation fails closed if original company OAuth fields are not proven',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(source,/company\.organization_capability_verified!==true/);
+ assert.match(source,/company\.organization_write_scope_authorized!==true/);
+ assert.match(source,/ORIGINAL_COMPANY_OAUTH_PREPARATION_UNVERIFIED/);
+ assert.match(source,/status:'repair_before_due'/);
+});
+
+test('every original publisher entry requires this exact fresh source-first preparation before provider create',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(source,/if\(!prepareOnly\)\{/);
+ assert.match(source,/EXACT_SOURCE_FIRST_PREFLIGHT_REQUIRED/);
+ assert.match(source,/status:'deferred_to_original_preparation'/);
+ assert.match(source,/clean\(evidence\.text_sha256\)!==originalHash/);
+ assert.match(source,/ageMs>12\*60\*60\*1000/);
+ assert.ok(source.indexOf("status:'deferred_to_original_preparation'")<
+   source.indexOf("const dispatchReady=linkedinDispatchReadiness"));
+});
+
+test('prepare_only must never report provider truth when no provider create occurred',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(source,/preparation_only:prepareOnly, provider_create:prepareOnly\?false:null/);
+ assert.match(source,/provider_truth_verified:prepareOnly\?false:true/);
+});
+
+test('actual ORIGINAL generator receives channel FTR prerequisites BEFORE writing content',async()=>{
+ const m=await import('../supabase/functions/_shared/editorial-council-context.mjs');
+ assert.equal(m.FIRST_TIME_RIGHT_PRE_GENERATION,'original-social-first-time-right-prepublish-v1');
+ for(const channel of ['linkedin_personal','linkedin_company','instagram_company','blog']){
+   const spec=m.buildEditorialCouncilBrief({channel});
+   assert.equal(spec.pre_generation_contract,m.FIRST_TIME_RIGHT_PRE_GENERATION);
+   assert.match(spec.pre_generation_specification,/VÓÓR GENERATIE/);
+   assert.ok(spec.instruction.includes(spec.pre_generation_specification));
+ }
+ const insta=m.buildEditorialCouncilBrief({channel:'instagram_company'});
+ assert.match(insta.instruction,/0,940/);
+ assert.match(insta.instruction,/1080x1920/);
+ const blog=m.buildEditorialCouncilBrief({channel:'blog'});
+ assert.match(blog.instruction,/Required\/BRAIN\/CodeQL/);
+});
+
+test('GitHub status 500 uses existing exact-local candidate browser verification, never a forged green',()=>{
+ const workflow=readFileSync('.github/workflows/lane-website.yml','utf8');
+ assert.match(workflow,/\[429,500,502,503,504\]\.includes\(response\.status\)/);
+ assert.match(workflow,/GitHub status API \$\{response\.status\}; verifying exact candidate locally/);
+ assert.match(workflow,/throw new Error\(\x60GitHub status API \$\{response\.status\}\x60\)/);
+ assert.match(workflow,/preview_mode=local-exact-candidate/);
+ assert.match(workflow,/ref: \$\{\{ inputs\.candidate_sha \}\}/);
+ assert.match(workflow,/Build and serve exact local candidate only when Netlify preview is unavailable/);
+ assert.match(workflow,/Verify affected routes on desktop and mobile/);
+ assert.match(workflow,/Verify all public pages are visibly rendered/);
+});
