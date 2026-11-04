@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-04",
+  "version": "v1",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "portal|brain|postmerge-published-sha-oracle-drift|20261104-v1",
+  "owner": "original Portal V2 BRAIN backend and protected delivery supervisor",
+  "compiler": {
+    "failure_class": "PORTAL_DOM_READBACK",
+    "scope": "CI_BACKEND",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Two inherited BRAIN backend tests still match old exact error wording for manual-only Portal SHA overrides and immediate adjacency of skill and migration lock paths. Original production workflow already protects both manual-approved and evidence-only push proofs, exact main ancestry, two identical strict allowlists, immutable Netlify provider and real browser.",
+  "prevention_rule": "Assert current executable protected source-only conditions and each exact allowed path, reject directory wildcards and all Portal/Netlify runtime, never infer protection from old adjacent string or retired message. No fake CI status or production identity.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs",
+      "tests/brain-portal-production-readback-source-only-override-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs",
+      "tests/brain-portal-production-readback-source-only-override-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-dom-proven-bridge-only-v1.test.mjs",
+      "tests/brain-portal-production-readback-source-only-override-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41844863923",
+      "Original BRAIN run backend: 2 failed, automation success; original PR #5418 Terminal Closure failed BRAIN"
+    ],
+    "current": [
+      "Original provider production browser run #41844746771 independently PASS: 15 passed, 1 skipped, 0 failed, published Netlify 6aeb3a724059acffb334e140 exact SHA 47d3b667c413d9624b6702936f6ff415bc3fe3fb",
+      "CODE_CANDIDATE_PENDING original protected Required/CodeQL/BRAIN/Terminal closure"
+    ]
+  },
+  "outcomes": {
+    "portal_browser": "PROVEN_15_PASSED_1_SKIPPED",
+    "authenticated_user_acceptance": "NOT_PROVEN",
+    "brain_terminal": "FAILED_PENDING_REVERIFY"
+  }
+}

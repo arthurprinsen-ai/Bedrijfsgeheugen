@@ -9,10 +9,22 @@ test('original production browser may read the same exact immutable deploy after
  assert.ok(sourceFence,'original trusted exact-SHA fence must remain');
  assert.match(sourceFence,/git merge-base --is-ancestor "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
  assert.match(sourceFence,/AGENTS\.md\|\.agents\/skills\/\*/);
- assert.match(sourceFence,/\.agents\/skills\/\*\|supabase\/migration-history\.lock\.json/);
+ // Source allowlist gained exact non-Netlify Edge and GitHub observer paths;
+ // path adjacency was never a security property. Assert individual exact
+ // names in the executable original case arm instead.
+ const scope=sourceFence.match(/case "\$file" in\s*([^\n]+)\s*;;/)?.[1]||'';
+ for(const exact of [
+  '.agents/skills/*','supabase/migration-history.lock.json',
+  'tools/delivery/github-actions-failure-observer.mjs',
+  'supabase/functions/_shared/editorial-council-context.mjs',
+  'supabase/functions/powerhouse-content-loop/index.ts',
+  'supabase/functions/powerhouse-social-publisher/index.ts'
+ ])assert.ok(scope.split('|').includes(exact),'original strict readback scope must explicitly include '+exact);
+ assert.ok(!scope.includes('supabase/functions/*'),'never weaken the guard to all Edge functions');
  assert.match(sourceFence,/tests\/\*\|docs\/\*\|brain\/learning\/\*/);
  assert.match(sourceFence,/Source.*changed.*after.*selected.*production.*SHA|Runtime source changed after selected production SHA/);
- assert.match(sourceFence,/Production SHA override requires main workflow_dispatch/);
+ assert.match(sourceFence,/Published source SHA pin requires approved main workflow_dispatch or original evidence-only push/);
+ assert.match(sourceFence,/PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false/);
 });
 
 test('source-only readback never whitelists changed live portal code, credentials or security policy',()=>{
