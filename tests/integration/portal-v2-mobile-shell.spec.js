@@ -48,17 +48,22 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   await expect(page.locator('.app')).toHaveJSProperty('inert',false);
 
   // Dismissing More preserves the previous canonical content route.
-  await page.evaluate(async()=>{
-    const {navigatePortal}=await import('/portal-v2/router.js');
-    navigatePortal('roadmap');
+  await page.evaluate(()=>{
+    // Call the real delegated navigation handler already bound by app.js.
+    // A bare import('/portal-v2/router.js') is a different ES module than
+    // app.js's query-pinned router, and cannot open the real UI.
+    const roadmap=document.querySelector('.sidebar .nav [data-nav-target="roadmap"]');
+    if(!roadmap)throw new Error('CANONICAL_ROADMAP_TRIGGER_MISSING');
+    roadmap.click();
   });
   const previousUrl=page.url();
-  // Use the canonical router: a specialist page can cover the dock visually.
-  await page.evaluate(async()=>{
-    const {navigatePortal}=await import('/portal-v2/router.js');
-    navigatePortal('hub:portal');
+  await page.evaluate(()=>{
+    const more=document.querySelector('[data-mobile-primary-target="hub:portal"]');
+    if(!more)throw new Error('CANONICAL_MORE_TRIGGER_MISSING');
+    more.click();
   });
   await expect(page.locator('#allPages')).toBeVisible();
+  await expect(page.locator('#portalView')).toHaveAttribute('aria-hidden','true');
   await page.locator('#closePages').click();
   await expect(page.locator('#allPages')).toBeHidden();
   await expect(page).toHaveURL(previousUrl);
