@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_NEEDS_MERGE_AND_INDEPENDENT_READBACK",
+  "fingerprint": "powerhouse|ftr|agent-policy-incident-closure-coverage-false-green-risk|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN incident register and original delivery/recovery agents",
+  "failure_class": "FIRST_TIME_RIGHT_INCIDENT_SCOPE_AND_CLOSURE_EVIDENCE_GAP",
+  "root_cause": "The protected original First Time Right native admission is live and genuine bad/good canary plus one synthetic canonical failure occurrence is independently verified. The same canary was explicitly written via public.brain_observe_failure; automatic future GitHub-to-Supabase occurrence ingress and cross-provider coverage are not independently proven. Without a uniform agent/skill lifecycle, some agents could treat passed CI, triage completion, or Github artifacts as terminal incident/provider outcomes, leaving invisible/unclosed incidents or false green.",
+  "evidence": {
+    "original_ftr_merges": [
+      "17959aed661eeea0d44b6aa45f441be1e0ba68a4",
+      "feb1635b374ed93a5fdacdc498eeefc8b596eb26",
+      "0d47c8983be1e5add00cb48cb05a561632253a1a"
+    ],
+    "negative_run_id": 41797450956,
+    "positive_run_id": 41797567508,
+    "synthetic_brain_readback_occurrences": 1,
+    "automatic_future_github_to_brain_ingestion": "NOT_YET_INDEPENDENTLY_PROVEN",
+    "daily_commercial_finality": "SEPARATE_PROVIDER_EVIDENCE_REQUIRED",
+    "existing_writer": "public.brain_observe_failure",
+    "original_policy": "brain/policies/powerhouse-incident-register-and-self-fix-v1.json"
+  },
+  "fix": "Extend original ONE BRAIN incident policy (revision 7) and original AGENTS plus engineering/recovery skills with mandatory prebuild conditions, one canonical failure occurrence writer, owner/fingerprint/root-cause/prevention/readback fields, phased incident terminal proof, synthetic canary discrimination, and explicit uncovered automatic-ingestion debt. Add same-PR deterministic policy consistency regression and human append-only log. This policy update does NOT add another worker or assert automatic cross-provider ingest.",
+  "prevention_rule": "Before every agent-side material action prove source, owner, costs, provider permissions, idempotency and regression; after every failure log through original Brain writer and independent readback; no terminal green without original production and external/customer outcome. When original ingestion is missing report INCIDENT_LOG_WRITEBACK_UNVERIFIED and retain owner obligation. Never expose service-role secrets to untrusted PR code.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-time-right-agent-incident-lifecycle-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-first-time-right-agent-incident-lifecycle-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-first-time-right-agent-incident-lifecycle-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "FIRST_TIME_RIGHT_INCIDENT_SCOPE_AND_CLOSURE_EVIDENCE_GAP",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL, merge and source readback prove updated policy/skills. Actual future automatic GitHub/Supabase cross-source ingestion remains OPEN until separately safely implemented and real event/independent readback proven; no false all-green."
+}
