@@ -75,3 +75,46 @@ test('when consented native signals exist but GA4 is empty, original source repa
  assert.match(testSection,/consent_evidence_error/);
  assert.match(testSection,/await bewijs\(false,result,/);
 });
+
+test('original GA4 repair safely rereads a concurrent CAS version before bounded retry',async()=>{
+ const section=code.slice(code.indexOf('async function originalGa4EmptyRepair'),code.indexOf('async function originalGa4AggregateProbe'));
+ const js=section.replace('db:any','db').replace('day:string','day').replace('sourceRoute:string','sourceRoute').replace('report:any','report');
+ const repair=new Function('sha256',js+';return originalGa4EmptyRepair;')(async()=> 'a'.repeat(64));
+ let version=3,transitions=0,reads=0,seen=null;
+ const db={
+  rpc:async(name,args)=>{
+   if(name==='brain_create_obligation')return {data:{id:'same-canonical-id',state:'RUNNING',version:3,evidence:{original:true}},error:null};
+   assert.equal(name,'brain_transition_obligation'); transitions++;
+   if(transitions===1){assert.equal(args.p_expected_version,3);version=4;return {data:null,error:{message:'STATE_VERSION_CONFLICT'}};}
+   assert.equal(args.p_expected_version,4);seen=args.p_evidence;
+   return {data:{id:'same-canonical-id',state:args.p_state,version:5},error:null};
+  },
+  from:table=>{assert.equal(table,'brain_obligations');return {select:()=>({eq:(key,value)=>{assert.equal(key,'id');assert.equal(value,'same-canonical-id');return {single:async()=>{reads++;return {data:{id:value,state:'RUNNING',version,evidence:{original:true,concurrent_write:'preserved'}},error:null};}};}})};}
+ };
+ const out=await repair(db,'2026-11-04','google-analytics-data-api',{provider_rows:0});
+ assert.equal(out.cas_retries,1);assert.equal(out.obligation_version,5);
+ assert.equal(reads,1);assert.equal(transitions,2);
+ assert.equal(seen.original,true);assert.equal(seen.concurrent_write,'preserved');
+ assert.equal(seen.historical_zero_rows_not_traffic_proof,true);
+});
+test('GA4 CAS retries never bypass other failures or reopen terminal obligations',async()=>{
+ const section=code.slice(code.indexOf('async function originalGa4EmptyRepair'),code.indexOf('async function originalGa4AggregateProbe'));
+ const js=section.replace('db:any','db').replace('day:string','day').replace('sourceRoute:string','sourceRoute').replace('report:any','report');
+ const repair=new Function('sha256',js+';return originalGa4EmptyRepair;')(async()=> 'a'.repeat(64));
+ let retryRead=0;
+ const denied={
+  rpc:async(name)=>name==='brain_create_obligation'?{data:{id:'x',state:'READY',version:1,evidence:{}},error:null}:{data:null,error:{message:'PERMISSION_DENIED'}},
+  from:()=>{retryRead++;throw Error('unreachable');}
+ };
+ await assert.rejects(()=>repair(denied,'2026-11-04','api',{}),/GA4_CANONICAL_REPAIR_CAS_FAILED:PERMISSION_DENIED/);
+ assert.equal(retryRead,0);
+ let created=0,transitions=0;
+ const terminal={
+  rpc:async(name,args)=>{
+   if(name==='brain_create_obligation'){created++;return {data:{id:created===1?'ongoing':'daily',state:'FULFILLED',version:7,evidence:{verified:true}},error:null};}
+   transitions++;throw Error('must not reopen');
+  }
+ };
+ const out=await repair(terminal,'2026-11-04','api',{provider_rows:0});
+ assert.equal(created,2);assert.equal(transitions,0);assert.equal(out.terminal_protected,true);
+});

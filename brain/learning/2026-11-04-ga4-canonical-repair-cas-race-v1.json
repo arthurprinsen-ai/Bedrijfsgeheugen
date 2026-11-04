@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_PENDING_NATIVE_READBACK",
+  "fingerprint": "powerhouse|ga4|canonical-measurement-repair-cas-race|20261104-v1",
+  "owner": "bg-analytics-sync-composio / original ONE BRAIN Data Spine owner",
+  "source_observation": {
+    "source": "public.powerhouse_runtime_events",
+    "event_type": "ga4_failover_observed",
+    "source_route": "google-analytics-data-api",
+    "observed_at": "2026-11-04T12:05:05.607427Z",
+    "error": "GA4_CANONICAL_REPAIR_CAS_FAILED:STATE_VERSION_CONFLICT"
+  },
+  "root_cause": "The original source collector creates/reads a shared ongoing MEASUREMENT_REPAIR obligation, but a concurrent authorized Brain owner may CAS-transition its version between read and write. The source treated this legitimate concurrent update as an unrecoverable provider sync failure.",
+  "correction": "Retain the single canonical obligation and original RPC. On specifically proven STATE_VERSION_CONFLICT, reread exact id/version/state/evidence and retry at most three total CAS attempts, merging current evidence every time. Preserve terminal states and canonical daily recurrence; fail on other errors, missing row or max retries.",
+  "prevention": "Bounded retry only after exact readback; no stale evidence overwrite, duplicate publisher, extra cron, permission relaxation, fake GA4 sessions or consent bypass.",
+  "regression": "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs",
+  "evidence": [
+    "native 2026-11-04 12:05:05.607427Z failure",
+    "original brain_transition_obligation checks expected version before update",
+    "candidate mocked CAS conflict and success test"
+  ],
+  "acceptance": [
+    "exact current-main protected Required/CodeQL/BRAIN",
+    "protected merge and original Edge source parity",
+    "original natural ga4 sync with no CAS error, independent provider row readback",
+    "consent-limited zero rows not counted as valid traffic",
+    "ONE BRAIN learning recorded and recurrence monitored"
+  ],
+  "truth_boundary": "Code fix is not GA4 data recovery; if provider lacks consented data the Data Spine remains stale/unknown.",
+  "failure_class": "CAS_CONCURRENCY",
+  "scope": "GA4",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CAS_CONCURRENCY",
+    "scope": "GA4",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
