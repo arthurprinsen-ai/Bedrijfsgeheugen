@@ -34,6 +34,8 @@ test('same original analytics function creates exactly one canonical ongoing rec
 test('original Brain repair uses atomic compare-and-swap and preserves the running owner',()=>{
  assert.match(code,/db\.rpc\('brain_transition_obligation'/);
  assert.match(code,/p_expected_version:ob.version/);
+ assert.match(code,/historical=\(ob\.evidence&&typeof ob\.evidence==='object'/);
+ assert.match(code,/\.\.\.historical,status:'REPAIR_REQUIRED',latest_observation:report/);
  assert.match(code,/\['RUNNING','BLOCKED'\]\.includes\(ob.state\)\?ob.state:'READY'/);
  assert.match(code,/GA4_CANONICAL_REPAIR_CAS_FAILED/);
  assert.match(code,/identity\.p_business_period=day/);
