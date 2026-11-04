@@ -78,6 +78,19 @@
       "tests/brain-original-heartbeat-native-recovery-proof-20261104.test.mjs"
     ],
     "external_provider_outcomes": "NOT_PROVEN",
-    "production_after_release": "PENDING_INDEPENDENT_POSTDEPLOY_READBACK"
+    "production_after_release": "PENDING_INDEPENDENT_POSTDEPLOY_READBACK",
+    "provider_preview_immutable_migration_history": "Versions 64400 and 65001 were actually applied, exact source restored in Git. Guard absent in old applied function; final 71100 version adds it.",
+    "latest_migration": "supabase/migrations/20261104071100_original_heartbeat_terminal_contract_guard_v1.sql"
+  },
+  "migration_history": {
+    "provider_applied_and_preserved": [
+      "20261104064400",
+      "20261104065001"
+    ],
+    "final_corrective_version": "20261104071100",
+    "reason": "Original provider preview had applied both initial function versions before source contract guard was added; the final guard must deploy as a NEW immutable migration, not be silently edited into an already-applied historical version.",
+    "exact_head_preview_readback": "PENDING_FINAL_CORRECTIVE_VERSION",
+    "original_scheduler": 171,
+    "new_scheduler_created": false
   }
 }
