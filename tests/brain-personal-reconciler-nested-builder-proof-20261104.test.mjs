@@ -47,3 +47,10 @@ test('strict nested builder proof accepts real source shape but rejects forged o
    assert.equal(verifiedNested({...valid,[k]:v}),false,k+' cannot bypass a publisher gate');
  }
 });
+
+test('original production SQL function has a completed terminator before restricted function ACL',()=>{
+ assert.match(sql, /end;\s*\$function\$;\s*-- Original production pg_proc\.proacl/);
+ assert.match(sql, /REVOKE ALL ON FUNCTION public\.powerhouse_reconcile_content_outcomes_v1\(date\) FROM PUBLIC, anon, authenticated;/);
+ assert.match(sql, /GRANT EXECUTE ON FUNCTION public\.powerhouse_reconcile_content_outcomes_v1\(date\) TO service_role;/);
+ assert.doesNotMatch(sql, /\$function\$\s*-- Original production pg_proc\.proacl/);
+});
