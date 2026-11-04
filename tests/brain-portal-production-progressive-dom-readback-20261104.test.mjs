@@ -34,7 +34,9 @@ test('real production browser probes open the original canonical details and 44p
  assert.match(global,/data-mobile-primary-target="hub:portal"/);
  assert.match(global,/mobile More touch target/);
  assert.match(global,/data-mobile-global-actions/);
- assert.match(overview,/more\.locator\('summary'\)\.click\(\)/);
+ assert.match(overview,/more\.locator\(':scope > summary'\)/);
+ assert.match(overview,/await overviewSummary\.click\(\)/);
+ assert.doesNotMatch(overview,/more\.locator\('summary'\)\.click\(\)/);
  assert.match(overview,/data-legacy-overview-insights/);
  assert.match(overview,/Adoptiecurve/);
  assert.match(overview,/CMMI/);
