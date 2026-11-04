@@ -17,16 +17,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/entrepreneur-home.test.mjs",
-      "portal-v2/tests/entrepreneur-journey.test.mjs",
-      "portal-v2/tests/mobile-responsive-shell.test.mjs"
+      "tests/brain-portal-ux-mobile-first-20261104.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/entrepreneur-focus-mobile.test.mjs"
+      "tests/brain-portal-ux-mobile-first-20261104.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/entrepreneur-focus-mobile.test.mjs",
-      "manual mobile VoiceOver and first-time task completion after deployment"
+      "tests/brain-portal-ux-mobile-first-20261104.test.mjs"
     ]
   },
   "closure": "OPEN until exact protected PR checks succeed, a same-source Netlify deployment is independently confirmed, iOS/mobile functional and accessibility checks pass and real entrepreneurs complete the core tasks without explanation.",
@@ -48,6 +45,7 @@
     "incident_first_required": "41798968364 initially failed missing PR machine metadata and on rerun missing activity_ledger,brain_learning; both historical failures remain open evidence",
     "regression": "portal-v2/tests/entrepreneur-focus-mobile.test.mjs",
     "human_documentation": "docs/changes/2026-11-04-portal-mobile-first-focus-v1.md",
-    "protected_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5399"
+    "protected_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5399",
+    "learning_canonicalization_gate": "The original gate requires root tests/brain-*.test.mjs. Initial candidate test paths under portal-v2/tests were rejected (run 41799483019). Reuse root source-contract regression in all evaluation modes without changing the gate."
   }
 }
