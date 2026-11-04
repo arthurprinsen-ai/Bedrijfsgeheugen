@@ -923,3 +923,11 @@ The original protected admission is now **independently proven live** in GitHub,
 
 Actual canonical ONE BRAIN persistence is independently read back: `public.brain_failure_occurrences` has precisely one original `brain_observe_failure` entry for the canary fingerprint, `is_synthetic=true`, `terminal_status=CANARY_PASS_NEGATIVE_AND_POSITIVE_VERIFIED`, original GitHub run/HEAD and cause/effect evidence. See original issue #4198 comment 6625978999 and `brain/learning/2026-11-04-first-time-right-native-admission-stage2-v1.json`. **This canary registration was explicitly invoked, not automatically bridged from GitHub.** Do not claim every future GitHub failure automatically reaches Supabase; auto-ingestion remains independently unproven. Do not claim zero future incidents or all Powerhouse/commercial channels green. Preserve original event owner, exclusive writer, human approvals, Mira identity, readback/ROI and duplicate protections.
 
+
+## Native GitHub Actions failures: automatic ONE BRAIN coverage (2026-11-04)
+
+- The original hourly Repository Janitor must capture real **completed failing GitHub Actions run attempts** by stable provider run ID + attempt and preserve workflow ID, conclusion and immutable head SHA; never substitute a synthetic canary for natural source evidence.
+- Use the single canonical `public.brain_observe_failure` RPC and require independent `brain_failure_occurrences` exact occurrence, fingerprint and hash readback. Existing occurrences are idempotent; conflicting hashes are incidents.
+- Source-list failure, 48-hour window gaps, bounded pagination truncation, missing credential, RPC error and readback mismatch are `SOURCE_COVERAGE_UNVERIFIED`, not zero failures or success. Do not classify intentional cancellations as production bugs.
+- The original owner triages cause with exact native job logs, performs only protected source repair, adds regression, measures a natural recurrence and updates ONE BRAIN / portal; an OBSERVED row cannot be called PROVEN.
+- Release evidence: `brain/learning/2026-11-04-github-actions-native-failure-observer-v1.json` and `tests/brain-github-actions-failure-observer-20261104.test.mjs`. No second scheduler, token rights, incident DB, social publisher, fake readback or global green.
