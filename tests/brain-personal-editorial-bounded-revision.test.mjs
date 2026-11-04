@@ -6,7 +6,7 @@ const code=readFileSync('supabase/functions/powerhouse-content-orchestrator/inde
 test('bounded revision is only attempted after personal editorial rejection',()=>{
   assert.match(code,/if \(editorialViolations\.length && generationProvider==='OpenAI' && apiKey\)/);
   assert.match(code,/editorial_rejection_codes:editorialViolations\.map/);
-  assert.match(code,/callAI\(apiKey,gov\.model_id,correctionPrompt,revisionInput,artifactTool,budget\)/);
+  assert.match(code,/\(budget:number\)=>callAI\(apiKey,gov\.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'\)/);
   assert.match(code,/retryIncompleteEditorialDraft\(/);
   assert.match(code,/\n\s*2400,\(error:unknown\)=>error instanceof AIProviderIncompleteOutputError/);
 });
@@ -22,5 +22,5 @@ test('no additional sender, no false publication results',()=>{
   const fragment=code.slice(start,end);
   assert.ok(start>0 && end>start);
   assert.doesNotMatch(fragment,/powerhouse-social-publisher|LIVE_PROVEN|net\.http_post|sendMessage/i);
-  assert.match(fragment,/tussen 150 en 175 woorden/);
+  assert.match(fragment,/met 150 tot 175 normale Nederlandse woorden/);
 });
