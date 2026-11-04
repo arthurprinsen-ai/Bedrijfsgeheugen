@@ -1,5 +1,5 @@
-// Intentionally invalid SOURCE-ONLY candidate for a protected-admission negative replay.
-// This path is never imported, deployed or merged to protected main.
+// Fixed on the SAME temporary original PR after native FTR rejected duplicate declaration.
+// Source-only admission replay; never imported by production or deployed externally.
 const revisionInput = 1;
-const revisionInput = 2;
 export const replayMarker = 'candidate-not-to-be-merged';
+export const verifiedSourceForm = Object.freeze({source:'repaired-original',value:revisionInput});
