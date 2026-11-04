@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CODE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "portal|ux|production-dom-progressive-disclosure-parity|20261104-v1",
+  "owner": "original Portal V2 UX/QA and protected release",
+  "compiler": {
+    "failure_class": "PORTAL_DOM_READBACK",
+    "scope": "PRODUCTION_BROWSER",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "root_cause": "Pre-rendered tenant panels remained as main direct children when the optional details moved only old static dashboard widgets; Playwright has selectors were incorrectly ancestor-qualified despite relative candidate scoping; one independent static public asset GET returned 403 and must remain fail-closed.",
+  "prevention_rule": "Before hiding original dashboard in native details collect exact direct main children with approved model markers and relocate once in DOM order; future dynamically inserted director questions follow actual parent's anchor; test scoped native details:has selector and real 44px More and business cards. Bound independent Netlify security-challenge-only asset GET retries and never admit 403 as success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41804876350",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41810228066",
+      "Published SHA 2a4ae8001b6f070ff205e4f106b1f487e2221149 with 4 failed browser assertions"
+    ],
+    "current": [
+      "Correct original source + original Playwright interaction, original source SHA/Netlify/browser pending"
+    ]
+  },
+  "skill_targets": [
+    "portal-living-interface"
+  ],
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_ORIGINAL_PRODUCTION_BROWSER_AND_HUMAN_USER"
+}
