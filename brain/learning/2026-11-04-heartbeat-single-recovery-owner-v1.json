@@ -54,5 +54,13 @@
     "display": "Eén hersteluitvoerder; bewijs van individuele herstelde resultaten blijft vereist",
     "full_green_allowed": false
   },
-  "terminal_rule": "Original owner lease, all Required/BRAIN/CodeQL/native Supabase Preview checks, protected merge, native production migration+ACL+cron count proving #171 active and #184 absent, TWO natural #171 terminal-autonomous-reconcile task_results include recovery_review_truth.explicitly_unresolved with provider_resolution_proven false, original learning/cas closure only for duplicate-scheduling source defect; 306 historical outcomes remain not proven."
+  "terminal_rule": "Original owner lease, all Required/BRAIN/CodeQL/native Supabase Preview checks, protected merge, native production migration+ACL+cron count proving #171 active and #184 absent, TWO natural #171 terminal-autonomous-reconcile task_results include recovery_review_truth.explicitly_unresolved with provider_resolution_proven false, original learning/cas closure only for duplicate-scheduling source defect; 306 historical outcomes remain not proven.",
+  "prevention_rule": "Original recovery watchdog/reconciliation must have exactly one native scheduled original owner. Before any cron addition compare active #171/#184 task overlap and advisory scopes; retire exact redundant job only via protected transactional migration after proving original active scheduler, ACL and native task receipts. Never infer provider recovery from succeeded triage.",
+  "evidence": {
+    "production_source": "Supabase public cron.job and powerhouse_ops.runtime_scheduler_run_evidence_v1 2026-11-04",
+    "original_cron_171": "16 execution-resilience-watchdog and 16 reconciliation-worker runs in 80 minutes",
+    "duplicate_cron_184": "15 minute original recovery control-plane invokes same two functions under different advisory outer lock",
+    "recovery_review_truth": "307 triaged / 306 explicitly UNRESOLVED, provider success NULL",
+    "required_production_confirmation": "After guarded source PR protected merge: native job #171 active; duplicate #184 absent; two real natural original task receipts with typed aggregate and provider false; no claim 306 original outcome resolved."
+  }
 }
