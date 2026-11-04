@@ -80,7 +80,7 @@ jobs:
           while IFS= read -r file; do
             [ -n "$file" ] || continue
             case "$file" in
-              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|tools/delivery/github-actions-failure-observer.mjs|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
               *)
                 echo "RUNTIME_DRIFT_NOT_ELIGIBLE_FOR_PUBLISHED_SHA:$file"
                 exit 0
@@ -116,7 +116,7 @@ jobs:
           while IFS= read -r file; do
             [ -n "$file" ] || continue
             case "$file" in
-              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|tools/delivery/github-actions-failure-observer.mjs|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
               *)
                 echo "::error::Runtime source changed after selected production SHA: $file"
                 exit 1
