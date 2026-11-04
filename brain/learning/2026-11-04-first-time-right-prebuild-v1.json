@@ -24,5 +24,13 @@
       "tests/brain-first-time-right-prebuild-v1.test.mjs"
     ]
   },
-  "closure": "Only actual merged stage2 trusted-main admission and real bad/good candidate probes followed by production readback proves preventive gate live; no promise of impossible zero unknown future defects."
+  "closure": "Only actual merged stage2 trusted-main admission and real bad/good candidate probes followed by production readback proves preventive gate live; no promise of impossible zero unknown future defects.",
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "PREBUILD_COMPILER_AND_REGRESSION_PROOF_MISSING",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
 }
