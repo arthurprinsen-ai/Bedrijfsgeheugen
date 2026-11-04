@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const sql=readFileSync(new URL('../supabase/migrations/20261104065001_original_heartbeat_native_recovery_truth_v1.sql',import.meta.url),'utf8');
+const sql=readFileSync(new URL('../supabase/migrations/20261104071100_original_heartbeat_terminal_contract_guard_v1.sql',import.meta.url),'utf8');
 
 test('one original mux remains, without second scheduler or renamed owner',()=>{
  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_runtime_mux_task_v1\(p_task text, p_sql text, p_timeout_ms integer DEFAULT 10000\)/);
@@ -52,4 +52,14 @@ test('historical migration version 64400 remains in original source after provid
  assert.match(historical,/GRANT EXECUTE ON FUNCTION public\.powerhouse_runtime_mux_task_v1\(text,text,integer\) TO service_role;/);
  assert.doesNotMatch(historical,/cron\.(?:schedule|unschedule)/);
  assert.match(sql,/TERMINAL_RECONCILER_SOURCE_RECEIPT_MISSING/);
+});
+
+test('immutable original 65001 migration stays provider-replayable while new 71100 adds strict contract',()=>{
+ const original=readFileSync(new URL('../supabase/migrations/20261104065001_original_heartbeat_native_recovery_truth_v1.sql',import.meta.url),'utf8');
+ assert.match(original,/CREATE OR REPLACE FUNCTION public\.powerhouse_runtime_mux_task_v1/);
+ assert.match(original,/recovery_review_truth/);
+ assert.doesNotMatch(original,/TERMINAL_RECONCILER_SOURCE_RECEIPT_MISSING/);
+ assert.match(sql,/TERMINAL_RECONCILER_SOURCE_RECEIPT_MISSING/);
+ assert.match(sql,/RECOVERY_REVIEW_SOURCE_RECEIPT_MISSING/);
+ assert.doesNotMatch(original,/cron\.(?:schedule|unschedule)/);
 });
