@@ -143,3 +143,9 @@ test('every original publisher entry requires this exact fresh source-first prep
  assert.ok(source.indexOf("status:'deferred_to_original_preparation'")<
    source.indexOf("const dispatchReady=linkedinDispatchReadiness"));
 });
+
+test('prepare_only must never report provider truth when no provider create occurred',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.match(source,/preparation_only:prepareOnly, provider_create:prepareOnly\?false:null/);
+ assert.match(source,/provider_truth_verified:prepareOnly\?false:true/);
+});
