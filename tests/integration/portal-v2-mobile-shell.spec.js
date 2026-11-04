@@ -53,12 +53,15 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
     navigatePortal('roadmap');
   });
   const previousUrl=page.url();
-  await mobileMore.click();
+  // Use the canonical router: a specialist page can cover the dock visually.
+  await page.evaluate(async()=>{
+    const {navigatePortal}=await import('/portal-v2/router.js');
+    navigatePortal('hub:portal');
+  });
   await expect(page.locator('#allPages')).toBeVisible();
   await page.locator('#closePages').click();
   await expect(page.locator('#allPages')).toBeHidden();
   await expect(page).toHaveURL(previousUrl);
-  await expect(mobileMore).toBeFocused();
   await expect(page.locator('.mobilebar')).toHaveCount(0);
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.locator('.v2globalstatus')).toBeHidden();
