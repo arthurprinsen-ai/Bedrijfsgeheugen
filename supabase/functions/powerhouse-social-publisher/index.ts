@@ -1216,7 +1216,9 @@ Deno.serve(async (req) => {
   const runDate = clean(body.runDate) || today();
   const mode = clean(body.mode) || 'run';
   if (mode === 'cockpit_autopilot') return json({ ok: true, runDate, cockpit_autopilot: await runLinkedInCockpitAutopilot(db) });
-  const publishOnly = mode === 'publish_only';
+  // FIRST-TIME-RIGHT: same original publisher, pre-review only (no provider create).
+  const prepareOnly = mode === 'prepare_only';
+  const publishOnly = mode === 'publish_only' || prepareOnly;
   const allChannels = ['linkedin_personal','linkedin_company','instagram_company'];
   const requestedChannels = Array.isArray(body.channels)
     ? [...new Set(body.channels.map((value:any)=>clean(value)).filter((value:string)=>allChannels.includes(value)))]
@@ -1253,7 +1255,10 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
+  // A preventive preview can never revoke/issue/consume a publication capability.
+  const authority_recovery=prepareOnly
+    ? {skipped:true,reason:'PREPARE_ONLY_NO_AUTHORITY_MUTATION'}
+    : await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
@@ -1281,12 +1286,34 @@ Deno.serve(async (req) => {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
       continue;
     }
+    if(!prepareOnly){
+      // All original caller paths obey the same prebuild contract. An early
+      // preflight is NOT final approval, but it must exist for THIS exact copy.
+      const evidence=row.delivery_evidence?.first_time_right_preflight||{};
+      const originalHash=await digest(clean(art.body));
+      const ageMs=Date.now()-Date.parse(clean(evidence.observed_at));
+      if(evidence.contract!=='original-social-first-time-right-prepare-v1'
+        ||evidence.status!=='READY_FOR_FINAL_RECHECK'
+        ||clean(evidence.text_sha256)!==originalHash
+        ||!Number.isFinite(ageMs)||ageMs<0||ageMs>12*60*60*1000){
+        results.push({channel:row.channel,status:'deferred_to_original_preparation',
+          reason:'EXACT_SOURCE_FIRST_PREFLIGHT_REQUIRED',
+          provider_create:false});
+        continue;
+      }
+    }
     const dispatchReady=linkedinDispatchReadiness(row.channel,row.scheduled_for);
-    if(dispatchReady.status==='not_due'){
-      // Do not start review, claim an authority or call an external provider before due.
-      // The existing canonical hourly loop will retry this same content_ready decision.
+    if(dispatchReady.status==='not_due'&&!prepareOnly){
+      // Real side effects remain impossible before the scheduled time.
       results.push({channel:row.channel,status:'deferred_until_due',due_at:dispatchReady.due_at});
       continue;
+    }
+    if(prepareOnly&&dispatchReady.status==='not_due'){
+      const dueTime=Date.parse(clean(dispatchReady.due_at));
+      if(!Number.isFinite(dueTime)||dueTime-Date.now()>12*60*60*1000){
+        results.push({channel:row.channel,status:'deferred_preflight_window',due_at:dispatchReady.due_at});
+        continue;
+      }
     }
     if(dispatchReady.status==='invalid_schedule'){
       const evidence={...row.delivery_evidence,error:'LINKEDIN_SCHEDULE_INVALID',provider_create_success:false,possible_provider_side_effect:false,republish_forbidden:false};
@@ -1455,6 +1482,51 @@ Deno.serve(async (req) => {
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
     const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
+    if(prepareOnly){
+      // An early independent review is PREPARATION, not an irrevocable approval.
+      // Validate original LinkedIn auth without creating a post or claiming a lease.
+      let authorization:'VERIFIED'|'RECHECK_AT_DUE'='RECHECK_AT_DUE';
+      try{
+        if(row.channel==='linkedin_personal') await preflightLinkedInComposio(db);
+        if(row.channel==='linkedin_company'){
+          const company=await preflightLinkedInCompanyComposio(db);
+          if(company.organization_capability_verified!==true
+            ||company.organization_write_scope_authorized!==true
+            ||company.linkedin_company_admin_oauth_proven!==true)
+            throw new Error('ORIGINAL_COMPANY_OAUTH_PREPARATION_UNVERIFIED');
+        }
+        if(row.channel==='linkedin_personal'||row.channel==='linkedin_company') authorization='VERIFIED';
+      }catch(error){
+        const why=clean((error as Error)?.message||error).slice(0,120);
+        const risk={...gatePassedEvidence,first_time_right_preflight:{
+          contract:'original-social-first-time-right-prepare-v1',status:'REPAIR_BEFORE_DUE',
+          reason:'ORIGINAL_PROVIDER_AUTH_PREFLIGHT_FAILED',observed_at:new Date().toISOString(),
+          text_sha256:textHash,provider_error_class:why
+        }};
+        const {error:writeError}=await db.from('powerhouse_channel_decisions')
+          .update({delivery_evidence:risk,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        if(writeError)throw new Error('PREPARE_AUTH_RISK_WRITE_FAILED');
+        results.push({channel:row.channel,status:'repair_before_due',
+          reason:'ORIGINAL_PROVIDER_AUTH_PREFLIGHT_FAILED'});
+        continue;
+      }
+      const prepared={...gatePassedEvidence,first_time_right_preflight:{
+        contract:'original-social-first-time-right-prepare-v1',status:'READY_FOR_FINAL_RECHECK',
+        text_sha256:textHash,observed_at:new Date().toISOString(),authorization,
+        independent_editorial_review:true,provider_create:false,
+        final_review_at_due_required:true
+      }};
+      const {error:prepareError}=await db.from('powerhouse_channel_decisions')
+        .update({delivery_evidence:prepared,updated_at:new Date().toISOString()})
+        .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+      if(prepareError)throw new Error('PREPARE_REVIEW_WRITE_FAILED');
+      results.push({channel:row.channel,status:'ready_for_final_recheck',
+        contract:'original-social-first-time-right-prepare-v1',
+        final_review_at_due_required:true,provider_create:false,
+        text_sha256:textHash});
+      continue;
+    }
     await db.from('powerhouse_channel_decisions').update({delivery_evidence:gatePassedEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
 
     let instagramMetaConfig:MetaInstagramConfig|null=null;
@@ -1696,7 +1768,10 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit,
+    // Preparation is not an external side effect and never constitutes provider proof.
+    preparation_only:prepareOnly, provider_create:prepareOnly?false:null,
+    provider_truth_verified:prepareOnly?false:true, publication_authority: PUBLICATION_AUTHORITY });
   } catch (error) {
     if (error instanceof BufferHttpError && error.status === 429) {
       return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);
