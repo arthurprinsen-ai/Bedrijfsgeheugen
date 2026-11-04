@@ -14,7 +14,10 @@
     "shadow": [
       "tests/brain-netlify-production-build-parity-v1.test.mjs"
     ],
-    "production_proof_required": true
+    "production_proof_required": true,
+    "canary": [
+      "tests/brain-netlify-production-build-parity-v1.test.mjs"
+    ]
   },
   "outcome": "PR candidate only; protected CI, merge, Netlify build and independent production readback outstanding.",
   "compiler": {
