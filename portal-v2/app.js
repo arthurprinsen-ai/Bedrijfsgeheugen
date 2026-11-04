@@ -2,7 +2,7 @@ import { deriveFlowState, statusLabel } from './flow-state.js?bg_explain=80ad881
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountLegacyParity } from './legacy-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { DESKTOP_NAV_GROUPS } from './navigation-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bindPortalNavigation, navigatePortal } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bindPortalNavigation, navigatePortal, subscribePortalRoute } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { groupedHubPages, hubDefinition } from './hubs.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { createScanClaimBridge } from './scan-claim-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
@@ -176,18 +176,56 @@ function renderHubGroups(hubId='portal'){
 function mountCanonicalDesktopNavigation(){
  const nav=document.querySelector('.sidebar .nav');if(!nav)return;
  nav.innerHTML='';nav.classList.add('portal-single-navigation');nav.setAttribute('aria-label','Portaalnavigatie');
+ const current=new URLSearchParams(location.search).get('page')||'overzicht';
  for(const group of DESKTOP_NAV_GROUPS){
-   const section=document.createElement('section');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
-   const heading=document.createElement('h2');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
+   const section=document.createElement('details');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
+   section.open=group.pages.some(page=>page.target===current);
+   const heading=document.createElement('summary');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
    for(const page of group.pages){
      if(isProtectedTrustPage(page.target)&&!hasProtectedTrustAccess())continue;
      const button=document.createElement('button');button.type='button';
      button.dataset.navTarget=page.target;button.dataset.navGroup=group.id;button.dataset.navPage=page.id;
+     if(page.target===current){button.classList.add('active');button.setAttribute('aria-current','page');}
      button.innerHTML=`<span class="ico">${group.icon}</span><span>${page.label}</span>`;
      section.appendChild(button);
    }
    nav.appendChild(section);
  }
+}
+/* Four task-oriented shortcuts into the existing authorized V2 router. */
+function mountMobilePrimaryNavigation(){
+ if(document.querySelector('[data-portal-mobile-primary]'))return;
+ const nav=document.createElement('nav');
+ nav.className='portal-mobile-primary';
+ nav.dataset.portalMobilePrimary='v1';
+ nav.setAttribute('aria-label','Snelle mobiele navigatie');
+ for(const [target,icon,label] of [
+  ['overzicht','⌂','Vandaag'],
+  ['actieve-acties','✓','Acties'],
+  ['outcomes-evidence','◈','Resultaat'],
+  ['hub:portal','☰','Meer']
+ ]){
+  const button=document.createElement('button');
+  button.type='button';button.dataset.mobilePrimaryTarget=target;
+  const symbol=document.createElement('span');
+  symbol.className='portal-mobile-primary-icon';symbol.setAttribute('aria-hidden','true');symbol.textContent=icon;
+  const caption=document.createElement('span');caption.textContent=label;
+  button.append(symbol,caption);
+  button.addEventListener('click',()=>navigatePortal(target));
+  nav.appendChild(button);
+ }
+ document.body.appendChild(nav);
+ const sync=({target})=>{
+  nav.querySelectorAll('button').forEach(button=>{
+   const selected=button.dataset.mobilePrimaryTarget===target;
+   button.classList.toggle('is-current',selected);
+   if(selected)button.setAttribute('aria-current','page');
+   else button.removeAttribute('aria-current');
+  });
+ };
+ subscribePortalRoute(sync);
+ const params=new URLSearchParams(location.search);
+ sync({target:params.get('hub')?'hub:portal':params.get('page')||'overzicht'});
 }
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
@@ -362,6 +400,7 @@ bindPortalNavigation({
  closeHub,
  showOverview:()=>{closePortalPage();closeHub()}
 });
+mountMobilePrimaryNavigation();
 document.querySelectorAll('[data-open-page]').forEach(control=>{
  control.addEventListener('click',event=>{
   if(control.tagName==='A') event.preventDefault();
