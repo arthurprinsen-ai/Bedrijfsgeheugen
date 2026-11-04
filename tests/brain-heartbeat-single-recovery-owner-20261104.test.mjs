@@ -33,15 +33,14 @@ test('source failure is never misclassified as green and external effects are no
  assert.equal(source.includes("public.content_publication_obligations"),false);
  assert.equal(source.includes("perform public.powerhouse_recovery_control_plane_tick_v1()"),false);
 });
-test('redundant #184 retired only when original #171 is live and exact job identity/ACL is proven',()=>{
- assert.ok(source.includes("jobname='powerhouse-original-recovery-control-plane-v1'"));
- assert.ok(source.includes("v_job.schedule <> '*/15 * * * *'"));
- assert.ok(source.includes("btrim(v_job.command) <> 'select public.powerhouse_recovery_control_plane_tick_v1();'"));
- assert.ok(source.includes("jobname='powerhouse-runtime-scheduler-mux-v1'"));
- assert.ok(source.includes("command LIKE '%powerhouse_runtime_scheduler_mux_v3%'"));
- assert.ok(source.includes("ORIGINAL_171_SCHEDULER_MISSING_KEEP_184"));
- assert.ok(source.includes("ORIGINAL_HEARTBEAT_PRIVILEGE_DRIFT_KEEP_184"));
- assert.ok(source.includes("PERFORM cron.unschedule(v_job.jobid)"));
+test('schema migration never bypasses protected native cron.job permissions',()=>{
+ assert.ok(source.includes("Native cron.job administration is intentionally OUTSIDE"));
+ assert.ok(source.includes("original authorized production owner"));
+ assert.ok(source.includes("two natural #171 receipts"));
+ assert.ok(source.includes("the source duplication incident remains ACTIVE"));
+ assert.equal(source.includes("PERFORM cron.unschedule("),false);
+ assert.equal(source.includes("SELECT count(*) INTO v_n FROM cron.job"),false);
+ assert.equal(source.includes("cron.schedule("),false);
 });
 test('role grants remain service-only and original function body properly closes',()=>{
  assert.ok(source.includes("$function$;"));
