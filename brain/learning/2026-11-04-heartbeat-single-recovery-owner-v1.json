@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "fingerprint": "powerhouse|heartbeat|same-recovery-workers-scheduled-by-171-and-184|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PATCH_CANDIDATE_NOT_PRODUCTION_LIVE_VERIFIED",
+  "owner": "original ONE BRAIN / Heartbeat runtime mux & Powerhouse recovery control-plane owners",
+  "one_brain_writer_lease": "CANDIDATE_REQUIRES_ORIGINAL_WRITER_VALIDATION",
+  "observed_evidence": {
+    "provider": "native Supabase production",
+    "original_job_171": "ACTIVE, original runtime scheduler calls execution-resilience-watchdog and reconciliation-worker every 5 minutes",
+    "recovery_job_184": "ACTIVE, additional original control-plane controller invokes same watchdog and worker every 15 minutes",
+    "shared_advisory_lock": "NOT_PROVEN, two different outer lock keys",
+    "recovery_truth": {
+      "review_completed": 307,
+      "explicitly_unresolved": 306,
+      "provider_resolution": "NOT_PROVEN_FROM_TRIAGE_RECORD"
+    },
+    "other_incidents": "22 currently active, unrelated provider recovery not proven"
+  },
+  "root_cause": "Original owner #5386 restored a native #184 schedule for previously unscheduled control-plane, but original #171 was already running both underlying worker operations; the independent private evidence receipt was not consumed in original #171. Duplicate activity and two different outer leases risk extra work and confusing liveness claims.",
+  "hypothesis": "Keep only canonical original #171 as active recovery worker, attach read-only aggregated source truth to its natural terminal task result, retire exact duplicate #184 only with native original #171 and ACL proof; this removes duplicate scheduling without reducing recovery cadence.",
+  "change": "One original SQL migration: preserve existing mux and provider authorization; capture typed terminal and recovery source receipts; fail closed on missing original contract, guard decommission of exact native duplicate cron #184 in same transaction after checking #171, original job command and ACL. No new scheduler or producer.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-heartbeat-single-recovery-owner-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-heartbeat-single-recovery-owner-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-heartbeat-single-recovery-owner-20261104.test.mjs"
+    ],
+    "invariants": [
+      "one original recovery worker scheduler",
+      "#171 native scheduler remains active",
+      "provider outcomes remain evidence due",
+      "no anonymous or authenticated function execute",
+      "no unknown-effect replay",
+      "protected original lease",
+      "independent natural task receipt and direct provider source readback required"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "DUPLICATE_RECOVERY_SCHEDULERS",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "portal_projection": {
+    "state": "SOURCE_PATCH_CANDIDATE",
+    "display": "Eén hersteluitvoerder; bewijs van individuele herstelde resultaten blijft vereist",
+    "full_green_allowed": false
+  },
+  "terminal_rule": "Original owner lease, all Required/BRAIN/CodeQL/native Supabase Preview checks, protected merge, native production migration+ACL+cron count proving #171 active and #184 absent, TWO natural #171 terminal-autonomous-reconcile task_results include recovery_review_truth.explicitly_unresolved with provider_resolution_proven false, original learning/cas closure only for duplicate-scheduling source defect; 306 historical outcomes remain not proven."
+}
