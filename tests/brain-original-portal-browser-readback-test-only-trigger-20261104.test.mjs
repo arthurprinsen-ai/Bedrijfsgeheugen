@@ -8,6 +8,7 @@ test('original production browser reruns when its own contract or original integ
  assert.match(workflow,/name: Portal V2 Production DOM Readback/);
  assert.match(workflow,/      - 'portal-v2\/\*\*'/);
  assert.match(workflow,/      - 'tests\/integration\/portal-v2-production-\*\.spec\.js'/);
+ assert.match(workflow,/      - 'tests\/integration\/portal-v2-mobile-shell\.spec\.js'/);
  assert.match(workflow,/      - '\.github\/workflows\/portal-v2-production-dom-readback\.yml'/);
  assert.match(workflow,/run: npx playwright test tests\/integration\/portal-v2-production-\*\.spec\.js --workers=1/);
  assert.match(workflow,/node tools\/ci\/portal-canonical-browser-release-fence\.mjs --verify/);
@@ -39,4 +40,16 @@ test('no source runtime can be reclassified as evidence-only and both original f
  assert.match(workflow,/echo "::error::Runtime source changed after selected production SHA:/);
  assert.match(workflow,/git diff --name-only "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
  assert.match(workflow,/PORTAL_READBACK_URL=\$\{immutable\}/);
+});
+
+
+test('original hydrated 390px demo uses real 44px mobile Meer instead of hidden deprecated hamburger',async()=>{
+ const source=await readFile(new URL('../tests/integration/portal-v2-mobile-shell.spec.js',import.meta.url),'utf8');
+ assert.match(source,/data-mobile-primary-target="hub:portal"/);
+ assert.match(source,/mobile Meer needs >=44px touch target/);
+ assert.match(source,/await mobileMore\.click\(\)/);
+ assert.match(source,/await page\.keyboard\.press\('Escape'\)/);
+ assert.match(source,/locator\('#portalFullMenuToggle'\)\)\.toBeHidden/);
+ assert.doesNotMatch(source,/locator\('#portalFullMenuToggle'\)\)\.toBeVisible/);
+ assert.match(workflow,/portal-v2-mobile-shell\.spec\.js --workers=1/);
 });
