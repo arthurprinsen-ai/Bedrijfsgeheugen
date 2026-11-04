@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE_PROVEN",
+  "fingerprint": "original-powerhouse-recovery-control-plane|existing-owner-no-cron-job|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original Powerhouse recovery control plane / ONE BRAIN reliability agent",
+  "failure_class": "ORIGINAL_RECOVERY_CONTROL_PLANE_UNSCHEDULED",
+  "root_cause": "At 2026-11-04T06:40Z the original production public.powerhouse_recovery_control_plane_tick_v1() and read-only original recovery truth function both exist and execute but there are 0 active pg_cron jobs invoking the tick. Autonomous recovery consequently lacks its native recurring trigger. Existing original manual tick returned state=COMPLETED watchdog_rows=0 reconciliation_rows=0 but 306 of 307 historical recovery reviews were explicitly UNRESOLVED and provider success is NOT proven from triage. Source execution and incident terminality must remain distinct.",
+  "evidence": {
+    "observed_at_utc": "2026-11-04T06:41:12Z",
+    "original_tick_execution": {
+      "state": "COMPLETED",
+      "elapsed_ms": 12,
+      "watchdog_rows": 0,
+      "reconciliation_rows": 0,
+      "review_completed": 307,
+      "explicitly_unresolved": 306,
+      "provider_resolution": "NOT_PROVEN_FROM_TRIAGE_RECORD"
+    },
+    "original_cron_count": 0,
+    "existing_cron_scheduler": "pg_cron 1.6.4",
+    "no_new_recovery_worker": true
+  },
+  "fix": "Protected SQL migration registers exactly one named native pg_cron job for the existing original control-plane tick every 15 minutes. Idempotent if identical job exists; fail closed if other active or reserved original owners exist. Existing tick's original pg_try_advisory_xact_lock and original watchdog/reconciler logic remain unchanged. No second scheduler product, no extra provider endpoint, no replay of unknown side effects.",
+  "prevention_rule": "For the original recovery control plane, runtime health requires exactly one active native cron job, original function and advisory lock, natural run history and independent actual provider/incident receipts; never equate cron or triage completed with incident repaired.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-recovery-control-plane-native-pgcron-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-recovery-control-plane-native-pgcron-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-recovery-control-plane-native-pgcron-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "ORIGINAL_RECOVERY_CONTROL_PLANE_UNSCHEDULED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "release_requirements": [
+    "protected exact head GitHub Required/BRAIN/CodeQL",
+    "official native Supabase Preview",
+    "protected merge",
+    "production named pg_cron job unique active",
+    "one natural cron run",
+    "original recovery tick outcome truth readback",
+    "do not close 306 unresolved unless individually provider verified"
+  ]
+}
