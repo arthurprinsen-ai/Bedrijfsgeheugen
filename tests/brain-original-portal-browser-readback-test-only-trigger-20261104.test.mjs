@@ -22,7 +22,7 @@ test('CI-only source replay must derive published SHA from independent Netlify m
  assert.match(workflow,/\$\{PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false\}/);
  assert.match(workflow,/PORTAL_EXPECTED_SHA=\$published_sha/);
  assert.match(workflow,/Exact immutable deploy ready/);
- assert.match(workflow,/PORTAL_CANONICAL_BROWSER_RELEASE_PINN/);
+ assert.match(workflow,/PORTAL_BROWSER_READBACK_URL=https:\/\/www\.bedrijfsgeheugen\.nl/);
 });
 
 test('no source runtime can be reclassified as evidence-only and both original fail-closed scope gates agree',()=>{
