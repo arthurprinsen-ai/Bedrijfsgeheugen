@@ -165,3 +165,15 @@ test('actual ORIGINAL generator receives channel FTR prerequisites BEFORE writin
  const blog=m.buildEditorialCouncilBrief({channel:'blog'});
  assert.match(blog.instruction,/Required\/BRAIN\/CodeQL/);
 });
+
+test('GitHub status 500 uses existing exact-local candidate browser verification, never a forged green',()=>{
+ const workflow=readFileSync('.github/workflows/lane-website.yml','utf8');
+ assert.match(workflow,/\[429,500,502,503,504\]\.includes\(response\.status\)/);
+ assert.match(workflow,/GitHub status API \$\{response\.status\}; verifying exact candidate locally/);
+ assert.match(workflow,/throw new Error\(\x60GitHub status API \$\{response\.status\}\x60\)/);
+ assert.match(workflow,/preview_mode=local-exact-candidate/);
+ assert.match(workflow,/ref: \$\{\{ inputs\.candidate_sha \}\}/);
+ assert.match(workflow,/Build and serve exact local candidate only when Netlify preview is unavailable/);
+ assert.match(workflow,/Verify affected routes on desktop and mobile/);
+ assert.match(workflow,/Verify all public pages are visibly rendered/);
+});
