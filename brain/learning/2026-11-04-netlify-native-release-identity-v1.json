@@ -9,10 +9,10 @@
   "prevention_rule": "Resolve release SHA from verified checkout Git HEAD when COMMIT_REF absent; reject malformed provided SHA and supplied SHA vs checkout mismatch; preserve fail-closed production CONTEXT and DEPLOY_ID; verify published release.json against original main SHA before claiming live.",
   "evaluation": {
     "historical_replay": [
-      "tools/ci/netlify-build-entry.mjs"
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
     ],
     "shadow": [
-      "tools/ci/netlify-build-entry.mjs"
+      "tests/brain-netlify-production-build-parity-v1.test.mjs"
     ],
     "production_proof_required": true
   },
