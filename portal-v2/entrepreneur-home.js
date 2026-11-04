@@ -212,7 +212,9 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!auth())return;
     if(button.dataset.entrepreneurReveal==='true'){
       const details=host.querySelector('[data-entrepreneur-details]');
-      if(details){details.open=true;details.querySelector('.eh-goals')?.scrollIntoView?.({block:'center'});}
+      const goals=host.querySelector('.eh-goals');
+      if(goals?.parentElement===host){goals.scrollIntoView?.({block:'center'});goals.querySelector('button')?.focus?.();}
+      else if(details){details.open=true;goals?.scrollIntoView?.({block:'center'});}
       return;
     }
     if(button.dataset.entrepreneurScan==='true'){
