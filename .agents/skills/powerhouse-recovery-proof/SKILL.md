@@ -5,6 +5,10 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## 4 november 2026 — één hersteluitvoerder, niet twee cron-routes
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Original native cron #171 voert al iedere vijf minuten de `powerhouse_execution_resilience_watchdog_v1` en `powerhouse_reconciliation_worker_v2` uit. De later ingevoerde oorspronkelijke cron #184 voert diezelfde functies elke 15 minuten opnieuw uit, zonder bewezen gedeelde buitenste writer-lease. Alle agents **moeten eerst de bestaande #171-taken/leases en actuele databasebron controleren voordat zij een recovery-scheduler toevoegen**. Voorkomen: voeg het onafhankelijke service-only `powerhouse_recovery_review_truth_v1()`-resultaat alleen toe aan de bestaande `terminal-autonomous-reconcile`-taak en verwijder een redundant origineel cron uitsluitend transactioneel na bewezen #171-identiteit, toegangsrechten en exacte #184-job. Verlaag nooit kwaliteits-, tenant- of autorisatiegrenzen. Voorkom geschiedenisvervalsing en genereer geen tweede writer. Bewijs via originele Required/BRAIN/CodeQL/Supabase-preview, beschermde merge, productiecontract en twee natuurlijke #171-resultaten met `recovery_provider_resolution_proven=false`. De 306 historische `UNRESOLVED`-provideruitkomsten blijven open. Fingerprint `powerhouse|heartbeat|same-recovery-workers-scheduled-by-171-and-184|20261104-v1`. Bron https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 **Fingerprint:** `powerhouse|recovery-queue|triage-only-marked-succeeded|20261103-v1`. **Owner:** existing original Powerhouse recovery queue / ONE BRAIN reliability agent. **Parent:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
