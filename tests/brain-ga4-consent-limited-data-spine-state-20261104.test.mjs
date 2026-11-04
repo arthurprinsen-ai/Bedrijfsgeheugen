@@ -9,7 +9,7 @@ test('preserves original Data Spine source registry and all ten source rows',()=
  assert.match(migration,/writer_contract='ga4-observed-metrics-v1'/);
  const named=[...migration.matchAll(/\('([^']+)'::text,'[^']+'::text,(?:true|false)\)/g)].map(x=>x[1]);
  assert.deepEqual(named,['ga4-analytics','gsc-search','linkedin','composio-linkedin-publication','instagram-social','social-buffer','tavily-intelligence','external-intelligence','dataforseo-intelligence','portal-state']);
- assert.match(migration,/create or replace view public\.powerhouse_data_spine_health_v1 as/);
+ assert.match(migration,/create or replace view public\.powerhouse_data_spine_health_v1\s+with \(security_invoker=true\) as/);
 });
 test('explicit true consent boundary cannot be inferred from HTTP200 or empty CSV alone',()=>{
  for(const part of [
