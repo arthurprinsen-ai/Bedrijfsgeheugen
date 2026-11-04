@@ -12,7 +12,7 @@
     "security_sensitive": true
   },
   "root_cause": "The originally protected production browser workflow's manual exact published SHA guard did not list original non-executable AGENTS.md and .agents/skills/* alongside tests/docs; protected test-only bugfix #5412 cannot be independently replayed against unchanged deployed site without a permitted documentation-only delta.",
-  "prevention_rule": "Only exact same immutable provider commit or its verified ancestor with CI/docs/agent-only changes is eligible for original manual DOM readback. Preserve merged PR ancestry and reject all changes to portal-v2 runtime, server functions, secrets, migrations, RLS and security implementation, with original browser + tenant-independent proof before green.",
+  "prevention_rule": "Only exact same immutable provider commit or its verified ancestor with CI/docs/agent-only changes is eligible for original manual DOM readback. Preserve merged PR ancestry and reject all changes to portal-v2 runtime, server functions, secrets, migrations, RLS and security implementation, with original browser + tenant-independent proof before green. The only permitted extra lock is the specifically named supabase/migration-history.lock.json, never SQL or runtime code.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-production-readback-source-only-override-20261104.test.mjs"
@@ -31,7 +31,8 @@
       "Protected PR #5412 changes test, AGENTS.md, skill, brain learning, docs only"
     ],
     "current": [
-      "Original whitelist extension candidate, original browser dispatch and provider readback PENDING"
+      "Original whitelist extension candidate, original browser dispatch and provider readback PENDING",
+      "Protected PR #5413 independently source/provider-attested the new 801st Supabase migration and changed only supabase/migration-history.lock.json (non-web-executable); its .sql source existed in published baseline. Explicit lock file may differ for browser replay; supabase/migrations/** and runtime remain disallowed."
     ]
   },
   "customer_outcome": "UNVERIFIED",
