@@ -289,6 +289,9 @@ function syncHubTriggerState(open){
 }
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
+ // The specialist page lives outside .app and can remain a separate overlay.
+ // One modal at a time: dismiss its view without losing the canonical route.
+ closePortalPage();
  if(!sheet.classList.contains('open')){
   hubOpener=document.activeElement instanceof HTMLElement&&!sheet.contains(document.activeElement)?document.activeElement:null;
   const background=document.querySelector('.app');
