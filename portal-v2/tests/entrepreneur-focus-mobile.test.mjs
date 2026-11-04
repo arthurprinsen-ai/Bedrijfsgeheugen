@@ -48,3 +48,17 @@ test('focus controls meet keyboard and motion preferences and preserve visible e
  assert.match(ui,/Geen actuele, klantgebonden Powerhouse-projectie bewezen/);
  assert.match(ui,/Voorbeeldcijfers en voorspellingen tellen nooit mee/);
 });
+
+test('legacy process and dashboard remain reachable as one optional accessible overview section',async()=>{
+ const [app,css,html]=await Promise.all([read('app.js'),read('navigation.css'),read('index.html')]);
+ assert.match(app,/function mountOverviewDepthDisclosure\(\)/);
+ assert.match(app,/details\.className='portal-overview-depth'/);
+ assert.match(app,/summary\.className='portal-overview-depth-trigger'/);
+ assert.match(app,/for\(const section of existing\)body\.appendChild\(section\)/);
+ assert.match(app,/sync\(\{target:params\.get\('hub'\)/);
+ assert.match(app,/if\(details\.open\)requestAnimationFrame\(render\)/);
+ assert.match(css,/portal-overview-depth-trigger:focus-visible/);
+ assert.match(css,/portal-overview-depth\[hidden\]\{display:none!important\}/);
+ assert.match(html,/class="daily-steering"/);
+ assert.match(html,/class="dashboard"/);
+});
