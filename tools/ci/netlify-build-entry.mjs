@@ -133,7 +133,7 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
   });
   const gitHead=gitHeadResult.status===0?String(gitHeadResult.stdout||'').trim():'';
   if(providedCommit && !HEX40.test(providedCommit)) throw new Error('PRODUCTION_RELEASE_COMMIT_REF_INVALID');
-  if(HEX40.test(providedCommit)&&HEX40.test(gitHead)&&providedCommit.toLowerCase()!==gitHead.toLowerCase()){
+  // GitHub PR parity checks out a synthetic merge commit while COMMIT_REF is\n  // intentionally the candidate PR head. Only native provider builds require\n  // checkout HEAD equality; retain the explicit candidate identity in CI.\n  if(process.env.GITHUB_ACTIONS!=='true'&&HEX40.test(providedCommit)&&HEX40.test(gitHead)&&providedCommit.toLowerCase()!==gitHead.toLowerCase()){
     throw new Error('PRODUCTION_RELEASE_GIT_HEAD_MISMATCH');
   }
   const commitRef=providedCommit||gitHead;
