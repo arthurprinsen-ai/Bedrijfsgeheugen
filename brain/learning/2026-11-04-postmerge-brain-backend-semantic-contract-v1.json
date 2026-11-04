@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "github|brain|postmerge-backend-regression|20261104-v1",
+  "owner": "original BRAIN backend lane and delivery recovery supervisor",
+  "source": {
+    "github_run_id": 41804969879,
+    "github_job_id": 126490006506,
+    "url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41804969879",
+    "candidate_sha": "8226eb4b360ba129f7b8680f8c274689ef50b252",
+    "merged_production_sha": "481fbf260896cdb961b45204013214bf363fb044",
+    "netlify_deploy_id": "6aeaf5d92bbce3a89d7c2263",
+    "observed": {
+      "backend_failed_tests": 11,
+      "portal_lane": "SUCCESS",
+      "automation_lane": "SUCCESS",
+      "terminal_closure": "FAILED"
+    }
+  },
+  "root_cause": "Current source safeguards intentionally expanded past literal old test fixtures: first-time-right fingerprint precedence, strict OpenAI low-reasoning bounded retry, exactly 30 rather than seven preceding publication dates, and the skill is now incident-protocol compliant.",
+  "prevention": "Keep original complete BRAIN and terminal closure separate from Netlify READY; compare executed source contract against tests, preserve stronger anti-repeat and approval rules, shrink real skill protocol debt; no synthetic green.",
+  "changes": [
+    "Semantically verify existing typed CI provider error fallback and first-time-right precedence",
+    "Assert existing bounded governed AI retry including low-reasoning argument and final editorial truth checks",
+    "Execute actual original SQL for 30 bound previous dates including leap-day and year rollover",
+    "Remove already-compliant skill from visible debt baseline",
+    "Keep existing personal editorial bounded revision and original 150–175 word requirement"
+  ],
+  "acceptance": [
+    "Protected PR exact-head Required and CodeQL green",
+    "Original BRAIN backend and all lanes pass using unchanged policy safeguards",
+    "Original post-merge terminal closure succeeds with exact SHA and independent provider status",
+    "No effect on source selection, publishers or tenant permissions"
+  ],
+  "customer_outcome": "No customer-facing business effect can be claimed from test alignment alone.",
+  "independent_verification": "PENDING"
+}
