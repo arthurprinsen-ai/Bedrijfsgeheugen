@@ -150,6 +150,7 @@ const PREVENTIVE_ACTION=Object.freeze({
  MIRA_FAILED_MEDIA_REPLACEMENT_REQUIRED:'Original Mira producer must use a genuinely different approved video; never replay rejected history or relax 0.940 three-frame identity.',
  MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Original router must verify native MP4, start/middle/end face at least 0.940, temporal proof and exact media SHA before publisher delivery.',
  ORIGINAL_PROVIDER_CONSENT_REQUIRED:'Only the authorized owner can grant genuinely missing provider rights using the original verified, unexpired action URL; never bypass consent.',
+ INDEPENDENT_PROVIDER_READBACK_REQUIRED:'An existing provider publication acknowledgement is not independent readback. Reconcile the exact provider ID using the original authorized publisher; never resend or invent proof.',
  VERIFIED_ARTIFACT_NOT_READY:'Original channel editor must finish fresh sourced content and original quality proof before its scheduled slot.'
 });
 const PREVENTIVE_WINDOW_MS=12*60*60*1000;
@@ -169,6 +170,19 @@ export function assessPreventivePublicationReadiness({
  for(const channel of PREVENTIVE_CHANNELS){
    const ob=byOb.get(channel);
    const dec=byDec.get(channel==='instagram'?'instagram_company':channel);
+   // A provider create/ACK can be terminal for idempotency without being independently LIVE_PROVEN.
+   // Surface missing independent proof as reconciliation-only, never as permission to resend.
+   if(ob&&['linkedin_personal','linkedin_company','instagram'].includes(channel)
+      &&str(ob.status)==='PUBLISHED'&&!ob.live_proven_at
+      &&ob.evidence?.provider_truth_verified!==true){
+     atRisk.push({channel,owner:PREVENTIVE_OWNER[channel],
+       code:'INDEPENDENT_PROVIDER_READBACK_REQUIRED',
+       action:PREVENTIVE_ACTION.INDEPENDENT_PROVIDER_READBACK_REQUIRED,
+       scheduledFor:null,minutesToDeadline:null,phase:'READBACK_PENDING',
+       requiresAuthorization:false,nextStep:'ORIGINAL_PROVIDER_RECONCILE_ONLY',
+       scope:'READ_ONLY_EXISTING_CONTENT_LOOP'});
+     continue;
+   }
    if(ob&&isTerminal(ob)){ready.push({channel,proof:'ORIGINAL_TERMINAL_PROVIDER_READBACK'});continue;}
    const raw=dec?.scheduled_for;
    const scheduledFor=raw instanceof Date&&Number.isFinite(raw.getTime())?raw.toISOString():str(raw);

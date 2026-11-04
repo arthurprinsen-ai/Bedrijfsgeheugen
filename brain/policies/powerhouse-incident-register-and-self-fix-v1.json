@@ -117,7 +117,7 @@
       "current_status": "PENDING_PROTECTED_MERGE_AND_NATIVE_PRODUCTION_READBACK"
     }
   },
-  "revision": 6,
+  "revision": 7,
   "continuous_lean_loop": {
     "required": true,
     "scope": [
@@ -432,5 +432,92 @@
       "retry external provider without idempotency or authorization",
       "mark completed after documented references alone"
     ]
+  },
+  "first_time_right_incident_lifecycle_v1": {
+    "version": "ONE_BRAIN_FIRST_TIME_RIGHT_INCIDENT_LIFECYCLE_V1",
+    "status": "ACTIVE_POLICY_WITH_SOURCE_COVERAGE_GAPS",
+    "owner": "original ONE BRAIN incident writer and original affected agent, no parallel registry or writer",
+    "all_agents_inherit": "AGENTS.md; original existing skill marker; canonical chat-learning-preflight",
+    "prebuild_requirements": [
+      "EXCLUSIVE_OWNER_AND_WRITER_LEASE",
+      "ACCEPTANCE_CRITERIA_AND_MEASURABLE_CUSTOMER_VALUE",
+      "SOURCE_LINEAGE_QUALITY_FRESHNESS",
+      "PREVIOUS_FINGERPRINTS_AND_FAILURE_PATTERNS",
+      "DEPENDENCY_AND_SCHEMA_PROOF",
+      "SECURITY_PRIVACY_AUTH_AND_CONSENT",
+      "COST_LIMITS_AND_RATE_QUOTAS",
+      "IDEMPOTENCY_DUPLICATE_PREVENTION",
+      "REGRESSION_TEST_AND_RECOVERY_ROLLBACK",
+      "NATIVE_POST_RELEASE_AND_INDEPENDENT_PROVIDER_OUTCOME_PROOF_PLAN"
+    ],
+    "incident_triggers": [
+      "ERROR",
+      "EXCEPTION",
+      "FAILED_ACTION",
+      "REJECTED_SOURCE",
+      "NEAR_MISS",
+      "UNVERIFIED_PROVIDER_RESULT",
+      "MISSING_INCIDENT_INGEST",
+      "RECURRING_FINGERPRINT",
+      "CONTROLLED_FTR_CANARY"
+    ],
+    "synthetic_test_is_real_production_incident": false,
+    "original_write_function": "public.brain_observe_failure",
+    "occurrence_readback": "public.brain_failure_occurrences",
+    "machine_evidence_fields": [
+      "source_run_id",
+      "source_head_sha",
+      "observed_at",
+      "stable_fingerprint",
+      "is_synthetic",
+      "source_scope",
+      "agent_owner",
+      "skill_version",
+      "failure_class",
+      "root_cause_or_UNKNOWN",
+      "repair",
+      "regression",
+      "protected_merge_sha",
+      "production_readback",
+      "external_provider_or_customer_outcome",
+      "prevention",
+      "recurrence_guard",
+      "remaining_unresolved",
+      "next_owner_action"
+    ],
+    "phases": [
+      "OBSERVED",
+      "REGISTERED",
+      "ROOT_CAUSE_VERIFIED",
+      "FIX_TESTED",
+      "PROTECTED_RELEASED",
+      "PRODUCTION_READBACK",
+      "PROVIDER_OR_CUSTOMER_OUTCOME_PROVEN",
+      "LEARNING_WRITTEN",
+      "RECURRENCE_WATCHED"
+    ],
+    "requires_full_terminal_proof_before_resolved": true,
+    "when_canonical_write_unavailable": "INCIDENT_LOG_WRITEBACK_UNVERIFIED",
+    "on_missing_original_provider_readback": "RECOVERY_NOT_PROVEN",
+    "on_unverified_coverage": "SOURCE_COVERAGE_UNVERIFIED",
+    "never": [
+      "FORCE_GREEN_FROM_CI_SUCCESS",
+      "COUNT_SYNTHETIC_CANARY_AS_PRODUCTION_INCIDENT",
+      "COUNT_TRIAGE_AS_PROVIDER_RESOLUTION",
+      "TREAT_SILENCE_AS_SUCCESS",
+      "RUN_PARALLEL_PUBLISHER_OR_SCHEDULER",
+      "BYPASS_USER_CONSENT_OR_PROVIDER_AUTH",
+      "EXPOSE_SERVICE_ROLE_SECRETS_TO_UNTRUSTED_PR"
+    ],
+    "live_verification": {
+      "native_ftr_admission": "NEGATIVE_AND_POSITIVE_LIVE_PROVEN",
+      "negative_run_id": 41797450956,
+      "positive_run_id": 41797567508,
+      "canonical_synthetic_occurrence": "ONE_READBACK_CONFIRMED",
+      "automatic_future_github_to_brain_ingestion": "NOT_YET_INDEPENDENTLY_PROVEN",
+      "provider_and_revenue_outcomes": "SEPARATELY_EVIDENCE_REQUIRED"
+    },
+    "regression": "tests/brain-first-time-right-agent-incident-lifecycle-20261104.test.mjs",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
   }
 }
