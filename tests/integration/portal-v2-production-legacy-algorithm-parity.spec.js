@@ -38,8 +38,22 @@ async function openAnalysis(page,pageId){
 }
 
 test('production serves the executable legacy parity engine',async({request})=>{
- const response=await request.get(`${BASE_URL}/portal-v2/legacy-parity-engine.js?bg_engine=${Date.now()}`);
- expect(response.status()).toBeLessThan(400);
+ // A verified provider-level anti-bot 403 can be a transient security challenge
+ // even for a legitimate read-only probe. Never weaken Netlify protection,
+ // supply fake authorization, or classify a persistent 403 as a successful GET.
+ let response,classification='HTTP_ERROR';
+ for(let attempt=0;attempt<3;attempt++){
+  if(attempt)await new Promise(resolve=>setTimeout(resolve,attempt*400));
+  response=await request.get(`${BASE_URL}/portal-v2/legacy-parity-engine.js?bg_engine=${Date.now()}-${attempt}`);
+  if(response.status()===403){
+   classification=classifyPortalBrowserReadback({status:403,html:await response.text()});
+   if(classification==='NETLIFY_SECURITY_CHALLENGE'&&attempt<2)continue;
+   if(classification==='NETLIFY_SECURITY_CHALLENGE')
+    throw new Error('NETLIFY_SECURITY_CHALLENGE_READBACK_BLOCKED:legacy-parity-engine.js:HTTP403; original provider challenge must remain open');
+  }
+  break;
+ }
+ expect(response.status(),'the original public asset must be independently served, never a 403').toBe(200);
  const source=await response.text();
  expect(source).toContain('calculateLegacyEquivalent');
  expect(source).toContain('LEGACY_PARITY_ENGINE_VERSION');
