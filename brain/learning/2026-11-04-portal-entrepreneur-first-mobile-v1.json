@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "fingerprint": "portal|ux|technical-dashboard-before-entrepreneur-decision|20261104-v1",
+  "owner": "original Portal V2 design and engineering agent within ONE BRAIN",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5399",
+  "root_cause": "The main V2 route foregrounds numerous workflow stages, long descriptions, KPIs and a large page catalog. Mobile was largely a responsive desktop layout without a compact task-first bottom navigation; the authenticated entrepreneur home repeated the next action.",
+  "customer_impact": "A first-time entrepreneur cannot reliably identify what needs attention, how to act, and what is independently proven, especially on a phone. Direct user-testing evidence is still outstanding.",
+  "prevention": "Present one prominently prioritized next action on the existing authenticated snapshot; show evidence and technical depth on demand; preserve full role-gated registry while giving mobile four task-oriented shortcuts. Release requires actual usability and mobile readback rather than self-assessed aesthetic claims.",
+  "actions": [
+    "Place the single next-action card before extended proof, source and journey details, and expose explicit disclosure controls.",
+    "Keep first-visit goal choices immediately reachable; retain existing canonical goal save and tenant-specific server state.",
+    "Use the existing router for Today, Actions, Result, More mobile tabs; collapse the desktop group list without deleting pages.",
+    "Check accessibility, screen sizes, role authorization and provider/readback before declaring live."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/entrepreneur-home.test.mjs",
+      "portal-v2/tests/entrepreneur-journey.test.mjs",
+      "portal-v2/tests/mobile-responsive-shell.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/entrepreneur-focus-mobile.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/entrepreneur-focus-mobile.test.mjs",
+      "manual mobile VoiceOver and first-time task completion after deployment"
+    ]
+  },
+  "closure": "OPEN until exact protected PR checks succeed, a same-source Netlify deployment is independently confirmed, iOS/mobile functional and accessibility checks pass and real entrepreneurs complete the core tasks without explanation.",
+  "compiler": {
+    "scope": "PORTAL_UX",
+    "failure_class": "TECHNICAL_HIERARCHY_BEFORE_CORE_DECISION",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "source_files": [
+      "portal-v2/index.html",
+      "portal-v2/app.js",
+      "portal-v2/entrepreneur-home.js",
+      "portal-v2/navigation.css"
+    ],
+    "incident_first_required": "41798968364 initially failed missing PR machine metadata and on rerun missing activity_ledger,brain_learning; both historical failures remain open evidence",
+    "regression": "portal-v2/tests/entrepreneur-focus-mobile.test.mjs",
+    "human_documentation": "docs/changes/2026-11-04-portal-mobile-first-focus-v1.md",
+    "protected_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5399"
+  }
+}
