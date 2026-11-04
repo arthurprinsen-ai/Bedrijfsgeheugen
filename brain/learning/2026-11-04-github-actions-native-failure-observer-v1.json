@@ -19,7 +19,8 @@
     "source_adapter": "tools/delivery/github-actions-failure-observer.mjs",
     "target": "public.brain_failure_registry + public.brain_failure_occurrences",
     "writer": "public.brain_observe_failure",
-    "known_limit": "Hourly 48-hour overlapping bounded scan is not an absolute guarantee for source outages exceeding its window; missing/truncated provider coverage is fail-closed."
+    "known_limit": "48-hour overlapping scan split into twelve disjoint 4-hour GitHub API search windows, each independently complete under provider's 1,000-result cap; missing/truncated results fail closed.",
+    "native_search_preflight": "Original GitHub Actions provider returns 2,500 completed runs for created >= 2026-11-02; naive single 1,000-result query silently loses coverage."
   },
   "evaluation": {
     "historical_replay": [
