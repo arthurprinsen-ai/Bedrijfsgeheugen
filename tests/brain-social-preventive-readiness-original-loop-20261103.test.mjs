@@ -191,7 +191,7 @@ test('original supervisor never turns a provider ACK or LIVE_PROVEN result into 
  assert.match(source,/error:alreadyLive\?null:alreadyPublished/);
  assert.match(source,/ORIGINAL_PROVIDER_READBACK_PENDING/);
  assert.ok(source.indexOf('const possibleSideEffect=') < source.indexOf("mode:'prepare_only'"));
- assert.ok(source.indexOf('const alreadyPublished=') < source.indexOf("mode:'publish_only'"));
+ assert.ok(source.indexOf('const alreadyPublished=') < source.indexOf('const result=await invoke(url,expected,name,payload);'));
 });
 
 test('preflight does not treat an ACK-only known side effect as a fresh publishing candidate',()=>{
