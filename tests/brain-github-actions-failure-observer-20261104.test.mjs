@@ -58,12 +58,12 @@ test('hash/identity conflicts and missing provider readback fail closed',async()
 });
 test('hourly native scan performs exactly one idempotent occurrence, no synthetic success',async()=>{
  const paths=[],observed=[];
- const api=async path=>{paths.push(path);return {workflow_runs:[run,{...run,id:41792546873,
+ const api=async path=>{paths.push(path);return {total_count:2,workflow_runs:[run,{...run,id:41792546873,
   conclusion:'success'}]};};
  const result=await scanNativeFailures({env,api,now:new Date('2026-11-04T09:00:00Z'),
   authority:{origin:'https://example.supabase.co',headers:{}},
   observe:async item=>{observed.push(item);return 'RECORDED_AND_VERIFIED';}});
- assert.equal(result.scanned,2);assert.equal(result.failures,1);
+ assert.equal(result.scanned,24);assert.equal(result.windows,12);assert.equal(result.failures,1);
  assert.equal(result.recorded,1);assert.equal(result.readback_complete,true);
  assert.equal(result.global_green,false);
  assert.equal(observed.length,1);
@@ -75,9 +75,9 @@ test('missing source/credentials or truncated pagination never claims full cover
  await assert.rejects(()=>scanNativeFailures({env,api:async()=>({invalid:true})}),
   /GITHUB_RUNS_SOURCE_UNAVAILABLE/);
  await assert.rejects(()=>scanNativeFailures({env,api:async()=>({
-   workflow_runs:Array.from({length:100},(_,i)=>({...run,id:41792546872+i,conclusion:'success'}))
+   total_count:2000,workflow_runs:Array.from({length:100},(_,i)=>({...run,id:41792546872+i,conclusion:'success'}))
  }),observe:async()=> 'ALREADY_VERIFIED'}),
-  /GITHUB_RUNS_PAGINATION_INCOMPLETE/);
+  /GITHUB_RUNS_WINDOW_OVERFLOW/);
 });
 test('same existing hourly Janitor hosts source observer without new cron, workflow or side effects',()=>{
  const w=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
