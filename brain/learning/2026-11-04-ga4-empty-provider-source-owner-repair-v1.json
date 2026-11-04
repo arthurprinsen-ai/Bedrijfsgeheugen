@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse|ga4|empty-success-without-resolve|20261104-v1",
   "status": "CANDIDATE_NOT_LIVE_PROVEN",
   "owner": "bg-analytics-sync-composio / original ONE BRAIN Data Spine owner",
-  "root_cause": "Original six-hour #42 Edge collector was returning 200 and bg_bewijs(true) for GA4 report rows.length===0; .bg_ga4_sync status=ok despite zero pages, and Data Spine stays stale. Source registry marks GA4 optional and therefore only generic health alarms ran without live canonical recovery obligation. Prior chat comments were informational, not actions.",
+  "root_cause": "Original six-hour #42 Edge collector was returning 200 and bg_bewijs(true) for GA4 report rows.length===0; .bg_ga4_sync status=ok despite zero pages, and Data Spine stays stale. Source registry marks GA4 optional and therefore only generic health alarms ran without live canonical recovery obligation. Prior chat comments were informational, not actions. Independent native verification on 2026-11-04 found GA4 absence coincides with zero consented nonrobot first-party sessions on 2026-11-02/03; earlier blanket provider failure hypothesis is not substantiated.",
   "impact": "GA4 attribution, campaigns, visitors and conversion analysis remain unavailable; 0 rows are not proof of zero visitors because GA4 requires consent.",
   "compiler": {
     "failure_class": "SOURCE_EMPTY_FALSE_SUCCESS",
@@ -11,7 +11,7 @@
     "contract": "powerhouse-source-health-to-canonical-brain-repair-v1",
     "machine_enforceable": true
   },
-  "prevention": "At original collector source, before creating an empty batch, reject empty source as NO_SOURCE_DATA/HTTP503 and bg_bewijs(false); query independent GA4 aggregate metrics to separate detailed-dimension loss from a true provider empty day; create or CAS-update a single original Brain MEASUREMENT_REPAIR obligation; preserve nonempty and provider-auth policies; never fabricate visits or use Buffer/Make fallback.",
+  "prevention": "Separate successful Google transport from GA4 data availability. In original collector, a 0-row report triggers bounded independent GA4 metric-only probe AND consent-aware native first-party presence proof. If no human consent evidence and provider totals are genuinely 0, status=CONSENT_LIMITED, bg_ga4_sync=privacy_limited, HTTP200 but ok=false/source_data_available=false and original Data Spine remains unobserved; do not treat as source API defect, do not force consent, preserve privacy-minimized native CRO. If consented source events exist or aggregate totals positive or proof unavailable, status=NO_SOURCE_DATA/HTTP503, original Brain repair stays owned; never report green GA4 or invent sessions. Same original cron/writer, CAS obligation and independent production readback.",
   "evidence": {
     "real_production": "2026-11-04T06:06:04Z source HTTP200, bg_ga4_sync ok / rows 0; last nonempty batch 2026-11-02T00:05:02Z; source-health RECOVERY_DUE/STALE",
     "real_native_obligation": "dee955d9-9e90-43f3-9b8a-2257bce3f1a5 state READY",
@@ -25,7 +25,25 @@
       "original #42 natural run readback",
       "independent GA4 property/date/provider measurement proof",
       "Brain CAS closure and learned skill evidence"
-    ]
+    ],
+    "privacy_data": {
+      "date_2026_11_02": {
+        "nonrobot_consent_sessions": 0,
+        "nonrobot_no_consent_sessions": 89,
+        "ga4_rows": 0
+      },
+      "date_2026_11_03": {
+        "nonrobot_consent_sessions": 0,
+        "nonrobot_no_consent_sessions": 85,
+        "ga4_rows": 0
+      },
+      "date_2026_11_01": {
+        "nonrobot_consent_sessions": 1,
+        "nonrobot_no_consent_sessions": 88,
+        "ga4_rows": 3
+      },
+      "truth_boundary": "Native session/event totals are not GA4 session totals, and user consent must not be overridden."
+    }
   },
   "evaluation": {
     "historical_replay": [
@@ -38,5 +56,5 @@
       "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
     ]
   },
-  "decision": "This does not invent GA4 visitors, change consent, change scheduler, or assert that actual provider upstream has already been fixed. Live can stay RED until genuine data returns."
+  "decision": "No all-green claim. GA4 source remains optional/consent-dependent, and privacy-minimized first-party CRO is a separate verified dataset; no Buffer/Make fallback or manufactured analytics. True no-consent days may be transport-healthy but no GA4 data."
 }
