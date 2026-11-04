@@ -203,3 +203,19 @@ test('preflight does not treat an ACK-only known side effect as a fresh publishi
  assert.match(truth,/provider_truth_verified===true/);
  assert.match(truth,/existing\.live_proven_at/);
 });
+
+test('every daily channel has machine-readable original owner and independent terminal acceptance',()=>{
+ const p=JSON.parse(readFileSync('brain/contracts/original-social-first-time-right-prepublish-v1.json','utf8'));
+ assert.equal(p.contract,'original-social-first-time-right-prepublish-v1');
+ assert.equal(p.authority.scheduler,140);
+ assert.equal(p.authority.new_schedulers,0);
+ assert.equal(p.authority.new_publishers,0);
+ for(const channel of ['linkedin_personal','linkedin_company','instagram','blog']){
+   assert.ok(p.channel_closure[channel]?.ready);
+   assert.ok(p.channel_closure[channel]?.result);
+ }
+ assert.match(p.channel_closure.linkedin_personal.when_ack_without_get,/never re-send/);
+ assert.match(p.channel_closure.instagram.when_waiting_asset,/original Mira producer/);
+ assert.match(p.channel_closure.blog.when_no_approval,/never writes synthetic approved_at/);
+ assert.match(p.alert_and_prevention.green_assertion,/all expected channels independently LIVE_PROVEN/);
+});
