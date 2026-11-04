@@ -32,5 +32,12 @@
     "repeat_count": 2,
     "security_sensitive": false
   },
-  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "evidence": {
+    "observed_runtime": "Original v601 Supabase Edge ACTIVE but HTTP503 worker boot, Duplicate const revisionInput (2026-11-03)",
+    "incident_reference": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "previous_recovery": "PR #5379 protected merged; Supabase v603 original worker returned HTTP200",
+    "historical_regression": "tests/brain-first-time-right-prebuild-v1.test.mjs",
+    "future_bootstrap_proof": "Separate protected stage2 trusted-main admission check and independent rejected/accepted original candidate readback required"
+  }
 }
