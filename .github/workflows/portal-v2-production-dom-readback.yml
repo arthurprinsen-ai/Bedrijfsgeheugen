@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'portal-v2/**'
+      - 'tests/integration/portal-v2-production-*.spec.js'
+      - '.github/workflows/portal-v2-production-dom-readback.yml'
   workflow_dispatch:
     inputs:
       approved_pr_number:
@@ -55,6 +57,37 @@ jobs:
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${PRODUCTION_SHA_OVERRIDE:-$GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Verify already-published SHA for only CI/evidence source changes on main
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          # Source-only protected-main changes must not falsely claim a new
+          # Netlify deploy. Exact manifest+ancestor+runtime diff proof first.
+          payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${PORTAL_ALIAS_URL}/release.json" || true)"
+          published_sha="$(node -e 'try {const d=JSON.parse(process.argv[1]);process.stdout.write(String(d.commit_ref||""));}catch{}' "$payload")"
+          if ! [[ "$published_sha" =~ ^[a-f0-9]{40}$ ]] || [ "$published_sha" = "$GITHUB_SHA" ]; then
+            echo "ORIGINAL_BROWSER_EXACT_MAIN_REQUIRED:no_independent_older_manifest"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor "$published_sha" "$GITHUB_SHA"; then
+            echo "ORIGINAL_BROWSER_EXACT_MAIN_REQUIRED:unverified_protected_ancestry"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$published_sha" "$GITHUB_SHA")"
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            case "$file" in
+              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|AGENTS.md|.agents/skills/*|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              *)
+                echo "ORIGINAL_BROWSER_EXACT_MAIN_REQUIRED:runtime_changed:$file"
+                exit 0
+                ;;
+            esac
+          done <<< "$changed"
+          echo "PORTAL_EXPECTED_SHA=$published_sha" >> "$GITHUB_ENV"
+          echo "PORTAL_PUBLISHED_CI_ONLY_VERIFIED=true" >> "$GITHUB_ENV"
+          echo "ORIGINAL_BROWSER_CI_ONLY_PUBLISHED_PROOF:deployed=$published_sha:main=$GITHUB_SHA"
+
       - name: Verify published SHA override is strictly scoped to CI and evidence
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -64,8 +97,12 @@ jobs:
             echo "EXACT_MAIN_PRODUCTION_TARGET:$GITHUB_SHA"
             exit 0
           fi
-          if [ "$EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
-            echo "::error::Production SHA override requires main workflow_dispatch with valid commit SHA."
+          if { [ "$EVENT_NAME" != "workflow_dispatch" ] && [ "$EVENT_NAME" != "push" ]; } || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Production SHA override requires main workflow_dispatch or independently validated CI-only main push with valid commit SHA."
+            exit 1
+          fi
+          if [ "$EVENT_NAME" = "push" ] && [ "${PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false}" != true ]; then
+            echo "::error::Automated readback pin requires independent exact-published provider and CI-only ancestry evidence."
             exit 1
           fi
           if ! git merge-base --is-ancestor "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA"; then
