@@ -15,3 +15,6 @@ Bronwaarneming → unieke fingerprint en huidige oorspronkelijke eigenaar → oo
 
 ## Vrijgavecriteria
 Exacte Required/BRAIN/CodeQL/Supabase-preview voor de commit, oorspronkelijke lease, beschermde merge, toepaste productiemigratie, afgeschermde uitvoerrechten en twee natuurlijke #171-runs met nieuwe `recovery_review_truth` nodig voordat de aansluiting live bewezen is. De 306 historische uitkomsten blijven open tot hun individuele bewijs.
+
+## Migratiehistorie en actuele releasegrens
+Supabase-preview had de oorspronkelijke migratieversies `20261104064400` en `20261104065001` reeds verwerkt voordat de striktere terminale broncontractcontrole werd ontworpen. Beide oorspronkelijke SQL-bronnen zijn onveranderd hersteld in Git. De definitieve aanscherping staat uitsluitend in een latere, nieuwe migratie `20261104071100_original_heartbeat_terminal_contract_guard_v1.sql`. Alleen een native preview die de nieuwste versie werkelijk heeft uitgevoerd en de nieuwe functie terugleest, telt als groen. Een oude preview met de velden maar zonder het contract is geen onafhankelijke test. Geen providerhistorie direct manipuleren, geen tweede scheduler aanmaken.
