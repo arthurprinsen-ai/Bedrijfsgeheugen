@@ -10,3 +10,6 @@
 - Risico- en securityregels: geen agent/scheduler naast oorspronkelijke #171, geen publiek EXECUTE, geen ruwe privédata, geen side-effect-replay, geen publicatie zonder provider-ID of consent.
 - Release: exacte security/Required/BRAIN/CodeQL/Supabase-preview, beschermde merge, productieledger, broncode en ACL, echte natuurlijke #171 taakreceipts, historische incidenten apart open.
 - Status bij aanvang: PATCH_CANDIDATE_NOT_PRODUCTION_VERIFIED. Dit log is géén bewijs van livegang.
+
+- Herstel migratiegeschiedenis: op dezelfde branch bleek een reeds toegepaste oorspronkelijke versie `20261104065001` te bestaan naast `20261104064400`. Na foutieve verwijdering meldde de officiële preview terecht `Remote migration versions not found`. De oorspronkelijke, provider-toegepaste 64400- en 65001-bestanden zijn met hun exacte broncode hersteld; er is geen provider-ledger direct aangepast of check gepasseerd zonder bewijs.
+- Nieuwe strikt geteste terminale receiptcontrole wordt uitsluitend geïntroduceerd in versie `20261104071100_original_heartbeat_terminal_contract_guard_v1.sql`, na beide historische versies; regressie controleert oude bronhistorie en nieuwe guard. Native provider exact-SHA readback en natuurlijke originele #171-runs blijven verplicht.
