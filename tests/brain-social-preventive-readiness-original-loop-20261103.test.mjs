@@ -177,3 +177,29 @@ test('GitHub status 500 uses existing exact-local candidate browser verification
  assert.match(workflow,/Verify affected routes on desktop and mobile/);
  assert.match(workflow,/Verify all public pages are visibly rendered/);
 });
+
+test('original supervisor never turns a provider ACK or LIVE_PROVEN result into a new social create attempt',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+ assert.match(source,/ORIGINAL_PREPUBLISH_SIDE_EFFECT_READ_FAILED/);
+ assert.match(source,/possibleSideEffect/);
+ assert.match(source,/evidence\.provider_create_success===true/);
+ assert.match(source,/evidence\.possible_provider_side_effect===true/);
+ assert.match(source,/\['PUBLISHED','DISPATCHED','LIVE_PROVEN'\]/);
+ assert.match(source,/status:live\?'ALREADY_LIVE_PROVEN':'PROVIDER_READBACK_PENDING'/);
+ assert.match(source,/const alreadyLive=readinessForChannel\?\.status==='ALREADY_LIVE_PROVEN'/);
+ assert.match(source,/const alreadyPublished=readinessForChannel\?\.alreadyDispatched===true/);
+ assert.match(source,/error:alreadyLive\?null:alreadyPublished/);
+ assert.match(source,/ORIGINAL_PROVIDER_READBACK_PENDING/);
+ assert.ok(source.indexOf('const possibleSideEffect=') < source.indexOf("mode:'prepare_only'"));
+ assert.ok(source.indexOf('const alreadyPublished=') < source.indexOf("mode:'publish_only'"));
+});
+
+test('preflight does not treat an ACK-only known side effect as a fresh publishing candidate',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+ const truth=source.slice(source.indexOf('const possibleSideEffect='),source.indexOf('const response=await invoke(url,expected'));
+ assert.match(truth,/if\(possibleSideEffect\)\{/);
+ assert.match(truth,/alreadyDispatched:true/);
+ assert.match(truth,/prepared:false/);
+ assert.match(truth,/provider_truth_verified===true/);
+ assert.match(truth,/existing\.live_proven_at/);
+});
