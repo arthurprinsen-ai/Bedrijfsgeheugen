@@ -38,5 +38,12 @@
     "historical_replay": [
       "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "CAS_CONCURRENCY",
+    "scope": "GA4",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
