@@ -74,6 +74,44 @@ export async function observeNativeFailure(item,{authority,fetchImpl=globalThis.
  if(!await read())throw Error('BRAIN_OCCURRENCE_READBACK_MISSING');
  return 'RECORDED_AND_VERIFIED';
 }
+// Batch the canonical readback, not the writes. Each missing occurrence is still
+// written by the existing original Brain RPC, never by direct table insert.
+export async function observeNativeFailureBatch(items,{authority,fetchImpl=globalThis.fetch}={}){
+ if(!Array.isArray(items)||items.length<1||items.length>40||
+    items.some(x=>x?.state!=='NATIVE_FAILURE'))throw Error('NATIVE_FAILURE_BATCH_INVALID');
+ const expected=new Map(items.map(x=>[x.occurrenceId,x]));
+ if(expected.size!==items.length)throw Error('NATIVE_FAILURE_BATCH_DUPLICATE');
+ const path='/rest/v1/brain_failure_occurrences?select=occurrence_id,fingerprint,payload_sha256'+
+  '&occurrence_id=in.('+items.map(x=>encodeURIComponent(x.occurrenceId)).join(',')+')';
+ const read=async()=>{
+  const r=await fetchImpl(authority.origin+path,{
+   headers:authority.headers,signal:AbortSignal.timeout(12000)});
+  if(!r.ok)throw Error('BRAIN_BATCH_READ_HTTP_'+r.status);
+  const rows=await r.json();
+  if(!Array.isArray(rows)||rows.length>expected.size)throw Error('BRAIN_BATCH_CARDINALITY_INVALID');
+  const found=new Set();
+  for(const row of rows){
+   const item=expected.get(row?.occurrence_id);
+   if(!item||found.has(row.occurrence_id)||row.fingerprint!==item.fingerprint||
+      row.payload_sha256!==item.payloadSha256)throw Error('BRAIN_BATCH_READBACK_CONFLICT');
+   found.add(row.occurrence_id);
+  }
+  return found;
+ };
+ const before=await read();
+ for(const item of items){
+  if(before.has(item.occurrenceId))continue;
+  const response=await fetchImpl(authority.origin+'/rest/v1/rpc/brain_observe_failure',{
+   method:'POST',headers:authority.headers,
+   body:JSON.stringify({p_occurrence_id:item.occurrenceId,
+    p_fingerprint:item.fingerprint,p_payload_sha256:item.payloadSha256,
+    p_evidence:item.evidence}),signal:AbortSignal.timeout(12000)});
+  if(!response.ok)throw Error('BRAIN_BATCH_RPC_HTTP_'+response.status);
+ }
+ const after=await read();
+ if(after.size!==items.length)throw Error('BRAIN_BATCH_READBACK_MISSING');
+ return {recorded:items.length-before.size,already_verified:before.size};
+}
 export async function scanNativeFailures({env=process.env,api,now=new Date(),
  observe=observeNativeFailure,authority}={}){
  if(env.GITHUB_REPOSITORY!==REPO)throw Error('NATIVE_REPOSITORY_IDENTITY_MISMATCH');
@@ -114,11 +152,20 @@ export async function scanNativeFailures({env=process.env,api,now=new Date(),
   recorded:0,already_verified:0,readback_complete:false,
   source:'original-hourly-janitor',global_green:false};
  const auth=authority||resolveBrainAuthority(env);
- for(const item of unique.values()){
-  const state=await observe(item,{authority:auth});
-  if(state==='RECORDED_AND_VERIFIED')result.recorded++;
-  else if(state==='ALREADY_VERIFIED')result.already_verified++;
-  else throw Error('BRAIN_FAILURE_RECEIPT_NOT_PROVEN');
+ if(observe===observeNativeFailure){
+  const items=[...unique.values()];
+  for(let start=0;start<items.length;start+=40){
+   const batch=await observeNativeFailureBatch(items.slice(start,start+40),{authority:auth});
+   result.recorded+=batch.recorded;
+   result.already_verified+=batch.already_verified;
+  }
+ }else{
+  for(const item of unique.values()){
+   const state=await observe(item,{authority:auth});
+   if(state==='RECORDED_AND_VERIFIED')result.recorded++;
+   else if(state==='ALREADY_VERIFIED')result.already_verified++;
+   else throw Error('BRAIN_FAILURE_RECEIPT_NOT_PROVEN');
+  }
  }
  result.readback_complete=true;
  return result;
