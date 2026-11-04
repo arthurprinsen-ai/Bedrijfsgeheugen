@@ -180,14 +180,17 @@ test('all global capabilities are native, mobile-safe and fail closed without au
  await page.setViewportSize({width:390,height:844});
  const response=await page.goto(`${BASE_URL}/portal-v2/?bg_global_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
  expect(response?.status()).toBeLessThan(400);
- const menu=page.locator('#portalFullMenuToggle');
+ // One canonical mobile More control replaces the old duplicated hamburger.
+ // Test actual user navigation, 44px touch, router and original global actions.
+ const menu=page.locator('[data-portal-mobile-primary] [data-mobile-primary-target="hub:portal"]');
  await expect(menu).toBeVisible();
- const menuBox=await menu.boundingBox();expect(menuBox?.height||0,'mobile menu touch target').toBeGreaterThanOrEqual(44);
+ const menuBox=await menu.boundingBox();expect(menuBox?.height||0,'mobile More touch target').toBeGreaterThanOrEqual(44);
  await expect(page.locator('[data-mobile-nav]')).toHaveCount(0);
  await menu.click();
  await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
+ await expect(page.locator('#allPages')).toBeVisible();
  const expected=['export','import','print-permission','feedback','customer-branding','identity-login-logout'];
- await expect(page.locator('#portalFullMenuToggle')).toBeVisible();
+ await expect(page.locator('#portalFullMenuToggle')).not.toBeVisible();
  await expect(page.locator('#allPages .group')).not.toHaveCount(0);
  await expect(page.locator('[data-mobile-global-actions]')).toBeVisible();
  for(const capability of expected){

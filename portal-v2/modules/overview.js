@@ -89,7 +89,7 @@ export function bindPageButtons(scope){
 function renderLegacyOverviewInsights(root,state){
  const main=root?.querySelector?.('.main');if(!main)return false;
  let section=main.querySelector('[data-legacy-overview-insights]');
- if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-overview-insights';section.dataset.legacyOverviewInsights='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');main.insertBefore(section,anchor||null);}
+ if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-overview-insights';section.dataset.legacyOverviewInsights='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');(anchor?.parentElement||main).insertBefore(section,anchor||null);}
  const model=legacyOverviewInsights(state);
  if(!model){section.innerHTML=`<article class="legacy-insight-card company-state"><div class="legacy-insight-head"><span>Stand van je bedrijf</span><strong>CMMI —/5</strong></div><h3>Nog niet ingevuld</h3><p>Vul het organisatieprofiel in om de actuele volwassenheid en voortgang te berekenen.</p><div class="legacy-progress"><i style="width:0%"></i></div></article><article class="legacy-insight-card adoption-card"><div class="legacy-insight-head"><span>Adoptiecurve</span><strong>Nog niet bepaald</strong></div><div class="adoption-curve">${ADOPTION_STAGES.map((item,index)=>`<div class="adoption-step"><i></i><b>${item.label}</b><small>Niveau ${index+1}</small></div>`).join('')}</div></article><article class="legacy-insight-card blockers-card"><div class="legacy-insight-head"><span>Waar organisatie staat</span><strong>Onbekend</strong></div><div class="legacy-blockers"><button type="button" data-pv-page="profiel"><span>Organisatieprofiel aanvullen</span><strong>→</strong></button></div><p>Blokkades en aandachtspunten worden pas berekend uit expliciete klantinvoer.</p></article>`;bindPageButtons(section);return true;}
  section.innerHTML=`<article class="legacy-insight-card company-state"><div class="legacy-insight-head"><span>Stand van je bedrijf</span><strong>CMMI ${model.level}/5</strong></div><h3>${model.stage.label}</h3><p>Gemiddelde volwassenheid ${nl1(model.averageMaturity)}/5 · ${model.progress}% op de volwassenheidsladder.</p><div class="legacy-progress"><i style="width:${model.progress}%"></i></div></article><article class="legacy-insight-card adoption-card"><div class="legacy-insight-head"><span>Adoptiecurve</span><strong>${model.stage.label}</strong></div><div class="adoption-curve">${ADOPTION_STAGES.map((item,index)=>`<div class="adoption-step ${index+1<=model.level?'active':''} ${index+1===model.level?'current':''}"><i></i><b>${item.label}</b><small>Niveau ${index+1}</small></div>`).join('')}</div></article><article class="legacy-insight-card blockers-card"><div class="legacy-insight-head"><span>Waar organisatie staat</span><strong>${model.blockers.length} aandachtspunten</strong></div><div class="legacy-blockers">${model.blockers.map(item=>`<button type="button" data-pv-page="profiel"><span>${item.label}</span><strong>${item.level}/5</strong></button>`).join('')}</div><p>${nl0(model.annualManualHours)} uur handmatig werk per jaar op basis van de huidige invoer.</p></article>`;
@@ -117,7 +117,7 @@ function renderBedrijfslekIntelligence(root,state){
   section.className='legacy-overview-insights';
   section.setAttribute('aria-label','Mijn Bedrijfslek nulmeting en voorgestelde acties');
   const anchor=main.querySelector('[data-legacy-overview-insights]')||main.querySelector('.dashboard');
-  main.insertBefore(section,anchor||null);
+  (anchor?.parentElement||main).insertBefore(section,anchor||null);
  }
  section.replaceChildren();
  const article=doc.createElement('article');article.className='legacy-insight-card';
@@ -179,8 +179,10 @@ function renderDirectievragen(root,state){
   houder=doc.createElement('div');houder.className='dv-houder';
   const insights=doel.querySelector('[data-legacy-overview-insights]');
   const lower=doel.querySelector('.lower');
-  if(insights?.parentNode===doel)insights.after(houder);
-  else if(lower?.parentNode===doel)lower.after(houder);
+  // Original overview model may be inside a native disclosure now.
+  // Use the true parent, preserving one logical model and human-readable UI.
+  if(insights?.parentElement)insights.after(houder);
+  else if(lower?.parentElement)lower.after(houder);
   else doel.appendChild(houder);
  }
  houder.innerHTML=directievragenMarkup(state);

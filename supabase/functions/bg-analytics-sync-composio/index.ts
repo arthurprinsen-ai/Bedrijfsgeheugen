@@ -20,7 +20,34 @@ function reportRows(report:any){const dims=(report.dimensionHeaders||[]).map((x:
 async function directGA4(sa:{client_email:string;private_key:string},property:string,day:string){const token=await accessToken(sa);const r=await fetch(`https://analyticsdata.googleapis.com/v1beta/${property}:runReport`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({dateRanges:[{startDate:day,endDate:day}],dimensions:[{name:'date'},{name:'pagePath'},{name:'sessionCampaignName'}],metrics:[{name:'sessions'},{name:'activeUsers'},{name:'eventCount'}],limit:250000,keepEmptyRows:false})});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error(`GA4_${r.status}:${String(b?.error?.message||'').slice(0,200)}`);return reportRows(b)}
 async function windsorGA4(apiKey:string,accountId:string,day:string){const u=new URL('https://connectors.windsor.ai/googleanalytics4');u.searchParams.set('api_key',apiKey);u.searchParams.set('fields','date,page_path,campaign_name,sessions,active_users,event_count,measurement_id');u.searchParams.set('date_from',day);u.searchParams.set('date_to',day);u.searchParams.set('select_accounts',accountId);u.searchParams.set('_renderer','json');u.searchParams.set('refresh_since','3d');u.searchParams.set('refresh_interval','1h');const r=await fetch(u,{headers:{'user-agent':'Bedrijfsgeheugen-Powerhouse/1.0'}});const b:any=await r.json().catch(()=>({}));if(!r.ok||!Array.isArray(b?.data))throw new Error(`WINDSOR_API_${r.status}:${String(b?.error?.message||b?.error||'invalid response').slice(0,200)}`);return b.data.map((x:any)=>({date:String(x.date||'').replaceAll('-',''),pagePath:String(x.page_path||'/'),sessionCampaignName:String(x.campaign_name||''),sessions:String(x.sessions??0),activeUsers:String(x.active_users??0),eventCount:String(x.event_count??0),measurementId:String(x.measurement_id||'')}))}
 async function recentWindsorReadback(db:any){const cutoff=new Date(Date.now()-48*3600*1000).toISOString();const {data,error}=await db.from('bg_ga4_csv_batches').select('run_id,period_start,period_end,rows_total,rows_attributed,completed_at,source,detail').ilike('source','windsor%').gte('completed_at',cutoff).gt('rows_total',0).order('completed_at',{ascending:false}).limit(1);if(error)throw new Error(`WINDSOR_READBACK_LOOKUP:${error.message}`);return data?.[0]||null}
-async function writeRuntime(db:any,dedupeKey:string,state:string,evidence:any){await db.from('powerhouse_runtime_events').upsert({dedupe_key:dedupeKey,event_type:'ga4_failover_observed',source:BRON,subject_key:'ga4-analytics',channel:'website',occurred_at:new Date().toISOString(),evidence,context:{contract:FAILOVER_CONTRACT,canonical_collector:BRON},state,data_quality:'verified',confidence:1},{onConflict:'dedupe_key'})}
+async function writeRuntime(db:any,dedupeKey:string,state:string,evidence:any,eventType='ga4_failover_observed'){await db.from('powerhouse_runtime_events').upsert({dedupe_key:dedupeKey,event_type:eventType,source:BRON,subject_key:'ga4-analytics',channel:'website',occurred_at:new Date().toISOString(),evidence,context:{contract:FAILOVER_CONTRACT,canonical_collector:BRON},state,data_quality:'verified',confidence:1},{onConflict:'dedupe_key'})}
+
+async function originalGa4EmptyRepair(db:any,day:string,sourceRoute:string,report:any){
+ const fingerprint='powerhouse|ga4|empty-success-without-resolve|20261104-v1';
+ const owner='bg-analytics-sync-composio / original ONE BRAIN Data Spine owner';
+ const identity={p_obligation_type:'MEASUREMENT_REPAIR',p_capability_id:'powerhouse-data-intake-learning-spine-v1',p_business_entity:'ga4-analytics',p_business_period:'ongoing',p_business_timezone:'Europe/Amsterdam',p_payload_sha256:await sha256('ga4-analytics|empty-success|stale-source|recovery-v1'),p_change_id:fingerprint,p_owner:owner};
+ let {data:ob,error}=await db.rpc('brain_create_obligation',identity);
+ if(error||!ob)throw new Error('GA4_CANONICAL_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
+ if(['FULFILLED','CANCELLED','BREACHED'].includes(ob.state)){
+  identity.p_business_period=day;
+  ({data:ob,error}=await db.rpc('brain_create_obligation',identity));
+  if(error||!ob)throw new Error('GA4_RECURRENCE_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
+ }
+ const historical=(ob.evidence&&typeof ob.evidence==='object'&&!Array.isArray(ob.evidence))?ob.evidence:{};
+ const evidence={...historical,status:'REPAIR_REQUIRED',latest_observation:report,fingerprint,owner,recovery_state:'PROVIDER_EMPTY_REQUIRES_ORIGINAL_OWNER',first_time_right:'NO_FAKE_OK',historical_zero_rows_not_traffic_proof:true,checkpoints:['independent GA4 provider totals and property readback','consent-aware site tag diagnostics','nonempty genuine source observation or independently confirmed no-data','protected regression, original runtime and Brain learning proof']};
+ const nextState=['RUNNING','BLOCKED'].includes(ob.state)?ob.state:'READY';
+ const {data:updated,error:transitionError}=await db.rpc('brain_transition_obligation',{p_obligation_id:ob.id,p_expected_version:ob.version,p_state:nextState,p_owner:owner,p_evidence:evidence});
+ if(transitionError||!updated)throw new Error('GA4_CANONICAL_REPAIR_CAS_FAILED:'+String(transitionError?.message||'no updated obligation').slice(0,160));
+ return {obligation_id:updated.id,obligation_state:updated.state,obligation_version:updated.version};
+}
+async function originalGa4AggregateProbe(sa:{client_email:string;private_key:string},property:string,day:string){
+ const token=await accessToken(sa);
+ const response=await fetch(`https://analyticsdata.googleapis.com/v1beta/${property}:runReport`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({dateRanges:[{startDate:day,endDate:day}],metrics:[{name:'sessions'},{name:'activeUsers'},{name:'eventCount'}],keepEmptyRows:true})});
+ const jsonBody:any=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error('GA4_TOTALS_'+response.status+':'+String(jsonBody?.error?.message||'').slice(0,120));
+ const metrics=jsonBody.rows?.[0]?.metricValues||[];
+ return {sessions:Number(metrics[0]?.value||0),active_users:Number(metrics[1]?.value||0),event_count:Number(metrics[2]?.value||0),source:'independent_metric_only_provider_readback'};
+}
 
 Deno.serve(async(req:Request)=>{
  if(req.method!=='POST')return json({error:'POST_ONLY'},405);
@@ -38,6 +65,46 @@ Deno.serve(async(req:Request)=>{
    const apiKey=await secret(db,'WINDSOR_API_KEY');const accountId=(await secret(db,'WINDSOR_GA4_ACCOUNT_ID'))||DEFAULT_WINDSOR_ACCOUNT;
    if(apiKey){try{rows=await windsorGA4(apiKey,accountId,day);sourceRoute=WINDSOR_SOURCE}catch(fallbackError){const cached=await recentWindsorReadback(db);if(!cached)throw fallbackError;sourceRoute='windsor-verified-readback-cache';await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:Number(cached.rows_total||0),pages_bijgewerkt:Number(cached.rows_attributed||0),metingen_ingevuld:Number(cached.rows_attributed||0),status:'ok',fout:`primary AUTH failed; live Windsor API failed; reused verified Windsor readback ${cached.run_id}`,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:'READBACK_REUSED',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,readback_run_id:cached.run_id,readback_completed_at:cached.completed_at};await writeRuntime(db,`ga4-failover:${day}:${cached.run_id}`, 'observed',out);await bewijs(true,out);return json(out,200)}}
    else {const cached=await recentWindsorReadback(db);if(!cached)throw new Error(`WINDSOR_FALLBACK_UNAVAILABLE:missing WINDSOR_API_KEY; primary=${primaryFailure}`);sourceRoute='windsor-verified-readback-cache';await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:Number(cached.rows_total||0),pages_bijgewerkt:Number(cached.rows_attributed||0),metingen_ingevuld:Number(cached.rows_attributed||0),status:'ok',fout:`primary AUTH failed; WINDSOR_API_KEY absent; reused verified Windsor readback ${cached.run_id}`,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:'READBACK_REUSED',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,readback_run_id:cached.run_id,readback_completed_at:cached.completed_at};await writeRuntime(db,`ga4-failover:${day}:${cached.run_id}`, 'observed',out);await bewijs(true,out);return json(out,200)}
+  }
+
+  // HTTP200 with zero returned rows is verified emptiness, NOT a successful import
+  // and never proof of zero business traffic (GA4 is consent-dependent).
+  if(rows.length===0){
+   let aggregate:any=null,probeError:string|null=null;
+   if(sourceRoute==='google-analytics-data-api'){
+    try{aggregate=await originalGa4AggregateProbe(sa,property,day)}
+    catch(e){probeError=e instanceof Error?e.message.slice(0,180):'GA4_TOTALS_UNKNOWN';}
+   }
+   // Consent-safe source discrimination: no consented native browser events
+   // plus zero GA4 totals is a privacy boundary, NOT proof that Google is broken.
+   const nextDay=new Date(day+'T00:00:00.000Z');nextDay.setUTCDate(nextDay.getUTCDate()+1);
+   const {data:consentEvents,error:consentError}=await db.from('bg_interacties').select('id')
+     .eq('toestemming',true).eq('is_robot',false)
+     .gte('gebeurd_op',day+'T00:00:00.000Z').lt('gebeurd_op',nextDay.toISOString()).limit(1);
+   const consentedHumanEvidence=consentError?null:Array.isArray(consentEvents)?consentEvents.length>0:null;
+   const totalsPositive=(aggregate?.sessions||0)>0||(aggregate?.event_count||0)>0;
+   const consentLimited=consentedHumanEvidence===false && aggregate!==null && !totalsPositive;
+   const reason=totalsPositive?'GA4_DIMENSION_QUERY_EMPTY_WITH_NONZERO_TOTAL'
+     :consentLimited?'GA4_CONSENT_LIMITED_NO_SOURCE_ROWS'
+     :consentedHumanEvidence===true?'GA4_ZERO_DESPITE_CONSENTED_SITE_EVENTS'
+     :'GA4_EMPTY_SOURCE_INDEPENDENT_EVIDENCE_DUE';
+   const observation={ok:false,source_data_available:false,status:consentLimited?'CONSENT_LIMITED':'NO_SOURCE_DATA',
+     reason,day,property,source_route:sourceRoute,provider_report_rows:0,aggregate_probe:aggregate,
+     aggregate_probe_error:probeError,consented_human_first_party_event_present:consentedHumanEvidence,
+     consent_evidence_error:consentError?String(consentError.message||'unknown').slice(0,160):null,
+     primary_failure:primaryFailure,actual_site_sessions:'UNKNOWN_NOT_INFERRED',
+     privacy_boundary:'NO_CONSENT_BYPASS_NO_FORCED_GA4_TRACKING',recommended_existing_source:'privacy-minimized bg_interacties for CRO only',
+     run_id:runId,owner:BRON,checked_at:new Date().toISOString()};
+   const {error:syncError}=await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:0,pages_bijgewerkt:0,metingen_ingevuld:0,
+     status:consentLimited?'privacy_limited':'error',fout:reason,uitgevoerd_op:new Date().toISOString()});
+   if(syncError)throw new Error('GA4_EMPTY_RECEIPT_STORE_FAILED:'+syncError.message.slice(0,160));
+   await writeRuntime(db,`ga4-source-empty:${day}:${sourceRoute}`,consentLimited?'observed':'error',observation,'ga4_source_empty_observed');
+   const repair=await originalGa4EmptyRepair(db,day,sourceRoute,observation);
+   const result={...observation,...repair};
+   await bewijs(false,result,consentLimited?'CONSENT_BOUNDARY':'EMPTY_SOURCE');
+   // Healthy invocation but unavailable GA4 measurement; original Data Spine
+   // remains stale/unobserved, native CRO can use its own privacy-safe events.
+   return json(result,consentLimited?200:503);
   }
   const headers=['date','pagePath','sessionCampaignName','sessions','activeUsers','eventCount'];const csv=[headers.join(','),...rows.map((r:any)=>headers.map(h=>csvCell(r[h])).join(','))].join('\n')+'\n';if(new TextEncoder().encode(csv).byteLength>5_000_000)throw new Error('GA4_CSV_TOO_LARGE');const csvHash=await sha256(csv);
   const {data:existing}=await db.from('bg_ga4_csv_batches').select('run_id,status,completed_at').eq('period_start',day).eq('period_end',day).eq('csv_sha256',csvHash).eq('source',sourceRoute).limit(1);
