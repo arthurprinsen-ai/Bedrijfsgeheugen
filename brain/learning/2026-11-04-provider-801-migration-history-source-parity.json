@@ -1,0 +1,47 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "supabase|migration-history|provider-801-source-800|20261104-v1",
+  "owner": "existing original Supabase migration source owner and ONE BRAIN protected recovery",
+  "compiler": {
+    "failure_class": "SUPABASE_MIGRATION_HISTORY_SOURCE_DRIFT",
+    "scope": "SUPABASE_PROVIDER_SOURCE_PARITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Official Supabase migration 20261104090000 was applied in provider and committed as executable SQL, but the original Git provider-history lock remained at prior 800 identities; old historical CI test assumed 800 was a permanent total and old Portal array literal blocked expanded safety-preserving details.",
+  "prevention_rule": "Before BRAIN green, compare ALL provider version/name pairs to original Git lock and executable migration filenames. On an independently applied new provider row, update the original monotonic captured_at and append its exact identity once, within original protected owner release; never fake application or re-run DDL. Historical baseline must be preserved, not permanently cap future ledger size.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
+      "tests/brain-portal-ux-mobile-first-20261104.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41830031893",
+      "Original BRAIN backend 7 tests failed on 0d8bb4e92a99101a2a5b8fda8ccf11c847df26b8"
+    ],
+    "current": [
+      "2026-11-04T13:07:33.991Z original Supabase schema_migrations has 801 exact provider rows",
+      "Full 801-row independent source comparison: 800 unchanged, 1 newly applied, none altered or missing",
+      "20261104090000:ga4_consent_limited_data_spine_truth_v1 is already in executable Git and was officially provider-applied"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_BRAIN_AND_TERMINAL",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
