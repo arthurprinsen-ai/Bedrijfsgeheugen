@@ -14,7 +14,8 @@ begin
 end
 $gate$;
 
-create or replace view public.powerhouse_data_spine_health_v1 as
+create or replace view public.powerhouse_data_spine_health_v1
+with (security_invoker=true) as
 with wanted(source_key,domain,producer_required) as (
   values
     ('ga4-analytics'::text,'analytics'::text,true),
