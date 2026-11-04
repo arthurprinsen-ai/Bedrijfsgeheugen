@@ -21,7 +21,18 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   // Preserve the fully hydrated browser state on every run, including failures.
   await page.screenshot({ path: 'artifacts/portal-v2-mobile-overview-demoai.png', fullPage: true });
 
-  await expect(page.locator('#portalFullMenuToggle')).toBeVisible();
+  // Original mobile UX is a single task-oriented four-tab dock. Verify the
+  // real "Meer" control instead of the intentionally hidden legacy hamburger.
+  const mobileMore=page.locator('[data-portal-mobile-primary] [data-mobile-primary-target="hub:portal"]');
+  await expect(mobileMore).toBeVisible();
+  const moreBox=await mobileMore.boundingBox();
+  expect(moreBox?.height||0,'mobile Meer needs >=44px touch target').toBeGreaterThanOrEqual(44);
+  await expect(page.locator('#portalFullMenuToggle')).toBeHidden();
+  await mobileMore.click();
+  await expect(page.locator('#allPages')).toBeVisible();
+  await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#allPages')).toBeHidden();
   await expect(page.locator('.mobilebar')).toHaveCount(0);
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.locator('.v2globalstatus')).toBeHidden();
