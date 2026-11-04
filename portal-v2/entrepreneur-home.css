@@ -127,7 +127,7 @@
 .eh-advanced>.eh-attention .eh-attention-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .eh-advanced>.eh-attention .eh-attention-card{border-radius:16px}
 .eh-advanced>.eh-foot{padding-bottom:23px}
-.eh-goals:not(.eh-advanced .eh-goals){margin-top:20px;padding:20px;border:1px solid #d9e7e7;border-radius:18px;background:#fff}
+.entrepreneur-home > .eh-goals{margin-top:20px;padding:20px;border:1px solid #d9e7e7;border-radius:18px;background:#fff}
 .eh-goal{min-height:48px}
 @media(max-width:920px){.eh-advanced>.eh-attention .eh-attention-grid{grid-template-columns:1fr}}
 @media(max-width:760px){
@@ -145,7 +145,7 @@
  .eh-advanced-summary:after{grid-column:2;grid-row:1/3}
  .eh-advanced>.eh-attention,.eh-advanced>.eh-goals,.eh-advanced>.eh-cards,.eh-advanced>.eh-journey,.eh-advanced>.eh-foot{margin-left:12px;margin-right:12px}
  .eh-advanced>.eh-attention .eh-attention-card{padding:15px}
- .eh-goals:not(.eh-advanced .eh-goals){padding:16px}
+ .entrepreneur-home > .eh-goals{padding:16px}
  .eh-goal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:390px){.eh-goal-grid{grid-template-columns:1fr}}
