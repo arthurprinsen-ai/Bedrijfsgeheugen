@@ -1472,7 +1472,13 @@ Deno.serve(async (req) => {
       let authorization:'VERIFIED'|'RECHECK_AT_DUE'='RECHECK_AT_DUE';
       try{
         if(row.channel==='linkedin_personal') await preflightLinkedInComposio(db);
-        if(row.channel==='linkedin_company') await preflightLinkedInCompanyComposio(db);
+        if(row.channel==='linkedin_company'){
+          const company=await preflightLinkedInCompanyComposio(db);
+          if(company.organization_capability_verified!==true
+            ||company.organization_write_scope_authorized!==true
+            ||company.linkedin_company_admin_oauth_proven!==true)
+            throw new Error('ORIGINAL_COMPANY_OAUTH_PREPARATION_UNVERIFIED');
+        }
         if(row.channel==='linkedin_personal'||row.channel==='linkedin_company') authorization='VERIFIED';
       }catch(error){
         const why=clean((error as Error)?.message||error).slice(0,120);
