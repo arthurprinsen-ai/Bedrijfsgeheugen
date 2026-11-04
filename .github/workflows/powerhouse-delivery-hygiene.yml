@@ -377,6 +377,82 @@ jobs:
             process.exitCode = 1;
           }
           NODE
+      # Stage 2: run the stage-1 parser from the exact trusted workflow commit,
+      # never from the candidate PR or a moving main alias. Precede costly CI.
+      - name: First Time Right prebuild from protected policy
+        if: steps.admit.outputs.admitted == 'true'
+        env:
+          TRUSTED_WORKFLOW_SHA: ${{ github.workflow_sha }}
+          EXPECTED_HEAD_SHA: ${{ steps.admit.outputs.candidate_head_sha }}
+          CANONICAL_OBLIGATION_ID: ${{ steps.admit.outputs.obligation_id }}
+        run: |
+          set -euo pipefail
+          if [[ ! "${TRUSTED_WORKFLOW_SHA:-}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::FIRST_TIME_RIGHT_TRUSTED_WORKFLOW_SHA_MISSING" >&2
+            exit 78
+          fi
+          if [[ ! "${EXPECTED_HEAD_SHA:-}" =~ ^[0-9a-f]{40}$ ]] || [ "$(git rev-parse HEAD)" != "$EXPECTED_HEAD_SHA" ]; then
+            echo "::error::FIRST_TIME_RIGHT_CANDIDATE_HEAD_DRIFT" >&2
+            exit 78
+          fi
+          if ! git cat-file -e "$TRUSTED_WORKFLOW_SHA^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$TRUSTED_WORKFLOW_SHA" || exit 78
+          fi
+          TRUSTED_FTR_FILE="$RUNNER_TEMP/powerhouse-trusted-first-time-right-$TRUSTED_WORKFLOW_SHA.mjs"
+          if ! git show "$TRUSTED_WORKFLOW_SHA:tools/delivery/first-time-right-prebuild-gate.mjs" > "$TRUSTED_FTR_FILE"; then
+            echo "::error::FIRST_TIME_RIGHT_PROTECTED_MAIN_CHECKER_UNAVAILABLE" >&2
+            exit 78
+          fi
+          test -s "$TRUSTED_FTR_FILE" || exit 78
+          export TRUSTED_FTR_FILE
+          node --input-type=module - <<'NODE'
+          import {readFile,writeFile,lstat,realpath} from 'node:fs/promises';
+          import {resolve,sep} from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          import {pathToFileURL} from 'node:url';
+          const evidenceFile='.artifacts/powerhouse-delivery-hygiene.json';
+          const evidence=JSON.parse(await readFile(evidenceFile,'utf8'));
+          const actualHead=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          if(actualHead!==process.env.EXPECTED_HEAD_SHA || evidence.admitted!==true){
+            throw new Error('FIRST_TIME_RIGHT_CANDIDATE_ADMISSION_UNPROVEN');
+          }
+          const {evaluateFirstTimeRightPrebuild,CONTRACT_VERSION}=
+            await import(pathToFileURL(process.env.TRUSTED_FTR_FILE).href);
+          const root=await realpath(process.cwd());
+          const check=await evaluateFirstTimeRightPrebuild({
+            changedPaths:evidence.changed_paths||[],
+            obligationId:process.env.CANONICAL_OBLIGATION_ID||'',
+            readSource:async relative=>{
+              const full=resolve(root,relative);
+              if(!full.startsWith(root+sep))throw new Error('FIRST_TIME_RIGHT_PATH_OUTSIDE_CANDIDATE');
+              const stat=await lstat(full);
+              if(!stat.isFile()||stat.isSymbolicLink())throw new Error('FIRST_TIME_RIGHT_NONREGULAR_SOURCE');
+              const resolved=await realpath(full);
+              if(resolved!==full)throw new Error('FIRST_TIME_RIGHT_SOURCE_SYMLINK_OR_DRIFT');
+              return readFile(resolved,'utf8');
+            }
+          });
+          evidence.first_time_right_prebuild={
+            contract:CONTRACT_VERSION,
+            trusted_workflow_sha:process.env.TRUSTED_WORKFLOW_SHA,
+            candidate_head_sha:actualHead,
+            state:check.state,
+            checked:check.checked,
+            reasons:check.reasons,
+            failure_evidence:check.failure_evidence
+          };
+          if(!check.ok){
+            evidence.state='FIRST_TIME_RIGHT_PREBUILD_BLOCKED';
+            evidence.ok=false;
+            evidence.admitted=false;
+          }
+          await writeFile(evidenceFile,JSON.stringify(evidence,null,2)+'\n');
+          console.log(JSON.stringify({state:check.state,checked:check.checked,reason_count:check.reasons.length,trusted_workflow_sha:process.env.TRUSTED_WORKFLOW_SHA}));
+          if(!check.ok){
+            console.error('::error::FIRST_TIME_RIGHT_PREBUILD_BLOCKED:'+JSON.stringify(check.reasons));
+            process.exitCode=78;
+          }
+          NODE
       # This is one of the two branch-protection-required jobs. Keep canonical
       # learning validation here too: Required test/preflight is not currently
       # a required branch protection context and must not be its sole guard.
