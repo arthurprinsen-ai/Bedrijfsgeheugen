@@ -10,3 +10,6 @@ Gebruik uitsluitend de bestaande preventieve classifier. Bij persoonlijke/bedrij
 
 ## Release gate
 Nieuwe originele test voor ACK zonder readback en voor volledig geverifieerde livegang, plus veldprojectie-regressie; Required, BRAIN, CodeQL, beschermde merge, originele Edge-source parity, natuurlijke cron #140, ONE BRAIN-readback en exacte externe providercontrole. Tot die tijd status CANDIDATE_NOT_LIVE. De 23 ACTIVE blockers blijven 23 totdat authentiek bewijs tot afwikkeling leidt. Gehoorzaam bestaande writer-lease. Referentie: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+## Preventieve GitHub admission-controle
+De eerste echte PR #5403-hygiene-run #41802339260 wees terecht de kandidaat af wegens ontbrekende verplichte `Base-SHA`-metadata (fout `PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING`). De PR-body is gecorrigeerd naar exact de immutable oorspronkelijke main `3f9ab2d13c21ee3ac8dd3822e10efac1a2c70fb8`; een nieuwe synchronize-run moet de corrigeerde metadata opnieuw beoordelen. De oude rode run blijft als historisch bewijs zichtbaar. Nooit Required/CodeQL/lease uitschakelen voor deze fout.
