@@ -27,7 +27,11 @@ test('exact deployment bridge (not all Supabase runtime) is allowable after publ
 });
 test('immutable published main and approved merged PR remain mandatory',()=>{
  assert.match(source,/git merge-base --is-ancestor "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
- assert.match(source,/Production SHA override requires main workflow_dispatch with valid commit SHA/);
+ // The original workflow now also permits independently scoped push readback.
+ // Preserve protected main, strict scope evidence and true immutable deployment.
+ assert.match(source,/Published source SHA pin requires approved main workflow_dispatch or original evidence-only push/);
+ assert.match(source,/PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false/);
+ assert.match(source,/Source PR merge is not in the verified published production ancestry/);
  assert.match(source,/Source PR merge is not in the verified published production ancestry/);
  assert.match(source,/Exact immutable Netlify deploy did not become ready/);
  assert.match(source,/Read back Portal V2 DOM, standalone routing and CSRD assets/);
