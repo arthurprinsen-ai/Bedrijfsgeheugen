@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "fingerprint": "powerhouse|heartbeat|recovery-proof-live-but-unconsumed-by-original-cron|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN / Heartbeat runtime mux owner",
+  "status": "PATCH_CANDIDATE_NOT_PRODUCTION_LIVE_VERIFIED",
+  "source_evidence": {
+    "production_migrations_count": 798,
+    "recovery_migration": "20261104051200 applied",
+    "proof_count": 307,
+    "explicitly_unresolved": 306,
+    "original_scheduler": "pg_cron #171 active",
+    "original_latest_terminal_run_result": "ok true, no recovery_review_truth",
+    "recovery_control_plane_tick_cron": "no active original cron directly calls the function"
+  },
+  "root_cause": "Original recovery aggregate was made available in production but not consumed by the existing runtime mux #171: terminal-autonomous-reconcile reported only ok/elapsed_ms, so heartbeat/agents could still misinterpret successful scheduling as independent provider incident resolution.",
+  "hypothesis": "Attach the service-only existing recovery aggregate to the receipt of the already active terminal-autonomous-reconcile task (without scheduler change), so original Heartbeat reliably sees EVIDENCE_DUE and stops false green closure while preserving normal tasks and throughput.",
+  "fix": "Modify ONLY existing service-role-only public.powerhouse_runtime_mux_task_v1: capture original terminal reconcile function receipt, require exact contract, read public.powerhouse_recovery_review_truth_v1() aggregate, append typed recovery_review_truth and recovery_provider_resolution_proven=false, keep all other tasks unchanged, fail closed on missing provider source.",
+  "prevention": "Before calling all incidents recovered, the ORIGINAL natural mux #171 receipt must contain original recovery_review_truth, show explicitly_unresolved from actual production source, and identify provider resolution separately. SOURCE_MISSING is error; EVIDENCE_DUE is not repaired. No replay of unknown external side effects.",
+  "safety": {
+    "new_scheduler": false,
+    "new_writer": false,
+    "source_replay": false,
+    "provider_action": false,
+    "privilege_escalation": false,
+    "original_writer_lease_preserved": true,
+    "permissions": "anon/authenticated=false, service_role=true"
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "failure_class": "CANONICAL_SOURCE_PROOF_NOT_CONSUMED_BY_RUNNING_AGENT",
+    "repeat_count": 306
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-heartbeat-native-recovery-proof-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-heartbeat-native-recovery-proof-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-heartbeat-native-recovery-proof-20261104.test.mjs"
+    ],
+    "invariants": [
+      "keep original runtime mux",
+      "preserve original one-brain policy error receipts",
+      "no second scheduler",
+      "no privileged browser access",
+      "fail closed on missing terminal source",
+      "do not equate task ok with provider success"
+    ]
+  },
+  "customer_measurement": {
+    "baseline": "One original terminal-auto run ok=true but missing proof",
+    "candidate": "Original #171 natural task_results includes typed recovery_review_truth 307/306 and provider_resolution false",
+    "provider_impacts": "not verified until original external provider readback",
+    "actual_revenue": "UNKNOWN"
+  },
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL/native Supabase Preview + protected merge + original production migration applied + original native source/ACL function readback + TWO successful real natural #171 runs with source receipt. Close only this integration gap; keep all historical provider incidents and unrelated active blockers open."
+}
