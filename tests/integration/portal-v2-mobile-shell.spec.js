@@ -21,7 +21,22 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   // Preserve the fully hydrated browser state on every run, including failures.
   await page.screenshot({ path: 'artifacts/portal-v2-mobile-overview-demoai.png', fullPage: true });
 
-  await expect(page.locator('#portalFullMenuToggle')).toBeVisible();
+  // The canonical four-tab dock replaced the redundant mobile hamburger.
+  // Prove the REAL mobile control, touch target, route and safe return.
+  const dock=page.locator('[data-portal-mobile-primary="v1"]');
+  await expect(dock).toBeVisible();
+  await expect(dock.locator('button')).toHaveCount(4);
+  const more=dock.locator('[data-mobile-primary-target="hub:portal"]');
+  await expect(more).toBeVisible();
+  await expect(more).toContainText('Meer');
+  const moreBox=await more.boundingBox();
+  expect(moreBox?.height||0, 'canonical mobile Meer touch target').toBeGreaterThanOrEqual(44);
+  await expect(page.locator('#portalFullMenuToggle')).toBeHidden();
+  await more.click();
+  await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
+  await expect(page.locator('#allPages')).toHaveAttribute('aria-hidden','false');
+  await page.locator('#closePages').click();
+  await expect(page.locator('#allPages')).toHaveAttribute('aria-hidden','true');
   await expect(page.locator('.mobilebar')).toHaveCount(0);
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.locator('.v2globalstatus')).toBeHidden();
