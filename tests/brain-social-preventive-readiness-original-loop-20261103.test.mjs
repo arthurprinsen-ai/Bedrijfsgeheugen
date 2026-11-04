@@ -104,3 +104,23 @@ test('original loop reads real blog approval and independent live timestamps for
  const loop=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
  assert.match(loop,/\.select\('channel,status,external_id,evidence,last_error,next_action,approved_at,live_proven_at,updated_at'\)/);
 });
+
+test('source-first preparation executes before original external social delivery without another sender',()=>{
+ const loop=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+ const source=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ assert.ok(loop.indexOf("mode:'prepare_only'")>=0);
+ assert.ok(loop.indexOf("mode:'prepare_only'")<loop.indexOf("mode:'publish_only'"));
+ assert.match(loop,/readinessForChannel\?\.prepared!==true/);
+ assert.match(loop,/PREFLIGHT_NOT_READY_NO_SEND/);
+ assert.match(source,/const prepareOnly = mode === 'prepare_only'/);
+ assert.match(source,/const publishOnly = mode === 'publish_only' \|\| prepareOnly/);
+ assert.match(source,/const authority_recovery=prepareOnly\s*\? \{skipped:true,reason:'PREPARE_ONLY_NO_AUTHORITY_MUTATION'\}/);
+ assert.match(source,/if\(prepareOnly\)/);
+ assert.match(source,/status:'READY_FOR_FINAL_RECHECK'/);
+ assert.match(source,/provider_create:false/);
+ assert.match(source,/final_review_at_due_required:true/);
+ assert.match(source,/if\(dispatchReady.status==='not_due'&&!prepareOnly\)/);
+ assert.match(source,/if\(prepareOnly&&dispatchReady.status==='not_due'\)/);
+ assert.ok(source.indexOf("status:'ready_for_final_recheck'") < source.indexOf('let instagramMetaConfig:MetaInstagramConfig'));
+ assert.doesNotMatch(loop,/cron\.schedule\(/);
+});
