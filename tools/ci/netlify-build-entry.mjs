@@ -123,12 +123,24 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
     }
   }
   // Publish independently observable deployment identity on normal builds too.
-  const commitRef=String(process.env.COMMIT_REF||'').trim();
+  const providedCommit=String(process.env.COMMIT_REF||'').trim();
   const context=String(process.env.CONTEXT||'').trim();
   const deployId=String(process.env.DEPLOY_ID||'').trim();
+  // Native Netlify builds can omit COMMIT_REF; use the checked-out Git HEAD,
+  // never a manually configured or stale release SHA. Fail closed otherwise.
+  const gitHeadResult=spawnSync('git',['rev-parse','--verify','HEAD'],{
+    cwd:process.cwd(),encoding:'utf8',timeout:5000,
+  });
+  const gitHead=gitHeadResult.status===0?String(gitHeadResult.stdout||'').trim():'';
+  if(providedCommit && !HEX40.test(providedCommit)) throw new Error('PRODUCTION_RELEASE_COMMIT_REF_INVALID');
+  if(HEX40.test(providedCommit)&&HEX40.test(gitHead)&&providedCommit.toLowerCase()!==gitHead.toLowerCase()){
+    throw new Error('PRODUCTION_RELEASE_GIT_HEAD_MISMATCH');
+  }
+  const commitRef=providedCommit||gitHead;
   if(context==='production'&&HEX40.test(commitRef)&&deployId){
     await restampReleaseIdentity({root:process.cwd(),commitRef,context,deployId});
   }else if(context==='production'){
+    console.error('PRODUCTION_RELEASE_IDENTITY_DIAGNOSTIC',JSON.stringify({context,has_deploy_id:Boolean(deployId),has_commit_ref:Boolean(providedCommit),has_git_head:HEX40.test(gitHead)}));
     throw new Error('PRODUCTION_RELEASE_IDENTITY_UNAVAILABLE');
   }
   const profile={
