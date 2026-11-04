@@ -10,3 +10,8 @@
 ## First Time Right admission negative (original Required run 41803279017)
 - De echte oorspronkelijke hygiene / admission job wees de eerste PR-body correct af met `PR_MACHINE_METADATA_INVALID:SUPERSEDES_INVALID`. Oorzaak: `Supersedes: none — ...` is ongeldig voor de streng geparseerde oorspronkelijke machine-header; #5400 is reeds gemerged en géén superseded kandidaat.
 - Binnen dezelfde originele PR #5404 is de pseudo-header verwijderd en vervangen door een gewone menselijke voorgangerverwijzing, zonder de machine-admission-gate af te zwakken. Deze append-only leerregistratie veroorzaakt een nieuwe exacte-head Required/CodeQL-controle. Geen productie-of-migratiewijziging uitgevoerd vóór bescherming.
+
+## Native learning semantic gate — second historical negative
+- PR Required run `41803422020` advanced past strict machine metadata but original integration closure correctly refused a learning file with `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning`.
+- Source cause: the new canonical `brain/learning/2026-11-04-ga4-data-spine-consent-boundary-classification-v1.json` supplied `cause/prevention/evaluation` but lacked a required machine-readable top-level `evidence` key. Production source evidence in normal prose/PR body is **not** adequate for the original permanent semantic contract.
+- Corrected in the same original protected PR: added independently grounded runtime/provider, baseline and proposed state, test path and negative/positive results in `evidence`. No relaxation of original semantic gate, no direct main mutation, no status claimed live. Preserve this real misadmission as a First Time Right lesson.
