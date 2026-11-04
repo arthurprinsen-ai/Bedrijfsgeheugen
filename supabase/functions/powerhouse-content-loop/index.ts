@@ -499,7 +499,7 @@ Deno.serve(async (req) => {
     }
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }, { data: mediaJobs, error: mediaJobsError }] = await Promise.all([
-      db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
+      db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,approved_at,live_proven_at,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at,scheduled_for').eq('run_date', runDate),
       db.from('powerhouse_instagram_media_jobs_v1').select('channel,status,last_error,asset_manifest,proof_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram'),
     ]);
