@@ -33,7 +33,8 @@
     "current": [
       "Original existing .github workflow extended to tests/integration/portal-v2-production-*.spec.js and own YAML",
       "Evidence-only source parent Sha selected only via exact provider manifest + protected-main ancestor + fully allowlisted diff; runtime SHA never spoofed",
-      "SOURCE_CANDIDATE; original browser proof pending"
+      "SOURCE_CANDIDATE; original browser proof pending",
+      "Original production DOM run #41839564792: 1 remaining mobile-shell browser failure on deprecated hidden #portalFullMenuToggle; 390px native Meer assertion and trigger added; full independent browser pass still pending."
     ]
   },
   "independent_verification": "PENDING_ORIGINAL_PROTECTED_MERGE_NETLIFY_IMMUTABLE_BROWSER",
@@ -41,5 +42,8 @@
     "portal-living-interface",
     "powerhouse-continuity"
   ],
-  "customer_outcome": "NOT_PROVEN"
+  "customer_outcome": "NOT_PROVEN",
+  "actions": [
+    "Original mobile shell readback checks 44px More and Escape, not intentionally hidden old hamburger"
+  ]
 }
