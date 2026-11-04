@@ -31,8 +31,34 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   await mobileMore.click();
   await expect(page.locator('#allPages')).toBeVisible();
   await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
+  await expect(mobileMore).toHaveAttribute('aria-expanded','true');
+  await expect(page.locator('#closePages')).toBeFocused();
+  await expect(page.locator('.app')).toHaveJSProperty('inert',true);
+  // Shift+Tab from the first menu action wraps to the last menu action,
+  // rather than letting keyboard users reach the hidden customer dashboard.
+  const lastMenuAction=page.locator('#allPages .groups button:visible').last();
+  await page.keyboard.press('Shift+Tab');
+  await expect(lastMenuAction).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#closePages')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.locator('#allPages')).toBeHidden();
+  await expect(mobileMore).toBeFocused();
+  await expect(mobileMore).toHaveAttribute('aria-expanded','false');
+  await expect(page.locator('.app')).toHaveJSProperty('inert',false);
+
+  // Dismissing More preserves the previous canonical content route.
+  await page.evaluate(async()=>{
+    const {navigatePortal}=await import('/portal-v2/router.js');
+    navigatePortal('roadmap');
+  });
+  const previousUrl=page.url();
+  await mobileMore.click();
+  await expect(page.locator('#allPages')).toBeVisible();
+  await page.locator('#closePages').click();
+  await expect(page.locator('#allPages')).toBeHidden();
+  await expect(page).toHaveURL(previousUrl);
+  await expect(mobileMore).toBeFocused();
   await expect(page.locator('.mobilebar')).toHaveCount(0);
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.locator('.v2globalstatus')).toBeHidden();
