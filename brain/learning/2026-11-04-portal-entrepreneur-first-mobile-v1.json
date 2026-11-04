@@ -8,12 +8,13 @@
   "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5399",
   "root_cause": "The main V2 route foregrounds numerous workflow stages, long descriptions, KPIs and a large page catalog. Mobile was largely a responsive desktop layout without a compact task-first bottom navigation; the authenticated entrepreneur home repeated the next action.",
   "customer_impact": "A first-time entrepreneur cannot reliably identify what needs attention, how to act, and what is independently proven, especially on a phone. Direct user-testing evidence is still outstanding.",
-  "prevention": "Present one prominently prioritized next action on the existing authenticated snapshot; show evidence and technical depth on demand; preserve full role-gated registry while giving mobile four task-oriented shortcuts. Release requires actual usability and mobile readback rather than self-assessed aesthetic claims.",
+  "prevention": "Present one prominently prioritized next action on the existing authenticated snapshot; show evidence and technical depth on demand; preserve full role-gated registry while giving mobile four task-oriented shortcuts. Release requires actual usability and mobile readback rather than self-assessed aesthetic claims. Existing technical-first legacy panels must remain available but collapsed in the default entrepreneurial decision view.",
   "actions": [
     "Place the single next-action card before extended proof, source and journey details, and expose explicit disclosure controls.",
     "Keep first-visit goal choices immediately reachable; retain existing canonical goal save and tenant-specific server state.",
     "Use the existing router for Today, Actions, Result, More mobile tabs; collapse the desktop group list without deleting pages.",
-    "Check accessibility, screen sizes, role authorization and provider/readback before declaring live."
+    "Check accessibility, screen sizes, role authorization and provider/readback before declaring live.",
+    "Wrap the original five-stage steering, source flow, KPIs and lower panels in an optional native details view; preserve one canonical node and redraw visual flow when expanded."
   ],
   "evaluation": {
     "historical_replay": [
@@ -46,6 +47,15 @@
     "regression": "portal-v2/tests/entrepreneur-focus-mobile.test.mjs",
     "human_documentation": "docs/changes/2026-11-04-portal-mobile-first-focus-v1.md",
     "protected_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5399",
-    "learning_canonicalization_gate": "The original gate requires root tests/brain-*.test.mjs. Initial candidate test paths under portal-v2/tests were rejected (run 41799483019). Reuse root source-contract regression in all evaluation modes without changing the gate."
+    "learning_canonicalization_gate": "The original gate requires root tests/brain-*.test.mjs. Initial candidate test paths under portal-v2/tests were rejected (run 41799483019). Reuse root source-contract regression in all evaluation modes without changing the gate.",
+    "provider_check_blocker": {
+      "fingerprint": "github|required-status-expected|context-source-sha",
+      "owner_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4929",
+      "protected_merge_attempt": "GitHub HTTP405: 3 of 3 required status checks are expected on source head c4a058ee4361069f9c47c788bbfebf87f4cfc2af",
+      "virtual_merge_sha": "164de529ddf31f0c9e802a6af48c971d34d0894f",
+      "virtual_merge_run_evidence": "0 Check Runs and 0 Commit Statuses at observation",
+      "expected_context_names": "UNKNOWN_FORBIDDEN",
+      "production_status": "NOT_DEPLOYED"
+    }
   }
 }
