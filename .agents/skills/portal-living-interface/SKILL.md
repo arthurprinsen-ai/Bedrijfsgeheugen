@@ -151,3 +151,18 @@ Original Portal Playwright run 41844746771 is independently green (15 passed, 1 
 - Original production mobile browser #41861441439 observed a false second-router test: `import('/portal-v2/router.js')` without the pinned import suffix creates a different ES module instance without original handlers. Browser tests must exercise already-bound canonical DOM actions rather than create a new router.
 - When opening the full menu from specialist `#portalView`, call the existing `closePortalPage()` to prevent two competing dialogs; dismissing restores the remembered source route and its guarded page view. Keep role/tenant safety and the original `navigatePortal` action authority.
 - Preserve actual 390px Playwright full-menu/ARIA/focus/route assertions; protected merge, exact published SHA and successful original readback are mandatory. Do not promote failure maturity on source-only pass.
+
+
+## 2026-11-04 — Verified production mobile closure and human acceptance boundary
+- Immutable Netlify production deploy `6aeb82327b0f598f2a87721a` published commit `4d5823446c3b830e9b33b0314893cdd56dc5b5ee` at 2026-11-04T19:08:09.915Z; original production-dom-readback run `41895447111`, job `126804497371` completed SUCCESS.
+- Independent Chromium logs prove 15 production routing/DOM checks, one hydrated mobile-shell check and one production visual regression check; approved-source visual baseline regenerated without waiver. Do not conflate this with real human usability.
+- Portal owner must preserve one canonical router, one visible modal, focus trap, source-route restoration, keyboard and inert behavior; every relevant change must run original mobile and production readback on exact published SHA.
+- Keep first-time entrepreneur, unassisted mobile usability, physical VoiceOver/TalkBack and WCAG 2.2 AA as separate OPEN evidence obligations until observed. Require five-second comprehension, one primary action, plain language, verified outcomes and mobile completion without guidance. Do not fabricate observations or mark these green based on CI.
+- Every failure: incident fingerprint, owner, source evidence, root cause, safe fix, regression, provider readback, and Brain/portal learning update. No parallel executor or weakened protection.
+
+
+### Agentuitvoering: oorspronkelijke Portal V2-owner
+- Bestaande Portal V2 UX/Engineering agent blijft exclusieve eigenaar. Geen nieuwe executor, scheduler of router.
+- Alleen groen bij beschermde merge, exacte Netlify productie-SHA en originele Chromium-readback. Gebruik 5-secondenbegrip, één primaire actie, duidelijke taal, bewezen resultaat en zelfstandig mobiel taakvoltooien als aparte menselijke acceptatiecriteria.
+- VoiceOver/TalkBack, WCAG 2.2 AA en echte ondernemersobservaties blijven OPEN totdat onafhankelijk getest; registreer succespercentage, taakduur en fouten zonder verzonnen metingen.
+- Elke afwijking: ONE BRAIN fingerprint, bewijs, oorzaak, eigenaar, veilige fix, regressie, productie-readback en preventieregel; leerregel naar bestaande skill en portaal.
