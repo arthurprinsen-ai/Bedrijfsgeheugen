@@ -476,7 +476,33 @@ Deno.serve(async (req) => {
     // can run up to 12h early. Source generation/router always ran above,
     // so a fixable condition never disables the original daily executor.
     const prepublishChannels=['linkedin_personal','linkedin_company','instagram_company'];
+    // A published/ACKed channel is a READBACK obligation, not another
+    // candidate for preparation or create. Do not report a successful,
+    // genuinely live-proven post as an early editorial risk on every hourly run.
+    const {data: existingBeforePublish,error: existingBeforePublishError}=
+      await db.from('content_publication_obligations')
+        .select('channel,status,external_id,live_proven_at,evidence')
+        .eq('tenant_id','canonical').eq('publication_date',runDate)
+        .in('channel',['linkedin_personal','linkedin_company','instagram']);
+    if(existingBeforePublishError) throw new Error('ORIGINAL_PREPUBLISH_SIDE_EFFECT_READ_FAILED');
+    const sideEffectByChannel=new Map((existingBeforePublish||[]).map((o:any)=>[clean(o.channel),o]));
     const prepublishResults=await Promise.all(prepublishChannels.map(async channel=>{
+      const mapped=channel==='instagram_company'?'instagram':channel;
+      const existing:any=sideEffectByChannel.get(mapped)||null;
+      const evidence=existing?.evidence||{};
+      const possibleSideEffect=!!existing&&(!!clean(existing.external_id)
+        ||['PUBLISHED','DISPATCHED','LIVE_PROVEN'].includes(clean(existing.status))
+        ||evidence.provider_create_success===true
+        ||evidence.possible_provider_side_effect===true);
+      if(possibleSideEffect){
+        const live=clean(existing.status)==='LIVE_PROVEN'
+          &&!!existing.live_proven_at
+          &&evidence.provider_truth_verified===true;
+        return {channel,prepared:false,alreadyDispatched:true,
+          status:live?'ALREADY_LIVE_PROVEN':'PROVIDER_READBACK_PENDING',
+          error:live?null:'ORIGINAL_PROVIDER_RECONCILE_ONLY',
+          http:null};
+      }
       const response=await invoke(url,expected,'powerhouse-social-publisher',
         {runDate,mode:'prepare_only',channels:[channel]});
       const match=Array.isArray(response?.body?.results)
@@ -485,7 +511,7 @@ Deno.serve(async (req) => {
         &&match?.status==='ready_for_final_recheck'
         &&match?.contract==='original-social-first-time-right-prepare-v1'
         &&match?.provider_create===false;
-      return {channel,prepared,
+      return {channel,prepared,alreadyDispatched:false,
         status:clean(match?.status)||'NO_CONTENT_READY',
         error:prepared?null:clean(match?.reason)||clean(response?.error)||'PREPUBLISH_PREPARATION_NOT_COMPLETE',
         http:response.http};
@@ -493,8 +519,11 @@ Deno.serve(async (req) => {
     const readiness=new Map(prepublishResults.map(x=>[x.channel,x]));
     stepResults.push(...prepublishResults.map(item=>({
       name:'original-first-time-right-prepublish:'+item.channel,
-      ok:item.prepared,degraded:!item.prepared,skipped:!item.prepared,
-      error:item.error,http:item.http
+      ok:item.prepared||item.alreadyDispatched===true,
+      degraded:!item.prepared&&item.status!=='ALREADY_LIVE_PROVEN',
+      skipped:!item.prepared,
+      error:item.error,http:item.http,
+      reason:item.status
     })));
 
     // Existing provider publisher is called only for a channel that was
@@ -511,10 +540,15 @@ Deno.serve(async (req) => {
       if(prepublishChannels.includes(channel)){
         const readinessForChannel=readiness.get(channel);
         if(readinessForChannel?.prepared!==true){
-          // NO external provider create. The original hourly runner keeps
-          // preparing the SAME bounded obligation; all other lanes proceed.
+          // Never resend a provider-ACKed post, even if independent GET is
+          // forbidden. The earlier original audit_only reconciles exactly.
+          // Independently LIVE_PROVEN is a successful no-send terminal lane.
+          const alreadyLive=readinessForChannel?.status==='ALREADY_LIVE_PROVEN';
+          const alreadyPublished=readinessForChannel?.alreadyDispatched===true;
           return {name:name+':'+channel,channel,ok:true,skipped:true,
-            degraded:true,error:'PREFLIGHT_NOT_READY_NO_SEND',
+            degraded:!alreadyLive,
+            error:alreadyLive?null:alreadyPublished
+              ?'ORIGINAL_PROVIDER_READBACK_PENDING':'PREFLIGHT_NOT_READY_NO_SEND',
             reason:readinessForChannel?.status||'PREPARATION_NOT_PROVEN'};
         }
       }
