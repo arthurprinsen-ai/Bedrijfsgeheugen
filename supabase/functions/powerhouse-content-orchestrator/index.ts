@@ -3,7 +3,7 @@ import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.m
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource} from '../_shared/personal-founder-source-reserve.mjs';
+import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource,personalSourceEventTypes} from '../_shared/personal-founder-source-reserve.mjs';
 import {normalizeRecommendationEvidence} from '../_shared/recommendation-evidence-normalization.mjs';
 const buildVerifiedFounderReserve:(...args:any[])=>any=buildVerifiedFounderReserve_raw;
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
@@ -540,13 +540,14 @@ Deno.serve(async (req) => {
         const verified=(sources||[]).find(validPersonalSource);
         const recentTypesForReserve=new Set<string>();
         {
-          const recentDates=Array.from({length:7},(_,i)=>
+          const recentDates=Array.from({length:30},(_,i)=>
             new Date(Date.parse(runDate+'T12:00:00Z')-(i+1)*86400000).toISOString().slice(0,10));
           const {data:rr}=await db.from('content_publication_obligations').select('evidence')
             .eq('tenant_id','canonical').eq('channel','linkedin_personal').in('publication_date',recentDates)
             .in('status',['PUBLISHED','LIVE_PROVEN']);
-          for(const r of rr||[]){const ev=(r as any).evidence||{};
-            for(const v of [ev.result_event,ev.friction_event,ev.source_focus_context]){const t=clean(v?.event_type);if(t)recentTypesForReserve.add(t);}}
+          for(const r of rr||[]){
+          for(const eventType of personalSourceEventTypes(r))recentTypesForReserve.add(eventType);
+        }
         }
         for(const alternative of buildVerifiedFounderReserve(verified,runDate,recentTypesForReserve)){
           const {error}=await db.from('powerhouse_content_recommendations')
@@ -599,14 +600,13 @@ Deno.serve(async (req) => {
     if(!channelScope||channelScope==='linkedin_personal'){
       // Use the existing bounded IN adapter. Its gte method intentionally
       // permits only measurement observed_at timestamps, not publication dates.
-      const recentDates=Array.from({length:7},(_,i)=>
+      const recentDates=Array.from({length:30},(_,i)=>
         new Date(Date.parse(runDate+'T12:00:00Z')-(i+1)*86400000).toISOString().slice(0,10));
       const {data:recentRows}=await db.from('content_publication_obligations').select('publication_date,evidence,status')
         .eq('tenant_id','canonical').eq('channel','linkedin_personal').in('publication_date',recentDates)
         .in('status',['PUBLISHED','LIVE_PROVEN']);
       for(const r of recentRows||[]){
-        const ev=(r as any).evidence||{};
-        for(const v of [ev.result_event,ev.friction_event,ev.source_focus_context]){const t=clean(v?.event_type);if(t)recentPersonalTypes.add(t);}
+        for(const eventType of personalSourceEventTypes(r))recentPersonalTypes.add(eventType);
       }
     }
     const priorPersonal = existing.find((row:any)=>clean(row.channel)==='linkedin_personal') || null;
