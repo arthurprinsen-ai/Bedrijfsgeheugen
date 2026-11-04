@@ -63,6 +63,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   };
   const draw=()=>{
     if(!host.isConnected)return;
+    const keepDetailsOpen=Boolean(host.querySelector('.eh-deep-dive')?.open);
     updatePageGuide();
     const loggedIn=auth();
     const snapshot=domainState.snapshot?.();
@@ -96,8 +97,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const attention=add(host,'section','eh-attention');
     attention.dataset.entrepreneurAttention='v1';
     attention.setAttribute('aria-label','Drie zaken die voor jouw bedrijf tellen');
-    add(attention,'h3','','Waar geef je nu aandacht aan?');
-    add(attention,'p','eh-muted','Jouw volgende keuze, de kwaliteit van je gegevens en wat al onafhankelijk onderbouwd is.');
+    add(attention,'h3','','Dit is belangrijk voor jou');
+    add(attention,'p','eh-muted','Wat je eerst kunt doen, hoe betrouwbaar je gegevens zijn en wat echt is bereikt.');
     const attentionGrid=add(attention,'div','eh-attention-grid');
     const nextCard=add(attentionGrid,'article','eh-attention-card');
     add(nextCard,'span','eh-attention-kicker','1 · Jouw volgende stap');
@@ -174,9 +175,20 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       const action=add(next,'button','eh-main-action',model.next.kind==='verified-proposal'?'Bekijk voorstel en onderbouwing →':'Ga verder met deze stap →');
       action.type='button';action.dataset.entrepreneurPage=model.next.page;
     }else add(next,'p','eh-small','Begin door hierboven een doel te kiezen.');
-    // Existing Brain/Powerhouse cockpit and scenario navigator are projections of
-    // this same authenticated snapshot, not separate onboarding databases.
-    renderEntrepreneurJourney(host,journey);
+    // The next action is above secondary information: one clear first screen.
+    // The original authorized data and handlers remain unchanged.
+    host.insertBefore(next,attention);
+    // A first-time visitor without a chosen goal sees the goal picker immediately.
+    // Returning entrepreneurs can expand it without losing any functionality.
+    const details=add(host,'details','eh-deep-dive');
+    details.open=keepDetailsOpen;
+    add(details,'summary','','Meer bekijken: doelen, gegevens en voortgang');
+    if(model.selectedGoal)details.appendChild(chooser);
+    details.appendChild(columns);
+    // Existing Brain/Powerhouse cockpit and scenario navigator remain projections
+    // of the same authenticated server snapshot, not a second data source.
+    const journeySection=renderEntrepreneurJourney(details,journey);
+    if(journeySection)journeySection.dataset.progressiveDisclosure='true';
     const footer=add(host,'div','eh-foot');
     add(footer,'span','','1 · Kies je doel');
     add(footer,'span','','2 · Maak het meetbaar');
