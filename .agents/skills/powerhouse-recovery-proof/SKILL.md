@@ -5,6 +5,15 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## Originele eigenaar: geen dubbele herstelplanner (4 november 2026)
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. De echte oorspronkelijke Heartbeat #171 voert al elke vijf minuten de bestaande `execution-resilience-watchdog` en `reconciliation-worker` uit. Via #5386 werd aanvullend een #184 recoverycontrol-plane cron ingevoerd die dezelfde functies aanroept, maar een andere advisory-lock heeft; row-level SKIP LOCKED beperkt dubbel herstel maar geen overbodige dubbele uitvoering.
+
+**Eigenaarsregel:** wijzig uitsluitend bestaande oorspronkelijke runtime mux #171 zodat `terminal-autonomous-reconcile` zijn contractresultaat en het service-only read-only herstelbewijs automatisch opslaat in dezelfde natuurlijke `task_results`. Stop de redundant geworden #184 uitsluitend na veilige native verificatie van #171, één exact geïdentificeerde cron #184, en bewezen huidige uitvoering. Geen parallelle scheduler, writer, queue of providerreplay. `ok=true` van de bestaande heartbeat is taakuitvoering, niet providerresultaat. `provider_success_count=null` blijft onbekend. De bestaande oorspronkelijke recoveryfunctie en haar exclusieve lock blijven bestaan voor geautoriseerde service-diagnose.
+
+Volg de oorspronkelijke ONE BRAIN-lus: incident + oorzaak → hypothese → baseline/controlegroep en reversibel experiment → beveiligde test/PR/lease → native productie-implementatie → twee natuurlijke originele runs met bronresultaat → effectmeting → preventie in Brain/skill/portaal → exacte CAS-afsluiting. De onafhankelijke originele 306 onbewezen historische provideruitkomsten mogen niet als opgelost worden aangemerkt. Kandidaatregressie `tests/brain-original-single-recovery-scheduler-proof-20261104.test.mjs`; leerregel `brain/learning/2026-11-04-single-original-recovery-scheduler-closed-loop-v1.json`; incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 **Fingerprint:** `powerhouse|recovery-queue|triage-only-marked-succeeded|20261103-v1`. **Owner:** existing original Powerhouse recovery queue / ONE BRAIN reliability agent. **Parent:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
