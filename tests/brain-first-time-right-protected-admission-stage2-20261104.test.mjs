@@ -21,7 +21,10 @@ test('protected admission obtains checker from exact trusted workflow revision, 
 });
 test('guard rejects wrong candidate head and nonregular source before evaluating',()=>{
   assert.match(workflow,/actualHead!==process\.env\.EXPECTED_HEAD_SHA/);
-  assert.match(workflow,/evidence\.admitted!==true/);
+  assert.match(workflow,/evidence\.state==='ADMITTED'/);
+  assert.match(workflow,/evidence\.ok===true/);
+  assert.match(workflow,/evidence\.candidateHeadSha===actualHead/);
+  assert.match(workflow,/evidence\.state\)\s*\|\|?\s*evidence\.admitted===true|evidence\.admitted===true/);
   assert.match(workflow,/!stat\.isFile\(\)\|\|stat\.isSymbolicLink\(\)/);
   assert.match(workflow,/resolved!==full/);
   assert.match(workflow,/FIRST_TIME_RIGHT_CANDIDATE_HEAD_DRIFT/);
