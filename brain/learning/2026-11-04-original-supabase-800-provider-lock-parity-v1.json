@@ -37,5 +37,13 @@
     "canary": [
       "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
     ]
+  },
+  "failure_class": "SUPABASE_PROVIDER_MIGRATION_HISTORY_LOCK_STALE",
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "SUPABASE_PROVIDER_MIGRATION_HISTORY_LOCK_STALE",
+    "machine_enforceable": true,
+    "repeat_count": 9,
+    "security_sensitive": true
   }
 }
