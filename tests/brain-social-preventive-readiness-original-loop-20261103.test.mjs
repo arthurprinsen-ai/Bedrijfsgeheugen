@@ -149,3 +149,19 @@ test('prepare_only must never report provider truth when no provider create occu
  assert.match(source,/preparation_only:prepareOnly, provider_create:prepareOnly\?false:null/);
  assert.match(source,/provider_truth_verified:prepareOnly\?false:true/);
 });
+
+test('actual ORIGINAL generator receives channel FTR prerequisites BEFORE writing content',async()=>{
+ const m=await import('../supabase/functions/_shared/editorial-council-context.mjs');
+ assert.equal(m.FIRST_TIME_RIGHT_PRE_GENERATION,'original-social-first-time-right-prepublish-v1');
+ for(const channel of ['linkedin_personal','linkedin_company','instagram_company','blog']){
+   const spec=m.buildEditorialCouncilBrief({channel});
+   assert.equal(spec.pre_generation_contract,m.FIRST_TIME_RIGHT_PRE_GENERATION);
+   assert.match(spec.pre_generation_specification,/VÓÓR GENERATIE/);
+   assert.ok(spec.instruction.includes(spec.pre_generation_specification));
+ }
+ const insta=m.buildEditorialCouncilBrief({channel:'instagram_company'});
+ assert.match(insta.instruction,/0,940/);
+ assert.match(insta.instruction,/1080x1920/);
+ const blog=m.buildEditorialCouncilBrief({channel:'blog'});
+ assert.match(blog.instruction,/Required\/BRAIN\/CodeQL/);
+});
