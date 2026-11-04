@@ -228,6 +228,40 @@ function mountMobilePrimaryNavigation(){
  const params=new URLSearchParams(location.search);
  sync({target:params.get('hub')?'hub:portal':params.get('page')||'overzicht'});
 }
+/* Preserve the entire existing overview but make the real entrepreneur action
+   primary. Move, don't clone, old content; routing, data and controls remain original. */
+function mountOverviewDepthDisclosure(){
+ const main=document.querySelector('main.main');
+ if(!main||main.querySelector('[data-portal-overview-depth]'))return;
+ const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities'];
+ const existing=sections.map(selector=>main.querySelector(':scope > '+selector)).filter(Boolean);
+ if(!existing.length)return;
+ const details=document.createElement('details');
+ details.className='portal-overview-depth';
+ details.dataset.portalOverviewDepth='v1';
+ const summary=document.createElement('summary');
+ summary.className='portal-overview-depth-trigger';
+ const label=document.createElement('span');
+ label.textContent='Meer over mijn bedrijf';
+ const hint=document.createElement('small');
+ hint.textContent='Analyses, gegevens en hoe het werkt';
+ summary.append(label,hint);
+ const body=document.createElement('div');
+ body.className='portal-overview-depth-content';
+ details.append(summary,body);
+ existing[0].before(details);
+ for(const section of existing)body.appendChild(section);
+ details.addEventListener('toggle',()=>{
+  if(details.open)requestAnimationFrame(render);
+ });
+ const sync=({target})=>{
+  details.hidden=target!=='overzicht';
+  if(target!=='overzicht')details.open=false;
+ };
+ subscribePortalRoute(sync);
+ const params=new URLSearchParams(location.search);
+ sync({target:params.get('hub')?'hub:'+params.get('hub'):params.get('page')||'overzicht'});
+}
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
  const definition=hubDefinition(hubId) || hubDefinition('portal');
@@ -402,6 +436,7 @@ bindPortalNavigation({
  showOverview:()=>{closePortalPage();closeHub()}
 });
 mountMobilePrimaryNavigation();
+mountOverviewDepthDisclosure();
 document.querySelectorAll('[data-open-page]').forEach(control=>{
  control.addEventListener('click',event=>{
   if(control.tagName==='A') event.preventDefault();
