@@ -5,6 +5,8 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
 **Fingerprint:** `powerhouse|recovery-queue|triage-only-marked-succeeded|20261103-v1`. **Owner:** existing original Powerhouse recovery queue / ONE BRAIN reliability agent. **Parent:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
 
 ## Non-negotiable meaning of status
