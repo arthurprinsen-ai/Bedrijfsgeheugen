@@ -33,7 +33,8 @@ async function originalGa4EmptyRepair(db:any,day:string,sourceRoute:string,repor
   ({data:ob,error}=await db.rpc('brain_create_obligation',identity));
   if(error||!ob)throw new Error('GA4_RECURRENCE_REPAIR_ENQUEUE_FAILED:'+String(error?.message||'no obligation').slice(0,160));
  }
- const evidence={...report,fingerprint,owner,recovery_state:'PROVIDER_EMPTY_REQUIRES_ORIGINAL_OWNER',first_time_right:'NO_FAKE_OK',historical_zero_rows_not_traffic_proof:true,checkpoints:['independent GA4 provider totals and property readback','consent-aware site tag diagnostics','nonempty genuine source observation or independently confirmed no-data','protected regression, original runtime and Brain learning proof']};
+ const historical=(ob.evidence&&typeof ob.evidence==='object'&&!Array.isArray(ob.evidence))?ob.evidence:{};
+ const evidence={...historical,status:'REPAIR_REQUIRED',latest_observation:report,fingerprint,owner,recovery_state:'PROVIDER_EMPTY_REQUIRES_ORIGINAL_OWNER',first_time_right:'NO_FAKE_OK',historical_zero_rows_not_traffic_proof:true,checkpoints:['independent GA4 provider totals and property readback','consent-aware site tag diagnostics','nonempty genuine source observation or independently confirmed no-data','protected regression, original runtime and Brain learning proof']};
  const nextState=['RUNNING','BLOCKED'].includes(ob.state)?ob.state:'READY';
  const {data:updated,error:transitionError}=await db.rpc('brain_transition_obligation',{p_obligation_id:ob.id,p_expected_version:ob.version,p_state:nextState,p_owner:owner,p_evidence:evidence});
  if(transitionError||!updated)throw new Error('GA4_CANONICAL_REPAIR_CAS_FAILED:'+String(transitionError?.message||'no updated obligation').slice(0,160));
