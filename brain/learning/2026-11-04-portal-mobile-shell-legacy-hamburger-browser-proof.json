@@ -12,7 +12,7 @@
     "security_sensitive": false
   },
   "root_cause": "After the protected mobile-first navigation rollout, the separate original tests/integration/portal-v2-mobile-shell.spec.js continued to demand #portalFullMenuToggle visible at 390px, although source intentionally hides the duplicate hamburger and exposes the canonical four-tab bottom dock and More hub.",
-  "prevention_rule": "Before protected release, collect all original browser contracts that depend on changed visible navigation and update semantic user interactions, not merely static DOM checks. Mobile hydration must prove real four-tab dock, More control >=44px, original hub open/close, unchanged search geometry, no overflow and zero uncaught exceptions; no duplicate menu or test skip.",
+  "prevention_rule": "Before protected release, collect all original browser contracts that depend on changed visible navigation and update semantic user interactions, not merely static DOM checks. Mobile hydration must prove real four-tab dock, More control >=44px, original hub open/close, unchanged search geometry, no overflow and zero uncaught exceptions; no duplicate menu or test skip. Original browser release SHA fence may allow exact non-web-executable tools/delivery/github-actions-failure-observer.mjs from protected prior PR #5402, never tools/delivery/* or changes to live Portal, functions or SQL.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-mobile-shell-actual-menu-readback-20261104.test.mjs"
@@ -30,7 +30,8 @@
       "Job 126607232193: original production DOM 15 PASS/1 SKIP, separately mobile-shell 1 FAIL on obsolete #portalFullMenuToggle"
     ],
     "current": [
-      "Original mobile Playwright test updated to use [data-mobile-primary-target=hub:portal] and original four-tab dock; no runtime or security changes; protected and independent production browser proof pending"
+      "Original mobile Playwright test updated to use [data-mobile-primary-target=hub:portal] and original four-tab dock; no runtime or security changes; protected and independent production browser proof pending",
+      "Protected original GitHub Actions failure observer PR #5402 merged main SHA 47dc323c4376d0bbc2289038bec870f6117b0029 after prior Portal deploy. Its only newly relevant non-web-executable file tools/delivery/github-actions-failure-observer.mjs is explicitly whitelisted by exact pathname for immutable Portal readback; never permit arbitrary tools/delivery/*."
     ]
   },
   "no_duplicate_executor": true,
