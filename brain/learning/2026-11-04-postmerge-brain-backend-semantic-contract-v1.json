@@ -35,5 +35,38 @@
     "No effect on source selection, publishers or tenant permissions"
   ],
   "customer_outcome": "No customer-facing business effect can be claimed from test alignment alone.",
-  "independent_verification": "PENDING"
+  "independent_verification": "PENDING",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs",
+      "tests/brain-ci-installation-rate-limit-classifier-v1.test.mjs",
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-artifact-incomplete-retry.test.mjs",
+      "tests/brain-personal-editorial-bounded-revision.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs",
+      "tests/brain-personal-editorial-bounded-revision.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41804969879",
+      "Original postmerge backend 11/5747 tests failed, portal and automation passed"
+    ],
+    "current": [
+      "Updated tests correspond to original 30-day source family suppression and precise protected content gates",
+      "Corrected explicit incident marker debt only; pending exact-head admission and full BRAIN"
+    ]
+  },
+  "prevention_rule": "Keep original complete BRAIN and terminal closure separate from Netlify READY; compare executed source contract against tests, preserve stronger anti-repeat and approval rules, shrink real skill protocol debt; no synthetic green."
 }
