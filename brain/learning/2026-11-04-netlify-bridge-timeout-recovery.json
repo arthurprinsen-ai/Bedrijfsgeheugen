@@ -26,5 +26,6 @@
     "shadow": [
       "tests/brain-netlify-bridge-client-timeout-20261104.test.mjs"
     ]
-  }
+  },
+  "fingerprint": "netlify-bridge-client-timeout-original-workflow-20261104-v1"
 }
