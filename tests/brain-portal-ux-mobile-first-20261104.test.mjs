@@ -39,3 +39,17 @@ test('canary preparation: hidden depth does not hide evidence or fabricate custo
  assert.match(registry,/export const PORTAL_SECTIONS/);
  assert.doesNotMatch(ui,/localStorage|sessionStorage|Math\.random/);
 });
+
+test('old five-stage and processor panels remain reachable but are collapsed behind native depth disclosure',async()=>{
+ const [app,html,style]=await Promise.all([read('app.js'),read('index.html'),read('navigation.css')]);
+ assert.match(app,/function mountOverviewDepthDisclosure\(\)/);
+ assert.match(app,/document\.createElement\('details'\)/);
+ assert.match(app,/details\.dataset\.portalOverviewDepth='v1'/);
+ assert.match(app,/\['\.daily-steering','\.kpis','\.dashboard','\.lower','\.activities'\]/);
+ assert.match(app,/for\(const section of existing\)body\.appendChild\(section\)/);
+ assert.match(app,/mountOverviewDepthDisclosure\(\);/);
+ assert.match(style,/\.portal-overview-depth\[hidden\]\{display:none!important\}/);
+ assert.match(style,/\.portal-overview-depth-trigger:focus-visible/);
+ assert.match(html,/class="daily-steering"/);
+ assert.match(html,/class="dashboard"/);
+});
