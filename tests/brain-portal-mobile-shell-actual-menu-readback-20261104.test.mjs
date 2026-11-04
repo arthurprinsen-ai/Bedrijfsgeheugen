@@ -32,3 +32,13 @@ test('original mobile proof keeps actual hydrated UX metrics and no uncaught run
  assert.match(probe,/overflow\)\.toBeLessThanOrEqual\(1\)/);
  assert.match(probe,/expect\(errors\)\.toEqual\(\[\]\)/);
 });
+
+test('original browser published-SHA fence admits only the protected non-web-executable GitHub failure observer, not arbitrary delivery scripts',async()=>{
+ const workflow=await read('.github/workflows/portal-v2-production-dom-readback.yml');
+ const fence=workflow.split('Verify published SHA override is strictly scoped to CI and evidence')[1]?.split('Classify visual baseline impact fail-closed')[0]||'';
+ assert.ok(fence,'original fail-closed ancestor and scope gate must remain');
+ assert.match(fence,/tools\/delivery\/github-actions-failure-observer\.mjs/);
+ assert.doesNotMatch(fence,/tools\/delivery\/\*/);
+ assert.match(fence,/Runtime source changed after selected production SHA/);
+ assert.match(fence,/git merge-base --is-ancestor/);
+});
