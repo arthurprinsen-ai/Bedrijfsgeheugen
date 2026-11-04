@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-04",
+  "version": "v1",
+  "status": "SOURCE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "portal|mobile-ux|dialog-loses-route-and-focus|20261104-v1",
+  "owner": "original Portal V2 UX/Engineering and canonical release owner",
+  "compiler": {
+    "failure_class": "PORTAL_MOBILE_ACCESSIBILITY",
+    "scope": "PORTAL_V2_SINGLE_ROUTER",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The existing role=dialog full mobile menu always dismissed to overview and lacked accessible Tab trapping, focus restoration and inert background despite aria-modal.",
+  "prevention_rule": "Reuse one canonical router, preserve previous non-hub route for dismissal, trap Tab inside dialog, inert only the existing background while open, focus the real close control, restore the visible invoker on exit and verify exact published production; never claim WCAG or real entrepreneur usability from source tests alone.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original mobile four-tab menu source portal-v2/app.js and original browser success https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41844746771"
+    ],
+    "current": [
+      "Focused source repair proposal; awaiting exact protected CI and actual production browser readback.",
+      "Original admission #41860199927 discovered invalid Playwright path in canonical learning evaluation; changed to a real node:test brain- contract while preserving the independent hydrated Playwright runtime test."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_ORIGINAL_PRODUCTION_BROWSER_AND_REAL_USER"
+}

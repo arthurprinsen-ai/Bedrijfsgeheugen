@@ -207,6 +207,11 @@ function mountMobilePrimaryNavigation(){
  ]){
   const button=document.createElement('button');
   button.type='button';button.dataset.mobilePrimaryTarget=target;
+  if(target==='hub:portal'){
+   button.setAttribute('aria-haspopup','dialog');
+   button.setAttribute('aria-controls','allPages');
+   button.setAttribute('aria-expanded','false');
+  }
   const symbol=document.createElement('span');
   symbol.className='portal-mobile-primary-icon';symbol.setAttribute('aria-hidden','true');symbol.textContent=icon;
   const caption=document.createElement('span');caption.textContent=label;
@@ -269,8 +274,27 @@ function mountOverviewDepthDisclosure(){
  const params=new URLSearchParams(location.search);
  sync({target:params.get('hub')?'hub:'+params.get('hub'):params.get('page')||'overzicht'});
 }
+// One route authority: dismissing the complete menu must never discard the
+// entrepreneur's current page. Keep only an in-memory focus/return pointer.
+let hubReturnTarget='overzicht';
+let hubOpener=null;
+let backgroundWasInert=false;
+subscribePortalRoute(({target})=>{
+ if(target&&!target.startsWith('hub:'))hubReturnTarget=target;
+});
+function syncHubTriggerState(open){
+ document.querySelectorAll('[data-mobile-primary-target="hub:portal"],#portalFullMenuToggle,#showPages').forEach(button=>
+  button.setAttribute('aria-expanded',String(open))
+ );
+}
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
+ if(!sheet.classList.contains('open')){
+  hubOpener=document.activeElement instanceof HTMLElement&&!sheet.contains(document.activeElement)?document.activeElement:null;
+  const background=document.querySelector('.app');
+  backgroundWasInert=Boolean(background?.inert);
+  if(background)background.inert=true;
+ }
  const definition=hubDefinition(hubId) || hubDefinition('portal');
  renderHubGroups(hubId);
  const heading=sheet.querySelector('.sheethead h3');if(heading)heading.textContent=definition.label;
@@ -278,12 +302,30 @@ function openHub(hubId){
  sheet.dataset.hub=hubId;
  sheet.classList.add('open');
  sheet.setAttribute('aria-hidden','false');
+ syncHubTriggerState(true);
+ el('closePages')?.focus({preventScroll:true});
 }
 function closeHub(){
  const sheet=el('allPages');if(!sheet)return;
+ const wasOpen=sheet.classList.contains('open');
  sheet.classList.remove('open');
  sheet.removeAttribute('data-hub');
  sheet.setAttribute('aria-hidden','true');
+ syncHubTriggerState(false);
+ if(wasOpen){
+  const background=document.querySelector('.app');
+  if(background&&!backgroundWasInert)background.inert=false;
+ }
+ hubOpener=null;
+}
+function dismissHub(){
+ const opener=hubOpener;
+ const returnTarget=hubReturnTarget;
+ closeHub();
+ navigatePortal(returnTarget,{replace:true});
+ const fallback=document.querySelector('[data-mobile-primary-target="hub:portal"]');
+ const target=opener?.isConnected&&opener.getClientRects().length?opener:fallback;
+ if(target?.getClientRects().length)target.focus({preventScroll:true});
 }
 function ensureNavigationStyles(){
  if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a'))return;
@@ -453,9 +495,20 @@ document.querySelectorAll('[data-open-page]').forEach(control=>{
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
 el('portalFullMenuToggle')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
-el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overzicht',{replace:true})});
-el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
+el('closePages')?.addEventListener('click',dismissHub);
+el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages'))dismissHub()});
+addEventListener('keydown',e=>{
+ const sheet=el('allPages');
+ if(!sheet?.classList.contains('open'))return;
+ if(e.key==='Escape'){e.preventDefault();dismissHub();return;}
+ if(e.key!=='Tab')return;
+ const focusable=[...sheet.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+  .filter(node=>node.getClientRects().length>0&&!node.closest('[hidden]'));
+ if(!focusable.length){e.preventDefault();el('closePages')?.focus();return;}
+ const first=focusable[0],last=focusable[focusable.length-1],active=document.activeElement;
+ if(e.shiftKey&&(active===first||!sheet.contains(active))){e.preventDefault();last.focus();}
+ else if(!e.shiftKey&&(active===last||!sheet.contains(active))){e.preventDefault();first.focus();}
+});
 addEventListener('resize',render);render();
 // Revalidate when the user returns and every 15 minutes while the portal is
 // visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
