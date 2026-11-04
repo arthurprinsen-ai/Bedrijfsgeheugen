@@ -26,7 +26,8 @@
     "Assert existing bounded governed AI retry including low-reasoning argument and final editorial truth checks",
     "Execute actual original SQL for 30 bound previous dates including leap-day and year rollover",
     "Remove already-compliant skill from visible debt baseline",
-    "Keep existing personal editorial bounded revision and original 150–175 word requirement"
+    "Keep existing personal editorial bounded revision and original 150–175 word requirement",
+    "Remove also already-compliant powerhouse-delivery-self-optimization from explicit incident debt baseline after canonical historical replay exposed a second stale entry."
   ],
   "acceptance": [
     "Protected PR exact-head Required and CodeQL green",
@@ -40,7 +41,7 @@
     "failure_class": "GITHUB_DELIVERY",
     "scope": "CI",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
   "evaluation": {
@@ -65,7 +66,8 @@
     ],
     "current": [
       "Updated tests correspond to original 30-day source family suppression and precise protected content gates",
-      "Corrected explicit incident marker debt only; pending exact-head admission and full BRAIN"
+      "Corrected explicit incident marker debt only; pending exact-head admission and full BRAIN",
+      "Required #41806973651 historical replay found second stale marker-debt mismatch; cross-checked exact marker against current skill set and removed only confirmed compliant skill."
     ]
   },
   "prevention_rule": "Keep original complete BRAIN and terminal closure separate from Netlify READY; compare executed source contract against tests, preserve stronger anti-repeat and approval rules, shrink real skill protocol debt; no synthetic green."
