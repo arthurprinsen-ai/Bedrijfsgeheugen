@@ -11,5 +11,20 @@
   "correction": "Increase existing GitHub bridge HTTP timeout to 60 seconds",
   "prevention_rule": "Set authorized bridge client timeout above observed cold-start and provider-discovery latency, with bounded retries; never infer provider outage from client timeout alone",
   "regression": "Protected GitHub admission and Required checks; then original Production Source Snapshot exact-SHA Netlify deployment and mobile DOM readback",
-  "status": "IMPLEMENTED_IN_PR_NOT_PRODUCTION_VERIFIED"
+  "status": "IMPLEMENTED_IN_PR_NOT_PRODUCTION_VERIFIED",
+  "compiler": {
+    "failure_class": "TIMEOUT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-bridge-client-timeout-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-bridge-client-timeout-20261104.test.mjs"
+    ]
+  }
 }
