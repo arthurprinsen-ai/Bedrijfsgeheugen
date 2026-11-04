@@ -21,7 +21,7 @@
   },
   "root_cause": "Original owner #5386 restored a native #184 schedule for previously unscheduled control-plane, but original #171 was already running both underlying worker operations; the independent private evidence receipt was not consumed in original #171. Duplicate activity and two different outer leases risk extra work and confusing liveness claims.",
   "hypothesis": "Keep only canonical original #171 as active recovery worker, attach read-only aggregated source truth to its natural terminal task result, retire exact duplicate #184 only with native original #171 and ACL proof; this removes duplicate scheduling without reducing recovery cadence.",
-  "change": "One original SQL migration: preserve existing mux and provider authorization; capture typed terminal and recovery source receipts; fail closed on missing original contract, guard decommission of exact native duplicate cron #184 in same transaction after checking #171, original job command and ACL. No new scheduler or producer.",
+  "change": "Phase 1: one service-only protected migration adds original recovery source proof to existing #171 terminal task without any cron.job access. Phase 2: original authorized native production owner uses guarded exact original cron identity and active #171 proof to unschedule only redundant #184 after TWO natural source receipts, with independent ONE BRAIN CAS and repeat recurrence test. No new schedulers.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-heartbeat-single-recovery-owner-20261104.test.mjs"
@@ -54,13 +54,18 @@
     "display": "Eén hersteluitvoerder; bewijs van individuele herstelde resultaten blijft vereist",
     "full_green_allowed": false
   },
-  "terminal_rule": "Original owner lease, all Required/BRAIN/CodeQL/native Supabase Preview checks, protected merge, native production migration+ACL+cron count proving #171 active and #184 absent, TWO natural #171 terminal-autonomous-reconcile task_results include recovery_review_truth.explicitly_unresolved with provider_resolution_proven false, original learning/cas closure only for duplicate-scheduling source defect; 306 historical outcomes remain not proven.",
-  "prevention_rule": "Original recovery watchdog/reconciliation must have exactly one native scheduled original owner. Before any cron addition compare active #171/#184 task overlap and advisory scopes; retire exact redundant job only via protected transactional migration after proving original active scheduler, ACL and native task receipts. Never infer provider recovery from succeeded triage.",
+  "terminal_rule": "Phase 1 protected Required/BRAIN/CodeQL/Supabase Preview and actual original prod function/ACL/migration readback, TWO native #171 task_results with typed recovery truth and no provider success claims; Phase 2 original authorized native owner checks #171 active/#184 exact job, retires only duplicate #184 using its existing privileges and independently reads cron.job and next #171 natural receipt. Source issue stays ACTIVE until both phases.",
+  "prevention_rule": "Compare existing native scheduler task ownership before any recovery cron creation; original #171 remains single runtime writer. Schema preview roles must not be granted cron.job access. Native cron cleanup is a separate owner-guarded provider action after verified #171 natural source receipts.",
   "evidence": {
     "production_source": "Supabase public cron.job and powerhouse_ops.runtime_scheduler_run_evidence_v1 2026-11-04",
     "original_cron_171": "16 execution-resilience-watchdog and 16 reconciliation-worker runs in 80 minutes",
     "duplicate_cron_184": "15 minute original recovery control-plane invokes same two functions under different advisory outer lock",
     "recovery_review_truth": "307 triaged / 306 explicitly UNRESOLVED, provider success NULL",
     "required_production_confirmation": "After guarded source PR protected merge: native job #171 active; duplicate #184 absent; two real natural original task receipts with typed aggregate and provider false; no claim 306 original outcome resolved."
+  },
+  "two_phase": {
+    "phase1": "SCHEMA_SOURCE_PATCH_PENDING_PROVIDER_PROOF",
+    "phase2": "NATIVE_CRON_184_RETIRE_AFTER_TWO_ORIGINAL_171_RECEIPTS",
+    "provider_privilege_boundary": "Supabase Git Preview migration role cannot SELECT cron.job; do not grant new permissions or skip preview"
   }
 }
