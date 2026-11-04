@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|ga4|empty-success-without-resolve|20261104-v1",
+  "status": "CANDIDATE_NOT_LIVE_PROVEN",
+  "owner": "bg-analytics-sync-composio / original ONE BRAIN Data Spine owner",
+  "root_cause": "Original six-hour #42 Edge collector was returning 200 and bg_bewijs(true) for GA4 report rows.length===0; .bg_ga4_sync status=ok despite zero pages, and Data Spine stays stale. Source registry marks GA4 optional and therefore only generic health alarms ran without live canonical recovery obligation. Prior chat comments were informational, not actions.",
+  "impact": "GA4 attribution, campaigns, visitors and conversion analysis remain unavailable; 0 rows are not proof of zero visitors because GA4 requires consent.",
+  "compiler": {
+    "failure_class": "SOURCE_EMPTY_FALSE_SUCCESS",
+    "severity": "P0",
+    "one_original_owner": true,
+    "contract": "powerhouse-source-health-to-canonical-brain-repair-v1",
+    "machine_enforceable": true
+  },
+  "prevention": "At original collector source, before creating an empty batch, reject empty source as NO_SOURCE_DATA/HTTP503 and bg_bewijs(false); query independent GA4 aggregate metrics to separate detailed-dimension loss from a true provider empty day; create or CAS-update a single original Brain MEASUREMENT_REPAIR obligation; preserve nonempty and provider-auth policies; never fabricate visits or use Buffer/Make fallback.",
+  "evidence": {
+    "real_production": "2026-11-04T06:06:04Z source HTTP200, bg_ga4_sync ok / rows 0; last nonempty batch 2026-11-02T00:05:02Z; source-health RECOVERY_DUE/STALE",
+    "real_native_obligation": "dee955d9-9e90-43f3-9b8a-2257bce3f1a5 state READY",
+    "source": "supabase/functions/bg-analytics-sync-composio/index.ts",
+    "tests": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "terminal_requirements": [
+      "protected Required BRAIN CodeQL",
+      "Supabase preview and native provider deploy",
+      "original #42 natural run readback",
+      "independent GA4 property/date/provider measurement proof",
+      "Brain CAS closure and learned skill evidence"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ]
+  },
+  "decision": "This does not invent GA4 visitors, change consent, change scheduler, or assert that actual provider upstream has already been fixed. Live can stay RED until genuine data returns."
+}
