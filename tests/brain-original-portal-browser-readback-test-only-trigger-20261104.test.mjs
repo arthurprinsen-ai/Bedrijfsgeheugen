@@ -31,12 +31,23 @@ test('no source runtime can be reclassified as evidence-only and both original f
  assert.equal(matches.length,2,'source pin and final protected verify must enforce the same exact paths');
  assert.equal(matches[0][1].trim(),matches[1][1].trim(),'scope checks cannot drift');
  const list=matches[0][1];
- for(const expected of ['AGENTS.md','.agents/skills/*','.github/workflows/*','tests/*','docs/*','brain/learning/*','tools/ci/*','supabase/migration-history.lock.json']){
+ for(const expected of ['AGENTS.md','.agents/skills/*','.github/workflows/*','tests/*','docs/*','brain/learning/*','tools/ci/*','tools/delivery/github-actions-failure-observer.mjs','supabase/functions/_shared/editorial-council-context.mjs','supabase/functions/powerhouse-content-loop/index.ts','supabase/functions/powerhouse-social-publisher/index.ts','supabase/migration-history.lock.json']){
   assert.ok(list.includes(expected),'documented CI-only path: '+expected);
  }
  for(const runtime of ['portal-v2/app.js','portal-v2/modules/overview.js','netlify/functions/checkout.js']){
   assert.ok(!list.includes(runtime),'runtime source must not be on CI-only list: '+runtime);
  }
+ assert.ok(!list.includes('tools/delivery/*'),'never broaden a GitHub observer exception to the entire delivery runtime');
+ assert.ok(!list.includes('tools/delivery/required-check-reconciliation.mjs'),'required-check authority must never be eligible for unproven runtime source equality');
+ for(const forbidden of ['supabase/functions/*','supabase/functions/**','supabase/functions/portal-state/index.ts','supabase/functions/portal-customer-state/index.ts','netlify/functions/*','netlify/functions/**','portal-v2/*']){
+  assert.ok(!list.includes(forbidden),'not allowed to widen evidence-only published SHA replay: '+forbidden);
+ }
+ // These are the only edge-only social files changed between the published
+ // Portal shell and the protected prepublish-FTR main. All three are named,
+ // never grant blanket Supabase runtime eligibility to a browser proof.
+ const approvedEdge=['supabase/functions/_shared/editorial-council-context.mjs','supabase/functions/powerhouse-content-loop/index.ts','supabase/functions/powerhouse-social-publisher/index.ts'];
+ assert.equal(approvedEdge.filter(x=>list.includes(x)).length,3);
+
  assert.match(workflow,/echo "::error::Runtime source changed after selected production SHA:/);
  assert.match(workflow,/git diff --name-only "\$PORTAL_EXPECTED_SHA" "\$GITHUB_SHA"/);
  assert.match(workflow,/PORTAL_READBACK_URL=\$\{immutable\}/);
