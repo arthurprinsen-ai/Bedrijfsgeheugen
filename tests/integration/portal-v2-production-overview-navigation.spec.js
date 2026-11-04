@@ -11,7 +11,14 @@ async function bootDemo(page){
 
 test('V2 overview exposes legacy company-state and adoption surfaces',async({page})=>{
   await bootDemo(page);
-  const insights=page.locator('[data-legacy-overview-insights]');
+  // The original company/adoption model remains intact, but is no longer
+  // forced in front of the entrepreneur's one primary decision.
+  const more=page.locator('details[data-portal-overview-depth="v1"]');
+  await expect(more).toHaveCount(1);
+  await expect(more).not.toHaveAttribute('open','');
+  await more.locator('summary').click();
+  await expect(more).toHaveAttribute('open','');
+  const insights=more.locator('[data-legacy-overview-insights]');
   await expect(insights).toBeVisible({timeout:10_000});
   await expect(insights).toContainText('Stand van je bedrijf');
   await expect(insights).toContainText('Adoptiecurve');
