@@ -1,0 +1,15 @@
+{
+  "id": "netlify-bridge-timeout-recovery-20261104-v1",
+  "date": "2026-11-04",
+  "incident": "NETLIFY_BRIDGE_CLIENT_TIMEOUT",
+  "root_cause": "GitHub curl max-time 20 seconds is shorter than observed successful bridge proxy_ready duration 25.166 seconds",
+  "evidence": {
+    "workflow_run": 41870321838,
+    "supabase_function": "netlify-deploy-bridge",
+    "observed_proxy_ready_ms": 25166
+  },
+  "correction": "Increase existing GitHub bridge HTTP timeout to 60 seconds",
+  "prevention_rule": "Set authorized bridge client timeout above observed cold-start and provider-discovery latency, with bounded retries; never infer provider outage from client timeout alone",
+  "regression": "Protected GitHub admission and Required checks; then original Production Source Snapshot exact-SHA Netlify deployment and mobile DOM readback",
+  "status": "IMPLEMENTED_IN_PR_NOT_PRODUCTION_VERIFIED"
+}
