@@ -74,15 +74,36 @@ Deno.serve(async(req:Request)=>{
     try{aggregate=await originalGa4AggregateProbe(sa,property,day)}
     catch(e){probeError=e instanceof Error?e.message.slice(0,180):'GA4_TOTALS_UNKNOWN';}
    }
-   const reason=aggregate?.sessions>0||aggregate?.event_count>0?'GA4_DIMENSION_QUERY_EMPTY_WITH_NONZERO_TOTAL':'GA4_NO_SOURCE_ROWS';
-   const observation={ok:false,status:'NO_SOURCE_DATA',reason,day,property,source_route:sourceRoute,provider_report_rows:0,aggregate_probe:aggregate,aggregate_probe_error:probeError,primary_failure:primaryFailure,actual_site_sessions:'UNKNOWN_NOT_INFERRED',run_id:runId,owner:BRON,checked_at:new Date().toISOString()};
-   const {error:syncError}=await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:0,pages_bijgewerkt:0,metingen_ingevuld:0,status:'error',fout:reason,uitgevoerd_op:new Date().toISOString()});
+   // Consent-safe source discrimination: no consented native browser events
+   // plus zero GA4 totals is a privacy boundary, NOT proof that Google is broken.
+   const nextDay=new Date(day+'T00:00:00.000Z');nextDay.setUTCDate(nextDay.getUTCDate()+1);
+   const {data:consentEvents,error:consentError}=await db.from('bg_interacties').select('id')
+     .eq('toestemming',true).eq('is_robot',false)
+     .gte('gebeurd_op',day+'T00:00:00.000Z').lt('gebeurd_op',nextDay.toISOString()).limit(1);
+   const consentedHumanEvidence=consentError?null:Array.isArray(consentEvents)?consentEvents.length>0:null;
+   const totalsPositive=(aggregate?.sessions||0)>0||(aggregate?.event_count||0)>0;
+   const consentLimited=consentedHumanEvidence===false && aggregate!==null && !totalsPositive;
+   const reason=totalsPositive?'GA4_DIMENSION_QUERY_EMPTY_WITH_NONZERO_TOTAL'
+     :consentLimited?'GA4_CONSENT_LIMITED_NO_SOURCE_ROWS'
+     :consentedHumanEvidence===true?'GA4_ZERO_DESPITE_CONSENTED_SITE_EVENTS'
+     :'GA4_EMPTY_SOURCE_INDEPENDENT_EVIDENCE_DUE';
+   const observation={ok:false,source_data_available:false,status:consentLimited?'CONSENT_LIMITED':'NO_SOURCE_DATA',
+     reason,day,property,source_route:sourceRoute,provider_report_rows:0,aggregate_probe:aggregate,
+     aggregate_probe_error:probeError,consented_human_first_party_event_present:consentedHumanEvidence,
+     consent_evidence_error:consentError?String(consentError.message||'unknown').slice(0,160):null,
+     primary_failure:primaryFailure,actual_site_sessions:'UNKNOWN_NOT_INFERRED',
+     privacy_boundary:'NO_CONSENT_BYPASS_NO_FORCED_GA4_TRACKING',recommended_existing_source:'privacy-minimized bg_interacties for CRO only',
+     run_id:runId,owner:BRON,checked_at:new Date().toISOString()};
+   const {error:syncError}=await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:0,pages_bijgewerkt:0,metingen_ingevuld:0,
+     status:consentLimited?'privacy_limited':'error',fout:reason,uitgevoerd_op:new Date().toISOString()});
    if(syncError)throw new Error('GA4_EMPTY_RECEIPT_STORE_FAILED:'+syncError.message.slice(0,160));
-   await writeRuntime(db,`ga4-source-empty:${day}:${sourceRoute}`,'error',observation,'ga4_source_empty_observed');
+   await writeRuntime(db,`ga4-source-empty:${day}:${sourceRoute}`,consentLimited?'observed':'error',observation,'ga4_source_empty_observed');
    const repair=await originalGa4EmptyRepair(db,day,sourceRoute,observation);
    const result={...observation,...repair};
-   await bewijs(false,result,'EMPTY_SOURCE');
-   return json(result,503);
+   await bewijs(false,result,consentLimited?'CONSENT_BOUNDARY':'EMPTY_SOURCE');
+   // Healthy invocation but unavailable GA4 measurement; original Data Spine
+   // remains stale/unobserved, native CRO can use its own privacy-safe events.
+   return json(result,consentLimited?200:503);
   }
   const headers=['date','pagePath','sessionCampaignName','sessions','activeUsers','eventCount'];const csv=[headers.join(','),...rows.map((r:any)=>headers.map(h=>csvCell(r[h])).join(','))].join('\n')+'\n';if(new TextEncoder().encode(csv).byteLength>5_000_000)throw new Error('GA4_CSV_TOO_LARGE');const csvHash=await sha256(csv);
   const {data:existing}=await db.from('bg_ga4_csv_batches').select('run_id,status,completed_at').eq('period_start',day).eq('period_end',day).eq('csv_sha256',csvHash).eq('source',sourceRoute).limit(1);
