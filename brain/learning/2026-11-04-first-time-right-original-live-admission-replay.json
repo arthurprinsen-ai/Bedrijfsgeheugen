@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-04",
+  "status": "CONTROLLED_NEGATIVE_PROBE_NOT_FOR_MERGE",
+  "fingerprint": "first-time-right|native-admission-negative-positive-probe|20261104-v1",
+  "owner": "original ONE BRAIN GitHub admission",
+  "root_cause": "Before real provider proof, merged prebuild parser policy must independently reject the historical duplicate lexical binding on its own original protected live workflow.",
+  "prevention_rule": "Use the same temporary candidate for negative then repaired positive original GitHub admission readback; close unmerged. Never deploy known-invalid source.",
+  "evidence": {
+    "source": "Historical original v601 Edge worker boot failure HTTP503 due duplicate const revisionInput",
+    "live_gate": "original .github/workflows/powerhouse-delivery-hygiene.yml from merged protected #5393",
+    "probe_scope": "test branch only, never main; controlled safe read-only compiler parse"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-time-right-original-admission-replay-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-first-time-right-original-admission-replay-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-first-time-right-original-admission-replay-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "ORIGINAL_ADMISSION_REPLAY_NOT_PROVEN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Failed negative PR must have FIRST_TIME_RIGHT_PREBUILD_BLOCKED and machine incident evidence, then fixed same PR positive admission; close without merge."
+}
