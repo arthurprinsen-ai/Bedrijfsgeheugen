@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const sql=readFileSync(new URL('../supabase/migrations/20261104064400_original_heartbeat_recovery_review_receipt_v1.sql',import.meta.url),'utf8');
+const sql=readFileSync(new URL('../supabase/migrations/20261104065001_original_heartbeat_native_recovery_truth_v1.sql',import.meta.url),'utf8');
 
 test('one original mux remains, without second scheduler or renamed owner',()=>{
  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_runtime_mux_task_v1\(p_task text, p_sql text, p_timeout_ms integer DEFAULT 10000\)/);
