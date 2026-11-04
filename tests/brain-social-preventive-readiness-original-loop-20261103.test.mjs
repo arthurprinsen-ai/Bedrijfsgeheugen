@@ -78,3 +78,29 @@ test('existing content-loop owns early readiness with one original producer read
  assert.match(helper,/scope:'READ_ONLY_EXISTING_CONTENT_LOOP'/);
  assert.doesNotMatch(helper,/cron\.schedule\(|fetch\(|supabase\.functions\.invoke|publish_to_instagram|update\(\{status:'APPROVED'/);
 });
+
+// 4 Nov production: personal LinkedIn had a verified publisher ACK / real URN but
+// readback failed Forbidden; this must stay reconciliation-only, not green or resendable.
+test('provider ACK without independent personal readback is an explicit preventive risk, not live proof',()=>{
+ const res=assess({obligations:obligations.map(o=>o.channel==='linkedin_personal'
+   ? {...o,status:'PUBLISHED',external_id:'urn:li:share:real',live_proven_at:null,
+      evidence:{provider_publication_ack_verified:true,provider_truth_verified:false}}:o),
+   isTerminal:o=>o.status==='LIVE_PROVEN'||o.status==='PUBLISHED'});
+ const personal=res.atRisk.find(x=>x.channel==='linkedin_personal');
+ assert.equal(personal.code,'INDEPENDENT_PROVIDER_READBACK_REQUIRED');
+ assert.equal(personal.nextStep,'ORIGINAL_PROVIDER_RECONCILE_ONLY');
+ assert.equal(personal.requiresAuthorization,false);
+ assert.equal(res.ready.some(x=>x.channel==='linkedin_personal'),false);
+});
+test('independently proven personal publication remains ready and never receives recovery risk',()=>{
+ const res=assess({obligations:obligations.map(o=>o.channel==='linkedin_personal'
+   ? {...o,status:'LIVE_PROVEN',external_id:'urn:li:share:real',
+     live_proven_at:'2026-11-04T07:11:00Z',
+     evidence:{provider_truth_verified:true}}:o)});
+ assert.equal(res.ready.some(x=>x.channel==='linkedin_personal'),true);
+ assert.equal(res.atRisk.some(x=>x.channel==='linkedin_personal'),false);
+});
+test('original loop reads real blog approval and independent live timestamps for preventive risk',()=>{
+ const loop=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+ assert.match(loop,/\.select\('channel,status,external_id,evidence,last_error,next_action,approved_at,live_proven_at,updated_at'\)/);
+});
