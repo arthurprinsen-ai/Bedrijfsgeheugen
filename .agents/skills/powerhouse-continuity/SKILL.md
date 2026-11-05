@@ -1970,3 +1970,5 @@ A protected main merge of only the original Portal Playwright spec must not disa
 ## Migration lock must move with the migration (2026-11-05)
 
 Provider 805 versus lock 801 after four official migrations on 5 November. Before reporting BRAIN or terminal closure green, compare all `supabase_migrations.schema_migrations` rows with `supabase/migration-history.lock.json` and `supabase/migrations/*.sql` by exact version and name, and append the missing lock rows in the same lineage. Fingerprint `supabase|migration-history|provider-805-source-801|20261105-v1`; evidence original BRAIN run 42020903893.
+
+- Migration-lock tests now run in the required PR check before merge (5 Nov 2026, fingerprint `supabase|migration-history|pre-merge-lock-gate|20261105-v1`); provider-only migrations outside Git still need provider readback.
