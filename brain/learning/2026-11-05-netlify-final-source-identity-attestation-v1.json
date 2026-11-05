@@ -1,0 +1,63 @@
+{
+  "id": "netlify-final-source-identity-attestation-20261105-v1",
+  "owner": "original production GitHub-Netlify release authority",
+  "status": "SOURCE_FIX_COMMITTED_PROTECTED_CI_PENDING",
+  "fingerprint": "netlify|production|ready-deployment-synthetic-unverified-commit-ref|20261105-v1",
+  "parent_issue": 4447,
+  "root_cause": "Observed two READY Netlify production deployments with provider commit_ref=null whose release.json contained 40-hex values that GitHub could not resolve as Bedrijfsgeheugen commits. A possible contributing source flaw is that netlify-build-entry.mjs restamps release.json from transient git rev-parse HEAD after the canonical release-evidence phase already wrote a source-derived identity; the precise provider writer/build origin requires production build-log corroboration.",
+  "observed": {
+    "unverified": [
+      {
+        "deploy_id": "6aec3e3e888a4e2164417f68",
+        "release_sha": "a1b6fcae4103e0d74cd25f288da1c75ca5535cad",
+        "provider_commit_ref": null,
+        "github_resolution": "422 No commit found"
+      },
+      {
+        "deploy_id": "6aec4257f095e98c3864f875",
+        "release_sha": "14fbc8ede60b0fcda6bbd156064426a632f62032",
+        "provider_commit_ref": null,
+        "github_resolution": "422 No commit found"
+      }
+    ],
+    "independently_verified": [
+      {
+        "deploy_id": "6aec4025bb0f91c759bbf31a",
+        "release_sha": "f68bb8aebad6a147a543d3cbdbc441d2f3ac89ff",
+        "browser_workflow": 41996326985,
+        "browser_job": 127140287934,
+        "dom_tests_passed": 15,
+        "mobile_tests_passed": 1
+      },
+      {
+        "deploy_id": "6aec43b3eab087e40ffd88ce",
+        "release_sha": "9f8e4367e52fb9d8f737f82fbc83fa807b1bd3f6",
+        "published_at": "2026-11-05T08:53:50.903Z"
+      }
+    ]
+  },
+  "remediation": "Use the original release-source-identity resolver to bind the final restamp to the already generated release-evidence source commit, validated against provider COMMIT_REF and/or .bg-source-commit. Where neither provider COMMIT_REF nor source marker exists, permit HEAD-only native fallback only with the canonical GitHub origin plus equal checked-out HEAD and origin/main; otherwise fail closed before deployment. Keep the same Netlify native Git/controlled OIDC transport, protected PR, source lane, reviewer and workflow.",
+  "prevention": "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs verifies real-provider vs source-marker vs synthetic Git HEAD/mismatch/legitimate native Git remote. Never declare live until exact protected main, READY provider and independently matching canonical + immutable release.json plus original browser proof.",
+  "open_obligations": [
+    "Exact-head Required, CodeQL, BRAIN and Netlify build parity must succeed",
+    "Protected merge and native/current production deployment with independent canonical+immutable release.json readback",
+    "Owner root-cause attribution from Netlify build and Git workflow logs for unverified deploy writer",
+    "Natural subsequent run must demonstrate no recurrence across API and Git-native paths",
+    "Portal human usability, two-tenant WCAG and assistive-technology acceptance remain separately open"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
+    ]
+  }
+}
