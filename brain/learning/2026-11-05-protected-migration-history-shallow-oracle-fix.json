@@ -1,0 +1,39 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|brain-replay|migration-admission-full-history-vs-legacy-shallow-test|20261105-v1",
+  "owner": "original GitHub Required / ONE BRAIN control-plane specialist",
+  "compiler": {
+    "failure_class": "STALE_TEST_ORACLE_AFTER_PROTECTED_MIGRATION_ADMISSION",
+    "scope": "CANONICAL_REQUIRED_BRAIN_REGRESSION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Protected PR #5453 legitimately added a single fetch-depth: 0 in Required preflight so new SQL candidates can be checked against immutable PR base. Legacy BRAIN test brain-ci-control-plane-convergence-v1 still demanded fetch-depth: 2 and no 0 anywhere, making full BRAIN verification and post-merge obligation terminalization of #5450 fail even after Required, CodeQL and Supabase Preview succeeded. Remaining 6 of the 7 observed failures concerned provider migration lock 807-vs-808 and were resolved independently by protected PR #5462; this change does not alter lock or SQL.",
+  "prevention_rule": "Test one explicitly permitted, named full-history checkout ONLY in protected migration preflight; preserve website bounded history and immutable base admission, Supabase hosted Preview, all original Netlify and control-plane assertions. Do not skip tests, change migration history or weaken Required. Require exact-head original BRAIN replay success and terminal provider readback.",
+  "evidence": {
+    "brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42055116770",
+    "brain_backend_job": 127341924308,
+    "closed_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
+    "migration_gate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5453",
+    "lock_parity_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5462",
+    "exact_error": "BRAIN test #699 expected Required to not match fetch-depth 0 even though it is source-backed and required for immutable migration base"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ]
+  },
+  "production_readback": "REQUIRES_PROTECTED_MERGE_AND_ORIGINAL_BRAIN_EXACT_HEAD_SUCCESS",
+  "regression_outcome": "PENDING_EXACT_HEAD_CI",
+  "no_duplicate_scheduler": true
+}
