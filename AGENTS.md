@@ -16,6 +16,7 @@ All existing Supabase/Brain/release agents: provider shows 805 applied migration
 
 - **Changed-path tests (5 Nov):** the required PR check runs tests that reference a changed file by exact path (`scripts/ci/select-tests-for-changed-paths.mjs`). New failures block; tests already red on the base are reported as `KNOWN_RED_ON_BASE`. Never skip or delete a test to pass this step.
 - **LinkedIn link placement (5 Nov):** UTM links go in the first comment, never in the post text (evidence `speelboek-2026-07-link`).
+- **Migration lock (5 Nov):** a migration applied to the provider is added to `supabase/migration-history.lock.json` in the same change; #5450 missed 20261105134200 and `preflight` failed on every PR until it was added.
 - **Skill sync (5 Nov):** growth-swarm, seo-conversion-orders and linkedin-company-growth carry the visitor target from `config/visitor-growth-target.json` and the LinkedIn UTM rule.
 - **Visitor growth target (5 Nov):** `config/visitor-growth-target.json` holds the honest SEO baseline and the daily qualified-visits metric; unmeasured stays UNKNOWN, no claim without GA4/Search Console readback.
 
