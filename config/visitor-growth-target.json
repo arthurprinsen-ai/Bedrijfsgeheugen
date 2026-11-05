@@ -24,13 +24,13 @@
     "Indexering en technische SEO van bestaande money pages controleren voordat nieuwe content wordt gemaakt",
     "Titel, H1, meta en intro van pagina's met vertoningen op positie 20-100 afstemmen op de zoekopdracht (een zoekwoord, een pagina)",
     "Interne links van pillar naar money page en terug",
-    "LinkedIn: minimaal een derde van de posts met link naar een eigen pagina met UTM; vraag-posts blijven voor bereik",
+    "LinkedIn: minimaal een derde van de posts met link met UTM in de eerste reactie (niet in de tekst); vraag-posts blijven voor bereik",
     "Nieuwe contentpagina alleen bij bewezen intent-gap (CREATE_INTENT_GAP_CONTENT)"
   ],
   "linkedin_distribution": {
     "baseline_posts_60d": { "conversation_question": 69, "diagnostic_offer": 29, "no_cta": 16 },
     "baseline_organic_social_sessions_28d": 3,
-    "rule": "diagnostic_offer-posts bevatten een link naar de bijbehorende pagina met utm_source=linkedin&utm_medium=social&utm_campaign=<post-id>",
+    "rule": "diagnostic_offer-posts krijgen de link naar de bijbehorende pagina met utm_source=linkedin&utm_medium=social&utm_campaign=<post-id> in de eerste reactie, niet in de posttekst (bestaand bewijs speelboek-2026-07-link: links in de tekst verlagen bereik)",
     "min_link_share": 0.33,
     "cause_status": "UNVERIFIED"
   },
