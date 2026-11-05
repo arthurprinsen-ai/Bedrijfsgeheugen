@@ -28,6 +28,13 @@ const makeRows=()=>keys.map((loop_key,i)=>({
 test('every original active 15-loop source gets exactly one specialist owner and safe handoff, no new queue',()=>{
  for(const key of keys)assert.ok(migration.includes("'"+key+"'"),key);
  assert.match(migration,/ORIGINAL_15_LOOP_POPULATION_CHANGED_FAIL_CLOSED/);
+ assert.match(migration,/ORIGINAL_RETIRED_PUBLISHER_AND_PORTAL_REGISTRY_MISMATCH/);
+ assert.match(migration,/where r\.loop_key='social-publisher'[\s\S]*?r\.active=true/);
+ assert.match(migration,/and r\.runtime_source='powerhouse-social-publisher'/);
+ assert.match(migration,/insert into public\.powerhouse_loop_assurance_registry_v1/);
+ assert.match(migration,/on conflict \(loop_key\) do nothing/);
+ assert.match(migration,/guard_requires_pass',true/);
+
  assert.match(migration,/ORIGINAL_LOOP_RECOVERY_ROUTE_MISSING/);
  assert.match(migration,/r\.evidence_contract->>'recovery_owner'/);
  assert.match(migration,/r\.evidence_contract->>'recovery_action'/);
