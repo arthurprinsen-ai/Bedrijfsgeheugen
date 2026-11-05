@@ -195,7 +195,7 @@ begin
       baseline_definition, evidence_window, first_seen_at, last_validated_at, expires_or_review_at, evidence_refs)
     values ('bedrijfsgeheugen', v_lid, 'li-lus|' || v_kanaal || '|' || v_dim || '|' || v_waarde, 'linkedin:' || v_kanaal,
       case v_lstatus when 'PROMOTED' then 'Voorlopig bevestigd: ' when 'REJECTED' then 'Niet bevestigd: ' else 'Nog niet bewezen: ' end || e.hypothesis,
-      'mediaan_' || v_metriek, v_uplift, v_n, null, v_lstatus,
+      'mediaan_' || v_metriek, v_uplift, v_n, 0, v_lstatus,
       'mediaan van eigen kanaal-posts in de 28 dagen vóór de start', to_char(e.started_at, 'YYYY-MM-DD') || ' t/m ' || to_char(p_run_date, 'YYYY-MM-DD'),
       e.started_at, now(), now() + interval '90 days',
       jsonb_build_array(jsonb_build_object('experiment', e.experiment_id, 'vergelijking', 'voor-na, geen controlegroep, kleine steekproef', 'besloten_door', 'agent:bg-linkedin-lus')))
