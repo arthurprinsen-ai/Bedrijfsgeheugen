@@ -10,7 +10,11 @@ permissions:
 
 jobs:
   cross-browser-screenshots:
-    runs-on: ubuntu-24.04 # Pin for Playwright 1.55 OS support
+    runs-on: ubuntu-24.04 # Trusted site browser assurance on existing original GitHub lane
+    # Official version-pinned Playwright image already includes chromium firefox webkit
+    # browser executables AND OS packages. Do not apt-install 181 packages each run.
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.0-noble
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
@@ -24,13 +28,13 @@ jobs:
         id: install
         run: |
           set -euo pipefail
-          # Incident #4447: this screenshot-only workflow never executes the
-          # ffmpeg-static binary. The root package depends on ffmpeg-static,
-          # whose npm postinstall fetch was HTTP 504 on run #42047646698.
-          # Disable unrelated npm lifecycle fetches, but install all three
-          # actual Playwright browser engines + system dependencies explicitly.
+          # Exact Playwright v1.55.0 Noble container includes all three browsers
+          # and OS dependencies. Run #42054614527 spent 30m apt-installing 181
+          # packages and was cancelled; do not repeat that unbounded network job.
+          # This screenshot-only workflow never invokes root ffmpeg-static.
           npm install --no-save --ignore-scripts playwright@1.55.0
-          npx playwright install --with-deps chromium firefox webkit
+          # Fail closed unless all three real browser executables are present.
+          node --input-type=module -e "import { chromium, firefox, webkit } from 'playwright'; import { existsSync } from 'node:fs'; for(const engine of [chromium,firefox,webkit]) { const path=engine.executablePath(); if(!existsSync(path)) throw new Error('BROWSER_BINARY_MISSING:'+engine.name()); console.log('BROWSER_BINARY_PRESENT:'+engine.name()); }"
       - name: Preserve browser installer incident evidence
         if: failure() && steps.install.outcome == 'failure'
         run: |
