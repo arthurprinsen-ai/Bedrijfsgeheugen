@@ -245,7 +245,10 @@ function mountOverviewDepthDisclosure(){
  const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities',
   '[data-legacy-overview-insights]','.legacy-complete','[data-bedrijfslek-intelligence]',
   '[data-business-journey-overview]','.dv-houder',
-  '.v2overviewcustomizer','.v2overviewcanvas'];
+  '.v2overviewcustomizer','.v2overviewcanvas',
+  // Late-mounted analytics are for optional evidence, not a second hero.
+  '[data-management-accounting-intelligence]','[data-foresight-context]',
+  '[data-pfs-host]','[data-contextual-impact-cards]'];
  const existing=[...main.children].filter(node=>sections.some(selector=>node.matches(selector)));
  if(!existing.length)return;
  const details=document.createElement('details');
