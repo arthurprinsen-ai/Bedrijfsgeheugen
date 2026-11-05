@@ -116,7 +116,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 2
+          # Immutable base-to-candidate migration classification must have history.
+          fetch-depth: 0
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
@@ -171,14 +172,21 @@ jobs:
       - name: Verify fail-closed Supabase provider preview classification
         run: node --test tests/brain-supabase-preview-diagnosis-v1.test.mjs
       - name: Enforce Supabase migration lock parity before merge
+        env:
+          CANDIDATE_BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.merge_group.base_sha || '' }}
+          CANDIDATE_EVENT_NAME: ${{ github.event_name }}
+          CANDIDATE_PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+        # Provider-applied lock remains immutable; NEW PR SQL is admitted source-only,
+        # with independent hosted Supabase Preview required for replay authority.
         run: >-
-          node --test
+          node tools/ci/protected-supabase-pr-migration-tests.mjs
           tests/supabase-migration-history-integrity.test.mjs
           tests/brain-cro-production-migration-lock-20261029.test.mjs
           tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs
           tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs
           tests/brain-supabase-migration-lock-provider-20261029.test.mjs
           tests/brain-migration-lock-pr-gate-20261105.test.mjs
+          tests/brain-protected-supabase-pr-migration-tests.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
         run: |
           node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
@@ -342,6 +350,11 @@ jobs:
           POWERHOUSE_BASE_SHA: ${{ steps.scope.outputs.base_sha }}
           POWERHOUSE_HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
         run: node scripts/brain/learning-canonicalization-gate.mjs
+      - name: Run tests that read changed files before merge
+        env:
+          BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
+        run: node scripts/ci/select-tests-for-changed-paths.mjs "$BASE_SHA" "$HEAD_SHA"
       - id: integration
         name: Compile one-write integration bundle
         env:

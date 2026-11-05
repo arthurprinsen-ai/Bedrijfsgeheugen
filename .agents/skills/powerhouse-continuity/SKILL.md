@@ -1978,3 +1978,19 @@ Provider 805 versus lock 801 after four official migrations on 5 November. Befor
 - A skill that gains the incident-loop marker leaves loop_debt_baseline in the same change (5 Nov 2026, fingerprint `brain|incident-self-fix|loop-debt-baseline-marker-parity|20261105-v1`).
 
 - Internal-link assertions accept the site origin or a relative path to the same target (5 Nov 2026, fingerprint `seo|afas-oci|internal-link-origin-agnostic-test|20261105-v1`).
+
+- The PR check runs tests that reference changed files; a test already red on the base is reported (KNOWN_RED_ON_BASE), a new failure blocks (5 Nov 2026, fingerprint `ci|required-test|changed-path-test-selection|20261105-v1`).
+
+- Daily qualified-visits target (`config/visitor-growth-target.json`): indexing and technical SEO first, then keyword-to-page match, internal links, LinkedIn links with UTM; new content only for a proven intent gap (5 Nov 2026, fingerprint `seo|visitor-growth-target|daily-qualified-visits|20261105-v1`).
+
+- Skills growth-swarm, seo-conversion-orders and linkedin-company-growth now carry the visitor target and LinkedIn UTM rule (5 Nov 2026, fingerprint `seo|visitor-target-skill-sync|20261105-v1`).
+
+- LinkedIn links with UTM go in the first comment, never in the post text (5 Nov 2026, fingerprint `seo|linkedin-link-in-comment|20261105-v1`).
+
+## 2026-11-05 — oorspronkelijke data-spine beslissing mag niet verouderen tussen twee bron-ticks
+
+Source-backed incident `powerhouse|heartbeat|data-spine-10m-watchdog-missing-native-decision-stage|20261105-v1`. Native `powerhouse_data_spine_watchdog_v1` heeft bronwaarheid en guard elke 10 minuten, maar miste de `decision`-fase. Een 30-minutenbrug was geen actuele bron-eigenaar voor een 10-minuten-evidence contract: 13:44 UTC was guard 13:41 groen met `unhealthy_sources=0`, decision 12:51, echte loop AMBER.
+
+Dezelfde bestaande native watchdog registreert voortaan de expliciete `decision` met **dezelfde bron `v_gaps` en exact `p_now`** als haar action/outcome/learning/guard. Een no-op is alleen `VERIFIED_NO_SOURCE_REPAIR_REQUIRED` bij 0 slechte bronnen; bij >0 `ORIGINAL_SOURCE_REPAIR_REQUIRED` zonder groen. Bewaar `customer_outcome_verified=false` en `causal_learning_verified=false`, bewaak service-role-only execute, geen aparte cron/agent/bron. Dit is Heartbeat/ONE BRAIN bronintegriteit, NIET bewijs van klantimpact, SEO-effect of omzet. Na protected merge alleen afronden bij onafhankelijke originele migratie + definitie- en volgende natuurlijke stage-readback; log aparte downstream resultaten onder bestaande ONE BRAIN fingerprint. Regressie `tests/brain-original-data-spine-decision-same-tick-20261105.test.mjs`.
+
+- Migration 20261105134200 added to the lock after #5450 (provider 808 = lock 808) (5 Nov 2026, fingerprint `ci|migration-lock|data-spine-decision-receipt|20261105-v1`).

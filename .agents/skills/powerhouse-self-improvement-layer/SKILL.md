@@ -378,3 +378,12 @@ ONE BRAIN `powerhouse|heartbeat|original-data-spine-10m-source-vs-30m-assurance-
 Voor afsluiting: protected Required/CodeQL/Supabase Preview, exact originele migratiehistorie lock rij 807, `pg_get_functiondef` bron-readback, natuurlijke tienminuten-uitvoering van oorspronkelijke mux #171, nieuwe `powerhouse_loop_assurance_receipts_v1` met werkelijke timestamps, daarna de originele 15-loop Heartbeat en ONE BRAIN. Social/Gmail/Stripe/forecasts en onuitgevoerde commerciële verbeteringen blijven aparte incidenten. Regressie `tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs`; machinebewijs `brain/learning/2026-11-05-data-spine-original-stage-cadence-repair-v1.json`, parent [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198).
 
 - Internal-link assertions accept the site origin or a relative path to the same target (5 Nov 2026, fingerprint `seo|afas-oci|internal-link-origin-agnostic-test|20261105-v1`).
+
+- The PR check runs tests that reference changed files; a test already red on the base is reported (KNOWN_RED_ON_BASE), a new failure blocks (5 Nov 2026, fingerprint `ci|required-test|changed-path-test-selection|20261105-v1`).
+
+- Daily qualified-visits target (`config/visitor-growth-target.json`): indexing and technical SEO first, then keyword-to-page match, internal links, LinkedIn links with UTM; new content only for a proven intent gap (5 Nov 2026, fingerprint `seo|visitor-growth-target|daily-qualified-visits|20261105-v1`).
+
+- Skills growth-swarm, seo-conversion-orders and linkedin-company-growth now carry the visitor target and LinkedIn UTM rule (5 Nov 2026, fingerprint `seo|visitor-target-skill-sync|20261105-v1`).
+
+- LinkedIn links with UTM go in the first comment, never in the post text (5 Nov 2026, fingerprint `seo|linkedin-link-in-comment|20261105-v1`).
+- Migration 20261105134200 added to the lock after #5450 (provider 808 = lock 808) (5 Nov 2026, fingerprint `ci|migration-lock|data-spine-decision-receipt|20261105-v1`).
