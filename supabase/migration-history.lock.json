@@ -3220,8 +3220,12 @@
     {
       "version": "20261105111500",
       "name": "original_15_loop_owner_coordination"
+    },
+    {
+      "version": "20261105125354",
+      "name": "content_outcome_measurement_v1"
     }
   ],
-  "captured_at": "2026-11-05T12:11:40.805Z",
+  "captured_at": "2026-11-05T12:54:10.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
