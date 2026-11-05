@@ -1,0 +1,19 @@
+# 5 november 2026 — één orgaanstelsel, geen algemene eigenaar zonder uitvoerder
+
+Canonical production: original Supabase project `adhjwmvyoixzjtmiroln`, existing 15-loop assurance view, brain_obligations and original admin-only Portal V2, with native pg_cron heartbeat and original content, SEO, outreach, learning, reconciliation and Revenue owners.
+
+## Measured failure
+11:11 UTC: 15 active loops, 9 GREEN / 1 AMBER / 5 RED, all SIX non-GREEN loop obligations are `OPERATIONS_ASSURANCE` with `owner='Powerhouse'` (still open and evidence due). Root cause in original `powerhouse_refresh_loop_assurance_v1`: every refresh inserts the literal generic owner and `ON CONFLICT` never updates it. RED status and missing readback are recorded, but there is no mechanically specific next expert to own action and final proof. This is an actual broken handoff between Heartbeat/Powerhouse/Brain, not missing an additional AI scheduler.
+
+## Single authoritative correction
+One protected migration extends **existing** `powerhouse_loop_assurance_registry_v1.evidence_contract` per original loop with `recovery_owner` and `recovery_action`. The same original five-minute refresh derives source-traceable recovery route, writes it to **existing** 15-loop state evidence and existing `brain_obligations` row (including owner on conflict). No job, queue, table, AI provider, public content sender or payment added. `RED`/human guard failures stay RED; routing alone cannot fulfil a task.
+
+The existing `brain/observability/one-loop-assurance-readback.mjs` sanitizes only registered source route fields and exposes them within the same admin-only GET. Existing CRO read model forwards these fields; existing `portal-v2/modules/powerhouse-observability.js` shows ONE primary next action in natural language and a specialist owner, with other loops in expandable detail, mobile-first. No generic extra publication or provider retries are initiated by the Portal.
+
+## Security and evaluation
+Native source is the existing protected service-role-only `public.powerhouse_refresh_loop_assurance_v1(timestamptz)`, not a new security-definer surface. Retain original table RLS, public/anon/authenticated execute revocation, scheduled original callback and admin-only Netlify Identity gate. Reject arbitrary/unregistered route values in the portal before HTML-escaping. See [Supabase database function security](https://supabase.com/docs/guides/database/functions).
+
+Machine learning: `brain/learning/2026-11-05-brain-portal-heartbeat-owner-handoff-v1.json`. Regression: `tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs`. Existing human skill and append-only development ledger updated.
+
+## Truth after release
+Do not mark autonomous all-green until protected Required/CodeQL/preview, applied migration, exact pg_get_functiondef, two natural source cron ticks and service-owner actual readback; next original executor takes authorized action, independent provider/customer result, measurement and learning, then only existing guard may set green. A portal card or routing label is NOT action execution. Preserve all real human OAuth, invoice, customer and provider boundaries.
