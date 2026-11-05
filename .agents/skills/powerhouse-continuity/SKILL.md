@@ -1982,3 +1982,5 @@ Provider 805 versus lock 801 after four official migrations on 5 November. Befor
 - The PR check runs tests that reference changed files; a test already red on the base is reported (KNOWN_RED_ON_BASE), a new failure blocks (5 Nov 2026, fingerprint `ci|required-test|changed-path-test-selection|20261105-v1`).
 
 - Daily qualified-visits target (`config/visitor-growth-target.json`): indexing and technical SEO first, then keyword-to-page match, internal links, LinkedIn links with UTM; new content only for a proven intent gap (5 Nov 2026, fingerprint `seo|visitor-growth-target|daily-qualified-visits|20261105-v1`).
+
+- Skills growth-swarm, seo-conversion-orders and linkedin-company-growth now carry the visitor target and LinkedIn UTM rule (5 Nov 2026, fingerprint `seo|visitor-target-skill-sync|20261105-v1`).
