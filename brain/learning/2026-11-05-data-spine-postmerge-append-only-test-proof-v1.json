@@ -14,10 +14,16 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
     ]
   },
   "root_cause": "Postmerge BRAIN run #42059928039 backend job #127358913479 failed because an old historical replay test incorrectly demanded original migration 20261105132000 remain the LAST entry, despite already protected provider-applied successor 20261105134200. The approved immutable source lock has 808 entries, strictly ordered; original record exists unchanged.",
-  "prevention": "Preserve exact original migration receipt and exact protected successor migration evidence; assert >=808 and strictly increasing immutable versions. Never set the last migration equal to a past version or rewrite history; retain all migrations and original provider checks. Do not alter SQL, cron, access privileges or fake output.",
+  "prevention": "Preserve exact original migration receipt and exact protected successor migration evidence; assert >=808 and strictly increasing immutable versions. Never set the last migration equal to a past version or rewrite history; retain all migrations and original provider checks. Do not alter SQL, cron, access privileges or fake output. Because the migration lock is security-sensitive, rerun the SAME deterministic source contract as historical_replay, shadow and canary before promotion. No synthetic provider writes.",
   "evidence": {
     "historical_terminal_run": 42059796291,
     "historical_brain_run": 42059928039,
