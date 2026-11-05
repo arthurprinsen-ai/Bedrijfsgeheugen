@@ -1,0 +1,9 @@
+# Development ledger — 2026-11-05 conversion receipt and original Frisse Blik intake
+
+- Original owner: website `frisse-blik.html`; original `lead-intake` Supabase Edge v1; original Powerhouse Growth & Revenue OS and ONE BRAIN obligation.
+- Fingerprint: `seo|sales|frisse-blik-lead-intake-silent-loss|20261105-v1`.
+- Evidence: public source `submitLead` swallowed fetch errors, advanced to Calendly on storage failures, and `onBooked('geen-calendly-geconfigureerd')` when no provider existed. `onBooked` did not use `deliverToContact` success boolean. Supabase Edge currently returns `{ok:true}` only when `commercial_leads` write succeeds; source-specific `frisse-blik` entries count=0 at read-only check on 2026-11-05. This does not prove lost real submissions without traffic-receipt correlation.
+- Corrective code: require `res.ok && receipt?.ok===true`; status `leadReceiptWarning` displayed on non-confirmation; keep customer Calendly path available but no invented booking; in-flight submit guard; separately inspect optional advisor email result.
+- Regression: `tests/brain-frisse-blik-provider-receipt-20261105.test.mjs` mocks HTTP200/ok true, HTTP200/ok false, HTTP502, rejected network, concurrency and missing Calendly config, no PII or network writes.
+- Original release: CANDIDATE, never count success until protected exact-head Required/CodeQL/website browser, exact Netlify published commit plus visible NL/EN warning and an independent genuine provider receipt when one exists. Customer data never copied to logs or automation context.
+- Prevention for subsequent product improvements: distinguish `intent`, `form_submitted`, `provider_received`, `qualified`, `confirmed_booking`, `paid`. Fail closed on missing evidence, use one owner, one existing endpoint, existing consent, no duplicate forms/collectors.
