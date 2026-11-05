@@ -9,9 +9,9 @@ const base = readFileSync(new URL('../supabase/migrations/20261105080000_origina
 const lock = JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json', import.meta.url), 'utf8'));
 const migrations = readdirSync(new URL('../supabase/migrations/', import.meta.url));
 
-test('migration was applied by the provider (version 20261105165702) and is recorded in source; the lock row follows in a separate PR', () => {
+test('migration was applied by the provider (version 20261105165702) and is recorded in source and, after the separate lock PR, in the lock', () => {
   assert.equal(file, '20261105165702_original_linkedin_tags_learning_v1.sql');
-  assert.ok(lock.applied.every(r => r.version < '20261105165702'), 'the PR gate forbids predeclaring the lock row; it is appended in a separate PR after this merge');
+  assert.ok(lock.applied.some(r => r.version === '20261105165702' && r.name === 'original_linkedin_tags_learning_v1'), 'lock row (separate PR after the provider apply) missing');
   assert.ok(!readdirSync(new URL('../supabase/', import.meta.url)).includes('migrations-pending'), 'no pending migration directory may remain');
   assert.match(sql, /^-- APPLIED op productie/);
   assert.doesNotMatch(sql, /^\s*(begin|commit);/im);
