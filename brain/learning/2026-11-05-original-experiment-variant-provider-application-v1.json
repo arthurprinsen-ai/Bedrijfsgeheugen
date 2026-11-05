@@ -1,0 +1,66 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROVIDER_PROOF_AND_NATURAL_MUX_READBACK_DUE",
+  "fingerprint": "powerhouse|social-learning|original-experiment-variant-provider-application-gap|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse-runtime-scheduler-mux-v2 minute39 / powerhouse_backfill_social_learning_applications_v1",
+  "failure_class": "PROVIDER_PROVEN_EXPERIMENT_VARIANT_NEVER_REGISTERED_AS_APPLIED",
+  "root_cause": "Original verified LinkedIn company publication and content generation_evidence.linkedin_loop were stored separately. Existing original social learning applications backfill only joined social_posts.learning_id to already-proven social_learnings; nobody attached authentic original one-variable post variant plus provider readback, leaving one legitimate Nov 3 application untracked, but attempted drafts Nov 1/2 must not be backfilled. Recent company post metrics do not exist for 3 Nov, so variant outcome is not yet measured.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T08:38:00Z",
+    "eligible_original_publication_date": "2026-11-03",
+    "channel": "linkedin_company",
+    "experiment_id": "li-lus-co-20261030",
+    "dimension": "hook_type",
+    "actual_and_planned_value": "concrete_number",
+    "verified_provider_id": "urn:li:share:7523338311717965825",
+    "publication_state": "LIVE_PROVEN",
+    "unpublished_candidate_dates": [
+      "2026-11-01",
+      "2026-11-02"
+    ],
+    "other_published_without_matching_variant_dates": [
+      "2026-11-04",
+      "2026-11-05"
+    ],
+    "provider_effect_measurement": "NOT_OBSERVED",
+    "revenue": "NOT_CLAIMED"
+  },
+  "fix": "Extend only the existing original once-per-hour minute-39 powerhouse_backfill_social_learning_applications_v1. Join daily artifact, original decision/provider ref, canonical publication obligation LIVE_PROVEN, exact organization post ID, original experiment, actual hook and frozen proposed variant; insert idempotent VERIFIED_EXPERIMENT_VARIANT entry with expected_effect and actual_effect NULL, and effect-pending status. Retain original lineage backfill and all permission boundaries.",
+  "prevention_rule": "Experiment proposal and generated content never count as execution. Exact provenance requires provider-authorized LIVE_PROVEN external ID, original channel/day/tenant, published artifact and post, identical immutable experiment id, dimension/variant and demonstrated hook. Never mark measured effect without comparable time-matched provider snapshot and original post source. No duplicate providers, new scheduler or causal claim.",
+  "tests": [
+    "tests/brain-original-experiment-provider-variant-application-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-experiment-provider-variant-application-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-experiment-provider-variant-application-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-experiment-provider-variant-application-20261105.test.mjs"
+    ],
+    "invariants": [
+      "original cron mux minute39",
+      "one original learning app store",
+      "exact meta-owned provider independent readback",
+      "source tenant split",
+      "same experiment ID + actual hook",
+      "no attempt without provider",
+      "idempotent application ID",
+      "actual_effect NULL until measured",
+      "service role only"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PROVIDER_PROVEN_EXPERIMENT_VARIANT_NEVER_REGISTERED_AS_APPLIED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected Required/CodeQL/full BRAIN, native Supabase original migration #803 applied, pg_get_functiondef reflects exact gates, natural original minute39 mux runs, readback one 2026-11-03 actual variant app with no false application for 1/2 Nov and effect NULL; later provider metric readback separately required before learned improvement claimed."
+}
