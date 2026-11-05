@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-growth|forecast-expiry|20261105-v1",
+  "fingerprint": "content|stale-forecast-drives-expired-blog|20261105-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "STALE_FORECAST_NEVER_EXPIRED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 8,
+    "security_sensitive": false
+  },
+  "root_cause": "powerhouse_forecasts rows stay active after their own expected_by/horizon_end because only forecasts with a calibration obligation are ever expired. The recommendation generator filters on status active or claimed only, so the CPNL forecast (opens 6 Oct 2026) kept producing daily blogs; 8 of the last 10 daily blogs were about it and the reader-ready gate had to block them.",
+  "observed_evidence": {
+    "source": "powerhouse_forecasts (11,626 active, 3,826 past horizon on 2026-11-05), content_publication_obligations, GitHub run 42082695079 (EXPIRED_FUTURE_EVENT_CLAIM)",
+    "stale_active_forecasts": 3826,
+    "daily_blogs_on_expired_topic": 8,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Migration 20261105190000 adds powerhouse_expire_stale_forecasts_v1 (one update: active/claimed with horizon before the Amsterdam date become expired) and one hourly pg_cron job. No change to the generator, the publisher or any gate.",
+  "prevention_rule": "A forecast has a lifetime. Anything that consumes forecasts may assume that active means its horizon has not passed.",
+  "tests": [
+    "tests/brain-forecast-expiry-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-forecast-expiry-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-forecast-expiry-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-forecast-expiry-20261105.test.mjs"
+    ],
+    "invariants": [
+      "only active or claimed rows change",
+      "only status and updated_at change",
+      "no deletes",
+      "no second publisher"
+    ]
+  },
+  "open_obligation": "Protected merge by Arthur and migration applied; then no active forecast may have a horizon before today, and the next daily blog must not be about an expired event. One-time data cleanup of 3,484 rows was already done on 2026-11-05 by agent on instruction of Arthur.",
+  "reuse_guidance": "Change the expiry rule only in the migration function and its test."
+}
