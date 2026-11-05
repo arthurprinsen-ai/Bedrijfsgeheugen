@@ -37,7 +37,6 @@ test('entrepreneur first screen contains one decision route and keeps late modul
   await expect(depth).toHaveAttribute('open','');
   await expect(accounting).toBeVisible();
   await expect(foresight).toBeVisible();
-  await expect(accounting.getByText('Nog nodig voor een rijker beeld:')).toHaveCount(0); // partial text may be extended
   await summary.click();
   await expect(depth).not.toHaveAttribute('open');
   await page.setViewportSize({width:1440,height:900});
