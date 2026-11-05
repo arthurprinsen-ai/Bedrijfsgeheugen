@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "seo|website|generated-keyword-title-conflicts-canonical-owner|20261105-v1",
+  "owner": "original SEO Order Engine / website protected publisher",
+  "state": "SOURCE_CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "SEARCH_INTENT_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-commercial-generated-keyword-owners-20261105.test.mjs"
+    ]
+  },
+  "root_cause": "Legacy generated title/keyword override tool tools/zoekwoorden.mjs had drifted away from canonical site/seo-baseline.json, site/seo-order-map(.expansion).json and NL/EN revenue owner map. The general /api-koppeling-laten-maken rendered an AFAS API specialist title and AFAS keyword instead of generic commercial API intent. Exact, Twinfield and webshop generated focus keywords likewise conflicted with their original primary commercial owners.",
+  "prevention": "For every changed high-intent money route require deterministic canonical source-to-generator owner equality and original content distinctness; use original protected website release and exact production rendered readback. Do not reset dates, fabricate authority or create duplicate pages.",
+  "evidence": {
+    "source": "Original live DataForSEO production OnPage 2026-11-05 + protected source tree",
+    "observed_live_api_title": "AFAS API koppeling laten maken | Bedrijfsgeheugen",
+    "correct_owner_keyword": "api koppeling laten maken",
+    "affected_routes": [
+      "/api-koppeling-laten-maken",
+      "/exact-online-koppeling",
+      "/twinfield-koppeling",
+      "/webshop-koppeling"
+    ],
+    "canonical_ownership_sources": [
+      "site/seo-order-map.json",
+      "site/seo-order-expansion.json",
+      "site/seo-baseline.json",
+      "site/seo-locale-revenue-map.json"
+    ],
+    "original_file": "tools/zoekwoorden.mjs",
+    "test": "tests/brain-seo-commercial-generated-keyword-owners-20261105.test.mjs",
+    "external_guidance": "https://developers.google.com/search/docs/essentials",
+    "production_readback": "EVIDENCE_DUE"
+  },
+  "outcome": {
+    "indexing_growth": "NOT_MEASURED",
+    "traffic_growth": "NOT_MEASURED",
+    "qualified_leads": "NOT_MEASURED",
+    "paid_sales": "NOT_MEASURED"
+  },
+  "experiment": {
+    "evaluation_days": [
+      28,
+      56
+    ],
+    "metrics": [
+      "query_to_canonical_owner",
+      "GSC_nonbranded_impressions",
+      "GSC_clicks_CTR",
+      "consented_organic_landing",
+      "verified_qualified_leads",
+      "provider_paid_revenue"
+    ],
+    "guardrails": [
+      "no second SEO executor",
+      "no fake ranking",
+      "no duplicate title ownership",
+      "preserve NL_EN locale",
+      "no changes to existing commercial authorization"
+    ]
+  }
+}
