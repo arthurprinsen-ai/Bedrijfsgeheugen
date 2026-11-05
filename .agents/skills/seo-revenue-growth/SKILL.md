@@ -302,3 +302,5 @@ Fingerprint: `seo|nl-en|static-i18n-cache-complete|v1`.
 Fingerprint: `seo|daily-blog|skipped-not-reserved|v1`.
 
 The daily first-mover single-flight reservation is held only by active (`suggested`), accepted (`accepted`) or completed (`done`) content decisions. `skipped` remains historical evidence, not capacity. A rejected duplicate keyword must not block a distinct, independently evidenced search-intent candidate; still never create more than one new blog candidate per natural day. When retroactively correcting canonical aliases, update the original recommendation status to `skipped` with intent-owner attribution and production runtime proof, never erase its history, reset approval or introduce another executor. The daily resolver, canonical blog queue, protected publisher and independent production readback remain the only authority.
+
+- Daily qualified-visits target (`config/visitor-growth-target.json`): indexing and technical SEO first, then keyword-to-page match, internal links, LinkedIn links with UTM; new content only for a proven intent gap (5 Nov 2026, fingerprint `seo|visitor-growth-target|daily-qualified-visits|20261105-v1`).

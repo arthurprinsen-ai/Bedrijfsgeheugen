@@ -1,0 +1,49 @@
+{
+  "version": "visitor-growth-target-v1",
+  "date": "2026-11-05",
+  "owner_skill": "seo-revenue-growth",
+  "objective": "Elke dag meer bezoekers die richting een gesprek of order gaan; verkeer telt alleen mee als het via een money page of pillar naar een CTA kan.",
+  "baseline": {
+    "source": "Windsor.ai googleanalytics4 + searchconsole, 28 dagen tot 2026-11-05",
+    "ga4_sessions_28d": 35,
+    "search_console_impressions_28d": 230,
+    "search_console_clicks_28d": 1,
+    "best_query_position_range": [47, 100],
+    "blogs_with_zero_sessions_after_7_days": 18,
+    "evidence_status": "PROVIDER_VERIFIED",
+    "note": "Organische zichtbaarheid is vrijwel nul; de hefboom is indexering, ranking en distributie van bestaande money pages, niet meer blogs."
+  },
+  "daily_metric": {
+    "name": "qualified_visits_7d_avg",
+    "definition": "GA4 sessions per dag (7-daags gemiddelde) exclusief merkverkeer en intern verkeer",
+    "direction": "up_every_week",
+    "unmeasured_is": "UNKNOWN",
+    "never_claim_without": "GA4 of Search Console readback"
+  },
+  "levers_in_order": [
+    "Indexering en technische SEO van bestaande money pages controleren voordat nieuwe content wordt gemaakt",
+    "Titel, H1, meta en intro van pagina's met vertoningen op positie 20-100 afstemmen op de zoekopdracht (een zoekwoord, een pagina)",
+    "Interne links van pillar naar money page en terug",
+    "LinkedIn: minimaal een derde van de posts met link naar een eigen pagina met UTM; vraag-posts blijven voor bereik",
+    "Nieuwe contentpagina alleen bij bewezen intent-gap (CREATE_INTENT_GAP_CONTENT)"
+  ],
+  "linkedin_distribution": {
+    "baseline_posts_60d": { "conversation_question": 69, "diagnostic_offer": 29, "no_cta": 16 },
+    "baseline_organic_social_sessions_28d": 3,
+    "rule": "diagnostic_offer-posts bevatten een link naar de bijbehorende pagina met utm_source=linkedin&utm_medium=social&utm_campaign=<post-id>",
+    "min_link_share": 0.33,
+    "cause_status": "UNVERIFIED"
+  },
+  "experiment_rule": {
+    "max_changes_per_day": 3,
+    "measure_after_days": 14,
+    "decision_states": ["KEEP", "ROLLBACK", "NO_ACTION_EVIDENCE_INSUFFICIENT"]
+  },
+  "guards": [
+    "one keyword one canonical page",
+    "keywords nieuw alleen na goedkeuring van Arthur",
+    "wijzigingen aan HTML via generator in tools/",
+    "geen duplicate publisher, geen direct main"
+  ],
+  "open_inputs": ["WINDSOR_API_KEY ontbreekt in vault (automatische dagmeting)", "oorzaak laag LinkedIn-verkeer niet geverifieerd"]
+}

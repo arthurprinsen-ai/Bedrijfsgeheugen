@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "fingerprint": "supabase|ci|protected-new-migration-candidate-vs-provider-baseline|20261105-v1",
+  "status": "CANDIDATE_EVALUATION_AND_PROTECTED_PREVIEW_DUE",
+  "source_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "observed_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
+  "reproducer": {
+    "run_id": 42039247615,
+    "failed_job_id": 127285726106,
+    "provider_applied_migrations": 807,
+    "provider_history_lock_rows": 807,
+    "proposed_pr_migrations": 1,
+    "preflight_error": "808 executable SQL migrations != 807 provider-applied history rows"
+  },
+  "cause": "Original historical migration parity oracle incorrectly treated a new pre-merge unapplied SQL file as an already-applied production migration, blocking protected Supabase Preview before replay.",
+  "prevention": "Exact provider-lock parity on applied historical source + bounded, verified source-only PR delta; never predeclare unapplied migration or skip hosted preview.",
+  "safety": {
+    "original_provider_lock_preserved": true,
+    "new_executor": false,
+    "database_schema_mutated": false,
+    "provider_preview_proven": false,
+    "production_replay_proven": false
+  },
+  "verification": {
+    "regression": "tests/brain-protected-supabase-pr-migration-tests.test.mjs",
+    "required_gate": ".github/workflows/required-test.yml",
+    "source_driver": "tools/ci/protected-supabase-pr-migration-tests.mjs"
+  },
+  "owner": "original GitHub Required and Supabase Hosted Preview integration",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-protected-supabase-pr-migration-tests.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-protected-supabase-pr-migration-tests.test.mjs",
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+  ],
+  "evidence": {
+    "root_cause_required_ci_run": 42039247615,
+    "actual_historical_provider_migrations": 807,
+    "exact_git_lock_rows": 807,
+    "strict_learning_regression_green_at": "2026-11-05T14:22:33Z",
+    "learning_canonicalization_run": 42044346515,
+    "remaining_gates": [
+      "protected_required",
+      "codeql",
+      "hosted_supabase_preview",
+      "provider_apply_readback"
+    ]
+  }
+}
