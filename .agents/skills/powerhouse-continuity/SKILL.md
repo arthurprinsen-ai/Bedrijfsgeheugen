@@ -1976,3 +1976,5 @@ Provider 805 versus lock 801 after four official migrations on 5 November. Befor
 - Content chain has a measurement stage (5 Nov 2026, fingerprint `content|publication-chain|measurement-stage|20261105-v1`): LEARNED only from a SUFFICIENT measurement.
 
 - A skill that gains the incident-loop marker leaves loop_debt_baseline in the same change (5 Nov 2026, fingerprint `brain|incident-self-fix|loop-debt-baseline-marker-parity|20261105-v1`).
+
+- Internal-link assertions accept the site origin or a relative path to the same target (5 Nov 2026, fingerprint `seo|afas-oci|internal-link-origin-agnostic-test|20261105-v1`).
