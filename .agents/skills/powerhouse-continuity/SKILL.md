@@ -1966,3 +1966,7 @@ Before promoting any original migration/GA4/experiment candidate to global green
 ## 2026-11-04 — Original CI browser proof for evidence-only GitHub merges
 
 A protected main merge of only the original Portal Playwright spec must not disappear from browser verification merely because `portal-v2/**` runtime source is unchanged. Keep the **existing** Portal V2 Production DOM Readback workflow as sole browser authority; trigger on its original integration specs and same workflow YAML. Preserve exact Netlify immutable deployed SHA, protected-main ancestor, strict repeated CI-only file allowlist, full original browser/visual/role tests and fail-closed runtime SHA drift. Never fake main deployment identity for docs/tests/agent source commits. Original PR #5412 had no natural browser run after its test fix; previous original #41832239828 had 1 failure. Canonical ONE BRAIN `portal|browser-readback|test-only-main-not-triggered|20261104-v1`; no duplicate workflow/scheduler or waivers.
+
+## Migration lock must move with the migration (2026-11-05)
+
+Provider 805 versus lock 801 after four official migrations on 5 November. Before reporting BRAIN or terminal closure green, compare all `supabase_migrations.schema_migrations` rows with `supabase/migration-history.lock.json` and `supabase/migrations/*.sql` by exact version and name, and append the missing lock rows in the same lineage. Fingerprint `supabase|migration-history|provider-805-source-801|20261105-v1`; evidence original BRAIN run 42020903893.
