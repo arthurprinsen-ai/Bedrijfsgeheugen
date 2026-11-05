@@ -69,5 +69,18 @@
     "historical_replay": [
       "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42075945749",
+    "original_artifact": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42075945749/artifacts/13439631334",
+    "netlify_observed_status_codes": [
+      499,
+      301,
+      200
+    ],
+    "actual_final_loaded_route": "https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/",
+    "observed_browser_result": "FAILURE 1/640 on main before this correction",
+    "postmerge_replay": "EVIDENCE_DUE",
+    "provider_deploy_effect": "NOT_APPLICABLE_NO_WEBSITE_CONTENT_CHANGE"
   }
 }
