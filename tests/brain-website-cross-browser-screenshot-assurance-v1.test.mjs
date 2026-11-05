@@ -165,3 +165,39 @@ test('a failed or different document, script, stylesheet or other network error 
     assert.deepEqual(filterSettledCoreFailures([failure],{status:200,finalUrl}),[failure],failure);
   }
 });
+
+test('HTTP2 PING failure settles only after the identical canonical document returns final HTTP 2xx',()=>{
+  const route='/en/blog/groeipijn-mkb-eigenaar-bottleneck';
+  const bad=`document:${route}/:net::ERR_HTTP2_PING_FAILED`;
+  const canonical=`https://www.bedrijfsgeheugen.nl${route}/`;
+  const helper=fs.readFileSync('tools/site-shell/core-request-recovery.mjs','utf8');
+  assert.match(helper,/ERR_HTTP2_PING_FAILED/);
+  assert.deepEqual(filterSettledCoreFailures([bad],{status:200,finalUrl:canonical}),[]);
+  assert.deepEqual(filterSettledCoreFailures([bad],{status:204,finalUrl:canonical}),[]);
+  assert.deepEqual(filterSettledCoreFailures([bad],{status:200,finalUrl:`https://www.bedrijfsgeheugen.nl${route}`}),[]);
+});
+
+test('HTTP2 PING cannot conceal missing/redirected/error HTML, unrelated route, script or CSS failures',()=>{
+  const route='/en/blog/groeipijn-mkb-eigenaar-bottleneck/';
+  const bad=`document:${route}:net::ERR_HTTP2_PING_FAILED`;
+  const canonical=`https://www.bedrijfsgeheugen.nl${route}`;
+  for(const status of [null,0,199,301,302,404,429,500,503]){
+    assert.deepEqual(filterSettledCoreFailures([bad],{status,finalUrl:canonical}),[bad],String(status));
+  }
+  for(const finalUrl of [
+    null, '', 'unparseable',
+    'https://www.bedrijfsgeheugen.nl/en/blog/another-article/',
+    'https://www.bedrijfsgeheugen.nl/en/blog/groeipijn-mkb-eigenaar-bottleneck-extra/',
+    'ftp://www.bedrijfsgeheugen.nl/en/blog/groeipijn-mkb-eigenaar-bottleneck/'
+  ]){
+    assert.deepEqual(filterSettledCoreFailures([bad],{status:200,finalUrl}),[bad],String(finalUrl));
+  }
+  for(const critical of [
+    `script:${route}:net::ERR_HTTP2_PING_FAILED`,
+    `stylesheet:${route}:net::ERR_HTTP2_PING_FAILED`,
+    `document:${route}:net::ERR_CONNECTION_REFUSED`,
+    `document:${route}:net::ERR_CERT_AUTHORITY_INVALID`
+  ]){
+    assert.deepEqual(filterSettledCoreFailures([critical],{status:200,finalUrl:canonical}),[critical],critical);
+  }
+});
