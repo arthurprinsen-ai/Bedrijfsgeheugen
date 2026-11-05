@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "supabase|migration-lock|provider-applied-808-vs-source-lock-807|20261105-v1",
+  "owner": "original protected Supabase migration history/Required admission owner",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_MIGRATION_SOURCE_LOCK_STALE",
+    "scope": "SUPABASE_PROTECTED_MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original protected #5450 merged the 808th source migration and the actual production provider subsequently applied it, while the immutable GitHub migration-history.lock.json remained at 807 entries. After PR #5457 updated to latest main, unchanged original strict PR migration tests failed because there were 808 real executable SQL migrations but only 807 locked provider identities.",
+  "prevention": "When a new original migration becomes genuinely provider-applied, reconcile the canonical source history lock from independently fetched Supabase schema_migrations version and name exactly, never from Git source count alone. Record true Supabase readback timestamp, update only newly proven provider rows, run existing strict migration integrity tests and protected PR, maintain original runtime source/permissions. Later PRs must not bypass the fail-closed migration gate.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-provider-applied-808-lock-20261105.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "actual_provider_count": 808,
+    "source_executable_count": 808,
+    "original_lock_count": 807,
+    "verified_applied_version": "20261105134200",
+    "verified_applied_name": "original_data_spine_decision_receipt_same_tick_v1",
+    "real_provider_readback_at": "2026-11-05T15:33:22.246269Z",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "original_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
+    "blocked_required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42055033207",
+    "dependent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5457"
+  },
+  "production_readback": "EVIDENCE_DUE",
+  "portal_status": "NOT_GREEN_UNTIL_PROTECTED_MERGE_AND_NEW_REQUIRED_SOURCE_READBACK"
+}
