@@ -4,10 +4,10 @@ import { readFileSync, existsSync } from 'node:fs';
 
 const read=p=>readFileSync(p,'utf8');
 
-test('canonical Required keeps current Netlify semantics and bounded Git history',()=>{
+test('canonical Required retains safe migration history with bounded website checkout',()=>{
   const required=read('.github/workflows/required-test.yml');
   const website=read('.github/workflows/lane-website.yml');
-  assert.doesNotMatch(required,/fetch-depth:\s*0/);
+  assert.match(required,/# Immutable base-to-candidate migration classification must have history\.\s*fetch-depth:\s*0/, 'Required must retain the complete protected migration history for exact base-to-head parity');
   assert.doesNotMatch(website,/fetch-depth:\s*0/);
   assert.match(required,/fetch-depth:\s*2/);
   assert.match(website,/TARGETED_BASE_FETCH/);
