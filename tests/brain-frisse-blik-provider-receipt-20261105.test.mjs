@@ -106,5 +106,5 @@ test('original SEO agent skill distinguishes click, receipt, confirmed booking a
   assert.match(skill,/commerciële aanvraag telt uitsluitend na providerbewijs/);
   assert.match(skill,/lead-intake/);
   assert.match(skill,/Calendly-providerboekingsbewijs/);
-  assert.match(skill,/tests\\/brain-frisse-blik-provider-receipt-20261105\\.test\\.mjs/);
+  assert.ok(skill.includes('tests/brain-frisse-blik-provider-receipt-20261105.test.mjs'));
 });
