@@ -31,6 +31,9 @@ test('source-health guard is never made green from a stale or synthetic provider
 
 test('same original least-privilege function, no anonymous execute, exact migration lock',async()=>{
  assert.match(sql,/SECURITY DEFINER/i);
+ assert.match(sql,/end;\s*\$function\$;\s*revoke all on function public\.powerhouse_data_spine_watchdog_v1/);
+ assert.equal((sql.match(/\$function\$/g)||[]).length,2,'matching PL/pgSQL delimiter pair');
+
  assert.match(sql,/SET search_path TO 'public', 'pg_catalog'/);
  assert.match(sql,/revoke all on function public\.powerhouse_data_spine_watchdog_v1\(timestamptz\)\s+from public,anon,authenticated/i);
  assert.match(sql,/grant execute on function public\.powerhouse_data_spine_watchdog_v1\(timestamptz\)\s+to service_role/i);
