@@ -36,6 +36,8 @@ test('every original active 15-loop source gets exactly one specialist owner and
  assert.match(migration,/guard_requires_pass',true/);
 
  assert.match(migration,/ORIGINAL_LOOP_RECOVERY_ROUTE_MISSING/);
+ assert.match(migration,/\('social-publisher','powerhouse-content-loop','VERIFY_RETIRED_ORIGINAL_SOCIAL_PUBLISHER_OWNER'\)/);
+ assert.doesNotMatch(migration,/update\s+public\.powerhouse_loop_assurance_registry_v1\s+set\s+active\s*=/i);
  assert.match(migration,/r\.evidence_contract->>'recovery_owner'/);
  assert.match(migration,/r\.evidence_contract->>'recovery_action'/);
  assert.match(migration,/'recovery_owner',v_recovery_owner/);
