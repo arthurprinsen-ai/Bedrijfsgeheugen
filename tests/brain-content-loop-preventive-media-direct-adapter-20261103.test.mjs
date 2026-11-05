@@ -8,7 +8,8 @@ test('original social preventive preflight can read canonical Mira media jobs th
  const allowed=source.match(/const DIRECT_TABLES=new Set\(\[([^\]]+)\]\);/);
  assert.ok(allowed,'Direct DB allowlist missing');
  assert.match(allowed[1],/"powerhouse_instagram_media_jobs_v1"/);
- assert.match(source,/\.from\('powerhouse_instagram_media_jobs_v1'\)\.select\('channel,status,last_error,asset_manifest,proof_manifest'\)/);
+ assert.match(source,/\.from\('powerhouse_instagram_media_jobs_v1'\)\.select\('channel,status,attempts,last_error,asset_manifest,proof_manifest'\)/);
+ assert.match(source,/\.eq\('tenant_id','canonical'\)\.eq\('publication_date',runDate\)\.eq\('channel','instagram'\)/);
  assert.match(source,/assessPreventivePublicationReadiness\(\{runDate/);
 });
 test('original preflight media table remains strictly read only',()=>{
