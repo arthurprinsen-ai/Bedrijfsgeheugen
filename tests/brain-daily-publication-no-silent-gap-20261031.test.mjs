@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {assessDailyPublicationRecovery} from '../supabase/functions/_shared/daily-publication-recovery.mjs';
+import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../supabase/functions/_shared/daily-publication-recovery.mjs';
 import {summarizeOneLoopAssurance} from '../brain/observability/one-loop-assurance-readback.mjs';
 import {projectOriginalGuardDiagnostics} from '../brain/observability/one-loop-guard-diagnostics.mjs';
 
@@ -242,4 +242,37 @@ test('original Brain guard and portal distinguish early recovery from missed dea
  assert.match(portal,/Publicatie in gevaar/);
  assert.match(portal,/Publicatie gemist/);
  assert.match(portal,/data-publication-phase/);
+});
+
+
+test('original personal source failure gets source repair, never a misleading provider resend action',()=>{
+ const own={channel:'linkedin_personal',status:'BLOCKED',last_error:'PERSONAL_SOURCE_UNVERIFIED',
+  external_id:null,live_proven_at:null,next_action:'old generic message'};
+ const editorial={channel:'linkedin_personal',state:'blocked',decision:'hold',
+  scheduled_for:new Date('2026-11-05T08:00:00Z'),
+  delivery_evidence:{error:'PERSONAL_SOURCE_UNVERIFIED',
+   artifact_generation_failure:{classification:'PROVIDER_BILLING',last_failed_at:'2026-11-01T09:39:00Z'}}};
+ const recovery=assessDailyPublicationRecovery({runDate:'2026-11-05',now:'2026-11-05T06:45:00Z',
+  decisions:[editorial],obligations:[own],isTerminal:proof});
+ const item=recovery.overdue.find(x=>x.channel==='linkedin_personal');
+ assert.equal(item.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
+ assert.equal(item.phase,'EARLY_RECOVERY');
+ assert.equal(item.repairHandoff,'VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE');
+ assert.equal(item.requiresAuthorization,false);
+ assert.match(item.action,/geen provider-retry|Geen provider-retry/i);
+ assert.match(item.owner,/content-orchestrator/);
+ assert.doesNotMatch(JSON.stringify(item),/insufficient_quota|api_key|bearer/i);
+ const preflight=assessPreventivePublicationReadiness({runDate:'2026-11-05',
+  now:'2026-11-05T06:45:00Z',decisions:[editorial],obligations:[own],mediaJobs:[],
+  isTerminal:proof});
+ assert.equal(preflight.atRisk.find(x=>x.channel==='linkedin_personal')?.code,
+  'SOURCE_EDITORIAL_REVISION_REQUIRED');
+ const posted={...own,status:'PUBLISHED',external_id:'urn:li:share:real',last_error:null};
+ const acknowledged=assessPreventivePublicationReadiness({runDate:'2026-11-05',
+  now:'2026-11-05T06:45:00Z',decisions:[editorial],obligations:[posted],mediaJobs:[],
+  isTerminal:proof});
+ assert.equal(acknowledged.atRisk.find(x=>x.channel==='linkedin_personal')?.code,
+  'INDEPENDENT_PROVIDER_READBACK_REQUIRED');
+ assert.equal(acknowledged.atRisk.find(x=>x.channel==='linkedin_personal')?.nextStep,
+  'ORIGINAL_PROVIDER_RECONCILE_ONLY');
 });
