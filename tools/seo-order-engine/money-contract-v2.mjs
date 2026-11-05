@@ -56,7 +56,7 @@ export function inspectMoneyPage(input,entry){
   if((entry.supporting_routes||[]).length&&!hasSupportLink(html,entry)) errors.push(`${entry.route}: contextuele support-link ontbreekt`);
   if(!new RegExp(`data-bg-intent-owner=["']${entry.route.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}["']`,'i').test(html)) errors.push(`${entry.route}: primaire intent-owner ontbreekt`);
   if(!/data-bg-intent-role=["']primary["']/i.test(html)) errors.push(`${entry.route}: primary intent-role ontbreekt`);
-  if(!/data-bg-reviewer=["']arthur-prinsen["']/i.test(html)) errors.push(`${entry.route}: zichtbare auteur/reviewer ontbreekt`);
+  if(!/data-bg-author=["']bedrijfsgeheugen["']/i.test(html)) errors.push(`${entry.route}: zichtbare herkomst ontbreekt`);
   return errors;
 }
 
@@ -67,6 +67,20 @@ function directAnswer(entry){
   if(q.includes('ai')) return 'Begin met een concreet bedrijfsprobleem en een meetbare uitkomst, niet met een AI-tool. Regel data, eigenaarschap, risico en menselijke controle voordat je opschaalt.';
   if(q.includes('due diligence')||q.includes('overname')) return 'Maak vóór de transactie zichtbaar welke kennis, processen, data en afhankelijkheden bedrijfskritisch zijn en wat er gebeurt als sleutelpersonen wegvallen.';
   return 'Maak eerst het echte knelpunt, de eigenaar en de gewenste uitkomst expliciet. Kies daarna de kleinste werkende oplossing en meet of die aantoonbaar waarde levert.';
+}
+
+function buyerProblem(entry){
+  const q=String(entry?.primary_intent||'').toLocaleLowerCase('nl-NL');
+  if(q.includes('afas')) return 'Orders, relaties of uren worden nog handmatig overgenomen in AFAS. Welke gegevens moeten waarheen, wie controleert afwijkingen en hoe voorkom je dubbele boekingen?';
+  if(q.includes('exact')) return 'Je webshop, verkoop en administratie gebruiken verschillende klant-, artikel- of factuurgegevens. Een koppeling is pas nuttig als ook foutafhandeling en eigenaarschap geregeld zijn.';
+  if(q.includes('twinfield')) return 'Facturen, bankmutaties en verkoopgegevens komen niet op hetzelfde moment binnen. Begin met de bron en de controles die jouw boekhouding echt nodig heeft.';
+  if(q.includes('power bi')) return 'Er bestaan dashboards, maar definities, brondata en beslissingen sluiten niet op elkaar aan. Wie gebruikt welke KPI om daadwerkelijk bij te sturen?';
+  if(q.includes('webshop')) return 'Een order in je webshop betekent nog niet dat voorraad, klant en factuur goed in de administratie staan. Controleer de volledige gegevensstroom en uitzonderingen.';
+  if(q.includes('automatiseren')) return 'Hetzelfde werk komt elke week terug: overtypen, controleren, wachten en herstellen. Kies eerst welke stap aantoonbaar tijd of fouten kost.';
+  if(q.includes('api koppeling')||q.includes('systemen koppelen')) return 'Twee systemen kunnen technisch gegevens uitwisselen, maar dat maakt het proces nog niet betrouwbaar. Bepaal eerst wat de bron is en wie fouten oplost.';
+  if(q.includes('kennis')||q.includes('bedrijfsgeheugen')) return 'Afspraken en werkinstructies zitten verspreid in hoofden, documenten en systemen. Welke kennis moet je collega zonder navragen kunnen terugvinden?';
+  if(q.includes('ai')) return 'Een AI-pilot levert pas iets op als de brondata kloppen, een eigenaar verantwoordelijk is en de uitkomst in het werkproces wordt gebruikt.';
+  return 'Welke handmatige stap veroorzaakt vertraging, herstelwerk of kennisverlies? Maak eerst de oorzaak, eigenaar en gewenste uitkomst concreet.';
 }
 
 function nativeMoneyPage(input){
@@ -88,8 +102,8 @@ export function enrichMoneyPage(input,entry){
   const links=support.map((url,i)=>`<a href="${esc(url)}" data-bg-money-support="${i+1}">${i===0?'Lees de inhoudelijke verdieping':'Bekijk de gerelateerde aanpak'}</a>`).join(' · ');
   const updated=new Date().toISOString().slice(0,10);
   const block=`<section id="bg-money-v3" class="bg-money-v2" aria-label="Beslisinformatie" data-bg-money-contract="v2" data-bg-money-contract-version="v3" data-bg-intent-role="primary" data-bg-intent-owner="${esc(entry.route)}" data-bg-content-updated="${updated}">
-  <aside class="bg-money-v2-review" data-bg-reviewer="arthur-prinsen" aria-label="Inhoudelijke review">Inhoudelijk gereviewd door <a href="${ORIGIN}/over-ons">Arthur Prinsen</a>. Gebaseerd op implementaties met AFAS, Exact, Microsoft 365, Power BI en bedrijfsprocessen in Nederlandse organisaties. Laatste inhoudelijke publicatiecontrole: <time datetime="${updated}">${updated}</time>.</aside>
-  <div data-bg-money-section="problem"><h2>Het zoekprobleem: ${esc(entry.primary_intent)}</h2><p>Deze pagina is de primaire eigenaar van deze zoekintentie. Gerelateerde pagina’s ondersteunen deze pagina en concurreren er niet mee.</p></div>
+  <aside class="bg-money-v2-review" data-bg-author="bedrijfsgeheugen" aria-label="Wie deze informatie aanbiedt">Deze uitleg komt van <a href="${ORIGIN}/over-ons">Bedrijfsgeheugen</a>. Een concrete koppeling, prijs of planning volgt pas na toetsing van jouw situatie.</aside>
+  <div data-bg-money-section="problem"><h2>Waar gaat het in de praktijk mis?</h2><p>${esc(buyerProblem(entry))}</p></div>
   <div data-bg-money-section="answer"><h2>Direct antwoord</h2><p>${esc(directAnswer(entry))}</p></div>
   <div data-bg-money-section="proposition"><h2>Wat we doen</h2><p>We verbinden analyse, bedrijfskennis, data en uitvoering zodat je niet blijft hangen in advies of losse tooling.</p></div>
   <div data-bg-money-section="how"><h2>Hoe het werkt</h2><ol><li>We brengen de huidige situatie, data en het echte knelpunt in beeld.</li><li>We bepalen de kleinste werkende oplossing, eigenaar en meetbare uitkomst.</li><li>We implementeren of prioriteren de vervolgstap en controleren het resultaat.</li><li>We borgen wat werkt en stoppen of herstellen wat niet werkt.</li></ol></div>
@@ -98,7 +112,7 @@ export function enrichMoneyPage(input,entry){
   <div data-bg-money-section="pricing"><h2>Kosten en keuze</h2><p>Prijs en scope hangen af van de gekozen vervolgstap. Bekijk de actuele vaste pakketten en prijslogica op <a href="${ORIGIN}/prijzen">prijzen voor digitalisering</a>.</p></div>
   <div data-bg-money-section="risk"><h2>Risico’s en bezwaren</h2><p>We werken stapsgewijs, maken aannames en eigenaarschap expliciet, gebruiken minimale noodzakelijke data en houden menselijke controle op beslissingen en uitvoering.</p></div>
   <div data-bg-money-section="faq"><h2>Veelgestelde vragen vóór je beslist</h2><details><summary>Moet alles in één keer?</summary><p>Nee. De voorkeur is één afgebakend probleem met een meetbare uitkomst, daarna pas opschalen.</p></details><details><summary>Wat kost het?</summary><p>De actuele prijs- en pakketlogica staat op <a href="${ORIGIN}/prijzen">de prijzenpagina</a>; maatwerk wordt pas gekozen als de scope dat echt vereist.</p></details><details><summary>Hoe voorkom je een traject zonder resultaat?</summary><p>Door vooraf probleem, eigenaar, succesmaat en stopcriteria vast te leggen en na iedere stap readback en verificatie te doen.</p></details></div>
-  <div data-bg-money-section="method"><h2>Methodologie en bronnenbeleid</h2><p>We scheiden observatie, bron, aanname en conclusie. Publieke claims moeten herleidbaar zijn naar een bron, berekening, screenshot, architectuur, praktijkvoorbeeld of eigen aantoonbare data. We voegen geen verzonnen klantresultaten of onbewezen cijfers toe.</p></div>
+  <div data-bg-money-section="method"><h2>Zo toetsen we jouw situatie</h2><p>We brengen het huidige proces, de gebruikte systemen, uitzonderingen en kosten in kaart. Pas daarna adviseren we of een standaardoplossing, maatwerkkoppeling of andere aanpak passend is.</p></div>
   <div class="bg-money-v2-actions"><a href="${esc(primary.url)}" data-bg-conversion="${esc(primary.action)}" data-bg-page-role="money" data-bg-funnel-stage="${esc(entry.funnel_stage)}">${primary.action==='frisse-blik'?'Plan een Frisse Blik':'Doe de gratis zelfscan'}</a>${links?`<p>${links}</p>`:''}</div>
 </section>`;
   if(/<\/main>/i.test(html)) html=html.replace(/<\/main>/i,`${block}\n</main>`); else html=html.replace(/<\/body>/i,`${block}\n</body>`);
