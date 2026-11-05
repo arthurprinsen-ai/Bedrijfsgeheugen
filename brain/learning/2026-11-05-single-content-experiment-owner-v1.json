@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROTECTED_MERGE_AND_RUNTIME_PROOF_DUE",
+  "fingerprint": "powerhouse|content-learning|multiple-competing-creative-experiments-same-post|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse-content-orchestrator (no new sender or scheduler)",
+  "failure_class": "EXPERIMENT_VARIABLE_CONFOUNDING",
+  "root_cause": "Original Powerhouse content-orchestrator independently generated a measuredNextPostTest challenger and a daily creativeExploration before calling bg_social_lus_cyclus; then concatenated measuredNextPostGuide + creativeExplorationGuide + linkedinLoopGuide into one text generator. A still-ACTIVE or new original LinkedIn one-variable experiment could therefore coexist with extra test copy changes in a single daily publication, destroying clean variant attribution and making learned effect untrustworthy.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T10:53:54Z",
+    "source": "supabase/functions/powerhouse-content-orchestrator/index.ts; public.powerhouse_content_artifacts; public.social_experiments",
+    "active_experiment_id": "li-lus-co-20261030",
+    "active_dimension": "hook_type",
+    "active_variant": "concrete_number",
+    "verified_company_experiment_post": "urn:li:share:7523338311717965825",
+    "provider_exposure_impressions": 4,
+    "actual_effect": null,
+    "competing_generator_sources": [
+      "measured_next_post_test",
+      "editorial_exploration",
+      "linkedin_loop"
+    ],
+    "next_publication_change_proven": false
+  },
+  "fix": "Explicit deterministic single-owner arbitration in existing measured-next-post-challenger helper after existing source SQL decision and before any AI prompt, editorial council and generation evidence. Original active LinkedIn experiment wins; fallback to existing evidence-backed measured challenger, then one reversible daily exploration, else no experiment. Suppressed candidates have zero proposed_test/single_change and no extra prompt instructions.",
+  "prevention_rule": "Never attempt two independent creative experiment variables in one provider publication; only one active test owner may direct the existing editorial generator. Log selected owner and suppression in immutable original generation_evidence. No causal win from 4 exposures; verify actual provider post, source baseline and independent control/effect before promotion. Existing publisher identity/consent/quality/writer lease unaffected.",
+  "tests": [
+    "tests/brain-original-single-content-experiment-owner-20261105.test.mjs",
+    "tests/brain-measured-next-post-challenger-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-single-content-experiment-owner-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-single-content-experiment-owner-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-single-content-experiment-owner-20261105.test.mjs"
+    ],
+    "invariants": [
+      "original content owner only",
+      "one active single-variable experiment",
+      "no changes to provider send",
+      "no new cron",
+      "no new tables",
+      "no fabricated effect/ROI",
+      "exact independent post readback required",
+      "protected release and production source parity"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "EXPERIMENT_VARIABLE_CONFOUNDING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required/CodeQL/BRAIN success, merge, original Edge exact source parity; next naturally generated original content_artifact contains editorial_experiment_owner=ORIGINAL_LINKEDIN_LOOP when experiment active and both additional test sources suppressed; independent provider ID/readback, genuine exposure and business outcome evaluation remain separate evidence gates."
+}
