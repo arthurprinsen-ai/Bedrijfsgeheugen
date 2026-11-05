@@ -2,18 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 
-const pendingDir = new URL('../supabase/migrations-pending/', import.meta.url);
-const file = readdirSync(pendingDir).find(f => f.endsWith('_original_linkedin_tags_learning_v1.sql'));
-const sql = file ? readFileSync(new URL(file, pendingDir), 'utf8') : '';
+const migrationsDir = new URL('../supabase/migrations/', import.meta.url);
+const file = readdirSync(migrationsDir).find(f => f.endsWith('_original_linkedin_tags_learning_v1.sql'));
+const sql = file ? readFileSync(new URL(file, migrationsDir), 'utf8') : '';
 const base = readFileSync(new URL('../supabase/migrations/20261105080000_original_linkedin_learning_source_truth.sql', import.meta.url), 'utf8');
 const lock = JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json', import.meta.url), 'utf8'));
 const migrations = readdirSync(new URL('../supabase/migrations/', import.meta.url));
 
-test('pending migration exists, is not yet an executable migration and is not marked as applied', () => {
-  assert.ok(file, 'pending migration missing');
-  assert.ok(!migrations.includes(file), 'must not be in supabase/migrations before the provider applied it');
-  assert.ok(!lock.applied.some(r => file.startsWith(r.version)), 'must not be in the lock before the provider applied it');
-  assert.match(sql, /^-- PENDING \(niet toegepast\)/);
+test('migration was applied by the provider (version 20261105165702) and is recorded in source and lock', () => {
+  assert.equal(file, '20261105165702_original_linkedin_tags_learning_v1.sql');
+  assert.ok(lock.applied.some(r => r.version === '20261105165702' && r.name === 'original_linkedin_tags_learning_v1'), 'lock row missing');
+  assert.ok(!readdirSync(new URL('../supabase/', import.meta.url)).includes('migrations-pending'), 'no pending migration directory may remain');
+  assert.match(sql, /^-- APPLIED op productie/);
+  assert.doesNotMatch(sql, /^\s*(begin|commit);/im);
 });
 
 test('owner stays the original loop: no new table, cron, sender or publisher', () => {

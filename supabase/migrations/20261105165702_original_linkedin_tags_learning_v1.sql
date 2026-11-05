@@ -1,12 +1,9 @@
--- PENDING (niet toegepast): leg tags (hashtags) per LinkedIn-post vast en maak 'tags' een dimensie van de BESTAANDE LinkedIn-lus.
+-- APPLIED op productie (adhjwmvyoixzjtmiroln) op 2026-11-05 als versie 20261105165702, met readback: leg tags (hashtags) per LinkedIn-post vast en maak 'tags' een dimensie van de BESTAANDE LinkedIn-lus.
 -- Owner: public.bg_social_lus_cyclus, aangeroepen door de BESTAANDE powerhouse-content-orchestrator. Geen nieuwe cron, tabel, sender of publisher.
 -- Alleen bg_post_kenmerken wordt aangevuld (kolommen tags, tags_bron); social_posts en social_metric_snapshots worden niet geschreven.
 -- Tags komen uit de gegenereerde posttekst (powerhouse_content_artifacts.body, status published) en alleen bij een 1-op-1 koppeling per kanaal en dag (Europe/Amsterdam).
 -- tags = '{}' betekent: gekoppelde tekst bevat geen hashtag. tags IS NULL betekent: onbekend. Geen gok bij meerdere posts of artifacts op dezelfde dag.
 -- Terugdraaien: kolommen droppen en bg_social_lus_cyclus herstellen vanuit 20261105080000_original_linkedin_learning_source_truth.sql.
--- Toepassen + lock-rij: pas na akkoord van Arthur via de beschermde migratieroute; daarna verplaatsen naar supabase/migrations en lock-rij toevoegen (zie docs/changes).
-begin;
-
 alter table public.bg_post_kenmerken
   add column if not exists tags text[],
   add column if not exists tags_bron text;
@@ -170,5 +167,3 @@ end $$;
 
 revoke all on function public.bg_social_lus_cyclus(text,date) from public,anon,authenticated;
 grant execute on function public.bg_social_lus_cyclus(text,date) to service_role;
-
-commit;

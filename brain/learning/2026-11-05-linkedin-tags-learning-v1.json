@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-05",
-  "status": "CANDIDATE_PENDING_PROVIDER_APPLY_AND_RUNTIME_PROOF_DUE",
+  "status": "APPLIED_PROVIDER_READBACK_VERIFIED_RUNTIME_PROOF_DUE",
   "fingerprint": "powerhouse|content-learning|linkedin-tags-not-captured-no-tag-dimension|20261105-v1",
   "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "owner": "original bg_social_lus_cyclus invoked by the existing powerhouse-content-orchestrator (no new sender or scheduler)",
@@ -27,9 +27,12 @@
     "tag_column_existed": false,
     "local_postgres_16_replay": "migration applied after 20261028220000 and 20261105080000; scenario: 11 posts tagged, 3 ambiguous or unpublished left NULL, second backfill 0 changes, tags dimension selected with explicit instruction",
     "actual_effect": null,
-    "tag_effect_proven": false
+    "tag_effect_proven": false,
+    "provider_applied_version": "20261105165702",
+    "provider_migration_count_after": 809,
+    "pre_apply_function_body_md5_equals_repo": "6dadd7a19021ec5f8e15ba1b1f27af1c"
   },
-  "fix": "Pending migration 20261105160000_original_linkedin_tags_learning_v1: columns bg_post_kenmerken.tags and tags_bron, bg_tags_uit_tekst, bg_post_tags_backfill (idempotent, unique match only) and the existing bg_social_lus_cyclus extended with the dimension tags (drie_hashtags, geen_hashtags) and a visible backfill result. Stored in supabase/migrations-pending until the provider applied it.",
+  "fix": "Pending migration 20261105160000_original_linkedin_tags_learning_v1: columns bg_post_kenmerken.tags and tags_bron, bg_tags_uit_tekst, bg_post_tags_backfill (idempotent, unique match only) and the existing bg_social_lus_cyclus extended with the dimension tags (drie_hashtags, geen_hashtags) and a visible backfill result. Applied on the provider as version 20261105165702 with independent readback; source and lock row in the same change.",
   "tests": [
     "tests/brain-linkedin-tags-learning-20261105.test.mjs"
   ],
@@ -60,5 +63,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "terminal_rule": "Protected Required/CodeQL/BRAIN success and merge; Arthur applies the pending migration via the protected route and moves it to supabase/migrations with its lock row in the same lineage; next original loop run returns tags_backfill state OK; first tag experiment post needs independent provider readback; no causal claim before at least 6 posts per variant and a verified baseline."
+  "terminal_rule": "Protected Required/CodeQL/BRAIN success and merge; next natural original loop run returns tags_backfill state OK; first tag experiment post needs independent provider readback; no causal claim before at least 6 posts per variant and a verified baseline."
 }
