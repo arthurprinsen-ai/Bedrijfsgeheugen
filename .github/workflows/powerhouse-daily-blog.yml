@@ -59,6 +59,17 @@ jobs:
           set -euo pipefail
           node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
 
+      - name: Approve the same-date blog after the veto window
+        if: steps.day.outputs.run == 'true' && github.event_name != 'workflow_dispatch'
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DATE: ${{ steps.day.outputs.date }}
+        run: |
+          set -euo pipefail
+          # Lifts only the last-mile publication permission. Reader-ready, official-date and
+          # protected PR gates stay downstream. A veto in obligation evidence stops it.
+          node tools/content-growth/blog-auto-approval.mjs "$DATE"
+
       - name: Reuse the existing writer for this obligation
         if: steps.day.outputs.run == 'true'
         id: writer
