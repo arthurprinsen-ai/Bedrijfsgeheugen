@@ -116,3 +116,42 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
    primary_business_metric:'attributed_verified_paid_orders',
    requires_readback:true,control:'never promote a winner from unknown denominators'};
 }
+
+
+/** Single-experiment arbitration for the EXISTING content owner.
+ * Source choices are read-only; this never opens experiments or changes data.
+ * A still-running original LinkedIn one-variable experiment must preempt
+ * optional challenger/exploration copy in the same post, preventing
+ * multi-variable confounding and false self-learning. */
+export function arbitrateOriginalEditorialExperiment({channel,linkedinLoop,measured,creative}={}){
+ const originalActive=['linkedin_company','linkedin_personal'].includes(channel)
+   &&['EXPERIMENT_LOOPT','NIEUW_EXPERIMENT'].includes(linkedinLoop?.state)
+   &&typeof linkedinLoop?.instructie==='string'
+   &&linkedinLoop.instructie.trim().length>0;
+ const measuredCandidate=measured&&typeof measured==='object'?measured:{state:'NOT_APPLICABLE'};
+ const creativeCandidate=creative&&typeof creative==='object'?creative:{state:'NO_EXPLORATION'};
+ const suppressMeasured=reason=>({...measuredCandidate,state:'SUPPRESSED_BY_SINGLE_EXPERIMENT_OWNER',
+   previous_state:measuredCandidate.state,decision:'KEEP_ORIGINAL_SINGLE_EXPERIMENT',
+   proposed_test:null,reason});
+ const suppressCreative=reason=>({...creativeCandidate,state:'NO_EXPLORATION',
+   previous_state:creativeCandidate.state,reason,hypothesis_id:null,single_change:null});
+ if(originalActive)return {
+   owner:'ORIGINAL_LINKEDIN_LOOP',experiment_id:linkedinLoop.experiment_id||null,
+   measured:suppressMeasured('ACTIVE_SOURCE_REGISTERED_LINKEDIN_ONE_VARIABLE_EXPERIMENT'),
+   creative:suppressCreative('ORIGINAL_LINKEDIN_EXPERIMENT_PREEMPTS_NEW_EXPLORATION'),
+   max_distinct_experimental_copy_changes:1,causal_effect_proven:false
+ };
+ if(measuredCandidate.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST')return {
+   owner:'EXISTING_MEASURED_CHALLENGER',experiment_id:null,
+   measured:measuredCandidate,
+   creative:suppressCreative('MEASURED_CHALLENGER_PREEMPTS_DAILY_EXPLORATION'),
+   max_distinct_experimental_copy_changes:1,causal_effect_proven:false
+ };
+ if(creativeCandidate.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS')return {
+   owner:'EXISTING_DAILY_EXPLORATION',experiment_id:null,
+   measured:measuredCandidate,creative:creativeCandidate,
+   max_distinct_experimental_copy_changes:1,causal_effect_proven:false
+ };
+ return {owner:'NO_NEW_EXPERIMENT',experiment_id:null,measured:measuredCandidate,
+   creative:creativeCandidate,max_distinct_experimental_copy_changes:0,causal_effect_proven:false};
+}
