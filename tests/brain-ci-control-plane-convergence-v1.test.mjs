@@ -9,7 +9,7 @@ test('canonical Required retains safe migration history with bounded website che
   const website=read('.github/workflows/lane-website.yml');
   assert.match(required,/# Immutable base-to-candidate migration classification must have history\.\s*fetch-depth:\s*0/, 'Required must retain the complete protected migration history for exact base-to-head parity');
   assert.doesNotMatch(website,/fetch-depth:\s*0/);
-  assert.match(required,/fetch-depth:\s*2/);
+  assert.match(website,/fetch-depth:\s*2/, 'website still uses bounded checkout and targeted base fetch');
   assert.match(website,/TARGETED_BASE_FETCH/);
   assert.match(required,/'diff','--name-only',diffBaseSha,context\.changeHeadSha/);
   assert.match(website,/process\.env\.BASE_SHA,process\.env\.CHANGE_HEAD_SHA/);
