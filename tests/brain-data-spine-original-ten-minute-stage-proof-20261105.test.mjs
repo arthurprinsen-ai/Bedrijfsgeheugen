@@ -40,7 +40,8 @@ test('same original least-privilege function, no anonymous execute, exact migrat
  const lock=JSON.parse(await read('supabase/migration-history.lock.json'));
  const row=lock.applied.filter(x=>x.version==='20261105132000');
  assert.deepEqual(row,[{version:'20261105132000',name:'original_data_spine_same_tick_stage_receipts_v1'}]);
- assert.equal(lock.applied.at(-1).version,'20261105132000');
+ assert.equal(lock.applied[806]?.version,'20261105132000','provider-verified 807th migration stays in its original immutable position');
+ assert.ok(lock.applied.at(-1).version>='20261105132000','later genuinely applied provider migrations must not invalidate a prior source guard');
  assert.ok(lock.applied.length>=807);
 });
 
