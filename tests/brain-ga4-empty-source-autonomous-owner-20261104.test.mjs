@@ -118,3 +118,17 @@ test('GA4 CAS retries never bypass other failures or reopen terminal obligations
  const out=await repair(terminal,'2026-11-04','api',{provider_rows:0});
  assert.equal(created,2);assert.equal(transitions,0);assert.equal(out.terminal_protected,true);
 });
+ 
+test('canonical GA4 Edge production declaration and original cron token guard are required together',()=>{
+ const config=readFileSync(new URL('../supabase/config.toml',import.meta.url),'utf8');
+ assert.match(config,/\[functions\.bg-analytics-sync-composio\]\s*enabled = true\s*verify_jwt = false\s*entrypoint = "\.\/functions\/bg-analytics-sync-composio\/index\.ts"/);
+ const start=code.indexOf('Deno.serve(async(req:Request)=>');
+ const auth=code.indexOf("req.headers.get('x-powerhouse-token')",start);
+ const compare=code.indexOf('callerToken!==schedulerSecret',start);
+ const vault=code.indexOf("p_naam:'powerhouse_daily_scheduler_token'",start);
+ const sourceCall=code.indexOf("p_naam:'GOOGLE_SERVICE_ACCOUNT'",start);
+ const provider=code.indexOf('rows=await directGA4',start);
+ assert.ok(start>=0&&auth>start&&vault>start&&compare>auth);
+ assert.ok(compare<sourceCall&&compare<provider);
+ assert.match(code.slice(start,provider),/return json\(\{ok:false,error:'UNAUTHORIZED'\},401\)/);
+});

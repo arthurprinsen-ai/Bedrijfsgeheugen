@@ -235,3 +235,12 @@ entrypoint = "./functions/bg-interactie/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-kansenradar/index.ts"
+ 
+# Original GA4/Data Spine collection via existing pg_cron #42 and bg_roep_functie.
+# Preserve verified production verify_jwt=false: original private
+# x-powerhouse-token (Vault) is checked in Edge BEFORE provider work.
+# This declaration enables protected-main production deployment/parity.
+[functions.bg-analytics-sync-composio]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-analytics-sync-composio/index.ts"
