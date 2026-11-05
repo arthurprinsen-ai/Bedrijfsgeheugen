@@ -34,8 +34,18 @@ export function summarizeOneLoopAssurance(rows,{observedAt=new Date().toISOStrin
       return fail('CANONICAL_GREEN_CONFLICTS_WITH_EVIDENCE');
     keys.add(row.loop_key);
     const missing=[...new Set(row.missing_stages.map(safeLabel).filter(Boolean))].slice(0,20);
+    // These fields are canonical registry-owned receipts, never a second
+    // routing engine. Do not echo arbitrary JSON/provider payloads to Portal.
+    const registered=row.evidence?.recovery_owner_registered===true;
+    const routeOwner=registered&&typeof row.evidence?.recovery_owner==='string'&&
+      /^[a-zA-Z0-9_:/ .-]{4,120}$/.test(row.evidence.recovery_owner)
+      ?row.evidence.recovery_owner:null;
+    const routeAction=registered&&typeof row.evidence?.recovery_action==='string'&&
+      /^[A-Z0-9_]{5,96}$/.test(row.evidence.recovery_action)
+      ?row.evidence.recovery_action:null;
     loops.push(Object.freeze({key:safeLabel(row.loop_key),status:row.status,
       guard:guard===false?'FAILED':guard===true?'PASSED':'NOT_RECORDED',
+      recoveryOwner:routeOwner,recoveryAction:routeAction,
       freshStages:fresh,requiredStages:required,missingStages:missing,
       problem:guard===false?'ORIGINAL_GUARD_FAILED':missing.length?'STAGE_EVIDENCE_MISSING':
         row.status==='GREEN'?'NONE':'CANONICAL_NON_GREEN',

@@ -170,6 +170,15 @@ jobs:
         run: node --test tests/release-artifact-identity.test.mjs
       - name: Verify fail-closed Supabase provider preview classification
         run: node --test tests/brain-supabase-preview-diagnosis-v1.test.mjs
+      - name: Enforce Supabase migration lock parity before merge
+        run: >-
+          node --test
+          tests/supabase-migration-history-integrity.test.mjs
+          tests/brain-cro-production-migration-lock-20261029.test.mjs
+          tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs
+          tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs
+          tests/brain-supabase-migration-lock-provider-20261029.test.mjs
+          tests/brain-migration-lock-pr-gate-20261105.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
         run: |
           node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
