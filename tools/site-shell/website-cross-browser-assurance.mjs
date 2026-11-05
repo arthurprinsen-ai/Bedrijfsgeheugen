@@ -2,6 +2,7 @@ import { chromium, firefox, webkit } from 'playwright';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { planMobileClsReplay, summarizeMobileClsReplay } from './mobile-cls-repeatability.mjs';
+import { filterSettledCoreFailures } from './core-request-recovery.mjs';
 
 const contractPath=process.env.WEBSITE_ASSURANCE_CONTRACT||'config/powerhouse-website-cross-browser-assurance-v1.json';
 const contract=JSON.parse(await fs.readFile(contractPath,'utf8'));
@@ -124,20 +125,6 @@ async function inspectStable(page){
     }
   }
   throw last;
-}
-
-function filterSettledCoreFailures(failedCore,{status,finalUrl}={}){
-  if(!(status>=200&&status<400)||!finalUrl)return [...failedCore];
-  let finalPath=null;
-  try{finalPath=new URL(finalUrl).pathname||'/';}catch{}
-  if(!finalPath)return [...failedCore];
-  const transientDocumentFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
-  return failedCore.filter(value=>{
-    const match=String(value).match(/^document:([^:]*):(.*)$/);
-    if(!match)return true;
-    const [,pathname,errorText]=match;
-    return !(pathname===finalPath&&transientDocumentFailure.test(errorText));
-  });
 }
 
 function basicViolations(state,status,pageErrors,failedCore){
