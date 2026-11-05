@@ -1,0 +1,40 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "brain|ci|scoped-migration-history-checkout-existing-netlify-test-conflict|20261105-v1",
+  "owner": "original GitHub Required / BRAIN control-plane test contract",
+  "compiler": {
+    "failure_class": "TEST_EXPECTATION_CONFLICT_WITH_REQUIRED_PROVIDER_MIGRATION_GUARD",
+    "scope": "BRAIN_EXACT_HEAD_BACKEND_VERIFICATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Protected migration admission PR #5453 had to fetch full Git ancestry in exactly one Required preflight checkout to verify base-to-candidate new SQL safely. An older BRAIN test asserted no fetch-depth:0 anywhere in Required and still expected a fetch-depth:2, although the original canonical checkout now intentionally needs full ancestry. This is a test-vs-production contract mismatch, not authorization to weaken immutable provider migration parity. Exact-head BRAIN run 42055116770 for PR #5450 failed this test while 808th provider migration source lock drift was later independently repaired by merged #5462.",
+  "prevention_rule": "Require exactly one fetch-depth:0 only at the comment-marked original migration-admission checkout in Required; keep website workflow forbidden from fetch-depth:0 and retain TARGETED_BASE_FETCH, full immutable history tests and original protected Supabase Preview checks.",
+  "fix": "Adjust original BRAIN regression expectations only, from global no-deep-checkout to exactly-one documented migration-only checkout; all other existing Netlify and website assertions unchanged.",
+  "evidence": {
+    "trigger_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42055116770",
+    "affected_test": "tests/brain-ci-control-plane-convergence-v1.test.mjs",
+    "migration_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5453",
+    "provider_migration": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
+    "independent_lock_repair": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5462",
+    "applied_provider_migrations": 808
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ]
+  },
+  "production_readback": "CANDIDATE_AWAITING_REQUIRED_BRAIN_PROTECTED_MERGE",
+  "no_second_scheduler": true,
+  "no_fake_green": true
+}
