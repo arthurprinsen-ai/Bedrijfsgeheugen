@@ -79,6 +79,11 @@ jobs:
           exit 1
       - name: Run cross-browser screenshot assurance
         env:
+          # GitHub container runs as root but sets HOME=/github/home (pwuser).
+          # Firefox refuses to launch with mismatched HOME ownership; keep the
+          # normal browser sandbox and all 271-route/three-engine checks.
+          # First-party Firefox launch logs from run #42061342484 prescribe /root.
+          HOME: /root
           BASE_URL: ${{ steps.target.outputs.base_url }}
           WEBSITE_ASSURANCE_CONTRACT: config/powerhouse-website-cross-browser-assurance-v1.json
           OUT_DIR: .artifacts/website-cross-browser-assurance
