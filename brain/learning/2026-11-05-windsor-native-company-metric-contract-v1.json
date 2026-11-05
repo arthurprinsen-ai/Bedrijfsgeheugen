@@ -1,0 +1,52 @@
+{
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROTECTED_RELEASE_AND_INDEPENDENT_METRIC_READBACK_DUE",
+  "fingerprint": "powerhouse|company-social-metrics|windsor-native-evidence-contract-unlinkable|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original bg-social-metrics-sync + original Powerhouse Growth & Revenue OS external source owner",
+  "failure_class": "PROVIDER_OBSERVATION_SCHEMA_DRIFT",
+  "root_cause": "Native Windsor.ai linkedin_organic observations in existing powerhouse_growth_source_daily_v1 use evidence.source='linkedin_organic', provider='windsor.ai', account, post_id, share_id, share_url, provider_metric_date and metrics.share_impression_count etc. Existing buildVerifiedCompanyMetricSnapshots requires a different fixture-only normalized schema with source='windsor.ai', provider='linkedin', connector, scope, provider_post_urn and metrics.post_id. Thus the original 6h media sync reported 55 source rows and 0 linked company metrics, despite exact LIVE_PROVEN author/post identities; last source refresh 1 November, another independent freshness gap.",
+  "proof": {
+    "runtime_observed_at": "2026-11-05T06:18:23Z",
+    "company_metric_link_state": "NO_EXACT_INDEPENDENTLY_LINKABLE_ANALYTICS",
+    "source_rows": 55,
+    "linked": 0,
+    "company_account_source": "WINDSOR_STALE",
+    "source_last_observed_at": "2026-11-01T09:42:39Z",
+    "existing_post": "urn:li:share:7523338311717965825",
+    "post_provider_proven": true,
+    "connected_windsor_read_utc": "2026-11-05T10:01:44Z",
+    "provider_reported_post_impressions": 4,
+    "actual_effect_causal": false
+  },
+  "fix": "Accept precisely the original native observed Windsor schema as second explicit proven provider shape, retaining existing normalized schema; require exact provider account, validated URL/share ID, canonical LIVE_PROVEN provider readback, source/staging URN and post index, nonnegative metrics, observed time freshness, and original six-hour owner. No new schema, scheduler, sender, auth scope or synthetic engagement.",
+  "prevention_rule": "Schema contract tests must replay current native connected-provider response through staged source and original matcher, not only hand-made normalized fixtures; require independent author account and exact post readback. Connector freshness must be measured separately from cron success, no stale provider metrics treated as fresh.",
+  "tests": [
+    "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs",
+    "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "invariants": [
+      "no new scheduler",
+      "no duplicate publisher",
+      "original 6h social metrics sync",
+      "original source table",
+      "only company account 18234216",
+      "exact provider ID and author",
+      "evidence timeframe <=72h",
+      "no invented conversion or causal uplift"
+    ]
+  },
+  "terminal_rule": "Protected Required/CodeQL/full BRAIN and merge; exact native source deployed in original bg-social-metrics-sync Edge bundle; original scheduled 6h run must link fresh provider metrics after actual authorized source refresh; application observation remains descriptive until baseline/holdout and real effect verified."
+}
