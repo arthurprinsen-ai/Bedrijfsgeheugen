@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROTECTED_MIGRATION_AND_REAL_OUTCOME_READBACK_DUE",
+  "fingerprint": "powerhouse|social-learning|published-variant-provider-exposure-not-evaluated|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing powerhouse_backfill_social_learning_applications_v1 via original runtime scheduler mux minute 39",
+  "failure_class": "PUBLISHED_VARIANT_OUTCOME_NOT_LEARNING",
+  "root_cause": "A genuine original 2026-11-03 LinkedIn company experiment variant had immutable provider publication ID, exact validated artifact and row in social_learning_applications, but 0 original post snapshots until native Windsor source contract repair. Once real 4-impression provider observation arrived, no existing original post-application step persisted it to social_learning_evaluations or updated the original learning candidate. A published variant remained effect-unmeasured indefinitely and its next iteration could not know the evidence gap.",
+  "evidence": {
+    "original_application_id": "original-experiment-variant:9644c448f90d0b9e986268f2c97aa3b9",
+    "post_id": "linkedin-company:urn:li:share:7523338311717965825",
+    "provider_id": "urn:li:share:7523338311717965825",
+    "original_metric_snapshot_impressions": 4,
+    "original_metric_snapshot_quality": "PROVIDER_OBSERVED_LINKED",
+    "real_causal_effect": null,
+    "original_application_actual_effect": null,
+    "observed_at_utc": "2026-11-05T10:10:00Z",
+    "matching_author": "urn:li:organization:18234216"
+  },
+  "fix": "Extend the existing original minute39 backfill function with bounded exact-author+post matched provider snapshot -> existing social_learning_evaluations descriptive receipt -> TESTING social_learnings with evidence -> existing application verification status to low exposure/no-control. Actual effect and causal uplift remain NULL. No new task, scheduler, provider writes or secondary ledger.",
+  "prevention_rule": "A publisher ID or analytics receipt alone is not learning. Require actual variant, independent source event, observed age, exact company author, metric scope, original evaluation lineage, noncausal or controlled verdict, and future owner decision. Sparse observations must be recorded but never promoted as conversion or proven causal improvement.",
+  "tests": [
+    "tests/brain-original-provider-experiment-feedback-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-experiment-feedback-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-experiment-feedback-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-experiment-feedback-20261105.test.mjs"
+    ],
+    "invariants": [
+      "single existing daily runtime mux minute39",
+      "original provider post IDs",
+      "exact source tenant and author",
+      "source event >=24h post and <=8days",
+      "no fake uplift",
+      "effect_size remains NULL",
+      "no new scheduler or outbound",
+      "provider event idempotency",
+      "user permissions unchanged"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "PUBLISHED_VARIANT_OUTCOME_NOT_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required+CodeQL+Supabase Preview+full BRAIN, protected merge, real canonical migration apply, exact pg_get_functiondef parity, original next natural minute39 run and independent original evaluation/learning/application readback. Verified provider exposure is descriptive only; no real marketing/sales uplift claim."
+}
