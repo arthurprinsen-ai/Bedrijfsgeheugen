@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "seo|sales|frisse-blik-lead-intake-silent-loss|20261105-v1",
+  "owner": "original website conversion lead-intake and Powerhouse Growth & Revenue OS",
+  "state": "SOURCE_CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "CONVERSION_RECEIPT_MISSING",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-frisse-blik-provider-receipt-20261105.test.mjs"
+    ]
+  },
+  "root_cause": "frisse-blik.html treated any successful HTTP status as registered even without an explicit {ok:true} response; errors, 502 and network failures were silently swallowed and the UI advanced to Calendly with no warning; missing Calendly config called onBooked without a real booking; post-Calendly email fallback result was not checked.",
+  "prevention": "Use existing Supabase Edge lead-intake explicit JSON ok:true receipt as the only frontend confirmation, fail closed for non-2xx or missing/negative receipt, expose recoverable non-sensitive status, prevent in-flight duplicate submit, retain independent existing Calendly flow, do not claim booking from lack of Calendly and differentiate advisory-mail acceptance from verified paid outcome. Original source owner and protected website release only.",
+  "evidence": {
+    "sources": [
+      "GitHub original public HTML: frisse-blik.html",
+      "Supabase existing lead-intake edge function slug lead-intake v1 ACTIVE, response {ok:true} only after commercial_leads insert",
+      "read-only Supabase commercial_leads source=frisse-blik returned no rows as of 2026-11-05"
+    ],
+    "source_file": "frisse-blik.html",
+    "provider_response_contract": {
+      "success": "HTTP 200 {ok:true,consultant:null}",
+      "validation": "HTTP 422 {ok:false}",
+      "store": "HTTP 502 {ok:false,error:'store'}"
+    },
+    "tests": [
+      "tests/brain-frisse-blik-provider-receipt-20261105.test.mjs"
+    ],
+    "preview": "EVIDENCE_DUE",
+    "production": "EVIDENCE_DUE"
+  },
+  "outcome": {
+    "successful_provider_lead": "NOT_TESTED_WITH_REAL_CUSTOMER",
+    "qualified_leads": "NOT_MEASURED",
+    "revenue": "NOT_MEASURED"
+  },
+  "experiment": {
+    "windows_days": [
+      7,
+      28,
+      56
+    ],
+    "metrics": [
+      "successful_originating_page",
+      "lead_intake_receipt_ok",
+      "qualified_real_customer_lead",
+      "calendly_provider_booking_verified",
+      "follow_up_outcome",
+      "paid_order_provider_receipt"
+    ],
+    "guardrails": [
+      "no fake submit to production",
+      "no storage of PII in metrics",
+      "no parallel lead collector",
+      "do not bypass OAuth/consent or security",
+      "keep booking and strict customer consent",
+      "no false booking claim"
+    ]
+  }
+}
