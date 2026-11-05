@@ -119,6 +119,25 @@ function deliveryView(events,observability){
   const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p>${issueMarkup}</section>`;
   return `<div class="poc-grid2">${releasePanel}<section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
+// Only presentation labels: status and recovery owner are always read from
+// original ONE BRAIN/Supabase. No action can be executed by this view.
+const ORIGINAL_LOOP_REPAIR_LABELS=Object.freeze({
+ VERIFY_AUTHORIZED_OUTREACH_ACTION_PROVIDER_RECEIPT:'Controleer de echte outreach-actie en ontvangst',
+ RECONCILE_ORIGINAL_CHANNEL_PROVIDER_PROOF:'Herstel publicatie en onafhankelijke providercontrole',
+ EVALUATE_APPLIED_LEARNING_WITH_REAL_OUTCOMES:'Toets of een toegepaste verbetering echt resultaat heeft',
+ REPAIR_SOURCE_FRESHNESS_AND_EFFECT_LINK:'Herstel actuele data en de koppeling naar resultaat',
+ RECONCILE_ORIGINAL_STALE_OPERATIONS:'Herstel vastgelopen oorspronkelijke uitvoeringen',
+ VERIFY_EXTERNAL_SIGNAL_TO_ACTION_OUTCOME:'Volg extern signaal tot gecontroleerde actie en resultaat',
+ RECONCILE_INDEPENDENT_PRODUCTION_PROOF:'Controleer eindresultaat rechtstreeks in productie',
+ VERIFY_ORIGINAL_MIRA_SOURCE_AND_PROVIDER_RESULT:'Controleer Mira-bron, media en publicatiebewijs',
+ RESOLVE_ORIGINAL_BRAIN_PROVIDER_OUTCOME:'Herstel ONE BRAIN-uitkomsten en controleer providerbewijs',
+ VERIFY_ORIGINAL_MOBILE_BROWSER_RECEIPT:'Controleer de mobiele portaalweergave in productie',
+ CALIBRATE_DUE_FORECASTS_WITH_VERIFIED_OUTCOMES:'Kalibreer voorspellingen met echte uitkomsten',
+ MEASURE_APPLIED_ORIGINAL_IMPROVEMENT:'Meet de daadwerkelijk ingevoerde verbetering',
+ VERIFY_ORIGINAL_SEARCH_OPTIMIZATION_OUTCOME:'Controleer zoekverkeer, conversie en werkelijke verbetering',
+ VERIFY_ORIGINAL_SIGNAL_TAXONOMY_CORRELATION:'Controleer de oorspronkelijke signaalclassificatie',
+ VERIFY_AUTHORIZED_SOURCE_BACKED_OUTBOUND:'Controleer brongebonden outreach en providerresultaat'
+});
 function oneLoopAssuranceView(assurance){
   const source=assurance||{},complete=source.status==='READBACK_COMPLETE' &&
     source.contract==='one-brain-original-loop-assurance-readback-v1' &&
@@ -156,21 +175,35 @@ function oneLoopAssuranceView(assurance){
       '<span class="poc-badge bad">'+(item.phase==='EARLY_RECOVERY'?'Herstel vóór deadline':'Herstel nodig')+'</span></article>').join('')+'</div>':'';
   const diagnosticState=diagnosis?'Bronoorzaken gecontroleerd':
     'Guard-oorzaken nog niet onafhankelijk teruggelezen; raadpleeg de originele receipts.';
+  // Mobile-first: one immediate next action; detailed loop stages remain
+  // behind the existing progressive-disclosure details control.
+  const priority=arr(source.loops).find(row=>row.status==='RED'&&row.recoveryOwner&&row.recoveryAction)
+    ||arr(source.loops).find(row=>row.status!=='GREEN'&&row.recoveryOwner&&row.recoveryAction);
+  const priorityText=priority&&ORIGINAL_LOOP_REPAIR_LABELS[priority.recoveryAction];
+  const priorityPanel=priority&&priorityText?
+    '<article class="poc-component" data-primary-loop-action="'+esc(priority.key)+'"><div><b>Belangrijkste volgende actie</b>'+
+    '<small>'+esc(priorityText)+'</small><small>Verantwoordelijk: '+esc(priority.recoveryOwner)+
+    ' · Status: '+esc(priority.status)+'</small></div><span class="poc-badge bad">Opvolgen</span></article>'
+    :'<p class="poc-note" data-primary-loop-action="OWNER_ROUTE_EVIDENCE_DUE">Nog geen geverifieerde luseigenaar en herstelactie beschikbaar.</p>';
   const list=arr(source.loops).map(row=>{
     const t={RED:'bad',AMBER:'warn',GREEN:'good'}[row.status]||'bad';
     const reason=row.guard==='FAILED'?'Originele guard faalt':row.missingStages?.length?
       'Ontbrekende fasen: '+row.missingStages.join(', '):row.status==='GREEN'?
       'Stadia en guard-status actueel':'Uitvoerings- of externe bewijscontrole ontbreekt';
+    const ownerDetail=row.status!=='GREEN'&&row.recoveryOwner?
+      '<small>Verantwoordelijke: '+esc(row.recoveryOwner)+'</small>':'';
+    const actionDetail=row.status!=='GREEN'&&ORIGINAL_LOOP_REPAIR_LABELS[row.recoveryAction]?
+      '<small>Volgende actie: '+esc(ORIGINAL_LOOP_REPAIR_LABELS[row.recoveryAction])+'</small>':'';
     const caseInfo=byKey.get(row.key);
     const remediation=caseInfo&&row.status!=='GREEN'?
       arr(caseInfo.reasons).map(x=>'<div><b>'+esc(x.code)+'</b><small>Herstel via oorspronkelijke luseigenaar: '+esc(x.nextAction)+'</small></div>').join(''):'';
-    return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small>${remediation}</div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
+    return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small>${ownerDetail}${actionDetail}${remediation}</div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
   }).join('');
   return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="READBACK_COMPLETE" data-overall-status="${esc(status)}">
     <div class="poc-panelhead"><h4>ONE BRAIN + Powerhouse + Heartbeat · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
     <p class="poc-note">Eén bestaande uitvoeringsarchitectuur; dit is uitsluitend onafhankelijke broncontrole van de 15 bestaande lussen, géén tweede executor. Een succesvolle job is geen bewezen klantresultaat. Laatste controle: ${esc(fmtTime(source.observedAt))}.</p>
     <div class="poc-kpis compact">${kpi('Lussen',counts.total,'bestaande canonieke inventaris')}${kpi('Groen',counts.green,'bron-gates voldoen')}${kpi('Oranje',counts.amber,'nog ontbrekend bewijs')}${kpi('Rood',counts.red,'guard of outcome faalt')}</div>
-    ${publicationPanel}<p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
+    ${priorityPanel}${publicationPanel}<p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
     <p class="poc-note">Eén overkoepelende status wordt ROOD zodra één originele lus rood is. Publicatie, OAuth-toestemming, omzet en agentleereffect worden nooit kunstmatig afgetekend.</p>
   </section>`;
 }

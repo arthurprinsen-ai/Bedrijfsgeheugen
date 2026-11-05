@@ -35,7 +35,7 @@ export function planOriginalIncidentLearning(recovery,runDate){
    rejected_copy_sha256:rejectedHash,rejected_recommendation_id:rejectedSourceId,
    first_time_right_prevention:{
     never_retry_rejected_same_candidate:true,
-    require_new_verified_source_before_regeneration:code==='DISTINCT_VERIFIED_STORY_REQUIRED',
+    require_new_verified_source_before_regeneration:['DISTINCT_VERIFIED_STORY_REQUIRED','PERSONAL_SOURCE_PROOF_REQUIRED'].includes(code),
     original_owner_only:true,max_distinct_candidates:3,
     no_duplicate_provider_side_effect:true,
     independent_quality_and_external_proof_required:true

@@ -11,6 +11,13 @@ Version: 2026-11-02-v1. Owner: original Portal V2 UX and single protected releas
 ## Mission
 Make the existing entrepreneur portal compelling, legible and effortless. Prioritize entrepreneur task completion, informed decisions and trust over novelty, animation or speculative claims. One UI/UX design system; never add a parallel portal, brain, read model, action scheduler, writer, tenant identity or fake demo KPI.
 
+## Entrepreneur-first late-module inclusion — 2026-11-05
+- The original overview is not a catalog. In the first viewport present the entrepreneur's one meaningful next action and its evidence state before any advanced system explanation. Detailed management accounting, external foresight, prediction studio, five-stage workflow and technical source maps belong in the **same original accessible ‘Meer over mijn bedrijf’ disclosure**, not late-inserted cards beneath it.
+- Modules that render asynchronously must explicitly target `[data-portal-overview-depth] .portal-overview-depth-content` whenever the existing disclosure exists, and otherwise retain the original root until it does. Never clone data, silently remove panels, create parallel state/tenant/schedulers or hide active route controls.
+- Verify the actual unauthenticated entry as well as 2 authorized real tenants. Logged-out status must not pose as customer insight; no demo KPI is ever presented as live company data.
+- Before award-readiness: test complete 320/375/390/430/768/1024/1440 flows and 200% zoom, focus order, sticky dock non-obscuring, iOS VoiceOver and Android TalkBack, keyboard, reduced motion and WCAG 2.2 AA; then run at least five uncoached entrepreneur tasks with measured completion, errors and clarity. **Source tests and provider browser PASS do not substitute for those human checks.**
+- Require a named owner and actual provider readback on the **current Netlify SHA**; never call the Red Dot standard met or award-ready solely because a visual or code patch shipped.
+
 ## Engineering rules
 - Build atop `portal-v2/` and its original InsightLens and route registry. Progressive disclosure for complex details; graphs have precise source-derived tabular alternatives and mouse/touch/keyboard parity.
 - Real user inputs must use native labels, required state, constraints, readable validation and explicit server confirmation; **never** show saved/success from merely typing.
@@ -138,3 +145,45 @@ The original Portal browser checks are about the published Netlify site, not the
 ## 2026-11-04 — postmerge BRAIN source oracle must follow protected published-SHA semantics
 
 Original Portal Playwright run 41844746771 is independently green (15 passed, 1 skipped, published immutable Netlify SHA 47d3b667c413d9624b6702936f6ff415bc3fe3fb) but original BRAIN backend 41844863923 failed 2 **inherited source literal tests** and original terminal 41844747602 failed. The published browser proof does not turn terminal green. Original BRAIN owner must compare tests to executed GitHub production verifier: protected main ancestry, strict `PORTAL_PUBLISHED_CI_ONLY_VERIFIED` push or approved manual path, both exact source fences, independent immutable Netlify readback, real browser. Do not assert retired manual-only strings or adjacency of unrelated allowed paths; validate exact actual entries and reject broad runtime globs, arbitrary Supabase/Netlify/browser code, security or credentials. Make original backend tests run with no skipped checks, then obtain protected full BRAIN + terminal independent provider readback. ONE BRAIN fingerprint `portal|brain|postmerge-published-sha-oracle-drift|20261104-v1`, original 41844863923/job 126626187966. Human unassisted authenticated usability remains separate.
+
+
+## 2026-11-04 — Mobile dialog navigation/focus never loses entrepreneur context
+- Incident fingerprint: `portal|mobile-ux|dialog-loses-route-and-focus|20261104-v1`. Original four-tab `Meer` menu is the sole full-navigation dialog; never re-enable the legacy hamburger or add an alternate router.
+- When any full-menu dialog opens, focus its visible close control, set `inert` on the original background and `aria-expanded` on the trigger, and keep Tab/Shift+Tab inside the dialog. On Escape, close button or backdrop, preserve the previous non-hub route and restore focus to the connected visible invoker. Explicit choice of a page continues through the original guarded `navigatePortal`.
+- Enforce genuine hydrated 390px Playwright focus, trap, menu closed and return-route behavior in `tests/integration/portal-v2-mobile-shell.spec.js`, then the original protected CI/CodeQL/BRAIN and exact Netlify release browser; source checks alone do not prove production.
+- Retain WCAG 2.2 AA, physical VoiceOver/TalkBack and unassisted first-time entrepreneur acceptance as separate evidence obligations; never call them green until measured. See `docs/changes/2026-11-04-portal-mobile-dialog-focus-route-closure.md`.
+
+
+### Productiebrowser leermoment: één routerinstantie en één overlay tegelijk
+- Original production mobile browser #41861441439 observed a false second-router test: `import('/portal-v2/router.js')` without the pinned import suffix creates a different ES module instance without original handlers. Browser tests must exercise already-bound canonical DOM actions rather than create a new router.
+- When opening the full menu from specialist `#portalView`, call the existing `closePortalPage()` to prevent two competing dialogs; dismissing restores the remembered source route and its guarded page view. Keep role/tenant safety and the original `navigatePortal` action authority.
+- Preserve actual 390px Playwright full-menu/ARIA/focus/route assertions; protected merge, exact published SHA and successful original readback are mandatory. Do not promote failure maturity on source-only pass.
+
+
+## 2026-11-04 — Verified production mobile closure and human acceptance boundary
+- Immutable Netlify production deploy `6aeb82327b0f598f2a87721a` published commit `4d5823446c3b830e9b33b0314893cdd56dc5b5ee` at 2026-11-04T19:08:09.915Z; original production-dom-readback run `41895447111`, job `126804497371` completed SUCCESS.
+- Independent Chromium logs prove 15 production routing/DOM checks, one hydrated mobile-shell check and one production visual regression check; approved-source visual baseline regenerated without waiver. Do not conflate this with real human usability.
+- Portal owner must preserve one canonical router, one visible modal, focus trap, source-route restoration, keyboard and inert behavior; every relevant change must run original mobile and production readback on exact published SHA.
+- Keep first-time entrepreneur, unassisted mobile usability, physical VoiceOver/TalkBack and WCAG 2.2 AA as separate OPEN evidence obligations until observed. Require five-second comprehension, one primary action, plain language, verified outcomes and mobile completion without guidance. Do not fabricate observations or mark these green based on CI.
+- Every failure: incident fingerprint, owner, source evidence, root cause, safe fix, regression, provider readback, and Brain/portal learning update. No parallel executor or weakened protection.
+
+
+### Agentuitvoering: oorspronkelijke Portal V2-owner
+- Bestaande Portal V2 UX/Engineering agent blijft exclusieve eigenaar. Geen nieuwe executor, scheduler of router.
+- Alleen groen bij beschermde merge, exacte Netlify productie-SHA en originele Chromium-readback. Gebruik 5-secondenbegrip, één primaire actie, duidelijke taal, bewezen resultaat en zelfstandig mobiel taakvoltooien als aparte menselijke acceptatiecriteria.
+- VoiceOver/TalkBack, WCAG 2.2 AA en echte ondernemersobservaties blijven OPEN totdat onafhankelijk getest; registreer succespercentage, taakduur en fouten zonder verzonnen metingen.
+- Elke afwijking: ONE BRAIN fingerprint, bewijs, oorzaak, eigenaar, veilige fix, regressie, productie-readback en preventieregel; leerregel naar bestaande skill en portaal.
+
+## 2026-11-05 — Mandatory fresh Netlify SHA before every Portal production check
+- Before **each** production browser check or release acceptance, the **original Portal V2 owner** must obtain the **current published production deployment** from the canonical Netlify `bedrijfsgeheugen` site and independently GET `https://www.bedrijfsgeheugen.nl/release.json` with `Cache-Control: no-cache`. Never substitute current GitHub `main` or a historical fixed SHA for the actual published revision.
+- Confirm provider state `READY`, a 40-character hexadecimal `commit_ref`, the published deployment ID, `deploy_id` and matching `/release.json` from the exact immutable Netlify deployment, plus approved GitHub protected-main ancestry. Missing, contradictory or challenged release evidence is `UNVERIFIED` and must fail closed.
+- Run **only** the existing `.github/workflows/portal-v2-production-dom-readback.yml` against that freshly verified published commit. For authorized `workflow_dispatch`, supply an already protected-merged `approved_pr_number` and `production_sha` equal to that live commit; for a normal original push, preserve its source-only SHA pin and strict ancestry/diff controls. Never add a second browser workflow, release executor, scheduler or writer; never widen the scope fence to make an unsafe revision pass.
+- After actual Chromium DOM, mobile and visual checks, independently read back the original GitHub Actions run/job conclusion and the canonical plus immutable Netlify release identities. The tested SHA, provider-published SHA and immutable SHA must match. If production changes, reopen the same proof obligation for the new release instead of reusing an older PASS.
+- Record original owner, deploy ID, exact tested SHA, workflow run URL, true pass/fail/skip counts, independent readback, incident fingerprint, cause, regression, preventive change and next natural agent application in the **existing** ONE BRAIN/Portal lineage. Do not label the learning rule `PROVEN` until the next original owner run demonstrates actual preflight, browser verification and post-check. Keep human usability, authenticated two-tenant acceptance, WCAG and physical assistive-technology evidence separate and `EVIDENCE_DUE` when unmeasured.
+
+
+## 2026-11-05 — originele ONE BRAIN herstelactie leesbaar maken, niet mooier kleuren
+
+De oorspronkelijke Netlify-productie van [PR #5441](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5441) is READY op exacte SHA `ba2578ddac8bca0f69207f618a24c04e3e1bf7a0`. De bestaande `/api/powerhouse-one-loop-assurance` en admin CRO projection gebruiken dezelfde `brain/observability/one-loop-assurance-readback.mjs`. Toon op mobiele Portal V2 slechts één primaire volgende actie uit `recoveryAction` met gecontroleerde vertaling en één `recoveryOwner`; de overige 15 processen achter de bestaande details-ontsluiting. Geen tweede control plane, eigen triage-algoritme, status-override of ruwe providergegevens op het scherm.
+
+In productie heeft de originele vijfminuten-agent 15/15 specialistische routes in ONE BRAIN vastgelegd. Toon tegelijkertijd eerlijk de onafhankelijke actueel geverifieerde staat (12:15 UTC 8 GREEN/3 AMBER/4 RED, 23 actieve blockers): `route toegekend` is NIET `probleem opgelost`. Zonder registry-versheid, originele guard of geauthenticeerde bron: duidelijk 'Nog niet geverifieerd' en geen groen. Onafhankelijke authentieke beheerder-GET, anonieme 401, gewone gebruiker 403, twee geautoriseerde tenants, huidige Netlify exact-SHA en echte mobiele/browserinteractie blijven gescheiden EVIDENCE_DUE totdat gecontroleerd; CI/READY is geen bewezen menselijk gebruik. De bestaande Portal-agent registreert elke afwijking met originele ONE BRAIN fingerprint, oorzaak, veilige fix, regressietest, productie- en human-proof. Regressie `tests/brain-one-loop-agent-skill-binding-20261105.test.mjs`.

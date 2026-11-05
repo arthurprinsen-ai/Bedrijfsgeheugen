@@ -31,8 +31,42 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   await mobileMore.click();
   await expect(page.locator('#allPages')).toBeVisible();
   await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
+  await expect(mobileMore).toHaveAttribute('aria-expanded','true');
+  await expect(page.locator('#closePages')).toBeFocused();
+  await expect(page.locator('.app')).toHaveJSProperty('inert',true);
+  // Shift+Tab from the first menu action wraps to the last menu action,
+  // rather than letting keyboard users reach the hidden customer dashboard.
+  const lastMenuAction=page.locator('#allPages .groups button:visible').last();
+  await page.keyboard.press('Shift+Tab');
+  await expect(lastMenuAction).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#closePages')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(page.locator('#allPages')).toBeHidden();
+  await expect(mobileMore).toBeFocused();
+  await expect(mobileMore).toHaveAttribute('aria-expanded','false');
+  await expect(page.locator('.app')).toHaveJSProperty('inert',false);
+
+  // Dismissing More preserves the previous canonical content route.
+  await page.evaluate(()=>{
+    // Call the real delegated navigation handler already bound by app.js.
+    // Importing a query-less router path would create a different module than
+    // app.js's query-pinned router, and cannot open the real UI.
+    const roadmap=document.querySelector('.sidebar .nav [data-nav-target="roadmap"]');
+    if(!roadmap)throw new Error('CANONICAL_ROADMAP_TRIGGER_MISSING');
+    roadmap.click();
+  });
+  const previousUrl=page.url();
+  await page.evaluate(()=>{
+    const more=document.querySelector('[data-mobile-primary-target="hub:portal"]');
+    if(!more)throw new Error('CANONICAL_MORE_TRIGGER_MISSING');
+    more.click();
+  });
+  await expect(page.locator('#allPages')).toBeVisible();
+  await expect(page.locator('#portalView')).toHaveAttribute('aria-hidden','true');
+  await page.locator('#closePages').click();
+  await expect(page.locator('#allPages')).toBeHidden();
+  await expect(page).toHaveURL(previousUrl);
   await expect(page.locator('.mobilebar')).toHaveCount(0);
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.locator('.v2globalstatus')).toBeHidden();

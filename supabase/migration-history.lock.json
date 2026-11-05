@@ -3204,8 +3204,28 @@
     {
       "version": "20261104090000",
       "name": "ga4_consent_limited_data_spine_truth_v1"
+    },
+    {
+      "version": "20261105080000",
+      "name": "original_linkedin_learning_source_truth"
+    },
+    {
+      "version": "20261105093000",
+      "name": "original_experiment_provider_variant_application"
+    },
+    {
+      "version": "20261105102500",
+      "name": "original_social_experiment_provider_outcome_feedback_v1"
+    },
+    {
+      "version": "20261105111500",
+      "name": "original_15_loop_owner_coordination"
+    },
+    {
+      "version": "20261105125354",
+      "name": "content_outcome_measurement_v1"
     }
   ],
-  "captured_at": "2026-11-04T13:07:33.991Z",
+  "captured_at": "2026-11-05T12:54:10.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {assessDailyPublicationRecovery} from '../supabase/functions/_shared/daily-publication-recovery.mjs';
+import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../supabase/functions/_shared/daily-publication-recovery.mjs';
+import {planOriginalIncidentLearning} from '../supabase/functions/_shared/publication-incident-learning.mjs';
 import {summarizeOneLoopAssurance} from '../brain/observability/one-loop-assurance-readback.mjs';
 import {projectOriginalGuardDiagnostics} from '../brain/observability/one-loop-guard-diagnostics.mjs';
 
@@ -242,4 +243,92 @@ test('original Brain guard and portal distinguish early recovery from missed dea
  assert.match(portal,/Publicatie in gevaar/);
  assert.match(portal,/Publicatie gemist/);
  assert.match(portal,/data-publication-phase/);
+});
+
+
+test('original personal source failure gets source repair, never a misleading provider resend action',()=>{
+ const own={channel:'linkedin_personal',status:'BLOCKED',last_error:'PERSONAL_SOURCE_UNVERIFIED',
+  external_id:null,live_proven_at:null,next_action:'old generic message'};
+ const editorial={channel:'linkedin_personal',state:'blocked',decision:'hold',
+  scheduled_for:new Date('2026-11-05T08:00:00Z'),
+  delivery_evidence:{error:'PERSONAL_SOURCE_UNVERIFIED',
+   artifact_generation_failure:{classification:'PROVIDER_BILLING',last_failed_at:'2026-11-01T09:39:00Z'}}};
+ const recovery=assessDailyPublicationRecovery({runDate:'2026-11-05',now:'2026-11-05T06:45:00Z',
+  decisions:[editorial],obligations:[own],isTerminal:proof});
+ const item=recovery.overdue.find(x=>x.channel==='linkedin_personal');
+ assert.equal(item.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
+ assert.equal(item.phase,'EARLY_RECOVERY');
+ assert.equal(item.repairHandoff,'VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE');
+ assert.equal(item.requiresAuthorization,false);
+ assert.match(item.action,/geen provider-retry|Geen provider-retry/i);
+ assert.match(item.owner,/content-orchestrator/);
+ const learned=planOriginalIncidentLearning(recovery,'2026-11-05');
+ const lesson=learned.observations.find(x=>x.channel==='linkedin_personal');
+ assert.equal(lesson.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
+ assert.equal(lesson.evidence.first_time_right_prevention.require_new_verified_source_before_regeneration,true);
+ assert.equal(lesson.evidence.proof_state,'NOT_PROVEN');
+ assert.doesNotMatch(JSON.stringify(item),/insufficient_quota|api_key|bearer/i);
+ const preflight=assessPreventivePublicationReadiness({runDate:'2026-11-05',
+  now:'2026-11-05T06:45:00Z',decisions:[editorial],obligations:[own],mediaJobs:[],
+  isTerminal:proof});
+ assert.equal(preflight.atRisk.find(x=>x.channel==='linkedin_personal')?.code,
+  'SOURCE_EDITORIAL_REVISION_REQUIRED');
+ const posted={...own,status:'PUBLISHED',external_id:'urn:li:share:real',last_error:null};
+ const acknowledged=assessPreventivePublicationReadiness({runDate:'2026-11-05',
+  now:'2026-11-05T06:45:00Z',decisions:[editorial],obligations:[posted],mediaJobs:[],
+  isTerminal:proof});
+ assert.equal(acknowledged.atRisk.find(x=>x.channel==='linkedin_personal')?.code,
+  'INDEPENDENT_PROVIDER_READBACK_REQUIRED');
+ assert.equal(acknowledged.atRisk.find(x=>x.channel==='linkedin_personal')?.nextStep,
+  'ORIGINAL_PROVIDER_RECONCILE_ONLY');
+});
+
+
+test('original Mira virgin source winner routes to exclusive producer claim before paid generation',async()=>{
+ const winner='5f95bf92-73f8-419a-bac4-0e388b256b76';
+ const originalDecision={channel:'instagram_company',decision:'hold',state:'blocked',
+  scheduled_for:new Date('2026-11-05T08:00:00Z'),
+  delivery_evidence:{daily_winner_recommendation_id:winner,
+   capability_state:'BLOCKED_HARD_BOUNDARY',capability_reason:'EXACT_FINAL_MEDIA_PROOF_REQUIRED'}};
+ const originalObligation={channel:'instagram',status:'BLOCKED',last_error:'MEDIA_ASSET_REQUIRED',
+  external_id:null,live_proven_at:null};
+ const virgin={channel:'instagram',status:'WAITING_ASSET',attempts:0,last_error:null,
+  asset_manifest:{daily_winner_recommendation_id:winner},proof_manifest:{}};
+ const assess=mediaJobs=>assessDailyPublicationRecovery({runDate:'2026-11-05',
+  now:'2026-11-05T07:45:00Z',decisions:[originalDecision],
+  obligations:[originalObligation],mediaJobs,isTerminal:proof});
+ const a=assess([virgin]).overdue.find(x=>x.channel==='instagram');
+ assert.equal(a.code,'MIRA_PRODUCER_CLAIM_REQUIRED');
+ assert.equal(a.repairHandoff,'ORIGINAL_MIRA_PRODUCER_CLAIM_THEN_GENERATE');
+ assert.equal(a.requiresAuthorization,false);
+ assert.equal(a.owner,'powerhouse-instagram-media-router / original Mira producer');
+ assert.match(a.action,/exclusief claimen/);
+ // A historic or claimed provider job must NEVER be mistaken for virgin;
+ // a wrong day-winner cannot take the producer claim.
+ for(const unsafe of [
+  {...virgin,attempts:1},
+  {...virgin,status:'WAITING_PROOF',attempts:0},
+  {...virgin,asset_manifest:{...virgin.asset_manifest,openart_history_id:'existing-history'}},
+  {...virgin,asset_manifest:{...virgin.asset_manifest,daily_winner_recommendation_id:'another-winner'}},
+  {...virgin,last_error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'},
+ ]){
+  const other=assess([unsafe]).overdue.find(x=>x.channel==='instagram');
+  assert.equal(other.code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ }
+ assert.equal(assess([]).overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+
+ const existingAck={...originalObligation,status:'PUBLISHED',external_id:'existing-meta-id',
+  evidence:{provider_create_success:true,provider_publication_ack_verified:true}};
+ const neverRecreate=assessDailyPublicationRecovery({runDate:'2026-11-05',
+  now:'2026-11-05T10:00:00Z',decisions:[originalDecision],
+  obligations:[existingAck],mediaJobs:[virgin],isTerminal:proof});
+ assert.notEqual(neverRecreate.overdue.find(x=>x.channel==='instagram')?.code,'MIRA_PRODUCER_CLAIM_REQUIRED');
+
+ const posted={...originalObligation,status:'LIVE_PROVEN',external_id:'meta-id'};
+ const terminal=assessDailyPublicationRecovery({runDate:'2026-11-05',now:'2026-11-05T10:00:00Z',
+  decisions:[originalDecision],obligations:[posted],mediaJobs:[virgin],isTerminal:proof});
+ assert.equal(terminal.overdue.some(x=>x.channel==='instagram'),false);
+ const source=await readFile(new URL('../supabase/functions/powerhouse-content-loop/index.ts',import.meta.url),'utf8');
+ assert.match(source,/\.select\('channel,status,attempts,last_error,asset_manifest,proof_manifest'\)/);
+ assert.match(source,/mediaJobs:mediaJobsError\?\[\]:mediaJobs\|\|\[\]/);
 });
