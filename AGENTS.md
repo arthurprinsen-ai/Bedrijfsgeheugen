@@ -14,6 +14,8 @@
 
 All existing Supabase/Brain/release agents: provider shows 805 applied migrations at 2026-11-05T12:11:40.805Z versus 801 in `supabase/migration-history.lock.json`; four official migrations from 5 November (`20261105080000`, `20261105093000`, `20261105102500`, `20261105111500`) were applied without their lock rows, and the original BRAIN backend lane failed six tests on every PR after that. The 4 November rule was prose and was not followed. **A migration is not done until its lock row is appended in the same protected lineage**: read all provider version/name pairs, compare with `supabase/migrations/*.sql` and the lock, append only missing identities, advance `captured_at`, never edit existing rows and never replay SQL.
 
+- **Loop-debt baseline (5 Nov):** a skill that gains the incident-loop marker must leave `loop_debt_baseline` in the same change; the guard test `baseline contains no skill that already carries the marker` fails main otherwise.
+
 - **Content measurement (5 Nov):** `powerhouse_measure_content_outcomes_v1` runs inside the existing content tick and records `MEASURED` with a `data_quality` label. Content may only reach `LEARNED` from a `SUFFICIENT` measurement; never from `INSUFFICIENT_DATA`.
 
 - **Migration lock is enforced before merge (5 Nov):** the required PR check runs all migration-lock tests (`Enforce Supabase migration lock parity before merge`). A migration PR is red until its executable SQL and lock row agree.
