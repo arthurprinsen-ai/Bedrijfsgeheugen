@@ -3,6 +3,8 @@ name: powerhouse-delivery-concurrency
 description: Use for GitHub delivery when multiple chats, agents, workflows or writers can move main concurrently or race at protected merge.
 ---
 
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
 # Powerhouse Delivery Concurrency
 
 Fingerprint: `delivery|merge-epoch|optimistic-cas|v1`.
@@ -543,3 +545,9 @@ Canonical incident: `supabase|revenue-learning|migration-history-lock-stale-afte
 **Permanent original-writer procedure:** whenever native protected-main Supabase GitOps applies or independently records migrations, the *same original migration/release owner* obtains the entire official `supabase_migrations.schema_migrations` version/name set through the original Supabase management provider, compares it bi-directionally and exactly to Git `supabase/migrations/*.sql`, proves there are zero missing, extra or duplicate identities, and refreshes `supabase/migration-history.lock.json` with official `source= supabase_migration_history`, complete applied set, observed provider timestamp and original project ref. No synthetic/manual applied record, truncated first-page query, deleted historical version, forged migration SQL or third authority. If any unmatched identity exists, stop and open/reopen same original ONE BRAIN incident with provider evidence; *never* write a lock merely to placate a test.
 
 **Prevention:** BRAIN asserts official provider source snapshot identities against all 790 executable Git SQL (and their 2 Nov immutable history), not obsolete 774/784 literals. CI cannot fetch live provider secrets, so its source parity validates only the **captured provider-backed snapshot**; separate original provider API readback is mandatory after each new merge. Preserve history and privacy; fail-closed until independent production+original postmerge BRAIN run. Source replay `tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs`; human runbook `docs/changes/2026-11-02-supabase-native-provider-lock-790.md`; learning `brain/learning/2026-11-02-production-migration-lock-provider-790-v1.json`. Existing portal surfaces recoverable evidence and remaining debt from original `public.brain_failure_registry`; do not mark all 15 Powerhouse loops or paid orders green on migration parity alone.
+
+
+## 2026-11-05 — Skills/agents borging hoort bij dezelfde originele beschermde release
+Source van de geïmplementeerde owner-route: originele PR #5441 MERGED (head `4288508af43763a58855a29f7bb181b002d4dd7d`, merge `ba2578ddac8bca0f69207f618a24c04e3e1bf7a0`); native Supabase-migratie `20261105111500` toegepast; originele Netlify `bedrijfsgeheugen` READY op **dezelfde merge-SHA**; onafhankelijke natuurlijke Heartbeat + ONE BRAIN-readback 15/15 owner en 15/15 action. De huidige operationele status blijft 8/3/4 en mag door documentatie of agents-registratie **niet** veranderen.
+
+Iedere opvolgende agentwijziging aan original `DEFAULT_AGENT_TEAM`, `AGENTS.md`, bestaande `.agents/skills/**/SKILL.md`, Brain learning JSON en menselijke ledger is ONE reviewbare originele GitHub-kandidaat. Vereis verplichte `INCIDENT_PROTOCOL` in aangeraakte skills, match met originele operationele owner i.p.v. zelf rol toekennen, exact-head Required, CodeQL, Netlify-applicability, system-map-integrity waar toegepast, protected merge en echte bijpassende provider/production readback. **Skills maken geen uitvoerder**; activiteit/outcome en later leerbewijs zijn losse acceptance gates. Registreer onder bestaande #4198 met source-ID, bewezen/falende controle en eigenaar; bij herhaling dezelfde fingerprint heropenen, geen duplicaat en geen branch-protection bypass. Geen tweede scheduler/CRM/social sender of agent-autoriteit.
