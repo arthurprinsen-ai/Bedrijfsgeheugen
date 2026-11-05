@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "seo|website|generic-search-intent-machine-copy-and-synthetic-review-date|20261105-v1",
+  "owner": "original website SEO Order Engine",
+  "state": "SOURCE_CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-sitewide-money-content-20261105.test.mjs"
+    ]
+  },
+  "root_cause": "Original cross-site money contract displayed internal keyword-owner SEO jargon and a new 'content reviewed' date derived from every build; duplicated generic copy across high-intent routes despite good technical SEO check scores.",
+  "prevention": "Original SEO owner must emit buyer-first relevant copy, not search-engine policy notes or a synthetic human review. Retain one canonical keyword owner and conversion CTA; run exact high-intent route Brain replay, strict static i18n, protected build and true provider/live readback before source-close.",
+  "evidence": {
+    "source": "DataForSEO provider direct live crawl 2026-11-05 of 16 primary pages",
+    "http_200_canonical": 16,
+    "visible_generic_money_template": 10,
+    "source_file": "tools/seo-order-engine/money-contract-v2.mjs",
+    "tests": [
+      "tests/seo-order-money-v2.test.mjs",
+      "tests/brain-seo-sitewide-money-content-20261105.test.mjs"
+    ],
+    "gsc_baseline": {
+      "period1": "2026-10-22/2026-10-28",
+      "impressions1": 42,
+      "clicks1": 0,
+      "period2": "2026-10-29/2026-11-03",
+      "impressions2": 79,
+      "clicks2": 0,
+      "period2_days_with_data": 6
+    },
+    "google_guidance": [
+      "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      "https://developers.google.com/search/docs/essentials/spam-policies"
+    ],
+    "release": "PR_NOT_YET_APPROVED_OR_LIVE",
+    "production_readback": "EVIDENCE_DUE"
+  },
+  "outcome": {
+    "indexing_growth": "NOT_MEASURED",
+    "lead_growth": "NOT_MEASURED",
+    "paid_sales_growth": "NOT_MEASURED"
+  },
+  "experiment": {
+    "windows_days": [
+      28,
+      56
+    ],
+    "metrics": [
+      "query_to_canonical",
+      "nonbranded_impressions",
+      "organic_clicks",
+      "consented_cta",
+      "verified_qualified_leads",
+      "paid_provider_revenue"
+    ],
+    "guardrails": [
+      "no user-irrelevant mass page production",
+      "no invented external authority",
+      "no fabricated review date",
+      "no duplicate site executor",
+      "keep original Build/CodeQL, NL/EN i18n and release checks"
+    ]
+  }
+}

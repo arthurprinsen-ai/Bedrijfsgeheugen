@@ -1,0 +1,16 @@
+# Sitewide money-page quality and source truth — 5 Nov 2026
+
+## Why
+Provider crawl of 16 major public pages on 2026-11-05: all 16 HTTP 200 with canonical. **10 of 16** showed the same template headings `Het zoekprobleem`, `Direct antwoord`, `Voor wie wel en niet`, `Veelgestelde vragen vóór je beslist`, `Methodologie en bronnenbeleid`. This template exposed internal SEO mechanics (`Deze pagina is de primaire eigenaar van deze zoekintentie`) and labeled the current build date as a completed editorial review without independent reviewer evidence. The homepage had 6,085 words and ~457 KB HTML; several money pages ~590 KB. SEO validators scored 100, but this did not mean Google rankings or sales were good. The factual user-value opportunity is in utility, clear purchase decision, original examples and authoritative sources, not more automated boilerplate. Source: DataForSEO production OnPage instant_pages; original source `tools/seo-order-engine/money-contract-v2.mjs`.
+
+## Canonical original-owner change only
+- Replace internal SEO headings and the claim about unique keyword ownership with buyer-first practical scenarios for AFAS, Exact, Twinfield, Power BI, webshop, process automation, API integration, business knowledge and AI.
+- Remove the unverified visible `Inhoudelijk gereviewd door` and auto-generated `Laatste inhoudelijke publicatiecontrole` statements. Retain a truthful organizational byline linking to `/over-ons`; keep the dated machine build metadata without presenting it as an independent expert review.
+- Keep the existing source's original canonical, sitemap, keyword ownership, `data-bg-intent-owner`, conversion tracking, `data-bg-money-section` contract, primary CTA and supporting links. Do not create duplicate pages, new collector, new SEO scheduler or unapproved backlink acquisition.
+- Update the original money-content contract tests and add a true executable Brain canonical replay for 7 existing high-intent routes. Retain strict offline static i18n: corresponding English translations are versioned in `config/bg-static-i18n-en.d/2026-11-05-sitewide-human-first-money-v1.json`.
+- Editorial content still needs specialist validation for each cluster before it can be reported as an authority benchmark. This code improvement doesn't manufacture experience, citations, references, customer cases, reviews, rankings or conversions.
+
+## Release and evaluation
+Original website owner executes the protected exact-head Required/BRAIN/CodeQL plus Netlify preview/browser, protected merge, production SHA and HTTP/live copy verification. If any fail, status CANDIDATE and remediate in SAME lineage. Measure two full comparable weeks using real consented Google Search Console query→canonical page, GA4 and bot-filtered growth events; CTA→successful qualified lead→won paid sale only from provider receipts. Baseline last comparable GSC 22–28 Oct: 42 impressions/0 clicks, 29 Oct–3 Nov 79 impressions/0 clicks across SIX available days, so don't claim WoW growth. Review at 28/56 days due reporting lag and tiny samples.
+
+Google guidance: https://developers.google.com/search/docs/fundamentals/creating-helpful-content ; https://developers.google.com/search/docs/essentials/spam-policies ; https://developers.google.com/search/docs/crawling-indexing/links-crawlable .
