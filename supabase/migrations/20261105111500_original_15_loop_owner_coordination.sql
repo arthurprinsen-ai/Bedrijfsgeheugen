@@ -76,6 +76,10 @@ from (values
   ('self-improvement-layer','powerhouse-self-improvement-layer-v1','MEASURE_APPLIED_ORIGINAL_IMPROVEMENT'),
   ('seo-opportunity-resolver','powerhouse-seo-opportunity-resolver-daily','VERIFY_ORIGINAL_SEARCH_OPTIMIZATION_OUTCOME'),
   ('signal-taxonomy-self-heal','postgres-trigger:trg_bg_externe_signalen_ensure_onderwerp_v1','VERIFY_ORIGINAL_SIGNAL_TAXONOMY_CORRELATION'),
+  -- Old preview migration lineage can still list the retired standalone publisher
+  -- as active. Assign it only to the SAME canonical content owner; never
+  -- enable, dispatch, schedule, or create a second social-publishing system.
+  ('social-publisher','powerhouse-content-loop','VERIFY_RETIRED_ORIGINAL_SOCIAL_PUBLISHER_OWNER'),
   ('source-backed-outbound','powerhouse-outbound-source-lineage-hourly-v1','VERIFY_AUTHORIZED_SOURCE_BACKED_OUTBOUND')
 ) as route(loop_key,owner,action)
 where r.loop_key=route.loop_key and r.active=true;
