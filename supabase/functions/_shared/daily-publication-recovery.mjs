@@ -16,6 +16,7 @@ const REPAIR_HANDOFF=Object.freeze({
   EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'VERIFY_SENDER_OPT_IN_AND_SUPPRESSION_THEN_RESUME',
   CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'RESTORE_APPROVED_GENERATION_CAPABILITY_THEN_REGENERATE',
   DISTINCT_VERIFIED_STORY_REQUIRED:'DISCOVER_DIFFERENT_VERIFIED_SOURCE_THEN_REGENERATE',
+  PERSONAL_SOURCE_PROOF_REQUIRED:'VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE',
   MIRA_FINAL_MEDIA_PROOF_REQUIRED:'REBUILD_AND_VERIFY_FINAL_MEDIA_THEN_RESUME',
   MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'FIND_FRESH_DISTINCT_SOURCE_AND_FREEZE_WINNER',
   BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'CORRECT_EDITORIAL_RELEASE_AND_READBACK',
@@ -41,6 +42,11 @@ function reasonFor(channel,obligation,decision){
       &&Array.isArray(current.violations)
       &&current.violations.some(v=>v?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT')))
     return 'DISTINCT_VERIFIED_STORY_REQUIRED';
+  // Source truth is a pre-create editorial failure, not a missing post ID.
+  // Route back to the original verified-source owner before any provider call.
+  if(channel==='linkedin_personal'
+    &&(error==='PERSONAL_SOURCE_UNVERIFIED'||currentError==='PERSONAL_SOURCE_UNVERIFIED'))
+    return 'PERSONAL_SOURCE_PROOF_REQUIRED';
   if(decision?.state==='decided'
     &&current.artifact_generation_failure?.classification==='PROVIDER_BILLING')
     return 'CONTENT_GENERATION_BILLING_ACTION_REQUIRED';
@@ -54,6 +60,7 @@ const REMEDIATION=Object.freeze({
   EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Controleer uitsluitend oorspronkelijke bevoegdheid, ontvanger-opt-in en suppressie; nooit een nieuwe of ongevraagde verzender.',
   CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Oorspronkelijke AI-tekstgenerator heeft geen providertegoed; vraag bevoegde accountbeheerder om herstel of gebruik pas een opnieuw goedgekeurde en bewezen beschikbare bestaande fallback. Niet automatisch betalen, route wisselen of extra sends proberen.',
   DISTINCT_VERIFIED_STORY_REQUIRED:'Laat oorspronkelijke bronagent een wezenlijk nieuw geverifieerd verhaal vinden; behoud onveranderlijke duplicate-gate en provider-ID.',
+  PERSONAL_SOURCE_PROOF_REQUIRED:'Laat de oorspronkelijke persoonlijke bronagent de eigen feitelijke gebeurtenis of aantoonbaar geverifieerde brongebonden observatie controleren; ontbreekt bewijs, houd het bericht geblokkeerd en vraag zo nodig echte brongoedkeuring. Geen provider-retry, verzonnen persoonlijke ervaring of versoepeling van de duplicaatcontrole.',
   MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Maak/controleer nieuwe Mira-media in de originele router met frame-identiteit >= 0,940, inhoudskwaliteit en exact definitief mediabewijs.',
   MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'Laat de bestaande Mira-bronagent eerst een nieuw, gedateerd en onafhankelijk MKB-probleem vinden, bestaande onderwerp- en brondubbelingen uitsluiten en daarna exact één originele dagwinnaar vastleggen. Pas na die stap mag de mediarouter een nieuwe video voorbereiden.',
   BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel oorspronkelijke redactionele goedkeuring, protected PR, Required/CodeQL/BRAIN, merge, Netlify en exact publiek artikelbewijs.',
@@ -203,6 +210,9 @@ export function assessPreventivePublicationReadiness({
        ||str(ed.error).startsWith('GLOBAL_POST_DUPLICATE_BLOCKED')
        ||Array.isArray(ed.violations)&&ed.violations.some(x=>x?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'))
        code='DISTINCT_VERIFIED_STORY_REQUIRED';
+     else if(channel==='linkedin_personal'
+       &&(error==='PERSONAL_SOURCE_UNVERIFIED'||str(ed.error)==='PERSONAL_SOURCE_UNVERIFIED'))
+       code='SOURCE_EDITORIAL_REVISION_REQUIRED';
      else if(ed.artifact_generation_failure||str(ed.error).startsWith('PERSONAL_EDITORIAL_CONTRACT_FAILED'))
        code='SOURCE_EDITORIAL_REVISION_REQUIRED';
      else if(['decided','blocked'].includes(state)||['BLOCKED','FAILED'].includes(str(ob?.status)))
