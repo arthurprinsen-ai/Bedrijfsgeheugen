@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "brain|postmerge|original-data-spine-lock-tail-no-longer-last|20261105-v1",
+  "owner": "original data-spine/ONE BRAIN postmerge assurance source",
+  "state": "SOURCE_CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "MIGRATION_APPEND_ONLY_TEST_DRIFT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ]
+  },
+  "root_cause": "Postmerge BRAIN run #42059928039 backend job #127358913479 failed because an old historical replay test incorrectly demanded original migration 20261105132000 remain the LAST entry, despite already protected provider-applied successor 20261105134200. The approved immutable source lock has 808 entries, strictly ordered; original record exists unchanged.",
+  "prevention": "Preserve exact original migration receipt and exact protected successor migration evidence; assert >=808 and strictly increasing immutable versions. Never set the last migration equal to a past version or rewrite history; retain all migrations and original provider checks. Do not alter SQL, cron, access privileges or fake output.",
+  "evidence": {
+    "historical_terminal_run": 42059796291,
+    "historical_brain_run": 42059928039,
+    "historical_backend_job": 127358913479,
+    "original_migration": "20261105132000_original_data_spine_same_tick_stage_receipts_v1",
+    "successor_migration": "20261105134200_original_data_spine_decision_receipt_same_tick_v1",
+    "canonical_lock_length": 808,
+    "protected_git_history_fix": "PR #5468 already merged; never duplicate",
+    "superseded_candidate": "PR #5470 closed without merge",
+    "source": "supabase/migration-history.lock.json",
+    "test": "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+  },
+  "outcome": {
+    "new_exact_head_required": "PENDING",
+    "historical_failure": "PRESERVED",
+    "provider_source_readback": "PENDING",
+    "revenue": "NOT_VERIFIED"
+  }
+}
