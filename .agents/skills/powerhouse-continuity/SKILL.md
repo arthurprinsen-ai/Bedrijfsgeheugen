@@ -1984,3 +1984,5 @@ Provider 805 versus lock 801 after four official migrations on 5 November. Befor
 - Daily qualified-visits target (`config/visitor-growth-target.json`): indexing and technical SEO first, then keyword-to-page match, internal links, LinkedIn links with UTM; new content only for a proven intent gap (5 Nov 2026, fingerprint `seo|visitor-growth-target|daily-qualified-visits|20261105-v1`).
 
 - Skills growth-swarm, seo-conversion-orders and linkedin-company-growth now carry the visitor target and LinkedIn UTM rule (5 Nov 2026, fingerprint `seo|visitor-target-skill-sync|20261105-v1`).
+
+- LinkedIn links with UTM go in the first comment, never in the post text (5 Nov 2026, fingerprint `seo|linkedin-link-in-comment|20261105-v1`).
