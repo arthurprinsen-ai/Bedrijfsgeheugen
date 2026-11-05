@@ -21,9 +21,23 @@ jobs:
         run: |
           node --test tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs tests/brain-mobile-cls-repeatability-20261023.test.mjs
       - name: Install Playwright engines
+        id: install
         run: |
-          npm install --no-save playwright@1.55.0
+          set -euo pipefail
+          # Incident #4447: this screenshot-only workflow never executes the
+          # ffmpeg-static binary. The root package depends on ffmpeg-static,
+          # whose npm postinstall fetch was HTTP 504 on run #42047646698.
+          # Disable unrelated npm lifecycle fetches, but install all three
+          # actual Playwright browser engines + system dependencies explicitly.
+          npm install --no-save --ignore-scripts playwright@1.55.0
           npx playwright install --with-deps chromium firefox webkit
+      - name: Preserve browser installer incident evidence
+        if: failure() && steps.install.outcome == 'failure'
+        run: |
+          mkdir -p .artifacts/website-cross-browser-assurance
+          printf '%s\n' '{"fingerprint":"ci|cross-browser|ffmpeg-static-postinstall-http-504|20261105-v1","status":"INSTALL_FAILED","owner":"existing website cross-browser assurance","run_id":"${{ github.run_id }}","release_claim":"NOT_VERIFIED","evidence":"GitHub Actions installer log"}' > .artifacts/website-cross-browser-assurance/ci-install-error.json
+          echo "::error::CROSS_BROWSER_DEPENDENCY_INSTALL_FAILED: browser proof unavailable; original job failed, no green claim"
+          echo "Browser installation failed; original production/PR acceptance is not verified. Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447" >> "$GITHUB_STEP_SUMMARY"
       - name: Resolve candidate browser target
         id: target
         env:
