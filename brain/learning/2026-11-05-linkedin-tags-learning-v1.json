@@ -1,0 +1,67 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "APPLIED_PROVIDER_READBACK_VERIFIED_RUNTIME_PROOF_DUE",
+  "fingerprint": "powerhouse|content-learning|linkedin-tags-not-captured-no-tag-dimension|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original bg_social_lus_cyclus invoked by the existing powerhouse-content-orchestrator (no new sender or scheduler)",
+  "failure_class": "MEASUREMENT_VARIABLE_NOT_CAPTURED",
+  "root_cause": "Tags (hashtags) were never stored as a field: social_posts and bg_post_kenmerken had no tag column, only 4 of 97 LinkedIn texts contained a hashtag and 0 contained a mention. The original LinkedIn loop could therefore never test tags as its single variable and no tag claim could be learned.",
+  "prevention_rules": [
+    "A variable that should be learned from must be captured per post before it is tested; unknown stays NULL, never an assumed zero.",
+    "Tags are tested only through the existing single-variable LinkedIn loop (one owner, one variable per post); never as a second competing creative experiment.",
+    "Tag instructions never ask readers to tag, like or share (engagement-bait rule) and never claim a winner from a before/after without control.",
+    "Backfill links text to a post only on a unique channel-day match with a published artifact; ambiguous days stay unknown and are counted, not guessed."
+  ],
+  "prevention_rule": "Capture a variable per post before testing it; only the existing loop tests it, one variable at a time, unknown stays NULL.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T15:58:00Z",
+    "source": "public.powerhouse_content_artifacts; public.social_posts; public.bg_post_kenmerken; public.social_experiments (read-only)",
+    "linkedin_artifacts": 97,
+    "artifacts_with_hashtag": 4,
+    "artifacts_with_mention": 0,
+    "linkedin_social_posts": 162,
+    "posts_with_channel_kind": 76,
+    "unique_channel_day_matches_published_artifact": 55,
+    "tag_column_existed": false,
+    "local_postgres_16_replay": "migration applied after 20261028220000 and 20261105080000; scenario: 11 posts tagged, 3 ambiguous or unpublished left NULL, second backfill 0 changes, tags dimension selected with explicit instruction",
+    "actual_effect": null,
+    "tag_effect_proven": false,
+    "provider_applied_version": "20261105165702",
+    "provider_migration_count_after": 809,
+    "pre_apply_function_body_md5_equals_repo": "6dadd7a19021ec5f8e15ba1b1f27af1c"
+  },
+  "fix": "Migration 20261105165702_original_linkedin_tags_learning_v1: columns bg_post_kenmerken.tags and tags_bron, bg_tags_uit_tekst, bg_post_tags_backfill (idempotent, unique match only) and the existing bg_social_lus_cyclus extended with the dimension tags (drie_hashtags, geen_hashtags) and a visible backfill result. Applied on the provider as version 20261105165702 with independent readback; source in this PR, lock row in a separate follow-up PR because the PR gate forbids predeclaring it.",
+  "tests": [
+    "tests/brain-linkedin-tags-learning-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-tags-learning-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-tags-learning-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-tags-learning-20261105.test.mjs"
+    ],
+    "invariants": [
+      "original loop owner only",
+      "one variable per post",
+      "no new cron, table, sender or publisher",
+      "social_posts and snapshots not written",
+      "unknown tags stay NULL",
+      "no engagement bait",
+      "no fabricated effect"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "MEASUREMENT_VARIABLE_NOT_CAPTURED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required/CodeQL/BRAIN success and merge; then a separate lock PR appends version 20261105165702; next natural original loop run returns tags_backfill state OK; first tag experiment post needs independent provider readback; no causal claim before at least 6 posts per variant and a verified baseline."
+}
