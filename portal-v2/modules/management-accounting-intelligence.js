@@ -68,11 +68,20 @@ export function managementAccountingMarkup(state={}){
 export function renderManagementAccountingIntelligence(root=document,state={}){
  const main=root?.querySelector?.('.main');if(!main)return false;
  const doc=root.ownerDocument||document;ensureStyles(doc);
+ // Reuse the original accessible disclosure, even when data is rendered later.
+ // Move the real panel; never duplicate values or create a second data model.
+ const overviewDepth=main.querySelector('[data-portal-overview-depth] .portal-overview-depth-content')||main;
  let section=main.querySelector('[data-management-accounting-intelligence]');
  const html=managementAccountingMarkup(state);
- if(section){const holder=doc.createElement('div');holder.innerHTML=html;section.replaceWith(holder.firstElementChild);return true;}
+ if(section){
+  const holder=doc.createElement('div');holder.innerHTML=html;
+  const replacement=holder.firstElementChild;
+  section.replaceWith(replacement);
+  if(!overviewDepth.contains(replacement))overviewDepth.appendChild(replacement);
+  return true;
+ }
  const holder=doc.createElement('div');holder.innerHTML=html;section=holder.firstElementChild;
- const anchor=main.querySelector('[data-business-journey-overview]')||main.querySelector('[data-legacy-overview-insights]')||main.querySelector('.dashboard');
- if(anchor?.parentNode===main)anchor.after(section);else main.appendChild(section);
+ const anchor=overviewDepth.querySelector('[data-business-journey-overview]')||overviewDepth.querySelector('[data-legacy-overview-insights]')||overviewDepth.querySelector('.dashboard');
+ if(anchor?.parentNode===overviewDepth)anchor.after(section);else overviewDepth.appendChild(section);
  return true;
 }

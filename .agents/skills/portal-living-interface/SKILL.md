@@ -11,6 +11,13 @@ Version: 2026-11-02-v1. Owner: original Portal V2 UX and single protected releas
 ## Mission
 Make the existing entrepreneur portal compelling, legible and effortless. Prioritize entrepreneur task completion, informed decisions and trust over novelty, animation or speculative claims. One UI/UX design system; never add a parallel portal, brain, read model, action scheduler, writer, tenant identity or fake demo KPI.
 
+## Entrepreneur-first late-module inclusion — 2026-11-05
+- The original overview is not a catalog. In the first viewport present the entrepreneur's one meaningful next action and its evidence state before any advanced system explanation. Detailed management accounting, external foresight, prediction studio, five-stage workflow and technical source maps belong in the **same original accessible ‘Meer over mijn bedrijf’ disclosure**, not late-inserted cards beneath it.
+- Modules that render asynchronously must explicitly target `[data-portal-overview-depth] .portal-overview-depth-content` whenever the existing disclosure exists, and otherwise retain the original root until it does. Never clone data, silently remove panels, create parallel state/tenant/schedulers or hide active route controls.
+- Verify the actual unauthenticated entry as well as 2 authorized real tenants. Logged-out status must not pose as customer insight; no demo KPI is ever presented as live company data.
+- Before award-readiness: test complete 320/375/390/430/768/1024/1440 flows and 200% zoom, focus order, sticky dock non-obscuring, iOS VoiceOver and Android TalkBack, keyboard, reduced motion and WCAG 2.2 AA; then run at least five uncoached entrepreneur tasks with measured completion, errors and clarity. **Source tests and provider browser PASS do not substitute for those human checks.**
+- Require a named owner and actual provider readback on the **current Netlify SHA**; never call the Red Dot standard met or award-ready solely because a visual or code patch shipped.
+
 ## Engineering rules
 - Build atop `portal-v2/` and its original InsightLens and route registry. Progressive disclosure for complex details; graphs have precise source-derived tabular alternatives and mouse/touch/keyboard parity.
 - Real user inputs must use native labels, required state, constraints, readable validation and explicit server confirmation; **never** show saved/success from merely typing.
