@@ -12,7 +12,7 @@ const changedSkillPaths=[
  '.agents/skills/powerhouse-delivery-concurrency/SKILL.md'
 ];
 
-test('the original Agent Fabric retains precisely the same 14 registered specialists and no new runtime authority',()=>{
+test('the original Agent Fabric retains precisely the same 14 registered specialists and no new runtime authority',async()=>{
  const ids=DEFAULT_AGENT_TEAM.map(x=>x.id);
  assert.equal(ids.length,14);
  assert.equal(new Set(ids).size,14);
