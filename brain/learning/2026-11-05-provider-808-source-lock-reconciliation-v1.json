@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "supabase|ci|already-applied-provider-808-not-in-source-lock|20261105-v1",
+  "owner": "original Supabase migration history source lock + original GitHub Required release owner",
+  "state": "SOURCE_CANDIDATE_NOT_MERGED",
+  "compiler": {
+    "failure_class": "PROVIDER_MIGRATION_LOCK_DRIFT",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-808-source-lock-exact-20261105.test.mjs"
+    ]
+  },
+  "root_cause": "Production Supabase already had exactly 808 provider migration identities but the protected immutable source lock retained 807, so unrelated website and SEO PR Required preflight failed closed. Previously applied 808th local SQL was incorrectly seen as unverified local-only because source lock capture preceded actual provider readback.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "read_source": "Supabase list_migrations read-only at 2026-11-05T15:33Z",
+    "provider_count": 808,
+    "source_before_count": 807,
+    "matched_before": 807,
+    "provider_last": {
+      "version": "20261105134200",
+      "name": "original_data_spine_decision_receipt_same_tick_v1"
+    },
+    "failed_required_run": 42055641890,
+    "failed_job_id": 127343409049,
+    "original_sql": "supabase/migrations/20261105134200_original_data_spine_decision_receipt_same_tick_v1.sql",
+    "source_lock": "supabase/migration-history.lock.json"
+  },
+  "prevention": "For original migration owner first compare all exact applied version/name records to current provider list, then only append actually observed new applied identities to original immutable lock; do not claim unexecuted SQL as applied or hide provider drift. Keep protected Required/BRAIN/CodeQL. Only count GREEN on exact provider readback after merge.",
+  "outcome": {
+    "original_808_records_preserved": true,
+    "website_5458_live": "NOT_CONFIRMED",
+    "website_5455_live": "NOT_CONFIRMED"
+  },
+  "action": {
+    "type": "APPEND_ONLY_PROVIDER_READBACK",
+    "sql_executed": false,
+    "checklist": [
+      "replay original existing migration tests",
+      "protected exact-head CI",
+      "provider exact 808/808 readback after merge",
+      "resume original site releases"
+    ]
+  }
+}
