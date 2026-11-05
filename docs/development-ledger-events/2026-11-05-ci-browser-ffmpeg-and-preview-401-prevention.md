@@ -10,3 +10,10 @@
 - Regression: `tests/brain-ci-browser-install-and-netlify-preview-auth-20261105.test.mjs`, existing website screenshot and Netlify source identity adversarial tests.
 - Admission: Required run #42052090462 rejected the **first 8-file candidate** because `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger`. Add **this** original append-only ledger to same protected PR, keep admission hard gate. Do not mark that rejected run PASS.
 - Status: CODE_CANDIDATE_UNVERIFIED until new exact-head Required, CodeQL, protected merge and independent original scheduled cross-browser + authorized immutable preview effects. Production website unchanged by the candidate.
+
+## Required admission failure #2 — exact metadata parser contract
+
+- Required run #42052567908: admission **PASS**, PostgreSQL lease **PASS**, but `preflight/Classify independent delivery lanes` **FAILED** with `SCOPE_CONTAMINATED` and seven unexpected paths. The paths were actually already part of the intended nine-file candidate; this was **not** a real cross-owner scope violation.
+- Proven cause: `tools/delivery-branch-hygiene-guard.mjs::parseScopeMetadata` only recognizes `^Change-Scope:\\s*(.+)$` on one physical line. The initial PR description supplied only the first path after `Change-Scope:` and continued the rest on separate unprefixed lines. The metadata therefore authorized one path while the diff contained the other seven delivery paths plus one test.
+- Repair: update original PR #5457 body to a **single** comma-separated `Change-Scope:` line including all nine exact paths; set `Scope-Budget: 8` for eight non-test delivery artifacts, preserving the original hard budget and unchanged code scope. Do not label failed Required runs successful, loosen the guard or branch into a parallel delivery workflow.
+- Permanent rule for website and Portal agents: verify the original single-line `Change-Scope` parser contract against the exact GitHub provider diff **before** PR admission. Tests under `tests/` are verification artifacts and do not spend the delivery scope budget. The next Required exact-head run must prove clean.
