@@ -11,6 +11,11 @@ test('GitHub Playwright container uses bash, not sh, for real prerequisite launc
   assert.match(cross,/container:\s*\n\s*image: mcr\.microsoft\.com\/playwright:/);
 });
 
+test('Firefox in official root-run browser container receives owned HOME without disabling sandbox',()=>{
+  assert.match(cross,/name: Run cross-browser screenshot assurance\s*\n\s*env:\s*\n[\s\S]*?HOME: \/root\s*\n\s*BASE_URL:/);
+  assert.doesNotMatch(cross,/--no-sandbox|MOZ_DISABLE_CONTENT_SANDBOX|seccomp.*unconfined|privileged:\s*true/);
+});
+
 test('original cross-browser workflow bypasses irrelevant ffmpeg-static binary postinstall only',()=>{
   assert.match(cross,/npm install --no-save --ignore-scripts playwright@1\.55\.0/);
   assert.doesNotMatch(cross,/npm install --no-save playwright@1\.55\.0/);
