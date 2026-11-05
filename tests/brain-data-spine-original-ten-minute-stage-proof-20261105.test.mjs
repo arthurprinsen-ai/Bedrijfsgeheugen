@@ -40,8 +40,12 @@ test('same original least-privilege function, no anonymous execute, exact migrat
  const lock=JSON.parse(await read('supabase/migration-history.lock.json'));
  const row=lock.applied.filter(x=>x.version==='20261105132000');
  assert.deepEqual(row,[{version:'20261105132000',name:'original_data_spine_same_tick_stage_receipts_v1'}]);
- assert.equal(lock.applied.at(-1).version,'20261105132000');
- assert.ok(lock.applied.length>=807);
+ const originalIndex=lock.applied.findIndex(x=>x.version==='20261105132000');
+ const appendedIndex=lock.applied.findIndex(x=>x.version==='20261105134200');
+ assert.ok(appendedIndex>originalIndex,'provider-confirmed next migration must append, never replace original receipt');
+ assert.deepEqual(lock.applied[appendedIndex],{version:'20261105134200',name:'original_data_spine_decision_receipt_same_tick_v1'});
+ assert.ok(lock.applied.length>=808,'provider-applied immutable migration history must not shrink');
+ assert.ok(lock.applied.every((row,i)=>i===0||row.version>lock.applied[i-1].version),'migration versions remain strictly ordered and append-only');
 });
 
 test('same original assurance contract, not replacement scheduler or fake learning',async()=>{
