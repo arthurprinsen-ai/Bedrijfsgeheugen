@@ -24,13 +24,26 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
  for(const o of observations){
    if(o?.tenant_id!=='bedrijfsgeheugen'||o.quality!=='PROVIDER_OBSERVED_UNLINKED')continue;
    const meta=o.evidence,metrics=o.metrics;
-   if(meta?.source!=='windsor.ai'||meta?.provider!=='linkedin'||meta?.connector!=='linkedin_organic'
-     ||meta?.scope!=='post-snapshot'||!metrics||typeof metrics!=='object')continue;
-   const urn=meta.provider_post_urn;
-   if(!urnRe.test(String(urn||''))||o.source_key!=='linkedin_company_post:'+urn||metrics.post_id!==urn)continue;
+   // Two independently evidenced formats originate from the same connected Windsor
+   // linkedin_organic provider. The original native staging producer writes
+   // {source:'linkedin_organic',provider:'windsor.ai',account,post_id,share_id,
+   //  share_url}; prior verified test fixtures used a normalized schema.
+   // Never accept an arbitrary mixed-schema fallback or a personal actor.
+   const normalized=meta?.source==='windsor.ai'&&meta?.provider==='linkedin'
+     &&meta?.connector==='linkedin_organic'&&meta?.scope==='post-snapshot';
+   const native=meta?.source==='linkedin_organic'&&meta?.provider==='windsor.ai'
+     &&typeof meta?.account==='string'&&typeof meta?.post_id==='string'
+     &&typeof meta?.share_id==='string'&&typeof meta?.share_url==='string';
+   if((!normalized&&!native)||!metrics||typeof metrics!=='object'||Array.isArray(metrics))continue;
+   const urn=normalized?meta.provider_post_urn:meta.post_id;
+   if(!urnRe.test(String(urn||''))||o.source_key!=='linkedin_company_post:'+urn)continue;
+   if(normalized&&metrics.post_id!==urn)continue;
+   if(native&&(meta.share_id!==urn.split(':').at(-1)
+     ||meta.share_url!=='https://www.linkedin.com/feed/update/'+urn
+     ||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(meta.provider_metric_date||''))))continue;
    const proof=proofByUrn.get(urn),post=byUrn.get(urn);
    if(!proof||!post)continue;
-   const orgId=String(meta.account_id||'');
+   const orgId=String(normalized?meta.account_id:meta.account);
    if(!/^[0-9]{5,22}$/.test(orgId)||proof.evidence.author_urn!=='urn:li:organization:'+orgId
      ||proof.evidence.linkedin_readback.author!=='urn:li:organization:'+orgId)continue;
    const dateKey=String(o.metric_date||''),observed=ts(o.source_observed_at),published=ts(post.published_at);
