@@ -1,0 +1,40 @@
+{
+  "id": "brain-mira-preventive-media-direct-adapter-attempts-oracle-20261105-v1",
+  "owner": "original-powerhouse-content-loop-and-BRAIN-backend",
+  "status": "SOURCE_TEST_CORRECTED_PROTECTED_VALIDATION_DUE",
+  "fingerprint": "brain|mira|media-job-readonly-direct-adapter-stale-expected-projection|20261105-v1",
+  "root_cause": "Existing Brain source regex expected the previous SELECT projection channel,status,last_error,asset_manifest,proof_manifest. PR #5431 added real observational 'attempts' column in canonical read-only Mira media preflight, leaving that exact-text test stale. Postmerge BRAIN backend #41993721022 job #127132117396 proved precisely one failure (test 1097). This is an outdated test oracle, not evidence of a failed production media operation.",
+  "remediation": "Change only tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs to match the current exact read-only channel,status,attempts,last_error,asset_manifest,proof_manifest projection and the existing canonical tenant/day/channel filters. Preserve original DB allowlist, read-only mutation rejection and preventive preflight behavior. Do not edit Supabase live runtime or create another publication executor.",
+  "evidence": {
+    "source_pr": 5431,
+    "portal_merge_parent": 5432,
+    "first_failed_run": 41993721022,
+    "backend_job_id": 127132117396,
+    "failed_test_number": 1097,
+    "source": "supabase/functions/powerhouse-content-loop/index.ts",
+    "current_observed_expression": "db.from('powerhouse_instagram_media_jobs_v1').select('channel,status,attempts,last_error,asset_manifest,proof_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram')",
+    "prior_expected_expression": "db.from('powerhouse_instagram_media_jobs_v1').select('channel,status,last_error,asset_manifest,proof_manifest')"
+  },
+  "prevention": "Oracle assertions must follow the executed canonical source projection while enforcing tenant scoping and DB_READ_ONLY_TABLE_REJECTED; update source-contract tests in the same original protected change when adding fields. Never remove attempts from actual secure runtime only to satisfy a stale literal assertion.",
+  "open_obligations": [
+    "exact-head Required, CodeQL and full BRAIN on candidate",
+    "protected merge AFTER the canonical Portal live release and original browser are independently proven",
+    "fresh postmerge BRAIN independently completed SUCCESS",
+    "ONE BRAIN provider receipt and root-cause regression readback"
+  ],
+  "compiler": {
+    "failure_class": "SOURCE_TEST_ORACLE_DRIFT",
+    "scope": "BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-loop-preventive-media-direct-adapter-20261103.test.mjs"
+    ]
+  }
+}
