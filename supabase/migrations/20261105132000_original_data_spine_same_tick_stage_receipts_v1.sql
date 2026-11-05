@@ -100,7 +100,7 @@ begin
     'state',case when v_gaps=0 then 'GREEN' else 'AMBER' end
   );
 end
-$function$
+$function$;
 revoke all on function public.powerhouse_data_spine_watchdog_v1(timestamptz)
   from public,anon,authenticated;
 grant execute on function public.powerhouse_data_spine_watchdog_v1(timestamptz)
