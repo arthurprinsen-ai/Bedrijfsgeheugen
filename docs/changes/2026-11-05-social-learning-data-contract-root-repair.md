@@ -1,0 +1,26 @@
+# 5 november 2026 — waarom het bestaande Powerhouse nog geen bewijsbaar zelflerend systeem is
+
+Parent [ONE BRAIN commerciële autonomie](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198). No new scheduler, sender, data store, tenant merge, website change, payment or provider OAuth.
+
+## Live proof of the source mismatch (8:00 UTC)
+Read-only SQL on the original Supabase database: 225 social experiments, none with `learning_id`; 22 social learnings but only one recorded social application with no measured effect. Among the last 28 days, `social_posts` has **17 personal posts in tenant `canonical`**, with **14** personal-post snapshot matches; there are **zero** recent personal posts under `bedrijfsgeheugen`. Canonical personal metric snapshots use `reactions`, `metric_scope='reactions_only'`, and `views_unavailable=true` rather than `impressions`, `likes`, `comments`. The active personal LinkedIn one-variable experiment `li-lus-pe-20261029` was built with a baseline containing **0** measurable posts.
+
+The existing `bg_social_lus_meting` hardcodes `tenant_id='bedrijfsgeheugen'` for both channels, counts explicit numeric `likes/comments` and considers reactions=0 missing. The original next-decision classifier treats unavailable impression count as numerical zero: `coalesce(v_med_imp,0)<50`. Its outcome evaluator can calculate a positive relative uplift from a **missing** baseline and write an `experiment_variant` application for **every** observed post, without independent proof the original approved post actually used that one-variable variant.
+
+This is a measurable data-contract and attribution failure—not a lack of models or schedulers.
+
+## Correct first repair
+One protected migration updates the SAME original `bg_social_lus_meting`, `bg_social_lus_cyclus` and `bg_social_lus_beoordelen` functions:
+1. `linkedin_personal` reads exact source `canonical`, `linkedin_company` continues to read `bedrijfsgeheugen`. Snapshots must match *both* tenant and post ID; there is **no** unauthorized cross-tenant data union.
+2. A numeric `reactions` value, including **zero**, is observed; unknown reactions and impressions stay SQL `NULL`. No pretending provider views exist. `impressies_beschikbaar` is reported explicitly.
+3. Missing impressions do not trigger a fabricated low-reach conclusion. A baseline that was never measured cannot yield numerical uplift or a winner. All small unmatched before/after changes remain **TESTING**, not PROVEN or causal. The original `social_learnings` store receives an explicit TESTING record with the real sample size, baseline quality, tenant and noncausal evidence, preserving PROVEN rows.
+4. The existing incorrect blanket insert of `experiment_variant` applications is withdrawn. A genuine application requires an exact source-approved variant attached to an actual provider-published post and independent outcome, not merely a nearby timestamp.
+5. Preserve original OpenAI content-orchestrator, writer lease, provider scopes, eligible factual sources, reviewer, LinkedIn anti-duplicate gate and provider ID/readback. No extra cron, Table, worker, content create, OAuth grant or false-green status.
+
+## Learning architecture acceptance (not a claim of complete rollout)
+**Observe:** internal GA4/GSC/social/checkout signals and current externally dated DataForSEO and market source observations, with source URL/date/license/freshness and tenant provenance. **Decide:** compare like-for-like periods/cohorts, mark missing denominators and source limitations; select one reversible hypothesis and record an evaluation plan. **Act:** original exclusive owner executes only authorized safe change, preserves identity/consent and protected release. **Readback:** verify exact real effect (provider ID, URL, post, change SHA, GA4/CTA event, paid order) before counting the action. **Learn:** store failure and success with baseline, sample, uncertainty, evidence, and controlled follow-up; test learning again next natural run. Never fabricate results or promote short historical before/after differences to causal wins.
+
+This approach follows [OpenAI agent traces and evaluations](https://developers.openai.com/api/docs/guides/agent-evals), [Google's ML feedback-loop and serving consistency rules](https://developers.google.com/machine-learning/guides/rules-of-ml) and [SRE customer-outcome SLIs](https://sre.google/sre-book/service-level-objectives/). Platform APIs and evaluation surfaces can evolve; use the original project-owned approved provider integrations rather than an unspecified new hosted API.
+
+## Terminal evidence still due
+Original protected Required/CodeQL/full BRAIN, actual original Supabase migration apply and schema/readback, original natural content-orchestrator and evaluator consuming real reactions-only personal data, and subsequent published variant plus independent outcome. Even after technical repair, 225 experiments are not automatically validated or applied and 23 blockers are not automatically resolved. Source-only changes are not production proof.
