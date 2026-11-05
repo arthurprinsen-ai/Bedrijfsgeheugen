@@ -7,9 +7,10 @@ const read=p=>readFileSync(p,'utf8');
 test('canonical Required keeps current Netlify semantics and bounded Git history',()=>{
   const required=read('.github/workflows/required-test.yml');
   const website=read('.github/workflows/lane-website.yml');
-  assert.doesNotMatch(required,/fetch-depth:\s*0/);
+  // Full ancestry is limited to the original migration admission checkout.
+  assert.match(required,/Immutable base-to-candidate migration classification must have history\.\s*\n\s*fetch-depth:\s*0/);
+  assert.equal([...required.matchAll(/fetch-depth:\s*0/g)].length,1);
   assert.doesNotMatch(website,/fetch-depth:\s*0/);
-  assert.match(required,/fetch-depth:\s*2/);
   assert.match(website,/TARGETED_BASE_FETCH/);
   assert.match(required,/'diff','--name-only',diffBaseSha,context\.changeHeadSha/);
   assert.match(website,/process\.env\.BASE_SHA,process\.env\.CHANGE_HEAD_SHA/);
