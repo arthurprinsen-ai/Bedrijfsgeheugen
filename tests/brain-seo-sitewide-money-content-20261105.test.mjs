@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { loadRegistry } from '../tools/seo-order-engine/registry.mjs';
 import { enrichMoneyPage, inspectMoneyPage } from '../tools/seo-order-engine/money-contract-v2.mjs';
 
-const registry=JSON.parse(readFileSync('site/seo-order-map.json','utf8'));
+const registry=await loadRegistry();
 const routeNames=['afas-koppeling','exact-online-koppeling','twinfield-koppeling','bedrijfsprocessen-automatiseren','webshop-koppeling','power-bi-implementatie','ai-implementeren'];
 
 for(const slug of routeNames){
