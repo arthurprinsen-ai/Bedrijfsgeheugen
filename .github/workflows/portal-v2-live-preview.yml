@@ -66,7 +66,20 @@ jobs:
                 # Accept ONLY this PR's exact alias, read its release identity, require the
                 # exact head SHA and a 24-hex deploy id, then pin the immutable host. The
                 # check below verifies SHA and deploy id again on that immutable host.
-                alias_release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "${target}/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+                # Permanent 401/403 on SSO-protected nonproduction URLs is an
+                # authorization failure, not eventual consistency. Never spin
+                # for nine minutes or silently accept an unauthenticated preview.
+                alias_body=$(mktemp)
+                alias_http=$(curl -sS --max-time 20 -o "$alias_body" -w '%{http_code}' -H 'Cache-Control: no-cache' "${target}/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+                if [ "$alias_http" = "401" ] || [ "$alias_http" = "403" ]; then
+                  rm -f "$alias_body"
+                  echo "::error::NETLIFY_PREVIEW_AUTH_REQUIRED stage=alias http=$alias_http; provider nonproduction visitor authorization must be restored, never bypassed"
+                  echo "Netlify immutable preview blocked at alias by HTTP $alias_http (auth/SSO). Original Portal lane owner must restore authorized preview access; no browser-green claim. Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447" >> "$GITHUB_STEP_SUMMARY"
+                  exit 1
+                fi
+                alias_release=""
+                if [ "$alias_http" = "200" ]; then alias_release=$(cat "$alias_body"); fi
+                rm -f "$alias_body"
                 alias_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$alias_release")
                 alias_id=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$alias_release")
                 if [ "$alias_sha" != "$HEAD_SHA" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
@@ -80,7 +93,17 @@ jobs:
                   exit 1
                 }
               fi
-              release=$(curl -fsS --max-time 20 -H 'Cache-Control: no-cache' "$immutable/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+              immutable_body=$(mktemp)
+              immutable_http=$(curl -sS --max-time 20 -o "$immutable_body" -w '%{http_code}' -H 'Cache-Control: no-cache' "$immutable/release.json?sha=$HEAD_SHA&attempt=$i" || true)
+              if [ "$immutable_http" = "401" ] || [ "$immutable_http" = "403" ]; then
+                rm -f "$immutable_body"
+                echo "::error::NETLIFY_PREVIEW_AUTH_REQUIRED stage=immutable http=$immutable_http; provider SSO/authorization is required, no bypass"
+                echo "Netlify immutable preview blocked by HTTP $immutable_http (auth/SSO); exact source + portal browser readback NOT verified. Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447" >> "$GITHUB_STEP_SUMMARY"
+                exit 1
+              fi
+              release=""
+              if [ "$immutable_http" = "200" ]; then release=$(cat "$immutable_body"); fi
+              rm -f "$immutable_body"
               deployed_sha=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$release")
               deploy_id=$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$release")
               if [ "$deployed_sha" = "$HEAD_SHA" ] && [ -n "$deploy_id" ] && [ "$immutable" = "https://${deploy_id}--bedrijfsgeheugen.netlify.app" ]; then

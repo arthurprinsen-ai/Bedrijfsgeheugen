@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|cross-browser|ffmpeg-static-postinstall-http-504|20261105-v1",
+  "owner": "original Website Cross-Browser Screenshot Assurance workflow",
+  "compiler": {
+    "failure_class": "TRANSIENT_UNRELATED_PACKAGE_LIFECYCLE_FETCH",
+    "scope": "WEBSITE_CROSS_BROWSER",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "GitHub run 42047646698 failed before any browser screenshots: npm install --no-save playwright@1.55.0 also executed unrelated root ffmpeg-static@5.3.0 postinstall; FFmpeg GitHub release download returned HTTP 504. Missing output then produced a secondary upload-artifact failure. Screenshot runner imports Playwright directly and does not invoke the ffmpeg-static binary.",
+  "prevention": "In the existing cross-browser job use npm install --no-save --ignore-scripts playwright@1.55.0; continue to install real Chromium, Firefox and WebKit plus system dependencies with npx playwright install --with-deps; retain full test and visual thresholds, preserve failure evidence as JSON, never report browser PASS after install failure.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-browser-install-and-netlify-preview-auth-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mobile-cls-repeatability-20261023.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42047646698",
+    "job_id": 127314880548,
+    "http_status": 504,
+    "failed_url_host": "github.com",
+    "file": ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+    "root_package": "ffmpeg-static@5.3.0",
+    "secondary_failure": "No screenshots/report artifact existed",
+    "fix_branch": "fix/ci-browser-install-and-preview-auth-failfast-20261105"
+  },
+  "production_readback": "EVIDENCE_DUE",
+  "regression_outcome": "PENDING_PROTECTED_REQUIRED_AND_NEXT_ORIGINAL_CROSS_BROWSER_RUN",
+  "portal_status": "SOURCE_ONLY_NOT_GREEN"
+}

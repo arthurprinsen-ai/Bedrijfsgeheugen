@@ -10,8 +10,17 @@ permissions:
 
 jobs:
   cross-browser-screenshots:
-    runs-on: ubuntu-24.04 # Pin for Playwright 1.55 OS support
+    runs-on: ubuntu-24.04 # Trusted site browser assurance on existing original GitHub lane
+    # Official version-pinned Playwright image already includes chromium firefox webkit
+    # browser executables AND OS packages. Do not apt-install 181 packages each run.
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.0-noble
     timeout-minutes: 30
+    # GitHub jobs.container defaults to POSIX sh; original installer uses
+    # set -euo pipefail and therefore requires bash. Incident run #42060526184.
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -21,9 +30,23 @@ jobs:
         run: |
           node --test tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs tests/brain-mobile-cls-repeatability-20261023.test.mjs
       - name: Install Playwright engines
+        id: install
         run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium firefox webkit
+          set -euo pipefail
+          # Exact Playwright v1.55.0 Noble container includes all three browsers
+          # and OS dependencies. Run #42054614527 spent 30m apt-installing 181
+          # packages and was cancelled; do not repeat that unbounded network job.
+          # This screenshot-only workflow never invokes root ffmpeg-static.
+          npm install --no-save --ignore-scripts playwright@1.55.0
+          # Fail closed unless all three real browser executables are present.
+          node --input-type=module -e "import { chromium, firefox, webkit } from 'playwright'; import { existsSync } from 'node:fs'; for(const engine of [chromium,firefox,webkit]) { const path=engine.executablePath(); if(!existsSync(path)) throw new Error('BROWSER_BINARY_MISSING:'+engine.name()); console.log('BROWSER_BINARY_PRESENT:'+engine.name()); }"
+      - name: Preserve browser installer incident evidence
+        if: failure() && steps.install.outcome == 'failure'
+        run: |
+          mkdir -p .artifacts/website-cross-browser-assurance
+          printf '%s\n' '{"fingerprint":"ci|cross-browser|ffmpeg-static-postinstall-http-504|20261105-v1","status":"INSTALL_FAILED","owner":"existing website cross-browser assurance","run_id":"${{ github.run_id }}","release_claim":"NOT_VERIFIED","evidence":"GitHub Actions installer log"}' > .artifacts/website-cross-browser-assurance/ci-install-error.json
+          echo "::error::CROSS_BROWSER_DEPENDENCY_INSTALL_FAILED: browser proof unavailable; original job failed, no green claim"
+          echo "Browser installation failed; original production/PR acceptance is not verified. Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447" >> "$GITHUB_STEP_SUMMARY"
       - name: Resolve candidate browser target
         id: target
         env:
@@ -56,6 +79,11 @@ jobs:
           exit 1
       - name: Run cross-browser screenshot assurance
         env:
+          # GitHub container runs as root but sets HOME=/github/home (pwuser).
+          # Firefox refuses to launch with mismatched HOME ownership; keep the
+          # normal browser sandbox and all 271-route/three-engine checks.
+          # First-party Firefox launch logs from run #42061342484 prescribe /root.
+          HOME: /root
           BASE_URL: ${{ steps.target.outputs.base_url }}
           WEBSITE_ASSURANCE_CONTRACT: config/powerhouse-website-cross-browser-assurance-v1.json
           OUT_DIR: .artifacts/website-cross-browser-assurance

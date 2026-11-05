@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|netlify-preview|nonproduction-auth-401-retry-misclassified-timeout|20261105-v1",
+  "owner": "original Portal V2 Live Preview workflow and Netlify nonproduction access owner",
+  "compiler": {
+    "failure_class": "EXTERNAL_NONPRODUCTION_AUTHORIZATION",
+    "scope": "PORTAL_PREVIEW_READBACK",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "GitHub run 42048047434 repeatedly received HTTP 401 while reading Netlify deploy-preview release identity. The existing curl -fsS || true discarded HTTP status, so 48 retries ended in generic timed-out immutable SHA wait instead of actionable access classification. Netlify project settings independently show team SSO is required for nonproduction.",
+  "prevention": "Inspect HTTP status without copying response bodies into logs. Fail fast on 401/403 with NETLIFY_PREVIEW_AUTH_REQUIRED and protected owner action, retain exact source SHA, immutable provider deploy identity and original browser checks for legitimate authorized access. Do not bypass SSO, use insecure SSL, fake readback, or mark a preview green on static code tests alone.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-browser-install-and-netlify-preview-auth-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42048047434",
+    "job_id": 127316300431,
+    "http_status": 401,
+    "project": "bedrijfsgeheugen",
+    "netlify_nonproduction_requires_team_sso": true,
+    "file": ".github/workflows/portal-v2-live-preview.yml",
+    "fix_branch": "fix/ci-browser-install-and-preview-auth-failfast-20261105"
+  },
+  "production_readback": "EVIDENCE_DUE",
+  "regression_outcome": "PENDING_PROTECTED_REQUIRED_AND_AUTHORIZED_IMMUTABLE_PREVIEW",
+  "portal_status": "BLOCKED_UNTIL_AUTHORIZED_PROVIDER_READBACK"
+}
