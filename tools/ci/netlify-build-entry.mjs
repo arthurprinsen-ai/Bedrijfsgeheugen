@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { restampReleaseIdentity } from '../site-shell/restamp-release-identity.mjs';
+import { resolveFinalReleaseIdentity } from '../site-shell/release-source-identity.mjs';
 
 const PREBUILT_MARKER = '.bg-prebuilt-deploy.json';
 const PREBUILT_MANIFEST = '.bg-prebuilt-manifest.json';
@@ -139,12 +140,27 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
   if(process.env.GITHUB_ACTIONS!=='true'&&HEX40.test(providedCommit)&&HEX40.test(gitHead)&&providedCommit.toLowerCase()!==gitHead.toLowerCase()){
     throw new Error('PRODUCTION_RELEASE_GIT_HEAD_MISMATCH');
   }
-  const commitRef=providedCommit||gitHead;
-  if(context==='production'&&HEX40.test(commitRef)&&deployId){
+  let commitRef=providedCommit||gitHead;
+  if(context==='production'){
+    // The earlier release-evidence phase has already resolved source identity.
+    // Never overwrite that attestation with an unrelated temporary build HEAD.
+    let markerText='';
+    try{markerText=await readFile('.bg-source-commit','utf8');}
+    catch(error){if(error?.code!=='ENOENT')throw error;}
+    const releaseEvidence=JSON.parse(await readFile('release.json','utf8'));
+    const originResult=spawnSync('git',['remote','get-url','origin'],{
+      cwd:process.cwd(),encoding:'utf8',timeout:5000,
+    });
+    const remoteMainResult=spawnSync('git',['rev-parse','--verify','refs/remotes/origin/main'],{
+      cwd:process.cwd(),encoding:'utf8',timeout:5000,
+    });
+    commitRef=resolveFinalReleaseIdentity({
+      env:process.env,markerText,existingRelease:releaseEvidence,gitHead,
+      gitOrigin:originResult.status===0?String(originResult.stdout||'').trim():'',
+      gitRemoteMain:remoteMainResult.status===0?String(remoteMainResult.stdout||'').trim():'',
+    });
+    if(!deployId) throw new Error('PRODUCTION_RELEASE_DEPLOY_ID_MISSING');
     await restampReleaseIdentity({root:process.cwd(),commitRef,context,deployId});
-  }else if(context==='production'){
-    console.error('PRODUCTION_RELEASE_IDENTITY_DIAGNOSTIC',JSON.stringify({context,has_deploy_id:Boolean(deployId),has_commit_ref:Boolean(providedCommit),has_git_head:HEX40.test(gitHead)}));
-    throw new Error('PRODUCTION_RELEASE_IDENTITY_UNAVAILABLE');
   }
   const profile={
     contract:'NETLIFY_BUILD_PROFILE_V1',
