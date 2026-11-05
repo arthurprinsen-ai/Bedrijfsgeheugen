@@ -1,0 +1,61 @@
+{
+  "id": "2026-11-05-cross-browser-canonical-document-redirect-recovery",
+  "fingerprint": "ci|cross-browser|canonical-trailing-slash-transient-document-reset|20261105-v1",
+  "date": "2026-11-05",
+  "owner": "existing website cross-browser screenshot assurance / Portal living interface",
+  "state": "IMPLEMENTED_SOURCE_EVIDENCE_DUE",
+  "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+  "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42075945749",
+  "original_artifact_id": 13439631334,
+  "observed": {
+    "original_source_sha": "19b46d540a721bbab0b43cfd7f2dc914ee38e95c",
+    "route": "/blog/wat-is-een-bedrijfsgeheugen",
+    "browser": "chromium mobile",
+    "failure": "document:/blog/wat-is-een-bedrijfsgeheugen:net::ERR_CONNECTION_RESET",
+    "report": {
+      "route_count": 271,
+      "result_count": 640,
+      "interaction_count": 24,
+      "failures": 1
+    },
+    "netlify_edge": [
+      {
+        "timestamp_utc": "2026-11-05T17:35:36.093828987Z",
+        "http": 499,
+        "path": "/blog/wat-is-een-bedrijfsgeheugen",
+        "meaning": "client aborted"
+      },
+      {
+        "timestamp_utc": "2026-11-05T17:35:57.627973549Z",
+        "http": 301,
+        "path": "/blog/wat-is-een-bedrijfsgeheugen",
+        "meaning": "canonical redirect"
+      },
+      {
+        "timestamp_utc": "2026-11-05T17:35:57.748512385Z",
+        "http": 200,
+        "path": "/blog/wat-is-een-bedrijfsgeheugen/",
+        "meaning": "final HTML loaded"
+      }
+    ],
+    "netlify_5xx_in_window": 0
+  },
+  "cause": "Browser recorder kept an initial net::ERR_CONNECTION_RESET after a successfully loaded canonical redirect because filterSettledCoreFailures required pathname===finalPath, while Netlify adds a trailing slash.",
+  "safety_contract": "Accept ONLY transient document reset/abort of same exact path after optional single trailing slash, AND the final document has 2xx. Keep all HTTP >=300, unrelated documents, JS/stylesheet and persistent network errors as failures. Retain existing UX/CLS checks, 271 mobile/desktop routes and Firefox/WebKit screenshot gates.",
+  "fix_files": [
+    "tools/site-shell/core-request-recovery.mjs",
+    "tools/site-shell/website-cross-browser-assurance.mjs"
+  ],
+  "regressions": [
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs",
+    "existing original Website Cross-Browser Screenshot Assurance on protected exact main"
+  ],
+  "prevention": "Keep canonical path normalization narrowly scoped to settled document retries; require actual browser result and full artifact before promotion, do not blanket-ignore connection errors.",
+  "closure": "Required/CodeQL exact candidate; protected GitHub merge; original workflow_dispatch full production 271-route postmerge report with 0 failures; ONE BRAIN promote only after readback.",
+  "constraints": [
+    "no scheduler duplication",
+    "no skip visual checks",
+    "no reduction of fail-closed security",
+    "no forced Netlify deploy if website source unchanged"
+  ]
+}
