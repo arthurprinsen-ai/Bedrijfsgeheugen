@@ -1,0 +1,86 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "fingerprint": "powerhouse|skillops|specialist-assurance-owner-live-but-agent-duties-not-bundled|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_original_incident": "powerhouse|brain-portal-heartbeat|generic-assurance-owner-rewrite-blocks-specialist-repair|20261105-v1",
+  "owner": "original ONE BRAIN/Heartbeat + existing Powerhouse Agent Fabric + original Portal V2 admin owner",
+  "status": "SKILL_AND_AGENT_CANDIDATE_PENDING_PROTECTED_RELEASE",
+  "failure_class": "AGENT_SKILL_REAL_SOURCE_HANDOFF_NOT_BUNDLED",
+  "root_cause": "The original protected SQL/Portal change (PR #5441) made specialist owners/actions real in existing brain_obligations and source Portal, but existing DEFAULT_AGENT_TEAM tasks, generic AGENTS instructions and role-specific Portal/Data/Delivery skills did not yet explicitly encode evidence-bound source routing, blocked-owner conflict handling, non-green/no-fake-outcome, repeated natural-readback and original incident-learning acceptance. Without propagated contract agent descriptions can reintroduce generic routing or mistake a tagged owner for executed action.",
+  "source_evidence": {
+    "as_of_utc": "2026-11-05T12:15:43Z",
+    "pr": 5441,
+    "approved_head": "4288508af43763a58855a29f7bb181b002d4dd7d",
+    "protected_merge_commit": "ba2578ddac8bca0f69207f618a24c04e3e1bf7a0",
+    "supabase_production_migration_version": "20261105111500",
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "netlify_production_deploy_id": "6aec6b0dbfc001ca1f6fa0ef",
+    "netlify_published_at_utc": "2026-11-05T11:41:38.367Z",
+    "original_loop_count": 15,
+    "original_owner_matches": 15,
+    "original_action_matches": 15,
+    "actual_loop_status": {
+      "GREEN": 8,
+      "AMBER": 3,
+      "RED": 4
+    },
+    "active_blocker_records": 23,
+    "original_specialist_actions_executed": false,
+    "portal_authenticated_browser_verified": false,
+    "paid_or_customer_outcome_proven": false,
+    "independent_readback_issue_comment": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-6657166420"
+  },
+  "fix": "Update SAME existing DEFAULT_AGENT_TEAM roster (no new agents) and AGENTS.md, original self-improvement, company intelligence, Portal V2 and protected delivery skills. Require exact original registry / obligation / guard receipt coherence, one specialized original owner per non-GREEN loop, honest open state until authorized action/result, same-fingerprint incident repair, tests, release and next-natural run. Write machine/human ledger with source+status, never mutate original historical incident observations.",
+  "prevention_rule": "No specialist agent may infer successful recovery solely from owner assignment, a Heartbeat tick, agent text, a GitHub merge or a Netlify READY deploy. Route from canonical registry, compare with original Brain obligation and current guard; fail closed on disagreement, preserve all old schedulers, no duplicate publisher or side-effect. Actual authorized action and independently verified business outcome are separate gates, with provenance, owner, regression and next-run learning.",
+  "tests": [
+    "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs",
+    "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs",
+    "tests/agent-fabric.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs"
+    ],
+    "invariants": [
+      "same original 14 Agent Fabric specialists",
+      "no additional writer/scheduler/queue/truth store",
+      "original 15-loop specialist owner proof",
+      "no green from assignment",
+      "same fingerprint and new occurrence on repeated failures",
+      "original browser/admin and 401/403 security held",
+      "human OAuth and provider boundaries intact",
+      "exact protected delivery and provider readback before closing"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "AGENT_SKILL_REAL_SOURCE_HANDOFF_NOT_BUNDLED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "New SkillOps candidate protected-merged with Required/CodeQL/BRAIN; source files verified on main; any runtime-imported Agent Fabric change verified against exact Netlify deployed SHA; original owner route remains 15/15 on next natural run; real specialist autonomous safe remediation and independent customer/provider result remain EVIDENCE_DUE until actually observed.",
+  "canonical_brain_registration": {
+    "fingerprint": "powerhouse|skillops|specialist-assurance-owner-live-but-agent-duties-not-bundled|20261105-v1",
+    "authority": "public.brain_observe_failure -> public.brain_promote_failure",
+    "source_table": "public.brain_failure_registry",
+    "source_occurrence_table": "public.brain_failure_occurrences",
+    "occurrence_id": "github:arthurprinsen-ai/Bedrijfsgeheugen:pull:5443:prechange-original-agent-skill-handoff-gap-20261105",
+    "original_observed_at_utc": "2026-11-05T12:27:35Z",
+    "maturity": "VALIDATED",
+    "version": 2,
+    "occurrence_count": 1,
+    "proven_fix": null,
+    "regression_ref": "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs",
+    "root_cause_and_prevention_present": true,
+    "terminal_proof_due": true
+  }
+}
