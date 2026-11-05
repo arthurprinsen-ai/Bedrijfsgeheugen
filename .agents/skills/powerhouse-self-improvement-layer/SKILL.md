@@ -384,3 +384,5 @@ Voor afsluiting: protected Required/CodeQL/Supabase Preview, exact originele mig
 - Daily qualified-visits target (`config/visitor-growth-target.json`): indexing and technical SEO first, then keyword-to-page match, internal links, LinkedIn links with UTM; new content only for a proven intent gap (5 Nov 2026, fingerprint `seo|visitor-growth-target|daily-qualified-visits|20261105-v1`).
 
 - Skills growth-swarm, seo-conversion-orders and linkedin-company-growth now carry the visitor target and LinkedIn UTM rule (5 Nov 2026, fingerprint `seo|visitor-target-skill-sync|20261105-v1`).
+
+- Migration 20261105134200 added to the lock after #5450 (provider 808 = lock 808) (5 Nov 2026, fingerprint `ci|migration-lock|data-spine-decision-receipt|20261105-v1`).
