@@ -26,21 +26,32 @@
     "missing_source_lock_name": "original_data_spine_decision_receipt_same_tick_v1",
     "original_required_red": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42055033207",
     "applied_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
-    "upstream_blocked_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5457"
+    "upstream_blocked_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5457",
+    "original_tests": [
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-protected-supabase-pr-migration-tests.test.mjs"
+    ]
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-history-integrity.test.mjs",
-      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+      "tests/brain-provider-808-migration-lock-source-close-20261105.test.mjs"
     ],
     "shadow": [
-      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+      "tests/brain-provider-808-migration-lock-source-close-20261105.test.mjs"
     ],
     "canary": [
-      "tests/brain-protected-supabase-pr-migration-tests.test.mjs"
+      "tests/brain-provider-808-migration-lock-source-close-20261105.test.mjs"
     ]
   },
   "production_readback": "PROVIDER_ALREADY_APPLIED_SOURCE_PR_PENDING_PROTECTED_MERGE",
   "regression_outcome": "REQUIRES_EXACT_HEAD_REQUIRED_CODEQL_AND_INDEPENDENT_PROVIDER_RECHECK",
-  "no_duplicate_scheduler": true
+  "no_duplicate_scheduler": true,
+  "admission_correction": {
+    "original_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42056253016",
+    "failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/supabase-migration-history-integrity.test.mjs",
+    "repair": "Actual canonical brain-prefix wrapper test invokes original provider lock regressions, preserving original tests and no gate waiver.",
+    "status": "PENDING_EXACT_HEAD_CI"
+  }
 }
