@@ -33,7 +33,12 @@ jobs:
           npm_config_fetch_retries: '2'
           npm_config_fetch_retry_maxtimeout: '20000'
           npm_config_fetch_retry_mintimeout: '5000'
-        run: npm install --prefer-offline --no-audit --no-fund
+        # The backend lane tests source/contract behavior, never invokes the
+        # root ffmpeg-static executable. HTTP 504 from its unrelated npm
+        # postinstall blocked all migration-guard PRs (run #42056751095).
+        # Install real JS dependencies and retain every backend test. Scripts
+        # needed for production media remain protected by their own runtime lane.
+        run: npm install --ignore-scripts --prefer-offline --no-audit --no-fund
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test
