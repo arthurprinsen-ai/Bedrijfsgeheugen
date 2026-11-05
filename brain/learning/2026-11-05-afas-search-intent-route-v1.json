@@ -28,7 +28,7 @@
     "base_sha": "1fec0b4d6ece32000a199d3bd1bb317f51a62a6a",
     "required_check": "PENDING_OR_FAILED",
     "production_readback": "EVIDENCE_DUE",
-    "test": "tests/seo-afas-search-intent-route-20261105.test.mjs"
+    "test": "tests/brain-seo-afas-search-intent-route-20261105.test.mjs"
   },
   "experiment": {
     "baseline_period": "2026-10-01/2026-11-02",
@@ -51,5 +51,15 @@
       "retain existing writer and publisher"
     ],
     "decision": "EVIDENCE_DUE"
+  },
+  "failure_class": "SEARCH_INTENT_MISMATCH",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-afas-search-intent-route-20261105.test.mjs"
+    ]
   }
 }
