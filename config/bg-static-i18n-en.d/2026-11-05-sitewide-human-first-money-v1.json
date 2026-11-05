@@ -1,0 +1,20 @@
+{
+  "Wie deze informatie aanbiedt": "Who provides this information",
+  "Deze uitleg komt van": "This explanation is provided by",
+  "Bedrijfsgeheugen": "Bedrijfsgeheugen",
+  ". Een concrete koppeling, prijs of planning volgt pas na toetsing van jouw situatie.": ". We only propose a specific integration, price or schedule after assessing your situation.",
+  "Een concrete koppeling, prijs of planning volgt pas na toetsing van jouw situatie.": "We only propose a specific integration, price or schedule after assessing your situation.",
+  "Waar gaat het in de praktijk mis?": "Where does the process break down in practice?",
+  "Zo toetsen we jouw situatie": "How we assess your situation",
+  "We brengen het huidige proces, de gebruikte systemen, uitzonderingen en kosten in kaart. Pas daarna adviseren we of een standaardoplossing, maatwerkkoppeling of andere aanpak passend is.": "We map your current process, systems, exceptions and costs. Only then do we advise whether an off-the-shelf solution, a custom integration or another approach makes sense.",
+  "Orders, relaties of uren worden nog handmatig overgenomen in AFAS. Welke gegevens moeten waarheen, wie controleert afwijkingen en hoe voorkom je dubbele boekingen?": "Orders, customers or time entries are still copied into AFAS manually. Which data need to flow where, who checks exceptions and how can you avoid duplicate entries?",
+  "Je webshop, verkoop en administratie gebruiken verschillende klant-, artikel- of factuurgegevens. Een koppeling is pas nuttig als ook foutafhandeling en eigenaarschap geregeld zijn.": "Your webshop, sales and accounts use different customer, product or invoice data. An integration only helps when error handling and ownership are addressed too.",
+  "Facturen, bankmutaties en verkoopgegevens komen niet op hetzelfde moment binnen. Begin met de bron en de controles die jouw boekhouding echt nodig heeft.": "Invoices, bank transactions and sales records arrive at different times. Start with the source data and checks your accounts actually need.",
+  "Er bestaan dashboards, maar definities, brondata en beslissingen sluiten niet op elkaar aan. Wie gebruikt welke KPI om daadwerkelijk bij te sturen?": "You have dashboards, but metric definitions, source data and decisions do not align. Who uses which KPI to make real decisions?",
+  "Een order in je webshop betekent nog niet dat voorraad, klant en factuur goed in de administratie staan. Controleer de volledige gegevensstroom en uitzonderingen.": "An order in your webshop does not mean inventory, customer and invoice data are correct in your accounts. Check the full data flow and its exceptions.",
+  "Hetzelfde werk komt elke week terug: overtypen, controleren, wachten en herstellen. Kies eerst welke stap aantoonbaar tijd of fouten kost.": "The same tasks recur every week: retyping, checking, waiting and fixing. First identify which step demonstrably wastes time or causes errors.",
+  "Twee systemen kunnen technisch gegevens uitwisselen, maar dat maakt het proces nog niet betrouwbaar. Bepaal eerst wat de bron is en wie fouten oplost.": "Two systems may exchange data technically, but that does not make the process reliable. Define the source of truth and who resolves errors first.",
+  "Afspraken en werkinstructies zitten verspreid in hoofden, documenten en systemen. Welke kennis moet je collega zonder navragen kunnen terugvinden?": "Agreements and work instructions are scattered across people's heads, documents and systems. What must a colleague be able to find without asking?",
+  "Een AI-pilot levert pas iets op als de brondata kloppen, een eigenaar verantwoordelijk is en de uitkomst in het werkproces wordt gebruikt.": "An AI pilot only adds value if the source data are reliable, someone is accountable and the output is used in the actual workflow.",
+  "Welke handmatige stap veroorzaakt vertraging, herstelwerk of kennisverlies? Maak eerst de oorzaak, eigenaar en gewenste uitkomst concreet.": "Which manual step causes delays, rework or loss of knowledge? First make the cause, owner and desired result concrete."
+}
