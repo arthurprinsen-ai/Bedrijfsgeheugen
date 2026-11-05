@@ -9,5 +9,5 @@
 - Tests: `tests/brain-linkedin-tags-learning-20261105.test.mjs`.
 - Machine learning: `brain/learning/2026-11-05-linkedin-tags-learning-v1.json`.
 - Human docs: `docs/changes/2026-11-05-linkedin-tags-learning.md`.
-- Toegepast op productie op 2026-11-05 als `20261105165702` na Arthurs opdracht "Zet live"; productiefunctie vooraf byte-gelijk aan de repo-bron; readback: 809 migraties, 2 kolommen, 2 nieuwe functies, nieuwe cyclus actief, alleen service_role. Lock-rij toegevoegd in dezelfde wijziging.
+- Toegepast op productie op 2026-11-05 als `20261105165702` na Arthurs opdracht "Zet live"; productiefunctie vooraf byte-gelijk aan de repo-bron; readback: 809 migraties, 2 kolommen, 2 nieuwe functies, nieuwe cyclus actief, alleen service_role. Lock-rij volgt in een aparte vervolg-PR (de PR-gate verbiedt het vooraf declareren in dezelfde PR).
 - Geen vals groen: nog geen natuurlijke lus-run (`tags_backfill.state = OK`), nog geen gepubliceerde post met drie hashtags; effect van tags is onbewezen.

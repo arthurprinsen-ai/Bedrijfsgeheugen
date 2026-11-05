@@ -32,7 +32,7 @@
     "provider_migration_count_after": 809,
     "pre_apply_function_body_md5_equals_repo": "6dadd7a19021ec5f8e15ba1b1f27af1c"
   },
-  "fix": "Pending migration 20261105160000_original_linkedin_tags_learning_v1: columns bg_post_kenmerken.tags and tags_bron, bg_tags_uit_tekst, bg_post_tags_backfill (idempotent, unique match only) and the existing bg_social_lus_cyclus extended with the dimension tags (drie_hashtags, geen_hashtags) and a visible backfill result. Applied on the provider as version 20261105165702 with independent readback; source and lock row in the same change.",
+  "fix": "Migration 20261105165702_original_linkedin_tags_learning_v1: columns bg_post_kenmerken.tags and tags_bron, bg_tags_uit_tekst, bg_post_tags_backfill (idempotent, unique match only) and the existing bg_social_lus_cyclus extended with the dimension tags (drie_hashtags, geen_hashtags) and a visible backfill result. Applied on the provider as version 20261105165702 with independent readback; source in this PR, lock row in a separate follow-up PR because the PR gate forbids predeclaring it.",
   "tests": [
     "tests/brain-linkedin-tags-learning-20261105.test.mjs"
   ],
@@ -63,5 +63,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "terminal_rule": "Protected Required/CodeQL/BRAIN success and merge; next natural original loop run returns tags_backfill state OK; first tag experiment post needs independent provider readback; no causal claim before at least 6 posts per variant and a verified baseline."
+  "terminal_rule": "Protected Required/CodeQL/BRAIN success and merge; then a separate lock PR appends version 20261105165702; next natural original loop run returns tags_backfill state OK; first tag experiment post needs independent provider readback; no causal claim before at least 6 posts per variant and a verified baseline."
 }
