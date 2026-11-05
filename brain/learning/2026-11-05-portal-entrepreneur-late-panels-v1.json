@@ -1,0 +1,38 @@
+{
+  "id": "portal-entrepreneur-late-rendered-panels-20261105-v1",
+  "owner": "original Portal V2 UX/Engineering",
+  "status": "SOURCE_CANDIDATE_CI_PENDING",
+  "parent_issue": 4547,
+  "fingerprint": "portal|ux|late-technical-panels-outside-entrepreneur-disclosure|20261105-v1",
+  "root_cause": "The original overview disclosure moved initial five-stage and dashboard panels into a native details element, but later-mounted management-accounting and Foresight/scenario modules still used main as their insertion host. The resulting public entry showed a separate dense second dashboard immediately after the collapsed entrepreneur details.",
+  "fix": "Keep the original overview, router, tenant and read-model unchanged. Move any pre-existing management and Foresight panels into the existing native details; after it mounts, render or replace later management-accounting, Foresight context, scenario studio and contextual candidate components inside the same details content. Preserve panel controls and event handlers rather than cloning data.",
+  "regression": "tests/brain-portal-entrepreneur-late-panels-disclosure-20261105.test.mjs (four original-source owner contract tests) plus existing portal-v2/tests/entrepreneur-focus-mobile.test.mjs and original production DOM/mobile browser.",
+  "expected_benefit": "One first screen centered on entrepreneur next action rather than immediate management-accounting/scenario technical inventories. Qualitative design ambition, not evidence of task-success performance.",
+  "evidence": {
+    "source_before": "GitHub main 9f8e4367e52fb9d8f737f82fbc83fa807b1bd3f6",
+    "actual_live_observation": "Public portal-v2 entry showed section[data-entrepreneur-home], details[data-portal-overview-depth], then .ma-intel and .fsv-context as direct visible main children. Unauthenticated browser showed not logged in and many zero-measurement panels.",
+    "independent_owner_rule": ".agents/skills/portal-living-interface/SKILL.md",
+    "human_tests": "EVIDENCE_DUE",
+    "user_goal": "mobile-first intuitive portal with premium Red Dot-caliber comprehensibility"
+  },
+  "prevention": "All advanced/late renderers must target the existing overview disclosure if present; no parallel UI hierarchy. Preserve reachable details, keyboard semantics, scenario simulation caveats and native router. Require human task and accessibility evidence before award-readiness.",
+  "open": [
+    "Protected exact-head Required, CodeQL, BRAIN, Netlify parity, merge",
+    "Canonical+immutable Netlify exact production SHA readback and original Chromium DOM/mobile regression",
+    "320–1440 CSS px screenshots, 200% zoom, keyboard and screen reader",
+    "Authenticated two-tenant experience and five unaided entrepreneur tasks",
+    "Visual design assessment against idea/form/impact criteria"
+  ],
+  "compiler": {
+    "failure_class": "UX",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "canary": [
+      "tests/brain-portal-entrepreneur-late-panels-disclosure-20261105.test.mjs"
+    ]
+  }
+}
