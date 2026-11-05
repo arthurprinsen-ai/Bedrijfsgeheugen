@@ -48,5 +48,12 @@
       "no invented conversion or causal uplift"
     ]
   },
-  "terminal_rule": "Protected Required/CodeQL/full BRAIN and merge; exact native source deployed in original bg-social-metrics-sync Edge bundle; original scheduled 6h run must link fresh provider metrics after actual authorized source refresh; application observation remains descriptive until baseline/holdout and real effect verified."
+  "terminal_rule": "Protected Required/CodeQL/full BRAIN and merge; exact native source deployed in original bg-social-metrics-sync Edge bundle; original scheduled 6h run must link fresh provider metrics after actual authorized source refresh; application observation remains descriptive until baseline/holdout and real effect verified.",
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "PROVIDER_OBSERVATION_SCHEMA_DRIFT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
