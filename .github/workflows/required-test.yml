@@ -342,6 +342,11 @@ jobs:
           POWERHOUSE_BASE_SHA: ${{ steps.scope.outputs.base_sha }}
           POWERHOUSE_HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
         run: node scripts/brain/learning-canonicalization-gate.mjs
+      - name: Run tests that read changed files before merge
+        env:
+          BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
+        run: node scripts/ci/select-tests-for-changed-paths.mjs "$BASE_SHA" "$HEAD_SHA"
       - id: integration
         name: Compile one-write integration bundle
         env:
