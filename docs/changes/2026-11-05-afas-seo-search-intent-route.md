@@ -11,7 +11,7 @@
 1. `/afas-koppeling` krijgt interne focus-identifier `afas koppeling` terug, zonder de cost-blogkeyword te kapen.
 2. De bestaande landingspagina geeft een concreet, niet-gegarandeerd scenario voor AFAS webshopintegraties (Shopify, WooCommerce, Lightspeed alleen na API/veiligheidstoets), zonder nieuwe dunne keywordpagina.
 3. Kostenartikel verwijst voor webshopimplementatie met een expliciete betekenisvolle link naar de bestaande canonieke dienstenroute.
-4. `tests/seo-afas-search-intent-route-20261105.test.mjs` verifieert eigendom, canonical en contextual link.
+4. `tests/brain-seo-afas-search-intent-route-20261105.test.mjs` verifieert eigendom, canonical en contextual link.
 
 ## First-Time-Right en release
 Vóór GitHub-PR admission machinevelden vastleggen: één `Obligation-ID`, `Delivery-Lane: website`, `Candidate-Type: implementation`, oorspronkelijke `Base-SHA`, `Change-Scope`, `Scope-Budget`. De originele PR #5447 faalde eerst op missende metadata, daarna op ontbrekende activity_ledger, brain_learning, human_documentation; de rode controles blijven historisch bewijs. Alle drie deze verplichte bewijsfamilies zitten nu in dezelfde PR, zonder workflow-uitzondering of false-green.
