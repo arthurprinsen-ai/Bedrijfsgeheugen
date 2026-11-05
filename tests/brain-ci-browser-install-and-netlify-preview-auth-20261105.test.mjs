@@ -5,6 +5,12 @@ import { readFileSync } from 'node:fs';
 const cross=readFileSync('.github/workflows/website-cross-browser-screenshot-assurance.yml','utf8');
 const preview=readFileSync('.github/workflows/portal-v2-live-preview.yml','utf8');
 
+test('GitHub Playwright container uses bash, not sh, for real prerequisite launch',()=>{
+  assert.match(cross,/defaults:\s*\n\s*run:\s*\n\s*shell: bash/);
+  assert.match(cross,/set -euo pipefail/);
+  assert.match(cross,/container:\s*\n\s*image: mcr\.microsoft\.com\/playwright:/);
+});
+
 test('original cross-browser workflow bypasses irrelevant ffmpeg-static binary postinstall only',()=>{
   assert.match(cross,/npm install --no-save --ignore-scripts playwright@1\.55\.0/);
   assert.doesNotMatch(cross,/npm install --no-save playwright@1\.55\.0/);
