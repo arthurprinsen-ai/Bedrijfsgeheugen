@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|backend|ffmpeg-static-postinstall-http-504|20261105-v1",
+  "owner": "original GitHub Backend release lane and Required tests",
+  "compiler": {
+    "failure_class": "TRANSIENT_UNRELATED_PACKAGE_LIFECYCLE_FETCH",
+    "scope": "ORIGINAL_BACKEND_CONTRACT_LANE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "After original provider-applied migration #808 source-lock fix, Required for PR #5462 run #42056751095 backend job 127348315642 failed during npm install: root ffmpeg-static@5.3.0 lifecycle script tried downloading GitHub FFmpeg release and got HTTP 504. Backend runs only JavaScript Brain/quality/data contracts; none of the listed workflow tests execute the ffmpeg-static binary. Same external postinstall incident had already blocked original screenshot lane #42047646698.",
+  "prevention": "In existing .github/workflows/lane-backend.yml use npm install --ignore-scripts --prefer-offline --no-audit --no-fund for test dependencies, keeping all original backend tests and 8-minute timeout. Do not change production media runtime, disable actual browser/video verification, or turn a failure into green. Maintain original screenshot lane fix under #5457 and do not fork executors.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-backend-ffmpeg-prerequisite-prevention-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-backend-ffmpeg-prerequisite-prevention-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-backend-ffmpeg-prerequisite-prevention-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42056751095",
+    "job_id": 127348315642,
+    "http_status": 504,
+    "failed_package": "ffmpeg-static@5.3.0",
+    "source_file": ".github/workflows/lane-backend.yml",
+    "original_browser_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42047646698",
+    "protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5462"
+  },
+  "production_readback": "EVIDENCE_DUE",
+  "regression_outcome": "REQUIRES_PROTECTED_EXACT_HEAD_REQUIRED_CODEQL_AND_NATURAL_BACKEND_RUN"
+}
