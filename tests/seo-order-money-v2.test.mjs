@@ -19,8 +19,9 @@ test('safe enrichment completes structural decision information without inventin
   assert.match(out,/data-bg-money-contract="v2"/);
   assert.match(out,/data-bg-intent-role="primary"/);
   assert.match(out,/data-bg-intent-owner="https:\/\/www\.bedrijfsgeheugen\.nl\/afas-koppeling"/);
-  assert.match(out,/data-bg-reviewer="arthur-prinsen"/);
-  assert.match(out,/Gebaseerd op implementaties met AFAS, Exact, Microsoft 365, Power BI en bedrijfsprocessen in Nederlandse organisaties\./);
+  assert.match(out,/data-bg-author="bedrijfsgeheugen"/);
+  assert.match(out,/Orders, relaties of uren worden nog handmatig overgenomen in AFAS/);
+  assert.doesNotMatch(out,/Deze pagina is de primaire eigenaar|Het zoekprobleem:|Laatste inhoudelijke publicatiecontrole|Inhoudelijk gereviewd door/);
   assert.match(out,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/prijzen"/);
   assert.match(out,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/blog\/afas-api\/"/);
   assert.deepEqual(inspectMoneyPage(out,entry),[]);
