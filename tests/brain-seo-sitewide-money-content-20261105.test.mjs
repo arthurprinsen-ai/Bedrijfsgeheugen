@@ -32,3 +32,14 @@ test('ook onbekende intent mag geen interne SEO-instructies op de site tonen',()
   assert.match(result,/Welke handmatige stap veroorzaakt vertraging/);
   assert.doesNotMatch(result,/Deze pagina is de primaire eigenaar|reviewdatum/i);
 });
+
+test('alle bestaande niet-native money pages krijgen een werkelijk passend praktijkscenario',()=>{
+  const pages=registry.pages.filter(page=>page.role==='money' && page.presentation!=='native');
+  assert.ok(pages.length>=20,'volledige commerciële SEO-registratie ontbreekt');
+  for(const entry of pages){
+    const html=enrichMoneyPage('<html><body><main><h1>Business decision</h1></main></body></html>',entry);
+    assert.match(html,/data-bg-money-section="problem"/,entry.route);
+    assert.doesNotMatch(html,/Welke handmatige stap veroorzaakt vertraging, herstelwerk of kennisverlies\?/,entry.route+' heeft nog een niet-relevant standaardscenario');
+    assert.doesNotMatch(html,/Deze pagina is de primaire eigenaar|Laatste inhoudelijke publicatiecontrole|Inhoudelijk gereviewd door/,entry.route);
+  }
+});
