@@ -15,8 +15,7 @@
   "prevention": "When a new original migration becomes genuinely provider-applied, reconcile the canonical source history lock from independently fetched Supabase schema_migrations version and name exactly, never from Git source count alone. Record true Supabase readback timestamp, update only newly proven provider rows, run existing strict migration integrity tests and protected PR, maintain original runtime source/permissions. Later PRs must not bypass the fail-closed migration gate.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-supabase-provider-applied-808-lock-20261105.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-supabase-provider-applied-808-lock-20261105.test.mjs"
     ],
     "shadow": [
       "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
@@ -35,7 +34,12 @@
     "project_ref": "adhjwmvyoixzjtmiroln",
     "original_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
     "blocked_required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42055033207",
-    "dependent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5457"
+    "dependent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5457",
+    "original_strict_regressions": [
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
   },
   "production_readback": "EVIDENCE_DUE",
   "portal_status": "NOT_GREEN_UNTIL_PROTECTED_MERGE_AND_NEW_REQUIRED_SOURCE_READBACK"
