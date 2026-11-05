@@ -316,6 +316,14 @@ test('original Mira virgin source winner routes to exclusive producer claim befo
   assert.equal(other.code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
  }
  assert.equal(assess([]).overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+
+ const existingAck={...originalObligation,status:'PUBLISHED',external_id:'existing-meta-id',
+  evidence:{provider_create_success:true,provider_publication_ack_verified:true}};
+ const neverRecreate=assessDailyPublicationRecovery({runDate:'2026-11-05',
+  now:'2026-11-05T10:00:00Z',decisions:[originalDecision],
+  obligations:[existingAck],mediaJobs:[virgin],isTerminal:proof});
+ assert.notEqual(neverRecreate.overdue.find(x=>x.channel==='instagram')?.code,'MIRA_PRODUCER_CLAIM_REQUIRED');
+
  const posted={...originalObligation,status:'LIVE_PROVEN',external_id:'meta-id'};
  const terminal=assessDailyPublicationRecovery({runDate:'2026-11-05',now:'2026-11-05T10:00:00Z',
   decisions:[originalDecision],obligations:[posted],mediaJobs:[virgin],isTerminal:proof});
