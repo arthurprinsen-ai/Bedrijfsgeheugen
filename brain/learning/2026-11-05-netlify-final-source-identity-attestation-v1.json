@@ -56,6 +56,9 @@
     "historical_replay": [
       "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
     ],
+    "shadow": [
+      "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
+    ],
     "canary": [
       "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
     ]
