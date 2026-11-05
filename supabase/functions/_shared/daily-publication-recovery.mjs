@@ -18,6 +18,7 @@ const REPAIR_HANDOFF=Object.freeze({
   DISTINCT_VERIFIED_STORY_REQUIRED:'DISCOVER_DIFFERENT_VERIFIED_SOURCE_THEN_REGENERATE',
   PERSONAL_SOURCE_PROOF_REQUIRED:'VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE',
   MIRA_FINAL_MEDIA_PROOF_REQUIRED:'REBUILD_AND_VERIFY_FINAL_MEDIA_THEN_RESUME',
+  MIRA_PRODUCER_CLAIM_REQUIRED:'ORIGINAL_MIRA_PRODUCER_CLAIM_THEN_GENERATE',
   MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'FIND_FRESH_DISTINCT_SOURCE_AND_FREEZE_WINNER',
   BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'CORRECT_EDITORIAL_RELEASE_AND_READBACK',
   CHANNEL_CAPABILITY_PROOF_REQUIRED:'RESTORE_ORIGINAL_PROVIDER_PERMISSION_THEN_RECONCILE',
@@ -25,7 +26,7 @@ const REPAIR_HANDOFF=Object.freeze({
   PUBLICATION_SCHEDULE_MISSING:'REPAIR_ORIGINAL_DAILY_DECISION_THEN_RESUME'
 });
 const str=x=>typeof x==='string'?x.trim():'';
-function reasonFor(channel,obligation,decision){
+function reasonFor(channel,obligation,decision,mediaJobs=[]){
   const error=str(obligation?.last_error);
   const boundary=str(decision?.delivery_evidence?.capability_reason);
   if(channel==='email_newsletter')return 'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED';
@@ -50,8 +51,20 @@ function reasonFor(channel,obligation,decision){
   if(decision?.state==='decided'
     &&current.artifact_generation_failure?.classification==='PROVIDER_BILLING')
     return 'CONTENT_GENERATION_BILLING_ACTION_REQUIRED';
-  if(channel==='instagram')return str(decision?.delivery_evidence?.daily_winner_recommendation_id)
-    ? 'MIRA_FINAL_MEDIA_PROOF_REQUIRED' : 'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED';
+  if(channel==='instagram'){
+    const winner=str(decision?.delivery_evidence?.daily_winner_recommendation_id);
+    if(!winner)return 'MIRA_UNIQUE_SOURCE_WINNER_REQUIRED';
+    // Same-day immutable source and zero historical OpenArt side effects.
+    // Recovery only HANDS OFF to the existing exclusive provider producer.
+    const media=mediaJobs.find(x=>str(x?.channel)==='instagram');
+    const mediaWinner=str(media?.asset_manifest?.daily_winner_recommendation_id);
+    if(media?.status==='WAITING_ASSET'&&media?.attempts===0&&!str(media?.last_error)
+       &&!str(media?.asset_manifest?.openart_history_id)
+       &&!str(media?.asset_manifest?.asset_url)
+       &&mediaWinner===winner)
+      return 'MIRA_PRODUCER_CLAIM_REQUIRED';
+    return 'MIRA_FINAL_MEDIA_PROOF_REQUIRED';
+  }
   if(channel==='blog')return 'BLOG_APPROVAL_RELEASE_READBACK_REQUIRED';
   if(boundary)return 'CHANNEL_CAPABILITY_PROOF_REQUIRED';
   return 'EXACT_PROVIDER_PUBLICATION_PROOF_MISSING';
@@ -62,6 +75,7 @@ const REMEDIATION=Object.freeze({
   DISTINCT_VERIFIED_STORY_REQUIRED:'Laat oorspronkelijke bronagent een wezenlijk nieuw geverifieerd verhaal vinden; behoud onveranderlijke duplicate-gate en provider-ID.',
   PERSONAL_SOURCE_PROOF_REQUIRED:'Laat de oorspronkelijke persoonlijke bronagent de eigen feitelijke gebeurtenis of aantoonbaar geverifieerde brongebonden observatie controleren; ontbreekt bewijs, houd het bericht geblokkeerd en vraag zo nodig echte brongoedkeuring. Geen provider-retry, verzonnen persoonlijke ervaring of versoepeling van de duplicaatcontrole.',
   MIRA_FINAL_MEDIA_PROOF_REQUIRED:'Maak/controleer nieuwe Mira-media in de originele router met frame-identiteit >= 0,940, inhoudskwaliteit en exact definitief mediabewijs.',
+  MIRA_PRODUCER_CLAIM_REQUIRED:'De bestaande Mira-producent moet eerst de originele mediajob exclusief claimen en pas daarna één brongebonden OpenArt-video maken. Behoud bevroren dagwinnaar, origineel project, budgetlimiet, drie frame-identiteitscontroles >= 0,940 en onafhankelijk Meta-bewijs. Deze classificatie doet zelf geen provider-create.',
   MIRA_UNIQUE_SOURCE_WINNER_REQUIRED:'Laat de bestaande Mira-bronagent eerst een nieuw, gedateerd en onafhankelijk MKB-probleem vinden, bestaande onderwerp- en brondubbelingen uitsluiten en daarna exact één originele dagwinnaar vastleggen. Pas na die stap mag de mediarouter een nieuwe video voorbereiden.',
   BLOG_APPROVAL_RELEASE_READBACK_REQUIRED:'Herstel oorspronkelijke redactionele goedkeuring, protected PR, Required/CodeQL/BRAIN, merge, Netlify en exact publiek artikelbewijs.',
   CHANNEL_CAPABILITY_PROOF_REQUIRED:'Herstel de oorspronkelijke providerbevoegdheid veilig, vraag vereiste menselijke OAuth-consent; geen alternatieve account of publisher.',
@@ -69,11 +83,11 @@ const REMEDIATION=Object.freeze({
   PUBLICATION_SCHEDULE_MISSING:'Herstel de oorspronkelijke gedateerde kanaalbeslissing; verzin geen deadline en verzend niets op basis van een aanname.'
 });
 export function assessDailyPublicationRecovery({
-  runDate, now=new Date().toISOString(), obligations=[], decisions=[], isTerminal=()=>false, graceMs=GRACE_MS
+  runDate, now=new Date().toISOString(), obligations=[], decisions=[], mediaJobs=[], isTerminal=()=>false, graceMs=GRACE_MS
 }={}){
   const observed=Date.parse(now);
   if(!/^\d{4}-\d{2}-\d{2}$/.test(str(runDate))||!Number.isFinite(observed)
-    ||!Array.isArray(obligations)||!Array.isArray(decisions)
+    ||!Array.isArray(obligations)||!Array.isArray(decisions)||!Array.isArray(mediaJobs)
     ||typeof isTerminal!=='function'||!Number.isFinite(graceMs)||graceMs<0)
     return {contract:PUBLICATION_RECOVERY_CONTRACT,status:'UNVERIFIED',overdue:[],pending:[],reason:'INPUT_UNVERIFIED'};
   const byObligation=new Map(obligations.map(o=>[str(o?.channel),o]));
@@ -103,12 +117,14 @@ export function assessDailyPublicationRecovery({
       ||str(decision?.state)==='blocked'||providerGenerationFailed;
     // Missing decision is itself a recovery obligation: never silently skip a lane.
     const isMissingSchedule=!isScheduled;
-    const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision);
+    const code=isMissingSchedule?'PUBLICATION_SCHEDULE_MISSING':reasonFor(entry.channel,obligation,decision,mediaJobs);
     const item={
       channel:entry.channel,
       owner:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED'
         ? 'powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1'
-        : entry.owner, code,
+        : code==='MIRA_PRODUCER_CLAIM_REQUIRED'
+          ? 'powerhouse-instagram-media-router / original Mira producer'
+          : entry.owner, code,
       action:REMEDIATION[code], scheduledFor:isScheduled?new Date(scheduleMs).toISOString():null,
       // Present deadline risk as risk, never falsely as a missed publication.
       phase:isExpired?'MISSED_DEADLINE':isFailed||isMissingSchedule?'EARLY_RECOVERY':'PENDING',
@@ -123,7 +139,7 @@ export function assessDailyPublicationRecovery({
       rejectedRecommendationId:/^[0-9a-f]{8}-[0-9a-f-]{27,36}$/i.test(str(decision?.delivery_evidence?.fallback_recommendation_id))
         ?str(decision.delivery_evidence.fallback_recommendation_id):null,
       status:isExpired||isFailed||isMissingSchedule?'REQUIRES_RECOVERY':'AWAITING_DUE_TIME',
-      requiresAuthorization:code==='MIRA_UNIQUE_SOURCE_WINNER_REQUIRED' ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
+      requiresAuthorization:['MIRA_UNIQUE_SOURCE_WINNER_REQUIRED','MIRA_PRODUCER_CLAIM_REQUIRED'].includes(code) ? false : code==='CONTENT_GENERATION_BILLING_ACTION_REQUIRED'
         || entry.channel==='email_newsletter'
         ||str(decision?.delivery_evidence?.capability_state)==='BLOCKED_HARD_BOUNDARY'
     };
