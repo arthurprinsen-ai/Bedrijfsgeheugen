@@ -137,6 +137,7 @@ export function projectCroOneLoopAssurance(source){
     overallStatus:source.overallStatus,source:'public.powerhouse_loop_assurance_state_v1',
     checkedAt:source.observedAt,loops:rows.map(r=>({
       key:r.key,status:r.status,guard:r.guard,
+      recoveryOwner:r.recoveryOwner||null,recoveryAction:r.recoveryAction||null,
       missingStages:r.missingStages.slice(0,12),problem:String(r.problem||'').slice(0,80)
     }))};
 }
