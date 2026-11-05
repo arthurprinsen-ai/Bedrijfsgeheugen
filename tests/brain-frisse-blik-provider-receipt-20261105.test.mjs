@@ -99,3 +99,12 @@ test('live UI never claims a sent report or booking only from CTA intent',()=>{
   assert.doesNotMatch(source,/onBooked\('geen-calendly-geconfigureerd'\)/);
   assert.match(source,/id="leadReceiptWarning"[\s\S]{0,330}href="https:\/\/www\.bedrijfsgeheugen\.nl\/contact"/);
 });
+
+
+test('original SEO agent skill distinguishes click, receipt, confirmed booking and paid sale',()=>{
+  const skill=readFileSync('.agents/skills/seo-revenue-growth/SKILL.md','utf8');
+  assert.match(skill,/commerciële aanvraag telt uitsluitend na providerbewijs/);
+  assert.match(skill,/lead-intake/);
+  assert.match(skill,/Calendly-providerboekingsbewijs/);
+  assert.match(skill,/tests\\/brain-frisse-blik-provider-receipt-20261105\\.test\\.mjs/);
+});
