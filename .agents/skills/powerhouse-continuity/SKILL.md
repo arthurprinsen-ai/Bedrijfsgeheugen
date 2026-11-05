@@ -1985,6 +1985,7 @@ Provider 805 versus lock 801 after four official migrations on 5 November. Befor
 
 - Skills growth-swarm, seo-conversion-orders and linkedin-company-growth now carry the visitor target and LinkedIn UTM rule (5 Nov 2026, fingerprint `seo|visitor-target-skill-sync|20261105-v1`).
 
+- LinkedIn links with UTM go in the first comment, never in the post text (5 Nov 2026, fingerprint `seo|linkedin-link-in-comment|20261105-v1`).
 
 ## 2026-11-05 — oorspronkelijke data-spine beslissing mag niet verouderen tussen twee bron-ticks
 
