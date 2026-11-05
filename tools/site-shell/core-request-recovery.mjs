@@ -18,7 +18,9 @@ export function filterSettledCoreFailures(failedCore,{status,finalUrl}={}){
   }catch{return [...failedCore];}
   if(!finalPath)return [...failedCore];
 
-  const transientDocumentFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
+  // HTTP/2 PING can fail on a retired connection while retry delivers the same final 2xx HTML.
+  // Never suppress it on an unresolved navigation, other URL, script or stylesheet.
+  const transientDocumentFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_HTTP2_PING_FAILED|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
   return failedCore.filter(value=>{
     const match=String(value).match(/^document:([^:]*):(.*)$/);
     if(!match)return true; // Preserve all script, stylesheet and unknown failures.
