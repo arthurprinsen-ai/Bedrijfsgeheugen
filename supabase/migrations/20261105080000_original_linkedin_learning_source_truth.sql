@@ -183,7 +183,7 @@ begin
 
     v_lid := 'li-lus:' || v_kanaal || ':' || v_dim || ':' || v_waarde;
     v_did := 'li-lus-besluit:' || e.experiment_id;
-    v_pid := coalesce(v_meet->'post_ids'->>0, e.experiment_id);
+    v_pid := 'experiment:'||e.experiment_id; -- A proposed variant has no verified published post ID.
 
     update public.social_experiments set status = v_status, besluit = v_besluit, besloten_op = now(), ended_at = now(), learning_id = v_lid,
       resultaat = jsonb_build_object('metriek', v_metriek, 'basislijn', v_basis, 'tijdens', v_nu, 'uplift_relatief', v_uplift, 'gemeten_posts', v_n,
@@ -230,9 +230,9 @@ begin
     where public.social_learnings.status<>'PROVEN';
 
     insert into public.social_learning_decisions (tenant_id, decision_id, post_id, decision, recorded_at)
-    values ('bedrijfsgeheugen', v_did, v_pid,
+    values (case when v_kanaal='linkedin_personal' then 'canonical' else 'bedrijfsgeheugen' end, v_did, v_pid,
       jsonb_build_object('experiment_id', e.experiment_id, 'kanaal', v_kanaal, 'dimensie', v_dim, 'waarde', v_waarde, 'besluit', v_besluit,
-        'uplift_relatief', v_uplift, 'gemeten_posts', v_n, 'leerregel', v_lid), now())
+        'uplift_relatief', v_uplift, 'gemeten_posts', v_n, 'leerregel', v_lid, 'post_application_proven', false, 'decision_scope','EXPERIMENT_NOT_PROVIDER_POST'), now())
     on conflict (tenant_id, decision_id) do nothing;
 
     -- Do NOT mark all observed posts as applications of a variant. The original
