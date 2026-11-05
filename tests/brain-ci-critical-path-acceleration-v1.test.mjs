@@ -67,7 +67,8 @@ test('backend release lane cannot hang indefinitely during dependency installati
   assert.match(backend, /Install runtime dependencies for backend contracts\n        timeout-minutes: 8/);
   assert.match(backend, /npm_config_fetch_retries: '2'/);
   assert.match(backend, /npm_config_fetch_retry_maxtimeout: '20000'/);
-  assert.match(backend, /npm install --prefer-offline --no-audit --no-fund/);
+  assert.match(backend, /npm install --ignore-scripts --prefer-offline --no-audit --no-fund/);
+  assert.doesNotMatch(backend, /run: npm install --prefer-offline --no-audit --no-fund/);
   assert.doesNotMatch(backend, /npm install .*--silent/);
 });
 
