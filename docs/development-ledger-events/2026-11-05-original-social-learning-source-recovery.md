@@ -10,3 +10,5 @@
 - Human docs: `docs/changes/2026-11-05-social-learning-data-contract-root-repair.md`; original social/CRO skill updated.
 - Required before GREEN: protected CI + migration promotion + `pg_get_functiondef` production source readback + actual original next natural execution and independent measured variant/outcome. Missing impressions remain missing, no artificially generated revenue or published post.
 - No bypass of consent, tenant authority, model governance, provider limits, anti-duplicate, CodeQL or RLS. No second scheduler, executor, store, or publisher.
+
+- Independent 2026-11-05 provider/DB readback: actual 4/5 Nov LinkedIn company `generation_evidence.linkedin_loop` says `SOURCE_UNAVAILABLE: null value in column confidence ... revenue_learnings violates not-null constraint`. Existing evaluator inserts explicit `NULL` into a NOT NULL column. Correct to `confidence=0` under exploratory TESTING, with regression `tests/brain-original-linkedin-learning-source-metric-truth-20261105.test.mjs`. Do not call a missing/failed evaluation a successful learning.
