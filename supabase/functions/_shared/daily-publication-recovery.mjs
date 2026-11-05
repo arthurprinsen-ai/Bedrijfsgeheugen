@@ -61,7 +61,11 @@ function reasonFor(channel,obligation,decision,mediaJobs=[]){
     if(media?.status==='WAITING_ASSET'&&media?.attempts===0&&!str(media?.last_error)
        &&!str(media?.asset_manifest?.openart_history_id)
        &&!str(media?.asset_manifest?.asset_url)
-       &&mediaWinner===winner)
+       &&mediaWinner===winner
+       &&!str(obligation?.external_id)&&!obligation?.live_proven_at
+       &&!['DISPATCHED','PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED'].includes(str(obligation?.status))
+       &&obligation?.evidence?.provider_create_success!==true
+       &&obligation?.evidence?.provider_publication_ack_verified!==true)
       return 'MIRA_PRODUCER_CLAIM_REQUIRED';
     return 'MIRA_FINAL_MEDIA_PROOF_REQUIRED';
   }
