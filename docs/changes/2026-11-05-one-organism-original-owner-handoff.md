@@ -10,6 +10,9 @@ One protected migration extends **existing** `powerhouse_loop_assurance_registry
 
 The existing `brain/observability/one-loop-assurance-readback.mjs` sanitizes only registered source route fields and exposes them within the same admin-only GET. Existing CRO read model forwards these fields; existing `portal-v2/modules/powerhouse-observability.js` shows ONE primary next action in natural language and a specialist owner, with other loops in expandable detail, mobile-first. No generic extra publication or provider retries are initiated by the Portal.
 
+## Preview replay parity after original Supabase native reset
+The isolated Supabase PR preview replays the historical registry with 15 active loops including legacy `social-publisher`, whereas production has the retired standalone publisher and active `portal-visual-density`. A source-only 15-key route map stopped safely with `ORIGINAL_LOOP_RECOVERY_ROUTE_MISSING` at migration statement 3 (SQLSTATE P0001). The forward-safe map includes legacy `social-publisher` exclusively as an alias of original `powerhouse-content-loop` with action `VERIFY_RETIRED_ORIGINAL_SOCIAL_PUBLISHER_OWNER`. **No registry active flag changes, no duplicated publisher, no historical status overwrites.** The count remains exactly 15 in each environment, existing source/provider outcomes remain authoritative, and the source selector remains fail-closed on any unknown active key.
+
 ## Security and evaluation
 Native source is the existing protected service-role-only `public.powerhouse_refresh_loop_assurance_v1(timestamptz)`, not a new security-definer surface. Retain original table RLS, public/anon/authenticated execute revocation, scheduled original callback and admin-only Netlify Identity gate. Reject arbitrary/unregistered route values in the portal before HTML-escaping. See [Supabase database function security](https://supabase.com/docs/guides/database/functions).
 
