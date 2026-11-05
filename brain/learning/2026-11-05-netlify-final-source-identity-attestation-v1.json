@@ -62,5 +62,16 @@
     "canary": [
       "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs"
     ]
+  },
+  "evidence": {
+    "historical_bad_deploy_ids": [
+      "6aec3e3e888a4e2164417f68",
+      "6aec4257f095e98c3864f875"
+    ],
+    "current_verified_deploy": "6aec43b3eab087e40ffd88ce",
+    "historical_original_portal_browser_run": 41996326985,
+    "failing_admission_run": 42009530343,
+    "regression": "tests/brain-netlify-final-source-identity-attestation-20261105.test.mjs",
+    "production_prevention_evidence": "EVIDENCE_DUE: source change and protected CI are not a live provider readback"
   }
 }
