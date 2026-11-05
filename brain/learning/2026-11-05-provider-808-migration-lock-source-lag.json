@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "supabase|migration-lock|808th-provider-applied-source-lock-lag|20261105-v1",
+  "owner": "original GitHub Required / Supabase source migration history owner",
+  "compiler": {
+    "failure_class": "APPLIED_PROVIDER_HISTORY_LOCK_BEHIND",
+    "scope": "ORIGINAL_SUPABASE_MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Protected original migration PR #5450 merged at 2026-11-05T15:26:25Z and its SQL migration 20261105134200_original_data_spine_decision_receipt_same_tick_v1 was applied in Supabase. Provider + GitHub executable source count are 808, while canonical migration-history.lock.json was frozen at 807. Subsequent unrelated PR #5457 Required run 42055033207 failed 6 historical parity assertions despite no SQL changes in the PR.",
+  "prevention_rule": "Use full first-party provider readback of supabase_migrations.schema_migrations version+name, compare exactly against executable GitHub supabase/migrations filenames; append only actually provider-applied identities into existing source lock, preserve all prior applied rows, and run original immutable lock tests in Required after each protected migration merge. Never append merely proposed PR migrations, invent or delete migration rows, or relax exact parity checks.",
+  "fix": "Append only 20261105134200_original_data_spine_decision_receipt_same_tick_v1 to 807 provider-verified immutable lock rows, now 808. No database SQL executed and no provider history mutated.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 808,
+    "source_sql_count": 808,
+    "prior_source_lock_count": 807,
+    "updated_lock_count": 808,
+    "all_provider_source_version_names_match": true,
+    "missing_source_lock_version": "20261105134200",
+    "missing_source_lock_name": "original_data_spine_decision_receipt_same_tick_v1",
+    "original_required_red": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42055033207",
+    "applied_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
+    "upstream_blocked_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5457"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-protected-supabase-pr-migration-tests.test.mjs"
+    ]
+  },
+  "production_readback": "PROVIDER_ALREADY_APPLIED_SOURCE_PR_PENDING_PROTECTED_MERGE",
+  "regression_outcome": "REQUIRES_EXACT_HEAD_REQUIRED_CODEQL_AND_INDEPENDENT_PROVIDER_RECHECK",
+  "no_duplicate_scheduler": true
+}
