@@ -1,0 +1,10 @@
+# Development evidence — sitewide money-page buyer-first contract (2026-11-05)
+
+- Fingerprint: `seo|website|generic-search-intent-machine-copy-and-synthetic-review-date|20261105-v1`.
+- Original owner: existing SEO Order Engine website source and protected GitHub publisher; ONE BRAIN learning under exactly the same obligation.
+- Source evidence: provider OnPage crawls 16 primary routes HTTP 200/canonical, 10 visibly repeat internal SEO boilerplate and a dynamically regenerated editorial review date in `tools/seo-order-engine/money-contract-v2.mjs`. This is not a proven Google spam violation, but a clear relevance/transparency defect.
+- Preventive change: adapt original money contract template to customer problems (AFAS/Exact/Twinfield/Power BI/webshop/automation/API/knowledge/AI), with organizational identity rather than a non-provider-backed editorial review assertion. Native V18 pages continue untouched.
+- Guards: deterministic English locale cache and preflight, original intent-owner metadata, original primary CTA and support-link coverage, no duplicate keyword routes, no author fabrication, no review date based on deploy date. Tests: `tests/seo-order-money-v2.test.mjs`, `tests/brain-seo-sitewide-money-content-20261105.test.mjs`, existing `tests/seo-estate-policy-v3.test.mjs` and `tests/seo-native-money-presentation.test.mjs`.
+- Release: CANDIDATE until Required/BRAIN/CodeQL, protected merge and exact Netlify provider production + live content/CTA readback. Track actual 28/56d GSC, consented sessions, qualified leads and paid orders; no ranking promise.
+- Baseline: Search Console 22–28 Oct 42 impressions 0 clicks, 29 Oct–3 Nov 79 impressions 0 clicks (not same duration). GA4 tiny measured cohort, 0 proven conversions in sampled data; Powerhouse site analytics includes prior bot and CTA-ratio anomalies.
+- External quality standard: https://developers.google.com/search/docs/fundamentals/creating-helpful-content and https://developers.google.com/search/docs/essentials/spam-policies .
