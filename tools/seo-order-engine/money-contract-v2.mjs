@@ -71,6 +71,14 @@ function directAnswer(entry){
 
 function buyerProblem(entry){
   const q=String(entry?.primary_intent||'').toLocaleLowerCase('nl-NL');
+  if(q.includes('due diligence')||q.includes('overname')) return 'Bij een investering of overname zijn kennis, contracten en procesafhankelijkheden niet altijd aantoonbaar. Welke documenten, eigenaren en risico’s moet de koper kunnen controleren?';
+  if(q.includes('overdraagbaar')) return 'Een eigenaar of sleutelmedewerker vertrekt, maar besluiten en werkwijzen zitten verspreid in hoofden. Wat moet overdraagbaar zijn voordat een opvolger het werk kan overnemen?';
+  if(q.includes('microsoft 365')) return 'E-mails, documenten en klantafspraken zitten in Microsoft 365, maar niet bij het proces waar ze nodig zijn. Welke gegevens mogen veilig en gecontroleerd worden gedeeld?';
+  if(q.includes('workshop')) return 'Je team ziet kansen voor AI, maar ideeën blijven los staan van werkprocessen en resultaten. Welk praktijkprobleem moet een workshop concreet helpen oplossen?';
+  if(q.includes('business case ai')) return 'Een AI-idee klinkt veelbelovend, maar welke uren, fouten of risico’s veranderen echt? Maak kosten, aannames en meetpunten inzichtelijk voordat je investeert.';
+  if(q.includes('ai governance')) return 'Medewerkers gebruiken AI, maar niet iedereen kent de risico’s, rechten en controleafspraken. Wie mag wat gebruiken en hoe toon je dat aan?';
+  if(q.includes('ai scan')) return 'De organisatie overweegt AI, maar de grootste praktische kansen en risico’s zijn nog niet geprioriteerd. Begin met processen, data en beslissingen.';
+  if(q.includes('ai adoptie')) return 'Er zijn AI-tools beschikbaar, maar medewerkers gebruiken ze nog niet effectief. Welke taak, begeleiding en kwaliteitscontrole maken het verschil?';
   if(q.includes('afas')) return 'Orders, relaties of uren worden nog handmatig overgenomen in AFAS. Welke gegevens moeten waarheen, wie controleert afwijkingen en hoe voorkom je dubbele boekingen?';
   if(q.includes('exact')) return 'Je webshop, verkoop en administratie gebruiken verschillende klant-, artikel- of factuurgegevens. Een koppeling is pas nuttig als ook foutafhandeling en eigenaarschap geregeld zijn.';
   if(q.includes('twinfield')) return 'Facturen, bankmutaties en verkoopgegevens komen niet op hetzelfde moment binnen. Begin met de bron en de controles die jouw boekhouding echt nodig heeft.';
