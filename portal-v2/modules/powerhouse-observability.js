@@ -136,8 +136,7 @@ const ORIGINAL_LOOP_REPAIR_LABELS=Object.freeze({
  MEASURE_APPLIED_ORIGINAL_IMPROVEMENT:'Meet de daadwerkelijk ingevoerde verbetering',
  VERIFY_ORIGINAL_SEARCH_OPTIMIZATION_OUTCOME:'Controleer zoekverkeer, conversie en werkelijke verbetering',
  VERIFY_ORIGINAL_SIGNAL_TAXONOMY_CORRELATION:'Controleer de oorspronkelijke signaalclassificatie',
- VERIFY_AUTHORIZED_SOURCE_BACKED_OUTBOUND:'Controleer brongebonden outreach en providerresultaat',
- VERIFY_RETIRED_ORIGINAL_SOCIAL_PUBLISHER_OWNER:'Controleer oude publisherstatus via de bestaande contentagent'
+ VERIFY_AUTHORIZED_SOURCE_BACKED_OUTBOUND:'Controleer brongebonden outreach en providerresultaat'
 });
 function oneLoopAssuranceView(assurance){
   const source=assurance||{},complete=source.status==='READBACK_COMPLETE' &&
