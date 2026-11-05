@@ -46,6 +46,10 @@ test('no valid baseline or no measured sample cannot promote a winner or invent 
  assert.match(sql,/Verkennend, niet causaal bewezen/);
  assert.match(sql,/where public\.social_learnings\.status<>'PROVEN'/);
  assert.doesNotMatch(sql,/insert into public\.social_learning_applications/);
+ assert.match(sql,/v_pid := 'experiment:'\|\|e\.experiment_id/);
+ assert.match(sql,/post_application_proven', false/);
+ assert.match(sql,/decision_scope','EXPERIMENT_NOT_PROVIDER_POST'/);
+ assert.doesNotMatch(sql,/v_pid := coalesce\(v_meet->'post_ids'/);
 });
 
 test('maintain original function signatures and explicit least-privilege roles',()=>{
