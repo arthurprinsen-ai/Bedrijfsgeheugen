@@ -8,7 +8,10 @@ const preview=readFileSync('.github/workflows/portal-v2-live-preview.yml','utf8'
 test('original cross-browser workflow bypasses irrelevant ffmpeg-static binary postinstall only',()=>{
   assert.match(cross,/npm install --no-save --ignore-scripts playwright@1\.55\.0/);
   assert.doesNotMatch(cross,/npm install --no-save playwright@1\.55\.0/);
-  assert.match(cross,/npx playwright install --with-deps chromium firefox webkit/);
+  assert.match(cross,/mcr\.microsoft\.com\/playwright:v1\.55\.0-noble/);
+  assert.match(cross,/engine\.executablePath\(\)/);
+  assert.match(cross,/BROWSER_BINARY_PRESENT/);
+  assert.doesNotMatch(cross,/npx playwright install --with-deps chromium firefox webkit/);
   assert.match(cross,/node --test tests\/brain-website-cross-browser-screenshot-assurance-v1\.test\.mjs/);
   assert.match(cross,/node tools\/site-shell\/website-cross-browser-assurance\.mjs/);
   assert.match(cross,/runs-on: ubuntu-24\.04/);
