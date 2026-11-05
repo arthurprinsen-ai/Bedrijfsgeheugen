@@ -282,3 +282,45 @@ test('original personal source failure gets source repair, never a misleading pr
  assert.equal(acknowledged.atRisk.find(x=>x.channel==='linkedin_personal')?.nextStep,
   'ORIGINAL_PROVIDER_RECONCILE_ONLY');
 });
+
+
+test('original Mira virgin source winner routes to exclusive producer claim before paid generation',async()=>{
+ const winner='5f95bf92-73f8-419a-bac4-0e388b256b76';
+ const originalDecision={channel:'instagram_company',decision:'hold',state:'blocked',
+  scheduled_for:new Date('2026-11-05T08:00:00Z'),
+  delivery_evidence:{daily_winner_recommendation_id:winner,
+   capability_state:'BLOCKED_HARD_BOUNDARY',capability_reason:'EXACT_FINAL_MEDIA_PROOF_REQUIRED'}};
+ const originalObligation={channel:'instagram',status:'BLOCKED',last_error:'MEDIA_ASSET_REQUIRED',
+  external_id:null,live_proven_at:null};
+ const virgin={channel:'instagram',status:'WAITING_ASSET',attempts:0,last_error:null,
+  asset_manifest:{daily_winner_recommendation_id:winner},proof_manifest:{}};
+ const assess=mediaJobs=>assessDailyPublicationRecovery({runDate:'2026-11-05',
+  now:'2026-11-05T07:45:00Z',decisions:[originalDecision],
+  obligations:[originalObligation],mediaJobs,isTerminal:proof});
+ const a=assess([virgin]).overdue.find(x=>x.channel==='instagram');
+ assert.equal(a.code,'MIRA_PRODUCER_CLAIM_REQUIRED');
+ assert.equal(a.repairHandoff,'ORIGINAL_MIRA_PRODUCER_CLAIM_THEN_GENERATE');
+ assert.equal(a.requiresAuthorization,false);
+ assert.equal(a.owner,'powerhouse-instagram-media-router / original Mira producer');
+ assert.match(a.action,/exclusief claimen/);
+ // A historic or claimed provider job must NEVER be mistaken for virgin;
+ // a wrong day-winner cannot take the producer claim.
+ for(const unsafe of [
+  {...virgin,attempts:1},
+  {...virgin,status:'WAITING_PROOF',attempts:0},
+  {...virgin,asset_manifest:{...virgin.asset_manifest,openart_history_id:'existing-history'}},
+  {...virgin,asset_manifest:{...virgin.asset_manifest,daily_winner_recommendation_id:'another-winner'}},
+  {...virgin,last_error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'},
+ ]){
+  const other=assess([unsafe]).overdue.find(x=>x.channel==='instagram');
+  assert.equal(other.code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ }
+ assert.equal(assess([]).overdue.find(x=>x.channel==='instagram').code,'MIRA_FINAL_MEDIA_PROOF_REQUIRED');
+ const posted={...originalObligation,status:'LIVE_PROVEN',external_id:'meta-id'};
+ const terminal=assessDailyPublicationRecovery({runDate:'2026-11-05',now:'2026-11-05T10:00:00Z',
+  decisions:[originalDecision],obligations:[posted],mediaJobs:[virgin],isTerminal:proof});
+ assert.equal(terminal.overdue.some(x=>x.channel==='instagram'),false);
+ const source=await readFile(new URL('../supabase/functions/powerhouse-content-loop/index.ts',import.meta.url),'utf8');
+ assert.match(source,/\.select\('channel,status,attempts,last_error,asset_manifest,proof_manifest'\)/);
+ assert.match(source,/mediaJobs:mediaJobsError\?\[\]:mediaJobs\|\|\[\]/);
+});
