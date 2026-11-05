@@ -31,6 +31,9 @@
     "security_sensitive": false
   },
   "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-entrepreneur-late-panels-disclosure-20261105.test.mjs"
+    ],
     "canary": [
       "tests/brain-portal-entrepreneur-late-panels-disclosure-20261105.test.mjs"
     ]
