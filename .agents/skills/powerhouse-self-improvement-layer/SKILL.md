@@ -355,3 +355,5 @@ Terminal evidence requires protected main Required/CodeQL/BRAIN, original Supaba
 ## 2026-11-05 — migration lock 805 versus 801: prose rule was not enough
 
 The 4 November prevention rule (lock row moves with the migration) was not followed: four migrations were applied on 5 November without lock rows and the original BRAIN backend lane failed six tests on every later PR (26 of 40 terminal closure runs failed since 2 November). Repair appends four provider-attested rows to the lock. Open learning: a rule that exists only as text did not prevent a repeat within one day; the check has to run on the migration's own PR. Fingerprint `supabase|migration-history|provider-805-source-801|20261105-v1`.
+
+- Migration-lock tests now run in the required PR check before merge (5 Nov 2026, fingerprint `supabase|migration-history|pre-merge-lock-gate|20261105-v1`); provider-only migrations outside Git still need provider readback.
