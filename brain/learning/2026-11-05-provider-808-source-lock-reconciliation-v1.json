@@ -14,6 +14,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-provider-808-source-lock-exact-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-provider-808-source-lock-exact-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-provider-808-source-lock-exact-20261105.test.mjs"
     ]
   },
   "root_cause": "Production Supabase already had exactly 808 provider migration identities but the protected immutable source lock retained 807, so unrelated website and SEO PR Required preflight failed closed. Previously applied 808th local SQL was incorrectly seen as unverified local-only because source lock capture preceded actual provider readback.",
@@ -30,7 +36,8 @@
     "failed_required_run": 42055641890,
     "failed_job_id": 127343409049,
     "original_sql": "supabase/migrations/20261105134200_original_data_spine_decision_receipt_same_tick_v1.sql",
-    "source_lock": "supabase/migration-history.lock.json"
+    "source_lock": "supabase/migration-history.lock.json",
+    "mode": "SOURCE_LOCK_REPLAY_SHADOW_CANARY"
   },
   "prevention": "For original migration owner first compare all exact applied version/name records to current provider list, then only append actually observed new applied identities to original immutable lock; do not claim unexecuted SQL as applied or hide provider drift. Keep protected Required/BRAIN/CodeQL. Only count GREEN on exact provider readback after merge.",
   "outcome": {
