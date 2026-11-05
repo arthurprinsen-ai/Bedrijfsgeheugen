@@ -57,5 +57,17 @@
     "no skip visual checks",
     "no reduction of fail-closed security",
     "no forced Netlify deploy if website source unchanged"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
 }
