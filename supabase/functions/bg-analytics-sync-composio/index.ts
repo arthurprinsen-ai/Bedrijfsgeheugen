@@ -70,6 +70,12 @@ Deno.serve(async(req:Request)=>{
  if(req.method!=='POST')return json({error:'POST_ONLY'},405);
  const url=(Deno.env.get('SUPABASE_URL')||'').replace(/\/$/,'');const serviceKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';if(!url||!serviceKey)return json({error:'CONFIG'},500);
  const db=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
+ // Same private token already sent by ORIGINAL pg_cron #42 through bg_roep_functie.
+ // Preserve existing verify_jwt=false at the Supabase transport boundary while
+ // refusing anonymous callers BEFORE Google API, Vault provider calls or Brain writes.
+ const schedulerSecret=String((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data||'').trim();
+ const callerToken=String(req.headers.get('x-powerhouse-token')||'').trim();
+ if(!schedulerSecret || callerToken.length<16 || callerToken!==schedulerSecret) return json({ok:false,error:'UNAUTHORIZED'},401);
  const bewijs=(groen:boolean,detail:unknown,klasse:string|null=null)=>db.rpc('bg_bewijs',{p_bron:BRON,p_groen:groen,p_detail:detail,p_foutklasse:klasse}).then(()=>{},()=>{});
  const property=Deno.env.get('GA4_PROPERTY_RESOURCE')||DEFAULT_PROPERTY;
  const envSa=parseAccount(Deno.env.get('GOOGLE_SERVICE_ACCOUNT')||null);const {data:vaultSa}=await db.rpc('bg_geheim',{p_naam:'GOOGLE_SERVICE_ACCOUNT'});const sa=envSa||parseAccount((vaultSa as string)||null);
