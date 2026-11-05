@@ -3,6 +3,12 @@ name: portal-living-interface
 description: Canonical Portal V2 visual design, chart accessibility, safe fields, entrepreneur experience and learning.
 ---
 
+## 5 november 2026 — vooraf-foutdetectie browser- en Netlify-previewbewijs
+
+- INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Originele Website Cross-Browser Screenshot Assurance run #42047646698 mislukte vóór screenshots omdat een onnodige `ffmpeg-static` postinstall HTTP 504 gaf. De bestaande screenshot-agent installeert Playwright zonder niet-benodigde npm lifecycle-binaire downloads, **maar installeert verplicht Chromium, Firefox en WebKit met systeemafhankelijkheden**, voert de echte visuele/CLS-tests uit en bewaart bij prerequisite-fout JSON-bewijs in de oorspronkelijke workflow. Geen screenshot-artifact = geen groen.
+- Originele Portal V2 Live Preview run #42048047434 bleef bij Netlify HTTP 401 negen minuten herhalen. De bestaande Portal-agent moet 401/403 op zowel PR-alias als immutable deploy onmiddellijk classificeren als `NETLIFY_PREVIEW_AUTH_REQUIRED`. Netlify nonproduction SSO/teamautorisatie mag niet worden uitgezet of omzeild om CI groen te maken. De herstel-eigenaar beoordeelt de bestaande providerautorisatie; immutable commit SHA, deploy ID en echte browserreadback blijven verplicht.
+- De twee unieke fingerprints worden in `brain/learning/2026-11-05-cross-browser-ffmpeg-postinstall-http-504.json` en `brain/learning/2026-11-05-netlify-preview-401-fast-failure.json` met root cause, uitvoerder, regressietest en open productie-eindbewijs bijgehouden. Test `tests/brain-ci-browser-install-and-netlify-preview-auth-20261105.test.mjs` vóór iedere beschermde merge. Geen parallelle runner, geen skip van security/visuele controles. Incident #4447; Portal-parent #4547; handboek `docs/changes/2026-11-05-ci-browser-ffmpeg-and-preview-401-prevention.md`. Status blijft EVIDENCE_DUE totdat exacte protected merge en oorspronkelijke provider/browser-readback bewezen zijn.
+
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 # Portal Living Business Interface — original V2 only
