@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../supabase/functions/_shared/daily-publication-recovery.mjs';
+import {planOriginalIncidentLearning} from '../supabase/functions/_shared/publication-incident-learning.mjs';
 import {summarizeOneLoopAssurance} from '../brain/observability/one-loop-assurance-readback.mjs';
 import {projectOriginalGuardDiagnostics} from '../brain/observability/one-loop-guard-diagnostics.mjs';
 
@@ -261,6 +262,11 @@ test('original personal source failure gets source repair, never a misleading pr
  assert.equal(item.requiresAuthorization,false);
  assert.match(item.action,/geen provider-retry|Geen provider-retry/i);
  assert.match(item.owner,/content-orchestrator/);
+ const learned=planOriginalIncidentLearning(recovery,'2026-11-05');
+ const lesson=learned.observations.find(x=>x.channel==='linkedin_personal');
+ assert.equal(lesson.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
+ assert.equal(lesson.evidence.first_time_right_prevention.require_new_verified_source_before_regeneration,true);
+ assert.equal(lesson.evidence.proof_state,'NOT_PROVEN');
  assert.doesNotMatch(JSON.stringify(item),/insufficient_quota|api_key|bearer/i);
  const preflight=assessPreventivePublicationReadiness({runDate:'2026-11-05',
   now:'2026-11-05T06:45:00Z',decisions:[editorial],obligations:[own],mediaJobs:[],
