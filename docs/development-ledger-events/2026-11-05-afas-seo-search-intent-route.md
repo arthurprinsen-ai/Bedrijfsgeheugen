@@ -10,3 +10,5 @@
 - Dedupe prevention: reuse original SEO source owner, original PR candidate and unique keyword routing; no second SEO executor, unapproved editorial publication, paid order or fake indexing/traffic.
 - Measured outcome after 28/56 days, if provider sample sufficient: search query-to-service-page match, position and click lift, CTA and qualified lead attribution. If insufficient, preserve `INSUFFICIENT_EVIDENCE`.
 - Fingerprint: `seo|afas|commercial-query-displays-pricing-intent-route|20261105-v1`.
+
+- First localized-route preflight (Required #42033655855, job #127266299051) refused the new Dutch public copy because the static English cache had 6 missing strings. Same original branch adds `config/bg-static-i18n-en.d/2026-11-05-afas-search-intent-route.json` with deterministic English translations; offline strict locale gate remains enabled. Verify next exact-head preflight and independently published `/en/afas-koppeling` route, never bypass translation quality.
