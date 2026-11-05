@@ -2,7 +2,56 @@
 -- Correct generic owner='Powerhouse' overwritten on every native assurance refresh.
 -- No new executor, scheduler, authority, table or provider side effect.
 begin;
+-- Native PR previews replay the 804 source migrations but can lack two
+-- historical registry data mutations that are already canonical in production.
+-- Repair EXACT retired/approved loop keys only, not a second social publisher.
+-- The retire operation changes a monitoring registry entry, NOT cron/Meta state.
+update public.powerhouse_loop_assurance_registry_v1 r
+set active=false,
+    evidence_contract=coalesce(r.evidence_contract,'{}'::jsonb)
+      ||jsonb_build_object(
+        'authority','content-closed-loop',
+        'lifecycle','RETIRED',
+        'superseded_by','content-closed-loop',
+        'retired_at','2026-10-07T15:55:15.462503+00:00',
+        'retired_reason','standalone social publisher assurance consolidated into canonical content closed loop'),
+    updated_at=now()
+where r.loop_key='social-publisher'
+  and r.active=true
+  and r.runtime_source='powerhouse-social-publisher'
+  and r.cron_jobname is null
+  and coalesce(r.evidence_contract->>'authority','') in ('runtime + stage receipts','content-closed-loop');
+
+-- Existing canonical Portal visual assurance is already active in production;
+-- supply only that missing original registry identity to an isolated preview.
+-- Stage receipts and visual proof must still be independently observed.
+insert into public.powerhouse_loop_assurance_registry_v1
+ (loop_key,label,runtime_source,cron_jobname,expected_cadence_minutes,
+  critical,required_stages,active,evidence_contract)
+values (
+ 'portal-visual-density','Portal visual density regression',
+ null,'powerhouse-portal-visual-assurance-sync-v1',1440,true,
+ array['input','decision','action','readback','outcome','measurement','learning','guard'],
+ true,
+ jsonb_build_object(
+   'authority','GitHub screenshot regression + Supabase loop assurance + Notion verified state',
+   'fingerprint','portal-visual-density-oversized-responsive-cascade-v1',
+   'viewports',jsonb_build_array('1440x900','1024x768','390x844'),
+   'no_parallel_truth',true,
+   'guard_requires_pass',true,
+   'runtime_authority','external GitHub Actions visual evidence via explicit Powerhouse stage receipts',
+   'production_routes',jsonb_build_array('/portal-v2/?page=overview','/portal-v2/?page=csrd-impact','/portal-v2/?page=data-ai')
+ )
+)
+on conflict (loop_key) do nothing;
+
 do $guard$ begin
+  if exists (select 1 from public.powerhouse_loop_assurance_registry_v1
+      where loop_key='social-publisher' and active=true)
+    or not exists(select 1 from public.powerhouse_loop_assurance_registry_v1
+      where loop_key='portal-visual-density' and active=true)
+    then raise exception 'ORIGINAL_RETIRED_PUBLISHER_AND_PORTAL_REGISTRY_MISMATCH';
+  end if;
   if (select count(*) from public.powerhouse_loop_assurance_registry_v1 where active) <> 15
     then raise exception 'ORIGINAL_15_LOOP_POPULATION_CHANGED_FAIL_CLOSED';
   end if;
