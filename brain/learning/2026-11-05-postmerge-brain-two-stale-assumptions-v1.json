@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "brain|postmerge|stale-history-assumption-and-frozen-migration-tail|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "state": "CANDIDATE_TEST_FIX_NOT_PRODUCTION_PROVEN",
+  "owner": "original protected BRAIN postmerge terminalization and Required test owners",
+  "root_cause": "Two backend BRAIN tests in historical postmerge run #42059928039 assumed old immutable conditions: (1) Required checkout must never use fetch-depth:0, despite source migration base/head classification explicitly requiring full history; (2) original ten-minute data-spine migration must be the LAST lock entry, despite canonical source and applied migration history appending a new provider-approved same-tick receipt version 20261105134200. Both assumptions conflicted with valid subsequent protected source evolution.",
+  "observed": {
+    "terminal_failure_run": 42059796291,
+    "brain_run": 42059928039,
+    "backend_job": 127358913479,
+    "failures": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs: incorrect no-full-history rule",
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs: 20261105132000 expected last, actual 20261105134200"
+    ],
+    "source_checked": [
+      ".github/workflows/required-test.yml",
+      ".github/workflows/lane-website.yml",
+      "supabase/migration-history.lock.json"
+    ],
+    "verified_migrations_count": 808
+  },
+  "corrective_action": "Keep original protected Required complete immutable migration history to make exact base-to-head audit meaningful while ensuring website lane remains fetch-depth:2 + TARGETED_BASE_FETCH; assert immutable original migration row and subsequent legitimate provider-applied row plus append-only strict chronology/size instead of pinning the tail to an obsolete version.",
+  "historical_replay_tests": [
+    "tests/brain-ci-control-plane-convergence-v1.test.mjs",
+    "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+  ],
+  "preventive_rule": "Never freeze a moving append-only migration tail. Assert presence, ordering, monotonic append and named/source historical receipt. For Git history, distinguish protected Required full history from bounded website lane; do not weaken Required security classification or invent migrations. A historical failed run must stay failed; close only via new protected main regression run and independent producer proof.",
+  "outcome": {
+    "existing_production_deployed": true,
+    "historical_failed_run_persists": true,
+    "new_exact_head_ci": "PENDING",
+    "current_main_source_state": "NOT_YET_RELEASED",
+    "search_rank_growth_proven": false,
+    "qualified_leads_proven": false,
+    "paid_revenue_proven": false
+  },
+  "release_gates": [
+    "exact-head Required",
+    "CodeQL",
+    "protected merge",
+    "independent main BRAIN execution",
+    "terminal source/readback crosscheck"
+  ],
+  "security_sensitive": true
+}
