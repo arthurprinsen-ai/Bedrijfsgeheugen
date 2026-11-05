@@ -61,5 +61,23 @@
     "historical_replay": [
       "tests/brain-seo-afas-search-intent-route-20261105.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "SEARCH_INTENT_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention": "Before protected SEO PR: preserve one canonical keyword owner per search intent and a relevant context link; submit valid machine metadata, executable Brain replay, activity ledger and human documentation. Follow real GSC query-page readback, do not invent ranking lifts.",
+  "evidence": {
+    "gsc_provider": "sc-domain:bedrijfsgeheugen.nl",
+    "baseline_impressions": 260,
+    "baseline_clicks": 2,
+    "afas_query_impressions": 39,
+    "afas_query_avg_position": 95.4615,
+    "root_page": "/blog/wat-kost-een-afas-koppeling/",
+    "test": "tests/brain-seo-afas-search-intent-route-20261105.test.mjs",
+    "production_status": "NOT_LIVE_PENDING_REQUIRED_AND_NETLIFY_READBACK"
   }
 }
