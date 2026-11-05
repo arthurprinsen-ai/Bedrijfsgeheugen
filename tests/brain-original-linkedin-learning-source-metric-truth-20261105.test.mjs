@@ -40,6 +40,8 @@ test('no valid baseline or no measured sample cannot promote a winner or invent 
  assert.match(sql,/if v_n < v_min or not v_baseline_ok then v_status := 'INSUFFICIENT_EVIDENCE'/);
  assert.match(sql,/effect_is_causal', false/);
  assert.match(sql,/v_besluit := 'verkennend_positief'; v_lstatus := 'TESTING'/);
+ assert.match(sql,/'mediaan_' \|\| v_metriek, v_uplift, v_n, 0, v_lstatus/);
+ assert.doesNotMatch(sql,/'mediaan_' \|\| v_metriek, v_uplift, v_n, null, v_lstatus/);
  assert.match(sql,/Do NOT mark all observed posts as applications of a variant/);
  assert.match(sql,/insert into public\.social_learnings \(/);
  assert.match(sql,/actual_variant_application_verified',false/);
