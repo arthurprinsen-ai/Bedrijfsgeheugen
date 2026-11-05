@@ -3224,8 +3224,12 @@
     {
       "version": "20261105125354",
       "name": "content_outcome_measurement_v1"
+    },
+    {
+      "version": "20261105132000",
+      "name": "original_data_spine_same_tick_stage_receipts_v1"
     }
   ],
-  "captured_at": "2026-11-05T12:54:10.000Z",
+  "captured_at": "2026-11-05T13:22:00.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
