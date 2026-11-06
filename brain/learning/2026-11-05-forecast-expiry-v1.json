@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-05",
-  "status": "CANDIDATE_UNVERIFIED",
+  "status": "PROVIDER_APPLIED_LOCK_SOURCE_CANDIDATE",
   "obligation_id": "website|seo-growth|forecast-expiry|20261105-v1",
   "fingerprint": "content|stale-forecast-drives-expired-blog|20261105-v1",
   "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
@@ -21,7 +21,7 @@
     "real_customers_or_revenue_claimed": false
   },
   "fix": "Migration 20261105190000 adds powerhouse_expire_stale_forecasts_v1 (one update: active/claimed with horizon before the Amsterdam date become expired) and one hourly pg_cron job. No change to the generator, the publisher or any gate.",
-  "prevention_rule": "A forecast has a lifetime. Anything that consumes forecasts may assume that active means its horizon has not passed.",
+  "prevention_rule": "Before any material PR check the exact live supabase_migrations.schema_migrations version/name sequence against executable supabase/migrations SQL and canonical migration-history.lock.json, and block on mismatch. Never invent or apply an already-applied version twice, never delete SQL, do not bypass the original protected migration preflight.",
   "tests": [
     "tests/brain-forecast-expiry-20261105.test.mjs"
   ],
@@ -42,6 +42,22 @@
       "no second publisher"
     ]
   },
-  "open_obligation": "Protected merge by Arthur and migration applied; then no active forecast may have a horizon before today, and the next daily blog must not be about an expired event. One-time data cleanup of 3,484 rows was already done on 2026-11-05 by agent on instruction of Arthur.",
-  "reuse_guidance": "Change the expiry rule only in the migration function and its test."
+  "open_obligation": "SQL provider migration already applied and independently listed as #810; source-lock parity is repaired on protected candidate and remains EVIDENCE_DUE until Required/CodeQL and protected merge. Original scheduled expiry job results and next natural blog freshness require their own provider/consumer readback; no assertion of visitor or revenue uplift.",
+  "reuse_guidance": "Change the expiry rule only in the migration function and its test.",
+  "provider_migration_readback": {
+    "verified_at": "2026-11-06T07:57:00Z",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 810,
+    "latest_version": "20261105190000",
+    "latest_name": "powerhouse_expire_stale_forecasts_v1",
+    "sql_source_path": "supabase/migrations/20261105190000_powerhouse_expire_stale_forecasts_v1.sql",
+    "source_lock_path": "supabase/migration-history.lock.json",
+    "source_lock_before": 809,
+    "source_lock_after": 810,
+    "provider_migration_applied": true,
+    "new_sql_execution_required": false,
+    "live_forecast_expiry_job_proven": false,
+    "next_natural_blog_safe_proven": false,
+    "customer_revenue_proven": false
+  }
 }
