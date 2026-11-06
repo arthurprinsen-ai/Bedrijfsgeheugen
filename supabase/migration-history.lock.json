@@ -3256,12 +3256,8 @@
     {
       "version": "20261106140000",
       "name": "powerhouse_blocker_playbook_recovery_v1"
-    },
-    {
-      "version": "20261106144500",
-      "name": "weekly_cron_health_cadence_original_function_v1"
     }
   ],
-  "captured_at": "2026-11-06T15:12:00.000Z",
+  "captured_at": "2026-11-05T17:05:00.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
