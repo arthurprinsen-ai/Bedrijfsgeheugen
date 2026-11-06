@@ -116,9 +116,16 @@ jobs:
         with:
           node-version: '22'
       - name: Reuse proven delivery lessons before expensive work
+        # The ORIGINAL BRAIN delivery planner supplies its actual planned operation.
+        # Untrusted PR code NEVER receives Supabase privileged credentials.
+        # No second executor or guard. Missing writer credentials never count as evidence.
+        env:
+          POWERHOUSE_AGENT_ID: brain-delivery-plan
+          POWERHOUSE_ACTION_RECALL_MODE: auto
+          DELIVERY_PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number || '0' }}
         run: |
           node --test tests/delivery-learning.test.mjs tests/delivery-preflight.test.mjs
-          node tools/delivery-preflight.mjs shared
+          node tools/delivery-preflight.mjs shared --action "Run canonical BRAIN delivery admission for pull request ${DELIVERY_PR_NUMBER}"
       - id: plan
         name: Discover changed lanes and Brain membership
         shell: bash

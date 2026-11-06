@@ -42,6 +42,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Observe genuine protected-main release action in canonical BRAIN
+        if: github.ref == 'refs/heads/main'
+        env:
+          POWERHOUSE_AGENT_ID: production-release-readback
+          POWERHOUSE_ACTION_RECALL_MODE: auto
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node tools/delivery-preflight.mjs shared --action "Run actual production release readback for protected main commit"
       - id: scope
         name: Derive affected production routes and deployment applicability
         env:
