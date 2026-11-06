@@ -73,17 +73,17 @@ test('no genuine independently reviewed action means NOT_MEASURED, not zero or 1
 test('review must be independent, verified, source-grounded and tenant-matched', () => {
   const one=action('run-a-one',['RISK_ONE']);
   const sameAgent=review(one,['RISK_ONE'],'agent-alpha');
-  assert.equal(evaluatePlannedActionRecall([one,sameAgent]).verdict,'NOT_MEASURED');
+  assert.equal(evaluatePlannedActionRecall([one,sameAgent],{verifyIndependentReview:()=>true}).verdict,'NOT_MEASURED');
   const wrongTenant={...review(one,['RISK_ONE']),tenantId:'other-tenant'};
-  assert.equal(evaluatePlannedActionRecall([one,wrongTenant]).verdict,'NOT_MEASURED');
+  assert.equal(evaluatePlannedActionRecall([one,wrongTenant],{verifyIndependentReview:()=>true}).verdict,'NOT_MEASURED');
   const noEvidence={...review(one,['RISK_ONE']),payload:{...review(one,['RISK_ONE']).payload,evidenceRef:''}};
-  assert.equal(evaluatePlannedActionRecall([one,noEvidence]).verdict,'NOT_MEASURED');
+  assert.equal(evaluatePlannedActionRecall([one,noEvidence],{verifyIndependentReview:()=>true}).verdict,'NOT_MEASURED');
 });
 
 test('small real observations remain INSUFFICIENT_EVIDENCE with no numeric percentages', () => {
   const positive=action('run-a-one',['RISK_ONE']);
   const negative=action('run-b-one',[]);
-  const result=evaluatePlannedActionRecall([positive,review(positive,['RISK_ONE']),negative,review(negative,[])]);
+  const result=evaluatePlannedActionRecall([positive,review(positive,['RISK_ONE']),negative,review(negative,[])],{verifyIndependentReview:()=>true});
   assert.equal(result.verdict,'INSUFFICIENT_EVIDENCE');
   assert.equal(result.sample.reviewed,2);
   assert.equal(result.sample.agents,2);
@@ -104,7 +104,8 @@ test('only sufficiently independently reviewed representative input enables actu
     const decision=action(exec,actual);
     data.push(decision,review(decision,positive?['RISK_ONE']:[]));
   }
-  const result=evaluatePlannedActionRecall(data);
+  assert.equal(evaluatePlannedActionRecall(data).verdict,'NOT_MEASURED','self-reported labels alone must not count');
+  const result=evaluatePlannedActionRecall(data,{verifyIndependentReview:()=>true});
   assert.equal(result.verdict,'MEASURED');
   assert.equal(result.sample.reviewed,40);
   assert.equal(result.sample.agents,2);
@@ -118,11 +119,11 @@ test('only sufficiently independently reviewed representative input enables actu
 test('duplicate decisions, duplicate review records and out-of-window samples cannot inflate denominator', () => {
   const a=action('run-a-one',['RISK_ONE']);
   const b=action('run-b-one',['RISK_ONE']);
-  const conflict=evaluatePlannedActionRecall([a,a,review(a,['RISK_ONE'])]);
+  const conflict=evaluatePlannedActionRecall([a,a,review(a,['RISK_ONE'])],{verifyIndependentReview:()=>true});
   assert.equal(conflict.verdict,'NOT_MEASURED');
-  const duplicateReviews=evaluatePlannedActionRecall([b,review(b,['RISK_ONE']),{...review(b,['RISK_ONE']),id:'review:second'}]);
+  const duplicateReviews=evaluatePlannedActionRecall([b,review(b,['RISK_ONE']),{...review(b,['RISK_ONE']),id:'review:second'}],{verifyIndependentReview:()=>true});
   assert.equal(duplicateReviews.verdict,'NOT_MEASURED');
-  const outside=evaluatePlannedActionRecall([a,review(a,['RISK_ONE'])],{from:'2026-11-07T00:00:00Z'});
+  const outside=evaluatePlannedActionRecall([a,review(a,['RISK_ONE'])],{from:'2026-11-07T00:00:00Z',verifyIndependentReview:()=>true});
   assert.equal(outside.verdict,'NOT_MEASURED');
 });
 
