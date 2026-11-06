@@ -2,6 +2,8 @@ import re
 import sqlite3,html,os,sys
 import pandas as pd,numpy as np
 from playwright.sync_api import sync_playwright
+import base64
+def IMG(n):return 'data:image/jpeg;base64,'+base64.b64encode(open('img/'+n,'rb').read()).decode()
 c=sqlite3.connect('ai_mkb.db');e=html.escape
 df=pd.read_sql('select * from country_ai',c);S=pd.read_sql('select * from sources',c).set_index('id')
 A={r['name']:r for _,r in pd.read_sql('select * from analysis_results',c).iterrows()}
@@ -141,24 +143,33 @@ def brug(W=520,H=230):
         x=170+i*(180/6);y=108-math.sin(math.pi*i/6)*66
         o+=f"<circle cx='{x:.1f}' cy='{y:.1f}' r='13' fill='#FBFAF7'/><text x='{x:.1f}' y='{y+4:.1f}' font-size='11' font-weight='800' font-family='Bricolage Grotesque' text-anchor='middle' fill='#14171A'>{i+1}</text><text x='{x:.1f}' y='{y-18:.1f}' font-size='7.6' text-anchor='middle' fill='#DCDFE6'>{t}</text>"
     return o+"</svg>"
-P.append(f"""<div class='p cover'><div class='top'><span class='geel'>Bedrijfs<b>geheugen</b></span><span style='margin-left:auto;font-size:8pt;letter-spacing:.16em;color:#8b93a1'>EDITIE 2026-Q4</span></div>
-<div class='eb' style='margin-top:12mm'>Onderzoeksrapport · Wereld · Europa · Nederland</div>
-<div class='big' style='font-size:60pt'>De AI-<span style='background:linear-gradient(transparent 55%,#FFE86B 55%,#FFE86B 92%,transparent 92%);color:var(--p)'>kloof</span><br>in het mkb</div>
-<p class='lead' style='color:#DCDFE6;margin-top:5mm;font-size:12pt;max-width:150mm'>Waarom kleine bedrijven in het ene Europese land ruim negen keer zo vaak AI gebruiken als in het andere, wat dat kost, en wat je er maandag aan doet.</p>
-<div style='margin-top:9mm'>{kloofkaart()}</div>
-<p style='margin-top:3mm;font-size:8.4pt;color:#8b93a1;max-width:150mm'>Elke stok is één EU-land. De stok loopt van het AI-gebruik van kleine bedrijven (onder) naar grote bedrijven (boven). Hoe langer de stok, hoe groter de kloof. Bron: Eurostat 2025.</p>
+P.append(f"""<div class='p cover'><img class='cph' src='{IMG("cover_c.jpg")}'><div class='cgr'></div>
+<div class='top' style='position:relative;z-index:2'><span class='geel'>Bedrijfs<b>geheugen</b></span><span style='margin-left:auto;font-size:8pt;letter-spacing:.16em;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)'>EDITIE 2026-Q4</span></div>
+<div style='position:relative;z-index:2;margin-top:64mm'><div class='eb'>Onderzoeksrapport · Wereld · Europa · Nederland</div>
+<div class='big' style='font-size:58pt'>De AI-<span style='background:linear-gradient(transparent 55%,#FFE86B 55%,#FFE86B 92%,transparent 92%);color:var(--p)'>kloof</span><br>in het mkb</div></div>
+<p class='lead' style='position:relative;z-index:2;color:#DCDFE6;margin-top:4mm;font-size:11.5pt;max-width:155mm'>Waarom kleine bedrijven in het ene Europese land ruim negen keer zo vaak AI gebruiken als in het andere, wat dat kost, en wat je er maandag aan doet. Met mensen, niet alleen met cijfers.</p>
+<div style='margin-top:5mm;position:relative;z-index:2'>{kloofkaart(520,250)}</div>
+<p style='position:relative;z-index:2;margin-top:1mm;font-size:7.8pt;color:#8b93a1;max-width:160mm'>Elke stok is één EU-land: van het AI-gebruik van kleine bedrijven (onder) naar grote bedrijven (boven). Hoe langer de stok, hoe groter de kloof. Bron: Eurostat 2025.</p>
 <div style='position:absolute;left:16mm;right:16mm;bottom:22mm;display:flex;gap:9mm;color:#DCDFE6;font-size:9pt;border-top:1px solid #3a4150;padding-top:4mm'><span><b style='color:#fff;font-size:15pt;font-family:Bric'>27</b><br>bronnen gelezen</span><span><b style='color:#fff;font-size:15pt;font-family:Bric'>145</b><br>feiten in database</span><span><b style='color:#fff;font-size:15pt;font-family:Bric'>27</b><br>EU-landen geanalyseerd</span><span><b style='color:#fff;font-size:15pt;font-family:Bric'>57</b><br>analyses opgeslagen</span></div>
-<div class='foot' style='color:#8b93a1;border-top:none'><span>Bedrijfsgeheugen · bedrijfsgeheugen.nl</span><span>AI-gedreven. Menselijk gericht.</span></div></div>""")
+<div class='foot' style='color:#8b93a1;border-top:none'><span>Bedrijfsgeheugen · bedrijfsgeheugen.nl · Beeld AI-gegenereerd</span><span>AI-gedreven. Menselijk gericht.</span></div></div>""")
 
 # 2 INHOUD + LEESWIJZER
 page("Voor je begint","leest",f"""<p class='lead' style='font-size:11pt'>Dit rapport is geschreven voor ondernemers die willen beslissen, niet voor mensen die willen bladeren. Elke pagina eindigt met iets wat je kunt doen.</p>
-<div class='grid2'><div class='card'><h3>Inhoud</h3><table class='mini' style='font-size:8.8pt'>
-<tr><td>4</td><td>Wereld, Europa, Nederland naast elkaar</td></tr><tr><td>5</td><td>De Nederlandse paradox</td></tr><tr><td>6</td><td>Waarom drie cijfers allemaal kloppen</td></tr><tr><td>7–9</td><td>Waar landen verschillen (analyse)</td></tr>
-<tr><td>10–12</td><td>Waarde en kosten: waar verdient AI geld</td></tr><tr><td>13</td><td>BI, data en software</td></tr><tr><td>14–16</td><td>Mens, proces, cultuur</td></tr><tr><td>17–18</td><td>Risico’s en regels</td></tr><tr><td>19</td><td>Kansenkaart</td></tr><tr><td>20–21</td><td>Twee cases, stap voor stap</td></tr><tr><td>22–25</td><td>Zelftest, 90 dagen, meetblad, portaal</td></tr><tr><td>26–31</td><td>Methode, bronnen, data, bijlage</td></tr></table></div>
+<div class='grid2'><div class='card'><h3>Inhoud</h3><table class='mini' style='font-size:8.4pt'><colgroup><col style='width:13mm'><col></colgroup>
+<tr><td>3</td><td>Kennismaken met Bedrijfsgeheugen</td></tr><tr><td>5</td><td>Wereld, Europa, Nederland naast elkaar</td></tr><tr><td>6</td><td>De Nederlandse paradox</td></tr><tr><td>7</td><td>Waarom drie cijfers allemaal kloppen</td></tr><tr><td>8–10</td><td>Waar landen verschillen (analyse)</td></tr><tr><td>11–13</td><td>Waarde en kosten: waar verdient AI geld</td></tr><tr><td>14</td><td>BI, data en software</td></tr><tr><td>15–17</td><td>Mens, proces, cultuur</td></tr><tr><td>18–19</td><td>Risico’s en regels</td></tr><tr><td>20</td><td>Kansenkaart</td></tr><tr><td>21–22</td><td>Twee cases, stap voor stap</td></tr><tr><td>23–27</td><td>Zelftest, plan, meetblad, mensen, portaal</td></tr><tr><td>28–33</td><td>Methode, bronnen, data, bijlage</td></tr></table></div>
 <div><div class='card'><h3>Zo lees je de labels</h3><p class='mini'><span class='lab lf'>Feit</span> gemeten en herleidbaar naar een bron.<br><span class='lab lv'>Verband</span> onze eigen analyse op de data. Zegt niets over oorzaak.<br><span class='lab lp'>Voorspelling</span> een verwachting van een derde.<br><span class='lab la'>Ons oordeel</span> onze eigen inschatting.</p></div>
 <div class='card'><h3>Bewijskracht</h3><p class='mini'>{tier('A')} officiële statistiek<br>{tier('B')} wetenschappelijk of grote enquête met methode<br>{tier('C')} adviesbureau of leverancier, methode deels bekend<br>{tier('D')} leverancierscase, niet geverifieerd</p></div></div></div>
 {card('Zo is dit gemaakt',"<p class='mini'>Alle cijfers staan met bron, jaar en populatie in een database (27 bronnen, 145 feiten, 27 landen). De analyses zijn daaroverheen gedraaid met bootstrap-intervallen, zodat je ziet hoe zeker iets is. Waar het aantal landen klein is (maximaal 27) zeggen we dat erbij. Een verband is nooit een bewijs van oorzaak.</p>",'cr')}
 {card('Eén ding vooraf',"<p class='mini'>Bronnen meten verschillende dingen: bedrijven of personen, 2+ of 10+ medewerkers, gebruik of inzet. We tellen cijfers daarom nooit bij elkaar op en zetten ze alleen naast elkaar waar dat eerlijk kan.</p>")}""",h="Hoe je dit rapport leest")
+
+# 2b KENNISMAKEN
+def ben(n,t,b):return f"<div class='card' style='margin:0'><div class='stepn' style='width:7.5mm;height:7.5mm;font-size:9pt;margin-bottom:2mm'>{n}</div><h3 style='margin:0 0 1mm'>{t}</h3><p class='mini' style='font-size:8.6pt;margin:0'>{b}</p></div>"
+page("Kennismaken · Bedrijfsgeheugen","geheugen",f"""<img class='ph' src='{IMG("team.jpg")}' style='height:58mm'><div class='cap'>Beeld: AI-gegenereerd, de personen bestaan niet.</div>
+<p class='lead' style='font-size:11pt;margin-top:3mm'>Wij zijn Bedrijfsgeheugen. Wij helpen Nederlandse bedrijven met 3 tot 250 medewerkers om AI te gebruiken zonder dat het blijft hangen bij één enthousiasteling. Dit rapport laat zien wat werkt. Je portaal helpt je het te doen, met mensen erbij als je dat wilt.</p>
+<div class='grid3' style='margin-top:3mm'>{ben(1,"Zes minuten tot je eerste beeld","De Frisse blik geeft scores per onderdeel, laat zien wat je het meest remt en levert een roadmap.")}{ben(2,"Alles op één plek","Wat je invult en uploadt staat in je portaal. Je koppelt documenten en systemen, zodat kennis niet in hoofden blijft.")}{ben(3,"Weten wat mag","De AI-verordening-scan toont welke van je toepassingen onder welke regel vallen, met datums en bron.")}
+{ben(4,"Weten wat bij je past","Het AI-capabilitymodel (86 capabilities) wijst per onderdeel aan wat nu, bij groei of later aan de orde is.")}{ben(5,"Elk kwartaal scherper","Nieuwe edities van dit rapport staan in je portaal onder Kwartaalrapporten, om naast je eigen cijfers te leggen.")}{ben(6,"Mensen als je ze wilt","Een expert denkt met je mee of voert het met je uit. Meer daarover in het hoofdstuk Werken met mensen.")}</div>
+{card("Wat je nu doet",f"<p class='mini' style='font-size:9.5pt'>Doe de Frisse blik (zes minuten, gratis). Wil je het hele portaal uitproberen? Gebruik {CODE} voor 30 dagen gratis, zonder betaalmethode.</p>",'lbg')}""",h="Kennismaken: je bedrijf, maar dan met een geheugen")
+
 # 3 BEVINDINGEN
 F10=[("Drie antwoorden, één land",f"CBS meldt 17% (2+ medewerkers), Eurostat 33,2% (10+) en Exact 70% (zelfrapportage). Het zijn drie lagen: bedrijfsinzet, bedrijfsinzet bij grotere bedrijven en persoonlijk gebruik. {tier('A')}"),
 ("Nederland: voorop bij bedrijven, sceptisch in de zaal",f"Rang {rank_tot} van 27 in de EU, maar slechts 36% ziet AI als meer nuttig dan schadelijk. KPMG meldt het laagste regelmatig gebruik van 47 landen. {tier('B')}"),
@@ -347,6 +358,14 @@ page("Werkblad · Meetblad","Meetblad",f"""<p>Dit blad werkt in het PDF zelf: kl
 <div class='grid2'>{card("Zo lees je de uitkomst","<ul class=tight style='font-size:9.2pt'><li><b>Minuten per stuk omlaag, fouten gelijk of lager:</b> uitbreiden naar de volgende taak.</li><li><b>Minuten omlaag, fouten omhoog:</b> pas de regels aan en meet nog twee weken.</li><li><b>Geen verschil:</b> de taak was niet geschikt. Kies een andere, dat is een normale uitkomst.</li></ul>",'cr')}
 {card("Bespaarde uren × uurtarief","<p class='mini'>(minuten vóór − minuten ná) × aantal stuk per maand ÷ 60 × jouw uurtarief = je besluitgetal per maand.</p><p class='mini'>Uitkomst: "+fld('besluit',34)+"</p>",'lbg')}</div>
 {card("Wat je nu doet","<p class='mini' style='font-size:9.5pt'>Vul vandaag week 0 in. Het kost tien minuten en het is het enige wat je nu niet kunt terugdraaien: een nulmeting achteraf bestaat niet.</p>",'lbg')}""",h="Je eigen meetblad, invulbaar")
+# 26b2 WERKEN MET MENSEN
+def way(t,sub,b,cls=''):return f"<div class='card {cls}' style='margin:0'><div style='font-size:7.5pt;letter-spacing:.14em;font-weight:700;color:var(--o)'>{sub}</div><h3 style='margin:1mm 0 1.5mm'>{t}</h3><p class='mini' style='font-size:8.8pt;margin:0'>{b}</p></div>"
+page("Werken met mensen · Experts","mensen",f"""<div style='display:flex;gap:4mm'><div style='flex:1'><img class='ph' src='{IMG("consult.jpg")}' style='height:52mm'></div><div style='flex:1'><img class='ph' src='{IMG("workshop.jpg")}' style='height:52mm'></div></div><div class='cap'>Beeld: AI-gegenereerd, de personen bestaan niet.</div>
+<p class='lead' style='font-size:11pt;margin-top:3mm'>In dit rapport strandt AI op mensen, niet op techniek. Daarom is het portaal er niet alleen voor jezelf: er zijn ook consultants en experts die het met je doen. Jij kiest hoeveel hulp je wilt.</p>
+<div class='grid3' style='margin-top:3mm'>{way("Zelf","JIJ STUURT","Je portaal en dit rapport. Je kiest een taak, vult het meetblad en volgt je resultaat. Past als je graag zelf aan het stuur zit. Starten kan 30 dagen gratis.")}{way("Samen","EEN EXPERT LOOPT MEE","Een expert helpt je de eerste taak te kiezen, je team mee te nemen en je meetblad scherp te zetten. Jij houdt het stuur en hebt iemand die het eerder deed.","lbg")}{way("Laten doen","EEN CONSULTANT VOERT UIT","Een consultant voert de invoering met je uit, van eerste taak tot meetbaar resultaat, inclusief afspraken over data, risico’s en de AI-verordening.")}</div>
+<div class='grid2' style='margin-top:3mm'>{card("Wie je helpt","<p class='mini'>Consultants en experts met ervaring in data, BI, AI en het mkb. Geen jargon, wel afspraken op papier en één getal waarop we samen afrekenen: je meetblad.</p>")}{card("Zo begin je","<ol class=tight style='font-size:9pt'><li>Doe de Frisse blik, zes minuten.</li><li>Plan een kort kennismakingsgesprek.</li><li>Kies samen: zelf, samen of laten doen.</li></ol>",'cr')}</div>
+{card("Wat je nu doet","<p class='mini' style='font-size:9.5pt'>Plan een kennismaking via bedrijfsgeheugen.nl/frisse-blik en vertel welke vorm je wilt: zelf, samen of laten doen.</p>",'lbg')}""",h="Software doet de helft, mensen de andere helft")
+
 # 26c SAMEN MET PORTAAL
 import segno,io
 qr=segno.make(TRIAL,error='m');buf=io.BytesIO();qr.save(buf,kind='svg',scale=4,border=0,dark='#14171A',light=None,omitsize=True,xmldecl=False);QR=buf.getvalue().decode()
