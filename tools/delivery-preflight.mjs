@@ -99,7 +99,8 @@ export async function loadDeliveryPreflight({
   const plannedActionGuard = String(plannedAction).trim()
     ? matchPlannedAction({
         action: plannedAction,
-        lessons: historicalLessons,
+        // Delivery lessons first, then the chat lessons the preflight already treats as PROVEN.
+        lessons: [...historicalLessons, ...chatLessons.filter(lesson => lesson.preventionRule && lesson.fix && lesson.rootCause)],
         rules: rulesDoc.rules || [],
         triggers: plannedActionTriggersDoc.rules || [],
         acknowledged: acknowledgedPreventionRules,

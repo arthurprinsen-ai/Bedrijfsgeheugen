@@ -1,0 +1,64 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|planned-action-chat-lessons-wave4|20261106-v1",
+  "owner": "existing planned-action guard, planned-action-triggers config and delivery preflight; no new mechanism",
+  "compiler": {
+    "failure_class": "PLANNED_ACTION_GUARD_BLIND_TO_CHAT_LESSONS",
+    "scope": "PLANNED_ACTION_GUARD_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The planned-action guard only read docs/brain/delivery-failure-lessons.json. 19 active rules have a complete lesson (root cause, required action, fingerprint) in the chat-learning shards that the delivery preflight already treats as PROVEN. The guard did not see those lessons, so these rules could never block a planned action, and they were wrongly counted as rules without a lesson.",
+  "prevention_rule": "The guard (scripts/brain/planned-action-guard.mjs) and the canonical preflight (tools/delivery-preflight.mjs) now match planned actions against delivery lessons first and then the same chat lessons. The 19 rules get phrase triggers. A required-check test fails when one of the 19 has no visible lesson or trigger, fires every trigger through the real guard and the canonical preflight, checks that an existing delivery lesson is never overridden, and fails on a false positive. No lesson is invented; every lesson already existed in the shards. Recall beyond the examples is not measured.",
+  "prevention_rules": [
+    "POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION",
+    "STRIP_SQL_COMMENTS_BEFORE_SEMANTIC_ASSERTIONS",
+    "DO_NOT_AUTO_FIX_PERFORMANCE_INFO",
+    "REVOKE_ALL_BEFORE_LEAST_PRIVILEGE_GRANT",
+    "READ_LIVE_SCHEMA_BEFORE_EVIDENCE_WRITE",
+    "REQUIRE_OBSERVED_SCHEDULER_RUN_BEFORE_AUTONOMY_CLAIM",
+    "NO_NOOP_MIGRATION_FOR_TRIGGER_PROOF",
+    "USE_EXACT_SHA_EVENT_FINGERPRINTS",
+    "CLASSIFY_NEW_RUNTIME_TOOL_PATHS",
+    "NETLIFY_DEPLOY_INSTRUCTION_IS_NOT_EXECUTION",
+    "RUNTIME_DNS_FAILURE_IS_INFRA_BOUNDARY",
+    "PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY",
+    "DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM",
+    "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES",
+    "USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH",
+    "USE_GITHUB_READY_FOR_REVIEW_ACTION",
+    "SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS",
+    "PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT",
+    "LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-chat-lessons-wave4-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner decision 2026-11-06 21:46 (Europe/Amsterdam): resolve all open items; decide yourself",
+      "docs/changes/2026-11-06-planned-action-triggers-wave3-v1.md (open PR #5506 scoped the 19 out because the guard did not see their lessons)"
+    ],
+    "current": [
+      "Local run: wave4 test 5 of 5 green; 44 of 44 related tests green (guard, wave2, system error register, preflight, chat learning, delivery learning, continuity, development doc contract)",
+      "19 of 19 positive examples fire; 0 of 8 neutral actions fire; 1 hit in 400 recent commit titles"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
