@@ -797,7 +797,7 @@
       "component": "shared",
       "reason": "Twelve companies were wrongly rejected as having no own website",
       "rootCause": "HTTP 432 plan usage limit was read as no results",
-      "fix": "A provider error stops the run with an alarm and is never written as an empty result; the same blind spot in bg-bedrijfsnieuws is open and needs the source code retrieved first",
+      "fix": "A provider error stops the run with an alarm and is never written as an empty result; bg-bedrijfsnieuws (version 12, read 6 November) throws TAVILY_<status> on any non-ok response and records a failed bg_bewijs, so it does not share this blind spot",
       "preventionRule": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
       "status": "PROVEN"
     },
