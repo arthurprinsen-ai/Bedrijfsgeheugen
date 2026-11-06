@@ -1,0 +1,20 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "PROVIDER_APPLIED_LOCK_PENDING",
+  "fingerprint": "powerhouse|content|stuck-publication-no-recovery-loop|20261106-v1",
+  "failure_class": "SILENT_FAILURE",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse content closed-loop tick; original ONE BRAIN",
+  "root_cause": "Een gemiste publicatie werd gemeld, maar niets koppelde hem aan een bekende blokkade, telde herstelpogingen of escaleerde naar de eigenaar. Een nieuwe foutcode bleef onopgemerkt.",
+  "evidence": {"at_utc": "2026-11-06T12:15:00Z", "source": "eerste run in productie: 12 gemiste kanaal-dagen gekoppeld, 11 geescaleerd met eigenaar, 0 onbekende codes"},
+  "fix": "Tabellen powerhouse_blocker_playbook (16 codes uit het blokkaderegister) en powerhouse_blocker_recovery_log; powerhouse_recover_stuck_publications_v1 als geisoleerde stap in de bestaande uurlijkse tick: koppelt aan het draaiboek, telt controles, escaleert via brain_observe_failure met eigenaar, oorzaak en preventie; een onbekende code wordt een incident blocker-unregistered. Geen herpublicatie, geen tweede scheduler.",
+  "prevention_rule": "Elke nieuwe foutcode komt in dezelfde wijziging in het draaiboek en het register. Escalatie wijst naar de eigenaar; nooit blind opnieuw publiceren.",
+  "regression_contract": "tests/brain-blocker-playbook-recovery-20261106.test.mjs",
+  "compiler": {"failure_class": "SILENT_FAILURE", "scope": "RUNTIME", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {"historical_replay": ["tests/brain-blocker-playbook-recovery-20261106.test.mjs"], "canary": ["tests/brain-blocker-playbook-recovery-20261106.test.mjs"]},
+  "tests": ["tests/brain-blocker-playbook-recovery-20261106.test.mjs"],
+  "production_proven": false,
+  "required_proof": ["Protected exact-head checks", "migratie 20261106140000 toegepast (813 -> 814); bronslot volgt in herstel-PR", "natuurlijke uurlijkse run zonder fout in bg_gezondheid soort stuck-recovery"]
+}
