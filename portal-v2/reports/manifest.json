@@ -1,0 +1,22 @@
+{
+ "version": 1,
+ "editions": [
+  {
+   "id": "ai-kloof-mkb-2026-q4",
+   "quarter": "2026-Q4",
+   "title": "De AI-kloof in het mkb",
+   "published": "2026-11-06",
+   "sources": 27,
+   "pages": 31,
+   "pdfBytes": 789353,
+   "summary": "Wereld, Europa en Nederland naast elkaar: waarde, kosten, risico’s, de menselijke blokkades en wat je er maandag aan doet. Met invulbaar meetblad.",
+   "highlights": [
+    "Nederland: voorop bij bedrijven (33,2% bij 10+ medewerkers), onderaan bij vertrouwen in AI.",
+    "Tussen EU-landen verschilt AI-gebruik door kleine bedrijven ruim 9 keer, bij grote bedrijven niet eens 4 keer.",
+    "Van 88% gebruik naar 6% topresultaat: waarde zit in herontwerp van werk en meten."
+   ],
+   "pdf": "/portal-v2/reports/ai-kloof-mkb-2026-q4.pdf",
+   "data": "/portal-v2/reports/ai-mkb-2026-q4.db"
+  }
+ ]
+}
