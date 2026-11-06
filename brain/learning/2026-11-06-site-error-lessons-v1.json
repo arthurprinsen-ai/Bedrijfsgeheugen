@@ -1,0 +1,67 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "site|delivery|site-and-ci-error-lessons|20261106-v1",
+  "owner": "existing delivery-failure-lessons and delivery-prevention-rules preflight; no new register",
+  "compiler": {
+    "failure_class": "SITE_AND_CI_KNOWN_ERRORS_NOT_IN_PREFLIGHT",
+    "scope": "DELIVERY_PREFLIGHT_LESSON_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Eleven site-generator, CSS, schema, test-design and CI errors that were already solved existed only in chat history, Notion and prose, so the delivery preflight could not stop an agent from repeating them. Only fixes that were merged and verified are recorded; PR #1588 and #1592 were closed without merge and are not recorded as proven.",
+  "prevention_rule": "Each of the eleven errors is a PROVEN lesson in docs/brain/delivery-failure-lessons.json with an active rule in config/delivery-prevention-rules.json, and a required-check test fails when a lesson loses its rule, is duplicated, or contains a credential. Rules marked agent-contract are applied by the preflight but not blocked by a validator.",
+  "prevention_rules": [
+    "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+    "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+    "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+    "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+    "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+    "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+    "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+    "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+    "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+    "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-error-lessons-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "PR #988, #1323 (merged 2026-09-09), #1378 (merged 2026-09-10), #5494, #5490",
+      "Notion: GitHub-foutenregister (410da36a-ac8a-815c-b0b0-cd8f786b84e1)"
+    ],
+    "current": [
+      "Local parity check on the changed files: no PROVEN lesson without an active rule, no duplicate fingerprint or rule id; 11 lessons added, 9 rules added, 1 existing rule reused"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ],
+  "fingerprints": [
+    "site|build|shared|generated-html-overwritten-by-build-generators",
+    "site|build|shared|homepage-index-overwritten-by-v18-production-core",
+    "site|build|shared|page-outside-generator-or-shell-exclusion",
+    "site|css|shared|scoper-flattens-scrollbar-selector-white-pages",
+    "site|seo|shared|shell-jsonld-copied-to-every-page",
+    "delivery-failure|governance|shared|learning-evaluation-uses-dependency-needing-tests",
+    "delivery-failure|pipeline|shared|two-contradicting-tests-after-rebuild",
+    "delivery-failure|pipeline|shared|tests-assert-literal-source-or-copy",
+    "github|writeback|shared|glob-skips-dot-folders",
+    "site|seo|shared|canonical-kop-must-match-menu",
+    "netlify|ci|shared|preview-check-race-or-neutral-pages-changed"
+  ]
+}

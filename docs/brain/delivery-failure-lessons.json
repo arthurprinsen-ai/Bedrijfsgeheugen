@@ -650,6 +650,116 @@
       "fix": "add the exact missing build keys to a config/bg-static-i18n-en.d patch using the existing sentence translations; after any public text change regenerate or verify the patch against the build output (STATIC_I18N_CACHE_MISSING lists the exact keys)",
       "preventionRule": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|build|shared|generated-html-overwritten-by-build-generators",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "an edit to a site .html file or to assets/kop.css disappeared on the next deploy, or a block that was removed from the page kept coming back",
+      "rootCause": "the HTML in the repository is generator input; netlify.toml runs the tools/ generators on every deploy and they rewrite the pages",
+      "fix": "start at netlify.toml and tools/ (for example tools/bouw-v18-views.mjs and tools/v18-modules.mjs) and change the generator; search the pages only after the generators are understood",
+      "preventionRule": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|build|shared|homepage-index-overwritten-by-v18-production-core",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "a change in index.html did not survive a build",
+      "rootCause": "tools/bouw-v18-production-core.mjs unpacks a hash-checked payload and overwrites index.html on every build",
+      "fix": "change the homepage through an extra html.replace in that build file, not in index.html",
+      "preventionRule": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|build|shared|page-outside-generator-or-shell-exclusion",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "a hand-made page lost its header, menu or top bar, or a generated view overwrote a hand-made page",
+      "rootCause": "the page sat outside the generator, on the uniforme-schil exclusion list or without a main element, or its view name was left in the generator view lists",
+      "fix": "before expecting the shared shell, check the generator view lists (tools/v18-views-lijst.mjs, tools/bouw-losse-paginas.mjs), the exclusion list in tools/uniforme-schil.mjs and that the page has a main element; never add a hand-made page back to the view lists",
+      "preventionRule": "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|css|shared|scoper-flattens-scrollbar-selector-white-pages",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "all standalone content pages rendered white on desktop while the text was in the DOM (PR #1323)",
+      "rootCause": "scoopCss() in tools/bouw-v18-chrome.mjs flattened a scrollbar selector into .inhoud-body{width:12px} inside a desktop media query, shrinking the content column to 12px",
+      "fix": "measure the ancestor geometry with getBoundingClientRect in headless Chrome before changing paint, opacity, visibility or overflow; a guard that forces visibility is not a fix until the cause is measured",
+      "preventionRule": "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|seo|shared|shell-jsonld-copied-to-every-page",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "nearly every page carried the Over ons WebPage schema and up to eleven duplicate data blocks (PR #1378)",
+      "rootCause": "tools/site-shell/apply-shell.mjs uses over-ons.html as the shell and copied its JSON-LD along",
+      "fix": "never copy shell JSON-LD to pages, de-duplicate each page own blocks and refuse a WebPage or BlogPosting whose URL differs from the canonical",
+      "preventionRule": "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|governance|shared|learning-evaluation-uses-dependency-needing-tests",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "hygiene / admission failed with LEARNING_CANONICALIZATION_BLOCKED because the evaluation tests failed on Cannot find package parse5 (PR #5494)",
+      "rootCause": "the canonical learning evaluation in admission runs without installed npm packages, so tests that import them cannot pass there",
+      "fix": "name only dependency-free tests in a learning record evaluation block (historical_replay, shadow, canary); mention dependency-needing tests as evidence instead",
+      "preventionRule": "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|shared|two-contradicting-tests-after-rebuild",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "two tests demanded opposite behavior after a rebuild (buildLegacyUrl, ensureNativeRange and window.scrollTo, three times)",
+      "rootCause": "a new test contract was added without retiring the old one in the same change",
+      "fix": "when a test is red, first look for a second test that demands the opposite; retire or rewrite the old contract in the same change as the rebuild",
+      "preventionRule": "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|shared|tests-assert-literal-source-or-copy",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "six tests in one day failed on the first rewording although the code was correct",
+      "rootCause": "the tests asserted literal source text or marketing copy instead of behavior",
+      "fix": "a test asserts the outcome, never the promise; do not target section ids or marketing copy",
+      "preventionRule": "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|writeback|shared|glob-skips-dot-folders",
+      "stage": "WRITEBACK",
+      "component": "shared",
+      "reason": "a bulk change updated 66 pages but left the canonical header in .github/ untouched",
+      "rootCause": "glob.glob with ** does not descend into folders that start with a dot, so .github/ was skipped",
+      "fix": "include dot folders explicitly in bulk file operations and check that .github/canoniek/kop.html moves with the pages",
+      "preventionRule": "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|seo|shared|canonical-kop-must-match-menu",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "a new menu item failed the SEO check on every page",
+      "rootCause": "the SEO check compares .github/canoniek/kop.html with the menu bar of every page, so the canonical file is leading",
+      "fix": "add every new menu item to .github/canoniek/kop.html in the same change",
+      "preventionRule": "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify|ci|shared|preview-check-race-or-neutral-pages-changed",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "a pull request showed unstable or a preview check went red without a code fault",
+      "rootCause": "the Netlify Pages changed run always concludes neutral, and the asset-verification step can run before the Netlify deploy is ready",
+      "fix": "only the required checks (test, hygiene / admission, CodeQL) decide; prove the diff is not the cause and rerun the failed job instead of editing the code",
+      "preventionRule": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+      "status": "PROVEN"
     }
   ]
 }
