@@ -44,5 +44,18 @@
   },
   "root_cause": "Original planned-action guard/preflight has no independently labelled real-agent decision/outcome corpus. Existing tests use authored plans and historical PR-title proxies rather than exact agent --action inputs.",
   "prevention_rule": "Allow operational percentages only from validated original BRAIN decision records with externally attested independent labels and adequate sample support; retain null for unknowns.",
-  "status": "CODE_CANDIDATE_UNVERIFIED"
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "evidence": {
+    "tests": [
+      "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+    ],
+    "baseline": [
+      "Original BRAIN record planned-action-recall:issue5510:20261106:baseline-v1 confirmed NOT_MEASURED via connected Supabase readback",
+      "PR #5511 original BRAIN terminal and production readback succeeded; no operational recall corpus collected"
+    ],
+    "limitations": [
+      "No real agent decision-source and external reviewer identity attestation joined yet",
+      "Source code candidate unverified until protected merge and terminal readback"
+    ]
+  }
 }
