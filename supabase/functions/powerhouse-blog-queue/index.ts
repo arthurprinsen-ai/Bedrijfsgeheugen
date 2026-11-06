@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { canRebindUnsentBlog, originalBlogSlugGuard } from '../_shared/blog-null-lineage-recovery.mjs';
 import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
+import { assessBlogQueueAdmission } from '../_shared/blog-queue-admission-contract.mjs';
 
 const VERSION='v8-null-safe-blog-lineage-cas';
 const clean=(v:unknown)=>String(v??'').trim();
@@ -38,6 +39,12 @@ Deno.serve(async(req)=>{
     db.from('content_publication_obligations').select('status,slug,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
+  // The canonical obligation is authoritative. A historical date, explicit
+  // NO_PUBLISH, active veto or possible provider side effect is never queued.
+  const admission=assessBlogQueueAdmission({
+    runDate,today:localDate(),obligation:o?{...o,evidence:jsonObject(o.evidence)}:null
+  });
+  if(!admission.allowed) return json({ok:true,queued:false,reason:admission.code,runDate});
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
   const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
   if(!fact.ok)return json({ok:false,queued:false,error:fact.code,runDate,
