@@ -14,7 +14,7 @@
   },
   "fix": "Pagina kwartaalrapporten leest portal-v2/reports/manifest.json en toont per editie PDF en databestand. Een nieuwe editie is een nieuw bestand plus een manifestregel; geen schemawijziging, geen scheduler.",
   "prevention_rule": "Elk periodiek rapport krijgt een manifestregel in het portaal, zodat klanten het daar vinden en een volgende editie geen code kost.",
-  "regression_contract": "tests/portal-kwartaalrapporten-20261106.test.mjs",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
   "compiler": {
     "failure_class": "DELIVERY_GAP",
     "scope": "RUNTIME",
@@ -23,10 +23,10 @@
     "security_sensitive": false
   },
   "evaluation": {
-    "historical_replay": ["tests/portal-kwartaalrapporten-20261106.test.mjs"],
-    "canary": ["tests/portal-kwartaalrapporten-20261106.test.mjs"]
+    "historical_replay": ["tests/brain-portal-kwartaalrapporten-20261106.test.mjs"],
+    "canary": ["tests/brain-portal-kwartaalrapporten-20261106.test.mjs"]
   },
-  "tests": ["tests/portal-kwartaalrapporten-20261106.test.mjs"],
+  "tests": ["tests/brain-portal-kwartaalrapporten-20261106.test.mjs"],
   "production_proven": false,
   "required_proof": [
     "Protected exact-head checks",

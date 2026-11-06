@@ -6,4 +6,4 @@ Nieuwe pagina `kwartaalrapporten` in Portal V2 (groep Actueel & externe data, va
 
 Een nieuwe editie is een nieuwe rij in het manifest plus de bestanden. De generator staat in `portal-v2/reports/ai-kloof/source/` met README. Geen scheduler, geen tabel, geen migratie, geen schrijfroute en geen klantdata.
 
-Test: `tests/portal-kwartaalrapporten-20261106.test.mjs` controleert dat elk manifestbestand bestaat en een echt PDF is, dat de nieuwste editie eerst staat, dat externe links en HTML worden geweerd en dat de pagina is aangesloten.
+Test: `tests/brain-portal-kwartaalrapporten-20261106.test.mjs` controleert dat elk manifestbestand bestaat en een echt PDF is, dat de nieuwste editie eerst staat, dat externe links en HTML worden geweerd en dat de pagina is aangesloten.
