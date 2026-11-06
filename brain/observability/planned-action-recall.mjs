@@ -57,7 +57,7 @@ export async function appendPlannedActionEvidence(adapter, prepared, sourceRevis
 // Observations and independent reviews are separate canonical BRAIN records.
 // A self-reported acknowledgment never becomes an independent review or a safe outcome.
 export function evaluatePlannedActionRecall(records, {
-  from, to, minReviewed = 30, minPositive = 10, minNegative = 10, minAgents = 2,
+  from, to, minReviewed = 30, minPositive = 10, minNegative = 10, minAgents = 2, verifyIndependentReview = null,
 } = {}) {
   if (!Array.isArray(records)) throw new TypeError('BRAIN records array required');
   if (from !== undefined && !validTime(from)) throw new TypeError('valid from required');
@@ -109,6 +109,14 @@ export function evaluatePlannedActionRecall(records, {
     if (tenant(review) !== tenant(decision) || label.reviewerId === actualPayload.agentId || Date.parse(time(review)) < at) { excluded++; continue; }
     const expected = ruleIds(label.expectedRuleIds), observed = ruleIds(actualPayload.matchedRuleIds);
     if (!expected || !observed) { excluded++; continue; }
+    // A record's self-reported verified/independent flags are NOT trusted identity proof.
+    // Only a caller authorized to perform independent provider/identity readback may
+    // supply this verifier. Without it, metrics remain NOT_MEASURED.
+    let attested = false;
+    if (typeof verifyIndependentReview === 'function') {
+      try { attested = verifyIndependentReview(review, decision) === true; } catch { attested = false; }
+    }
+    if (!attested) { excluded++; continue; }
     reviewed++; agents.add(actualPayload.agentId);
     if (expected.length) positive++;
     else { negative++; safe++; if (actualPayload.blocked) falseBlocks++; }
