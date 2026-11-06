@@ -27,6 +27,11 @@ test('handles numbered lists, CRLF, and existing blank lines without duplication
   assert.equal(normalizeBlogMarkdownBlocks(result), result);
 });
 
+test('ordinary dash punctuation inside a sentence is not converted to a list', () => {
+  const raw='Kosten - baten: controleer de cijfers.\nDe tekst blijft een alinea.';
+  assert.equal(normalizeBlogMarkdownBlocks(raw), raw);
+});
+
 test('original canonical generator and exporter both enforce one contract', () => {
   const orchestrator=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
   const exporter=readFileSync('supabase/functions/powerhouse-blog-export/index.ts','utf8');
