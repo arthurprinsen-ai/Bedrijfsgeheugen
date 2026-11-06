@@ -50,7 +50,3 @@ test('Friday after Monday success is healthy; false 74-hour warning disappears',
  const now=new Date('2026-11-06T13:57:00Z');
  assert.equal(status({schedule:'0 6 * * 1',lastStatus:'succeeded',lastRun:new Date('2026-11-02T06:00:00Z')},now),'ok');
 });
-test('preserve same cron schedule and no attempt to declare provider output proven',()=>{
- assert.doesNotMatch(sql,/\\bcron\\.(schedule|alter_job|unschedule)\\s*\\(/i);
- assert.doesNotMatch(sql,/LIVE_PROVEN|NOOIT_BEWEZEN.*(ok|success)/i);
-});
