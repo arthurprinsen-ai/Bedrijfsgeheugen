@@ -140,3 +140,15 @@ export function evaluatePlannedActionRecall(records, {
     causalPrevention: 'NOT_PROVEN', // guard match ≠ actual prevented incident
   });
 }
+
+/**
+ * Read from the existing canonical BRAIN record adapter only. This does not
+ * create a new scheduler, store, data source, or a green-status write.
+ */
+export async function evaluateCanonicalBrainRecall(adapter, {tenantId='canonical', ...options} = {}) {
+  if (!safeId(tenantId) || typeof adapter?.listRecords !== 'function') {
+    throw new TypeError('canonical BRAIN record adapter and tenant are required');
+  }
+  const records = await adapter.listRecords(tenantId);
+  return evaluatePlannedActionRecall(records, options);
+}
