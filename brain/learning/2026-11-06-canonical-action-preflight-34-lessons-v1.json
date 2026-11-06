@@ -1,0 +1,33 @@
+{
+  "fingerprint": "delivery|preflight|shared|action-guard-not-connected-to-preflight-20261106-v1",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "owner": "tools/delivery-preflight.mjs",
+  "root_cause": "The existing delivery preflight only screened default-stage lessons and did not call the separate planned-action guard; 15 GitHub lessons from PR 5490 had no action triggers.",
+  "prevention_rule": "Every concrete planned change goes through the existing canonical delivery preflight with an explicit action; match 34 active PROVEN lessons before execution and fail closed for unacknowledged risks.",
+  "evidence": [
+    {
+      "type": "production-source",
+      "reference": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5493",
+      "fact": "PR 5493 merged and shipped 19 system triggers; original canonical delivery preflight was not wired to the guard."
+    },
+    {
+      "type": "source-lesson",
+      "reference": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5490",
+      "fact": "15 GitHub lessons had active prevention rules but lacked planned-action triggers."
+    },
+    {
+      "type": "regression",
+      "reference": "tests/brain-planned-action-guard-20261106.test.mjs",
+      "fact": "Candidate tests must prove 34 triggers and central fail-closed action checks; merge/readback pending."
+    }
+  ],
+  "fix": "Add 15 GitHub triggers, reuse matchPlannedAction in loadDeliveryPreflight, accept explicit plannedAction and acknowledgedPreventionRules, extend existing regression tests and AGENTS.md.",
+  "regression": "tests/brain-planned-action-guard-20261106.test.mjs",
+  "learning_boundary": "--ack is an agent declaration only, not provider readback, test evidence or guaranteed risk remediation.",
+  "without_action": "Backwards-compatible general preflight but no planned-action clearance claim.",
+  "no_parallel_scheduler": true,
+  "no_parallel_guard": true
+}
