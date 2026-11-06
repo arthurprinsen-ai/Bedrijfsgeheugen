@@ -6,3 +6,5 @@
 - Proposed source: original function replacement on current main; new migration version 20261106144500_weekly_cron_health_cadence_original_function_v1.sql.
 - Negative tests: failed/no-run, overdue weekly, unchanged daily/non-weekly thresholds, security/ACL readback, no duplicate job; no provider-output inference.
 - Status: CODE_CANDIDATE awaiting protected CI, provider preview and production proof.
+
+- 2026-11-06 14:47 UTC initial Required admission blocked by `BLOCKED_LINEAGE_AMBIGUOUS` with blocker #4639 while that old PR was still open at the start of the run. The original PR was then closed as explicitly superseded (unmerged). This same candidate is now the one authoritative current-main fix; the next distinct head must rerun original Required and Supabase Preview. Do not bypass gate or force CI outcome.
