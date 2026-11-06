@@ -2000,3 +2000,5 @@ Dezelfde bestaande native watchdog registreert voortaan de expliciete `decision`
 - i18n patch keys vs build segments (6 Nov 2026, fingerprint `i18n|cache|blog-2026-11-06-segment-keys|20261106-v1`): after any public text change verify the patch against `STATIC_I18N_CACHE_MISSING`; the build looks up final page blocks, not sentences.
 
 - Site, CSS, schema, test and CI error lessons (6 Nov 2026, fingerprint `site|delivery|site-and-ci-error-lessons|20261106-v1`): 11 PROVEN lessons with active rules in the delivery preflight; read them before any site, generator, test or learning-record change.
+
+- Planned-action-triggers, tweede golf (6 Nov 2026, fingerprint `delivery|preflight|planned-action-triggers-wave2|20261106-v1`): 17 regels vuren nu op de geplande actie; zoek open PR's op head en bestandspad vóór een nieuwe branch of PR en vóór wijzigingen aan lessen, regels of triggers.

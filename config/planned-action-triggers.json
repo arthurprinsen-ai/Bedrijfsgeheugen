@@ -477,6 +477,230 @@
         "install",
         "apt"
       ]
+    },
+    {
+      "ruleId": "RECOVER_DUE_SOCIAL_ZERO_CANDIDATES_FROM_RELEASE_STATE",
+      "systems": [
+        "social",
+        "linkedin",
+        "instagram"
+      ],
+      "actions": [
+        "zero candidate",
+        "zero eligible",
+        "expected today"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+      "systems": [
+        "netlify",
+        "production deploy"
+      ],
+      "actions": [
+        "readback",
+        "commit sha",
+        "deploy identity",
+        "mark green"
+      ]
+    },
+    {
+      "ruleId": "RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA",
+      "systems": [
+        "production",
+        "netlify"
+      ],
+      "actions": [
+        "production sha",
+        "sha lag",
+        "promote",
+        "reconcile main"
+      ]
+    },
+    {
+      "ruleId": "CLASSIFY_PRIVATE_AUTH_BEFORE_PUBLIC_SEO_SCANS",
+      "systems": [
+        "seo scan",
+        "seo check",
+        "seo audit"
+      ],
+      "actions": [
+        "noindex",
+        "private page",
+        "auth",
+        "portal",
+        "login"
+      ]
+    },
+    {
+      "ruleId": "RECONCILE_CLOSED_FORCE_PUSHED_PR_AGAINST_CURRENT_MAIN",
+      "systems": [
+        "pull request",
+        "pr #"
+      ],
+      "actions": [
+        "force push",
+        "force-push",
+        "closed pr",
+        "reopen"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN",
+      "systems": [
+        "evidence"
+      ],
+      "actions": [
+        "mark green",
+        "report green",
+        "claim green",
+        "declare done"
+      ]
+    },
+    {
+      "ruleId": "REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION",
+      "systems": [
+        "pull request",
+        "pr #"
+      ],
+      "actions": [
+        "recreate",
+        "same head",
+        "ready for review"
+      ]
+    },
+    {
+      "ruleId": "CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS",
+      "systems": [
+        "test path",
+        "test selection",
+        "changed test"
+      ],
+      "actions": [
+        "classif",
+        "lane",
+        "select",
+        "execute"
+      ]
+    },
+    {
+      "ruleId": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "deploy authority",
+        "project access",
+        "account visible",
+        "not visible"
+      ]
+    },
+    {
+      "ruleId": "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE",
+      "systems": [
+        "production"
+      ],
+      "actions": [
+        "persist",
+        "write to main",
+        "current main"
+      ]
+    },
+    {
+      "ruleId": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+      "systems": [
+        "i18n",
+        "translation cache",
+        "english cache"
+      ],
+      "actions": [
+        "patch",
+        "blog",
+        "public text",
+        "segment"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK",
+      "systems": [
+        "http",
+        "webhook"
+      ],
+      "actions": [
+        "http 202",
+        "202 accepted",
+        "acknowledged",
+        "execution proof"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN",
+      "systems": [
+        "outcome",
+        "obligation"
+      ],
+      "actions": [
+        "mark green",
+        "close obligation",
+        "report green",
+        "declare proven"
+      ]
+    },
+    {
+      "ruleId": "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+      "systems": [
+        "test"
+      ],
+      "actions": [
+        "literal text",
+        "marketing text",
+        "source text",
+        "assert the copy"
+      ]
+    },
+    {
+      "ruleId": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "neutral",
+        "pages changed",
+        "preview race",
+        "preview check"
+      ]
+    },
+    {
+      "ruleId": "VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE",
+      "systems": [
+        "github",
+        "pull request"
+      ],
+      "actions": [
+        "create pr",
+        "open pr",
+        "create a pull request",
+        "open a pull request",
+        "create the pr",
+        "new branch"
+      ]
+    },
+    {
+      "ruleId": "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+      "systems": [
+        "delivery-failure-lessons",
+        "delivery-prevention-rules",
+        "planned-action-triggers",
+        "prevention rule",
+        "lessons file"
+      ],
+      "actions": [
+        "add",
+        "append",
+        "write",
+        "new",
+        "edit"
+      ]
     }
   ]
 }
