@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPlannedActionEvidence, appendPlannedActionEvidence, evaluatePlannedActionRecall, REVIEW_CONTRACT } from '../brain/observability/planned-action-recall.mjs';
+import { buildPlannedActionEvidence, appendPlannedActionEvidence, evaluatePlannedActionRecall, evaluateCanonicalBrainRecall, REVIEW_CONTRACT } from '../brain/observability/planned-action-recall.mjs';
 
 const now = '2026-11-06T22:00:00.000Z';
 const key = 'test-only-hmac-key-not-a-provider-token-0123456789';
@@ -124,4 +124,12 @@ test('duplicate decisions, duplicate review records and out-of-window samples ca
   assert.equal(duplicateReviews.verdict,'NOT_MEASURED');
   const outside=evaluatePlannedActionRecall([a,review(a,['RISK_ONE'])],{from:'2026-11-07T00:00:00Z'});
   assert.equal(outside.verdict,'NOT_MEASURED');
+});
+
+test('existing canonical adapter is the sole read path; missing corpus stays NOT_MEASURED', async () => {
+  const calls=[];
+  const adapter={async listRecords(tenantId){calls.push(tenantId);return [];}};
+  const result=await evaluateCanonicalBrainRecall(adapter,{tenantId:'canonical'});
+  assert.equal(result.verdict,'NOT_MEASURED');
+  assert.deepEqual(calls,['canonical']);
 });
