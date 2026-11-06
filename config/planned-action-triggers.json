@@ -701,6 +701,598 @@
         "new",
         "edit"
       ]
+    },
+    {
+      "ruleId": "RECREATE_READY_PR_ON_CONNECTOR_GRAPHQL_FAILURE",
+      "systems": [
+        "draft pr",
+        "draft pull",
+        "graphql"
+      ],
+      "actions": [
+        "ready for review",
+        "mark ready",
+        "mark as ready",
+        "recreate"
+      ]
+    },
+    {
+      "ruleId": "GITHUB_PUBLIC_PROOF_MAKE_STATE_WRITEBACK",
+      "systems": [
+        "github action",
+        "github workflow"
+      ],
+      "actions": [
+        "to notion",
+        "notion write",
+        "notion state",
+        "notion update"
+      ]
+    },
+    {
+      "ruleId": "BOUNDED_GITHUB_PUBLIC_PROOF",
+      "systems": [
+        "public proof",
+        "public http",
+        "title and canonical"
+      ],
+      "actions": [
+        "verif",
+        "bounded",
+        "proof"
+      ]
+    },
+    {
+      "ruleId": "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+      "systems": [
+        "contract test",
+        "literal assertion"
+      ],
+      "actions": [
+        "update",
+        "change",
+        "retire",
+        "rewrite",
+        "stale"
+      ]
+    },
+    {
+      "ruleId": "REFRESH_BASE_BEFORE_FINAL_GATE",
+      "systems": [
+        "merge base",
+        "stale base",
+        "base sha",
+        "final gate"
+      ],
+      "actions": [
+        "refresh",
+        "rebase",
+        "overlap",
+        "recreate",
+        "drift"
+      ]
+    },
+    {
+      "ruleId": "BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED",
+      "systems": [
+        "writer canary",
+        "github_token",
+        "actions policy"
+      ],
+      "actions": [
+        "pull request",
+        "pr creation",
+        "candidate pr",
+        "create pr",
+        "enable"
+      ]
+    },
+    {
+      "ruleId": "EXPLICIT_WRITER_SHADOW_DISPATCH",
+      "systems": [
+        "writer shadow",
+        "shadow workflow",
+        "shadow verification"
+      ],
+      "actions": [
+        "dispatch",
+        "workflow_dispatch",
+        "recursive"
+      ]
+    },
+    {
+      "ruleId": "BIND_SHADOW_TO_ACTUAL_PR_IDENTITY",
+      "systems": [
+        "writer shadow",
+        "shadow verification",
+        "shadow workflow"
+      ],
+      "actions": [
+        "base_sha",
+        "base sha",
+        "head sha",
+        "head.sha",
+        "pr identity"
+      ]
+    },
+    {
+      "ruleId": "SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS",
+      "systems": [
+        "parity"
+      ],
+      "actions": [
+        "writer path",
+        "changedfiles",
+        "writer-owned",
+        "git patch"
+      ]
+    },
+    {
+      "ruleId": "FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX",
+      "systems": [
+        "trigger pr",
+        "verification workflow",
+        "verification trigger"
+      ],
+      "actions": [
+        "runtime fix",
+        "close stale",
+        "fresh trigger",
+        "exercised"
+      ]
+    },
+    {
+      "ruleId": "CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE",
+      "systems": [
+        "writeback"
+      ],
+      "actions": [
+        "git diff",
+        "untracked",
+        "porcelain",
+        "allowlist"
+      ]
+    },
+    {
+      "ruleId": "FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC",
+      "systems": [
+        "detached head",
+        "refspec"
+      ],
+      "actions": [
+        "push"
+      ]
+    },
+    {
+      "ruleId": "VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE",
+      "systems": [
+        "runscenariowithinputs",
+        "subscenario",
+        "sub-scenario"
+      ],
+      "actions": [
+        "input",
+        "envelope",
+        "map"
+      ]
+    },
+    {
+      "ruleId": "FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS",
+      "systems": [
+        "branch protection",
+        "main protection",
+        "platform control",
+        "platform enforcement"
+      ],
+      "actions": [
+        "certif",
+        "verif",
+        "infer",
+        "readiness",
+        "enforce"
+      ]
+    },
+    {
+      "ruleId": "ISOLATE_NEGATIVE_TEST_FIXTURES",
+      "systems": [
+        "negative test",
+        "negative fixture",
+        "negative scenario"
+      ],
+      "actions": [
+        "add",
+        "write",
+        "build",
+        "create",
+        "hardcode"
+      ]
+    },
+    {
+      "ruleId": "SINGLE_CANONICAL_WRITER_HANDOFF",
+      "systems": [
+        "central gates",
+        "writer handoff",
+        "shadow handoff"
+      ],
+      "actions": [
+        "handoff",
+        "hand off",
+        "route"
+      ]
+    },
+    {
+      "ruleId": "VALIDATE_BG184_BG156_EVENT_ENVELOPE",
+      "systems": [
+        "bg184",
+        "bg156"
+      ],
+      "actions": [
+        "event",
+        "envelope",
+        "dispatch"
+      ]
+    },
+    {
+      "ruleId": "TREAT_MAKE_ACCOUNT_CONNECT_400_AS_HARD_BOUNDARY",
+      "systems": [
+        "make.com",
+        "make scenario",
+        "make connection",
+        "make account"
+      ],
+      "actions": [
+        "400",
+        "oauth",
+        "reconnect",
+        "credential",
+        "authoriz"
+      ]
+    },
+    {
+      "ruleId": "RESTORE_GENERATED_REPORT_BEFORE_REBASE",
+      "systems": [
+        "seo-rapport",
+        "seo-status"
+      ],
+      "actions": [
+        "rebase",
+        "pull",
+        "commit",
+        "writeback"
+      ]
+    },
+    {
+      "ruleId": "DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR",
+      "systems": [
+        "ledger"
+      ],
+      "actions": [
+        "dedupe",
+        "dedup",
+        "duplicate"
+      ]
+    },
+    {
+      "ruleId": "NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN",
+      "systems": [
+        "directly on main",
+        "directly to main",
+        "straight on main",
+        "commit to main",
+        "push to main"
+      ],
+      "actions": [
+        "tdd",
+        "develop",
+        "implement",
+        "fix",
+        "change",
+        "push",
+        "commit"
+      ]
+    },
+    {
+      "ruleId": "AUTO_REGISTER_FUTURE_COMPONENTS",
+      "systems": [
+        "new component",
+        "component registry",
+        "component registration"
+      ],
+      "actions": [
+        "register",
+        "registry",
+        "cost",
+        "dashboard",
+        "launch"
+      ]
+    },
+    {
+      "ruleId": "MARK_UNMETERED_USAGE_NOT_ZERO",
+      "systems": [
+        "usage ledger",
+        "metering",
+        "unmetered",
+        "usage counter",
+        "provider usage"
+      ],
+      "actions": [
+        "zero",
+        "missing",
+        "counter",
+        "adapter",
+        "report"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES",
+      "systems": [
+        "remote write",
+        "remote config",
+        "git remote",
+        "remote url"
+      ],
+      "actions": [
+        "push",
+        "write",
+        "connector",
+        "authoriz"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON",
+      "systems": [
+        "required lesson",
+        "chat lesson",
+        "chat-learning",
+        "chat learning"
+      ],
+      "actions": [
+        "add",
+        "prevention",
+        "rule",
+        "mapping"
+      ]
+    },
+    {
+      "ruleId": "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+      "systems": [
+        "platform capacity",
+        "capacity gate",
+        "capacity state",
+        "build minutes"
+      ],
+      "actions": [
+        "promot",
+        "deploy",
+        "production",
+        "publish"
+      ]
+    },
+    {
+      "ruleId": "OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE",
+      "systems": [
+        "source call",
+        "source-call",
+        "polling cadence",
+        "polling interval"
+      ],
+      "actions": [
+        "cache",
+        "optimi",
+        "reduce",
+        "operation"
+      ]
+    },
+    {
+      "ruleId": "NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE",
+      "systems": [
+        "branch discovery",
+        "discover branch",
+        "branch state",
+        "branch exists",
+        "capability discovery"
+      ],
+      "actions": [
+        "create",
+        "write",
+        "mutate",
+        "push",
+        "probe",
+        "try"
+      ]
+    },
+    {
+      "ruleId": "CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST",
+      "systems": [
+        "checkpoint"
+      ],
+      "actions": [
+        "contract test",
+        "learning artifact",
+        "co-change"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API",
+      "systems": [
+        "contents api",
+        "create_or_update_file",
+        "file contents"
+      ],
+      "actions": [
+        "write",
+        "update",
+        "patch",
+        "fragment",
+        "replace",
+        "commit"
+      ]
+    },
+    {
+      "ruleId": "SINGLE_FLIGHT_POST_MERGE_CODEQL_PER_REF",
+      "systems": [
+        "codeql"
+      ],
+      "actions": [
+        "concurrency",
+        "cancel-in-progress",
+        "run_id",
+        "post-merge",
+        "single-flight",
+        "single flight"
+      ]
+    },
+    {
+      "ruleId": "NO_FINAL_HANDOFF_WHILE_AUTHORITATIVE_SECURITY_RUN_ACTIVE",
+      "systems": [
+        "codeql",
+        "security run"
+      ],
+      "actions": [
+        "handoff",
+        "hand off",
+        "final report",
+        "terminal"
+      ]
+    },
+    {
+      "ruleId": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
+      "systems": [
+        "interrupted",
+        "transport",
+        "connection lost",
+        "session dropped"
+      ],
+      "actions": [
+        "resume",
+        "restart",
+        "continue",
+        "start over"
+      ]
+    },
+    {
+      "ruleId": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "systems": [
+        "index.html",
+        "homepage",
+        "netlify.toml",
+        "generator"
+      ],
+      "actions": [
+        "edit",
+        "change",
+        "fix",
+        "update",
+        "adjust"
+      ]
+    },
+    {
+      "ruleId": "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+      "systems": [
+        "new page",
+        "handmade page",
+        "losse pagina",
+        "new html page",
+        "site-shell",
+        "site shell"
+      ],
+      "actions": [
+        "add",
+        "create",
+        "build",
+        "shell",
+        "view list"
+      ]
+    },
+    {
+      "ruleId": "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+      "systems": [
+        "visibility",
+        "opacity",
+        "overflow",
+        "invisible",
+        "content column"
+      ],
+      "actions": [
+        "guard",
+        "force",
+        "!important"
+      ]
+    },
+    {
+      "ruleId": "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+      "systems": [
+        "json-ld",
+        "jsonld",
+        "structured data"
+      ],
+      "actions": [
+        "shell",
+        "copy",
+        "apply-shell",
+        "canonical"
+      ]
+    },
+    {
+      "ruleId": "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+      "systems": [
+        "learning record",
+        "learning evaluation",
+        "historical_replay",
+        "evaluation block"
+      ],
+      "actions": [
+        "test",
+        "npm",
+        "dependenc",
+        "import"
+      ]
+    },
+    {
+      "ruleId": "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+      "systems": [
+        "glob",
+        "bulk move",
+        "bulk rename",
+        "bulk file",
+        "move pages",
+        "rename pages"
+      ],
+      "actions": [
+        "move",
+        "rename",
+        "replace",
+        "rewrite",
+        "operation"
+      ]
+    },
+    {
+      "ruleId": "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+      "systems": [
+        "menu",
+        "navigation",
+        "kop.html",
+        "nav bar",
+        "menubalk"
+      ],
+      "actions": [
+        "add",
+        "new item",
+        "change",
+        "rename",
+        "item"
+      ]
+    },
+    {
+      "ruleId": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
+      "systems": [
+        "markdown"
+      ],
+      "actions": [
+        "render",
+        "convert",
+        "heading"
+      ]
     }
   ]
 }
