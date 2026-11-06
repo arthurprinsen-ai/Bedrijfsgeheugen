@@ -1,0 +1,62 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|planned-action-triggers-wave2|20261106-v1",
+  "owner": "existing planned-action guard, planned-action-triggers config and delivery preflight; no new mechanism",
+  "compiler": {
+    "failure_class": "PREVENTION_RULES_WITHOUT_PLANNED_ACTION_TRIGGER",
+    "scope": "PLANNED_ACTION_GUARD_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The planned-action guard only blocks a rule that has a trigger and a PROVEN lesson. On main 76 of 110 active rules had no trigger and 21 of those had no lesson, so the preflight listed them but nothing stopped an agent from repeating the failure, including the duplicate-pull-request failures of 6 November.",
+  "prevention_rule": "Seventeen rules get sharpened phrase triggers (measured at most 1 hit in 300 recent actions and no hit on 11 neutral actions), two rules get their missing PROVEN lessons, and a required-check test fires every new trigger through the real guard and fails on a false positive. Recall beyond these examples is not measured.",
+  "prevention_rules": [
+    "RECOVER_DUE_SOCIAL_ZERO_CANDIDATES_FROM_RELEASE_STATE",
+    "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+    "RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA",
+    "CLASSIFY_PRIVATE_AUTH_BEFORE_PUBLIC_SEO_SCANS",
+    "RECONCILE_CLOSED_FORCE_PUSHED_PR_AGAINST_CURRENT_MAIN",
+    "REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN",
+    "REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION",
+    "CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS",
+    "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+    "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE",
+    "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+    "REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK",
+    "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN",
+    "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+    "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+    "VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE",
+    "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-triggers-wave2-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Notion: Triggervoorstel voor 55 regels zonder planned-action-trigger (410da36a-ac8a-8181-b9e5-e062c4707511)",
+      "PR #5493 and #5496 built and connected the guard; PR #5502 merged the site lessons"
+    ],
+    "current": [
+      "Local run of the new test against the real guard: 3 of 3 green",
+      "Python replay: 17 of 17 positive examples fire, 0 of 11 neutral actions fire, at most 1 hit in 300 recent commit titles"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

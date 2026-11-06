@@ -950,6 +950,26 @@
       "fix": "only the required checks (test, hygiene / admission, CodeQL) decide; prove the diff is not the cause and rerun the failed job instead of editing the code",
       "preventionRule": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pr|shared|duplicate-pr-opened-without-head-and-file-check",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "pull requests and branches were created for work another session already had open: #988 on 3 September, and #5493, #5495 and #5502 on 6 November touching the same lessons files",
+      "rootCause": "no search for an open pull request on the same head branch or the same changed files was done immediately before creating the branch and again before opening the pull request",
+      "fix": "search open pull requests by head branch and by changed file path right before creating a branch and again before opening the pull request; extend or explicitly supersede the existing one instead of opening a second",
+      "preventionRule": "VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|governance|shared|several-sessions-one-root-cause-no-owner",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "three sessions edited delivery-failure-lessons.json and delivery-prevention-rules.json on 6 November and one pull request was left dirty against main for hours",
+      "rootCause": "no single owner was named per root cause, so parallel sessions appended to the same files and the slowest pull request conflicted with the others",
+      "fix": "before adding lessons, rules or triggers search open pull requests and branches by topic and by these file paths; if one exists, extend it or supersede it explicitly after confirming it is stale, and name one owner per root cause",
+      "preventionRule": "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+      "status": "PROVEN"
     }
   ]
 }
