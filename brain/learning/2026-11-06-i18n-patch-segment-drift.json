@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "i18n|cache|blog-2026-11-06-segment-keys|20261106-v1",
+  "owner": "existing static i18n cache patch directory and brain-static-i18n cache tests",
+  "compiler": {
+    "failure_class": "I18N_PATCH_KEYS_DIFFER_FROM_BUILD_SEGMENTS",
+    "scope": "STATIC_I18N_CACHE_COMPLETENESS",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The BRAIN backend lane failed with STATIC_I18N_CACHE_INCOMPLETE: 5 missing translation(s) on five consecutive main merges. A patch for the blog existed but keyed the text as separate sentences, while the build looks up the final page blocks, so five exact keys never matched.",
+  "prevention_rule": "The five exact build keys are added to a second patch using the existing sentence translations, and the lesson plus rule make agents check the patch against STATIC_I18N_CACHE_MISSING after any public text change. No test is weakened and the cache check stays fail-closed.",
+  "prevention_rules": [
+    "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "BRAIN delivery post-merge runs red on main for #5488, #5486, #5489, #5491 and #5490 with the same STATIC_I18N_CACHE_INCOMPLETE error",
+      "config/bg-static-i18n-en.d/powerhouse-blog-2026-11-06.json holds the sentence-level keys"
+    ],
+    "current": [
+      "Key comparison: all five missing build keys are absent from the existing patch and present in the new one; lessons and rules parity checked locally"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

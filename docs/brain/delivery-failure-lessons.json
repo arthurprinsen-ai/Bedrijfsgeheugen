@@ -640,6 +640,16 @@
       "fix": "install Chromium only through tools/ci/install-chromium.sh, which removes that apt source and retries three times",
       "preventionRule": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "i18n|cache|shared|translation-patch-keys-differ-from-build-segments",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "five Dutch blog blocks were reported as missing translations by the static i18n cache check on five consecutive main merges even though a patch for the same blog existed",
+      "rootCause": "the translation patch keyed the text as separate sentences while the build looks up the final page blocks, so the keys never matched after the blog text was edited or segmented differently",
+      "fix": "add the exact missing build keys to a config/bg-static-i18n-en.d patch using the existing sentence translations; after any public text change regenerate or verify the patch against the build output (STATIC_I18N_CACHE_MISSING lists the exact keys)",
+      "preventionRule": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+      "status": "PROVEN"
     }
   ]
 }
