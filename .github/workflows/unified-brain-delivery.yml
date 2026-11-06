@@ -117,12 +117,11 @@ jobs:
           node-version: '22'
       - name: Reuse proven delivery lessons before expensive work
         # The ORIGINAL BRAIN delivery planner supplies its actual planned operation.
+        # Untrusted PR code NEVER receives Supabase privileged credentials.
         # No second executor or guard. Missing writer credentials never count as evidence.
         env:
           POWERHOUSE_AGENT_ID: brain-delivery-plan
           POWERHOUSE_ACTION_RECALL_MODE: auto
-          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
           DELIVERY_PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number || '0' }}
         run: |
           node --test tests/delivery-learning.test.mjs tests/delivery-preflight.test.mjs
