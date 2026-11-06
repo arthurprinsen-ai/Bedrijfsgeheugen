@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|public-provider-readback-author-copy-date-urn|20261106-v1",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "date": "2026-11-06",
+  "compiler": {
+    "failure_class": "LINKEDIN_PERSONAL_PROVIDER_GET_SCOPE_DENIED_WITH_PUBLIC_POST_PROVEN",
+    "scope": "ORIGINAL_SOCIAL_PUBLISHER",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "owner": "original powerhouse-social-publisher readback/reconciliation only",
+  "root_cause": "Original Composio LinkedIn create acknowledgement plus immutable URN exists, but GET_POST_CONTENT 401/403 cannot independently verify despite the identical public post being retrievable. The original publisher only preserves independent public proof if it has ALREADY been written LIVE_PROVEN, leaving new public evidence with a circular prerequisite.",
+  "fix": "Extend only the original publisher's permission-limited readback catch path with existing Composio account's read-only ScrapeCreators tool. The backend uses existing COMPOSIO_API_KEY and existing canonical Composio user ID. Verify existing canonical URN/URL, real prior provider-create acknowledgement, complete original body normalized equality, first 85 and last 90 chars, exact author public profile and same Amsterdam publication date. Then original recordObligation can close LIVE_PROVEN; all other cases remain fail-closed PUBLISHED without republish. No new scheduler, writer, or post.",
+  "prevention_rule": "Never conflate an API scope 403 with an absent public post. If and only if original provider create was acknowledged, accept separately authenticated publicly retrievable proof for exact original author, full copy, date, canonical post URL; never infer success from HTTP200 alone. Do not repost any existing URN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "2026-11-06 original Composio LinkedIn personal post urn:li:share:7524468222708948994 status PUBLISHED and provider_create_success=true; three active LinkedIn provider accounts returned 401/403 to GET_POST_CONTENT, no duplicate was created."
+    ],
+    "current": [
+      "Connected ScrapeCreators independent public post returned author Arthur Prinsen at profile nl.linkedin.com/in/arthurprinsen/en, published 2026-11-06T13:50:22.309Z, permanent public LinkedIn post activity URL; normalized full content equality with original artifact length 946. The SAME ORIGINAL Supabase runtime called Composio ScrapeCreators under existing key/entity_id and received HTTP200 request 22797 and identical content."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_CODEQL_DEPLOY_RUNTIME_READBACK",
+  "regression": "tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs",
+  "no_parallel_scheduler": true,
+  "no_duplicate_publication": true,
+  "provider_write_during_readback": false
+}
