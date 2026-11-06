@@ -18,19 +18,20 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
+      "tests/brain-github-error-register-20261106.test.mjs"
     ],
     "shadow": [
-      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+      "tests/delivery-learning.test.mjs"
     ],
     "canary": [
-      "tests/brain-github-error-register-20261106.test.mjs"
+      "tests/brain-chat-learning-completeness.test.mjs"
     ]
   },
   "evidence": {
     "historical": [
       "BRAIN delivery post-merge runs red on main for #5488, #5486, #5489, #5491 and #5490 with the same STATIC_I18N_CACHE_INCOMPLETE error",
-      "config/bg-static-i18n-en.d/powerhouse-blog-2026-11-06.json holds the sentence-level keys"
+      "config/bg-static-i18n-en.d/powerhouse-blog-2026-11-06.json holds the sentence-level keys",
+      "Failing tests that name the gap: tests/brain-static-i18n-production-cache-completeness-v1.test.mjs and tests/brain-static-i18n-versioned-cache-v1.test.mjs run in the backend lane, which installs dependencies; the admission evaluation does not, so they are evidence here, not evaluation tests"
     ],
     "current": [
       "Key comparison: all five missing build keys are absent from the existing patch and present in the new one; lessons and rules parity checked locally"
