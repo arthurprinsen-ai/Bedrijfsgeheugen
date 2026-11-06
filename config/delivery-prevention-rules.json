@@ -3,7 +3,8 @@
   "linked_learning_sources": [
     "brain/learning/portal-v2-customer-project-completeness-2026-09-15.json",
     "brain/learning/netlify-transport-authority-2026-10-19.json",
-    "brain/learning/2026-11-06-github-error-register-v1.json"
+    "brain/learning/2026-11-06-github-error-register-v1.json",
+    "brain/learning/2026-11-06-i18n-patch-segment-drift.json"
   ],
   "rules": [
     {
@@ -490,6 +491,12 @@
       "id": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
       "active": true,
       "enforcedBy": "tools-ci-install-chromium-script",
+      "scope": "shared"
+    },
+    {
+      "id": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+      "active": true,
+      "enforcedBy": "brain-static-i18n-production-cache-completeness-v1-test-plus-agent-contract",
       "scope": "shared"
     }
   ]
