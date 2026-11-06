@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const sql=readFileSync('supabase/migrations/20261106103000_powerhouse_missed_publication_v1.sql','utf8');
-const orch=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
 test('migration is read-only and service_role only',()=>{
  assert.doesNotMatch(sql,/\b(insert|update|delete|truncate|create table|cron\.schedule)\b/i);
  assert.match(sql,/STABLE/);
@@ -14,11 +13,8 @@ test('only published-or-later states count as done and every channel has a named
  for(const ch of ['blog','linkedin_company','linkedin_personal','instagram_company','email_newsletter'])assert.ok(sql.includes("('"+ch+"'"),ch);
  assert.match(sql,/UNOWNED_NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR/);
 });
-test('original orchestrator reads it on every success path, without new scheduler or publisher',()=>{
- assert.ok(orch.includes('"powerhouse_missed_publication_v1"]'));
- assert.equal((orch.match(/ok:true,missed_publications:await missedPublications\(db\)/g)||[]).length,2);
- assert.match(orch,/PUBLICATION_DEADLINE_MISSED/);
-});
-test('a failing check is reported, never silently green',()=>{
- assert.match(orch,/check_failed/);
+test('the orchestrator is untouched: reading is wired later through a narrow reader, never a second scheduler',()=>{
+ const orch=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ assert.ok(!orch.includes('powerhouse_missed_publication_v1'));
+ assert.doesNotMatch(sql,/cron\.schedule/);
 });

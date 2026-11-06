@@ -13,7 +13,7 @@
     "missed_count_3d": 13,
     "source": "powerhouse_missed_publication_v1 uitgevoerd in teruggedraaide transactie op productie"
   },
-  "fix": "Alleen-lezen functie powerhouse_missed_publication_v1 + de bestaande orchestrator meldt elke gemiste kanaal/dag met eigenaar bij elke run (response + PUBLICATION_DEADLINE_MISSED). Geen nieuwe scheduler, geen schrijfactie, geen publicatie.",
+  "fix": "Alleen-lezen functie powerhouse_missed_publication_v1 met eigenaar per kanaal. Orchestrator ongemoeid (te brede testafhankelijkheid voor de preflight); aansluiting volgt via een smalle lezer. Geen scheduler, geen schrijfactie.",
   "prevention_rule": "Een kanaal zonder uitvoerder of verplichtingsrij telt als gemist, niet als afwezig. Groen vereist PUBLISHED of later met provider-bewijs.",
   "regression_contract": "tests/brain-missed-publication-deadline-20261106.test.mjs",
   "compiler": {
@@ -39,7 +39,6 @@
     "Protected exact-head checks",
     "merge door Arthur",
     "migratie toegepast in productie",
-    "Edge-deploy orchestrator",
-    "volgende natuurlijke run toont missed_publications in respons"
+    "functie leesbaar met service_role en geeft missed_count"
   ]
 }
