@@ -27,6 +27,9 @@ out['bold_ul'] = m.body_html(doc('Intro.', lines('**Let op:**', '- een', '- twee
 leak_p = '<p>' + lines('2) Snelcontrole', '- Vraag: welke import?') + '</p>'
 leak_h = '<h2>' + lines('Meetpunten', '- een', '- twee') + '</h2>'
 long_h = '<h2>' + ('woord ' * 40) + '</h2>'
+out['faq'] = m.faq_items(doc(lines('## Wat meet je?', '- signalen per week', '- tijd tot besluit'), 'Volgende blok.'))
+long_text = 'Waarom dit belangrijk ' + ('woord ' * 60)
+out['excerpt'] = {'short': m.card_excerpt('Kort.'), 'cut': m.card_excerpt(long_text), 'exact': m.card_excerpt('x' * 220)}
 out['verdicts'] = {'clean': verdict(out['mixed']), 'leak_p': verdict(leak_p), 'leak_h': verdict(leak_h), 'long_h': verdict(long_h)}
 print(json.dumps(out, ensure_ascii=False))
 `;
@@ -68,4 +71,18 @@ test('the publisher blocks markdown lists and section-sized headings in rendered
   assert.equal(out.verdicts.long_h, 'BLOG_ARTIFACT_NOT_READER_READY:HEADING_TOO_LONG');
   const publisher = readFileSync('tools/site-shell/publish_powerhouse_blog_artifact.py', 'utf8');
   assert.match(publisher, /assert_rendered_body_clean\(body_markup\)/);
+});
+
+test('a FAQ answer made of list lines has no list markers left', () => {
+  assert.equal(out.faq.length, 1);
+  assert.equal(out.faq[0][0], 'Wat meet je?');
+  assert.equal(out.faq[0][1], 'signalen per week tijd tot besluit');
+  assert.doesNotMatch(out.faq[0][1], /(^|\s)-\s/);
+});
+
+test('a blog card excerpt is cut at a word boundary, not inside a word', () => {
+  assert.equal(out.excerpt.short, 'Kort.');
+  assert.ok(out.excerpt.cut.endsWith('woord…'), out.excerpt.cut.slice(-20));
+  assert.ok(out.excerpt.cut.length <= 221);
+  assert.equal(out.excerpt.exact, 'x'.repeat(220));
 });

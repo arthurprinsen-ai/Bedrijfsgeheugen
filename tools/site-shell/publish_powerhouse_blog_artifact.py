@@ -184,6 +184,9 @@ def faq_items(data):
                 if nxt != "---":
                     answer = nxt
                     break
+        # List markers in an answer are structure, not text: drop them so the
+        # schema.org answer and the visible FAQ never start with or contain "- ".
+        answer = re.sub(r"(?m)^\s*-\s+", "", answer)
         answer = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", answer)
         answer = re.sub(r"\*\*([^*]+)\*\*", r"\1", answer)
         answer = re.sub(r"\s+", " ", answer).strip()
@@ -320,6 +323,16 @@ def body_html(data):
             + ' <a href="/frisse-blik">Bekijk de Frisse blik &rarr;</a></p>'
         )
     return "\n".join(result)
+
+def card_excerpt(text, limit=220):
+    """Cut a blog card excerpt at a word boundary instead of in the middle of a word."""
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    if not text[limit].isspace() and " " in cut:
+        cut = cut.rsplit(" ", 1)[0]
+    return cut.rstrip(" ,;:-") + "…"
+
 
 def assert_rendered_body_clean(markup):
     """Fail closed when markdown list syntax or a whole section ends up inside a heading or paragraph."""
@@ -532,7 +545,7 @@ def main():
     index_text = BLOG_INDEX.read_text(encoding="utf-8")
     href = f"/blog/{slug}/"
     excerpt_raw = re.sub(r"\s+", " ", data["body"]).strip()
-    excerpt = html.escape(excerpt_raw[:220] + ("…" if len(excerpt_raw) > 220 else ""))
+    excerpt = html.escape(card_excerpt(excerpt_raw))
     card = (
         f'  <a class="kaart" href="{canonical}"><span class="tag">Powerhouse</span><h2>{title}</h2>'
         f'<p>{excerpt}</p><span class="lees">Lees het artikel &rarr;</span>'

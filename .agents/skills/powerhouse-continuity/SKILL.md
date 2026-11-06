@@ -2004,3 +2004,5 @@ Dezelfde bestaande native watchdog registreert voortaan de expliciete `decision`
 - Planned-action-triggers, tweede golf (6 Nov 2026, fingerprint `delivery|preflight|planned-action-triggers-wave2|20261106-v1`): 17 regels vuren nu op de geplande actie; zoek open PR's op head en bestandspad vóór een nieuwe branch of PR en vóór wijzigingen aan lessen, regels of triggers.
 
 - Daglijkse blog-renderer (6 Nov 2026, fingerprint `powerhouse|daily-blog|markdown-list-in-heading-and-paragraph|20261106-v1`): een kop is alleen zijn eerste regel en `assert_rendered_body_clean` blokkeert markdown-lijsten in `p`/`h2`; lees het blokkaderegister vóór blogwerk. Gepubliceerde artikelen zijn niet hersteld.
+
+- Zeven gepubliceerde blogartikelen hersteld (6 Nov 2026, fingerprint `powerhouse|daily-blog|published-articles-markdown-repair|20261106-v1`): een corpustest controleert elk gecommit artikel op lijstregels in p/h2/h3, meerregelige koppen en ongeldige JSON-LD; voeg bij nieuwe blogwijzigingen de Engelse cache aan voor elke nieuwe tekstknoop.
