@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|lead-magnet-trial-code-unmeasured|20261106-v1",
+  "failure_class": "MEASUREMENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "original bg-mollie-checkout trial route",
+  "root_cause": "Het gratis rapport De AI-kloof in het mkb geeft een actiecode weg voor de bestaande 30-dagen-proef, maar de proefroute bewaarde geen herkomst, dus conversie vanuit het rapport was niet te meten.",
+  "evidence": {
+    "at_utc": "2026-11-06T10:50:00Z",
+    "source": "afsluiten.html, checkout-create.mjs en startTrial lezen vóór deze wijziging geen code"
+  },
+  "fix": "Een gesaneerde actiecode (A-Z, 0-9, streepje, 3 tot 24 tekens) gaat van /afsluiten via checkout-create naar bg-mollie-checkout en wordt bewaard in saas_subscriptions.metadata.promo_code van de trial. Geen korting, geen schemawijziging, geen nieuwe scheduler of tabel.",
+  "prevention_rule": "Elke weggegeven toegang draagt een herkomstcode tot in de opgeslagen proef, anders is de campagne niet te leren.",
+  "regression_contract": "tests/brain-saas-promo-code-trial-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "MEASUREMENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-saas-promo-code-trial-20261106.test.mjs"],
+    "canary": ["tests/brain-saas-promo-code-trial-20261106.test.mjs"]
+  },
+  "tests": ["tests/brain-saas-promo-code-trial-20261106.test.mjs"],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge door Arthur",
+    "bg-mollie-checkout opnieuw gedeployed",
+    "proef met code KLOOF26 laat promo_code in saas_subscriptions.metadata zien"
+  ]
+}
