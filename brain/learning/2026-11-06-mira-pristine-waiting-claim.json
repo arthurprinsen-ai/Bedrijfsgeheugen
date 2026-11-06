@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|mira|pristine-waiting-asset-original-claim|20261106-v1",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "ORIGINAL_MEDIA_PRODUCER_CLAIM_STARVATION",
+    "scope": "SINGLE_CANONICAL_MIRA_MEDIA_CLAIM",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "owner": "original powerhouse_claim_instagram_media_job_v1 and original Mira producer",
+  "date": "2026-11-06",
+  "root_cause": "Nov6 canonical original media job is WAITING_ASSET attempts=0, missing provider media and matching frozen winner, while original service_role-only atomic claim function allows only QUEUED/RETRY, so original producer cannot claim the virgin job.",
+  "fix": "Guarded in-place original claim function status branch: allow only virgin same-date WAITING_ASSET with exact original frozen winner match to obligation and daily selector, no veto, no provider history, no prior publish and no failed attempts. Preserve original FOR UPDATE SKIP LOCKED, ACL and canonical producer.",
+  "prevention_rule": "Never strand pristine original media jobs while maintaining exclusive claim and independent pre-spend/face/Meta proof boundaries.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-original-pristine-claim-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-original-pristine-claim-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-original-pristine-claim-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Direct 2026-11-06 production: original job 2d2a7385-43b9-4a15-a91c-583ce0e7ea69 WAITING_ASSET attempts=0, OpenArt-only and no asset, exact winner ID b5c14d41-35ca-45cf-8cf8-471489b44791 matched in original job, obligation, daily selection."
+    ],
+    "current": [
+      "Original service_role-only claim source filters on status in ('QUEUED','RETRY'), no WAITING_ASSET."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_CI_PREVIEW_PRODUCTION",
+  "migration": "supabase/migrations/20261106160000_mira_original_pristine_waiting_asset_claim_v1.sql",
+  "regression": "tests/brain-mira-original-pristine-claim-20261106.test.mjs",
+  "no_new_scheduler": true,
+  "no_duplicate_executors": true,
+  "no_provider_create_in_migration": true
+}
