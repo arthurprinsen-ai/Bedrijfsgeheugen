@@ -395,3 +395,5 @@ Voor afsluiting: protected Required/CodeQL/Supabase Preview, exact originele mig
 - Site, CSS, schema, test and CI error lessons (6 Nov 2026, fingerprint `site|delivery|site-and-ci-error-lessons|20261106-v1`): 11 PROVEN lessons with active rules in the delivery preflight; read them before any site, generator, test or learning-record change.
 
 - Planned-action-triggers, tweede golf (6 Nov 2026, fingerprint `delivery|preflight|planned-action-triggers-wave2|20261106-v1`): 17 regels vuren nu op de geplande actie; zoek open PR's op head en bestandspad vóór een nieuwe branch of PR en vóór wijzigingen aan lessen, regels of triggers.
+
+- Daglijkse blog-renderer (6 Nov 2026, fingerprint `powerhouse|daily-blog|markdown-list-in-heading-and-paragraph|20261106-v1`): een kop is alleen zijn eerste regel en `assert_rendered_body_clean` blokkeert markdown-lijsten in `p`/`h2`; lees het blokkaderegister vóór blogwerk. Gepubliceerde artikelen zijn niet hersteld.

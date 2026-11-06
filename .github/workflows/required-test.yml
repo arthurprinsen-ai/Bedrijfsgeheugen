@@ -193,6 +193,8 @@ jobs:
         run: node --test tests/brain-site-error-lessons-20261106.test.mjs
       - name: Verify planned-action triggers fire and stay precise
         run: node --test tests/brain-planned-action-triggers-wave2-20261106.test.mjs
+      - name: Verify the daily blog renderer keeps markdown out of headings and paragraphs
+        run: node --test tests/brain-blog-markdown-render-20261106.test.mjs
       - name: Enforce system error lessons and the planned-action guard
         run: node --test tests/brain-system-error-register-20261106.test.mjs tests/brain-planned-action-guard-20261106.test.mjs tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs tests/brain-mira-original-pristine-claim-20261106.test.mjs tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
