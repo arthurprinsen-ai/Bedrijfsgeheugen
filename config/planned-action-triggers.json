@@ -281,6 +281,202 @@
         "add",
         "toevoeg"
       ]
+    },
+    {
+      "ruleId": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+      "systems": [
+        "github",
+        "workflow"
+      ],
+      "actions": [
+        "workflow",
+        "permission",
+        "token",
+        "write"
+      ]
+    },
+    {
+      "ruleId": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+      "systems": [
+        "github",
+        "chat"
+      ],
+      "actions": [
+        "token",
+        "secret",
+        "paste"
+      ]
+    },
+    {
+      "ruleId": "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+      "systems": [
+        "github",
+        "token"
+      ],
+      "actions": [
+        "expired",
+        "expire",
+        "401",
+        "403"
+      ]
+    },
+    {
+      "ruleId": "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+      "systems": [
+        "github",
+        "raw",
+        "api"
+      ],
+      "actions": [
+        "fetch",
+        "read",
+        "cache",
+        "verify"
+      ]
+    },
+    {
+      "ruleId": "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+      "systems": [
+        "github",
+        "pr",
+        "pull request"
+      ],
+      "actions": [
+        "merge",
+        "405",
+        "behind",
+        "conflict"
+      ]
+    },
+    {
+      "ruleId": "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+      "systems": [
+        "github",
+        "pr"
+      ],
+      "actions": [
+        "auto-merge",
+        "merge"
+      ]
+    },
+    {
+      "ruleId": "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+      "systems": [
+        "github",
+        "contents api"
+      ],
+      "actions": [
+        "409",
+        "write",
+        "commit",
+        "conflict"
+      ]
+    },
+    {
+      "ruleId": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+      "systems": [
+        "github",
+        "branch"
+      ],
+      "actions": [
+        "branch",
+        "ref",
+        "422",
+        "create"
+      ]
+    },
+    {
+      "ruleId": "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+      "systems": [
+        "github",
+        "branch",
+        "pr"
+      ],
+      "actions": [
+        "parallel",
+        "duplicate",
+        "concurrent"
+      ]
+    },
+    {
+      "ruleId": "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+      "systems": [
+        "github",
+        "ci",
+        "checks"
+      ],
+      "actions": [
+        "check",
+        "status",
+        "workflow",
+        "readback"
+      ]
+    },
+    {
+      "ruleId": "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+      "systems": [
+        "github",
+        "pr"
+      ],
+      "actions": [
+        "body",
+        "description",
+        "required"
+      ]
+    },
+    {
+      "ruleId": "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+      "systems": [
+        "github",
+        "ci",
+        "test"
+      ],
+      "actions": [
+        "new test",
+        "path",
+        "lane",
+        "file"
+      ]
+    },
+    {
+      "ruleId": "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+      "systems": [
+        "supabase",
+        "preview"
+      ],
+      "actions": [
+        "preview",
+        "branch",
+        "test"
+      ]
+    },
+    {
+      "ruleId": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+      "systems": [
+        "github",
+        "pr",
+        "ci"
+      ],
+      "actions": [
+        "claim",
+        "status",
+        "verified",
+        "read"
+      ]
+    },
+    {
+      "ruleId": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
+      "systems": [
+        "github",
+        "ci",
+        "chromium"
+      ],
+      "actions": [
+        "chrome",
+        "chromium",
+        "install",
+        "apt"
+      ]
     }
   ]
 }
