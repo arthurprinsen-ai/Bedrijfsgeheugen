@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|outreach|composer-relationship-fact-decision-27-oct-not-in-code|20261106-v1",
+  "failure_class": "DECISION_NOT_IMPLEMENTED",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse-commercial-message-composer; original ONE BRAIN + Heartbeat",
+  "root_cause": "Besluit van 27 okt 2026 (koude mails aan kleine Nederlandse contacten mogen een verifieerbaar relatiefeit gebruiken: functie, bedrijf, eerder gesprek, status in_gesprek) stond niet in composerSourcePreflight. Alleen nieuws met https-bron telde, waardoor de kwaliteitspoort dicht bleef en 0 berichten de dispatcher haalden.",
+  "evidence": {
+    "at_utc": "2026-11-06T10:30:00Z",
+    "source": "Beslissing Arthur 27 okt 2026 + composer preflight bronlezing",
+    "provider_outcome_verified": false
+  },
+  "fix": "composerSourcePreflight accepteert naast nieuws ook minimaal twee verifieerbare feiten uit relationship_evidence. human_readable_context blijft verplicht; kwaliteit, banned, getallen, lengte, vraag-, onderwerp- en suppressiepoorten ongewijzigd. Het feit voedt de anchor-controle van de composer.",
+  "prevention_rule": "Een eigenaarsbesluit dat een poort verandert moet binnen een werkdag in code + test staan, anders is het een open verplichting. Een enkel feit (alleen naam of alleen bedrijf) volstaat nooit.",
+  "regression_contract": "tests/brain-composer-relationship-fact-20261106.test.mjs: 30-okt-gat blijft vast, twee feiten slagen, een feit/lege waarden/onbekende status falen, nieuwspad ongewijzigd.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-composer-relationship-fact-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-composer-relationship-fact-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-composer-relationship-fact-20261106.test.mjs",
+    "tests/brain-outreach-composer-source-handoff-20261030.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head Required + BRAIN + CodeQL",
+    "protected main merge",
+    "original Edge function deploy met shared helper",
+    "natuurlijke dispatch laat een actie met twee relatiefeiten door de preflight",
+    "tekstkwaliteit pass op echte actie",
+    "echte Gmail message/thread ID met SENT-label en ontvanger-readback vóór GREEN"
+  ]
+}
