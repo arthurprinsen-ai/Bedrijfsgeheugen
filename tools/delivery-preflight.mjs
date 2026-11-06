@@ -39,6 +39,7 @@ export async function loadDeliveryPreflight({
   stages = ['COMMIT', 'PR', 'MERGE', 'PIPELINE'],
   plannedAction = '',
   acknowledgedPreventionRules = [],
+  recordPlannedAction = null,
 } = {}) {
   const [lessonsDoc, chatLessonsDoc, continuityDoc, executionLessonsDoc, completenessAddendum, remediationOwnership, ciEfficiency, rulesDoc, plannedActionTriggersDoc, completenessGuard, browserGuard, ownershipGuard, guardDiscovery, guardRegistrySchema] = await Promise.all([
     readFile(lessonsPath, 'utf8').then(JSON.parse),
@@ -105,6 +106,11 @@ export async function loadDeliveryPreflight({
         acknowledged: acknowledgedPreventionRules,
       })
     : null;
+  // Record genuine matched and blocked actions before the original safety decision.
+  if (plannedActionGuard && recordPlannedAction) {
+    if (typeof recordPlannedAction !== 'function') throw new TypeError('recordPlannedAction callback required');
+    await recordPlannedAction({ action: plannedAction, result: plannedActionGuard });
+  }
   if (plannedActionGuard && !plannedActionGuard.ok) {
     throw new Error('PLANNED_ACTION_PREVENTION_REQUIRED: ' +
       plannedActionGuard.unacknowledged.map(item => item.ruleId + ': ' + item.fix).join(' | '));
@@ -161,10 +167,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const args = process.argv.slice(2);
   const component = args[0]?.startsWith('--') ? 'shared' : (args[0] || 'shared');
   const flag = key => { const index = args.indexOf(key); return index >= 0 ? args[index + 1] || '' : ''; };
+  const action = flag('--action');
+  const { createCanonicalPlannedActionRecorder } = await import('../brain/observability/planned-action-live-recorder.mjs');
+  const recorder = action.trim() ? createCanonicalPlannedActionRecorder() : null;
+  if (recorder?.status === 'NOT_CONFIGURED') {
+    process.stderr.write('PLANNED_ACTION_CAPTURE_NOT_CONFIGURED: operational recall remains NOT_MEASURED\n');
+  }
   const decision = await loadDeliveryPreflight({
     component,
-    plannedAction: flag('--action'),
+    plannedAction: action,
     acknowledgedPreventionRules: flag('--ack').split(',').map(value => value.trim()).filter(Boolean),
+    recordPlannedAction: recorder?.record || null,
   });
   process.stdout.write(`${JSON.stringify(decision)}\n`);
 }
