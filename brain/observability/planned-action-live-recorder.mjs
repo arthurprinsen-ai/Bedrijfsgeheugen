@@ -63,9 +63,13 @@ export function createCanonicalPlannedActionRecorder({ env = process.env, fetchI
     status: 'CONFIGURED',
     async record({ action, result }) {
       // The exact planned action exists only in memory, never in the remote payload.
+      const intentDigest = createHmac('sha256', hmacKey).update(JSON.stringify({ action,
+        matchedRuleIds: result?.matches?.map(x => x.ruleId),
+        blockedRuleIds: result?.unacknowledged?.map(x => x.ruleId),
+      }), 'utf8').digest('hex').slice(0, 20);
       const prepared = buildPlannedActionEvidence({
         tenantId: config.tenantId, action, result, agentId: config.agentId,
-        sourceRef: config.sourceRef, executionId: config.executionId,
+        sourceRef: config.sourceRef, executionId: config.executionId + '-' + intentDigest,
         hmacKey, observedAt: new Date().toISOString(),
       });
       await appendPlannedActionEvidence(adapter, prepared, config.sourceRevision);
