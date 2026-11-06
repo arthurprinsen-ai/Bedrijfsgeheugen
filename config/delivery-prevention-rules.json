@@ -4,7 +4,8 @@
     "brain/learning/portal-v2-customer-project-completeness-2026-09-15.json",
     "brain/learning/netlify-transport-authority-2026-10-19.json",
     "brain/learning/2026-11-06-github-error-register-v1.json",
-    "brain/learning/2026-11-06-i18n-patch-segment-drift.json"
+    "brain/learning/2026-11-06-i18n-patch-segment-drift.json",
+    "brain/learning/2026-11-06-site-error-lessons-v1.json"
   ],
   "rules": [
     {
@@ -611,6 +612,60 @@
       "id": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
       "active": true,
       "enforcedBy": "brain-static-i18n-production-cache-completeness-v1-test-plus-agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+      "active": true,
+      "enforcedBy": "tests-site-shell-schema-integriteit",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+      "active": true,
+      "enforcedBy": "portal-v2-no-demo-data-test-plus-agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+      "active": true,
+      "enforcedBy": "seo-controle-kop-comparison",
+      "scope": "shared"
+    },
+    {
+      "id": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+      "active": true,
+      "enforcedBy": "agent-contract",
       "scope": "shared"
     }
   ]
