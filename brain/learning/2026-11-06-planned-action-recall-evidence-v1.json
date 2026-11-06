@@ -29,5 +29,20 @@
     "Verify outcomes and monitor drift before claiming preventive effectiveness"
   ],
   "proof": "PENDING_PROTECTED_CI_ORIGINAL_BRAIN_AND_MAIN_READBACK",
-  "safety": "HMAC key never persisted. source reference cannot itself establish independent review or causal prevention. No second executor or artificial observations."
+  "safety": "HMAC key never persisted. source reference cannot itself establish independent review or causal prevention. No second executor or artificial observations.",
+  "compiler": {
+    "failure_class": "UNMEASURED_AGENT_ACTION_RECALL",
+    "scope": "BRAIN_EVIDENCE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+    ]
+  },
+  "root_cause": "Original planned-action guard/preflight has no independently labelled real-agent decision/outcome corpus. Existing tests use authored plans and historical PR-title proxies rather than exact agent --action inputs.",
+  "prevention_rule": "Allow operational percentages only from validated original BRAIN decision records with externally attested independent labels and adequate sample support; retain null for unknowns.",
+  "status": "CODE_CANDIDATE_UNVERIFIED"
 }
