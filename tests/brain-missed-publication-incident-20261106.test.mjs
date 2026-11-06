@@ -19,3 +19,10 @@ test('wired into the existing hourly tick, isolated, with no second scheduler',(
  assert.match(tick,/powerhouse_reconcile_content_outcomes_v1/);
  assert.match(tick,/powerhouse_measure_content_outcomes_v1/);
 });
+test('channel names in the missed-publication check match the obligation table (instagram, not instagram_company)',()=>{
+ const fix=readFileSync('supabase/migrations/20261106131000_powerhouse_missed_publication_instagram_channel_v1.sql','utf8');
+ assert.match(fix,/\('instagram','powerhouse-social-publisher'\)/);
+ assert.doesNotMatch(fix,/instagram_company'/);
+ assert.match(fix,/"instagram":"18:00"/);
+ assert.match(fix,/REVOKE ALL ON FUNCTION public\.powerhouse_missed_publication_v1[^;]*FROM PUBLIC, anon, authenticated/);
+});
