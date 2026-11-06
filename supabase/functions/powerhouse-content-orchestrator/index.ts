@@ -94,7 +94,7 @@ const executor_capabilities: Record<string, { executable: boolean; executor: str
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
 const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1","social_learnings","social_posts","social_metric_snapshots","revenue_learnings"]);
-const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2","bg_social_lus_cyclus"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2","bg_social_lus_cyclus","powerhouse_missed_publication_v1"]);
 const DB_JSON_COLUMNS=new Set([
  'bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload',
  'content_publication_obligations.evidence','content_publication_obligations.metrics',
@@ -504,6 +504,15 @@ function shouldPreserveExisting(row:any, channel:string, personalSource:any, con
 }
 
 
+async function missedPublications(db:any){
+  // Read-only deadline check. A miss is reported with its named owner on every run until the original owner repairs it.
+  try{
+    const {data,error}=await db.rpc('powerhouse_missed_publication_v1',{});
+    if(error)return {contract:'powerhouse-missed-publication-v1',check_failed:clean(error.message).slice(0,120)};
+    if(Number(data?.missed_count||0)>0)console.error('PUBLICATION_DEADLINE_MISSED',JSON.stringify(data.missed).slice(0,1500));
+    return data;
+  }catch(error){return {contract:'powerhouse-missed-publication-v1',check_failed:clean((error as Error)?.message||error).slice(0,120)};}
+}
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ok:false,error:'POST_ONLY'},405);
   const url = Deno.env.get('SUPABASE_URL') || '', service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -738,7 +747,7 @@ Deno.serve(async (req) => {
     }
     const pendingRows=includeOwnedBlogRepair(pendingRowsSnapshot,blogRepair);
     const pending = selectNextContentChannel(pendingRows, Date.now());
-    if (!pending) return json({ok:true,runDate,generated:false,reason:Array.isArray(pendingRows) && pendingRows.length ? 'ALL_PENDING_CHANNELS_IN_BOUNDED_COOLDOWN' : 'NO_PENDING_ARTIFACT',cooldown_channels:Array.isArray(pendingRows)?pendingRows.map((row:any)=>clean(row.channel)):[],executor_capabilities,personal_source_ready:!!personalSource});
+    if (!pending) return json({ok:true,missed_publications:await missedPublications(db),runDate,generated:false,reason:Array.isArray(pendingRows) && pendingRows.length ? 'ALL_PENDING_CHANNELS_IN_BOUNDED_COOLDOWN' : 'NO_PENDING_ARTIFACT',cooldown_channels:Array.isArray(pendingRows)?pendingRows.map((row:any)=>clean(row.channel)):[],executor_capabilities,personal_source_ready:!!personalSource});
     selectedGeneration = {channel:clean(pending.channel),evidence:pending.delivery_evidence||{}};
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     if (pending.channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
@@ -1076,7 +1085,7 @@ Deno.serve(async (req) => {
       const aw=await db.from('powerhouse_content_artifacts').upsert(artifactPayload);if(aw.error)throw new Error('ARTIFACT_WRITE_FAILED');
       const dw=await db.from('powerhouse_channel_decisions').update(decisionPayload).eq('run_date',runDate).eq('channel',pending.channel).eq('state','decided');if(dw.error)throw new Error('DECISION_STATE_WRITE_FAILED');
     }
-    return json({ok:true,runDate,generated:true,channel:pending.channel,title:artifact.title,executor_capabilities,personal_truth_verified:pending.channel==='linkedin_personal'?true:null});
+    return json({ok:true,missed_publications:await missedPublications(db),runDate,generated:true,channel:pending.channel,title:artifact.title,executor_capabilities,personal_truth_verified:pending.channel==='linkedin_personal'?true:null});
   } catch (error) {
     const message = String((error as Error)?.message||error).slice(0,500);
     console.error('ORCHESTRATOR_ERROR',stage,message);
