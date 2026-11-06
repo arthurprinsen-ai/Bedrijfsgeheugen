@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|migration|production-815th-provider-history-source-lock|20261106-v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "owner": "original Supabase migration-history source lock and original GitHub protected delivery",
+  "compiler": {
+    "failure_class": "MIGRATION_PROVIDER_LOCK_DRIFT_AFTER_PROTECTED_MERGE",
+    "scope": "ORIGINAL_SUPABASE_PROVIDER_MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected PR #5497 actually applied provider migration 20261106144500, but the retained source lock was still 814 rows, failing next candidate migration-integrity tests.",
+  "fix": "Synchronize ONLY the original 815 provider-recorded version/name pairs in existing immutable source lock via a separate lock-only PR, because protected PRs proposing new migrations cannot also edit provider-applied lock.",
+  "prevention_rule": "After provider-confirmed protected migration merge, reconcile original production provider history and immutable repository lock BEFORE next proposed migration PR; never predeclare a not-yet-applied version.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original provider list_migrations on 2026-11-06: 815 applied versions, exact first 814 matching previous lock and sole added 20261106144500_weekly_cron_health_cadence_original_function_v1 from protected merged PR #5497."
+    ],
+    "current": [
+      "Main lock prior to this PR has 814 identical provider versions; candidate lock is exact provider 815 versions and capture timestamp, with no new migration files in this PR."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_CODEQL_MERGE_PRODUCTION_READBACK",
+  "no_schema_change": true,
+  "regression": "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
+}
