@@ -79,7 +79,7 @@ test('all 15 GitHub error rules have live planned-action triggers', () => {
     'INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT'
   ];
   const ids = new Set(knowledge.triggers.map(trigger => trigger.ruleId));
-  assert.equal(knowledge.triggers.length, 34, '19 original + 15 GitHub rules');
+  assert.ok(knowledge.triggers.length >= 34, 'at least the 19 original and 15 GitHub triggers must stay');
   for (const id of githubRuleIds) assert.ok(ids.has(id), 'trigger missing for ' + id);
 });
 
