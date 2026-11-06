@@ -11,3 +11,9 @@ After the blog approval step went live, its first approved blog was blocked by t
 
 ## Not proven yet
 Merge and applied migration. Then the next daily blog must not be about an expired event. This does not by itself bring visitors or orders.
+
+## 6 november 2026 — live database-identiteit en bronlock gesynchroniseerd
+
+De oorspronkelijke applicatie van de SQL-migratie is in de live Supabase-projecthistorie onafhankelijk gelezen: **810 toegepaste versies**, hoogste versie `20261105190000`, naam `powerhouse_expire_stale_forecasts_v1`. Exact dezelfde uitvoerbare SQL stond al op beschermd `main`. Alleen `supabase/migration-history.lock.json` liep achter (809/810), waardoor het originele Required-preflight #42184168547 (PR #5477) terecht blokkeerde op meerdere integriteitsregressies.
+
+Herstel: voeg uitsluitend de bestaande, werkelijk toegepaste versie + naam aan het bestaande bronlock toe; laat SQL en live provider ongemoeid. Update het originele machineleerrecord en dit menselijke verslag plus de append-only ledger onder één beschermd herstel-PR. Er is géén tweede SQL-uitvoering, verzonnen migratie, afwijkende database-eigenaar, nieuwe cron of verlaagde test. De lockpariteit is pas officieel afgerond na exact-head Required/CodeQL, beschermde merge en onafhankelijke source/providerreadback. De natuurlijke hourly expiry-run en kwaliteit van de eerstvolgende blog blijven afzonderlijk te meten; geen omzet- of leadclaim.
