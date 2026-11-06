@@ -109,7 +109,7 @@ export async function handlePayment(db: any, key: string, payment: any) {
 }
 
 // Free trial: full access for TRIAL_DAYS without a payment method. One trial per e-mail address.
-export async function startTrial(db: any, a: { planCode: string; cycle: string; email: string; company: string; intentId: string }) {
+export async function startTrial(db: any, a: { planCode: string; cycle: string; email: string; company: string; intentId: string; promoCode?: string }) {
   const subId = `trial-${a.intentId}`;
   const again = await db.from('saas_subscriptions').select('organisation_id,current_period_end').eq('provider', 'trial').eq('provider_subscription_id', subId).maybeSingle();
   if (again.data) return { ok: true, already: true, organisation_id: again.data.organisation_id };
@@ -125,7 +125,7 @@ export async function startTrial(db: any, a: { planCode: string; cycle: string; 
   const end = trialEndsAt();
   const up = await db.from('saas_subscriptions').upsert({
     organisation_id: org.id, plan_code: a.planCode, provider: 'trial', provider_subscription_id: subId, status: 'trialing', current_period_end: end, cancel_at_period_end: true,
-    metadata: { trial: true, trial_email: a.email, checkout_session_id: a.intentId, billing_cycle: a.cycle, trial_ends_at: end }, updated_at: new Date().toISOString(),
+    metadata: { trial: true, trial_email: a.email, checkout_session_id: a.intentId, billing_cycle: a.cycle, trial_ends_at: end, ...(a.promoCode ? { promo_code: a.promoCode } : {}) }, updated_at: new Date().toISOString(),
   }, { onConflict: 'provider_subscription_id' });
   if (up.error) throw new Error('SUBSCRIPTION_STORE_FAILED');
   await db.from('saas_checkout_intents').update({ state: 'completed', organisation_id: org.id, updated_at: new Date().toISOString() }).eq('id', a.intentId);

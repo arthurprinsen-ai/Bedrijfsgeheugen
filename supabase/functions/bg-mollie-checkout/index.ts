@@ -57,7 +57,7 @@ Deno.serve(async (req: Request) => {
 
   if (trialMode) {
     try {
-      const t = await startTrial(db, { planCode, cycle, email, company, intentId });
+      const t = await startTrial(db, { planCode, cycle, email, company, intentId, promoCode: /^[A-Z0-9-]{3,24}$/.test(String(body.promo_code || '').toUpperCase()) ? String(body.promo_code).toUpperCase() : '' });
       if (!t.ok) return json({ error: t.error }, 409);
       return json({ url: `${ORIGIN}/afsluiten?success=1&trial=1&session_id=${encodeURIComponent(intentId)}&plan=${planCode}&billing=${cycle}` });
     } catch { return json({ error: 'storage_unavailable' }, 503); }
