@@ -63,7 +63,7 @@
   "known_limits": [
     "agent-contract rules are surfaced by the preflight, not blocked by a validator",
     "bg-gsc-sync and bg-zoekwoordkansen root cause still unknown; lesson records only the cadence mismatch",
-    "bg-bedrijfsnieuws Tavily blind spot is open until the source is retrieved"
+    "bg-bedrijfsnieuws was checked on 6 November and does not share the Tavily 432 blind spot (it fails loudly); keep reading its provider evidence, not only its status"
   ],
   "fingerprints": [
     "supabase|writeback|shared|migration-outside-git-without-readback",
