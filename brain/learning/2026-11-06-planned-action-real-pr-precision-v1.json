@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|planned-action-real-pr-precision|20261106-v1",
+  "owner": "original planned-action guard and canonical delivery preflight; issue #5510",
+  "compiler": {
+    "failure_class": "PLANNED_ACTION_GUARD_FALSE_BLOCK_ON_UNRELATED_REAL_PR_INTENT",
+    "scope": "PLANNED_ACTION_GUARD_PRECISION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Substring matching on generic systems and actions (github+ref, supabase+approve, pr+claim, linkedin+publish within publisher, chat lessons+rule) matches unrelated actual GitHub PR titles. Since matching active rules block all agents until acknowledgement, these overbroad matches can obstruct safe work.",
+  "prevention_rule": "Narrow seven existing trigger pairs to relevant concrete misuse; fail a protected required test when any of eight independently traceable historical PR-title/rule false positives returns or when seven concrete risky actions cease to be blocked. Keep original guard, PROVEN lessons and fail-closed acknowledgements unchanged.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ],
+    "shadow": [
+      "existing planned-action guard"
+    ],
+    "canary": [
+      "tests/brain-planned-action-guard-20261106.test.mjs",
+      "tests/brain-planned-action-triggers-wave2-20261106.test.mjs",
+      "tests/brain-planned-action-triggers-wave3-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Public PR titles #5509, #5508, #5498, #5496, #5490 and #5501 from GitHub on 2026-11-06",
+      "Read-only Supabase source audit found no time-windowed labelled real-agent plannedAction/guard-output corpus in brain_records; public PR titles are proxies only"
+    ],
+    "current": [
+      "8 manually adjudicated hard-negative PR/rule pairs",
+      "7 explicit risky-action positive regression samples",
+      "Operational recall and production false-block rate: NOT_MEASURED"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ]
+}

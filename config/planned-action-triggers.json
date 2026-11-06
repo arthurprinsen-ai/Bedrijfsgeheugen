@@ -22,8 +22,10 @@
       ],
       "actions": [
         "approved_at",
-        "goedkeur",
-        "approve"
+        "direct approval",
+        "directly approve",
+        "set approval",
+        "goedkeuring rechtstreeks"
       ]
     },
     {
@@ -100,7 +102,9 @@
       "ruleId": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
       "systems": [
         "composio",
-        "linkedin"
+        "linkedin connection",
+        "linkedin account",
+        "linkedin token"
       ],
       "actions": [
         "publish",
@@ -285,26 +289,35 @@
     {
       "ruleId": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
       "systems": [
-        "github",
-        "workflow"
+        "github workflow",
+        ".github/workflows",
+        "workflow file",
+        "github actions"
       ],
       "actions": [
-        "workflow",
+        "write",
+        "edit",
+        "create",
+        "403",
         "permission",
-        "token",
-        "write"
+        "grant"
       ]
     },
     {
       "ruleId": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
       "systems": [
-        "github",
-        "chat"
+        "chat",
+        "conversation",
+        "message"
       ],
       "actions": [
-        "token",
-        "secret",
-        "paste"
+        "paste token",
+        "send token",
+        "share token",
+        "repeat token",
+        "token into",
+        "secret into",
+        "paste secret"
       ]
     },
     {
@@ -375,14 +388,19 @@
     {
       "ruleId": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
       "systems": [
-        "github",
-        "branch"
+        "branch",
+        "git refs",
+        "git branch",
+        "github branch"
       ],
       "actions": [
-        "branch",
-        "ref",
+        "create",
+        "rename",
         "422",
-        "create"
+        "collision",
+        "nested",
+        "slash",
+        "branch name"
       ]
     },
     {
@@ -454,14 +472,19 @@
       "ruleId": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
       "systems": [
         "github",
-        "pr",
-        "ci"
+        "pull request",
+        "pr status",
+        "checks"
       ],
       "actions": [
-        "claim",
-        "status",
-        "verified",
-        "read"
+        "anonymous",
+        "unauthenticated",
+        "without authenticated",
+        "without an authenticated",
+        "claim without",
+        "status without",
+        "cannot read",
+        "can't read"
       ]
     },
     {
@@ -1047,10 +1070,12 @@
         "chat learning"
       ],
       "actions": [
-        "add",
-        "prevention",
-        "rule",
-        "mapping"
+        "without a prevention",
+        "without prevention",
+        "missing prevention",
+        "unmapped",
+        "add required",
+        "new required"
       ]
     },
     {
