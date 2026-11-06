@@ -25,7 +25,10 @@ export function resolvePlannedActionRuntime(env = process.env) {
     if (u.protocol === 'https:' && !u.username && !u.password && !u.search && !u.hash &&
         (u.pathname === '/' || u.pathname === '') && /^[a-z0-9-]+\.supabase\.co$/i.test(u.hostname)) origin = u.origin;
   } catch { /* caller gets an unconfigured state, without echoing secrets or URLs */ }
-  const configured = Boolean(origin && serviceRoleKey && safeId(agentId) && sourcePattern.test(sourceRef) && idPattern.test(executionId) && safeId(tenantId));
+  // Additional defense-in-depth: never accept privileged capture from a PR run.
+  // Agents outside GitHub still use their explicitly authorized connection.
+  const githubTrusted = env.GITHUB_ACTIONS !== 'true' || env.GITHUB_REF === 'refs/heads/main';
+  const configured = Boolean(githubTrusted && origin && serviceRoleKey && safeId(agentId) && sourcePattern.test(sourceRef) && idPattern.test(executionId) && safeId(tenantId));
   if (!configured && mode === 'required') throw Error('PLANNED_ACTION_CAPTURE_AUTHORITY_OR_IDENTITY_MISSING');
   return configured
     ? Object.freeze({ state: 'CONFIGURED', origin, serviceRoleKey, agentId, sourceRef, executionId, tenantId, sourceRevision })
@@ -89,6 +92,8 @@ export function createCanonicalPlannedActionRecorder({ env = process.env, fetchI
           rows[0].tenant_id !== config.tenantId || rows[0].status !== 'OBSERVED' ||
           rows[0].payload?.actionHmacSha256 !== prepared.record.payload.actionHmacSha256 ||
           rows[0].payload?.sourceRef !== config.sourceRef ||
+          rows[0].payload?.agentId !== config.agentId ||
+          (config.sourceRevision && rows[0].source_revision !== config.sourceRevision) ||
           JSON.stringify(rows[0].payload?.matchedRuleIds) !== JSON.stringify(prepared.record.payload.matchedRuleIds) ||
           JSON.stringify(rows[0].payload?.blockedRuleIds) !== JSON.stringify(prepared.record.payload.blockedRuleIds)) {
         throw Error('PLANNED_ACTION_BRAIN_READBACK_MISMATCH');
