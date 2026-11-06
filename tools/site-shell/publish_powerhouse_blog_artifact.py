@@ -244,31 +244,61 @@ def body_html(data):
     focus_plain = seo_focus(data)
     result = [f"<h2>{html.escape(focus_plain)}: de kern</h2>"]
     lead_written = False
-    for block in blocks:
+
+    def emit_block(block):
+        nonlocal lead_written
         if block == "---":
-            continue
+            return
         if block.startswith("# "):
-            continue
-        if block.startswith("## "):
-            result.append(f"<h2>{inline_markdown(block[3:].strip())}</h2>")
-            continue
-        if block.startswith("### "):
-            result.append(f"<h3>{inline_markdown(block[4:].strip())}</h3>")
-            continue
+            return
+        # A heading is only its first line. Source text often continues on the
+        # next line without a blank line (the same shape faq_items accepts), so
+        # the rest of the block is rendered as its own paragraph or list instead
+        # of being swallowed into the heading.
+        for marker, tag in (("## ", "h2"), ("### ", "h3")):
+            if block.startswith(marker):
+                head, _, rest = block.partition("\n")
+                result.append(f"<{tag}>{inline_markdown(head[len(marker):].strip())}</{tag}>")
+                if rest.strip():
+                    emit_block(rest.strip())
+                return
         lines = [line.strip() for line in block.splitlines() if line.strip()]
         if lines and all(line.startswith("- ") for line in lines):
             result.append("<ul>" + "".join(f"<li>{inline_markdown(line[2:].strip())}</li>" for line in lines) + "</ul>")
-            continue
+            return
         if len(lines) > 1 and lines[0].startswith("**") and all(line.startswith("- ") for line in lines[1:]):
             result.append(f"<p>{inline_markdown(lines[0])}</p>")
             result.append("<ul>" + "".join(f"<li>{inline_markdown(line[2:].strip())}</li>" for line in lines[1:]) + "</ul>")
-            continue
+            return
+        if any(line.startswith("- ") for line in lines):
+            # Text and list lines mixed in one block: keep each run in its own
+            # element instead of leaking "- " markdown into a paragraph.
+            run, is_list = [], False
+            def flush():
+                if not run:
+                    return
+                if is_list:
+                    result.append("<ul>" + "".join(f"<li>{inline_markdown(x[2:].strip())}</li>" for x in run) + "</ul>")
+                else:
+                    result.append(f"<p>{inline_markdown(' '.join(run))}</p>")
+            for line in lines:
+                item = line.startswith("- ")
+                if run and item != is_list:
+                    flush()
+                    run = []
+                is_list = item
+                run.append(line)
+            flush()
+            return
         css = ' class="lead"' if not lead_written else ""
         paragraph = block
         if not lead_written and focus_plain.casefold() not in paragraph.casefold():
             paragraph = f"{focus_plain}: {paragraph}"
         result.append(f"<p{css}>{inline_markdown(paragraph)}</p>")
         lead_written = True
+
+    for block in blocks:
+        emit_block(block)
     result.append(functional_figures(focus_plain))
     # Visible, verified source links are required for claims about laws and
     # external events; never synthesize a citation or remove the SEO proof gate.
@@ -290,6 +320,16 @@ def body_html(data):
             + ' <a href="/frisse-blik">Bekijk de Frisse blik &rarr;</a></p>'
         )
     return "\n".join(result)
+
+def assert_rendered_body_clean(markup):
+    """Fail closed when markdown list syntax or a whole section ends up inside a heading or paragraph."""
+    for tag, text in re.findall(r"<(h[23]|p)(?:\s[^>]*)?>(.*?)</\1>", markup, re.S):
+        plain = re.sub(r"<[^>]+>", "", text)
+        if re.search(r"(?m)^\s*-\s+\S", plain):
+            fail("BLOG_ARTIFACT_NOT_READER_READY:MARKDOWN_LIST_IN_" + tag.upper())
+        if tag != "p" and len(plain) > 160:
+            fail("BLOG_ARTIFACT_NOT_READER_READY:HEADING_TOO_LONG")
+
 
 def assert_reader_ready(data, business_date=None):
     """Fail closed on author/editor instructions accidentally exported as customer copy.
@@ -474,12 +514,14 @@ def main():
         rf'\1{title}\2',
         "breadcrumb",
     )
+    body_markup = body_html(data)
+    assert_rendered_body_clean(body_markup)
     article = (
         f'<article class="artikel" data-content-id="{html.escape(data["content_id"], quote=True)}">'
         f'<div class="artikelkop"><span class="eyebrow">Powerhouse · Dagelijkse learning</span>'
         f'<h1>{title}</h1><div class="artikelmeta"><span>{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]}</span>'
         f' · <span>Arthur Prinsen</span></div></div>'
-        + body_html(data)
+        + body_markup
         + faq_html(data)
         + "</article>"
     )

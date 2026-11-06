@@ -3177,6 +3177,16 @@
    "cause": "Canonical runtime authority still declared supabase_buffer and Buffer delivery evidence after Buffer had been retired, while actual supported social transport is Composio. Provider capability was also treated too globally, allowing a LinkedIn company scope failure to impede unrelated channels.",
    "prevention": "Canonical social authority must name Supabase+Composio, bind one exact provider account/capability per channel, and fail closed only the affected channel. Provider ACTIVE metadata is insufficient; terminal success requires action-specific provider health and external readback.",
    "source": "brain/learning/social-runtime-authority-composio-channel-isolation-v1.json"
+  },
+  {
+   "fingerprint": "powerhouse|daily-blog|markdown-list-in-heading-and-paragraph|20261106-v1",
+   "date": "2026-11-06",
+   "channels": [
+    "blog"
+   ],
+   "cause": "The daily blog renderer (body_html in tools/site-shell/publish_powerhouse_blog_artifact.py) turned a whole block starting with '## ' into one heading and wrote text-plus-list blocks as one paragraph with literal '- ' lines. 5 of the 7 recent daily articles (15, 22, 23, 24 Oct and 6 Nov) carry the defect live: for 6 Nov, six paragraphs with markdown lists and five headings over 200 characters, also in the table of contents. It surfaced as STATIC_I18N_CACHE_INCOMPLETE on main, a symptom of the same malformed text nodes.",
+   "prevention": "body_html treats a heading as its first line only and renders the rest as paragraph or list | mixed text and list lines become separate p and ul elements | assert_rendered_body_clean blocks MARKDOWN_LIST_IN_P, MARKDOWN_LIST_IN_H2 and HEADING_TOO_LONG before the page is written | tests/brain-blog-markdown-render-20261106.test.mjs in the required check | already published articles are NOT repaired by this change",
+   "source": "brain/learning/2026-11-06-blog-markdown-render-v1.json"
   }
  ],
  "provider_and_obligation_blockers": [

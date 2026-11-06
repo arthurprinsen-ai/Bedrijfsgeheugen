@@ -5,7 +5,8 @@
     "brain/learning/netlify-transport-authority-2026-10-19.json",
     "brain/learning/2026-11-06-github-error-register-v1.json",
     "brain/learning/2026-11-06-i18n-patch-segment-drift.json",
-    "brain/learning/2026-11-06-site-error-lessons-v1.json"
+    "brain/learning/2026-11-06-site-error-lessons-v1.json",
+    "brain/learning/2026-11-06-blog-markdown-render-v1.json"
   ],
   "rules": [
     {
@@ -666,6 +667,12 @@
       "id": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
       "active": true,
       "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
+      "active": true,
+      "enforcedBy": "publish_powerhouse_blog_artifact-assert_rendered_body_clean-plus-brain-blog-markdown-render-20261106-test",
       "scope": "shared"
     }
   ]

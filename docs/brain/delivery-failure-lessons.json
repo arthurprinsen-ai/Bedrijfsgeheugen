@@ -970,6 +970,16 @@
       "fix": "before adding lessons, rules or triggers search open pull requests and branches by topic and by these file paths; if one exists, extend it or supersede it explicitly after confirming it is stale, and name one owner per root cause",
       "preventionRule": "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|blog|shared|markdown-blocks-rendered-into-headings-and-paragraphs",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "five of seven recent daily blog articles carry markdown list syntax inside paragraphs and section-sized headings live, and the same malformed text nodes later broke the static i18n cache check on main",
+      "rootCause": "the markdown-to-HTML step turned a whole block starting with a heading marker into one heading and wrote text-plus-list blocks as a single paragraph; only all-list and bold-first-line blocks were recognised, and nothing checked the rendered markup",
+      "fix": "treat a heading as its first line only, render mixed text and list lines as separate paragraph and list elements, and fail closed before writing the page when a heading or paragraph still contains markdown list lines or a heading is section-sized",
+      "preventionRule": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
+      "status": "PROVEN"
     }
   ]
 }
