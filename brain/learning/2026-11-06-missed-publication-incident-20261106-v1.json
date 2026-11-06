@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-06",
-  "status": "PROVIDER_APPLIED_LOCK_SOURCE_CANDIDATE",
+  "status": "PROVIDER_APPLIED_LOCK_SOURCE_RECONCILED",
   "fingerprint": "powerhouse|content|missed-publication-not-an-incident|20261106-v1",
   "failure_class": "SILENT_FAILURE",
   "scope": "RUNTIME",
