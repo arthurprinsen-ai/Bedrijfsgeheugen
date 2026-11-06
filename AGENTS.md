@@ -1,6 +1,6 @@
 ## 2026-11-06 — Blokkaderegister blogs/posts/nieuwsbrief: eerst lezen, dan bouwen
 
-Elke agent, skill en workflow die een blog, LinkedIn-post, Instagram-post of nieuwsbrief maakt, wijzigt of herstelt leest eerst `brain/content-publication-blocker-register.json` (316 eerdere leerpunten + de echte foutcodes uit `content_publication_obligations`). Een blokkade in het register mag niet terugkomen: pas de preventieregel toe, of leg vast waarom die niet meer geldt. Een nieuwe blokkade komt in dezelfde wijziging in het register. Bron: Arthur, 6 nov. Guard: `tests/content-publication-blocker-register-20261106.test.mjs`.
+Elke agent, skill en workflow die een blog, LinkedIn-post, Instagram-post of nieuwsbrief maakt, wijzigt of herstelt leest eerst `brain/content-publication-blocker-register.json` (316 eerdere leerpunten + de echte foutcodes uit `content_publication_obligations`). Een blokkade in het register mag niet terugkomen: pas de preventieregel toe, of leg vast waarom die niet meer geldt. Een nieuwe blokkade komt in dezelfde wijziging in het register. Bron: Arthur, 6 nov. Guard: `tests/brain-content-publication-blocker-register-20261106.test.mjs`.
 
 ## 2026-11-05 — CANONICAL AGENT CONTRACT: Heartbeat → ONE BRAIN → original owner → Portal → measured learning
 
