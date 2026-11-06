@@ -65,3 +65,8 @@ table.tight td,table.tight th{padding:.7mm 2mm}
 .qr{background:#fff;border:1px solid var(--l);border-radius:8px;padding:3mm;width:42mm;flex:none}
 
 .cover .geel{color:var(--i)}
+.cph{position:absolute;left:0;top:0;width:210mm;height:150mm;object-fit:cover;object-position:50% 33%}
+.cgr{position:absolute;left:0;top:0;width:210mm;height:150mm;background:linear-gradient(180deg,rgba(20,23,26,.45) 0%,rgba(20,23,26,0) 22%,rgba(20,23,26,.6) 55%,rgba(20,23,26,.95) 92%,#14171A 100%)}
+.ph{width:100%;display:block;object-fit:cover;border-radius:10px}
+.cap{font-size:7pt;color:var(--g);margin-top:1mm}
+

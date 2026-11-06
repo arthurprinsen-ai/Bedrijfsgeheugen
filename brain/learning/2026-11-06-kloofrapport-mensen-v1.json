@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|report-lacks-people-and-portal-pitch|20261106-v2",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het eerste lead-magnetrapport had geen kennismaking met het portaal en weinig mens, terwijl ondernemers met mensen willen werken.",
+  "evidence": {
+    "at_utc": "2026-11-06T12:15:00Z",
+    "source": "feedback Arthur op rapport 2026-Q4 v1"
+  },
+  "fix": "Foto-voorkant, pagina met portaalvoordelen en pagina over werken met experts toegevoegd; afbeeldingen als AI-gegenereerd gemarkeerd.",
+  "prevention_rule": "Elk lead-magnetrapport introduceert het portaal, laat mensen zien en biedt een route naar een expert.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge door Arthur",
+    "PDF in portaal toont 33 pagina's"
+  ]
+}
