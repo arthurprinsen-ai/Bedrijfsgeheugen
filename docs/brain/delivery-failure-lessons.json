@@ -642,6 +642,196 @@
       "status": "PROVEN"
     },
     {
+      "fingerprint": "supabase|writeback|shared|migration-outside-git-without-readback",
+      "stage": "WRITEBACK",
+      "component": "shared",
+      "reason": "A Supabase migration applied outside Git made repository and provider diverge",
+      "rootCause": "Provider state and supabase/migration-history.lock.json were changed separately; production showed 805 migrations against 801 in the lock and BRAIN ran red 26 of 40 times between 2 and 5 November",
+      "fix": "Add the migration file and its lock entry in the same change; a migration applied outside Git always needs a provider readback by the migration owner; never edit a test expectation to turn a check green",
+      "preventionRule": "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|governance|shared|approved-at-set-directly",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "A blog stayed GENERATED without any error",
+      "rootCause": "approved_at was empty and the export refuses unapproved content; setting approved_at directly in the database would bypass the approval gate",
+      "fix": "Approve content only through record_content_publication_state; never write approved_at directly",
+      "preventionRule": "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|pipeline|shared|veto-reverted-by-queue",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Withdrawing a blog did not hold",
+      "rootCause": "powerhouse-blog-queue moved FAILED back to GENERATED, so a plain status change was undone",
+      "fix": "Reject durably with evidence.veto = {active: true, reason}; verify by reading the row back after the next queue run",
+      "preventionRule": "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|verification|shared|sql-stage-counted-as-agent-run",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "A SQL stage was counted as an agent action",
+      "rootCause": "Process output was read as an agent run; a SQL stage is SQL_PROCESS, not AGENT_EXECUTED",
+      "fix": "Claim an agent action only with agent_id, skill_version and a before and after; use the status ladder REGISTERED, WIRED, JOB_ACTIVE, EXECUTED, PROVIDER_VERIFIED, OUTCOME_PROVEN, LEARNING_APPLIED and never claim a higher step than the evidence shows",
+      "preventionRule": "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|governance|shared|bulk-data-write-without-approval",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "Row cleanup in production data cannot be undone",
+      "rootCause": "Deleting or rewriting rows has no rollback; cleanup was attempted before the owner agreed",
+      "fix": "Propose first, wait for the owner's yes, then write and read back the result; production migrations and spend stay with the owner",
+      "preventionRule": "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify|configuration|shared|wrong-env-key-name-in-functions",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Control Plane saw no Supabase URL",
+      "rootCause": "Netlify Functions context has BG_PORTAL_EU_SUPABASE_URL, not SUPABASE_URL",
+      "fix": "Check which config keys Netlify Functions actually expose before reading one; never add a new secret or a second source",
+      "preventionRule": "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify|verification|shared|deploy-ready-taken-as-outcome",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "A READY deploy was read as proof of the outcome",
+      "rootCause": "READY shows the published version for the exact commit, not that the change works for the customer",
+      "fix": "Treat READY on the exact commit as one link; keep browser or provider readback and the outcome as separate evidence; a 401 on an admin-only endpoint without an admin-JWT 200 is unproven, not green",
+      "preventionRule": "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "composio|integration|shared|active-connection-not-healthy",
+      "stage": "INTEGRATION",
+      "component": "shared",
+      "reason": "A LinkedIn connection was ACTIVE but the backend could not publish",
+      "rootCause": "Nine connections were ACTIVE and none healthy because tokens were revoked on 3 and 30 October; the server key saw 11 accounts that all returned REVOKED_ACCESS_TOKEN",
+      "fix": "ACTIVE is not proof: before publishing check the exact server project, the account, its scopes and a LINKEDIN_GET_MY_INFO readback; company posting also needs the organisation URN, ADMINISTRATOR role and read rights on the same connection",
+      "preventionRule": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "composio|integration|shared|wrong-project-connected-account",
+      "stage": "INTEGRATION",
+      "component": "shared",
+      "reason": "A Gmail call failed with no connection in the server project on 30 September",
+      "rootCause": "An id from the chat environment was used instead of a real connected_account_id of the server project",
+      "fix": "Every outgoing run first checks the exact server project and a real ACTIVE connected_account_id with its user_id",
+      "preventionRule": "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "composio|verification|shared|wrong-instagram-account-measured",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "The wrong Instagram account was measured",
+      "rootCause": "Eight connections point to @arthurprinsen and aliases containing the company name are misleading; the company account is id 28537384955950341",
+      "fix": "Every measurement records account id and username; LinkedIn company figures come from Windsor linkedin_organic account 18234216, not from OAuth that lacks the admin scope",
+      "preventionRule": "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "buffer|pipeline|shared|rate-limit-429-looped-or-fallback",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Buffer returned 429 with a retry-after of about three days on 29 October and again on 6 November",
+      "rootCause": "The client rate limit was reached; looping or adding a second route does not help and Make is abolished",
+      "fix": "Respect retry-after, do not loop, add no second publishing route, report the blocker and repair the existing line; Buffer-Instagram counts as available only after a successful call with a read-back result",
+      "preventionRule": "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "windsor|verification|shared|ok-with-fallback-is-not-fresh",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "Windsor sync said ok but the data was old",
+      "rootCause": "WINDSOR_API_KEY was missing from the vault and the sync reused an earlier readback",
+      "fix": "An ok with fallback is not a fresh measurement; always record the fetch date; setting the key is the owner's task",
+      "preventionRule": "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ga4|verification|shared|ok-with-zero-rows-is-not-measured",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "The GA4 sync reported ok but wrote zero measurements (six syncs on 31 October)",
+      "rootCause": "Empty provider reports were counted as success; a 403 on property 546874601 meant the canonical service account was not authorised",
+      "fix": "Test provider observation, non-empty rows and source attribution per metric date; on 403 check the exact account binding and never mask authorisation; INSUFFICIENT_DATA is a valid outcome and never claimed as significant",
+      "preventionRule": "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "searchconsole|verification|shared|weekly-job-judged-by-daily-threshold",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "bg-gsc-sync and bg-zoekwoordkansen showed VEROUDERD after 74 hours",
+      "rootCause": "A weekly job was judged with a daily freshness threshold; the root cause of the NOOIT_BEWEZEN counts is still unknown",
+      "fix": "Use a cadence-aware health check and never hide a missed or failed run; find and record the root cause before declaring these jobs healthy",
+      "preventionRule": "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "dataforseo|verification|shared|empty-result-codes-misread",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "DataForSEO task 40101 or 40102 was read as an error",
+      "rootCause": "No search results is valid emptiness at HTTP 200 with status code 20000",
+      "fix": "Only 40101 and 40102 are EMPTY, every other status is an error; payment, subscription, auth and rate-limit errors are never retried to force green; use short Dutch search phrases and record a partial result honestly",
+      "preventionRule": "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "tavily|pipeline|shared|plan-limit-432-read-as-no-results",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Twelve companies were wrongly rejected as having no own website",
+      "rootCause": "HTTP 432 plan usage limit was read as no results",
+      "fix": "A provider error stops the run with an alarm and is never written as an empty result; the same blind spot in bg-bedrijfsnieuws is open and needs the source code retrieved first",
+      "preventionRule": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "heartbeat|pipeline|shared|loop-without-owner-and-starter",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Instagram published nothing since 3 October with MEDIA_ASSET_REQUIRED",
+      "rootCause": "An agent session that nobody starts is a stopped loop; no cron starts the producer session",
+      "fix": "Every loop has an owner and a starter; check scheduled runs per day, not only green, because the daily blog workflow ran once per about five hours instead of hourly",
+      "preventionRule": "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "heartbeat|outcome|shared|missed-publication-blind-retry",
+      "stage": "OUTCOME",
+      "component": "shared",
+      "reason": "The personal LinkedIn post of 6 November was not published",
+      "rootCause": "The 07:00 UTC deadline was missed and EXACT_PROVIDER_PUBLICATION_PROOF_MISSING was returned",
+      "fix": "Establish the external effect first and never republish blind; never bypass the quality gate or send manually outside the existing chain",
+      "preventionRule": "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "notion|handoff|shared|oversized-entry-page-truncated",
+      "stage": "HANDOFF",
+      "component": "shared",
+      "reason": "The START HIER page could not be read in one go",
+      "rootCause": "The page exceeds 288,000 characters and every session adds a section at the top; a fetch is cut at 100,000",
+      "fix": "Read only the top part and follow links; summarise old sections into an archive page without discarding facts; correct the old status of the same item on every update and attach evidence to each claim",
+      "preventionRule": "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS",
+      "status": "PROVEN"
+    },
+    {
       "fingerprint": "i18n|cache|shared|translation-patch-keys-differ-from-build-segments",
       "stage": "PIPELINE",
       "component": "shared",

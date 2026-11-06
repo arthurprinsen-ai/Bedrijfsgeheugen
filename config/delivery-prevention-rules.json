@@ -494,6 +494,120 @@
       "scope": "shared"
     },
     {
+      "id": "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
       "id": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
       "active": true,
       "enforcedBy": "brain-static-i18n-production-cache-completeness-v1-test-plus-agent-contract",
