@@ -1,0 +1,286 @@
+{
+  "version": "PLANNED-ACTION-TRIGGERS-v1",
+  "note": "A rule fires when the planned action text contains at least one system word AND one action word. Substring match, case-insensitive. Rules are defined in config/delivery-prevention-rules.json; lessons in docs/brain/delivery-failure-lessons.json.",
+  "rules": [
+    {
+      "ruleId": "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+      "systems": [
+        "supabase"
+      ],
+      "actions": [
+        "migrat",
+        "apply",
+        "schema"
+      ]
+    },
+    {
+      "ruleId": "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+      "systems": [
+        "supabase",
+        "database",
+        "content_publication"
+      ],
+      "actions": [
+        "approved_at",
+        "goedkeur",
+        "approve"
+      ]
+    },
+    {
+      "ruleId": "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+      "systems": [
+        "supabase",
+        "blog"
+      ],
+      "actions": [
+        "afkeur",
+        "afschrijv",
+        "reject",
+        "withdraw",
+        "veto"
+      ]
+    },
+    {
+      "ruleId": "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+      "systems": [
+        "supabase",
+        "agent",
+        "heartbeat",
+        "powerhouse"
+      ],
+      "actions": [
+        "agent_executed",
+        "claim",
+        "status",
+        "bewezen",
+        "proven"
+      ]
+    },
+    {
+      "ruleId": "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+      "systems": [
+        "supabase"
+      ],
+      "actions": [
+        "delete",
+        "opruim",
+        "cleanup",
+        "truncate",
+        "drop ",
+        "bulk"
+      ]
+    },
+    {
+      "ruleId": "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "secret",
+        "env",
+        "supabase_url",
+        "config"
+      ]
+    },
+    {
+      "ruleId": "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+      "systems": [
+        "netlify",
+        "deploy"
+      ],
+      "actions": [
+        "ready",
+        "uitgerold",
+        "live",
+        "verified",
+        "bewezen"
+      ]
+    },
+    {
+      "ruleId": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+      "systems": [
+        "composio",
+        "linkedin"
+      ],
+      "actions": [
+        "publish",
+        "publiceer",
+        "post",
+        "plaats"
+      ]
+    },
+    {
+      "ruleId": "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+      "systems": [
+        "composio",
+        "gmail"
+      ],
+      "actions": [
+        "send",
+        "mail",
+        "verstuur",
+        "connected_account"
+      ]
+    },
+    {
+      "ruleId": "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+      "systems": [
+        "composio",
+        "instagram",
+        "linkedin",
+        "windsor"
+      ],
+      "actions": [
+        "meet",
+        "measure",
+        "analytics",
+        "statistiek",
+        "cijfers"
+      ]
+    },
+    {
+      "ruleId": "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+      "systems": [
+        "buffer"
+      ],
+      "actions": [
+        "post",
+        "publish",
+        "schedule",
+        "retry",
+        "publiceer",
+        "plan"
+      ]
+    },
+    {
+      "ruleId": "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+      "systems": [
+        "windsor"
+      ],
+      "actions": [
+        "sync",
+        "fetch",
+        "ophalen",
+        "meting",
+        "measure",
+        "data"
+      ]
+    },
+    {
+      "ruleId": "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+      "systems": [
+        "ga4",
+        "google analytics",
+        "search console",
+        "searchconsole"
+      ],
+      "actions": [
+        "sync",
+        "meting",
+        "measure",
+        "rapport",
+        "report"
+      ]
+    },
+    {
+      "ruleId": "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+      "systems": [
+        "search console",
+        "searchconsole",
+        "gsc",
+        "zoekwoordkansen"
+      ],
+      "actions": [
+        "verouderd",
+        "health",
+        "stale",
+        "check",
+        "sync"
+      ]
+    },
+    {
+      "ruleId": "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+      "systems": [
+        "dataforseo"
+      ],
+      "actions": [
+        "40101",
+        "40102",
+        "error",
+        "fout",
+        "retry",
+        "empty",
+        "leeg",
+        "task"
+      ]
+    },
+    {
+      "ruleId": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+      "systems": [
+        "tavily"
+      ],
+      "actions": [
+        "search",
+        "zoek",
+        "run",
+        "afwijz",
+        "reject",
+        "432",
+        "empty",
+        "leeg"
+      ]
+    },
+    {
+      "ruleId": "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+      "systems": [
+        "heartbeat",
+        "agent",
+        "lus",
+        "loop",
+        "cron",
+        "schedule"
+      ],
+      "actions": [
+        "new",
+        "nieuw",
+        "build",
+        "bouw",
+        "start",
+        "schedule"
+      ]
+    },
+    {
+      "ruleId": "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+      "systems": [
+        "linkedin",
+        "instagram",
+        "buffer",
+        "publicat",
+        "post"
+      ],
+      "actions": [
+        "republish",
+        "opnieuw",
+        "retry",
+        "gemist",
+        "missed"
+      ]
+    },
+    {
+      "ruleId": "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS",
+      "systems": [
+        "notion",
+        "start hier"
+      ],
+      "actions": [
+        "update",
+        "bijwerk",
+        "fetch",
+        "read",
+        "lees",
+        "add",
+        "toevoeg"
+      ]
+    }
+  ]
+}

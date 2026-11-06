@@ -1,0 +1,89 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "system|delivery|error-register-gap-lessons|20261106-v1",
+  "owner": "existing delivery-failure-lessons and delivery-prevention-rules preflight; no new register",
+  "compiler": {
+    "failure_class": "SYSTEM_KNOWN_ERRORS_NOT_IN_PREFLIGHT",
+    "scope": "DELIVERY_PREFLIGHT_LESSON_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Known errors in Supabase, Netlify, Composio, Buffer, Windsor, GA4, Search Console, DataForSEO, Tavily and the heartbeat loops were recorded in Notion prose only, so the delivery preflight could not stop an agent from repeating them. The preflight only applies active rules that have a PROVEN lesson.",
+  "prevention_rule": "Each of the 19 errors is a PROVEN lesson with an active rule; a required-check test fails when a lesson loses its rule, is duplicated or contains a credential. Rules that rely on the agent contract are marked agent-contract and are not claimed as machine-blocked.",
+  "prevention_rules": [
+    "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+    "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+    "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+    "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+    "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+    "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+    "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+    "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+    "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+    "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+    "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+    "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+    "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+    "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+    "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+    "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+    "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+    "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+    "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-system-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Notion: Foutenregister overige systemen (410da36a-ac8a-815b-82f3-f4516e43149e), compiled 6 Nov 2026 from earlier sessions and brain_failure_registry"
+    ],
+    "current": [
+      "Local parity check on the changed files: no PROVEN lesson without an active rule, no duplicate fingerprint"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "follow_up_of": "PR 5490 (github-foutenregister-20261106); rebase after it merges",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ],
+  "known_limits": [
+    "agent-contract rules are surfaced by the preflight, not blocked by a validator",
+    "bg-gsc-sync and bg-zoekwoordkansen root cause still unknown; lesson records only the cadence mismatch",
+    "bg-bedrijfsnieuws Tavily blind spot is open until the source is retrieved"
+  ],
+  "fingerprints": [
+    "supabase|writeback|shared|migration-outside-git-without-readback",
+    "supabase|governance|shared|approved-at-set-directly",
+    "supabase|pipeline|shared|veto-reverted-by-queue",
+    "supabase|verification|shared|sql-stage-counted-as-agent-run",
+    "supabase|governance|shared|bulk-data-write-without-approval",
+    "netlify|configuration|shared|wrong-env-key-name-in-functions",
+    "netlify|verification|shared|deploy-ready-taken-as-outcome",
+    "composio|integration|shared|active-connection-not-healthy",
+    "composio|integration|shared|wrong-project-connected-account",
+    "composio|verification|shared|wrong-instagram-account-measured",
+    "buffer|pipeline|shared|rate-limit-429-looped-or-fallback",
+    "windsor|verification|shared|ok-with-fallback-is-not-fresh",
+    "ga4|verification|shared|ok-with-zero-rows-is-not-measured",
+    "searchconsole|verification|shared|weekly-job-judged-by-daily-threshold",
+    "dataforseo|verification|shared|empty-result-codes-misread",
+    "tavily|pipeline|shared|plan-limit-432-read-as-no-results",
+    "heartbeat|pipeline|shared|loop-without-owner-and-starter",
+    "heartbeat|outcome|shared|missed-publication-blind-retry",
+    "notion|handoff|shared|oversized-entry-page-truncated"
+  ]
+}
