@@ -1,0 +1,27 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "PROVIDER_APPLIED_LOCK_SOURCE_CANDIDATE",
+  "fingerprint": "powerhouse|content|missed-publication-not-an-incident|20261106-v1",
+  "failure_class": "SILENT_FAILURE",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse content closed-loop tick; original ONE BRAIN + Heartbeat",
+  "root_cause": "De gemiste-publicatiecheck meldde alleen; niets legde een gemist kanaal vast als incident met eigenaar, dus 4 dagen zonder blog bleven zonder opvolging.",
+  "evidence": {
+    "at_utc": "2026-11-06T11:40:00Z",
+    "source": "dry-run in teruggedraaide transactie: 12 gemiste kanaal-dagen leggen 12 voorvallen vast; tweede run is idempotent"
+  },
+  "fix": "powerhouse_report_missed_publications_v1 legt per (datum, kanaal) een voorval vast via brain_observe_failure met eigenaar in het bewijs; aangeroepen als geisoleerde stap in de bestaande uurlijkse tick. Geen tweede scheduler.",
+  "prevention_rule": "Een gemiste deadline is een incident met eigenaar, geen log-regel. Fouten in de rapportage worden in bg_gezondheid gezet en blokkeren de dispatch niet.",
+  "regression_contract": "tests/brain-missed-publication-incident-20261106.test.mjs",
+  "compiler": {"failure_class": "FALSE_GREEN", "scope": "RUNTIME", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {"historical_replay": ["tests/brain-missed-publication-incident-20261106.test.mjs"], "canary": ["tests/brain-missed-publication-incident-20261106.test.mjs"]},
+  "tests": ["tests/brain-missed-publication-incident-20261106.test.mjs"],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "migratie 20261106130000 toegepast in productie (811 -> 812)",
+    "natuurlijke uurlijkse run legt voorvallen vast of meldt een fout in bg_gezondheid"
+  ]
+}

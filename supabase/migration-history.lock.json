@@ -3244,6 +3244,10 @@
     {
       "version": "20261106103000",
       "name": "powerhouse_missed_publication_v1"
+    },
+    {
+      "version": "20261106130000",
+      "name": "powerhouse_missed_publication_incident_v1"
     }
   ],
   "captured_at": "2026-11-05T17:05:00.000Z",
