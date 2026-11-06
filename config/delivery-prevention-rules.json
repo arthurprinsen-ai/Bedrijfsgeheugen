@@ -2,7 +2,8 @@
   "version": "DELIVERY-PREVENTION-v1",
   "linked_learning_sources": [
     "brain/learning/portal-v2-customer-project-completeness-2026-09-15.json",
-    "brain/learning/netlify-transport-authority-2026-10-19.json"
+    "brain/learning/netlify-transport-authority-2026-10-19.json",
+    "brain/learning/2026-11-06-github-error-register-v1.json"
   ],
   "rules": [
     {
@@ -405,6 +406,90 @@
       "id": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
       "active": true,
       "enforcedBy": "netlify-authority-incident-classifier-plus-transport-regression",
+      "scope": "shared"
+    },
+    {
+      "id": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+      "active": true,
+      "enforcedBy": "delivery-test-coverage-guard-plus-delivery-plan-unclassified-path-check",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
+      "active": true,
+      "enforcedBy": "tools-ci-install-chromium-script",
       "scope": "shared"
     }
   ]

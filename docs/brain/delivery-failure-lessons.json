@@ -490,6 +490,156 @@
       "fix": "Classify HTTP 420 as non-retryable authorization boundary, preserve exact source evidence and incident owner, restore provider/Composio project visibility through an approved service/team connection and independently verify production readback",
       "preventionRule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|governance|shared|workflow-file-write-needs-contents-and-workflows-permission",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "writing a file under .github/workflows returned 403 although a Workflows permission was granted",
+      "rootCause": "a fine-grained token with only Workflows read/write cannot write workflow files; GitHub requires Contents write as well",
+      "fix": "grant Contents and Workflows read/write together; ask GitHub which permission is missing via the x-accepted-github-permissions response header instead of guessing",
+      "preventionRule": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|governance|shared|token-pasted-in-chat",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "personal access tokens were pasted into chats and then used in shell commands on three occasions in August 2026",
+      "rootCause": "credentials were handed over as chat text instead of being placed in a vault or Actions secret",
+      "fix": "never ask for, accept, repeat or store a token in chat text; use the connected GitHub account or a vault/secret, and tell the owner to revoke any token that was pasted",
+      "preventionRule": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|expired-token-error-swallowed",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the weekblog trigger returned 401 for days while the scenario dashboard showed zero errors",
+      "rootCause": "a fine-grained token had expired and an error handler ignored the failure, so only a side mail revealed it",
+      "fix": "never ignore an authentication error; every credential with an expiry date gets a reminder before it lapses and every failure path reports what failed",
+      "preventionRule": "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|verification|shared|unauthenticated-api-rate-limit-and-raw-cache",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "unauthenticated GitHub API calls returned 403 after about 60 requests per hour and raw.githubusercontent.com served stale content after a commit",
+      "rootCause": "the unauthenticated API has a per-IP hourly limit and the raw host is cached",
+      "fix": "read files via raw.githubusercontent.com or the authenticated connector; verify a fresh commit through the contents API with ref=main, never through the raw host",
+      "preventionRule": "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|merge|shared|merge-405-required-check-branch-behind-main",
+      "stage": "MERGE",
+      "component": "shared",
+      "reason": "merge returned 405 required status check is expected although the check on the branch was green",
+      "rootCause": "branch protection is strict and the branch was behind main, so the green check did not apply to the merge result",
+      "fix": "call update-branch on the pull request, wait for the required check to rerun on the new head, then retry the merge",
+      "preventionRule": "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|merge|shared|auto-merge-forbidden-repo-setting-off",
+      "stage": "MERGE",
+      "component": "shared",
+      "reason": "enabling auto-merge through GraphQL returned FORBIDDEN",
+      "rootCause": "Allow auto-merge was disabled in the repository settings",
+      "fix": "check that auto-merge is enabled before planning around it; if it is off, report that the owner must enable it and continue polling instead",
+      "preventionRule": "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|writeback|shared|contents-api-409-concurrent-agent-commits",
+      "stage": "WRITEBACK",
+      "component": "shared",
+      "reason": "contents API writes failed repeatedly with 409 conflicts",
+      "rootCause": "brain agents commit to the repository continuously, so the file sha read earlier was already stale",
+      "fix": "write through a multi-file commit with base_branch or the Git Data API (blobs, tree with base_tree, commit, ref); never retry the contents API in a loop",
+      "preventionRule": "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pr|shared|branch-ref-prefix-collision-422",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "creating a branch named koppelingen/api returned 422",
+      "rootCause": "a branch named koppelingen already existed and git refs cannot be both a file and a directory",
+      "fix": "list existing refs first and use flat branch names without a slash after an existing branch name",
+      "preventionRule": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pr|shared|duplicate-branch-from-parallel-process",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "a branch and pull request #988 already existed a minute before the agent committed, producing a duplicate commit",
+      "rootCause": "inventory was not refreshed immediately before creating the branch while another process worked on the same change",
+      "fix": "search open pull requests by head_branch and for the same files immediately before creating a branch; reuse the existing owner instead of creating a second candidate",
+      "preventionRule": "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|verification|shared|check-runs-queried-by-branch-name",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "check-run lookups by branch name returned nothing or the wrong runs",
+      "rootCause": "the check-runs endpoint needs the full commit sha and returns skipped and neutral runs next to real ones",
+      "fix": "always query check-runs by the full head sha and filter on conclusion; a neutral Netlify Pages changed run is not a failure",
+      "preventionRule": "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|pr-body-edit-does-not-retrigger-required",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the Required workflow stayed red after the pull request body was corrected",
+      "rootCause": "a body edit does not emit a new pull_request event for the Required workflow",
+      "fix": "close the pull request, wait five seconds and reopen it, or rerun the failed jobs on the same head; never claim green from an edited body",
+      "preventionRule": "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|new-test-or-path-outside-lane-config",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "a new test file never ran in CI and a new file in an unlisted folder turned every delivery check red with unclassified delivery path",
+      "rootCause": "CI runs explicit test lists per lane and config/brain-delivery-system.json classifies every changed path",
+      "fix": "register every new test in a lane workflow and give new files a name that matches an existing lane prefix instead of editing the delivery configuration",
+      "preventionRule": "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|preview|shared|incomplete-git-branch-name",
+      "stage": "INTEGRATION",
+      "component": "shared",
+      "reason": "creating a Supabase preview branch failed with GitHub branch not found",
+      "rootCause": "the git branch name was typed incompletely in the dashboard (a date suffix was cut off)",
+      "fix": "copy the exact branch name from GitHub, and delete the preview branch after merge because it bills per hour",
+      "preventionRule": "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|handoff|shared|anonymous-read-only-session-claimed-pr-state",
+      "stage": "HANDOFF",
+      "component": "shared",
+      "reason": "a session with only anonymous read access reported on open pull requests and failing checks it could not see",
+      "rootCause": "pull requests, check-runs and protection details need authenticated access; anonymous reads show only public files",
+      "fix": "without an authenticated GitHub link make no claim about pull request or check state; report the gap and ask for the link or the list",
+      "preventionRule": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|apt-chrome-hash-sum-mismatch-ci-red",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "checks went red with Hash Sum mismatch although no code had changed",
+      "rootCause": "CI installed Google Chrome from an apt source that regularly serves inconsistent package hashes",
+      "fix": "install Chromium only through tools/ci/install-chromium.sh, which removes that apt source and retries three times",
+      "preventionRule": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
+      "status": "PROVEN"
     }
   ]
 }
