@@ -1,0 +1,26 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|ci|changed-path-test-limit-blocks-portal-pages|20261106-v1",
+  "failure_class": "GATE_CAPACITY",
+  "scope": "RUNTIME",
+  "owner": "scripts/ci/select-tests-for-changed-paths.mjs",
+  "root_cause": "De limiet van 40 geselecteerde tests werd overschreden door elke wijziging die de System Map raakt (43 tests), waardoor geen nieuwe portaalpagina door preflight kon.",
+  "evidence": {
+    "at_utc": "2026-11-06T11:25:54Z",
+    "source": "PR 5486: CHANGED_PATH_TESTS_OVERFLOW:42"
+  },
+  "fix": "MAX_TESTS van 40 naar 100. De poort blijft fail-closed boven de limiet en draait elke geselecteerde test.",
+  "prevention_rule": "Een limiet op geselecteerde tests moet groter zijn dan het aantal tests dat het meest gedeelde gegenereerde bestand leest.",
+  "regression_contract": "tests/brain-changed-path-test-selection-20261105.test.mjs",
+  "compiler": {"failure_class": "GATE_CAPACITY", "scope": "RUNTIME", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-changed-path-test-selection-20261105.test.mjs"],
+    "canary": ["tests/brain-changed-path-test-selection-20261105.test.mjs"]
+  },
+  "tests": ["tests/brain-changed-path-test-selection-20261105.test.mjs"],
+  "production_proven": false,
+  "required_proof": ["Protected exact-head checks", "merge door Arthur", "PR 5486 preflight groen na rebase"]
+}

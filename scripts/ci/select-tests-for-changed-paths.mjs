@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 export const IGNORED_PREFIXES = ['AGENTS.md', '.agents/', 'docs/', 'brain/learning/', '.github/', 'package.json', 'package-lock.json', 'supabase/migration-history.lock.json'];
-export const MAX_TESTS = 40;
+export const MAX_TESTS = 100;
 
 export function selectTestsForChangedPaths({ changedPaths = [], tests = [], max = MAX_TESTS } = {}) {
   const selected = new Set();
