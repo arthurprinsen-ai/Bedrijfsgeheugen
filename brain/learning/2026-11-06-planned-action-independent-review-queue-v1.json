@@ -1,0 +1,48 @@
+{
+  "type": "CONTROL_PLANE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|unreviewed-agent-action-corpus|20261106-v1",
+  "owner": "original Whole Brain Canonical Loop + canonical planned-action preflight; issue #5510",
+  "compiler": {
+    "failure_class": "REAL_AGENT_RECALL_REVIEW_EVIDENCE_MISSING",
+    "scope": "BRAIN_EVIDENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Two genuine actions from separate protected-main agents were stored on canonical Supabase brain_records, but zero independently verified expected-rule labels exist; BRAIN percentages cannot be computed. Existing evaluator accepts only externally attested reviews; no queue reconciled actual actions and reviewer approval.",
+  "prevention_rule": "Reuse the existing Whole Brain Canonical Loop v2 schedule to read actual BRAIN decisions and link them to their exact GitHub provider run/source SHA; require one-file reviewed label PR, a different provider-authenticated APPROVED reviewer on exact PR head and matching immutable label data before counting it. Unknown, duplicate, unsupported or under-sampled actions remain NOT_MEASURED/INSUFFICIENT_EVIDENCE. Do not self-attest.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-independent-review-queue-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Supabase canonical BRAIN query 2026-11-06: real agent decisions 2, distinct agents 2, verified independent reviews 0; linked to source SHA 5f71b90ea09698f22a0407adeb285b3a59fd47ce",
+      "PR #5514 exact-source BRAIN observations and terminal LIVE_BEWEZEN"
+    ],
+    "tests": [
+      "tests/brain-planned-action-independent-review-queue-20261106.test.mjs"
+    ],
+    "current": [
+      "review queue and provider-approval checker CODE_CANDIDATE_UNVERIFIED until protected CI/merge/readback",
+      "real recall, precision and false-block rate remain NOT_MEASURED"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_CI_ORIGINAL_BRAIN_PRODUCTION_READBACK",
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ],
+  "security": "No raw action, secrets or prompt in queue. Do not grant PR candidate service role; only existing protected main cron has read-only BRAIN API calls. Reviewer must be separate externally approved identity, verified against GitHub current exact PR head."
+}
