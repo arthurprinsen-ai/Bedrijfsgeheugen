@@ -22,6 +22,8 @@ test('capture configuration is explicit and accepts only a trusted hosted author
   assert.throws(() => resolvePlannedActionRuntime({...env,SUPABASE_URL:'http://example-project.supabase.co'}),/AUTHORITY_OR_IDENTITY_MISSING/);
   assert.throws(() => resolvePlannedActionRuntime({...env,SUPABASE_URL:'https://localhost'}),/AUTHORITY_OR_IDENTITY_MISSING/);
   assert.throws(() => resolvePlannedActionRuntime({...env,POWERHOUSE_AGENT_ID:'bad identity with spaces'}),/AUTHORITY_OR_IDENTITY_MISSING/);
+  assert.throws(() => resolvePlannedActionRuntime({...env,GITHUB_ACTIONS:'true',GITHUB_REF:'refs/pull/5510/merge'}),/AUTHORITY_OR_IDENTITY_MISSING/);
+  assert.equal(resolvePlannedActionRuntime({...env,GITHUB_ACTIONS:'true',GITHUB_REF:'refs/heads/main'}).state,'CONFIGURED');
   const c=resolvePlannedActionRuntime(env);
   assert.equal(c.state,'CONFIGURED');
   assert.equal(c.sourceRef,'github:run:42301230001');
