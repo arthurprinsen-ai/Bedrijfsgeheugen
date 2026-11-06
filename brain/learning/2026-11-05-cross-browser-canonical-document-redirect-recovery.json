@@ -3,7 +3,7 @@
   "fingerprint": "ci|cross-browser|canonical-trailing-slash-transient-document-reset|20261105-v1",
   "date": "2026-11-05",
   "owner": "existing website cross-browser screenshot assurance / Portal living interface",
-  "state": "IMPLEMENTED_SOURCE_EVIDENCE_DUE",
+  "state": "PROVEN_POSTMERGE_ORIGINAL_RUN_20261105",
   "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
   "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42075945749",
   "original_artifact_id": 13439631334,
@@ -67,7 +67,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs",
+      "tests/brain-netlify-git-deploy-first-v1.test.mjs"
     ]
   },
   "evidence": {
@@ -80,7 +81,45 @@
     ],
     "actual_final_loaded_route": "https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/",
     "observed_browser_result": "FAILURE 1/640 on main before this correction",
-    "postmerge_replay": "EVIDENCE_DUE",
-    "provider_deploy_effect": "NOT_APPLICABLE_NO_WEBSITE_CONTENT_CHANGE"
-  }
+    "postmerge_replay": {
+      "github_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42081117654",
+      "run_id": 42081117654,
+      "head_sha": "c6a2718e0de7eea4fdb87fe2a54026db21dfc218",
+      "conclusion": "SUCCESS",
+      "mobile_routes": 271,
+      "desktop_routes": 271,
+      "results": 640,
+      "interactions": 24,
+      "failures": 0,
+      "artifact_id": 13440742777
+    },
+    "provider_deploy_effect": "NOT_APPLICABLE_NO_WEBSITE_CONTENT_CHANGE",
+    "protected_merge": {
+      "pr": 5474,
+      "merge_sha": "c6a2718e0de7eea4fdb87fe2a54026db21dfc218",
+      "required_run": 42079562310,
+      "codeql_run": 42079562134
+    },
+    "netlify_normal_git": {
+      "deployed_id": "6aecc573342de9b9ea08a889",
+      "exact_commit_ref": "c6a2718e0de7eea4fdb87fe2a54026db21dfc218",
+      "next_main_deploy_id": "6aecc8100190bb7c9e07b6f8",
+      "next_main_sha": "93a4a4554961b08d30d3ae4d4d21bd6ca9ddb92e",
+      "primary_route": "GIT_LINKED"
+    },
+    "backup_authority": {
+      "run_id": 42083931842,
+      "original_source_sha": "93a4a4554961b08d30d3ae4d4d21bd6ca9ddb92e",
+      "http": 200,
+      "healthy": true,
+      "deploy_requested": false,
+      "deployment_required": false,
+      "emergency_write_proven": false,
+      "open_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447"
+    },
+    "agent_skills_proposed_in_draft": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5477",
+    "verification_status": "Source and browser facts proved; agent skill projection pending protected merge, backup write still evidence due"
+  },
+  "production_readback": "ORIGINAL_BROWSER_AND_NORMAL_NETLIFY_RELEASE_PROVEN",
+  "backup_provider_write": "EVIDENCE_DUE_SEPARATE_INCIDENT_4447"
 }
