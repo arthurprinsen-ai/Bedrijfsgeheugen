@@ -192,7 +192,7 @@ jobs:
       - name: Verify site and CI error lessons stay in the delivery preflight
         run: node --test tests/brain-site-error-lessons-20261106.test.mjs
       - name: Verify planned-action triggers fire and stay precise
-        run: node --test tests/brain-planned-action-triggers-wave2-20261106.test.mjs tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs
+        run: node --test tests/brain-planned-action-triggers-wave2-20261106.test.mjs tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs tests/brain-planned-action-recall-evidence-20261106.test.mjs
       - name: Verify the daily blog renderer keeps markdown out of headings and paragraphs
         run: node --test tests/brain-blog-markdown-render-20261106.test.mjs
       - name: Verify no published blog article carries markdown or invalid structured data
