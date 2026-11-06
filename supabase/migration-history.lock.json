@@ -3260,8 +3260,12 @@
     {
       "version": "20261106144500",
       "name": "weekly_cron_health_cadence_original_function_v1"
+    },
+    {
+      "version": "20261106160000",
+      "name": "mira_original_pristine_waiting_asset_claim_v1"
     }
   ],
-  "captured_at": "2026-11-06T15:15:00.000Z",
+  "captured_at": "2026-11-06T15:30:00.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
