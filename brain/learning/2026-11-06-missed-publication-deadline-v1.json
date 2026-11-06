@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|content|missed-publication-deadline-silent|20261106-v1",
+  "failure_class": "SILENT_FAILURE",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse-content-orchestrator; original ONE BRAIN + Heartbeat",
+  "root_cause": "Op 6 nov 2026 stond blog op GENERATED (4 dagen op rij), email_newsletter had geen verplichtingsrij en instagram_company ontbrak op 3, 4 en 5 nov, zonder dat iets een gemiste deadline meldde.",
+  "evidence": {
+    "at_utc": "2026-11-06T09:35:20Z",
+    "missed_count_3d": 13,
+    "source": "powerhouse_missed_publication_v1 uitgevoerd in teruggedraaide transactie op productie"
+  },
+  "fix": "Alleen-lezen functie powerhouse_missed_publication_v1 met eigenaar per kanaal. Orchestrator ongemoeid (te brede testafhankelijkheid voor de preflight); aansluiting volgt via een smalle lezer. Geen scheduler, geen schrijfactie.",
+  "prevention_rule": "Een kanaal zonder uitvoerder of verplichtingsrij telt als gemist, niet als afwezig. Groen vereist PUBLISHED of later met provider-bewijs.",
+  "regression_contract": "tests/brain-missed-publication-deadline-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-missed-publication-deadline-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-missed-publication-deadline-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-missed-publication-deadline-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge door Arthur",
+    "migratie toegepast in productie",
+    "functie leesbaar met service_role en geeft missed_count"
+  ]
+}
