@@ -3240,6 +3240,10 @@
     {
       "version": "20261105190000",
       "name": "powerhouse_expire_stale_forecasts_v1"
+    },
+    {
+      "version": "20261106103000",
+      "name": "powerhouse_missed_publication_v1"
     }
   ],
   "captured_at": "2026-11-05T17:05:00.000Z",
