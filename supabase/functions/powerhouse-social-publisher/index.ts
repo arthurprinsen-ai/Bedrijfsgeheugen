@@ -927,6 +927,66 @@ function instagramIdentityProven(evidence: any) {
     &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk;
 }
 
+// Bounded independent PUBLIC LinkedIn readback owned by the ORIGINAL publisher.
+// Never creates a post, never treats a 403 as proof, never trusts caller-provided copy.
+// Live backend Composio read-only response #22797 verified on 2026-11-06.
+async function originalLinkedInPersonalPublicReadback(db,ref,runDate,canonicalUrl){
+ const fail=reason=>({ok:false,reason});
+ const urn=clean(ref),url='https://www.linkedin.com/feed/update/'+urn+'/';
+ if(!/^urn:li:(?:share|ugcPost):[0-9]+$/.test(urn)||clean(canonicalUrl)!==url
+   ||!/^20\d{2}-\d{2}-\d{2}$/.test(clean(runDate)))
+   return fail('PUBLIC_LINKEDIN_EXACT_URN_URL_OR_DATE_REQUIRED');
+ const [{data:artifact,error:artifactError},{data:setup,error:setupError}]=await Promise.all([
+  db.from('powerhouse_content_artifacts').select('body').eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle(),
+  db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle()
+ ]);
+ if(artifactError||setupError)return fail('PUBLIC_LINKEDIN_SOURCE_READ_UNAVAILABLE');
+ const expectedCopy=clean(artifact?.body),entityId=clean(jsonObject(setup?.result)?.user_id);
+ if(!expectedCopy||expectedCopy.length<150||!entityId)return fail('PUBLIC_LINKEDIN_CANONICAL_SOURCE_OR_ENTITY_MISSING');
+ const apiKey=await secret(db,'COMPOSIO_API_KEY');
+ if(!apiKey)return fail('PUBLIC_LINKEDIN_COMPOSIO_KEY_UNAVAILABLE');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),14000);
+ try{
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/SCRAPECREATORS_GET_LINKEDIN_POST',{
+   method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey},
+   body:JSON.stringify({entity_id:entityId,user_id:entityId,arguments:{url}}),
+   signal:controller.signal
+  });
+  const result=await response.json().catch(()=>({}));
+  const publicPost=result?.data||{},author=publicPost?.author||{};
+  if(!response.ok||result?.successful!==true||publicPost?.success!==true)
+    return fail('PUBLIC_LINKEDIN_PROVIDER_READBACK_UNAVAILABLE');
+  const normalize=value=>String(value??'').replace(/\s+/g,' ').trim();
+  const expected=normalize(expectedCopy),actual=normalize(publicPost?.description);
+  const match=expected.length>=150&&expected===actual;
+  const first=expected.slice(0,85)===actual.slice(0,85);
+  const last=expected.slice(-90)===actual.slice(-90);
+  const authorMatched=/^Arthur Prinsen\b/i.test(clean(author?.name))
+    &&/^https:\/\/(?:[a-z]{2}\.)?linkedin\.com\/in\/arthurprinsen(?:\/|$)/i.test(clean(author?.url));
+  const actualPermalink=clean(publicPost?.url);
+  const postMatched=/^https:\/\/(?:[a-z]{2}\.)?linkedin\.com\/posts\/arthurprinsen_[^\s?#]+-activity-[0-9]+-[A-Za-z0-9_-]+(?:[/?#]|$)/i.test(actualPermalink);
+  const published=new Date(clean(publicPost?.date_published));
+  const validDate=Number.isFinite(published.getTime())
+    &&new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(published)===runDate;
+  if(!match||!first||!last||!authorMatched||!postMatched||!validDate)
+    return fail('PUBLIC_LINKEDIN_AUTHOR_COPY_DATE_OR_PERMALINK_MISMATCH');
+  return {ok:true,evidence:{
+   independent_public_readback_verified:true,
+   readback_exact_first_85_characters_matched:true,
+   readback_exact_last_90_characters_matched:true,
+   independent_public_full_copy_matched:true,
+   public_provider_readback_contract:'linkedin-original-public-page-readback-v1',
+   independent_public_source:'SCRAPECREATORS_GET_LINKEDIN_POST',
+   independent_public_post_url:actualPermalink,
+   independent_public_author_url:clean(author.url),
+   independent_public_published_at:published.toISOString(),
+   independent_public_readback_checked_at:new Date().toISOString(),
+   public_linkedin_urn:urn
+  }};
+ }catch(_error){return fail('PUBLIC_LINKEDIN_PROVIDER_READBACK_UNAVAILABLE')}
+ finally{clearTimeout(timer)}
+}
+
 async function reconcileExistingProviderTruth(db: any, token: string | null, runDate: string) {
   const [{ data: rows, error }, { data: obligations, error: obligationError }] = await Promise.all([
     db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence').eq('run_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram_company']),
@@ -981,8 +1041,10 @@ async function reconcileExistingProviderTruth(db: any, token: string | null, run
           && publicProof.readback_exact_first_85_characters_matched===true
           && publicProof.readback_exact_last_90_characters_matched===true
           && clean(obligation?.canonical_url).includes(ref);
-        if(providerCreateProven && independentPublicProof){
-          const evidence={...previous,provider:'composio',provider_post_id:ref,
+        const verifiedPublicPage=providerCreateProven && permissionLimited && !independentPublicProof
+          ?await originalLinkedInPersonalPublicReadback(db,ref,runDate,clean(obligation?.canonical_url)):null;
+        if(providerCreateProven && (independentPublicProof || verifiedPublicPage?.ok===true)){
+          const evidence={...previous,...(verifiedPublicPage?.ok===true?verifiedPublicPage.evidence:{}),provider:'composio',provider_post_id:ref,
             provider_create_success:true,provider_publication_ack_verified:true,
             provider_truth_verified:true,provider_truth_source:'independent_public_linkedin_page',
             provider_truth_checked_at:new Date().toISOString(),

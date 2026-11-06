@@ -190,7 +190,7 @@ jobs:
       - name: Verify GitHub error lessons stay in the delivery preflight
         run: node --test tests/brain-github-error-register-20261106.test.mjs
       - name: Enforce system error lessons and the planned-action guard
-        run: node --test tests/brain-system-error-register-20261106.test.mjs tests/brain-planned-action-guard-20261106.test.mjs tests/brain-mira-original-pristine-claim-20261106.test.mjs tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs
+        run: node --test tests/brain-system-error-register-20261106.test.mjs tests/brain-planned-action-guard-20261106.test.mjs tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs tests/brain-mira-original-pristine-claim-20261106.test.mjs tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
         run: |
           node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
