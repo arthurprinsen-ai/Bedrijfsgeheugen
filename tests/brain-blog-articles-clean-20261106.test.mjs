@@ -7,7 +7,18 @@ const DIR = process.env.BLOG_ARTICLES_DIR || 'blog';
 const articles = readdirSync(DIR, { withFileTypes: true })
   .filter(entry => entry.isDirectory() && existsSync(join(DIR, entry.name, 'index.html')))
   .map(entry => ({ slug: entry.name, html: readFileSync(join(DIR, entry.name, 'index.html'), 'utf8') }));
-const text = markup => markup.replace(/<[^>]+>/g, '');
+// Visible text of a fragment: skip everything between '<' and '>'. A small state machine
+// instead of a tag-stripping regular expression, which static analysis rightly distrusts.
+const text = markup => {
+  let out = '';
+  let inTag = false;
+  for (const char of markup) {
+    if (char === '<') inTag = true;
+    else if (char === '>') inTag = false;
+    else if (!inTag) out += char;
+  }
+  return out;
+};
 const lines = value => value.split('\n').map(line => line.trim()).filter(Boolean);
 
 test('the corpus is not empty', () => {
