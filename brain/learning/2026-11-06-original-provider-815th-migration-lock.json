@@ -14,13 +14,13 @@
   "prevention_rule": "After provider-confirmed protected migration merge, reconcile original production provider history and immutable repository lock BEFORE next proposed migration PR; never predeclare a not-yet-applied version.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
     ],
     "shadow": [
-      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
     ],
     "canary": [
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
     ]
   },
   "evidence": {
@@ -33,5 +33,6 @@
   },
   "customer_outcome": "NOT_PROVEN",
   "independent_verification": "PENDING_PROTECTED_REQUIRED_CODEQL_MERGE_PRODUCTION_READBACK",
-  "no_schema_change": true
+  "no_schema_change": true,
+  "regression": "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
 }
