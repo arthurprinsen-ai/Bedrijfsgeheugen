@@ -1,0 +1,47 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "powerhouse|daily-blog|supabase-source-block-boundaries|20261106-v1",
+  "owner": "original powerhouse-content-orchestrator and approved powerhouse-blog-export; no parallel writer",
+  "compiler": {
+    "failure_class": "BLOG_SOURCE_MARKDOWN_BLOCK_BOUNDARIES_MISSING",
+    "scope": "DAILY_BLOG_GENERATOR_AND_AUTHORIZED_EXPORT",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Observed original public.powerhouse_content_artifacts blog bodies contain immediately adjacent ## headings, paragraphs and - list lines, while approved powerhouse-blog-export forwarded unnormalized body. Prompt requested headings without any explicit block-boundary contract. The static renderer previously leaked this Markdown into HTML on seven published articles; the independent renderer repair is already on main.",
+  "prevention_rule": "Generate explicit empty lines before and after Markdown headings/lists, normalize original blog bodies once before reader-ready validation and Supabase write, normalize approved legacy export with one shared deterministic helper. Preserve source facts and approval gates; genuine FAQs only from explicit source-authored questions.",
+  "prevention_rules": [
+    "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-source-markdown-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-markdown-render-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-articles-clean-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original production Supabase blog artifact 2026-11-06 includes heading followed by plain text and bullet lines without empty block separator.",
+      "Original exporter v492 passes clean(a.body) unchanged, and the existing prompt had no newline contract.",
+      "Four of seven historical pages now have no FAQPage (no proven explicit questions); three retain source-authored FAQ."
+    ],
+    "current": [
+      "PR #5509 code candidate adds one helper for original generator and authorized exporter; production evidence pending.",
+      "CI admission initially blocked on missing Base-SHA, subsequently on missing brain_learning and activity_ledger; corrected through original PR rather than bypassing gate."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_CI_ORIGINAL_SUPABASE_AND_NEXT_NATURAL_BLOG_READBACK",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
