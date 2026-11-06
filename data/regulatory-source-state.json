@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contract": "powerhouse-regulatory-source-state-v1",
-  "checkedAt": "2026-09-24T08:23:53.925624Z",
+  "checkedAt": "2026-11-06T10:47:05.504690Z",
   "sources": {
     "eu-ai-act": {
       "id": "eu-ai-act",
@@ -48,17 +48,20 @@
       "jurisdiction": "NL",
       "url": "https://www.ncsc.nl/cyberbeveiligingswet-nis2",
       "finalUrl": "https://www.ncsc.nl/cyberbeveiligingswet-nis2",
-      "checkedAt": "2026-09-24T08:23:53.925624Z",
+      "checkedAt": "2026-11-06T10:47:05.504690Z",
       "httpStatus": 200,
       "contentType": "text/html; charset=utf-8",
-      "contentSha256": "e59aff6cff3f997bd1620cfbd60174dd9360f9be6703d0bda9900add6cf48b64",
-      "rawSha256": "22c7bd0fbbd6607159b397fe24d651487834b1859a0a14f67555499ad3598b57",
-      "bytes": 389939,
+      "contentSha256": "631601439e562930e29d7c21bccd361dafe23d62c951d46c772394c08bba2a4f",
+      "rawSha256": "94517b4f684bd764e76c4283edf2c7b7b1f44e1c31500059bba57dc05cc4eff4",
+      "bytes": 412026,
       "etag": null,
       "lastModified": null,
-      "previousSha256": "587188967b113711770931fea12b71350e802a1d4cebc04badf71a6659aaf11c",
+      "previousSha256": "e59aff6cff3f997bd1620cfbd60174dd9360f9be6703d0bda9900add6cf48b64",
       "changed": true,
-      "firstObservation": false
+      "firstObservation": false,
+      "sourceContentVerified": true,
+      "verification": "VERIFIED_HTTP_DOCUMENT",
+      "diagnosticResponseSha256": "94517b4f684bd764e76c4283edf2c7b7b1f44e1c31500059bba57dc05cc4eff4"
     },
     "eu-gdpr": {
       "id": "eu-gdpr",
