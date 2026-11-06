@@ -14,13 +14,13 @@
   "prevention_rule": "After provider-confirmed protected migration merge, reconcile original production provider history and immutable repository lock BEFORE next proposed migration PR; never predeclare a not-yet-applied version.",
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-history-integrity.test.mjs"
-    ],
-    "shadow": [
       "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
     ],
-    "canary": [
+    "shadow": [
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
     ]
   },
   "evidence": {
