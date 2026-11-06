@@ -387,3 +387,5 @@ Voor afsluiting: protected Required/CodeQL/Supabase Preview, exact originele mig
 
 - LinkedIn links with UTM go in the first comment, never in the post text (5 Nov 2026, fingerprint `seo|linkedin-link-in-comment|20261105-v1`).
 - Migration 20261105134200 added to the lock after #5450 (provider 808 = lock 808) (5 Nov 2026, fingerprint `ci|migration-lock|data-spine-decision-receipt|20261105-v1`).
+
+- GitHub/CI/credential error lessons (6 Nov 2026, fingerprint `github|delivery|error-register-gap-lessons|20261106-v1`): 15 PROVEN lessons with active rules in the delivery preflight; read them before any branch, commit, merge, workflow or token action.
