@@ -1,5 +1,5 @@
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
-import {composerQualityProvenance,composerSourcePreflight} from '../_shared/composer-quality-provenance.mjs';
+import {composerQualityProvenance,composerSourcePreflight,relationshipFact} from '../_shared/composer-quality-provenance.mjs';
 import {buildEditorialCouncilBrief} from '../_shared/editorial-council-context.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -33,7 +33,8 @@ function quality(action:any,plan:any,out:any,history:any[]=[]){
     headline:ev?.headline,summary:ev?.summary,
     public_headline:pub?.headline,public_summary:pub?.summary,
     public_source_evidence:ev?.public_source_evidence,
-    inbound_message:ev?.inbound?.message,reply_text:ev?.reply_text,last_message:ev?.last_message
+    inbound_message:ev?.inbound?.message,reply_text:ev?.reply_text,last_message:ev?.last_message,
+    relationship_fact:relationshipFact(action).text
   };
   const context=normalize(JSON.stringify(humanContext));
   const sourceContext=normalize(JSON.stringify(sourceSpecificContext));
