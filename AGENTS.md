@@ -1,3 +1,7 @@
+## 2026-11-06 — Blokkaderegister blogs/posts/nieuwsbrief: eerst lezen, dan bouwen
+
+Elke agent, skill en workflow die een blog, LinkedIn-post, Instagram-post of nieuwsbrief maakt, wijzigt of herstelt leest eerst `brain/content-publication-blocker-register.json` (316 eerdere leerpunten + de echte foutcodes uit `content_publication_obligations`). Een blokkade in het register mag niet terugkomen: pas de preventieregel toe, of leg vast waarom die niet meer geldt. Een nieuwe blokkade komt in dezelfde wijziging in het register. Bron: Arthur, 6 nov. Guard: `tests/content-publication-blocker-register-20261106.test.mjs`.
+
 ## 2026-11-05 — CANONICAL AGENT CONTRACT: Heartbeat → ONE BRAIN → original owner → Portal → measured learning
 
 **Source-truth checkpoint, not a promise of all-green autonomy:** protected [PR #5441](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5441), merge `ba2578ddac8bca0f69207f618a24c04e3e1bf7a0`; Supabase production migration `20261105111500_original_15_loop_owner_coordination`; Netlify published this exact merge at 2026-11-05T11:41:38Z. Natural original five-minute evaluations at 11:42:58, 11:44:00 and 11:45:03 UTC and followup at 12:14 UTC independently verified **15/15** registry-defined specialist owners and **15/15** matching canonical Brain recovery actions, but original loops remained **8 GREEN / 3 AMBER / 4 RED** and 23 active blocker records. Do NOT turn that evidence into a 15/15-green, agent-executed, published, earned-revenue or fully self-learning claim.
