@@ -25,11 +25,13 @@ export function createCheckoutHandler({storeFactory=createPortalProjectStore,fet
   if(!plan||!plan.direct_checkout||!plan.monthly_price_cents)return out(400,{error:'plan_not_self_serve'});
   // Prijsdrift: wat Mollie int moet exact gelijk zijn aan wat /prijzen toont.
   if(Number(plan.monthly_price_cents)!==publicPlan.monthly_price_cents)return out(503,{error:'catalogue_sync_required'});
+  // Actiecode (bijv. uit het rapport): alleen herkomst, geen korting; onbekende tekens vallen weg.
+  const promoRaw=String(body.promo_code||'').trim().toUpperCase(),promo=/^[A-Z0-9-]{3,24}$/.test(promoRaw)?promoRaw:'';
   const attemptId=String(body.attempt_id||randomUUID());
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(attemptId))return out(400,{error:'invalid_attempt'});
   let response,data;
   try{
-    response=await fetchFn(config.functionUrl,{method:'POST',headers:{apikey:config.token,authorization:'Bearer '+config.token,'content-type':'application/json'},body:JSON.stringify({plan:code,billing_cycle:billingCycle,email,company_name:company,attempt_id:attemptId,...(trial?{mode:'trial'}:{})})});
+    response=await fetchFn(config.functionUrl,{method:'POST',headers:{apikey:config.token,authorization:'Bearer '+config.token,'content-type':'application/json'},body:JSON.stringify({plan:code,billing_cycle:billingCycle,email,company_name:company,attempt_id:attemptId,...(trial?{mode:'trial'}:{}),...(promo?{promo_code:promo}:{})})});
     data=await response.json().catch(()=>null);
   }catch{return out(502,{error:'checkout_provider_failed'})}
   if(response.ok&&SAFE_URL.test(String(data?.url||'')))return out(200,{url:data.url});
