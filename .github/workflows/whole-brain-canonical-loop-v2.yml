@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -42,6 +43,20 @@ jobs:
         run: node --test tests/whole-brain-rum.test.mjs
       - name: Supabase record adapter contract
         run: node --test tests/whole-brain-supabase-adapter.test.mjs
+      - name: Canonical actual-action independent-review queue and evidence-gated recall
+        if: github.ref == 'refs/heads/main'
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/brain/planned-action-review-audit.mjs
+      - name: Upload read-only original BRAIN review queue
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: original-brain-planned-action-review-queue-${{ github.run_id }}
+          path: .artifacts/planned-action-independent-review-queue.json
+          if-no-files-found: error
       - name: Decision simulation contract
         run: node --test tests/whole-brain-decision-simulation.test.mjs
       - name: Cross-domain intelligence loop
