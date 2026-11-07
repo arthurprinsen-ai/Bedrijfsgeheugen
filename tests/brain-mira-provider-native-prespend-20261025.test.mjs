@@ -60,3 +60,16 @@ test('original router exposes read-only authorized generation_preflight BEFORE s
  assert.match(s,/MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED/);
  assert.match(s,/A passing output-config or derived-input check is NOT final visual proof/);
 });
+
+test('veo3-1 element2video exposes explicit 9:16 and mute controls and passes format preflight only with both set',()=>{
+ const base={model:'veo3-1',mode:'element2video',masterReferenceId,params:{resolution:'1080p',duration:8,videoCount:1}};
+ assert.equal(assessMiraProviderBeforeSpend(base).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...base,params:{...base.params,aspectRatio:'9:16'}}).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...base,params:{...base.params,aspectRatio:'16:9',generateAudio:false}}).ok,false);
+ const ok=assessMiraProviderBeforeSpend({...base,params:{...base.params,aspectRatio:'9:16',generateAudio:false}});
+ assert.equal(ok.ok,true);
+ assert.equal(ok.code,'FORMAT_CONTROLS_PROVEN_ONLY');
+ assert.equal(ok.approved_for_publish,false);
+ assert.equal(ok.actual_media_verified,false);
+ assert.equal(assessMiraProviderBeforeSpend({...base,masterReferenceId:'other',params:{...base.params,aspectRatio:'9:16',generateAudio:false}}).ok,false);
+});

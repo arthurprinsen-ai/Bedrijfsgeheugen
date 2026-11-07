@@ -1,0 +1,35 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-11-07",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "mira|reel|producer-preflight-incomplete-input-and-element2video-unrecognised|20261107-v1",
+  "compiler": {
+    "failure_class": "PRODUCER_PRESPEND_PREFLIGHT_INPUT_AND_FORMAT_GATE_MISMATCH",
+    "scope": "INSTAGRAM_MIRA",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The 2026-11-07 daily producer called generation_preflight without scene, canonical_problem_id and recommendation_id, so the original router answered 422 MIRA_FROZEN_REEL_PRODUCER_AUTHORITY_REQUIRED (no generation, 0 credits). With complete input admission passed, but the format gate only knew veo3-1 image2video, so veo3-1 element2video returned MIRA_PROVIDER_OUTPUT_CONTRACT_UNPROVEN although the OpenArt model form exposes aspectRatio 9:16 and generateAudio.",
+  "prevention": "Producer skill lists the complete preflight input. The format gate accepts veo3-1 element2video only with aspectRatio 9:16, generateAudio false, 1080p, 8 s, one video and the original master Yjqu4D7v76HABNPmQPj1. This is FORMAT_CONTROLS_PROVEN_ONLY: native 1080x1920 measurement, three-frame face >=0.940, temporal >=0.900 and independent Meta provider readback stay mandatory; no threshold, budget or publisher change.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ]
+  },
+  "evidence": {
+    "run_date": "2026-11-07",
+    "first_preflight_status": 422,
+    "second_preflight_code": "MIRA_PROVIDER_OUTPUT_CONTRACT_UNPROVEN",
+    "credits_spent": 0,
+    "new_provider_side_effect": false,
+    "pull_request": 5516,
+    "no_second_scheduler": true,
+    "no_quality_gate_relaxation": true,
+    "release_proven": false
+  }
+}
