@@ -990,6 +990,16 @@
       "fix": "add the patch prefix to runtimeClosurePathPrefixes in config/powerhouse-integration-bundle-v1.json and keep a test that reads the git add paths from the workflow and requires each to be covered",
       "preventionRule": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|i18n|shared|daily-blog-two-key-views",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the BRAIN backend lane went red after the daily blog merged with STATIC_I18N_CACHE_INCOMPLETE although the PR checks were green",
+      "rootCause": "the daily blog workflow translates the production transform chain view of the article (text fragments) but the BRAIN cache tests validate the committed HTML (whole blocks); the two views have different segment keys and only the CI log of the failing lane shows the missing keys",
+      "fix": "after the production pass, run a second prepare pass on the clean committed tree (build-localized-routes --prepare-cache) and validate fail-closed, in both candidate steps of the workflow, and keep a dependency-free test for the step order",
+      "preventionRule": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
+      "status": "PROVEN"
     }
   ]
 }

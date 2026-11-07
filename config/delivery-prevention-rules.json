@@ -8,7 +8,8 @@
     "brain/learning/2026-11-06-site-error-lessons-v1.json",
     "brain/learning/2026-11-06-blog-markdown-render-v1.json",
     "brain/learning/2026-11-07-daily-blog-closure-exemption.json",
-    "brain/learning/2026-11-07-i18n-blog-segment-keys-repeat.json"
+    "brain/learning/2026-11-07-i18n-blog-segment-keys-repeat.json",
+    "brain/learning/2026-11-07-daily-blog-i18n-committed-tree.json"
   ],
   "rules": [
     {
@@ -681,6 +682,12 @@
       "id": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
       "active": true,
       "enforcedBy": "brain-daily-blog-closure-exemption-20261107-test",
+      "scope": "shared"
+    },
+    {
+      "id": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
+      "active": true,
+      "enforcedBy": "brain-daily-blog-i18n-committed-tree-20261107-test",
       "scope": "shared"
     }
   ]

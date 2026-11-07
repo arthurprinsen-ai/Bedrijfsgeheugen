@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-07",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "i18n|cache|daily-blog-two-key-views|20261107-v1",
+  "owner": "daily blog workflow and static i18n cache tests",
+  "compiler": {
+    "failure_class": "I18N_TWO_KEY_VIEWS_NOT_BOTH_PREPARED",
+    "scope": "STATIC_I18N_CACHE_COMPLETENESS",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The daily blog workflow only prepares the English cache from the production transform chain (text fragments). The BRAIN cache tests validate the committed HTML (whole blocks). The two views have different segment keys, so every daily blog can leave a few block keys untranslated; this failed on 2026-11-06 and 2026-11-07 and was repaired by hand both times. The missing keys appear only in the CI log of the BRAIN backend lane after merge.",
+  "prevention_rule": "Both candidate steps of the workflow run a second prepare pass on the clean committed tree and validate fail-closed. A dependency-free test pins the step order, and a planned-action trigger guards removal.",
+  "prevention_rules": [
+    "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "BRAIN delivery run 42379680897 on main (2026-11-07): STATIC_I18N_CACHE_MISSING, two block keys, repaired by hand in #5522",
+      "same class on 2026-11-06 (#5494)"
+    ],
+    "current": [
+      "tests/brain-daily-blog-i18n-committed-tree-20261107.test.mjs pins the order of the production pass, committed pass and validation in both steps",
+      "the generator change is NOT proven end to end: the first real proof is the scheduled blog run of 2026-11-08"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

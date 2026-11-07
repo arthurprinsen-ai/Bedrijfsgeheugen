@@ -209,6 +209,22 @@ jobs:
             fi
           fi
           git reset --hard HEAD
+          git clean -fd
+          # Second pass on the COMMITTED tree. The production transform chain
+          # above and the committed HTML (what BRAIN tests validate) yield
+          # different segment keys; both views must be complete.
+          STATIC_I18N_NETWORK=1 node tools/site-shell/build-localized-routes.mjs \
+            --prepare-cache="powerhouse-blog-$DATE-committed.json"
+          STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 \
+            node tools/site-shell/build-localized-routes.mjs --validate-cache
+          patch2="config/bg-static-i18n-en.d/powerhouse-blog-$DATE-committed.json"
+          if [ -f "$patch2" ]; then
+            git add -- "$patch2"
+            if ! git diff --cached --quiet; then
+              git commit --amend --no-edit
+            fi
+          fi
+          git reset --hard HEAD
           git push --force-with-lease origin "HEAD:$branch"
 
           pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
@@ -287,6 +303,25 @@ jobs:
             echo "CANONICAL_I18N_CACHE_UPDATED:$pr:$DATE"
           else
             echo "CANONICAL_I18N_CACHE_ALREADY_COMPLETE:$pr:$DATE"
+          fi
+          # Second pass on the COMMITTED tree (what BRAIN tests validate); the
+          # production transform chain above yields different segment keys.
+          git reset --hard HEAD
+          git clean -fd
+          STATIC_I18N_NETWORK=1 node tools/site-shell/build-localized-routes.mjs \
+            --prepare-cache="powerhouse-blog-$DATE-committed.json"
+          STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 \
+            node tools/site-shell/build-localized-routes.mjs --validate-cache
+          patch2="config/bg-static-i18n-en.d/powerhouse-blog-$DATE-committed.json"
+          if [ -f "$patch2" ]; then
+            git add -- "$patch2"
+            if ! git diff --cached --quiet; then
+              git config user.name "Powerhouse Daily Publisher"
+              git config user.email "actions@users.noreply.github.com"
+              git commit -m "i18n: complete committed-tree English cache for Powerhouse blog $DATE"
+              git push origin "HEAD:$branch"
+              echo "CANONICAL_I18N_COMMITTED_CACHE_UPDATED:$pr:$DATE"
+            fi
           fi
           if [ "${QUALITY_REFRESH:-false}" = true ]; then
             echo "BLOG_VERIFIED_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
