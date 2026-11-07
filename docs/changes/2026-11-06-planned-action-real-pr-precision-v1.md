@@ -1,0 +1,13 @@
+# Real PR-intent guard precision — 6 November 2026 (#5510)
+
+## Verified defect
+PR #5506 put 41 additional triggers live. A read-only replay of actual public GitHub PR titles showed unrelated rule matches: PR #5509 Supabase Markdown export triggered a rule about directly setting `approved_at`; #5496 mentions "preflight" but invoked the Git ref-collision rule because `ref` is a substring; #5501 mentions "publisher" but triggered the Composio pre-publish connection gate. PRs #5508, #5498 and #5490 have additional cross-topic matches.
+
+## Corrective scope
+Only seven trigger system/action phrase sets are tightened in the **existing** `config/planned-action-triggers.json`. Do not disable the planned-action guard, modify evidence authority, remove the underlying PROVEN lessons, or add a parallel executor. A test replays 8 identified PR-title/rule nonapplicable pairs and 7 high-risk positive plans with the *real* original guard. The test is wired into protected Required. The 41 wave3 triggers and 19 unproven lessons remain separately governed. A later wave4 PR (#5508) changes the same trigger array; its owner must reconcile on current protected main rather than overwrite these corrections.
+
+## Evidence classification
+GitHub PR titles are **genuine historical author-submitted change intents**, but **not** the exact free-text `--action` argument a running agent supplied to preflight. Nonapplicability labels are manually adjudicated against the named lesson's root cause, not independently double-reviewed. The 8 hard-negative pairs are narrow regression evidence, **not a denominator for global precision**. The 7 positive samples are test fixtures, **not a measured recall rate**. No preflight event-level action/guard-output corpus with independent labels was found in the inspected existing ONE BRAIN tables. Never report 100% recall or 0% operational false-blocks from this test.
+
+## Remaining acceptance — issue #5510 stays open
+Capture **actual** planned-action text and the guard decision at the canonical preflight entry point, under existing source/tenant protections; retain a deterministic timestamp, originating agent/source, rule matches, acknowledgement and resulting action outcome in the **existing** BRAIN evidence lineage. Avoid leaking credentials or PII in raw action text. Independently label a time-windowed, deduplicated holdout of positive and negative actions from multiple agents; then compute recall, precision and false-block rate with denominator/support. Unknown is NOT_MEASURED. Gate drift and repeat after changes. All mutations require protected CI + merge and independent readback. Monday's existing weekly-job control remains separate.

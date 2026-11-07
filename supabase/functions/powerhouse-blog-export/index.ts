@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
+import { normalizeBlogMarkdownBlocks } from '../_shared/blog-markdown-source-contract.mjs';
 
 const VERSION='v3-repository-native-export';
 const clean=(v:unknown)=>String(v??'').trim();
@@ -74,7 +75,7 @@ Deno.serve(async(req)=>{
     executor_version:VERSION,
     run_date:runDate,
     title:clean(a.title),
-    body:clean(a.body),
+    body:normalizeBlogMarkdownBlocks(clean(a.body)),
     cta:clean(a.cta),
     sources,
     slug,

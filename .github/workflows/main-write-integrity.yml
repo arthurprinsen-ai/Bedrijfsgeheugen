@@ -24,6 +24,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      - name: Observe genuine protected-main integrity action in canonical BRAIN
+        if: github.ref == 'refs/heads/main'
+        env:
+          POWERHOUSE_AGENT_ID: main-write-integrity
+          POWERHOUSE_ACTION_RECALL_MODE: auto
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node tools/delivery-preflight.mjs shared --action "Audit canonical main write integrity on protected branch"
       - name: Classify main write provenance
         id: classify
         env:
