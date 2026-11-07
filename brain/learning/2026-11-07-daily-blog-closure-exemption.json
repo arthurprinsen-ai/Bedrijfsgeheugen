@@ -12,7 +12,7 @@
     "security_sensitive": false
   },
   "root_cause": "The daily blog workflow adds config/bg-static-i18n-en.d/powerhouse-blog-<date>.json to its candidate commit, but config/powerhouse-integration-bundle-v1.json only exempted blog/ and sitemap.xml from the closure artifacts. A candidate with that patch is a material change outside the runtime prefixes, so hygiene / admission rejected it with INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation, and the required check test stayed red. The 2026-11-07 candidate (PR #5517) was the first to hit it; the 2026-11-06 candidate had hand-added closure files.",
-  "prevention_rule": "The patch prefix is added to runtimeClosurePathPrefixes and a dependency-free test reads the git add paths from the workflow and requires each one to be covered, so a new staged path cannot ship without its exemption. The exemption stays limited to powerhouse-blog- patches under a content-publication obligation.",
+  "prevention_rule": "The patch prefix is added to runtimeClosurePathPrefixes and a dependency-free test reads the git add paths from the workflow and requires each one to be covered, so a new staged path cannot ship without its exemption. The exemption stays limited to powerhouse-blog- patches under a content-publication obligation. A planned-action trigger blocks plans that add a staged path to the daily blog workflow until the closure prefixes are acknowledged.",
   "prevention_rules": [
     "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS"
   ],
@@ -31,10 +31,12 @@
     "historical": [
       "hygiene / admission on PR #5517: INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation, obligationId content-publication:2026-11-07:blog",
       "tools/delivery/integration-bundle-compiler.mjs compileClosurePlan only grants canonical-runtime-obligation when every material path matches runtimeClosurePathPrefixes",
-      "PR #5481 (2026-11-06 blog) carried hand-added brain/learning, docs/changes and ledger files"
+      "PR #5481 (2026-11-06 blog) carried hand-added brain/learning, docs/changes and ledger files",
+      "BRAIN backend lane on main red after the first merge (#5518): tests/brain-planned-action-triggers-wave3-20261106.test.mjs 'adds a trigger for every active rule that has a PROVEN lesson' listed DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS as uncovered"
     ],
     "current": [
-      "Test reads the workflow staging paths and compiles the closure plan with the policy"
+      "Test reads the workflow staging paths and compiles the closure plan with the policy",
+      "Planned-action trigger added; wave2, wave3, guard and the closure test pass 21 of 21 locally, and the wave3 test fails without the trigger"
     ]
   },
   "customer_outcome": "NOT_PROVEN",
