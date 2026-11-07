@@ -1620,6 +1620,24 @@
         "retry",
         "unavailable"
       ]
+    },
+    {
+      "ruleId": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
+      "systems": [
+        "daily blog workflow",
+        "runtimeclosurepathprefixes",
+        "integration bundle",
+        "closure policy"
+      ],
+      "actions": [
+        "git add",
+        "stage",
+        "new path",
+        "add a file",
+        "add a path",
+        "closure",
+        "exempt"
+      ]
     }
   ]
 }
