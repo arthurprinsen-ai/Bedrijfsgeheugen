@@ -980,6 +980,16 @@
       "fix": "treat a heading as its first line only, render mixed text and list lines as separate paragraph and list elements, and fail closed before writing the page when a heading or paragraph still contains markdown list lines or a heading is section-sized",
       "preventionRule": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|admission|shared|daily-blog-candidate-path-outside-runtime-closure",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the daily blog candidate was rejected by hygiene / admission with INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE and the required check test stayed red",
+      "rootCause": "the workflow stages the English cache patch config/bg-static-i18n-en.d/powerhouse-blog-<date>.json, which was not listed in runtimeClosurePathPrefixes, so it counted as a material change needing Brain learning, ledger and documentation files",
+      "fix": "add the patch prefix to runtimeClosurePathPrefixes in config/powerhouse-integration-bundle-v1.json and keep a test that reads the git add paths from the workflow and requires each to be covered",
+      "preventionRule": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
+      "status": "PROVEN"
     }
   ]
 }

@@ -399,3 +399,5 @@ Voor afsluiting: protected Required/CodeQL/Supabase Preview, exact originele mig
 - Daglijkse blog-renderer (6 Nov 2026, fingerprint `powerhouse|daily-blog|markdown-list-in-heading-and-paragraph|20261106-v1`): een kop is alleen zijn eerste regel en `assert_rendered_body_clean` blokkeert markdown-lijsten in `p`/`h2`; lees het blokkaderegister vóór blogwerk. Gepubliceerde artikelen zijn niet hersteld.
 
 - Zeven gepubliceerde blogartikelen hersteld (6 Nov 2026, fingerprint `powerhouse|daily-blog|published-articles-markdown-repair|20261106-v1`): een corpustest controleert elk gecommit artikel op lijstregels in p/h2/h3, meerregelige koppen en ongeldige JSON-LD; voeg bij nieuwe blogwijzigingen de Engelse cache aan voor elke nieuwe tekstknoop.
+
+- Daily blog candidate paths vs closure policy (7 Nov 2026, fingerprint `powerhouse|daily-blog|i18n-patch-closure-exemption|20261107-v1`): every path the daily blog workflow stages must be in `runtimeClosurePathPrefixes`; the English cache patch `powerhouse-blog-<date>.json` is now covered and a test reads the workflow paths.
