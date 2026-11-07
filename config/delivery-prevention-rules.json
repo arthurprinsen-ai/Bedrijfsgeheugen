@@ -6,7 +6,8 @@
     "brain/learning/2026-11-06-github-error-register-v1.json",
     "brain/learning/2026-11-06-i18n-patch-segment-drift.json",
     "brain/learning/2026-11-06-site-error-lessons-v1.json",
-    "brain/learning/2026-11-06-blog-markdown-render-v1.json"
+    "brain/learning/2026-11-06-blog-markdown-render-v1.json",
+    "brain/learning/2026-11-07-daily-blog-closure-exemption.json"
   ],
   "rules": [
     {
@@ -673,6 +674,12 @@
       "id": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
       "active": true,
       "enforcedBy": "publish_powerhouse_blog_artifact-assert_rendered_body_clean-plus-brain-blog-markdown-render-20261106-test",
+      "scope": "shared"
+    },
+    {
+      "id": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
+      "active": true,
+      "enforcedBy": "brain-daily-blog-closure-exemption-20261107-test",
       "scope": "shared"
     }
   ]

@@ -197,6 +197,8 @@ jobs:
         run: node --test tests/brain-blog-markdown-render-20261106.test.mjs
       - name: Verify no published blog article carries markdown or invalid structured data
         run: node --test tests/brain-blog-articles-clean-20261106.test.mjs
+      - name: Verify every path the daily blog workflow stages is a runtime closure path
+        run: node --test tests/brain-daily-blog-closure-exemption-20261107.test.mjs
       - name: Enforce system error lessons and the planned-action guard
         run: node --test tests/brain-system-error-register-20261106.test.mjs tests/brain-planned-action-guard-20261106.test.mjs tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs tests/brain-mira-original-pristine-claim-20261106.test.mjs tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
