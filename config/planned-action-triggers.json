@@ -1318,6 +1318,308 @@
         "convert",
         "heading"
       ]
+    },
+    {
+      "ruleId": "POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION",
+      "systems": [
+        "push to main",
+        "commit to main",
+        "write to main",
+        "direct main write",
+        "directly to main",
+        "directly on main"
+      ],
+      "actions": [
+        "push",
+        "commit",
+        "write",
+        "land",
+        "merge"
+      ]
+    },
+    {
+      "ruleId": "STRIP_SQL_COMMENTS_BEFORE_SEMANTIC_ASSERTIONS",
+      "systems": [
+        "sql test",
+        "sql regression",
+        "migration test",
+        "semantic assert"
+      ],
+      "actions": [
+        "regex",
+        "assert",
+        "comment",
+        "auth.uid",
+        "pattern"
+      ]
+    },
+    {
+      "ruleId": "DO_NOT_AUTO_FIX_PERFORMANCE_INFO",
+      "systems": [
+        "supabase advisor",
+        "performance advisor",
+        "get_advisors",
+        "unindexed foreign key",
+        "unused index"
+      ],
+      "actions": [
+        "fix",
+        "optimi",
+        "drop index",
+        "create index",
+        "remediat"
+      ]
+    },
+    {
+      "ruleId": "REVOKE_ALL_BEFORE_LEAST_PRIVILEGE_GRANT",
+      "systems": [
+        "service_role",
+        "append-only",
+        "privilege"
+      ],
+      "actions": [
+        "revoke",
+        "grant",
+        "truncate",
+        "least privilege",
+        "least-privilege"
+      ]
+    },
+    {
+      "ruleId": "READ_LIVE_SCHEMA_BEFORE_EVIDENCE_WRITE",
+      "systems": [
+        "evidence insert",
+        "evidence write",
+        "write evidence",
+        "insert evidence",
+        "evidence table"
+      ],
+      "actions": [
+        "insert",
+        "write",
+        "column",
+        "target"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_OBSERVED_SCHEDULER_RUN_BEFORE_AUTONOMY_CLAIM",
+      "systems": [
+        "autonomy",
+        "autonomous",
+        "scheduled run",
+        "scheduler",
+        "cron job"
+      ],
+      "actions": [
+        "claim",
+        "mark live",
+        "mark green",
+        "certif",
+        "declare operational"
+      ]
+    },
+    {
+      "ruleId": "NO_NOOP_MIGRATION_FOR_TRIGGER_PROOF",
+      "systems": [
+        "noop migration",
+        "no-op migration",
+        "dummy migration",
+        "empty migration",
+        "trigger proof"
+      ],
+      "actions": [
+        "migration",
+        "prove",
+        "proof",
+        "create"
+      ]
+    },
+    {
+      "ruleId": "USE_EXACT_SHA_EVENT_FINGERPRINTS",
+      "systems": [
+        "event fingerprint",
+        "agentwork",
+        "push event",
+        "webhook",
+        "redeliver"
+      ],
+      "actions": [
+        "dedupe",
+        "replay",
+        "redeliver",
+        "fingerprint",
+        "duplicate"
+      ]
+    },
+    {
+      "ruleId": "CLASSIFY_NEW_RUNTIME_TOOL_PATHS",
+      "systems": [
+        "tools/",
+        "delivery lane",
+        "unified brain"
+      ],
+      "actions": [
+        "classif",
+        "new tool",
+        "new runtime",
+        "lane assignment",
+        "unassigned"
+      ]
+    },
+    {
+      "ruleId": "NETLIFY_DEPLOY_INSTRUCTION_IS_NOT_EXECUTION",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "deploy instruction",
+        "cli command",
+        "trigger a deploy",
+        "trigger deploy",
+        "deploy to production",
+        "run the deploy"
+      ]
+    },
+    {
+      "ruleId": "RUNTIME_DNS_FAILURE_IS_INFRA_BOUNDARY",
+      "systems": [
+        "dns",
+        "could not resolve",
+        "getaddrinfo",
+        "enotfound"
+      ],
+      "actions": [
+        "fail",
+        "retry",
+        "error",
+        "cannot",
+        "can't"
+      ]
+    },
+    {
+      "ruleId": "PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY",
+      "systems": [
+        "netlify production",
+        "production deploy",
+        "commit_ref"
+      ],
+      "actions": [
+        "parity",
+        "behind main",
+        "older commit",
+        "stale deploy",
+        "mismatch"
+      ]
+    },
+    {
+      "ruleId": "DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM",
+      "systems": [
+        "openart",
+        "connector",
+        "plugin"
+      ],
+      "actions": [
+        "not available",
+        "unavailable",
+        "no access",
+        "niet beschikbaar",
+        "cannot use"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES",
+      "systems": [
+        "connector write",
+        "manual write",
+        "create_or_update_file",
+        "repository write",
+        "repo write"
+      ],
+      "actions": [
+        "write",
+        "create",
+        "update",
+        "commit",
+        "push"
+      ]
+    },
+    {
+      "ruleId": "USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH",
+      "systems": [
+        "code search",
+        "search/code",
+        "search code"
+      ],
+      "actions": [
+        "fetch",
+        "rest",
+        "url",
+        "api",
+        "endpoint"
+      ]
+    },
+    {
+      "ruleId": "USE_GITHUB_READY_FOR_REVIEW_ACTION",
+      "systems": [
+        "update_pull_request",
+        "draft=false",
+        "draft pull request",
+        "draft pr"
+      ],
+      "actions": [
+        "ready",
+        "draft=false",
+        "convert",
+        "mark"
+      ]
+    },
+    {
+      "ruleId": "SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS",
+      "systems": [
+        "workflow",
+        "github actions",
+        ".github/workflows"
+      ],
+      "actions": [
+        "paths:",
+        "path filter",
+        "trigger scope",
+        "scope the trigger",
+        "broaden the trigger"
+      ]
+    },
+    {
+      "ruleId": "PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT",
+      "systems": [
+        "shared context",
+        "compact context",
+        "context pointer",
+        "shared team context"
+      ],
+      "actions": [
+        "compact",
+        "shorten",
+        "pointer",
+        "truncate",
+        "summariz"
+      ]
+    },
+    {
+      "ruleId": "LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK",
+      "systems": [
+        "learning writeback",
+        "learning write-back",
+        "brain writeback",
+        "learning_deferred"
+      ],
+      "actions": [
+        "fail",
+        "error",
+        "rate limit",
+        "rate-limit",
+        "retry",
+        "unavailable"
+      ]
     }
   ]
 }
