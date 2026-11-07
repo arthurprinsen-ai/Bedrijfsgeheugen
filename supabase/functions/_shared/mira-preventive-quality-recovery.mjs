@@ -45,7 +45,7 @@ export function assessMiraProviderBeforeSpend({model,mode,params,masterReference
   // Only the observed Veo3.1 control surface has both explicit 9:16 and mute
   // settings and a historical actual native 1080x1920 result. Its past face
   // failures remain valid; compatibility here does NOT endorse retrying Veo.
-  if(name==='veo3-1'&&kind==='image2video'&&
+  if(name==='veo3-1'&&(kind==='image2video'||kind==='element2video')&&
      p.aspectRatio==='9:16'&&p.generateAudio===false){
     return {...base,ok:true,code:'FORMAT_CONTROLS_PROVEN_ONLY',
       evidence:'Prior original OpenArt Veo3.1 image2video returned native 1080x1920 without audio; facial continuity still failed independent validation.',
