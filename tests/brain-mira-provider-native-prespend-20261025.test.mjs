@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {assessMiraProviderBeforeSpend,MIRA_WAN27_PROVIDER_OBSERVATION} from '../supabase/functions/_shared/mira-preventive-quality-recovery.mjs';
+import {assessMiraProviderBeforeSpend,MIRA_WAN27_PROVIDER_OBSERVATION,MIRA_MODEL_FACE_EVIDENCE,MIRA_FACE_GATE_MIN} from '../supabase/functions/_shared/mira-preventive-quality-recovery.mjs';
 
 const masterReferenceId='Yjqu4D7v76HABNPmQPj1';
 const wan={model:'wan2-7',mode:'image2video',masterReferenceId,
@@ -40,13 +40,12 @@ test('unproven models are NOT deemed compatible just because user asks for 1080p
  assert.equal(d.ok,false);
  assert.equal(d.code,'MIRA_PROVIDER_OUTPUT_CONTRACT_UNPROVEN');
 });
-test('known format-capable Veo 3.1 remains FORMAT-only and does not rewrite old face rejections',()=>{
+test('Veo 3.1 has the right format controls but is blocked by recorded face-gate failures, not re-enabled',()=>{
  const v=assessMiraProviderBeforeSpend({...wan,model:'veo3-1',params:{...wan.params,aspectRatio:'9:16',generateAudio:false}});
- assert.equal(v.ok,true);
- assert.equal(v.code,'FORMAT_CONTROLS_PROVEN_ONLY');
+ assert.equal(v.ok,false);
+ assert.equal(v.code,'MIRA_MODEL_FACE_GATE_FAILED_BEFORE');
  assert.equal(v.approved_for_publish,false);
  assert.equal(v.actual_media_verified,false);
- assert.equal(v.do_not_reuse_rejected_history,true);
  assert.equal(assessMiraProviderBeforeSpend({...wan,model:'veo3-1'}).ok,false);
 });
 test('original router exposes read-only authorized generation_preflight BEFORE submit_asset',()=>{
@@ -61,15 +60,17 @@ test('original router exposes read-only authorized generation_preflight BEFORE s
  assert.match(s,/A passing output-config or derived-input check is NOT final visual proof/);
 });
 
-test('veo3-1 element2video exposes explicit 9:16 and mute controls and passes format preflight only with both set',()=>{
- const base={model:'veo3-1',mode:'element2video',masterReferenceId,params:{resolution:'1080p',duration:8,videoCount:1}};
- assert.equal(assessMiraProviderBeforeSpend(base).ok,false);
- assert.equal(assessMiraProviderBeforeSpend({...base,params:{...base.params,aspectRatio:'9:16'}}).ok,false);
- assert.equal(assessMiraProviderBeforeSpend({...base,params:{...base.params,aspectRatio:'16:9',generateAudio:false}}).ok,false);
- const ok=assessMiraProviderBeforeSpend({...base,params:{...base.params,aspectRatio:'9:16',generateAudio:false}});
- assert.equal(ok.ok,true);
- assert.equal(ok.code,'FORMAT_CONTROLS_PROVEN_ONLY');
- assert.equal(ok.approved_for_publish,false);
- assert.equal(ok.actual_media_verified,false);
- assert.equal(assessMiraProviderBeforeSpend({...base,masterReferenceId:'other',params:{...base.params,aspectRatio:'9:16',generateAudio:false}}).ok,false);
+test('veo3-1 element2video is blocked BEFORE spend because real paid runs failed the face gate (0.900 < 0.940)',()=>{
+ const base={model:'veo3-1',mode:'element2video',masterReferenceId,params:{resolution:'1080p',duration:8,videoCount:1,aspectRatio:'9:16',generateAudio:false}};
+ for(const mode of ['element2video','image2video']){
+  const v=assessMiraProviderBeforeSpend({...base,mode});
+  assert.equal(v.ok,false);
+  assert.equal(v.code,'MIRA_MODEL_FACE_GATE_FAILED_BEFORE');
+  assert.equal(v.best_recorded_face_score,0.9);
+  assert.ok(v.rejected_histories.includes('B5uX1JhoC8hl0kiFTrnl'));
+ }
+ // caller cannot bypass with asserted evidence
+ assert.equal(assessMiraProviderBeforeSpend({...base,params:{...base.params,newModelEvidenceId:'x',faceEvidenceOverrideScore:0.99}}).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...base,masterReferenceId:'other'}).ok,false);
+ assert.equal(MIRA_MODEL_FACE_EVIDENCE.every(r=>r.best_face_score<MIRA_FACE_GATE_MIN),true);
 });
