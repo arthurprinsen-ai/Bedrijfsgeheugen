@@ -19,3 +19,6 @@ Not proven on a real daily run yet; that happens when the next scheduled blog ca
 
 ## Independent gates
 Protected Required, CodeQL, original BRAIN lane and the next daily blog run.
+
+## Follow-up the same day: planned-action trigger
+The first merge (#5518) turned the BRAIN backend lane on main red: the wave3 test requires a planned-action trigger for every active rule with a PROVEN lesson, and the new rule had none. `config/planned-action-triggers.json` now has a trigger for `DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS`, and the closure test checks that it fires and that everyday blog wording does not. The full planned-action test set was run locally before this change; the pull request lane alone had not caught it.
