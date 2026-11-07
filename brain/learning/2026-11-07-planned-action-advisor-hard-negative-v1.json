@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-07",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|planned-action-advisor-hard-negative|20261107-v1",
+  "owner": "existing planned-action guard triggers config and one test; no new mechanism",
+  "compiler": {
+    "failure_class": "PLANNED_ACTION_TRIGGER_PRECISION_AND_RECALL_GAP",
+    "scope": "PLANNED_ACTION_GUARD_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The DO_NOT_AUTO_FIX_PERFORMANCE_INFO trigger shipped in #5508 went through two defects. A first version used the bare word 'advisor' and fired on 'strategic advisor' (#5212); that near-miss was caught only by a one-off replay of 400 commit titles outside CI. Pinning it as a test then exposed the opposite defect: the action words only contained 'drop index', so 'Drop the unused index reported by the Supabase advisor' was not matched.",
+  "prevention_rule": "A required-check test pins three real commit titles containing 'advisor' as hard negatives and three genuine Supabase advisor actions as positives, with a mutation check that fails against the original bare-word trigger. The action words of this one rule were widened (drop, add an index, adding an index, add index, resolve) while the system terms stay specific. Examples are hand-picked; recall across the 19 wave4 rules remains NOT_MEASURED and belongs to #5510.",
+  "prevention_rules": [
+    "DO_NOT_AUTO_FIX_PERFORMANCE_INFO"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-advisor-hard-negative-20261107.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-chat-lessons-wave4-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner instruction 2026-11-06: record every failure and never repeat it",
+      "docs/changes/2026-11-07-planned-action-advisor-hard-negative-v1.md"
+    ],
+    "current": [
+      "Advisor test 3 of 3 green; 22 of 22 related planned-action tests green; 0 hits for this rule in 400 recent commit titles"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
