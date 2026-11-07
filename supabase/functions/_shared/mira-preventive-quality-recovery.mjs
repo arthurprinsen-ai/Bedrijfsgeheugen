@@ -10,6 +10,15 @@ export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generati
 export const MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT='mira-recognizable-face-and-genuine-human-motion-v1';
 
 export const MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT='mira-native-provider-output-prespend-v1';
+// Measured face-gate outcomes of real, paid, independently verified OpenArt
+// generations. A model whose best measured face score stays below the gate is
+// NOT spendable again until a new candidate is justified by new evidence.
+export const MIRA_FACE_GATE_MIN=0.94;
+export const MIRA_MODEL_FACE_EVIDENCE=Object.freeze([
+  Object.freeze({model:'veo3-1',modes:['image2video','element2video'],best_face_score:0.9,
+    rejected_histories:['6GYKFxqd9aif8WacnMnL','B5uX1JhoC8hl0kiFTrnl'],
+    observed:['2026-11-03','2026-11-07'],source:'brain_failure_occurrences VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'})
+]);
 export const MIRA_WAN27_PROVIDER_OBSERVATION=Object.freeze({
   model:'wan2-7',mode:'image2video',requested_resolution:'1080p',
   actual_width:1292,actual_height:1604,actual_duration:8.08,
@@ -36,6 +45,15 @@ export function assessMiraProviderBeforeSpend({model,mode,params,masterReference
     return {...base,ok:false,code:'MIRA_SOURCE_ANCHORED_GENERATION_REQUIRED'};
   if(String(p.resolution??'').toLowerCase()!=='1080p'||Number(p.duration)!==8||Number(p.videoCount)!==1)
     return {...base,ok:false,code:'MIRA_NATIVE_REEL_SETTINGS_REQUIRED'};
+  const faceRecord=MIRA_MODEL_FACE_EVIDENCE.find(r=>r.model===name&&r.modes.includes(kind));
+  // No caller-supplied bypass: only a reviewed source change to the evidence
+  // list above (new measured score) can re-enable a model.
+  if(faceRecord&&Number(faceRecord.best_face_score)<MIRA_FACE_GATE_MIN)
+    return {...base,ok:false,code:'MIRA_MODEL_FACE_GATE_FAILED_BEFORE',
+      best_recorded_face_score:faceRecord.best_face_score,required_face_score:MIRA_FACE_GATE_MIN,
+      rejected_histories:faceRecord.rejected_histories,
+      reason:'This model/mode produced Mira videos that failed the independent face gate on real paid runs. Spending again would repeat a known failure.',
+      recommended_action:'Choose a different model/route and update MIRA_MODEL_FACE_EVIDENCE only through a reviewed PR with new measured evidence; never resubmit rejected histories.'};
   if(name==='wan2-7'&&kind==='image2video'){
     return {...base,ok:false,code:'MIRA_WAN27_IMAGE_RATIO_NOT_EXACT_REEL',
       observed:MIRA_WAN27_PROVIDER_OBSERVATION,
