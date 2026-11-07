@@ -6,3 +6,4 @@
 - Repair: runtime closure prefix for the blog English cache patch; guard test over the workflow staging paths; one lesson and rule.
 - Known limit: not proven on a real daily run yet.
 - Status: CODE_CANDIDATE, not verified until PR #5517 passes admission and the next daily blog run succeeds.
+- 2026-11-07 follow-up: BRAIN backend red on main after #5518 (missing planned-action trigger for the new rule); trigger and test added.
