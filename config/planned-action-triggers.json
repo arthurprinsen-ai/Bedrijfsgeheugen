@@ -1365,9 +1365,13 @@
       "actions": [
         "fix",
         "optimi",
-        "drop index",
+        "drop",
         "create index",
-        "remediat"
+        "add an index",
+        "adding an index",
+        "add index",
+        "remediat",
+        "resolve"
       ]
     },
     {
