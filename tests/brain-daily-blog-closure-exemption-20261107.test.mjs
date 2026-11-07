@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { compileClosurePlan } from '../tools/delivery/integration-bundle-compiler.mjs';
+import { loadGuardKnowledge, matchPlannedAction } from '../scripts/brain/planned-action-guard.mjs';
 
 const policy = JSON.parse(readFileSync('config/powerhouse-integration-bundle-v1.json', 'utf8'));
 const workflow = readFileSync('.github/workflows/powerhouse-daily-blog.yml', 'utf8');
@@ -64,4 +65,30 @@ test('the same paths under a different obligation still need the closure artifac
   const result = plan(workflowCandidatePaths(), 'some-other-obligation:2026-11-07');
   assert.equal(result.authority, 'repository-artifacts');
   assert.equal(result.ready, false);
+});
+
+const RULE = 'DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS';
+
+test('the planned-action guard blocks a plan that adds a staged path to the daily blog workflow until acknowledged', async () => {
+  const knowledge = await loadGuardKnowledge();
+  const action = 'Add a new path to the git add list of the daily blog workflow';
+  const result = matchPlannedAction({ action, ...knowledge });
+  assert.ok(result.matches.some(match => match.ruleId === RULE), 'trigger did not fire');
+  assert.equal(result.ok, false);
+  const passed = matchPlannedAction({ action, ...knowledge, acknowledged: result.unacknowledged.map(match => match.ruleId) });
+  assert.equal(passed.ok, true);
+});
+
+test('everyday blog and closure wording does not fire the daily blog closure rule', async () => {
+  const knowledge = await loadGuardKnowledge();
+  for (const action of [
+    'Fix a typo in a blog title',
+    'Update blog post copy for the new report',
+    'Draft a LinkedIn post about the AI report',
+    'Write release notes for the checkout change',
+    'Improve the process documentation for onboarding'
+  ]) {
+    const fired = matchPlannedAction({ action, ...knowledge }).matches.filter(match => match.ruleId === RULE);
+    assert.deepEqual(fired, [], `false positive on: ${action}`);
+  }
 });
