@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-07",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "powerhouse|daily-blog|i18n-patch-closure-exemption|20261107-v1",
+  "owner": "daily blog workflow, integration bundle policy and the hygiene admission closure check",
+  "compiler": {
+    "failure_class": "DAILY_BLOG_CANDIDATE_PATH_NOT_RUNTIME_CLOSURE_COVERED",
+    "scope": "INTEGRATION_BUNDLE_CLOSURE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The daily blog workflow adds config/bg-static-i18n-en.d/powerhouse-blog-<date>.json to its candidate commit, but config/powerhouse-integration-bundle-v1.json only exempted blog/ and sitemap.xml from the closure artifacts. A candidate with that patch is a material change outside the runtime prefixes, so hygiene / admission rejected it with INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation, and the required check test stayed red. The 2026-11-07 candidate (PR #5517) was the first to hit it; the 2026-11-06 candidate had hand-added closure files.",
+  "prevention_rule": "The patch prefix is added to runtimeClosurePathPrefixes and a dependency-free test reads the git add paths from the workflow and requires each one to be covered, so a new staged path cannot ship without its exemption. The exemption stays limited to powerhouse-blog- patches under a content-publication obligation.",
+  "prevention_rules": [
+    "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-closure-exemption-20261107.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "hygiene / admission on PR #5517: INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger,brain_learning,human_documentation, obligationId content-publication:2026-11-07:blog",
+      "tools/delivery/integration-bundle-compiler.mjs compileClosurePlan only grants canonical-runtime-obligation when every material path matches runtimeClosurePathPrefixes",
+      "PR #5481 (2026-11-06 blog) carried hand-added brain/learning, docs/changes and ledger files"
+    ],
+    "current": [
+      "Test reads the workflow staging paths and compiles the closure plan with the policy"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_NEXT_DAILY_BLOG_RUN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
