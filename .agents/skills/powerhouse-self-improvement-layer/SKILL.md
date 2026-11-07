@@ -403,3 +403,5 @@ Voor afsluiting: protected Required/CodeQL/Supabase Preview, exact originele mig
 - Daily blog candidate paths vs closure policy (7 Nov 2026, fingerprint `powerhouse|daily-blog|i18n-patch-closure-exemption|20261107-v1`): every path the daily blog workflow stages must be in `runtimeClosurePathPrefixes`; the English cache patch `powerhouse-blog-<date>.json` is now covered and a test reads the workflow paths.
 
 - i18n blog patch keys, repeat (7 Nov 2026, fingerprint `i18n|cache|blog-2026-11-07-segment-keys|20261107-v1`): the daily blog patch again missed two build keys (whole paragraph and intro excerpt); after a daily blog merge check the BRAIN backend lane and add exact keys from `STATIC_I18N_CACHE_MISSING`; the generator is not fixed.
+
+- Daily blog i18n, both key views (7 Nov 2026, fingerprint `i18n|cache|daily-blog-two-key-views|20261107-v1`): the workflow now also prepares and validates the English cache on the clean committed tree (`--prepare-cache=powerhouse-blog-<date>-committed.json`) in both candidate steps; a test pins the order; not proven until the blog run of 8 Nov.
