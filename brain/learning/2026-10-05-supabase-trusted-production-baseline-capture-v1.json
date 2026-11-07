@@ -1,0 +1,57 @@
+{
+  "contract": "supabase-trusted-production-baseline-capture-v1",
+  "date": "2026-10-05",
+  "obligation_issue": 3742,
+  "failure_mode": "A recovery PR cannot safely generate an official production baseline when production credentials would be exposed to PR-controlled workflow code.",
+  "structural_fix": "Generate the official Supabase CLI baseline from trusted default-branch workflow code; for the exact candidate-declared, effect-verified replay baselines, reconcile tracking with supported `supabase migration repair --status applied`, read the remote ledger back, and lease the resulting evidence to the exact recovery PR head.",
+  "invariants": [
+    "no pull_request trigger on the production baseline capture workflow",
+    "official supabase db dump and migration list only",
+    "no hand-built pg_catalog schema dump",
+    "exact-head force-with-lease before writing baseline evidence",
+    "fresh replay and parity remain independently required",
+    "no production schema/data DDL/DML mutation; only bounded supported migration-history tracking repair",
+    "repair set must equal the exact effect-verified replay baselines and remote readback must prove each repaired version",
+    "recovery lock may become REPAIRED_APPLIED_VERIFIED only after official remote migration-history dump proves exact version/name identities"
+  ],
+  "failure_class": "SECRET_EXPOSURE",
+  "fingerprint": "powerhouse|supabase-production-baseline-capture|trusted-default-branch|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-production-baseline-capture-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Migration-history parity had four replay-baseline files whose production effects were already verified, but their versions were absent from the remote migration ledger. Re-executing their SQL would be unsafe, direct writes to supabase_migrations are forbidden, and PR-controlled code must not receive production credentials.",
+  "prevention": [
+    "Perform migration-history reconciliation only from trusted default-branch workflow code.",
+    "Require the pre-repair drift set to equal exactly 20260920101150, 20260920102450, 20260925080500 and 20261005133951 with zero remote-only migrations.",
+    "Use only the supported Supabase CLI migration repair status-applied operation so no migration SQL is re-executed.",
+    "Require post-repair migration list drift to be zero before capturing or writing baseline evidence.",
+    "Advance the recovery lock to REPAIRED_APPLIED_VERIFIED only after official migration-history readback and exact-head lease checks.",
+    "Re-verify all reviewed replay-baseline effects with trusted read-only production-effect probes before migration repair; never execute candidate-supplied SQL against production."
+  ],
+  "evidence": {
+    "canonical_recovery_pr": 3766,
+    "production_ledger_before_repair_count": 564,
+    "exact_repair_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ],
+    "production_effects_verified": true,
+    "supported_repair_command": "supabase migration repair <versions> --status applied",
+    "sql_reexecution_forbidden": true,
+    "regression_tests": [
+      "tests/supabase-production-baseline-workflow.test.mjs",
+      "tests/brain-supabase-production-baseline-capture-v1.test.mjs"
+    ]
+  }
+}
