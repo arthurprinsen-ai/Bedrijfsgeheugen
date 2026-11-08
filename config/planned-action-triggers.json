@@ -1660,6 +1660,40 @@
         "committed tree",
         "validate-cache"
       ]
+    },
+    {
+      "ruleId": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "systems": [
+        "artifact-id",
+        "git ls-files",
+        "source manifest",
+        "maxbuffer"
+      ],
+      "actions": [
+        "remove",
+        "drop",
+        "lower",
+        "revert",
+        "default buffer",
+        "unbounded"
+      ]
+    },
+    {
+      "ruleId": "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD",
+      "systems": [
+        "required-test",
+        "npm install",
+        "ffmpeg-static",
+        "postinstall",
+        "preflight install"
+      ],
+      "actions": [
+        "remove",
+        "drop",
+        "revert",
+        "ignore-scripts",
+        "retry"
+      ]
     }
   ]
 }
