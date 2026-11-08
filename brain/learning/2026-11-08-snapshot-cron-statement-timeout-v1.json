@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|supabase|snapshot-cron-statement-timeout|20261108-v1",
+  "owner": "original powerhouse-revenue-intelligence-snapshot cron job 46; only its cron command changes",
+  "compiler": {
+    "failure_class": "CRON_STATEMENT_TIMEOUT_ARMED_TOO_LATE",
+    "scope": "CRON_JOB_RUNTIME_LIMIT",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The hourly snapshot cron command calls set_config('statement_timeout','90000',true) inside a DO block. The timer of the running statement is not re-armed, so the effective limit stayed at the default 120 s. Over 14 days (2026-10-25 to 2026-11-08): 336 runs, 4 failed at about 120 s (1.2 percent); successful runs average about 60 s and reach 114 s. Related fingerprint powerhouse|revenue-snapshot|cron-120s-statement-timeout|v1.",
+  "prevention_rule": "Arm statement_timeout as a separate statement before the DO block (set local statement_timeout = '240s'), keep the advisory lock and both functions, change nothing else. A required-check test pins the command shape. This does not make the snapshot faster; a structural fix still needs tenant parity and performance validation.",
+  "prevention_rules": [
+    "ARM_STATEMENT_TIMEOUT_BEFORE_THE_DO_STATEMENT_IN_CRON_COMMANDS"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-snapshot-cron-timeout-20261108.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-guard-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner approval 2026-11-08: decide and fix autonomously",
+      "docs/changes/2026-11-08-snapshot-cron-statement-timeout-v1.md"
+    ],
+    "current": [
+      "cron.job_run_details 2026-10-25 to 2026-11-08: 336 runs, 4 failed, avg success 59.6 s, max success 114.3 s, max failure 120.1 s"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
