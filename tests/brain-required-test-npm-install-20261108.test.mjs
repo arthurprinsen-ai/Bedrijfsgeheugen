@@ -9,6 +9,7 @@ import { loadGuardKnowledge, matchPlannedAction } from '../scripts/brain/planned
 const required = readFileSync('.github/workflows/required-test.yml', 'utf8');
 const backend = readFileSync('.github/workflows/lane-backend.yml', 'utf8');
 const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+const dailyBlog = readFileSync('.github/workflows/powerhouse-daily-blog.yml', 'utf8');
 
 function stepBody(workflow, name) {
   const start = workflow.indexOf(`- name: ${name}`);
@@ -35,6 +36,12 @@ test('the Netlify build parity install also skips lifecycle scripts', () => {
 test('the website lane local candidate build installs without lifecycle scripts', () => {
   const body = stepBody(website, 'Build and serve exact local candidate only when Netlify preview is unavailable');
   assert.match(body, /npm install --ignore-scripts --prefer-offline/);
+});
+
+test('every npm install of the daily blog workflow skips lifecycle scripts', () => {
+  const installs = dailyBlog.split('\n').filter(line => /^\s*npm install\b/.test(line));
+  assert.ok(installs.length >= 2, 'expected the install in both candidate steps');
+  for (const line of installs) assert.match(line, /npm install --ignore-scripts /, line.trim());
 });
 
 const RULE = 'REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD';
