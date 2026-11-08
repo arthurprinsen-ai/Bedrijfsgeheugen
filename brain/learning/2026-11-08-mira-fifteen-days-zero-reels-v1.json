@@ -1,4 +1,6 @@
 {
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
   "fingerprint": "powerhouse|mira|fifteen-days-zero-published-reels-producer-unclaimed|20261108-v1",
   "date": "2026-11-08",
   "status": "OBSERVED",
@@ -18,7 +20,24 @@
   ],
   "owner": "powerhouse-instagram-media-router / original Mira producer; bron: powerhouse-mira-problem-radar-v1",
   "issue": 5232,
-  "skill_targets": [".agents/skills/instagram-composio-publisher/SKILL.md"],
+  "skill_targets": [
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
   "independent_publication_proven": false,
-  "brain_registered": "public.brain_observe_failure occurrence powerhouse|mira|fifteen-days-zero-published-reels-producer-unclaimed|20261108-v1:2026-11-08"
+  "brain_registered": "public.brain_observe_failure occurrence powerhouse|mira|fifteen-days-zero-published-reels-producer-unclaimed|20261108-v1:2026-11-08",
+  "compiler": {
+    "failure_class": "PUBLICATION_PRODUCER_GAP",
+    "scope": "INSTAGRAM_MIRA_DAILY_REEL",
+    "machine_enforceable": false,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ],
+    "note": "Bestaande verwante guards (geen stille publicatiekloof, geen vals groen bij bronschaarste). Een nieuwe regressietest voor de dagelijkse producer-claim hoort bij de codefix en bestaat nog niet."
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PRODUCER_FIX"
 }
