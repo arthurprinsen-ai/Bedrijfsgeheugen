@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|ci|red-run-attribution-by-gate|20261108-v1",
+  "owner": "existing docs/brain/groen-draaiboek.md and brain/learning route; no new mechanism",
+  "compiler": {
+    "failure_class": "CI_RED_RUN_CAUSE_ATTRIBUTION_NOT_RECORDED",
+    "scope": "AGENT_ONBOARDING_AND_DELIVERY_GATES",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "brain_failure_registry held 262 (Required test), 254 (Unified Brain Delivery), 120 (Obligation Terminal Closure) and 93 (Portal V2 Live Preview) red-run occurrences with no recorded root cause, so agents could not tell a rejected PR bundle from a code defect. Measured on the last 30 red runs per workflow on 2026-11-08: Required test and Unified Brain Delivery fail mainly in admission steps (canonical candidate, integration closure, learning evidence); Terminal Closure fails 28 of 30 on exact-head critical gates; Portal V2 Live Preview fails 30 of 30 in the Netlify preview SHA step.",
+  "prevention_rule": "The playbook section 6 states the measured attribution and the rule to read the failing admission step first. A required-check test asserts the section exists. Counts are a sample of 30 runs per workflow, not the full history, and the HTTP code of the Portal V2 Live Preview runs was not read.",
+  "prevention_rules": [
+    "READ_FAILING_ADMISSION_STEP_BEFORE_CHANGING_CODE"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-guard-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner instruction 2026-11-08: record all red checks and errors, work autonomously",
+      "docs/changes/2026-11-08-groen-draaiboek-meting-v1.md"
+    ],
+    "current": [
+      "GitHub API 2026-11-08: last 30 failed runs per workflow, failing steps counted per run"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
