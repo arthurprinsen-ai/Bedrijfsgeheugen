@@ -1,0 +1,25 @@
+{
+  "fingerprint": "brain|attested-agent-run|pilot-experiment-cycle|20261108",
+  "compiler": {
+    "failure_class": "AGENT_ATTRIBUTION_NOT_ATTESTED"
+  },
+  "root_cause": "Live meting 8 nov 2026: van 1.114 cyclus-events in 24 uur had 0 een agent_id, 0 een skill_version; 850 stonden als UNKNOWN_NOT_ATTESTED. SQL-schrijvers zijn bewust geen agents, en de bestaande validator werd nergens in een natuurlijke run gebruikt.",
+  "prevention_rule": "agent_id en skill_version komen alleen in een event-payload als de bestaande validator VERIFIED_EVIDENCE geeft (loader-receipt, toepassing, onafhankelijke verifier) en voor/na aanwezig is; anders UNKNOWN_NOT_ATTESTED zonder agent_id. Een SQL-schrijver vult nooit zelf een agent_id.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-attested-agent-run-payload.test.mjs",
+      "tests/brain-agent-skill-execution-evidence.test.mjs"
+    ]
+  },
+  "tests": {
+    "command": "node --test tests/brain-attested-agent-run-payload.test.mjs tests/agent-skill-execution-evidence.test.mjs",
+    "status": "PASSED_LOCALLY_NOT_YET_CONFIRMED_ON_CURRENT_HEAD"
+  },
+  "evidence": {
+    "baseline": "live powerhouse_cycle_events, laatste 24 uur: 1114 events, 0 agent_id, 0 skill_version, 850 UNKNOWN_NOT_ATTESTED",
+    "github_run": "NOT_VERIFIED",
+    "production_readback": "NOT_VERIFIED",
+    "natural_next_run": "EVIDENCE_DUE: eerste run van de experimentcyclus op 9 nov 2026 08:24 Europe/Amsterdam moet minstens 1 event met agent_id, skill_version en voor/na opleveren"
+  },
+  "prevention": "Geen scheduler, tabel, migratie, backfill of database-write toegevoegd; terugdraaien is een revert van de PR. Uitbreiden naar alle agents pas na bewezen natuurlijke run."
+}
