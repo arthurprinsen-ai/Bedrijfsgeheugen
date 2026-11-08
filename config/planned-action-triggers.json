@@ -1660,6 +1660,23 @@
         "committed tree",
         "validate-cache"
       ]
+    },
+    {
+      "ruleId": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "systems": [
+        "artifact-id",
+        "git ls-files",
+        "source manifest",
+        "maxbuffer"
+      ],
+      "actions": [
+        "remove",
+        "drop",
+        "lower",
+        "revert",
+        "default buffer",
+        "unbounded"
+      ]
     }
   ]
 }

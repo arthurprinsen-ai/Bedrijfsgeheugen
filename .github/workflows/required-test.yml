@@ -201,6 +201,8 @@ jobs:
         run: node --test tests/brain-daily-blog-closure-exemption-20261107.test.mjs
       - name: Verify the daily blog prepares the English cache for the committed tree
         run: node --test tests/brain-daily-blog-i18n-committed-tree-20261107.test.mjs
+      - name: Verify git file listings used by the build set an explicit buffer
+        run: node --test tests/brain-artifact-id-git-buffer-20261108.test.mjs
       - name: Enforce system error lessons and the planned-action guard
         run: node --test tests/brain-system-error-register-20261106.test.mjs tests/brain-planned-action-guard-20261106.test.mjs tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs tests/brain-mira-original-pristine-claim-20261106.test.mjs tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract

@@ -9,7 +9,8 @@
     "brain/learning/2026-11-06-blog-markdown-render-v1.json",
     "brain/learning/2026-11-07-daily-blog-closure-exemption.json",
     "brain/learning/2026-11-07-i18n-blog-segment-keys-repeat.json",
-    "brain/learning/2026-11-07-daily-blog-i18n-committed-tree.json"
+    "brain/learning/2026-11-07-daily-blog-i18n-committed-tree.json",
+    "brain/learning/2026-11-08-artifact-id-git-buffer.json"
   ],
   "rules": [
     {
@@ -688,6 +689,12 @@
       "id": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
       "active": true,
       "enforcedBy": "brain-daily-blog-i18n-committed-tree-20261107-test",
+      "scope": "shared"
+    },
+    {
+      "id": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "active": true,
+      "enforcedBy": "brain-artifact-id-git-buffer-20261108-test",
       "scope": "shared"
     }
   ]

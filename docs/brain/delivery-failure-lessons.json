@@ -1000,6 +1000,16 @@
       "fix": "after the production pass, run a second prepare pass on the clean committed tree (build-localized-routes --prepare-cache) and validate fail-closed, in both candidate steps of the workflow, and keep a dependency-free test for the step order",
       "preventionRule": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|git|shared|ls-files-default-maxbuffer|20261108-v1",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the required check test failed on every pull request (including the daily blog PR 5525) with spawnSync git ENOBUFS in tools/build/artifact-id.mjs, so no PR could merge",
+      "rootCause": "node execFileSync has a default maxBuffer of 1 MiB and git ls-files -s on this repository (about 10.7k files) is about 1.2 MB, so the build step died as soon as the file index grew past 1 MiB; nothing warned before the limit was crossed",
+      "fix": "set maxBuffer explicitly on the git ls-files calls in tools/build/artifact-id.mjs and tests/delivery-test-coverage-guard.test.mjs and pin it with a dependency-free test that also proves the 1 MiB default fails",
+      "preventionRule": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "status": "PROVEN"
     }
   ]
 }
