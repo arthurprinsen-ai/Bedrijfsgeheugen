@@ -1,3 +1,7 @@
+## 2026-11-08 — Groen-draaiboek en autonoom werken
+
+Lees `docs/brain/groen-draaiboek.md` vóór elke wijziging: per rode check of blokkade staat er wat het betekent en de vaste fix, plus de weg naar live in volgorde. Besluit Arthur (2026-11-08, alle agents en chats): autonoom uitvoeren en niet terugvragen; alleen stoppen bij kosten die bevestiging vragen, providerinstellingen en OAuth die alleen Arthur kan doen, en onomkeerbare dataverwijdering. Beschermde checks en kwaliteitsgates worden nooit omzeild. Fingerprint `delivery|preflight|green-playbook-and-autonomous-mode|20261108-v1`. Guard: `tests/brain-groen-draaiboek-20261108.test.mjs`.
+
 ## 2026-11-06 — Zeven gepubliceerde blogartikelen hersteld (opsommingen, koppen, FAQ, JSON-LD)
 
 De renderer-fix van #5505 beschermde alleen nieuwe artikelen. Een scan van alle 46 artikelen vond zeven met het defect live, plus een FAQ die uit sectiekoppen was verzonnen en in vier artikelen ongeldige FAQPage-JSON-LD. Hersteld met de structuur die de renderer nu maakt; FAQ opnieuw gegenereerd (alleen expliciete vragen); Engelse cache aangevuld met 326 sleutels (276 afgeleid uit bestaande vertalingen, 50 met de hand). Een corpustest controleert elk artikel. Beperkingen: geneste lijsten zijn plat, 50 vertalingen zijn handwerk, drie artikelen hebben geen FAQ meer, oude indexkaarten die midden in een woord stoppen zijn niet herschreven. Fingerprint `powerhouse|daily-blog|published-articles-markdown-repair|20261106-v1`. Guard: `tests/brain-blog-articles-clean-20261106.test.mjs`.
