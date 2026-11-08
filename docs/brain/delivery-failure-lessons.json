@@ -1010,6 +1010,16 @@
       "fix": "set maxBuffer explicitly on the git ls-files calls in tools/build/artifact-id.mjs and tests/delivery-test-coverage-guard.test.mjs and pin it with a dependency-free test that also proves the 1 MiB default fails",
       "preventionRule": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|npm|required-test|ffmpeg-static-postinstall-504-repeat|20261108-v1",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the required check test was red on every pull request after the preflight step npm install exited 1 within seconds, hidden by --silent",
+      "rootCause": "root dependency ffmpeg-static runs node install.js as a postinstall and downloads a binary from GitHub releases; that download returned HTTP 504 (reproduced locally with npm 10.9.2). The same incident was fixed on 5 Nov only in lane-backend.yml, so the identical npm install in required-test.yml kept the failure; --silent hid the real error",
+      "fix": "preflight installs with --ignore-scripts like the backend lane; the exact Netlify parity install keeps its scripts but retries three times with backoff; a dependency-free test pins both and the backend lane",
+      "preventionRule": "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD",
+      "status": "PROVEN"
     }
   ]
 }
