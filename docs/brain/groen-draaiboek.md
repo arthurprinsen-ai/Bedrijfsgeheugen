@@ -71,3 +71,16 @@ Autonoom uitvoeren, niet terugvragen. Kies zelf de beste route, voer uit, bewijs
 - Dat elke agent dit draaiboek leest; dat bewijst pas een preflight-run die het als bron noemt.
 - Dit draaiboek is samengesteld uit de foutenregisters, START HIER, `brain_failure_registry` en eerdere chats; niet elk van de 627 patronen is regel voor regel gescand.
 - Rijen zonder guard in de repo zijn REGEL, geen AFGEDWONGEN.
+
+## 6. Meting 8 november 2026: waar de rode runs vandaan komen
+
+Laatste 30 rode runs per workflow, gelezen via de GitHub-API op 2026-11-08 (stappen die faalden, geteld per run).
+
+| Workflow | Falende stap (aantal van 30) | Lezing |
+| --- | --- | --- |
+| Required test (20 pull_request, 10 workflow_dispatch) | `test` aggregatiestap 29; daaronder admission: "Admit one canonical candidate" 10, "Enforce canonical integration closure" 6, "Require canonical learning evidence" 3; preflight "static English cache" 2; website/browser 2 | Meestal een afwijzing van de PR-bundel door de poort, geen codefout. Voorkom met sectie 1 en 2 |
+| Unified Brain Delivery (30 workflow_dispatch) | admission: closure 8, learning evidence 7, canonical candidate 6; lanes (backend) 3 | Zelfde patroon: bundel-eisen, niet de code zelf |
+| Obligation Terminal Closure | "Verify exact-head critical delivery gates before terminal closure" 28; "Require explicit Supabase Edge Function provider readback" 5 | De sluitstap faalt als een kritieke poort op de exacte head niet groen is; eerst die poort herstellen |
+| Portal V2 Live Preview (30 workflow_run) | "Wait for exact Netlify preview SHA and pin immutable deploy" 30 van 30, laatste 8 nov 12:39 UTC, ook na merges naar main | Blijvend rood. Eerder vastgelegde oorzaak: `NETLIFY_PREVIEW_AUTH_REQUIRED` (401), providerinstelling voor Arthur. De HTTP-code van deze 30 runs is niet apart nagelezen |
+
+Regel: een rode `test` of `Unified Brain Delivery` betekent vrijwel altijd een gemiste bundel-eis (canonical candidate, integration closure, learning evidence). Lees eerst welke admission-stap faalde voordat je code aanpast. `Portal V2 Live Preview` rood na een merge is op dit moment bekende ruis; laat hem niet de reden zijn om een verplichte check te vertrouwen of te wantrouwen.
