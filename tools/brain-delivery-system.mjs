@@ -41,6 +41,8 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/brain-agent-skill-execution-evidence.test.mjs': 'automation',
   'tools/brain/attested-agent-run-payload.mjs': 'automation',
   'tests/brain-attested-agent-run-payload.test.mjs': 'automation',
+  'tools/brain/trusted-skill-loader.mjs': 'automation',
+  'tests/brain-trusted-skill-loader.test.mjs': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',
   'tools/ci/netlify-ignore-build.mjs': 'backend',
