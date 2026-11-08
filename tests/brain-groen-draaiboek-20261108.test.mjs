@@ -6,7 +6,7 @@ const playbook = readFileSync(new URL('../docs/brain/groen-draaiboek.md', import
 const agents = readFileSync(new URL('../AGENTS.md', import.meta.url), 'utf8');
 
 test('green playbook has the ordered path to live and both gate tables', () => {
-  for (const heading of ['## 1. De vijf minuten', '## 2. De weg naar live', '## 3. Rode check of melding', '## 4. Publicatieblokkades', '## 5. Niet bewezen', '## 6. Meting 8 november']) {
+  for (const heading of ['## 1. De vijf minuten', '## 2. De weg naar live', '## 3. Rode check of melding', '## 4. Publicatieblokkades', '## 5. Niet bewezen', '## 6. Meting 8 november', '## 7. Wat de zelfbewaking-alarmen betekenen']) {
     assert.ok(playbook.includes(heading), `missing section: ${heading}`);
   }
   const rows = playbook.split('\n').filter(line => line.startsWith('| ') && !line.startsWith('| ---'));

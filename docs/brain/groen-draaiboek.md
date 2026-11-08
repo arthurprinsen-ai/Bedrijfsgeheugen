@@ -84,3 +84,16 @@ Laatste 30 rode runs per workflow, gelezen via de GitHub-API op 2026-11-08 (stap
 | Portal V2 Live Preview (30 workflow_run) | "Wait for exact Netlify preview SHA and pin immutable deploy" 30 van 30, laatste 8 nov 12:39 UTC, ook na merges naar main | Blijvend rood. Eerder vastgelegde oorzaak: `NETLIFY_PREVIEW_AUTH_REQUIRED` (401), providerinstelling voor Arthur. De HTTP-code van deze 30 runs is niet apart nagelezen |
 
 Regel: een rode `test` of `Unified Brain Delivery` betekent vrijwel altijd een gemiste bundel-eis (canonical candidate, integration closure, learning evidence). Lees eerst welke admission-stap faalde voordat je code aanpast. `Portal V2 Live Preview` rood na een merge is op dit moment bekende ruis; laat hem niet de reden zijn om een verplichte check te vertrouwen of te wantrouwen.
+
+## 7. Wat de zelfbewaking-alarmen betekenen (gemeten 8 november 2026)
+
+`intern.bg_brein_zelfbewaking()` meldt elk uur wat niet werkt in `brain_failure_registry` (fingerprint `brein-status|<bron>|<oordeel>`). Op 8 november 12:41 UTC: 17 gecontroleerd, 1 niet werkend, 0 meldfouten. Het ene niet-werkende onderdeel is `pg_cron` FOUT ("Nachtelijke jobs (alle)", laatst bewezen 2 november 06:00 UTC, grens 26 uur).
+
+| Alarm | Wat erachter zit | Wat je doet |
+| --- | --- | --- |
+| `pg_cron` FOUT (1.371 voorkomens sinds 10 sep) | Twee cronjobs falen terugkerend: `bg-content-publication-daily-assert` (dagelijks 19:35 UTC, elke dag 31 okt t/m 7 nov, `DAILY_PUBLICATION_INVARIANT_FAILED expected=4 non_terminal=1 tot 4`) en `powerhouse-revenue-intelligence-snapshot-15m` (`canceling statement due to statement timeout` bij het vullen van `powerhouse_revenue_command_center_snapshot_v1`, onder meer 31 okt, 2 nov, 6 nov en 8 nov) | De dagelijkse assert is het bedoelde alarm voor een gemiste publicatie (Instagram `BLOCKED` met `MEDIA_ASSET_REQUIRED`, blogs `GENERATED` zonder goedkeuring). Herstel de publicatie, niet het alarm. Voor de snapshot-timeout bestaat op main geen fix: #4630 (materialiseer person intelligence één keer) is gesloten zonder merge en vroeg tenantpariteit en echte performancevalidatie; nieuw werk vraagt dezelfde validatie |
+| `bg-calendly-sync NOOIT_BEWEZEN`, `bg-experimentcyclus NOOIT_BEWEZEN` | Laatst gezien 27 okt en 3 nov; de cronjobs slagen nu | Historisch. Sluiten via de Brain-route met dit bewijs |
+| `bg-native-content-generate`, `bg-externe-signalen`, `bg-bedrijfsnieuws`, `brain_run_due_value_evaluations`, `powerhouse-runtime` VEROUDERD | Laatst gezien resp. 27 okt, 31 okt, 3 nov, 20 okt en 8 okt; staan nu niet meer in de lijst met niet-werkende onderdelen | Historisch. Sluiten via de Brain-route met dit bewijs |
+| `growth-datahub-ingest`, `bg-interactie` VEROUDERD | Bezoekersmetingen (grenzen 12 en 6 uur); event-gedreven zonder eigen cron, bij weinig en consent-beperkt verkeer lang stil. Op 8 november 12:41 UTC niet in de lijst met niet-werkende onderdelen | Een drempel in uren past slecht bij een bron die alleen schrijft als er bezoekers zijn; beoordeel op verkeer, niet alleen op leeftijd |
+
+Regel: lees bij `pg_cron` FOUT eerst `cron.job_run_details` en de `return_message`; de naam van het alarm zegt niet welke job faalt. Zeg nooit dat een brein-status "groen" is zonder de lijst met niet-werkende onderdelen te noemen en het tijdstip.
