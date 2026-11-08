@@ -36,6 +36,7 @@ jobs:
             tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs \
             tests/agent-skill-execution-evidence.test.mjs \
             tests/brain-attested-agent-run-payload.test.mjs \
+            tests/brain-trusted-skill-loader.test.mjs \
             tests/required-check-reconciliation.test.mjs \
             tests/brain-skill-byte-audit.test.mjs \
             tests/brain-agent-skill-execution-evidence.test.mjs \
