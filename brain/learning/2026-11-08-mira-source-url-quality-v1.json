@@ -13,7 +13,9 @@
   ],
   "owner": "powerhouse-mira-problem-radar-v1",
   "issue": 5232,
-  "skill_targets": [".agents/skills/instagram-composio-publisher/SKILL.md"],
+  "skill_targets": [
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
   "compiler": {
     "failure_class": "SOURCE_QUALITY",
     "scope": "INSTAGRAM_MIRA_DAILY_REEL",
@@ -21,8 +23,14 @@
     "security_sensitive": false
   },
   "evaluation": {
-    "historical_replay": ["tests/brain-mira-source-url-quality-20261108.test.mjs"]
+    "historical_replay": [
+      "tests/brain-mira-source-url-quality-20261108.test.mjs"
+    ]
   },
   "customer_outcome": "NOT_PROVEN",
-  "independent_verification": "PENDING_NATURAL_RADAR_RUN"
+  "independent_verification": "PENDING_NATURAL_RADAR_RUN",
+  "evidence": {
+    "winner_2026-11-06": "bron was een google.com-redirect",
+    "check": "tests/brain-mira-source-url-quality-20261108.test.mjs weigert redirect/zoek-URL's en laat echte publicaties toe"
+  }
 }
