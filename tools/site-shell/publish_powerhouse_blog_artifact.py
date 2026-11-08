@@ -97,11 +97,17 @@ def seo_focus(data):
     # one-word fallback that is merely a question/article/preposition.
     words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title)
     starters = {"hoe", "wat", "waarom", "wanneer", "welke", "wie",
-                "de", "het", "een", "dit", "die", "als", "voor"}
+                "de", "het", "een", "dit", "die", "als", "voor",
+                # Pronouns are not a search topic either: "je Twinfield" and
+                # "jouw MKB" were published as titles, keywords and headings.
+                "je", "jij", "jouw", "jullie", "u", "uw", "zich", "mijn",
+                "ons", "onze", "we", "wij"}
     leading = 0
     while leading < len(words) and words[leading].casefold() in starters:
         leading += 1
     meaningful = words[leading:]
+    # A pronoun inside the first words is no topic either ("MKB zich").
+    meaningful = [word for word in meaningful if word.casefold() not in {"je", "jij", "jouw", "jullie", "u", "uw", "zich", "mijn", "ons", "onze", "we", "wij"}]
     # Editorial verbs + prepositions are not a meaningful search topic.
     if [word.casefold() for word in meaningful[:2]] == ["publiceren", "voor"]:
         meaningful = meaningful[2:]
