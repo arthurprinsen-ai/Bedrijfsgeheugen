@@ -1,0 +1,42 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "i18n|translations|blog-markdown-repair-second-reading|20261108-v1",
+  "owner": "static English cache config/bg-static-i18n-en.d/blog-markdown-repair-2026-11-06.json",
+  "compiler": {
+    "failure_class": "HAND_TRANSLATION_WITHOUT_SECOND_READING",
+    "scope": "STATIC_EN_CACHE_QUALITY",
+    "machine_enforceable": false,
+    "security_sensitive": false
+  },
+  "root_cause": "The repair patch of 6 Nov holds hand-made English translations (PR 5507) that were only checked for key coverage, not for meaning. A second reading of all 338 entries found 21 clear errors: the Dutch abbreviation MT left untranslated, a source article title left in Dutch, 'play time' for exercise duration, 'structural' for 'regular', 'refund' for a reversal and 'IT responsible' as a job title.",
+  "prevention_rule": "After any hand-made or derived translation patch, run a second reading of every pair before merge and apply only clear fixes. The cache tests prove coverage, not quality; that limit is stated, not hidden.",
+  "prevention_rules": [],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "21 of 338 entries corrected in this change; each old and new value is visible in the pull request diff"
+    ],
+    "current": [
+      "the second reading was done by an automatic model reviewer, not by a human or by the governed OpenAI route; keys unchanged, only values; not proven live until readback"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_HUMAN_SPOT_CHECK",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
