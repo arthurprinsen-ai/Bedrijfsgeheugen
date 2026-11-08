@@ -6,6 +6,7 @@ import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource 
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
 import { isSpreadsheetBusinessContext } from '../_shared/mira-business-spreadsheet-context.mjs';
+import { classifyMiraSourceUrl } from '../_shared/mira-source-url-quality.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -102,7 +103,7 @@ Deno.serve(async(req:Request)=>{
   for(const x of (sr.results||[])){
    const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
-   if(!d||title.length<12) continue;
+   if(!d||title.length<12||!classifyMiraSourceUrl(sourceUrl).ok) continue;
    const personalTopic=channel==='linkedin_personal'?classifyObservationalPersonalSource({topic:personalQueryTopic,title,excerpt}):null;
    const problemTopic=personalTopic||topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||'';
    // Do not leak unsupported public signals to the Instagram winner or personal publisher.

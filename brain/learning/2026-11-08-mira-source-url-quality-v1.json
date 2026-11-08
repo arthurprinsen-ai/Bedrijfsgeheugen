@@ -1,0 +1,28 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "fingerprint": "powerhouse|mira|redirect-or-search-url-accepted-as-source|20261108-v1",
+  "date": "2026-11-08",
+  "status": "OBSERVED",
+  "symptom": "De radar liet een google.com-redirect toe als bron voor de dagwinnaar van 2026-11-06.",
+  "root_cause": "powerhouse-mira-problem-radar controleerde alleen titellengte en domein-aanwezigheid, niet of de URL een echte publicatie is.",
+  "fix": "supabase/functions/_shared/mira-source-url-quality.mjs weigert redirect-, zoek- en linkverkorter-hosts en url=/q=-redirectparameters; de radar slaat zulke bronnen over.",
+  "prevention": [
+    "Alleen een echte publicatie-URL mag een Mira-bron worden.",
+    "Dit lost niet op dat de producer de mediajob niet claimt; zie powerhouse|mira|fifteen-days-zero-published-reels-producer-unclaimed|20261108-v1."
+  ],
+  "owner": "powerhouse-mira-problem-radar-v1",
+  "issue": 5232,
+  "skill_targets": [".agents/skills/instagram-composio-publisher/SKILL.md"],
+  "compiler": {
+    "failure_class": "SOURCE_QUALITY",
+    "scope": "INSTAGRAM_MIRA_DAILY_REEL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-mira-source-url-quality-20261108.test.mjs"]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_NATURAL_RADAR_RUN"
+}
