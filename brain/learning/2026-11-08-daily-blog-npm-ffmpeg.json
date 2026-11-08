@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|npm|daily-blog|ffmpeg-static-postinstall-504-repeat|20261108-v1",
+  "owner": "daily blog workflow candidate steps",
+  "compiler": {
+    "failure_class": "TRANSIENT_UNRELATED_PACKAGE_LIFECYCLE_FETCH",
+    "scope": "REQUIRED_TEST_NPM_INSTALL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 3
+  },
+  "root_cause": "The two npm install steps of the daily blog workflow still ran the ffmpeg-static postinstall, which downloads linux-x64.README from GitHub releases (persistent HTTP 504 on 8 Nov). The blog build never runs that binary. Same incident as 2026-11-08-required-test-npm-install-ffmpeg.json, found by searching every workflow for the same command.",
+  "prevention_rule": "Both installs use --ignore-scripts; the existing dependency-free test brain-required-test-npm-install-20261108 now pins every npm install line of the daily blog workflow.",
+  "prevention_rules": [
+    "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "PR 5526 fixed the required-test, parity and website-lane installs; the daily blog workflow was the remaining copy of the same command"
+    ],
+    "current": [
+      "not proven until the blog run of 9 Nov merges without handwork"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}
