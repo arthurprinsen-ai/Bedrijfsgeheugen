@@ -13,7 +13,7 @@ The required check `test` was red on every pull request, including the daily blo
 
 ## Second cause behind the same red check
 The `preflight` job of `Required test` fails earlier: `npm install` exits 1 because root `ffmpeg-static` downloads a binary in its postinstall and GitHub releases returned HTTP 504 (reproduced locally). `--silent` hid it. The same incident was fixed on 5 Nov only in `lane-backend.yml`.
-- `required-test.yml`: preflight installs with `--ignore-scripts`; the exact Netlify parity install keeps scripts and retries three times with backoff.
+- `required-test.yml`: preflight installs with `--ignore-scripts`. The exact Netlify parity install is unchanged (`tests/brain-composable-release-control-plane.test.mjs` pins its text), so that job can still hit the same download flake.
 - `tests/brain-required-test-npm-install-20261108.test.mjs` pins both and the backend lane; lesson, rule `REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD`, trigger, learning.
 
 ## Not changed

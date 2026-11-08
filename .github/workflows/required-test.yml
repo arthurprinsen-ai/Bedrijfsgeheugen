@@ -728,15 +728,7 @@ jobs:
           restore-keys: |
             static-i18n-render-v1-${{ runner.os }}-
       - name: Install exact Netlify build dependencies
-        # Keep the install exact (scripts included) but survive a transient 5xx from the
-        # ffmpeg-static postinstall download with bounded retries.
-        run: |
-          for attempt in 1 2 3; do
-            npm install --prefer-offline --no-audit --no-fund --silent && exit 0
-            echo "npm install attempt $attempt failed" >&2
-            sleep $((attempt * 20))
-          done
-          exit 1
+        run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command once
         env:
           COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}

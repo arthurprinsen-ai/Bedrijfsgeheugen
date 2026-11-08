@@ -5,4 +5,4 @@
 - Source: required `test` red on every PR with `spawnSync git ENOBUFS`.
 - Repair: explicit `maxBuffer` on the `git ls-files` calls; test, rule and trigger added.
 - Status: CODE_CANDIDATE, not verified until a protected required test is green.
-- Second cause (fingerprint `ci|npm|required-test|ffmpeg-static-postinstall-504-repeat|20261108-v1`): preflight `npm install` failed on the ffmpeg-static postinstall download (HTTP 504); preflight now uses `--ignore-scripts`, the parity install retries.
+- Second cause (fingerprint `ci|npm|required-test|ffmpeg-static-postinstall-504-repeat|20261108-v1`): preflight `npm install` failed on the ffmpeg-static postinstall download (HTTP 504); preflight now uses `--ignore-scripts`; the parity install is unchanged.
