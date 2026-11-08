@@ -26,10 +26,9 @@ test('the backend lane keeps installing without lifecycle scripts', () => {
   assert.match(body, /npm install --ignore-scripts /);
 });
 
-test('the exact Netlify build install stays exact: it keeps its lifecycle scripts', () => {
+test('the Netlify build parity install also skips lifecycle scripts', () => {
   const body = stepBody(required, 'Install exact Netlify build dependencies');
-  assert.ok(!body.includes('--ignore-scripts'), 'the parity install must stay exact');
-  assert.match(body, /run: npm install --prefer-offline/);
+  assert.match(body, /run: npm install --ignore-scripts --prefer-offline/);
 });
 
 const RULE = 'REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD';

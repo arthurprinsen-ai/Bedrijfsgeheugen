@@ -1017,7 +1017,7 @@
       "component": "shared",
       "reason": "the required check test was red on every pull request after the preflight step npm install exited 1 within seconds, hidden by --silent",
       "rootCause": "root dependency ffmpeg-static runs node install.js as a postinstall and downloads a binary from GitHub releases; that download returned HTTP 504 (reproduced locally with npm 10.9.2). The same incident was fixed on 5 Nov only in lane-backend.yml, so the identical npm install in required-test.yml kept the failure; --silent hid the real error",
-      "fix": "preflight installs with --ignore-scripts like the backend lane; the exact Netlify parity install stays unchanged because an existing test pins its exact text, so it keeps the flake exposure; a dependency-free test pins the preflight, the parity step and the backend lane",
+      "fix": "preflight installs with --ignore-scripts like the backend lane; the Netlify build parity install does the same (the pin in brain-composable-release-control-plane.test.mjs now accepts the flag); a dependency-free test pins preflight, parity and the backend lane",
       "preventionRule": "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD",
       "status": "PROVEN"
     }

@@ -13,7 +13,7 @@
     "repeat_count": 2
   },
   "root_cause": "npm install in the required-test preflight failed in about 3 seconds because the root dependency ffmpeg-static downloads a binary in its postinstall and GitHub releases answered HTTP 504 (reproduced with npm 10.9.2: Failed to download ffmpeg b6.1.1, statusCode 504). --silent hid the cause. The identical incident of 5 Nov (brain/learning/2026-11-05-backend-ffmpeg-postinstall-http-504.json) was fixed only in lane-backend.yml, so the same install in required-test.yml stayed exposed. Passing runs of 7 Nov 16:57 and failing runs from 8 Nov 07:18 show it is external, not a code change.",
-  "prevention_rule": "When an incident is fixed for one workflow, search every workflow for the same command. Preflight installs with --ignore-scripts; the exact Netlify parity install stays exact (an existing test pins its text) and keeps the flake exposure; a dependency-free test pins preflight, parity and the backend lane.",
+  "prevention_rule": "When an incident is fixed for one workflow, search every workflow for the same command. Preflight installs with --ignore-scripts; the Netlify build parity install does the same (its pin test now accepts the flag); a dependency-free test pins preflight, parity and the backend lane. The failing asset linux-x64.README stayed at HTTP 504 for hours, so retries would not have helped.",
   "prevention_rules": [
     "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD"
   ],

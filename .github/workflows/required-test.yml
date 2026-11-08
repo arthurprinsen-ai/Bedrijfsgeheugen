@@ -728,7 +728,9 @@ jobs:
           restore-keys: |
             static-i18n-render-v1-${{ runner.os }}-
       - name: Install exact Netlify build dependencies
-        run: npm install --prefer-offline --no-audit --no-fund --silent
+        # The build never runs the root ffmpeg-static binary; its postinstall download of
+        # linux-x64.README returns HTTP 504 from GitHub releases (persistent on 8 Nov).
+        run: npm install --ignore-scripts --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command once
         env:
           COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}

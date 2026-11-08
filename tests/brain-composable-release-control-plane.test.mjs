@@ -69,7 +69,7 @@ test('one central exact artifact build owns parity and browser reuses exact prev
 
   assert.match(artifactBuild, /needs:\s*preflight/);
   assert.match(artifactBuild, /name: Install exact Netlify build dependencies/);
-  assert.match(artifactBuild, /run: npm install --prefer-offline/);
+  assert.match(artifactBuild, /run: npm install (--ignore-scripts )?--prefer-offline/);
   assert.match(artifactBuild, /name: Run exact Netlify production build command once/);
   assert.match(artifactBuild, /node tools\/ci\/netlify-build-entry\.mjs/);
   assert.match(artifactBuild, /name: Verify built artifact contracts/);
