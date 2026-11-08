@@ -248,7 +248,7 @@ jobs:
           STATIC_I18N_REQUIRE_CACHE: '1'
           STATIC_I18N_BUILD_CACHE_DIR: .cache/bg-static-i18n-v1
         run: |
-          npm install --prefer-offline --no-audit --no-fund --silent
+          npm install --ignore-scripts --prefer-offline --no-audit --no-fund --silent
           node tools/ci/netlify-build-entry.mjs
           nohup python3 tools/ci/serve-clean-urls.py --port 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
           for attempt in $(seq 1 20); do

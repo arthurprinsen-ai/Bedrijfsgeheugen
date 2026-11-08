@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|npm|required-test|ffmpeg-static-postinstall-504-repeat|20261108-v1",
+  "owner": "required-test workflow preflight and Netlify parity install",
+  "compiler": {
+    "failure_class": "TRANSIENT_UNRELATED_PACKAGE_LIFECYCLE_FETCH",
+    "scope": "REQUIRED_TEST_NPM_INSTALL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 2
+  },
+  "root_cause": "npm install in the required-test preflight failed in about 3 seconds because the root dependency ffmpeg-static downloads a binary in its postinstall and GitHub releases answered HTTP 504 (reproduced with npm 10.9.2: Failed to download ffmpeg b6.1.1, statusCode 504). --silent hid the cause. The identical incident of 5 Nov (brain/learning/2026-11-05-backend-ffmpeg-postinstall-http-504.json) was fixed only in lane-backend.yml, so the same install in required-test.yml stayed exposed. Passing runs of 7 Nov 16:57 and failing runs from 8 Nov 07:18 show it is external, not a code change.",
+  "prevention_rule": "When an incident is fixed for one workflow, search every workflow for the same command. Preflight installs with --ignore-scripts; the Netlify build parity install does the same (its pin test now accepts the flag); a dependency-free test pins preflight, parity and the backend lane. The failing asset linux-x64.README stayed at HTTP 504 for hours, so retries would not have helped.",
+  "prevention_rules": [
+    "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Required test runs 42466312871 (PR 5525) and 42467999757 (PR 5526): preflight step Install runtime dependencies for the unwired contracts failed; runs 42385365693 and 42393862086 of 7 Nov passed",
+      "local reproduction: npm install of package.json fails with ffmpeg-static statusCode 504"
+    ],
+    "current": [
+      "not proven until the required test of a pull request with this change is green; daily blog workflow installs (two npm install steps) still run postinstall scripts and were not changed"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

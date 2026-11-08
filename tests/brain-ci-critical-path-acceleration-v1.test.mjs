@@ -10,7 +10,7 @@ test('CI acceleration keeps one Required single-flight and removes duplicate gen
   assert.match(required, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(required, /Prove Supabase security gate blocks known unsafe patterns/);
   assert.doesNotMatch(required, /Verify Portal V2 suite/);
-  assert.match(required, /npm install --prefer-offline/);
+  assert.match(required, /npm install (--ignore-scripts )?--prefer-offline/);
   assert.match(required, /hashFiles\('package\.json'\)/);
 });
 
