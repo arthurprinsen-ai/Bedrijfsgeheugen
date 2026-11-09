@@ -89,7 +89,7 @@
   "terminal_rule": "Required and CodeQL green, protected merge, deployed original Supabase composer, original blocked action re-evaluated against current company evidence, approved quality if eligible, then independent provider-ID/readback for any sent email; no forced send if source remains missing. Never mark GREEN with internal cron receipt alone. Verify wait transition and research+quality resume on the original action ID; canonical provider ID/readback and real outcomes required. Rejected research remains held and expires after 48h. Validate original bg-social-metrics-sync deployed version, natural six-hour run, exact 8 Nov personal snapshot rehydrated, 9 Nov not prematurely mature, and existing social learning owner later joining real outcome by exact post/source event.",
   "canonical_scheduler": "powerhouse-commercial-learning-v1",
   "parallel_executor_created": false,
-  "migration": "supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql",
+  "migration": "supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql",
   "metrics_contract": {
     "source": "public.powerhouse_commercial_handoff_telemetry_v1",
     "scorecard": "public.powerhouse_commercial_handoff_scorecard_v1",
