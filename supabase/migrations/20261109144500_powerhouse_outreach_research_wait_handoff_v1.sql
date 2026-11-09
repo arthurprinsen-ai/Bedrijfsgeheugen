@@ -649,6 +649,8 @@ declare
   v_stages jsonb:='{}'::jsonb;
   v_snapshot jsonb;
   v_commercial jsonb:='{}'::jsonb;
+  v_receipt_fingerprint text;
+  v_stalled int:=0;
 begin
   if p_now is null then raise exception 'ORIGINAL_HANDOFF_TIME_REQUIRED'; end if;
   for r in
@@ -792,8 +794,32 @@ begin
     end if;
     v_stages:=jsonb_set(v_stages,array[v_stage],
       to_jsonb(coalesce((v_stages->>v_stage)::int,0)+1),true);
+    -- Evidence fingerprint: unchanged scheduled runs are not progress.
+    -- Identity/provenance changes are distinguishable from agent activity.
+    v_receipt_fingerprint:=md5(jsonb_build_object(
+      'provider_verified',v_provider_proven,
+      'provider_id',r.external_id,
+      'source_content_id',r.content_id,
+      'metric_source_event',v_source_event,
+      'metric_receipt_verified',v_metric_proven,
+      'analyst_ack',v_analysis_proven,
+      'controlled_experiment',v_experiment_proven,
+      'application_ack',v_application_proven,
+      'next_live_readback',v_next_run_proven,
+      'evidence_stage',v_stage)::text);
     v_evidence:=jsonb_build_object(
       'contract','POWERHOUSE_ORIGINAL_HANDOFF_ACK_V1',
+      'handoff_receipt',jsonb_build_object(
+        'proof_fingerprint',v_receipt_fingerprint,
+        'original_first_seen_at',p_now,
+        'last_real_progress_at',p_now,
+        'unchanged_heartbeat_runs',0,
+        'next_owner_ack_claimed',false,
+        'proven_next_stage',v_stage='END_TO_END_VERIFIED',
+        'escalation_state',case
+          when v_stage='END_TO_END_VERIFIED' then 'CLOSED_WITH_INDEPENDENT_PROOF'
+          when v_overdue then 'OVERDUE_RETURN_TO_ORIGINAL_OWNER'
+          else 'AWAITING_ORIGINAL_NEXT_OWNER' end),
       'original_id',v_original_key,
       'original_status',r.status,
       'source_content_id',r.content_id,
@@ -852,9 +878,52 @@ begin
         else 'observed' end,
       'OBSERVED',1,p_now)
     on conflict(dedupe_key) do update
-      set evidence=excluded.evidence,context=excluded.context,
+      set evidence=excluded.evidence || jsonb_build_object(
+          'handoff_receipt',jsonb_build_object(
+            'proof_fingerprint',
+              excluded.evidence#>>'{handoff_receipt,proof_fingerprint}',
+            'original_first_seen_at',
+              coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,original_first_seen_at}')::timestamptz,
+                powerhouse_runtime_events.created_at),
+            'last_real_progress_at',
+              case when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  is distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                then excluded.occurred_at
+                else coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,last_real_progress_at}')::timestamptz,
+                  powerhouse_runtime_events.created_at) end,
+            'unchanged_heartbeat_runs',
+              case when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  is distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                then 0
+                else least(coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,unchanged_heartbeat_runs}')::integer,0)+1,100000) end,
+            -- A new owner or fresh proof invalidates any old claim. No fictitious
+            -- acknowledgment: a claim is separate from provider outcome proof.
+            'next_owner_ack_claimed',
+              case when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                    is distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                    or powerhouse_runtime_events.evidence->>'expected_owner'
+                       is distinct from excluded.evidence->>'expected_owner'
+                then false else coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,next_owner_ack_claimed}')::boolean,false) end,
+            'proven_next_stage',excluded.evidence->>'next_stage'='END_TO_END_VERIFIED',
+            'escalation_state',
+              case when excluded.evidence->>'next_stage'='END_TO_END_VERIFIED'
+                then 'CLOSED_WITH_INDEPENDENT_PROOF'
+                when coalesce((excluded.evidence->>'deadline_overdue')::boolean,false)
+                  then 'OVERDUE_RETURN_TO_ORIGINAL_OWNER'
+                when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  and coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,unchanged_heartbeat_runs}')::integer,0)>=2
+                  then 'STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER'
+                else 'AWAITING_ORIGINAL_NEXT_OWNER' end,
+            'owner_receipt_required',excluded.evidence->>'next_stage'<>'END_TO_END_VERIFIED',
+            'checked_at_utc',excluded.occurred_at
+          )),
+          context=excluded.context,
           state=excluded.state,data_quality=excluded.data_quality,
-          confidence=excluded.confidence,occurred_at=excluded.occurred_at,
+          confidence=excluded.confidence,
+          -- The original first occurrence is preserved for audit trail;
+          -- changing a cron tick is NOT a fresh handoff.
+          occurred_at=powerhouse_runtime_events.occurred_at,
           updated_at=excluded.updated_at;
   end loop;
   -- Read the EXISTING original email scorecard, not a second sender/collector.
