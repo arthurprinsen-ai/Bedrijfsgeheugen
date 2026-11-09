@@ -39,6 +39,7 @@ Deno.serve(async (req: Request) => {
       const active = lopend.filter(e => e.status === 'ACTIVE');
       const r = {
         ok: false, beoordeeld, voorstel: null,
+        reason_code: 'EXPERIMENT_EXECUTION_UNVERIFIED',
         cycle_status: planned.length ? 'PROPOSED_NOT_DEPLOYED' : 'ACTIVE_OUTCOME_UNVERIFIED',
         active_count: active.length, pending_count: planned.length,
         pending_experiment_ids: planned.slice(0, 3).map(e => String(e.id || e.experiment_id || '')),
@@ -53,7 +54,7 @@ Deno.serve(async (req: Request) => {
       return json(r);
     }
     if (bezoekers < MIN_BEZOEKERS) {
-      const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'INSUFFICIENT_OBSERVED_TRAFFIC',
+      const r = { ok: false, beoordeeld, voorstel: null, reason_code: 'INSUFFICIENT_TRAFFIC', cycle_status: 'INSUFFICIENT_OBSERVED_TRAFFIC',
         observed_session_count: bezoekers, required_session_count: MIN_BEZOEKERS,
         improvement_verified: false, next_owner: 'original-growth-cro-agent',
         next_action: 'VALIDATE_CONSENTED_INSTRUMENTATION_AND_PRIORITIZE_SAFE_GITOPS_ITERATION',
@@ -102,7 +103,7 @@ Deno.serve(async (req: Request) => {
     // "BUTTON" is a captured instrumentation label, not verified live DOM copy.
     // Never turn it into an executable website change without original-site proof.
     if (/\bBUTTON\b/i.test(String(v.controle || '') + ' ' + String(v.variant || ''))) {
-      const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'UNVERIFIED_PAGE_CONTROL',
+      const r = { ok: false, beoordeeld, voorstel: null, reason_code: 'CONTROL_NOT_VERIFIED', cycle_status: 'UNVERIFIED_PAGE_CONTROL',
         improvement_verified: false, next_owner: 'original-growth-cro-agent',
         next_action: 'VERIFY_CANONICAL_LIVE_DOM_CONTROL_BEFORE_PROPOSAL' };
       await bewijs(false, r, 'VALIDATION');
@@ -110,7 +111,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const res = await poort('voorstellen', v);
-    const r = { ok: true, beoordeeld, cycle_status: 'PROPOSED_NOT_DEPLOYED',
+    const r = { ok: true, beoordeeld, reason_code: 'EXPERIMENT_NOT_ACTIVATED', cycle_status: 'PROPOSED_NOT_DEPLOYED',
       improvement_verified: false, next_owner: 'original-growth-cro-agent',
       next_action: 'VERIFY_CONTROL_AND_CREATE_PROTECTED_GITOPS_CANDIDATE',
       voorstel: { id: res.experiment_id, hypothese: v.hypothese, pagina: v.pagina, meetpunt: v.meetpunt } };
