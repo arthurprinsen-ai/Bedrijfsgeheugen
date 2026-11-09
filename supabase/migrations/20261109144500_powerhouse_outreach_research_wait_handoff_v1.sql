@@ -314,3 +314,10 @@ begin
   );
 end;
 $function$;
+
+-- Match independently read-back production ACL: postgres and service_role only.
+-- No browser or PUBLIC execution on the existing SECURITY DEFINER watchdog.
+revoke all on function public.powerhouse_email_execution_watchdog_v1(timestamptz)
+  from public, anon, authenticated;
+grant execute on function public.powerhouse_email_execution_watchdog_v1(timestamptz)
+  to service_role;
