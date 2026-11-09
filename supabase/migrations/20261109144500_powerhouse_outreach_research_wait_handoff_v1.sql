@@ -222,6 +222,7 @@ declare
   v_held_research int := 0;
   v_sent_24h int := 0;
   v_status text;
+  v_handoff_scorecard jsonb := jsonb_build_object('handoff_health','NOT_MEASURED');
 begin
   update public.powerhouse_sales_actions a
      set status='prepared',
@@ -279,7 +280,18 @@ begin
       or coalesce((a.evidence#>>'{native_gmail_executor,provider_ack_verified}')::boolean,false)
     );
 
-  v_status := case when v_overdue>0 then 'fout' when v_held_research>0 then 'waarschuwing' else 'ok' end;
+  -- Existing scheduler/watchdog owner records the stage readback on every
+  -- natural run; no secondary metrics scheduler and no fabricated green.
+  begin
+    select to_jsonb(score) into v_handoff_scorecard
+    from public.powerhouse_commercial_handoff_scorecard_v1 score;
+  exception when others then
+    v_handoff_scorecard := jsonb_build_object('handoff_health','MEASUREMENT_FAILED','sqlstate',sqlstate);
+  end;
+  v_status := case when v_overdue>0 then 'fout'
+                   when v_held_research>0 or coalesce(v_handoff_scorecard->>'handoff_health','NOT_MEASURED')
+                         not in ('PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE') then 'waarschuwing'
+                   else 'ok' end;
 
   insert into public.bg_gezondheid(gemeten_op,onderdeel,soort,status,detail,gegevens)
   values(
@@ -298,6 +310,7 @@ begin
       'overdue_prepared',v_overdue,
       'waiting',v_waiting,
       'awaiting_verified_source',v_held_research,
+      'original_handoff_scorecard_7d',v_handoff_scorecard,
       'provider_verified_sent_24h',v_sent_24h,
       'checked_at',p_now
     )
@@ -305,7 +318,8 @@ begin
 
   return jsonb_build_object(
     'contract','powerhouse-email-execution-watchdog-v1',
-    'healthy',v_overdue=0 and v_held_research=0,
+    'healthy',v_overdue=0 and v_held_research=0 and
+      v_handoff_scorecard->>'handoff_health'='PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE',
     'requeued_stale_waiting',v_requeued,
     'overdue_prepared',v_overdue,
     'waiting',v_waiting,
@@ -321,3 +335,142 @@ revoke all on function public.powerhouse_email_execution_watchdog_v1(timestamptz
   from public, anon, authenticated;
 grant execute on function public.powerhouse_email_execution_watchdog_v1(timestamptz)
   to service_role;
+
+
+-- Read-only instrumentation of the ORIGINAL commercial chain, no new executor.
+-- A green cron/quality draft is never counted as provider or revenue proof.
+create or replace view public.powerhouse_commercial_handoff_telemetry_v1
+with (security_invoker = true) as
+with joined as (
+ select
+   a.action_id, a.created_at, a.updated_at, a.status as action_status,
+   a.evidence #>> '{execution_gate,reason}' as execution_hold,
+   r.status as research_status, r.executed_at as research_completed_at,
+   r.action_id as research_action_id,
+   nullif(btrim(coalesce(r.evidence #>> '{public_research_execution,source_url}','')),'') as research_source_url,
+   coalesce(q.passed,false) as latest_quality_passed,
+   q.evaluated_at as latest_quality_evaluated_at,
+   coalesce(nullif(a.evidence->>'provider_message_id',''),
+            nullif(a.evidence #>> '{autonomous_outbound,provider_message_id}',''),
+            nullif(a.evidence #>> '{native_gmail_executor,provider_message_id}','')) as provider_message_id,
+   (
+     a.evidence->>'provider_ack_verified'='true'
+     or a.evidence #>> '{autonomous_outbound,provider_ack_verified}'='true'
+     or a.evidence #>> '{native_gmail_executor,provider_ack_verified}'='true'
+   ) as provider_ack_observed,
+   (
+     a.evidence->>'provider_readback_verified'='true'
+     or a.evidence #>> '{autonomous_outbound,provider_readback_verified}'='true'
+     or a.evidence #>> '{native_gmail_executor,provider_readback_verified}'='true'
+   ) as provider_readback_observed,
+   a.executed_at as action_executed_at,
+   exists(
+     select 1 from public.powerhouse_email_reply_events re
+     where re.action_id=a.action_id
+   ) as actual_reply_observed,
+   exists(
+     select 1 from public.powerhouse_sales_outcomes o
+     where o.action_id=a.action_id and o.outcome_type in ('meeting_booked','appointment_booked','meeting_confirmed')
+   ) as meeting_observed,
+   (
+     select coalesce(sum(o.revenue_eur),0)::numeric
+     from public.powerhouse_sales_outcomes o
+     where o.action_id=a.action_id and o.revenue_eur>0
+       and o.outcome_type in ('realized_revenue','payment_received','invoice_paid','order_paid')
+   ) as realized_revenue_eur,
+   exists(
+     select 1 from public.powerhouse_experiment_assignments ex
+     where ex.treatment_action_id=a.action_id
+   ) as assigned_experiment_treatment
+ from public.powerhouse_sales_actions a
+ left join lateral (
+   select r.action_id,r.status,r.executed_at,r.evidence
+   from public.powerhouse_sales_actions r
+   where r.dedupe_key='relationship-research:outreach-source:'||a.action_id::text
+     and r.action_type='research_enrichment' and r.channel='internal'
+     and r.person_key is not distinct from a.person_key
+     and r.company_key is not distinct from a.company_key
+   order by r.created_at desc,r.action_id
+   limit 1
+ ) r on true
+ left join lateral (
+   select q.passed,q.evaluated_at
+   from public.powerhouse_message_quality_v1 q
+   where q.action_id=a.action_id
+   order by q.evaluated_at desc,q.quality_id
+   limit 1
+ ) q on true
+ where a.action_type='autonomous_email'
+   and lower(replace(coalesce(a.channel,''),' ','_')) in ('email','e-mail')
+   and a.created_at>=now()-interval '7 days'
+)
+select
+ j.action_id,j.created_at,j.updated_at,j.action_status,j.execution_hold,
+ j.research_status,j.research_action_id,j.research_completed_at,
+ j.research_source_url is not null and j.research_status='done' as research_evidence_recorded,
+ j.latest_quality_passed,j.latest_quality_evaluated_at,
+ (j.research_completed_at is not null and j.latest_quality_passed
+   and j.latest_quality_evaluated_at>=j.research_completed_at) as research_to_composer_confirmed,
+ j.provider_message_id is not null as provider_id_recorded,
+ j.provider_ack_observed,
+ j.provider_readback_observed,
+ (j.provider_message_id is not null and j.provider_ack_observed and j.provider_readback_observed) as provider_delivery_proven,
+ j.action_executed_at,j.actual_reply_observed,j.meeting_observed,j.realized_revenue_eur,
+ j.assigned_experiment_treatment,
+ case
+   when j.action_status='expired' and j.research_status='done'
+     and not (j.latest_quality_passed and j.latest_quality_evaluated_at>=j.research_completed_at)
+     then 'BROKEN_RESEARCH_TO_COMPOSER_EXPIRED'
+   when j.research_status='done'
+     and j.research_completed_at<now()-interval '60 minutes'
+     and not (j.latest_quality_passed and j.latest_quality_evaluated_at>=j.research_completed_at)
+     then 'BROKEN_RESEARCH_TO_COMPOSER_SLA'
+   when j.latest_quality_passed and j.action_status='expired' and not j.provider_ack_observed
+     then 'BROKEN_COMPOSER_TO_PROVIDER_EXPIRED'
+   when j.latest_quality_passed and j.latest_quality_evaluated_at<now()-interval '30 minutes'
+     and not j.provider_ack_observed
+     then 'COMPOSER_TO_PROVIDER_UNPROVEN'
+   when j.provider_ack_observed and
+     (j.provider_message_id is null or not j.provider_readback_observed)
+     then 'PROVIDER_READBACK_MISSING'
+   when j.provider_message_id is not null and j.provider_ack_observed and j.provider_readback_observed
+     then 'PROVIDER_DELIVERY_PROVEN'
+   when j.action_status='expired' then 'EXPIRED_WITHOUT_DELIVERY'
+   when j.execution_hold='SOURCE_SPECIFIC_EVIDENCE_REQUIRED' then 'WAITING_FOR_VERIFIED_SOURCE'
+   else 'PENDING_WITHOUT_EXTERNAL_PROOF'
+ end as handoff_state,
+ case when j.research_completed_at is not null and j.latest_quality_evaluated_at>=j.research_completed_at
+      then round((extract(epoch from j.latest_quality_evaluated_at-j.research_completed_at)/60)::numeric,1)
+      else null end as research_to_quality_minutes
+from joined j;
+
+revoke all on table public.powerhouse_commercial_handoff_telemetry_v1 from public,anon,authenticated;
+grant select on table public.powerhouse_commercial_handoff_telemetry_v1 to service_role;
+
+-- One service-only, read-only seven-day operational scorecard.
+create or replace view public.powerhouse_commercial_handoff_scorecard_v1
+with (security_invoker = true) as
+select
+ now() as measured_at,
+ count(*)::integer as original_email_actions_7d,
+ count(*) filter(where research_status='done')::integer as research_completed_7d,
+ count(*) filter(where research_to_composer_confirmed)::integer as research_consumed_by_quality_7d,
+ count(*) filter(where latest_quality_passed)::integer as quality_passed_7d,
+ count(*) filter(where provider_id_recorded and provider_ack_observed)::integer as provider_accepted_with_id_7d,
+ count(*) filter(where provider_delivery_proven)::integer as provider_readback_proven_7d,
+ count(*) filter(where actual_reply_observed and provider_delivery_proven)::integer as provider_linked_replies_7d,
+ count(*) filter(where meeting_observed and provider_delivery_proven)::integer as provider_linked_meetings_7d,
+ coalesce(sum(realized_revenue_eur) filter(where provider_delivery_proven),0)::numeric as provider_linked_realized_revenue_eur_7d,
+ count(*) filter(where assigned_experiment_treatment)::integer as linked_experiment_treatments_7d,
+ count(*) filter(where handoff_state like 'BROKEN_%'
+                       or handoff_state in ('COMPOSER_TO_PROVIDER_UNPROVEN','PROVIDER_READBACK_MISSING','EXPIRED_WITHOUT_DELIVERY'))::integer as broken_or_unproven_handoffs_7d,
+ count(*) filter(where handoff_state='BROKEN_RESEARCH_TO_COMPOSER_EXPIRED')::integer as research_completed_but_expired_7d,
+ case when count(*)=0 then 'NO_ELIGIBLE_ACTIONS_OBSERVED'
+      when count(*) filter(where handoff_state like 'BROKEN_%'
+                          or handoff_state in ('COMPOSER_TO_PROVIDER_UNPROVEN','PROVIDER_READBACK_MISSING','EXPIRED_WITHOUT_DELIVERY'))>0 then 'DEGRADED'
+      when count(*) filter(where provider_delivery_proven)=0 then 'NO_PROVIDER_DELIVERY_PROVEN'
+      else 'PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE' end as handoff_health
+from public.powerhouse_commercial_handoff_telemetry_v1;
+
+revoke all on table public.powerhouse_commercial_handoff_scorecard_v1 from public,anon,authenticated;
+grant select on table public.powerhouse_commercial_handoff_scorecard_v1 to service_role;
