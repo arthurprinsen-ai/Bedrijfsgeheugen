@@ -213,3 +213,15 @@ test('the original six-hour provider reader is sole write owner; write is origin
  assert.match(ts,/learning_proven:false/);
  assert.doesNotMatch(ts,/await db\.from\('content_publication_obligations'\)\.insert\(/);
 });
+
+test('original blog queue never demotes approved content and must receive exact handoff receipt',()=>{
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-blog-queue/index.ts',import.meta.url),'utf8');
+ assert.match(src,/const queueStatus=clean\(o\?\.status\)==='APPROVED'\?'APPROVED':'GENERATED'/);
+ assert.match(src,/p_status:queueStatus/);
+ assert.match(src,/BLOG_APPROVAL_STATE_REGRESSION/);
+ assert.match(src,/BLOG_ORIGINAL_QUEUE_RECEIPT_MISSING/);
+ assert.match(src,/clean\(received\.status\)!==queueStatus/);
+ assert.match(src,/clean\(receipt\.idempotency_key\)!==evidence\.idempotency_key/);
+ assert.match(src,/clean\(receipt\.next_executor\)!==evidence\.next_executor/);
+ assert.doesNotMatch(src,/p_status:'GENERATED'/);
+});
