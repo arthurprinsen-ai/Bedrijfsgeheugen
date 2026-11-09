@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {reconcileOriginalPublicationMeasurement,identifyOriginalPublicationHandoff} from '../supabase/functions/_shared/original-publication-metric-handoff.mjs';
 import {readFileSync} from 'node:fs';
 import {sourceVerifiedComposerHandoff} from '../supabase/functions/_shared/verified-research-composer-handoff.mjs';
 const now='2026-11-09T12:30:00.000Z';
@@ -141,4 +142,74 @@ test('canonical skill makes publication only a nonterminal step until applied le
  for(const clause of ['P0_END_TO_END_CLOSURE_20261109','content_publication_obligations','powerhouse_sales_actions','ONE BRAIN/Heartbeat','LIVE_PROVEN','MEASUREMENT_PENDING','ANALYSIS_PENDING','EXPERIMENT_PENDING','APPLICATION_PENDING','INSUFFICIENT_EVIDENCE_NOT_LEARNED','NOT_ELIGIBLE','provider-ID/URL','volgende NATUURLIJKE productie-run']) assert.ok(body.includes(clause),'missing hard acceptance '+clause);
  assert.match(body,/Geen tweede executor, cron, CRM, databank of losse leertaak/);
  assert.match(body,/alleen werkelijke provider-ID\+readback/);
+});
+
+
+const measuredPersonal={
+ tenant_id:'canonical',publication_date:'2026-11-08',channel:'linkedin_personal',
+ status:'LIVE_PROVEN',external_id:'urn:li:share:7525096824584544257',
+ published_at:'2026-11-08T07:28:13.735Z',live_proven_at:'2026-11-08T07:29:30.803Z',
+ measured_at:null,learned_at:null,metrics:{}
+};
+const personalPost={tenant_id:'canonical',post_id:'linkedin-personal:7525096824584544257',
+ external_post_id:measuredPersonal.external_id,channel_kind:'linkedin_personal',published_at:measuredPersonal.published_at};
+const personalSnapshot={tenant_id:'canonical',post_id:personalPost.post_id,
+ source:'composio-linkedin',data_quality:'OBSERVED_PARTIAL_SCOPE',
+ observed_at:'2026-11-09T15:32:45.977Z',
+ source_event_id:'composio:linkedin:urn:li:share:7525096824584544257:2026-11-09',
+ metrics:{reactions:8,metric_scope:'reactions_only',views_unavailable:true}};
+const measurementTime='2026-11-09T16:00:00Z';
+
+test('original personal post receives only independently source-bound mature reactions, no invented reach or learning',()=>{
+ const r=identifyOriginalPublicationHandoff(measuredPersonal,[personalPost],[personalSnapshot],measurementTime);
+ assert.equal(r.reason,'VERIFIED_MATURED_PROVIDER_METRIC');
+ assert.equal(r.patch.measured_at,personalSnapshot.observed_at);
+ assert.equal(r.patch.status,'LIVE_PROVEN');
+ assert.equal(r.patch.learned_at,null);
+ assert.deepEqual(r.patch.metrics.original_provider_metric_handoff.observed_metrics,{reactions:8});
+ assert.equal(r.patch.metrics.original_provider_metric_handoff.impression_source_available,false);
+ assert.equal(r.patch.metrics.original_provider_metric_handoff.enough_for_commercial_or_causal_learning,false);
+ const already={...measuredPersonal,metrics:r.patch.metrics,measured_at:r.patch.measured_at};
+ assert.equal(identifyOriginalPublicationHandoff(already,[personalPost],[personalSnapshot],measurementTime).reason,'ALREADY_RECONCILED');
+});
+test('reject source spoofing, wrong post identity, missing independent provider evidence and immature snapshots',()=>{
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,{...personalPost,external_post_id:'urn:li:share:111'},personalSnapshot,measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,{...personalPost,tenant_id:'other'},personalSnapshot,measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,personalPost,{...personalSnapshot,source:'generated'},measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,personalPost,{...personalSnapshot,data_quality:'INFERRED'},measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,personalPost,{...personalSnapshot,metrics:{reactions:0}},measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,personalPost,{...personalSnapshot,source_event_id:'composio:linkedin:urn:li:share:999:2026-11-09'},measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(measuredPersonal,personalPost,{...personalSnapshot,observed_at:'2026-11-08T14:30:00Z'},measurementTime),null);
+ assert.equal(identifyOriginalPublicationHandoff(measuredPersonal,[personalPost,personalPost],[personalSnapshot],measurementTime).reason,'AMBIGUOUS_POST_IDENTITY');
+});
+test('company snapshot requires exact independently verified organization author and impressions',()=>{
+ const ob={...measuredPersonal,channel:'linkedin_company',tenant_id:'canonical',external_id:'urn:li:share:7524367540987301888',
+  published_at:'2026-11-06T07:10:19.789Z',live_proven_at:'2026-11-06T07:10:19.789Z'};
+ const post={tenant_id:'bedrijfsgeheugen',post_id:'linkedin-company:'+ob.external_id,
+   channel_kind:'linkedin_company',external_post_id:ob.external_id,published_at:ob.published_at};
+ const snap={tenant_id:'bedrijfsgeheugen',post_id:post.post_id,source:'windsor-linkedin-company',
+   data_quality:'PROVIDER_OBSERVED_LINKED',observed_at:'2026-11-08T14:27:03.278Z',
+   source_event_id:'windsor:linkedin-company:'+ob.external_id+':2026-11-08',
+   metrics:{scope:'company_post_analytics',provider_post_urn:ob.external_id,
+    provider_organization_urn:'urn:li:organization:18234216',
+    independent_proof:'EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT',
+    impressions:183,likes:1,clicks:0,comments:0}};
+ const r=reconcileOriginalPublicationMeasurement(ob,post,snap,measurementTime);
+ assert.ok(r);
+ assert.equal(r.metrics.original_provider_metric_handoff.observed_metrics.impressions,183);
+ assert.equal(r.metrics.original_provider_metric_handoff.observed_metrics.clicks,0);
+ assert.equal(r.metrics.original_provider_metric_handoff.measurement_scope,'company_post_analytics');
+ assert.equal(r.learned_at,null);
+ assert.equal(reconcileOriginalPublicationMeasurement(ob,post,{...snap,metrics:{...snap.metrics,provider_organization_urn:'urn:li:organization:other'}},measurementTime),null);
+ assert.equal(reconcileOriginalPublicationMeasurement(ob,post,{...snap,data_quality:'UNVERIFIED'},measurementTime),null);
+});
+test('the original six-hour provider reader is sole write owner; write is original conditional compare-and-swap',()=>{
+ const ts=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+ assert.match(ts,/identifyOriginalPublicationHandoff\(ob,\[post\],snapshots\|\|\[\],now\.toISOString\(\)\)/);
+ assert.match(ts,/\.from\('content_publication_obligations'\)/);
+ assert.match(ts,/\.eq\('status','LIVE_PROVEN'\)\.eq\('updated_at',ob\.updated_at\)/);
+ assert.match(ts,/measured_at:result\.patch\.measured_at/);
+ assert.match(ts,/original_publication_metric_handoff:originalMetricHandoff/);
+ assert.match(ts,/learning_proven:false/);
+ assert.doesNotMatch(ts,/await db\.from\('content_publication_obligations'\)\.insert\(/);
 });
