@@ -117,7 +117,7 @@ export function evaluateCompanyExperimentHandoffs({
    const published=ts(post?.published_at);
    // A missing post or bad clock must never turn into an imaginary observation.
    const age=published===null?null:Math.max(0,(clock.getTime()-published)/3600000);
-   const validMetric=post? snapshots.filter(s=>
+   const validMetrics=post? snapshots.filter(s=>
      s?.tenant_id==='bedrijfsgeheugen'&&s.post_id===post.post_id&&
      s.source==='windsor-linkedin-company'&&
      s.data_quality==='PROVIDER_OBSERVED_LINKED'&&
@@ -129,17 +129,28 @@ export function evaluateCompanyExperimentHandoffs({
      ts(s.observed_at)!==null&&ts(s.observed_at)>=published+24*3600000&&
      ts(s.observed_at)<=published+8*86400000&&
      ts(s.observed_at)<=clock.getTime()+300000)
-     .sort((l,r)=>ts(r.observed_at)-ts(l.observed_at))[0]:null;
-   const evalPresent=validMetric&&evaluations.some(e=>
+     .sort((l,r)=>ts(r.observed_at)-ts(l.observed_at)):[];
+   const validMetric=validMetrics[0]||null;
+   const hasExactEvaluation=s=>evaluations.some(e=>
      e?.tenant_id==='bedrijfsgeheugen'&&e.post_id===a.post_id&&
      e.evidence?.application_id===a.application_id&&
-     e.evidence?.source_event_id===validMetric.source_event_id&&
+     e.evidence?.source_event_id===s.source_event_id&&
      e.evidence?.causal_improvement_verified===false&&
      e.metric_vector?.metric_scope==='DESCRIPTIVE_EXPOSURE_NOT_CAUSAL_LIFT');
+   // An older independently evaluated source event remains valid when Windsor
+   // later refreshes that post. Track the newer unconsumed event separately;
+   // never mark the old evaluation as missing or silently call it fully learned.
+   const evaluatedMetric=validMetrics.find(hasExactEvaluation)||null;
+   const newerUnconsumed=!!validMetric&&!!evaluatedMetric&&
+     validMetric.source_event_id!==evaluatedMetric.source_event_id;
+   const newerAge=newerUnconsumed?(clock.getTime()-ts(validMetric.observed_at))/3600000:null;
+   const evalPresent=!!evaluatedMetric;
    let state;
    if(!post||published===null)state='ORIGINAL_POST_IDENTITY_MISSING';
    else if(!validMetric)state=age>=metricDueHours?'PROVIDER_METRIC_HANDOFF_OVERDUE':'WAITING_MATURE_PROVIDER_METRIC';
    else if(!evalPresent)state=age>=evaluationDueHours?'BRAIN_EVALUATION_HANDOFF_OVERDUE':'WAITING_BRAIN_EVALUATION';
+   else if(newerUnconsumed)state=newerAge>=evaluationDueHours?
+     'BRAIN_REFRESH_HANDOFF_OVERDUE':'WAITING_BRAIN_REFRESH';
    else if(!String(a.verification_status||'').startsWith('PROVIDER_METRICS_OBSERVED_'))
      state=age>=evaluationDueHours?'ORIGINAL_APPLICATION_ACK_OVERDUE':'WAITING_APPLICATION_ACK';
    else state='EVALUATED_DESCRIPTIVE_NO_CAUSAL_LIFT';
@@ -148,13 +159,16 @@ export function evaluateCompanyExperimentHandoffs({
      provider_post_urn:post?.external_post_id||null,
      published_at:post?.published_at||null,
      age_hours:age===null?null:Math.round(age*100)/100,state,
-     overdue,source_event_id:validMetric?.source_event_id||null,
+     overdue,source_event_id:evaluatedMetric?.source_event_id||validMetric?.source_event_id||null,
+     newest_provider_event_id:validMetric?.source_event_id||null,
+     newest_provider_event_evaluated:!!validMetric&&hasExactEvaluation(validMetric),
      learning_id:a.learning_id||null});
  }
  const overdue=details.filter(x=>x.overdue),verified=details.filter(x=>x.state==='EVALUATED_DESCRIPTIVE_NO_CAUSAL_LIFT');
  return {state:overdue.length?'HANDOFF_OVERDUE':details.length?'VERIFIED_WITH_PENDING':'NO_ELIGIBLE_VERIFIED_EXPERIMENT',
    checked_at:clock.toISOString(),experiment_applications:details.length,
    evaluated_count:verified.length,pending_count:details.length-overdue.length-verified.length,
+   newer_sample_waiting_count:details.filter(x=>x.state==='WAITING_BRAIN_REFRESH').length,
    overdue_count:overdue.length,metric_due_hours:metricDueHours,
    evaluation_due_hours:evaluationDueHours,
    overdue_post_urns:overdue.map(x=>x.provider_post_urn).filter(Boolean).slice(0,12),
