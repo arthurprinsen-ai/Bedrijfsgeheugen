@@ -789,7 +789,21 @@ begin
       'deadline_utc',v_due,'deadline_overdue',v_overdue,
       'checked_at_utc',p_now,
       'repair_policy','original-owner-only; preserve original ID and provider idempotency; never invent publication, sample or revenue',
-      'next_action',r.next_action,
+      'next_action',case
+        when v_stage in ('PUBLICATION_BLOCKED','ORIGINAL_PUBLICATION_NOT_PROVEN')
+          then 'Original publisher: check immutable external side effect first; correct approval/media/CMS cause, then prove exact provider URL without duplicate write.'
+        when v_stage in ('PROVIDER_TO_METRICS_PENDING','MEASUREMENT_STAMP_WITHOUT_SOURCE_RECEIPT')
+          then 'Original provider analytics owner: fetch exact post/URL source event after proper maturity, attach scope+UTC to original date/channel; no synthetic zero.'
+        when v_stage='METRICS_TO_ANALYST_ACK_MISSING'
+          then 'Original analyst: join exact original provider source ID to evaluation, report denominators, diagnosis and evidence.'
+        when v_stage='EXPERIMENT_OUTCOME_NOT_PROVEN'
+          then 'Original CRO owner: run eligible treatment/holdout with guardrails; label no sample explicitly; no unsupported lift.'
+        when v_stage='LEARNING_APPLICATION_ACK_MISSING'
+          then 'Original improvement owner: apply approved source-backed result via protected release and read back deployed result.'
+        when v_stage='NEXT_NATURAL_RUN_READBACK_MISSING'
+          then 'Original publisher and learning owner: verify next natural provider run uses approved change and exact live readback.'
+        else 'No recovery required; original end-to-end proof closed.' end,
+      'original_next_action',r.next_action,
       'learning_state',case when v_stage='END_TO_END_VERIFIED' then 'CLOSED_WITH_NEXT_RUN_PROOF'
         when not v_experiment_proven then 'INSUFFICIENT_EVIDENCE_NOT_LEARNED'
         else 'APPLICATION_PENDING' end);
