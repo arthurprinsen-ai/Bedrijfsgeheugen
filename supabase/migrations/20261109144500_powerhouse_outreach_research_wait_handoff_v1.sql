@@ -353,16 +353,16 @@ with joined as (
    coalesce(nullif(a.evidence->>'provider_message_id',''),
             nullif(a.evidence #>> '{autonomous_outbound,provider_message_id}',''),
             nullif(a.evidence #>> '{native_gmail_executor,provider_message_id}','')) as provider_message_id,
-   (
+   coalesce((
      a.evidence->>'provider_ack_verified'='true'
      or a.evidence #>> '{autonomous_outbound,provider_ack_verified}'='true'
      or a.evidence #>> '{native_gmail_executor,provider_ack_verified}'='true'
-   ) as provider_ack_observed,
-   (
+   ),false) as provider_ack_observed,
+   coalesce((
      a.evidence->>'provider_readback_verified'='true'
      or a.evidence #>> '{autonomous_outbound,provider_readback_verified}'='true'
      or a.evidence #>> '{native_gmail_executor,provider_readback_verified}'='true'
-   ) as provider_readback_observed,
+   ),false) as provider_readback_observed,
    a.executed_at as action_executed_at,
    exists(
      select 1 from public.powerhouse_email_reply_events re
@@ -409,8 +409,8 @@ select
  j.research_status,j.research_action_id,j.research_completed_at,
  j.research_source_url is not null and j.research_status='done' as research_evidence_recorded,
  j.latest_quality_passed,j.latest_quality_evaluated_at,
- (j.research_completed_at is not null and j.latest_quality_passed
-   and j.latest_quality_evaluated_at>=j.research_completed_at) as research_to_composer_confirmed,
+ coalesce((j.research_completed_at is not null and j.latest_quality_passed
+   and j.latest_quality_evaluated_at>=j.research_completed_at),false) as research_to_composer_confirmed,
  j.provider_message_id is not null as provider_id_recorded,
  j.provider_ack_observed,
  j.provider_readback_observed,
@@ -419,11 +419,11 @@ select
  j.assigned_experiment_treatment,
  case
    when j.action_status='expired' and j.research_status='done'
-     and not (j.latest_quality_passed and j.latest_quality_evaluated_at>=j.research_completed_at)
+     and not coalesce((j.latest_quality_passed and j.latest_quality_evaluated_at>=j.research_completed_at),false)
      then 'BROKEN_RESEARCH_TO_COMPOSER_EXPIRED'
    when j.research_status='done'
      and j.research_completed_at<now()-interval '60 minutes'
-     and not (j.latest_quality_passed and j.latest_quality_evaluated_at>=j.research_completed_at)
+     and not coalesce((j.latest_quality_passed and j.latest_quality_evaluated_at>=j.research_completed_at),false)
      then 'BROKEN_RESEARCH_TO_COMPOSER_SLA'
    when j.latest_quality_passed and j.action_status='expired' and not j.provider_ack_observed
      then 'BROKEN_COMPOSER_TO_PROVIDER_EXPIRED'
