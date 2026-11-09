@@ -225,3 +225,39 @@ test('original blog queue never demotes approved content and must receive exact 
  assert.match(src,/clean\(receipt\.next_executor\)!==evidence\.next_executor/);
  assert.doesNotMatch(src,/p_status:'GENERATED'/);
 });
+
+
+test('every original content channel has a durable idempotent handoff receipt on existing hourly runner',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1\(/i);
+ assert.match(sql,/dedupe_key,event_type,source,subject_key,channel,occurred_at/);
+ assert.match(sql,/'original-handoff:'\|\|r\.publication_date::text\|\|':'\|\|r\.channel/);
+ assert.match(sql,/on conflict\(dedupe_key\) do update/);
+ assert.match(sql,/from public\.content_publication_obligations o/);
+ for(const channel of ['linkedin_personal','linkedin_company','instagram','blog'])
+   assert.ok(sql.includes("'"+channel+"'"),'missing original channel '+channel);
+ for(const proof of ['original_provider_proven','metric_receipt_proven','analysis_ack_proven','controlled_experiment_proven','application_ack_proven','next_natural_run_ack_proven','source_content_id','metric_source_event','expected_owner','deadline_overdue'])
+   assert.ok(sql.includes("'"+proof+"'"),'missing source-bound handoff proof '+proof);
+ assert.match(sql,/perform public\.powerhouse_original_handoff_receipt_audit_v1\(p_now\)/);
+ assert.match(sql,/public\.powerhouse_content_closed_loop_tick_v1\(p_now timestamp with time zone DEFAULT now\(\)\)/);
+ assert.match(sql,/original-content-metrics-experiment-application/);
+ assert.match(sql,/from public\.powerhouse_commercial_handoff_scorecard_v1 t/);
+ assert.match(sql,/revoke all on function public\.powerhouse_original_handoff_receipt_audit_v1/);
+ assert.match(sql,/grant execute on function public\.powerhouse_original_handoff_receipt_audit_v1[\s\S]*?to service_role;/);
+});
+test('handoff receipt cannot declare complete without source measurement, experiment, applied learning and next natural provider readback',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/v_metric_proven:=r\.measured_at is not null and v_source_event is not null/);
+ assert.match(sql,/v_experiment_proven:=coalesce/);
+ assert.match(sql,/\{experiment,controlled_outcome_verified\}/);
+ assert.match(sql,/\{learning,next_original_run_readback_verified\}/);
+ assert.match(sql,/v_next_run_proven:=coalesce/);
+ assert.match(sql,/and r\.learned_at is not null/);
+ assert.match(sql,/elsif not v_experiment_proven then[\s\S]*?EXPERIMENT_OUTCOME_NOT_PROVEN/);
+ assert.match(sql,/elsif not v_next_run_proven then[\s\S]*?NEXT_NATURAL_RUN_READBACK_MISSING/);
+ assert.match(sql,/v_stage:='END_TO_END_VERIFIED'/);
+ assert.match(sql,/case when v_overdue then 'error'/);
+ assert.match(sql,/when v_stage='END_TO_END_VERIFIED' then 'closed'/);
+ assert.match(sql,/INSUFFICIENT_EVIDENCE_NOT_LEARNED/);
+ assert.doesNotMatch(sql,/create\s+(?:extension|trigger|table)\s+powerhouse_original_handoff/i);
+});
