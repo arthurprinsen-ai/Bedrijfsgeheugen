@@ -47,7 +47,7 @@ test('production composer consumes verified original research before its origina
 });
 
 test('research-bound waiting retains original action and never authorizes a provider send',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/WAIT_FOR_VERIFIED_SOURCE/);
  assert.match(sql,/a\.created_at>p_now-interval '48 hours'/);
  assert.match(sql,/EXPIRE_AFTER_RESEARCH_WINDOW/);
@@ -71,7 +71,7 @@ test('existing composer is sole authority to resume source-held waiting email',(
 });
 
 test('canonical per-action handoff telemetry has original identifiers, SLA and provider evidence',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/create or replace view public\.powerhouse_commercial_handoff_telemetry_v1/);
  assert.match(sql,/create or replace view public\.powerhouse_commercial_handoff_scorecard_v1/);
  assert.match(sql,/with \(security_invoker = true\) as/);
@@ -96,7 +96,7 @@ test('canonical per-action handoff telemetry has original identifiers, SLA and p
  assert.doesNotMatch(sql,/create\s+table\s+public\.powerhouse_commercial_handoff/i);
 });
 test('the original existing email watchdog runs handoff measurement every natural owner tick',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/from public\.powerhouse_commercial_handoff_scorecard_v1 score/);
  assert.match(sql,/handoff_health','MEASUREMENT_FAILED/);
  assert.match(sql,/original_handoff_scorecard_7d/);
@@ -105,7 +105,7 @@ test('the original existing email watchdog runs handoff measurement every natura
 });
 
 test('commercial closure emits measured original action funnel without manufacturing delivered emails',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/POWERHOUSE_ORIGINAL_COMMERCIAL_HANDOFF_MEASUREMENT_V1/);
  for(const field of [
   'linked_original_research_7d','research_done_with_source_7d',
@@ -127,7 +127,7 @@ test('commercial closure emits measured original action funnel without manufactu
  assert.match(sql,/insert into public\.bg_gezondheid/);
 });
 test('experiment readiness is policy-scoped and not called learned without two mature arms',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/from public\.powerhouse_experiment_policies/);
  assert.match(sql,/experiment_key='persuasion-revenue-optimizer-v1' and status='active'/);
  assert.match(sql,/where experiment_key='persuasion-revenue-optimizer-v1'/);
@@ -228,7 +228,7 @@ test('original blog queue never demotes approved content and must receive exact 
 
 
 test('every original content channel has a durable idempotent handoff receipt on existing hourly runner',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1\(/i);
  assert.match(sql,/dedupe_key,event_type,source,subject_key,channel,occurred_at/);
  assert.match(sql,/'original-handoff:'\|\|r\.publication_date::text\|\|':'\|\|r\.channel/);
@@ -246,7 +246,7 @@ test('every original content channel has a durable idempotent handoff receipt on
  assert.match(sql,/grant execute on function public\.powerhouse_original_handoff_receipt_audit_v1[\s\S]*?to service_role;/);
 });
 test('handoff receipt cannot declare complete without source measurement, experiment, applied learning and next natural provider readback',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/v_metric_proven:=r\.measured_at is not null and v_source_event is not null/);
  assert.match(sql,/v_experiment_proven:=coalesce/);
  assert.match(sql,/\{experiment,controlled_outcome_verified\}/);
@@ -263,7 +263,7 @@ test('handoff receipt cannot declare complete without source measurement, experi
 });
 
 test('original closure requires independently matured control and treatment, not just a claimed experiment flag',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/from public\.social_experiments se/);
  assert.match(sql,/se\.status='COMPLETE'/);
  assert.match(sql,/effect_is_causal/);
@@ -274,7 +274,7 @@ test('original closure requires independently matured control and treatment, not
  assert.match(sql,/se\.min_steekproef/);
 });
 test('original applied-learning closure independently matches a later same-channel published output',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/from public\.content_publication_obligations later/);
  assert.match(sql,/later\.tenant_id=r\.tenant_id and later\.channel=r\.channel/);
  assert.match(sql,/later\.publication_date>r\.publication_date/);
@@ -286,7 +286,7 @@ test('original applied-learning closure independently matches a later same-chann
  assert.match(sql,/provider_truth_verified/);
 });
 test('single original SQL audit and original hourly tick — never duplicate by content replacement',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.equal((sql.match(/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1/gi)||[]).length,1);
  assert.equal((sql.match(/create or replace function public\.powerhouse_content_closed_loop_tick_v1/gi)||[]).length,1);
  assert.match(sql,/\(se\.resultaat->>'treatment_matured'\) ~ '\^\[0-9\]\+\$'/);
@@ -294,7 +294,7 @@ test('single original SQL audit and original hourly tick — never duplicate by 
 });
 
 test('repeated healthy cron is not downstream owner processing or fresh source progress',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/v_receipt_fingerprint:=md5\(jsonb_build_object\(/);
  assert.match(sql,/original_first_seen_at/);
  assert.match(sql,/last_real_progress_at/);
@@ -306,7 +306,7 @@ test('repeated healthy cron is not downstream owner processing or fresh source p
  assert.doesNotMatch(sql,/occurred_at=excluded\.occurred_at/);
 });
 test('receiver must explicitly claim exact original, current owner and current proof fingerprint',()=>{
- const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
  assert.match(sql,/create or replace function public\.powerhouse_claim_original_handoff_v1/);
  assert.match(sql,/p_dedupe_key not like 'original-handoff:%'/);
  assert.match(sql,/event_type='original_content_handoff_ack_audit'/);
