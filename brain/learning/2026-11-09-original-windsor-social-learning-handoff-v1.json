@@ -31,14 +31,14 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "8 Nov observed source schema positive fixture in brain-windsor-native-learning-provider-repair-20261105.test.mjs",
-      "8 Nov observed source schema negative forged identity cases"
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs",
+      "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
     ],
     "shadow": [
-      "Run original 6-hour observer once after protected deploy; compare matched snapshots to LIVE_PROVEN provider URN"
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
     ],
     "canary": [
-      "At least one original provider social_metric_snapshots row then original minute39 evaluation and application, no fake lift"
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
     ],
     "invariants": [
       "single original bg-social-metrics-sync observer + original runtime mux minute39",
