@@ -10,6 +10,23 @@ declare
   v_social_expired int:=0;
   v_quality_blocked int:=0;
   v_source_wait int:=0;
+  -- Stage-specific observability inside the EXISTING commercial closure owner.
+  v_email_7d integer:=0;
+  v_research_linked_7d integer:=0;
+  v_research_done_7d integer:=0;
+  v_research_done_expired_7d integer:=0;
+  v_composer_checked_7d integer:=0;
+  v_research_without_composer_7d integer:=0;
+  v_quality_passed_7d integer:=0;
+  v_prepared_and_quality_7d integer:=0;
+  v_ack_with_provider_id_7d integer:=0;
+  v_readback_with_provider_id_7d integer:=0;
+  v_reply_7d integer:=0;
+  v_expired_7d integer:=0;
+  v_matured_treatment_30d integer:=0;
+  v_matured_holdout_30d integer:=0;
+  v_experiment_assigned_30d integer:=0;
+
   v_external_wait int:=0;
   v_bad_research int:=0;
   v_bad_social int:=0;
@@ -178,6 +195,71 @@ begin
       )
     );
 
+  -- Read-only funnel analysis for the exact same 7-day email action cohort.
+  -- A cron success, internal research=done or quality pass is not email delivery.
+  with recent as (
+    select a.action_id,a.status,a.person_key,a.company_key,a.evidence,a.executed_at,
+      exists(select 1 from public.powerhouse_sales_actions r
+        where r.dedupe_key='relationship-research:outreach-source:'||a.action_id::text
+          and r.action_type='research_enrichment' and r.person_key=a.person_key
+          and r.company_key=a.company_key) as research_linked,
+      exists(select 1 from public.powerhouse_sales_actions r
+        where r.dedupe_key='relationship-research:outreach-source:'||a.action_id::text
+          and r.action_type='research_enrichment' and r.person_key=a.person_key
+          and r.company_key=a.company_key and r.status='done'
+          and nullif(r.evidence#>>'{public_research_execution,source_url}','') is not null) as research_done,
+      (select q.passed from public.powerhouse_message_quality_v1 q
+        where q.action_id=a.action_id order by q.evaluated_at desc limit 1) as latest_quality,
+      exists(select 1 from public.powerhouse_message_quality_v1 q
+        where q.action_id=a.action_id) as composer_checked,
+      exists(select 1 from public.powerhouse_email_reply_events e
+        where e.action_id=a.action_id and e.provider_message_id is not null) as has_provider_reply,
+      nullif(coalesce(a.evidence->>'provider_message_id',
+        a.evidence#>>'{autonomous_outbound,provider_message_id}',
+        a.evidence#>>'{native_gmail_executor,provider_message_id}'),'') as external_id,
+      (
+        a.evidence->>'provider_ack_verified'='true'
+        or a.evidence#>>'{autonomous_outbound,provider_ack_verified}'='true'
+        or a.evidence#>>'{native_gmail_executor,provider_ack_verified}'='true'
+      ) as provider_ack,
+      (
+        a.evidence->>'provider_readback_verified'='true'
+        or a.evidence#>>'{autonomous_outbound,provider_readback_verified}'='true'
+        or a.evidence#>>'{native_gmail_executor,provider_readback_verified}'='true'
+      ) as provider_readback
+    from public.powerhouse_sales_actions a
+    where a.action_type='autonomous_email'
+      and a.created_at>=p_now-interval '7 days'
+      and a.created_at<=p_now
+  )
+  select count(*)::int,
+    count(*) filter(where research_linked)::int,
+    count(*) filter(where research_done)::int,
+    count(*) filter(where research_done and status='expired')::int,
+    count(*) filter(where composer_checked)::int,
+    count(*) filter(where research_done and not composer_checked)::int,
+    count(*) filter(where latest_quality is true)::int,
+    count(*) filter(where status='prepared' and latest_quality is true)::int,
+    count(*) filter(where status='done' and executed_at is not null and provider_ack and external_id is not null)::int,
+    count(*) filter(where status='done' and executed_at is not null and provider_ack and provider_readback and external_id is not null)::int,
+    count(*) filter(where has_provider_reply)::int,
+    count(*) filter(where status='expired')::int
+  into v_email_7d, v_research_linked_7d, v_research_done_7d,
+    v_research_done_expired_7d, v_composer_checked_7d,
+    v_research_without_composer_7d, v_quality_passed_7d,
+    v_prepared_and_quality_7d, v_ack_with_provider_id_7d,
+    v_readback_with_provider_id_7d, v_reply_7d, v_expired_7d
+  from recent;
+
+  select count(*)::int,
+    count(*) filter(where lower(coalesce(assignment_arm,''))='treatment'
+        and measurement_horizon_end<=p_now)::int,
+    count(*) filter(where lower(coalesce(assignment_arm,''))='holdout'
+        and measurement_horizon_end<=p_now)::int
+  into v_experiment_assigned_30d,v_matured_treatment_30d,v_matured_holdout_30d
+  from public.powerhouse_experiment_assignments
+  where assigned_at>=p_now-interval '30 days' and assigned_at<=p_now;
+
   v_payload:=jsonb_build_object(
     'contract','powerhouse-commercial-action-closure-v3',
     'checked_at',p_now,
@@ -192,6 +274,53 @@ begin
     'stale_quality_unproven_nonterminal',v_bad_quality,
     'healthy',v_bad_research=0 and v_bad_social=0 and v_bad_quality=0,
     'invariant','WAIT requires executable provider-owned work; quality-unproven outbound is terminalized OBSERVE and remains send-forbidden'
+  );
+
+  -- This readback is written to the EXISTING bg_gezondheid by the existing
+  -- closure watchdog. It is not a new publisher, scheduler or outcome store.
+  v_payload:=v_payload || jsonb_build_object(
+    'handoff_measurement',jsonb_build_object(
+      'contract','POWERHOUSE_ORIGINAL_COMMERCIAL_HANDOFF_MEASUREMENT_V1',
+      'cohort','autonomous_email_created_last_7d',
+      'measured_at',p_now,
+      'created_7d',v_email_7d,
+      'linked_original_research_7d',v_research_linked_7d,
+      'research_done_with_source_7d',v_research_done_7d,
+      'research_done_but_original_expired_7d',v_research_done_expired_7d,
+      'composer_evaluated_7d',v_composer_checked_7d,
+      'research_done_without_composer_evaluation_7d',v_research_without_composer_7d,
+      'last_composer_quality_passed_7d',v_quality_passed_7d,
+      'quality_passed_and_prepared_now_7d',v_prepared_and_quality_7d,
+      'provider_ack_with_external_message_id_7d',v_ack_with_provider_id_7d,
+      'provider_readback_with_external_message_id_7d',v_readback_with_provider_id_7d,
+      'provider_linked_reply_7d',v_reply_7d,
+      'original_expired_7d',v_expired_7d,
+      'research_to_composer_evaluation_pct',
+        case when v_research_done_7d>0
+          then round(100.0*(v_research_done_7d-v_research_without_composer_7d)
+            /v_research_done_7d,2) else null end,
+      'commercial_delivery_proven',v_readback_with_provider_id_7d>0,
+      'handoff_problem',
+        case when v_research_done_expired_7d>0
+          then 'RESEARCH_DONE_BUT_ORIGINAL_EMAIL_EXPIRED'
+          when v_research_without_composer_7d>0
+          then 'VERIFIED_RESEARCH_NOT_CONSUMED_BY_COMPOSER'
+          when v_quality_passed_7d>0 and v_ack_with_provider_id_7d=0
+          then 'QUALITY_PASSED_NO_PROVIDER_ACCEPTANCE'
+          when v_ack_with_provider_id_7d>v_readback_with_provider_id_7d
+          then 'PROVIDER_ACCEPTED_NO_INDEPENDENT_READBACK'
+          when v_email_7d=0 then 'NO_EMAIL_ACTION_ELIGIBLE'
+          else 'NO_PROVEN_COMMERCIAL_DELIVERY_YET' end,
+      'experiment_assignments_last_30d',v_experiment_assigned_30d,
+      'matured_treatment_last_30d',v_matured_treatment_30d,
+      'matured_holdout_last_30d',v_matured_holdout_30d,
+      'experiment_evidence_state',
+        case when v_matured_treatment_30d>=20 and v_matured_holdout_30d>=20
+          then 'READY_FOR_CAUSAL_EFFECT_ANALYSIS'
+          else 'INSUFFICIENT_EVIDENCE_NOT_LEARNED' end,
+      'critical_evidence_rule',
+        'Only same-action provenance, latest composer quality, immutable external provider ID, independent readback and matured treatment/holdout outcomes count.'
+    )
   );
 
   insert into public.bg_gezondheid(gemeten_op,onderdeel,soort,status,detail,gegevens)
