@@ -3264,8 +3264,16 @@
     {
       "version": "20261106160000",
       "name": "mira_original_pristine_waiting_asset_claim_v1"
+    },
+    {
+      "version": "20261109152200",
+      "name": "original_social_provider_refresh_learning_v1"
+    },
+    {
+      "version": "20261109152945",
+      "name": "original_social_provider_refresh_learning_v1"
     }
   ],
-  "captured_at": "2026-11-06T15:30:00.000Z",
+  "captured_at": "2026-11-09T15:30:03.363355Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
