@@ -237,7 +237,27 @@ Deno.serve(async(req:Request)=>{
         const provenance=composerQualityProvenance({actionId:action.action_id,hash,contract:CONTRACT,previousScore:action.evidence?.commercial_intelligence?.composer?.quality_score,currentScore:qv.score});
         const ci={...(action.evidence?.commercial_intelligence||{}),commercial_feedback:commercialFeedback,commercial_feedback_use:commercialFeedback?'MODEL_INPUT_CONTEXT_ONLY':'NOT_APPLICABLE',message_strategy:action.play_key,persuasion_authority:{contract:'powerhouse-persuasion-revenue-optimizer-v1',play_key:clean(persuasion?.play_key),principles:persuasion?.principles||[],primary_message_strategy:clean(persuasion?.primary_message_strategy),micro_cta:clean(persuasion?.micro_cta),do_not_use:persuasion?.do_not_use||[],confidence:persuasion?.confidence??null,truth_boundary:clean(persuasion?.truth_boundary)},predicted_objection:clean(generated.predicted_objection),objection_response:clean(generated.objection_response),quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,composer_contract:CONTRACT,composer:{contract:CONTRACT,...provenance,model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,source_specific_evidence_ok:qv.checks.source_specific_evidence_ok,semantic_novelty_ok:qv.checks.semantic_novelty_ok,new_followup_evidence_ok:qv.checks.new_followup_evidence_ok,generated_at:now,personalization_anchor:clean(generated.personalization_anchor),micro_commitment:clean(generated.micro_commitment),human_reason:clean(generated.human_reason)}};
         const evidence={...(workingAction.evidence||{}),commercial_intelligence:ci};if(['email','e-mail','reply_email'].includes(action.channel_norm))evidence.email_subject=clean(generated.subject)||clean(action.evidence?.email_subject);
-        const update:any={evidence,updated_at:now};if(qv.passed)update.message_draft=message;else if(clean(action.message_draft))update.message_draft='';
+        const update:any={evidence,updated_at:now};
+        if(qv.passed){
+          update.message_draft=message;
+          // One canonical handoff: an original research-held email can return
+          // to the ORIGINAL sender only after fresh source and full composer
+          // quality are independently proven. No second send queue is created.
+          if(action.status==='waiting' &&
+             action?.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED' &&
+             workingAction?.evidence?.verified_research_composer_handoff?.contract==='POWERHOUSE_VERIFIED_RESEARCH_COMPOSER_HANDOFF_V1' &&
+             qv.checks.source_specific_evidence_ok===true &&
+             qv.checks.semantic_novelty_ok===true){
+            update.status='prepared';update.due_at=now;
+            evidence.execution_gate={
+              ...action.evidence.execution_gate,
+              reason:'SOURCE_VERIFIED_COMPOSER_ACCEPTED',resolved_at:now,
+              original_research_action_id:workingAction.evidence.verified_research_composer_handoff.research_action_id,
+              quality_passed:true,provider_attempted:false,provider_readback_verified:false,
+              resumed_by:'powerhouse-commercial-message-composer'
+            };
+          }
+        }else if(clean(action.message_draft))update.message_draft='';
         const {error:uErr}=await db.from('powerhouse_sales_actions').update(update).eq('action_id',action.action_id);if(uErr)throw new Error('ACTION_WRITE:'+uErr.message);
         out.push({action_id:action.action_id,channel:action.channel_norm,play_key:action.play_key,quality_passed:qv.passed,quality_score:qv.score,word_count:qv.checks.word_count,personalization_anchor:qv.checks.personalization_anchor});
       }catch(e:any){out.push({action_id:action.action_id,status:'error',error:clean(e?.message||e).slice(0,300)});}
