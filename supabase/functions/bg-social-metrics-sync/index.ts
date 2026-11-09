@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
-import { buildVerifiedCompanyMetricSnapshots } from '../_shared/linked-company-analytics.mjs';
+import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
@@ -155,7 +155,7 @@ async function reconcileCompanyMetricEvidence(db:any){
   const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
   const {data:observations,error:sourceError}=await db.from('powerhouse_growth_source_daily_v1')
     .select('tenant_id,metric_date,source_key,quality,source_observed_at,metrics,evidence')
-    .eq('tenant_id','bedrijfsgeheugen').eq('quality','PROVIDER_OBSERVED_UNLINKED')
+    .eq('tenant_id','bedrijfsgeheugen').in('quality',['PROVIDER_OBSERVED_UNLINKED','PROVIDER_OBSERVED'])
     .like('source_key','linkedin_company_post:%')
     .gte('metric_date',since).order('source_observed_at',{ascending:false}).limit(60);
   if(sourceError)throw new Error('COMPANY_ANALYTICS_SOURCE_READ:'+sourceError.message);
@@ -182,6 +182,37 @@ async function reconcileCompanyMetricEvidence(db:any){
     source_rows:(observations||[]).length,linked:matched.length,
     source:'windsor.ai',verified_by:'canonical LIVE_PROVEN organization author and exact post URN',
     inference_limits:'impressions are not customers and video views are not reach'};
+}
+
+// Stage-by-stage original experiment audit. Use the same original six-hour observer
+// and minute-39 learning writer: do not create another job, store, or publisher.
+async function auditCompanyExperimentHandoffs(db:any){
+  const since=new Date(Date.now()-14*86400000).toISOString();
+  const {data:applications,error:appError}=await db.from('social_learning_applications')
+    .select('tenant_id,application_id,application_role,post_id,learning_id,verification_status,applied_at')
+    .eq('tenant_id','bedrijfsgeheugen')
+    .eq('application_role','ORIGINAL_EXPERIMENT_VARIANT_PROVIDER_PROVEN')
+    .gte('applied_at',since).order('applied_at',{ascending:false}).limit(40);
+  if(appError)throw new Error('COMPANY_EXPERIMENT_APPLICATION_READ:'+appError.message);
+  const ids=[...new Set((applications||[]).map((a:any)=>a.post_id).filter(Boolean))];
+  if(!ids.length)return evaluateCompanyExperimentHandoffs({now:new Date()});
+  const [postResult,snapshotResult,evaluationResult]=await Promise.all([
+    db.from('social_posts').select('tenant_id,post_id,platform,channel_kind,external_post_id,published_at')
+      .eq('tenant_id','bedrijfsgeheugen').in('post_id',ids).limit(40),
+    db.from('social_metric_snapshots').select('tenant_id,post_id,source,data_quality,observed_at,source_event_id,metrics')
+      .eq('tenant_id','bedrijfsgeheugen').eq('source','windsor-linkedin-company')
+      .in('post_id',ids).order('observed_at',{ascending:false}).limit(200),
+    db.from('social_learning_evaluations').select('tenant_id,post_id,metric_vector,evidence')
+      .eq('tenant_id','bedrijfsgeheugen').in('post_id',ids).limit(100)
+  ]);
+  if(postResult.error||snapshotResult.error||evaluationResult.error)
+    throw new Error('COMPANY_EXPERIMENT_STAGE_READ:'+
+      (postResult.error||snapshotResult.error||evaluationResult.error).message);
+  return evaluateCompanyExperimentHandoffs({
+    applications:applications||[],ownedPosts:postResult.data||[],
+    snapshots:snapshotResult.data||[],evaluations:evaluationResult.data||[],
+    now:new Date()
+  });
 }
 
 // Company analytics come from the Windsor ingest (powerhouse_growth_source_daily_v1), not from Composio (403).
@@ -262,7 +293,7 @@ Deno.serve(async(req:Request)=>{
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const day=localDay();
-    let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any;
+    let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any,companyExperimentHandoff:any;
     try{personalRegistry=await registerPersonalProofs(db);}catch(e){
       personalRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
     }
@@ -272,15 +303,32 @@ Deno.serve(async(req:Request)=>{
     try{companyMetricLink=await reconcileCompanyMetricEvidence(db);}catch(e){
       companyMetricLink={state:'COMPANY_METRIC_LINK_SOURCE_ERROR',error:clean((e as Error).message).slice(0,120)};
     }
+    try{companyExperimentHandoff=await auditCompanyExperimentHandoffs(db);}catch(e){
+      companyExperimentHandoff={state:'EXPERIMENT_HANDOFF_READ_ERROR',overdue_count:null,
+        error:clean((e as Error).message).slice(0,140),
+        recovery_owner:'existing bg-social-metrics-sync',
+        recovery_action:'RECONCILE_ORIGINAL_EXPERIMENT_STAGE_READ'};
+    }
     try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     let companyState:any;
     try{companyState=await companyAnalyticsState(db);}catch(e){companyState={state:'WINDSOR_READBACK_ERROR',error:clean((e as Error).message).slice(0,100)};}
     const total=(ig?.snapshots||0)+(li?.snapshots||0);
-    const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
+    // Social learning is not healthy when verified company posts have no
+    // independently linked provider metrics. A successful HTTP cron or fresh
+    // account aggregate is not proof that an experimental post was measured.
+    const companyHandoffOk=companyRegistry?.eligible===0||(
+      companyState?.state==='WINDSOR_FRESH'&&
+      companyMetricLink?.state==='VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED'&&
+      (companyMetricLink?.linked||0)>0);
+    const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0
+      &&!(ig?.failures||[]).length&&!(li?.failures||[]).length&&companyHandoffOk
+      &&!['HANDOFF_OVERDUE','EXPERIMENT_HANDOFF_READ_ERROR'].includes(companyExperimentHandoff?.state);
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,personal_post_registry:personalRegistry,
+      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
+      company_learning_handoff_ok:companyHandoffOk,company_experiment_handoff:companyExperimentHandoff,
+      personal_post_registry:personalRegistry,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
