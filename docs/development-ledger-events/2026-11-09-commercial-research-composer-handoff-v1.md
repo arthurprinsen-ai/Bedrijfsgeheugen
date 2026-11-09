@@ -25,3 +25,11 @@ De oorspronkelijke closure-watchdog liet e-mails met een geldige onderzoekstaak 
 
 Bron/migratie: `supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql`.
 Technische en businessbewijsgrens: pas na beschermd merge, Supabase migratie/Edge readback en een echte providerbevestiging is de release aantoonbaar operationeel.
+
+
+## Addendum: operationele funnelanalyse in dezelfde closing watchdog
+- Geobserveerde cohortdata (2026-11-09, laatste 7 dagen): 11 orig. e-mailacties, 11 gelinkte researchacties, 4 afgeronde met bron, alle 4 originele e-mails toch verlopen, 0 bewezen composerkwaliteit, 0 bewezen providerreceipt, 0 replies. Experimenteerregister: 1 totaal, 0 laatste 30 dagen, 0 treatment/holdout laatste 30 dagen.
+- Oorzaak: succesvolle interne schedulersteps maskeren verlies van context tussen originele brononderzoek- en composeractie. Geen bewezen observaties voor experimenten of omzet.
+- Herstel: `handoff_measurement` wordt in bestaande `bg_gezondheid` van `powerhouse_commercial_action_closure_watchdog_v1` meegeschreven; dezelfde `action_id`-cohort en 7d denominator, expliciete onderzoeksuitval, laatste kwaliteitsbewijs, provider-ID en readback, replies en sample/maturity van bestaande `persuasion-revenue-optimizer-v1`-experimentpolicy.
+- Data-uitkomsten zijn observaties, geen causaal bewijs. Leg treatment en holdout uitsluitend via bestaande policy en assignment-owner vast; pas experimentadviezen toe na analyse, controle op contaminatie en voldoende daadwerkelijke provider/outcome-readbacks.
+- Regression: `tests/brain-verified-research-composer-handoff-20261109.test.mjs`. Geen nieuwe cron, parallel database of verzender. Protected release PR #5543 en bron-/provider-readback blijven vereist.
