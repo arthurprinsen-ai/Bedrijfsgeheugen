@@ -31,5 +31,14 @@
     "canary": [
       "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
     ]
+  },
+  "tests": [
+    "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+  ],
+  "test_evidence": {
+    "method": "Original GitHub Required CI historical replay and canary",
+    "expected": "All unchanged owner + non-green state regressions pass",
+    "real_production_outcome": "NOT_YET_VERIFIED",
+    "required_release": "Protected GitHub merge, exact active original Supabase Edge version readback"
   }
 }
