@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-09",
-  "status": "FIRST_PROVIDER_APPLIED_LOCK_STAGE_817_CANDIDATE",
+  "status": "EXACT_PROTECTED_818_HISTORY_RECONCILIATION_CANDIDATE_REQUIRES_HOSTED_PROVIDER_PREVIEW",
   "fingerprint": "powerhouse|supabase|original-refresh-double-migration-history|20261109-v1",
   "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "owner": "original protected Supabase GitOps migration release + original source lock reconciler (not a second database release executor)",
@@ -26,23 +26,21 @@
     "live_original_brain_repeat_mutations": 0
   },
   "fix": "Preserve immutable production history; add exact second already-applied original SQL source mirror version 20261109152945; advance same canonical supabase/migration-history.lock.json from 816 to 818 with the 2 live provider identities; guard exact mirrored source equality and permissions. No new apply, merge_branch, migration replay or creation of scheduler/provider/sender in production.",
-  "prevention": "After protected merge, verify existing original Supabase GitOps status and native migration history BEFORE any explicit provider apply. If migration already applied via GitHub connector, never call apply_migration again. Prevent duplicate migration history, source/provider file count mismatch and tail checksum drift with protected test and original delivery preflight; leave previous history immutable, never alter provider rows to cosmetically green.",
+  "prevention": "After protected merge, verify existing original Supabase GitOps status and native migration history BEFORE any explicit provider apply. If migration already applied via GitHub connector, never call apply_migration again. Prevent duplicate migration history, source/provider file count mismatch and tail checksum drift with protected test and original delivery preflight; leave previous history immutable, never alter provider rows to cosmetically green. Protected one-time recovery is accepted only for base SHA 3e55c792504ddbaf0916244213c58b9e827f120e, two independently observed exact provider identities 20261109152200/20261109152945, original SQL byte parity to protected Git base, original provider SQL MD5 0f713650278cf68f47011ec97ffd22f9, head lock 818 with unchanged first 816 records, and mandatory hosted Supabase Preview. All ordinary PR migration gates remain fail-closed. An 817-lock-only PR was blocked by preview because the independently recorded 818th migration was missing. Therefore repair all 818 via one documented provider-applied exception, never a general bypass.",
   "tests": [
-    "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
-    "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs",
+    "tests/brain-protected-supabase-pr-migration-tests.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
-      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
     ],
     "shadow": [
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
-      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
     ],
     "canary": [
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
-      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
     ],
     "invariants": [
       "one file per original applied provider version",
@@ -60,5 +58,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "terminal_rule": "First protected lock-only PR 817/817 source parity; separate protected source-only mirror for existing provider version 20261109152945; separate protected second lock-only PR to close 818/818/818. Never combine new source file with lock write under protected admission. Never apply production SQL again."
+  "terminal_rule": "PR #5551 one-time exact 818 provider history reconciliation: protected Required+CodeQL, hosted Supabase Preview must pass with matching provider ledger, original source file count=lock count=provider count 818, protected merge, independent readback. The exception must be ineligible on any future base or different provider SQL. No new database DDL, migration apply or cron; commercial learning later still requires next natural proof."
 }
