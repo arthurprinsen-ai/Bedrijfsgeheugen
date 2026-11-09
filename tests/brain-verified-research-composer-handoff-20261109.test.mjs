@@ -102,3 +102,36 @@ test('the original existing email watchdog runs handoff measurement every natura
  assert.match(sql,/v_handoff_scorecard->>'handoff_health'='PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE'/);
  assert.match(sql,/provider_send_forbidden',true/);
 });
+
+test('commercial closure emits measured original action funnel without manufacturing delivered emails',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/POWERHOUSE_ORIGINAL_COMMERCIAL_HANDOFF_MEASUREMENT_V1/);
+ for(const field of [
+  'linked_original_research_7d','research_done_with_source_7d',
+  'research_done_but_original_expired_7d','composer_evaluated_7d',
+  'research_done_without_composer_evaluation_7d',
+  'last_composer_quality_passed_7d','provider_ack_with_external_message_id_7d',
+  'provider_readback_with_external_message_id_7d','provider_linked_reply_7d',
+  'research_to_composer_evaluation_pct','handoff_problem',
+  'experiment_evidence_state'
+ ])assert.ok(sql.includes("'"+field+"'"),'missing original funnel field '+field);
+ assert.match(sql,/a\.created_at>=p_now-interval '7 days'/);
+ assert.match(sql,/r\.person_key=a\.person_key/);
+ assert.match(sql,/r\.company_key=a\.company_key/);
+ assert.match(sql,/order by q\.evaluated_at desc limit 1/);
+ assert.match(sql,/status='done' and executed_at is not null and provider_ack and provider_readback and external_id is not null/);
+ assert.match(sql,/provider_linked_reply_7d/);
+ assert.match(sql,/INSUFFICIENT_EVIDENCE_NOT_LEARNED/);
+ assert.match(sql,/v_payload:=v_payload \|\| jsonb_build_object\(/);
+ assert.match(sql,/insert into public\.bg_gezondheid/);
+});
+test('experiment readiness is policy-scoped and not called learned without two mature arms',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/from public\.powerhouse_experiment_policies/);
+ assert.match(sql,/experiment_key='persuasion-revenue-optimizer-v1' and status='active'/);
+ assert.match(sql,/where experiment_key='persuasion-revenue-optimizer-v1'/);
+ assert.match(sql,/v_matured_treatment_30d>=v_experiment_min_per_arm/);
+ assert.match(sql,/v_matured_holdout_30d>=v_experiment_min_per_arm/);
+ assert.match(sql,/NO_ACTIVE_EXPERIMENT_POLICY/);
+ assert.match(sql,/INSUFFICIENT_EVIDENCE_NOT_LEARNED/);
+});
