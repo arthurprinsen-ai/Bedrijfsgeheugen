@@ -245,10 +245,10 @@ async function reconcileOriginalPublicationMetricHandoffs(db:any){
   const result=identifyOriginalPublicationHandoff(ob,[post],snapshots||[],now.toISOString());
   if(!result.patch){
    const age=(now.getTime()-Date.parse(ob.published_at))/3600000;
-   const overdue=Number.isFinite(age)&&age>78&&result.reason!=='ALREADY_RECONCILED';
-   if(overdue)overdue++;
+   const isOverdue=Number.isFinite(age)&&age>78&&result.reason!=='ALREADY_RECONCILED';
+   if(isOverdue)overdue++;
    stages.push({day:ob.publication_date,channel:ob.channel,
-     stage:overdue?'PROVIDER_MEASUREMENT_HANDOFF_OVERDUE':result.reason});continue;
+     stage:isOverdue?'PROVIDER_MEASUREMENT_HANDOFF_OVERDUE':result.reason});continue;
   }
   const proof=result.patch.metrics.original_provider_metric_handoff;
   const {data:updated,error:we}=await db.from('content_publication_obligations')
