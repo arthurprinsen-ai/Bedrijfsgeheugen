@@ -162,5 +162,39 @@
     "release_state": "SOURCE_ONLY; native Supabase GitHub PR preview not yet associated, no protected release/deploy/readback proven",
     "branch": "fix/p0-20261109-commercial-research-to-composer",
     "test": "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
+  },
+  "repair_assurance_20261109": {
+    "original_receiver_audit": "powerhouse_original_handoff_receipt_audit_v1",
+    "existing_scheduler_cron": 140,
+    "original_heartbeat": "powerhouse-original-handoff-ack",
+    "original_lineage_event_key": "original-handoff:<publication_date>:<channel>",
+    "publisher_receipt": "original provider ID/URL and independent readback",
+    "recipient_receipt": "next owner source-bound metrics/analysis/experimental result and applied next original output",
+    "observable_states": [
+      "PUBLICATION_BLOCKED",
+      "ORIGINAL_PUBLICATION_NOT_PROVEN",
+      "PROVIDER_TO_METRICS_PENDING",
+      "MEASUREMENT_STAMP_WITHOUT_SOURCE_RECEIPT",
+      "METRICS_TO_ANALYST_ACK_MISSING",
+      "EXPERIMENT_OUTCOME_NOT_PROVEN",
+      "LEARNING_APPLICATION_ACK_MISSING",
+      "NEXT_NATURAL_RUN_READBACK_MISSING",
+      "END_TO_END_VERIFIED"
+    ],
+    "next_owner_and_sla": true,
+    "no_parallel_executor": true,
+    "original_owner_scheduled_tasks_updated": true,
+    "source_ci_state": "PENDING_ON_EXACT_CANDIDATE_HEAD",
+    "production_state": "NOT_DEPLOYED"
+  },
+  "source_edit_incident_20261109": {
+    "root_cause": "A raw JavaScript String.replace replacement containing a regex end anchor followed by a quote expands the special replacement token, duplicating the original SQL suffix and making the candidate invalid.",
+    "effect": "Source-only candidate temporarily contained duplicated hourly SQL function and truncated regex; no production deployment or provider side effect.",
+    "recovery": "Reconstructed exact previous safe source commit with callback String.replace(old,()=>replacement), verified exact length and exactly one original audit and hourly function, then added regressions.",
+    "regression": "tests/brain-verified-research-composer-handoff-20261109.test.mjs (single-function and intact full-regex count)",
+    "prevention": "When applying source text with replacement tokens, use function-returned replacements, require old/new byte-length assertions and exactly one original function, fail admission before SQL release.",
+    "first_observed_on": "2026-11-09",
+    "resolved_in_source": true,
+    "production_changed_by_incident": false
   }
 }
