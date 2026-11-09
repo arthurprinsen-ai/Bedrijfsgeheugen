@@ -37,9 +37,9 @@ if (/^[a-f0-9]{40}$/.test(base)) {
     // protected original SQL on an immutable historical base. Unlike ordinary
     // candidates, it restores the remote history's *existing* second version.
     // Hosted Supabase Preview remains mandatory to verify provider truth.
-    const originalBaseSQL=git('show',base+':supabase/migrations/20261109152200_original_social_provider_refresh_learning_v1.sql');
+    const originalBaseSQL=execFileSync('git',['show',base+':supabase/migrations/20261109152200_original_social_provider_refresh_learning_v1.sql'],{cwd:root,encoding:'utf8',maxBuffer:5e6});
     const restoredFile='supabase/migrations/20261109152945_original_social_provider_refresh_learning_v1.sql';
-    const restoredSQL=proposed.includes(restoredFile)?readFileSync(path.join(root,restoredFile),'utf8').trim():'';
+    const restoredSQL=proposed.includes(restoredFile)?readFileSync(path.join(root,restoredFile),'utf8'):'';
     const reconciliation=verifyAlreadyApplied818HistoryReconciliation({
       baseSha:base,baseLock:JSON.parse(baseLock),headLock:JSON.parse(headLock),
       proposed,originalBaseSQL,restoredSQL
