@@ -21,6 +21,7 @@ test('converts independently vetted canonical company news into original compose
 test('research cannot be borrowed from a different prospect or company',()=>{
  assert.equal(sourceVerifiedComposerHandoff(a,{...r,person_key:'other'},n,now),null);
  assert.equal(sourceVerifiedComposerHandoff(a,{...r,company_key:'other'},n,now),null);
+ assert.equal(sourceVerifiedComposerHandoff(a,r,{...n,bedrijf:'Different company'},now),null);
  assert.equal(sourceVerifiedComposerHandoff(a,{...r,evidence:{...r.evidence,original_outreach_action_id:'some-other-action'}},n,now),null);
 });
 test('unverified, rejected or stale source never unlocks commercial message',()=>{
