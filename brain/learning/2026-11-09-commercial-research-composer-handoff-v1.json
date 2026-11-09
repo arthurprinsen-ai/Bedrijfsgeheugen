@@ -43,10 +43,20 @@
     "experiment_persuasion_minimum_per_arm": 20,
     "experiment_evidence_status": "INSUFFICIENT_MATURED_ASSIGNMENTS",
     "live_telemetry_views_deployed": false,
-    "source_read_only_sql_validation": true
+    "source_read_only_sql_validation": true,
+    "social_provider_metric_readback_20261109": {
+      "original_provider_sync_event": "provider-social-metrics:2026-11-09",
+      "provider_ingest_reported_healthy": true,
+      "composio_linkedin_personal_nov09_reactions": 5,
+      "composio_linkedin_personal_nov08_reactions": 8,
+      "company_windsor_matched_historical_snapshots": 4,
+      "nov09_original_obligation_measured_at": null,
+      "source_snapshot_identity_verified": true,
+      "obligation_measurement_handoff_missing": true
+    }
   },
   "fix": "Read original research_enrichment by its dedupe ID, then cross-check canonical company-news identity, timestamps, confidence and exact HTTPS source in existing composer. Re-run original quality gate. Preserve distinct recipient authority, suppression, idempotence, provider ACK/readback and outcome gates. Canonical closure now parks genuinely research-held originals as WAITING up to 48 hours and terminalizes without side effects if unresolved; original email watchdog excludes this hold from automatic requeue; original composer is sole owner of WAITING->PREPARED after full source and copy quality pass. The original commercial action closure emits a seven-day same-action handoff funnel and 30-day policy-scoped randomized experiment maturity in its existing bg_gezondheid record. Record first handoff error instead of only cron health. Attach a service-only read-only seven-day per-action observability view and aggregated scorecard to the existing email watchdog so every existing scheduler tick records handoff diagnostics; classify missing research/composer, expired source handoff, provider ACK/readback gaps, actual replies and realized revenue. Reuse the existing active CRO experiment policy and holdout, never invent uplift or recipients.",
-  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design. A generic retry watchdog must never promote a source-held WAITING action; a closure watchdog must not expire a legitimate pending research action during its bounded evidence deadline. A learning result requires qualifying original action outcomes and evidence from both matured experiment arms; otherwise INSUFFICIENT_EVIDENCE_NOT_LEARNED. A successful cron tick can never override handoff-stage failures or low experiment power. Underpowered A/B remains INSUFFICIENT_EVIDENCE and terminal claimed outcome requires exact external provider receipt.",
+  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design. A generic retry watchdog must never promote a source-held WAITING action; a closure watchdog must not expire a legitimate pending research action during its bounded evidence deadline. A learning result requires qualifying original action outcomes and evidence from both matured experiment arms; otherwise INSUFFICIENT_EVIDENCE_NOT_LEARNED. A successful cron tick can never override handoff-stage failures or low experiment power. Underpowered A/B remains INSUFFICIENT_EVIDENCE and terminal claimed outcome requires exact external provider receipt. The original post's measurable 24h provider observation must write a verified source+scope+UTC receipt back to its exact original publication_date/channel obligation, with CAS and provider-post identity; provider ingest without obligation-level acknowledgment is not terminal measurement.",
   "tests": [
     "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
   ],
@@ -68,7 +78,7 @@
       "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
     ]
   },
-  "terminal_rule": "Required and CodeQL green, protected merge, deployed original Supabase composer, original blocked action re-evaluated against current company evidence, approved quality if eligible, then independent provider-ID/readback for any sent email; no forced send if source remains missing. Never mark GREEN with internal cron receipt alone. Verify wait transition and research+quality resume on the original action ID; canonical provider ID/readback and real outcomes required. Rejected research remains held and expires after 48h.",
+  "terminal_rule": "Required and CodeQL green, protected merge, deployed original Supabase composer, original blocked action re-evaluated against current company evidence, approved quality if eligible, then independent provider-ID/readback for any sent email; no forced send if source remains missing. Never mark GREEN with internal cron receipt alone. Verify wait transition and research+quality resume on the original action ID; canonical provider ID/readback and real outcomes required. Rejected research remains held and expires after 48h. Validate original bg-social-metrics-sync deployed version, natural six-hour run, exact 8 Nov personal snapshot rehydrated, 9 Nov not prematurely mature, and existing social learning owner later joining real outcome by exact post/source event.",
   "canonical_scheduler": "powerhouse-commercial-learning-v1",
   "parallel_executor_created": false,
   "migration": "supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql",
@@ -93,5 +103,14 @@
     },
     "human_observable_state": "DEGRADED_OR_NOT_MEASURED_UNTIL_PROVIDER_PROOF",
     "experiment_policy": "existing powerhouse_experiment_policies; min 20 matured treatment and holdout per current policy"
+  },
+  "remediation_social_metric_handoff": {
+    "owner": "existing bg-social-metrics-sync, six-hour provider observer",
+    "implementation": "supabase/functions/_shared/original-publication-metric-handoff.mjs and original bg-social-metrics-sync/index.ts",
+    "handoff": "original LIVE_PROVEN date+channel+tenant_id+external_id -> exact-owned social_posts -> source-event-bound ≥24h provider snapshot -> CAS original obligation measured_at and partial metrics receipt",
+    "provider_scope": "personal reactions only; verified company post impressions where available",
+    "safety": "no fabricated reach, no mixed tenant, no premature measured, no learned_at, no second scheduler",
+    "test": "tests/brain-verified-research-composer-handoff-20261109.test.mjs",
+    "deployment_state": "SOURCE_ONLY_CANDIDATE_NOT_LIVE"
   }
 }
