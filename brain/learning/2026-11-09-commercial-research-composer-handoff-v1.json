@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-09",
+  "status": "CANDIDATE",
+  "fingerprint": "commercial|research-done-original-composer-not-rehydrated|20261109-v1",
+  "obligation_id": "commercial|research-composer-handoff|20261109-v1",
+  "failure_class": "RESEARCH_COMPOSER_EVIDENCE_HANDOFF_MISSING",
+  "root_cause": "Original autonomous-email composer rejects actions without source-specific evidence; source research can complete into canonical company-news and its original research action, but original composer never reads that completion before source preflight. Schedulers report internal success while provider-accepted email remains zero.",
+  "observed_evidence": {
+    "project": "canonical Supabase Powerhouse",
+    "observation_date": "2026-11-09",
+    "prepared_autonomous_email": 2,
+    "approved_company_news_research_actions": 1,
+    "no_verified_source_waiting": 1,
+    "provider_ack_last_30_days": 0,
+    "cron_112_113_114_116": "running",
+    "gmail_preflight": "ok account/user resolved; no send implied",
+    "cro_active_assignments": 0,
+    "source_objects": [
+      "public.powerhouse_sales_actions",
+      "public.bg_bedrijfsnieuws",
+      "public.powerhouse_email_provider_preflight_reconcile_v1",
+      "public.powerhouse_autonomous_experiment_readiness_v1"
+    ],
+    "private_recipient_identifiers_omitted": true,
+    "no_revenue_or_send_claim": true
+  },
+  "fix": "Read original research_enrichment by its dedupe ID, then cross-check canonical company-news identity, timestamps, confidence and exact HTTPS source in existing composer. Re-run original quality gate. Preserve distinct recipient authority, suppression, idempotence, provider ACK/readback and outcome gates.",
+  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design.",
+  "tests": [
+    "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "RESEARCH_COMPOSER_EVIDENCE_HANDOFF_MISSING",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
+    ]
+  },
+  "terminal_rule": "Required and CodeQL green, protected merge, deployed original Supabase composer, original blocked action re-evaluated against current company evidence, approved quality if eligible, then independent provider-ID/readback for any sent email; no forced send if source remains missing. Never mark GREEN with internal cron receipt alone.",
+  "canonical_scheduler": "powerhouse-commercial-learning-v1",
+  "parallel_executor_created": false
+}
