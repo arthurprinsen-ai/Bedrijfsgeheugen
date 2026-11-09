@@ -53,10 +53,18 @@
       "nov09_original_obligation_measured_at": null,
       "source_snapshot_identity_verified": true,
       "obligation_measurement_handoff_missing": true
+    },
+    "end_to_end_nov01_to_nov09": {
+      "total_channel_obligations": 36,
+      "live_proven": 13,
+      "measured_at_set": 0,
+      "learned_at_set": 0,
+      "measured_obligations": "ZERO",
+      "measurement_date": "2026-11-09T20:08:34Z"
     }
   },
   "fix": "Read original research_enrichment by its dedupe ID, then cross-check canonical company-news identity, timestamps, confidence and exact HTTPS source in existing composer. Re-run original quality gate. Preserve distinct recipient authority, suppression, idempotence, provider ACK/readback and outcome gates. Canonical closure now parks genuinely research-held originals as WAITING up to 48 hours and terminalizes without side effects if unresolved; original email watchdog excludes this hold from automatic requeue; original composer is sole owner of WAITING->PREPARED after full source and copy quality pass. The original commercial action closure emits a seven-day same-action handoff funnel and 30-day policy-scoped randomized experiment maturity in its existing bg_gezondheid record. Record first handoff error instead of only cron health. Attach a service-only read-only seven-day per-action observability view and aggregated scorecard to the existing email watchdog so every existing scheduler tick records handoff diagnostics; classify missing research/composer, expired source handoff, provider ACK/readback gaps, actual replies and realized revenue. Reuse the existing active CRO experiment policy and holdout, never invent uplift or recipients.",
-  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design. A generic retry watchdog must never promote a source-held WAITING action; a closure watchdog must not expire a legitimate pending research action during its bounded evidence deadline. A learning result requires qualifying original action outcomes and evidence from both matured experiment arms; otherwise INSUFFICIENT_EVIDENCE_NOT_LEARNED. A successful cron tick can never override handoff-stage failures or low experiment power. Underpowered A/B remains INSUFFICIENT_EVIDENCE and terminal claimed outcome requires exact external provider receipt. The original post's measurable 24h provider observation must write a verified source+scope+UTC receipt back to its exact original publication_date/channel obligation, with CAS and provider-post identity; provider ingest without obligation-level acknowledgment is not terminal measurement.",
+  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design. A generic retry watchdog must never promote a source-held WAITING action; a closure watchdog must not expire a legitimate pending research action during its bounded evidence deadline. A learning result requires qualifying original action outcomes and evidence from both matured experiment arms; otherwise INSUFFICIENT_EVIDENCE_NOT_LEARNED. A successful cron tick can never override handoff-stage failures or low experiment power. Underpowered A/B remains INSUFFICIENT_EVIDENCE and terminal claimed outcome requires exact external provider receipt. The original post's measurable 24h provider observation must write a verified source+scope+UTC receipt back to its exact original publication_date/channel obligation, with CAS and provider-post identity; provider ingest without obligation-level acknowledgment is not terminal measurement. Blog queue may never re-request GENERATED for an original APPROVED obligation; original state readback must contain same date/channel idempotency and next executor. A GENERATED row with recorded approval evidence is inconsistent and needs original approval-owner recheck.",
   "tests": [
     "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
   ],
@@ -112,5 +120,17 @@
     "safety": "no fabricated reach, no mixed tenant, no premature measured, no learned_at, no second scheduler",
     "test": "tests/brain-verified-research-composer-handoff-20261109.test.mjs",
     "deployment_state": "SOURCE_ONLY_CANDIDATE_NOT_LIVE"
+  },
+  "blog_approval_handoff_regression": {
+    "original_date": "2026-11-09",
+    "status": "GENERATED",
+    "approved_at": "2026-11-09T06:10:39Z",
+    "approved_evidence_present": true,
+    "live_proven": false,
+    "source_root": "powerhouse-blog-queue unconditionally requests p_status=GENERATED even if original APPROVED; monotone RPC returns without applying queued idempotency/next_executor receipt",
+    "fix": "preserve actual APPROVED status, assert same original recorded RPC receipt, fail closed if GENERATED has older approval evidence",
+    "source_path": "supabase/functions/powerhouse-blog-queue/index.ts",
+    "regression_test": "tests/brain-verified-research-composer-handoff-20261109.test.mjs",
+    "live_state": "SOURCE_PATCH_NOT_DEPLOYED"
   }
 }
