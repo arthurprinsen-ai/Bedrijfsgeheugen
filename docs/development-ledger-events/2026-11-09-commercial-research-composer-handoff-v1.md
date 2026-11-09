@@ -23,7 +23,7 @@ De oorspronkelijke closure-watchdog liet e-mails met een geldige onderzoekstaak 
 - Na 48 uur zonder goedkeuring wordt de actie veilig `expired` en alleen nieuw actueel bewijs mag een nieuwe, gededupliceerde commerciële actie opleveren.
 - De twee reeds op 9 november verlopen acties worden niet heimelijk heropend en niet als verstuurd gemeld.
 
-Bron/migratie: `supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql`.
+Bron/migratie: `supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql`.
 Technische en businessbewijsgrens: pas na beschermd merge, Supabase migratie/Edge readback en een echte providerbevestiging is de release aantoonbaar operationeel.
 
 
