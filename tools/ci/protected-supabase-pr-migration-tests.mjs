@@ -37,7 +37,11 @@ if (/^[a-f0-9]{40}$/.test(base)) {
     // protected original SQL on an immutable historical base. Unlike ordinary
     // candidates, it restores the remote history's *existing* second version.
     // Hosted Supabase Preview remains mandatory to verify provider truth.
-    const originalBaseSQL=execFileSync('git',['show',base+':supabase/migrations/20261109152200_original_social_provider_refresh_learning_v1.sql'],{cwd:root,encoding:'utf8',maxBuffer:5e6});
+    const originalBlob=spawnSync('git',['show',base+':supabase/migrations/20261109152200_original_social_provider_refresh_learning_v1.sql'],{cwd:root,encoding:'utf8',maxBuffer:5e6});
+    // Ordinary PR regression fixtures intentionally contain no incident-era
+    // protected source. Treat its absence as "not this one-time recovery";
+    // preserve the original normal migration admission path and its tests.
+    const originalBaseSQL=originalBlob.status===0?originalBlob.stdout:'';
     const restoredFile='supabase/migrations/20261109152945_original_social_provider_refresh_learning_v1.sql';
     const restoredSQL=proposed.includes(restoredFile)?readFileSync(path.join(root,restoredFile),'utf8'):'';
     const reconciliation=verifyAlreadyApplied818HistoryReconciliation({
