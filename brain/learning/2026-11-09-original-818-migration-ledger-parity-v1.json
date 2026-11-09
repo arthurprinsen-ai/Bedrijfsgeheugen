@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-09",
-  "status": "PROVIDER_HISTORY_OBSERVED_SOURCE_MIRROR_CANDIDATE",
+  "status": "FIRST_PROVIDER_APPLIED_LOCK_STAGE_817_CANDIDATE",
   "fingerprint": "powerhouse|supabase|original-refresh-double-migration-history|20261109-v1",
   "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "owner": "original protected Supabase GitOps migration release + original source lock reconciler (not a second database release executor)",
@@ -28,17 +28,21 @@
   "fix": "Preserve immutable production history; add exact second already-applied original SQL source mirror version 20261109152945; advance same canonical supabase/migration-history.lock.json from 816 to 818 with the 2 live provider identities; guard exact mirrored source equality and permissions. No new apply, merge_branch, migration replay or creation of scheduler/provider/sender in production.",
   "prevention": "After protected merge, verify existing original Supabase GitOps status and native migration history BEFORE any explicit provider apply. If migration already applied via GitHub connector, never call apply_migration again. Prevent duplicate migration history, source/provider file count mismatch and tail checksum drift with protected test and original delivery preflight; leave previous history immutable, never alter provider rows to cosmetically green.",
   "tests": [
-    "tests/brain-original-818-migration-ledger-parity-20261109.test.mjs"
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-original-818-migration-ledger-parity-20261109.test.mjs"
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
     ],
     "shadow": [
-      "tests/brain-original-818-migration-ledger-parity-20261109.test.mjs"
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
     ],
     "canary": [
-      "tests/brain-original-818-migration-ledger-parity-20261109.test.mjs"
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
     ],
     "invariants": [
       "one file per original applied provider version",
@@ -56,5 +60,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "terminal_rule": "Exact provider 818 identities and existing original SQL bodies, protected Required+CodeQL merge, independent count/lock/file parity readback, no extra runtime apply. Original experiment refresh remains TESTING and successful second 0 writes. Only the original GitOps executor owns future migration deployment."
+  "terminal_rule": "First protected lock-only PR 817/817 source parity; separate protected source-only mirror for existing provider version 20261109152945; separate protected second lock-only PR to close 818/818/818. Never combine new source file with lock write under protected admission. Never apply production SQL again."
 }
