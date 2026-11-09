@@ -28,3 +28,10 @@ De oorspronkelijke closure-watchdog liet e-mails met een geldige onderzoekstaak 
 
 Bron/migratie: `supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql`.
 Technische en businessbewijsgrens: pas na beschermd merge, Supabase migratie/Edge readback en een echte providerbevestiging is de release aantoonbaar operationeel.
+
+
+## Meet- en experimenteercontract (dezelfde originele watchdog)
+Het productieonderzoek op 9 november toonde in het zeven-dagen-cohort **11** `autonomous_email`-acties, **11** gelinkte onderzoeksacties, **4** afgeronde brononderzoeken waarvan de originele e-mail **alle vier** `expired` was, **0** composer-quality records, **0** externe providerbevestigingen en **0** provider-gelinkte replies. Uitkomst bij huidige data: onvoldoende experimentbasis; in het experimentregister één toewijzing historisch, nul de laatste dertig dagen en geen actuele holdout.
+De bestaande closure-watchdog gaat voortaan in zijn normale `bg_gezondheid`-output alle onderling gekoppelde stappen meten, met `action_id` als bronidentiteit: research ontvangen en voltooid; of uitgevoerd onderzoek vóór composer is verloren; laatste composerkwaliteit; originele actiestatus; acceptatie met externe provider-ID; onafhankelijk provider-readback; gelinkte reactie. Hij rapporteert expliciet het eerstvolgende falende overdrachtspunt én berekent research→composer-dekking alleen als de noemer groter dan nul is. Intern 'done' of cron 'ok' telt nooit als externe salesoutput.
+CRO/Innovatie gebruikt de bestaande 50/50-behandelings-/controlegroeppolicy `persuasion-revenue-optimizer-v1` (minimum twintig volwassen uitkomsten per arm) en schrijft alleen een `READY_FOR_CAUSAL_EFFECT_ANALYSIS` als beide armen de beleidsdrempel behalen. Zelfs dit is nog geen significant of bewezen lift; daarvoor is aparte effectanalyse met onzekerheid, omzetbewijs en validatie nodig. Nul sample/ontvanger = `INSUFFICIENT_EVIDENCE_NOT_LEARNED`.
+Status: releasekandidaat, **niet live**; zonder beveiligde merge, Supabase-preview en exacte productiecontrole geen succesclaim. Geen tweede executor, geen ongevraagde e-mails.
