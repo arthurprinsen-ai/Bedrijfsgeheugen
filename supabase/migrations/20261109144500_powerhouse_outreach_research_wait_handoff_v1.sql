@@ -617,3 +617,229 @@ from public.powerhouse_commercial_handoff_telemetry_v1;
 
 revoke all on table public.powerhouse_commercial_handoff_scorecard_v1 from public,anon,authenticated;
 grant select on table public.powerhouse_commercial_handoff_scorecard_v1 to service_role;
+
+-- P0 original content-to-measure-to-learn handoff receipts, on the EXISTING hourly content executor.
+-- Uses ONLY existing obligations, runtime events and health, no new cron/table/side-effect.
+create or replace function public.powerhouse_original_handoff_receipt_audit_v1(
+  p_now timestamp with time zone default now()
+)
+returns jsonb
+language plpgsql
+set search_path to 'public','pg_catalog'
+as $handoff$
+declare
+  r record;
+  v_stage text;
+  v_owner text;
+  v_due timestamp with time zone;
+  v_overdue boolean;
+  v_provider_proven boolean;
+  v_metric_proven boolean;
+  v_analysis_proven boolean;
+  v_experiment_proven boolean;
+  v_application_proven boolean;
+  v_next_run_proven boolean;
+  v_source_event text;
+  v_original_key text;
+  v_evidence jsonb;
+  v_checked int:=0;
+  v_pending int:=0;
+  v_overdue_count int:=0;
+  v_verified int:=0;
+  v_stages jsonb:='{}'::jsonb;
+  v_snapshot jsonb;
+begin
+  if p_now is null then raise exception 'ORIGINAL_HANDOFF_TIME_REQUIRED'; end if;
+  for r in
+    select o.* from public.content_publication_obligations o
+    where o.tenant_id='canonical'
+      and o.channel in ('linkedin_personal','linkedin_company','instagram','blog')
+      and o.publication_date between
+        (p_now at time zone 'Europe/Amsterdam')::date-8
+        and (p_now at time zone 'Europe/Amsterdam')::date
+    order by o.publication_date,o.channel
+  loop
+    v_checked:=v_checked+1;
+    v_original_key:='content-publication:'||r.publication_date::text||':'||r.channel;
+    v_owner:=case
+      when r.channel='blog' then 'original Powerhouse blog queue + protected CMS publisher'
+      when r.channel='instagram' then 'original Mira media producer + Instagram publisher'
+      else 'original Powerhouse social publisher'
+    end;
+    v_due:=(r.publication_date::timestamp+time '20:30')
+             at time zone 'Europe/Amsterdam';
+    v_provider_proven:=r.status in ('LIVE_PROVEN','MEASURED','LEARNED')
+      and r.live_proven_at is not null
+      and nullif(r.external_id,'') is not null
+      and (r.channel not in ('blog','linkedin_personal','linkedin_company')
+        or nullif(r.canonical_url,'') is not null);
+    v_source_event:=nullif(r.metrics#>>'{original_provider_metric_handoff,source_event_id}','');
+    -- Only original source-bound metrics are admitted; older measured_at stamps
+    -- with no provider/GA4/GSC provenance never count as a received handoff.
+    if r.channel='blog' then
+      v_source_event:=coalesce(
+        nullif(r.metrics#>>'{ga4,source_event_id}',''),
+        nullif(r.metrics#>>'{gsc,source_event_id}',''),
+        nullif(r.metrics#>>'{original_provider_metric_handoff,source_event_id}',''));
+    end if;
+    v_metric_proven:=r.measured_at is not null and v_source_event is not null;
+    v_analysis_proven:=false;
+    v_experiment_proven:=false;
+    v_application_proven:=false;
+    if r.channel in ('linkedin_personal','linkedin_company','instagram') then
+      select exists (
+        select 1
+        from public.social_posts sp
+        join public.social_learning_evaluations le
+          on le.post_id=sp.post_id and le.tenant_id=sp.tenant_id
+        where sp.external_post_id=r.external_id
+          and sp.channel_kind=r.channel
+          and sp.tenant_id=case when r.channel='linkedin_company'
+            then 'bedrijfsgeheugen' else 'canonical' end
+          and le.observed_at>=r.published_at
+      ) into v_analysis_proven;
+      select exists (
+        select 1
+        from public.social_posts sp
+        join public.social_learning_applications la
+          on la.post_id=sp.post_id and la.tenant_id=sp.tenant_id
+        where sp.external_post_id=r.external_id and sp.channel_kind=r.channel
+          and sp.tenant_id=case when r.channel='linkedin_company'
+            then 'bedrijfsgeheugen' else 'canonical' end
+          and la.verification_status in
+            ('APPLIED_NEXT_RUN_VERIFIED','CONTROLLED_EXPERIMENT_OUTCOME_VERIFIED')
+      ) into v_application_proven;
+    else
+      v_analysis_proven:=nullif(r.evidence#>>'{blog_analysis,source_event_id}','') is not null;
+      v_application_proven:=coalesce(
+        r.evidence#>>'{blog_learning,application_verified}','false')='true';
+    end if;
+    -- Policy evidence for a real control/holdout, not merely calendar experiment_id.
+    v_experiment_proven:=coalesce(
+      r.evidence#>>'{experiment,controlled_outcome_verified}','false')='true'
+      and nullif(r.evidence#>>'{experiment,experiment_id}','') is not null;
+    v_next_run_proven:=coalesce(
+      r.evidence#>>'{learning,next_original_run_readback_verified}','false')='true'
+      and nullif(r.evidence#>>'{learning,next_original_provider_id}','') is not null
+      and r.learned_at is not null;
+
+    if not v_provider_proven then
+      v_stage:=case when r.status in ('BLOCKED','FAILED') then 'PUBLICATION_BLOCKED'
+         else 'ORIGINAL_PUBLICATION_NOT_PROVEN' end;
+    elsif not v_metric_proven then
+      v_stage:=case when r.measured_at is null then 'PROVIDER_TO_METRICS_PENDING'
+        else 'MEASUREMENT_STAMP_WITHOUT_SOURCE_RECEIPT' end;
+      v_due:=r.live_proven_at+
+        case when r.channel='blog' then interval '8 days' else interval '78 hours' end;
+      v_owner:=case when r.channel='blog' then 'original SEO/GA4/GSC data spine'
+        else 'original bg-social-metrics-sync and channel provider analytics' end;
+    elsif not v_analysis_proven then
+      v_stage:='METRICS_TO_ANALYST_ACK_MISSING';
+      v_due:=r.measured_at+interval '36 hours';
+      v_owner:='original Powerhouse analyst / social learning';
+    elsif not v_experiment_proven then
+      v_stage:='EXPERIMENT_OUTCOME_NOT_PROVEN';
+      v_due:=r.measured_at+interval '8 days';
+      v_owner:='original CRO/Innovation experiment owner';
+    elsif not v_application_proven or r.learned_at is null then
+      v_stage:='LEARNING_APPLICATION_ACK_MISSING';
+      v_due:=r.measured_at+interval '8 days';
+      v_owner:='original Powerhouse learning and improvement owner';
+    elsif not v_next_run_proven then
+      v_stage:='NEXT_NATURAL_RUN_READBACK_MISSING';
+      v_due:=r.learned_at+interval '2 days';
+      v_owner:='original Powerhouse publisher and learning owner';
+    else
+      v_stage:='END_TO_END_VERIFIED';
+      v_due:=null;
+      v_owner:='original ONE BRAIN terminal verifier';
+    end if;
+    v_overdue:=v_due is not null and p_now>v_due
+      and v_stage<>'END_TO_END_VERIFIED';
+    if v_overdue then v_overdue_count:=v_overdue_count+1;
+    elsif v_stage='END_TO_END_VERIFIED' then v_verified:=v_verified+1;
+    else v_pending:=v_pending+1;
+    end if;
+    v_stages:=jsonb_set(v_stages,array[v_stage],
+      to_jsonb(coalesce((v_stages->>v_stage)::int,0)+1),true);
+    v_evidence:=jsonb_build_object(
+      'contract','POWERHOUSE_ORIGINAL_HANDOFF_ACK_V1',
+      'original_id',v_original_key,
+      'original_status',r.status,
+      'source_content_id',r.content_id,
+      'provider_id',r.external_id,
+      'provider_url',r.canonical_url,
+      'last_proven_stage',case
+        when v_next_run_proven and v_application_proven and v_experiment_proven
+          and v_analysis_proven and v_metric_proven then 'NEXT_RUN_VERIFIED'
+        when v_metric_proven and v_analysis_proven then 'ANALYZED'
+        when v_metric_proven then 'MEASURED_WITH_SOURCE'
+        when v_provider_proven then 'PROVIDER_LIVE_VERIFIED'
+        else 'NOT_LIVE_PROVEN' end,
+      'next_stage',v_stage,'expected_owner',v_owner,
+      'receipt_missing',v_stage<>'END_TO_END_VERIFIED',
+      'original_provider_proven',v_provider_proven,
+      'metric_source_event',v_source_event,
+      'metric_receipt_proven',v_metric_proven,
+      'analysis_ack_proven',v_analysis_proven,
+      'controlled_experiment_proven',v_experiment_proven,
+      'application_ack_proven',v_application_proven,
+      'next_natural_run_ack_proven',v_next_run_proven,
+      'deadline_utc',v_due,'deadline_overdue',v_overdue,
+      'checked_at_utc',p_now,
+      'repair_policy','original-owner-only; preserve original ID and provider idempotency; never invent publication, sample or revenue',
+      'next_action',r.next_action,
+      'learning_state',case when v_stage='END_TO_END_VERIFIED' then 'CLOSED_WITH_NEXT_RUN_PROOF'
+        when not v_experiment_proven then 'INSUFFICIENT_EVIDENCE_NOT_LEARNED'
+        else 'APPLICATION_PENDING' end);
+    insert into public.powerhouse_runtime_events (
+      dedupe_key,event_type,source,subject_key,channel,occurred_at,
+      evidence,context,state,data_quality,confidence,updated_at)
+    values (
+      'original-handoff:'||r.publication_date::text||':'||r.channel,
+      'original_content_handoff_ack_audit',
+      'powerhouse-content-closed-loop-tick-v1',
+      v_original_key,r.channel,p_now,v_evidence,
+      jsonb_build_object('publication_date',r.publication_date,
+        'original_tenant','canonical','canonical_owner',v_owner,
+        'existing_scheduler','powerhouse-content-orchestrator-daily-v1'),
+      case when v_overdue then 'error'
+        when v_stage='END_TO_END_VERIFIED' then 'closed'
+        else 'observed' end,
+      'OBSERVED',1,p_now)
+    on conflict(dedupe_key) do update
+      set evidence=excluded.evidence,context=excluded.context,
+          state=excluded.state,data_quality=excluded.data_quality,
+          confidence=excluded.confidence,occurred_at=excluded.occurred_at,
+          updated_at=excluded.updated_at;
+  end loop;
+  v_snapshot:=jsonb_build_object(
+    'contract','POWERHOUSE_ORIGINAL_HANDOFF_ACK_V1',
+    'checked_at_utc',p_now,
+    'original_count',v_checked,
+    'overdue_count',v_overdue_count,
+    'pending_count',v_pending,
+    'complete_with_next_run_proof',v_verified,
+    'by_stage',v_stages,
+    'new_executor_created',false,
+    'original_scheduler','powerhouse-content-orchestrator-daily-v1',
+    'email_delivery_owner','existing autonomous commercial sender; separate original email scorecard',
+    'release_state','measured only after exact source, UTC and original readback');
+  insert into public.bg_gezondheid
+    (gemeten_op,onderdeel,soort,status,detail,gegevens)
+  values (p_now,'powerhouse-original-handoff-ack',
+    'original-content-metrics-experiment-application',
+    case when v_overdue_count>0 then 'fout'
+      when v_pending>0 then 'waarschuwing' else 'ok' end,
+    'Original ID, owner, SLA and receipt audited; green only after independently proven applied learning on next natural run.',
+    v_snapshot);
+  return v_snapshot;
+end
+$handoff$;
+
+-- This internal maintenance function is not a public browser API.
+revoke all on function public.powerhouse_original_handoff_receipt_audit_v1(timestamp with time zone)
+  from public,anon,authenticated;
+grant execute on function public.powerhouse_original_handoff_receipt_audit_v1(timestamp with time zone)
+  to service_role;
+
