@@ -261,3 +261,34 @@ test('handoff receipt cannot declare complete without source measurement, experi
  assert.match(sql,/INSUFFICIENT_EVIDENCE_NOT_LEARNED/);
  assert.doesNotMatch(sql,/create\s+(?:extension|trigger|table)\s+powerhouse_original_handoff/i);
 });
+
+test('original closure requires independently matured control and treatment, not just a claimed experiment flag',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/from public\.social_experiments se/);
+ assert.match(sql,/se\.status='COMPLETE'/);
+ assert.match(sql,/effect_is_causal/);
+ assert.match(sql,/provider_outcome_source_event_id/);
+ assert.match(sql,/control_provider_source_event_id/);
+ assert.match(sql,/treatment_matured/);
+ assert.match(sql,/control_matured/);
+ assert.match(sql,/se\.min_steekproef/);
+});
+test('original applied-learning closure independently matches a later same-channel published output',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/from public\.content_publication_obligations later/);
+ assert.match(sql,/later\.tenant_id=r\.tenant_id and later\.channel=r\.channel/);
+ assert.match(sql,/later\.publication_date>r\.publication_date/);
+ assert.match(sql,/later\.external_id=r\.evidence#>>'\{learning,next_original_provider_id\}'/);
+ assert.match(sql,/later\.content_id=r\.evidence#>>'\{learning,next_original_content_id\}'/);
+ assert.match(sql,/later\.content_id is distinct from r\.content_id/);
+ assert.match(sql,/later\.evidence#>>'\{learning,applied_learning_id\}'/);
+ assert.match(sql,/provider_publication_ack_verified/);
+ assert.match(sql,/provider_truth_verified/);
+});
+test('single original SQL audit and original hourly tick — never duplicate by content replacement',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.equal((sql.match(/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1/gi)||[]).length,1);
+ assert.equal((sql.match(/create or replace function public\.powerhouse_content_closed_loop_tick_v1/gi)||[]).length,1);
+ assert.match(sql,/\(se\.resultaat->>'treatment_matured'\) ~ '\^\[0-9\]\+\$'/);
+ assert.match(sql,/\(se\.resultaat->>'control_matured'\) ~ '\^\[0-9\]\+\$'/);
+});
