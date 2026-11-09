@@ -185,3 +185,27 @@ test('existing original six-hour runtime has a per-experiment handoff health vet
  assert.match(runtime,/HANDOFF_OVERDUE','EXPERIMENT_HANDOFF_READ_ERROR'/);
  assert.doesNotMatch(runtime,/cron\.schedule|createClient\(.+other/);
 });
+
+
+test('later Windsor observation cannot invalidate an already exact original prior BRAIN evaluation',()=>{
+ const earlier=validatedSnapshot();
+ const newer={...earlier,observed_at:'2026-11-10T01:00:00Z',
+  source_event_id:'windsor:linkedin-company:'+freshUrn+':2026-11-10'};
+ const report=evaluate({snapshots:[earlier,newer],now:new Date('2026-11-10T13:00:00Z')});
+ assert.equal(report.state,'VERIFIED_WITH_PENDING');
+ assert.equal(report.overdue_count,0);
+ assert.equal(report.newer_sample_waiting_count,1);
+ assert.equal(report.stages[0].state,'WAITING_BRAIN_REFRESH');
+ assert.equal(report.stages[0].source_event_id,earlier.source_event_id);
+ assert.equal(report.stages[0].newest_provider_event_id,newer.source_event_id);
+ assert.equal(report.stages[0].newest_provider_event_evaluated,false);
+});
+test('genuinely unconsumed newer provider source matures into original BRAIN refresh due',()=>{
+ const earlier=validatedSnapshot();
+ const newer={...earlier,observed_at:'2026-11-10T01:00:00Z',
+  source_event_id:'windsor:linkedin-company:'+freshUrn+':2026-11-10'};
+ const report=evaluate({snapshots:[earlier,newer],now:new Date('2026-11-14T13:00:00Z')});
+ assert.equal(report.overdue_count,1);
+ assert.equal(report.stages[0].state,'BRAIN_REFRESH_HANDOFF_OVERDUE');
+ assert.equal(report.state,'HANDOFF_OVERDUE');
+});
