@@ -94,7 +94,7 @@ Deno.serve(async (req: Request) => {
       throw new Error('VOORSTEL_ONBEKENDE_PAGINA_OR_SCHEMA');
     // "BUTTON" is a captured instrumentation label, not verified live DOM copy.
     // Never turn it into an executable website change without original-site proof.
-    if (/\\bBUTTON\\b/i.test(String(v.controle || '') + ' ' + String(v.variant || ''))) {
+    if (/\bBUTTON\b/i.test(String(v.controle || '') + ' ' + String(v.variant || ''))) {
       const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'UNVERIFIED_PAGE_CONTROL',
         improvement_verified: false, next_owner: 'original-growth-cro-agent',
         next_action: 'VERIFY_CANONICAL_LIVE_DOM_CONTROL_BEFORE_PROPOSAL' };
