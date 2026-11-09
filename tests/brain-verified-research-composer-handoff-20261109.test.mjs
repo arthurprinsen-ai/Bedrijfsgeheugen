@@ -292,3 +292,31 @@ test('single original SQL audit and original hourly tick — never duplicate by 
  assert.match(sql,/\(se\.resultaat->>'treatment_matured'\) ~ '\^\[0-9\]\+\$'/);
  assert.match(sql,/\(se\.resultaat->>'control_matured'\) ~ '\^\[0-9\]\+\$'/);
 });
+
+test('repeated healthy cron is not downstream owner processing or fresh source progress',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/v_receipt_fingerprint:=md5\(jsonb_build_object\(/);
+ assert.match(sql,/original_first_seen_at/);
+ assert.match(sql,/last_real_progress_at/);
+ assert.match(sql,/unchanged_heartbeat_runs/);
+ assert.match(sql,/proof_fingerprint/);
+ assert.match(sql,/STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER/);
+ assert.match(sql,/OVERDUE_RETURN_TO_ORIGINAL_OWNER/);
+ assert.match(sql,/occurred_at=powerhouse_runtime_events\.occurred_at/);
+ assert.doesNotMatch(sql,/occurred_at=excluded\.occurred_at/);
+});
+test('receiver must explicitly claim exact original, current owner and current proof fingerprint',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/create or replace function public\.powerhouse_claim_original_handoff_v1/);
+ assert.match(sql,/p_dedupe_key not like 'original-handoff:%'/);
+ assert.match(sql,/event_type='original_content_handoff_ack_audit'/);
+ assert.match(sql,/for update/);
+ assert.match(sql,/is distinct from p_expected_owner/);
+ assert.match(sql,/is distinct from p_proof_fingerprint/);
+ assert.match(sql,/RECEIVED_NOT_PROCESSED/);
+ assert.match(sql,/external_provider_result_proven',false/);
+ assert.match(sql,/must_verify_next_natural_run',true/);
+ assert.match(sql,/revoke all on function public\.powerhouse_claim_original_handoff_v1\(/);
+ assert.match(sql,/grant execute on function public\.powerhouse_claim_original_handoff_v1[\s\S]*?to service_role;/);
+ assert.equal((sql.match(/create or replace function public\.powerhouse_claim_original_handoff_v1/gi)||[]).length,1);
+});
