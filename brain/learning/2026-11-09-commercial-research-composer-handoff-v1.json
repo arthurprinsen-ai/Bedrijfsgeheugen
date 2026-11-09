@@ -5,8 +5,8 @@
   "status": "CANDIDATE",
   "fingerprint": "commercial|research-done-original-composer-not-rehydrated|20261109-v1",
   "obligation_id": "commercial|research-composer-handoff|20261109-v1",
-  "failure_class": "RESEARCH_COMPOSER_EVIDENCE_HANDOFF_MISSING",
-  "root_cause": "Original autonomous-email composer rejects actions without source-specific evidence; source research can complete into canonical company-news and its original research action, but original composer never reads that completion before source preflight. Schedulers report internal success while provider-accepted email remains zero.",
+  "failure_class": "RESEARCH_COMPOSER_HANDOFF_AND_PREMATURE_ACTION_EXPIRY",
+  "root_cause": "Original autonomous-email composer rejects actions without source-specific evidence; source research can complete into canonical company-news and its original research action, but original composer never reads that completion before source preflight. Schedulers report internal success while provider-accepted email remains zero. The existing closure watchdog additionally marks a research-held prepared email expired after six hours; the generic email watchdog can retry source-held WAITING actions after twenty minutes without waiting for composer approval. This breaks the single action lineage.",
   "observed_evidence": {
     "project": "canonical Supabase Powerhouse",
     "observation_date": "2026-11-09",
@@ -24,10 +24,12 @@
       "public.powerhouse_autonomous_experiment_readiness_v1"
     ],
     "private_recipient_identifiers_omitted": true,
-    "no_revenue_or_send_claim": true
+    "no_revenue_or_send_claim": true,
+    "root_original_actions_expired_20261109": 2,
+    "action_research_completed_but_email_expired": 1
   },
-  "fix": "Read original research_enrichment by its dedupe ID, then cross-check canonical company-news identity, timestamps, confidence and exact HTTPS source in existing composer. Re-run original quality gate. Preserve distinct recipient authority, suppression, idempotence, provider ACK/readback and outcome gates.",
-  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design.",
+  "fix": "Read original research_enrichment by its dedupe ID, then cross-check canonical company-news identity, timestamps, confidence and exact HTTPS source in existing composer. Re-run original quality gate. Preserve distinct recipient authority, suppression, idempotence, provider ACK/readback and outcome gates. Canonical closure now parks genuinely research-held originals as WAITING up to 48 hours and terminalizes without side effects if unresolved; original email watchdog excludes this hold from automatic requeue; original composer is sole owner of WAITING->PREPARED after full source and copy quality pass.",
+  "prevention_rule": "No research action marked done, cron succeeded, positive model score or draft created is accepted as provider delivery. Research completeness requires verified source-to-original-action writeback; send requires provider acceptance/readback; causal learning requires valid sample/outcome design. A generic retry watchdog must never promote a source-held WAITING action; a closure watchdog must not expire a legitimate pending research action during its bounded evidence deadline.",
   "tests": [
     "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
   ],
@@ -49,7 +51,8 @@
       "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
     ]
   },
-  "terminal_rule": "Required and CodeQL green, protected merge, deployed original Supabase composer, original blocked action re-evaluated against current company evidence, approved quality if eligible, then independent provider-ID/readback for any sent email; no forced send if source remains missing. Never mark GREEN with internal cron receipt alone.",
+  "terminal_rule": "Required and CodeQL green, protected merge, deployed original Supabase composer, original blocked action re-evaluated against current company evidence, approved quality if eligible, then independent provider-ID/readback for any sent email; no forced send if source remains missing. Never mark GREEN with internal cron receipt alone. Verify wait transition and research+quality resume on the original action ID; canonical provider ID/readback and real outcomes required. Rejected research remains held and expires after 48h.",
   "canonical_scheduler": "powerhouse-commercial-learning-v1",
-  "parallel_executor_created": false
+  "parallel_executor_created": false,
+  "migration": "supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql"
 }
