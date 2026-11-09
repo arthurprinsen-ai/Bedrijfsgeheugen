@@ -32,3 +32,13 @@ Powerhouse moet bij iedere relevante connectie/klant/bedrijf weten wat er extern
 
 ## Daily full connection enrichment
 Gebruik permanent `powerhouse-daily-full-connection-enrichment-v1`. Iedere canonieke connectie wordt iedere kalenderdag opnieuw verrijkt met alle reeds ingeladen relevante LinkedIn-, bedrijfs-, publieke web-, runtime-, opportunity- en outcome-evidence. De full-graph refresh draait set-based binnen de bestaande `powerhouse-commercial-learning-v1` scheduler. Gedetailleerde evidence blijft in de canonieke bronstores; de dagelijkse enrichment-state is een rollup/provenance-laag en geen parallel CRM. Nieuwe evidence die later op de dag binnenkomt wordt bij de volgende bestaande commerciële cyclus opnieuw op de volledige graph geprojecteerd.
+
+## P0 invariant: research is pas klaar na consumer-readback
+Bij `SOURCE_SPECIFIC_EVIDENCE_REQUIRED` van een bestaande `autonomous_email`:
+1. Voer via het bestaande `relationship-research:outreach-source:<action-id>` record de reeds toegestane publieke research uit. Dedupe en oorspronkelijke actie-ID blijven gelijk.
+2. Een `research_enrichment` met `status=done` is uitsluitend een interne onderzoeksuitkomst. Het bewijst geen vrijgegeven bericht, verstuurde mail, antwoord, afspraak of omzet.
+3. De oorspronkelijke composer leest vóór elke herbeoordeling de onderzoeksactie én het door `bg_bedrijfsnieuws` geaccepteerde, actuele bedrijfsspecifieke bronrecord. Alleen bij sluitende persoon-, bedrijf-, bron- en tijdsmatch mag dat specifieke feit als context worden gebruikt. SERP-kandidaten, ontbrekende bronvalidatie en uitgestelde research blijven geblokkeerd.
+4. De originele composer voert daarna alle inhouds- en bronkwaliteitscontroles opnieuw uit. Verzending blijft uitsluitend bij de bestaande executor na recipient authority, suppressions, fatigue, dedupe en onafhankelijke provider-ID/readback.
+5. Meet dagelijks de volledige keten: `eligible -> researched -> sourced -> composer_passed -> provider_accepted -> answered -> meeting -> order -> realized_revenue`. Zet de eindstatus nooit groen op basis van een cron-succes, een interne actie `done`, een concept, of een modelscore. Bij nul toegestane externe acties rapporteer `NO_ELIGIBLE_ACTION`, niet kunstmatig succes.
+6. CRO en Innovatie mogen een aanpak pas `LEARNED` noemen na gekoppelde echte uitkomsten met een valide experiment-/holdoutopzet of na expliciet gemarkeerde observationele onzekerheid. Onvoldoende steekproef blijft `INSUFFICIENT_EVIDENCE`.
+7. Storingen loggen met exacte action-ID en originele onderzoeks-dedupe, ontbrekende voorwaarde, eigenaar, herstelaanpak, regressietest en nieuwe productiereadback in dezelfde ONE BRAIN lineage. Nooit een tweede scheduler of parallel e-mailsysteem.
