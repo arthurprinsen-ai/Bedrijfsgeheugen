@@ -1,0 +1,7 @@
+# Correctie: één experiment kan meerdere geldige providerwaarnemingen hebben
+
+De bestaande zesuurse bronbewaker mag niet één laatste Windsor-snapshot als de enige waarheid behandelen. Op 9 november bleek een post van 3 november al een echte oorspronkelijke BRAIN-evaluatie te hebben uit de Windsor-observatie van 5 november; op 8 november kwam een nieuwe providerobservatie binnen. De eerdere evaluatie blijft geldig, terwijl de recente waarneming nog een eigen evaluatie nodig heeft.
+
+De audit van `bg-social-metrics-sync` in de bestaande helper `linked-company-analytics.mjs` controleert daarom **alle** exact provider-gematchte bron-events binnen het oorspronkelijke meetvenster. Voor elke afzonderlijke post wordt het meest recente ongeëvalueerde event zichtbaar naast het laatste wel geëvalueerde event. `WAITING_BRAIN_REFRESH` is geen harde fout zolang de nieuwe bronobservatie korter dan 84 uur geleden is ontvangen; daarna is een reële leerachterstand `BRAIN_REFRESH_HANDOFF_OVERDUE`, met originele recovery-owner. De recorder noemt geen post succes of nieuwe omzet op basis van impressies; ontbrekende controlegroepen blijven ontbreken.
+
+De bestaande zesuurse scheduler en minuut-39-evaluator worden niet gewijzigd of gedupliceerd. Werkelijke end-to-end dekking vraagt na beschermd merge en Supabase-productiecontrole een natuurlijke bronrun, post-evaluatie-readback en vervolgens bewijs dat de originele contentgenerator de kennis toepast. De autonome groeilus blijft daarmee observeerbaar zonder te vervallen in een stroom kunstmatig groene statussen.
