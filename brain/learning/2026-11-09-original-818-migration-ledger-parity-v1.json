@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-09",
+  "status": "EXACT_PROTECTED_818_HISTORY_RECONCILIATION_CANDIDATE_REQUIRES_HOSTED_PROVIDER_PREVIEW",
+  "fingerprint": "powerhouse|supabase|original-refresh-double-migration-history|20261109-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original protected Supabase GitOps migration release + original source lock reconciler (not a second database release executor)",
+  "root_cause": "On 2026-11-09 PR #5550 protected merge triggered the existing Supabase GitHub integration to apply its native migration as version 20261109152200. A contemporaneous explicit official apply_migration call to check a missing product deployment also recorded version 20261109152945 for the same idempotent CREATE OR REPLACE FUNCTION. Both provider entries represent identical bounded logic. Original production migration ledger advanced 816 -> 818, while protected main had only source file 20261109152200 and old lock 816. This is duplicate migration history, not duplicate social publication/learning records.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "migration_count_before": 816,
+    "migration_count_after": 818,
+    "ids": [
+      "20261109152200",
+      "20261109152945"
+    ],
+    "migration_name": "original_social_provider_refresh_learning_v1",
+    "first_native_statements": 5,
+    "second_original_full_source_statements": 1,
+    "second_source_chars": 12153,
+    "first_original_sql_source": "supabase/migrations/20261109152200_original_social_provider_refresh_learning_v1.sql",
+    "second_canonical_source_mirror": "supabase/migrations/20261109152945_original_social_provider_refresh_learning_v1.sql",
+    "observed_live_bounded_refresh": true,
+    "live_original_brain_first_mutations": 2,
+    "live_original_brain_repeat_mutations": 0
+  },
+  "fix": "Preserve immutable production history; add exact second already-applied original SQL source mirror version 20261109152945; advance same canonical supabase/migration-history.lock.json from 816 to 818 with the 2 live provider identities; guard exact mirrored source equality and permissions. No new apply, merge_branch, migration replay or creation of scheduler/provider/sender in production.",
+  "prevention": "After protected merge, verify existing original Supabase GitOps status and native migration history BEFORE any explicit provider apply. If migration already applied via GitHub connector, never call apply_migration again. Prevent duplicate migration history, source/provider file count mismatch and tail checksum drift with protected test and original delivery preflight; leave previous history immutable, never alter provider rows to cosmetically green. Protected one-time recovery is accepted only for base SHA 3e55c792504ddbaf0916244213c58b9e827f120e, two independently observed exact provider identities 20261109152200/20261109152945, original SQL byte parity to protected Git base, original provider SQL MD5 0f713650278cf68f47011ec97ffd22f9, head lock 818 with unchanged first 816 records, and mandatory hosted Supabase Preview. All ordinary PR migration gates remain fail-closed. An 817-lock-only PR was blocked by preview because the independently recorded 818th migration was missing. Therefore repair all 818 via one documented provider-applied exception, never a general bypass.",
+  "tests": [
+    "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs",
+    "tests/brain-protected-supabase-pr-migration-tests.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
+    ],
+    "invariants": [
+      "one file per original applied provider version",
+      "exact 818 ordered lock identities",
+      "no migration deletions",
+      "duplicate SQL was provider already applied and idempotent",
+      "no new production DDL from lock-only reconciliation",
+      "original BRAIN double-run produces second zero writes"
+    ]
+  },
+  "compiler": {
+    "scope": "DATABASE_MIGRATIONS",
+    "failure_class": "DUPLICATE_CANONICAL_MIGRATION_APPLY_DURING_GITHUB_GITOPS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "PR #5551 one-time exact 818 provider history reconciliation: protected Required+CodeQL, hosted Supabase Preview must pass with matching provider ledger, original source file count=lock count=provider count 818, protected merge, independent readback. The exception must be ineligible on any future base or different provider SQL. No new database DDL, migration apply or cron; commercial learning later still requires next natural proof."
+}
