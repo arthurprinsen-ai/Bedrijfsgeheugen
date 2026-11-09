@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 // One-time recovery for two provider-applied ORIGINAL Supabase versions.
 // Immutable Git base (protected PR #5550) is the SQL authority; the hosted
 // Supabase Preview independently confirms the provider ledger after this guard.
@@ -37,6 +38,11 @@ export function verifyAlreadyApplied818HistoryReconciliation({
     return fail('MIGRATION_ORDER_OR_DUPLICATE');
   if(!originalBaseSQL||originalBaseSQL!==restoredSQL)
     return fail('RESTORED_SQL_NOT_IDENTICAL_TO_PROTECTED_ORIGINAL');
+  // Independent Supabase schema_migrations.statements digest (one original
+  // provider-applied SQL statement at version 20261109152945, Nov 9 2026).
+  // This is an immutable observation, NOT a self-attested PR manifest.
+  if(createHash('md5').update(restoredSQL,'utf8').digest('hex')!=='0f713650278cf68f47011ec97ffd22f9')
+    return fail('PROVIDER_APPLIED_SQL_DIGEST_MISMATCH');
   if(!originalBaseSQL.includes('create or replace function public.powerhouse_backfill_social_learning_applications_v1(')||
      !originalBaseSQL.includes("order by m.observed_at,m.source_event_id limit 4")||
      !originalBaseSQL.includes('revoke all on function public.powerhouse_backfill_social_learning_applications_v1(timestamptz)')||
