@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {sourceVerifiedComposerHandoff} from '../supabase/functions/_shared/verified-research-composer-handoff.mjs';
 const now='2026-11-09T12:30:00.000Z';
 const a={action_id:'8ebbec50-0522-4919-b9f0-239946884d48',person_key:'person-1',company_key:'company-1',company_name:'ROXTAR Online Marketing',source_url:'https://www.linkedin.com/in/example',message_plan:{play_key:'trigger_outreach',human_readable_context:false,source_trigger_relevance:false},evidence:{execution_gate:{reason:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'}}};
@@ -34,4 +35,11 @@ test('research candidates, no-result attempts and outdated execution cannot send
  assert.equal(sourceVerifiedComposerHandoff(a,{...r,executed_at:'2026-10-01T00:00:00Z'},n,now),null);
  assert.equal(sourceVerifiedComposerHandoff(a,{...r,evidence:{...r.evidence,public_research_execution:{contract:'powerhouse-relationship-public-research-v1',source_url:url}}},n,now),null);
  assert.equal(sourceVerifiedComposerHandoff({...a,evidence:{execution_gate:{reason:'OTHER_HOLD'}}},r,n,now),null);
+});
+
+test('production composer consumes verified original research before its original source quality gate',()=>{
+ const text=readFileSync(new URL('../supabase/functions/powerhouse-commercial-message-composer/index.ts',import.meta.url),'utf8');
+ assert.match(text,/sourceVerifiedComposerHandoff\(workingAction,research,news,now\)/);
+ assert.match(text,/const sourceGate=composerSourcePreflight\(workingAction,workingAction\.message_plan\)/);
+ assert.match(text,/const evidence=\{\.\.\.\(workingAction\.evidence\|\|\{\}\),commercial_intelligence:ci\}/);
 });
