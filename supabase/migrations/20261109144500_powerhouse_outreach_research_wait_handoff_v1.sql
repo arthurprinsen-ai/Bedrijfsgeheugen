@@ -849,3 +849,97 @@ revoke all on function public.powerhouse_original_handoff_receipt_audit_v1(times
 grant execute on function public.powerhouse_original_handoff_receipt_audit_v1(timestamp with time zone)
   to service_role;
 
+
+-- Wire assurance into existing cron #140 owner; retain authenticated publisher and security behavior.
+CREATE OR REPLACE FUNCTION public.powerhouse_content_closed_loop_tick_v1(p_now timestamp with time zone DEFAULT now())
+ RETURNS bigint
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_catalog', 'net', 'vault'
+AS $function$
+declare
+  v_request bigint;
+  v_date date := (p_now at time zone 'Europe/Amsterdam')::date;
+  v_token text;
+begin
+  begin
+    perform public.powerhouse_reconcile_content_outcomes_v1(v_date);
+  exception when others then
+    raise warning 'CONTENT_OUTCOME_RECONCILE_ISOLATED: % %', sqlstate, left(sqlerrm, 240);
+    begin
+      insert into public.bg_gezondheid(gemeten_op, onderdeel, soort, status, detail, gegevens)
+      values (now(), 'powerhouse-content-closed-loop-tick', 'reconciliation', 'fout', left(sqlerrm,360),
+        jsonb_build_object('run_date',v_date::text,'stage','reconcile_pre','isolated',true));
+    exception when others then
+      raise warning 'CONTENT_RECONCILE_DIAGNOSTIC_WRITE_FAILED: %', sqlstate;
+    end;
+  end;
+
+  begin
+    perform public.powerhouse_measure_content_outcomes_v1(p_now);
+  exception when others then
+    raise warning 'CONTENT_OUTCOME_MEASURE_ISOLATED: % %', sqlstate, left(sqlerrm, 240);
+    begin
+      insert into public.bg_gezondheid(gemeten_op, onderdeel, soort, status, detail, gegevens)
+      values (now(), 'powerhouse-content-closed-loop-tick', 'measurement', 'fout', left(sqlerrm,360),
+        jsonb_build_object('run_date',v_date::text,'stage','measure','isolated',true));
+    exception when others then
+      raise warning 'CONTENT_MEASURE_DIAGNOSTIC_WRITE_FAILED: %', sqlstate;
+    end;
+  end;
+
+  begin
+    perform public.powerhouse_report_missed_publications_v1(p_now);
+  exception when others then
+    raise warning 'CONTENT_MISSED_PUBLICATION_REPORT_ISOLATED: % %', sqlstate, left(sqlerrm, 240);
+    begin
+      insert into public.bg_gezondheid(gemeten_op, onderdeel, soort, status, detail, gegevens)
+      values (now(), 'powerhouse-content-closed-loop-tick', 'missed-publication-report', 'fout', left(sqlerrm,360),
+        jsonb_build_object('run_date',v_date::text,'stage','missed_report','isolated',true));
+    exception when others then
+      raise warning 'CONTENT_MISSED_REPORT_DIAGNOSTIC_WRITE_FAILED: %', sqlstate;
+    end;
+  end;
+
+  begin
+    perform public.powerhouse_recover_stuck_publications_v1(p_now);
+  exception when others then
+    raise warning 'CONTENT_STUCK_RECOVERY_ISOLATED: % %', sqlstate, left(sqlerrm, 240);
+    begin
+      insert into public.bg_gezondheid(gemeten_op, onderdeel, soort, status, detail, gegevens)
+      values (now(), 'powerhouse-content-closed-loop-tick', 'stuck-recovery', 'fout', left(sqlerrm,360),
+        jsonb_build_object('run_date',v_date::text,'stage','stuck_recovery','isolated',true));
+    exception when others then
+      raise warning 'CONTENT_STUCK_RECOVERY_DIAGNOSTIC_WRITE_FAILED: %', sqlstate;
+    end;
+  end;
+
+  -- Existing hourly scheduler #140 performs end-to-end original receipt audit,
+  -- without a new worker, publisher, experiment scheduler or provider write.
+  begin
+    perform public.powerhouse_original_handoff_receipt_audit_v1(p_now);
+  exception when others then
+    raise warning 'ORIGINAL_HANDOFF_RECEIPT_AUDIT_FAILED: % %',sqlstate,left(sqlerrm,240);
+    insert into public.bg_gezondheid(gemeten_op,onderdeel,soort,status,detail,gegevens)
+    values (p_now,'powerhouse-original-handoff-ack',
+      'receipt-audit','fout','Original handoff audit failed; no terminal success claimed.',
+      jsonb_build_object('source','powerhouse-content-closed-loop-tick-v1',
+        'sqlstate',sqlstate,'error',left(sqlerrm,240),
+        'original_event','P0_END_TO_END_CLOSURE_20261109',
+        'repair_owner','original Powerhouse operator','verified',false));
+  end;
+
+  -- Auth/security and provider dispatch errors are deliberately NOT caught.
+  v_token := nullif(trim(public.bg_geheim('powerhouse_daily_scheduler_token')), '');
+  if v_token is null then
+    raise exception 'CONTENT_LOOP_SCHEDULER_TOKEN_UNAVAILABLE';
+  end if;
+  select net.http_post(
+    url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-content-loop',
+    headers := jsonb_build_object('content-type','application/json','x-powerhouse-token',v_token),
+    body := jsonb_build_object('runDate',v_date::text),
+    timeout_milliseconds := 120000
+  ) into v_request;
+  return v_request;
+end
+$function$;
