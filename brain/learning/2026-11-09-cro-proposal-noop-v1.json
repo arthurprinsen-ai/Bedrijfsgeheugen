@@ -16,5 +16,20 @@
   "corrective_action": "truthful typed non-green evidence for proposal/active/low-traffic and invalid generic BUTTON controls",
   "regression_test": "tests/brain-experimentcyclus-openai-only-20261103.test.mjs",
   "prevention": "Never promote cron completion, proposal, vanity metric, a control-less variant or unverified conversion into implemented CRO learning",
-  "next_gate": "Protected CI -> merge -> original Edge deploy -> exact source/version readback -> genuine executed experiment and outcome evidence"
+  "next_gate": "Protected CI -> merge -> original Edge deploy -> exact source/version readback -> genuine executed experiment and outcome evidence",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ]
+  }
 }
