@@ -122,3 +122,66 @@ test('original six-hour social sync accepts verified staging quality but treats 
  assert.match(runtime,/company_learning_handoff_ok/);
  assert.doesNotMatch(runtime,/cron\.schedule/);
 });
+
+
+// Original experimental handoff SLA: a cron success or one old matched post must
+// never hide a different overdue real, provider-proven experiment variant.
+import {evaluateCompanyExperimentHandoffs} from '../supabase/functions/_shared/linked-company-analytics.mjs';
+const oldApp={tenant_id:'bedrijfsgeheugen',application_role:'ORIGINAL_EXPERIMENT_VARIANT_PROVIDER_PROVEN',
+ application_id:'app:nov6',post_id:freshPost.post_id,learning_id:'li-lus:linkedin_company:hook_type:contrarian_observation',
+ verification_status:'PROVIDER_METRICS_OBSERVED_NO_CONTROL'};
+const validatedSnapshot=()=>fresh()[0];
+const validEvaluation={tenant_id:'bedrijfsgeheugen',post_id:freshPost.post_id,
+ evidence:{application_id:oldApp.application_id,source_event_id:validatedSnapshot().source_event_id,causal_improvement_verified:false},
+ metric_vector:{metric_scope:'DESCRIPTIVE_EXPOSURE_NOT_CAUSAL_LIFT'}};
+const evaluate=(opts={})=>evaluateCompanyExperimentHandoffs({
+ applications:[oldApp],ownedPosts:[freshPost],snapshots:[validatedSnapshot()],
+ evaluations:[validEvaluation],now:new Date('2026-11-09T13:00:00Z'),...opts});
+test('original experiment 183 impressions -> exact independent evaluation is verified only descriptively',()=>{
+ const report=evaluate();
+ assert.equal(report.state,'VERIFIED_WITH_PENDING');
+ assert.equal(report.evaluated_count,1);
+ assert.equal(report.overdue_count,0);
+ assert.equal(report.causal_improvement_proven,false);
+});
+test('one old successful snapshot cannot hide a different provider-proven post missing metrics at 78h',()=>{
+ const another={...freshPost,post_id:'different',external_post_id:'urn:li:share:7524731986603798528',
+  published_at:'2026-11-07T07:18:29Z'};
+ const a2={...oldApp,application_id:'app:nov7',post_id:'different',
+  verification_status:'EXECUTED_PROVIDER_PROVEN_EFFECT_NOT_YET_MEASURED'};
+ const report=evaluate({applications:[oldApp,a2],ownedPosts:[freshPost,another],
+  now:new Date('2026-11-11T13:00:00Z')});
+ assert.equal(report.state,'HANDOFF_OVERDUE');
+ assert.equal(report.overdue_count,1);
+ assert.equal(report.stages.find(x=>x.application_id==='app:nov7').state,'PROVIDER_METRIC_HANDOFF_OVERDUE');
+});
+test('missing independent BRAIN evaluation after 84h is a typed overdue handoff',()=>{
+ const report=evaluate({evaluations:[],now:new Date('2026-11-10T13:00:00Z')});
+ assert.equal(report.stages[0].state,'BRAIN_EVALUATION_HANDOFF_OVERDUE');
+ assert.equal(report.state,'HANDOFF_OVERDUE');
+});
+test('false provider author, wrong post or wrong evaluation receipt cannot satisfy experiment closure',()=>{
+ for(const changed of [{data_quality:'UNVERIFIED'},
+  {metrics:{...validatedSnapshot().metrics,provider_post_urn:'urn:li:share:1234567890123456'}},
+  {metrics:{...validatedSnapshot().metrics,independent_proof:'UNPROVEN'}}]){
+  const report=evaluate({snapshots:[{...validatedSnapshot(),...changed}],now:new Date('2026-11-10T13:00:00Z')});
+  assert.equal(report.overdue_count,1);
+  assert.equal(report.stages[0].state,'PROVIDER_METRIC_HANDOFF_OVERDUE');
+ }
+ const wrong={...validEvaluation,evidence:{...validEvaluation.evidence,source_event_id:'wrong'}};
+ assert.equal(evaluate({evaluations:[wrong],now:new Date('2026-11-10T13:00:00Z')}).overdue_count,1);
+});
+test('provider analytics immature within 78 hours remains pending, not fake green or false red',()=>{
+ const report=evaluate({applications:[{...oldApp,verification_status:'EXECUTED_PROVIDER_PROVEN_EFFECT_NOT_YET_MEASURED'}],
+  snapshots:[],evaluations:[],now:new Date('2026-11-07T12:00:00Z')});
+ assert.equal(report.state,'VERIFIED_WITH_PENDING');
+ assert.equal(report.pending_count,1);
+ assert.equal(report.overdue_count,0);
+});
+test('existing original six-hour runtime has a per-experiment handoff health veto, no added scheduler',async()=>{
+ const runtime=await readFile(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+ assert.match(runtime,/auditCompanyExperimentHandoffs/);
+ assert.match(runtime,/company_experiment_handoff:companyExperimentHandoff/);
+ assert.match(runtime,/HANDOFF_OVERDUE','EXPERIMENT_HANDOFF_READ_ERROR'/);
+ assert.doesNotMatch(runtime,/cron\.schedule|createClient\(.+other/);
+});

@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-09",
+  "status": "CANDIDATE_PROTECTED_CHECKS_AND_PRODUCTION_PROOF_DUE",
+  "fingerprint": "powerhouse|social-learning|per-experiment-handoff-false-green|20261109-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original bg-social-metrics-sync 6h observer, original powerhouse-runtime-scheduler-mux minute39, existing CRO redaction agent",
+  "root_cause": "After provider-native schema drift correction PR #5546, the existing 6h observer sets healthy true if any verified LinkedIn company metric was linked. It does not check whether EACH provider-proven published experimental variant was successfully passed to original social_metric_snapshots then source-exact social_learning_evaluations and social_learning_applications. A single old metric and Instagram/personal success can hide unrelated mature variant handoff failure. On Nov 9, 5 provider-proven applications existed, 2 evaluated and 3 pending; absence of a post-level SLA was unobserved.",
+  "evidence": {
+    "observed_at_utc": "2026-11-09T13:52:00Z",
+    "source": "original public.social_learning_applications + social_metric_snapshots + social_learning_evaluations",
+    "verified_variant_applications": 5,
+    "evaluated_variant_applications": 2,
+    "pending_variant_applications": 3,
+    "source_sync_jobid": 177,
+    "learning_mux_jobid": 171,
+    "new_scheduler": false,
+    "causal_winner_proven": false,
+    "protected_release_proven": false
+  },
+  "fix": "Append read-only bounded per-experiment audit to existing bg-social-metrics-sync and its already-imported linked-company-analytics helper. Only exact company tenant/channel/URN and provider org observation >=24h post and <=8d accepted; exact source_event in original evaluation with original application-ID. After 78h metric missing and after 84h evaluation/ack missing become HANDOFF_OVERDUE and veto overall healthy. Pending age is non-green but not outage. Original 6h runtime event stores evidence, owner, repair action; no extra cron, fallback sender, new table or permissions.",
+  "prevention": "No service-level GREEN for full experiment flow on HTTP200, account-level provider freshness, linked_count>0, or successful metrics for another post. The exact downstream post+application+provider event must join at correct maturity; incomplete mature stage changes original run to nonhealthy and gives sole repair owner; no duplicate execution or false revenue/causal uplift. Keep incoming posts pending until evidence-maturity horizon and original executor running.",
+  "tests": [
+    "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "invariants": [
+      "single original six-hour job #177",
+      "single original minute39 scheduler #171",
+      "provider exact account/URN/tenant/post",
+      "78h metric and 84h evaluation grace",
+      "original application exact source event",
+      "no artificial zero or causal lift",
+      "producer/consumer readback",
+      "deduped snapshots no extra publisher"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "PER_EXPERIMENT_HANDOFF_UNMONITORED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required+CodeQL, exact PR commit+merge, deploy existing Edge with same shared helpers, independent source parity and original six-hour event readback. Repeat on an overdue genuine provider experiment to verify alert; only a natural next content generation with source-linked application proves full learn-and-improve."
+}
