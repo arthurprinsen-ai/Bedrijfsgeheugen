@@ -24,8 +24,36 @@ Deno.serve(async (req: Request) => {
     const eigen = (d.cyclus?.experimenten || []) as any[];
     const lopend = eigen.filter(e => e.status === 'ACTIVE' || e.status === 'PLANNED');
     const bezoekers = Number(d.meet?.totaal?.bezoekers || 0);
-    if (lopend.length) { const r = { ok: true, beoordeeld, voorstel: null, reden: 'er loopt of wacht al een experiment; één tegelijk bij dit verkeer' }; await bewijs(true, r); return json(r); }
-    if (bezoekers < MIN_BEZOEKERS) { const r = { ok: true, beoordeeld, voorstel: null, reden: `te weinig menselijke bezoekers in 30 dagen (${bezoekers} < ${MIN_BEZOEKERS}) voor een zinnige voor-en-na-meting` }; await bewijs(true, r); return json(r); }
+    if (lopend.length) {
+      // A cron/HTTP success is not treatment, exposure, or measured improvement.
+      // Keep the original single-experiment/human-authorization gate; give its owner
+      // a typed, truthful recovery obligation instead of another green no-op.
+      const planned = lopend.filter(e => e.status === 'PLANNED');
+      const active = lopend.filter(e => e.status === 'ACTIVE');
+      const r = {
+        ok: false, beoordeeld, voorstel: null,
+        cycle_status: planned.length ? 'PROPOSED_NOT_DEPLOYED' : 'ACTIVE_OUTCOME_UNVERIFIED',
+        active_count: active.length, pending_count: planned.length,
+        pending_experiment_ids: planned.slice(0, 3).map(e => String(e.experiment_id || '')),
+        improvement_verified: false,
+        next_owner: 'original-growth-cro-agent',
+        next_action: planned.length
+          ? 'VERIFY_CONTROL_IN_LIVE_DOM_AND_SUBMIT_PROTECTED_CHANGE; AUTHORIZE_EXPOSURE_AFTER_DEPLOY'
+          : 'VERIFY_PRODUCTION_EXPOSURE_AND_MATURED_CONTROL_OUTCOME',
+        reden: 'een geregistreerd experiment is nog geen uitgevoerde of bewezen verbetering'
+      };
+      await bewijs(false, r, 'EXPERIMENT_EXECUTION_UNVERIFIED');
+      return json(r);
+    }
+    if (bezoekers < MIN_BEZOEKERS) {
+      const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'INSUFFICIENT_OBSERVED_TRAFFIC',
+        observed_session_count: bezoekers, required_session_count: MIN_BEZOEKERS,
+        improvement_verified: false, next_owner: 'original-growth-cro-agent',
+        next_action: 'VALIDATE_CONSENTED_INSTRUMENTATION_AND_PRIORITIZE_SAFE_GITOPS_ITERATION',
+        reden: 'onvoldoende waargenomen sessies voor een betekenisvolle voor-na-meting; geen winst claimen' };
+      await bewijs(false, r, 'INSUFFICIENT_TRAFFIC');
+      return json(r);
+    }
 
     const { data: gov } = await db.from('brain_ai_governance_registry').select('model_id,lifecycle_status,approved,provider').eq('tenant_id', 'canonical').eq('use_case_id', USE_CASE).maybeSingle();
     if (!gov || gov.lifecycle_status !== 'ACTIVE' || gov.approved !== true || gov.provider !== 'OpenAI') { const r = { ok: false, error: 'AI_USE_CASE_NOT_APPROVED' }; await bewijs(false, r, 'POLICY'); return json(r, 403); }
@@ -64,10 +92,23 @@ Deno.serve(async (req: Request) => {
       || schema.required.some((field: string) => !(field in v))
       || !paginas.some((p: any) => p.pad === v.pagina))
       throw new Error('VOORSTEL_ONBEKENDE_PAGINA_OR_SCHEMA');
+    // "BUTTON" is a captured instrumentation label, not verified live DOM copy.
+    // Never turn it into an executable website change without original-site proof.
+    if (/\\bBUTTON\\b/i.test(String(v.controle || '') + ' ' + String(v.variant || ''))) {
+      const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'UNVERIFIED_PAGE_CONTROL',
+        improvement_verified: false, next_owner: 'original-growth-cro-agent',
+        next_action: 'VERIFY_CANONICAL_LIVE_DOM_CONTROL_BEFORE_PROPOSAL' };
+      await bewijs(false, r, 'CONTROL_NOT_VERIFIED');
+      return json(r);
+    }
 
     const res = await poort('voorstellen', v);
-    const r = { ok: true, beoordeeld, voorstel: { id: res.experiment_id, hypothese: v.hypothese, pagina: v.pagina, meetpunt: v.meetpunt } };
-    await bewijs(true, r);
+    const r = { ok: true, beoordeeld, cycle_status: 'PROPOSED_NOT_DEPLOYED',
+      improvement_verified: false, next_owner: 'original-growth-cro-agent',
+      next_action: 'VERIFY_CONTROL_AND_CREATE_PROTECTED_GITOPS_CANDIDATE',
+      voorstel: { id: res.experiment_id, hypothese: v.hypothese, pagina: v.pagina, meetpunt: v.meetpunt } };
+    // Proposal creation is successful, but the commercial learning loop is not.
+    await bewijs(false, r, 'EXPERIMENT_NOT_ACTIVATED');
     return json(r);
   } catch (_error: unknown) {
     // Do not disclose provider/DB exception details to callers. Keep canonical source owner recovery due.
