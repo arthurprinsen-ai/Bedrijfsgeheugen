@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-09",
+  "status": "CANDIDATE_PROTECTED_MIGRATION_AND_ORIGINAL_MINUTE39_READBACK_DUE",
+  "fingerprint": "powerhouse|social-learning|observed-provider-refresh-not-written-to-original-brain|20261109-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing public.powerhouse_backfill_social_learning_applications_v1 from original Powerhouse runtime mux minute39, no new scheduler, writer, or provider",
+  "root_cause": "Original minute39 BRAIN social backfill queries only 'EXECUTED_PROVIDER_PROVEN_EFFECT_NOT_YET_MEASURED' applications and a single newest post snapshot, then permanently changes application status to PROVIDER_METRICS_OBSERVED_*. A later independently measured Windsor source event for the exact same real LinkedIn company experiment cannot create another source-specific original social_learning_evaluations record. As of 2026-11-09 Nov3 source event Nov8 had impressions 4 but no evaluation while previous Nov3 source event was evaluated; original six-hour source monitor correctly reports WAITING_BRAIN_REFRESH.",
+  "evidence": {
+    "tenant_id": "bedrijfsgeheugen",
+    "source": "real social_learning_applications + verified Windsor social_metric_snapshots + social_learning_evaluations",
+    "provider_post_urn": "urn:li:share:7523338311717965825",
+    "latest_source_event": "windsor:linkedin-company:urn:li:share:7523338311717965825:2026-11-08",
+    "original_evaluated_source_event": "windsor:linkedin-company:urn:li:share:7523338311717965825:2026-11-03",
+    "provider_impressions": 4,
+    "latest_event_evaluations_before": 0,
+    "previous_event_evaluations": 1,
+    "original_application_status": "PROVIDER_METRICS_OBSERVED_LOW_EXPOSURE",
+    "causal_effect": null,
+    "observed_at_utc": "2026-11-09T14:14:27Z"
+  },
+  "fix": "Extend SAME original minute39 BRAIN function: select all bounded exact-provider-matched source events not yet evaluated for that application (up to 4 per post, 20 per run) without disqualifying already provider-observed application statuses. Insert immutable per-source_event_id original social_learning_evaluations with on conflict do nothing; on new receipt, append independently verifiable source evidence to existing TESTING social_learnings without changing effect_size, independent sample_size, confidence, or control group. Update original application status only on its initial observed transfer. Original content generator and existing 28-day metric comparison remain sole natural experiment decision route.",
+  "prevention": "A follow-up metrics event is not a duplicate because the exact source_event_id differs. A repeated same event is a duplicate and must generate zero new evaluations and zero new learnings. Preserve earlier historical proof and status. Never change PROVEN or claim a new independent experiment from refresh, never confuse impressions with leads or causal lift. Verify exact source in original BRAIN and next natural generator lineage.",
+  "tests": [
+    "tests/brain-original-provider-refresh-learning-20261109.test.mjs",
+    "tests/brain-original-provider-experiment-feedback-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-refresh-learning-20261109.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-refresh-learning-20261109.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-refresh-learning-20261109.test.mjs"
+    ],
+    "invariants": [
+      "single existing minute39 original BRAIN owner",
+      "one exact evaluation per (tenant, application, source_event_id)",
+      "same original publisher/tenant/URN/independent organization gate",
+      "metric window 24h..8days",
+      "bounded 4 snapshots per post, 20 per owner run",
+      "older evaluated source remains valid",
+      "one post refresh does not raise sample_size",
+      "effect_size and actual_effect remain unchanged without controlled comparison",
+      "no new provider sender, scheduler, tenant, privilege or data store"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "SUBSEQUENT_PROVIDER_METRIC_NOT_CONSUMED_IN_ORIGINAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required+CodeQL, exact SHA merge, official Supabase migration via original provider, grant/security parity, two live calls to ORIGINAL minute39 function => first >=1 exact new evaluation for Nov8 observed source, second zero new receipts, original social_learnings evidence_refs exact, existing 6h audit WAITING_BRAIN_REFRESH closed for Nov3. Future natural original content generator readback is still required to prove actual next experiment use; keep P0 open until then."
+}
