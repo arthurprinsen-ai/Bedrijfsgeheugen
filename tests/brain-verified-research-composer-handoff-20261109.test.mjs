@@ -44,3 +44,27 @@ test('production composer consumes verified original research before its origina
  assert.match(text,/const sourceGate=composerSourcePreflight\(workingAction,workingAction\.message_plan\)/);
  assert.match(text,/const evidence=\{\.\.\.\(workingAction\.evidence\|\|\{\}\),commercial_intelligence:ci\}/);
 });
+
+test('research-bound waiting retains original action and never authorizes a provider send',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/WAIT_FOR_VERIFIED_SOURCE/);
+ assert.match(sql,/a\.created_at>p_now-interval '48 hours'/);
+ assert.match(sql,/EXPIRE_AFTER_RESEARCH_WINDOW/);
+ assert.match(sql,/r\.dedupe_key='relationship-research:outreach-source:'\|\|a\.action_id::text/);
+ assert.match(sql,/r\.person_key=a\.person_key/);
+ assert.match(sql,/r\.company_key=a\.company_key/);
+ assert.match(sql,/and coalesce\(a\.evidence#>>'\{execution_gate,reason\}',''\) <> 'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'/);
+ assert.match(sql,/awaiting_verified_source/);
+ assert.match(sql,/v_held_research>0 then 'waarschuwing'/);
+ assert.doesNotMatch(sql,/create\s+(?:table|extension|trigger)/i);
+});
+test('existing composer is sole authority to resume source-held waiting email',()=>{
+ const ts=readFileSync(new URL('../supabase/functions/powerhouse-commercial-message-composer/index.ts',import.meta.url),'utf8');
+ assert.match(ts,/if\(action\.status==='waiting' &&/);
+ assert.match(ts,/workingAction\?\.evidence\?\.verified_research_composer_handoff\?\.contract==='POWERHOUSE_VERIFIED_RESEARCH_COMPOSER_HANDOFF_V1'/);
+ assert.match(ts,/qv\.checks\.source_specific_evidence_ok===true/);
+ assert.match(ts,/qv\.checks\.semantic_novelty_ok===true/);
+ assert.match(ts,/update\.status='prepared';update\.due_at=now/);
+ assert.match(ts,/reason:'SOURCE_VERIFIED_COMPOSER_ACCEPTED'/);
+ assert.match(ts,/provider_attempted:false,provider_readback_verified:false/);
+});
