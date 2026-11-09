@@ -21,7 +21,14 @@ Deno.serve(async (req: Request) => {
   try {
     const beoordeeld = await poort('beoordelen');
     const d = await poort('data');
-    const eigen = (d.cyclus?.experimenten || []) as any[];
+    // The shared register also contains content-distribution experiments owned by
+    // other agents. They must not permanently block the original CRO experiment owner.
+    const alleExperimenten = (d.cyclus?.experimenten || []) as any[];
+    const eigen = alleExperimenten.filter(e =>
+      ['site', 'seo', 'content'].includes(String(e.onderdeel || '')) &&
+      (String(e.voorgesteld_door || '') === BRON ||
+        /^bgx-/.test(String(e.id || e.experiment_id || '')))
+    );
     const lopend = eigen.filter(e => e.status === 'ACTIVE' || e.status === 'PLANNED');
     const bezoekers = Number(d.meet?.totaal?.bezoekers || 0);
     if (lopend.length) {
@@ -32,9 +39,10 @@ Deno.serve(async (req: Request) => {
       const active = lopend.filter(e => e.status === 'ACTIVE');
       const r = {
         ok: false, beoordeeld, voorstel: null,
+        reason_code: 'EXPERIMENT_EXECUTION_UNVERIFIED',
         cycle_status: planned.length ? 'PROPOSED_NOT_DEPLOYED' : 'ACTIVE_OUTCOME_UNVERIFIED',
         active_count: active.length, pending_count: planned.length,
-        pending_experiment_ids: planned.slice(0, 3).map(e => String(e.experiment_id || '')),
+        pending_experiment_ids: planned.slice(0, 3).map(e => String(e.id || e.experiment_id || '')),
         improvement_verified: false,
         next_owner: 'original-growth-cro-agent',
         next_action: planned.length
@@ -42,16 +50,16 @@ Deno.serve(async (req: Request) => {
           : 'VERIFY_PRODUCTION_EXPOSURE_AND_MATURED_CONTROL_OUTCOME',
         reden: 'een geregistreerd experiment is nog geen uitgevoerde of bewezen verbetering'
       };
-      await bewijs(false, r, 'EXPERIMENT_EXECUTION_UNVERIFIED');
+      await bewijs(false, r, 'VALIDATION');
       return json(r);
     }
     if (bezoekers < MIN_BEZOEKERS) {
-      const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'INSUFFICIENT_OBSERVED_TRAFFIC',
+      const r = { ok: false, beoordeeld, voorstel: null, reason_code: 'INSUFFICIENT_TRAFFIC', cycle_status: 'INSUFFICIENT_OBSERVED_TRAFFIC',
         observed_session_count: bezoekers, required_session_count: MIN_BEZOEKERS,
         improvement_verified: false, next_owner: 'original-growth-cro-agent',
         next_action: 'VALIDATE_CONSENTED_INSTRUMENTATION_AND_PRIORITIZE_SAFE_GITOPS_ITERATION',
         reden: 'onvoldoende waargenomen sessies voor een betekenisvolle voor-na-meting; geen winst claimen' };
-      await bewijs(false, r, 'INSUFFICIENT_TRAFFIC');
+      await bewijs(false, r, 'VALIDATION');
       return json(r);
     }
 
@@ -95,20 +103,20 @@ Deno.serve(async (req: Request) => {
     // "BUTTON" is a captured instrumentation label, not verified live DOM copy.
     // Never turn it into an executable website change without original-site proof.
     if (/\bBUTTON\b/i.test(String(v.controle || '') + ' ' + String(v.variant || ''))) {
-      const r = { ok: false, beoordeeld, voorstel: null, cycle_status: 'UNVERIFIED_PAGE_CONTROL',
+      const r = { ok: false, beoordeeld, voorstel: null, reason_code: 'CONTROL_NOT_VERIFIED', cycle_status: 'UNVERIFIED_PAGE_CONTROL',
         improvement_verified: false, next_owner: 'original-growth-cro-agent',
         next_action: 'VERIFY_CANONICAL_LIVE_DOM_CONTROL_BEFORE_PROPOSAL' };
-      await bewijs(false, r, 'CONTROL_NOT_VERIFIED');
+      await bewijs(false, r, 'VALIDATION');
       return json(r);
     }
 
     const res = await poort('voorstellen', v);
-    const r = { ok: true, beoordeeld, cycle_status: 'PROPOSED_NOT_DEPLOYED',
+    const r = { ok: true, beoordeeld, reason_code: 'EXPERIMENT_NOT_ACTIVATED', cycle_status: 'PROPOSED_NOT_DEPLOYED',
       improvement_verified: false, next_owner: 'original-growth-cro-agent',
       next_action: 'VERIFY_CONTROL_AND_CREATE_PROTECTED_GITOPS_CANDIDATE',
       voorstel: { id: res.experiment_id, hypothese: v.hypothese, pagina: v.pagina, meetpunt: v.meetpunt } };
     // Proposal creation is successful, but the commercial learning loop is not.
-    await bewijs(false, r, 'EXPERIMENT_NOT_ACTIVATED');
+    await bewijs(false, r, 'VALIDATION');
     return json(r);
   } catch (_error: unknown) {
     // Do not disclose provider/DB exception details to callers. Keep canonical source owner recovery due.

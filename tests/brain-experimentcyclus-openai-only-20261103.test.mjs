@@ -62,3 +62,13 @@ test('P0 CRO truth: proposed/active/low-traffic/noop never yields a verified imp
   assert.ok(!source.includes("poort('ingevoerd'"));
   assert.ok(!source.includes("bg_experiment_actie"));
 });
+
+test('original CRO owner isolates shared blog distribution registry without fabricating experiment IDs',()=>{
+  assert.ok(source.includes('const alleExperimenten = (d.cyclus?.experimenten || [])'));
+  assert.ok(source.includes("['site', 'seo', 'content'].includes(String(e.onderdeel || ''))"));
+  assert.ok(source.includes("String(e.voorgesteld_door || '') === BRON"));
+  assert.ok(source.includes("String(e.id || e.experiment_id || '')"));
+  assert.ok(source.includes("planned.slice(0, 3).map(e => String(e.id || e.experiment_id || ''))"));
+  assert.ok(source.includes("await bewijs(false, r, 'VALIDATION')"));
+  assert.ok(!source.includes("planned.slice(0, 3).map(e => String(e.experiment_id || ''))"));
+});
