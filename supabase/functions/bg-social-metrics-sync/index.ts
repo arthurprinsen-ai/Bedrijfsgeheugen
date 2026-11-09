@@ -155,7 +155,7 @@ async function reconcileCompanyMetricEvidence(db:any){
   const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
   const {data:observations,error:sourceError}=await db.from('powerhouse_growth_source_daily_v1')
     .select('tenant_id,metric_date,source_key,quality,source_observed_at,metrics,evidence')
-    .eq('tenant_id','bedrijfsgeheugen').eq('quality','PROVIDER_OBSERVED_UNLINKED')
+    .eq('tenant_id','bedrijfsgeheugen').in('quality',['PROVIDER_OBSERVED_UNLINKED','PROVIDER_OBSERVED'])
     .like('source_key','linkedin_company_post:%')
     .gte('metric_date',since).order('source_observed_at',{ascending:false}).limit(60);
   if(sourceError)throw new Error('COMPANY_ANALYTICS_SOURCE_READ:'+sourceError.message);
@@ -277,10 +277,19 @@ Deno.serve(async(req:Request)=>{
     let companyState:any;
     try{companyState=await companyAnalyticsState(db);}catch(e){companyState={state:'WINDSOR_READBACK_ERROR',error:clean((e as Error).message).slice(0,100)};}
     const total=(ig?.snapshots||0)+(li?.snapshots||0);
-    const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0&&!(ig?.failures||[]).length&&!(li?.failures||[]).length;
+    // Social learning is not healthy when verified company posts have no
+    // independently linked provider metrics. A successful HTTP cron or fresh
+    // account aggregate is not proof that an experimental post was measured.
+    const companyHandoffOk=companyRegistry?.eligible===0||(
+      companyState?.state==='WINDSOR_FRESH'&&
+      companyMetricLink?.state==='VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED'&&
+      (companyMetricLink?.linked||0)>0);
+    const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0
+      &&!(ig?.failures||[]).length&&!(li?.failures||[]).length&&companyHandoffOk;
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,personal_post_registry:personalRegistry,
+      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
+      company_learning_handoff_ok:companyHandoffOk,personal_post_registry:personalRegistry,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',

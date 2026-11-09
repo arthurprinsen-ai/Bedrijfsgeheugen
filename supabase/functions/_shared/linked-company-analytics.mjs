@@ -22,7 +22,13 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
    &&urnRe.test(String(p.evidence?.linkedin_readback?.id||''))).map(p=>[p.external_id,p]));
  const deduped=new Map();
  for(const o of observations){
-   if(o?.tenant_id!=='bedrijfsgeheugen'||o.quality!=='PROVIDER_OBSERVED_UNLINKED')continue;
+   // The current first-party Windsor ingestion stores PROVIDER_OBSERVED at the
+   // source row and explicitly marks post identity as still UNLINKED. Preserve
+   // both schema versions; never admit unverified/provider-only account rows.
+   const priorUnlinked=o?.quality==='PROVIDER_OBSERVED_UNLINKED';
+   const stagedProvider=o?.quality==='PROVIDER_OBSERVED'
+     &&o?.evidence?.post_identity==='PROVIDER_OBSERVED_UNLINKED';
+   if(o?.tenant_id!=='bedrijfsgeheugen'||(!priorUnlinked&&!stagedProvider))continue;
    const meta=o.evidence,metrics=o.metrics;
    // Two independently evidenced formats originate from the same connected Windsor
    // linkedin_organic provider. The original native staging producer writes
@@ -34,13 +40,23 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
    const native=meta?.source==='linkedin_organic'&&meta?.provider==='windsor.ai'
      &&typeof meta?.account==='string'&&typeof meta?.post_id==='string'
      &&typeof meta?.share_id==='string'&&typeof meta?.share_url==='string';
-   if((!normalized&&!native)||!metrics||typeof metrics!=='object'||Array.isArray(metrics))continue;
-   const urn=normalized?meta.provider_post_urn:meta.post_id;
+   // Native Windsor schema since 8 Nov: provider/account/identity in evidence,
+   // exact post URL, share ID and metric date in the metric payload itself.
+   const stagedNative=stagedProvider&&meta?.provider==='windsor.ai'
+     &&meta?.connector==='linkedin_organic'&&typeof meta?.account==='string'
+     &&typeof meta?.provider_date==='string'
+     &&typeof metrics?.post_id==='string'&&typeof metrics?.share_id==='string'
+     &&typeof metrics?.share_url==='string'&&metrics?.date===meta.provider_date;
+   if((!normalized&&!native&&!stagedNative)||!metrics||typeof metrics!=='object'||Array.isArray(metrics))continue;
+   const urn=normalized?meta.provider_post_urn:stagedNative?metrics.post_id:meta.post_id;
    if(!urnRe.test(String(urn||''))||o.source_key!=='linkedin_company_post:'+urn)continue;
    if(normalized&&metrics.post_id!==urn)continue;
    if(native&&(meta.share_id!==urn.split(':').at(-1)
      ||meta.share_url!=='https://www.linkedin.com/feed/update/'+urn
      ||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(meta.provider_metric_date||''))))continue;
+   if(stagedNative&&(metrics.share_id!==urn.split(':').at(-1)
+     ||metrics.share_url!=='https://www.linkedin.com/feed/update/'+urn
+     ||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(meta.provider_date)))continue;
    const proof=proofByUrn.get(urn),post=byUrn.get(urn);
    if(!proof||!post)continue;
    const orgId=String(normalized?meta.account_id:meta.account);
@@ -48,6 +64,8 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
      ||proof.evidence.linkedin_readback.author!=='urn:li:organization:'+orgId)continue;
    const dateKey=String(o.metric_date||''),observed=ts(o.source_observed_at),published=ts(post.published_at);
    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)||observed===null||published===null
+     ||(stagedNative&&Math.abs(Date.parse(meta.provider_date+'T00:00:00Z')-
+         Date.parse(String(post.published_at).slice(0,10)+'T00:00:00Z'))>86400000)
      ||observed>date.getTime()+300000||date.getTime()-observed>72*3600000
      ||observed<published||published<date.getTime()-35*86400000)continue;
    const impressions=nonneg(metrics.share_impression_count),likes=nonneg(metrics.share_like_count),
@@ -63,7 +81,7 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
         ...(videoViews!==null?{video_views:videoViews}:{}),
         observed_source:'windsor.ai',scope:'company_post_analytics',
         provider_post_urn:urn,provider_organization_urn:'urn:li:organization:'+orgId,
-        source_quality_before_link:'PROVIDER_OBSERVED_UNLINKED',
+        source_quality_before_link:o.quality,
         independent_proof:'EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT'}
    };
    if(!deduped.has(identity)||ts(deduped.get(identity).observed_at)<observed)deduped.set(identity,next);

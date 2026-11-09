@@ -69,3 +69,56 @@ test('same original six-hour observer and provider readback remain exclusive',as
  assert.match(bridge,/native\&\&\(meta\.share_id!==urn\.split/);
  assert.doesNotMatch(bridge,/cron\.schedule|fetch\(|provider_create|post_social|openart/i);
 });
+
+const freshUrn='urn:li:share:7524367540987301888';
+const freshNow=new Date('2026-11-09T13:00:00Z');
+const freshProof={...proof,external_id:freshUrn,live_proven_at:'2026-11-06T07:10:19Z',
+ evidence:{...proof.evidence,linkedin_readback:{id:freshUrn,author:'urn:li:organization:'+org}}};
+const freshPost={...post,post_id:'linkedin-company:'+freshUrn,external_post_id:freshUrn,
+ published_at:'2026-11-06T07:10:19Z'};
+const freshSource={tenant_id:'bedrijfsgeheugen',metric_date:'2026-11-08',
+ source_key:'linkedin_company_post:'+freshUrn,quality:'PROVIDER_OBSERVED',
+ source_observed_at:'2026-11-08T14:27:03Z',
+ evidence:{account:org,provider:'windsor.ai',connector:'linkedin_organic',
+   post_identity:'PROVIDER_OBSERVED_UNLINKED',provider_date:'2026-11-06'},
+ metrics:{date:'2026-11-06',post_id:freshUrn,share_id:freshUrn.split(':').at(-1),
+   share_url:'https://www.linkedin.com/feed/update/'+freshUrn,
+   share_impression_count:183,share_like_count:1,share_comment_count:0,
+   share_clicks_count:0,share_video_views:0}};
+const fresh=(src=freshSource,p=freshProof,post=freshPost)=>
+ buildVerifiedCompanyMetricSnapshots({observations:[src],publicationProofs:[p],
+  ownedPosts:[post],now:freshNow,max:5});
+
+test('8 Nov real staged Windsor provider format transfers into same original company learning snapshot',()=>{
+ const [s]=fresh();assert.ok(s);
+ assert.equal(s.post_id,freshPost.post_id);
+ assert.equal(s.metrics.impressions,183);
+ assert.equal(s.metrics.source_quality_before_link,'PROVIDER_OBSERVED');
+ assert.equal(s.source_event_id,'windsor:linkedin-company:'+freshUrn+':2026-11-08');
+ assert.equal(s.metrics.independent_proof,'EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT');
+ assert.equal(Object.hasOwn(s.metrics,'revenue'),false);
+});
+test('8 Nov staged provider format rejects unlinked identity, wrong author, mismatched post URL/date and estimates',()=>{
+ const cases=[
+ {...freshSource,quality:'ESTIMATED'},
+ {...freshSource,evidence:{...freshSource.evidence,post_identity:'LINKED_UNVERIFIED'}},
+ {...freshSource,evidence:{...freshSource.evidence,account:'1111111'}},
+ {...freshSource,evidence:{...freshSource.evidence,provider:'some-other-provider'}},
+ {...freshSource,evidence:{...freshSource.evidence,provider_date:'2026-10-01'}},
+ {...freshSource,metrics:{...freshSource.metrics,share_id:'bad'}},
+ {...freshSource,metrics:{...freshSource.metrics,share_url:'https://example.org/false'}},
+ {...freshSource,metrics:{...freshSource.metrics,date:'2026-11-01'}},
+ {...freshSource,metrics:{...freshSource.metrics,share_impression_count:null}},
+ {...freshSource,source_key:'linkedin_company_post:unrelated'}
+ ];
+ for(const invalid of cases)assert.deepEqual(fresh(invalid),[]);
+ assert.deepEqual(fresh(freshSource,{...freshProof,evidence:{...freshProof.evidence,provider_truth_verified:false}}),[]);
+ assert.deepEqual(fresh(freshSource,freshProof,{...freshPost,channel_kind:'linkedin_personal'}),[]);
+});
+test('original six-hour social sync accepts verified staging quality but treats missing company handoff as incomplete',async()=>{
+ const runtime=await readFile(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+ assert.match(runtime,/\.in\('quality',\['PROVIDER_OBSERVED_UNLINKED','PROVIDER_OBSERVED'\]\)/);
+ assert.match(runtime,/companyHandoffOk/);
+ assert.match(runtime,/company_learning_handoff_ok/);
+ assert.doesNotMatch(runtime,/cron\.schedule/);
+});
