@@ -899,11 +899,20 @@ begin
             -- A new owner or fresh proof invalidates any old claim. No fictitious
             -- acknowledgment: a claim is separate from provider outcome proof.
             'next_owner_ack_claimed',
+              powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+              and powerhouse_runtime_events.evidence->>'expected_owner'
+                  is not distinct from excluded.evidence->>'expected_owner'
+              and powerhouse_runtime_events.evidence#>>'{handoff_receipt,claim_receipt,expected_owner}'
+                  = excluded.evidence->>'expected_owner'
+              and coalesce(powerhouse_runtime_events.evidence#>>'{handoff_receipt,claim_receipt,source_run_id}','')<>'',
+            'claim_receipt',
               case when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
-                    is distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
-                    or powerhouse_runtime_events.evidence->>'expected_owner'
-                       is distinct from excluded.evidence->>'expected_owner'
-                then false else coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,next_owner_ack_claimed}')::boolean,false) end,
+                   is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                   and powerhouse_runtime_events.evidence->>'expected_owner'
+                       is not distinct from excluded.evidence->>'expected_owner'
+                then powerhouse_runtime_events.evidence#>'{handoff_receipt,claim_receipt}'
+                else null end,
             'proven_next_stage',excluded.evidence->>'next_stage'='END_TO_END_VERIFIED',
             'escalation_state',
               case when excluded.evidence->>'next_stage'='END_TO_END_VERIFIED'
@@ -1055,3 +1064,73 @@ begin
   return v_request;
 end
 $function$;
+
+
+-- Explicit receiver-side acknowledgment of ONE ORIGINAL handoff.
+-- A claim proves receipt, not processing, publication, provider send, revenue or applied learning.
+-- Only the existing canonical service execution can invoke this RPC.
+create or replace function public.powerhouse_claim_original_handoff_v1(
+  p_dedupe_key text,
+  p_expected_owner text,
+  p_source_run_id text,
+  p_proof_fingerprint text,
+  p_now timestamp with time zone default now()
+) returns jsonb
+language plpgsql
+security invoker
+set search_path to 'public','pg_catalog'
+as $claim$
+declare
+  v_event public.powerhouse_runtime_events%rowtype;
+  v_receipt jsonb;
+begin
+  if p_now is null or nullif(btrim(p_dedupe_key),'') is null
+     or p_dedupe_key not like 'original-handoff:%'
+     or nullif(btrim(p_expected_owner),'') is null
+     or nullif(btrim(p_source_run_id),'') is null
+     or length(p_source_run_id)>160
+     or nullif(btrim(p_proof_fingerprint),'') is null
+     or p_proof_fingerprint !~ '^[0-9a-f]{32}$'
+  then
+    raise exception 'ORIGINAL_HANDOFF_CLAIM_INVALID_INPUT';
+  end if;
+  select * into v_event
+  from public.powerhouse_runtime_events
+  where dedupe_key=p_dedupe_key
+    and event_type='original_content_handoff_ack_audit'
+    and state in ('observed','error')
+  for update;
+  if not found then raise exception 'ORIGINAL_HANDOFF_NOT_OPEN_OR_UNKNOWN'; end if;
+  if v_event.evidence->>'expected_owner' is distinct from p_expected_owner
+     or v_event.evidence#>>'{handoff_receipt,proof_fingerprint}'
+        is distinct from p_proof_fingerprint
+     or v_event.evidence->>'next_stage'='END_TO_END_VERIFIED'
+  then raise exception 'ORIGINAL_HANDOFF_OWNER_OR_FINGERPRINT_DRIFT'; end if;
+  -- Explicit owner claim is not terminal success. The next natural hourly
+  -- audit must detect independently verified provider/outcome progress.
+  v_receipt:=jsonb_build_object(
+    'expected_owner',p_expected_owner,
+    'source_run_id',p_source_run_id,
+    'proof_fingerprint',p_proof_fingerprint,
+    'received_at_utc',p_now,
+    'ack_kind','RECEIVED_NOT_PROCESSED',
+    'external_provider_result_proven',false,
+    'owner_action_required',true);
+  update public.powerhouse_runtime_events
+  set evidence=jsonb_set(
+    jsonb_set(evidence,'{handoff_receipt,claim_receipt}',v_receipt,true),
+    '{handoff_receipt,next_owner_ack_claimed}','true'::jsonb,true),
+    updated_at=p_now
+  where event_id=v_event.event_id;
+  return jsonb_build_object(
+    'original_dedupe_key',p_dedupe_key,
+    'claim_receipt',v_receipt,
+    'still_open',true,
+    'must_verify_next_natural_run',true);
+end
+$claim$;
+
+revoke all on function public.powerhouse_claim_original_handoff_v1(
+  text,text,text,text,timestamp with time zone) from public,anon,authenticated;
+grant execute on function public.powerhouse_claim_original_handoff_v1(
+  text,text,text,text,timestamp with time zone) to service_role;
