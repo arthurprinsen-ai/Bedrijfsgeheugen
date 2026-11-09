@@ -88,3 +88,78 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
  }
  return [...deduped.values()].sort((a,b)=>b.observed_at.localeCompare(a.observed_at)).slice(0,bound);
 }
+
+
+/** Original 6-hour observer: audit each *already provider-proven* experiment
+ * through independent company post metrics and the existing minute-39 BRAIN
+ * evaluation. Report an overdue handoff; never mark an experiment a winner. */
+export function evaluateCompanyExperimentHandoffs({
+ applications=[],ownedPosts=[],snapshots=[],evaluations=[],now=new Date(),
+ metricDueHours=78,evaluationDueHours=84
+}={}){
+ const clock=now instanceof Date?now:new Date(now);
+ if(!Number.isFinite(clock.getTime())||
+    ![applications,ownedPosts,snapshots,evaluations].every(Array.isArray))
+   throw new TypeError('ORIGINAL_EXPERIMENT_HANDOFF_AUDIT_INPUT_INVALID');
+ const validPosts=new Map(ownedPosts.filter(p=>p?.tenant_id==='bedrijfsgeheugen'
+   &&p.platform==='linkedin'&&p.channel_kind==='linkedin_company'
+   &&urnRe.test(String(p.external_post_id||''))&&p.post_id)
+   .map(p=>[p.post_id,p]));
+ const details=[];
+ const seen=new Set();
+ for(const a of applications){
+   if(a?.tenant_id!=='bedrijfsgeheugen'||
+      a.application_role!=='ORIGINAL_EXPERIMENT_VARIANT_PROVIDER_PROVEN'||
+      typeof a.application_id!=='string'||typeof a.post_id!=='string'||
+      seen.has(a.application_id))continue;
+   seen.add(a.application_id);
+   const post=validPosts.get(a.post_id);
+   const published=ts(post?.published_at);
+   // A missing post or bad clock must never turn into an imaginary observation.
+   const age=published===null?null:Math.max(0,(clock.getTime()-published)/3600000);
+   const validMetric=post? snapshots.filter(s=>
+     s?.tenant_id==='bedrijfsgeheugen'&&s.post_id===post.post_id&&
+     s.source==='windsor-linkedin-company'&&
+     s.data_quality==='PROVIDER_OBSERVED_LINKED'&&
+     s.metrics?.independent_proof==='EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT'&&
+     s.metrics?.provider_organization_urn==='urn:li:organization:18234216'&&
+     s.metrics?.provider_post_urn===post.external_post_id&&
+     nonneg(s.metrics?.impressions)!==null&&
+     typeof s.source_event_id==='string'&&
+     ts(s.observed_at)!==null&&ts(s.observed_at)>=published+24*3600000&&
+     ts(s.observed_at)<=published+8*86400000&&
+     ts(s.observed_at)<=clock.getTime()+300000)
+     .sort((l,r)=>ts(r.observed_at)-ts(l.observed_at))[0]:null;
+   const evalPresent=validMetric&&evaluations.some(e=>
+     e?.tenant_id==='bedrijfsgeheugen'&&e.post_id===a.post_id&&
+     e.evidence?.application_id===a.application_id&&
+     e.evidence?.source_event_id===validMetric.source_event_id&&
+     e.evidence?.causal_improvement_verified===false&&
+     e.metric_vector?.metric_scope==='DESCRIPTIVE_EXPOSURE_NOT_CAUSAL_LIFT');
+   let state;
+   if(!post||published===null)state='ORIGINAL_POST_IDENTITY_MISSING';
+   else if(!validMetric)state=age>=metricDueHours?'PROVIDER_METRIC_HANDOFF_OVERDUE':'WAITING_MATURE_PROVIDER_METRIC';
+   else if(!evalPresent)state=age>=evaluationDueHours?'BRAIN_EVALUATION_HANDOFF_OVERDUE':'WAITING_BRAIN_EVALUATION';
+   else if(!String(a.verification_status||'').startsWith('PROVIDER_METRICS_OBSERVED_'))
+     state=age>=evaluationDueHours?'ORIGINAL_APPLICATION_ACK_OVERDUE':'WAITING_APPLICATION_ACK';
+   else state='EVALUATED_DESCRIPTIVE_NO_CAUSAL_LIFT';
+   const overdue=state==='ORIGINAL_POST_IDENTITY_MISSING'||state.endsWith('_OVERDUE');
+   details.push({application_id:a.application_id,post_id:a.post_id,
+     provider_post_urn:post?.external_post_id||null,
+     published_at:post?.published_at||null,
+     age_hours:age===null?null:Math.round(age*100)/100,state,
+     overdue,source_event_id:validMetric?.source_event_id||null,
+     learning_id:a.learning_id||null});
+ }
+ const overdue=details.filter(x=>x.overdue),verified=details.filter(x=>x.state==='EVALUATED_DESCRIPTIVE_NO_CAUSAL_LIFT');
+ return {state:overdue.length?'HANDOFF_OVERDUE':details.length?'VERIFIED_WITH_PENDING':'NO_ELIGIBLE_VERIFIED_EXPERIMENT',
+   checked_at:clock.toISOString(),experiment_applications:details.length,
+   evaluated_count:verified.length,pending_count:details.length-overdue.length-verified.length,
+   overdue_count:overdue.length,metric_due_hours:metricDueHours,
+   evaluation_due_hours:evaluationDueHours,
+   overdue_post_urns:overdue.map(x=>x.provider_post_urn).filter(Boolean).slice(0,12),
+   stages:details.slice(0,40),
+   recovery_owner:'existing bg-social-metrics-sync + original minute39 runtime learning owner',
+   recovery_action:overdue.length?'RECHECK_ORIGINAL_WINDSOR_SOURCE_THEN_MINUTE39_BRAIN':'NO_ACTION_REQUIRED',
+   causal_improvement_proven:false};
+}
