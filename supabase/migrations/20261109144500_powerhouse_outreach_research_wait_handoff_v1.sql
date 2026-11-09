@@ -939,11 +939,23 @@ begin
   select to_jsonb(t) into v_commercial
   from public.powerhouse_commercial_handoff_scorecard_v1 t
   limit 1;
+  -- Derived from persisted original receipts, not a transient cron success.
+  select count(*)::int into v_stalled
+  from public.powerhouse_runtime_events e
+  where e.event_type='original_content_handoff_ack_audit'
+    and e.dedupe_key like 'original-handoff:%'
+    and e.evidence#>>'{handoff_receipt,escalation_state}' in
+      ('STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER',
+       'OVERDUE_RETURN_TO_ORIGINAL_OWNER')
+    and e.evidence->>'checked_at_utc' is not null
+    and (e.evidence->>'checked_at_utc')::timestamptz>=p_now-interval '2 hours';
   v_snapshot:=jsonb_build_object(
     'contract','POWERHOUSE_ORIGINAL_HANDOFF_ACK_V1',
     'checked_at_utc',p_now,
     'original_count',v_checked,
     'overdue_count',v_overdue_count,
+    'stalled_or_overdue_original_handoffs',v_stalled,
+    'owner_claim_is_not_processing_proof',true,
     'pending_count',v_pending,
     'complete_with_next_run_proof',v_verified,
     'by_stage',v_stages,
