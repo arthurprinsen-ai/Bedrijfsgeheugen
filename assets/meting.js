@@ -145,7 +145,7 @@
       el.getAttribute('data-bg-conversion')||
       el.getAttribute('data-bg-order-cta')||
       el.id||el.tagName||'';
-    return String(label).replace(/\\s+/g,' ').trim().slice(0,120);
+    return String(label).replace(/\s+/g,' ').trim().slice(0,120);
   }
   function onderdeelVan(el){var c=el.closest&&el.closest('[data-bg-component]');if(c)return c.getAttribute('data-bg-component').slice(0,80);var i=el.parentElement&&el.parentElement.closest&&el.parentElement.closest('section[id],[id]');return i?String(i.id).slice(0,80):'';}
   meet({gebeurtenis:'pagina'});
