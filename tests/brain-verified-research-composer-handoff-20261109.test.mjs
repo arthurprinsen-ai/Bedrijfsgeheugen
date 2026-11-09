@@ -81,7 +81,7 @@ test('canonical per-action handoff telemetry has original identifiers, SLA and p
  assert.match(sql,/r\.person_key is not distinct from a\.person_key/);
  assert.match(sql,/r\.company_key is not distinct from a\.company_key/);
  assert.match(sql,/q\.action_id=a\.action_id/);
- assert.match(sql,/q\.evaluated_at>=j\.research_completed_at/);
+ assert.match(sql,/j\.latest_quality_evaluated_at>=j\.research_completed_at/);
  assert.match(sql,/BROKEN_RESEARCH_TO_COMPOSER_EXPIRED/);
  assert.match(sql,/BROKEN_RESEARCH_TO_COMPOSER_SLA/);
  assert.match(sql,/COMPOSER_TO_PROVIDER_UNPROVEN/);
