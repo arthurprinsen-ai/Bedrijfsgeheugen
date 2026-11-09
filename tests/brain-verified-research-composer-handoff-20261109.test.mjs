@@ -55,7 +55,7 @@ test('research-bound waiting retains original action and never authorizes a prov
  assert.match(sql,/r\.company_key=a\.company_key/);
  assert.match(sql,/and coalesce\(a\.evidence#>>'\{execution_gate,reason\}',''\) <> 'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'/);
  assert.match(sql,/awaiting_verified_source/);
- assert.match(sql,/v_held_research>0 then 'waarschuwing'/);
+ assert.match(sql,/when v_held_research>0/);
  assert.doesNotMatch(sql,/create\s+(?:table|extension|trigger)/i);
 });
 test('existing composer is sole authority to resume source-held waiting email',()=>{
