@@ -28,21 +28,21 @@
   "fix": "Preserve immutable production history; add exact second already-applied original SQL source mirror version 20261109152945; advance same canonical supabase/migration-history.lock.json from 816 to 818 with the 2 live provider identities; guard exact mirrored source equality and permissions. No new apply, merge_branch, migration replay or creation of scheduler/provider/sender in production.",
   "prevention": "After protected merge, verify existing original Supabase GitOps status and native migration history BEFORE any explicit provider apply. If migration already applied via GitHub connector, never call apply_migration again. Prevent duplicate migration history, source/provider file count mismatch and tail checksum drift with protected test and original delivery preflight; leave previous history immutable, never alter provider rows to cosmetically green.",
   "tests": [
-    "tests/supabase-migration-history-integrity.test.mjs",
-    "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
+    "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-history-integrity.test.mjs",
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-migration-history-integrity.test.mjs",
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
     ],
     "canary": [
-      "tests/supabase-migration-history-integrity.test.mjs",
-      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
     ],
     "invariants": [
       "one file per original applied provider version",
