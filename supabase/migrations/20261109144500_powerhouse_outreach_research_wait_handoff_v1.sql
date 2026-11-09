@@ -648,6 +648,7 @@ declare
   v_verified int:=0;
   v_stages jsonb:='{}'::jsonb;
   v_snapshot jsonb;
+  v_commercial jsonb:='{}'::jsonb;
 begin
   if p_now is null then raise exception 'ORIGINAL_HANDOFF_TIME_REQUIRED'; end if;
   for r in
@@ -666,7 +667,7 @@ begin
       when r.channel='instagram' then 'original Mira media producer + Instagram publisher'
       else 'original Powerhouse social publisher'
     end;
-    v_due:=(r.publication_date::timestamp+time '20:30')
+    v_due:=(r.publication_date+time '20:30')
              at time zone 'Europe/Amsterdam';
     v_provider_proven:=r.status in ('LIVE_PROVEN','MEASURED','LEARNED')
       and r.live_proven_at is not null
@@ -813,6 +814,10 @@ begin
           confidence=excluded.confidence,occurred_at=excluded.occurred_at,
           updated_at=excluded.updated_at;
   end loop;
+  -- Read the EXISTING original email scorecard, not a second sender/collector.
+  select to_jsonb(t) into v_commercial
+  from public.powerhouse_commercial_handoff_scorecard_v1 t
+  limit 1;
   v_snapshot:=jsonb_build_object(
     'contract','POWERHOUSE_ORIGINAL_HANDOFF_ACK_V1',
     'checked_at_utc',p_now,
@@ -823,7 +828,8 @@ begin
     'by_stage',v_stages,
     'new_executor_created',false,
     'original_scheduler','powerhouse-content-orchestrator-daily-v1',
-    'email_delivery_owner','existing autonomous commercial sender; separate original email scorecard',
+    'email_delivery_owner','existing autonomous commercial sender',
+    'commercial_email_handoff',coalesce(v_commercial,'{}'::jsonb),
     'release_state','measured only after exact source, UTC and original readback');
   insert into public.bg_gezondheid
     (gemeten_op,onderdeel,soort,status,detail,gegevens)
