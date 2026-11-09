@@ -68,3 +68,37 @@ test('existing composer is sole authority to resume source-held waiting email',(
  assert.match(ts,/reason:'SOURCE_VERIFIED_COMPOSER_ACCEPTED'/);
  assert.match(ts,/provider_attempted:false,provider_readback_verified:false/);
 });
+
+test('canonical per-action handoff telemetry has original identifiers, SLA and provider evidence',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/create or replace view public\.powerhouse_commercial_handoff_telemetry_v1/);
+ assert.match(sql,/create or replace view public\.powerhouse_commercial_handoff_scorecard_v1/);
+ assert.match(sql,/with \(security_invoker = true\) as/);
+ assert.match(sql,/revoke all on table public\.powerhouse_commercial_handoff_telemetry_v1 from public,anon,authenticated/);
+ assert.match(sql,/revoke all on table public\.powerhouse_commercial_handoff_scorecard_v1 from public,anon,authenticated/);
+ assert.match(sql,/grant select on table public\.powerhouse_commercial_handoff_scorecard_v1 to service_role/);
+ assert.match(sql,/r\.dedupe_key='relationship-research:outreach-source:'\|\|a\.action_id::text/);
+ assert.match(sql,/r\.person_key is not distinct from a\.person_key/);
+ assert.match(sql,/r\.company_key is not distinct from a\.company_key/);
+ assert.match(sql,/q\.action_id=a\.action_id/);
+ assert.match(sql,/q\.evaluated_at>=j\.research_completed_at/);
+ assert.match(sql,/BROKEN_RESEARCH_TO_COMPOSER_EXPIRED/);
+ assert.match(sql,/BROKEN_RESEARCH_TO_COMPOSER_SLA/);
+ assert.match(sql,/COMPOSER_TO_PROVIDER_UNPROVEN/);
+ assert.match(sql,/PROVIDER_READBACK_MISSING/);
+ assert.match(sql,/EXPIRED_WITHOUT_DELIVERY/);
+ assert.match(sql,/provider_message_id is not null and j\.provider_ack_observed and j\.provider_readback_observed/);
+ assert.match(sql,/provider_linked_replies_7d/);
+ assert.match(sql,/provider_linked_realized_revenue_eur_7d/);
+ assert.match(sql,/provider_delivery_proven\),0\)::numeric/);
+ assert.match(sql,/NO_ELIGIBLE_ACTIONS_OBSERVED/);
+ assert.doesNotMatch(sql,/create\s+table\s+public\.powerhouse_commercial_handoff/i);
+});
+test('the original existing email watchdog runs handoff measurement every natural owner tick',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109144500_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/from public\.powerhouse_commercial_handoff_scorecard_v1 score/);
+ assert.match(sql,/handoff_health','MEASUREMENT_FAILED/);
+ assert.match(sql,/original_handoff_scorecard_7d/);
+ assert.match(sql,/v_handoff_scorecard->>'handoff_health'='PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE'/);
+ assert.match(sql,/provider_send_forbidden',true/);
+});
