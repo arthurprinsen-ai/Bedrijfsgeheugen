@@ -1,5 +1,6 @@
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
 import {composerQualityProvenance,composerSourcePreflight,relationshipFact} from '../_shared/composer-quality-provenance.mjs';
+import {sourceVerifiedComposerHandoff} from '../_shared/verified-research-composer-handoff.mjs';
 import {buildEditorialCouncilBrief} from '../_shared/editorial-council-context.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -182,6 +183,29 @@ Deno.serve(async(req:Request)=>{
             workingAction={...action,evidence:{...(action.evidence||{}),public_source_evidence:{event_id:sourceEvent.event_id,event_type:sourceEvent.event_type,source:sourceEvent.source,occurred_at:sourceEvent.occurred_at,evidence:sourceEvent.evidence,context:sourceEvent.context}}};
           }
         }
+        // Close the ORIGINAL research->composer loop. The existing research action
+        // must be done, belong to this same person+company, and match a current,
+        // independently screened record in the canonical company-news source.
+        // Failed research and SERP-only candidates never loosen the source gate.
+        if(!composerSourcePreflight(workingAction,workingAction.message_plan).ok &&
+          action?.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED'){
+          const {data:research,error:researchErr}=await db.from('powerhouse_sales_actions')
+            .select('action_id,status,person_key,company_key,source_url,executed_at,evidence')
+            .eq('dedupe_key','relationship-research:outreach-source:'+action.action_id)
+            .eq('action_type','research_enrichment').eq('channel','internal')
+            .eq('status','done').maybeSingle();
+          if(researchErr)throw new Error('ORIGINAL_RESEARCH_READ:'+researchErr.message);
+          const candidateUrl=clean(research?.evidence?.public_research_execution?.source_url);
+          if(candidateUrl){
+            const {data:news,error:newsErr}=await db.from('bg_bedrijfsnieuws')
+              .select('url,bedrijf,titel,haak,over_dit_bedrijf,afgewezen_reden,zekerheid,gepubliceerd_op,opgehaald_op')
+              .eq('url',candidateUrl).eq('over_dit_bedrijf',true)
+              .order('opgehaald_op',{ascending:false}).limit(1).maybeSingle();
+            if(newsErr)throw new Error('ORIGINAL_COMPANY_NEWS_READ:'+newsErr.message);
+            const enriched=sourceVerifiedComposerHandoff(workingAction,research,news,now);
+            if(enriched)workingAction=enriched;
+          }
+        }
         const sourceGate=composerSourcePreflight(workingAction,workingAction.message_plan);
         if(!sourceGate.ok){
           out.push({action_id:action.action_id,status:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED',quality_passed:false,model_generated:false,missing_contract_fields:sourceGate.missing});
@@ -212,7 +236,7 @@ Deno.serve(async(req:Request)=>{
         if(qualityEvidenceError)throw new Error('COMPOSER_QUALITY_PROOF_WRITE:'+clean(qualityEvidenceError.message).slice(0,200));
         const provenance=composerQualityProvenance({actionId:action.action_id,hash,contract:CONTRACT,previousScore:action.evidence?.commercial_intelligence?.composer?.quality_score,currentScore:qv.score});
         const ci={...(action.evidence?.commercial_intelligence||{}),commercial_feedback:commercialFeedback,commercial_feedback_use:commercialFeedback?'MODEL_INPUT_CONTEXT_ONLY':'NOT_APPLICABLE',message_strategy:action.play_key,persuasion_authority:{contract:'powerhouse-persuasion-revenue-optimizer-v1',play_key:clean(persuasion?.play_key),principles:persuasion?.principles||[],primary_message_strategy:clean(persuasion?.primary_message_strategy),micro_cta:clean(persuasion?.micro_cta),do_not_use:persuasion?.do_not_use||[],confidence:persuasion?.confidence??null,truth_boundary:clean(persuasion?.truth_boundary)},predicted_objection:clean(generated.predicted_objection),objection_response:clean(generated.objection_response),quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,composer_contract:CONTRACT,composer:{contract:CONTRACT,...provenance,model:gen.model,provider:gen.provider,primary_provider_error:gen.primary_error,quality_passed:qv.passed,quality_score:qv.score,message_hash:hash,source_specific_evidence_ok:qv.checks.source_specific_evidence_ok,semantic_novelty_ok:qv.checks.semantic_novelty_ok,new_followup_evidence_ok:qv.checks.new_followup_evidence_ok,generated_at:now,personalization_anchor:clean(generated.personalization_anchor),micro_commitment:clean(generated.micro_commitment),human_reason:clean(generated.human_reason)}};
-        const evidence={...(action.evidence||{}),commercial_intelligence:ci};if(['email','e-mail','reply_email'].includes(action.channel_norm))evidence.email_subject=clean(generated.subject)||clean(action.evidence?.email_subject);
+        const evidence={...(workingAction.evidence||{}),commercial_intelligence:ci};if(['email','e-mail','reply_email'].includes(action.channel_norm))evidence.email_subject=clean(generated.subject)||clean(action.evidence?.email_subject);
         const update:any={evidence,updated_at:now};if(qv.passed)update.message_draft=message;else if(clean(action.message_draft))update.message_draft='';
         const {error:uErr}=await db.from('powerhouse_sales_actions').update(update).eq('action_id',action.action_id);if(uErr)throw new Error('ACTION_WRITE:'+uErr.message);
         out.push({action_id:action.action_id,channel:action.channel_norm,play_key:action.play_key,quality_passed:qv.passed,quality_score:qv.score,word_count:qv.checks.word_count,personalization_anchor:qv.checks.personalization_anchor});
