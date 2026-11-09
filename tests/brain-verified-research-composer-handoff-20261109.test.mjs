@@ -135,3 +135,10 @@ test('experiment readiness is policy-scoped and not called learned without two m
  assert.match(sql,/NO_ACTIVE_EXPERIMENT_POLICY/);
  assert.match(sql,/INSUFFICIENT_EVIDENCE_NOT_LEARNED/);
 });
+
+test('canonical skill makes publication only a nonterminal step until applied learning is read back',()=>{
+ const body=readFileSync(new URL('../.agents/skills/powerhouse-relationship-external-intelligence/SKILL.md',import.meta.url),'utf8');
+ for(const clause of ['P0_END_TO_END_CLOSURE_20261109','content_publication_obligations','powerhouse_sales_actions','ONE BRAIN/Heartbeat','LIVE_PROVEN','MEASUREMENT_PENDING','ANALYSIS_PENDING','EXPERIMENT_PENDING','APPLICATION_PENDING','INSUFFICIENT_EVIDENCE_NOT_LEARNED','NOT_ELIGIBLE','provider-ID/URL','volgende NATUURLIJKE productie-run']) assert.ok(body.includes(clause),'missing hard acceptance '+clause);
+ assert.match(body,/Geen tweede executor, cron, CRM, databank of losse leertaak/);
+ assert.match(body,/alleen werkelijke provider-ID\+readback/);
+});
