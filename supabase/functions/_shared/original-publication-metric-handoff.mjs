@@ -75,6 +75,10 @@ export function identifyOriginalPublicationHandoff(ob,posts,snapshots,now){
  const s=(snapshots||[]).filter(s=>s.tenant_id===expectedTenant&&s.post_id===exact[0].post_id)
    .sort((a,b)=>millis(b.observed_at)-millis(a.observed_at));
  for(const candidate of s){
+   const proof=accept(ob,exact[0],candidate,now);
+   if(!proof)continue;
+   if(ob?.metrics?.original_provider_metric_handoff?.source_event_id===proof.source_event_id)
+     return {reason:'ALREADY_RECONCILED'};
    const patch=reconcileOriginalPublicationMeasurement(ob,exact[0],candidate,now);
    if(patch)return {reason:'VERIFIED_MATURED_PROVIDER_METRIC',patch,source_event_id:candidate.source_event_id};
  }
