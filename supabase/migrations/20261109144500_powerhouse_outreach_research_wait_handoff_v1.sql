@@ -26,6 +26,8 @@ declare
   v_matured_treatment_30d integer:=0;
   v_matured_holdout_30d integer:=0;
   v_experiment_assigned_30d integer:=0;
+  v_experiment_min_per_arm integer:=20;
+  v_experiment_active boolean:=false;
 
   v_external_wait int:=0;
   v_bad_research int:=0;
@@ -251,6 +253,12 @@ begin
     v_readback_with_provider_id_7d, v_reply_7d, v_expired_7d
   from recent;
 
+  select greatest(1,coalesce(min(min_matured_per_arm),20)),
+    count(*)>0
+  into v_experiment_min_per_arm,v_experiment_active
+  from public.powerhouse_experiment_policies
+  where experiment_key='persuasion-revenue-optimizer-v1' and status='active';
+
   select count(*)::int,
     count(*) filter(where lower(coalesce(assignment_arm,''))='treatment'
         and measurement_horizon_end<=p_now)::int,
@@ -258,7 +266,8 @@ begin
         and measurement_horizon_end<=p_now)::int
   into v_experiment_assigned_30d,v_matured_treatment_30d,v_matured_holdout_30d
   from public.powerhouse_experiment_assignments
-  where assigned_at>=p_now-interval '30 days' and assigned_at<=p_now;
+  where experiment_key='persuasion-revenue-optimizer-v1'
+    and assigned_at>=p_now-interval '30 days' and assigned_at<=p_now;
 
   v_payload:=jsonb_build_object(
     'contract','powerhouse-commercial-action-closure-v3',
@@ -311,11 +320,16 @@ begin
           then 'PROVIDER_ACCEPTED_NO_INDEPENDENT_READBACK'
           when v_email_7d=0 then 'NO_EMAIL_ACTION_ELIGIBLE'
           else 'NO_PROVEN_COMMERCIAL_DELIVERY_YET' end,
+      'experiment_policy_key','persuasion-revenue-optimizer-v1',
+      'experiment_policy_active',v_experiment_active,
+      'min_matured_per_arm',v_experiment_min_per_arm,
       'experiment_assignments_last_30d',v_experiment_assigned_30d,
       'matured_treatment_last_30d',v_matured_treatment_30d,
       'matured_holdout_last_30d',v_matured_holdout_30d,
       'experiment_evidence_state',
-        case when v_matured_treatment_30d>=20 and v_matured_holdout_30d>=20
+        case when not v_experiment_active then 'NO_ACTIVE_EXPERIMENT_POLICY'
+          when v_matured_treatment_30d>=v_experiment_min_per_arm
+            and v_matured_holdout_30d>=v_experiment_min_per_arm
           then 'READY_FOR_CAUSAL_EFFECT_ANALYSIS'
           else 'INSUFFICIENT_EVIDENCE_NOT_LEARNED' end,
       'critical_evidence_rule',
