@@ -19,9 +19,8 @@
     "one_current_waiting_action_qualifies_for_exact_canonical_verified_research_resume": 1,
     "independent_provider_send_after_repair_proven": false
   },
-  "repair": "Amend only the existing candidate RPC to re-admit research-held waiting drafts with completed same-action research, current matching independently vetted company news, and strict 14/30 day evidence freshness; amend only original composer candidate filter to allow re-evaluation; preserve existing independent quality/recipient/suppression/claim/ACK/readback gates.",
+  "repair": "Keep the existing SQL candidates RPC unchanged. In the ORIGINAL composer read the existing canonical message-plan view for WAITING/SOURCE_SPECIFIC_EVIDENCE_REQUIRED originals, require same-action completed research and independently vetted current company news through sourceVerifiedComposerHandoff; re-evaluate full message quality then original sender gates. No schema, scheduler or alternate sender.",
   "scope": [
-    "supabase/migrations/20261110140500_original_commercial_verified_research_resume_v1.sql",
     "supabase/functions/powerhouse-commercial-message-composer/index.ts",
     "tests/brain-original-commercial-held-resume-20261110.test.mjs",
     ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
@@ -36,11 +35,11 @@
     "Do not create parallel email sender or scheduler, and do not call delivery GREEN without external provider ID+readback."
   ],
   "production_proof_to_complete": [
-    "Protected required CI/CodeQL, hosted Supabase migration preview and original Edge deploy on exact PR head.",
-    "Protected merge to main, native migration history and service_role-only ACL independent readback.",
-    "First natural original composer tick picks up the same waiting action and records a new quality result.",
-    "Only after lawful recipient authorization may original Gmail sender return provider ID/SENT/readback; never infer from prepared/done.",
-    "One genuine reply/outcome feeds original Powerhouse experiment and applied improvement with controlled evidence."
+    "Protected required CI/CodeQL and original Edge deploy on exact PR head; no new Supabase migration.",
+    "Protected merge to main and independently verified original composer Edge function version/hash.",
+    "First original natural composer run picks up the exact original waiting action and records new quality/source evidence.",
+    "Only after recipient consent and provider-independent readback may a mail be counted sent; never infer from prepared/done.",
+    "Genuine outcomes feed original Powerhouse experiments and applied next natural execution with controlled evidence."
   ],
   "independent_provider_readback_required": true,
   "no_false_green": true,
@@ -61,5 +60,11 @@
     "canary": [
       "tests/brain-original-commercial-held-resume-20261110.test.mjs"
     ]
+  },
+  "ci_history": {
+    "failed_preview_on": "2026-11-10",
+    "root_cause": "Hosted Preview lacks historical production-only public.powerhouse_commercial_message_plan_v1 type; new RPC replacement failed SQLSTATE 42704; migration removed rather than hide or skip preview errors.",
+    "repair": "No new schema migration, no preview dependency added; original composer reads existing provider-backed production view with independent exact-source contract.",
+    "preview_result_on_fixed_head": "PENDING"
   }
 }
