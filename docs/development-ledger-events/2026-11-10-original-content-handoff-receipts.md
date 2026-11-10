@@ -9,3 +9,9 @@
 **Preventie:** controle `tests/brain-original-content-handoff-receipts-20261110.test.mjs`; machinecontract `brain/learning/2026-11-10-original-content-handoff-receipts-v1.json`; agentregel bestaande CRO-skill. Audit maakt geen nieuwe providerpublicatie, CRM, scheduler, tabel of privilege. Een tweede run mag ongewijzigde verplichtingen niet opnieuw verhogen.
 
 **Eindbewijs:** vereiste PR/CI/CodeQL/Hosted Preview → merge → native originele GitOps-migratie → service-only ACL en originele functie/cronreadback → individuele OPEN-registraties en oudere originele data met ongewijzigde externe IDs → eerstvolgende natuurlijke runtime-acceptatie → later onafhankelijke post→metric→eval→experimentbewijs. Tot die laatste stap niet alles GREEN.
+
+## Exacte e-mail-overdracht
+
+Niet alleen de nieuwsbriefstatus: de oorspronkelijke `powerhouse_sales_actions`-rijen per `action_id` krijgen een eigen `CONTENT_HANDOFF`-dossier. `prepared` is geen verzonden bericht. `done` wordt alleen als echt providerbevestigd verzonden gezien wanneer Gmail exact dezelfde niet-lege provider-message-ID en een onafhankelijk bevestigd account-/ontvanger-readback heeft. Antwoordevents worden alleen op het exacte actie-ID gekoppeld; zelfs een bezorgde mail plus antwoord blijft `OPEN` totdat de eigen CRO-/BRAIN-lering en een daadwerkelijk nieuw experiment worden geverifieerd. Geen extra afzender, provideractie, scheduler of fictieve conversie.
+
+De originele gezondheidsstatus mag niet groen worden bij `OVERDUE` of onafgemaakte relevante handoffs; de status en aantallen worden in het oorspronkelijke `OPERATIONS_ASSURANCE`-BRAIN-bewijs zichtbaar. De leer-ID van een volgend LinkedIn-bedrijfsexperiment moet exact dezelfde leerregel gebruiken en zijn toepassing moet **na** de gemeten BRAIN-evaluatie liggen.
