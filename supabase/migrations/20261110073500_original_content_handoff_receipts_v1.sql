@@ -103,6 +103,11 @@ BEGIN
           AND n.live_proven_at>r.live_proven_at
           AND n.live_proven_at<=p_now
           AND n.status IN('LIVE_PROVEN','MEASURED','LEARNED')
+          AND n.evidence->>'provider_truth_verified'='true'
+          -- Consumer must independently ACK the source provider object and
+          -- original BRAIN evaluation. A producer's assertion alone is not proof.
+          AND n.evidence->>'learning_source_external_id'=r.external_id
+          AND n.evidence->>'learning_source_evaluation_id'=v_eval
       ) INTO v_reuse;
     END IF;
     IF NOT v_pub THEN
