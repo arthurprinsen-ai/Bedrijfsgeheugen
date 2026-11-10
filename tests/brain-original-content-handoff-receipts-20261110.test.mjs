@@ -7,7 +7,7 @@ test('one original loop assurance owner, no new scheduler or social/email sender
  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_content_handoff_receipts_v1/);
  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_refresh_loop_assurance_v1/);
  assert.match(sql,/perform public\.powerhouse_sync_loop_assurance_receipts_v1\(p_now\);/);
- assert.match(sql,/perform public\.powerhouse_content_handoff_receipts_v1\(p_now\);/);
+ assert.match(sql,/v_handoff:=public\.powerhouse_content_handoff_receipts_v1\(p_now\);/);
  assert.doesNotMatch(sql,/cron\.schedule|net\.http_post|create table|delete from supabase_migrations/i);
  assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_content_handoff_receipts_v1\(timestamptz\)/);
  assert.match(sql,/FROM PUBLIC,anon,authenticated/);
@@ -77,4 +77,14 @@ test('email approval and historical backlog never count as fake publication or l
  assert.match(sql,/'no_mass_closure_without_source_proof',true/);
  assert.match(sql,/'social-learning-backlog'/);
  assert.match(sql,/'no_fake_close',true/);
+});
+
+test('existing content loop status cannot go GREEN on missed consumer ACK, unlearned or overdue obligations',()=>{
+ assert.match(sql,/v_handoff:=public\.powerhouse_content_handoff_receipts_v1\(p_now\);/);
+ assert.match(sql,/r\.loop_key='content-closed-loop'[\s\S]*?v_handoff->>'overdue'/);
+ assert.match(sql,/v_handoff->>'social_learning_overdue'/);
+ assert.match(sql,/r\.loop_key='content-closed-loop'[\s\S]*?v_handoff->>'open'/);
+ assert.match(sql,/v_status:='RED'; v_reason:='independent source-to-consumer handoff overdue'/);
+ assert.match(sql,/v_status:='AMBER'; v_reason:='original source-to-consumer handoff incomplete'/);
+ assert.match(sql,/'content_handoff',case when r\.loop_key='content-closed-loop' then v_handoff else null end/);
 });
