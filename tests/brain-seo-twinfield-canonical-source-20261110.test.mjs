@@ -11,9 +11,15 @@ test('Twinfield short commercial API intent belongs exclusively to existing cano
  assert.equal(matches.length,1);
  assert.equal(matches[0].role,'money');
  assert.equal(matches[0].primary_cta.url,'https://www.bedrijfsgeheugen.nl/frisse-blik');
- // Consumer owner aliases are released together with their original Supabase resolver;
- // this website-only PR must not break canonical source/projection equivalence.
- assert.equal(matches[0].secondary_keywords?.includes(alias),false);
+ // The website-only release may precede its original SEO backend owner-projection.
+ // Once the original Supabase resolver is released, the alias MUST exist on both
+ // original source and runtime owner; a one-sided change remains fail-closed.
+ const runtime=JSON.parse(await read('supabase/functions/powerhouse-seo-opportunity-resolver/intent-owners.json'));
+ const sourceOwners=seo.pages.filter(x=>x.primary_keyword===alias||x.secondary_keywords?.includes(alias)).map(x=>x.route);
+ const runtimeOwners=runtime.pages.filter(x=>x.primary_keyword===alias||x.secondary_keywords?.includes(alias)).map(x=>x.route);
+ assert.deepEqual(sourceOwners,runtimeOwners,'source/runtime exact commercial intent parity is mandatory');
+ assert.ok(sourceOwners.length===0||(sourceOwners.length===1&&sourceOwners[0]===exact),'only the Twinfield canonical may own the API alias');
+ assert.equal(matches[0].secondary_keywords?.includes(alias)===true,sourceOwners.length===1);
  assert.ok(locale.pages.find(x=>x.source_route===exact).nl.secondary_keywords.includes(alias));
 });
 test('existing Twinfield page is one reversible, truthful and measured canonical, not a duplicate blog',async()=>{
