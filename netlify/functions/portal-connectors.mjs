@@ -9,4 +9,6 @@ const store=createPortalConnectorsStore();
 const engine=createConnectorRuntime({providers:createEnvironmentConnectorProviders()});
 const sovereignty=createDataSovereigntyClient();
 export default async request=>handlePortalConnectorsRequest({request,user:await getUser(),store,engine,sovereignty});
-export const config={path:'/api/connectors/*',excludedPath:'/api/connectors/readiness'};
+// The base path is the tenant-scoped connector list/create endpoint; Netlify's URLPattern wildcard does not imply the base.
+// Preserve exactly one existing handler and keep public readiness excluded from its authenticated scope.
+export const config={path:['/api/connectors','/api/connectors/*'],excludedPath:'/api/connectors/readiness'};
