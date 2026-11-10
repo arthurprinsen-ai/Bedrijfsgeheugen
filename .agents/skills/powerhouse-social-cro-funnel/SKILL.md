@@ -5,6 +5,20 @@ description: Operate the existing Bedrijfsgeheugen social post → engagement �
 
 # Powerhouse social CRO — één bewijsgestuurde lus (30 oktober 2026)
 
+## 10 november 2026 — autonoom herstellen, geen statusrapport als vervanging voor uitvoering
+
+**Verplichte agentinstructie voor iedere sociale leer- en publicatieagent:** bij een onvoltooide content-, meet-, analyse- of experimenteerstap in dezelfde sessie eerst de originele bron, eigenaar en provider-ACK inspecteren, herstel binnen de bestaande bevoegdheid uitvoeren, regressie toevoegen, beschermde release voltooien en provider-readback toetsen. Een lijst met open blockers of "volgende natuurlijke run afwachten" is géén geleverde herstelactie wanneer de oorspronkelijke actie veilig uitvoerbaar is. Meld uitsluitend concreet uitgevoerd werk en aantoonbare resultaten; noem echte onoplosbare externe toestemmings- of bronbeperkingen zonder er succes van te maken.
+
+**Precies één meet-ACK:** de originele `netlify/functions/social-learning-evaluate.mjs` is de bestaande hourly eigenaar. Na originele evaluatie roept hij in dezelfde uitvoering `reconcile_verified_obligations` aan via de oorspronkelijke `social-learning-store` Edge API. Alleen de bestaande `social_learning_obligations`-rij `(tenant_id, obligation_id, post_id, 24/48/72h)` met de originele `social_learning_evaluations` én een werkelijk `social_metric_snapshots`-event binnen ±6 uur mag de status `MEASUREMENT_VERIFIED` krijgen. Controleer tenant, exact provider-post-ID, immutable source_event_id, bronkwaliteit, meettijd, vector/waarden en originele evaluatie-ID. De status betekent alléén *meetbewijs geconsumeerd*, nooit een PROVEN post, causaal effect, omzet of succesvol volgende bericht.
+
+**Automatische herstelactie per uur:** zoek ook historische open verplichtingen waarvoor een geldige originele evaluatie en providerbron later binnenkwamen; registreer een uniek ontvangstbewijs en stop heropening door dubbele `record_obligation`-writes. Bescherm iedere CAS-update en dekking tegen truncatie, accountswaps en tokenloze aanroep. Gebruik geen nieuwe scheduler, Buffer/Make fallback, herpublicatie of alternatieve leerdatabase. Historische Buffer-bronnen mogen uitsluitend read-only als reeds opgeslagen providerobservatie worden gecontroleerd, nooit als nieuwe publicatieconnector. `OBSERVED_PARTIAL_SCOPE`, provider-dagtotalen en onvolledige of verlopen uurvensters geven géén exact 24/48/72h-effectbewijs; bronverlies blijft expliciet identificeerbaar, gekoppeld aan de originele herstelowner en de volgende echte providerbron.
+
+**Afsluitvolgorde:** origineel bewijs → deterministische evaluatie → unieke ontvangst/ACK → BRAIN-leerregel met sample- en causaalheidsgrens → vastgelegde keuze in volgende oorspronkelijke publicatie → onafhankelijke provider-ID/readback en effectmeting → feedback. Een technisch geslaagde hourly job sluit geen enkel ander kanaal af. Dezelfde fingerprint heropenen bij regressie, niet een nieuwe agent of tweede proces starten.
+
+Bewijs: `tests/brain-social-obligation-evidence-ack-20261110.test.mjs`; één canonieke wijzigingslijn en incident `#4198`.
+
+
+
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 ## Canonieke eigenaren, geen tweede systeem
