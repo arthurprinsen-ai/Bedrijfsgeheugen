@@ -1,0 +1,71 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_MIGRATION_PREVIEW_AND_NATURAL_OWNER_RUN_DUE",
+  "fingerprint": "powerhouse|content|producer-consumer-acks-and-full-experiment-reuse|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing powerhouse-runtime-scheduler-mux-v1 / original loop assurance and channel executors",
+  "root_cause": "A source Cron success and one independently LIVE_PROVEN LinkedIn company post can satisfy a daily commercial provider-proof obligation while other channels are GENERATED/BLOCKED/PLANNED and publication obligations have no measured_at or learned_at. 2026-11-10 audit shows 2/4 channels provider-proven, 0/4 measured/learned; 7-10 Nov 16 publication obligations have 0 recorded measurement and 0 learning. 188 social_learning_obligations are OPEN and overdue. Publisher handoffs do not have one persistent, independently consumer-accepted source-to-measurement-to-analysis-to-next-experiment record. Two due prepared email actions are not provider sent. The original content executor runs, but its stage evidence and incomplete obligations are not bound into per-publication Brain owner and consumer receipts.",
+  "evidence": {
+    "checked_on": "2026-11-10",
+    "project": "adhjwmvyoixzjtmiroln",
+    "publication_dates": "2026-11-07..2026-11-10",
+    "publication_slots": 16,
+    "measured_slots": 0,
+    "learned_slots": 0,
+    "nov10_proven_publications": 2,
+    "nov10_total_publications": 4,
+    "nov10_blog": "GENERATED",
+    "nov10_instagram": "PLANNED",
+    "nov10_linkedin_company": "LIVE_PROVEN",
+    "nov10_linkedin_personal": "LIVE_PROVEN",
+    "overdue_social_learning_obligations": 188,
+    "prepared_due_email_actions": 2,
+    "commercial_execution_day_fulfilled_from_only_one_independently_proven_company_post": true,
+    "independent_latest_nov6_company_183_impression_evaluation_present": true
+  },
+  "fix": "Inside EXISTING 15-min original loop assurance invocation in original powerhouse_runtime_scheduler_mux_v1, add provider- and stage-exact powerhouse_content_handoff_receipts_v1. It upserts one durable existing brain_obligations CONTENT_HANDOFF per original date/channel for last 8 days plus daily opt-in email and continuous social-learning backlog. Only exact independently provider-proven publication receipts, per-post verified metric source, per-original application/source-event BRAIN evaluation, and a separately provider-proven next experiment mark terminal FULFILLED. Others remain OPEN with typed WAIT/OVERDUE stage, sole existing owner, due date and independent receipt references. Same original writer; no new scheduler, provider connection, sends, reposts, privileges or table. Recovery remains with the original channel pipeline.",
+  "prevention": "ACK_RECEIVED is not processed: a cron run or provider source connection is not a consumer acceptance; no partial-channel promotion to full-loop success. Each channel has owner and fingerprinted immutable source identity; no fake statistics, a matched source cannot be reused for a different post. Duplicate inputs upsert without mutations when unchanged. Email must have real opt-in and provider message ID; never send from audit. Insufficient GA4 samples remain WAIT; exact content + evaluated metrics are not causal improvement until a later independently published experiment is actually linked.",
+  "tests": [
+    "tests/brain-original-content-handoff-receipts-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-content-handoff-receipts-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-content-handoff-receipts-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-content-handoff-receipts-20261110.test.mjs"
+    ],
+    "invariants": [
+      "single existing runtime scheduler #171 and existing loop-assurance owner",
+      "canonical original date/channel identity",
+      "no new writer/sender/cron",
+      "independent provider IDs and exact post metrics",
+      "source-event analysis/evaluation",
+      "next different provider-proven original experiment",
+      "not FULFILLED on publish alone",
+      "emails require consent and real provider proof",
+      "188 overdue learning obligations not fabricated closed",
+      "service_role-only SECURITY DEFINER"
+    ],
+    "canary_gates": [
+      "provider preview applies migration",
+      "original function SECURITY DEFINER ACL preserved",
+      "readback original BRAIN obligations and hourly runtime audit event",
+      "second original audit idempotent no version change",
+      "next natural #171 original assured owner audit observation"
+    ]
+  },
+  "compiler": {
+    "scope": "CONTENT_GROWTH",
+    "failure_class": "PARTIAL_PUBLISHER_ACK_FALSE_FULL_CHAIN_COMPLETION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required+CodeQL+Supabase Preview, merge exact main then native Supabase GitOps applies one migration; provider readback of original owner and service-role ACL; source audit yields per channel OPEN/owner for missing, no false FULFILLED and no duplicated provider side effects; repeat is idempotent. Next natural original runtime and next genuine content experiment readback must independently prove real use and improvement; never claim whole cycle GREEN until real converted/controlled outcomes."
+}
