@@ -169,7 +169,15 @@ Deno.serve(async(req:Request)=>{
     const {data,error}=await db.rpc('powerhouse_commercial_message_candidates_v1',{p_limit:limit,p_channels:channels.length?channels:null,p_action_ids:actionIds.length?actionIds:null});
     if(error)throw new Error('PLAN_READ:'+error.message);
     let rows=(data||[]);
-    rows=rows.filter((a:any)=>a.evidence?.commercial_intelligence?.composer?.contract!==CONTRACT||a.evidence?.commercial_intelligence?.composer?.quality_passed!==true||!clean(a.message_draft));
+    // A source-held ORIGINAL action must be re-evaluated when its verified research is
+    // newly available, even if an earlier draft already passed quality. The SQL
+    // candidates RPC admits only a matching, vetted, completed research receipt.
+    // This is NOT recipient authorization and never bypasses the source gate.
+    rows=rows.filter((a:any)=>
+      (a.status==='waiting' && a.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED')
+      || a.evidence?.commercial_intelligence?.composer?.contract!==CONTRACT
+      || a.evidence?.commercial_intelligence?.composer?.quality_passed!==true
+      || !clean(a.message_draft));
     if(dryRun)return json({ok:true,contract:CONTRACT,dry_run:true,candidates:rows.map((a:any)=>({action_id:a.action_id,play_key:a.play_key,channel:a.channel_norm}))});
     const out:any[]=[];
     for(const action of rows){
