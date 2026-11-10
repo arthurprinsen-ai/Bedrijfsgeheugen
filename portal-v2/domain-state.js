@@ -169,9 +169,82 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
  const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
+ // Tenant-scoped SERVER-PERSISTED handoff manifest in the original Portal State.
+ // The raw customer answers already live in the SAME canonical server state;
+ // this manifest persists only exact binding/impact lineage, not another copy.
+ const HANDOFF_JOURNAL_PATH='portal.__brainHandoffJournalV1';
+ const HANDOFF_JOURNAL_VERSION=1;
+ let journalCleanupPending=false;
+ let recoveredOnInit=false;
  // Same-session retry only: never send a pending input under another tenant.
  const currentPrincipal=()=>{const user=stateClient.currentUser?.();return String(user?.id||user?.email||'').trim();};
  let handoffPrincipal='',hydratedPrincipal='';
+ const journalValue=()=>domain.get(HANDOFF_JOURNAL_PATH);
+ function persistJournalManifest(){
+  const principal=currentPrincipal();
+  if(!principal||stateClient.isDemo?.()||hydratedPrincipal!==principal)return false;
+  const raw=journalValue();
+  if(raw&&(!isObject(raw)||raw.version!==HANDOFF_JOURNAL_VERSION||!isObject(raw.byPrincipal)))
+   throw new Error('PORTAL_BRAIN_JOURNAL_INVALID');
+  // Preserve every OTHER principal's original pending handoff. Never convert
+  // team-user A's pending record into a submission from team-user B.
+  const byPrincipal=clone(raw?.byPrincipal||{});
+  const bindings=[...pendingBusinessInputs.values()].map(item=>({
+   key:item.key,inputType:item.inputType,modelId:item.modelId,statePath:item.statePath,generation:item.generation
+  }));
+  if(bindings.length){
+   byPrincipal[principal]={bindings,impacts:clone(pendingImpacts)};
+  }else delete byPrincipal[principal];
+  const next={version:HANDOFF_JOURNAL_VERSION,byPrincipal};
+  if(JSON.stringify(raw)===JSON.stringify(next))return false;
+  // Internal state change goes through the ORIGINAL authenticated state writer.
+  // It is never routed through public set/patch and never emits a new impact.
+  domain.set(HANDOFF_JOURNAL_PATH,next);
+  return true;
+ }
+ function recoverJournalManifest(){
+  const principal=currentPrincipal();
+  if(!principal||stateClient.isDemo?.())return false;
+  const raw=journalValue();
+  if(raw==null)return false;
+  if(!isObject(raw)||raw.version!==HANDOFF_JOURNAL_VERSION||!isObject(raw.byPrincipal))
+   throw new Error('PORTAL_BRAIN_JOURNAL_INVALID');
+  const entry=raw.byPrincipal[principal];
+  if(!entry)return false;
+  if(!Array.isArray(entry.bindings)||!Array.isArray(entry.impacts))
+   throw new Error('PORTAL_BRAIN_JOURNAL_INVALID');
+  // Read-only validation of every replay route: an authenticated user may
+  // edit this server state, so don't trust arbitrary binding or impact paths.
+  const recovered=new Map(),impacts=[],seen=new Set();
+  for(const item of entry.bindings){
+   if(!isObject(item)||typeof item.statePath!=='string'||!item.statePath.startsWith('portal.'))
+    throw new Error('PORTAL_BRAIN_JOURNAL_INVALID_BINDING');
+   const expected=businessInputBinding(item.statePath);
+   if(!expected||expected.key!==item.key||expected.modelId!==item.modelId||expected.inputType!==item.inputType
+      ||expected.statePath!==item.statePath||!Number.isSafeInteger(item.generation)||item.generation<1
+      ||seen.has(item.key))throw new Error('PORTAL_BRAIN_JOURNAL_INVALID_BINDING');
+   seen.add(item.key);recovered.set(item.key,{...expected,generation:item.generation});
+  }
+  const impactGenerations=new Set();
+  for(const impact of entry.impacts){
+   if(!isObject(impact)||typeof impact.path!=='string'||!impact.path.startsWith('portal.')
+     ||!Number.isSafeInteger(impact.generation)||impact.generation<1
+     ||impactGenerations.has(impact.generation)
+     ||!Array.isArray(impact.changes)||!Array.isArray(impact.affectedPages))
+    throw new Error('PORTAL_BRAIN_JOURNAL_INVALID_IMPACT');
+   if(![...recovered.values()].some(binding=>impact.path===binding.statePath||impact.path.startsWith(binding.statePath+'.')))
+    throw new Error('PORTAL_BRAIN_JOURNAL_ORPHAN_IMPACT');
+   impactGenerations.add(impact.generation);impacts.push(clone(impact));
+  }
+  if(!recovered.size&&impacts.length)throw new Error('PORTAL_BRAIN_JOURNAL_ORPHAN_IMPACT');
+  for(const [key,item] of recovered)pendingBusinessInputs.set(key,item);
+  pendingImpacts.push(...impacts);
+  businessRevision=Math.max(businessRevision,...[...recovered.values()].map(item=>item.generation),0);
+  impactRevision=Math.max(impactRevision,...impacts.map(item=>item.generation),0);
+  if(recovered.size)handoffPrincipal=principal;
+  return recovered.size>0;
+ }
+
  function guardHandoffPrincipal(){
   if(hydratedPrincipal&&hydratedPrincipal!==currentPrincipal())
    throw new Error('PORTAL_HYDRATED_PRINCIPAL_MISMATCH');
@@ -182,8 +255,9 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  function pendingHandoffs(){
   const inputs=pendingBusinessInputs.size,impacts=pendingImpacts.length;
   return Object.freeze({
-   pending:inputs>0||impacts>0,inputs,impacts,
-   retryable:inputs>0&&Boolean(handoffPrincipal)&&handoffPrincipal===currentPrincipal()
+   pending:inputs>0||impacts>0||journalCleanupPending,inputs,impacts,
+   journalCleanupPending,
+   retryable:(inputs>0||journalCleanupPending)&&Boolean(handoffPrincipal||hydratedPrincipal)&&(!handoffPrincipal||handoffPrincipal===currentPrincipal())
      &&hydratedPrincipal===currentPrincipal()&&domain.initialized()&&!stateClient.isDemo?.()
      &&['saved','idle','error'].includes(domain.status())
   });
@@ -209,6 +283,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   if(!stateClient.isDemo?.()&&initializingPrincipal!==currentPrincipal())
    throw new Error('PORTAL_PRINCIPAL_CHANGED_DURING_HYDRATION');
   hydratedPrincipal=initializingPrincipal;
+  recoveredOnInit=recoverJournalManifest();
   if(browserLegacyLiftPending){
    domain.patch('portal.migration',{browserLegacyLifted:true,browserLegacyLiftVersion:'2026-09-18-v1'});
    result=await domain.flush();
@@ -220,7 +295,23 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   for(const input of reader(legacyStorage,stateClient.currentUser?.()))await saveBusinessInput(input);
   return result;
  }
- function init(){if(activeInit)return activeInit;activeInit=performInit().finally(()=>{activeInit=null});return activeInit;}
+ function init(){
+  if(activeInit)return activeInit;
+  recoveredOnInit=false;
+  let completed=false;
+  activeInit=performInit().then(result=>{completed=true;return result}).finally(()=>{
+   activeInit=null;
+   // Reuse the EXISTING authenticated init lifecycle rather than a second
+   // scheduler. Server-state handoffs are attempted after browser restart.
+   if(completed&&recoveredOnInit&&pendingHandoffs().retryable){
+    queueMicrotask(()=>{if(pendingHandoffs().retryable)void flush().catch(error=>{
+     if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')
+      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{recovered:true,error:String(error?.message||error),...pendingHandoffs()}}));
+    });});
+   }
+  });
+  return activeInit;
+ }
  function track(path){
   const binding=businessInputBinding(path);
   if(!binding)return;
@@ -266,6 +357,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   // Snapshot causal lineage before any await: edits made during the state or
   // Brain write must remain pending and cannot be reported as synchronized.
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
+  // Persist the exact to-be-delivered binding and ALL causal impacts on the
+  // EXISTING customer state BEFORE the first downstream Brain POST. If Brain
+  // fails, the next authenticated init recovers from this server snapshot.
+  persistJournalManifest();
   const cutoff=impactRevision;
   const submittedImpacts=pendingImpacts.filter(impact=>impact.generation<=cutoff);
   const stateResult=await domain.flush();
@@ -299,6 +394,25 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
     if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
    }
    if(pendingBusinessInputs.size===0&&pendingImpacts.length===0)handoffPrincipal='';
+   // Once canonical Brain ACKs exist, persist the remaining manifest. A failed
+   // cleanup is retryable and cannot erase unconfirmed or newer source edits.
+   // Never auto-save customer typing that arrived during the Brain request.
+   if(submittedPrincipal&&submittedPrincipal===currentPrincipal()&&hydratedPrincipal===submittedPrincipal){
+    const cleanlySaved=['saved','idle'].includes(domain.status());
+    if(cleanlySaved&&(stored.length||journalCleanupPending)){
+     try{
+      journalCleanupPending=persistJournalManifest()||journalCleanupPending;
+      if(journalCleanupPending){
+       const cleanup=await domain.flush();
+       if(['saved','idle'].includes(cleanup.status))journalCleanupPending=false;
+      }
+     }catch(error){
+      journalCleanupPending=true;
+      if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')
+       globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{journalCleanupPending:true,error:String(error?.message||error)}}));
+     }
+    }
+   }
    // Never broadcast one tenant's confirmations into a different user's session.
    if(stored.length&&submittedPrincipal===currentPrincipal()&&hydratedPrincipal===submittedPrincipal
       &&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
