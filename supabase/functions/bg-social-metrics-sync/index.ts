@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
+import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -215,6 +216,59 @@ async function auditCompanyExperimentHandoffs(db:any){
   });
 }
 
+// Same six-hour provider observer. CAS-update ORIGINAL date/channel obligation
+// only from independently observed, exact-provider-ID, >=24h metrics.
+async function reconcileOriginalPublicationMetricHandoffs(db:any){
+ const now=new Date(),since=new Date(now.getTime()-10*86400000).toISOString().slice(0,10);
+ const {data:obs,error}=await db.from('content_publication_obligations')
+  .select('tenant_id,publication_date,channel,status,external_id,published_at,live_proven_at,measured_at,learned_at,metrics,updated_at')
+  .eq('tenant_id','canonical').eq('status','LIVE_PROVEN')
+  .in('channel',['linkedin_personal','linkedin_company'])
+  .gte('publication_date',since).lte('publication_date',localDay())
+  .not('live_proven_at','is',null).order('publication_date',{ascending:false}).limit(22);
+ if(error)throw new Error('ORIGINAL_METRIC_OBLIGATION_READ:'+error.message);
+ let savedCount=0,overdue=0,errors=0;const stages:any[]=[];
+ for(const ob of obs||[]){
+  const kind=ob.channel==='linkedin_personal'?'canonical':'bedrijfsgeheugen';
+  const {data:posts,error:pe}=await db.from('social_posts')
+   .select('tenant_id,post_id,external_post_id,channel_kind,published_at')
+   .eq('tenant_id',kind).eq('platform','linkedin')
+   .eq('channel_kind',ob.channel).eq('external_post_id',ob.external_id).limit(2);
+  if(pe){errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_READ_ERROR'});continue;}
+  const post=posts?.[0];
+  if(posts?.length!==1){stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_IDENTITY_NOT_UNIQUE'});continue;}
+  const {data:snapshots,error:se}=await db.from('social_metric_snapshots')
+   .select('tenant_id,post_id,source,data_quality,observed_at,source_event_id,metrics')
+   .eq('tenant_id',kind).eq('post_id',post.post_id)
+   .order('observed_at',{ascending:false}).limit(5);
+  if(se){errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'METRIC_READ_ERROR'});continue;}
+  const result=identifyOriginalPublicationHandoff(ob,[post],snapshots||[],now.toISOString());
+  if(!result.patch){
+   const age=(now.getTime()-Date.parse(ob.published_at))/3600000;
+   const isOverdue=Number.isFinite(age)&&age>78&&result.reason!=='ALREADY_RECONCILED';
+   if(isOverdue)overdue++;
+   stages.push({day:ob.publication_date,channel:ob.channel,
+     stage:isOverdue?'PROVIDER_MEASUREMENT_HANDOFF_OVERDUE':result.reason});continue;
+  }
+  const proof=result.patch.metrics.original_provider_metric_handoff;
+  const {data:updated,error:we}=await db.from('content_publication_obligations')
+   .update({metrics:result.patch.metrics,measured_at:result.patch.measured_at,updated_at:now.toISOString()})
+   .eq('tenant_id','canonical').eq('publication_date',ob.publication_date)
+   .eq('channel',ob.channel).eq('external_id',ob.external_id)
+   .eq('status','LIVE_PROVEN').eq('updated_at',ob.updated_at)
+   .select('measured_at,metrics').maybeSingle();
+  if(we||!updated||updated.metrics?.original_provider_metric_handoff?.source_event_id!==proof.source_event_id){
+   errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'ORIGINAL_CAS_OR_READBACK_FAILED'});continue;
+  }
+  savedCount++;stages.push({day:ob.publication_date,channel:ob.channel,
+    stage:'PROVIDER_MEASURED_PARTIAL_NO_LEARNING_CLAIM',source_event_id:proof.source_event_id,
+    metric_scope:proof.measurement_scope});
+ }
+ return {contract:'POWERHOUSE_ORIGINAL_PUBLICATION_METRIC_HANDOFF_V1',
+   eligible:(obs||[]).length,recorded:savedCount,overdue_count:overdue,failed_count:errors,
+   results:stages,learning_proven:false,provider_metric_scope_preserved:true};
+}
+
 // Company analytics come from the Windsor ingest (powerhouse_growth_source_daily_v1), not from Composio (403).
 async function companyAnalyticsState(db:any){
   const {data,error}=await db.from('powerhouse_growth_source_daily_v1')
@@ -294,6 +348,7 @@ Deno.serve(async(req:Request)=>{
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const day=localDay();
     let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any,companyExperimentHandoff:any;
+     let originalMetricHandoff:any;
     try{personalRegistry=await registerPersonalProofs(db);}catch(e){
       personalRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
     }
@@ -311,6 +366,10 @@ Deno.serve(async(req:Request)=>{
     }
     try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    try{originalMetricHandoff=await reconcileOriginalPublicationMetricHandoffs(db);}catch(e){
+      originalMetricHandoff={state:'ORIGINAL_PUBLICATION_HANDOFF_ERROR',
+        error:clean((e as Error).message).slice(0,125),learning_proven:false};
+    }
     let companyState:any;
     try{companyState=await companyAnalyticsState(db);}catch(e){companyState={state:'WINDSOR_READBACK_ERROR',error:clean((e as Error).message).slice(0,100)};}
     const total=(ig?.snapshots||0)+(li?.snapshots||0);
@@ -323,12 +382,15 @@ Deno.serve(async(req:Request)=>{
       (companyMetricLink?.linked||0)>0);
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0
       &&!(ig?.failures||[]).length&&!(li?.failures||[]).length&&companyHandoffOk
+       &&originalMetricHandoff?.state!=='ORIGINAL_PUBLICATION_HANDOFF_ERROR'
+       &&!(originalMetricHandoff?.failed_count>0)&&!(originalMetricHandoff?.overdue_count>0)
       &&!['HANDOFF_OVERDUE','EXPERIMENT_HANDOFF_READ_ERROR'].includes(companyExperimentHandoff?.state);
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
       linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
       company_learning_handoff_ok:companyHandoffOk,company_experiment_handoff:companyExperimentHandoff,
       personal_post_registry:personalRegistry,
+      original_publication_metric_handoff:originalMetricHandoff,
       social_sentiment_or_revenue_not_inferred:true};
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
