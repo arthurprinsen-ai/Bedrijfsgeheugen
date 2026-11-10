@@ -113,8 +113,8 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     id:'agent-social-delivery-recovery',
     domains:['Social','Content','Integration','Reliability'],
     capabilities:['analyze','diagnose','recover','verify','coordinate'],
-    tasks:['diagnose-stalled-daily-obligation','request-fresh-verified-source','coordinate-editorial-and-security-gates','reconcile-original-provider-publication','submit-verified-outcome-learning','consume-original-content-closed-loop-owner-action','verify-exact-channel-provider-id-before-resolution'],
-    playbooks:['same-obligation-fingerprint-recovery','fresh-source-not-rephrased-duplicate','single-writer-protected-release','identity-and-provider-readback-truth'],
+    tasks:['diagnose-stalled-daily-obligation','request-fresh-verified-source','coordinate-editorial-and-security-gates','reconcile-original-provider-publication','submit-verified-outcome-learning','consume-original-content-closed-loop-owner-action','verify-exact-channel-provider-id-before-resolution','reconcile-original-provider-window-and-evaluation-receipt','verify-evaluation-to-obligation-cas-ack','retry-canonical-evidence-handoff-without-new-worker','classify-missing-historical-evidence-as-evidence-gap-not-success','require-proven-next-natural-post-learning-application'],
+    playbooks:['same-obligation-fingerprint-recovery','fresh-source-not-rephrased-duplicate','single-writer-protected-release','identity-and-provider-readback-truth','source-to-consumer-ack-before-resolution','no-reopening-acknowledged-windows','recover-with-original-hourly-owner'],
     learningContracts:[...sharedLearning,'reliability.v1','content.v1','delivery.v1'],
   }),
   Object.freeze({
