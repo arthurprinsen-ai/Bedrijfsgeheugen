@@ -1626,7 +1626,7 @@ impressions, customer replies or experiment lift as zeros.
 
 Regression contract:
 `supabase/migrations/20261110153331_linkedin_org_readback_sticky_provider_health_v1.sql`
-and `tests/provider-readback-sticky-health-20261110.test.mjs`.
+and `tests/brain-provider-readback-sticky-health-20261110.test.mjs`.
 Original P0 authority:
 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
 
