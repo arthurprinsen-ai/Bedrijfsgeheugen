@@ -350,3 +350,22 @@ test('original receiver claim escalation respects daily analytics and shorter or
  assert.match(sql,/stage_execution_mature/);
  assert.match(sql,/case when v_overdue_count>0 or v_stalled>0 then 'fout'/);
 });
+
+test('only original ONE BRAIN authority can terminally close handoff; secondary hourly audit never self-promotes',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/from public\.brain_obligations original_brain/);
+ for(const clause of [
+  "original_brain.obligation_type='CONTENT_HANDOFF'",
+  "original_brain.capability_id='content:'||r.channel",
+  "original_brain.business_entity='original-provider-to-learning-chain'",
+  "original_brain.business_period=r.publication_date::text",
+  "original_brain.business_timezone='Europe/Amsterdam'",
+  "original_brain.state='FULFILLED'",
+  "original_brain.evidence->>'stage'='PROVEN_NEXT_EXPERIMENT_HANDOFF'",
+  "original_brain.evidence#>>'{producer,provider_id}'=r.external_id",
+  "original_brain.evidence#>>'{measurement_consumer,accepted}'",
+  "original_brain.evidence#>>'{analysis_consumer,accepted}'",
+  "original_brain.evidence#>>'{experiment_consumer,accepted}'",
+ ])assert.ok(sql.includes(clause),'missing canonical close authority '+clause);
+ assert.equal((sql.match(/ONE canonical completion authority/g)||[]).length,1);
+});
