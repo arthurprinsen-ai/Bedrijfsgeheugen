@@ -237,3 +237,12 @@ begin
  return new;
 end 
 $function$;
+
+-- Fail closed for the existing SECURITY DEFINER trigger function.
+-- Original production ACL (independently read back) grants EXECUTE solely to
+-- postgres + service_role; preserve that explicit contract and NEVER expose
+-- privileged triggers directly to PUBLIC/anon/authenticated.
+REVOKE ALL ON FUNCTION public.powerhouse_require_source_for_direct_outreach_v1()
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_require_source_for_direct_outreach_v1()
+  TO service_role;
