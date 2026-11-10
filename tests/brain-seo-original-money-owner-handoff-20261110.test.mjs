@@ -7,6 +7,8 @@ const DATE='2026-11-10', NOW='2026-11-10T06:00:00.000Z';
 const owner=(name,role='money')=>({
  route:'https://www.bedrijfsgeheugen.nl/'+name,
  primary_intent:name,primary_keyword:name,role,
+ secondary_keywords:name==='twinfield-koppeling'?['twinfield api','twinfield koppelingen','koppeling twinfield']:
+   name==='exact-online-koppeling'?['exact online api']:[],
  primary_cta:{url:'https://www.bedrijfsgeheugen.nl/frisse-blik',action:'frisse-blik'}
 });
 const candidate=(keyword,route,score=80,extra={})=>({
@@ -33,7 +35,7 @@ test('five original observed queries give one exact canonical handoff per money 
   'seo-owner-update:2026-11-10:exact-online-koppeling',
   'seo-owner-update:2026-11-10:twinfield-koppeling'
  ]);
- assert.equal(got[1].topic_key,'twinfield boekhouden');
+ assert.equal(got[1].topic_key,'twinfield koppelingen');
  assert.ok(got.every(x=>x.status==='suggested'&&x.target_channel==='website'));
  assert.ok(got.every(x=>x.evidence.contract===SEO_MONEY_OWNER_HANDOFF));
  assert.ok(got.every(x=>x.evidence.state==='ORIGINAL_SEO_EXECUTION_HANDOFF_PENDING'));
