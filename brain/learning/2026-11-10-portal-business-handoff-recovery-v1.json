@@ -13,7 +13,7 @@
     "repeat_count": 1
   },
   "root_cause": "createPortalDomainState tracked pending BusinessInput bindings and causal impacts only in transient Map/Array memory. The canonical customer state had been saved but after a browser reload no semantic Brain handoff generation or 50+ impacts could be recovered; the next login could show source truth without downstream acknowledgement.",
-  "fix": "Persist only pending semantic binding and all causal-impact lineage under portal.__brainHandoffJournalV1 using the original authenticated Portal State writer before downstream section calls; on authenticated init hydrate the exact user+server-tenant principal's obligations, validate binding and impacted source paths, and reuse original flush. Persist partial-ACK removal in same server state, never auto-save newer unsaved typing, preserve other principals, and exclude outbox metadata from AI-eligible PortalDomainStateSnapshot.",
+  "fix": "Persist only pending semantic binding, the immutable section answer snapshot, and all causal-impact lineage under portal.__brainHandoffJournalV1 using the original authenticated Portal State writer before downstream section calls; on authenticated init hydrate the exact user+server-tenant principal's obligations, validate binding and impacted source paths, and reuse original flush. Persist partial-ACK removal in same server state, never auto-save newer unsaved typing, preserve other principals, and exclude outbox metadata from AI-eligible PortalDomainStateSnapshot.",
   "tests": [
     "portal-v2/tests/portal-server-handoff-restart.test.mjs",
     "tests/brain-portal-server-durable-replay-20261110.test.mjs"
