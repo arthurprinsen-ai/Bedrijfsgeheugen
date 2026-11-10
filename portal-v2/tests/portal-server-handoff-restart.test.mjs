@@ -88,10 +88,11 @@ test('a different authenticated customer cannot consume, delete or reattribute a
  assert.equal(bSent,0);
  assert.equal(bDomain.pendingHandoffs().pending,false);
  assert.equal(journal(h.current()).byPrincipal['user-A'].bindings.length,1);
- bDomain.set('portal.profile.employees',19);
+ bDomain.set('portal.aiAct.riskClass','high');
  await bDomain.flush();
  assert.equal(bSent,1,'B may submit ONLY a new B-owned change');
  assert.equal(journal(h.current()).byPrincipal['user-A'].bindings.length,1,'B update must not erase A pending lineage');
+ assert.equal(journal(h.current()).byPrincipal['user-A'].bindings[0].answers.employees,17,'A original snapshot cannot be rewritten by B');
  h.become('user-A');
  let aSent=0;
  const restored=createPortalDomainState(h.client,{legacyStorage:null,businessInputSaver:async()=>{aSent++;return {stored:true}}});
@@ -152,4 +153,29 @@ test('same user id in a different tenant cannot replay a saved handoff from the 
  await replay.init();
  await until(()=>sent===1&&!(journal(snapshots.get('company-A')).byPrincipal['shared-user::tenant:company-A']));
  assert.equal(sent,1);
+});
+
+test('a newer change to the SAME source section is not overwritten by stale restart recovery',async()=>{
+ const h=serverHarness();
+ const original=createPortalDomainState(h.client,{legacyStorage:null,businessInputSaver:async()=>{throw Error('BRAIN_DOWN')}});
+ await original.init();original.set('portal.profile.employees',17);
+ await assert.rejects(original.flush(),/BRAIN_DOWN/);
+ const snapshot=h.current();
+ // Simulate a separately authorized newer write to same source data while
+ // keeping the earlier original obligation in this server state.
+ const updated=clone(snapshot);updated.portal.profile.employees=33;
+ const synced={
+  load:async()=>({mode:'authenticated',state:clone(updated)}),
+  write:async state=>({mode:'authenticated',state:clone(state)}),
+  currentUser:()=>({id:'user-A'}),isDemo:()=>false,
+  authHeaders:async()=>({authorization:'Bearer user-A'})
+ };
+ let sent=0;const restored=createPortalDomainState(synced,{legacyStorage:null,businessInputSaver:async()=>{sent++;return {stored:true}}});
+ await restored.init();
+ await tick();await tick();
+ assert.equal(sent,0,'do not submit earlier 17 as current if server now says 33');
+ assert.equal(restored.pendingHandoffs().pending,true);
+ await assert.rejects(restored.flush(),/PORTAL_BRAIN_REPLAY_SOURCE_CONFLICT/);
+ assert.equal(sent,0);
+ assert.equal(journal(restored.get()).byPrincipal['user-A'].bindings[0].answers.employees,17);
 });
