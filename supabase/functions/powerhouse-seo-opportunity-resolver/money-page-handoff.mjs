@@ -12,6 +12,10 @@ export function selectOriginalSeoMoneyHandoffs(opportunities,{runDate,observedAt
  for(const item of [...(opportunities||[])].sort((a,b)=>Number(b.score||0)-Number(a.score||0))){
   const page=item?.owner, source=item?.row, score=Number(item?.score);
   if(item?.action!=='UPDATE_MONEY_PAGE'||page?.role!=='money'||!finite(score)||score<65||!source)continue;
+  // Do not optimize a commercial integration page for an adjacent generic
+  // software/product query unless its canonical keyword map owns it explicitly.
+  const normalized=s=>String(s||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  if(![page.primary_keyword,...(page.secondary_keywords||[])].some(alias=>normalized(alias)===normalized(item.keyword)))continue;
   let url,cta;
   try{url=new URL(page.route);cta=new URL(page.primary_cta?.url);}catch{continue;}
   if(url.origin!==ORIGIN||url.search||url.hash||cta.origin!==ORIGIN||!url.pathname.startsWith('/')||url.pathname==='/')continue;
