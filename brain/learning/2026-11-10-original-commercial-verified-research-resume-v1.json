@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_CI_DEPLOY_AND_PROVIDER_READBACK_DUE",
+  "fingerprint": "powerhouse|commercial|verified-research-quality-passed-waiting-excluded|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "owner": "original powerhouse-commercial-message-composer and powerhouse-commercial-learning-v1; canonical Gmail owner powerhouse-autonomous-outreach",
+  "failure_class": "ORIGINAL_HANDOFF_RESUME_FILTER_LOSES_VERIFIED_RESEARCH",
+  "root_cause": "Existing SQL candidates RPC AND TS composer candidate filter both exclude previously quality-passed drafts even while original autonomous_email action remains WAITING/SOURCE_SPECIFIC_EVIDENCE_REQUIRED. Independently completed and vetted original research can no longer trigger a fresh composer evaluation, so provider/experiment handoff never happens.",
+  "source_evidence": {
+    "observed_at_utc": "2026-11-10T10:00:00Z",
+    "source": "production Supabase read-only original tables",
+    "email_actions_7d": 12,
+    "recent_broken_or_unproven_handoffs_7d": 11,
+    "research_done_7d": 5,
+    "research_consumed_by_quality_7d": 1,
+    "provider_accepted_with_id_7d": 0,
+    "one_current_waiting_action_qualifies_for_exact_canonical_verified_research_resume": 1,
+    "independent_provider_send_after_repair_proven": false
+  },
+  "repair": "Amend only the existing candidate RPC to re-admit research-held waiting drafts with completed same-action research, current matching independently vetted company news, and strict 14/30 day evidence freshness; amend only original composer candidate filter to allow re-evaluation; preserve existing independent quality/recipient/suppression/claim/ACK/readback gates.",
+  "scope": [
+    "supabase/migrations/20261110140500_original_commercial_verified_research_resume_v1.sql",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "tests/brain-original-commercial-held-resume-20261110.test.mjs",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "tests": [
+    "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+  ],
+  "prevention": [
+    "Never equate an old composer quality-pass with terminal success when a source-held original action receives new independently verified research.",
+    "An upstream research DONE requires a fresh composer receipt for exactly the same person/company/action lineage before any provider dispatch.",
+    "Admit only canonical source-matched approved company news; no SERP-only signal, old research, spoofed company, anonymous recipient or missing consent may bypass gates.",
+    "Do not create parallel email sender or scheduler, and do not call delivery GREEN without external provider ID+readback."
+  ],
+  "production_proof_to_complete": [
+    "Protected required CI/CodeQL, hosted Supabase migration preview and original Edge deploy on exact PR head.",
+    "Protected merge to main, native migration history and service_role-only ACL independent readback.",
+    "First natural original composer tick picks up the same waiting action and records a new quality result.",
+    "Only after lawful recipient authorization may original Gmail sender return provider ID/SENT/readback; never infer from prepared/done.",
+    "One genuine reply/outcome feeds original Powerhouse experiment and applied improvement with controlled evidence."
+  ],
+  "independent_provider_readback_required": true,
+  "no_false_green": true,
+  "compiler": {
+    "failure_class": "RESEARCH_TO_COMPOSER_RESELECTION_DRIFT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
