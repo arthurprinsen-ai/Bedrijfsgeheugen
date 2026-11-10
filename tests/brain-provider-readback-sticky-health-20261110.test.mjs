@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const sql = readFileSync(
-  new URL('../supabase/migrations/20261110153331_linkedin_org_readback_sticky_provider_health_v1.sql', import.meta.url),
+  new URL('../supabase/migrations/20261110160055_linkedin_org_readback_sticky_provider_health_v1.sql', import.meta.url),
   'utf8'
 );
 
