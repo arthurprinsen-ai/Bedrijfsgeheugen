@@ -129,7 +129,7 @@ export function createPowerhouseRuntimeBridge({
   async function sendRecord(record,expectedPrincipal=currentPrincipal()){
     if(!expectedPrincipal||currentPrincipal()!==expectedPrincipal)return null;
     const headers=await authHeadersProvider();
-    if(!/^Bearer\\s+\\S+/i.test(String(headers?.authorization||''))||currentPrincipal()!==expectedPrincipal)return null;
+    if(!/^Bearer\s+\S+/i.test(String(headers?.authorization||''))||currentPrincipal()!==expectedPrincipal)return null;
     const response=await fetchImpl('/api/brain-operating-loop',{
       method:'POST',
       credentials:'same-origin',
