@@ -754,6 +754,27 @@ begin
             r.evidence#>>'{learning,learning_id}'
           and coalesce((later.evidence->>'provider_truth_verified')::boolean,false)
           and coalesce((later.evidence->>'provider_publication_ack_verified')::boolean,false)
+      )
+      -- ONE canonical completion authority. The original BRAIN content
+      -- obligation (owned by existing #171) must independently confirm the
+      -- exact same date/channel/provider and its downstream consumer ACKs.
+      -- This #140 audit is only a secondary observer, never a competing
+      -- autonomous completion writer or replacement executor.
+      and exists (
+        select 1 from public.brain_obligations original_brain
+        where original_brain.obligation_type='CONTENT_HANDOFF'
+          and original_brain.capability_id='content:'||r.channel
+          and original_brain.business_entity='original-provider-to-learning-chain'
+          and original_brain.business_period=r.publication_date::text
+          and original_brain.business_timezone='Europe/Amsterdam'
+          and original_brain.state='FULFILLED'
+          and original_brain.evidence->>'contract'='original-content-handoff-receipts-v1'
+          and original_brain.evidence->>'stage'='PROVEN_NEXT_EXPERIMENT_HANDOFF'
+          and original_brain.evidence#>>'{producer,provider_id}'=r.external_id
+          and coalesce((original_brain.evidence#>>'{producer,verified}')::boolean,false)
+          and coalesce((original_brain.evidence#>>'{measurement_consumer,accepted}')::boolean,false)
+          and coalesce((original_brain.evidence#>>'{analysis_consumer,accepted}')::boolean,false)
+          and coalesce((original_brain.evidence#>>'{experiment_consumer,accepted}')::boolean,false)
       );
 
     if not v_provider_proven then
