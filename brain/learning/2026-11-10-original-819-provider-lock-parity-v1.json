@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_RELEASE_NOT_PRODUCTION_CONFIRMED",
+  "fingerprint": "powerhouse|original-supabase|819-applied-lock-parity|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Protected #5554 applied real migration 20261110073500 to canonical Supabase production (819 unique provider identities), but original GitHub migration-history.lock.json still declared 818 identities, so subsequent PR #5543 on the updated main correctly failed historical migration gate before the native provider preview.",
+  "independent_readback": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-10T08:19:43.652162Z",
+    "production_unique_migrations": 819,
+    "previous_source_lock": 818,
+    "last_record": {
+      "version": "20261110073500",
+      "name": "original_content_handoff_receipts_v1"
+    },
+    "github_protected_main_sha_at_analysis": "0089537552af9c9e5df85692698cca5418afb6b9"
+  },
+  "change": "Append only the already applied canonical 819th version/name pair to original migration-history.lock.json and update captured_at with true provider readback time; no DDL, migration replay, delete, alternative runtime, new sender, scheduler, or privilege.",
+  "release_conditions": [
+    "Full existing 819-entry source SQL manifest and original provider history version/name exact identity",
+    "Historical migrations immutable, zero extra SQL proposed",
+    "Exact-head Required, CodeQL, native Supabase hosted preview and protected merge",
+    "Provider production remains 819 exactly; full source lock equals original applied provider list after merge",
+    "Then refresh existing PR #5543 source base and require its own exact-head checks and preview before delivery"
+  ],
+  "customer_email_sent_proven": false,
+  "experiment_improvement_proven": false,
+  "secondary_pipeline_created": false
+}
