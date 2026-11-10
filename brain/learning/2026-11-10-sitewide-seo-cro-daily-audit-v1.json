@@ -47,5 +47,16 @@
     "historical_replay": [
       "tests/brain-seo-conversion-orders-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "original_daily_scheduler_updated": "2026-11-10T18:00:00Z — automation 6ad5b66790548191ad87ca89c4fd00ab update returned success; unchanged enabled=true; this does NOT prove a production crawl",
+    "existing_production_cro_view": "2026-11-10T18:03:16Z public.powerhouse_cro_conversion_evidence_v1; 102 human-flagged pageviews/7d, 2 CTA events/7d, no linked qualified leads, no provider orders, no controlled assignments",
+    "historical_replay": "tests/brain-seo-conversion-orders-v1.test.mjs historical replay passed in protected Required run 42873582132; this is SOURCE_AND_TEST proof only",
+    "production_readback": "NOT_MEASURED: full site coverage, verified lead conversion, experimental lift and postmerge proof pending",
+    "failed_admission_runs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42872487275",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42873384221",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42873582132"
+    ]
   }
 }
