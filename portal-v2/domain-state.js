@@ -177,7 +177,14 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  let journalCleanupPending=false;
  let recoveredOnInit=false;
  // Same-session retry only: never send a pending input under another tenant.
- const currentPrincipal=()=>{const user=stateClient.currentUser?.();return String(user?.id||user?.email||'').trim();};
+ const currentPrincipal=()=>{
+  const user=stateClient.currentUser?.();
+  const id=String(user?.id||user?.email||'').trim();
+  const tenant=String(user?.appMetadata?.tenantId||user?.app_metadata?.tenantId||'').trim();
+  // Same human identity can belong to more than one company; explicit
+  // server-issued tenant membership must be part of the recovery principal.
+  return id?(tenant?`${id}::tenant:${tenant}`:id):'';
+ };
  let handoffPrincipal='',hydratedPrincipal='';
  const journalValue=()=>domain.get(HANDOFF_JOURNAL_PATH);
  function persistJournalManifest(){
