@@ -39,7 +39,11 @@ test('no one cron success, generic state or fake metrics can mark a downstream r
  "e.evidence->>'application_id'=a.application_id",
  "r.learned_at IS NOT NULL",
  "r.evidence->>'learning_applied_verified'='true'",
- "n.live_proven_at>r.live_proven_at",
+ "a2.learning_id=v_learning_id",
+ "a2.application_role='ORIGINAL_EXPERIMENT_VARIANT_PROVIDER_PROVEN'",
+ "a2.applied_at>v_eval_at",
+ "n.live_proven_at>v_eval_at",
+ "n.evidence->>'provider_truth_verified'='true'",
  "n.evidence->>'learning_source_external_id'=r.external_id",
  "n.evidence->>'learning_source_evaluation_id'=v_eval",
  ])assert.ok(sql.includes(gate),'missing receiver gate '+gate);
