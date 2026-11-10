@@ -27,5 +27,16 @@
   ],
   "customer_email_sent_proven": false,
   "experiment_improvement_proven": false,
-  "secondary_pipeline_created": false
+  "secondary_pipeline_created": false,
+  "failure_class": "CI",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  }
 }
