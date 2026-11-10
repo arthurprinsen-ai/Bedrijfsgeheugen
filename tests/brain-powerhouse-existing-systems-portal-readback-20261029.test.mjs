@@ -176,7 +176,7 @@ test('the original commercial Brain register is separate from the repaired sourc
   assert.match(html,/data-bg-original-commercial-incidents="true"/);
   assert.match(html,/Brein · commerciële incidenten/);
   assert.match(html,/onbewezen\/verlopen 10/);
-  assert.match(html,/https:\/\/github\.com\/arthurprinsen-ai\/Bedrijfsgeheugen\/issues\/4198/);
+  assert.ok(html.includes('href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"'));
   assert.match(html,/NIET BEWEZEN/);
 });
 
