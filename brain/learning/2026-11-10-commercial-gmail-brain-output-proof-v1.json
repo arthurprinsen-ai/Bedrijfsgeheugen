@@ -1,0 +1,66 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "fingerprint": "powerhouse|commercial|native-gmail-sent-outcome-brain-daily-mismatch|20261110-v1",
+  "failure_class": "ORIGINAL_COMMERCIAL_PROVIDER_PROOF_CONSUMER_SCHEMA_DRIFT",
+  "root_cause": "The existing powerhouse_commercial_output_assurance_v1 daily Brain consumer counts provider-readback mail only from top-level evidence fields. The same original Gmail Edge sender correctly records provider_ack_verified, provider_readback_verified, provider_message_id and provider_thread_id under evidence.autonomous_outbound, with exact independently verified original powerhouse_sales_outcomes sent receipt. The consumer incorrectly reports zero email proofs and provider_proven_email=0 despite one independently proven native Gmail delivery, causing an invisible original Heartbeat->Brain discrepancy.",
+  "evidence": {
+    "observed_at_utc": "2026-11-10T11:12:06Z",
+    "original_action_id": "c749e43b-a335-49d6-bf01-42383930347f",
+    "gmail_provider_message_id": "1a1c4b1f339a051f",
+    "source_proof": "Native Gmail exact message ID, To and SENT label; original readback-only request #26781 HTTP 200, verified=1, external_outreach_executed=false; original action done, needs_readback=false and exactly one original sent outcome.",
+    "discrepancy": "Original provider-linked commercial scorecard provider_readback_proven_7d=1 and hourly Heartbeat commercial_delivery_proven=true; original daily commercial assurance/Brain still provider_proven_email=0, from top-level-only JSON paths.",
+    "source_sql": "pg_get_functiondef('public.powerhouse_commercial_output_assurance_v1(date)'::regprocedure)",
+    "regression_path": "tests/brain-original-commercial-gmail-nested-brain-proof-20261110.test.mjs",
+    "required_status": "PENDING_PROTECTED_RELEASE_AND_FRESH_NATIVE_RUNTIME_READBACK"
+  },
+  "fix": "Replace only original daily output assurance function, preserve all current channels and existing Brain same-day obligation owner. Count native nested Gmail proof only on original action DONE on commercial day with provider ACK+readback verified, republish forbidden, immutable exact non-empty message/thread IDs and an independently matched idempotent outcome_type=sent row for the same action, person, company, channel, provider and exact message/thread. Preserve existing legacy top-level proof, no duplicate counts. Reuse same output-array and same Brain daily handoff, not a new data source or scheduler.",
+  "compiler": {
+    "failure_class": "ORIGINAL_COMMERCIAL_PROVIDER_PROOF_CONSUMER_SCHEMA_DRIFT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention": [
+    "When original executor schema changes, consumers must compile or regression-check actual receipt paths rather than assuming root-level keys.",
+    "Native Gmail provider truth requires independent provider-readback result linked by original action, recipient/person, company, idempotency key and exact provider message/thread IDs, never action=done alone.",
+    "Reuse original commercial day assurance, BRAIN obligation and Heartbeat. Do not add a parallel cron or infer contact permission, reply, experiment, meeting or revenue.",
+    "First reproduce both positive and false-positive scenarios with native SQL, then exact-head protected CI and original Supabase GitOps deployment/readback.",
+    "Keep incomplete historical outreach/experiment proof accurately AMBER/DEGRADED."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-commercial-gmail-nested-brain-proof-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-commercial-gmail-nested-brain-proof-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-commercial-gmail-nested-brain-proof-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-commercial-gmail-nested-brain-proof-20261110.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261110131500_original_commercial_nested_gmail_provider_outcome_assurance_v1.sql",
+    "tests/brain-original-commercial-gmail-nested-brain-proof-20261110.test.mjs",
+    "brain/learning/2026-11-10-commercial-gmail-brain-output-proof-v1.json",
+    "docs/changes/2026-11-10-commercial-gmail-brain-output-proof-v1.md",
+    "docs/development-ledger-events/2026-11-10-commercial-gmail-brain-output-proof-v1.md",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "owner": "Original Powerhouse Growth & Revenue OS / daily commercial output assurance; same ONE BRAIN and Heartbeat",
+  "status": "CI_AND_NATIVE_PRODUCTION_PROOF_DUE",
+  "production_proof_to_complete": [
+    "Protected Required, CodeQL, schema preview and any native GitOps migration control green on exact PR head.",
+    "Protected merge and native original Supabase migration readback (do not fake migration lock or skip preview).",
+    "Original assurance call for the same commercial day reads exact Gmail provider proof count 1 (no duplicate), creates same BRAIN obligation updated evidence, and retains existing source-backed social/publications proof.",
+    "Original natural commercial Heartbeat reads and maintains source truth; no new Gmail sends.",
+    "Return to past expired/waiting handoffs only through fresh source verification and original recipient authority. Causal experimental learning requires prospective treatment/holdout and matured real outcomes."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
