@@ -1,3 +1,8 @@
+# Existing public brand asset aliases. Verified exact target assets returned 200 on original production 2026-11-10.
+# Keep the requested legacy paths valid without producing an invented social image.
+/og-image.png  /assets/merk/banner-instagram-tegel.jpg  301!
+/favicon.ico  /favicon.png  301!
+
 # Persoonlijke meetlinks: bedrijfsgeheugen.nl/g/<sleutel> -> Supabase bg-l (registreert de klik per connectie, stuurt door). 10 sept 2026.
 /g/:sleutel  https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-l?s=:sleutel  302!
 /contact  /contact.html  200
