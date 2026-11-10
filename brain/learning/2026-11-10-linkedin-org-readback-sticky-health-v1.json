@@ -37,7 +37,14 @@
       "tests/brain-provider-readback-sticky-health-20261110.test.mjs"
     ],
     "canonical_sql": "supabase/migrations/20261110153331_linkedin_org_readback_sticky_provider_health_v1.sql",
-    "independent_production_dry_run": true
+    "independent_production_dry_run": true,
+    "shadow": [
+      "tests/brain-provider-readback-sticky-health-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-provider-readback-sticky-health-20261110.test.mjs"
+    ],
+    "mode_note": "Historical, shadow and canary CI test passes cover source invariants only; the independent production read-only preflight was separately executed. Real OAuth/consumer recovery and deployed view are not implied."
   },
   "status": "OBSERVED",
   "humanDocs": "docs/changes/2026-11-10-linkedin-org-readback-sticky-health-v1.md",
