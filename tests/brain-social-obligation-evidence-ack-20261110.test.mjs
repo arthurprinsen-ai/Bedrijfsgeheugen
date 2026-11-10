@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {verifiedSocialWindowAck} from '../supabase/functions/_shared/social-learning-window-ack.mjs';
+import {runScheduledTenants} from '../netlify/functions/social-learning-evaluate.mjs';
 
 const postId='6aaa57852bae7e96e951773d';
 const tenantId='canonical';
@@ -62,4 +63,31 @@ test('one ORIGINAL tenant-scoped hourly executor calls existing store ACK and du
   assert.match(evaluator,/schedule:'@hourly'/);
   assert.match(agent,/reconcile-original-provider-window-and-evaluation-receipt/);
   assert.doesNotMatch(edge,/cron\.schedule|provider_create|publish_post|buffer\.com\/api/i);
+});
+
+test('original hourly social agent executes ACK reconciliation after the same tenant evaluation, no new scheduler',async()=>{
+  const calls=[];
+  const run=await runScheduledTenants({tenants:['canonical','bedrijfsgeheugen'],
+    now:new Date('2026-11-10T10:00:00Z'),storeFactory:({tenantId})=>({
+      listDuePosts:async()=>{calls.push(tenantId+':due');return [];},
+      reconcileVerifiedObligations:async()=>{calls.push(tenantId+':ack');return {checked:8,resolved:2};}
+    })});
+  assert.equal(run.healthy,true);
+  assert.equal(run.tenants.length,2);
+  assert.deepEqual(calls.sort(),['bedrijfsgeheugen:ack','bedrijfsgeheugen:due','canonical:ack','canonical:due']);
+  assert.ok(run.tenants.every(x=>x.obligationReceiptsResolved===2));
+});
+
+test('one failed tenant source/ACK does not erase the other original tenant receipt',async()=>{
+  const run=await runScheduledTenants({tenants:['canonical','bedrijfsgeheugen'],
+    now:new Date('2026-11-10T10:00:00Z'),storeFactory:({tenantId})=>({
+      listDuePosts:async()=>[],
+      reconcileVerifiedObligations:async()=>{
+        if(tenantId==='canonical')throw Error('SOURCE_TRUNCATED');
+        return {checked:2,resolved:1};
+      }
+    })});
+  assert.equal(run.healthy,false);
+  assert.equal(run.totals.failedTenantScopes,1);
+  assert.equal(run.tenants.find(x=>x.tenantId==='bedrijfsgeheugen').obligationReceiptsResolved,1);
 });
