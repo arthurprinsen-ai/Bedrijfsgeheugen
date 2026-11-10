@@ -320,3 +320,19 @@ test('receiver must explicitly claim exact original, current owner and current p
  assert.match(sql,/grant execute on function public\.powerhouse_claim_original_handoff_v1[\s\S]*?to service_role;/);
  assert.equal((sql.match(/create or replace function public\.powerhouse_claim_original_handoff_v1/gi)||[]).length,1);
 });
+
+test('continuous handoff assurance distinguishes missing receiver from legitimately immature metric windows',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/v_stage_actionable_at:=case/);
+ assert.match(sql,/when v_stage='PROVIDER_TO_METRICS_PENDING'[\s\S]*?r\.live_proven_at\+interval '24 hours'/);
+ assert.match(sql,/when v_stage='ORIGINAL_PUBLICATION_NOT_PROVEN' then v_due/);
+ assert.match(sql,/when v_stage='METRICS_TO_ANALYST_ACK_MISSING'[\s\S]*?interval '4 hours'/);
+ assert.match(sql,/when v_stage in \('EXPERIMENT_OUTCOME_NOT_PROVEN'/);
+ assert.match(sql,/interval '8 days'/);
+ assert.match(sql,/stage_execution_mature/);
+ assert.match(sql,/ORIGINAL_RECEIVER_NOT_CLAIMED_ESCALATE_OWNER/);
+ assert.match(sql,/next_owner_ack_claimed'\)\:\:boolean,false\)=false/);
+ assert.match(sql,/STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER/);
+ assert.match(sql,/case when v_overdue_count>0 or v_stalled>0 then 'fout'/);
+ assert.equal((sql.match(/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1/gi)||[]).length,1);
+});
