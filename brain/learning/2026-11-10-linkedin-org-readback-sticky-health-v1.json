@@ -44,15 +44,31 @@
     "canary": [
       "tests/brain-provider-readback-sticky-health-20261110.test.mjs"
     ],
-    "mode_note": "Historical, shadow and canary CI test passes cover source invariants only; the independent production read-only preflight was separately executed. Real OAuth/consumer recovery and deployed view are not implied."
+    "mode_note": "Source historical/shadow/canary tests prove fail-closed SQL; the approved original PR #5586 passed Required and CodeQL and native Supabase readback independently verifies same existing view production applied. These do not prove provider read entitlement repair or new learning outcome."
   },
   "status": "OBSERVED",
   "humanDocs": "docs/changes/2026-11-10-linkedin-org-readback-sticky-health-v1.md",
   "production_readback": {
-    "schema_applied": false,
-    "verified": false,
+    "schema_applied": true,
+    "verified": true,
+    "protected_pr": 5586,
+    "main_sha": "40400729db629699289ce6bf6d84d4aac3878db2",
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "applied_migration_version": "20261110160055",
+    "applied_migration_name": "linkedin_org_readback_sticky_provider_health_v1",
+    "applied_sql_bytes": 3834,
+    "existing_health_view": "public.powerhouse_provider_health_v1",
+    "security_invoker": true,
+    "anon_read": false,
+    "authenticated_read": false,
+    "service_role_read": true,
+    "linked_in_health": "degraded",
+    "unresolved_denials": 1,
     "provider_permission_recovered": false,
-    "original_organic_readback_restored": false
+    "original_organic_readback_restored": false,
+    "provider_analytics_results_not_inferred": true,
+    "verified_source_kind": "independent_sql_provider_management_readback",
+    "confirmed_utc": "2026-11-10T16:02:00Z"
   },
   "commercial_lift_verified": false
 }
