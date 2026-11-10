@@ -108,6 +108,8 @@ test('verified LinkedIn company Windsor provider-linked observation is consumed 
   assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,provider_post_urn:'other'}}]}),null);
   assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,provider_organization_urn:'other'}}]}),null);
   assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,independent_proof:'UNVERIFIED'}}]}),null);
+  assert.equal(verify({snapshots:[{...linked,source_event_id:'windsor:linkedin-company:other:2026-09-18'}]}),null);
+  assert.equal(verify({post:{...post,external_post_id:'other'}}),null);
   assert.equal(verify({snapshots:[{...linked,source:'composio-linkedin'}]}),null);
   assert.equal(verify({snapshots:[{...linked,data_quality:'OBSERVED_PARTIAL_SCOPE'}]}),null);
   assert.equal(verify({snapshots:[{...linked,observed_at:'2026-09-30T10:58:21.308Z'}]}),null);
