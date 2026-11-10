@@ -40,6 +40,8 @@ test('no one cron success, generic state or fake metrics can mark a downstream r
  "r.learned_at IS NOT NULL",
  "r.evidence->>'learning_applied_verified'='true'",
  "n.live_proven_at>r.live_proven_at",
+ "n.evidence->>'learning_source_external_id'=r.external_id",
+ "n.evidence->>'learning_source_evaluation_id'=v_eval",
  ])assert.ok(sql.includes(gate),'missing receiver gate '+gate);
  assert.match(sql,/v_pub:=coalesce\(/);
  assert.match(sql,/v_metric:=coalesce\(/);
