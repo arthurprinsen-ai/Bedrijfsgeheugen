@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import owners from './intent-owners.json' with { type: 'json' };
 import { decideSeoBlogCandidate } from './blog-decision.mjs';
+import { selectOriginalSeoMoneyHandoffs,SEO_MONEY_OWNER_HANDOFF } from './money-page-handoff.mjs';
 
 const CONTRACT='powerhouse-seo-opportunity-resolver-v1';
 const clean=(v:unknown)=>String(v??'').replace(/\s+/g,' ').trim();
@@ -160,7 +161,8 @@ Deno.serve(async(req:Request)=>{
     opportunities.sort((a,b)=>b.score-a.score);
     const top=opportunities.slice(0,5);
 
-    let recommendations=0, forecastsWritten=0;
+    const originalSeoMoneyHandoffs=selectOriginalSeoMoneyHandoffs(top,{runDate,observedAt,max:3});
+    let recommendations=0, forecastsWritten=0, ownerHandoffsWritten=0;
     for(const item of top){
       const forecastKey='seo:'+runDate+':'+norm(item.keyword).replaceAll(' ','-').slice(0,120);
       const probability=Math.max(.05,Math.min(.95,item.score/100));
@@ -212,10 +214,19 @@ Deno.serve(async(req:Request)=>{
       }
     }
 
+    // Same canonical recommendation table; website is NOT a social/blog publisher.
+    // Never reset an existing accepted/done receipt to suggested on repeat cron.
+    for(const handoff of originalSeoMoneyHandoffs){
+      const {error:handoffError}=await db.from('powerhouse_content_recommendations')
+        .upsert({...handoff,updated_at:observedAt},{onConflict:'dedupe_key',ignoreDuplicates:true});
+      if(handoffError)throw new Error('SEO_ORIGINAL_OWNER_HANDOFF_WRITE:'+handoffError.message);
+      ownerHandoffsWritten++;
+    }
+
     const {error:hError}=await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'ok',
-      detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; recommendations='+recommendations,
-      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten}
+      detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; blog_recommendations='+recommendations+'; money_owner_handoffs='+ownerHandoffsWritten+'; execution_readback=EVIDENCE_DUE',
+      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,execution_readback:'EVIDENCE_DUE'}
     });
     if(hError) throw new Error('HEALTH_WRITE:'+hError.message);
     await db.rpc('powerhouse_record_source_observation_v1',{
@@ -223,9 +234,9 @@ Deno.serve(async(req:Request)=>{
       p_dedupe_key:'seo-opportunity-resolver:'+runDate,
       p_external_event_id:'seo-opportunity-resolver:'+runDate,
       p_observed_at:observedAt,
-      p_evidence:{contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action}))}
+      p_evidence:{contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action}))}
     });
-    return json({ok:true,contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
+    return json({ok:true,contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT,run_date:runDate}}).then(()=>{},()=>{});
