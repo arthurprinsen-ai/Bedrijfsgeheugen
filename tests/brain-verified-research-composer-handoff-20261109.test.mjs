@@ -336,3 +336,17 @@ test('continuous handoff assurance distinguishes missing receiver from legitimat
  assert.match(sql,/case when v_overdue_count>0 or v_stalled>0 then 'fout'/);
  assert.equal((sql.match(/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1/gi)||[]).length,1);
 });
+
+test('original receiver claim escalation respects daily analytics and shorter original publisher cadences',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261109213200_powerhouse_outreach_research_wait_handoff_v1.sql',import.meta.url),'utf8');
+ assert.match(sql,/ORIGINAL_RECEIVER_NOT_CLAIMED_ESCALATE_OWNER/);
+ assert.match(sql,/excluded\.occurred_at >=[\s\S]*?last_real_progress_at/);
+ assert.match(sql,/when excluded\.evidence->>'next_stage' in[\s\S]*?'PROVIDER_TO_METRICS_PENDING'/);
+ assert.match(sql,/then interval '28 hours'/);
+ assert.match(sql,/excluded\.channel='blog'/);
+ assert.match(sql,/then interval '24 hours'/);
+ assert.match(sql,/then interval '8 hours'/);
+ assert.match(sql,/else interval '6 hours'/);
+ assert.match(sql,/stage_execution_mature/);
+ assert.match(sql,/case when v_overdue_count>0 or v_stalled>0 then 'fout'/);
+});
