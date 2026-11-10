@@ -19,11 +19,12 @@
     "related_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5554",
     "waiting_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5543"
   },
-  "fix": "Append exactly the single provider-observed applied version and update captured_at in the original supabase/migration-history.lock.json only. Never reapply SQL or treat PR #5543 new candidate migration as applied. Maintain 819 exact local files, provider rows and lock versions.",
-  "prevention": "After each protected production Supabase migration, reconcile the original immutable provider lock by a separate source-only protected change before admitting a subsequent migration PR; no bypass, no silent bulk closure.",
+  "fix": "Append exactly the single provider-observed applied version and update captured_at in the original supabase/migration-history.lock.json only. Never reapply SQL or treat PR #5543 new candidate migration as applied. Maintain 819 exact local files, provider rows and lock versions. The existing RETIRED_DIAGNOSTIC endpoint now explicitly returns canonical heartbeat/readback and provider-only migration recovery without doing any database probe; this minimal real Supabase-function change also allows normal hosted integration detection, never substitutes for a preview PASS.",
+  "prevention": "After each protected production Supabase migration, reconcile the original immutable provider lock by a separate source-only protected change before admitting a subsequent migration PR; no bypass, no silent bulk closure. The retired diagnostic must not be mistaken for an operational green status; preserve HTTP 410 and all no-probe/no-sender invariants.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs"
+      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs",
+      "tests/brain-powerhouse-runtime-backpressure-v1.test.mjs"
     ],
     "provider_verification": "PRODUCTION_SQL_READBACK",
     "live_email_send_proven": false,
