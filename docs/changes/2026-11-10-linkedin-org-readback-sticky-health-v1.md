@@ -24,3 +24,10 @@ Required en CodeQL exact groen; beschermd gemerged; dezelfde view met `security_
 Oorspronkelijk incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
 
 Kandidaat: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5586
+
+## Productiereadback — 10 november 2026, 16:02 UTC
+- De bestaande PR #5586 is volledig beschermd samengevoegd naar `main`, SHA `40400729db629699289ce6bf6d84d4aac3878db2`; Required en CodeQL zijn beide succesvol.
+- Exact dezelfde SQL uit `main` is met de originele Supabase `apply_migration` toegepast en rechtstreeks in productie geverifieerd: `public.powerhouse_provider_health_v1` toont `linkedin=degraded`, `unresolved_capability_readback_denials=1`, met de nieuwe exacte herstelvoorwaarde.
+- Beveiliging bewezen: `security_invoker=true`, `anon=false`, `authenticated=false`, `service_role=true`.
+- Supabase heeft de migratie officieel als `20261110160055_linkedin_org_readback_sticky_provider_health_v1` vastgelegd. De oorspronkelijke voorgestelde Git-bestandsversie `20261110153331` was alleen de kandidaattijd en wordt in het beschermde bronpariteitsherstel naar de daadwerkelijk toegepaste versie gecorrigeerd. De native provider heeft 824 migraties; alleen deze officiële 824e identiteit wordt toegevoegd aan de originele bronlock.
+- OAuth/LinkedIn-organisatie-leesrecht blijft DENIED; de volledige autonome lus wordt niet groen verklaard.

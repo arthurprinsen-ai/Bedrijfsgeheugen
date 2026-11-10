@@ -1,0 +1,57 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-10",
+  "fingerprint": "supabase|provider-native-version-source-lock-drift|20261110-v1",
+  "obligation_id": "powerhouse|social-metrics|linkedin-org-analytics-permission-403|20261022-v1",
+  "compiler": {
+    "failure_class": "SUPABASE_NATIVE_MIGRATION_IDENTITY_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original protected source proposal version 20261110153331 was successfully applied through native Supabase apply_migration; native management provider assigned actual production version 20261110160055. Existing Git source filename and prior migration-history.lock.json (823) then did not match 824 authoritative applied migrations, exposing a future replay/preview-block risk.",
+  "prevention": "Immediately after official provider deployment read all authoritative version/name identities and the exact native SQL statements; before next migration candidate, reconcile same original protected Git source filename to actual provider version and append only provider-proven identity to existing lock. Never replay applied SQL, write fake history, delete applied production version, relax admission or create another migration owner. The existing protected migration-admission script has an immutable exact original-base one-time exception validated against true native provider SQL SHA-256, all 823 original lock entries, exact 824th and exact D/A paths; all other historical changes remain denied.",
+  "evidence": {
+    "canonical_project": "adhjwmvyoixzjtmiroln",
+    "protected_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5586",
+    "protected_merge_sha": "40400729db629699289ce6bf6d84d4aac3878db2",
+    "actual_provider_migration": {
+      "version": "20261110160055",
+      "name": "linkedin_org_readback_sticky_provider_health_v1",
+      "applied_source_bytes": 3834
+    },
+    "original_proposal_version": "20261110153331",
+    "previous_provider_backed_lock_length": 823,
+    "authoritative_provider_ledger_count": 824,
+    "original_provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "same_sql_content_but_new_provider_version": true,
+    "existing_health_view_live_proven": true,
+    "unresolved_linkedin_org_readback_denial": 1,
+    "commercial_outcome_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
+    ],
+    "source_lock_from_provider_only": true
+  },
+  "status": "OBSERVED",
+  "humanDocs": "docs/changes/2026-11-10-linkedin-org-readback-sticky-health-v1.md",
+  "production_readback": {
+    "schema_applied": true,
+    "provider_version_verified": true,
+    "source_git_lock_parity_merged": false,
+    "original_provider_permission_recovered": false
+  },
+  "commercial_lift_verified": false
+}
