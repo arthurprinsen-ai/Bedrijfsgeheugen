@@ -1,0 +1,7 @@
+# Productiemigratie 819: oorspronkelijke migratielock exact bijwerken
+
+Op 10 november 2026 om 08:20:29 UTC zijn alle 819 daadwerkelijke Supabase-provideridentiteiten van het **bestaande** project `adhjwmvyoixzjtmiroln` gelezen. De oorspronkelijke bronlock had 818 historische versies. Alle eerste 818 identiteiten waren exact gelijk. De enige ontbrekende, al onafhankelijk uitgevoerde versie is `20261110073500_original_content_handoff_receipts_v1`, afkomstig van beschermde GitHub PR #5554. Het echte 819e SQL-bronbestand staat al in `main`.
+
+Deze **lock-only** PR voegt **uitsluitend de echt toegepaste 819e versie** toe; er wordt geen SQL uitgevoerd of eerdere providerhistorie aangepast. Daarmee kan de originele beveiligde `supabase/migration-history.lock.json`-toelating nieuwe migraties weer toestaan. Dit is een onafhankelijk vastgestelde post-native GitOps handoff-reparatie: na GitHub-merge niet nogmaals `apply_migration` uitvoeren; vóór de volgende source-only migratie altijd exact provider-versie/name, bron-SQL en lock vergelijken. Is de SQL wel toegepast maar lock nog niet bijgewerkt, dan de provider-geattesteerde lock apart en beschermd syncen.
+
+Incidentspoor: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Machine-regel `brain/learning/2026-11-10-native819-provider-source-lock-handoff-v1.json`. Originele tests voor migratie-integriteit en provider-readback blijven verplicht. Er komt geen nieuwe scheduler, publiceerder, verzender of verwerking.
