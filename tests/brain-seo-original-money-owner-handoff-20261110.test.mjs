@@ -72,3 +72,17 @@ test('original resolver persists only deduped existing recommendation and leaves
  assert.match(source,/owner_handoffs_written:ownerHandoffsWritten/);
  assert.doesNotMatch(source,/git push|netlify deploy|scheduled\(.*money-page/i);
 });
+
+test('original Twinfield SEO copy has complete deterministic English locale cache, no network fallback',async()=>{
+ const cache=JSON.parse(await readFile(new URL('../config/bg-static-i18n-en.d/2026-11-10-twinfield-api-seo-source.json',import.meta.url),'utf8'));
+ const expected=[
+  'Twinfield API-koppeling laten maken | Bedrijfsgeheugen',
+  'Twinfield API-koppeling voor je boekhouding, webshop, CRM of urenregistratie. Ontdek welke gegevens je kunt automatiseren en hoe je fouten voorkomt.',
+  'Vergelijking tussen de huidige situatie en de situatie met twinfield api-koppeling laten maken'
+ ];
+ assert.deepEqual(Object.keys(cache).sort(),expected.sort());
+ for(const source of expected){assert.ok(typeof cache[source]==='string'&&cache[source].length>15)}
+ const page=await readFile(new URL('../twinfield-koppeling.html',import.meta.url),'utf8');
+ assert.ok(page.includes(expected[0]));
+ assert.ok(page.includes(expected[1]));
+});
