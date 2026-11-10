@@ -54,5 +54,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "terminal_rule": "Required + CodeQL + hosted Supabase Preview must pass; merge protected PR into main, native GitOps applies exactly one new 20261110084500 source-only migration. On ORIGINAL production recheck 819→820 migrations, original two functions ACL and source matching, one original audit creates up to 48 older dated handoffs and 48 distinct overdue source learning handoffs; second audit advances to previously not registered sources without duplicates; original #171 natural tick uses new code; metrics/backlog remain red until provider evidence and actual new experiments, never administrative green."
+  "terminal_rule": "Required + CodeQL + hosted Supabase Preview must pass; merge protected PR into main, native GitOps applies exactly one new 20261110123000 source-only migration. On ORIGINAL production recheck 819→820 migrations, original two functions ACL and source matching, one original audit creates up to 48 older dated handoffs and 48 distinct overdue source learning handoffs; second audit advances to previously not registered sources without duplicates; original #171 natural tick uses new code; metrics/backlog remain red until provider evidence and actual new experiments, never administrative green."
 }

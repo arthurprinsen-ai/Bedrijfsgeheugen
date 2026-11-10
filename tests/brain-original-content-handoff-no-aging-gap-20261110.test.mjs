@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const sql=readFileSync(new URL('../supabase/migrations/20261110084500_original_content_handoff_no_aging_gap_v2.sql',import.meta.url),'utf8');
+const sql=readFileSync(new URL('../supabase/migrations/20261110123000_original_content_handoff_no_aging_gap_v2.sql',import.meta.url),'utf8');
 
 test('original one-owner PR contains NO new cron, publisher, Gmail sender or unrelated table',()=>{
  assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_content_handoff_receipts_v1/);
