@@ -73,6 +73,12 @@ BEGIN
       and new.evidence #>> '{commercial_closure,decision}'='WAIT_FOR_VERIFIED_SOURCE'
       and new.evidence #>> '{commercial_closure,provider_send_forbidden}'='true'
       and new.created_at>now()-interval '48 hours'
+      and nullif(btrim(coalesce(new.evidence#>>'{commercial_closure,source_handoff_deadline}','')),'')::timestamptz = new.created_at+interval '48 hours'
+      and new.evidence#>>'{commercial_closure,research_dedupe_key}'='relationship-research:outreach-source:'||new.action_id::text
+      and not coalesce((new.evidence#>>'{autonomous_outbound,republish_forbidden}')::boolean,false)
+      and not coalesce((new.evidence#>>'{provider_ambiguity_quarantine,external_resend_forbidden}')::boolean,false)
+      and not coalesce((new.evidence->>'provider_ack_verified')::boolean,false)
+      and nullif(btrim(coalesce(new.evidence#>>'{native_gmail_executor,provider_message_id}','')),'') is null
       and nullif(btrim(coalesce(new.person_key,'')),'') is not null
       and nullif(btrim(coalesce(new.company_key,'')),'') is not null
       and nullif(btrim(coalesce(new.evidence#>>'{autonomous_outbound,provider_message_id}','')),'') is null
@@ -130,6 +136,12 @@ begin
       and new.evidence #>> '{commercial_closure,decision}'='WAIT_FOR_VERIFIED_SOURCE'
       and new.evidence #>> '{commercial_closure,provider_send_forbidden}'='true'
       and new.created_at>now()-interval '48 hours'
+      and nullif(btrim(coalesce(new.evidence#>>'{commercial_closure,source_handoff_deadline}','')),'')::timestamptz = new.created_at+interval '48 hours'
+      and new.evidence#>>'{commercial_closure,research_dedupe_key}'='relationship-research:outreach-source:'||new.action_id::text
+      and not coalesce((new.evidence#>>'{autonomous_outbound,republish_forbidden}')::boolean,false)
+      and not coalesce((new.evidence#>>'{provider_ambiguity_quarantine,external_resend_forbidden}')::boolean,false)
+      and not coalesce((new.evidence->>'provider_ack_verified')::boolean,false)
+      and nullif(btrim(coalesce(new.evidence#>>'{native_gmail_executor,provider_message_id}','')),'') is null
       and nullif(btrim(coalesce(new.person_key,'')),'') is not null
       and nullif(btrim(coalesce(new.company_key,'')),'') is not null
       and nullif(btrim(coalesce(new.evidence#>>'{autonomous_outbound,provider_message_id}','')),'') is null
@@ -174,6 +186,12 @@ begin
       and new.evidence #>> '{commercial_closure,decision}'='WAIT_FOR_VERIFIED_SOURCE'
       and new.evidence #>> '{commercial_closure,provider_send_forbidden}'='true'
       and new.created_at>now()-interval '48 hours'
+      and nullif(btrim(coalesce(new.evidence#>>'{commercial_closure,source_handoff_deadline}','')),'')::timestamptz = new.created_at+interval '48 hours'
+      and new.evidence#>>'{commercial_closure,research_dedupe_key}'='relationship-research:outreach-source:'||new.action_id::text
+      and not coalesce((new.evidence#>>'{autonomous_outbound,republish_forbidden}')::boolean,false)
+      and not coalesce((new.evidence#>>'{provider_ambiguity_quarantine,external_resend_forbidden}')::boolean,false)
+      and not coalesce((new.evidence->>'provider_ack_verified')::boolean,false)
+      and nullif(btrim(coalesce(new.evidence#>>'{native_gmail_executor,provider_message_id}','')),'') is null
       and nullif(btrim(coalesce(new.person_key,'')),'') is not null
       and nullif(btrim(coalesce(new.company_key,'')),'') is not null
       and nullif(btrim(coalesce(new.evidence#>>'{autonomous_outbound,provider_message_id}','')),'') is null
