@@ -6,14 +6,14 @@ const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.j
 const sql=readdirSync(new URL('../supabase/migrations/',import.meta.url))
   .filter(x=>/^[0-9]{14}_[a-z0-9_]+[.]sql$/.test(x)).sort();
 
-test('immutable original source lock contains exactly 819 independently provider observed identities',()=>{
+test('immutable original source lock preserves original 819 provider identities after future native migrations',()=>{
   assert.equal(lock.source,'supabase_migration_history');
   assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
-  assert.equal(lock.applied.length,819);
-  assert.equal(new Set(lock.applied.map(x=>x.version)).size,819);
-  assert.equal(sql.length,819);
-  assert.deepEqual(sql.map(x=>x.slice(0,-4)),lock.applied.map(x=>x.version+'_'+x.name));
-  assert.deepEqual(lock.applied.at(-1),{version:'20261110073500',name:'original_content_handoff_receipts_v1'});
+  assert.ok(lock.applied.length>=819);
+  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+  assert.equal(sql.length,lock.applied.length);
+  assert.deepEqual(sql.slice(0,819).map(x=>x.slice(0,-4)),lock.applied.slice(0,819).map(x=>x.version+'_'+x.name));
+  assert.deepEqual(lock.applied[818],{version:'20261110073500',name:'original_content_handoff_receipts_v1'});
   assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-10T08:19:43.617348Z'));
 });
 
