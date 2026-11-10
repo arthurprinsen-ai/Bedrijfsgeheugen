@@ -130,3 +130,26 @@ test('malformed journal cannot cause a forged cross-model or cross-tenant replay
  await assert.rejects(domain.init(),/PORTAL_BRAIN_JOURNAL_INVALID_BINDING/);
  assert.equal(posted,0);
 });
+
+test('same user id in a different tenant cannot replay a saved handoff from the first tenant',async()=>{
+ let tenant='company-A';let state={portal:{profile:{employees:7}}};const snapshots=new Map();
+ const client={
+  currentUser:()=>({id:'shared-user',app_metadata:{tenantId:tenant}}),
+  isDemo:()=>false,authHeaders:async()=>({authorization:`Bearer ${tenant}`}),
+  load:async()=>({mode:'authenticated',state:clone(snapshots.get(tenant)||state)}),
+  write:async value=>{snapshots.set(tenant,clone(value));return{mode:'authenticated',state:clone(value)}}
+ };
+ const owner=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async()=>{throw Error('SUPABASE_NETWORK_DOWN')}});
+ await owner.init();owner.set('portal.profile.employees',9);await assert.rejects(owner.flush(),/SUPABASE_NETWORK_DOWN/);
+ assert.equal(journal(snapshots.get('company-A')).byPrincipal['shared-user::tenant:company-A'].bindings.length,1);
+ tenant='company-B';
+ let sent=0;const other=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async()=>{sent++;return {stored:true}}});
+ await other.init();await tick();await tick();
+ assert.equal(sent,0);
+ assert.equal(other.pendingHandoffs().pending,false);
+ tenant='company-A';
+ const replay=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async()=>{sent++;return {stored:true}}});
+ await replay.init();
+ await until(()=>sent===1&&!(journal(snapshots.get('company-A')).byPrincipal['shared-user::tenant:company-A']));
+ assert.equal(sent,1);
+});
