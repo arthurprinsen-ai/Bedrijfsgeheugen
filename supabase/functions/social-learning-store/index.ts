@@ -152,8 +152,70 @@ Deno.serve(async(req:Request)=>{
         if(we)throw we;
         resolved+=(ack||[]).length;
       }
+      // Consume the next ORIGINAL BRAIN mirror receipt in the same hourly owner.
+      // Source measurement ACK and BRAIN receipt are distinct; both are
+      // independently checked before calling this measurement window fulfilled.
+      // Historical debt replay is bounded by the original evaluation page.
+      const {data:acknowledged,error:ackReadError}=await db.from('social_learning_obligations')
+        .select('tenant_id,obligation_id,type,status,post_id,window_hours,payload')
+        .eq('tenant_id',tenantId).eq('status','MEASUREMENT_VERIFIED')
+        .in('type',['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'])
+        .in('post_id',ids).limit(250);
+      if(ackReadError)throw ackReadError;
+      if((acknowledged||[]).length>=250)
+        return json({error:'BRAIN_ACK_SOURCE_COVERAGE_TRUNCATED',resolved},503);
+      let brainAcked=0,brainMirrorMissing=0;
+      for(const o of acknowledged||[]){
+        const originalProof=verifiedSocialWindowAck({
+          obligation:{...o,status:'OPEN'},post:posts.get(o.post_id),
+          evaluation:byKey.get(o.post_id+':'+o.window_hours),
+          snapshots:byPost.get(o.post_id)||[]
+        });
+        const persisted=o.payload?.resolution;
+        if(!originalProof||!persisted||
+          persisted.contract!=='ORIGINAL_SOCIAL_WINDOW_EVIDENCE_ACK_V1'||
+          persisted.status!=='MEASUREMENT_VERIFIED'||
+          persisted.source_event_id!==originalProof.source_event_id||
+          persisted.evaluation_id!==originalProof.evaluation_id||
+          persisted.post_id!==originalProof.post_id||
+          Number(persisted.window_hours)!==originalProof.window_hours)continue;
+        const {data:mirrors,error:mirrorReadError}=await db.from('brain_obligations')
+          .select('id,capability_id,owner,state,version,evidence')
+          .eq('obligation_type','CONTENT_HANDOFF')
+          .eq('business_entity','original-provider-to-learning-chain')
+          .eq('business_period','continuous')
+          .eq('business_timezone','Europe/Amsterdam')
+          .eq('state','OPEN')
+          .contains('evidence',{original_obligation_id:o.obligation_id,
+            original_tenant_id:tenantId,original_post_id:o.post_id})
+          .limit(2);
+        if(mirrorReadError)throw mirrorReadError;
+        if((mirrors||[]).length>1)throw Error('DUPLICATE_ORIGINAL_BRAIN_MIRROR');
+        const mirror=mirrors?.[0];
+        if(!mirror){brainMirrorMissing++;continue;}
+        if(!String(mirror.capability_id||'').startsWith('social-learning:')||
+          mirror.owner!=='POWERHOUSE_SOCIAL_LEARNING'||
+          !Number.isSafeInteger(Number(mirror.version)))throw Error('BRAIN_MIRROR_AUTHORITY_MISMATCH');
+        const {data:written,error:mirrorWriteError}=await db.from('brain_obligations')
+          .update({state:'FULFILLED',version:Number(mirror.version)+1,
+            evidence:{...(mirror.evidence||{}),
+              stage:'MEASUREMENT_WINDOW_ACK_VERIFIED',
+              original_source_status:'MEASUREMENT_VERIFIED',
+              exact_source_receipt:originalProof,
+              next_action:'MEASUREMENT_ACK_FINISHED_NEXT_POST_CAUSAL_EFFECT_REQUIRES_SEPARATE_PROOF',
+              measurement_only:true,causal_lift_proven:false,
+              forbid_unsupported_repost:true},
+            updated_at:new Date().toISOString()})
+          .eq('id',mirror.id).eq('state','OPEN').eq('version',mirror.version)
+          .select('id,state,evidence');
+        if(mirrorWriteError)throw mirrorWriteError;
+        if((written||[]).length>1)throw Error('ORIGINAL_BRAIN_ACK_AMBIGUOUS');
+        brainAcked+=(written||[]).length;
+      }
       return json({contract:'ORIGINAL_SOCIAL_WINDOW_EVIDENCE_ACK_V1',
-        checked:(os.data||[]).length,resolved,unverified_preserved:true,
+        checked:(os.data||[]).length,resolved,
+        brain_receipts_acknowledged:brainAcked,brain_mirror_missing:brainMirrorMissing,
+        unverified_preserved:true,
         total_evaluations:total,history_page:oldPage,history_pages:oldPages,
         learned_or_causal_effect_proven:false,parallel_executor_created:false});
     }
