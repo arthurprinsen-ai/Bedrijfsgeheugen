@@ -11,7 +11,7 @@
     "security_sensitive": true
   },
   "root_cause": "Original protected source proposal version 20261110153331 was successfully applied through native Supabase apply_migration; native management provider assigned actual production version 20261110160055. Existing Git source filename and prior migration-history.lock.json (823) then did not match 824 authoritative applied migrations, exposing a future replay/preview-block risk.",
-  "prevention": "Immediately after official provider deployment read all authoritative version/name identities and the exact native SQL statements; before next migration candidate, reconcile same original protected Git source filename to actual provider version and append only provider-proven identity to existing lock. Never replay applied SQL, write fake history, delete applied production version, relax admission or create another migration owner.",
+  "prevention": "Immediately after official provider deployment read all authoritative version/name identities and the exact native SQL statements; before next migration candidate, reconcile same original protected Git source filename to actual provider version and append only provider-proven identity to existing lock. Never replay applied SQL, write fake history, delete applied production version, relax admission or create another migration owner. The existing protected migration-admission script has an immutable exact original-base one-time exception validated against true native provider SQL SHA-256, all 823 original lock entries, exact 824th and exact D/A paths; all other historical changes remain denied.",
   "evidence": {
     "canonical_project": "adhjwmvyoixzjtmiroln",
     "protected_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5586",
@@ -32,13 +32,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs"
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
     ],
     "shadow": [
-      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs"
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
     ],
     "canary": [
-      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs"
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
     ],
     "source_lock_from_provider_only": true
   },
