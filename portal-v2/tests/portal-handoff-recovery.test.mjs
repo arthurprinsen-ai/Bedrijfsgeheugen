@@ -61,6 +61,28 @@ test('principal mismatch blocks both recovery and new writes to prevent cross-te
  assert.equal(domain.pendingHandoffs().pending,false);
 });
 
+test('identity rehydration cannot replay another tenant current snapshot as an earlier tenant input',async()=>{
+ let attempts=0;
+ const {domain,inputs,switchPrincipal}=harness(async()=>({stored:++attempts>1}));
+ await domain.init();
+ domain.set('portal.profile.employees',22);
+ await assert.rejects(domain.flush(),/CANONICAL_BUSINESS_INPUT_ACK_REQUIRED/);
+ switchPrincipal('company-b');
+ await domain.init();
+ assert.equal(domain.pendingHandoffs().retryable,false);
+ await assert.rejects(domain.flush(),/PORTAL_PENDING_HANDOFF_PRINCIPAL_MISMATCH/);
+ switchPrincipal('company-a');
+ // The cached model is currently bound to B; do not replay until A rehydrates.
+ assert.equal(domain.pendingHandoffs().retryable,false);
+ await assert.rejects(domain.flush(),/PORTAL_HYDRATED_PRINCIPAL_MISMATCH/);
+ assert.equal(inputs.length,1,'no other user snapshot was transmitted');
+ await domain.init();
+ const recovered=await domain.refresh();
+ assert.equal(recovered.applied,true);
+ assert.equal(inputs.length,2);
+ assert.equal(inputs[1].authorization,'Bearer company-a');
+});
+
 test('dirty unsubmitted form changes never automatically write on original revalidation',async()=>{
  const {domain,inputs}=harness(async()=>({stored:true}));
  await domain.init();
