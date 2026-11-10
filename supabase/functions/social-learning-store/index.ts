@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { tagDuePostsWithObservedWindows } from '../_shared/social-learning-due-evidence.mjs';
+import { verifiedSocialWindowAck } from '../_shared/social-learning-window-ack.mjs';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -75,7 +76,87 @@ Deno.serve(async(req:Request)=>{
     if(action==='record_decision'){const d=body.decision||{};const {error}=await db.from('social_learning_decisions').upsert({tenant_id:tenantId,decision_id:d.decisionId,post_id:d.postId,decision:d,recorded_at:d.recordedAt||new Date().toISOString()},{onConflict:'tenant_id,decision_id'});if(error)throw error;return json({tenantId,decisionId:d.decisionId,postId:d.postId});}
     if(action==='reconcile_application'){const a=body.application||{};const {error}=await db.from('social_learning_applications').update({actual_effect:a.actualEffect??null,verification_status:a.verificationStatus||'VERIFIED',updated_at:new Date().toISOString()}).eq('tenant_id',tenantId).eq('application_id',a.applicationId);if(error)throw error;return json({stored:true});}
     if(action==='reconcile_applications'){const d=body.data||{};const {error}=await db.from('social_learning_applications').update({actual_effect:d.effect??null,verification_status:d.verificationStatus||'VERIFIED',updated_at:new Date().toISOString()}).eq('tenant_id',tenantId).eq('post_id',d.postId);if(error)throw error;return json({stored:true});}
-    if(action==='record_obligation'){const o=body.obligation||{};const {error}=await db.from('social_learning_obligations').upsert({tenant_id:tenantId,obligation_id:o.id,type:o.type||'MISSED_OBLIGATION',owner:o.owner||'POWERHOUSE_SOCIAL_LEARNING',post_id:o.postId||null,window_hours:o.windowHours||null,due_at:o.dueAt||null,status:o.status||'OPEN',payload:o,updated_at:new Date().toISOString()},{onConflict:'tenant_id,obligation_id'});if(error)throw error;return json({stored:true});}
+    if(action==='record_obligation'){
+      const o=body.obligation||{};
+      if(!o.id)return json({error:'INVALID_OBLIGATION_ID'},400);
+      const isWindow=['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'].includes(o.type);
+      if(isWindow&&(!o.postId||![24,48,72].includes(Number(o.windowHours))))
+        return json({error:'INVALID_WINDOW_OBLIGATION'},400);
+      // Never reopen a source-verified ACK during a retry of an old missing-window run.
+      const {data,error}=await db.from('social_learning_obligations').upsert({
+        tenant_id:tenantId,obligation_id:o.id,
+        type:o.type||'MISSED_OBLIGATION',owner:o.owner||'POWERHOUSE_SOCIAL_LEARNING',
+        post_id:o.postId,window_hours:Number(o.windowHours),due_at:o.dueAt||null,
+        status:o.status||'OPEN',payload:o,updated_at:new Date().toISOString()
+      },{onConflict:'tenant_id,obligation_id',ignoreDuplicates:true}).select('obligation_id');
+      if(error)throw error;
+      return json({stored:(data||[]).length>0,duplicate:(data||[]).length===0});
+    }
+    if(action==='reconcile_verified_obligations'){
+      if(!['canonical','bedrijfsgeheugen'].includes(tenantId))return json({error:'UNAUTHORIZED_TENANT'},403);
+      // This only consumes original tables and creates an ACK for a REAL 
+      // independent 24/48/72-hour post observation + original evaluator.
+      // Missing and partial-only provider windows remain OPEN, not zero or GREEN.
+      // Always check the newest 30 original evaluations; rotate a bounded 20
+      // historical receipts per hour so old debt cannot starve after 250+ rows.
+      // No new scheduler and no false success on a truncated source read.
+      const {count:total,error:countError}=await db.from('social_learning_evaluations')
+        .select('evaluation_id',{count:'exact',head:true})
+        .eq('tenant_id',tenantId).like('evaluation_id','evaluation:%');
+      if(countError)throw countError;
+      const olderCount=Math.max(0,(total||0)-30);
+      const oldPages=Math.max(1,Math.ceil(olderCount/20));
+      const oldPage=Math.floor(Date.now()/3600000)%oldPages;
+      const query=()=>db.from('social_learning_evaluations')
+        .select('tenant_id,evaluation_id,post_id,window_hours,observed_at,metric_vector')
+        .eq('tenant_id',tenantId).like('evaluation_id','evaluation:%')
+        .order('created_at',{ascending:false});
+      const [recent,older]=await Promise.all([
+        query().range(0,29),
+        olderCount>0?query().range(30+oldPage*20,49+oldPage*20)
+          :Promise.resolve({data:[],error:null})
+      ]);
+      if(recent.error||older.error)throw (recent.error||older.error);
+      const evals=[...(recent.data||[]),...(older.data||[])];
+      const ids=[...new Set((evals||[]).map((e:any)=>e.post_id).filter(Boolean))];
+      if(!ids.length)return json({checked:0,resolved:0,unverified_preserved:true});
+      const [os,ps,ss]=await Promise.all([
+        db.from('social_learning_obligations').select('tenant_id,obligation_id,type,status,post_id,window_hours,payload')
+          .eq('tenant_id',tenantId).eq('status','OPEN')
+          .in('type',['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'])
+          .in('post_id',ids).limit(250),
+        db.from('social_posts').select('tenant_id,post_id,published_at,external_post_id')
+          .eq('tenant_id',tenantId).in('post_id',ids).limit(250),
+        db.from('social_metric_snapshots').select('tenant_id,post_id,source,source_event_id,observed_at,data_quality,metrics')
+          .eq('tenant_id',tenantId).in('post_id',ids).order('observed_at',{ascending:false}).limit(750)
+      ]);
+      if(os.error||ps.error||ss.error)throw (os.error||ps.error||ss.error);
+      if((os.data||[]).length>=250||(ss.data||[]).length>=750)
+        return json({error:'EVIDENCE_COVERAGE_TRUNCATED',checked:0,resolved:0},503);
+      const posts=new Map((ps.data||[]).map((p:any)=>[p.post_id,p]));
+      const byPost=new Map<string,any[]>();
+      for(const snap of ss.data||[])byPost.set(snap.post_id,[...(byPost.get(snap.post_id)||[]),snap]);
+      const byKey=new Map((evals||[]).map((e:any)=>[e.post_id+':'+e.window_hours,e]));
+      let resolved=0;
+      for(const o of os.data||[]){
+        const e=byKey.get(o.post_id+':'+o.window_hours);
+        const proof=verifiedSocialWindowAck({obligation:o,post:posts.get(o.post_id),
+          evaluation:e,snapshots:byPost.get(o.post_id)||[]});
+        if(!proof)continue;
+        const {data:ack,error:we}=await db.from('social_learning_obligations')
+          .update({status:'MEASUREMENT_VERIFIED',
+            payload:{...(o.payload||{}),resolution:proof},
+            updated_at:new Date().toISOString()})
+          .eq('tenant_id',tenantId).eq('obligation_id',o.obligation_id)
+          .eq('status','OPEN').select('obligation_id');
+        if(we)throw we;
+        resolved+=(ack||[]).length;
+      }
+      return json({contract:'ORIGINAL_SOCIAL_WINDOW_EVIDENCE_ACK_V1',
+        checked:(os.data||[]).length,resolved,unverified_preserved:true,
+        total_evaluations:total,history_page:oldPage,history_pages:oldPages,
+        learned_or_causal_effect_proven:false,parallel_executor_created:false});
+    }
     if(action==='get_projection'){const {data,error}=await db.from('social_learning_projections').select('projection').eq('tenant_id',tenantId).maybeSingle();if(error)throw error;return json({projection:data?.projection||null});}
     if(action==='put_projection'){const p=body.projection||{};const {error}=await db.from('social_learning_projections').upsert({tenant_id:tenantId,version:p.version,projection:p,updated_at:new Date().toISOString()},{onConflict:'tenant_id'});if(error)throw error;return json({stored:true});}
     return json({error:'INVALID_ACTION'},400);
