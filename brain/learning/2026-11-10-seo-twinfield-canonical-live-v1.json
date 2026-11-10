@@ -21,7 +21,7 @@
     "organic_rank": "Observed mapped Twinfield searches mostly positions 90+",
     "qualified_leads_or_paid_orders_proven": false
   },
-  "correction": "Add exact commercial Twinfield API alias to original canonical SEO map and NL locale map, update only existing page title/meta SEO messaging, keep original canonical and Frisse Blik destination, translate exactly via existing checked-in static cache; use original protected GitHub/Netlify publisher, never second scheduler, duplicate blog, or direct deployment.",
+  "correction": "Add Twinfield API to existing NL locale SEO map only, leave the canonical source and original Supabase owner projection unchanged until paired original backend PR #5591 can safely deploy them together; update only existing page title/meta SEO messaging, keep existing canonical and Frisse Blik destination, translate exactly via checked-in static cache; use protected GitHub/Netlify publisher, never second scheduler, duplicate blog, or direct deployment.",
   "prevention": [
     "No website publish until exact-head Required+CodeQL and Netlify public deploy metadata/canonical/CTA readback.",
     "No fake search rank, conversion or experiment gain claims from a title/description change.",
