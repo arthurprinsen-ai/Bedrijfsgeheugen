@@ -6,6 +6,7 @@ import { mountAskPortal } from './ask-portal.js';
 import { mountOwnerOperatingSystem } from './owner-operating-system.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
+import { runtimeEvidenceVersion, shouldReconcileRuntimePage } from './live-page-reconciliation.js';
 import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
@@ -109,6 +110,18 @@ const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek
 export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','ai-modelkeuze','compliance-governance','compliance-command-center','eu-ai-act-audit']);
 const protectedTrustSet=new Set(PROTECTED_TRUST_PAGES);
 const portalContext={domainState:null,stateClient:null};
+// Read only the existing authenticated runtime projection; no second store.
+let renderedRuntimeVersion='null';
+function currentRuntimeVersion(){
+  try{return runtimeEvidenceVersion(portalContext.domainState?.get?.('portal.runtime'));}
+  catch{return 'unavailable';}
+}
+function focusedPageEditor(root){
+  const focused=document.activeElement;
+  return Boolean(focused&&root?.contains?.(focused)
+    &&(focused.matches?.('input, textarea, select, [contenteditable="true"]')
+      ||focused.closest?.('[contenteditable="true"]')));
+}
 
 export function isProtectedTrustPage(pageId=''){return protectedTrustSet.has(String(pageId||''));}
 export function hasProtectedTrustAccess(){
@@ -396,6 +409,7 @@ export function openPortalPage(pageId){
     void mountConnectedDataSources(native,{pageId});
   }
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
+  renderedRuntimeVersion=currentRuntimeVersion();
   return true;
 }
 
@@ -443,6 +457,51 @@ export function enhancePortalShell(){
 
   if(!document.documentElement.dataset.portalImpactBound){
     document.documentElement.dataset.portalImpactBound='true';
+    let queuedRuntimePage='';
+    const reconcileRuntimePage=()=>{
+      const root=document.getElementById('portalView');
+      const page=root?.dataset?.pageId||'';
+      const snap=portalContext.stateClient?.getSnapshot?.();
+      const currentId=String(portalContext.stateClient?.currentUser?.()?.id||'');
+      const authenticated=snap?.mode==='authenticated'&&!!currentId
+        &&String(snap?.user?.id||'')===currentId&&!portalContext.stateClient?.isDemo?.();
+      const eligible=()=>shouldReconcileRuntimePage({
+        open:root?.classList?.contains('open')===true,
+        authenticated,versionChanged:currentRuntimeVersion()!==renderedRuntimeVersion,
+        status:portalContext.domainState?.status?.()||'idle',editing:focusedPageEditor(root)
+      });
+      if(!page||!eligible()||queuedRuntimePage===page)return;
+      queuedRuntimePage=page;
+      requestAnimationFrame(()=>{
+        queuedRuntimePage='';
+        const latest=portalContext.stateClient?.getSnapshot?.();
+        const sameUser=latest?.mode==='authenticated'
+          &&String(latest?.user?.id||'')===currentId
+          &&String(portalContext.stateClient?.currentUser?.()?.id||'')===currentId;
+        if(sameUser&&root.isConnected&&root.dataset.pageId===page&&eligible())
+          openPortalPage(page);
+      });
+    };
+    // Native pages consume the existing Powerhouse readback immediately.
+    // A periodic poll with unchanged content never remounts a customer form.
+    globalThis.addEventListener?.('bg:portal-owner-runtime-updated',reconcileRuntimePage);
+    globalThis.addEventListener?.('bg:runtime-evidence',reconcileRuntimePage);
+    // Identity changes revoke previously rendered private DOM, not just auth flags.
+    document.addEventListener('bg:portal-identity-boundary',()=>{
+      queuedRuntimePage='';
+      renderedRuntimeVersion='null';
+      const root=document.getElementById('portalView');
+      if(!root)return;
+      closePortalPage();
+      root.dataset.pageId='';
+      root.querySelector('#pvNative')?.replaceChildren();
+      const impact=root.querySelector('#pvImpactMap');
+      impact?.replaceChildren();if(impact)impact.hidden=true;
+      const status=root.querySelector('#pvStatus');if(status)status.textContent='';
+      const body=root.querySelector('.pvbody');
+      if(body)for(const node of [...body.children])
+        if(node.id!=='pvNative'&&node.id!=='pvImpactMap'&&!node.classList.contains('pvstatus'))node.remove();
+    });
     globalThis.addEventListener?.('bg:portal-impact',event=>{
       const impact=event.detail||{};
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact}));

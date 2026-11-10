@@ -213,3 +213,9 @@ Bron: `tools/site-shell/core-request-recovery.mjs`, regressie `tests/brain-websi
 - Schrijf nooit de pending gegevens van een andere tenant weg; bewaak identiteit vóór en ná beide server-ACKs. Toon een onbevestigde overdracht op de ondernemerstart en bij iedere geregistreerde pagina zonder de gegevens van een andere klant bloot te geven.
 - De frontend-wachtrij is sessiegeheugen en vervangt geen server-durable outbox. Full reboot/offline, provider-degradatie, twee onafhankelijke tenant-readbacks en complete downstream Powerhouse/Heartbeat/ONE BRAIN leer- en adviesketen blijven onder oorspronkelijke issue #4215 EVIDENCE_DUE. Nooit alles groen verklaren wegens een geslaagde UI-regressietest.
 - Uitvoerende regressie: tests/brain-portal-handoff-replay-20261110.test.mjs. Originele GitHub Required, CodeQL, BRAIN, beschermde merge, exacte live Netlify-SHA en tenant-browserproef blijven hard-gates.
+
+## 10 november 2026 — dynamische BRAIN-data op alle geopende pagina's
+- De originele runtime-bridge vernieuwt uitsluitend de bestaande tenantgebonden `portal.runtime`. Ook geopende native detailpagina's gebruiken `bg:runtime-evidence` en `bg:portal-owner-runtime-updated` voor dezelfde readback; geen tweede poller of datalaag.
+- Herteken alleen na echte inhoudswijziging met bewezen huidige principal; bescherm `dirty`, `saving`, fouten en actieve formulieren. Vergelijk de actuele principal en route opnieuw net vóór hertekenen.
+- Op `bg:portal-identity-boundary` is het volledig wissen van de oude private paginainhoud verplicht, ook als het paneel verborgen is.
+- Regressie `tests/brain-portal-live-runtime-propagation-20261110.test.mjs`; echte tweede-tenant browser-, Heartbeat-, outcome- en leerbewijzen blijven EVIDENCE_DUE zolang niet onafhankelijk gecontroleerd.

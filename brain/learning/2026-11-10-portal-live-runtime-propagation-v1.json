@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-4215-live-runtime-native-pages-20261110-v1",
+  "fingerprint": "portal|runtime|open-native-page-not-invalidated-by-brain-projection|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_RUNTIME_READMODEL_STALE_ON_OPEN_PAGE",
+    "scope": "PORTAL_V2_NATIVE_PAGES",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing Powerhouse/Brain runtime readback updates shared domainState but does not invalidate already mounted native detail page, and identity boundary did not clear mounted private panel.",
+  "fix": "Bind existing provider-readback runtime events, dedupe by canonical runtime data, preserve dirty forms, wipe DOM at original tenant boundary.",
+  "tests": [
+    "tests/brain-portal-live-runtime-propagation-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-live-runtime-propagation-20261110.test.mjs"
+    ],
+    "shadow": [],
+    "canary": []
+  },
+  "owner": "Original #4215 Portal V2 and #4547 UX",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_VERIFIED",
+  "prevention_rules": [
+    "Re-render a native page only on changed authenticated canonical runtime evidence, never merely on polling.",
+    "Clear all mounted native customer content at account transition, even in hidden panels.",
+    "Missing provider writeback or outcome proof cannot be rendered as verified business improvement."
+  ]
+}
