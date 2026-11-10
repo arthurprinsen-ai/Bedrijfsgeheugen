@@ -262,10 +262,13 @@ export function mapRuntimeProjection(projection) {
 // provider readback must not leave an older, apparently healthy projection live.
 function invalidateRuntime(domainState,validateSession,reason){
   if(!validateSession())return;
-  const prior=typeof domainState?.get==='function'?domainState.get('portal.runtime'):null;
-  if(prior==null||typeof domainState?.setDerived!=='function')return;
+  const canRead=typeof domainState?.get==='function';
+  const prior=canRead?domainState.get('portal.runtime'):undefined;
+  if(typeof domainState?.setDerived!=='function'||(canRead&&prior==null))return;
+  // Older domain-state clients expose only setDerived: clear them as well.
+  // When get exists, suppress duplicate events for an already empty projection.
   domainState.setDerived('portal.runtime',null);
-  if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')
+  if(canRead&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')
     globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',state:'UNVERIFIED',reason}}));
 }
 
