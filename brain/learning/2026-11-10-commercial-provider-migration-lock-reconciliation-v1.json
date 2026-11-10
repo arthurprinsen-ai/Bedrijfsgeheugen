@@ -38,5 +38,12 @@
     "provider_observed_at": "2026-11-10T12:29:55.152814Z",
     "native_function_nested_provider_and_sent_outcome_verified": true,
     "source_candidate_not_live_proven": true
+  },
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_MIGRATION_LOCK_DRIFT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
   }
 }
