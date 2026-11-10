@@ -17,3 +17,6 @@ De bestaande SEO-skill, ONE BRAIN-lering en append-only incidentledger hebben de
 Verzamelincident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
 
 De reeds gepubliceerde blogs van 6-8 november hebben nog geen echt GSC/GA4-meting+leren-consumerreceipt: dit blijft zichtbaar als apart `EVIDENCE_DUE`, **niet groen door een andere SEO-fix**.
+
+## Vervolgincident: originele tweetalige Netlify-build (2026-11-10)
+Exact-head Required preflight in GitHub PR #5591 passeerde SEO Order Engine voor 148 indexeerbare pagina's maar `localized-routes` werd terecht gestopt met `STATIC_I18N_PREPARE_NETWORK_REQUIRED`: drie nieuwe NL tekstsegmenten van de Twinfield-verbetering ontbraken in de statische EN-cache. De drie bronkeys zijn in hetzelfde originele `config/bg-static-i18n-en.d/2026-11-10-twinfield-api-seo-source.json` opgenomen met expliciete Engelse vertaling. Bestaande `STATIC_I18N_REQUIRE_CACHE=1` en offline productiebouw blijven ongewijzigd. De Brain-regressietest eist exacte bronkey-coverage. Geen vertaalservice, nieuwe scheduler of achterdeur. De patch is pas live na hernieuwde vereiste checks, protected merge en publieke NL/EN readback.
