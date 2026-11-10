@@ -1,0 +1,40 @@
+/* Living Company is a component of the original entrepreneur-first experience.
+   Status is sourced exclusively from its authenticated journey; color is not a KPI. */
+.bdw-world{margin-top:24px;padding-top:22px;border-top:1px solid rgba(183,236,221,.23);color:#eefbf7;min-width:0}
+.bdw-heading{max-width:750px}
+.bdw-eyebrow{display:block;color:#99e7d4;font-size:.69rem;font-weight:800;letter-spacing:.13em}
+.bdw-heading h4{margin:8px 0 6px;color:#fff;font-size:clamp(1.08rem,2.1vw,1.55rem);letter-spacing:-.025em;line-height:1.2}
+.eh-focus .bdw-heading p{margin:0;color:#c8e2e1;font-size:.85rem;line-height:1.5;max-width:61ch}
+.bdw-composition{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);align-items:center;gap:clamp(20px,4vw,55px);padding-top:14px;min-width:0}
+.bdw-orbit{width:min(100%,355px);aspect-ratio:1;position:relative;isolation:isolate;margin:auto}
+.bdw-orbit:before,.bdw-orbit:after{content:'';position:absolute;inset:11%;border-radius:50%;pointer-events:none}
+.bdw-orbit:before{border:1px solid rgba(169,236,221,.35);box-shadow:0 0 44px inset rgba(116,223,196,.045)}
+.bdw-orbit:after{inset:25%;border:1px dashed rgba(184,233,220,.18)}
+.bdw-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:6px;padding:9px;background:radial-gradient(circle at 35% 25%,#32776e,#123f45 77%);border:1px solid #87c7b6;box-shadow:0 0 48px rgba(112,217,187,.13),inset 0 0 0 5px rgba(255,255,255,.04);z-index:1}
+.bdw-core-label{color:#b2eadb;font-size:.54rem;font-weight:800;letter-spacing:.08em}
+.bdw-core strong{color:#fff;font-size:clamp(.64rem,1.05vw,.9rem);line-height:1.19;max-width:18ch;overflow-wrap:anywhere}
+.bdw-core small{color:#c6e2db;font-size:.57rem;line-height:1.3}
+.bdw-node{position:absolute;z-index:2;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;min-width:92px;min-height:57px;padding:8px 10px;border-radius:15px;border:1px solid rgba(154,205,199,.38);background:#193c46;color:#e4f3f0;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.12);cursor:pointer;transition:transform .2s ease,border-color .2s ease,background .2s ease}
+.bdw-node:hover{transform:translate(-50%,-53%);background:#24515a;border-color:#afeddb}
+.bdw-node[aria-pressed="true"]{border-color:#b6f7dc;background:#defbef;color:#16493e;box-shadow:0 0 0 3px rgba(180,248,219,.16),0 12px 28px rgba(0,0,0,.16)}
+.bdw-node:focus-visible{outline:3px solid #ffdd8d!important;outline-offset:4px}
+.bdw-node[data-bdw-stage="scan"]{left:50%;top:11%}
+.bdw-node[data-bdw-stage="goal"]{left:79%;top:31%}
+.bdw-node[data-bdw-stage="evidence"]{left:68%;top:81%}
+.bdw-node[data-bdw-stage="decision"]{left:32%;top:81%}
+.bdw-node[data-bdw-stage="outcome"]{left:21%;top:31%}
+.bdw-node-number{font-size:.57rem;opacity:.8;letter-spacing:.11em;font-weight:750}
+.bdw-node-name{font-size:.79rem;line-height:1.13;font-weight:800}
+.bdw-node-dot{position:absolute;width:7px;height:7px;border-radius:50%;top:6px;right:7px;background:#9facb4}
+.bdw-node[data-confirmed="true"] .bdw-node-dot{background:#70e6b8;box-shadow:0 0 0 2px rgba(112,230,184,.17)}
+.bdw-node[aria-pressed="true"] .bdw-node-dot{background:#247761}
+.bdw-readout{min-width:0;border:1px solid rgba(145,215,197,.26);border-radius:20px;background:linear-gradient(145deg,rgba(5,30,39,.54),rgba(29,79,80,.48));padding:clamp(18px,2vw,28px);min-height:188px;align-self:center}
+.bdw-readout-label{display:block;color:#a5dbd4;font-size:.71rem;letter-spacing:.09em;font-weight:800}
+.bdw-readout-status{display:block;font-size:clamp(1.2rem,2vw,1.65rem);letter-spacing:-.02em;line-height:1.2;color:#fff;margin:9px 0}
+.bdw-readout-status[data-confirmed="true"]{color:#bdf8dc}
+.eh-focus .bdw-readout-copy{color:#e2efec;font-size:.9rem;line-height:1.56;margin:0 0 13px;overflow-wrap:anywhere}
+.eh-focus .bdw-readout-trust{margin:0;padding-top:11px;border-top:1px solid rgba(169,229,211,.2);font-size:.75rem;line-height:1.5;color:#b2cfcb}
+@media(max-width:900px){.bdw-composition{grid-template-columns:minmax(0,1fr);gap:10px}.bdw-orbit{width:min(100%,335px)}.bdw-readout{min-height:auto}}
+@media(max-width:480px){.bdw-world{margin-top:20px;padding-top:18px}.bdw-orbit{width:min(100%,310px)}.bdw-node{min-width:77px;min-height:53px;padding:6px 7px;border-radius:12px}.bdw-node-name{font-size:.72rem}.bdw-core{width:36%}.bdw-core strong{font-size:.65rem}.bdw-core small{font-size:.51rem}.bdw-readout{padding:17px}}
+@media(max-width:350px){.bdw-node{min-width:71px}.bdw-node-name{font-size:.66rem}}
+@media(prefers-reduced-motion:reduce){.bdw-node{transition:none}.bdw-node:hover{transform:translate(-50%,-50%)}}
