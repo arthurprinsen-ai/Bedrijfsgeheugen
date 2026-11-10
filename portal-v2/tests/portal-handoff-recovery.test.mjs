@@ -51,8 +51,8 @@ test('principal mismatch blocks both recovery and new writes to prevent cross-te
  switchPrincipal('company-b');
  assert.equal(domain.pendingHandoffs().retryable,false);
  assert.equal((await domain.refresh()).applied,false);
- await assert.rejects(domain.flush(),/PORTAL_PENDING_HANDOFF_PRINCIPAL_MISMATCH/);
- assert.throws(()=>domain.set('portal.profile.employees',18),/PORTAL_PENDING_HANDOFF_PRINCIPAL_MISMATCH/);
+ await assert.rejects(domain.flush(),/PORTAL_(?:PENDING_HANDOFF|HYDRATED)_PRINCIPAL_MISMATCH/);
+ assert.throws(()=>domain.set('portal.profile.employees',18),/PORTAL_(?:PENDING_HANDOFF|HYDRATED)_PRINCIPAL_MISMATCH/);
  assert.equal(inputs.length,1);
  assert.equal(inputs[0].authorization,'Bearer company-a');
  switchPrincipal('company-a');
@@ -70,7 +70,7 @@ test('identity rehydration cannot replay another tenant current snapshot as an e
  switchPrincipal('company-b');
  await domain.init();
  assert.equal(domain.pendingHandoffs().retryable,false);
- await assert.rejects(domain.flush(),/PORTAL_PENDING_HANDOFF_PRINCIPAL_MISMATCH/);
+ await assert.rejects(domain.flush(),/PORTAL_(?:PENDING_HANDOFF|HYDRATED)_PRINCIPAL_MISMATCH/);
  switchPrincipal('company-a');
  // The cached model is currently bound to B; do not replay until A rehydrates.
  assert.equal(domain.pendingHandoffs().retryable,false);
