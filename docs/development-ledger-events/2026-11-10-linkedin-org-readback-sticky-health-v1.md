@@ -12,3 +12,5 @@
 - First original Required run #42846279013 failed `PR_MACHINE_METADATA_INVALID` (missing Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA). No tests or CI checks were overridden; this same PR metadata was corrected to original base `f06fe142c7c3dc73bf0991dade68b89458134f64`.
 - Open: exact-head fresh Required/CodeQL; protected merge; official Supabase production migration/readback; original LinkedIn API permission restoration; next natural consumer/handoff; 179 historical social-learning obligations.
 - Truth: source candidate only until independent production/checkout proves deployment. A CODEQL or source test pass alone does not prove provider authorization or a new publication. No added cron, sender or Brain.
+
+- The original PR machine metadata was subsequently completed with EXACT six-file Change-Scope, Scope-Budget 6, immutable Base-SHA and Candidate-Type recovery. This non-behavioral ledger update triggers NEW exact-head CI rather than rerunning a stale opening-event payload. Every earlier failed admission remains historical.
