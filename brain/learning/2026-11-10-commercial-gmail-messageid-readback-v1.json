@@ -38,7 +38,9 @@
     "supabase/functions/_shared/verified-gmail-readback.mjs",
     "supabase/functions/powerhouse-autonomous-outreach/index.ts",
     "tests/brain-gmail-messageid-readback-only-20261110.test.mjs",
-    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+    "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+    "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
   ],
   "compiler": {
     "failure_class": "GMAIL_PROVIDER_READBACK_SCHEMA_DRIFT",
@@ -49,13 +51,19 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-gmail-messageid-readback-only-20261110.test.mjs"
+      "tests/brain-gmail-messageid-readback-only-20261110.test.mjs",
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
     ],
     "shadow": [
-      "tests/brain-gmail-messageid-readback-only-20261110.test.mjs"
+      "tests/brain-gmail-messageid-readback-only-20261110.test.mjs",
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
     ],
     "canary": [
-      "tests/brain-gmail-messageid-readback-only-20261110.test.mjs"
+      "tests/brain-gmail-messageid-readback-only-20261110.test.mjs",
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
     ]
   },
   "production_proof_to_complete": [
@@ -86,5 +94,13 @@
     "provider_verified_commit_after_fix": false,
     "canonical_replay": "tests/brain-gmail-messageid-readback-only-20261110.test.mjs",
     "observed_failure_gate": "PR #5577 Required admission first pass INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning; missing top-level evidence semantic key; repaired without weakening gate."
+  },
+  "tests": [
+    "tests/brain-gmail-messageid-readback-only-20261110.test.mjs",
+    "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+    "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
+  ],
+  "ci_history": {
+    "original_preflight_failure": "After merging main #5576 no-resend guard into same branch, two pre-existing source-string tests expected obsolete inline id!==messageId. Updated those tests to import and behaviorally verify the canonical exact provider ID/SENT/recipient helper without weakening no-resend; rerun protected Required on exact head."
   }
 }
