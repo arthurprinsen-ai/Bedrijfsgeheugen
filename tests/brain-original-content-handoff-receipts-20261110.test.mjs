@@ -88,3 +88,22 @@ test('existing content loop status cannot go GREEN on missed consumer ACK, unlea
  assert.match(sql,/v_status:='AMBER'; v_reason:='original source-to-consumer handoff incomplete'/);
  assert.match(sql,/'content_handoff',case when r\.loop_key='content-closed-loop' then v_handoff else null end/);
 });
+
+test('each original email action has its own independent Gmail readback, reply and learning handoff',()=>{
+ assert.match(sql,/FOR mail IN[\s\S]*?FROM public\.powerhouse_sales_actions/);
+ assert.match(sql,/mail\.status='done' AND mail\.executed_at IS NOT NULL/);
+ assert.match(sql,/mail\.evidence->>'provider_message_id'/);
+ assert.match(sql,/mail\.evidence->>'provider_ack_verified'='true'/);
+ assert.match(sql,/mail\.evidence->>'provider_readback_verified'='true'/);
+ assert.match(sql,/provider_delivery_readback,provider_message_id/);
+ assert.match(sql,/provider_delivery_readback,recipient_match/);
+ assert.match(sql,/provider_delivery_readback,gmail_label/);
+ assert.match(sql,/FROM public\.powerhouse_email_reply_events e/);
+ assert.match(sql,/e\.action_id=mail\.action_id/);
+ assert.match(sql,/'email-action:'\|\|mail\.action_id::text/);
+ assert.match(sql,/'OVERDUE_INDEPENDENT_GMAIL_READBACK'/);
+ assert.match(sql,/'WAIT_EMAIL_REPLY_AND_OUTCOME_MEASUREMENT'/);
+ assert.match(sql,/'WAIT_EMAIL_EXPERIMENT_LEARNING'/);
+ assert.match(sql,/'no_resend_on_ambiguous_provider_side_effect',true/);
+ assert.doesNotMatch(sql,/perform\s+.*(send_email|send_message|send_campaign)/i);
+});
