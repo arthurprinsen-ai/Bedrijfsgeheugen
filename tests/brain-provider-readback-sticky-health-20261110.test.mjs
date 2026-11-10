@@ -10,6 +10,7 @@ const sql = readFileSync(
 test('same existing provider health view: security invoker and no parallel executor', () => {
   assert.match(sql, /create or replace view public\.powerhouse_provider_health_v1\s+with \(security_invoker = true\)/i);
   assert.match(sql, /alter view public\.powerhouse_provider_health_v1\s+set \(security_invoker = true\)/i);
+  assert.match(sql, /revoke all on table public\.powerhouse_provider_health_v1\s+from public, anon, authenticated;/i);
   assert.doesNotMatch(sql, /\bcron\.schedule\s*\(|\bnet\.http_post\s*\(|create\s+(table|trigger)\b/i);
 });
 
