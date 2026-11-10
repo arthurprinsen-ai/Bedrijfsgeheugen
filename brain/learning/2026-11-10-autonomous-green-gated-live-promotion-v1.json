@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "fingerprint": "delivery|governance|agent-asks-owner-to-go-live-after-all-green-checks|20261110-v1",
+  "failure_class": "GREEN_GATED_DEPLOYMENT_REAPPROVAL_HANDOFF_GAP",
+  "root_cause": "The standing autonomous-delivery policy forbids unnecessary owner questions but did not explicitly require every agent/chat/skill to finish the existing protected merge and production-promotion/readback after all applicable formal gates are green, so a green tested change could terminate at a chat question instead of source-backed production completion.",
+  "evidence": {
+    "source": "User explicitly requires that agents and chats do not ask whether to go live after all checks, and that guarded production promotion is always the default.",
+    "repo_observation": "AGENTS.md and docs/brain/groen-draaiboek.md already required autonomous execution but did not spell out automatic post-green production promotion as a universal non-question terminal policy.",
+    "verified_live_status": "NOT_YET_PROVEN"
+  },
+  "fix": "Bind all existing agents/chats/skills to AUTO_SHIP_AFTER_GREEN. After exact-head protected tests, security/quality/authorization and applicable review checks pass, only the canonical authorized writer must merge and promote using existing delivery mechanisms. Verify exact production SHA, relevant provider and functional readback, consumer ACK and original ONE BRAIN/Heartbeat/Portal evidence. Open recovery in same lineage on failure, no extra user question for normal reversible release.",
+  "compiler": {
+    "failure_class": "GREEN_GATED_DEPLOYMENT_REAPPROVAL_HANDOFF_GAP",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention": [
+    "Never close a delivery session with 'shall I put it live?' when all required gates and formal approval are satisfied.",
+    "Use original exclusive release writer and protected PR path; forbid direct-main push, force merge, gate bypass, new scheduler, duplicate executor or fabricated live evidence.",
+    "If a required gate/review or provider authentication is absent, preserve OPEN evidence debt; autonomously repair authorized issues or request only genuinely unavoidable human action.",
+    "After merge require independent exact-SHA and runtime/provider functional readback, receiving consumer ACK, BRAIN/Heartbeat/Portal trace, and learning evidence before LIVE_BEWEZEN.",
+    "The assistant must never claim live access or deployment it has not actually performed."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-groen-draaiboek-20261108.test.mjs"
+  ],
+  "scope": [
+    "AGENTS.md",
+    "docs/brain/groen-draaiboek.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "tests/brain-groen-draaiboek-20261108.test.mjs",
+    "brain/learning/2026-11-10-autonomous-green-gated-live-promotion-v1.json"
+  ],
+  "owner": "Canonical protected GitHub delivery owner / original ONE BRAIN obligation lineage",
+  "status": "PENDING_PROTECTED_CI_MERGE_PRODUCTION_READBACK",
+  "production_proof_to_complete": [
+    "Required test, hygiene/admission, CodeQL and any applicable preview/security checks pass on exact PR head with all necessary reviews.",
+    "Existing authorized GitHub writer lands via protected merge; no extra owner live approval requested.",
+    "Existing canonical production release completes, exact SHA and affected runtime/provider routes independently read back.",
+    "Original consumer/ONE BRAIN/Heartbeat/Portal acknowledges receipt and outcome; no false-green on policy-only deploy."
+  ],
+  "no_false_green": true
+}
