@@ -274,6 +274,10 @@ export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domain
     const projection = await response.json();
     const runtime = mapRuntimeProjection(projection);
     if (!Object.keys(runtime).length || !validateSession()) return null;
+    // An identical 45-second provider readback does not constitute new data;
+    // do not repeatedly repaint a customer's open page or active analysis.
+    const prior=typeof domainState?.get==='function'?domainState.get('portal.runtime'):undefined;
+    if(JSON.stringify(prior??null)===JSON.stringify(runtime))return runtime;
     if (typeof domainState?.setDerived === 'function') domainState.setDerived('portal.runtime', runtime);
     if (typeof globalThis.dispatchEvent === 'function' && typeof globalThis.CustomEvent === 'function') {
       globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',updatedAt:runtime?.observability?.updatedAt||null}}));
