@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_CI_DEPLOY_AND_PROVIDER_READBACK_DUE",
+  "fingerprint": "powerhouse|commercial|verified-research-quality-passed-waiting-excluded|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "owner": "original powerhouse-commercial-message-composer and powerhouse-commercial-learning-v1; canonical Gmail owner powerhouse-autonomous-outreach",
+  "failure_class": "ORIGINAL_HANDOFF_RESUME_FILTER_LOSES_VERIFIED_RESEARCH",
+  "root_cause": "Existing SQL candidates RPC AND TS composer candidate filter both exclude previously quality-passed drafts even while original autonomous_email action remains WAITING/SOURCE_SPECIFIC_EVIDENCE_REQUIRED. Independently completed and vetted original research can no longer trigger a fresh composer evaluation, so provider/experiment handoff never happens.",
+  "source_evidence": {
+    "observed_at_utc": "2026-11-10T10:00:00Z",
+    "source": "production Supabase read-only original tables",
+    "email_actions_7d": 12,
+    "recent_broken_or_unproven_handoffs_7d": 11,
+    "research_done_7d": 5,
+    "research_consumed_by_quality_7d": 1,
+    "provider_accepted_with_id_7d": 0,
+    "one_current_waiting_action_qualifies_for_exact_canonical_verified_research_resume": 1,
+    "independent_provider_send_after_repair_proven": false
+  },
+  "repair": "Keep the existing SQL candidates RPC unchanged. In the ORIGINAL composer read the existing canonical message-plan view for WAITING/SOURCE_SPECIFIC_EVIDENCE_REQUIRED originals, require same-action completed research and independently vetted current company news through sourceVerifiedComposerHandoff; re-evaluate full message quality then original sender gates. No schema, scheduler or alternate sender.",
+  "scope": [
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "tests/brain-original-commercial-held-resume-20261110.test.mjs",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "tests": [
+    "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+  ],
+  "prevention": [
+    "Never equate an old composer quality-pass with terminal success when a source-held original action receives new independently verified research.",
+    "An upstream research DONE requires a fresh composer receipt for exactly the same person/company/action lineage before any provider dispatch.",
+    "Admit only canonical source-matched approved company news; no SERP-only signal, old research, spoofed company, anonymous recipient or missing consent may bypass gates.",
+    "Do not create parallel email sender or scheduler, and do not call delivery GREEN without external provider ID+readback."
+  ],
+  "production_proof_to_complete": [
+    "Protected required CI/CodeQL and original Edge deploy on exact PR head; no new Supabase migration.",
+    "Protected merge to main and independently verified original composer Edge function version/hash.",
+    "First original natural composer run picks up the exact original waiting action and records new quality/source evidence.",
+    "Only after recipient consent and provider-independent readback may a mail be counted sent; never infer from prepared/done.",
+    "Genuine outcomes feed original Powerhouse experiments and applied next natural execution with controlled evidence."
+  ],
+  "independent_provider_readback_required": true,
+  "no_false_green": true,
+  "compiler": {
+    "failure_class": "RESEARCH_TO_COMPOSER_RESELECTION_DRIFT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+    ]
+  },
+  "ci_history": {
+    "failed_preview_on": "2026-11-10",
+    "root_cause": "Hosted Preview lacks historical production-only public.powerhouse_commercial_message_plan_v1 type; new RPC replacement failed SQLSTATE 42704; migration removed rather than hide or skip preview errors.",
+    "repair": "No new schema migration, no preview dependency added; original composer reads existing provider-backed production view with independent exact-source contract.",
+    "preview_result_on_fixed_head": "PENDING"
+  }
+}
