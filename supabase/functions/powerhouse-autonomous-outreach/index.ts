@@ -1,4 +1,5 @@
 import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction,providerUncertaintyNoResend} from '../_shared/outreach-composer-hold.mjs';
+import {verifiedGmailReadback} from '../_shared/verified-gmail-readback.mjs';
 import {createClient} from 'npm:@supabase/supabase-js@2';
 const C='powerhouse-autonomous-relationship-outreach-v3',B='https://backend.composio.dev/api/v3.1';
 const s=(v:any)=>String(v??'').trim(),J=(b:any,n=200)=>new Response(JSON.stringify(b),{status:n,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -33,15 +34,9 @@ async function readback(key:string,acct:{id:string;userId:string},messageId:stri
  const r=await fetch(B+'/tools/execute/GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({connected_account_id:acct.id,user_id:acct.userId,arguments:{message_id:messageId,user_id:'me',format:'full'}}),signal:AbortSignal.timeout(15000)});
  const x:any=await r.json().catch(()=>({parse_error:true}));
  if(!r.ok||x?.successful!==true)throw{code:'GMAIL_INDEPENDENT_READBACK_UNAVAILABLE',status:r.status,payload:safe(x)};
- const d=x?.data?.data||x?.data||x,m=d?.message||d;
- const id=s(m?.id||m?.message_id),labels=Array.isArray(m?.labelIds)?m.labelIds:(Array.isArray(m?.label_ids)?m.label_ids:[]);
- const headers=Array.isArray(m?.payload?.headers)?m.payload.headers:(Array.isArray(m?.headers)?m.headers:[]);
- const toHeader=headers.find((h:any)=>s(h?.name).toLowerCase()==='to');
- const addressed=s(toHeader?.value||m?.to).toLowerCase(),target=s(recipient).toLowerCase();
- const recipients=(addressed.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi)||[]).map((v:string)=>v.toLowerCase());
- if(id!==messageId||!labels.includes('SENT')||!target||!recipients.includes(target))
-  throw{code:'GMAIL_READBACK_MISMATCH',id_matches:id===messageId,sent_label:labels.includes('SENT'),recipient_matches:Boolean(target&&recipients.includes(target))};
- return{message_id:id,thread_id:s(m?.threadId||m?.thread_id),sent_label_verified:true,recipient_verified:true};
+ const proof=verifiedGmailReadback(x,messageId,recipient);
+ if(!proof.ok)throw{code:'GMAIL_READBACK_MISMATCH',id_matches:proof.id_matches,sent_label:proof.sent_label,recipient_matches:proof.recipient_matches};
+ return{message_id:proof.message_id,thread_id:proof.thread_id,sent_label_verified:true,recipient_verified:true};
 }
 // Do not treat a prepared action or an authenticated scheduler as recipient authorization.
 async function verifyRecipientAuthority(db:any,a:any,to:string):Promise<boolean>{
@@ -81,6 +76,12 @@ Deno.serve(async(req)=>{
     try{out.push(await settle(a,{message_id:id,thread_id:s(old.provider_thread_id)},to))}
     catch(e:any){out.push({action_id:a.action_id,status:'unverified',reason:safe(e)})}
    }
+  }
+  // Authenticated readback-only: settle original pending Gmail claims and
+  // return before any fresh composer or sender execution.
+  if(input?.readback_only===true){
+   const verified=out.filter(v=>v.status==='sent').length;
+   return J({ok:true,contract:C,readback_only:true,selected:out.length,verified,results:out,external_outreach_executed:false});
   }
   // A true dry run is read-only: no mutating composer, provider send or message-plan refresh.
   if(input?.dry_run===true){
