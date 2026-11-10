@@ -24,10 +24,10 @@
       "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/portal-runtime-proof-boundary.test.mjs"
+      "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/portal-runtime-proof-boundary.test.mjs"
+      "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs"
     ]
   },
   "prevention_rules": [
