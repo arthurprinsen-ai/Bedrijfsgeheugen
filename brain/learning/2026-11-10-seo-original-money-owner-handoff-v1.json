@@ -31,7 +31,9 @@
     "original_published_blogs_20261106_to_20261108": 3,
     "measured_blog_receipts": 0,
     "learned_blog_receipts": 0,
-    "total_commercial_order_revenue_proof": false
+    "total_commercial_order_revenue_proof": false,
+    "staged_website_pr_5592_exact_live_commit": "fa6c1424061ce2d106c291a081c83f48f689c5f4",
+    "staged_website_only_regression_replay": "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
   },
   "correction": "In the same original SEO resolver, after approved deterministic owner-first selection, write at most three source-fresh and deduped website money-page handoffs to existing powerhouse_content_recommendations; preserve existing accepted/done receipts with insert-ignore-duplicates. Keep blog channel exclusively for distinct intent-gap content. Do not invent a website publisher: original SEO Order Engine must produce exact protected source diff, CI, Netlify public readback, subsequent GSC/GA4 outcomes and Brain receipt before terminal closure. Deploy one evidence-backed canonical Twinfield API title/description alias improvement in same protected source lineage.",
   "prevention": [
@@ -39,16 +41,19 @@
     "Group multiple search queries by the same existing canonical money owner; never create duplicate intent pages or multiple execution demands for the same owner/day.",
     "Never re-open an accepted/done existing recommendation on cron retry.",
     "Never count handoff, forecast, GSC impressions, metadata deployment or blog publication as a paid order, tested uplift or completed learning.",
-    "Keep original publisher/scheduler, existing recommendation table, protected GitHub/Netlify release, exact public URL and conversion readback."
+    "Keep original publisher/scheduler, existing recommendation table, protected GitHub/Netlify release, exact public URL and conversion readback.",
+    "A protected website-only first-phase test must accept source/runtime alias absence as transitional, but must also accept the later exactly paired source+runtime owner alias. Never demand permanent absence after successful original backend handoff; require exact map/projection parity and unique Twinfield canonical."
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs"
+      "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs",
+      "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
     ]
   },
   "tests": [
     "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs",
-    "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+    "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs",
+    "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
   ],
   "release": {
     "protected_required": false,
