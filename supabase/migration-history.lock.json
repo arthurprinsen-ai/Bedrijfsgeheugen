@@ -3280,8 +3280,12 @@
     {
       "version": "20261110120000",
       "name": "powerhouse_outreach_research_wait_handoff_v1"
+    },
+    {
+      "version": "20261110123000",
+      "name": "original_content_handoff_no_aging_gap_v2"
     }
   ],
-  "captured_at": "2026-11-10T08:36:00.000Z",
+  "captured_at": "2026-11-10T09:29:00.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
