@@ -66,4 +66,8 @@ test('source gate stays fail closed for all unrelated actions; held source canno
  assert.match(source,/new\.status:='skipped'/);
  assert.match(source,/'source_gate','FAIL'/);
  assert.match(source,/SECURITY DEFINER/);
+ assert.match(source,/REVOKE ALL ON FUNCTION public\.powerhouse_require_source_for_direct_outreach_v1\(\)/);
+ assert.match(source,/FROM PUBLIC, anon, authenticated/);
+ assert.match(source,/GRANT EXECUTE ON FUNCTION public\.powerhouse_require_source_for_direct_outreach_v1\(\)/);
+ assert.match(source,/TO service_role/);
 });
