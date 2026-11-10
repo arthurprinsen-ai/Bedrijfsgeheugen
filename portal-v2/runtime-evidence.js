@@ -8,6 +8,7 @@
 
 const arr = value => (Array.isArray(value) ? value : []);
 const txt = value => (value == null ? '' : String(value));
+const evidenceHealth = value => value === true ? {status:'ok',healthy:true} : value === false ? {status:'aandacht',healthy:false} : {status:'open',healthy:false};
 const measuredNumber = value => {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
   if (typeof value !== 'string' || !value.trim()) return null;
@@ -173,13 +174,12 @@ export function mapRuntimeProjection(projection) {
   return {
     sources: slice(arr(health.components).map(item => ({
       naam: txt(item.name || item.component || item.platform),
-      status: item.healthy === false ? 'aandacht' : 'ok',
-      healthy: item.healthy !== false,
+      ...evidenceHealth(item.healthy),
       laatst: txt(item.lastSeenAt || item.observedAt)
     })), bijgewerkt, { summary: health.summary || {} }),
 
     datahub: slice(arr(projection.businessGraph?.nodes || projection.businessGraph?.entities).map(node => ({
-      naam: txt(node.label || node.id), status: 'ok', healthy: true
+      naam: txt(node.label || node.id), status: 'open', healthy: false
     })), bijgewerkt, { edges: arr(projection.businessGraph?.edges).length }),
 
     brain: slice(perStap, bijgewerkt, {
@@ -190,8 +190,8 @@ export function mapRuntimeProjection(projection) {
 
     agents: slice(arr(cockpit.activityTimeline).map(item => ({
       naam: txt(item.title || item.subjectId || item.type),
-      status: item.status === 'BLOCKED' ? 'aandacht' : 'ok',
-      healthy: item.status !== 'BLOCKED',
+      status: item.status === 'BLOCKED' || item.status === 'FAILED' ? 'aandacht' : 'open',
+      healthy: false,
       laatst: txt(item.occurredAt)
     })), bijgewerkt),
 
@@ -237,13 +237,15 @@ export function mapRuntimeProjection(projection) {
 
     audit: slice(records.map(record => ({
       naam: txt(record.type || record.subjectId),
-      status: 'ok', healthy: true, laatst: txt(record.occurredAt || record.recordedAt || record.observedAt)
+      status: record.verified === true && arr(record.evidenceIds).length > 0 ? 'ok' : 'open',
+      healthy: record.verified === true && arr(record.evidenceIds).length > 0,
+      laatst: txt(record.occurredAt || record.recordedAt || record.observedAt)
     })), bijgewerkt),
 
     governance: slice(arr(projection.aiGovernance?.systems || projection.aiGovernance).map(item => ({
       naam: txt(item.systemName || item.model),
-      status: item.riskLevel === 'HIGH' ? 'aandacht' : 'ok',
-      healthy: item.riskLevel !== 'HIGH'
+      status: item.riskLevel === 'HIGH' ? 'aandacht' : 'open',
+      healthy: false
     })), bijgewerkt),
 
     decisions: slice(arr(projection.companyDecisions), bijgewerkt),
@@ -256,21 +258,29 @@ export function mapRuntimeProjection(projection) {
   };
 }
 
+// Only the original tenant-bound read model is invalidated. An invalid/expired
+// provider readback must not leave an older, apparently healthy projection live.
+function invalidateRuntime(domainState,validateSession,reason){
+  if(!validateSession())return;
+  const prior=typeof domainState?.get==='function'?domainState.get('portal.runtime'):null;
+  if(prior==null||typeof domainState?.setDerived!=='function')return;
+  domainState.setDerived('portal.runtime',null);
+  if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')
+    globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',state:'UNVERIFIED',reason}}));
+}
+
 export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}), validateSession = () => true } = {}) {
   try {
     const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
     // Server projection is tenant-specific; without an authenticated bearer, do
     // not even request it, and never promote anonymous/demo runtime into state.
-    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||'')))return null;
+    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||''))){invalidateRuntime(domainState,validateSession,'AUTH_MISSING');return null;}
     const response = await fetchImpl('/api/brain-operating-loop', {
       headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
     // If permissions were revoked, discard the previous session's transient view.
-    if(response.status===401||response.status===403){
-      if(validateSession()&&typeof domainState?.setDerived==='function')domainState.setDerived('portal.runtime',null);
-      return null;
-    }
-    if (!response.ok) return null;
+    if(response.status===401||response.status===403){invalidateRuntime(domainState,validateSession,'AUTH_REVOKED');return null;}
+    if (!response.ok){invalidateRuntime(domainState,validateSession,'SOURCE_UNAVAILABLE');return null;}
     const projection = await response.json();
     const runtime = mapRuntimeProjection(projection);
     if (!Object.keys(runtime).length || !validateSession()) return null;
@@ -284,6 +294,9 @@ export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domain
     }
     return runtime;
   } catch {
+    // A transport failure is not a new success receipt. Invalidating only the
+    // same authenticated session prevents yesterday's health appearing green.
+    try{invalidateRuntime(domainState,validateSession,'SOURCE_UNAVAILABLE');}catch{}
     return null;
   }
 }
