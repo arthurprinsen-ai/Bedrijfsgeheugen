@@ -272,6 +272,72 @@
         ],
         "evidence_policy": "measure search, engagement, selfscan progression, qualified lead, proposal, paid order and realized revenue; do not infer demand or revenue from traffic alone"
       }
+    },
+    "sitewide_daily_audit": {
+      "fingerprint": "seo|sitewide|daily-audit-to-conversion-learning|20261110-v1",
+      "scheduler_authority": "existing Powerhouse SEO Order Engine daily automation (id 6ad5b66790548191ad87ca89c4fd00ab); NO second scheduler",
+      "execution_owner": "original Powerhouse SEO Order Engine + BG169 protected website writer",
+      "expected_site_coverage": "every discoverable public indexable production NL/EN canonical, including blog, money, pillar and product pages",
+      "discovery_sources": [
+        "live sitemap.xml",
+        "live robots.txt",
+        "canonical production registry",
+        "live linked/public discovery"
+      ],
+      "mandatory_technical_checks": [
+        "HTTP status and redirect chains",
+        "sitemap/indexability/canonical parity",
+        "robots and noindex",
+        "title/description/H1",
+        "NL/EN hreflang",
+        "structured-data-to-visible-truth",
+        "orphan and broken internal links",
+        "mobile accessibility",
+        "LCP CLS INP when provider-measured",
+        "image performance",
+        "security and privacy guardrails"
+      ],
+      "mandatory_keyword_checks": [
+        "GSC query x landing page x locale with reporting lag",
+        "28 complete days versus previous 28",
+        "keyword intent owner and cannibalization",
+        "current title/description to SERP intent match",
+        "bounded DataForSEO supplemental evidence",
+        "new intent gap only if commercially distinct"
+      ],
+      "mandatory_cro_checks": [
+        "real non-bot visits and consent",
+        "CTA exposure and click",
+        "server-confirmed form success",
+        "qualified lead and meeting",
+        "order and paid provider receipt",
+        "real assigned and matured control/treatment experiment"
+      ],
+      "evidence_readbacks": [
+        "scan timestamp and discovered/scanned/excluded/failed URLs",
+        "origin source and freshness",
+        "hypothesis and route owner",
+        "protected PR and checks",
+        "exact Netlify main deploy SHA",
+        "independent live URL readback",
+        "outcome comparison and rollback decision",
+        "ONE BRAIN ACK and Heartbeat/portal handoff"
+      ],
+      "actions_max_per_day": 3,
+      "single_writer_lease": true,
+      "auto_promote_only_after_protected_checks_and_preview": true,
+      "experiment_policy": "single registered controlled experiment per page/metric; do not claim lift without matured evidence",
+      "on_missing_data": "UNKNOWN not zero, no automatic winner or claimed conversion",
+      "on_incomplete_coverage": "COVERAGE_INCOMPLETE; preserve missing-route obligation and retry through original owner",
+      "terminal_states": [
+        "LIVE_PROVEN",
+        "NO_SAFE_CHANGE_WITH_EVIDENCE",
+        "PENDING_ORIGINAL_OWNER_RETRY",
+        "HUMAN_ONLY_ACTION"
+      ],
+      "no_parallel_executor": true,
+      "no_duplicate_intent_content": true,
+      "never_claim_sales_without_provider_readback": true
     }
   },
   "failure_policy": {
