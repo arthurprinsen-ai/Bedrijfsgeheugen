@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_MERGE_AND_PROVIDER_READBACK_REQUIRED",
+  "fingerprint": "powerhouse|supabase|production-819-history-lock-parity|20261110-v1",
+  "owner": "original GitHub/Supabase protected migration control plane",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Protected PR #5554 deployed original handoff SQL 20261110073500 in production and added its source but the immutable original provider-history lock remained at 818. The next legitimate separate proposed PR #5543 inherited 819 SQL files vs 818 provider-lock rows, causing six existing regression tests to fail.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-10T08:19:43.617348Z",
+    "production_provider_migration_count": 819,
+    "production_unique_versions": 819,
+    "production_max_version": "20261110073500",
+    "production_new_name": "original_content_handoff_receipts_v1",
+    "previous_source_lock_count": 818,
+    "source_file": "supabase/migrations/20261110073500_original_content_handoff_receipts_v1.sql",
+    "related_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5554",
+    "waiting_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5543"
+  },
+  "fix": "Append exactly the single provider-observed applied version and update captured_at in the original supabase/migration-history.lock.json only. Never reapply SQL or treat PR #5543 new candidate migration as applied. Maintain 819 exact local files, provider rows and lock versions.",
+  "prevention": "After each protected production Supabase migration, reconcile the original immutable provider lock by a separate source-only protected change before admitting a subsequent migration PR; no bypass, no silent bulk closure.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "provider_verification": "PRODUCTION_SQL_READBACK",
+    "live_email_send_proven": false,
+    "causal_revenue_uplift_proven": false
+  },
+  "tests": [
+    "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ]
+}
