@@ -27,7 +27,8 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
    // both schema versions; never admit unverified/provider-only account rows.
    const priorUnlinked=o?.quality==='PROVIDER_OBSERVED_UNLINKED';
    const stagedProvider=o?.quality==='PROVIDER_OBSERVED'
-     &&o?.evidence?.post_identity==='PROVIDER_OBSERVED_UNLINKED';
+     &&(o?.evidence?.post_identity==='PROVIDER_OBSERVED_UNLINKED'
+       ||o?.evidence?.identity==='PROVIDER_OBSERVED_UNLINKED_UNTIL_JOIN_VERIFIED');
    if(o?.tenant_id!=='bedrijfsgeheugen'||(!priorUnlinked&&!stagedProvider))continue;
    const meta=o.evidence,metrics=o.metrics;
    // Two independently evidenced formats originate from the same connected Windsor
@@ -43,7 +44,9 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
    // Native Windsor schema since 8 Nov: provider/account/identity in evidence,
    // exact post URL, share ID and metric date in the metric payload itself.
    const stagedNative=stagedProvider&&meta?.provider==='windsor.ai'
-     &&meta?.connector==='linkedin_organic'&&typeof meta?.account==='string'
+     &&meta?.connector==='linkedin_organic'
+     &&typeof (meta?.account_id??meta?.account)==='string'
+     &&(!meta?.account_id||!meta?.account||meta.account_id===meta.account)
      &&typeof meta?.provider_date==='string'
      &&typeof metrics?.post_id==='string'&&typeof metrics?.share_id==='string'
      &&typeof metrics?.share_url==='string'&&metrics?.date===meta.provider_date;
@@ -59,7 +62,7 @@ export function buildVerifiedCompanyMetricSnapshots({observations=[],publication
      ||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(meta.provider_date)))continue;
    const proof=proofByUrn.get(urn),post=byUrn.get(urn);
    if(!proof||!post)continue;
-   const orgId=String(normalized?meta.account_id:meta.account);
+   const orgId=String(normalized?meta.account_id:stagedNative?(meta.account_id??meta.account):meta.account);
    if(!/^[0-9]{5,22}$/.test(orgId)||proof.evidence.author_urn!=='urn:li:organization:'+orgId
      ||proof.evidence.linkedin_readback.author!=='urn:li:organization:'+orgId)continue;
    const dateKey=String(o.metric_date||''),observed=ts(o.source_observed_at),published=ts(post.published_at);
