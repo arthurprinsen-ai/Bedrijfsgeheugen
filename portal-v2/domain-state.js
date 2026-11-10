@@ -171,8 +171,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
  // Same-session retry only: never send a pending input under another tenant.
  const currentPrincipal=()=>{const user=stateClient.currentUser?.();return String(user?.id||user?.email||'').trim();};
- let handoffPrincipal='';
+ let handoffPrincipal='',hydratedPrincipal='';
  function guardHandoffPrincipal(){
+  if(hydratedPrincipal&&hydratedPrincipal!==currentPrincipal())
+   throw new Error('PORTAL_HYDRATED_PRINCIPAL_MISMATCH');
   if(handoffPrincipal&&handoffPrincipal!==currentPrincipal()
      &&(pendingBusinessInputs.size>0||pendingImpacts.length>0))
    throw new Error('PORTAL_PENDING_HANDOFF_PRINCIPAL_MISMATCH');
@@ -182,7 +184,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return Object.freeze({
    pending:inputs>0||impacts>0,inputs,impacts,
    retryable:inputs>0&&Boolean(handoffPrincipal)&&handoffPrincipal===currentPrincipal()
-     &&domain.initialized()&&!stateClient.isDemo?.()
+     &&hydratedPrincipal===currentPrincipal()&&domain.initialized()&&!stateClient.isDemo?.()
      &&['saved','idle','error'].includes(domain.status())
   });
  }
@@ -199,7 +201,14 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return saver(input,{authorization});
  }
  async function performInit(){
+  // The authenticated snapshot must be hydrated under the same identity as the
+  // pending handoff. A different user's cached domain may never be replayed.
+  const initializingPrincipal=currentPrincipal();
+  hydratedPrincipal='';
   let result=await domain.init();
+  if(!stateClient.isDemo?.()&&initializingPrincipal!==currentPrincipal())
+   throw new Error('PORTAL_PRINCIPAL_CHANGED_DURING_HYDRATION');
+  hydratedPrincipal=initializingPrincipal;
   if(browserLegacyLiftPending){
    domain.patch('portal.migration',{browserLegacyLifted:true,browserLegacyLiftVersion:'2026-09-18-v1'});
    result=await domain.flush();
