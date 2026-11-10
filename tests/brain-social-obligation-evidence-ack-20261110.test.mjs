@@ -94,3 +94,24 @@ test('one failed tenant source/ACK does not erase the other original tenant rece
   assert.equal(run.totals.failedTenantScopes,1);
   assert.equal(run.tenants.find(x=>x.tenantId==='bedrijfsgeheugen').obligationReceiptsResolved,1);
 });
+
+test('verified LinkedIn company Windsor provider-linked observation is consumed only with exact author and post proof',()=>{
+  const linked={...snap,source:'windsor-linkedin-company',
+    data_quality:'PROVIDER_OBSERVED_LINKED',
+    source_event_id:'windsor:linkedin-company:'+postId+':2026-09-18',
+    metrics:{impressions:1963,reach:1450,likes:4,comments:0,
+      scope:'company_post_analytics',provider_post_urn:postId,
+      provider_organization_urn:'urn:li:organization:18234216',
+      independent_proof:'EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT',
+      source_quality_before_link:'PROVIDER_OBSERVED'}};
+  assert.equal(verify({snapshots:[linked]})?.status,'MEASUREMENT_VERIFIED');
+  assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,provider_post_urn:'other'}}]}),null);
+  assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,provider_organization_urn:'other'}}]}),null);
+  assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,independent_proof:'UNVERIFIED'}}]}),null);
+  assert.equal(verify({snapshots:[{...linked,source_event_id:'windsor:linkedin-company:other:2026-09-18'}]}),null);
+  assert.equal(verify({post:{...post,external_post_id:'other'}}),null);
+  assert.equal(verify({snapshots:[{...linked,source:'composio-linkedin'}]}),null);
+  assert.equal(verify({snapshots:[{...linked,data_quality:'OBSERVED_PARTIAL_SCOPE'}]}),null);
+  assert.equal(verify({snapshots:[{...linked,observed_at:'2026-09-30T10:58:21.308Z'}]}),null);
+  assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,impressions:123}}]}),null);
+});

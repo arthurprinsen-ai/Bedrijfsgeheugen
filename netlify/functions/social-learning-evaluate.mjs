@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {isSourceQualifiedSocialSnapshot} from '../../supabase/functions/_shared/social-learning-window-ack.mjs';
 import { createSocialLearningStore } from './_social-learning-store.mjs';
 import { metricVector, buildCohort, selectSnapshotForWindow, selectOptimizationMetric, transitionLearningState } from './_social-learning-model.mjs';
 
@@ -78,7 +79,7 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
     // cannot become an exact 24/48/72-hour experiment observation even if
     // their retrieval timestamp happens to fall inside the window.
     const sourceQualified=(Array.isArray(snapshots)?snapshots:[])
-      .filter(x=>['OBSERVED','PROVIDER_OBSERVED'].includes(x?.dataQuality));
+      .filter(x=>isSourceQualifiedSocialSnapshot(x,post.externalPostId));
     const snapshot=selectSnapshotForWindow({snapshots:sourceQualified,publishedAt:post.publishedAt,windowHours,toleranceHours:Number(config.windowToleranceHours??6)});
     if(!snapshot){
       missedObligations++;

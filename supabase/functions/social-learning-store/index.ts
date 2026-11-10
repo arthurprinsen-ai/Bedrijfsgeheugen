@@ -6,7 +6,7 @@ const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(value:string){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const tenantOf=(b:any)=>String(b?.tenantId||b?.post?.tenantId||b?.snapshot?.tenantId||b?.evaluation?.tenantId||b?.experiment?.tenantId||b?.learning?.tenantId||b?.application?.tenantId||b?.decision?.tenantId||b?.projection?.tenantId||b?.obligation?.tenantId||b?.data?.tenantId||'canonical');
-const camelPost=(p:any)=>({postId:p.post_id,tenantId:p.tenant_id,platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,publishedAt:p.published_at,format:p.format,funnelStage:p.funnel_stage,contentPillar:p.content_pillar,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type,learningStatus:p.learning_status,learningId:p.learning_id});
+const camelPost=(p:any)=>({postId:p.post_id,tenantId:p.tenant_id,externalPostId:p.external_post_id,platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,publishedAt:p.published_at,format:p.format,funnelStage:p.funnel_stage,contentPillar:p.content_pillar,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type,learningStatus:p.learning_status,learningId:p.learning_id});
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -50,7 +50,7 @@ Deno.serve(async(req:Request)=>{
       // synthetic timestamps are introduced.
       const since=new Date(now.getTime()-100*86400000).toISOString();
       const {data:observations,error:snapshotError}=await db.from('social_metric_snapshots')
-        .select('post_id,observed_at,data_quality').eq('tenant_id',tenantId)
+        .select('post_id,observed_at,data_quality,source,source_event_id,metrics').eq('tenant_id',tenantId)
         .gte('observed_at',since).order('observed_at',{ascending:false}).limit(900);
       if(snapshotError)throw snapshotError;
       // Fail closed on read truncation. The evaluator falls back to existing
