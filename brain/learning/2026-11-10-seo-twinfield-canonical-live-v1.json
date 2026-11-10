@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "fingerprint": "seo|twinfield-api|existing-canonical-title-description-localized-v1",
+  "parent_issue": 4198,
+  "owner": "existing SEO Order Engine + existing protected GitHub/Netlify website publisher",
+  "compiler": {
+    "failure_class": "SEO_VERIFIED_INTENT_UNDERCAPTURED_EXISTING_MONEY_PAGE",
+    "scope": "SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing Twinfield API commercial search intent belongs to /twinfield-koppeling; unqualified generic Twinfield and duplicate blog would cannibalize. Source GSC and DataForSEO indicate low rank for existing exact Twinfield integration queries. Improve existing owner's SERP message and canonical alias instead of creating another URL.",
+  "observed": {
+    "asof_utc": "2026-11-10T17:29:00Z",
+    "search_source": "Google Search Console and DataForSEO cache",
+    "existing_canonical": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+    "organic_rank": "Observed mapped Twinfield searches mostly positions 90+",
+    "qualified_leads_or_paid_orders_proven": false
+  },
+  "correction": "Add exact commercial Twinfield API alias to original canonical SEO map and NL locale map, update only existing page title/meta SEO messaging, keep original canonical and Frisse Blik destination, translate exactly via existing checked-in static cache; use original protected GitHub/Netlify publisher, never second scheduler, duplicate blog, or direct deployment.",
+  "prevention": [
+    "No website publish until exact-head Required+CodeQL and Netlify public deploy metadata/canonical/CTA readback.",
+    "No fake search rank, conversion or experiment gain claims from a title/description change.",
+    "A fixed webpage is separate from deferred backend original daily SEO action consumer, which remains EVIDENCE_DUE until its own source/consumer ACK is released."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
+  ],
+  "release": {
+    "required": false,
+    "codeql": false,
+    "merged": false,
+    "netlify_exact_sha": false,
+    "public_readback": false,
+    "gsc_conversion_outcomes_proven": false
+  },
+  "no_false_green": true,
+  "no_second_executor": true
+}
