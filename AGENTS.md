@@ -1635,3 +1635,5 @@ Protected source delivery admission for this recovery lane requires a single exa
 immutable branch-origin `Base-SHA`, exact `Change-Scope` and `Scope-Budget`.
 When admission rejects missing metadata, correct the SAME original PR body and
 trigger NEW exact-head checks without bypassing or relabeling historical failed runs.
+
+Native Supabase version parity (2026-11-10): A successfully applied migration can be stamped by the original management provider with a different authoritative version from the Git proposal timestamp. Always compare original provider `supabase_migrations.schema_migrations` to exact source `supabase/migrations` identities and `supabase/migration-history.lock.json` after successful apply. The actual native provider version/name plus exact SQL bytes win; update source filename and original provider-backed lock in a separate protected correction, never manipulate historical production ledger or replay applied DDL. Do not say source parity-green before this proof. The original owner and #4198 stay responsible; no second runner/cron or security bypass.
