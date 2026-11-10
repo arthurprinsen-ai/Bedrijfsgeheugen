@@ -22,7 +22,7 @@ test('each canonical date/channel handoff is its own durable receiver obligation
  assert.match(sql,/ON CONFLICT\(obligation_type,capability_id,business_entity,business_period,business_timezone\)/);
  assert.match(sql,/WHERE public\.brain_obligations\.owner IS DISTINCT FROM excluded\.owner/);
  assert.match(sql,/CASE WHEN v_reuse THEN 'FULFILLED' ELSE 'OPEN' END/);
- assert.match(sql,/r\.publication_date BETWEEN v_day-8 AND v_day/);
+ assert.match(sql,/publication_date BETWEEN v_day-8 AND v_day/);
 });
 
 test('no one cron success, generic state or fake metrics can mark a downstream recipient accepted',()=>{
