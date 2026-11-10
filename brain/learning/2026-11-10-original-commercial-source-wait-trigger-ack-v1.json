@@ -1,0 +1,66 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "fingerprint": "powerhouse|commercial|source-wait-48h-trigger-skipped-guard-conflict|20261110-v1",
+  "failure_class": "ORIGINAL_COMMERCIAL_RESEARCH_WAIT_TRIGGER_HANDOFF_CONFLICT",
+  "root_cause": "The original commercial closure watchdog moves a SOURCE_SPECIFIC_EVIDENCE_REQUIRED autonomous_email into WAIT_FOR_VERIFIED_SOURCE for up to 48 hours. The unchanged original email suppression trigger interprets this legitimate non-sending research WAIT as a Gmail provider claim and replaces status WAITING with SKIPPED and execution_gate.reason NO_PROSPECT_SPECIFIC_NOVEL_COPY_PROOF. Independently, original outbound quality and source gates reject missing pre-send message quality/source, although the source wait is by definition non-sending. This loses ownership/retry for the same 48h action despite a linked research_enrichment WAITING receipt.",
+  "evidence": {
+    "observed_at_utc": "2026-11-10T12:25:52Z",
+    "original_action_id": "b38b4645-e1d7-467a-af5f-d982a1ec4f5b",
+    "original_research_dedupe": "relationship-research:outreach-source:b38b4645-e1d7-467a-af5f-d982a1ec4f5b",
+    "research_state": "waiting with due_at 2026-11-11T06:38:11.843Z; reason NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH",
+    "watchdog_result": "2026-11-10T12:25:39.722Z: original_outreach_moved_to_bounded_source_wait=1; same original row readback status SKIPPED despite commercial_closure.decision WAIT_FOR_VERIFIED_SOURCE, deadline 2026-11-12T06:24:00.035189Z and source_gate reason NO_PROSPECT_SPECIFIC_NOVEL_COPY_PROOF; no provider ID",
+    "parser_source": "pg_get_functiondef of original powerhouse_email_suppression_guard_v1(), powerhouse_assert_outbound_message_quality_v1(), powerhouse_require_source_for_direct_outreach_v1()",
+    "security_boundary": "No sent message for this action. Restore original research wait, not delivery or customer consent; never send on research claim or override suppressions.",
+    "historical_replay": "tests/brain-original-commercial-source-wait-ack-20261110.test.mjs"
+  },
+  "repair": "Replace only original three triggers using native migration. The only scoped exception is an existing same-action 48h WAIT_FOR_VERIFIED_SOURCE, matching exact research dedupe, person and company, no prior provider send/ACK/readback/ambiguity. Suppressions run BEFORE exception; original quality guard still blocks provider claim and DONE; original source gate labels PENDING_VERIFIED_SOURCE and preserves send_forbidden=true. Reconcile the exact original skipped action to WAITING only if all required safe inputs remain unchanged and before the original 48h deadline.",
+  "prevention": [
+    "A non-sending research/verification WAIT is a separate handoff from a provider WAITING/send claim. Triggers must not silently conflate the two.",
+    "The original source-wait transition must be verified after all relevant BEFORE UPDATE triggers; compare requested transition and final stored status and record original owner/ack, not SQL rows-affected alone.",
+    "Use exact same-action and same-person/company research receipt, strict deadline, no provider side effects, suppression check and no-send conditions for safe research handoff.",
+    "Never bypass recipient consent, suppressed contacts, message quality or independent provider readback for actual sending.",
+    "Test original supression, quality and source gates together; include previous unsafe variants and first natural research→composer→sender/readback owner receipt."
+  ],
+  "owner": "Original Powerhouse commercial closure watchdog, same original research/composer/Gmail executor, ONE BRAIN and Heartbeat",
+  "status": "PENDING_PROTECTED_CI_NATIVE_MIGRATION_SAME_ACTION_READBACK",
+  "compiler": {
+    "failure_class": "ORIGINAL_COMMERCIAL_RESEARCH_WAIT_TRIGGER_HANDOFF_CONFLICT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-commercial-source-wait-ack-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-commercial-source-wait-ack-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-commercial-source-wait-ack-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-commercial-source-wait-ack-20261110.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261110134500_original_source_wait_is_not_send_v1.sql",
+    "tests/brain-original-commercial-source-wait-ack-20261110.test.mjs",
+    "brain/learning/2026-11-10-original-commercial-source-wait-trigger-ack-v1.json",
+    "docs/changes/2026-11-10-original-commercial-source-wait-trigger-ack.md",
+    "docs/development-ledger-events/2026-11-10-original-commercial-source-wait-trigger-ack.md",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "production_proof_to_complete": [
+    "Required and CodeQL green exact PR head, Supabase Hosted Preview SQL and security checks pass, protected merge and canonical migration readback.",
+    "Read back all three original trigger function definitions from live PostgreSQL without disabling triggers.",
+    "Only for exact unsent original action b38... with valid research and no suppression, safely return SKIPPED to original WAITING/source-pending; independently read back status, send_forbidden, deadline, owner and research due.",
+    "Next original research execution either produces fresh valid evidence and composer evaluates SAME action, or reaches evidenced safe no-send terminal result by 48h. No synthetic provider success.",
+    "Original Heartbeat/BRAIN acknowledges source wait and retains observed historical scorecard. No second scheduler, sender or experimental claims."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
