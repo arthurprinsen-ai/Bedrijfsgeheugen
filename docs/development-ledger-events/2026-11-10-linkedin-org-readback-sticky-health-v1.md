@@ -14,3 +14,5 @@
 - Truth: source candidate only until independent production/checkout proves deployment. A CODEQL or source test pass alone does not prove provider authorization or a new publication. No added cron, sender or Brain.
 
 - The original PR machine metadata was subsequently completed with EXACT six-file Change-Scope, Scope-Budget 6, immutable Base-SHA and Candidate-Type recovery. This non-behavioral ledger update triggers NEW exact-head CI rather than rerunning a stale opening-event payload. Every earlier failed admission remains historical.
+
+- The next original admission failure was precisely `unclassified delivery path: tests/provider-readback-sticky-health-20261110.test.mjs`; source was NOT the cause. Moved the SAME four regression checks to the already classified original backend `tests/brain-` prefix, updated Brain/AGENTS/ledger refs and immutable six-file PR metadata. No relaxation of classification or guard. This append is the fresh-head natural synchronize trigger; prior failures remain intact.
