@@ -11,6 +11,7 @@ DECLARE
   v_day date:=(p_now at time zone 'Europe/Amsterdam')::date;
   v_pub boolean; v_metric boolean; v_analysis boolean; v_reuse boolean;
   v_stage text; v_owner text; v_event text; v_eval text; v_payload jsonb;
+  v_learning_id text; v_eval_at timestamptz;
   v_pub_due timestamptz; v_metric_due timestamptz; v_due timestamptz;
   v_count integer:=0; v_open integer:=0; v_overdue integer:=0;
   v_email_due integer:=0; v_learning_overdue integer:=0;
@@ -23,6 +24,7 @@ BEGIN
     ORDER BY publication_date,channel
   LOOP
     v_count:=v_count+1; v_event:=null; v_eval:=null;
+    v_learning_id:=null; v_eval_at:=null;
     v_pub_due:=(r.publication_date::timestamp+interval '12 hours')
        AT TIME ZONE 'Europe/Amsterdam';
     v_pub:=coalesce(r.live_proven_at IS NOT NULL
@@ -57,7 +59,8 @@ BEGIN
       ORDER BY s.observed_at DESC LIMIT 1;
       v_metric:=v_event IS NOT NULL;
       IF v_metric THEN
-        SELECT e.evaluation_id INTO v_eval
+        SELECT e.evaluation_id,a.learning_id,e.observed_at
+          INTO v_eval,v_learning_id,v_eval_at
         FROM public.social_learning_applications a
         JOIN public.social_learning_evaluations e
           ON e.tenant_id=a.tenant_id AND e.post_id=a.post_id
@@ -92,20 +95,34 @@ BEGIN
         v_analysis:=v_eval IS NOT NULL;
       END IF;
     END IF;
+    -- A later post must consume the exact ORIGINAL learning ID, and must
+    -- have been assigned after this independently observed BRAIN evaluation.
+    -- The later provider author and source/analysis ACK remain necessary.
     IF v_analysis AND r.learned_at IS NOT NULL
        AND r.evidence->>'learning_applied_verified'='true'
+       AND nullif(v_learning_id,'') IS NOT NULL
+       AND v_eval_at IS NOT NULL
        AND nullif(r.evidence->>'learning_application_external_id','') IS NOT NULL THEN
       SELECT EXISTS (
-        SELECT 1 FROM public.content_publication_obligations n
-        WHERE n.tenant_id='canonical'
-          AND n.external_id=r.evidence->>'learning_application_external_id'
+        SELECT 1
+        FROM public.social_learning_applications a2
+        JOIN public.social_posts p2
+          ON p2.tenant_id=a2.tenant_id AND p2.post_id=a2.post_id
+        JOIN public.content_publication_obligations n
+          ON n.tenant_id='canonical'
+         AND n.channel='linkedin_company'
+         AND n.external_id=p2.external_post_id
+        WHERE a2.tenant_id IN ('canonical','bedrijfsgeheugen')
+          AND a2.learning_id=v_learning_id
+          AND a2.application_role='ORIGINAL_EXPERIMENT_VARIANT_PROVIDER_PROVEN'
+          AND a2.post_id<>'linkedin-company:'||r.external_id
+          AND a2.applied_at>v_eval_at
+          AND p2.external_post_id=r.evidence->>'learning_application_external_id'
           AND n.external_id<>r.external_id
-          AND n.live_proven_at>r.live_proven_at
+          AND n.live_proven_at>v_eval_at
           AND n.live_proven_at<=p_now
           AND n.status IN('LIVE_PROVEN','MEASURED','LEARNED')
           AND n.evidence->>'provider_truth_verified'='true'
-          -- Consumer must independently ACK the source provider object and
-          -- original BRAIN evaluation. A producer's assertion alone is not proof.
           AND n.evidence->>'learning_source_external_id'=r.external_id
           AND n.evidence->>'learning_source_evaluation_id'=v_eval
       ) INTO v_reuse;
