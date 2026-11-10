@@ -277,7 +277,12 @@ export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domain
     const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
     // Server projection is tenant-specific; without an authenticated bearer, do
     // not even request it, and never promote anonymous/demo runtime into state.
-    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||''))){invalidateRuntime(domainState,validateSession,'AUTH_MISSING');return null;}
+    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||''))){
+      // Anonymous/demo sessions cannot publish or invalidate a runtime overlay.
+      // A real initialized domain exposes get() and can discard its previous view.
+      if(typeof domainState?.get==='function')invalidateRuntime(domainState,validateSession,'AUTH_MISSING');
+      return null;
+    }
     const response = await fetchImpl('/api/brain-operating-loop', {
       headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
