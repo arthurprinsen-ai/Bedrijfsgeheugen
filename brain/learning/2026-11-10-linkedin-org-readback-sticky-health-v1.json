@@ -1,0 +1,51 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-10",
+  "fingerprint": "powerhouse|social-metrics|linkedin-org-analytics-permission-403|20261022-v1",
+  "obligation_id": "powerhouse|social-metrics|linkedin-org-analytics-permission-403|20261022-v1",
+  "compiler": {
+    "failure_class": "LINKEDIN_ORG_READBACK_PERMISSION_DENIAL_SILENT_24H_FALSE_GREEN",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "root_cause": "Original provider-health view treated all provider error events as only a 24-hour rolling count. An actual denied organization analytics read scope could disappear from that count even without the original provider's read permission recovering. Unrelated fresh LinkedIn activity then made provider_state falsely healthy.",
+  "prevention": "Original existing provider health view retains exact denied source/organization/channel/readback target until later independent successful HTTP200 same-target provider readback and immutable provider source event. Keep security_invoker, fail closed, no new scheduler or provider send.",
+  "evidence": {
+    "verified_date": "2026-11-10",
+    "provider": "LinkedIn",
+    "organization_urn": "urn:li:organization:18234216",
+    "target_post_urn": "urn:li:share:7525815714499170304",
+    "provider_log": "log_RHJ0G5Il1Gxp",
+    "two_marketing_accounts_status": 401,
+    "organic_org_stats_status": 403,
+    "canonical_runtime_event": "741d626d-65fb-4637-9452-e3fa943bb56e",
+    "read_only_sql_current": {
+      "provider_state": "degraded",
+      "unresolved_denials": 1
+    },
+    "read_only_sql_simulated_plus_2_days": {
+      "provider_state": "degraded",
+      "events_24h": 0,
+      "errors_24h": 0
+    },
+    "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/provider-readback-sticky-health-20261110.test.mjs"
+    ],
+    "canonical_sql": "supabase/migrations/20261110153331_linkedin_org_readback_sticky_provider_health_v1.sql",
+    "independent_production_dry_run": true
+  },
+  "status": "OBSERVED",
+  "humanDocs": "docs/changes/2026-11-10-linkedin-org-readback-sticky-health-v1.md",
+  "production_readback": {
+    "schema_applied": false,
+    "verified": false,
+    "provider_permission_recovered": false,
+    "original_organic_readback_restored": false
+  },
+  "commercial_lift_verified": false
+}
