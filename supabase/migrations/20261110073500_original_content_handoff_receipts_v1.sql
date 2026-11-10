@@ -25,14 +25,14 @@ BEGIN
     v_count:=v_count+1; v_event:=null; v_eval:=null;
     v_pub_due:=(r.publication_date::timestamp+interval '12 hours')
        AT TIME ZONE 'Europe/Amsterdam';
-    v_pub:=r.live_proven_at IS NOT NULL
+    v_pub:=coalesce(r.live_proven_at IS NOT NULL
        AND nullif(r.external_id,'') IS NOT NULL
        AND coalesce(r.canonical_url,'') LIKE 'https://%'
        AND r.status IN ('LIVE_PROVEN','MEASURED','LEARNED')
        AND (CASE WHEN r.channel='blog'
           THEN r.evidence->>'public_http_status'='200'
              AND nullif(r.evidence->>'netlify_deploy_id','') IS NOT NULL
-          ELSE r.evidence->>'provider_truth_verified'='true' END);
+          ELSE r.evidence->>'provider_truth_verified'='true' END),false);
     v_metric_due:=coalesce(r.live_proven_at,v_pub_due)+
       CASE WHEN r.channel='blog' THEN interval '8 days'
            ELSE interval '78 hours' END;
@@ -72,9 +72,9 @@ BEGIN
         v_analysis:=v_eval IS NOT NULL;
       END IF;
     ELSIF v_pub AND r.channel='blog' THEN
-      v_metric:=r.measured_at IS NOT NULL
+      v_metric:=coalesce(r.measured_at IS NOT NULL
         AND r.metrics ? 'window_start' AND r.metrics ? 'window_end'
-        AND r.metrics->>'data_quality' NOT IN('UNVERIFIED','INSUFFICIENT_DATA');
+        AND r.metrics->>'data_quality' NOT IN('UNVERIFIED','INSUFFICIENT_DATA'),false);
       IF v_metric THEN
         v_event:='ga4:'||r.metrics->>'window_start'||':'||r.metrics->>'window_end';
         v_eval:=nullif(r.evidence->>'analysis_receipt_id','');
@@ -83,9 +83,9 @@ BEGIN
     ELSIF v_pub THEN
       -- Other social lanes must provide their own independently linked
       -- measurement and analysis; cron success is not a consumer receipt.
-      v_metric:=r.measured_at IS NOT NULL
+      v_metric:=coalesce(r.measured_at IS NOT NULL
         AND nullif(r.evidence->>'measurement_source_event_id','') IS NOT NULL
-        AND r.evidence->>'measurement_provider_verified'='true';
+        AND r.evidence->>'measurement_provider_verified'='true',false);
       IF v_metric THEN
         v_event:=r.evidence->>'measurement_source_event_id';
         v_eval:=nullif(r.evidence->>'analysis_receipt_id','');
