@@ -80,3 +80,9 @@ left join unresolved_capability_denials d
 -- Preserve the existing least-privilege view semantics; no RLS bypass.
 alter view public.powerhouse_provider_health_v1
 set (security_invoker = true);
+
+-- Preserve live production's service-role-only ACL: independently verified
+-- anon_select=false, authenticated_select=false, service_select=true.
+-- Explicit in the same migration to pass the ORIGINAL security source gate.
+revoke all on table public.powerhouse_provider_health_v1
+from public, anon, authenticated;
