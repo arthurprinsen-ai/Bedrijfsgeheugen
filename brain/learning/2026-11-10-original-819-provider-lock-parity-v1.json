@@ -38,5 +38,32 @@
       "tests/brain-cro-production-migration-lock-20261029.test.mjs",
       "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention": "The original migration ledger must be brought back into exact independently provider-proven version/name parity after a protected native GitOps deployment, before admitting the next original SQL candidate; never predeclare a proposed migration applied or bypass preview.",
+  "evidence": {
+    "production_readback": {
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "observed_at": "2026-11-10T08:19:43.652162Z",
+      "production_unique_migrations": 819,
+      "previous_source_lock": 818,
+      "last_record": {
+        "version": "20261110073500",
+        "name": "original_content_handoff_receipts_v1"
+      },
+      "github_protected_main_sha_at_analysis": "0089537552af9c9e5df85692698cca5418afb6b9"
+    },
+    "historical_replay_tests": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "original_owner": "protected GitHub native Supabase GitOps",
+    "safety": "No provider SQL apply, no sender, no parallel executor"
   }
 }
