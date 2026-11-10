@@ -60,6 +60,7 @@ test('source rule: changed runtime, partial canonical ACK and identity boundary 
   const source=await readFile(new URL('../page-shell.js',import.meta.url),'utf8');
   assert.match(source,/bg:runtime-evidence/);
   assert.match(source,/bg:portal-identity-boundary/);
+  assert.match(source,/root\.querySelector\('#pvNative'\)\?\.replaceChildren\(\)/);
   assert.match(source,/const confirmed=\[\.\.\.impacts\]/);
   assert.match(source,/scheduleVisiblePageRebuild\(root\)/);
   assert.match(source,/canRebuildVisiblePortalPage\(options\(\)\)/);

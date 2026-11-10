@@ -13,3 +13,6 @@
 
 ## Status and proof
 This is source-level remediation only until protected Required + CodeQL, source-exact Netlify production deploy and independent authenticated tenant A/B input→Brain→Powerhouse→Heartbeat→advice→outcome→learning acceptance. Browser restart durability and full external connector writebacks remain EVIDENCE_DUE under original #4215. A successful source test is not verified business outcome.
+
+## Identity-boundary private DOM disposal
+The original source already closed the page shell on login identity change; a concurrent source audit showed closing alone keeps hidden private widgets in the DOM. The existing boundary handler now empties the native body, impact panel and supplemental content immediately after disposal. This is not the same as proving tenant RLS at the backend; exact authenticated two-user canaries remain EVIDENCE_DUE.

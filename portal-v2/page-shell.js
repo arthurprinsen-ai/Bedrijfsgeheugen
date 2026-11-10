@@ -486,7 +486,22 @@ export function enhancePortalShell(){
     };
     // The existing app emits this synchronously when the authenticated subject
     // changes. Hide the old tenant's mounted content BEFORE the next hydration.
-    document.addEventListener('bg:portal-identity-boundary',()=>closePortalPage());
+    document.addEventListener('bg:portal-identity-boundary',()=>{
+      // Closing hides the panel, but a tenant switch must also revoke its
+      // old private DOM: hidden widgets can otherwise retain prior answers.
+      const root=document.getElementById('portalView');
+      if(!root)return;
+      closePortalPage();
+      root.dataset.pageId='';
+      root.querySelector('#pvNative')?.replaceChildren();
+      const impact=root.querySelector('#pvImpactMap');
+      if(impact){impact.replaceChildren();impact.hidden=true;}
+      const status=root.querySelector('#pvStatus');
+      if(status)status.textContent='';
+      const body=root.querySelector('.pvbody');
+      if(body)for(const node of [...body.children])
+        if(node.id!=='pvNative'&&node.id!=='pvImpactMap'&&!node.classList.contains('pvstatus'))node.remove();
+    });
     globalThis.addEventListener?.('bg:portal-impact',event=>{
       const impact=event.detail||{};
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact}));
