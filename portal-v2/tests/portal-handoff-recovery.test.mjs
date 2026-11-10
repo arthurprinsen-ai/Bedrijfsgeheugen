@@ -42,6 +42,27 @@ test('an incomplete canonical ACK is retried by the existing refresh and preserv
  assert.equal(domain.pendingHandoffs().pending,false);
 });
 
+test('partial multi-page Brain ACK only retries the failed section and retains unconfirmed impact',async()=>{
+ let metricAttempts=0;
+ const {domain,inputs}=harness(async input=>{
+  if(input.modelId==='business-metrics'&&++metricAttempts===1)return {stored:false};
+  return {stored:true};
+ });
+ await domain.init();
+ domain.set('portal.profile.employees',12);
+ domain.set('portal.metrics.revenue',600);
+ await assert.rejects(domain.flush(),/CANONICAL_BUSINESS_INPUT_ACK_REQUIRED/);
+ assert.deepEqual(domain.pendingHandoffs(),{pending:true,inputs:1,impacts:1,retryable:true});
+ assert.deepEqual(inputs.map(x=>x.input.modelId),['company-profile','business-metrics']);
+ const result=await domain.refresh();
+ assert.equal(result.applied,true);
+ assert.deepEqual(inputs.map(x=>x.input.modelId),['company-profile','business-metrics','business-metrics'],
+  'originally confirmed CompanyProfile must never be resent after BusinessMetrics fails');
+ assert.equal(inputs[2].input.metadata.causalImpacts.length,1);
+ assert.equal(inputs[2].input.metadata.causalImpacts[0].path,'portal.metrics.revenue');
+ assert.equal(domain.pendingHandoffs().pending,false);
+});
+
 test('principal mismatch blocks both recovery and new writes to prevent cross-tenant replay',async()=>{
  let calls=0;
  const {domain,inputs,switchPrincipal}=harness(async()=>({stored:++calls>1}));
