@@ -1,0 +1,67 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_CI_AND_DEPLOY_READBACK_DUE",
+  "fingerprint": "powerhouse|social-learning|native-windsor-stage-consumer-handoff|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing bg-social-metrics-sync #177; original minute39 ONE BRAIN learning owner #171",
+  "failure_class": "NATIVE_PROVIDER_STAGE_SCHEMA_DRIFT",
+  "root_cause": "Staged original Windsor linkedin_organic source records use evidence.identity='PROVIDER_OBSERVED_UNLINKED_UNTIL_JOIN_VERIFIED' and evidence.account_id=18234216; existing canonical bridge matched only evidence.post_identity='PROVIDER_OBSERVED_UNLINKED' and evidence.account. Healthy transport HTTP did not imply new native source metric consumer ACK.",
+  "evidence": {
+    "provider": "Windsor.ai linkedin_organic account 18234216",
+    "observation_at": "2026-11-10T09:30:55Z",
+    "source_table": "public.powerhouse_growth_source_daily_v1",
+    "source_exact_urns": [
+      "urn:li:share:7524367540987301888",
+      "urn:li:share:7524731986603798528",
+      "urn:li:share:7525090976026230784",
+      "urn:li:share:7525453327631917056"
+    ],
+    "impressions": [
+      199,
+      30,
+      3,
+      1
+    ],
+    "original_native_sync_request_id": 26702,
+    "original_sync_http_status": 200,
+    "post_original_snapshot_readback_count": 4,
+    "original_learning_backfill_first_run_mutations": 12,
+    "original_learning_backfill_second_run_mutations": 0,
+    "causal_uplift_proven": false,
+    "backlog_open_social_learning_obligations": 189
+  },
+  "repair": "Accept both the previously tested and new native schema in the ORIGINAL bridge, with exact account/author/post/date readback required; preserve single original cron and publication executor, no fallback.",
+  "regression_test": "tests/brain-windsor-live-schema-handoff-20261110.test.mjs",
+  "production_proof_to_complete": [
+    "protected Required, CodeQL and existing applicable deployment checks",
+    "merge through protected canonical process",
+    "live Edge function bundle contains corrected original bridge",
+    "next organic native source row accepted without manual metadata patch",
+    "original BRAIN evaluation and next independently proven post reuse with attributable outcome"
+  ],
+  "independent_provider_readback_required": true,
+  "do_not_falsify_commercial_or_causal_success": true,
+  "compiler": {
+    "failure_class": "PROVIDER_OBSERVATION_SCHEMA_DRIFT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-windsor-live-schema-handoff-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-windsor-live-schema-handoff-20261110.test.mjs"
+  ],
+  "prevention": [
+    "Replay exact recent connected Windsor native provider stage identity and account_id shapes in original company source-to-consumer regression test on protected CI.",
+    "Check the independent exact provider post URN, organization author readback, post timestamp and genuine numeric metrics; reject source/account conflicts without fallback inference.",
+    "Treat an HTTP 200/healthy social sync as only transport truth; compare the source event_id against actual social_metric_snapshots and original application/evaluation consumer receipts.",
+    "Keep ONE BRAIN original #171 and original social sync #177 on existing scheduler only; never duplicate provider publication or mark uncontrolled descriptive impressions as causal lift."
+  ]
+}
