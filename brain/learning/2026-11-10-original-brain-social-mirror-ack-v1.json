@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "fingerprint": "powerhouse|social-learning|source-ack-to-original-brain-mirror-closure-gap|20261110-v1",
+  "parent_issue": 4198,
+  "owner": "existing authenticated social-learning-store + existing original hourly social-learning-evaluate",
+  "compiler": {
+    "failure_class": "SOCIAL_BRAIN_MIRROR_RECEIPT_NOT_CONSUMED",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "12 original 24/48/72-hour social_learning_obligations were independently MEASUREMENT_VERIFIED with immutable provider and evaluation evidence, while their exact original brain_obligations CONTENT_HANDOFF mirrors stayed OPEN in OVERDUE_INDEPENDENT_LEARNING_EVIDENCE; original scanner only reoffers OPEN source obligations, not acknowledged source proof.",
+  "evidence": {
+    "original_source_verified_windows": 12,
+    "original_brain_mirrors_previously_open": 12,
+    "original_brain_mirrors_cas_resolved": 12,
+    "original_edge_version_before": 476,
+    "netlify_main_sha": "7f1bafbf7fd4e77c37a726187dbeaa477f2b7bdf",
+    "causal_effect_proven": false,
+    "parent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5573"
+  },
+  "correction": "Original authenticated hourly Edge action reconciles previously MEASUREMENT_VERIFIED original window with exact original evaluation and numeric source proof again, then CAS-acknowledges existing original BRAIN child mirror with same original obligation ID, post identity, tenant, owner and immutable version. Single original function; no new scheduler or sender.",
+  "prevention": [
+    "Require both source measurement ACK and original Brain consumer ACK for same immutable provider source_event_id and exact post/evaluation in original hourly owner.",
+    "Keep child BRAIN mirror unresolved if source event missing, partial, wrong-tenant, wrong provider, wrong timing, or multiple candidate child mirrors.",
+    "Causal improvement, next-post publication, leads, revenue, and commercial success require distinct independent evidence; do not infer from measurement ACK.",
+    "Do not alter exclusive original publication executor, token, permissions, or schedule; protected CI and Edge deployed source readback mandatory."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-original-brain-mirror-ack-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-social-original-brain-mirror-ack-20261110.test.mjs"
+  ],
+  "release": {
+    "protected_required": false,
+    "codeql": false,
+    "merged": false,
+    "edge_readback": false,
+    "natural_hourly_ack": false
+  },
+  "no_second_executor": true,
+  "no_false_green": true
+}

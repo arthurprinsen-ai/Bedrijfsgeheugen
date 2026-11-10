@@ -154,6 +154,47 @@ async function generate(db:any,anthropicKey:string,anthropicModel:string,action:
   const generated=await openaiGenerate(anthropicKey,anthropicModel,system+' '+CONTENT_FEEDBACK_GUIDE+(emailCouncil?' '+emailCouncil.instruction+' '+emailCouncil.editorial:''),allowed);
   return {output:extractJson(generated.text),provider:generated.provider,model:generated.model,primary_error:null};
 }
+// Reuse ONLY the canonical message-plan view; legacy SQL definitions of that
+// view are already deployed in production but unavailable in hosted preview.
+// This is a read-only recovery path inside the ORIGINAL composer, not a
+// second queue, sender or scheduler. The independent source verification below
+// is required before any held item reaches generation.
+async function originalVerifiedSourceHeldCandidates(db:any,limit:number,channels:string[],actionIds:string[],now:string){
+  if(channels.length&&!channels.some(c=>['email','e-mail'].includes(c)))return [];
+  let q=db.from('powerhouse_commercial_message_plan_v1').select('*')
+    .eq('status','waiting')
+    .contains('evidence',{execution_gate:{reason:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'}})
+    .order('priority',{ascending:false}).limit(50);
+  if(channels.length)q=q.in('channel_norm',channels);
+  if(actionIds.length)q=q.in('action_id',actionIds);
+  const{data:waiting,error}=await q;
+  if(error)throw new Error('ORIGINAL_HELD_PLAN_READ:'+error.message);
+  const resumed:any[]=[];
+  for(const action of waiting||[]){
+    if(!clean(action?.action_id)||!clean(action?.person_key)||!clean(action?.company_key))continue;
+    const{data:research,error:researchErr}=await db.from('powerhouse_sales_actions')
+      .select('action_id,status,person_key,company_key,source_url,executed_at,evidence')
+      .eq('dedupe_key','relationship-research:outreach-source:'+action.action_id)
+      .eq('action_type','research_enrichment').eq('channel','internal')
+      .eq('person_key',action.person_key).eq('company_key',action.company_key)
+      .eq('status','done').maybeSingle();
+    if(researchErr)throw new Error('ORIGINAL_HELD_RESEARCH_READ:'+researchErr.message);
+    const sourceUrl=clean(research?.evidence?.public_research_execution?.source_url);
+    if(!sourceUrl)continue;
+    const{data:news,error:newsErr}=await db.from('bg_bedrijfsnieuws')
+      .select('url,bedrijf,titel,haak,over_dit_bedrijf,afgewezen_reden,zekerheid,gepubliceerd_op,opgehaald_op')
+      .eq('url',sourceUrl).eq('over_dit_bedrijf',true)
+      .order('opgehaald_op',{ascending:false}).limit(1).maybeSingle();
+    if(newsErr)throw new Error('ORIGINAL_HELD_NEWS_READ:'+newsErr.message);
+    // Contract verifies original action ID, person/company keys, provider
+    // source URL, confidence, freshness and rejection status. No consent inferred.
+    const verified=sourceVerifiedComposerHandoff(action,research,news,now);
+    if(verified)resumed.push(verified);
+    if(resumed.length>=limit)break;
+  }
+  return resumed;
+}
+
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
   const url=Deno.env.get('SUPABASE_URL')||'',service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';if(!url||!service)return json({ok:false,error:'CONFIG'},500);
@@ -169,7 +210,17 @@ Deno.serve(async(req:Request)=>{
     const {data,error}=await db.rpc('powerhouse_commercial_message_candidates_v1',{p_limit:limit,p_channels:channels.length?channels:null,p_action_ids:actionIds.length?actionIds:null});
     if(error)throw new Error('PLAN_READ:'+error.message);
     let rows=(data||[]);
-    rows=rows.filter((a:any)=>a.evidence?.commercial_intelligence?.composer?.contract!==CONTRACT||a.evidence?.commercial_intelligence?.composer?.quality_passed!==true||!clean(a.message_draft));
+    // SQL RPC is unchanged. Earlier quality-passed WAITING drafts are excluded
+    // by its original filter, so reconcile matching source-verified originals
+    // from the SAME original plan view before the normal composer evaluation.
+    const sourceHeld=await originalVerifiedSourceHeldCandidates(db,limit,channels,actionIds,now);
+    const known=new Set(sourceHeld.map((a:any)=>a.action_id));
+    rows=[...sourceHeld,...rows.filter((a:any)=>!known.has(a.action_id))].slice(0,limit);
+    rows=rows.filter((a:any)=>
+      (a.status==='waiting' && a.evidence?.verified_research_composer_handoff?.contract==='POWERHOUSE_VERIFIED_RESEARCH_COMPOSER_HANDOFF_V1')
+      || a.evidence?.commercial_intelligence?.composer?.contract!==CONTRACT
+      || a.evidence?.commercial_intelligence?.composer?.quality_passed!==true
+      || !clean(a.message_draft));
     if(dryRun)return json({ok:true,contract:CONTRACT,dry_run:true,candidates:rows.map((a:any)=>({action_id:a.action_id,play_key:a.play_key,channel:a.channel_norm}))});
     const out:any[]=[];
     for(const action of rows){

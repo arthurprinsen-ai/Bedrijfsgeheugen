@@ -5,6 +5,16 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## P0 2026-11-10 — actie vóór status: herstel ontbrekende leer-ontvangst direct
+
+Verplicht voor ALLE agents/skills die de ONE BRAIN/Powerhouse/Heartbeat-leerlus raken: begin bij de originele operationele record en bewaak elke producent→afnemer-overdracht met immutable providerbewijs, deterministische ontvangende ID en idempotente ACK. Bij falende overdracht geen passieve lijst of een te vervangen "volgende run" als eindresultaat: voer de toegestane bronreparatie meteen uit, activeer uitsluitend de bestaande oorspronkelijke uitvoerder, verifieer bron én consumer in productie en borg hetzelfde incident met regressie, agentskill, BRAIN-leerrecord en beschermde release.
+
+Specifiek social: de enige bestaande hourly `social-learning-evaluate` consumeert de oorspronkelijke `social_metric_snapshots` en `social_learning_evaluations`; alleen een exact binnen ±6 uur gemeten, providerbewijs-gebonden 24/48/72u-window krijgt idempotent `MEASUREMENT_VERIFIED` op de oorspronkelijke `social_learning_obligations`. Een ontbrekend of `OBSERVED_PARTIAL_SCOPE`-window wordt niet opgevuld met huidige providerstand, kunstmatige CTR, causaliteitsclaim of omzet. Historische niet-reconstrueerbare bronvensters blijven met eigenaar, oorzaak en preventie zichtbaar; alleen echte nieuwe metingen en aantoonbaar toegepaste volgende publicaties mogen een positieve leerclaim dragen. Geen tweede scheduler, nieuwe publisher, e-mailroute of parallel brein.
+
+Rapporteer primair voltooide herstelhandelingen met onafhankelijk bewijs; werk direct door bij herstelbare fouten. Als een externe menselijke bevoegdheid vereist is, noem uitsluitend de exact noodzakelijke actie. Guard: `tests/brain-social-obligation-evidence-ack-20261110.test.mjs`.
+
+
+
 ## P0 #5232 — stop recurring false CPNL date even after same-original blog rewrite (1 Nov)
 
 The original auto-repair has **actually run** once: original `pg_net 18292` HTTP200 `generated:true`, updated original blog, but its new copy STILL falsely says “Onze forecast verwacht dat de Circular Plastics NL-subsidie op 6 oktober 2026 opengaat”. This is after official RVO 2026 CPNL application CLOSED 6 Oct. Original reader threw `BLOG_RUN_DATE_INVALID` on Postgres Date object, and the shared time gate recognized opener-before-date but NOT date-before-`opengaat`. Permanent fix: normalize real native Postgres `run_date` to ISO YYYY-MM-DD and reject a closed historical 6 October CPNL future-opening fact in EITHER word order within the SAME clause, before original model artifact / GitHub protected blog queue/export. True retrospective closing and separate SOPV subsidy remain eligible. If approved model repeats wrong fact, the original reader MUST REJECT and leave the original same-day obligation red, not a generated=published or self-approved pass. Use original single CAS claim, same original scheduler, provider truth and protected test `tests/brain-blog-official-future-forecast-20261101.test.mjs`, ONE BRAIN parent #5232. Independent end-to-end live blog and natural-run evidence are still required before PROVEN.
