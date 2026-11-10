@@ -78,13 +78,16 @@ Deno.serve(async(req:Request)=>{
     if(action==='reconcile_applications'){const d=body.data||{};const {error}=await db.from('social_learning_applications').update({actual_effect:d.effect??null,verification_status:d.verificationStatus||'VERIFIED',updated_at:new Date().toISOString()}).eq('tenant_id',tenantId).eq('post_id',d.postId);if(error)throw error;return json({stored:true});}
     if(action==='record_obligation'){
       const o=body.obligation||{};
-      if(!o.id||!o.postId||![24,48,72].includes(Number(o.windowHours)))return json({error:'INVALID_WINDOW_OBLIGATION'},400);
+      if(!o.id)return json({error:'INVALID_OBLIGATION_ID'},400);
+      const isWindow=['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'].includes(o.type);
+      if(isWindow&&(!o.postId||![24,48,72].includes(Number(o.windowHours))))
+        return json({error:'INVALID_WINDOW_OBLIGATION'},400);
       // Never reopen a source-verified ACK during a retry of an old missing-window run.
       const {data,error}=await db.from('social_learning_obligations').upsert({
         tenant_id:tenantId,obligation_id:o.id,
         type:o.type||'MISSED_OBLIGATION',owner:o.owner||'POWERHOUSE_SOCIAL_LEARNING',
         post_id:o.postId,window_hours:Number(o.windowHours),due_at:o.dueAt||null,
-        status:'OPEN',payload:o,updated_at:new Date().toISOString()
+        status:o.status||'OPEN',payload:o,updated_at:new Date().toISOString()
       },{onConflict:'tenant_id,obligation_id',ignoreDuplicates:true}).select('obligation_id');
       if(error)throw error;
       return json({stored:(data||[]).length>0,duplicate:(data||[]).length===0});
