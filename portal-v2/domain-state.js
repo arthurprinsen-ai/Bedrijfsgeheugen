@@ -275,29 +275,35 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   if(stateResult.status==='dirty')return stateResult;
   if(!['saved','idle'].includes(stateResult.status))throw new Error('PORTAL_STATE_PERSISTENCE_ACK_REQUIRED');
   const stored=[];const acknowledged=new Set();
-  for(const item of pending){
-   if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
-   const causalImpacts=submittedImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
-   const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
-   if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
-   if(saved?.skipped===true&&saved.reason==='DEMO_NON_DURABLE'&&stateClient.isDemo?.()){
+  try{
+   for(const item of pending){
+    if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
+    const causalImpacts=submittedImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
+    const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
+    if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
+    if(saved?.skipped===true&&saved.reason==='DEMO_NON_DURABLE'&&stateClient.isDemo?.()){
+     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
+     continue;
+    }
+    if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
+    stored.push(saved);
+    for(const impact of causalImpacts)acknowledged.add(impact.generation);
     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
-    continue;
    }
-   if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
-   stored.push(saved);
-   for(const impact of causalImpacts)acknowledged.add(impact.generation);
-   if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
-  }
-  // Prune only impacts acknowledged by the canonical Brain. Never drop newer
-  // edits, even when a user changes a field during the Brain write.
-  const confirmedImpacts=submittedImpacts.filter(impact=>acknowledged.has(impact.generation));
-  for(let index=pendingImpacts.length-1;index>=0;index--){
-   if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
-  }
-  if(pendingBusinessInputs.size===0&&pendingImpacts.length===0)handoffPrincipal='';
-  if(stored.length&&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
+  }finally{
+   // A later section may fail AFTER earlier sections received independent Brain
+   // ACKs. Reconcile proven generations even on partial failure; preserve
+   // unacknowledged and newer generations for the next same-principal attempt.
+   const confirmedImpacts=submittedImpacts.filter(impact=>acknowledged.has(impact.generation));
+   for(let index=pendingImpacts.length-1;index>=0;index--){
+    if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
+   }
+   if(pendingBusinessInputs.size===0&&pendingImpacts.length===0)handoffPrincipal='';
+   // Never broadcast one tenant's confirmations into a different user's session.
+   if(stored.length&&submittedPrincipal===currentPrincipal()&&hydratedPrincipal===submittedPrincipal
+      &&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
+   }
   }
   return stateResult;
  }
