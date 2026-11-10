@@ -35,5 +35,17 @@
     "qualified experiment outcomes measured and lesson reused"
   ],
   "production_status": "PENDING_INDEPENDENT_PROOF",
-  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "CONTRACT_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ]
+  }
 }
