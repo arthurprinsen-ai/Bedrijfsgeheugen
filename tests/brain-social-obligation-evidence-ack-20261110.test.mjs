@@ -57,6 +57,9 @@ test('one ORIGINAL tenant-scoped hourly executor calls existing store ACK and du
   assert.match(edge,/verifiedSocialWindowAck/);
   assert.match(edge,/if\(action==='reconcile_verified_obligations'\)/);
   assert.match(edge,/onConflict:'tenant_id,obligation_id',ignoreDuplicates:true/);
+  assert.match(edge,/const oldPages=Math.max\(1,Math.ceil\(olderCount\/20\)\)/);
+  assert.match(edge,/query\(\)\.range\(0,29\)/);
+  assert.match(edge,/query\(\)\.range\(30\+oldPage\*20,49\+oldPage\*20\)/);
   assert.match(edge,/\.eq\('status','OPEN'\)\.select\('obligation_id'\)/);
   assert.match(client,/reconcileVerifiedObligations:.*reconcile_verified_obligations/);
   assert.match(evaluator,/const receipts=store.reconcileVerifiedObligations/);
