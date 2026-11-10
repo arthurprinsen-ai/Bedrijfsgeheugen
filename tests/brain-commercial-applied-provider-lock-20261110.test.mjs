@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync,readdirSync} from 'node:fs';
+const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+const sourceFiles=readdirSync(new URL('../supabase/migrations/',import.meta.url)).filter(name=>/^\d{14}_.+\.sql$/.test(name)).sort();
+test('exact observed original commercial provider migration belongs to complete immutable migration lock',()=>{
+ const expected='20261110131500_original_commercial_nested_gmail_provider_outcome_assurance_v1.sql';
+ assert.ok(sourceFiles.includes(expected));
+ const applied=lock.applied.map(x=>x.version+'_'+x.name+'.sql').sort();
+ assert.deepEqual(applied,sourceFiles);
+ assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
+ assert.equal(lock.source,'supabase_migration_history');
+ assert.equal(lock.applied.length,822);
+ assert.equal(lock.applied.at(-1).version,'20261110131500');
+ assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-10T12:29:55.152814Z'));
+ const sql=readFileSync(new URL('../supabase/migrations/'+expected,import.meta.url),'utf8');
+ assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_commercial_output_assurance_v1/);
+ assert.match(sql,/autonomous-email-sent:/);
+ assert.match(sql,/provider_readback_verified/);
+});
