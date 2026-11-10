@@ -6,7 +6,7 @@ import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
 
-const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE'};
+const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE',commercialHandoff:'LIVE',commercialIncidents:'LIVE'};
 const datasets={
   health:[{observed_at:'2026-10-29T16:20:00Z',architecture_state:'AMBER',
     learning_state:'EVIDENCE_DUE_GAPS',content_loop_state:'BLOCKED',
@@ -23,7 +23,20 @@ const datasets={
     amber_loops:1,red_loops:6,fully_evidenced_loops:8,overall_status:'RED'}],
   terminal:[{observed_at:'2026-10-29T16:20:00Z',nonterminal_obligations:4,
     blocked_obligations:3,escalated_reconciliation_jobs:1,
-    control_plane_healthy:false,stale_green_truths:0}]
+    control_plane_healthy:false,stale_green_truths:0}],
+  commercialHandoff:[{measured_at:'2026-11-10T17:34:20Z',
+    original_email_actions_7d:12,provider_readback_proven_7d:1,
+    broken_or_unproven_handoffs_7d:10,linked_experiment_treatments_7d:0,
+    provider_linked_replies_7d:0,provider_linked_meetings_7d:0,
+    provider_linked_realized_revenue_eur_7d:0,handoff_health:'DEGRADED'}],
+  commercialIncidents:[
+    {fingerprint:'powerhouse|commercial|original-loop-handoff-and-learning-evidence-due|20261110-v1',
+      scope:'powerhouse:commercial:original-end-to-end',severity:'HIGH',state:'ACTIVE',
+      updated_at:'2026-11-10T17:37:09Z',resolved_at:null},
+    {fingerprint:'powerhouse|commercial|original-source-wait-is-not-send|20261110-v1',
+      scope:'powerhouse:commercial:original-research-handoff',severity:'HIGH',state:'RESOLVED',
+      updated_at:'2026-11-10T17:37:28Z',resolved_at:'2026-11-10T17:37:28Z'}
+  ]
 };
 const projection=()=>projectPowerhouseIntegrationReadback({datasets,readStates:states,at:'2026-10-29T17:00:00Z'});
 
@@ -57,7 +70,7 @@ test('structurally green health does not certify agents, business or revenue',()
   assert.equal(p.integrationState,'END_TO_END_UNPROVEN');
   assert.ok(p.gapCodes.includes('INDEPENDENT_BUSINESS_OUTCOME_VERIFICATION_REQUIRED'));
 });
-test('read-only REST readback uses all seven original authority views and never leaks key',async()=>{
+test('read-only REST readback uses original authority views and native Brain blockers and never leaks key',async()=>{
   const mapping={
     powerhouse_one_brain_runtime_health_v1:datasets.health,
     powerhouse_one_brain_capability_inventory_v1:datasets.capabilities,
@@ -65,7 +78,9 @@ test('read-only REST readback uses all seven original authority views and never 
     powerhouse_autonomous_experiment_readiness_v1:datasets.experiments,
     powerhouse_revenue_event_spine_health_v1:datasets.revenue,
     powerhouse_loop_integrity_health_v1:datasets.loops,
-    powerhouse_terminal_control_plane_health_v1:datasets.terminal
+    powerhouse_terminal_control_plane_health_v1:datasets.terminal,
+    powerhouse_commercial_handoff_scorecard_v1:datasets.commercialHandoff,
+    brain_blockers:datasets.commercialIncidents
   };
   const seen=[];
   const mock=async (url,options)=>{
@@ -77,9 +92,9 @@ test('read-only REST readback uses all seven original authority views and never 
     return {ok:true,json:async()=>mapping[key]};
   };
   const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'secret',fetchImpl:mock});
-  assert.equal(seen.length,7,'all seven actual authority views must be checked');
+  assert.equal(seen.length,9,'all nine original authority sources, including native Brain blockers, must be checked');
   assert.deepEqual(new Set(seen),new Set(Object.keys(mapping)),
-    'provider reads must not escape the original seven-view allowlist');
+    'provider reads must not escape the original nine-source allowlist');
   assert.equal(p.sourceState,'READABLE');
   assert.equal(p.loopAssurance.red,6);
   assert.equal(p.terminalControl.blocked,3);
@@ -89,7 +104,7 @@ test('read-only REST readback uses all seven original authority views and never 
   assert.doesNotMatch(JSON.stringify(p),/secret/);
 });
 
-test('missing sixth or seventh provider view cannot create a false readable or green integration',async()=>{
+test('missing original integrity or terminal provider view cannot create a false readable or green integration',async()=>{
  const tables=['powerhouse_loop_integrity_health_v1','powerhouse_terminal_control_plane_health_v1'];
  for(const missing of tables){
   const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'private-key',
@@ -103,7 +118,9 @@ test('missing sixth or seventh provider view cannot create a false readable or g
       powerhouse_autonomous_experiment_readiness_v1:datasets.experiments,
       powerhouse_revenue_event_spine_health_v1:datasets.revenue,
       powerhouse_loop_integrity_health_v1:datasets.loops,
-      powerhouse_terminal_control_plane_health_v1:datasets.terminal
+      powerhouse_terminal_control_plane_health_v1:datasets.terminal,
+    powerhouse_commercial_handoff_scorecard_v1:datasets.commercialHandoff,
+    brain_blockers:datasets.commercialIncidents
     };
     return {ok:true,json:async()=>map[name]||[]};
    }});
@@ -127,7 +144,7 @@ test('provider errors and oversized responses fail closed',async()=>{
 test('panel is embedded in existing cockpit and can never claim green',()=>{
   const html=controlPlaneCockpitMarkup({systemIntegration:projection()});
   assert.match(html,/powerhouse-integration-health/);
-  assert.match(html,/Bronnen LIVE: <strong>7 \/ 7<\/strong>/);
+  assert.match(html,/Bronnen LIVE: <strong>9 \/ 9<\/strong>/);
   assert.match(html,/NIET BEWEZEN/);
   assert.match(html,/Heartbeat/);
   assert.match(html,/bron-omzet/);
@@ -139,12 +156,75 @@ test('admin portal reports partial live-source coverage and never paints missing
   at:'2026-11-02T08:00:00Z'
  });
  const html=powerhouseIntegrationMarkup(incomplete);
- assert.match(html,/Bronnen LIVE: <strong>6 \/ 7<\/strong>/);
+ assert.match(html,/Bronnen LIVE: <strong>8 \/ 9<\/strong>/);
  assert.match(html,/Broncontrole: PARTIAL/);
  assert.match(html,/NIET BEWEZEN/);
  assert.match(html,/SOURCE_UNAVAILABLE:terminal/);
  assert.doesNotMatch(html,/Volledige uitvoeringsketen: <strong>BEWEZEN<\/strong>/);
 });
+test('the original commercial Brain register is separate from the repaired source-code status',()=>{
+  const p=projection();
+  assert.equal(p.commercialHandoff.state,'DEGRADED');
+  assert.equal(p.commercialHandoff.providerProven7d,1);
+  assert.equal(p.commercialHandoff.brokenOrUnproven7d,10);
+  assert.equal(p.commercialIncidents.active,1);
+  assert.equal(p.commercialIncidents.resolved,1);
+  assert.ok(p.gapCodes.includes('COMMERCIAL_HANDOFF_PROOF_OPEN'));
+  assert.ok(p.gapCodes.includes('HISTORICAL_COMMERCIAL_HANDOFF_DEBT_OPEN'));
+  assert.ok(p.gapCodes.includes('ACTIVE_COMMERCIAL_BRAIN_INCIDENT_REQUIRES_READBACK'));
+  const html=powerhouseIntegrationMarkup(p);
+  assert.match(html,/data-bg-original-commercial-incidents="true"/);
+  assert.match(html,/Brein · commerciële incidenten/);
+  assert.match(html,/onbewezen\/verlopen 10/);
+  assert.ok(html.includes('href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"'));
+  assert.match(html,/NIET BEWEZEN/);
+});
+
+test('missing original Brain incident authority fails closed rather than showing zero open incidents',()=>{
+  const p=projectPowerhouseIntegrationReadback({
+    datasets:{...datasets,commercialIncidents:[]},
+    readStates:{...states,commercialIncidents:'UNAVAILABLE'}
+  });
+  assert.equal(p.sourceState,'PARTIAL');
+  assert.equal(p.commercialIncidents,null);
+  assert.ok(p.gapCodes.includes('SOURCE_UNAVAILABLE:commercialIncidents'));
+  const html=powerhouseIntegrationMarkup(p);
+  assert.match(html,/Origineel Brain-register onbereikbaar/);
+  assert.match(html,/NIET BEWEZEN/);
+});
+
+test('commercial dashboard does not expose incident evidence, personal contact fields or secret credentials',async()=>{
+ const secret='SECRET_SERVICE_ROLE_TOKEN';
+ const seen=[];
+ const mapping={
+  powerhouse_one_brain_runtime_health_v1:datasets.health,
+  powerhouse_one_brain_capability_inventory_v1:datasets.capabilities,
+  powerhouse_one_brain_intelligence_inventory_v1:datasets.layers,
+  powerhouse_autonomous_experiment_readiness_v1:datasets.experiments,
+  powerhouse_revenue_event_spine_health_v1:datasets.revenue,
+  powerhouse_loop_integrity_health_v1:datasets.loops,
+  powerhouse_terminal_control_plane_health_v1:datasets.terminal,
+  powerhouse_commercial_handoff_scorecard_v1:datasets.commercialHandoff,
+  brain_blockers:[...datasets.commercialIncidents,
+    {fingerprint:'unrelated-secret',scope:'private-other-tenant',
+      severity:'HIGH',state:'ACTIVE',last_evidence:{recipient_email:'private@example.com'}}]
+ };
+ const result=await readPowerhouseIntegrationReadback({
+  baseUrl:'https://project.supabase.co',key:secret,
+  fetchImpl:async(url,options)=>{
+    seen.push(url);
+    assert.equal(options.headers.authorization,'Bearer '+secret);
+    return {ok:true,json:async()=>mapping[new URL(url).pathname.split('/').at(-1)]};
+  }
+ });
+ assert.ok(seen.find(v=>v.includes('/brain_blockers?')));
+ assert.ok(seen.find(v=>v.includes('scope=like.powerhouse%3Acommercial%3A*')));
+ assert.ok(seen.every(v=>!v.includes('last_evidence')&&!v.includes('recipient_email')));
+ assert.equal(result.commercialIncidents.active,1);
+ const html=powerhouseIntegrationMarkup(result);
+ assert.doesNotMatch(JSON.stringify(result)+html,/SECRET_SERVICE_ROLE_TOKEN|private@example.com|unrelated-secret|last_evidence/);
+});
+
 test('untrusted text is escaped before reaching dashboard HTML',()=>{
   const p=projection();
   p.architecture.state='<script>alert(1)</script>';
