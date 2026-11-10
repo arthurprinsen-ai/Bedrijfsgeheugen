@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "fingerprint": "powerhouse|social-learning|provider-linked-company-window-unconsumed|20261110-v1",
+  "parent_issue": 4198,
+  "owner": "existing social-learning-evaluate hourly and social-learning-store; original ONE BRAIN source-window ACK",
+  "compiler": {
+    "failure_class": "PROVIDER_LINKED_WINDOW_EXCLUDED_FROM_ORIGINAL_EVALUATOR",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original live LinkedIn company Windsor snapshots use PROVIDER_OBSERVED_LINKED, but the hourly social evaluator, due-observation priority and original ACK accepted only OBSERVED or PROVIDER_OBSERVED. This excludes exact account/post-linked source evidence from the original measured-window handoff.",
+  "observed": {
+    "checked_at_utc": "2026-11-10T14:52:00Z",
+    "social_learning_obligations_open": 179,
+    "linked_windsor_company_snapshots_recent_14d": 11,
+    "current_runtime_error_groups": 24,
+    "candidate_window_proof_not_equivalent_to_causal_lift": true
+  },
+  "correction": "Use the same original hourly owner and a shared source-qualification gate. For PROVIDER_OBSERVED_LINKED require exact Windsor linked company source, original external post URN, exact organization URN, immutable verified author+account proof, exact source event ID prefix, company analytics scope and numeric impressions. Only then prioritize an observed window, evaluate actual snapshot and CAS-acknowledge the exact original obligation after the existing independent original-evaluation/time/metric agreement checks.",
+  "prevention": [
+    "Never treat OBSERVED_PARTIAL_SCOPE or an unlinked/daily aggregated provider post as independent 24/48/72h window evidence.",
+    "Original provider-linked metrics need exact immutable provider post and author/account identity before the original evaluator may consume them.",
+    "Do not reopen historical expired commercial outreach or re-send social content to repair measurement debt.",
+    "A verified measurement/Brain ACK does not establish causal experiment effectiveness, reply, appointment, sale or a better next post.",
+    "Protected Required+CodeQL, deployment readback and next natural original hourly execution are necessary to claim live closure."
+  ],
+  "tests": [
+    "tests/brain-social-obligation-evidence-ack-20261110.test.mjs",
+    "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-obligation-evidence-ack-20261110.test.mjs",
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ]
+  },
+  "release": {
+    "required_passed": false,
+    "codeql_passed": false,
+    "merged": false,
+    "edge_live_readback": false,
+    "netlify_live_readback": false,
+    "next_natural_hourly_verified": false
+  },
+  "no_false_green": true,
+  "no_second_executor": true
+}
