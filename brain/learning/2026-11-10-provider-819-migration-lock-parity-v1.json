@@ -23,8 +23,7 @@
   "prevention": "After each protected production Supabase migration, reconcile the original immutable provider lock by a separate source-only protected change before admitting a subsequent migration PR; no bypass, no silent bulk closure.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs"
     ],
     "provider_verification": "PRODUCTION_SQL_READBACK",
     "live_email_send_proven": false,
@@ -33,5 +32,12 @@
   "tests": [
     "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs",
     "tests/supabase-migration-history-integrity.test.mjs"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
