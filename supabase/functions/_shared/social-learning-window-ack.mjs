@@ -26,12 +26,15 @@ export function verifiedSocialWindowAck({obligation,post,evaluation,snapshots=[]
   const checked=snapshots.filter(s=>
     s?.tenant_id===tenant&&s?.post_id===postId&&
     ['OBSERVED','PROVIDER_OBSERVED'].includes(s.data_quality)&&
-    typeof s.source_event_id==='string'&&s.source_event_id.length>=8&&
+    typeof s.source_event_id==='string'&&
+    s.source_event_id.includes(String(post.external_post_id))&&
     typeof s.source==='string'&&s.source.length>0&&
     millis(s.observed_at)!==null&&
     Math.abs(millis(s.observed_at)-evaluated)<=5000&&
     Math.abs((millis(s.observed_at)-published)/3600000-window)<=toleranceHours&&
-    fields.some(k=>valid(read(s.metrics,k))&&valid(evaluation.metric_vector?.[k])&&
+    fields.some(k=>valid(read(s.metrics,k))&&valid(evaluation.metric_vector?.[k]))&&
+    fields.every(k=>!valid(read(s.metrics,k))||
+      !valid(evaluation.metric_vector?.[k])||
       Number(read(s.metrics,k))===Number(evaluation.metric_vector[k]))
   );
   if(!checked.length)return null;
