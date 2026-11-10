@@ -14,7 +14,9 @@ test('P0 #4215 durable source journal uses only original customer-state writer a
  assert.match(domain,/recoveredOnInit=recoverJournalManifest\(\)/);
  assert.match(domain,/queueMicrotask\(\(\)=>/);
  assert.match(domain,/journalCleanupPending/);
- assert.match(domain,/PORTAL_BRAIN_JOURNAL_INVALID_BINDING/);\n assert.match(domain,/PORTAL_BRAIN_REPLAY_SOURCE_CONFLICT/);\n assert.match(domain,/answers:clone\(item.answers\)/);
+ assert.match(domain,/PORTAL_BRAIN_JOURNAL_INVALID_BINDING/);
+ assert.match(domain,/PORTAL_BRAIN_REPLAY_SOURCE_CONFLICT/);
+ assert.match(domain,/answers:clone\(item.answers\)/);
  assert.match(domain,/app_metadata\?\.tenantId/);
  assert.match(domain,/bg:portal-brain-synced/);
  assert.match(state,/delete answers\.portal\.__brainHandoffJournalV1/);
