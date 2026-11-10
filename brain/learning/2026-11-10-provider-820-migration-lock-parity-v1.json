@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_PREVIEW_AND_MAIN_READBACK_REQUIRED",
+  "fingerprint": "powerhouse|supabase|production-820-history-lock-parity|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original protected GitHub-Supabase release control-plane",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "After protected PR #5543 applied original research-composer migration 20261110120000 to production, the original immutable provider-history source lock remained at 819 and would stop the next protected SQL candidate. Original 820th identity must be recorded only after provider proof.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_observed_at": "2026-11-10T09:04:23.639001+00:00",
+    "provider_applied_count": 820,
+    "provider_unique_versions": 820,
+    "latest_version": "20261110120000",
+    "latest_name": "powerhouse_outreach_research_wait_handoff_v1",
+    "previous_git_lock_count": 819,
+    "protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5543",
+    "source_sql": "supabase/migrations/20261110120000_powerhouse_outreach_research_wait_handoff_v1.sql"
+  },
+  "fix": "Append only the exact already-applied provider-recorded 820th original version and name to the existing immutable source lock; preserve the preceding 819 identities and original SQL. No direct migration application, cron, publisher, sender, or status fabrication.",
+  "prevention": "Reconcile exact provider-applied migration identities after every original protected GitOps production deploy before admitting subsequent migration PR. Do not relax protected GitHub/Supabase gates.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-820-migration-lock-parity-20261110.test.mjs"
+    ],
+    "live_email_send_proven": false,
+    "causal_revenue_uplift_proven": false
+  },
+  "tests": [
+    "tests/brain-provider-820-migration-lock-parity-20261110.test.mjs"
+  ]
+}

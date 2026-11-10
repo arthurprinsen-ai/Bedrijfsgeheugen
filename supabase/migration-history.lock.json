@@ -3276,8 +3276,12 @@
     {
       "version": "20261110073500",
       "name": "original_content_handoff_receipts_v1"
+    },
+    {
+      "version": "20261110120000",
+      "name": "powerhouse_outreach_research_wait_handoff_v1"
     }
   ],
-  "captured_at": "2026-11-10T08:19:43.617348Z",
+  "captured_at": "2026-11-10T09:04:23.639001+00:00",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
