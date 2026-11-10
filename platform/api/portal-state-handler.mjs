@@ -32,7 +32,14 @@ export function createPortalStateHandler({getUser,store,maxBytes=1_500_000,now=(
    try{body=await request.json()}catch{return json({error:'INVALID_JSON'},400)}
    const measured=new TextEncoder().encode(JSON.stringify(body)).byteLength;
    if(measured>maxBytes) return json({error:'PAYLOAD_TOO_LARGE'},413);
-   const projection=sanitizePortalProjection(body,{tenantId,userId:user.id,now});
+   // The user's readback may contain an old sourceMeta.updatedAt. It is
+   // never the clock authority for a NEW authenticated write: otherwise the
+   // original Supabase bg_portal_state_put_internal rejects an otherwise
+   // valid source/journal update as stale. The same request remains tenant-
+   // derived and the original Postgres monotonic compare remains enforced.
+   const sourceMeta=body?.sourceMeta&&typeof body.sourceMeta==='object'&&!Array.isArray(body.sourceMeta)?body.sourceMeta:{};
+   const timestamp=now();
+   const projection=sanitizePortalProjection({...body,sourceMeta:{...sourceMeta,updatedAt:timestamp}},{tenantId,userId:user.id,now:()=>timestamp});
    const result=await store.put(tenantId,projection);
    return json({stored:Boolean(result?.stored),stale:Boolean(result?.stale),sourceUpdatedAt:(result?.record||projection).sourceUpdatedAt});
  };
