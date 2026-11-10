@@ -238,7 +238,9 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    if(!isObject(impact)||typeof impact.path!=='string'||!impact.path.startsWith('portal.')
      ||!Number.isSafeInteger(impact.generation)||impact.generation<1
      ||impactGenerations.has(impact.generation)
-     ||!Array.isArray(impact.changes)||!Array.isArray(impact.affectedPages))
+     ||!Array.isArray(impact.changes)||!Array.isArray(impact.affectedPages)
+     ||impact.externalExecutionAuthorized!==false
+     ||impact.evidenceStatus!=='OBSERVED_NOT_VERIFIED')
     throw new Error('PORTAL_BRAIN_JOURNAL_INVALID_IMPACT');
    if(![...recovered.values()].some(binding=>impact.path===binding.statePath||impact.path.startsWith(binding.statePath+'.')))
     throw new Error('PORTAL_BRAIN_JOURNAL_ORPHAN_IMPACT');
