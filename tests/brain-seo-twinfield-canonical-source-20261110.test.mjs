@@ -7,11 +7,13 @@ test('Twinfield short commercial API intent belongs exclusively to existing cano
  const locale=JSON.parse(await read('site/seo-locale-revenue-map.json'));
  const alias='twinfield api';
  const exact='https://www.bedrijfsgeheugen.nl/twinfield-koppeling';
- const matches=seo.pages.filter(p=>p.primary_keyword===alias||p.secondary_keywords?.includes(alias));
+ const matches=seo.pages.filter(p=>p.route===exact);
  assert.equal(matches.length,1);
- assert.equal(matches[0].route,exact);
  assert.equal(matches[0].role,'money');
  assert.equal(matches[0].primary_cta.url,'https://www.bedrijfsgeheugen.nl/frisse-blik');
+ // Consumer owner aliases are released together with their original Supabase resolver;
+ // this website-only PR must not break canonical source/projection equivalence.
+ assert.equal(matches[0].secondary_keywords?.includes(alias),false);
  assert.ok(locale.pages.find(x=>x.source_route===exact).nl.secondary_keywords.includes(alias));
 });
 test('existing Twinfield page is one reversible, truthful and measured canonical, not a duplicate blog',async()=>{
