@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-4215-cross-page-replay-draft-protection-20261110-v1",
+  "fingerprint": "portal|runtime|evidence-page-stale-and-ack-draft-discard|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_CROSS_PAGE_EVIDENCE_REFRESH_DRAFT_GUARD",
+    "scope": "PORTAL_V2_TENANT_UI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Changed tenant-bound Powerhouse runtime projections updated domain state but did not invalidate open native pages; old Brain ACK could remount a newer unsaved form.",
+  "fix": "Original read-only runtime bridge deduplicates unchanged provider results; original page shell updates all registered open read-only pages for exact principal/route and preserves forms. Identity switch closes old content.",
+  "tests": [
+    "tests/brain-portal-cross-page-refresh-20261110.test.mjs",
+    "portal-v2/tests/portal-cross-page-refresh.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-cross-page-refresh-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-cross-page-refresh-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-cross-page-refresh-20261110.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "A changed authenticated runtime read model must invalidate native read-only views using the original portal event bus.",
+    "Do not discard a DOM-only customer form draft on Brain ACK even when canonical domain says saved.",
+    "Never present another page's partial ACK as the current page's confirmed evidence.",
+    "Never carry a view across tenant identity switch; verify source response before claiming outcome."
+  ],
+  "owner": "Original #4215 portal + Brain + Heartbeat owner",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_VERIFIED",
+  "observed_evidence": {
+    "original_source": "portal-v2/page-shell.js; portal-v2/runtime-evidence.js",
+    "real_customer_multi_tenant_e2e_proven": false
+  }
+}

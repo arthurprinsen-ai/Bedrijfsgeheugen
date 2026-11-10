@@ -245,7 +245,11 @@ test('portal listens for fresh server readbacks without adding a second backend 
  assert.match(app,/visibilitychange/);
  assert.match(app,/revalidateVisibleCustomer/);
  assert.match(shell,/bg:portal-server-refreshed/);
- assert.match(shell,/root\.contains\(active\)/);
+ // Keep the original safety contract while following its canonical shared guard.
+ assert.match(shell,/canRebuildVisiblePortalPage/);
+ assert.ok(shell.includes('root?.contains?.(focus)'));
+ assert.ok(shell.includes('form, input, textarea, select'));
+ assert.match(shell,/bg:runtime-evidence/);
 });
 
 

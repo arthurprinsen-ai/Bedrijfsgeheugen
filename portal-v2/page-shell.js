@@ -110,6 +110,28 @@ export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-cent
 const protectedTrustSet=new Set(PROTECTED_TRUST_PAGES);
 const portalContext={domainState:null,stateClient:null};
 
+// All native pages use this one tenant/route/draft safety gate for live readback.
+// The original legacy forms may hold an unsaved DOM-only draft even while the
+// canonical state client reports "saved": never automatically remount those.
+export function canRebuildVisiblePortalPage({root,domainState,stateClient,documentRef=globalThis.document,pageId=null,principal=null}={}){
+  if(!root?.classList?.contains?.('open')||root?.getAttribute?.('aria-hidden')==='true')return false;
+  const page=String(root?.dataset?.pageId||'');
+  if(!page||(pageId!==null&&page!==pageId))return false;
+  const snapshot=stateClient?.getSnapshot?.();
+  if(!stateClient?.isDemo?.()&&!['authenticated','empty'].includes(snapshot?.mode))return false;
+  const user=stateClient?.currentUser?.()||snapshot?.user;
+  const subject=String(user?.id||user?.email||'').trim();
+  const snapshotSubject=String(snapshot?.user?.id||snapshot?.user?.email||'').trim();
+  if(!subject||snapshotSubject&&snapshotSubject!==subject)return false;
+  if(principal!==null&&subject!==principal)return false;
+  if(!domainState?.initialized?.()||['dirty','saving','error'].includes(domainState?.status?.()))return false;
+  const native=root?.querySelector?.('#pvNative');
+  if(native?.querySelector?.('form, input, textarea, select, [contenteditable="true"], [contenteditable=""]'))return false;
+  const focus=documentRef?.activeElement;
+  if(focus&&root?.contains?.(focus)&&focus?.matches?.('input, textarea, select, [contenteditable="true"], [contenteditable=""]'))return false;
+  return true;
+}
+
 export function isProtectedTrustPage(pageId=''){return protectedTrustSet.has(String(pageId||''));}
 export function hasProtectedTrustAccess(){
   const snap=portalContext.stateClient?.getSnapshot?.();
@@ -443,6 +465,43 @@ export function enhancePortalShell(){
 
   if(!document.documentElement.dataset.portalImpactBound){
     document.documentElement.dataset.portalImpactBound='true';
+    let repaintScheduled=false;
+    const scheduleVisiblePageRebuild=root=>{
+      const page=String(root?.dataset?.pageId||'');
+      const user=portalContext.stateClient?.currentUser?.();
+      const principal=String(user?.id||user?.email||'').trim();
+      const options=()=>({root,domainState:portalContext.domainState,stateClient:portalContext.stateClient,documentRef:document,pageId:page,principal});
+      const showPending=()=>{
+        const status=root?.querySelector?.('#pvStatus');
+        if(status)status.textContent='Nieuwe bedrijfsgegevens beschikbaar · rond eerst je invoer af en open deze pagina opnieuw';
+      };
+      if(!canRebuildVisiblePortalPage(options())){showPending();return;}
+      if(repaintScheduled)return;
+      repaintScheduled=true;
+      requestAnimationFrame(()=>{
+        repaintScheduled=false;
+        if(canRebuildVisiblePortalPage(options()))openPortalPage(page);
+        else showPending();
+      });
+    };
+    // The existing app emits this synchronously when the authenticated subject
+    // changes. Hide the old tenant's mounted content BEFORE the next hydration.
+    document.addEventListener('bg:portal-identity-boundary',()=>{
+      // Closing hides the panel, but a tenant switch must also revoke its
+      // old private DOM: hidden widgets can otherwise retain prior answers.
+      const root=document.getElementById('portalView');
+      if(!root)return;
+      closePortalPage();
+      root.dataset.pageId='';
+      root.querySelector('#pvNative')?.replaceChildren();
+      const impact=root.querySelector('#pvImpactMap');
+      if(impact){impact.replaceChildren();impact.hidden=true;}
+      const status=root.querySelector('#pvStatus');
+      if(status)status.textContent='';
+      const body=root.querySelector('.pvbody');
+      if(body)for(const node of [...body.children])
+        if(node.id!=='pvNative'&&node.id!=='pvImpactMap'&&!node.classList.contains('pvstatus'))node.remove();
+    });
     globalThis.addEventListener?.('bg:portal-impact',event=>{
       const impact=event.detail||{};
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact}));
@@ -455,34 +514,34 @@ export function enhancePortalShell(){
       if(impact.changed)renderImpactMap(root,impact,'pending');
       // Tijdens typen blijft het bronformulier stabiel. Andere open afgeleide
       // pagina's mogen direct opnieuw renderen, net als teken() in het oude portaal.
-      if(current!==impact.sourcePage)requestAnimationFrame(()=>openPortalPage(current));
+      if(current!==impact.sourcePage)scheduleVisiblePageRebuild(root);
     });
     // A fresh authenticated server projection invalidates open derived pages.
     // Do not replace active form controls while the customer is editing them.
     globalThis.addEventListener?.('bg:portal-server-refreshed',()=>{
       const root=document.getElementById('portalView');
-      if(!root?.classList.contains('open'))return;
-      if(portalContext.domainState?.status?.()==='dirty'||portalContext.domainState?.status?.()==='saving')return;
-      const active=document.activeElement;
-      if(active&&root.contains(active)&&active.matches?.('input, textarea, select, [contenteditable="true"]'))return;
-      const page=root.dataset.pageId;
-      if(page)requestAnimationFrame(()=>{
-        if(root.classList.contains('open')&&root.dataset.pageId===page
-           &&!['dirty','saving'].includes(portalContext.domainState?.status?.()))openPortalPage(page);
-      });
+      if(root?.classList.contains('open'))scheduleVisiblePageRebuild(root);
+    });
+    // The original Powerhouse bridge emits this ONLY for a changed, tenant-
+    // authenticated runtime projection. No second poller or scheduler.
+    globalThis.addEventListener?.('bg:runtime-evidence',event=>{
+      if(event?.detail?.source!=='brain-operating-loop')return;
+      const root=document.getElementById('portalView');
+      if(root?.classList.contains('open'))scheduleVisiblePageRebuild(root);
     });
     globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
-      // Only an impact explicitly listed among the canonical ACKs may render as confirmed.
-      const impact=event.detail?.impacts?.at?.(-1)||null;
-      globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact||{}}));
+      // A partial multi-section ACK proves exactly its original causal
+      // generations; never show unrelated page B as confirmed on page A.
+      const impacts=Array.isArray(event.detail?.impacts)?event.detail.impacts:[];
+      globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impacts.at(-1)||{}}));
       const root=document.getElementById('portalView');
       if(!root?.classList.contains('open'))return;
-      renderImpactMap(root,impact,'confirmed');
       const current=root.dataset.pageId;
-      if(!impact?.affectedPages?.includes(current))return;
-      // Na Opslaan is het veilig ook de bronpagina opnieuw op te bouwen:
-      // canonieke state + Brain-record zijn dan bevestigd.
-      requestAnimationFrame(()=>openPortalPage(current));
+      const confirmed=[...impacts].reverse().find(item=>item?.affectedPages?.includes(current));
+      if(!confirmed)return;
+      renderImpactMap(root,confirmed,'confirmed');
+      // An old receipt does not authorize discarding a newer unsaved DOM form.
+      scheduleVisiblePageRebuild(root);
     });
     globalThis.addEventListener?.('bg:portal-brain-pending',event=>{
       const root=document.getElementById('portalView');
