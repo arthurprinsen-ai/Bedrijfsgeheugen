@@ -124,7 +124,16 @@ export async function runScheduledTenants({
   }
   const settled=await Promise.allSettled(distinct.map(async tenantId=>{
     const store=storeFactory({tenantId});
-    return runEvaluation({store,now,maxDuePosts,config});
+    const result=await runEvaluation({store,now,maxDuePosts,config});
+    // Same ORIGINAL hourly owner performs post→evaluation→obligation ACK.
+    // The provider snapshot and deterministic evaluation must agree in the
+    // original authenticated store. This also heals previously orphaned ACKs.
+    const receipts=store.reconcileVerifiedObligations
+      ? await store.reconcileVerifiedObligations()
+      : {checked:0,resolved:0};
+    return {...result,
+      obligationReceiptsResolved:receipts.resolved||0,
+      obligationReceiptsChecked:receipts.checked||0};
   }));
   const done=settled.map((result,i)=>result.status==='fulfilled'
     ? {tenantId:distinct[i],...result.value,ok:true}
