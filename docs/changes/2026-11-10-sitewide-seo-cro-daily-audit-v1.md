@@ -1,0 +1,13 @@
+# Sitewide daily SEO + keyword + CRO: one Powerhouse execution loop
+**Date:** 2026-11-10 · **Fingerprint:** `seo|sitewide|daily-audit-to-conversion-learning|20261110-v1` · **Owner:** original SEO Order Engine / BG169.
+**Scope:** Existing, enabled once-per-day SEO Order Engine, not a second scheduler or website writer.
+## Problem
+The existing scheduled skill required a daily SEO/CRO cycle, but did not make full LIVE public NL+EN URL coverage, explicit source freshness, qualified conversion outcomes and proof-based owner handoff a single discoverable regression contract. The CI workflows validate source changes but their push triggers alone are not proof of a daily production crawl. Current source of truth 10 Nov at 18:03Z: 102 flagged human pageviews/7d, 2 CTA events/7d, 0 recorded linked qualified leads, 0 externally verified orders and 0 assignments/30d.
+## Canonical change
+`config/seo-growth-loop.json` now declares `optimization.sitewide_daily_audit`. The original skill, system map and Brain capability registry project the same fingerprint and writer. The original daily ChatGPT SEO automation was updated while retaining its existing schedule; no extra cron was created.
+Daily operations must reconcile LIVE sitemap/robots plus NL/EN canonical and linked route inventory, record per-route coverage/exclusions/failures, run technical SEO checks (HTTP, noindex, canonical, sitemap, hreflang, schema truth, title/H1, links/orphans, accessibility, mobile field CWV, privacy), join keyword intent ownership to fresh lag-aware GSC and bounded DataForSEO, and inspect actual CRO events → qualified lead → meeting → paid receipt.
+At most three reversible changes per cycle, under existing owner lease; source/skill fixes use protected PR, Required/BRAIN/CodeQL, scoped preview, automatic safe BG169 release, exact Netlify production deploy SHA and public-route readback. Failed or incomplete handoffs become original ONE BRAIN obligations with retry/backoff and owner ACK; outcome returns through original Heartbeat/portal and learning. Insufficient sample ≠ win.
+## Evidence gate
+A workflow succeeding or an automation prompt being updated is **not** proof of an actual whole-site audit, a deployed optimization, a controlled experiment or revenue. Status stays `COVERAGE_INCOMPLETE` if any intended public route lacks coverage proof; `PENDING_ORIGINAL_OWNER_RETRY` for tool/CI failures; `NO_SAFE_CHANGE_WITH_EVIDENCE` if no defensible edit. No fake “all green”.
+## Verification
+`node --test tests/brain-seo-conversion-orders-v1.test.mjs`, plus original Required/BRAIN/CodeQL release checks and independently verified natural production observations. Reference original P0 coordination: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198 .

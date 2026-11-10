@@ -1670,6 +1670,18 @@
           4900
         ],
         "status": "POLICY_CANDIDATE_PENDING_PROTECTED_MERGE_AND_RUNTIME_PROOF"
+      },
+      "sitewide_daily_audit": {
+        "fingerprint": "seo|sitewide|daily-audit-to-conversion-learning|20261110-v1",
+        "authority": "config/seo-growth-loop.json#optimization.sitewide_daily_audit",
+        "single_daily_executor": true,
+        "full_production_public_nl_en_coverage_required": true,
+        "technical_keyword_cro_audits_required": true,
+        "original_owner_writer": "Powerhouse SEO Order Engine / BG169",
+        "max_daily_safe_reversible_changes": 3,
+        "protected_merge_and_production_readback_required": true,
+        "one_brain_heartbeat_portal_learning_handoff_required": true,
+        "status": "POLICY_CANDIDATE_PENDING_PROTECTED_MERGE_AND_RUNTIME_EVIDENCE"
       }
     },
     {
