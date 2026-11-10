@@ -57,5 +57,11 @@
   },
   "tests": [
     "tests/brain-windsor-live-schema-handoff-20261110.test.mjs"
+  ],
+  "prevention": [
+    "Replay exact recent connected Windsor native provider stage identity and account_id shapes in original company source-to-consumer regression test on protected CI.",
+    "Check the independent exact provider post URN, organization author readback, post timestamp and genuine numeric metrics; reject source/account conflicts without fallback inference.",
+    "Treat an HTTP 200/healthy social sync as only transport truth; compare the source event_id against actual social_metric_snapshots and original application/evaluation consumer receipts.",
+    "Keep ONE BRAIN original #171 and original social sync #177 on existing scheduler only; never duplicate provider publication or mark uncontrolled descriptive impressions as causal lift."
   ]
 }
