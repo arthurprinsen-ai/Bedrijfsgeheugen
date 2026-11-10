@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-4215-bridge-ack-retry-principal-20261110-v1",
+  "fingerprint": "portal|powerhouse-runtime-bridge|unacked-event-deleted-and-cross-principal-retry|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_BRAIN_HANDOFF_ACK_LOSS",
+    "scope": "PORTAL_V2_TENANT_UI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The existing portal Powerhouse runtime bridge removed a debounced event from the in-memory queue before POST success, suppressed failed sends with catch, trusted any HTTP 2xx without matching the immutable Brain record, and queued work without a strict source-principal binding. Failed/ambiguous action intent or post-sync evidence could silently vanish or risk crossing a later identity switch.",
+  "fix": "Retain original immutable queued records with captured tenant principal, observedAt, correlation and idempotency key; exact ID/correlation Brain readback is the only dequeue criterion; original 45s/focus/identity refresh opportunistically retries with in-flight suppression; original auth boundary resets prior tenant queue and lineage.",
+  "tests": [
+    "portal-v2/tests/powerhouse-runtime-bridge.test.mjs",
+    "tests/brain-portal-bridge-handoff-ack-retry-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-bridge-handoff-ack-retry-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-bridge-handoff-ack-retry-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-bridge-handoff-ack-retry-20261110.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Never remove portal queued evidence or requested action before exact canonical Brain ACK of matching record ID and correlation ID.",
+    "Retry original immutable record on existing session-bound refresh/focus, do not invent duplicate IDs or a new scheduler.",
+    "Never carry queued original tenant evidence, idempotency and previous correlation into next identity.",
+    "Browser session retry is not a durable restart outbox; keep #4215 EVIDENCE_DUE until authenticated post-restart and end-to-end customer verification."
+  ],
+  "owner": "Original Portal V2 and ONE BRAIN P0 #4215",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_VERIFIED",
+  "observed_evidence": {
+    "original_source": "portal-v2/powerhouse-runtime-bridge.js",
+    "reproduced_from_source": true,
+    "end_to_end_provider_receipt_proven": false,
+    "session_restart_durable_outbox_proven": false,
+    "heartbeat_value_learning_proven": false
+  }
+}
