@@ -331,7 +331,7 @@ test('continuous handoff assurance distinguishes missing receiver from legitimat
  assert.match(sql,/interval '8 days'/);
  assert.match(sql,/stage_execution_mature/);
  assert.match(sql,/ORIGINAL_RECEIVER_NOT_CLAIMED_ESCALATE_OWNER/);
- assert.match(sql,/next_owner_ack_claimed'\)\:\:boolean,false\)=false/);
+ assert.ok(sql.includes("coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,next_owner_ack_claimed}')::boolean,false)=false"),'only unclaimed receipts may be escalated before outcome maturity');
  assert.match(sql,/STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER/);
  assert.match(sql,/case when v_overdue_count>0 or v_stalled>0 then 'fout'/);
  assert.equal((sql.match(/create or replace function public\.powerhouse_original_handoff_receipt_audit_v1/gi)||[]).length,1);
