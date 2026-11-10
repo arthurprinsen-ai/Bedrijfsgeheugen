@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROVIDER_819_ALREADY_APPLIED_LOCK_ONLY_PROTECTED_CANDIDATE",
+  "fingerprint": "powerhouse|supabase|native819-provider-applied-source-lock-lag|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "Existing protected GitHub→Supabase GitOps native migration reconciler only",
+  "root_cause": "Original PR #5554 protected merge 0089537552af9c9e5df85692698cca5418afb6b9 automatically applied exactly one real Supabase migration 20261110073500_original_content_handoff_receipts_v1, updating actual provider schema_migrations from 818 to 819. Original Git main source already had the exact 819 SQL files, but original supabase/migration-history.lock.json remained at 818, so next protected source-only PR #5556 failed original exact provider lock equality (819 executable source files != 818 recorded provider identities). This is a source lock handoff gap, not a need to rerun migration DDL.",
+  "evidence": {
+    "original_provider_project": "adhjwmvyoixzjtmiroln",
+    "verified_at": "2026-11-10T08:20:29.700412Z",
+    "provider_actual_versions": 819,
+    "original_lock_before": 818,
+    "original_lock_after": 819,
+    "exact_verified_version": "20261110073500",
+    "exact_verified_name": "original_content_handoff_receipts_v1",
+    "first_818_identities_verified_equal": true,
+    "original_819_sql_source_present": true,
+    "first_protected_pr": 5554,
+    "next_blocked_pr": 5556,
+    "blocked_workflow": 42781630673,
+    "no_database_apply": true
+  },
+  "fix": "Preserve all 818 prior official immutable identities, append ONLY independently verified actual #819 version/name in original supabase/migration-history.lock.json captured_at provider check, and deliver as LOCK-ONLY protected PR before new source-only migration. No SQL DDL, no new cron, no provider edits. Protected original preview verifies exact provider/source/lock parity before merge.",
+  "prevention": "Original single GitOps pipeline must reconcile and protect source lock independently AFTER native production DDL applies, BEFORE admitting next source-only migration; do not combine a never-applied migration source and applied provider ledger in the same candidate. Depend on original provider full identity readback, not a self-authored success claim.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
+    "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "invariants": [
+      "819 applied immutable Supabase versions",
+      "819 original Git migration SQL files",
+      "819 exact provider lock identities",
+      "no new migration file in lock-only candidate",
+      "no migration apply/reapply",
+      "protected native GitHub Required + CodeQL + Supabase Preview"
+    ]
+  },
+  "compiler": {
+    "scope": "DATABASE_MIGRATIONS",
+    "failure_class": "POST_NATIVE_APPLY_LOCK_LAG_BLOCKS_NEXT_SOURCE_ONLY_CANDIDATE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required/CodeQL and hosted Supabase preview, protected merge, independent main source 819/lock 819/provider 819 exact version/name equality. Next ORIGINAL source-only PR #5556 then eligible for normal admission; never manually apply existing migration or pretend old work is complete."
+}
