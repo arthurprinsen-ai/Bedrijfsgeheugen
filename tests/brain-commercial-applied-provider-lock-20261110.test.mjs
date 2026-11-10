@@ -11,6 +11,8 @@ test('exact observed original commercial provider migration belongs to complete 
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.applied.length,822);
+ assert.equal(new Set(lock.applied.map(row=>row.version)).size,822,'duplicate provider versions forbidden');
+ assert.ok(lock.applied.every(row=>/^\d{14}$/.test(row.version)&&/^[a-z0-9_]+$/.test(row.name)),'preserve every exact provider identity');
  assert.equal(lock.applied.at(-1).version,'20261110131500');
  assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-10T12:29:55.152814Z'));
  const sql=readFileSync(new URL('../supabase/migrations/'+expected,import.meta.url),'utf8');
