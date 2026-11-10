@@ -650,6 +650,7 @@ declare
   v_snapshot jsonb;
   v_commercial jsonb:='{}'::jsonb;
   v_receipt_fingerprint text;
+  v_stage_actionable_at timestamptz;
   v_stalled int:=0;
 begin
   if p_now is null then raise exception 'ORIGINAL_HANDOFF_TIME_REQUIRED'; end if;
@@ -786,6 +787,25 @@ begin
       v_due:=null;
       v_owner:='original ONE BRAIN terminal verifier';
     end if;
+    -- Receipt must be claimed promptly; operational progress must only be
+    -- judged once the provider/measurement/experiment stage is actionable.
+    -- This prevents a 24h provider metric from being marked STALLED at +2h.
+    v_stage_actionable_at:=case
+      when v_stage='PUBLICATION_BLOCKED' then p_now
+      when v_stage='ORIGINAL_PUBLICATION_NOT_PROVEN' then v_due
+      when v_stage='PROVIDER_TO_METRICS_PENDING'
+        then r.live_proven_at+interval '24 hours'
+      when v_stage='MEASUREMENT_STAMP_WITHOUT_SOURCE_RECEIPT'
+        then coalesce(r.measured_at,p_now)
+      when v_stage='METRICS_TO_ANALYST_ACK_MISSING'
+        then r.measured_at+interval '4 hours'
+      when v_stage in ('EXPERIMENT_OUTCOME_NOT_PROVEN',
+                       'LEARNING_APPLICATION_ACK_MISSING')
+        then r.measured_at+interval '8 days'
+      when v_stage='NEXT_NATURAL_RUN_READBACK_MISSING'
+        then r.learned_at+interval '24 hours'
+      else p_now
+    end;
     v_overdue:=v_due is not null and p_now>v_due
       and v_stage<>'END_TO_END_VERIFIED';
     if v_overdue then v_overdue_count:=v_overdue_count+1;
@@ -842,6 +862,8 @@ begin
       'application_ack_proven',v_application_proven,
       'next_natural_run_ack_proven',v_next_run_proven,
       'deadline_utc',v_due,'deadline_overdue',v_overdue,
+      'stage_actionable_at_utc',v_stage_actionable_at,
+      'stage_execution_mature',v_stage_actionable_at is not null and p_now>=v_stage_actionable_at,
       'checked_at_utc',p_now,
       'repair_policy','original-owner-only; preserve original ID and provider idempotency; never invent publication, sample or revenue',
       'next_action',case
@@ -922,6 +944,12 @@ begin
                 when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
                   is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
                   and coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,unchanged_heartbeat_runs}')::integer,0)>=2
+                  and coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,next_owner_ack_claimed}')::boolean,false)=false
+                  then 'ORIGINAL_RECEIVER_NOT_CLAIMED_ESCALATE_OWNER'
+                when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
+                  and coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,unchanged_heartbeat_runs}')::integer,0)>=2
+                  and coalesce((excluded.evidence->>'stage_execution_mature')::boolean,false)
                   then 'STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER'
                 else 'AWAITING_ORIGINAL_NEXT_OWNER' end,
             'owner_receipt_required',excluded.evidence->>'next_stage'<>'END_TO_END_VERIFIED',
@@ -946,6 +974,7 @@ begin
     and e.dedupe_key like 'original-handoff:%'
     and e.evidence#>>'{handoff_receipt,escalation_state}' in
       ('STALLED_WITHOUT_NEW_PROOF_ESCALATE_ORIGINAL_OWNER',
+       'ORIGINAL_RECEIVER_NOT_CLAIMED_ESCALATE_OWNER',
        'OVERDUE_RETURN_TO_ORIGINAL_OWNER')
     and e.evidence->>'checked_at_utc' is not null
     and (e.evidence->>'checked_at_utc')::timestamptz>=p_now-interval '2 hours';
@@ -968,7 +997,7 @@ begin
     (gemeten_op,onderdeel,soort,status,detail,gegevens)
   values (p_now,'powerhouse-original-handoff-ack',
     'original-content-metrics-experiment-application',
-    case when v_overdue_count>0 then 'fout'
+    case when v_overdue_count>0 or v_stalled>0 then 'fout'
       when v_pending>0 then 'waarschuwing' else 'ok' end,
     'Original ID, owner, SLA and receipt audited; green only after independently proven applied learning on next natural run.',
     v_snapshot);
