@@ -169,6 +169,25 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
  const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
+ // Same-session retry only: never send a pending input under another tenant.
+ const currentPrincipal=()=>{const user=stateClient.currentUser?.();return String(user?.id||user?.email||'').trim();};
+ let handoffPrincipal='',hydratedPrincipal='';
+ function guardHandoffPrincipal(){
+  if(hydratedPrincipal&&hydratedPrincipal!==currentPrincipal())
+   throw new Error('PORTAL_HYDRATED_PRINCIPAL_MISMATCH');
+  if(handoffPrincipal&&handoffPrincipal!==currentPrincipal()
+     &&(pendingBusinessInputs.size>0||pendingImpacts.length>0))
+   throw new Error('PORTAL_PENDING_HANDOFF_PRINCIPAL_MISMATCH');
+ }
+ function pendingHandoffs(){
+  const inputs=pendingBusinessInputs.size,impacts=pendingImpacts.length;
+  return Object.freeze({
+   pending:inputs>0||impacts>0,inputs,impacts,
+   retryable:inputs>0&&Boolean(handoffPrincipal)&&handoffPrincipal===currentPrincipal()
+     &&hydratedPrincipal===currentPrincipal()&&domain.initialized()&&!stateClient.isDemo?.()
+     &&['saved','idle','error'].includes(domain.status())
+  });
+ }
  const loadBusinessInputStore=()=>businessInputStorePromise||(businessInputStorePromise=Promise.resolve().then(()=>businessInputStoreLoader()));
  async function saveBusinessInput(input){
   const headers=typeof stateClient.authHeaders==='function'?await stateClient.authHeaders():{};
@@ -182,7 +201,14 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return saver(input,{authorization});
  }
  async function performInit(){
+  // The authenticated snapshot must be hydrated under the same identity as the
+  // pending handoff. A different user's cached domain may never be replayed.
+  const initializingPrincipal=currentPrincipal();
+  hydratedPrincipal='';
   let result=await domain.init();
+  if(!stateClient.isDemo?.()&&initializingPrincipal!==currentPrincipal())
+   throw new Error('PORTAL_PRINCIPAL_CHANGED_DURING_HYDRATION');
+  hydratedPrincipal=initializingPrincipal;
   if(browserLegacyLiftPending){
    domain.patch('portal.migration',{browserLegacyLifted:true,browserLegacyLiftVersion:'2026-09-18-v1'});
    result=await domain.flush();
@@ -198,6 +224,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  function track(path){
   const binding=businessInputBinding(path);
   if(!binding)return;
+  if(!handoffPrincipal)handoffPrincipal=currentPrincipal();
   businessRevision+=1;
   pendingBusinessInputs.set(binding.key,{...binding,generation:businessRevision});
  }
@@ -230,41 +257,53 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   return enriched;
  }
- function set(path,value){const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
+ function set(path,value){guardHandoffPrincipal();const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  function setDerived(path,value){return domain.setDerived(path,value);}
- function patch(path,value){const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
+ function patch(path,value){guardHandoffPrincipal();const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  async function performPortalFlush(){
+  guardHandoffPrincipal();
+  const submittedPrincipal=currentPrincipal();
   // Snapshot causal lineage before any await: edits made during the state or
   // Brain write must remain pending and cannot be reported as synchronized.
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
   const cutoff=impactRevision;
   const submittedImpacts=pendingImpacts.filter(impact=>impact.generation<=cutoff);
   const stateResult=await domain.flush();
+  if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
   // If a field changed during state persistence, its data is not yet server-
   // confirmed. Defer Brain submission until the next flush.
   if(stateResult.status==='dirty')return stateResult;
   if(!['saved','idle'].includes(stateResult.status))throw new Error('PORTAL_STATE_PERSISTENCE_ACK_REQUIRED');
   const stored=[];const acknowledged=new Set();
-  for(const item of pending){
-   const causalImpacts=submittedImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
-   const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
-   if(saved?.skipped===true&&saved.reason==='DEMO_NON_DURABLE'&&stateClient.isDemo?.()){
+  try{
+   for(const item of pending){
+    if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
+    const causalImpacts=submittedImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
+    const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
+    if(submittedPrincipal!==currentPrincipal())throw new Error('PORTAL_HANDOFF_PRINCIPAL_CHANGED_DURING_WRITE');
+    if(saved?.skipped===true&&saved.reason==='DEMO_NON_DURABLE'&&stateClient.isDemo?.()){
+     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
+     continue;
+    }
+    if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
+    stored.push(saved);
+    for(const impact of causalImpacts)acknowledged.add(impact.generation);
     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
-    continue;
    }
-   if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
-   stored.push(saved);
-   for(const impact of causalImpacts)acknowledged.add(impact.generation);
-   if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
-  }
-  // Prune only impacts acknowledged by the canonical Brain. Never drop newer
-  // edits, even when a user changes a field during the Brain write.
-  const confirmedImpacts=submittedImpacts.filter(impact=>acknowledged.has(impact.generation));
-  for(let index=pendingImpacts.length-1;index>=0;index--){
-   if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
-  }
-  if(stored.length&&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
+  }finally{
+   // A later section may fail AFTER earlier sections received independent Brain
+   // ACKs. Reconcile proven generations even on partial failure; preserve
+   // unacknowledged and newer generations for the next same-principal attempt.
+   const confirmedImpacts=submittedImpacts.filter(impact=>acknowledged.has(impact.generation));
+   for(let index=pendingImpacts.length-1;index>=0;index--){
+    if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
+   }
+   if(pendingBusinessInputs.size===0&&pendingImpacts.length===0)handoffPrincipal='';
+   // Never broadcast one tenant's confirmations into a different user's session.
+   if(stored.length&&submittedPrincipal===currentPrincipal()&&hydratedPrincipal===submittedPrincipal
+      &&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
+   }
   }
   return stateResult;
  }
@@ -280,16 +319,25 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
      &&!stateClient.isDemo?.()&&!activeInit&&!activePortalFlush
      &&pendingBusinessInputs.size===0&&pendingImpacts.length===0&&!browserLegacyLiftPending;
   };
-  if(!samePrincipal())return Promise.resolve(Object.freeze({applied:false,reason:'UNVERIFIED_OR_UNSAVED_TENANT'}));
-  activeRefresh=domain.refresh({canApply:samePrincipal}).then(result=>{
+  // Reuse the existing focus/visibility/15-minute revalidation, never a new scheduler.
+  // Only replay an already-attempted, same-principal handoff; never auto-save typing.
+  if(!samePrincipal()&&!pendingHandoffs().retryable)
+   return Promise.resolve(Object.freeze({applied:false,reason:'UNVERIFIED_OR_UNSAVED_TENANT'}));
+  activeRefresh=(async()=>{
+   if(pendingHandoffs().retryable){
+    try{await flush();}
+    catch{return Object.freeze({applied:false,reason:'PENDING_BRAIN_HANDOFF_ACK_REQUIRED'});}
+   }
+   if(!samePrincipal())return Object.freeze({applied:false,reason:'UNVERIFIED_OR_UNSAVED_TENANT'});
+   const result=await domain.refresh({canApply:samePrincipal});
    if(result.applied&&result.changed&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
     globalThis.dispatchEvent(new CustomEvent('bg:portal-server-refreshed',{detail:{source:'authenticated_canonical_readback',customerScoped:true}}));
    }
    return result;
-  }).finally(()=>{activeRefresh=null});
+  })().finally(()=>{activeRefresh=null});
   return activeRefresh;
  }
- const portalDomain=Object.freeze({...domain,init,refresh,set,setDerived,patch,flush,saveBusinessInput});
+ const portalDomain=Object.freeze({...domain,init,refresh,set,setDerived,patch,flush,pendingHandoffs,saveBusinessInput});
  if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=portalDomain;
  return portalDomain;
 }

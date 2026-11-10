@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-4215-canonical-handoff-recovery-20261110-v1",
+  "fingerprint": "portal|brain|partial-ack-pending-handoff-not-revalidated|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_PENDING_BRAIN_HANDOFF_RETRY_GAP",
+    "scope": "PORTAL_V2_CANONICAL_TENANT_WRITE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original domain-state retains pending BusinessInput and causal impacts on a failed secondary Brain ACK, but original refresh refused pending handoffs without an idempotent same-principal retry.",
+  "fix": "Reuse the existing authenticated portal revalidation to recover only previously attempted same-principal pending canonical BusinessInput; block cross-tenant replay and display pending evidence on the entrepreneur home and every registered page guide. No new scheduler, tenant store or provider.",
+  "tests": [
+    "tests/brain-portal-handoff-replay-20261110.test.mjs",
+    "portal-v2/tests/portal-handoff-recovery.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-handoff-replay-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-handoff-replay-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-handoff-replay-20261110.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "A previously attempted canonical handoff is retried at an existing revalidation point only for its authenticated original principal.",
+    "A source-state ACK, scheduler success or UI event is never independently verified Brain/outcome/learning evidence.",
+    "Registered entrepreneur pages preserve pending causal status until genuine original Brain confirmation; never claim impact from just a proposal.",
+    "A browser-session queue is not a server-durable outbox; retain original #4215 and its two-tenant acceptance."
+  ],
+  "owner": "Original #4215 Portal V2 + ONE BRAIN + Powerhouse/Heartbeat owner",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_VERIFIED",
+  "observed_evidence": {
+    "production_readonly_at": "2026-11-10T07:50:00Z",
+    "brain_obligations": {
+      "fulfilled": 948,
+      "open": 30,
+      "ready": 5,
+      "running": 2,
+      "blocked": 2
+    },
+    "brain_active_blockers": 23,
+    "portal_canonical_brain_layer_rows": 0,
+    "independent_real_tenant_e2e_proven": false,
+    "comment": "Global Powerhouse growth queues are separate from tenant portal BusinessInput ACK; never infer individual customer loss."
+  }
+}
