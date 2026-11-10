@@ -32,7 +32,8 @@ export function powerhouseIntegrationMarkup(snapshot){
   const source=snapshot?.sourceReadStates||{},a=snapshot?.architecture||null,
     capabilities=snapshot?.capabilities||null, intelligence=snapshot?.intelligence||null,
     experiments=snapshot?.experiments||null, commercial=snapshot?.commercial||null,
-    loops=snapshot?.loopAssurance||null, terminal=snapshot?.terminalControl||null;
+    loops=snapshot?.loopAssurance||null, terminal=snapshot?.terminalControl||null,
+    handoff=snapshot?.commercialHandoff||null, incidents=snapshot?.commercialIncidents||null;
   const sourceState=snapshot?.sourceState||'UNAVAILABLE';
   const sourceNames=Object.keys(source);
   const liveSources=sourceNames.filter(name=>source[name]==='LIVE').length;
@@ -46,9 +47,20 @@ export function powerhouseIntegrationMarkup(snapshot){
     ['Integriteitslussen',loops?esc(loops.state||'UNKNOWN'):'GEEN BRON',loops?'Groen '+knownNum(loops.green)+' · oranje '+knownNum(loops.amber)+' · rood '+knownNum(loops.red)+' / totaal '+knownNum(loops.total):'Geen actuele lus-readback; nooit impliciet groen'],
     ['Terminale verplichtingen',terminal?(terminal.healthy===true?'CONTROLPLANE GEZOND':'HERSTEL OPEN'):'GEEN BRON',terminal?'Niet-afgerond '+knownNum(terminal.nonterminal)+' · geblokkeerd '+knownNum(terminal.blocked)+' · geëscaleerde onbekende resultaten '+knownNum(terminal.escalated):'Geen terminale bewijscontrole; nooit impliciet groen'],
     ['CRO / experimenten',experiments?esc(experiments.readiness||'UNKNOWN'):'GEEN BRON',experiments?'Toewijzingen '+knownNum(experiments.assignments)+' · controlegroep '+knownNum(experiments.holdoutAssignments):'Geen experimenteerbewijs'],
-    ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht']
+    ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht'],
+    ['Commerciële provider-overdracht',handoff?esc(handoff.state||'ONBEKEND'):'GEEN BRON',
+      handoff?'Bewezen '+knownNum(handoff.providerProven7d)+' · onbewezen/verlopen '+knownNum(handoff.brokenOrUnproven7d)+' · A/B-behandelingen '+knownNum(handoff.linkedTreatments7d):'Geen onafhankelijke oorspronkelijke commercial-scorecard'],
+    ['Brein · commerciële incidenten',incidents?(incidents.active>0?'OPEN':'BRON UITGELEZEN'):'GEEN BRON',
+      incidents?'Actief '+knownNum(incidents.active)+' · technisch opgelost '+knownNum(incidents.resolved)+' · status uit het oorspronkelijke Brain-register':'Origineel Brain-register onbereikbaar; niet groen']
   ].map(row=>'<tr><th scope="row">'+esc(row[0])+'</th><td>'+row[1]+'</td><td>'+row[2]+'</td></tr>').join('');
   const messages=gaps.length?gaps.slice(0,18).map(v=>'<li>'+esc(v)+'</li>').join(''):'<li>Geen stage-voor-stage providerbewijs in deze projectie.</li>';
+  const recentIncidents=incidents?.incidents||[];
+  const incidentItems=recentIncidents.length
+    ?recentIncidents.slice(0,16).map(item=>'<li><strong>'+esc(item.state||'ONBEKEND')
+      +'</strong> · '+esc(item.severity||'ONBEKEND')+' · '+esc(item.fingerprint||'BRON ZONDER VINGERAFDRUK')
+      +' · '+esc(item.updatedAt||'tijd onbekend')+'</li>').join('')
+    :'<li>Geen incidentregels uit het oorspronkelijke register opgehaald; dit bewijst geen herstel.</li>';
+
   return '<section class="cp-integration" data-bg-component="powerhouse-integration-health" data-proof="END_TO_END_UNPROVEN">'+
     '<h3>Powerhouse · gezamenlijke systeemstatus</h3>'+
     '<p>Één brongevoed overzicht van Brain, Heartbeat, de 15 integriteitslussen, terminale bewijsplichten, Growth en experimenten. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
@@ -58,6 +70,10 @@ export function powerhouseIntegrationMarkup(snapshot){
     '<ul>'+messages+'</ul>'+
     '<p>Bronnen: '+Object.entries(source).map(([k,v])=>esc(k)+': '+esc(v)).join(' · ')+'</p>'+
     '<p>Alleen originele uitvoering, onafhankelijke provider-readback, uitkomst, Brain-leertoepassing en regressietest sluiten de keten. Onbekend blijft onbekend.</p></details>'+
+    '<details data-bg-original-commercial-incidents="true"><summary>Brein · incidentlog en overdrachtsbewijs ('+knownNum(incidents?.active)+' actief)</summary>'+
+    '<p>Een gerepareerde codefout is niet hetzelfde als een gesloten commerciële lus. Statussen komen rechtstreeks uit het oorspronkelijke Brein; ontbrekende bronnen worden niet groen.</p>'+
+    '<ul>'+incidentItems+'</ul>'+
+    '<p><a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198" target="_blank" rel="noopener noreferrer">Canoniek commercieel incident #4198</a></p></details>'+
     '</section>';
 }
 
