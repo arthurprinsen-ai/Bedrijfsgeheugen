@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "EXACT_PROVIDER_APPLIED_821_LOCK_ONLY_CANDIDATE",
+  "fingerprint": "powerhouse|supabase|native821-applied-original-handoff-no-age-out-lock-lag|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing protected GitHub Supabase GitOps and ONE BRAIN provider ledger owner",
+  "root_cause": "The original protected PR #5556 successfully merged at main 147a8769208006091ed94cedc6e7b1803148ee37, and native GitOps independently applied original previously-unapplied source-only SQL 20261110123000_original_content_handoff_no_aging_gap_v2 as provider version 821. Existing source lock still tracked only 820, blocking the next protected migration. All first 820 immutable provider version/name pairs match Git main lock exactly. This is post-native-apply source-lock lag, not need to replay DDL. The original BRAIN source/no-aging gap runtime is in production and evidence observed.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "main_at_check": "147a8769208006091ed94cedc6e7b1803148ee37",
+    "canonical_provider_count": 821,
+    "lock_before": 820,
+    "identical_prefix_count": 820,
+    "missing_provider_applied_version": "20261110123000",
+    "missing_provider_applied_name": "original_content_handoff_no_aging_gap_v2",
+    "source_blob": "75e0b095eae1528474bc1e03fd0dc90182d240e7",
+    "original_171_runtime_active": true,
+    "source_to_consumer_old_196_registered": true,
+    "per_social_learning_189_reinspected": true,
+    "missing_original_coverage": 0,
+    "no_fake_fulfillment": true
+  },
+  "fix": "One protected lock-only GitHub PR updates supabase/migration-history.lock.json from exact independently applied immutable provider identity 820 to 821, preserving all earlier rows, no SQL file, no sender, API, social publication, cron, rights or provider migration apply. Separate provider Preview / Required / CodeQL must PASS before merge and independent main/source/provider parity 821/821/821 readback afterwards.",
+  "prevention": "Native GitOps writer must independently read applied production provider history and reconcile original source lock as a separate protected append-only PR after every successful SQL migration, before admitting the next schema candidate. Never mark source-only SQL as applied before provider proves it.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "invariants": [
+      "all provider 821 ordered identities equal lock",
+      "source 821 SQL files",
+      "no DDL reapply",
+      "no parallel executor",
+      "Required+CodeQL+Hosted Preview necessary"
+    ]
+  },
+  "compiler": {
+    "scope": "DATABASE_MIGRATIONS",
+    "failure_class": "POST_PROTECTED_NATIVE_APPLY_SOURCE_LOCK_LAG",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required, CodeQL and exact-head Hosted Supabase Preview must all succeed; merge lock-only PR; independently confirm production 821 applied identities equal original main lock 821 and 821 tracked SQL files; no double apply, original #171 natural tick and BRAIN owner receipts remain. Commercial/casual outcome uplift not proven."
+}
