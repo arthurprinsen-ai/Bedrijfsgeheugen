@@ -309,7 +309,7 @@ begin
 
   return v_result;
 end;
-$function$
+$function$;
 
 -- No automatic replay or fabricated result: original hourly Heartbeat must
 -- subsequently call the unchanged assurance and write the same Brain obligation.
