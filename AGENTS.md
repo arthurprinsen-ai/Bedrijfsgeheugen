@@ -1629,3 +1629,9 @@ Regression contract:
 and `tests/provider-readback-sticky-health-20261110.test.mjs`.
 Original P0 authority:
 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+Protected source delivery admission for this recovery lane requires a single exact
+`Obligation-ID`, `Delivery-Lane: backend`, `Candidate-Type: recovery`,
+immutable branch-origin `Base-SHA`, exact `Change-Scope` and `Scope-Budget`.
+When admission rejects missing metadata, correct the SAME original PR body and
+trigger NEW exact-head checks without bypassing or relabeling historical failed runs.
