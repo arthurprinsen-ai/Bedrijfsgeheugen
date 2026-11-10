@@ -55,7 +55,11 @@
     "historical_replay": [
       "tests/brain-original-commercial-held-resume-20261110.test.mjs"
     ],
-    "owner": "original composer and commercial ONE BRAIN learning",
-    "requires_independent_provider_readback": true
+    "shadow": [
+      "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-commercial-held-resume-20261110.test.mjs"
+    ]
   }
 }
