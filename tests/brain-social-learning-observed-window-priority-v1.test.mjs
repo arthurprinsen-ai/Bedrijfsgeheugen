@@ -41,9 +41,24 @@ test('without source evidence keep old bounded absent-snapshot obligations, neve
 test('new window data index keeps one existing store/action/scheduler, tenant filter and 900 row guard',()=>{
  const source=fs.readFileSync(new URL('../supabase/functions/social-learning-store/index.ts',import.meta.url),'utf8');
  const runner=fs.readFileSync(new URL('../netlify/functions/social-learning-evaluate.mjs',import.meta.url),'utf8');
- assert.ok(source.includes("select('post_id,observed_at,data_quality').eq('tenant_id',tenantId)"));
+ assert.ok(source.includes("select('post_id,observed_at,data_quality,source,source_event_id,metrics').eq('tenant_id',tenantId)"));
  assert.ok(source.includes("limit(900)"));
  assert.ok(source.includes("COVERAGE_TRUNCATED_FALLBACK"));
  assert.equal(runner.split("schedule:'@hourly'").length-1,1);
  assert.ok(runner.includes("runScheduledTenants"));
+});
+
+test('verified Windsor company post windows are prioritized only with matching immutable provider identity',()=>{
+ const id='urn:li:share:12345';
+ const linked={post_id:'company-post',observed_at:'2026-10-05T10:00:00Z',
+   data_quality:'PROVIDER_OBSERVED_LINKED',source:'windsor-linkedin-company',
+   source_event_id:'windsor:linkedin-company:'+id+':2026-10-05',
+   metrics:{impressions:4,scope:'company_post_analytics',provider_post_urn:id,
+     provider_organization_urn:'urn:li:organization:18234216',
+     independent_proof:'EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT',
+     source_quality_before_link:'PROVIDER_OBSERVED'}};
+ const due=[{postId:'company-post',externalPostId:id,publishedAt:'2026-10-04T08:00:00Z',dueWindow:24}];
+ assert.equal(tagDuePostsWithObservedWindows(due,[linked])[0].hasWindowSnapshot,true);
+ assert.equal(tagDuePostsWithObservedWindows(due,[{...linked,metrics:{...linked.metrics,provider_post_urn:'wrong'}}])[0].hasWindowSnapshot,false);
+ assert.equal(tagDuePostsWithObservedWindows(due,[{...linked,data_quality:'OBSERVED_PARTIAL_SCOPE'}])[0].hasWindowSnapshot,false);
 });
