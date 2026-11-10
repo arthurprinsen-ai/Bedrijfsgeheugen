@@ -12,6 +12,9 @@ The existing Portal V2 already persists the customer's state via `/api/portal-st
 - Include server-issued tenant membership as well as identity in the principal key; preserve other authorized members' unacknowledged work without submitting under another user's token.
 - Strip `portal.__brainHandoffJournalV1` from the `PortalDomainStateSnapshot` canonical source answers; do not turn delivery state into business facts/AI training input.
 
+## Original Supabase clock cause and repair
+The existing authenticated `portal-state-handler.mjs` previously used the browser's rehydrated `sourceMeta.updatedAt` to stamp a new post. Real `bg_portal_state_put_internal` compares this value against the last accepted layer timestamp and can return stale on a valid new write. This is now server-stamped per authenticated POST, preventing a stale or forged future browser clock from controlling the DB revision. The original Postgres monotonic stale check remains intact; concurrent compare-and-swap and older future-dated records are separate obligations.
+
 ## Bounded proof
 Original regression tests cover restart after failed POST, partial section ACK, >50 causal changes, two users, same user across tenant memberships, corrupted journal, and exclusion from AI source answers. Protected CI + exact production deployment and original 2-tenant authenticated browser test must be independently verified before calling it live.
 
