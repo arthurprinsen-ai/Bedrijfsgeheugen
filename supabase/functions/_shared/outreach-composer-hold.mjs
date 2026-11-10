@@ -57,3 +57,19 @@ export function sourceResearchTaskForAction(action,handoff,at){
     message_draft:'',source_url:'',status:'suggested',due_at:at,expected_value_eur:0
   };
 }
+
+// Any prior external side effect with uncertain provider identity is a hard
+// no-resend barrier. The original readback reconciler may still confirm the
+// SAME provider ID; this gate NEVER authorizes a new GMAIL_SEND_EMAIL.
+export function providerUncertaintyNoResend(evidence){
+  const ev=evidence&&typeof evidence==='object'?evidence:{};
+  const outbound=ev.autonomous_outbound&&typeof ev.autonomous_outbound==='object'
+    ?ev.autonomous_outbound:{};
+  const quarantine=ev.provider_ambiguity_quarantine||{};
+  const truth=v=>v===true||v==='true';
+  const id=String(outbound.provider_message_id||'').trim();
+  return truth(outbound.needs_readback)
+    ||truth(outbound.republish_forbidden)
+    ||truth(quarantine.external_resend_forbidden)
+    ||(id!==''&&!truth(outbound.provider_readback_verified));
+}
