@@ -42,5 +42,20 @@
     "original BRAIN evaluation and next independently proven post reuse with attributable outcome"
   ],
   "independent_provider_readback_required": true,
-  "do_not_falsify_commercial_or_causal_success": true
+  "do_not_falsify_commercial_or_causal_success": true,
+  "compiler": {
+    "failure_class": "PROVIDER_OBSERVATION_SCHEMA_DRIFT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-windsor-live-schema-handoff-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-windsor-live-schema-handoff-20261110.test.mjs"
+  ]
 }
