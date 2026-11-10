@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {verifiedGmailReadback} from '../supabase/functions/_shared/verified-gmail-readback.mjs';
 import {outboundDeliveryGap} from '../supabase/functions/_shared/outreach-composer-hold.mjs';
 
 const sender=readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
@@ -9,7 +10,12 @@ const map=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
 test('Gmail created response is not independent SENT evidence',()=>{
  assert.match(sender,/GMAIL_SEND_EMAIL/);
  assert.match(sender,/GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID/);
- assert.match(sender,/id!==messageId\|\|!labels\.includes\('SENT'\)/);
+ assert.match(sender,/verifiedGmailReadback\(x,messageId,recipient\)/);
+ const provider={data:{messageId:'1a1c4b1f339a051f',labelIds:['SENT'],payload:{headers:[{name:'To',value:'Contact <contact@example.org>'}]}}};
+ assert.equal(verifiedGmailReadback(provider,'1a1c4b1f339a051f','contact@example.org').ok,true);
+ assert.equal(verifiedGmailReadback(provider,'wrong','contact@example.org').ok,false);
+ assert.equal(verifiedGmailReadback(provider,'1a1c4b1f339a051f','wrong@example.org').ok,false);
+ assert.equal(verifiedGmailReadback({...provider,data:{...provider.data,labelIds:['INBOX']}},'1a1c4b1f339a051f','contact@example.org').ok,false);
  assert.match(sender,/recipient_matches:/);
  assert.match(sender,/provider_readback_verified:true/);
  assert.ok(sender.indexOf('const proof=await readback(')<sender.indexOf('provider_ack_verified:true'));

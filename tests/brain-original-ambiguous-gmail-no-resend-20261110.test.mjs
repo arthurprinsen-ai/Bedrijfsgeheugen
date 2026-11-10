@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {verifiedGmailReadback} from '../supabase/functions/_shared/verified-gmail-readback.mjs';
 import {providerUncertaintyNoResend} from '../supabase/functions/_shared/outreach-composer-hold.mjs';
 
 const sender=readFileSync(new URL('../supabase/functions/powerhouse-autonomous-outreach/index.ts',import.meta.url),'utf8');
@@ -36,8 +37,11 @@ test('original Edge sender applies no-resend barrier before recipient authority,
 test('existing sender retains original pending-readback lineage and uncertainty no-resend',()=>{
  assert.match(sender,/\.eq\('status','waiting'\)\.contains\('evidence',\{autonomous_outbound:\{needs_readback:true\}\}\)/);
  assert.match(sender,/GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID/);
- assert.match(sender,/id!==messageId/);
- assert.match(sender,/sent_label:labels\.includes\('SENT'\)/);
+ assert.match(sender,/verifiedGmailReadback\(x,messageId,recipient\)/);
+ const source={data:{messageId:'gmail-real-id',labelIds:['SENT'],payload:{headers:[{name:'To',value:'prospect@example.org'}]}}};
+ assert.equal(verifiedGmailReadback(source,'gmail-real-id','prospect@example.org').ok,true);
+ assert.equal(verifiedGmailReadback({...source,data:{...source.data,messageId:'other'}},'gmail-real-id','prospect@example.org').id_matches,false);
+ assert.equal(verifiedGmailReadback({...source,data:{...source.data,labelIds:['INBOX']}},'gmail-real-id','prospect@example.org').sent_label,false);
  assert.match(sender,/republish_forbidden:true/);
  assert.match(sender,/powerhouse_email_contact_suppressions/);
  assert.match(sender,/verifyRecipientAuthority/);
