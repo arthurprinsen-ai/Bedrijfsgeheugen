@@ -1,4 +1,4 @@
-import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction} from '../_shared/outreach-composer-hold.mjs';
+import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction,providerUncertaintyNoResend} from '../_shared/outreach-composer-hold.mjs';
 import {createClient} from 'npm:@supabase/supabase-js@2';
 const C='powerhouse-autonomous-relationship-outreach-v3',B='https://backend.composio.dev/api/v3.1';
 const s=(v:any)=>String(v??'').trim(),J=(b:any,n=200)=>new Response(JSON.stringify(b),{status:n,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -87,7 +87,7 @@ Deno.serve(async(req)=>{
    const{data:preview,error:qe}=await db.from('powerhouse_sales_actions').select('action_id,person_key,evidence').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);
    if(qe)throw{code:'OUTREACH_PREVIEW_READ',message:qe.message};
    let authorized=0;
-   for(const a of preview||[])if(await verifyRecipientAuthority(db,a,s(a?.evidence?.recipient_email)))authorized++;
+   for(const a of preview||[])if(!providerUncertaintyNoResend(a?.evidence)&&await verifyRecipientAuthority(db,a,s(a?.evidence?.recipient_email)))authorized++;
    return J({ok:true,dry_run:true,eligible:authorized,prepared:(preview||[]).length,recipient_authority_unverified:(preview||[]).length-authorized,external_outreach_executed:false,account_resolved:Boolean(acct.id),account_user_resolved:Boolean(acct.userId),contract:C});
   }
   const composerResponse=await fetch(url+'/functions/v1/powerhouse-commercial-message-composer',{
@@ -100,6 +100,27 @@ Deno.serve(async(req)=>{
   const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,message_draft,evidence,priority').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
   
   for(const a of acts||[]){
+   // P0: the original SQL watchdog can return an uncertain provider send
+   // from WAITING to PREPARED. A prior provider side effect is NEVER retried.
+   // Reclaim the SAME action for original readback; do not call Gmail SEND.
+   if(providerUncertaintyNoResend(a?.evidence)){
+    const quarantine={...(a.evidence||{}),provider_ambiguity_quarantine:{
+      ...(a.evidence?.provider_ambiguity_quarantine||{}),
+      contract:'ORIGINAL_OUTREACH_NO_RESEND_ON_UNCERTAIN_PROVIDER_V1',
+      quarantined_at:now,
+      reason:'PRIOR_PROVIDER_SIDE_EFFECT_UNVERIFIED',
+      must_reconcile_original_provider_id:true,
+      external_resend_forbidden:true}};
+    const{data:reclaimed,error:reclaimErr}=await db.from('powerhouse_sales_actions')
+      .update({status:'waiting',updated_at:now,evidence:quarantine})
+      .eq('action_id',a.action_id).eq('status','prepared')
+      .select('action_id').maybeSingle();
+    if(reclaimErr)throw{code:'PRIOR_SEND_QUARANTINE_WRITEBACK',message:reclaimErr.message};
+    out.push({action_id:a.action_id,status:'unverified',
+      reason:'PRIOR_PROVIDER_SEND_UNCERTAIN_NO_RESEND',
+      original_action_reclaimed:Boolean(reclaimed),provider_send_attempted:false});
+    continue;
+   }
    const composer=a?.evidence?.commercial_intelligence?.composer||{};
    const strategy=s(a?.evidence?.commercial_intelligence?.message_strategy);
    const to=s(a.evidence?.recipient_email),sub=s(a.evidence?.email_subject),body=s(a.message_draft);
