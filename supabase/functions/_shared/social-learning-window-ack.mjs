@@ -7,6 +7,25 @@ const legacy={impressions:'Impressions',reach:'Reach',reactions:'Reactions',
 const valid=n=>typeof n==='number'&&Number.isFinite(n)&&n>=0;
 const millis=v=>{const n=Date.parse(String(v||''));return Number.isFinite(n)?n:null;};
 const read=(metrics,key)=>metrics?.[key]??metrics?.[legacy[key]];
+/** Linked Windsor company analytics can be used as ORIGINAL observed-window evidence
+ * only when the source, exact live provider URN, organization and independent
+ * provider-author proof all agree. A provider-date rollup or partial-scope
+ * observation is never promoted to an exact post window. */
+export function isSourceQualifiedSocialSnapshot(s,externalPostId){
+  const quality=String(s?.data_quality??s?.dataQuality??'');
+  if(['OBSERVED','PROVIDER_OBSERVED'].includes(quality))return true;
+  if(quality!=='PROVIDER_OBSERVED_LINKED'||!externalPostId||
+    s?.source!=='windsor-linkedin-company')return false;
+  const id=String(s?.source_event_id??s?.sourceEventId??'');
+  const m=s?.metrics||{};
+  return id.startsWith('windsor:linkedin-company:'+externalPostId+':')&&
+    m.provider_post_urn===externalPostId&&
+    m.provider_organization_urn==='urn:li:organization:18234216'&&
+    m.independent_proof==='EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT'&&
+    m.source_quality_before_link==='PROVIDER_OBSERVED'&&
+    m.scope==='company_post_analytics'&&
+    typeof m.impressions==='number'&&Number.isFinite(m.impressions)&&m.impressions>=0;
+}
 export function verifiedSocialWindowAck({obligation,post,evaluation,snapshots=[],toleranceHours=6}={}){
   if(!obligation||!post||!evaluation||!Array.isArray(snapshots))return null;
   const tenant=String(obligation.tenant_id||''),postId=String(obligation.post_id||'');
@@ -25,7 +44,7 @@ export function verifiedSocialWindowAck({obligation,post,evaluation,snapshots=[]
   if(!measured)return null;
   const checked=snapshots.filter(s=>
     s?.tenant_id===tenant&&s?.post_id===postId&&
-    ['OBSERVED','PROVIDER_OBSERVED'].includes(s.data_quality)&&
+    isSourceQualifiedSocialSnapshot(s,post.external_post_id)&&
     typeof s.source_event_id==='string'&&
     s.source_event_id.includes(String(post.external_post_id))&&
     typeof s.source==='string'&&s.source.length>0&&
