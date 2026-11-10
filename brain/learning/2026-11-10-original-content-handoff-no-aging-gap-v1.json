@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_PENDING_NATIVE_SUPABASE_PREVIEW",
+  "fingerprint": "powerhouse|content-handoff|historical-age-out-orphan-backlog|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "Existing original powerhouse-runtime-scheduler-mux-v1 (#171) -> powerhouse_refresh_loop_assurance_v1 -> powerhouse_content_handoff_receipts_v1; not a second executor",
+  "root_cause": "PR #5554 verified current source-to-consumer receipt monitoring but original assessor scanned publication_date BETWEEN local today-8 days and local today only. Original provider table has 436 date/channel obligations, including 196 earlier than the moving eight-day window and not LEARNED. These older operations age out of the next audit and are never registered or reoffered in per-date/channel original BRAIN handoffs. Original social_learning_obligations has 189 open (oldest due 2026-08-11) but previous monitoring only aggregated a count, not a durable owner per original source obligation. An aggregate red status alone does not force recipient pickup or ensure old work remains visible.",
+  "production_evidence": {
+    "at": "2026-11-10",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "original_daily_runtime_cron": 171,
+    "original_live_hand_off_migration": "20261110073500",
+    "source_publication_total": 436,
+    "older_than_eight_days_nonterminal": 196,
+    "source_social_learning_open": 189,
+    "prior_original_content_handoff_rows": 51,
+    "older_per_channel_hand_off_history_missing": true,
+    "original_provider_publications_unchanged": true
+  },
+  "fix": "Within existing original function invoked by canonical #171, keep 8-day recent rows and union a bounded rotating 48-row historic backlog, prioritizing source records with no receiver receipt and then oldest last_checked. Historic owner receipts are reobserved at most each six hours if no evidence changes; stable unique date/channel key means repeated scanning never creates duplicate obligation identities, while genuinely missing old ones are eventually reoffered. In the SAME original audit, project up to 48 older source social_learning_obligations into one stable source-ID-based BRAIN obligation each, without changing their original status/owner or inventing metrics; age/due, source post, exact original obligation ID, and provenance are retained. Original summary gains count of unregistered historic source publications and number of learning obligations rescanned. No new table, cron, network send or secondary dispatcher. Original contact/email consent, provider publish proof and experiment gates remain unchanged.",
+  "prevention": "No time-window TTL can silently discard an unfulfilled source record. Every source with nonterminal proof is retained, reoffered fairly to its original owner, and upserted with immutable logical identity; only independent accepted consumer receipts close. A six-hour safety refresh makes old outstanding obligations observable without falsifying provider progress. Bounded batches cap original #171 runtime. OAuth/consent/provider blocks remain OPEN at the exact authorization boundary, never bypassed or marked sent. Test that first 48 historic rows rotate to next 48 rather than reselect forever, no unbounded loop and no extra publisher.",
+  "tests": [
+    "tests/brain-original-content-handoff-no-aging-gap-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-content-handoff-no-aging-gap-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-content-handoff-no-aging-gap-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-content-handoff-no-aging-gap-20261110.test.mjs"
+    ],
+    "invariants": [
+      "one existing #171 original runtime owner",
+      "original author and publisher provider evidence",
+      "recent 8 days always scanned",
+      "older unfinished work reoffered in 48-row bounded rotating batches",
+      "per-original-source social learning obligation 48-row fair batches",
+      "stable original date/channel and hashed social obligation identity",
+      "six-hour auditing no incessant idempotency mutation",
+      "no mail sends or duplicate posts",
+      "service-role-only function",
+      "single protected GitOps migration only"
+    ]
+  },
+  "compiler": {
+    "scope": "CONTENT_GROWTH",
+    "failure_class": "AGING_OUT_SOURCE_TO_CONSUMER_HANDOFF_WITH_AGGREGATE_ONLY_LEARNING_ACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Required + CodeQL + hosted Supabase Preview must pass; merge protected PR into main, native GitOps applies exactly one new 20261110084500 source-only migration. On ORIGINAL production recheck 819→820 migrations, original two functions ACL and source matching, one original audit creates up to 48 older dated handoffs and 48 distinct overdue source learning handoffs; second audit advances to previously not registered sources without duplicates; original #171 natural tick uses new code; metrics/backlog remain red until provider evidence and actual new experiments, never administrative green."
+}
