@@ -945,6 +945,28 @@ begin
                   is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
                   and coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,unchanged_heartbeat_runs}')::integer,0)>=2
                   and coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,next_owner_ack_claimed}')::boolean,false)=false
+                  -- Compare with the actual cadence of the ORIGINAL owner.
+                  -- Daily metrics/analysis cannot be "unclaimed" before their
+                  -- first legitimate daily run; publisher/commercial owner has
+                  -- the shorter, separately actionable receiver SLA.
+                  and excluded.occurred_at >=
+                    coalesce((powerhouse_runtime_events.evidence#>>'{handoff_receipt,last_real_progress_at}')::timestamptz,
+                      powerhouse_runtime_events.created_at)
+                    + case
+                        when excluded.evidence->>'next_stage' in
+                          ('PROVIDER_TO_METRICS_PENDING',
+                           'MEASUREMENT_STAMP_WITHOUT_SOURCE_RECEIPT',
+                           'METRICS_TO_ANALYST_ACK_MISSING')
+                          then interval '28 hours'
+                        when excluded.evidence->>'next_stage'='ORIGINAL_PUBLICATION_NOT_PROVEN'
+                             and excluded.channel='blog'
+                          then interval '24 hours'
+                        when excluded.evidence->>'next_stage' in
+                          ('EXPERIMENT_OUTCOME_NOT_PROVEN',
+                           'LEARNING_APPLICATION_ACK_MISSING')
+                          then interval '8 hours'
+                        else interval '6 hours'
+                      end
                   then 'ORIGINAL_RECEIVER_NOT_CLAIMED_ESCALATE_OWNER'
                 when powerhouse_runtime_events.evidence#>>'{handoff_receipt,proof_fingerprint}'
                   is not distinct from excluded.evidence#>>'{handoff_receipt,proof_fingerprint}'
