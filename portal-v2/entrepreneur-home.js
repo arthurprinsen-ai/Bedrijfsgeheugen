@@ -3,6 +3,7 @@ import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.j
 import {findPage} from './page-registry.js';
 import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from './entrepreneur-journey-model.js';
 import {renderEntrepreneurJourney} from './entrepreneur-journey-view.js';
+import {renderDecisionWorld} from './decision-world.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -22,7 +23,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   host.setAttribute('aria-label','Jouw ondernemersroute');
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
-  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null,expanded=false;
+  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null,expanded=false,worldStage='decision';
   const updatePageGuide=()=>{
     const root=documentRef.getElementById('portalView');
     if(!root)return;
@@ -111,6 +112,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       ?journey.autopilot.outcomes+' onafhankelijk geverifieerde resultaten beschikbaar · zie onderbouwing'
       :'Nog geen onafhankelijk bewezen financieel resultaat.');
     proof.setAttribute('role','status');
+    // One read-only, interactive map of this exact authenticated journey.
+    renderDecisionWorld(next,{home:model,journey,selectedStage:worldStage,onSelect:id=>{worldStage=id;}});
     const advanced=add(host,'details','eh-advanced');
     advanced.dataset.entrepreneurDetails='true';
     advanced.open=expanded;
@@ -251,7 +254,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       if(request===generation&&owner===principal()){saving=false;draw();}
     }
   });
-  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;expanded=false;}draw();};
+  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;expanded=false;worldStage='decision';}draw();};
   const onVerifiedScans=event=>{if(!auth())return;const count=event?.detail?.count;verifiedScanCount=Number.isInteger(count)&&count>=0?count:null;draw();};
   const onImpact=event=>{
     if(!auth()||!principal()||principal()!==subject)return;
