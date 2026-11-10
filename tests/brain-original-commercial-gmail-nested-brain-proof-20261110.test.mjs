@@ -8,6 +8,7 @@ const sql=readFileSync(new URL('../'+filename,import.meta.url),'utf8');
 test('one existing daily Brain function, no parallel executor, queue, provider call or backfill',()=>{
   assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_commercial_output_assurance_v1\(p_run_date date/);
   assert.equal((sql.match(/CREATE OR REPLACE FUNCTION/gi)||[]).length,1);
+  assert.match(sql,/\$function\$;/); // Postgres migration statement must be terminated
   assert.doesNotMatch(sql,/cron\.schedule|net\.http_post|GMAIL_SEND_EMAIL|GMAIL_FETCH_MESSAGE|update public\.powerhouse_sales_actions|insert into public\.powerhouse_sales_outcomes/i);
   assert.match(sql,/insert into public\.brain_obligations\(/);
   assert.match(sql,/on conflict \(obligation_type,capability_id,business_entity,business_period,business_timezone\)/);
