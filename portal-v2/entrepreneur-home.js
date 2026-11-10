@@ -47,6 +47,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(guide,'p','',guidance.why);
     add(guide,'p','',guidance.check);
     add(guide,'p','',guidance.next);
+    const handoff=domainState.pendingHandoffs?.();
+    if(handoff?.pending){
+      const pendingNote=add(guide,'p','eh-truth',handoff.retryable
+        ?'De laatste wijziging wacht nog op bevestiging van het Bedrijfsbrein. De bestaande portaalcontrole probeert opnieuw; het gevolgadvies is nog niet bewezen.'
+        :'Een eerdere wijziging is nog niet volledig bevestigd. Controleer de opgeslagen bedrijfsgegevens in de juiste sessie; het gevolgadvies is nog niet bewezen.');
+      pendingNote.setAttribute('role','status');
+    }
     const back=add(guide,'button','eh-text-action',model.selectedGoal?'Terug naar mijn route →':'Kies mijn ondernemersdoel →');
     back.type='button';back.addEventListener('click',()=>navigate('overzicht'));
     if(!previous){
@@ -201,6 +208,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(footer,'span','','2 · Maak het meetbaar');
     add(footer,'span','','3 · Onderzoek en besluit');
     add(footer,'span','','4 · Meet wat echt werkt');
+    const pendingHandoff=domainState.pendingHandoffs?.();
+    if(pendingHandoff?.pending){
+      const pendingMessage=add(host,'p','eh-feedback eh-truth',pendingHandoff.retryable
+        ?'Verwerking onderweg: je gegevens zijn nog niet volledig bevestigd in het Bedrijfsbrein. De bestaande controles proberen opnieuw.'
+        :'Niet alle verwerking is bevestigd. Controleer de aangemelde bedrijfsomgeving en de opgeslagen gegevens.');
+      pendingMessage.setAttribute('role','status');
+    }
     const feedback=add(host,'p','eh-feedback',notice||(
       snapshot?.status==='error'?'Gegevens zijn niet bevestigd als opgeslagen. Je wijzigingen blijven herstelbaar.':
       model.intelligence.ready?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar in de bestaande ondernemerscockpit.':
