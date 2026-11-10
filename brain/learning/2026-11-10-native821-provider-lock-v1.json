@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_PENDING_NATIVE_SUPABASE_PREVIEW",
+  "fingerprint": "powerhouse|supabase|native821-provider-lock-after-original-historical-handoff|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original protected Supabase GitOps / ONE BRAIN migration-history owner",
+  "root_cause": "Native protected merge of PR #5556 applies already-source-controlled 20261110123000_original_content_handoff_no_aging_gap_v2 in production, verified as the 821st applied version, but main immutable provider history lock remains 820, blocking next protected release. The source workflow repeatedly fails to write back exact native provider version after migration deployment.",
+  "production_evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-10T09:24:44.056132Z",
+    "verified_count": 821,
+    "unique_versions": 821,
+    "latest_version": "20261110123000",
+    "latest_name": "original_content_handoff_no_aging_gap_v2",
+    "source_sql_sha": "75e0b095eae1528474bc1e03fd0dc90182d240e7",
+    "source_main_commit": "147a8769208006091ed94cedc6e7b1803148ee37",
+    "source_lock_count": 820,
+    "previous_migration": "20261110120000_powerhouse_outreach_research_wait_handoff_v1"
+  },
+  "fix": "Append only verified native applied version/name to same original immutable lock, preserve all prior 820 identities. Historical 819 regression becomes exact prefix rather than brittle total to allow future legitimate native migrations. New 821-prefix regression preserves strict full source/lock parity. No SQL re-execution or new owner.",
+  "prevention": "Original protected deployment must have an automatic provider-lock readback obligation after every native migration and before the next candidate is admitted. Repair original release ownership rather than bypass provider preview or spawn a parallel executor.",
+  "tests": [
+    "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs",
+    "tests/brain-provider-821-migration-lock-parity-20261110.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-821-migration-lock-parity-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "live_production_verified": true,
+    "outbound_send_proven": false,
+    "all_learning_obligations_closed": false,
+    "invariants": [
+      "821 exact native provider identities",
+      "preserve original 820 immutable entries",
+      "do not replay SQL",
+      "original protected merge and hosted preview",
+      "no fake content or email results"
+    ]
+  },
+  "compiler": {
+    "scope": "DATABASE_MIGRATIONS",
+    "failure_class": "NATIVE_DEPLOY_APPLIED_MIGRATION_BUT_MAIN_LOCK_LAGS",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Only exact-head protected Required+CodeQL+provider Preview, merged main 821/821 source lock, and independent Supabase provider-readback can close this specific migration-lock obligation; all historical content/learning outcomes remain separate OPEN."
+}
