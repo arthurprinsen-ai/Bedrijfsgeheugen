@@ -197,7 +197,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   // team-user A's pending record into a submission from team-user B.
   const byPrincipal=clone(raw?.byPrincipal||{});
   const bindings=[...pendingBusinessInputs.values()].map(item=>({
-   key:item.key,inputType:item.inputType,modelId:item.modelId,statePath:item.statePath,generation:item.generation
+   key:item.key,inputType:item.inputType,modelId:item.modelId,statePath:item.statePath,generation:item.generation,answers:clone(item.answers)
   }));
   if(!raw&&!bindings.length)return false;
   if(bindings.length){
@@ -229,9 +229,9 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
     throw new Error('PORTAL_BRAIN_JOURNAL_INVALID_BINDING');
    const expected=businessInputBinding(item.statePath);
    if(!expected||expected.key!==item.key||expected.modelId!==item.modelId||expected.inputType!==item.inputType
-      ||expected.statePath!==item.statePath||!Number.isSafeInteger(item.generation)||item.generation<1
+      ||expected.statePath!==item.statePath||!isObject(item.answers)||!Number.isSafeInteger(item.generation)||item.generation<1
       ||seen.has(item.key))throw new Error('PORTAL_BRAIN_JOURNAL_INVALID_BINDING');
-   seen.add(item.key);recovered.set(item.key,{...expected,generation:item.generation});
+   seen.add(item.key);recovered.set(item.key,{...expected,generation:item.generation,answers:clone(item.answers)});
   }
   const impactGenerations=new Set();
   for(const impact of entry.impacts){
@@ -325,7 +325,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   if(!binding)return;
   if(!handoffPrincipal)handoffPrincipal=currentPrincipal();
   businessRevision+=1;
-  pendingBusinessInputs.set(binding.key,{...binding,generation:businessRevision});
+  pendingBusinessInputs.set(binding.key,{...binding,generation:businessRevision,answers:asAnswers(domain.get(binding.statePath))});
  }
  function publishImpact(path,before,after){
   const impact=impactForMutation({path,before,after});
@@ -364,7 +364,12 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   const submittedPrincipal=currentPrincipal();
   // Snapshot causal lineage before any await: edits made during the state or
   // Brain write must remain pending and cannot be reported as synchronized.
-  const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
+  const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:clone(binding.answers)}));
+  // Never reconstruct a historical failed handoff from another writer's newer
+  // source facts. A conflicting shared-tenant edit stays an explicit open
+  // obligation rather than silently overwriting the current customer truth.
+  if(pending.some(binding=>JSON.stringify(binding.answers)!==JSON.stringify(asAnswers(domain.get(binding.statePath)))))
+   throw new Error('PORTAL_BRAIN_REPLAY_SOURCE_CONFLICT');
   // Persist the exact to-be-delivered binding and ALL causal impacts on the
   // EXISTING customer state BEFORE the first downstream Brain POST. If Brain
   // fails, the next authenticated init recovers from this server snapshot.
