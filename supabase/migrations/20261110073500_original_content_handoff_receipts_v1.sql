@@ -8,6 +8,7 @@ SET search_path TO 'pg_catalog','public'
 AS $handoff$
 DECLARE
   r public.content_publication_obligations%rowtype;
+  mail record; v_mail_proven boolean; v_mail_reply boolean;
   v_day date:=(p_now at time zone 'Europe/Amsterdam')::date;
   v_pub boolean; v_metric boolean; v_analysis boolean; v_reuse boolean;
   v_stage text; v_owner text; v_event text; v_eval text; v_payload jsonb;
@@ -184,6 +185,76 @@ BEGIN
        OR public.brain_obligations.state IS DISTINCT FROM excluded.state
        OR public.brain_obligations.evidence IS DISTINCT FROM excluded.evidence;
   END LOOP;
+  -- Each prepared/executed original email has its OWN idempotent consumer
+  -- obligation. A sent Gmail message may be transport-proven but cannot
+  -- become an automatic reply, measured experiment, learning or sale.
+  FOR mail IN
+    SELECT action_id,status,due_at,executed_at,evidence
+    FROM public.powerhouse_sales_actions
+    WHERE channel='email'
+      AND (
+        due_at BETWEEN p_now-interval '8 days' AND p_now
+        OR executed_at BETWEEN p_now-interval '8 days' AND p_now
+      )
+    ORDER BY coalesce(executed_at,due_at) DESC
+    LIMIT 150
+  LOOP
+    v_mail_proven:=coalesce(
+      mail.status='done' AND mail.executed_at IS NOT NULL
+      AND nullif(mail.evidence->>'provider_message_id','') IS NOT NULL
+      AND mail.evidence->>'provider_ack_verified'='true'
+      AND (
+        mail.evidence->>'provider_readback_verified'='true'
+        OR (
+          mail.evidence#>>'{provider_delivery_readback,provider_message_id}'
+             =mail.evidence->>'provider_message_id'
+          AND mail.evidence#>>'{provider_delivery_readback,recipient_match}'='true'
+          AND mail.evidence#>>'{provider_delivery_readback,gmail_label}'='SENT'
+        )
+      ),false);
+    SELECT EXISTS (
+      SELECT 1 FROM public.powerhouse_email_reply_events e
+      WHERE e.action_id=mail.action_id AND e.occurred_at<=p_now
+    ) INTO v_mail_reply;
+    v_stage:=CASE
+      WHEN v_mail_proven AND v_mail_reply THEN 'WAIT_EMAIL_EXPERIMENT_LEARNING'
+      WHEN v_mail_proven THEN 'WAIT_EMAIL_REPLY_AND_OUTCOME_MEASUREMENT'
+      WHEN mail.status='prepared' AND mail.due_at<=p_now THEN 'OVERDUE_AUTHORIZED_EMAIL_SEND'
+      WHEN mail.status='done' THEN 'OVERDUE_INDEPENDENT_GMAIL_READBACK'
+      ELSE 'WAIT_ORIGINAL_EMAIL_SEND' END;
+    v_owner:=CASE WHEN v_mail_proven
+      THEN 'powerhouse-commercial-learning-v1 / original email outcome owner'
+      ELSE 'powerhouse-autonomous-outreach-dispatch-daily / canonical consent sender' END;
+    v_payload:=jsonb_build_object(
+      'contract','original-content-handoff-receipts-v1','stage',v_stage,
+      'channel','email','action_id',mail.action_id,
+      'provider_message_id',mail.evidence->>'provider_message_id',
+      'provider_readback_accepted',v_mail_proven,
+      'original_reply_observed',v_mail_reply,
+      'next_owner',v_owner,
+      'due_at',mail.due_at,
+      'consent_not_inferred',true,
+      'no_bogus_reply_or_order',true,
+      'no_resend_on_ambiguous_provider_side_effect',true);
+    INSERT INTO public.brain_obligations(
+      obligation_type,capability_id,business_entity,business_period,
+      business_timezone,payload_sha256,change_id,owner,state,evidence,
+      created_at,updated_at,version)
+    VALUES('CONTENT_HANDOFF','email-action:'||mail.action_id::text,
+      'original-provider-to-learning-chain',
+      coalesce((mail.due_at at time zone 'Europe/Amsterdam')::date,
+               (mail.executed_at at time zone 'Europe/Amsterdam')::date)::text,
+      'Europe/Amsterdam',
+      md5('original-email-handoff|'||mail.action_id::text),
+      'original-content-handoff-receipts-v1',
+      v_owner,'OPEN',v_payload,p_now,p_now,1)
+    ON CONFLICT(obligation_type,capability_id,business_entity,business_period,business_timezone)
+    DO UPDATE SET owner=excluded.owner,evidence=excluded.evidence,updated_at=excluded.updated_at,
+      version=public.brain_obligations.version+1
+    WHERE public.brain_obligations.owner IS DISTINCT FROM excluded.owner
+       OR public.brain_obligations.evidence IS DISTINCT FROM excluded.evidence;
+  END LOOP;
+
   SELECT count(*) INTO v_email_due
   FROM public.powerhouse_sales_actions
   WHERE channel='email' AND status='prepared' AND due_at<=p_now;
