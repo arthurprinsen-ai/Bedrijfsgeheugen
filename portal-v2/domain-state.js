@@ -266,7 +266,8 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   const inputs=pendingBusinessInputs.size,impacts=pendingImpacts.length;
   return Object.freeze({
    pending:inputs>0||impacts>0||journalCleanupPending,inputs,impacts,
-   journalCleanupPending,
+   // Preserve original public status contract: internal cleanup state must not
+   // break existing consumers that compare the exact pendingHandoffs shape.
    retryable:(inputs>0||journalCleanupPending)&&Boolean(handoffPrincipal||hydratedPrincipal)&&(!handoffPrincipal||handoffPrincipal===currentPrincipal())
      &&hydratedPrincipal===currentPrincipal()&&domain.initialized()&&!stateClient.isDemo?.()
      &&['saved','idle','error'].includes(domain.status())
