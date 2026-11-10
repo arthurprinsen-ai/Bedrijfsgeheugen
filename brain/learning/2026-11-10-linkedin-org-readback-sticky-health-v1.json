@@ -34,7 +34,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/provider-readback-sticky-health-20261110.test.mjs"
+      "tests/brain-provider-readback-sticky-health-20261110.test.mjs"
     ],
     "canonical_sql": "supabase/migrations/20261110153331_linkedin_org_readback_sticky_provider_health_v1.sql",
     "independent_production_dry_run": true
