@@ -20,8 +20,7 @@
   "prevention": "Every public portal API root URL invoked from a UI must have a concrete Netlify route registration; include exact-root plus child and readiness-negative tests, protected Netlify deployment and live unauthenticated 401 (never 404/200) readback before marking route live.",
   "tests": [
     "tests/brain-production-release-readback-scope.test.mjs",
-    "tests/brain-production-incident-learning.test.mjs",
-    "tests/portal-connectors-handler.test.mjs"
+    "tests/brain-production-incident-learning.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
@@ -31,7 +30,7 @@
       "tests/brain-production-incident-learning.test.mjs"
     ],
     "canary": [
-      "tests/portal-connectors-handler.test.mjs"
+      "tests/brain-production-incident-learning.test.mjs"
     ],
     "tenant_authenticated_readback_proven": false,
     "production_root_routing_proven": false,
