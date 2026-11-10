@@ -16,3 +16,6 @@ This patch is **same active browser-session retry only**, not a server-durable o
 
 ## Required independent gates
 Original preflight, Root BRAIN test tests/brain-portal-handoff-replay-20261110.test.mjs, Required, hygiene/admission, CodeQL, original BRAIN, Netlify source-exact deployment, authenticated two-tenant browser canary, mobile/accessibility and measured entrepreneur decision outcome. No green from source build or cron success alone.
+
+### Multi-section partial receipt correction (same original PR)
+If a saved tenant edit changes two different native portal sections, section A can have a valid canonical Brain receipt before section B fails. The previous loop pruned receipts only after **all** sections succeeded, so that first receipt stayed wrongly pending and could be silently stranded or needlessly resent. Finalize independently confirmed causal generations in `finally` while preserving the rejected section and all edits made in flight. Emit receipt events only for the original hydrated principal. Regression: `portal-v2/tests/portal-handoff-recovery.test.mjs` verifies CompanyProfile ACK then BusinessMetrics failure, replaying only BusinessMetrics. This is source-level logic, not a proof of a durable server outbox.
