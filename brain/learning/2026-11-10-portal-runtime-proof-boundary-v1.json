@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-4215-runtime-proof-health-revocation-20261110-v1",
+  "fingerprint": "portal|runtime|unknown-evidence-false-green-and-revocation-stale|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_UNVERIFIED_RUNTIME_FALSE_GREEN",
+    "scope": "PORTAL_V2_TENANT_UI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original tenant runtime mapper used healthy !== false and status defaults of ok for absent measurements, graph nodes, non-blocked agent activity, observed audit records and low-risk governance. Revoked or failed provider reads could clear transient state without dispatching native page invalidation or leave prior state visible on transport errors.",
+  "fix": "Conservative explicit-proof status mapping, and one existing runtime event on same-session unauthorized or unavailable source invalidation; only transient derived runtime is cleared, customer input state and unsaved forms remain untouched.",
+  "tests": [
+    "portal-v2/tests/portal-runtime-proof-boundary.test.mjs",
+    "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs",
+    "portal-v2/tests/portal-cross-page-refresh.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-runtime-proof-boundary-20261110.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Unknown source health or a graph/audit/activity record must not imply healthy integration, executed action or compliance.",
+    "On unauthorized/unavailable original tenant runtime readback clear same-principal derived projection and publish original invalidation once.",
+    "Do not mutate customer-input state, cross tenant boundaries, or discard unsaved DOM forms for read-model recovery.",
+    "Reject overall green until authenticated A/B input -> Brain -> Powerhouse -> Heartbeat -> action -> verified outcome -> learning is provider-proven."
+  ],
+  "owner": "Original #4215 Portal V2 + Brain + Heartbeat owner",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_VERIFIED",
+  "observed_evidence": {
+    "original_source": "portal-v2/runtime-evidence.js",
+    "source_defect_verified": true,
+    "live_tenant_e2e_proven": false,
+    "server_durable_handoff_proven": false
+  }
+}
