@@ -37,7 +37,7 @@ test('native sender count requires exact independent sent outcome, never provide
 test('legacy top-level proof is preserved and no second copy of Gmail count may inflate daily metrics',()=>{
   assert.match(sql,/coalesce\(a\.evidence->>'provider_ack_verified','false'\)='true'/);
   assert.match(sql,/coalesce\(a\.evidence->>'provider_readback_verified','false'\)='true'/);
-  assert.match(sql,/and nullif\(btrim\(coalesce\(a\.evidence->>'provider_message_id',''\)\),'\) is not null/);
+  assert.ok(sql.includes("and nullif(btrim(coalesce(a.evidence->>'provider_message_id','')),'') is not null"));
   assert.match(sql,/v_email := jsonb_array_length\(v_email_proofs\);/);
   assert.match(sql,/v_proofs := v_email_proofs \|\| v_proofs \|\| v_dm_proofs \|\| v_publication_proofs;/);
   assert.equal((sql.match(/into v_email_proofs/g)||[]).length,1);
