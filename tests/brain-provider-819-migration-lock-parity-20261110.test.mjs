@@ -4,7 +4,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 
 const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
 const sql=readdirSync(new URL('../supabase/migrations/',import.meta.url))
-  .filter(x=>/^\\d{14}_[a-z0-9_]+\\.sql$/.test(x)).sort();
+  .filter(x=>/^[0-9]{14}_[a-z0-9_]+[.]sql$/.test(x)).sort();
 
 test('immutable original source lock contains exactly 819 independently provider observed identities',()=>{
   assert.equal(lock.source,'supabase_migration_history');
