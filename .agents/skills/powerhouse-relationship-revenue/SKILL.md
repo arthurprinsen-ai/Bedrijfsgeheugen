@@ -200,6 +200,13 @@ De ene originele commerciële lus blijft `bg_connecties` → bedrijfs-/publiek b
 
 Regressie: `tests/brain-original-commercial-held-resume-20261110.test.mjs`; geen nieuwe SQL-migratie of schemarelease; de geïsoleerde Hosted Preview heeft de historische plan-view niet. Productiepaspoort: beschermde CI/CodeQL → merge → originele Edge-deploy → natuurlijke run met exact action-ID bron-/composerbewijzen → echte provider-ACK/readback → outcome/experiment. Tot die tijd alleen kandidaat, niet end-to-end groen.
 
+## P0 10 november 2026 — onzekere Gmail-acceptatie is permanent NO RESEND
+
+Incident: `powerhouse|commercial|prior-gmail-provider-id-reprepared-duplicate-send-risk|20261110-v1`. Een Gmail-send kan een externe message-ID opleveren maar bij onafhankelijke fetch de verkeerde ID tonen, ondanks `SENT` en dezelfde ontvanger. Dit is **ONBEWEZEN**, niet `sent`. De originele actie kan door upstream materiaalverversing toch terugkomen als `prepared`; de bron van die herstatussering is nog niet afzonderlijk bewezen.
+
+**Harde originele verzendregel:** vóór iedere oorspronkelijke `GMAIL_SEND_EMAIL` blokkeert de bestaande `powerhouse-autonomous-outreach` iedere actie met een eerdere `provider_message_id` (ook top-level of native Gmail), `needs_readback=true`, `republish_forbidden=true` of `provider_ambiguity_quarantine.external_resend_forbidden=true`, ongeacht de huidige status. De originele actie wordt atomisch van `prepared` naar `waiting` teruggezet, met alle oorspronkelijke provider-ID's en bewijs intact; alleen de bestaande pending-readback-route mag **diezelfde** provider-ID controleren. Een nieuwe verzendpoging, nieuw account, tweede scheduler of autoresend is verboden. `dry_run` telt zulke acties evenmin als eligible. Blijf de oorspronkelijke cron draaien en meld het werk als `UNVERIFIED` tot exact provider-ID + onafhankelijk Gmail SENT/ontvangerbewijs wel sluiten.
+
+Borg in ONE BRAIN/Heartbeat dat een statusovergang `waiting→prepared` na een onzeker providereffect **nooit** opnieuw marketingtoestemming of send-authority impliceert; respecteer toestemming, opt-out, fatigue, idempotentie en quality. Machineleerbewijs met historische replay, shadow en canary in `tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs`. Productie groen pas na beschermde CI, officiële deploy-readback, echte volgende run met aantoonbaar géén dubbele verzending, en afzonderlijk op echte gegevens bevestigde outcome/experimenttoepassing.
 
 ## P0 10 november 2026 — Gmail messageId readback, nooit dubbel versturen
 

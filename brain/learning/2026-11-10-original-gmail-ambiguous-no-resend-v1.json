@@ -1,0 +1,69 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_PROTECTED_CI_AND_PROVIDER_READBACK_DUE",
+  "fingerprint": "powerhouse|commercial|prior-gmail-provider-id-reprepared-duplicate-send-risk|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse-autonomous-outreach sender + canonical commercial learning/heartbeat",
+  "failure_class": "AMBIGUOUS_PROVIDER_SIDE_EFFECT_REPREPARED",
+  "root_cause": "Production original Gmail sender obtained an external provider message ID; independent fetch returned mismatched ID despite SENT label and recipient match. Original action later appeared PREPARED with needs_readback=true and republish_forbidden=true. Precise intermediate re-preparer not independently attributed. Original sender lacked a terminal fail-closed check on prior provider IDs in PREPARED candidates, risking a second email.",
+  "observed_evidence": {
+    "run_utc": "2026-11-10T10:37:01Z",
+    "provider_id_present": true,
+    "readback_code": "GMAIL_READBACK_MISMATCH",
+    "id_matches": false,
+    "sent_label": true,
+    "recipient_matches": true,
+    "provider_delivery_proven": false,
+    "action_prepared_with_prior_provider_id_observed_at_utc": "2026-11-10T10:38:12Z",
+    "single_action_live_quarantine_to_waiting": "2026-11-10T10:40:00Z",
+    "quarantine_provider_resend_forbidden": true,
+    "confirmed_duplicate_email_sent": false,
+    "confirmed_first_email_delivered": false
+  },
+  "repair": "In existing original _shared composer handoff helper, fail closed when needs_readback, republish_forbidden, any historical provider ID, or live quarantine flag is present. In existing original powerhouse-autonomous-outreach Edge send loop, guard before recipient authority and before Gmail SEND, atomically re-claim PREPARED back to WAITING with original lineage; next original pending-readback path alone may check the same ID. No second executor or provider send.",
+  "scope": [
+    "supabase/functions/_shared/outreach-composer-hold.mjs",
+    "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+    "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+    "docs/changes/2026-11-10-original-gmail-ambiguous-no-resend.md",
+    "docs/development-ledger-events/2026-11-10-original-gmail-ambiguous-no-resend.md"
+  ],
+  "prevention": [
+    "Any prior provider side effect—especially a nonempty Gmail message ID—must be a permanent no-resend fence irrespective of PREPARED or WAITING.",
+    "Treat SENT label and recipient match without exact message ID as unverified, not delivered; preserve original provider ID and reconcile only.",
+    "Requeued or rematerialized commercial actions may not bypass existing recipient, suppression, duplicate and provider readback gates.",
+    "Never mark outreach or experiment GREEN without independently verifiable provider identity and actual outcome."
+  ],
+  "tests": [
+    "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
+    ]
+  },
+  "production_proof_to_complete": [
+    "Exact-head Required, CodeQL and affected original Edge source contract passes.",
+    "Protected merge and official existing Supabase Edge production source parity for original outreach worker and shared helper.",
+    "Next genuine uncertain original action remains WAITING or is safely moved PREPARED -> WAITING without a second Gmail SEND; independently read back no extra external provider message ID.",
+    "Original Gmail readback mismatch is reconciled to exact immutable ID without fabricating delivery, or remains unverified with explicit owner; experiment/learning separately proven."
+  ],
+  "independent_provider_readback_required": true,
+  "no_false_green": true,
+  "compiler": {
+    "failure_class": "AMBIGUOUS_PROVIDER_SIDE_EFFECT_REPREPARED",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
