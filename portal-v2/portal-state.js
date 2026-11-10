@@ -29,6 +29,11 @@ const clone=value=>value==null?value:structuredClone(value);
 export function buildPortalBusinessInput(nextState={}){
  const answers=clone(nextState||{})||{};
  for(const key of DERIVED_READ_MODEL_KEYS)delete answers[key];
+ // The durable retry manifest is delivery control data, never a business
+ // fact or AI-eligible source document. Keep it in authenticated server
+ // Portal State, but exclude it from canonical BusinessInput answers.
+ if(answers.portal&&typeof answers.portal==='object'&&!Array.isArray(answers.portal))
+  delete answers.portal.__brainHandoffJournalV1;
  return Object.freeze({
   inputType:'PortalDomainStateSnapshot',
   modelId:'portal-v2-domain-state',
