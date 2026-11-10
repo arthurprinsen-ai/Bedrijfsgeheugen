@@ -97,11 +97,27 @@ Deno.serve(async(req:Request)=>{
       // This only consumes original tables and creates an ACK for a REAL 
       // independent 24/48/72-hour post observation + original evaluator.
       // Missing and partial-only provider windows remain OPEN, not zero or GREEN.
-      const {data:evals,error:ee}=await db.from('social_learning_evaluations')
+      // Always check the newest 30 original evaluations; rotate a bounded 20
+      // historical receipts per hour so old debt cannot starve after 250+ rows.
+      // No new scheduler and no false success on a truncated source read.
+      const {count:total,error:countError}=await db.from('social_learning_evaluations')
+        .select('evaluation_id',{count:'exact',head:true})
+        .eq('tenant_id',tenantId).like('evaluation_id','evaluation:%');
+      if(countError)throw countError;
+      const olderCount=Math.max(0,(total||0)-30);
+      const oldPages=Math.max(1,Math.ceil(olderCount/20));
+      const oldPage=Math.floor(Date.now()/3600000)%oldPages;
+      const query=()=>db.from('social_learning_evaluations')
         .select('tenant_id,evaluation_id,post_id,window_hours,observed_at,metric_vector')
         .eq('tenant_id',tenantId).like('evaluation_id','evaluation:%')
-        .order('created_at',{ascending:false}).limit(250);
-      if(ee)throw ee;
+        .order('created_at',{ascending:false});
+      const [recent,older]=await Promise.all([
+        query().range(0,29),
+        olderCount>0?query().range(30+oldPage*20,49+oldPage*20)
+          :Promise.resolve({data:[],error:null})
+      ]);
+      if(recent.error||older.error)throw (recent.error||older.error);
+      const evals=[...(recent.data||[]),...(older.data||[])];
       const ids=[...new Set((evals||[]).map((e:any)=>e.post_id).filter(Boolean))];
       if(!ids.length)return json({checked:0,resolved:0,unverified_preserved:true});
       const [os,ps,ss]=await Promise.all([
@@ -115,7 +131,7 @@ Deno.serve(async(req:Request)=>{
           .eq('tenant_id',tenantId).in('post_id',ids).order('observed_at',{ascending:false}).limit(750)
       ]);
       if(os.error||ps.error||ss.error)throw (os.error||ps.error||ss.error);
-      if((evals||[]).length>=250||(os.data||[]).length>=250||(ss.data||[]).length>=750)
+      if((os.data||[]).length>=250||(ss.data||[]).length>=750)
         return json({error:'EVIDENCE_COVERAGE_TRUNCATED',checked:0,resolved:0},503);
       const posts=new Map((ps.data||[]).map((p:any)=>[p.post_id,p]));
       const byPost=new Map<string,any[]>();
@@ -138,6 +154,7 @@ Deno.serve(async(req:Request)=>{
       }
       return json({contract:'ORIGINAL_SOCIAL_WINDOW_EVIDENCE_ACK_V1',
         checked:(os.data||[]).length,resolved,unverified_preserved:true,
+        total_evaluations:total,history_page:oldPage,history_pages:oldPages,
         learned_or_causal_effect_proven:false,parallel_executor_created:false});
     }
     if(action==='get_projection'){const {data,error}=await db.from('social_learning_projections').select('projection').eq('tenant_id',tenantId).maybeSingle();if(error)throw error;return json({projection:data?.projection||null});}
