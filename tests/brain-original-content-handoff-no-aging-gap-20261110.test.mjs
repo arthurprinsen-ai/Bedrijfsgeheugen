@@ -32,7 +32,7 @@ test('each original historical publication keeps the exact stable date and chann
   "r.publication_date::text,'Europe/Amsterdam'",
   "WHEN 'instagram' THEN 'powerhouse-mira-problem-radar / original media router'",
   "WHEN 'blog' THEN 'powerhouse-blog-queue / original protected blog writer'",
-  "WHEN r.channel='linkedin_company'",
+  "r.channel='linkedin_company'",
   "r.evidence->>'provider_truth_verified'='true'",
   "s.source='windsor-linkedin-company'",
   "e.evidence->>'source_event_id'=v_event",
