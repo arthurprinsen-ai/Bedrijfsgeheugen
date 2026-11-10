@@ -271,13 +271,14 @@ declare
   v_next_expected timestamptz;
   v_window interval;
   v_guard_pass boolean;
+  v_handoff jsonb;
   v_recovery_owner text;
   v_recovery_action text;
 begin
   perform public.powerhouse_sync_loop_assurance_receipts_v1(p_now);
   -- Same original runtime #171 and original BRAIN assurance owner.
   -- This only checks per-channel receipts, never publishes or sends anything.
-  perform public.powerhouse_content_handoff_receipts_v1(p_now);
+  v_handoff:=public.powerhouse_content_handoff_receipts_v1(p_now);
 
   for r in
     select * from public.powerhouse_loop_assurance_registry_v1
@@ -331,6 +332,14 @@ begin
       v_status:='RED'; v_reason:='runtime evidence stale beyond 2x cadence';
     elsif v_guard_pass is false then
       v_status:='RED'; v_reason:='fresh guard evidence reports unresolved failure or human boundary';
+    elsif r.loop_key='content-closed-loop'
+       and (coalesce((v_handoff->>'overdue')::integer,0)>0
+         or coalesce((v_handoff->>'social_learning_overdue')::integer,0)>0) then
+      v_status:='RED'; v_reason:='independent source-to-consumer handoff overdue';
+    elsif r.loop_key='content-closed-loop'
+       and (coalesce((v_handoff->>'open')::integer,0)>0
+         or coalesce((v_handoff->>'email_due')::integer,0)>0) then
+      v_status:='AMBER'; v_reason:='original source-to-consumer handoff incomplete';
     elsif v_fresh_stage_count=0 and r.critical then
       v_status:='RED'; v_reason:='critical loop has zero fresh closed-loop stage evidence';
     elsif v_fresh_stage_count<v_required_count then
@@ -359,6 +368,7 @@ begin
         'recovery_owner',v_recovery_owner,
         'recovery_action',case when v_status='GREEN' then 'ASSURANCE_NO_REPAIR_REQUIRED' else v_recovery_action end,
         'recovery_owner_registered',r.evidence_contract ? 'recovery_owner',
+        'content_handoff',case when r.loop_key='content-closed-loop' then v_handoff else null end,
         'receipt_sync','canonical-runtime-cron-and-explicit-guard'
       )
     )
@@ -382,7 +392,8 @@ begin
         'recovery_owner',v_recovery_owner,
         'recovery_action',case when v_status='GREEN' then 'ASSURANCE_NO_REPAIR_REQUIRED' else v_recovery_action end,
         'recovery_owner_registered',r.evidence_contract ? 'recovery_owner',
-        'last_runtime_at',v_last_runtime,'next_expected_at',v_next_expected,'checked_at',p_now
+        'last_runtime_at',v_last_runtime,'next_expected_at',v_next_expected,'checked_at',p_now,
+        'content_handoff',case when r.loop_key='content-closed-loop' then v_handoff else null end
       ),
       p_now,p_now,1
     )
