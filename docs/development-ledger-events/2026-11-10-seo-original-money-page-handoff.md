@@ -11,3 +11,6 @@ Bronophaling 2026-11-10T05:02 UTC: 95 DataForSEO-cachewoorden, 29 GSC-queries, t
 **Testen & regressie:** `tests/brain-seo-original-money-owner-handoff-20261110.test.mjs` en `tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs`; bestaande website/SEO/technical SEO-gates en CodeQL blijven verplicht. Na protected merge: Edge deployed-file readback, Netlify exact-main + publieke canonical/meta/CTA readback, originele natuurlijke resolverrun, handoff in database, consument-/deploy-ACK, en latere GA4/GSC/lead/order/learning-feedback.
 
 **Uitkomstgrens:** source receipt, queued task en technische SEO-test bewijzen geen effectief experiment of omzet. Historische blogmetingen blijven open totdat ze realistisch bij de originele blog worden gekoppeld.
+
+## Zelfherstel #5591: offline EN-cache verplicht (geen bypass)
+Source: GitHub Required job #130018253840, `STATIC_I18N_PREPARE_NETWORK_REQUIRED: 3 missing translation(s)`. De originele SEO-registry/technische validators slaagden; de locale-build vond drie exact nieuwe Twinfield-tekstsegmenten. Append-only bestaande `bg-static-i18n-en.d`-cachepatch met alle drie keys plus brain-regressietest bewaart de geblokkeerde publicatiebeveiliging; geen `STATIC_I18N_NETWORK=1`, geen force deploy en geen vertaal-API of nieuwe build-authority. Nieuw exact-head Required, CodeQL en Netlify productiereadback zijn nodig.
