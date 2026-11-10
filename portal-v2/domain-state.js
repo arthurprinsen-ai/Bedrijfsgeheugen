@@ -192,6 +192,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   const bindings=[...pendingBusinessInputs.values()].map(item=>({
    key:item.key,inputType:item.inputType,modelId:item.modelId,statePath:item.statePath,generation:item.generation
   }));
+  if(!raw&&!bindings.length)return false;
   if(bindings.length){
    byPrincipal[principal]={bindings,impacts:clone(pendingImpacts)};
   }else delete byPrincipal[principal];
