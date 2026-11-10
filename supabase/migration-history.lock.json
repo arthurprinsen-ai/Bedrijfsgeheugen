@@ -3272,8 +3272,12 @@
     {
       "version": "20261109152945",
       "name": "original_social_provider_refresh_learning_v1"
+    },
+    {
+      "version": "20261110073500",
+      "name": "original_content_handoff_receipts_v1"
     }
   ],
-  "captured_at": "2026-11-09T16:47:42.815131Z",
+  "captured_at": "2026-11-10T08:19:43.617348Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
