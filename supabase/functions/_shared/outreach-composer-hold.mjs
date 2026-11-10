@@ -67,9 +67,9 @@ export function providerUncertaintyNoResend(evidence){
     ?ev.autonomous_outbound:{};
   const quarantine=ev.provider_ambiguity_quarantine||{};
   const truth=v=>v===true||v==='true';
-  const id=String(outbound.provider_message_id||'').trim();
+  const id=String(outbound.provider_message_id||ev.native_gmail_executor?.provider_message_id||ev.provider_message_id||'').trim();
   return truth(outbound.needs_readback)
     ||truth(outbound.republish_forbidden)
     ||truth(quarantine.external_resend_forbidden)
-    ||(id!==''&&!truth(outbound.provider_readback_verified));
+    ||id!==''; // Once an external ID exists, the SAME action may never be resent.
 }
