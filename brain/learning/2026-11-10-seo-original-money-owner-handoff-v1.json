@@ -43,8 +43,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs",
-      "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+      "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs"
     ]
   },
   "tests": [
