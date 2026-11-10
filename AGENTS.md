@@ -1601,3 +1601,37 @@ Canonical ONE BRAIN `powerhouse|social-learning|personal-wrong-tenant-reactions-
 Alle bestaande ONE BRAIN, Heartbeat, growth, content, SEO/CRO en engineering agents onderscheiden zes toestanden: observed signal, measured baseline, proposed hypothesis, authorized original-owner action, independent effect readback, applied and evaluated learning. Geen statusoptelling van cron HTTP200 of AI-tekst naar resultaat. Nieuwe innovatie is een versieerbare hypothesis/eval/test/change, niet een louter documentair advies; uitvoerbare veilige changes lopen via origineel owner-protected GitHub/Netlify/Supabase en exacte productie-sourcematch. Menselijke OAuth-, betaald-, klantwaarheid- en toestemmingsgrenzen blijven harde grenzen. Geen tweede scheduler/writer/provider en geen kunstmatig groen.
 
 Source implementation `supabase/migrations/20261105080000_original_linkedin_learning_source_truth.sql`; test `tests/brain-original-linkedin-learning-source-metric-truth-20261105.test.mjs`; originele social skill en machine-learning record moeten samen meekomen. Niet afsluiten voordat de beschermde migratie echt actief en daarna de natuurlijke oorspronkelijke evaluatie met provider-snapshot werkt.
+
+
+## Provider readback: persistent permission failure (2026-11-10)
+
+A connection being ACTIVE, an unrelated publisher succeeding, a cron succeeding, or fresh
+LinkedIn page activity **does not** prove organization-read permission. On a real
+capability-specific 401/403, the original owner registers the exact provider log
+and existing ONE BRAIN failure fingerprint, and an idempotent
+`provider_capability_readback_denied` event on the existing
+`powerhouse_runtime_events` stream (`source`, `subject_key`, `channel`,
+original post `readback_target`). The existing
+`powerhouse_provider_health_v1` view remains degraded for that capability
+even when its error ages past 24 hours.
+
+Only the original provider reader may record
+`provider_capability_readback_restored` after **successful independent readback**
+of the same provider source, organization, channel, exact published post,
+HTTP 200, and immutable source event ID; no generic heartbeat, draft,
+accepted publish, unrelated post or alternative metric provider is recovery.
+Keep existing schedules, single executor and no-republish/idempotency rules.
+Provider approval/OAuth scopes must never be bypassed. Never infer missing
+impressions, customer replies or experiment lift as zeros.
+
+Regression contract:
+`supabase/migrations/20261110153331_linkedin_org_readback_sticky_provider_health_v1.sql`
+and `tests/brain-provider-readback-sticky-health-20261110.test.mjs`.
+Original P0 authority:
+https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+Protected source delivery admission for this recovery lane requires a single exact
+`Obligation-ID`, `Delivery-Lane: backend`, `Candidate-Type: recovery`,
+immutable branch-origin `Base-SHA`, exact `Change-Scope` and `Scope-Budget`.
+When admission rejects missing metadata, correct the SAME original PR body and
+trigger NEW exact-head checks without bypassing or relabeling historical failed runs.
