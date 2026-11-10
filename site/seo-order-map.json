@@ -209,7 +209,8 @@
         "twinfield koppelen",
         "twinfield integratie",
         "twinfield koppelingen",
-        "koppeling twinfield"
+        "koppeling twinfield",
+        "twinfield api"
       ],
       "funnel_stage": "decide",
       "primary_cta": {
