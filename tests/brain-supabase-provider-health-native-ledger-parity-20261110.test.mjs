@@ -39,3 +39,14 @@ test('code and learning all point to one protected, actual applied migration ide
   assert.equal(learning.production_readback.applied_migration_version,migratedVersion);
   assert.equal(learning.production_readback.provider_permission_recovered,false);
 });
+
+test('original protected admission retains all ordinary history guards and requires exact native one-time receipt', () => {
+  const code=readFileSync(new URL('../tools/ci/protected-supabase-pr-migration-tests.mjs',import.meta.url),'utf8');
+  const helper=readFileSync(new URL('../tools/ci/verified-provider-health-native-version-reconciliation.mjs',import.meta.url),'utf8');
+  assert.match(code,/verifyNativeProviderHealthVersionReconciliation/);
+  assert.match(code,/if\(!nativeProviderHealthVersionReconciliation\)/);
+  assert.match(code,/Applied historical migrations must never be modified or deleted in an ordinary PR/);
+  assert.match(helper,/NATIVE_PROVIDER_HISTORY_IS_NOT_EXACT_APPEND_ONLY_824/);
+  assert.match(helper,/NATIVE_SQL_MUST_EQUAL_PROTECTED_AND_PROVIDER_READBACK_BYTES/);
+  assert.match(helper,/hostedPreviewRequired:true,providerHistoryAttestedByCandidate:false/);
+});
