@@ -10,7 +10,14 @@ const SOURCES=Object.freeze([
   {name:'experiments',table:'powerhouse_autonomous_experiment_readiness_v1',query:'select=readiness_state,assignments,treatment_assignments,holdout_assignments,observed_at&limit=2',max:1},
   {name:'revenue',table:'powerhouse_revenue_event_spine_health_v1',query:'select=measured_at,scored_prospects,next_best_actions,attribution_touches,realized_revenue_eur,attributed_revenue_eur&limit=2',max:1},
   {name:'loops',table:'powerhouse_loop_integrity_health_v1',query:'select=observed_at,total_loops,green_loops,amber_loops,red_loops,fully_evidenced_loops,overall_status&limit=2',max:1},
-  {name:'terminal',table:'powerhouse_terminal_control_plane_health_v1',query:'select=observed_at,nonterminal_obligations,blocked_obligations,escalated_reconciliation_jobs,control_plane_healthy,stale_green_truths&limit=2',max:1}
+  {name:'terminal',table:'powerhouse_terminal_control_plane_health_v1',query:'select=observed_at,nonterminal_obligations,blocked_obligations,escalated_reconciliation_jobs,control_plane_healthy,stale_green_truths&limit=2',max:1},
+  // Existing commercial read-model and ORIGINAL Brain incident ledger, admin-only.
+  // Return only non-identifying source fields; never last_evidence, person/email,
+  // tenant data, provider tokens or customer-level action rows.
+  {name:'commercialHandoff',table:'powerhouse_commercial_handoff_scorecard_v1',
+    query:'select=measured_at,original_email_actions_7d,provider_readback_proven_7d,broken_or_unproven_handoffs_7d,linked_experiment_treatments_7d,provider_linked_replies_7d,provider_linked_meetings_7d,provider_linked_realized_revenue_eur_7d,handoff_health&limit=2',max:1},
+  {name:'commercialIncidents',table:'brain_blockers',
+    query:'select=fingerprint,scope,severity,state,updated_at,resolved_at&scope=like.powerhouse%3Acommercial%3A*&order=updated_at.desc&limit=17',max:16}
 ]);
 const metric=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
 const text=v=>typeof v==='string'?v.slice(0,90):null;
@@ -25,8 +32,13 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   const revenueRows=usable(readStates,'revenue')?rows(datasets.revenue):[];
   const loopRows=usable(readStates,'loops')?rows(datasets.loops):[];
   const terminalRows=usable(readStates,'terminal')?rows(datasets.terminal):[];
+  const handoffRows=usable(readStates,'commercialHandoff')?rows(datasets.commercialHandoff):[];
+  const incidentRows=usable(readStates,'commercialIncidents')?rows(datasets.commercialIncidents).filter(r=>String(r?.scope||'').startsWith('powerhouse:commercial:')).slice(0,16):[];
   const health=healthRows[0]||null, experiments=expRows[0]||null, revenue=revenueRows[0]||null;
   const loops=loopRows[0]||null, terminal=terminalRows[0]||null;
+  const handoff=handoffRows[0]||null;
+  const incidentActive=incidentRows.filter(r=>r.state==='ACTIVE').length;
+  const incidentResolved=incidentRows.filter(r=>r.state==='RESOLVED').length;
   const sourceNames=SOURCES.map(x=>x.name);
   const sourceComplete=sourceNames.every(n=>usable(readStates,n));
   const gaps=['END_TO_END_HANDOFF_EVIDENCE_NOT_IN_THIS_PROJECTION',
@@ -46,6 +58,9 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
     gaps.push('BLOCKED_OBLIGATIONS_REQUIRE_ORIGINAL_OWNER');
   if(terminal && metric(terminal.escalated_reconciliation_jobs)>0)
     gaps.push('RESULT_UNKNOWN_RECONCILIATION_REQUIRES_READBACK');
+  if(handoff && handoff.handoff_health!=='GREEN')gaps.push('COMMERCIAL_HANDOFF_PROOF_OPEN');
+  if(handoff && metric(handoff.broken_or_unproven_handoffs_7d)>0)gaps.push('HISTORICAL_COMMERCIAL_HANDOFF_DEBT_OPEN');
+  if(incidentActive>0)gaps.push('ACTIVE_COMMERCIAL_BRAIN_INCIDENT_REQUIRES_READBACK');
   return {
     contract:'POWERHOUSE_EXISTING_SYSTEMS_ADMIN_READBACK_V1',
     observedAt:at,
@@ -99,6 +114,29 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
       attributedRevenueEur:metric(revenue.attributed_revenue_eur),
       readAt:revenue.measured_at||null,
       boundary:'AGGREGATED_CANONICAL_SOURCE_NOT_PAYMENT_PROVIDER_PROOF'
+    }:null,
+    // This is an existing admin-only data projection, NOT a new incident store.
+    // Resolved source-code repair and ACTIVE end-to-end evidence debt must be
+    // shown separately; neither implies an autonomous outcome or revenue.
+    commercialHandoff:handoff?{
+      state:text(handoff.handoff_health),
+      originalEmailActions7d:metric(handoff.original_email_actions_7d),
+      providerProven7d:metric(handoff.provider_readback_proven_7d),
+      brokenOrUnproven7d:metric(handoff.broken_or_unproven_handoffs_7d),
+      linkedTreatments7d:metric(handoff.linked_experiment_treatments_7d),
+      linkedReplies7d:metric(handoff.provider_linked_replies_7d),
+      linkedMeetings7d:metric(handoff.provider_linked_meetings_7d),
+      realizedRevenueEur7d:metric(handoff.provider_linked_realized_revenue_eur_7d),
+      readAt:handoff.measured_at||null
+    }:null,
+    commercialIncidents:usable(readStates,'commercialIncidents')?{
+      active:incidentActive,resolved:incidentResolved,
+      incidents:incidentRows.map(r=>({
+        fingerprint:text(r.fingerprint),scope:text(r.scope),
+        state:text(r.state),severity:text(r.severity),
+        updatedAt:r.updated_at||null
+      })),
+      readAt:at
     }:null,
     gapCodes:gaps
   };
