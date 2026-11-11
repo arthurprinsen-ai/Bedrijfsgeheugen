@@ -1,0 +1,91 @@
+/* Public website mobile UX repair. One canonical layer, no portal/auth styles. */
+@supports (overflow:clip) {
+  html,body { overflow-x:clip!important; }
+}
+/* iOS Safari sticky navigation cannot survive overflow-x:hidden scroll ancestors. */
+body > header.v17-header,body > nav.bgkop,
+header.v17-header,nav.bgkop {
+  position:sticky!important;top:0!important;z-index:1500!important;
+  isolation:isolate;
+}
+header.v17-header .v17-nav,nav.bgkop .bgkop-in {box-sizing:border-box!important;align-items:center!important}
+@media(max-width:1100px) {
+  header.v17-header .v17-nav {min-height:64px!important;max-height:72px!important}
+  header.v17-header .v17-nav>.brand {display:flex!important;align-items:center!important;min-width:0!important;max-width:calc(100% - 92px)!important;white-space:nowrap!important}
+  header.v17-header .v17-nav>.mobile-toggle {position:relative!important;z-index:1502!important;min-height:44px!important;cursor:pointer!important}
+  nav.bgkop .bgkop-in {min-height:64px!important;gap:10px!important;padding:10px 16px!important}
+  nav.bgkop .bgkop-logo {min-width:0!important;max-width:calc(100% - 90px)!important}
+  nav.bgkop .bgkop-woord {font-size:clamp(16px,4.5vw,21px)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  nav.bgkop .bgkop-knop {position:relative!important;z-index:1502!important;min-height:44px!important;cursor:pointer!important}
+}
+/* All legacy public pages use the same dark brand header as the V18 pages. */
+nav.bgkop {background:#0c1014!important;color:#fff!important;border-bottom:1px solid rgba(255,255,255,.12)!important}
+nav.bgkop .bgkop-logo,nav.bgkop .bgkop-woord,nav.bgkop .bgkop-woord b,nav.bgkop .bgkop-payoff,
+nav.bgkop .bgkop-links>a,nav.bgkop .bgkop-trig {color:#fff!important}
+nav.bgkop .bgkop-paneel a,nav.bgkop .bgkop-paneel a * {color:#14171a!important}
+nav.bgkop .bgkop-knop {background:#22262d!important;color:#fff!important;border:1px solid rgba(255,255,255,.28)!important;box-shadow:none!important}
+nav.bgkop .bgkop-knop .bg-mobile-menu-icon::before,
+nav.bgkop .bgkop-knop .bg-mobile-menu-icon::after {background:#fff!important}
+/* Keep overlays below the persistent header; expose an independent close control. */
+#bgMobileNav,#bgSharedMobileNav,#v18MobileDrawer {z-index:1400!important}
+.bg-sitewide-menu-close {
+  position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 78px)!important;right:18px!important;
+  z-index:1490!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-width:92px!important;min-height:44px!important;padding:8px 14px!important;
+  background:#14171a!important;color:#fff!important;border:1px solid #14171a!important;
+  border-radius:12px!important;font:700 15px/1.2 system-ui,sans-serif!important;
+  cursor:pointer!important;box-shadow:0 4px 14px rgba(0,0,0,.12)!important;
+}
+#bgMobileNav[aria-hidden="true"] .bg-sitewide-menu-close,
+#bgSharedMobileNav[aria-hidden="true"] .bg-sitewide-menu-close,
+#v18MobileDrawer[aria-hidden="true"] .bg-sitewide-menu-close {display:none!important}
+.bg-sitewide-menu-close:focus-visible,
+header.v17-header .mobile-toggle:focus-visible,
+nav.bgkop .bgkop-knop:focus-visible {outline:3px solid #ffe86b!important;outline-offset:3px!important}
+/* A secondary homepage CTA was white-on-white after global .secondary overrides. */
+.pgl .pgl-actions a.pgl-btn.secondary {
+  background:#fff!important;color:#14171a!important;border:2px solid #fff!important;
+  text-decoration:none!important;opacity:1!important;visibility:visible!important;
+}
+.pgl .pgl-actions a.pgl-btn.secondary:hover {background:#ffe86b!important;border-color:#ffe86b!important}
+main :is(a,button).btn.wit {background:#fff!important;color:#14171a!important;border-color:#14171a!important}
+main :is(a,button)[href]:focus-visible,main button:not(:disabled):focus-visible,
+main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3px}
+/* Knowledge comparison: one real, full-surface native range (touch + keyboard). */
+#compareFrame {position:relative!important;touch-action:pan-y}
+#compareFrame #compareRange {
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  margin:0!important;padding:0!important;opacity:.015!important;z-index:35!important;
+  cursor:ew-resize!important;touch-action:pan-y;
+}
+#compareFrame:focus-within {outline:3px solid #2742d6;outline-offset:3px}
+.bg-knowledge-slider-output {display:inline-block;margin-left:10px;font-weight:700;color:#2742d6}
+@media(max-width:700px) {
+  #compareFrame {min-height:410px!important}
+  #compareFrame .compare-before,#compareFrame .compare-after {
+    clip-path:none!important;inset:0!important;transition:opacity .16s ease!important;
+  }
+  #compareFrame[data-bg-knowledge-side="before"] .compare-after,
+  #compareFrame[data-bg-knowledge-side="after"] .compare-before {opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+  #compareFrame[data-bg-knowledge-side="before"] .compare-before,
+  #compareFrame[data-bg-knowledge-side="after"] .compare-after {opacity:1!important;visibility:visible!important}
+  #compareFrame .compare-handle {display:none!important}
+  #compareFrame::after {
+    content:"";position:absolute;left:0;right:0;bottom:0;height:66px;
+    background:rgba(255,255,255,.94);pointer-events:none;z-index:20;
+  }
+  #compareFrame #compareRange {
+    inset:auto 20px 10px!important;width:calc(100% - 40px)!important;
+    height:44px!important;opacity:1!important;accent-color:#2742d6!important;
+    background:transparent!important;
+  }
+  #compareFrame .compare-label {z-index:8!important}
+  #compareFrame[data-bg-knowledge-side="before"] .compare-label.after,
+  #compareFrame[data-bg-knowledge-side="after"] .compare-label.before {opacity:.45}
+  #compareFrame .mess-card {max-width:85%!important}
+  #compareFrame .organised {grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:62px 12px 18px!important}
+  #compareFrame .memory-card {min-width:0!important;padding:12px!important}
+}
+@media(prefers-reduced-motion:reduce) {
+  #compareFrame .compare-before,#compareFrame .compare-after {transition:none!important}
+}

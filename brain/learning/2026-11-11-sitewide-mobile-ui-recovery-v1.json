@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "fingerprint": "website|mobile|header-menu-slider-interaction-and-cta-contrast|20261111-v1",
+  "date": "2026-11-11",
+  "type": "WEBSITE_MOBILE_INTERACTION_AND_CONTRAST_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_CI_EVIDENCE_DUE",
+  "original_owner": "original canonical public website / Netlify build",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "root_cause": {
+    "observed": "Five user iPhone screenshots show blank white CTA, inconsistent mobile header, non-closing navigation, unreadable and non-draggable knowledge comparison, and reported unresponsive controls.",
+    "cause": "Multiple legacy/V18 header owners and overflow-x:hidden on html/body break sticky behavior in iOS; white-on-white secondary CTA after CSS collision; knowledge comparison input is below the visual frame rather than its touch target; close control depends on the header layer."
+  },
+  "fix": {
+    "scope": "Single idempotent public CSS+JS layer injected at original final Netlify build, not portal; restores header/CTA/close and one native range for knowledge comparison.",
+    "non_goals": [
+      "no second scheduler or executor",
+      "no tenant/auth modification",
+      "no false sitewide interaction success without real browser tests"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_MOBILE_CHROME_AND_INTERACTION_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Keep one public mobile header and menu authority; all sitewide changes pass through the canonical build",
+    "Test sticky after scroll on real mobile browser and menu open then close; never assert only aria-expanded open",
+    "Every visual slider must have one keyboard/touch native input as its actual hit target",
+    "Test computed button text/background contrast, including secondary CTAs and legacy CSS collisions",
+    "Keep production status EVIDENCE_DUE until protected checks, exact Netlify READY SHA and independent browser readback",
+    "Require actual keyboard/touch/mobile menu-close and sticky-header browser checks in the original protected website delivery lane, not only source-level regex or visibility checks"
+  ],
+  "evidence": {
+    "source": "User-provided screenshots and original GitHub source; public URL https://www.bedrijfsgeheugen.nl",
+    "tests": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs",
+      "tests/site-shell-mobile-ui-recovery-20261111.test.mjs",
+      "tests/site-shell-mobile-sitewide-recovery-20261111.test.mjs",
+      "tools/site-shell/website-cross-browser-assurance.mjs"
+    ],
+    "production_readback": "NOT_YET_VERIFIED",
+    "limitation": "Source patch is not proof that all pages and all controls work. CI and browser checks remain required.",
+    "browser_gate": {
+      "workflow": ".github/workflows/lane-website.yml",
+      "script": "tools/site-shell/sitewide-mobile-interaction-browser-check.mjs",
+      "routes": [
+        "/",
+        "/kennis/",
+        "/prijzen",
+        "/contact"
+      ],
+      "mobile_widths": [
+        320,
+        390
+      ],
+      "assertions": [
+        "menu open/close and Escape",
+        "header sticky after scroll",
+        "secondary CTA contrast >=4.5:1",
+        "knowledge native range keyboard Home/End and pointer hit target",
+        "scroll unlock",
+        "no unexpected page errors"
+      ],
+      "state": "CANDIDATE_PENDING_PROTECTED_BROWSER_AND_PRODUCTION_READBACK"
+    }
+  },
+  "next_action": "Protected Required/BRAIN/CodeQL and preview browser evidence, then protected merge and exact-main Netlify READY plus mobile production readback."
+}
