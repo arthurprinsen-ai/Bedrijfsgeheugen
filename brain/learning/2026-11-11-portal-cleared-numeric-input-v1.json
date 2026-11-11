@@ -1,0 +1,56 @@
+{
+  "fingerprint": "portal|all-native-forms|cleared-numeric-unknown-not-zero|20261111-v1",
+  "date": "2026-11-11",
+  "type": "PORTAL_INPUT_SOURCE_TRUTH",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "obligation_id": "portal|all-native-forms|cleared-numeric-unknown-not-zero|20261111-v1",
+  "owner": "existing Portal V2 #4215 / canonical Brain BusinessInput",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5596",
+  "root_cause": "Number('') is 0: clearing numeric native controls gave an observed zero instead of missing. Native required-field input handler rejected an empty value before clearing old domain state. Causal impact numeric parser also treated null/blank as zero, risking no causal recalculation when zero was cleared.",
+  "failure_class": "PORTAL_EMPTY_NUMERIC_FALSE_ZERO_AND_STALE_REQUIRED_ANSWER",
+  "compiler": {
+    "failure_class": "PORTAL_EMPTY_NUMERIC_FALSE_ZERO_AND_STALE_REQUIRED_ANSWER",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "Shared numeric inputs use null for unknown and preserve explicit valid zero. Clearing required inputs must invalidate the stale client business fact despite visual validity warning, but malformed non-empty input stays rejected. Causal comparison preserves zero-vs-null; never invent a numerical impact delta to unknown. Regressions must run on every original Portal/Brain protected delivery.",
+  "prevention_rules": [
+    "PORTAL_BLANK_INPUT_NEVER_OBSERVED_ZERO",
+    "PORTAL_REQUIRED_FIELD_CLEAR_INVALIDATES_OLD_FACT",
+    "PORTAL_CAUSAL_ZERO_TO_NULL_NOT_NOOP"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-cleared-numeric-input-20261111.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/form-primitives.test.mjs",
+      "portal-v2/tests/portal-impact-engine.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-cleared-numeric-input-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "prior_user_report": "Customer entry must alter dependent page calculations and advice; current verified cross-page/live consumer coverage incomplete.",
+    "original_failure": "PR #5596 hygiene / admission first failed DELIVERY_LANE_INVALID in run 42967394799; second run 42967795466 failed INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning.",
+    "code_paths": [
+      "portal-v2/form-primitives.js",
+      "portal-v2/portal-impact-engine.js"
+    ],
+    "independent_production_readback": "NOT_PROVEN",
+    "authenticated_two_tenant_writeback": "NOT_PROVEN",
+    "brain_heartbeat_consumer_ack": "NOT_PROVEN",
+    "released_main_sha": null
+  },
+  "production_proven": false,
+  "customer_outcome": "NOT_PROVEN",
+  "learning_status": "CANDIDATE_UNTIL_VALIDATED_SOURCE_TEST_AND_LIVE_READBACK",
+  "next_gate": "protected exact-head hygiene + Required/BRAIN/CodeQL, original merge, Netlify source-exact deploy, authenticated two-tenant actual customer field clear -> durable readback -> dependent page and Brain ACK",
+  "skill_targets": [
+    "powerhouse-company-intelligence-os"
+  ]
+}
