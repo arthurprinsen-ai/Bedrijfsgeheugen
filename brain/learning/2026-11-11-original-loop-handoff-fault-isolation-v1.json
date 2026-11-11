@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|15-loop|unisolated-handoff-fault-blocks-other-owners|20261111-v1",
+  "date": "2026-11-11",
+  "type": "CANONICAL_ORIGINAL_LOOP_ASSURANCE_FAULT_ISOLATION",
+  "status": "PROTECTED_CANDIDATE_UNVERIFIED_RUNTIME",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_portal_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "owner": "original powerhouse-runtime-scheduler-mux-v1 / powerhouse_refresh_loop_assurance_v1 / ONE BRAIN",
+  "root_cause": "The existing original assurance function executed stage receipt sync and original content handoff inside one unguarded transaction before iterating the 15 registered loop owners. One helper exception could abort the refresh for every loop, leaving stale health and no new owner evidence. This is a verified source-level structural risk, NOT a claimed observed production exception.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rules": [
+    "ORIGINAL_STAGE_RECEIPT_SYNC_ERROR_MARKS_ALL_RED_NEVER_GREEN",
+    "ORIGINAL_CONTENT_HANDOFF_ERROR_MARKS_CONTENT_LOOP_RED_BUT_UNRELATED_LOOPS_CONTINUE",
+    "ORIGINAL_SQLSTATE_SANITIZED_IN_SAME_BRAIN_OBLIGATION",
+    "KEEP_OPEN_PROVIDER_UNKNOWN_AND_DURABLE_UNACKED_WORK",
+    "NO_SECOND_SCHEDULER_OR_PROVIDER_SIDE_EFFECT",
+    "EXACT_PROTECTED_MIGRATION_LOCK_AND_NATIVE_PROVIDER_READBACK_REQUIRED"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs"
+    ]
+  },
+  "original_source_evidence": {
+    "observed_at": "2026-11-11T09:18:00Z",
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "active_loops": 15,
+    "green": 8,
+    "red": 7,
+    "open_content_handoffs": 433,
+    "overdue_content_handoffs": 403,
+    "historical_escalations_no_safe_handler": 2,
+    "original_cron_job_id": 171,
+    "original_cron_enabled": true,
+    "original_cron_latest_runs": "SUCCESS but does not prove complete business outcomes",
+    "original_helper_exception_seen_in_production": false,
+    "actual_customer_2_tenant_consumer_proof": false
+  },
+  "fix": "Only the existing original 15-loop assurance SQL RPC gains isolated non-provider exception subtransactions around stage sync and content handoff, with explicit failed-source statuses and original native BRAIN evidence; no change to other original provider actions or obligation authority.",
+  "no_second_scheduler": true,
+  "no_provider_replay": true,
+  "no_new_store": true,
+  "no_parallel_executor": true,
+  "production_applied_verified": false,
+  "failed_helper_fault_injection_proven_in_production": false,
+  "regression": "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs",
+  "independent_acceptance": "Protected CI, original Supabase migration and provider source-lock equality, actual cron #171 natural owner readback, 15 loop/source status readback, two auth tenants and truly observed downstream provider/outcome/learning still EVIDENCE_DUE."
+}
