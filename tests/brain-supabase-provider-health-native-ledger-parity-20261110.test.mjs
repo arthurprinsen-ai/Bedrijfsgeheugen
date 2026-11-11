@@ -22,10 +22,13 @@ test('no duplicate old proposal migration: exactly provider assigned native vers
 test('original source lock is append-only and matches exact official native identity', () => {
   assert.equal(lock.source, 'supabase_migration_history');
   assert.equal(lock.project_ref, 'adhjwmvyoixzjtmiroln');
-  assert.equal(lock.applied.length, 824);
+  // This 10 November proof is the immutable historical #824 identity, not a
+  // claim that valid provider-applied migrations #825/#826 cannot follow.
+  assert.ok(lock.applied.length>=824, 'original provider #824 history must remain present');
   for (let i=1;i<lock.applied.length;i++)
     assert.ok(lock.applied[i-1].version < lock.applied[i].version, 'provider versions must be monotonic unique');
-  assert.deepEqual(lock.applied.at(-1), {version:migratedVersion,name});
+  assert.deepEqual(lock.applied[822], {version:'20261110134500',name:'original_source_wait_is_not_send_v1'});
+  assert.deepEqual(lock.applied[823], {version:migratedVersion,name});
   assert.equal(lock.applied.filter(x=>x.name===name).length, 1);
   assert.equal(lock.applied.some(x=>x.version==='20261110153331'), false);
 });

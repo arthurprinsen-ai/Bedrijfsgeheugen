@@ -41,13 +41,23 @@ test('AI Modelwijzer keeps goal, cost and sovereignty contracts',()=>{
   }
 });
 
-test('catalog evidence is freshness bounded',()=>{
-  // Claim-level evidence is authoritative (see scripts/ai-model-freshness-watch.mjs); the
-  // catalog-level verified_at is a label and explicitly not proof of a supplier check.
+test('supplier evidence is freshness bounded for automatic selection, not research-only listings',()=>{
+  // 2026-10-15 product decision: historical third-party research may remain stale
+  // only when ineligible for recommendation. Do not refresh source dates or
+  // approve customer/provider controls without independent evidence.
+  const now=Date.now();
   for(const m of catalog.models){
     const checked=new Date(String(m.verification_evidence?.checked_on||'')+'T00:00:00Z');
     assert.ok(Number.isFinite(checked.getTime()),`${m.id}: verification_evidence.checked_on required`);
-    const ageDays=(Date.now()-checked)/86400000;
-    assert.ok(ageDays<=14,`${m.id}: supplier evidence must be re-checked within 14 days`);
+    const ageDays=(now-checked.getTime())/86400000;
+    const autoEligible=m.auto_recommendation_eligible===true||
+      m.supplier_audit?.automatic_recommendation_eligible===true;
+    if(autoEligible) {
+      assert.ok(ageDays>=0&&ageDays<=14,`${m.id}: auto-recommendation needs current supplier evidence within 14 days`);
+      assert.equal(m.supplier_audit?.automatic_recommendation_eligible,true,`${m.id}: independent approval required`);
+    }
+    if(ageDays>14) {
+      assert.equal(autoEligible,false,`${m.id}: stale catalog entry must not be auto-recommended`);
+    }
   }
 });

@@ -5,7 +5,11 @@ import {
  verifyNativeProviderHealthVersionReconciliation, EXACT_BASE_SHA, PROPOSAL, NATIVE
 } from '../tools/ci/verified-provider-health-native-version-reconciliation.mjs';
 
-const headLock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+const currentLock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+// Replay the *historical* provider-824 correction against its exact immutable
+// provider-824 prefix. Newer verified #825/#826 entries remain in currentLock.
+assert.ok(currentLock.applied.length>=824,'native provider 824 prefix missing');
+const headLock={...currentLock,applied:currentLock.applied.slice(0,824)};
 const candidateSQL=readFileSync(new URL('../'+NATIVE,import.meta.url),'utf8');
 const baseLock={
  ...headLock,
