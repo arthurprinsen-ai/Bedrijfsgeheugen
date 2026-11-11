@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "fingerprint": "portal|production-readback|demo-alias-double-navigation|20261111-v1",
+  "type": "ORIGINAL_PRODUCTION_BROWSER_READBACK_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Portal V2 Production DOM Readback / original Netlify release",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "merge_sha": "f7aa5af45e5a7da2ee55078324adb60dc891438c",
+    "dom_run_id": 43028996822,
+    "production_readback_run_id": 43028997020,
+    "deploy_id": "6af46cc891e46f47ab9a0d75"
+  },
+  "root_cause": {
+    "observed": "mobile 24-capability test starts with HTTP 301 /klantportaal alias and page.goto collides with redirect to /portaal/demo",
+    "not_proven": "real tenant login or deliveryPlan receipt failure"
+  },
+  "fix": {
+    "scope": "Readback test canonical demo bootstrap URL only; no runtime or redirect changes",
+    "authority": "original portal-v2-production-dom-readback",
+    "no_false_green": true
+  },
+  "compiler": {
+    "failure_class": "CANONICAL_PUBLIC_DEMO_REDIRECT_RACE_IN_PRODUCTION_BROWSER_READBACK",
+    "scope": "PORTAL_READBACK",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-v2-demo-routing.test.mjs",
+      "tests/portal-v2-demo-state.test.mjs"
+    ],
+    "shadow": [
+      "tests/portal-v2-production-canonical-demo-bootstrap-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/integration/portal-v2-production-full-parity.spec.js"
+    ]
+  },
+  "prevention": [
+    "PRODUCTION_READBACK_USE_CANONICAL_DEMO_ROUTE",
+    "RETAIN_REDIRECT_AND_AUTH_FAIL_CLOSED",
+    "ALL_24_MOBILE_CAPABILITIES_MUST_PASS"
+  ],
+  "evidence": {
+    "source": "GitHub run 43028996822, original _redirects and demo route code",
+    "required": "green protected CI + exact-main independent rerun of original browser readback",
+    "limitation": "No independent authenticated 2-tenant business chain acceptance or Red Dot certification"
+  }
+}

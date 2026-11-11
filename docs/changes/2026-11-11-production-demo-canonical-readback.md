@@ -1,0 +1,9 @@
+# 2026-11-11 — Portal V2 production DOM readback: canonical demo navigation
+
+**Source evidence:** GitHub `portal-v2-production-dom-readback` run [43028996822](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43028996822), exact protected main `f7aa5af45e5a7da2ee55078324adb60dc891438c`. The production route and release readback [43028997020](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43028997020) succeeded; Netlify deployment `6af46cc891e46f47ab9a0d75` is READY.
+
+**Root cause:** `bootDemo()` in `tests/integration/portal-v2-production-full-parity.spec.js` requests the obsolete canonical alias `/klantportaal?klant=demoAI`. The established `_redirects` sends that public demo alias to `/portaal/demo` with HTTP 301 and then rewrites to Portal V2. During the 320/390/430 Playwright test, multiple navigation events race: `page.goto` is interrupted by a second navigation to `/portaal/demo`. This failure is **not** evidence of a failed login or a 2-tenant customer workflow.
+
+**Corrective action:** Point the mobile browser test directly to the unchanged canonical `/portaal/demo?klant=demoAI` source; leave the independent redirect contract tests and production redirects unchanged. Retain all 24 protected capabilities, mobile width checks, demo state edit/reopen, routing and fail-closed assertions. Prevent retry loops that continually traverse the 301. A missing portal state or real runtime error must still fail the test.
+
+**Invariants:** No portal auth override, no real tenant write, no backend/Supabase/Netlify change, no fake server/consumer readback, no skipped browser assertions. Release only after protected checks green and exact-current-main repeat of failed DOM workflow. The broader 7 red lussen, 433 pending handoffs, actual approved process execution and Red Dot acceptance remain independently open.
