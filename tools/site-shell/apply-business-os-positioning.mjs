@@ -52,7 +52,7 @@ function markup(locale,page){
  <div class="bgor-actions">
   <a href="${ORIGIN+scan}" data-bg-conversion="bedrijfslek" data-bg-funnel-stage="discover">${esc(x.cta)}</a>
   <a href="${ORIGIN}/portaal-demo" data-bg-funnel-stage="consider">${esc(x.second)}</a>
-  <a href="${page==='price'?'#prijzen-pakketten':ORIGIN+pricing}" data-bg-funnel-stage="decide">${esc(x.third)}</a>
+  <a href="${page==='price'?ORIGIN+pricing+'#prijzen-pakketten':ORIGIN+pricing}" data-bg-funnel-stage="decide">${esc(x.third)}</a>
  </div><p class="bgor-evidence">${esc(x.note)}</p>
  </section>`;
 }
