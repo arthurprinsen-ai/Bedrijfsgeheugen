@@ -114,7 +114,7 @@ test('one canonical growth producer measures NL and EN pricing, scan and checkou
  const ORIGIN='https://www.bedrijfsgeheugen.nl';
  const html=injectGrowthMeasurement('<html><body><main></main></body></html>',
    {canonical:ORIGIN+'/prijzen',page_role:'money',funnel_stage:'decide'});
- const script=html.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/)?.[1];
+ const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/)?.[1];
  assert.ok(script);
  const cases=[
    ['/zelfscan','zelfscan','selfscan_start'],['/en/zelfscan','zelfscan','selfscan_start'],
@@ -157,7 +157,7 @@ test('one canonical growth producer measures NL and EN pricing, scan and checkou
 test('even an explicitly marked cross-origin EN scan link cannot create a false scan-start event',()=>{
  const ORIGIN='https://www.bedrijfsgeheugen.nl';
  const html=injectGrowthMeasurement('<html><body><main></main></body></html>',{canonical:ORIGIN+'/prijzen'});
- const script=html.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/)?.[1];
+ const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/)?.[1];
  const sent=[],listeners={};let next=0;
  const location={origin:ORIGIN,hostname:'www.bedrijfsgeheugen.nl',pathname:'/prijzen',href:ORIGIN+'/prijzen'};
  vm.runInNewContext(script,{
