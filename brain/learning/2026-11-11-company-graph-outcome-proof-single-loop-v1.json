@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "fingerprint": "company-graph|unrelated-first-item-causal-link-and-false-realized-value|20261111-v1",
+  "type": "ORIGINAL_COMPANY_INTELLIGENCE_CAUSAL_PROOF_REPAIR",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Original Portal V2 Company Intelligence context + ONE BRAIN",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "gap": "Unrelated first problem/opportunity/action/outcome linked and unverified raw amounts cast into realized EUR",
+    "verified_real_paid_orders_claimed": 0
+  },
+  "root_cause": {
+    "observed": "Contextual renderer used array order, untyped amounts and unverified outcome pairs instead of canonical original Outcome Feedback proof gate",
+    "unknowns": [
+      "two genuine authenticated tenant production cycles",
+      "provider action readback",
+      "subsequent applied learning"
+    ]
+  },
+  "fix": {
+    "scope": "Reuse verifiedCustomerOutcome, explicit causal IDs and learning next-decision source proof in original contextual Company Intelligence UI",
+    "no_new_store": true,
+    "no_new_agent": true,
+    "no_new_scheduler": true,
+    "no_provider_send": true
+  },
+  "compiler": {
+    "failure_class": "COMPANY_INTELLIGENCE_FALSE_CAUSAL_VALUE",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "NO_POSITIONAL_CAUSAL_EDGES",
+    "NO_UNVERIFIED_REALIZED_AMOUNTS",
+    "NO_FALSE_ZERO",
+    "MATCH_ORIGINAL_OUTCOME_VALIDATOR",
+    "NO_LEARNING_WITHOUT_NEXT_DECISION_PROOF",
+    "ORIGINAL_TENANT_READBACK_REQUIRED"
+  ],
+  "evidence": {
+    "required": "protected Required/BRAIN/CodeQL; exact production Netlify READY/DOM; authenticated tenant and real provider/outcome proof before broader release green",
+    "limitation": "Source/CI/DOM success does not prove actual third-party data ingest, provider writebacks or measured CRO outcome"
+  }
+}
