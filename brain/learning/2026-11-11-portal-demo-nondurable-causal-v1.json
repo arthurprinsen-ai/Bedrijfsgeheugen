@@ -1,0 +1,46 @@
+{
+  "fingerprint": "portal|v2|demo-ephemeral-does-not-create-brain-pending|20261111-v1",
+  "date": "2026-11-11",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "owner": "existing Portal V2 #4215 / original Brain BusinessInput",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "DEMO_EPHEMERAL_INPUT_FALSE_CANONICAL_PENDING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The shared domain attached pending real Brain section snapshots and causal impacts to ephemeral demo-only edits; restoring demo state then met original durable replay source-conflict guard, leaving exactly one original production browser failure.",
+  "prevention_rules": [
+    "DEMO_DATA_MUST_NOT_ENTER_CUSTOMER_BRAIN_PENDING_QUEUE",
+    "DEMO_IMPACT_EVENTS_MAY_RECOMPUTE_LOCAL_UI_BUT_NEVER_CLAIM_PROVIDER_ACK",
+    "AUTHENTICATED_CUSTOMER_EDITS_REQUIRE_ORIGINAL_BRAIN_ACK_AND_STALE_REPLAY_GUARDS"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-demo-no-false-handoff-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-demo-no-false-handoff-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-demo-no-false-handoff-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "priorSourceCommit": "bfdd7fa140ee2bd0a5ce21090f5cf72206b1ab2e",
+    "priorDeployId": "6af40e9c1a5e131bc6856f1c",
+    "productionBrowserRun": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42974453301",
+    "priorResult": "15 passed / 1 failed / 1 skipped",
+    "newPortalTest": "portal-v2/tests/portal-demo-nondurable-bulk.test.mjs",
+    "realAuthTwoTenantE2E": "NOT_PROVEN",
+    "realBrainHeartbeatConsumerAck": "NOT_PROVEN"
+  },
+  "customerOutcome": "NOT_PROVEN",
+  "production_proven": false,
+  "skill_targets": [
+    "portal-living-interface",
+    "powerhouse-continuity"
+  ]
+}
