@@ -68,7 +68,7 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     id:'agent-data-quality',
     domains:['Data','Data Quality'],
     capabilities:['analyze','reconcile','validate','verify'],
-    tasks:['validate-data-contract','reconcile-source-projection','detect-data-drift','verify-data-lineage','validate-exact-assurance-owner-action-source-pair','verify-fresh-original-stage-and-provider-receipts','verify-exact-tenant-source-revision-consumer-ack','detect-provenance-or-source-freshness-gap-before-cro-action','audit-process-step-intents-and-missing-independent-consumer-receipts-per-tenant-revision'],
+    tasks:['validate-data-contract','reconcile-source-projection','detect-data-drift','verify-data-lineage','validate-exact-assurance-owner-action-source-pair','verify-fresh-original-stage-and-provider-receipts','verify-exact-tenant-source-revision-consumer-ack','detect-provenance-or-source-freshness-gap-before-cro-action','audit-process-step-intents-and-missing-independent-consumer-receipts-per-tenant-revision','deny-unmatched-company-graph-causal-edges-and-unverified-outcome-value-in-customer-intelligence'],
     playbooks:['source-projection-reconciliation','schema-drift-recovery','data-quality-regression'],
     learningContracts:[...sharedLearning,'data-quality.v1'],
   }),
