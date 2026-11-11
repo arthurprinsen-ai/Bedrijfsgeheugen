@@ -60,3 +60,15 @@ test('iPhone screenshot regression checks viewport menu geometry and one close c
   assert.match(browser,/floating WhatsApp obstructs menu/);
   assert.match(browser,/route:'\/product'/);
 });
+
+test('existing website UX agent and website skill inherit mobile screenshot recurrence and proof',()=> {
+  const team=fs.readFileSync('platform/agents/agent-team.mjs','utf8');
+  const skill=fs.readFileSync('skills/website-portal-coherence.md','utf8');
+  assert.match(team,/verify-public-mobile-menu-viewport-geometry-and-single-toggle/);
+  assert.match(team,/verify-sitewide-sticky-header-and-cta-touch-contrast/);
+  assert.match(team,/confirm-real-mobile-browser-gate-and-exact-production-sha/);
+  assert.match(skill,/website\\|mobile\\|navigation-coherence-geometry\\|20261111-v2/);
+  assert.match(skill,/v18MobileDrawer/);
+  assert.match(skill,/same original owner/);
+  assert.match(skill,/320 and 390px/);
+});
