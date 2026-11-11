@@ -9,6 +9,8 @@ const pairs=[
   {route:'/kennis/',width:390},
   {route:'/prijzen',width:390},
   {route:'/contact',width:390},
+  {route:'/product',width:390},
+  {route:'/product',width:320},
   {route:'/',width:320},
   {route:'/kennis/',width:320}
 ];
@@ -51,9 +53,24 @@ try {
       const nav=page.locator('#'+controls);
       await nav.waitFor({state:'visible',timeout:8000});
       assert.equal(await nav.getAttribute('aria-hidden'),'false',`${route}: open menu aria mismatch`);
-      const close=nav.locator('[data-bg-sitewide-close]').first();
-      await close.waitFor({state:'visible',timeout:5000});
-      await close.click({timeout:7000});
+      const geometry=await page.evaluate(owner=>{
+        const header=document.querySelector('header.v17-header,nav.bgkop');
+        const menu=document.getElementById(owner);
+        const h=header.getBoundingClientRect(),m=menu.getBoundingClientRect();
+        const float=document.querySelector('.wa,.whatsapp-float,[data-whatsapp-float]');
+        return {viewport:innerWidth,left:m.left,right:m.right,top:m.top,
+          headerTop:h.top,headerBottom:h.bottom,menuPosition:getComputedStyle(menu).position,
+          singleClose:menu.querySelectorAll('[data-bg-sitewide-close]').length===0,
+          bodyState:document.body.classList.contains('bg-site-mobile-menu-open'),
+          floatHidden:!float||getComputedStyle(float).display==='none'};
+      },controls);
+      assert.ok(geometry.bodyState&&geometry.singleClose,route+': duplicate menu controls '+JSON.stringify(geometry));
+      assert.ok(geometry.menuPosition==='fixed'&&Math.abs(geometry.left)<3&&Math.abs(geometry.right-geometry.viewport)<3,
+        route+': sheet leaves side gaps '+JSON.stringify(geometry));
+      assert.ok(Math.abs(geometry.headerTop)<3&&Math.abs(geometry.top-geometry.headerBottom)<4,
+        route+': sheet does not meet fixed header '+JSON.stringify(geometry));
+      assert.ok(geometry.floatHidden,route+': floating WhatsApp obstructs menu');
+      await toggle.click({timeout:7000});
       assert.equal(await toggle.getAttribute('aria-expanded'),'false',`${route}: explicit close did not collapse`);
       assert.equal(await nav.getAttribute('aria-hidden'),'true',`${route}: close left overlay active`);
       const unlocked=await page.evaluate(()=>document.body.style.overflow===''&&document.documentElement.style.overflow==='');

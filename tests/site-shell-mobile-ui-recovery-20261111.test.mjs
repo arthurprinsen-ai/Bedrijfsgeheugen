@@ -10,7 +10,7 @@ const config=JSON.parse(fs.readFileSync('config/powerhouse-website-cross-browser
 
 test('final canonical Netlify phase injects one public sitewide repair, including nested knowledge and English',()=>{
   assert.match(builder,/sitewide-mobile-ui-20261111\.css/);
-  assert.match(builder,/sitewide-mobile-ui-20261111\.js\?v=20261111a/);
+  assert.match(builder,/sitewide-mobile-ui-20261111\.js\?v=20261111b/);
   assert.match(builder,/bg-sitewide-mobile-ui-20261111/);
   assert.match(builder,/data-bg-sitewide-mobile-ui=/);
   assert.match(builder,/'kennis'/);

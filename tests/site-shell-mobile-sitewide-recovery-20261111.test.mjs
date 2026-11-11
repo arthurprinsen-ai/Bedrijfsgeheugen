@@ -44,7 +44,7 @@ test('canonical last Netlify build phase injects the same public UX once per pag
       const html=fs.readFileSync(path.join(tmp,p),'utf8');
       assert.equal((html.match(/id="bg-sitewide-mobile-ui-20261111"/g)||[]).length,1,p);
       assert.equal((html.match(/data-bg-sitewide-mobile-ui="1"/g)||[]).length,1,p);
-      assert.match(html,/<script src="\/assets\/sitewide-mobile-ui-20261111\.js\?v=20261111a" defer/);
+      assert.match(html,/<script src="\/assets\/sitewide-mobile-ui-20261111\.js\?v=20261111b" defer/);
     }
     const portal=fs.readFileSync(path.join(tmp,'portal/index.html'),'utf8');
     assert.doesNotMatch(portal,/bg-sitewide-mobile-ui-20261111/);

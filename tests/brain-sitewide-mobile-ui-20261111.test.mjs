@@ -39,7 +39,7 @@ test('original protected website browser lane exercises real menu close, sticky 
   assert.match(workflow,/node tools\/site-shell\/sitewide-mobile-interaction-browser-check\.mjs/);
   assert.match(workflow,/Retain original mobile interaction browser evidence/);
   assert.match(browser,/hasTouch:true,isMobile:true/);
-  assert.match(browser,/await close\.click/);
+  assert.match(browser,/await toggle\.click/);
   assert.match(browser,/await page\.keyboard\.press\('Escape'\)/);
   assert.match(browser,/sticky\.position==='sticky'/);
   assert.match(browser,/ratio\(fg,bg\)>=4\.5/);
