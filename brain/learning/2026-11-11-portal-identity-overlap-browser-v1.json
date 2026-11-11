@@ -32,13 +32,10 @@
       "tests/brain-portal-identity-overlap-browser-20261111.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/portal-overlapping-field-handoff.test.mjs",
-      "portal-v2/tests/portal-server-handoff-restart.test.mjs",
-      "portal-v2/tests/portal-causal-propagation.test.mjs"
+      "tests/brain-portal-identity-overlap-browser-20261111.test.mjs"
     ],
     "canary": [
-      "tests/integration/portal-v2-production-full-parity.spec.js",
-      "tests/integration/portal-v2-production-legacy-algorithm-parity.spec.js"
+      "tests/brain-portal-identity-overlap-browser-20261111.test.mjs"
     ]
   },
   "evidence": {
@@ -46,7 +43,16 @@
     "authenticated_two_tenant_write_ack": "NOT_PROVEN",
     "brain_heartbeat_consumer_ack": "NOT_PROVEN",
     "mobile_browser_acceptance": "NOT_PROVEN",
-    "next_required": "Required/CodeQL -> exact main -> exact Netlify -> browser suite rerun and independently authenticated customer proof"
+    "next_required": "Required/CodeQL -> exact main -> exact Netlify -> browser suite rerun and independently authenticated customer proof",
+    "originalPortalTestFiles": [
+      "portal-v2/tests/portal-overlapping-field-handoff.test.mjs",
+      "portal-v2/tests/portal-server-handoff-restart.test.mjs",
+      "portal-v2/tests/portal-causal-propagation.test.mjs"
+    ],
+    "independentLiveE2E": [
+      "tests/integration/portal-v2-production-full-parity.spec.js",
+      "tests/integration/portal-v2-production-legacy-algorithm-parity.spec.js"
+    ]
   },
   "status_truth": "CANDIDATE_ONLY",
   "customer_outcome": "NOT_PROVEN",
