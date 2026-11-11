@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "fingerprint": "powerhouse|all-loops|one-owner-receipt-cro-autonomous-decision-continuity|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_ONE_OWNER_CRO_CONTINUITY_CONTRACT",
+  "original_owner": "Original Powerhouse / ONE BRAIN / Heartbeat 15-loop assurance",
+  "original_issue": 4198,
+  "related_issue": 4215,
+  "status": "PROTECTED_CANDIDATE_IN_CI_RUNTIME_OUTCOME_EVIDENCE_DUE",
+  "failure_class": "SOURCE_TO_CONSUMER_HANDOFF_UNPROVEN",
+  "no_new_scheduler": true,
+  "no_new_agent": true,
+  "no_new_writer": true,
+  "no_new_store": true,
+  "no_provider_replay": true,
+  "customer_end_to_end_proven": false,
+  "live_evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "original_active_loops": 15,
+    "green": 8,
+    "red": 7,
+    "content_handoff_open": 433,
+    "content_handoff_overdue": 403,
+    "historical_result_unknown_escalated": 2,
+    "cron_171_active": true,
+    "migration_applied_native_versions": 826,
+    "native_second_version_exact_source_verified": true,
+    "source_lock_before_candidate": 825,
+    "source_lock_after_candidate": 826,
+    "cro_readiness": "LATENT_WAITING_FOR_ELIGIBLE_ACTION",
+    "cro_assignments": 0,
+    "treatment_assignments": 0,
+    "holdout_assignments": 0,
+    "real_customer_outcome_verified": false
+  },
+  "root_cause": {
+    "status": "MULTIPLE_DISTINCT_OBSERVED_GAPS",
+    "observed": [
+      "original 15 loops 7 RED after actual natural receipt reconciliation",
+      "433 original content handoffs OPEN, 403 OVERDUE",
+      "two original result-unknown reconciliation jobs escalated with no safe handler",
+      "original CRO assignments still 0",
+      "original native provider 826 rows while source lock was 825 after #5607"
+    ],
+    "cause": "Fault isolation source patch already applied, but downstream consumer ACK, eligible CRO experiment, and next-run reused learning lack source evidence; provider/source lock mismatch is a separate independently observed release parity gap.",
+    "unknowns": [
+      "full authenticated two-tenant production consumer-stage closure",
+      "why several historic handoffs have no genuine consumer proof",
+      "whether a safe qualified CRO action will become eligible"
+    ]
+  },
+  "fix": {
+    "scope": "Existing 14 agents, original 2 skills, immutable source lock, regression, ONE BRAIN lesson and human ledger only",
+    "mechanism": "One original source/owner/lease/consumer ACK/measurement/next-run learning contract; source lock reconciles 826 native versions without native reexecution; autonomous reversible eligible CRO variant subject to real source, consent, baseline, holdout and protected release gates.",
+    "effect": "policy-and-source-parity-only; does not claim real experiment, actual customer value, channel delivery or invariant 100-percent uptime"
+  },
+  "compiler": {
+    "failure_class": "CROSS_LOOP_CONSUMER_RECEIPT_AND_CRO_DECISION_GAP",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "READ_ACTUAL_PROVIDER_VERSION_AND_SOURCE_IN_ONE_ORIGINAL_RELEASE_AUTHORITY",
+    "NEVER_CLAIM_CONSUMER_RECEIVED_FROM_PRODUCER_POST_ONLY",
+    "NO_SILENT_AGING_OUT_OF_OVERDUE_ORIGINAL_HANDOFF",
+    "RETRY_ONLY_ON_ORIGINAL_IDEMPOTENT_LEASE_WITH_PROVIDER_READBACK",
+    "ONE_ORIGINAL_REVERSIBLE_CRO_TREATMENT_ONLY_WHEN_ELIGIBLE_AND_MEASURABLE",
+    "DO_NOT_TREAT_HOLDOUT_OR_REVENUE_AS_OBSERVED_WITH_ZERO_ASSIGNMENTS",
+    "PROVE_NEXT_NATURAL_RUN_CONSUMED_VALIDATED_LEARNING_BEFORE_FULFILLMENT"
+  ],
+  "next_action": "Pass protected Required/BRAIN/CodeQL and original main merge; independently verify original native 826/826 source lock and 15-loop natural #171 readback. Original #4198/#4215 require authentic provider customer→consumer→measurement→learning evidence and remain EVIDENCE_DUE.",
+  "source_files": [
+    "platform/agents/agent-team.mjs",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "supabase/migration-history.lock.json",
+    "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs",
+    "docs/changes/2026-11-11-original-all-loop-autonomous-cro-handoff.md",
+    "docs/development-ledger-events/2026-11-11-original-all-loop-autonomous-cro-handoff.md"
+  ]
+}
