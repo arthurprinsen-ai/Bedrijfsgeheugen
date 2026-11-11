@@ -36,6 +36,6 @@ test('canonical builder owns the one-roof pass and original invoices / pricing r
  assert.match(build,/\['business-os-positioning','tools\/site-shell\/apply-business-os-positioning\.mjs'\]/);
  assert.ok(build.indexOf("'daily-steering-positioning'")<build.indexOf("'business-os-positioning'"));
  assert.ok(build.indexOf("'business-os-positioning'")<build.indexOf("'sitemap'"));
- assert.doesNotMatch(code,/setInterval|cron\.schedule|update\s+public\.|create\s+table|service_role|/);
+ assert.doesNotMatch(code,/setInterval|cron\.schedule|update\s+public\.|create\s+table|service_role/);
  assert.match(code,/data-bg-funnel-stage/);
 });
