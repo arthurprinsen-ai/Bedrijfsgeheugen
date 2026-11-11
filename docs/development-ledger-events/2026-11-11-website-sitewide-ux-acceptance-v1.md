@@ -13,3 +13,7 @@ A source/test success or broad visibility sweep can be incorrectly promoted as s
 
 ## Terminal criterion
 The source change is **SOURCE_CANDIDATE**, not automatically live, until the protected GitHub PR merges after Required/BRAIN/CodeQL, exact current Netlify SHA is independently read and the next authentic agent/skill projection is proven. Full-site interaction and normal-text contrast acceptance stay **OPEN/EVIDENCE_DUE** until observed browser outcomes, not just this documentation/agent update.
+
+## Protected semantic-learning gate — failed first attempt, recovered in the same PR
+
+Original Required PR #5625 run [#43052091943](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43052091943) failed early with `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning`. Inspection of the original trusted guard `scripts/brain/material-writeback-closure-guard.mjs` showed that explicit semantic key `prevention` / `prevention_rule(s)` is mandatory. The candidate JSON contained human prevention prose in docs and fix fields but no top-level machine-readable prevention key. The same original PR adds a nonempty explicit `prevention` array to the Brain learning record, without modifying/waiving the admission guard. The first red run remains historical evidence; new exact-head Required and CodeQL must pass before protected merge. Source state remains CANDIDATE, not LIVE.
