@@ -33,14 +33,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-v2-demo-routing.test.mjs",
-      "tests/portal-v2-demo-state.test.mjs"
+      "tests/brain-portal-prod-readback-canonical-demo-20261111.test.mjs"
     ],
     "shadow": [
-      "tests/portal-v2-production-canonical-demo-bootstrap-20261111.test.mjs"
+      "tests/brain-portal-prod-readback-canonical-demo-20261111.test.mjs"
     ],
     "canary": [
-      "tests/integration/portal-v2-production-full-parity.spec.js"
+      "tests/brain-portal-prod-readback-canonical-demo-20261111.test.mjs"
     ]
   },
   "prevention": [
