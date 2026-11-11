@@ -166,6 +166,40 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
   header.v17-header .brand,nav.bgkop .bgkop-logo{min-width:0!important;max-width:calc(100% - 98px)!important}
 }
 
+/* Money-page CTA controls inserted after V18 build had only generic link
+   styling. Render the product hero actions as actual accessible buttons. */
+@media(max-width:1100px){
+  .inhoud-kop .bg-money-order-path{
+    display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+    gap:10px 12px!important;margin-top:18px!important
+  }
+  .inhoud-kop .bg-money-order-path>a[data-money-primary],
+  .inhoud-kop .bg-money-order-path>a[data-money-secondary]{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    box-sizing:border-box!important;min-height:48px!important;max-width:100%!important;
+    padding:12px 18px!important;border-radius:12px!important;
+    font-weight:750!important;font-size:16px!important;line-height:1.25!important;
+    text-align:center!important;text-decoration:none!important;white-space:normal!important;
+    box-shadow:none!important
+  }
+  .inhoud-kop .bg-money-order-path>a[data-money-primary]{
+    color:#14171a!important;background:#ffe86b!important;border:2px solid #ffe86b!important
+  }
+  .inhoud-kop .bg-money-order-path>a[data-money-secondary]{
+    color:#fff!important;background:rgba(255,255,255,.08)!important;
+    border:2px solid rgba(255,255,255,.9)!important
+  }
+  .inhoud-kop .bg-money-order-path>p{
+    flex-basis:100%!important;margin:6px 0 0!important;
+    max-width:60ch!important;color:#f2f5ff!important;
+    font-size:clamp(15px,3.8vw,18px)!important;line-height:1.6!important
+  }
+}
+@media(max-width:420px){
+  .inhoud-kop .bg-money-order-path>a[data-money-primary],
+  .inhoud-kop .bg-money-order-path>a[data-money-secondary]{width:100%!important}
+}
+
 /* One mobile navigation must never be covered by the canonical global
    WhatsApp contact widget (whose z-index is 100000 in shared components). */
 @media(max-width:1100px){
