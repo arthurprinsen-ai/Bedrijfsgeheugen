@@ -10,7 +10,6 @@
     for (var i=0;i<MENUS.length;i++) {
       var config=MENUS[i], nav=document.getElementById(config.id);
       if (!nav) continue;
-      if (config.id==='v18MobileDrawer' && document.getElementById('bgMobileNav')) continue;
       if (nav.getAttribute('aria-hidden')==='false' || nav.classList.contains('open')) {
         return {nav:nav,toggle:document.getElementById(config.toggle)};
       }
@@ -43,7 +42,7 @@
   function ensureCloseButtons() {
     MENUS.forEach(function(config) {
       var nav=document.getElementById(config.id);
-      if (!nav || (config.id==='v18MobileDrawer' && document.getElementById('bgMobileNav'))) return;
+      if (!nav) return;
       if (nav.querySelector('[data-bg-sitewide-close]')) return;
       var button=document.createElement('button');
       button.type='button';
