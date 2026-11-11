@@ -48,3 +48,15 @@ test('original protected website browser lane exercises real menu close, sticky 
   assert.match(browser,/await range\.click/);
   assert.match(browser,/if\(failures\)process\.exitCode=1/);
 });
+
+test('iPhone screenshot regression checks viewport menu geometry and one close control',()=>{
+  const browser=fs.readFileSync('tools/site-shell/sitewide-mobile-interaction-browser-check.mjs','utf8');
+  assert.match(js,/syncMenuGeometry/);
+  assert.match(js,/bg-site-mobile-menu-open/);
+  assert.match(css,/\.bg-sitewide-menu-close\{display:none!important\}/);
+  assert.match(browser,/sheet leaves side gaps/);
+  assert.match(browser,/sheet does not meet fixed header/);
+  assert.match(browser,/duplicate menu controls/);
+  assert.match(browser,/floating WhatsApp obstructs menu/);
+  assert.match(browser,/route:'\/product'/);
+});

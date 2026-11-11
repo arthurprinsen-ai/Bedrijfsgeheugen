@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "fingerprint": "website|mobile|navigation-coherence-geometry|20261111-v2",
+  "date": "2026-11-11",
+  "type": "WEBSITE_MOBILE_NAVIGATION_GEOMETRY_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_CI_EVIDENCE_DUE",
+  "original_owner": "original canonical public website/Netlify delivery",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "root_cause": {
+    "observed": "User iPhone screenshots show partial-width menu, visible background strip, offset header, duplicate close button, floating WhatsApp overlap and overflowing top announcement.",
+    "cause": "Old gate checked aria menu state but not viewport geometry. V18 and legacy menu overlays can inherit fixed containing blocks from header and extra close layer conflicted."
+  },
+  "fix": {
+    "scope": "Preserve existing menu engines, move overlay into document.body, align to fixed header, one Menu/Sluit toggle and no floating WhatsApp collision. Add real browser geometry tests.",
+    "non_goals": [
+      "no parallel executor",
+      "no portal/auth state changes",
+      "no premature production success claim"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_MOBILE_NAVIGATION_GEOMETRY_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Assert actual drawer left/right/top and header adjacency on 320/390px iPhones",
+    "Require one close toggle and keyboard Escape",
+    "Hide floating WhatsApp while drawer open",
+    "One canonical site builder and proof of exact Netlify READY SHA"
+  ],
+  "evidence": {
+    "source": "User screenshots and GitHub source",
+    "tests": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs",
+      "tools/site-shell/sitewide-mobile-interaction-browser-check.mjs"
+    ],
+    "production_readback": "NOT_YET_VERIFIED",
+    "browser_gate": {
+      "routes": [
+        "/",
+        "/product",
+        "/kennis/",
+        "/prijzen",
+        "/contact"
+      ],
+      "mobile_widths": [
+        320,
+        390
+      ]
+    },
+    "limitation": "Source candidate is not live proof."
+  },
+  "next_action": "Protected original CI, browser, CodeQL, merge, Netlify READY and production readback."
+}

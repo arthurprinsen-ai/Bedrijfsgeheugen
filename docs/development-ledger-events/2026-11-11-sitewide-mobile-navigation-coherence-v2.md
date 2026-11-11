@@ -9,3 +9,6 @@ Proof: existing website lane browser asserts 320/390px viewport geometry, header
 
 ## CI incident recovery — 2026-11-11 13:16 UTC
 First PR #5618 admission rejected machine metadata because freeform prose put Delivery-Lane, Candidate-Type and Base-SHA on one paragraph and omitted Obligation-ID. Original protected gate correctly failed and skipped downstream tests; no bypass. The PR was corrected to the canonical multiline metadata block and synchronized with this ledger-only source commit to request a new genuine PR event with the corrected event payload. Prevention: future PRs must use canonical multiline metadata at creation, before checks start.
+
+## Canonical learning closure (2026-11-11 13:18 UTC)
+Admission metadata fixed, then the protected integration closure required a brain learning record. The same PR now adds this record and its historical replay test; no check was bypassed. Each previous failure remains traceable.
