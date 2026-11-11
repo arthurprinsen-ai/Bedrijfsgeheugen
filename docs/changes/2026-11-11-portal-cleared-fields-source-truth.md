@@ -3,7 +3,7 @@
 Parent authority: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215
 
 Obligation-ID: portal|all-native-forms|cleared-numeric-unknown-not-zero|20261111-v1
-Delivery-Lane: frontend
+Delivery-Lane: portal
 Candidate-Type: recovery
 Base-SHA: 4c7cd7760216d04ef0937f02498f7de091f8dd41
 Change-Scope: portal-v2/form-primitives.js, portal-v2/portal-impact-engine.js, portal-v2/tests/form-primitives.test.mjs, portal-v2/tests/portal-impact-engine.test.mjs, this change record.
