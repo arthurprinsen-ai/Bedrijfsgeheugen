@@ -18,3 +18,6 @@ The actual 320/390px browser gate failed **8/8** on original candidate SHA 1354e
 
 ## Navigation obstruction audit
 The original canonical WhatsApp widget in tools/site-shell/components.mjs uses .bg-whatsapp-contact at z-index 100000, not merely .wa; the new full-width drawer z-index 2050 would still be obscured. Added actual selector to the public menu-open CSS and the same browser gate. This is still the same PR and original build, not a separate executor.
+
+## Published-template owner confirmation — browser red 2026-11-11 13:40 UTC
+Second real candidate check on SHA 3fa0c109 also failed 8/8 geometry. Added browser diagnostics proved `owner=v18MobileDrawer`, `parent=BODY`, `canonicalAvailable=false`, `computedTransform=translateX(384.9px)` at 390px width. Earlier belief that the generated V18 pages mount `bgMobileNav` was false: the historical V18 drawer is the actual owner in this production build. Corrected the existing public sitewide CSS to normalize that exact historical drawer to viewport width and position immediately under the 64px fixed header, remove its transform, and suppress its redundant internal close control while the canonical toggle handles closing. New protected browser evidence required; no claims of production success before exact readback.
