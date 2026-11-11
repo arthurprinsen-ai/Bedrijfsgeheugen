@@ -25,3 +25,6 @@ Second run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/429
 
 ## Acceptance and residual limitations
 Code + tests are not live product proof. Must pass exact-head protected Required/BRAIN/CodeQL, then protected main merge and exact Netlify source/deploy readback; two authenticated tenant user-change/reopen tests; Brain/Heartbeat/Powerhouse consumer ACK and changed dependent advice evidence. Original issue #4215 remains open for all field/provider/dynamic surface coverage, concurrency and durable outbox. No manual fake-green update or second executor.
+
+## Portal test recovery — source-level only
+Original exact candidate run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42968545566 passed admission, lease and system-map preflight. Portal suite failed 2 of 707 tests: the new fake DOM root omitted querySelectorAll and the original living-interface source assertion matched only one-line invalid guards. The product semantic branch was retained; the DOM fixture and assertion were made multiline-safe. New exact-head CI is required, not presumed.
