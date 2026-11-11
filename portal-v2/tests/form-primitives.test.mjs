@@ -55,7 +55,7 @@ test('clearing a required field removes its stale fact while malformed edits rem
       removeEventListener(type){delete listeners[type];},
       setAttribute(){},removeAttribute(){}
     };
-    const root={querySelector:()=>node};
+    const root={querySelector:()=>node,querySelectorAll:()=>[]};
     const unbind=bindFields(root,[{id:'employees',type:'number',path:'portal.profile.employees',required:true}],{
       onChange:(_,value)=>received.push(value)
     });
