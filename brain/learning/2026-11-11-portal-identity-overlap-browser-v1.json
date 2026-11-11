@@ -1,0 +1,57 @@
+{
+  "fingerprint": "portal|v2|deep-link-hydration-and-overlapping-source-snapshots|20261111-v1",
+  "date": "2026-11-11",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "owner": "original Portal V2 / Brain BusinessInput #4215",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "observed_source": {
+    "merged_main_sha": "8220286effffce70d436b58d4ce5f3dbec2907c1",
+    "netlify_deploy": "6af404a98712ccea070b9e08",
+    "prod_browser": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42969509727",
+    "passed": 12,
+    "failed": 4,
+    "skipped": 1
+  },
+  "compiler": {
+    "failure_class": "PORTAL_IDENTITY_RENDER_RACE_AND_OVERLAPPING_PENDING_SOURCE_CONFLICT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "First anonymous session event emitted an identity change from null to empty and could clear a valid native deep-link after routing. Fresh overlapping section and specialised-model edits retained noncontemporaneous pending snapshots that the original Brain replay guard correctly refused.",
+  "prevention_rules": [
+    "INITIAL_ANONYMOUS_ROUTE_MUST_NOT_EMIT_FALSE_IDENTITY_BOUNDARY",
+    "TRUE_TENANT_SWITCH_REVOKES_STALE_CUSTOMER_DOM",
+    "POST_HYDRATION_DEEP_LINK_USES_EXISTING_AUTH_GATE",
+    "OVERLAPPING_UNSUBMITTED_SECTION_INPUTS_USE_CURRENT_SAME_REVISION_SNAPSHOT",
+    "EXTERNAL_NEWER_SOURCE_CONFLICT_NEVER_SILENTLY_REPLAYED"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-identity-overlap-browser-20261111.test.mjs",
+      "portal-v2/tests/portal-overlapping-field-handoff.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/portal-server-handoff-restart.test.mjs",
+      "portal-v2/tests/portal-causal-propagation.test.mjs"
+    ],
+    "canary": [
+      "tests/integration/portal-v2-production-full-parity.spec.js",
+      "tests/integration/portal-v2-production-legacy-algorithm-parity.spec.js"
+    ]
+  },
+  "evidence": {
+    "production_status": "CODE_CANDIDATE_UNTIL_EXACT_NETLIFY_AND_BROWSER_READBACK",
+    "authenticated_two_tenant_write_ack": "NOT_PROVEN",
+    "brain_heartbeat_consumer_ack": "NOT_PROVEN",
+    "mobile_browser_acceptance": "NOT_PROVEN",
+    "next_required": "Required/CodeQL -> exact main -> exact Netlify -> browser suite rerun and independently authenticated customer proof"
+  },
+  "status_truth": "CANDIDATE_ONLY",
+  "customer_outcome": "NOT_PROVEN",
+  "skill_targets": [
+    "portal-living-interface",
+    "powerhouse-continuity"
+  ]
+}
