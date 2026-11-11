@@ -16,10 +16,12 @@ const required = readFileSync('.github/workflows/required-test.yml', 'utf8');
  * nu installatiestappen, ongeacht hoe ze geschreven zijn.
  */
 test('website lane provisions one pinned Playwright browser runtime per release candidate', () => {
-  const nodeInstalls = workflow.match(/(?:npm install --no-save --package-lock=false --ignore-scripts playwright@1\.61\.0|npx playwright install --with-deps|bash tools\\/ci\\/install-chromium\\.sh)/g) || [];
+  const nodeInstalls = workflow.match(/npm install --no-save --package-lock=false --ignore-scripts playwright@1\.61\.0/g) || [];
+  const legacyInstalls = ['npx playwright install --with-deps', 'bash tools/ci/install-chromium.sh'].filter(text => workflow.includes(text));
   const pythonPlaywrightInstalls = workflow.match(/python -m pip install playwright|pip install --quiet playwright/g) || [];
   const pythonBrowserInstalls = workflow.match(/python -m playwright install/g) || [];
   assert.equal(nodeInstalls.length, 1, `expected exactly one browser runtime install, found ${nodeInstalls.length}`);
+  assert.equal(legacyInstalls.length, 0, `unexpected legacy browser installation: ${legacyInstalls.join(', ')}`);
   assert.equal(pythonPlaywrightInstalls.length, 0, `expected no duplicate Python Playwright install, found ${pythonPlaywrightInstalls.length}`);
   assert.equal(pythonBrowserInstalls.length, 0, `expected no duplicate Python Chromium install, found ${pythonBrowserInstalls.length}`);
 });
