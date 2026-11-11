@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "fingerprint": "website|mobile|header-menu-slider-interaction-and-cta-contrast|20261111-v1",
+  "date": "2026-11-11",
+  "type": "CANONICAL_PUBLIC_WEBSITE_MOBILE_INTERACTION_RECOVERY",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "original_owner": "Original canonical website GitHub → Netlify delivery / ONE BRAIN #4198",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "observed": {
+    "source": "Five user iPhone screenshots and original website builder sources; public mobile pages require independent browser acceptance",
+    "main_source_sha_at_intake": "550b020eeb3e03c6ffc7d0356cbb62c2ac4180ad",
+    "original_pre_fix_pr": 5613,
+    "original_admission_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43015777977",
+    "original_admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: missing original same-lineage Brain learning and append-only activity ledger",
+    "public_production_verified": false,
+    "browser_interaction_verified": false,
+    "red_dot_award_ready": false
+  },
+  "root_cause": {
+    "observed": "Blank white secondary CTA; legacy versus V18 header and Safari sticky overflow conflict; mobile overlay cannot be dismissed reliably; separate knowledge slider input sits below the visible comparison and leaves clipped halves unreadable.",
+    "cause": "Independent CSS/JS/HTML contracts across generations, page-scoped interaction input outside compared frame, and missing shared end-to-end mobile close/sticky/slider test coverage.",
+    "unknowns": [
+      "Live Safari/WebKit touch correctness on final exact published SHA",
+      "Sitewide 320px and 200% zoom outcomes",
+      "Actual visitor CTA progression and order conversion"
+    ]
+  },
+  "fix": {
+    "scope": "Single public-only CSS/JS patch injected through existing final canonical Netlify CMS runtime phase; idempotent public page coverage including /kennis and /en; native single range, keyboard endpoints, accessible independently closeable navigation, sticky header, correct secondary CTA contrast.",
+    "authority": "Original public website build owner; existing menu and knowledge page listener, not a second navigation/scheduler/CMS engine",
+    "non_goals": [
+      "new executor",
+      "new scheduler",
+      "portal tenant runtime rewrites",
+      "unverified all-pages green",
+      "pricing or auth changes"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MOBILE_PUBLIC_SITE_CROSS_GENERATION_INTERACTION_AND_CONTRAST",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-mobile-interaction-recovery-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sitewide-mobile-interaction-recovery-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sitewide-mobile-interaction-recovery-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "PUBLIC_MOBILE_REPAIRS_APPLY_AFTER_CANONICAL_GENERATORS",
+    "NO_SAFARI_STICKY_HEADER_UNDER_BODY_OVERFLOW_HIDDEN",
+    "SECONDARY_CTA_TEXT_CONTRAST_MUST_BE_VISIBLE",
+    "MOBILE_MENU_CLOSE_CLICK_AND_ESCAPE_MUST_RESTORE_SCROLL_AND_ARIA",
+    "NATIVE_COMPARE_SLIDER_MUST_COVER_VISIBLE_INTERACTIVE_AREA_AND_REACH_BOTH_EDGES",
+    "PUBLIC_SITE_STYLES_MUST_NOT_LEAK_INTO_PORTAL"
+  ],
+  "evidence": {
+    "source": "GitHub PR #5613 source and original required admission; user-reported screenshots; source tests",
+    "required": "Protected hygiene/admission, Required/BRAIN/CodeQL, existing website preview, cross-browser Chromium/Firefox/WebKit 390px and /kennis, protected main merge, exact current Netlify READY SHA, independent mobile production readback.",
+    "at_candidate": "SOURCE_ONLY_NOT_LIVE",
+    "original_owner_next_action": "Repair canonical admission, run tests and preview, protected merge once checks are green, independent exact release readback; preserve open incident on failures."
+  },
+  "status_truth": "CANDIDATE_ONLY"
+}
