@@ -74,5 +74,12 @@
     "github_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5618",
     "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43043865912",
     "production_readback": "PREDECESSOR_ONLY; NEW_ACCEPTANCE_NOT_VERIFIED"
-  }
+  },
+  "prevention": [
+    "Never treat 277 x 3 visibility/CLS checks as 831 real interactive outcomes; preserve per-route selector/viewport action and observed result.",
+    "Use computed WCAG AA >=4.5:1 contrast for ordinary text; accept 3:1 only for demonstrably large text; keep 3.78:1 panel EVIDENCE_DUE.",
+    "Reuse original website lane, single writer and ONE BRAIN owner + consumer ACK. Do not claim full-site ALL_GREEN from merged documentation or partial browser tests.",
+    "Retain exact SHA, protected Required/BRAIN/CodeQL, current Netlify READY, independent production browser behavior and agent skill readback before closure.",
+    "Canonical semantic-learning hygiene requires explicit prevention key: prior PR #5625 admission failed INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE semantic_learning; do not alter the gate."
+  ]
 }
