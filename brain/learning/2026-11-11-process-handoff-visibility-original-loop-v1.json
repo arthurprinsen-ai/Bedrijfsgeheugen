@@ -30,7 +30,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/process-portfolio.test.mjs"
+      "tests/brain-process-original-stage-handoff-20261111.test.mjs"
     ],
     "shadow": [
       "tests/brain-process-original-stage-handoff-20261111.test.mjs"
@@ -48,5 +48,12 @@
   "evidence": {
     "required": "protected Required+BRAIN+CodeQL; exact Netlify SHA and authenticated two-tenant production browser readback",
     "limitation": "Independent provider execution/outcome and Heartbeat learning remain unproven"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_PROCESS_INDEPENDENT_RECEIPT_VISIBILITY_GAP",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
   }
 }
