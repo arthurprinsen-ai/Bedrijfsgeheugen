@@ -2,6 +2,8 @@ import { readFile, writeFile, glob } from 'node:fs/promises';
 
 const ORIGIN='https://www.bedrijfsgeheugen.nl';
 const STYLE='/assets/site-coherence-v1.css?v=20261001';
+const MOBILE_COHERENCE_STYLE='/assets/website-mobile-coherence-v1.css?v=20261111';
+const MOBILE_COHERENCE_SCRIPT='/assets/website-mobile-coherence-v1.js?v=20261111';
 
 function routeFor(path){
   const p=String(path).replace(/\\/g,'/');
@@ -27,8 +29,11 @@ function markRoute(html,route){
 }
 
 function ensureStyle(html){
-  if(html.includes('site-coherence-v1.css')) return html;
-  return html.replace('</head>',`<link rel="stylesheet" href="${STYLE}">\n</head>`);
+  let next=html;
+  if(!next.includes('site-coherence-v1.css'))next=next.replace('</head>',`<link rel="stylesheet" href="${STYLE}">\n</head>`);
+  if(!next.includes('website-mobile-coherence-v1.css'))next=next.replace('</head>',`<link rel="stylesheet" href="${MOBILE_COHERENCE_STYLE}">\n</head>`);
+  if(!next.includes('website-mobile-coherence-v1.js'))next=next.replace('</body>',`<script src="${MOBILE_COHERENCE_SCRIPT}" defer></script>\n</body>`);
+  return next;
 }
 
 const productTruth=`
@@ -136,6 +141,8 @@ const files=[];
 for await (const p of glob('*.html')) files.push(p);
 for await (const p of glob('blog/**/index.html')) files.push(p);
 for await (const p of glob('en/**/*.html')) files.push(p);
+for await (const p of glob('kennis/index.html')) files.push(p);
+for await (const p of glob('behoeftecheck/index.html')) files.push(p);
 for await (const p of glob('*-ai-modellen/index.html')) files.push(p);
 for await (const p of glob('*-vs-*/index.html')) files.push(p);
 
