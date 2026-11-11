@@ -1,0 +1,9 @@
+# Pricing package advisor → same original CRO chain, 11 November 2026
+
+Parent #4198, linked portal #4215. Fingerprint `pricing|package-advisor|three-fields-not-measured-or-linked|20261111-v1`.
+
+**Existing source weakness:** `tools/site-shell/apply-commercial-pricing-v1.mjs` renders three public category selectors for employee band, goal and delivery mode. The CTA `id=pkgGo` did not carry the original `data-bg-conversion` marker, so the existing single SEO/CRO producer did not recognize it as a package-advice decision. A second JS `location.href` navigation on click competed with the anchor's ordinary default link and could lose the selected query.
+
+**Single-writer scoped correction:** keep the original canonical NL/EN pricing page builder, original product catalog/prices and original `/pakketadvies` route. Set the existing link's `href` on initialization and each select `change`; no click navigation override and no second sender. Add explicit `data-bg-conversion=pakketadvies` and `data-bg-funnel-stage=consider`, fed through the existing website `bg-growth-measurement` event pipeline. Selected values are only fixed plan bands/goals/modes, not a legally consented authenticated tenant or paid order. Do not claim external integration, order/checkout, qualified customer or measured Heartbeat learning from this click alone.
+
+**Proof:** `tests/brain-pricing-advisor-original-cro-handoff-20261111.test.mjs` historical/shadow/canary: actual JS executes, all 3 selections change the link, link is keyboard-native, no JS double navigation and no separate analytics producer. Original protected Required/CodeQL/BRAIN + Netlify main exact SHA and browser readback must pass. URL selection remains on the preexisting Dutch `/pakketadvies` route even for EN marketing; do not advertise this as a finished fully localized English destination until that page has actual dedicated translation and accessibility review.
