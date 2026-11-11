@@ -6,3 +6,6 @@ Root cause: V18/legacy mobile header position and a second close control, with a
 Recovery: retain original menu engines; move mobile menu sheet to body; fix header during open; align full-width menu beneath measured header; remove duplicate close control; suppress floating WhatsApp and non-essential mobile ticker; reduce duplicate-hamburger visual confusion; maintain hero touch target.
 
 Proof: existing website lane browser asserts 320/390px viewport geometry, header adjacency, no side gaps, no secondary close, real touch/keyboard and /product route. No portal/auth changes, no bypass. Exact Netlify READY/main SHA and independent readback mandatory before marking LIVE.
+
+## CI incident recovery — 2026-11-11 13:16 UTC
+First PR #5618 admission rejected machine metadata because freeform prose put Delivery-Lane, Candidate-Type and Base-SHA on one paragraph and omitted Obligation-ID. Original protected gate correctly failed and skipped downstream tests; no bypass. The PR was corrected to the canonical multiline metadata block and synchronized with this ledger-only source commit to request a new genuine PR event with the corrected event payload. Prevention: future PRs must use canonical multiline metadata at creation, before checks start.
