@@ -1,6 +1,9 @@
+import {processPortfolioMarkup,bindProcessPortfolio} from './process-portfolio-view.js';
+import {verifiedProcessBrainReceipt} from './process-portfolio.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const clone=value=>typeof structuredClone==='function'?structuredClone(value):JSON.parse(JSON.stringify(value));
 const sprintValue=value=>value===null||value===undefined||value==='backlog'?null:Math.max(1,Number(value)||1);
+const receiptListeners=new WeakMap();
 
 export function normalizeDeliveryState(state={}){
  const next=clone(state||{});next.epics=Array.isArray(next.epics)?next.epics:[];next.features=Array.isArray(next.features)?next.features:[];next.stories=Array.isArray(next.stories)?next.stories:[];next.sprints=Math.max(1,Math.min(12,Number(next.sprints)||6));
@@ -18,13 +21,28 @@ function boardMarkup(state){const lanes=['backlog',...Array.from({length:state.s
 
 export function mountDeliveryBoard(root,{domainState,onSaveStatus}={}){
  if(!root?.replaceChildren)throw new TypeError('DELIVERY_BOARD_ROOT_REQUIRED');if(!domainState?.get||!domainState?.set)throw new TypeError('DELIVERY_DOMAIN_STATE_REQUIRED');
- let state=normalizeDeliveryState(domainState.get('portal.deliveryPlan')||{});let draggedFeature=null,draggedStory=null,saveTimer=null;
- const persist=next=>{state=normalizeDeliveryState(next);domainState.set('portal.deliveryPlan',state);onSaveStatus?.(domainState.status?.()||'dirty');clearTimeout(saveTimer);saveTimer=setTimeout(()=>domainState.flush?.().then(()=>onSaveStatus?.(domainState.status?.()||'saved')).catch(()=>onSaveStatus?.('error')),250);render();};
+ let state=normalizeDeliveryState(domainState.get('portal.deliveryPlan')||{});let draggedFeature=null,draggedStory=null,saveTimer=null,activeHandoffEvidence=null;
+ receiptListeners.get(root)?.();
+ const persist=next=>{activeHandoffEvidence=null;state=normalizeDeliveryState(next);domainState.set('portal.deliveryPlan',state);onSaveStatus?.(domainState.status?.()||'dirty');clearTimeout(saveTimer);saveTimer=setTimeout(()=>domainState.flush?.().then(()=>onSaveStatus?.(domainState.status?.()||'saved')).catch(()=>onSaveStatus?.('error')),250);render();};
  const updateFeature=(id,patch)=>persist({...state,features:state.features.map(feature=>feature.id===id?{...feature,...patch}:feature)});
  const updateStory=(id,patch)=>persist({...state,stories:state.stories.map(story=>story.id===id?{...story,...patch}:story)});
- const render=()=>{root.innerHTML=boardMarkup(state);root.querySelector('[data-add-feature]')?.addEventListener('click',()=>{const id=`f-${Date.now()}`;persist({...state,features:[...state.features,{id,title:'Nieuwe feature',epic:'',sprint:null,value:0,outcome:'',done:false}]});});
+ const render=()=>{const wasOpen=Boolean(root.querySelector?.('[data-process-portfolio] details')?.open);
+ root.innerHTML=processPortfolioMarkup(state,{handoffEvidence:activeHandoffEvidence})+boardMarkup(state);
+ const disclosure=root.querySelector('[data-process-portfolio] details');if(disclosure)disclosure.open=wasOpen;
+ bindProcessPortfolio(root.querySelector('[data-process-portfolio]'),{getState:()=>state,onChange:persist});root.querySelector('[data-add-feature]')?.addEventListener('click',()=>{const id=`f-${Date.now()}`;persist({...state,features:[...state.features,{id,title:'Nieuwe feature',epic:'',sprint:null,value:0,outcome:'',done:false}]});});
  root.querySelectorAll('[data-feature-id]').forEach(card=>{const id=card.dataset.featureId;card.addEventListener('dragstart',event=>{if(event.target.closest('[data-story-id]'))return;draggedFeature=id;draggedStory=null;event.dataTransfer?.setData('text/plain',`F:${id}`);card.classList.add('dragging');});card.addEventListener('dragend',()=>{draggedFeature=null;card.classList.remove('dragging');});card.addEventListener('dragover',event=>{if(!draggedFeature||draggedFeature===id)return;event.preventDefault();card.classList.add('dragover');});card.addEventListener('dragleave',()=>card.classList.remove('dragover'));card.addEventListener('drop',event=>{if(!draggedFeature||draggedFeature===id)return;event.preventDefault();event.stopPropagation();const sprint=card.dataset.sprint==='backlog'?null:Number(card.dataset.sprint);persist(reorderFeature(moveFeature(state,draggedFeature,sprint),draggedFeature,id));});card.querySelector('[data-feature-done]')?.addEventListener('change',event=>updateFeature(id,{done:event.target.checked}));card.querySelector('[data-add-story]')?.addEventListener('click',()=>persist({...state,stories:[...state.stories,{id:`s-${Date.now()}`,feature:id,role:'Rol',wish:'Nieuwe user story',reason:'',done:false}]}));card.querySelector('[data-feature-move-left]')?.addEventListener('click',()=>{const current=card.dataset.sprint==='backlog'?null:Number(card.dataset.sprint);if(current===null)return;persist(moveFeature(state,id,current<=1?null:current-1));});card.querySelector('[data-feature-move-right]')?.addEventListener('click',()=>{const current=card.dataset.sprint==='backlog'?null:Number(card.dataset.sprint);persist(moveFeature(state,id,current===null?1:Math.min(state.sprints,current+1)));});});
  root.querySelectorAll('[data-feature-drop]').forEach(lane=>{lane.addEventListener('dragover',event=>{if(!draggedFeature)return;event.preventDefault();lane.classList.add('dragover');});lane.addEventListener('dragleave',()=>lane.classList.remove('dragover'));lane.addEventListener('drop',event=>{if(!draggedFeature)return;event.preventDefault();const key=lane.dataset.featureDrop;persist(moveFeature(state,draggedFeature,key==='backlog'?null:Number(key)));});});
  root.querySelectorAll('[data-story-id]').forEach(story=>{const id=story.dataset.storyId;story.addEventListener('dragstart',event=>{event.stopPropagation();draggedStory=id;draggedFeature=null;event.dataTransfer?.setData('text/plain',`S:${id}`);story.classList.add('dragging');});story.addEventListener('dragend',()=>{draggedStory=null;story.classList.remove('dragging');});story.querySelector('[data-story-done]')?.addEventListener('change',event=>updateStory(id,{done:event.target.checked}));story.querySelector('[data-story-target]')?.addEventListener('change',event=>{if(event.target.value)persist(moveStory(state,id,event.target.value));});});
- root.querySelectorAll('[data-story-drop]').forEach(zone=>{zone.addEventListener('dragover',event=>{if(!draggedStory)return;event.preventDefault();zone.classList.add('dragover');});zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));zone.addEventListener('drop',event=>{if(!draggedStory)return;event.preventDefault();event.stopPropagation();persist(moveStory(state,draggedStory,zone.dataset.storyDrop));});});};render();return Object.freeze({getState:()=>normalizeDeliveryState(state),moveFeature:(id,sprint)=>persist(moveFeature(state,id,sprint)),moveStory:(id,feature)=>persist(moveStory(state,id,feature))});
+ root.querySelectorAll('[data-story-drop]').forEach(zone=>{zone.addEventListener('dragover',event=>{if(!draggedStory)return;event.preventDefault();zone.classList.add('dragover');});zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));zone.addEventListener('drop',event=>{if(!draggedStory)return;event.preventDefault();event.stopPropagation();persist(moveStory(state,draggedStory,zone.dataset.storyDrop));});});};
+ const onBrainSynced=event=>{
+  if(root.isConnected===false){receiptListeners.get(root)?.();return;}
+  const receipt=verifiedProcessBrainReceipt(event?.detail,{scope:domainState.receiptScope,pending:domainState.pendingHandoffs?.()});
+  if(receipt&&domainState.status?.()!=='dirty'&&domainState.status?.()!=='error'){
+   activeHandoffEvidence=receipt;render();
+  }
+ };
+ globalThis.addEventListener?.('bg:portal-brain-synced',onBrainSynced);
+ const dispose=()=>{globalThis.removeEventListener?.('bg:portal-brain-synced',onBrainSynced);if(receiptListeners.get(root)===dispose)receiptListeners.delete(root);};
+ receiptListeners.set(root,dispose);
+ render();return Object.freeze({dispose,getState:()=>normalizeDeliveryState(state),moveFeature:(id,sprint)=>persist(moveFeature(state,id,sprint)),moveStory:(id,feature)=>persist(moveStory(state,id,feature))});
 }
