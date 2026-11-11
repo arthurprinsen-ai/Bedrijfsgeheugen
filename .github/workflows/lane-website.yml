@@ -230,7 +230,14 @@ jobs:
     needs: [classify, syntax-preflight, preview-ready]
     timeout-minutes: 25
     if: needs.classify.outputs.requires_preview == 'true'
-    runs-on: ubuntu-latest
+    # Exact official Playwright container: reuse existing website screenshot
+    # assurance pattern, no per-run apt/181-package OS installation.
+    runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v5
         with:
@@ -261,9 +268,26 @@ jobs:
           cat /tmp/bg-local-site.log || true
           echo "::error::Exact local website candidate did not become reachable on /, /ai-act and /benchmark within 20 seconds. See /tmp/bg-local-site.log output above."
           exit 1
-      - name: Install shared website browser runtime
+      - name: Verify prebuilt shared website browser runtime
         run: |
-          PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
+          set -euo pipefail
+          # Official pinned image includes Chromium and OS libraries.
+          # Install the matching JS client only, without lifecycle hooks.
+          npm install --no-save --package-lock=false --ignore-scripts playwright@1.61.0
+          node --input-type=module - <<'NODE'
+          import { chromium } from 'playwright';
+          import { existsSync } from 'node:fs';
+          const executable=chromium.executablePath();
+          if(!existsSync(executable))throw new Error('BROWSER_BINARY_MISSING:chromium');
+          const browser=await chromium.launch({headless:true});
+          try {
+            const page=await browser.newPage();
+            await page.setContent('<main>Real Chromium available</main>');
+            if(await page.locator('main').innerText()!=='Real Chromium available')
+              throw new Error('BROWSER_SMOKE_FAILED');
+          } finally { await browser.close(); }
+          console.log('BROWSER_BINARY_PRESENT:chromium; real smoke PASS');
+          NODE
       - name: Verify high-risk full website regression contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         run: >-
