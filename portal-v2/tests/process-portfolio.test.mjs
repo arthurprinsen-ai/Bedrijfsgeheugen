@@ -46,7 +46,7 @@ test('original board retains one canonical writer and no new process scheduler o
  const board=readFileSync(new URL('../modules/delivery-board.js',import.meta.url),'utf8');
  const process=readFileSync(new URL('../modules/process-portfolio.js',import.meta.url),'utf8');
  assert.match(board,/domainState\.set\('portal\.deliveryPlan',state\)/);
- assert.match(board,/processPortfolioMarkup\(state\)/);
+ assert.match(board,/processPortfolioMarkup\(state,\{handoffEvidence:activeHandoffEvidence\}\)/);
  assert.match(board,/bindProcessPortfolio/);
  assert.doesNotMatch(process,/fetch\(|localStorage|sessionStorage|setInterval|cron\.schedule|service_role/);
 });
