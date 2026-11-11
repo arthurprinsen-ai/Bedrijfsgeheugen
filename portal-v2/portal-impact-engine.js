@@ -88,7 +88,7 @@ function downstreamDependencyClosure(seedPages=[]){
   return [...seen];
 }
 
-const n=v=>Number.isFinite(Number(v))?Number(v):null;
+const n=v=>(v==null||typeof v==='string'&&v.trim()==='')?null:Number.isFinite(Number(v))?Number(v):null;
 const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'
   ?Object.fromEntries(Object.keys(v).sort().map(key=>[key,canonical(v[key])])):v;
 const stable=v=>v===undefined?'undefined':JSON.stringify(canonical(v));
