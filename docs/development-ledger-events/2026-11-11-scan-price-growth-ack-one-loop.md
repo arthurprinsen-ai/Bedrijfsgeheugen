@@ -9,3 +9,5 @@
 - Safety: no synthetic paid revenue/lead, no PII in aggregate event, no new sales emails, scheduler or consent change; anonymous scan remains outside authenticated tenant state pending secure claim.
 - Regression: original scan suite, `tests/brain-scan-price-portal-one-loop-20261111.test.mjs`, `tests/seo-order-measurement.test.mjs`.
 - Release: protected GitHub Required/BRAIN/CodeQL + exact Netlify READY plus original Supabase Edge deployed version and independent production readback; unobserved external/customer outcomes stay EVIDENCE_DUE. Rollback: original protected source revert via same lease/CI.
+
+- Directe historische hersteluitvoering 2026-11-11: 4 records in originele `growth_events` idempotent uit `scan_inzendingen` en bestaand runtime-ID gereconcilieerd. Readback 62/62 exact scan-ID/event-type, 0 missing; anonieme original source, ouderdom behouden en expliciete auditpayload, geen commercieel of causaal succes geclaimd.
