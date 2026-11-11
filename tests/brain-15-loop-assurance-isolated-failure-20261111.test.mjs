@@ -5,6 +5,7 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const sql=read('supabase/migrations/20261111093500_original_loop_assurance_fault_isolation_v1.sql');
 const legacy=read('supabase/migrations/20261110123000_original_content_handoff_no_aging_gap_v2.sql');
 const fp='powerhouse|15-loop|unisolated-handoff-fault-blocks-other-owners|20261111-v1';
+const testPath='tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs';
 
 test('historical replay proves the original helper calls previously lacked fault isolation',()=>{
  const previous=legacy.slice(legacy.indexOf('CREATE OR REPLACE FUNCTION public.powerhouse_refresh_loop_assurance_v1('));
