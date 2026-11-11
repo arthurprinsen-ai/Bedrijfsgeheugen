@@ -70,6 +70,15 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
   #compareFrame[data-bg-knowledge-side="before"] .compare-before,
   #compareFrame[data-bg-knowledge-side="after"] .compare-after {opacity:1!important;visibility:visible!important}
   #compareFrame .compare-handle {display:none!important}
+  #compareFrame::after {
+    content:"";position:absolute;left:0;right:0;bottom:0;height:66px;
+    background:rgba(255,255,255,.94);pointer-events:none;z-index:20;
+  }
+  #compareFrame #compareRange {
+    inset:auto 20px 10px!important;width:calc(100% - 40px)!important;
+    height:44px!important;opacity:1!important;accent-color:#2742d6!important;
+    background:transparent!important;
+  }
   #compareFrame .compare-label {z-index:8!important}
   #compareFrame[data-bg-knowledge-side="before"] .compare-label.after,
   #compareFrame[data-bg-knowledge-side="after"] .compare-label.before {opacity:.45}
