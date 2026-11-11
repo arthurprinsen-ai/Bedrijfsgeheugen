@@ -1,0 +1,114 @@
+/* Bedrijfsgeheugen public-site interaction recovery: idempotent, no parallel menu/slider engine. */
+(function () {
+  'use strict';
+  var MENUS = [
+    { id:'bgMobileNav', toggle:'mobileToggle' },
+    { id:'bgSharedMobileNav', toggle:'bgkopKnop' },
+    { id:'v18MobileDrawer', toggle:'mobileToggle' }
+  ];
+  function activeMenu() {
+    for (var i=0;i<MENUS.length;i++) {
+      var config=MENUS[i], nav=document.getElementById(config.id);
+      if (!nav) continue;
+      if (config.id==='v18MobileDrawer' && document.getElementById('bgMobileNav')) continue;
+      if (nav.getAttribute('aria-hidden')==='false' || nav.classList.contains('open')) {
+        return {nav:nav,toggle:document.getElementById(config.toggle)};
+      }
+    }
+    return null;
+  }
+  function closeMenu(state) {
+    if (!state) return;
+    var nav=state.nav,toggle=state.toggle;
+    nav.setAttribute('aria-hidden','true');
+    nav.classList.remove('open');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded','false');
+      toggle.setAttribute('aria-label','Open menu');
+      var label=toggle.querySelector('.bg-mobile-menu-label');
+      if (label) label.textContent='Menu';
+    }
+    var legacy=document.getElementById('v18MobileDrawer');
+    if (legacy && legacy!==nav) {
+      legacy.setAttribute('aria-hidden','true');
+      legacy.classList.remove('open');
+    }
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+    nav.querySelectorAll('[data-bg-mobile-view],[data-bg-shared-mobile-view]').forEach(function(view){
+      var root=view.getAttribute('data-bg-mobile-view')==='root'||view.getAttribute('data-bg-shared-mobile-view')==='root';
+      if (root) view.removeAttribute('hidden'); else view.setAttribute('hidden','');
+    });
+  }
+  function ensureCloseButtons() {
+    MENUS.forEach(function(config) {
+      var nav=document.getElementById(config.id);
+      if (!nav || (config.id==='v18MobileDrawer' && document.getElementById('bgMobileNav'))) return;
+      if (nav.querySelector('[data-bg-sitewide-close]')) return;
+      var button=document.createElement('button');
+      button.type='button';
+      button.className='bg-sitewide-menu-close';
+      button.setAttribute('data-bg-sitewide-close','');
+      button.setAttribute('aria-label','Sluit navigatiemenu');
+      button.textContent='Sluiten ×';
+      nav.appendChild(button);
+    });
+  }
+  function knowledgeCompare() {
+    var frame=document.getElementById('compareFrame');
+    var range=document.getElementById('compareRange');
+    if (!frame || !range || frame.dataset.bgKnowledgeMounted==='1') return;
+    frame.dataset.bgKnowledgeMounted='1';
+    /* The homepage compare runtime must not create a second control here. */
+    frame.setAttribute('data-bg-compare-version','native-range-v13');
+    frame.querySelectorAll('.bg-compare-range').forEach(function(other){if(other!==range)other.remove();});
+    range.min='0';range.max='100';range.step='1';
+    range.setAttribute('aria-label','Schuif tussen verspreide en geborgde kennis');
+    frame.appendChild(range);
+    var label=document.querySelector('label[for="compareRange"]');
+    var output=document.createElement('output');
+    output.className='bg-knowledge-slider-output';
+    output.setAttribute('for','compareRange');
+    if (label) label.appendChild(output);
+    function update() {
+      var value=Math.max(0,Math.min(100,Number(range.value)||0));
+      frame.dataset.bgKnowledgeSide=value<50?'before':'after';
+      output.value=String(value)+'% geborgd';
+      output.textContent=output.value;
+      /* Keep the original page's range listener as the single render owner. */
+    }
+    range.addEventListener('input',update);
+    range.addEventListener('change',update);
+    range.dispatchEvent(new Event('input',{bubbles:true}));
+    update();
+  }
+  function init() {
+    if (!document.body) return;
+    ensureCloseButtons();
+    knowledgeCompare();
+  }
+  document.addEventListener('click',function(event) {
+    var close=event.target.closest && event.target.closest('[data-bg-sitewide-close]');
+    var toggle=event.target.closest && event.target.closest('#mobileToggle,#bgkopKnop');
+    var open=activeMenu();
+    if (!open || (!close && !(toggle && toggle===open.toggle))) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    closeMenu(open);
+    if (toggle) toggle.focus();
+  },true);
+  document.addEventListener('keydown',function(event){
+    if (event.key!=='Escape') return;
+    var open=activeMenu();
+    if (!open) return;
+    closeMenu(open);
+    if (open.toggle) open.toggle.focus();
+  },true);
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+  /* Dynamic CMS navigation can mount after DOMContentLoaded. */
+  var observer=new MutationObserver(function(mutations){
+    if (mutations.some(function(m){return m.type==='childList' && m.addedNodes.length>0;})) init();
+  });
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+})();
