@@ -281,6 +281,19 @@ jobs:
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: node tools/site-shell/checkout-browser-check.mjs
+      - name: Verify actual mobile navigation, sticky header, readable CTA and knowledge comparison
+        if: needs.classify.outputs.risk_lane == 'high-risk'
+        env:
+          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+        run: node tools/site-shell/sitewide-mobile-interaction-browser-check.mjs
+      - name: Retain original mobile interaction browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-interaction-pr-${{ inputs.candidate_sha }}
+          path: .artifacts/sitewide-mobile-interactions-20261111/
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Verify all public pages are visibly rendered
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
