@@ -6,12 +6,12 @@ const targets=[
   ...fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isFile()&&e.name.endsWith('.html')).map(e=>path.join(root,e.name))
 ];
 
-for(const dirName of ['blog','en','pages','portal','portal-next']){
+for(const dirName of ['blog','en','pages','portal','portal-next','kennis','behoeftecheck','openai-ai-modellen','claude-ai-modellen','gemini-ai-modellen','mistral-ai-modellen','amazon-ai-modellen','chatgpt-vs-claude','chatgpt-vs-gemini','claude-vs-gemini']){
   const dir=path.join(root,dirName);
   if(fs.existsSync(dir))walk(dir,targets);
 }
 
-let changed=0,covered=0;
+const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileSync(path.join(root,'assets/sitewide-mobile-ui-20261111.css'),'utf8')+'\n</style>';\nconst mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111a" defer data-bg-sitewide-mobile-ui="1"></script>';\n\nlet changed=0,covered=0;
 for(const file of [...new Set(targets)]){
   if(path.basename(file)==='cms.html')continue;
   let html=fs.readFileSync(file,'utf8');
@@ -24,7 +24,7 @@ for(const file of [...new Set(targets)]){
   if(!html.includes('/assets/mobile-viewport-cleanup.js')){
     html=html.replace(/<\/head>/i,'<script src="/assets/mobile-viewport-cleanup.js?v=20261015" defer data-bg-mobile-fix="1"></script>\n</head>');
   }
-  if(html!==before){fs.writeFileSync(file,html);changed++;}
+  // Public pages share one header/menu/CTA/slider repair, including nested /kennis.\n  // Keep portal/authenticated applications isolated from marketing-site CSS.\n  const rel=path.relative(root,file).replaceAll(path.sep,'/');\n  const publicPage=!/^(?:portal|portal-next|portal-v2|intern)\\//.test(rel);\n  if(publicPage){\n    if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){\n      html=html.replace(/<\\/head>/i,mobileUiStyle+'\\n</head>');\n    }\n    if(!html.includes('data-bg-sitewide-mobile-ui=')){\n      html=html.replace(/<\\/head>/i,mobileUiScript+'\\n</head>');\n    }\n  }\n  if(html!==before){fs.writeFileSync(file,html);changed++;}
 }
 
 const inventory={
