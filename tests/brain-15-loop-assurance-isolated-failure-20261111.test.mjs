@@ -46,7 +46,8 @@ test('same original privileges and no extra scheduler, sender or silent completi
    assert.ok(!sql.includes(forbidden),'unsafe side effect '+forbidden);
  }
  const lock=JSON.parse(read('supabase/migration-history.lock.json'));
- assert.ok(lock.applied.some(row=>row.version==='20261111093500'&&row.name==='original_loop_assurance_fault_isolation_v1'));
+ assert.equal(lock.applied.some(row=>row.version==='20261111093500'),false,'proposal must not be predeclared applied');
+ assert.equal(lock.applied.length,824,'retain only independently verified original provider-applied history');
 });
 
 test('one original Brain lesson preserves unresolved evidence and no fictitious production green',()=>{
