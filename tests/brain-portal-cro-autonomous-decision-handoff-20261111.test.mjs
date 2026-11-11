@@ -22,7 +22,7 @@ test('only the original fourteen agents advise on CRO and original owner execute
 
 test('original SEO CRO skill gates autonomous decision on trusted source and outcome',async()=>{
  const skill=await read('.agents/skills/powerhouse-seo-conversion-orders/SKILL.md');
- assert.ok(skill.startsWith('---\n'));
+ assert.ok(skill.startsWith('# Skill: Powerhouse SEO Conversion-to-Orders'));
  for(const term of [
   fingerprint,'/api/portal-state','BusinessInput',
   'powerhouse_optimization_candidate_v1','powerhouse_optimization_closure_truth_v1',
