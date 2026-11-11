@@ -240,3 +240,100 @@ test('network exception retains pending evidence until a later focus or readback
   assert.equal(bridge.pendingHandoffs().pending,0);
  }finally{bridge.destroy();}
 });
+
+test('a second same-kind UI event never replaces a ready but unacknowledged Brain handoff',async()=>{
+ const bus=new FakeBus();let accepts=false;const attempts=[];
+ const stateClient={
+  getSnapshot:()=>({mode:'authenticated',user:{id:'shared-user',app_metadata:{tenantId:'company-A'}}}),
+  authHeaders:async()=>({authorization:'Bearer company-A'}),
+  subscribe:()=>()=>{},isDemo:()=>false
+ };
+ const bridge=createPowerhouseRuntimeBridge({
+  stateClient,domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method!=='POST')return {ok:true,json:async()=>projection};
+   const record=JSON.parse(opts.body);attempts.push(record);
+   if(!accepts)return {ok:false,status:503,json:async()=>({error:'RETRY'})};
+   return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+  }
+ });
+ try{
+  bus.emit('portal:semantic-point-select',{metric:'first-metric'});
+  await new Promise(resolve=>setTimeout(resolve,300));
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  bus.emit('portal:semantic-point-select',{metric:'second-metric'});
+  assert.equal(bridge.pendingHandoffs().pending,2,'unacknowledged first event must not disappear');
+  await new Promise(resolve=>setTimeout(resolve,300));
+  assert.equal(bridge.pendingHandoffs().pending,2);
+  assert.ok(attempts.some(record=>record.payload.metric==='first-metric'));
+  assert.ok(attempts.some(record=>record.payload.metric==='second-metric'));
+  accepts=true;
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,60));
+  assert.equal(bridge.pendingHandoffs().pending,0,'both handoffs eventually get their own exact ACK');
+  for(const metric of ['first-metric','second-metric']){
+   const records=attempts.filter(record=>record.payload.metric===metric);
+   assert.ok(records.length>=2,'failed same record must retry: '+metric);
+   assert.equal(new Set(records.map(record=>record.idempotencyKey)).size,1,'original immutable key');
+   assert.equal(new Set(records.map(record=>record.id)).size,1,'original immutable record ID');
+  }
+ }finally{bridge.destroy();}
+});
+
+test('tenant membership switch for the SAME user revokes all previous tenant pending records',async()=>{
+ const bus=new FakeBus(),subscribers=new Set();let tenant='company-A';const sent=[];
+ const client={
+  getSnapshot:()=>({mode:'authenticated',user:{id:'same-user',app_metadata:{tenantId:tenant}}}),
+  authHeaders:async()=>({authorization:'Bearer '+tenant}),
+  subscribe:fn=>{subscribers.add(fn);return()=>subscribers.delete(fn);},
+  isDemo:()=>false
+ };
+ const bridge=createPowerhouseRuntimeBridge({
+  stateClient:client,domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method!=='POST')return {ok:true,json:async()=>projection};
+   const record=JSON.parse(opts.body);sent.push({token:opts.headers.authorization,record});
+   return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+  }
+ });
+ try{
+  bus.emit('portal:semantic-point-select',{metric:'tenant-A-private'});
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  tenant='company-B';for(const fn of subscribers)fn(client.getSnapshot());
+  assert.equal(bridge.pendingHandoffs().pending,0);
+  await new Promise(resolve=>setTimeout(resolve,310));
+  assert.equal(sent.length,0,'old private A item must not go out under B authorization');
+  bus.emit('portal:semantic-point-select',{metric:'tenant-B-public'});
+  await new Promise(resolve=>setTimeout(resolve,310));
+  assert.equal(sent.length,1);
+  assert.equal(sent[0].record.payload.metric,'tenant-B-public');
+  assert.equal(sent[0].token,'Bearer company-B');
+ }finally{bridge.destroy();}
+});
+
+test('the same source revision never creates concurrent duplicate runtime Brain evidence',async()=>{
+ const bus=new FakeBus();let successful=false;const sent=[];
+ const bridge=createPowerhouseRuntimeBridge({
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-A',app_metadata:{tenantId:'a'}}),
+   authHeaders:async()=>({authorization:'Bearer a'}),subscribe:()=>()=>{},isDemo:()=>false},
+  domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method!=='POST')return {ok:true,json:async()=>projection};
+   const record=JSON.parse(opts.body);sent.push(record);
+   return successful
+    ?{ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})}
+    :{ok:false,json:async()=>({error:'retry'})};
+  }
+ });
+ try{
+  const source={stored:[{sourceRevision:'immutable-r1',brainRecordId:'brain-1',currentStateRecordId:'state-1'}]};
+  bus.emit('bg:portal-brain-synced',source);
+  await new Promise(resolve=>setTimeout(resolve,80));
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  bus.emit('bg:portal-brain-synced',source);
+  assert.equal(bridge.pendingHandoffs().pending,1,'same source ACK should not spawn a second handoff');
+  successful=true;
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,25));
+  assert.equal(bridge.pendingHandoffs().pending,0);
+  assert.equal(new Set(sent.map(record=>record.idempotencyKey)).size,1);
+ }finally{bridge.destroy();}
+});
