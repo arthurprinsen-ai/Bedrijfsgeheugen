@@ -33,6 +33,11 @@ function ensureStyle(html){
   if(!next.includes('site-coherence-v1.css'))next=next.replace('</head>',`<link rel="stylesheet" href="${STYLE}">\n</head>`);
   if(!next.includes('website-mobile-coherence-v1.css'))next=next.replace('</head>',`<link rel="stylesheet" href="${MOBILE_COHERENCE_STYLE}">\n</head>`);
   if(!next.includes('website-mobile-coherence-v1.js'))next=next.replace('</body>',`<script src="${MOBILE_COHERENCE_SCRIPT}" defer></script>\n</body>`);
+  // Legacy knowledge and editorial pages use the shared #bgkopKnop shell.
+  // Attach its original navigation controller once; never create a second drawer executor.
+  if(/id=["']bgkopKnop["']/i.test(next) && !/assets\/js\/menu\.js/i.test(next)){
+    next=next.replace('</body>','<script src="/assets/js/menu.js?v=20261111" defer></script>\n</body>');
+  }
   return next;
 }
 
