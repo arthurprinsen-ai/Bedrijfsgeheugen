@@ -14,7 +14,7 @@ test('AGENTS and original three Portal / Brain / Company Intelligence skills enf
   read('.agents/skills/powerhouse-continuity/SKILL.md'),
   read('.agents/skills/powerhouse-company-intelligence-os/SKILL.md')
  ]);
- assert.match(agents,new RegExp(RULE.replace(/[|]/g,'\\|')));
+ assert.ok(agents.includes(RULE),'AGENTS exact canonical incident fingerprint');
  for(const [name,doc] of [['AGENTS',agents],['portal',portal],['continuity',continuity],['intelligence',intelligence]]){
   assert.match(doc,/#4215/,name+' original P0 owner');
   assert.match(doc,/8e291bf3493fdb87d052712e97c5a8126984a3fd/,name+' exact deployed source');
