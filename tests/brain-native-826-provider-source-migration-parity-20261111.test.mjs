@@ -15,7 +15,7 @@ test('historical provider migration lock keeps both immutable native versions an
  // Proposed SQL must NOT be predeclared applied in a candidate PR.
  // After a separate provider-authoritative lock correction, both entries
  // must be present atomically and in the genuine version order.
- assert.ok(matches.length===1 || matches.length===2);
+ assert.equal(matches.length,2,'both exact native provider versions must be registered after source merge');
  assert.deepEqual(matches.map(x=>x.version),['20261111093500','20261111094222'].slice(0,matches.length));
  if(matches.length===2){
   assert.deepEqual(matches.map(x=>x.version),['20261111093500','20261111094222']);
