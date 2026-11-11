@@ -9,6 +9,8 @@ const pairs=[
   {route:'/kennis/',width:390},
   {route:'/prijzen',width:390},
   {route:'/contact',width:390},
+  {route:'/product',width:390},
+  {route:'/product',width:320},
   {route:'/',width:320},
   {route:'/kennis/',width:320}
 ];
@@ -51,9 +53,29 @@ try {
       const nav=page.locator('#'+controls);
       await nav.waitFor({state:'visible',timeout:8000});
       assert.equal(await nav.getAttribute('aria-hidden'),'false',`${route}: open menu aria mismatch`);
-      const close=nav.locator('[data-bg-sitewide-close]').first();
-      await close.waitFor({state:'visible',timeout:5000});
-      await close.click({timeout:7000});
+      const geometry=await page.evaluate(owner=>{
+        const header=document.querySelector('header.v17-header,nav.bgkop');
+        const menu=document.getElementById(owner);
+        const h=header.getBoundingClientRect(),m=menu.getBoundingClientRect();
+        const float=document.querySelector('.wa,.whatsapp-float,.bg-whatsapp-contact,[data-whatsapp-float]');
+        return {owner,parent:menu.parentElement?.tagName,canonicalAvailable:!!document.getElementById('bgMobileNav'),
+          toggleControls:document.getElementById('mobileToggle')?.getAttribute('aria-controls'),
+          computedTransform:getComputedStyle(menu).transform,
+          viewport:innerWidth,left:m.left,right:m.right,top:m.top,
+          headerTop:h.top,headerBottom:h.bottom,menuPosition:getComputedStyle(menu).position,
+          singleClose:menu.querySelectorAll('[data-bg-sitewide-close]').length===0,
+          bodyState:document.body.classList.contains('bg-site-mobile-menu-open'),
+          floatHidden:!float||getComputedStyle(float).display==='none'};
+      },controls);
+      if(controls==='v18MobileDrawer' && geometry.canonicalAvailable)
+        assert.fail(route+': obsolete sliding drawer retained aria-controls instead of real visible menu '+JSON.stringify(geometry));
+      assert.ok(geometry.bodyState&&geometry.singleClose,route+': duplicate menu controls '+JSON.stringify(geometry));
+      assert.ok(geometry.menuPosition==='fixed'&&Math.abs(geometry.left)<3&&Math.abs(geometry.right-geometry.viewport)<3,
+        route+': sheet leaves side gaps '+JSON.stringify(geometry));
+      assert.ok(Math.abs(geometry.headerTop)<3&&Math.abs(geometry.top-geometry.headerBottom)<4,
+        route+': sheet does not meet fixed header '+JSON.stringify(geometry));
+      assert.ok(geometry.floatHidden,route+': floating WhatsApp obstructs menu');
+      await toggle.click({timeout:7000});
       assert.equal(await toggle.getAttribute('aria-expanded'),'false',`${route}: explicit close did not collapse`);
       assert.equal(await nav.getAttribute('aria-hidden'),'true',`${route}: close left overlay active`);
       const unlocked=await page.evaluate(()=>document.body.style.overflow===''&&document.documentElement.style.overflow==='');
@@ -84,6 +106,34 @@ try {
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
       assert.ok(overflow<=4,`${route}: horizontal overflow ${overflow}px at ${width}px`);
 
+      if(route==='/product'){
+        const conversion=await page.evaluate(()=>{
+          const wrapper=document.querySelector('.inhoud-kop .bg-money-order-path');
+          const primary=wrapper?.querySelector('a[data-money-primary]');
+          const secondary=wrapper?.querySelector('a[data-money-secondary]');
+          if(!primary||!secondary)return {missing:true};
+          const a=primary.getBoundingClientRect(),b=secondary.getBoundingClientRect();
+          const first=getComputedStyle(primary),second=getComputedStyle(secondary);
+          return {
+            missing:false,primaryHeight:a.height,secondaryHeight:b.height,
+            primaryWidth:a.width,secondaryWidth:b.width,viewport:innerWidth,
+            firstFg:first.color,firstBg:first.backgroundColor,firstDisplay:first.display,
+            secondDisplay:second.display,firstDecoration:first.textDecorationLine,
+            secondDecoration:second.textDecorationLine,
+            primaryHref:primary.getAttribute('href'),secondaryHref:secondary.getAttribute('href')
+          };
+        });
+        assert.equal(conversion.missing,false,`${route}: platform hero has no visibly styled conversion buttons`);
+        assert.ok(conversion.primaryHeight>=44&&conversion.secondaryHeight>=44,
+          `${route}: platform hero conversion touch targets are too small: ${JSON.stringify(conversion)}`);
+        assert.ok(conversion.primaryWidth<=conversion.viewport&&conversion.secondaryWidth<=conversion.viewport,
+          `${route}: platform hero CTAs exceed mobile viewport: ${JSON.stringify(conversion)}`);
+        assert.ok(conversion.firstDisplay.includes('flex')&&conversion.secondDisplay.includes('flex')&&
+          conversion.firstDecoration==='none'&&conversion.secondDecoration==='none',
+          `${route}: platform CTA degraded to raw links: ${JSON.stringify(conversion)}`);
+        assert.ok(ratio(rgb(conversion.firstFg),rgb(conversion.firstBg))>=4.5,
+          `${route}: platform CTA does not have sufficient contrast: ${JSON.stringify(conversion)}`);
+      }
       if(route==='/'){
         const cta=page.locator('.pgl .pgl-actions a.pgl-btn.secondary').first();
         await cta.waitFor({state:'attached',timeout:10000});

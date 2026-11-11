@@ -39,7 +39,7 @@ test('original protected website browser lane exercises real menu close, sticky 
   assert.match(workflow,/node tools\/site-shell\/sitewide-mobile-interaction-browser-check\.mjs/);
   assert.match(workflow,/Retain original mobile interaction browser evidence/);
   assert.match(browser,/hasTouch:true,isMobile:true/);
-  assert.match(browser,/await close\.click/);
+  assert.match(browser,/await toggle\.click/);
   assert.match(browser,/await page\.keyboard\.press\('Escape'\)/);
   assert.match(browser,/sticky\.position==='sticky'/);
   assert.match(browser,/ratio\(fg,bg\)>=4\.5/);
@@ -47,4 +47,28 @@ test('original protected website browser lane exercises real menu close, sticky 
   assert.match(browser,/await range\.press\('End'\)/);
   assert.match(browser,/await range\.click/);
   assert.match(browser,/if\(failures\)process\.exitCode=1/);
+});
+
+test('iPhone screenshot regression checks viewport menu geometry and one close control',()=>{
+  const browser=fs.readFileSync('tools/site-shell/sitewide-mobile-interaction-browser-check.mjs','utf8');
+  assert.match(js,/syncMenuGeometry/);
+  assert.match(js,/bg-site-mobile-menu-open/);
+  assert.match(css,/\.bg-sitewide-menu-close\{display:none!important\}/);
+  assert.match(browser,/sheet leaves side gaps/);
+  assert.match(browser,/sheet does not meet fixed header/);
+  assert.match(browser,/duplicate menu controls/);
+  assert.match(browser,/floating WhatsApp obstructs menu/);
+  assert.match(browser,/route:'\/product'/);
+});
+
+test('existing website UX agent and website skill inherit mobile screenshot recurrence and proof',()=> {
+  const team=fs.readFileSync('platform/agents/agent-team.mjs','utf8');
+  const skill=fs.readFileSync('skills/website-portal-coherence.md','utf8');
+  assert.match(team,/verify-public-mobile-menu-viewport-geometry-and-single-toggle/);
+  assert.match(team,/verify-sitewide-sticky-header-and-cta-touch-contrast/);
+  assert.match(team,/confirm-real-mobile-browser-gate-and-exact-production-sha/);
+  assert.match(skill,/website\|mobile\|navigation-coherence-geometry\|20261111-v2/);
+  assert.match(skill,/v18MobileDrawer/);
+  assert.match(skill,/same original owner/);
+  assert.match(skill,/320 and 390px/);
 });

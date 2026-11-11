@@ -15,11 +15,13 @@ const required = readFileSync('.github/workflows/required-test.yml', 'utf8');
  * ging de test rood terwijl er niets was veranderd aan wat hij bewaakt. Hij telt
  * nu installatiestappen, ongeacht hoe ze geschreven zijn.
  */
-test('website lane installs exactly one Playwright/Chromium browser runtime per release candidate', () => {
-  const nodeInstalls = workflow.match(/(?:npx playwright install --with-deps|bash tools\/ci\/install-chromium\.sh)/g) || [];
+test('website lane provisions one pinned Playwright browser runtime per release candidate', () => {
+  const nodeInstalls = workflow.match(/npm install --no-save --package-lock=false --ignore-scripts playwright@1\.61\.0/g) || [];
+  const legacyInstalls = ['npx playwright install --with-deps', 'bash tools/ci/install-chromium.sh'].filter(text => workflow.includes(text));
   const pythonPlaywrightInstalls = workflow.match(/python -m pip install playwright|pip install --quiet playwright/g) || [];
   const pythonBrowserInstalls = workflow.match(/python -m playwright install/g) || [];
   assert.equal(nodeInstalls.length, 1, `expected exactly one browser runtime install, found ${nodeInstalls.length}`);
+  assert.equal(legacyInstalls.length, 0, `unexpected legacy browser installation: ${legacyInstalls.join(', ')}`);
   assert.equal(pythonPlaywrightInstalls.length, 0, `expected no duplicate Python Playwright install, found ${pythonPlaywrightInstalls.length}`);
   assert.equal(pythonBrowserInstalls.length, 0, `expected no duplicate Python Chromium install, found ${pythonBrowserInstalls.length}`);
 });
@@ -78,4 +80,13 @@ test('build-once topology keeps parity outside browser lane and avoids legacy du
   assert.match(build, /name: Verify built artifact contracts/);
   assert.doesNotMatch(build, /playwright|PAGINA_BASE_URL|paginacontrole\.py|seocontrole\.py/);
   assert.doesNotMatch(workflow, /^  netlify[-_]build[-_]parity:/m);
+});
+
+test('single website browser image has exact package/binary parity and keeps browser tests mandatory',()=>{
+  assert.ok(workflow.includes('image: mcr.microsoft.com/playwright:v1.61.0-noble'));
+  assert.ok(workflow.includes('npm install --no-save --package-lock=false --ignore-scripts playwright@1.61.0'));
+  assert.ok(workflow.includes('BROWSER_BINARY_MISSING:chromium'));
+  assert.ok(workflow.includes('await chromium.launch'));
+  assert.ok(workflow.includes('node tools/site-shell/sitewide-mobile-interaction-browser-check.mjs'));
+  assert.ok(!workflow.includes('npx playwright install --with-deps'));
 });

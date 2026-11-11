@@ -1,0 +1,2 @@
+# Professionele mobiele navigatie
+Eén vast menu op alle publieke routes, met één Menu/Sluit-knop en een volledig schermbrede laag direct onder de header. Geen extra zwevende sluitknop, zijstrook, WhatsApp over navigatie of overvolle meldingenstrook op mobiel. Logo en CTA's verbeterd. Regressiecontrole bekijkt voortaan echte geometrie bij 320/390px. Dit is bronregistratie, niet zelfstandig livebewijs.

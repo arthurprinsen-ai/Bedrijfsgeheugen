@@ -89,3 +89,121 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
 @media(prefers-reduced-motion:reduce) {
   #compareFrame .compare-before,#compareFrame .compare-after {transition:none!important}
 }
+/* v2: one viewport-aligned mobile navigation, no competing close control. */
+@media(max-width:1100px){
+  body.bg-site-mobile-menu-open :is(header.v17-header,nav.bgkop){
+    position:fixed!important;top:0!important;left:0!important;right:0!important;
+    width:100%!important;max-width:none!important;transform:none!important;
+    z-index:2100!important;isolation:isolate!important
+  }
+  /* Most published V18 views use the historical drawer, not bgMobileNav.
+     Its 94vw translateX(105%) puts the visible aria-open sheet offscreen.
+     Normalize the actual production owner to the same viewport geometry. */
+  body.bg-site-mobile-menu-open > #v18MobileDrawer{
+    display:block!important;position:fixed!important;
+    top:var(--bg-site-menu-top,64px)!important;left:0!important;right:0!important;bottom:0!important;
+    inset:var(--bg-site-menu-top,64px) 0 0 0!important;
+    width:100%!important;max-width:none!important;min-width:0!important;
+    height:auto!important;max-height:none!important;min-height:0!important;
+    margin:0!important;padding:0!important;
+    transform:none!important;translate:none!important;
+    transition:none!important;animation:none!important;will-change:auto!important;
+    opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+    background:#fff!important;color:#14171a!important;
+    overflow-y:auto!important;overscroll-behavior:contain!important;
+    box-shadow:none!important;border-radius:0!important;z-index:2050!important;
+    box-sizing:border-box!important
+  }
+  body.bg-site-mobile-menu-open > #v18MobileDrawer > *{
+    max-width:100%!important;box-sizing:border-box!important
+  }
+  body.bg-site-mobile-menu-open #v18MobileClose{
+    display:none!important;pointer-events:none!important
+  }
+  body > :is(#bgMobileNav,#bgSharedMobileNav){
+    position:fixed!important;
+    inset:var(--bg-site-menu-top,72px) 0 0 0!important;
+    width:100%!important;max-width:none!important;height:auto!important;
+    max-height:none!important;margin:0!important;padding:0!important;
+    transform:none!important;border:0!important;border-radius:0!important;
+    box-shadow:none!important;background:#fff!important;overflow:hidden!important;
+    z-index:2050!important;box-sizing:border-box!important
+  }
+  #bgMobileNav .bg-mobile-shell,#bgSharedMobileNav .bg-shared-mobile-shell{
+    width:100%!important;max-width:560px!important;height:100%!important;
+    box-sizing:border-box!important;padding:18px 20px max(24px,env(safe-area-inset-bottom,0px))!important
+  }
+  #bgMobileNav .bg-mobile-brandline,#bgSharedMobileNav .bg-shared-mobile-brandline{display:none!important}
+  #bgMobileNav .bg-mobile-view,#bgSharedMobileNav .bg-shared-mobile-view{
+    min-height:0!important;overflow-y:auto!important;
+    padding-top:6px!important;padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important
+  }
+  /* The 94vw historical V18 drawer is inert once the canonical menu exists. */
+  body.bg-site-mobile-canonical-nav #v18MobileDrawer{
+    display:none!important;visibility:hidden!important;pointer-events:none!important
+  }
+  .bg-sitewide-menu-close{display:none!important}
+  body.bg-site-mobile-menu-open :is(.wa,.whatsapp-float,.floating-whatsapp,.whatsapp-button,[data-whatsapp-float]){
+    display:none!important;visibility:hidden!important;pointer-events:none!important
+  }
+  body > .bgtop{display:none!important}
+  nav.bgkop .bgkop-logo img{display:none!important}
+  nav.bgkop .bgkop-logo::before{
+    content:"";display:block;flex:0 0 10px;width:10px;height:10px;
+    border-radius:50%;background:#ffe86b
+  }
+  nav.bgkop .bgkop-in{padding-inline:clamp(14px,4vw,22px)!important}
+  nav.bgkop .bgkop-woord{font-size:clamp(16px,4.8vw,21px)!important}
+  header.v17-header .v17-nav,nav.bgkop .bgkop-in{width:100%!important;max-width:100%!important}
+  main :is(.hero-actions,.pgl-actions,.cta-row){flex-wrap:wrap!important;gap:10px!important}
+  main :is(.hero-actions,.pgl-actions,.cta-row)>a[href]{
+    display:inline-flex;min-height:44px;align-items:center;justify-content:center;
+    text-align:center;white-space:normal;line-height:1.3
+  }
+}
+@media(max-width:380px){
+  #bgMobileNav .bg-mobile-shell,#bgSharedMobileNav .bg-shared-mobile-shell{padding-inline:16px!important}
+  header.v17-header .brand,nav.bgkop .bgkop-logo{min-width:0!important;max-width:calc(100% - 98px)!important}
+}
+
+/* Money-page CTA controls inserted after V18 build had only generic link
+   styling. Render the product hero actions as actual accessible buttons. */
+@media(max-width:1100px){
+  .inhoud-kop .bg-money-order-path{
+    display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+    gap:10px 12px!important;margin-top:18px!important
+  }
+  .inhoud-kop .bg-money-order-path>a[data-money-primary],
+  .inhoud-kop .bg-money-order-path>a[data-money-secondary]{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    box-sizing:border-box!important;min-height:48px!important;max-width:100%!important;
+    padding:12px 18px!important;border-radius:12px!important;
+    font-weight:750!important;font-size:16px!important;line-height:1.25!important;
+    text-align:center!important;text-decoration:none!important;white-space:normal!important;
+    box-shadow:none!important
+  }
+  .inhoud-kop .bg-money-order-path>a[data-money-primary]{
+    color:#14171a!important;background:#ffe86b!important;border:2px solid #ffe86b!important
+  }
+  .inhoud-kop .bg-money-order-path>a[data-money-secondary]{
+    color:#fff!important;background:rgba(255,255,255,.08)!important;
+    border:2px solid rgba(255,255,255,.9)!important
+  }
+  .inhoud-kop .bg-money-order-path>p{
+    flex-basis:100%!important;margin:6px 0 0!important;
+    max-width:60ch!important;color:#f2f5ff!important;
+    font-size:clamp(15px,3.8vw,18px)!important;line-height:1.6!important
+  }
+}
+@media(max-width:420px){
+  .inhoud-kop .bg-money-order-path>a[data-money-primary],
+  .inhoud-kop .bg-money-order-path>a[data-money-secondary]{width:100%!important}
+}
+
+/* One mobile navigation must never be covered by the canonical global
+   WhatsApp contact widget (whose z-index is 100000 in shared components). */
+@media(max-width:1100px){
+  body.bg-site-mobile-menu-open a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]{
+    display:none!important;visibility:hidden!important;pointer-events:none!important
+  }
+}

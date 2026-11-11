@@ -39,19 +39,43 @@
       if (root) view.removeAttribute('hidden'); else view.setAttribute('hidden','');
     });
   }
+  /* Keep the existing handlers; no second menu engine or duplicate close button. */
   function ensureCloseButtons() {
     MENUS.forEach(function(config) {
       var nav=document.getElementById(config.id);
-      if (!nav) return;
-      if (nav.querySelector('[data-bg-sitewide-close]')) return;
-      var button=document.createElement('button');
-      button.type='button';
-      button.className='bg-sitewide-menu-close';
-      button.setAttribute('data-bg-sitewide-close','');
-      button.setAttribute('aria-label','Sluit navigatiemenu');
-      button.textContent='Sluiten ×';
-      nav.appendChild(button);
+      if(nav)nav.querySelectorAll('[data-bg-sitewide-close]').forEach(function(button){button.remove();});
     });
+  }
+  /* Fixed children under a filtered or transformed header can be offset on
+     iOS. The public menu sheet must belong directly to the viewport. */
+  function syncMenuGeometry() {
+    if(!document.body)return;
+    var mobile=window.matchMedia('(max-width:1100px)').matches;
+    MENUS.forEach(function(config){
+      var nav=document.getElementById(config.id);
+      if(nav && nav.parentElement!==document.body && config.id!=='v18MobileDrawer')
+        document.body.appendChild(nav);
+    });
+    // The original V18 drawer-state observer can rewrite aria-controls to an
+    // offscreen 94vw sliding drawer after the visible drilldown has mounted.
+    // Keep one real menu owner: the accessible, viewport-aligned bgMobileNav.
+    var canonical=document.getElementById('bgMobileNav');
+    var legacy=document.getElementById('v18MobileDrawer');
+    var toggle=document.getElementById('mobileToggle');
+    document.body.classList.toggle('bg-site-mobile-canonical-nav',Boolean(canonical)&&mobile);
+    if(canonical && mobile && toggle){
+      if(legacy && legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');
+      if(legacy && legacy.classList.contains('open'))legacy.classList.remove('open');
+      if(toggle.getAttribute('aria-controls')!=='bgMobileNav')toggle.setAttribute('aria-controls','bgMobileNav');
+    }
+    var open=activeMenu();
+    document.body.classList.toggle('bg-site-mobile-menu-open',Boolean(open)&&mobile);
+    var headers=document.querySelectorAll('header.v17-header,nav.bgkop');
+    var header=Array.prototype.find.call(headers,function(node){return getComputedStyle(node).display!=='none';});
+    if(header && mobile) {
+      var height=Math.max(56,Math.min(window.innerHeight-80,Math.round(header.getBoundingClientRect().bottom)));
+      document.documentElement.style.setProperty('--bg-site-menu-top',height+'px');
+    }
   }
   function knowledgeCompare() {
     var frame=document.getElementById('compareFrame');
@@ -102,6 +126,7 @@
   function init() {
     if (!document.body) return;
     ensureCloseButtons();
+    syncMenuGeometry();
     knowledgeCompare();
     fixUnreadableButtons();
   }
@@ -133,4 +158,10 @@
     requestAnimationFrame(function(){scheduled=false;init();});
   });
   observer.observe(document.documentElement,{childList:true,subtree:true});
+  var stateObserver=new MutationObserver(function(changes){
+    if(changes.some(function(m){return /^(bgMobileNav|bgSharedMobileNav|v18MobileDrawer)$/.test(m.target.id||'');}))
+      syncMenuGeometry();
+  });
+  stateObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['aria-hidden']});
+  window.addEventListener('resize',syncMenuGeometry,{passive:true});
 })();
