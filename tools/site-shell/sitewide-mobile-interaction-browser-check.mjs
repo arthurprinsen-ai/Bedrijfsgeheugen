@@ -64,13 +64,23 @@ try {
       await page.keyboard.press('Escape');
       assert.equal(await nav.getAttribute('aria-hidden'),'true',`${route}: Escape did not dismiss menu`);
 
-      const sticky=await page.evaluate(()=>{
+      const sticky=await page.evaluate(async()=>{
         const header=document.querySelector('header.v17-header,nav.bgkop');
         if(document.documentElement.scrollHeight-innerHeight<250)return {short:true};
-        scrollTo(0,Math.min(800,document.documentElement.scrollHeight-innerHeight));
-        return {top:header.getBoundingClientRect().top,position:getComputedStyle(header).position,overflow:document.documentElement.scrollWidth-innerWidth};
+        // The public pages enable smooth scrolling. Measure only after a real
+        // completed scroll frame; an immediate read reports the initial 41px
+        // announcement offset, not the sticky header's settled position.
+        document.documentElement.style.scrollBehavior='auto';
+        window.scrollTo({top:Math.min(800,document.documentElement.scrollHeight-innerHeight),behavior:'instant'});
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        return {
+          scrollY:window.scrollY,
+          top:header.getBoundingClientRect().top,
+          position:getComputedStyle(header).position,
+          overflow:document.documentElement.scrollWidth-innerWidth
+        };
       });
-      assert.ok(sticky.short||(sticky.position==='sticky'&&Math.abs(sticky.top)<5),`${route}: header fails scroll sticky: ${JSON.stringify(sticky)}`);
+      assert.ok(sticky.short||(sticky.scrollY>200&&sticky.position==='sticky'&&Math.abs(sticky.top)<5),`${route}: header fails settled scroll sticky: ${JSON.stringify(sticky)}`);
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
       assert.ok(overflow<=4,`${route}: horizontal overflow ${overflow}px at ${width}px`);
 
