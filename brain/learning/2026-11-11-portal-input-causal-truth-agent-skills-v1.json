@@ -1,0 +1,58 @@
+{
+  "fingerprint": "portal|v2|production-input-causal-truth-agent-skill-borging|20261111-v1",
+  "date": "2026-11-11",
+  "type": "PORTAL_AGENT_SKILL_CAUSAL_TRUTH_PREVENTION",
+  "status": "CANDIDATE_NOT_SKILL_PROJECTION_VERIFIED",
+  "owner": "original Portal V2 #4215 / ONE BRAIN / existing agent-skill authority",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Three sequential Portal V2 fixes were needed to separate unknown numeric customer facts, transient identity/render events, coherent nested actual writes and demo-only data from durable canonical customer Brain delivery. Skill policies needed the same protected learnings to prevent an agent or future form from incorrectly claiming customer outcomes from browser demo, source commit or generic ACK.",
+  "compiler": {
+    "failure_class": "PORTAL_AGENT_SKILLS_FALSE_CUSTOMER_OUTCOME_FROM_DEMO_OR_PARTIAL_ACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "prevention_rules": [
+    "PORTAL_UNKNOWN_NOT_ZERO_AND_CLEARED_FACT_INVALIDATES",
+    "PORTAL_ANON_INIT_NO_FALSE_TENANT_SWITCH_AND_GATED_DEEPLINK",
+    "PORTAL_OVERLAPPING_NEW_PENDING_MODEL_SNAPSHOT_SAME_REVISION",
+    "PORTAL_HISTORICAL_CONFLICT_STAYS_FAIL_CLOSED",
+    "PORTAL_DEMO_NEVER_REAL_BRAIN_PENDING_OR_ACK",
+    "PORTAL_GENUINE_BUSINESS_INPUT_REQUIRES_AUTHORITATIVE_TENANT_PROVIDER_ACK",
+    "PORTAL_BROWSER_PASS_NOT_DOWNSTREAM_CUSTOMER_OUTCOME"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-agent-skill-causal-truth-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-agent-skill-causal-truth-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-agent-skill-causal-truth-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "prior_prs": [
+      5596,
+      5597,
+      5598
+    ],
+    "original_main_release_sha": "8e291bf3493fdb87d052712e97c5a8126984a3fd",
+    "original_netlify_deploy_id": "6af411b8d9fee5cd23a504b1",
+    "production_original_browser_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42975963909",
+    "production_browser_results": "16 pass / 1 skip / 0 fail; visuals pass",
+    "independent_authenticated_two_tenant_customer_readback": "NOT_PROVEN",
+    "exact_Brain_Heartbeat_Powerhouse_consumer_ack": "NOT_PROVEN",
+    "measured_customer_advice_outcome": "NOT_PROVEN",
+    "skill_projection_release": "PENDING_VERIFICATION"
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "production_proven": false,
+  "skill_targets": [
+    "portal-living-interface",
+    "powerhouse-continuity",
+    "powerhouse-company-intelligence-os"
+  ]
+}
