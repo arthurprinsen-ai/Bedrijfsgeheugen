@@ -23,7 +23,7 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     id:'agent-reliability',
     domains:['Reliability','Operations'],
     capabilities:['analyze','diagnose','recover','verify'],
-    tasks:['detect-runtime-failure','diagnose-root-cause','execute-safe-recovery','verify-recovery','read-canonical-15-loop-owner-and-action','reconcile-existing-brain-obligation-with-runtime-proof','reopen-source-fingerprint-on-regression','reconcile-stalled-portal-cro-handoff-with-original-owner','audit-all-active-original-loop-handoffs-without-aging-out','reconcile-unchanged-consumer-ack-under-original-owner-lease','require-independent-receipt-before-terminal-green','reconcile-customer-process-intent-to-authorized-approval-and-outcome-in-original-deliveryplan-without-false-green'],
+    tasks:['detect-runtime-failure','diagnose-root-cause','execute-safe-recovery','verify-recovery','read-canonical-15-loop-owner-and-action','reconcile-existing-brain-obligation-with-runtime-proof','reopen-source-fingerprint-on-regression','reconcile-stalled-portal-cro-handoff-with-original-owner','audit-all-active-original-loop-handoffs-without-aging-out','reconcile-unchanged-consumer-ack-under-original-owner-lease','require-independent-receipt-before-terminal-green','reconcile-explicit-concurrent-portal-flush-to-newest-authorized-revision-without-second-writer','reconcile-customer-process-intent-to-authorized-approval-and-outcome-in-original-deliveryplan-without-false-green'],
     playbooks:['self-heal-safe-failure','retry-fallback-last-known-good','production-regression-recovery','same-owner-fingerprint-to-provider-readback','no-green-from-owner-assignment'],
     learningContracts:[...sharedLearning,'reliability.v1'],
   }),
