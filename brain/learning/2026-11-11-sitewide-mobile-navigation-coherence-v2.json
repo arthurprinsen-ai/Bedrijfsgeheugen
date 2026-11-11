@@ -10,11 +10,11 @@
     4215
   ],
   "root_cause": {
-    "observed": "User iPhone screenshots show partial-width menu, visible background strip, offset header, duplicate close button, floating WhatsApp overlap and overflowing top announcement.",
-    "cause": "Old gate checked aria menu state but not viewport geometry. V18 and legacy menu overlays can inherit fixed containing blocks from header and extra close layer conflicted."
+    "observed": "User iPhone screenshots show partial-width menu, visible background strip, offset header, duplicate close button, floating WhatsApp overlap and overflowing top announcement. Product hero also rendered two unstyled post-build CTA links.",
+    "cause": "Old gate checked aria menu state but not viewport geometry. V18 and legacy menu overlays can inherit fixed containing blocks from header and extra close layer conflicted. The old V18 entrance transform continued interpolating after fixed geometry; post-build money-page CTA lacked scoped mobile button styling."
   },
   "fix": {
-    "scope": "Preserve existing menu engines, move overlay into document.body, align to fixed header, one Menu/Sluit toggle and no floating WhatsApp collision. Add real browser geometry tests.",
+    "scope": "Preserve existing menu engines, move overlay into document.body, align to fixed header, one Menu/Sluit toggle and no floating WhatsApp collision. Add real browser geometry tests. Cancel old drawer transition and style generated platform money CTA touch targets.",
     "non_goals": [
       "no parallel executor",
       "no portal/auth state changes",
@@ -43,7 +43,8 @@
     "Assert actual drawer left/right/top and header adjacency on 320/390px iPhones",
     "Require one close toggle and keyboard Escape",
     "Hide floating WhatsApp while drawer open",
-    "One canonical site builder and proof of exact Netlify READY SHA"
+    "One canonical site builder and proof of exact Netlify READY SHA",
+    "Check both mobile product hero conversion links as actual 44px+ styled buttons with computed 4.5:1 primary contrast"
   ],
   "evidence": {
     "source": "User screenshots and GitHub source",
