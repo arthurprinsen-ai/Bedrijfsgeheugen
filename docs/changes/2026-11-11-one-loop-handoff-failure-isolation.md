@@ -1,6 +1,6 @@
 # 2026-11-11 — Eén oorspronkelijke 15-lus assurance, foutisolatie zonder overdrachtverlies
 
-Canonical P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+Canonical P0 #4198: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
 Portal P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215
 Fingerprint: `powerhouse|15-loop|unisolated-handoff-fault-blocks-other-owners|20261111-v1`
 
