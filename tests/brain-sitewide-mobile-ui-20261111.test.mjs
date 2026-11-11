@@ -32,3 +32,19 @@ test('one final public build, portal excluded and JavaScript valid',()=>{
   assert.match(builder,/sitewide-mobile-ui-20261111.js/);
   assert.doesNotThrow(()=>new Function(js));
 });
+
+test('original protected website browser lane exercises real menu close, sticky and touch slider rather than only source regex',()=>{
+  const workflow=fs.readFileSync('.github/workflows/lane-website.yml','utf8');
+  const browser=fs.readFileSync('tools/site-shell/sitewide-mobile-interaction-browser-check.mjs','utf8');
+  assert.match(workflow,/node tools\/site-shell\/sitewide-mobile-interaction-browser-check\.mjs/);
+  assert.match(workflow,/Retain original mobile interaction browser evidence/);
+  assert.match(browser,/hasTouch:true,isMobile:true/);
+  assert.match(browser,/await close\.click/);
+  assert.match(browser,/await page\.keyboard\.press\('Escape'\)/);
+  assert.match(browser,/sticky\.position==='sticky'/);
+  assert.match(browser,/ratio\(fg,bg\)>=4\.5/);
+  assert.match(browser,/await range\.press\('Home'\)/);
+  assert.match(browser,/await range\.press\('End'\)/);
+  assert.match(browser,/await range\.click/);
+  assert.match(browser,/if\(failures\)process\.exitCode=1/);
+});
