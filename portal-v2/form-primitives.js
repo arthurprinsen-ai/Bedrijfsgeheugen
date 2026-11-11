@@ -59,7 +59,13 @@ export function bindFields(root,schema,{getValue=()=>undefined,onChange=()=>{}}=
     error.hidden=valid;
     error.textContent=valid?'':node.validity?.valueMissing?'Vul dit veld in.':node.validity?.rangeUnderflow?'De waarde is lager dan toegestaan.':node.validity?.rangeOverflow?'De waarde is hoger dan toegestaan.':'Controleer de ingevoerde waarde.';
    }
-   if(!valid){node.setAttribute('aria-invalid','true');return;}
+   if(!valid){
+    node.setAttribute('aria-invalid','true');
+    // Clearing a required field must invalidate its previous business fact.
+    // Keep other invalid edits (bad numbers/ranges) uncommitted.
+    if(node.validity?.valueMissing)onChange(field,normalizeFieldValue(field,raw),node);
+    return;
+   }
    node.removeAttribute('aria-invalid');
    onChange(field,normalizeFieldValue(field,raw),node);
   };
