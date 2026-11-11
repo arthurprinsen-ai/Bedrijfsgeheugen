@@ -85,7 +85,7 @@ export function renderCompanyIntelligenceContext(input={},surface='executive-coc
   // Only show graph arrows for explicit matching IDs. Unrelated nodes may
   // appear in the five-stage overview but never as a fabricated causal chain.
   const nodeById=new Map(model.graph.nodes.map(node=>[node.id,node]));
-  const graph=model.graph.edges.length?`<div class="ci-mini-graph" aria-label="Aantoonbare Company Graph relaties">${model.graph.edges.map(edge=>{
+  const graph=model.graph.edges.length?`<div class="ci-mini-graph" aria-label="Company Graph context: aantoonbare relaties">${model.graph.edges.map(edge=>{
     const from=nodeById.get(edge.from),to=nodeById.get(edge.to);
     return from&&to?`<span data-node-type="${esc(from.type)}"><b>${esc(from.label)}</b></span><em>→</em><span data-node-type="${esc(to.type)}"><b>${esc(to.label)}</b></span>`:'';
   }).join('')}</div>`:'';
