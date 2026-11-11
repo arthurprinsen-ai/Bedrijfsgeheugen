@@ -329,6 +329,17 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   if(!handoffPrincipal)handoffPrincipal=currentPrincipal();
   businessRevision+=1;
   pendingBusinessInputs.set(binding.key,{...binding,generation:businessRevision,answers:asAnswers(domain.get(binding.statePath))});
+  // Two independently modelled inputs can overlap: strategy contains
+  // strategy.dna, while canvases may contain one specialised child model.
+  // Before the first submission, keep the ancestor/descendant snapshots
+  // consistent with the same current customer revision. Otherwise a valid
+  // multi-page edit is incorrectly rejected as a replay source conflict.
+  for(const [key,item] of pendingBusinessInputs){
+   if(key===binding.key)continue;
+   if(path===item.statePath||path.startsWith(item.statePath+'.')||item.statePath.startsWith(path+'.')){
+    pendingBusinessInputs.set(key,{...item,generation:++businessRevision,answers:asAnswers(domain.get(item.statePath))});
+   }
+  }
  }
  function publishImpact(path,before,after){
   const impact=impactForMutation({path,before,after});

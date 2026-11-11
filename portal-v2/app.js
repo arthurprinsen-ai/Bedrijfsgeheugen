@@ -452,7 +452,7 @@ mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClie
 mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
-let portalVisualAuthSubject=null;
+let portalVisualAuthSubject='';
 portalStateClient.subscribe(snap=>{
  const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
    ? String(snap.user.id||'') : '';
@@ -522,8 +522,22 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)void reval
 globalThis.addEventListener('focus',()=>void revalidateVisibleCustomer());
 globalThis.setInterval(()=>void revalidateVisibleCustomer(),PORTAL_REVALIDATION_INTERVAL_MS);
 ensureIdentityWidget().then(identity=>{
- const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
+ const refreshDomainState=async()=>{
+  const before=String(portalStateClient.currentUser?.()?.id||'');
+  try{
+   await portalDomainState.init();
+   // A delayed identity hydration must not leave a valid deep-linked page
+   // hidden after the old tenant's private DOM has been revoked.
+   // Re-open through the original entitlement/security gate, and only for
+   // the same principal that just hydrated successfully.
+   const after=String(portalStateClient.currentUser?.()?.id||'');
+   if(before!==after)return;
+   const requested=new URL(location.href).searchParams.get('page');
+   const view=document.getElementById('portalView');
+   if(requested&&view?.getAttribute('aria-hidden')==='true')gatedOpenPage(requested);
+  }catch{return null;}
+ };
  identity?.on?.('login',refreshDomainState);
  identity?.on?.('logout',refreshDomainState);
- refreshDomainState();
+ void refreshDomainState();
 });
