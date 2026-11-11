@@ -11,7 +11,10 @@ for(const dirName of ['blog','en','pages','portal','portal-next','kennis','behoe
   if(fs.existsSync(dir))walk(dir,targets);
 }
 
-const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileSync(path.join(root,'assets/sitewide-mobile-ui-20261111.css'),'utf8')+'\n</style>';\nconst mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111a" defer data-bg-sitewide-mobile-ui="1"></script>';\n\nlet changed=0,covered=0;
+const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileSync(path.join(root,'assets/sitewide-mobile-ui-20261111.css'),'utf8')+'\n</style>';
+const mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111a" defer data-bg-sitewide-mobile-ui="1"></script>';
+
+let changed=0,covered=0;
 for(const file of [...new Set(targets)]){
   if(path.basename(file)==='cms.html')continue;
   let html=fs.readFileSync(file,'utf8');
