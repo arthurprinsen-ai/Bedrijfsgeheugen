@@ -19,7 +19,7 @@ test('public site mobile repairs are script-valid and targeted, not an alternati
   assert.match(css,/#compareFrame #compareRange/);
   assert.match(css,/\.pgl \.pgl-actions a\.pgl-btn\.secondary/);
   assert.match(js,/data-bg-sitewide-close/);
-  assert.match(js,/data-bg-knowledge-side/);
+  assert.match(js,/frame\.dataset\.bgKnowledgeSide/);
   assert.match(js,/range\.dispatchEvent\(new Event\('input'/);
 });
 
