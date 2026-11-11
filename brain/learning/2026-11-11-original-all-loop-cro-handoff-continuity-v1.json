@@ -90,5 +90,32 @@
     "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs",
     "docs/changes/2026-11-11-original-all-loop-autonomous-cro-handoff.md",
     "docs/development-ledger-events/2026-11-11-original-all-loop-autonomous-cro-handoff.md"
-  ]
+  ],
+  "evidence": {
+    "source": "read-only original Supabase production observation 2026-11-11",
+    "observations": {
+      "project": "adhjwmvyoixzjtmiroln",
+      "original_active_loops": 15,
+      "green": 8,
+      "red": 7,
+      "content_handoff_open": 433,
+      "content_handoff_overdue": 403,
+      "historical_result_unknown_escalated": 2,
+      "cron_171_active": true,
+      "migration_applied_native_versions": 826,
+      "native_second_version_exact_source_verified": true,
+      "source_lock_before_candidate": 825,
+      "source_lock_after_candidate": 826,
+      "cro_readiness": "LATENT_WAITING_FOR_ELIGIBLE_ACTION",
+      "cro_assignments": 0,
+      "treatment_assignments": 0,
+      "holdout_assignments": 0,
+      "real_customer_outcome_verified": false
+    },
+    "acceptance_boundary": "The observed 15 original monitoring loops and native migration version parity do not prove two authenticated tenant consumer ACK, provider action, CRO effect, paid revenue or next-natural-run learning",
+    "original_issues": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+    ]
+  }
 }
