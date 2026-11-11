@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "fingerprint": "portal|cro|source-verified-autonomous-decision-receipt|20261111-v1",
+  "type": "CANONICAL_POLICY_AND_AGENT_ROUTING",
+  "parent_issue": 4215,
+  "related_issue": 4198,
+  "obligation_id": "portal|cro|source-verified-autonomous-decision-receipt|20261111-v1",
+  "original_owner": "existing Portal V2 / ONE BRAIN / Heartbeat / original CRO owner",
+  "problem": "Authentic customer input and original CRO candidates are not yet independently connected to executed treatment/holdout, measured business effect and next-cycle applied learning. Agent task ownership and handoff receipt policy need explicit binding.",
+  "root_cause_status": "NOT_INDEPENDENTLY_ESTABLISHED",
+  "source_observation": {
+    "observed_at": "2026-11-11T08:58:18Z",
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "readiness_state": "LATENT_WAITING_FOR_ELIGIBLE_ACTION",
+    "assignments": 0,
+    "treatment_assignments": 0,
+    "holdout_assignments": 0,
+    "candidates_review_required": 14,
+    "experiment_evidence": "INSUFFICIENT_MATURED_ASSIGNMENTS",
+    "actual_cro_treatment_proven": false,
+    "two_authenticated_tenant_handoffs_proven": false,
+    "customer_outcome_to_learning_proven": false
+  },
+  "no_new_agent": true,
+  "no_new_executor": true,
+  "no_new_scheduler": true,
+  "no_new_writer": true,
+  "no_new_store": true,
+  "change_scope": [
+    "platform/agents/agent-team.mjs",
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "tests/brain-portal-cro-autonomous-decision-handoff-20261111.test.mjs",
+    "docs/changes/2026-11-11-portal-cro-autonomous-decision-handoff.md",
+    "docs/development-ledger-events/2026-11-11-portal-cro-autonomous-decision-handoff.md",
+    "brain/learning/2026-11-11-portal-cro-autonomous-decision-handoff-v1.json"
+  ],
+  "decision_policy": "Select only source-backed reversible eligible original-owner one-variable experiments; otherwise REVIEW_REQUIRED with original next source action; never fabricate control, assignment, effect, outcome or revenue.",
+  "mandatory_acks": [
+    "authenticated portal persisted revision GET",
+    "tenant-and-revision-bound BusinessInput consumer receipt",
+    "affected dependent page refresh or REVIEW_REQUIRED",
+    "original CRO/Powerhouse owner consumption",
+    "Heartbeat receipt",
+    "protected exact-source production deployment",
+    "mature actual treatment/holdout measurement",
+    "ONE BRAIN learning receipt and later original application"
+  ],
+  "due_status": "EVIDENCE_DUE",
+  "regression": "tests/brain-portal-cro-autonomous-decision-handoff-20261111.test.mjs"
+}
