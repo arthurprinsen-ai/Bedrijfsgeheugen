@@ -19,7 +19,7 @@ const projection={
 };
 
 test('original bridge never replaces immutable ready handshake or submits under a switched company',async()=>{
- const bus=new Bus();let tenant='A',accept=false;const posted=[];
+ const bus=new Bus();let tenant='A',accept=false;const posted=[],readback=[];
  const listeners=new Set();
  const stateClient={
   getSnapshot:()=>({mode:'authenticated',user:{id:'shared-user',app_metadata:{tenantId:tenant}}}),
@@ -30,9 +30,10 @@ test('original bridge never replaces immutable ready handshake or submits under 
   stateClient,domainState:{get:()=>({portal:{}}),setDerived:()=>{}},
   eventTarget:bus,intervalMs:0,
   fetchImpl:async(_url,options={})=>{
-   if(options.method!=='POST')return {ok:true,json:async()=>projection};
+   if(options.method!=='POST')return {ok:true,json:async()=>({...projection,records:readback})};
    const record=JSON.parse(options.body);posted.push({record,token:options.headers.authorization});
    if(!accept)return {ok:false,status:503,json:async()=>({error:'provider-unavailable'})};
+   readback.push({...record,provenance:{source:'portal-v2'}});
    return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
   }
  });
@@ -65,6 +66,9 @@ test('bridge and customer source journal are one original authority, not two sch
  assert.match(bridge,/previous\.ready\|\|previous\.inflight/);
  assert.match(bridge,/user\?\.app_metadata\?\.tenantId/);
  assert.match(bridge,/record\.idempotencyKey/);
+ assert.match(bridge,/projection\.records\.some/);
+ assert.match(bridge,/item\?\.observedAt/);
+ assert.match(bridge,/item\?\.provenance\?\.source/);
  assert.match(domain,/HANDOFF_JOURNAL_PATH='portal\.__brainHandoffJournalV1'/);
  assert.match(domain,/PORTAL_BRAIN_REPLAY_SOURCE_CONFLICT/);
  assert.match(agent,/server.*duurzame.*overdracht|server-persisted.*handoff/i);

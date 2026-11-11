@@ -1,0 +1,54 @@
+{
+  "fingerprint": "portal|v2|brain-operation-post-to-get-exact-record-receipt|20261111-v1",
+  "date": "2026-11-11",
+  "type": "PORTAL_BRAIN_HANDOFF_RECEIVER_READBACK",
+  "status": "CODE_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "owner": "original Portal V2 / ONE BRAIN runtime bridge",
+  "root_cause": "The original portal runtime bridge accepted an exact POST producer echo as a terminal ACK before independently verifying that the same immutable record was present in the authenticated tenant-scoped original Brain GET projection. A generic refresh was not a record-specific receipt.",
+  "compiler": {
+    "failure_class": "PORTAL_BRAIN_POST_ACK_WITHOUT_INDEPENDENT_RECEIVER_READBACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rules": [
+    "PORTAL_POST_ECHO_NEVER_TERMINAL_WITHOUT_INDEPENDENT_AUTHENTICATED_GET",
+    "PORTAL_RECEIVER_GET_RECORD_ID_CORRELATION_TYPE_OBSERVED_AT_AND_PROVENANCE_MATCH",
+    "PORTAL_MISSING_GET_RETAIN_EXACT_IMMUTABLE_PENDING_AND_RETRY_SAME_ID",
+    "PORTAL_TENANT_CHANGE_REVOKES_OLD_SESSION_QUEUE",
+    "PORTAL_REQUESTED_ACTION_NOT_EXECUTED_OR_MEASURED_OUTCOME"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-runtime-bridge-handshake-no-loss-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-runtime-bridge-handshake-no-loss-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-runtime-bridge-handshake-no-loss-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "base_sha": "1e012ab3ab0be14fdf13d64c11af4688c411800c",
+    "original_live_netlify": "6af41c295e090b1a009b649b",
+    "original_live_browser": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42981334629",
+    "source_paths": [
+      "portal-v2/powerhouse-runtime-bridge.js",
+      "portal-v2/tests/powerhouse-runtime-bridge.test.mjs"
+    ],
+    "exact_new_prod_readback": "NOT_PROVEN",
+    "actual_tenantA_B_provider_receipts": "NOT_PROVEN",
+    "downstream_heartbeat_ack": "NOT_PROVEN",
+    "actual_business_outcome": "NOT_PROVEN",
+    "separate_migration_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5557"
+  },
+  "production_proven": false,
+  "customer_outcome": "NOT_PROVEN",
+  "skill_targets": [
+    "portal-living-interface",
+    "powerhouse-continuity"
+  ]
+}

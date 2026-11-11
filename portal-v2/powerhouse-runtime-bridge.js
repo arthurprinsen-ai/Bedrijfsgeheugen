@@ -148,6 +148,24 @@ export function createPowerhouseRuntimeBridge({
     // and correlation before removing an item from the original queue.
     if(clean(body?.record?.id)!==record.id
         ||clean(body?.record?.correlationId)!==record.correlationId)return null;
+    // The POST echo is a producer receipt, not proof that the tenant-scoped
+    // canonical read model can independently retrieve the SAME record.
+    // Use the original GET endpoint with the original bearer and verify exact
+    // immutable identity before deleting the pending handoff. No new worker.
+    const readback=await fetchImpl('/api/brain-operating-loop',{
+      credentials:'same-origin',cache:'no-store',
+      headers:{...headers,accept:'application/json'}
+    });
+    if(currentPrincipal()!==expectedPrincipal||!readback.ok)return null;
+    const projection=await readback.json().catch(()=>null);
+    if(!Array.isArray(projection?.records)
+      ||!projection.records.some(item=>
+        clean(item?.id)===record.id
+        &&clean(item?.correlationId)===record.correlationId
+        &&clean(item?.type)===record.type
+        &&clean(item?.observedAt)===record.observedAt
+        &&clean(item?.provenance?.source||item?.source)==='portal-v2'
+      ))return null;
     lastRecordId=record.id;
     lastCorrelationId=record.correlationId;
     await refresh().catch(()=>null);
