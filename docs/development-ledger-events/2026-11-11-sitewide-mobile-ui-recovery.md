@@ -9,3 +9,5 @@
 - Regression: `tests/brain-sitewide-mobile-ui-20261111.test.mjs`, `tests/site-shell-mobile-ui-recovery-20261111.test.mjs`, `tests/site-shell-mobile-sitewide-recovery-20261111.test.mjs`, existing full-sitemap cross-browser assurance with new close/sticky/slider checks.
 - Admission failure #43015777977: `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning`; add the original learning and append-only ledger in the same candidate, then re-run without weakening gates.
 - Current outcome: **candidate only / evidence due**. Never claim live, fully working or Red Dot-ready before protected merge, exact Netlify READY and independent iOS/desktop readback.
+
+- Aanvullende first-time-right controle: bij PR-browsercontrole bleek de algemene 277-routes × 3-viewport sweep niet afzonderlijk de nieuwe klik-, sluit- en kennisvergelijkingscontracten te bewijzen. De **zelfde** beschermde website-lane voert nu een concrete Playwright-interactietest uit, inclusief keyboard/touch en CTA-contrast. Bewijs wordt in de bestaande workflow als artifact bewaard. Deze nieuwe browserpoort is niet hetzelfde als onafhankelijke productie-/iPhone-readback.
