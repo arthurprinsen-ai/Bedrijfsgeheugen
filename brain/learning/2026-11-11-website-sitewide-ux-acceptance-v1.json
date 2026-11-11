@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "fingerprint": "website|sitewide|interaction-coverage-and-normal-text-contrast|20261111-v1",
+  "type": "WEBSITE_UX_ACCURATE_ACCEPTANCE_AND_AGENT_SKILL_HANDOFF",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE_PROOF",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "original_owner": "canonical public website/Netlify GitHub release lane",
+  "predecessor_release": {
+    "pull_request": 5618,
+    "main_sha": "381a73637c2e607f687574517797a86907f0684c",
+    "netlify_deploy": "6af484c5d9c6f6a7b09ca75c",
+    "verified_scope": "8 targeted mobile functional checks and 831 page-viewport visibility/CLS checks"
+  },
+  "root_cause": {
+    "observed": "Eight focused browser checks and 831 visibility/CLS checks were at risk of being conflated with sitewide interaction completion; passing header contrast minimum was 3:1 and lowest measured Solutions panel 3.78:1.",
+    "gap": "No machine-verifiable route-selector-viewport matrix proving actual outcomes for all present controls; contrast minimum not yet 4.5:1 for ordinary text."
+  },
+  "fix": {
+    "scope": "Update original website UX agent, code-quality agent, original website skill, shared Brain historical regression and existing ledger; preserve one writer and no runtime behavior changes.",
+    "non_goals": [
+      "No new scheduler or executor",
+      "No bypass of CI or WCAG threshold",
+      "No unverified all-green claim",
+      "No customer data or portal mutation"
+    ]
+  },
+  "compiler": {
+    "failure_class": "WEBSITE_INTERACTION_EVIDENCE_SCOPE_AND_WCAG_AA_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "acceptance": {
+    "full_site_interactions": "EVIDENCE_DUE",
+    "normal_text_wcag_aa": "EVIDENCE_DUE",
+    "production_promotion": "DO_NOT_PROMOTE_WITHOUT_REQUIRED_GATES_AND_READBACK",
+    "status_rule": "MARK_ONLY_EXACT_TESTED_SCOPE_LIVE_BEWEZEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ]
+  },
+  "handoff": {
+    "agent_owner": "platform/agents/agent-team.mjs#agent-website-ux",
+    "guard_agent": "platform/agents/agent-team.mjs#agent-code-quality",
+    "skill": "skills/website-portal-coherence.md",
+    "same_original_website_owner": true,
+    "proof_fields": [
+      "route",
+      "selector",
+      "viewport",
+      "user_action",
+      "observed_outcome",
+      "screenshot",
+      "source_sha",
+      "deploy_id",
+      "owner",
+      "consumer_ack"
+    ],
+    "next_action": "Original website owner extends real interactions and fixes normal-text contrast, then controlled protected merge and actual production readback."
+  },
+  "evidence": {
+    "github_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5618",
+    "required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43043865912",
+    "production_readback": "PREDECESSOR_ONLY; NEW_ACCEPTANCE_NOT_VERIFIED"
+  },
+  "prevention": [
+    "Never treat 277 x 3 visibility/CLS checks as 831 real interactive outcomes; preserve per-route selector/viewport action and observed result.",
+    "Use computed WCAG AA >=4.5:1 contrast for ordinary text; accept 3:1 only for demonstrably large text; keep 3.78:1 panel EVIDENCE_DUE.",
+    "Reuse original website lane, single writer and ONE BRAIN owner + consumer ACK. Do not claim full-site ALL_GREEN from merged documentation or partial browser tests.",
+    "Retain exact SHA, protected Required/BRAIN/CodeQL, current Netlify READY, independent production browser behavior and agent skill readback before closure.",
+    "Canonical semantic-learning hygiene requires explicit prevention key: prior PR #5625 admission failed INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE semantic_learning; do not alter the gate."
+  ]
+}
