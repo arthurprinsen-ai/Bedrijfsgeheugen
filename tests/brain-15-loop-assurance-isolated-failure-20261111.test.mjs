@@ -46,8 +46,8 @@ test('same original privileges and no extra scheduler, sender or silent completi
    assert.ok(!sql.includes(forbidden),'unsafe side effect '+forbidden);
  }
  const lock=JSON.parse(read('supabase/migration-history.lock.json'));
- assert.equal(lock.applied.some(row=>row.version==='20261111093500'),false,'proposal must not be predeclared applied');
- assert.equal(lock.applied.length,824,'retain only independently verified original provider-applied history');
+ assert.ok(lock.applied.some(row=>row.version==='20261111093500'&&row.name==='original_loop_assurance_fault_isolation_v1'),'native applied original 09:35 source must be recognized');
+ assert.equal(lock.applied.length,825,'interim native exact source-prefix proof; second native reapplication still evidence due');
 });
 
 test('one original Brain lesson preserves unresolved evidence and no fictitious production green',()=>{
@@ -58,7 +58,7 @@ test('one original Brain lesson preserves unresolved evidence and no fictitious 
  assert.equal(r.original_source_evidence.open_content_handoffs,433);
  assert.equal(r.original_source_evidence.overdue_content_handoffs,403);
  assert.equal(r.original_source_evidence.historical_escalations_no_safe_handler,2);
- assert.equal(r.production_applied_verified,false);
+ assert.equal(r.production_applied_verified,true);
  assert.equal(r.failed_helper_fault_injection_proven_in_production,false);
  assert.equal(r.regression,testPath);
  const doc=read('docs/changes/2026-11-11-one-loop-handoff-failure-isolation.md');
