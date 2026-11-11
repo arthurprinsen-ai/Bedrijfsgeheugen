@@ -4,6 +4,7 @@ import {findPage} from './page-registry.js';
 import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from './entrepreneur-journey-model.js';
 import {renderEntrepreneurJourney} from './entrepreneur-journey-view.js';
 import {renderDecisionWorld} from './decision-world.js';
+import {renderOneRoofWorkspace} from './business-os-home.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -128,6 +129,12 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(summary,'span','','Meer inzicht en instellingen');
     add(summary,'small','','Doelen, brongegevens, metingen en achtergrond');
     advanced.addEventListener('toggle',()=>{expanded=advanced.open;});
+    // One view of this principal's source state; reuses the original route and
+    // handoff owner, never creates a parallel business database or executor.
+    renderOneRoofWorkspace(advanced,{
+      authenticated:loggedIn&&Boolean(customerState),state:customerState,
+      journey,pendingHandoff:domainState.pendingHandoffs?.()
+    });
     const attention=add(advanced,'section','eh-attention');
     attention.dataset.entrepreneurAttention='v1';
     attention.setAttribute('aria-label','Drie zaken die voor jouw bedrijf tellen');
