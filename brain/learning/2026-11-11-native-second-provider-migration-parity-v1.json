@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse|migration|native-second-version-source-lock-drift|20261111-v1",
   "date": "2026-11-11",
   "type": "ONE_BRAIN_IMMUTABLE_NATIVE_PROVIDER_MIGRATION_PARITY",
-  "status": "SOURCE_CORRECTION_PROTECTED_PR_NOT_MERGED",
+  "status": "SOURCE_MIRROR_PROPOSED_LOCK_CORRECTION_SEPARATE",
   "owner": "Original ONE BRAIN / Supabase protected migration history authority",
   "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
@@ -10,7 +10,7 @@
     "observed": "Native Supabase applied migration ledger has 826 distinct versions, including 20261111093500 and an additional 20261111094222 both named original_loop_assurance_fault_isolation_v1. Original protected source history lock still listed 824 before this PR, and only the first migration source file was present.",
     "reason_for_second_native_execution": "NOT_INDEPENDENTLY_ESTABLISHED; do not infer who or what dispatched an extra version",
     "risk": "Provider-native/source history divergence prevents trustworthy independent source parity and may block future protected releases.",
-    "remediation": "Keep provider ledger immutable; mirror the exactly matching original SQL under the second genuine native provider version; append both provider identities to the canonical GitHub lock without modifying existing prior rows."
+    "remediation": "First submit original byte-exact native second migration source in this normal protected proposed-SQL PR with existing 824 provider-locked baseline unchanged. Only after protected merge, independently verify provider 826 and append both immutable native identities to original source lock in a second protected source-only correction. Never modify native ledger or bypass admission."
   },
   "compiler": {
     "failure_class": "SCHEMA_DRIFT",
@@ -58,5 +58,5 @@
   },
   "production_proven": false,
   "customer_outcome": "NOT_PROVEN",
-  "next_action": "Protected Required/BRAIN/CodeQL/hosted Supabase preview; merge exact protected main, verify native 826/826 source identity, skill release readback and existing natural #171 loop; keep original #4215 and #4198 EVIDENCE_DUE."
+  "next_action": "Pass protected source-only migration proposal without changing production-applied lock, merge, independently verify native 826; then separate protected source-lock 826/826 correction, and natural #171 source-to-consumer receipt. Actual business outcome remains EVIDENCE_DUE."
 }
