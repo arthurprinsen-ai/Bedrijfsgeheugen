@@ -247,6 +247,30 @@ Deno.serve(async(req:Request)=>{
     }
   }
 
-  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:scan.kind==='bedrijfslek_scan'?'bedrijfslek':scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'diagnosis',funnel_stage:scan.kind==='bedrijfslek_scan'?'assessment':'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,scan_kind:scan.kind,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
-  return json({ok:true,stored:true,deduped:!created,contract:'powerhouse-canonical-scan-loop-v1',scan_id:stored.id,event_id:event.event_id,tenant_identity_status:'unverified',portal_preprovisioned:portalPreprovisioned},created?201:200);
+  // The scan and Powerhouse receipt are not yet the separate commercial
+  // growth-event consumer ACK. Preserve the SAME original deterministic ID on
+  // retried requests; no second sender, lead, tenant identity or queue.
+  const {error:growthError}=await client.from('growth_events').upsert({
+    event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,
+    intent:scan.kind==='bedrijfslek_scan'?'bedrijfslek':scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',
+    intent_owner:'bedrijfsgeheugen',source:'website',medium:'unattributed',
+    occurred_at:scan.datum||new Date().toISOString(),page_role:'diagnosis',
+    funnel_stage:scan.kind==='bedrijfslek_scan'?'assessment':'lead',value:0,
+    payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,
+      scan_kind:scan.kind,privacy_scope:'no_pii'}
+  },{onConflict:'event_id',ignoreDuplicates:true});
+  if(growthError)return json({ok:false,error:'SCAN_GROWTH_HANDOFF_FAILED',
+    scan_id:stored.id,event_id:event.event_id,retryable:true},503);
+  const {data:growthReceipt,error:growthReadError}=await client.from('growth_events')
+    .select('event_id,event_type,payload').eq('event_id',dedupe).maybeSingle();
+  if(growthReadError||growthReceipt?.event_id!==dedupe||
+      growthReceipt?.event_type!=='scan_completed'||
+      String(growthReceipt?.payload?.scan_id||'')!==String(stored.id)){
+    return json({ok:false,error:'SCAN_GROWTH_HANDOFF_UNCONFIRMED',
+      scan_id:stored.id,event_id:event.event_id,retryable:true},503);
+  }
+  return json({ok:true,stored:true,deduped:!created,contract:'powerhouse-canonical-scan-loop-v1',
+    scan_id:stored.id,event_id:event.event_id,growth_event_id:dedupe,
+    growth_event_readback_proven:true,tenant_identity_status:'unverified',
+    portal_preprovisioned:portalPreprovisioned},created?201:200);
 });
