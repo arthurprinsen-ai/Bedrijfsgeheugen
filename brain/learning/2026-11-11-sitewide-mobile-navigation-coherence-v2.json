@@ -68,5 +68,14 @@
     },
     "limitation": "Source candidate is not live proof."
   },
-  "next_action": "Protected original CI, browser, CodeQL, merge, Netlify READY and production readback."
+  "next_action": "Protected original CI, browser, CodeQL, merge, Netlify READY and production readback.",
+  "agent_skill_handoff": {
+    "original_agent": "platform/agents/agent-team.mjs#agent-website-ux",
+    "original_skill": "skills/website-portal-coherence.md",
+    "same_owner": true,
+    "machine_guard": "tests/brain-sitewide-mobile-ui-20261111.test.mjs",
+    "source_state": "SOURCE_CANDIDATE_CI_PENDING",
+    "next_natural_agent_application": "EVIDENCE_DUE",
+    "independent_production_browser_readback": "EVIDENCE_DUE"
+  }
 }
