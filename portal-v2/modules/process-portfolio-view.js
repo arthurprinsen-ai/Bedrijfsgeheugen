@@ -7,7 +7,7 @@ const LABELS=Object.freeze({
  missing_owner:'Eigenaar ontbreekt',
  ready_for_customer_input:'Kan worden opgepakt'
 });
-export function processPortfolioMarkup(state,{today=new Date().toISOString().slice(0,10)}={}){
+export function processPortfolioMarkup(state,{today=new Date().toISOString().slice(0,10),handoffEvidence=null}={}){
  const portfolio=processPortfolioOverview(state,{today});
  const opts=PROCESS_TEMPLATES.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.label)+'</option>').join('');
  const cards=portfolio.items.map(p=>{
@@ -32,6 +32,9 @@ export function processPortfolioMarkup(state,{today=new Date().toISOString().sli
   portfolio.pendingApprovals+' goedkeuringen open · '+portfolio.overdue+' termijnen verstreken</span>'+
   '</summary><div class="v2processbody"><p>Gebruik één bestaand bedrijfsplan met eigenaren, afhankelijkheden en deadlines. '+
   'Goedkeuring vraagt altijd een bevoegde, onafhankelijk bevestigde handeling.</p>'+
+  (portfolio.open?'<p class="v2processhandoff" data-process-handoff="'+esc(handoffEvidence?.status||'EVIDENCE_DUE')+'" role="status">'+
+  (handoffEvidence?.status==='BRAIN_INPUT_ACK'?'ONE BRAIN heeft deze procesinvoer ontvangen · bronrevisie '+esc(handoffEvidence.sourceRevision)+' · ontvangst '+esc(handoffEvidence.brainRecordId)+'. Uitvoering, resultaat en leren blijven apart te bewijzen.':
+  'ONE BRAIN-ontvangst voor de actuele invoer is nog niet in deze sessie bevestigd. Nieuwe wijzigingen vragen een nieuw ontvangstbewijs.')+'</p>':'')+
   '<form data-process-create><label>Procesvorm<select name="templateId" required>'+opts+'</select></label>'+
   '<label>Procesnaam<input name="title" maxlength="120" required placeholder="Bijvoorbeeld nieuwe productlijn"></label>'+
   '<label>Verantwoordelijke<input name="owner" maxlength="120" required placeholder="Naam of team"></label>'+

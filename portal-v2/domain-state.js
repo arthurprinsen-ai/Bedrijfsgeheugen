@@ -169,6 +169,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
  const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
+ const receiptScope=Symbol('portal-domain-brain-receipt');
  // Tenant-scoped SERVER-PERSISTED handoff manifest in the original Portal State.
  // The raw customer answers already live in the SAME canonical server state;
  // this manifest persists only exact binding/impact lineage, not another copy.
@@ -412,7 +413,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
      continue;
     }
     if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
-    stored.push(saved);
+    stored.push({...saved,statePath:item.statePath,bindingGeneration:item.generation});
     for(const impact of causalImpacts)acknowledged.add(impact.generation);
     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
    }
@@ -447,7 +448,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    // Never broadcast one tenant's confirmations into a different user's session.
    if(stored.length&&submittedPrincipal===currentPrincipal()&&hydratedPrincipal===submittedPrincipal
       &&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-    globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{receiptScope,stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
    }
   }
   return stateResult;
@@ -482,7 +483,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   })().finally(()=>{activeRefresh=null});
   return activeRefresh;
  }
- const portalDomain=Object.freeze({...domain,init,refresh,set,setDerived,patch,flush,pendingHandoffs,saveBusinessInput});
+ const portalDomain=Object.freeze({...domain,init,refresh,set,setDerived,patch,flush,pendingHandoffs,saveBusinessInput,receiptScope});
  if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=portalDomain;
  return portalDomain;
 }

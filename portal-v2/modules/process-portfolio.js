@@ -112,3 +112,20 @@ export function recordProcessStepIntent(state,{processId,stepId,action,intentId,
  p.nextConsumerReceipt='EVIDENCE_DUE';
  return next;
 }
+
+export function verifiedProcessBrainReceipt(detail,{scope,pending}={}){
+ if(typeof scope!=='symbol'||detail?.receiptScope!==scope||pending?.pending!==false)return null;
+ if(!Array.isArray(detail?.stored)||!Array.isArray(detail?.impacts))return null;
+ const matches=detail.stored.filter(x=>x?.statePath==='portal.deliveryPlan');
+ if(matches.length!==1)return null;
+ const a=matches[0];
+ if(a.stored!==true||a.stale===true||a.authorityStored!==true||a.powerhouseFeedStored!==true||
+    a.organismImpactStored!==true||!Number.isSafeInteger(a.bindingGeneration)||a.bindingGeneration<1||
+    ![a.sourceRevision,a.brainRecordId,a.currentStateRecordId,a.organismImpactRecordId].every(v=>typeof v==='string'&&v.length>0))return null;
+ const impacts=detail.impacts.filter(x=>x?.path==='portal.deliveryPlan'&&
+   Number.isSafeInteger(x.generation)&&x.generation>0&&x.evidenceStatus==='OBSERVED_NOT_VERIFIED');
+ if(!impacts.length)return null;
+ return Object.freeze({status:'BRAIN_INPUT_ACK',sourceRevision:a.sourceRevision,brainRecordId:a.brainRecordId,
+  bindingGeneration:a.bindingGeneration,impactGenerations:impacts.map(x=>x.generation),
+  providerExecutionVerified:false,measuredOutcomeVerified:false,learningVerified:false});
+}

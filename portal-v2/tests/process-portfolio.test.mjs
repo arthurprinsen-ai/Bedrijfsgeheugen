@@ -46,7 +46,7 @@ test('original board retains one canonical writer and no new process scheduler o
  const board=readFileSync(new URL('../modules/delivery-board.js',import.meta.url),'utf8');
  const process=readFileSync(new URL('../modules/process-portfolio.js',import.meta.url),'utf8');
  assert.match(board,/domainState\.set\('portal\.deliveryPlan',state\)/);
- assert.match(board,/processPortfolioMarkup\(state\)/);
+ assert.match(board,/processPortfolioMarkup\(state,\{handoffEvidence:activeHandoffEvidence\}\)/);
  assert.match(board,/bindProcessPortfolio/);
  assert.doesNotMatch(process,/fetch\(|localStorage|sessionStorage|setInterval|cron\.schedule|service_role/);
 });
@@ -59,4 +59,35 @@ test('original workflow changes invalidate relevant domain pages without claimin
  assert.ok(impact.reviewDomains.includes('process'));
  assert.equal(impact.externalExecutionAuthorized,false);
  assert.equal(impact.evidenceStatus,'OBSERVED_NOT_VERIFIED');
+});
+
+test('scoped process Brain receipt only after exact binding, causal impact and independent authority ACK',async()=>{
+ const {verifiedProcessBrainReceipt}=await import('../modules/process-portfolio.js');
+ const scope=Symbol('tenant-domain');
+ const ack={statePath:'portal.deliveryPlan',bindingGeneration:2,stored:true,stale:false,
+  authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,
+  sourceRevision:'rev-A',brainRecordId:'brain-A',currentStateRecordId:'current-A',organismImpactRecordId:'impact-A'};
+ const detail={receiptScope:scope,stored:[ack],impacts:[{path:'portal.deliveryPlan',generation:1,evidenceStatus:'OBSERVED_NOT_VERIFIED'}]};
+ const opts={scope,pending:{pending:false}};
+ const out=verifiedProcessBrainReceipt(detail,opts);
+ assert.equal(out.status,'BRAIN_INPUT_ACK');
+ assert.deepEqual([out.providerExecutionVerified,out.measuredOutcomeVerified,out.learningVerified],[false,false,false]);
+ assert.match(processPortfolioMarkup(create(),{handoffEvidence:out}),/brain-A/);
+ assert.equal(verifiedProcessBrainReceipt({...detail,receiptScope:Symbol('wrong-tenant')},opts),null);
+ assert.equal(verifiedProcessBrainReceipt(detail,{scope,pending:{pending:true}}),null);
+ for(const overrides of [{stale:true},{authorityStored:false},{organismImpactStored:false},{statePath:'portal.profile'}, {brainRecordId:''}]){
+  assert.equal(verifiedProcessBrainReceipt({...detail,stored:[{...ack,...overrides}]},opts),null);
+ }
+ assert.equal(verifiedProcessBrainReceipt({...detail,stored:[ack,ack]},opts),null);
+ assert.equal(verifiedProcessBrainReceipt({...detail,impacts:[]},opts),null);
+ assert.doesNotMatch(processPortfolioMarkup(create()),/BRAIN_INPUT_ACK/);
+});
+test('the original UI keeps disclosure open after mutations and exposes domain-scoped receipt',()=>{
+ const board=readFileSync(new URL('../modules/delivery-board.js',import.meta.url),'utf8');
+ const domain=readFileSync(new URL('../domain-state.js',import.meta.url),'utf8');
+ assert.match(board,/wasOpen=Boolean/);
+ assert.match(board,/disclosure\.open=wasOpen/);
+ assert.match(board,/receiptListeners=new WeakMap/);
+ assert.match(domain,/receiptScope=Symbol/);
+ assert.match(domain,/stored\.push\(\{\.\.\.saved,statePath:item\.statePath,bindingGeneration:item\.generation\}\)/);
 });
