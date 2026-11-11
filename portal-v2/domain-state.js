@@ -324,6 +324,9 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return activeInit;
  }
  function track(path){
+  // Demo edits affect only this browser's in-memory preview. They must never
+  // create real Brain BusinessInput or consumer-ACK obligations.
+  if(stateClient.isDemo?.())return;
   const binding=businessInputBinding(path);
   if(!binding)return;
   if(!handoffPrincipal)handoffPrincipal=currentPrincipal();
@@ -352,9 +355,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   // Expose the exact causal mutation revision; a generic later Brain ACK must
   // never be credited to an unrelated or newer customer edit.
-  const generation=impact.changed?impactRevision+1:null;
+  const durableHandoff=!stateClient.isDemo?.();
+  const generation=impact.changed&&durableHandoff?impactRevision+1:null;
   const enriched=Object.freeze({...impact,generation,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
-  if(impact.changed){
+  if(impact.changed&&durableHandoff){
    pendingImpacts.push({generation:++impactRevision,path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
   }
   if(typeof globalThis!=='undefined'){
@@ -364,7 +368,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
     globalThis.dispatchEvent(new CustomEvent('bg:portal-pages-invalidated',{detail:{path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],effectDetails:[...enriched.effectDetails]}}));
     if(impact.changed){
       globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
-      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length}}));
+      if(durableHandoff)globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length}}));
      }
    }
   }
