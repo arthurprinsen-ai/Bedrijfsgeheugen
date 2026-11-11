@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "fingerprint": "portal|work-process|source-aware-workflow-templates|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PORTAL_PROCESS_WORKFLOW_SLICE",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Portal V2 deliveryPlan / original state and Brain lineage",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "gap": "Original delivery board had features and stories but no generic process dependency, owner and approval-request projection",
+    "commercial_loops_closed_by_this_patch": 0
+  },
+  "root_cause": {
+    "observed": "Work navigation and process-specific templates were not yet joined to the original deliveryPlan interface",
+    "unknowns": [
+      "independent consumer receipts per process stage",
+      "authorised approver provider",
+      "end-to-end tenant two-context browser proof"
+    ]
+  },
+  "fix": {
+    "scope": "Source-aware templates in original portal.deliveryPlan, no new backend or scheduler",
+    "truth_boundary": "Customer submitted is never provider execution or independent Brain receipt"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_WORKFLOW_PROCESS_CONTEXT_MISSING",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-process-portfolio-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-process-portfolio-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-process-portfolio-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "NO_SECOND_PROCESS_ENGINE",
+    "NO_CUSTOMER_SELF_APPROVAL",
+    "NO_FALSE_BRAIN_ACK",
+    "KEEP_ORIGINAL_DELIVERYPLAN_SOURCE"
+  ],
+  "evidence": {
+    "source": "Original GitHub Portal V2 and domainState",
+    "required": "protected CI, merge, exact Netlify deploy SHA and real authenticated two-tenant readback",
+    "limitation": "True durable independent consumer receipts, notifications, backend approval, Powerhouse/Heartbeat results and Red Dot quality gate not solved by this slice"
+  }
+}
