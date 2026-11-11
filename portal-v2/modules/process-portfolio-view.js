@@ -1,4 +1,4 @@
-import {PROCESS_TEMPLATES,processPortfolioOverview,instantiateProcess,recordProcessStepIntent} from './process-portfolio.js';
+import {PROCESS_TEMPLATES,processPortfolioOverview,instantiateProcess,reviseProcessPlan,recordProcessStepIntent} from './process-portfolio.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const LABELS=Object.freeze({
  submitted_not_verified:'Door gebruiker gemarkeerd · ontvangstbewijs open',
@@ -25,7 +25,11 @@ export function processPortfolioMarkup(state,{today=new Date().toISOString().sli
   return '<article class="v2processcard"><header><div><strong>'+esc(p.title)+'</strong>'+
    '<small>'+esc(p.owner||'Eigenaar ontbreekt')+' · '+esc(p.targetDate||'Geen einddatum')+
    '</small></div><span>'+p.completeByCustomer+'/'+p.steps.length+' invoerstappen</span></header>'+
-   '<ol>'+steps+'</ol><p>Invoer is nog geen onafhankelijke ONE BRAIN-ontvangst, Powerhouse-uitvoering of Heartbeat-effect.</p></article>';
+   '<ol>'+steps+'</ol><form data-process-replan="'+esc(p.id)+'" aria-label="Eigenaar en planning bijwerken">'+
+   '<label>Procesverantwoordelijke<input name="owner" required maxlength="120" value="'+esc(p.owner||'')+'"></label>'+
+   '<label>Einddatum<input name="targetDate" type="date" value="'+esc(p.targetDate||'')+'"></label>'+
+   '<button type="submit">Planning bijwerken</button></form>'+
+   '<p>Invoer is nog geen onafhankelijke ONE BRAIN-ontvangst, Powerhouse-uitvoering of Heartbeat-effect.</p></article>';
  }).join('');
  return '<section class="v2processportfolio" data-process-portfolio><details><summary>'+
   '<strong>Processen & overdrachten</strong><span>'+portfolio.open+' processen · '+
@@ -62,6 +66,19 @@ export function bindProcessPortfolio(panel,{getState,onChange}={}){
    }));
   }catch(error){errorMessage(error);}
  });
+
+ panel.querySelectorAll('[data-process-replan]').forEach(form=>form.addEventListener('submit',event=>{
+  event.preventDefault();
+  try{
+   const data=new FormData(form),previous=getState();
+   const revised=reviseProcessPlan(previous,{
+    processId:form.dataset.processReplan,
+    owner:String(data.get('owner')||''),
+    targetDate:String(data.get('targetDate')||'')
+   });
+   if(JSON.stringify(previous)!==JSON.stringify(revised))onChange(revised);
+  }catch(error){errorMessage(error);}
+ }));
  panel.querySelectorAll('[data-process-step]').forEach(button=>button.addEventListener('click',()=>{
   try{
    const state=getState(),p=state.processes?.find(x=>x.id===button.dataset.processId);
