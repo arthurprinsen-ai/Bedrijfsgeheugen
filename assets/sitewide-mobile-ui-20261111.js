@@ -126,8 +126,12 @@
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
   /* Dynamic CMS navigation can mount after DOMContentLoaded. */
+  var scheduled=false;
   var observer=new MutationObserver(function(mutations){
-    if (mutations.some(function(m){return m.type==='childList' && m.addedNodes.length>0;})) init();
+    if (!mutations.some(function(m){return m.type==='childList' && m.addedNodes.length>0;})) return;
+    if (scheduled) return;
+    scheduled=true;
+    requestAnimationFrame(function(){scheduled=false;init();});
   });
   observer.observe(document.documentElement,{childList:true,subtree:true});
 })();
