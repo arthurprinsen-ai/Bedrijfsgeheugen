@@ -105,7 +105,13 @@ try {
           return {parent:range?.parentElement?.id,frameWidth:a?.width,rangeWidth:b?.width,frameHeight:a?.height,rangeHeight:b?.height};
         });
         assert.equal(geometry.parent,'compareFrame','knowledge range must own visual frame');
-        assert.ok(geometry.rangeWidth>=geometry.frameWidth*.9,'knowledge range touch width does not cover frame');
+        // The visible 44px range rail deliberately reserves 20px safe insets
+        // at either side. Test its actual usable touch target, not an invisible
+        // full-frame overlay which obscures the comparison UX.
+        assert.ok(
+          geometry.rangeWidth>=geometry.frameWidth-48&&geometry.rangeHeight>=44,
+          `knowledge visible range rail is too small: ${JSON.stringify(geometry)}`
+        );
         await range.focus();
         await range.press('Home');
         assert.equal(Number(await range.inputValue()),0,'knowledge slider Home is not left physical endpoint');
