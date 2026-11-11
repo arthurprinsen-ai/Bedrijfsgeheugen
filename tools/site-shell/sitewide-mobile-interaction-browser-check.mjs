@@ -58,12 +58,17 @@ try {
         const menu=document.getElementById(owner);
         const h=header.getBoundingClientRect(),m=menu.getBoundingClientRect();
         const float=document.querySelector('.wa,.whatsapp-float,[data-whatsapp-float]');
-        return {viewport:innerWidth,left:m.left,right:m.right,top:m.top,
+        return {owner,parent:menu.parentElement?.tagName,canonicalAvailable:!!document.getElementById('bgMobileNav'),
+          toggleControls:document.getElementById('mobileToggle')?.getAttribute('aria-controls'),
+          computedTransform:getComputedStyle(menu).transform,
+          viewport:innerWidth,left:m.left,right:m.right,top:m.top,
           headerTop:h.top,headerBottom:h.bottom,menuPosition:getComputedStyle(menu).position,
           singleClose:menu.querySelectorAll('[data-bg-sitewide-close]').length===0,
           bodyState:document.body.classList.contains('bg-site-mobile-menu-open'),
           floatHidden:!float||getComputedStyle(float).display==='none'};
       },controls);
+      if(controls==='v18MobileDrawer' && geometry.canonicalAvailable)
+        assert.fail(route+': obsolete sliding drawer retained aria-controls instead of real visible menu '+JSON.stringify(geometry));
       assert.ok(geometry.bodyState&&geometry.singleClose,route+': duplicate menu controls '+JSON.stringify(geometry));
       assert.ok(geometry.menuPosition==='fixed'&&Math.abs(geometry.left)<3&&Math.abs(geometry.right-geometry.viewport)<3,
         route+': sheet leaves side gaps '+JSON.stringify(geometry));
